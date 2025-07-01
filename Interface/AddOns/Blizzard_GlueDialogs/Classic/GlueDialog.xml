@@ -146,10 +146,10 @@
 					</Layers>
 					<Scripts>
 						<OnEnterPressed>
-							StaticPopup_EditBoxOnEnterPressed();
+							GlueDialog_EditBoxOnEnterPressed();
 						</OnEnterPressed>
 						<OnEscapePressed>
-							StaticPopup_EditBoxOnEscapePressed();
+							GlueDialog_EditBoxOnEscapePressed();
 						</OnEscapePressed>
 					</Scripts>
 					<FontString inherits="GlueFontHighlight"/>

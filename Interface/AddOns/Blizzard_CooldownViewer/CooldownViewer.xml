@@ -1,0 +1,341 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CooldownViewerEssentialItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
+		<Size x="50" y="50"/>
+		<KeyValues>
+			<KeyValue key="cooldownFont" value="GameFontHighlightHugeOutline" type="string"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-9" y="8"/>
+						<Anchor point="BOTTOMRIGHT" x="9" y="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OutOfRange" setAllPoints="true" atlas="UI-CooldownManager-OORshadow">
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" setAllPoints="true">
+				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
+					<Color r="1" g="1" b="1" a="1"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
+			</Cooldown>
+			<Frame parentKey="ChargeCount" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Current" inherits="NumberFontNormal">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="CooldownFlash" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" atlas="UI-HUD-ActionBar-GCD-Flipbook" alpha="0"/>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlashAnim">
+						<Alpha parentKey="HideAnim" childKey="Flipbook" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha parentKey="ShowAnim" childKey="Flipbook" duration="0" order="1" fromAlpha="1" toAlpha="1"/>
+						<FlipBook parentKey="PlayAnim" childKey="Flipbook" duration="0.75" order="1" flipBookRows="11" flipBookColumns="2" flipBookFrames="22" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerUtilityItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
+		<Size x="30" y="30"/>
+		<KeyValues>
+			<KeyValue key="cooldownFont" value="GameFontHighlightOutline" type="string"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-6" y="5"/>
+						<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="OutOfRange" setAllPoints="true" atlas="UI-CooldownManager-OORshadow">
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" setAllPoints="true">
+				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
+					<Color r="1" g="1" b="1" a="1"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
+			</Cooldown>
+			<Frame parentKey="ChargeCount" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Current" inherits="NumberFontNormalSmall">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="CooldownFlash" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="1"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" atlas="UI-HUD-ActionBar-GCD-Flipbook" alpha="0"/>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlashAnim">
+						<Alpha parentKey="HideAnim" childKey="Flipbook" duration="0" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha parentKey="ShowAnim" childKey="Flipbook" duration="0" order="1" fromAlpha="1" toAlpha="1"/>
+						<FlipBook parentKey="PlayAnim" childKey="Flipbook" duration="0.75" order="1" flipBookRows="11" flipBookColumns="2" flipBookFrames="22" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerBuffIconItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<KeyValues>
+			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="7"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="Cooldown" reverse="true" setAllPoints="true">
+				<SwipeTexture file="Interface\HUD\UI-HUD-CoolDownManager-Icon-Swipe">
+					<Color r="0" g="0" b="0" a="0.7"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
+			</Cooldown>
+			<Frame parentKey="Applications" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Applications" inherits="NumberFontNormal">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerBuffBarItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
+		<Size x="220" y="30"/>
+		<KeyValues>
+			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
+			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Icon" frameLevel="512">
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Size x="30" y="30"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+						<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-6" y="5"/>
+								<Anchor point="BOTTOMRIGHT" x="6" y="-5"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Applications" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+							<Size x="32" y="10"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar parentKey="Bar" frameLevel="511">
+				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
+					<Color r="1.0" g="0.5" b="0.25"/>
+				</BarTexture>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Size y="19"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
+							<Size y="30"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="-2"/>
+								<Anchor point="RIGHT" x="6" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Pip" atlas="UI-HUD-CoolDownManager-Bar-Pip" useAtlasSize="true"/>
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="5"/>
+								<Anchor point="RIGHT" x="-25"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Duration" inherits="NumberFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="RIGHT" x="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="EssentialCooldownViewer" mixin="EssentialCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Essential" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ESSENTIAL_COOLDOWNS" type="global"/>
+			<KeyValue key="itemTemplate" value="CooldownViewerEssentialItemTemplate" type="string"/>
+			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.Essential" type="global"/>
+			<KeyValue key="layoutIndex" value="10" type="number"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="UtilityCooldownViewer" mixin="UtilityCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Utility" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_UTILITY_COOLDOWNS" type="global"/>
+			<KeyValue key="itemTemplate" value="CooldownViewerUtilityItemTemplate" type="string"/>
+			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.Utility" type="global"/>
+			<KeyValue key="layoutIndex" value="11" type="number"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BuffIconCooldownViewer" mixin="BuffIconCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffIcon" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFFS" type="global"/>
+			<KeyValue key="itemTemplate" value="CooldownViewerBuffIconItemTemplate" type="string"/>
+			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBuff" type="global"/>
+			<KeyValue key="layoutIndex" value="9" type="number"/>
+			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BuffBarCooldownViewer" mixin="BuffBarCooldownViewerMixin" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFF_BARS" type="global"/>
+			<KeyValue key="itemTemplate" value="CooldownViewerBuffBarItemTemplate" type="string"/>
+			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBar" type="global"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

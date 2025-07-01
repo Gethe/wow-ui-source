@@ -126,3 +126,14 @@ end
 function RunNextFrame(callback)
 	C_Timer.After(0, callback);
 end
+
+FunctionUtil = {};
+
+function FunctionUtil.SafeInvokeMethod(table, methodName, ...)
+	local method = table[methodName];
+	if method then
+		return method(table, ...);
+	end
+
+	return nil;
+end

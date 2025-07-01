@@ -1,0 +1,6 @@
+## Title: Blizzard_AccessibilityTemplates
+## RequiredDep: Blizzard_SharedXML
+## AllowLoad: both
+## AllowLoadGameType: mainline
+Mainline\AccessibilityTemplates.lua
+AccessibilityIntrinsics.xml

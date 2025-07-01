@@ -5,6 +5,7 @@
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: classic
+## EscalateErrorDuringLoad: 1
 Shared\GlueParentUtil.lua
 Classic\GlueParent.lua
 Classic\GlueParent.xml

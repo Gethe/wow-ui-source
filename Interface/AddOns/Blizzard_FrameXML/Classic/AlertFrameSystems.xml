@@ -2608,4 +2608,150 @@
 			</Layer>
 		</Layers>
 	</ContainedAlertFrame>
+
+	<Frame name="ChallengeModeAlertFrameRewardTemplate" virtual="true" inherits="DungeonCompletionAlertFrameRewardTemplate" mixin="ChallengeModeAlertFrameRewardMixin">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<ContainedAlertFrame name="ChallengeModeAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate" mixin="ChallengeModeAlertFrameMixin">
+		<Size x="311" y="78"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="128"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentWaitAndAnimOut" parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Challenges\challenges-main" setAllPoints="true">
+					<TexCoords left="0.00097656" right="0.30468750" top="0.52148438" bottom="0.67382813"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentDungeonTexture" parentKey="dungeonTexture">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="LEFT" x="19" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
+					<Size x="72" y="72"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentDungeonTexture" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontWhiteTiny" text="CHALLENGE_MODE_COMPLETED">
+					<Size x="200" y="12"/>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="20" y="-22"/>
+						</Anchor>
+					</Anchors>
+					<Color r="0.973" g="0.937" b="0.580"/>
+				</FontString>
+				<FontString name="$parentTime" inherits="GameFontHighlight" parentKey="time">
+					<!--Size x="200" y="16"/-->
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset x="20" y="-40"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentMedalIcon" file="Interface\Challenges\challenges-silver" parentKey="medalIcon">
+					<Size>
+						<AbsDimension x="52" y="52"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentDungeonTexture" relativePoint="RIGHT" x="-21" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentShine" file="Interface\AchievementFrame\UI-Achievement-Alert-Glow" alphaMode="ADD" hidden="true" parentKey="shine">
+					<Size>
+						<AbsDimension x="67" y="72"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Animations>
+						<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+							<Translation offsetX="260" offsetY="0" duration="0.85" order="2"/>
+							<Alpha startDelay="0.35" fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<TexCoords left="0.78125" right="0.912109375" top="0" bottom="0.28125"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentReward1" inherits="ChallengeModeAlertFrameRewardTemplate" parentKey="reward1"/>
+			<Frame name="$parentGlowFrame" setAllPoints="true" enableMouse="false" parentKey="glowFrame">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentGlow" file="Interface\Scenarios\ScenariosParts" alphaMode="ADD" hidden="true" parentKey="glow">
+							<Size>
+								<AbsDimension x="327" y="94"/>
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="$parentAnimIn" parentKey="animIn">
+									<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+									<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
+									<Scripts>
+										<OnFinished>
+											self:GetParent():Hide();
+										</OnFinished>
+									</Scripts>
+								</AnimationGroup>
+							</Animations>
+							<TexCoords left="0.00195313" right="0.64062500" top="0.07421875" bottom="0.25781250"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.glow = self.glowFrame.glow;
+			</OnLoad>
+			<OnClick>
+				PVEFrame_ToggleFrame("ChallengesFrame", self.mapID);
+			</OnClick>
+		</Scripts>
+	</ContainedAlertFrame>
+
 </Ui>

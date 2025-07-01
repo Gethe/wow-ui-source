@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXMLUtil
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXMLGame
+## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 PartyUtil.lua

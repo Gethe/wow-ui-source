@@ -21,11 +21,6 @@ function CommunitiesGuildNewsButtonMixin:Init(elementData)
 end
 
 function CommunitiesGuildNewsFrame_OnLoad(self)
-	QueryGuildNews();
-	self:RegisterEvent("GUILD_NEWS_UPDATE");
-	self:RegisterEvent("GUILD_MOTD");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local fontString = self.SetFiltersButton:GetFontString();
 	self.SetFiltersButton:SetHeight(fontString:GetHeight() + 4);
 	self.SetFiltersButton:SetWidth(fontString:GetWidth() + 4);
@@ -45,18 +40,26 @@ function CommunitiesGuildNewsFrame_OnLoad(self)
 end
 
 function CommunitiesGuildNewsFrame_OnShow(self)
+	self:RegisterEvent("GUILD_NEWS_UPDATE");
+	self:RegisterEvent("GUILD_MOTD");
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+	self:RegisterEvent("CALENDAR_UPDATE_GUILD_EVENTS");
+
+	C_Calendar.OpenCalendar();
+	QueryGuildNews();
 	-- GuildNewsSort will cause a GUILD_NEWS_UPDATE event to get signalled, and CommunitiesGuildNews_Update will get called.
 	GuildNewsSort(0);	-- normal sort, taking into account filters and stickies
 end
 
+function CommunitiesGuildNewsFrame_OnHide(self)
+	self:UnregisterEvent("GUILD_NEWS_UPDATE");
+	self:UnregisterEvent("GUILD_MOTD");
+	self:UnregisterEvent("GUILD_ROSTER_UPDATE");
+	self:UnregisterEvent("CALENDAR_UPDATE_GUILD_EVENTS");
+end
+
 function CommunitiesGuildNewsFrame_OnEvent(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		QueryGuildNews();
-	else
-		if ( self:IsVisible() ) then
-			CommunitiesGuildNews_Update(self);
-		end
-	end
+	CommunitiesGuildNews_Update(self);
 end
 
 function CommunitiesGuildNews_Update(self)
@@ -85,7 +88,7 @@ function CommunitiesGuildNews_Update(self)
 	for index = 1, GetNumGuildNews() do
 		dataProvider:Insert({index=index, news=true});
 	end
-	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	-- update tooltip
 	if ( self.activeButton ) then

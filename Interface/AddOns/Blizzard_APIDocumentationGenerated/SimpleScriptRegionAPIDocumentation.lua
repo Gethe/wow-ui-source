@@ -19,6 +19,32 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CanPropagateMouseClicks",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 
@@ -61,6 +87,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetBottom",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -74,6 +101,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetCenter",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -102,6 +130,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -115,6 +144,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -131,6 +161,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRight",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -144,6 +175,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScaledRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -203,6 +235,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetTop",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -258,6 +291,20 @@ local SimpleScriptRegionAPI =
 				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
 				{ Name = "script", Type = "luaFunction", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "Intersects",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "intersects", Type = "bool", Nilable = false },
 			},
 		},
 		{

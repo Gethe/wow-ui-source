@@ -1,0 +1,48 @@
+## Title: Blizzard_UnitFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UnitFrameUtil, Blizzard_CastingBar
+## AllowLoad: Game
+## AllowLoadGameType: mists
+Cata\PredictiveHealing.lua
+Cata\UnitPowerBarAlt.xml
+StatusBarOverlaySegment.lua
+StatusBarOverlaySegment.xml
+Classic\UnitFrame.lua
+UnitFrame.xml
+Classic\PlayerFrame.lua
+Classic\PlayerFrame.xml
+Wrath\AlternatePowerBar.lua
+Mists\AlternatePowerBar.xml
+Cata\PartyFrameTemplates.xml
+Classic\PartyFrame.xml
+Wrath\TargetFrame.lua
+Cata\TargetFrame.xml
+Shared\TotemFrame.lua
+Mists\TotemFrame.lua
+Shared\TotemFrame.xml
+Cata\PetFrame.lua
+Classic\PetFrame_Shared.lua
+Cata\PetFrame.xml
+Classic\ComboFrame.lua
+Classic\ComboFrame.xml
+Wrath\CompactUnitFrame.lua
+Wrath\CompactUnitFrame.xml
+Classic\CompactRaidGroup.lua
+Classic\CompactRaidGroup.xml
+Classic\CompactPartyFrame.lua
+Classic\CompactPartyFrame.xml
+Classic\RuneFrame_Shared.lua
+Cata\RuneFrame.lua
+Cata\RuneFrame.xml
+Mists\ShardBar.lua
+Mists\ShardBar.xml
+Classic\Localization.lua
+Cata\EclipseBarFrame.lua
+Cata\EclipseBarFrame.xml
+Mists\PaladinPowerBar.xml
+Mists\MonkHarmonyBar.lua
+Mists\MonkHarmonyBar.xml
+Mists\MonkStaggerBar.lua
+Mists\MonkStaggerBar.xml
+Mists\PriestBar.xml

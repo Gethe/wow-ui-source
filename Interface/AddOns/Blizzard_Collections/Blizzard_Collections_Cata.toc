@@ -1,22 +1,25 @@
 ## Title: Blizzard Collections
-## Author: Blizzard Entertainment
-## AllowLoad: game
-## AllowLoadGameType: classic
 ## Notes: Collections
+## Author: Blizzard Entertainment
 ## Version: 1.0
 ## LoadOnDemand: 1
-Wrath\Blizzard_CollectionTemplates.lua
-Wrath\Blizzard_CollectionTemplates.xml
-Wrath\Blizzard_Collections.lua
-Wrath\Blizzard_Collections.xml
-Wrath\Blizzard_MountCollection.lua
-Wrath\Blizzard_MountCollection.xml
-Wrath\Blizzard_PetCollection.lua
-Wrath\Blizzard_PetCollection.xml
-Wrath\Blizzard_ToyBox.lua
-Wrath\Blizzard_ToyBox.xml
-Wrath\Blizzard_HeirloomCollection.lua
-Wrath\Blizzard_HeirloomCollection.xml
-Wrath\Blizzard_Wardrobe.lua
-Wrath\Blizzard_Wardrobe.xml
-Wrath\Localization.lua
+## AllowLoad: game
+## Dependencies: Blizzard_FrameXMLUtil
+## AllowLoadGameType: classic
+Classic\Blizzard_CollectionTemplates.lua
+Classic\Blizzard_CollectionTemplates.xml
+Classic\Blizzard_Collections.lua
+Classic\Blizzard_Collections.xml
+Classic\Blizzard_MountCollection.lua
+Classic\Blizzard_MountCollection.xml
+Classic\Blizzard_PetCollection.lua
+Classic\Blizzard_PetCollection.xml
+Classic\Blizzard_ToyBox.lua
+Classic\Blizzard_ToyBox.xml
+Classic\Blizzard_HeirloomCollection.lua
+Classic\Blizzard_HeirloomCollection.xml
+Classic\Blizzard_Wardrobe.lua
+Classic\Blizzard_Wardrobe.xml
+Cata\Blizzard_Wardrobe.lua
+Cata\Blizzard_Wardrobe.xml
+Classic\Localization.lua

@@ -7,8 +7,18 @@ local PvpInfo =
 	Functions =
 	{
 		{
+			Name = "ClearLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -26,6 +36,7 @@ local PvpInfo =
 		{
 			Name = "GetArenaRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -44,6 +55,7 @@ local PvpInfo =
 		{
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -59,6 +71,7 @@ local PvpInfo =
 		{
 			Name = "GetBattlefieldVehicles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -68,6 +81,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "vehicles", Type = "table", InnerType = "BattlefieldVehicleInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHolidayBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
 			},
 		},
 		{
@@ -97,6 +119,34 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLocklistMapName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "mapName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOutdoorPvPWaitTime",
 			Type = "Function",
 
@@ -108,6 +158,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "pvpWaitTime", Type = "time_t", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRandomBGInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "RandomBGInfo", Nilable = false },
 			},
 		},
 		{
@@ -150,6 +209,20 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetWorldPVPAreaInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "WorldPVPBattlegroundInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWorldPvPWaitTime",
 			Type = "Function",
 
@@ -166,6 +239,7 @@ local PvpInfo =
 		{
 			Name = "GetZonePVPInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -220,6 +294,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "SetLocklistMap",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetPVP",
 			Type = "Function",
 
@@ -245,6 +328,11 @@ local PvpInfo =
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
 				{ Name = "updateReason", Type = "cstring", Nilable = false },
 			},
+		},
+		{
+			Name = "ArenaPrepOpponentSpecializations",
+			Type = "Event",
+			LiteralName = "ARENA_PREP_OPPONENT_SPECIALIZATIONS",
 		},
 		{
 			Name = "ArenaRegistrarClosed",
@@ -531,7 +619,7 @@ local PvpInfo =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "instanceType", Type = "number", Nilable = false },
+				{ Name = "matchmakingType", Type = "PvPMatchmakingType", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = false },
 				{ Name = "maxPlayers", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
@@ -626,7 +714,24 @@ local PvpInfo =
 			{
 				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "bgIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "WorldPVPBattlegroundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "canEnter", Type = "bool", Nilable = false },
+				{ Name = "startTime", Type = "time_t", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},

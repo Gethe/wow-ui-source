@@ -22,6 +22,8 @@
 		<KeyValues>
 			<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
 			<KeyValue key="defaultFontName" value="GameFontDisable" type="string"/>
+			<KeyValue key="useDefaultEnterHandling" value="true" type="boolean"/>
+			<KeyValue key="useDefaultEscapeHandling" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBox">

@@ -127,50 +127,33 @@
 			<Button name="$parentButton3" inherits="StaticPopupButtonTemplate" parentKey="button3" id="3"/>
 			<Button name="$parentButton4" inherits="StaticPopupButtonTemplate" parentKey="button4" id="4"/>
 			<Button name="$parentExtraButton" inherits="StaticPopupButtonTemplate" parentKey="extraButton" id="5"/>
-			<EditBox name="$parentEditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate">
-				<Size>
-					<AbsDimension x="130" y="32"/>
-				</Size>
+			<EditBox name="$parentEditBox" parentKey="editBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate" mixin="StaticPopupEditBoxMixin">
+				<Size x="130" y="32"/>
+				<KeyValues>
+					<KeyValue key="addHighlightedText" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOM" >
-						<Offset>
-							<AbsDimension x="0" y="45"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOM" x="0" y="45"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture name="$parentLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left2">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="LEFT" x="-10" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right2">
-							<Size>
-								<AbsDimension x="32" y="32"/>
-							</Size>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="10" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture name="$parentMid" file="Interface\ChatFrame\UI-ChatInputBorder-Mid2" horizTile="true">
-							<Size>
-								<AbsDimension x="0" y="32"/>
-							</Size>
+							<Size x="0" y="32"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
-								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT">
-									<Offset>
-										<AbsDimension x="0" y="0"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentRight" relativePoint="TOPLEFT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -181,19 +164,10 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnterPressed>
-						StaticPopup_EditBoxOnEnterPressed(self);
-					</OnEnterPressed>
-					<OnEscapePressed>
-						StaticPopup_EditBoxOnEscapePressed(self);
-					</OnEscapePressed>
-					<OnTextChanged>
-						StaticPopup_EditBoxOnTextChanged(self, userInput);
-					</OnTextChanged>
-					<OnLoad>
-						self:GetParent().editBox = self;
-						self.addHighlightedText = true;
-					</OnLoad>
+					<OnAttributeChanged method="OnAttributeChanged"/>
+					<OnEnterPressed method="OnEnterPressed"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnTextChanged method="OnTextChanged"/>
 				</Scripts>
 				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
@@ -291,16 +265,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnUpdate>
-				StaticPopup_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnUpdate function="StaticPopup_OnUpdate"/>
 			<OnEvent function="StaticPopup_OnEvent" />
-			<OnShow>
-				StaticPopup_OnShow(self);
-			</OnShow>
-			<OnHide>
-				StaticPopup_OnHide(self);
-			</OnHide>
+			<OnShow function="StaticPopup_OnShow"/>
+			<OnHide function="StaticPopup_OnHide"/>
 			<OnLoad inherit="prepend" function="StaticPopup_OnLoad"/>
 			<OnHyperlinkClick function="StaticPopup_OnHyperlinkClick"/>
 			<OnHyperlinkEnter function="StaticPopup_OnHyperlinkEnter"/>

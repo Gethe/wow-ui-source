@@ -89,14 +89,6 @@ local function Register()
 	-- Block Calendar Invites
 	Settings.SetupCVarCheckbox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
 	
-	-- Display Only Character Achievements
-	if AreAccountAchievementsHidden and ShowAccountAchievements then
-		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS",
-			Settings.VarType.Boolean, SHOW_ACCOUNT_ACHIEVEMENTS, defaultValue, AreAccountAchievementsHidden, ShowAccountAchievements);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_ACCOUNT_ACHIEVEMENTS);
-	end
-
 	-- Block Channel Invites
 	Settings.SetupCVarCheckbox(category, "blockChannelInvites", BLOCK_CHAT_CHANNEL_INVITE, OPTION_TOOLTIP_BLOCK_CHAT_CHANNEL_INVITE);
 

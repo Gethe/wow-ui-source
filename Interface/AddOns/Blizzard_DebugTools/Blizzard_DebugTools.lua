@@ -82,7 +82,11 @@ end
 function FrameStackTooltip_InspectTable(self)
 	if self.highlightFrame then
 		if DebugInspectionTool then
-			DebugInspectionTool:OpenObject(self.highlightFrame);
+			local useExistingFrame = nil;
+			local pollingOff = nil;
+			local fallbackName = nil;
+			local view = DebugInspectionToolViewEnum.Hierarchy;
+			DebugInspectionTool:OpenObject(self.highlightFrame, useExistingFrame, pollingOff, fallbackName, view);
 		else
 			TableAttributeDisplay:InspectTable(self.highlightFrame);
 			TableAttributeDisplay:Show();

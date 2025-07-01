@@ -213,9 +213,9 @@
 					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame setAllPoints="true">
+			<Frame parentKey="textureFrame" setAllPoints="true">
 				<Frames>
-					<Frame setAllPoints="true">
+					<Frame parentKey="childFrame" setAllPoints="true">
 						<Layers>
 							<Layer level="BORDER">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
@@ -244,6 +244,8 @@
 									</Anchors>
 									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 								</Texture>
+								<Texture parentKey="overAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+								<Texture parentKey="overHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
@@ -290,6 +292,8 @@
 				<Frames>
 					<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
 					<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame parentKey="HealAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame parentKey="TotalAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>

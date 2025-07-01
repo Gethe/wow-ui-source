@@ -1,104 +1,48 @@
-MICRO_BUTTONS = {
-	"CharacterMicroButton",
-	"SpellbookMicroButton",
-	"TalentMicroButton",
-	"QuestLogMicroButton",
-	"SocialsMicroButton",
-	"GuildMicroButton",
-	"WorldMapMicroButton",
-	"MainMenuMicroButton",
-	"HelpMicroButton",
-}
+-- Leaving in some of the original alert pane priorities (but commented out) so we don't have to go find them again.
+-- These came from SVN revision 401288.
+-- If we add those alerts, uncomment them below.
+MAIN_MENU_MICRO_ALERT_PRIORITY = {
+	--"CollectionsMicroButtonAlert",
+	"TalentMicroButtonAlert",
+	--"EJMicroButtonAlert",
+};
 
-function MoveMicroButtons(anchor, anchorTo, relAnchor, x, y, isStacked)
-	CharacterMicroButton:ClearAllPoints();
-	CharacterMicroButton:SetPoint(anchor, anchorTo, relAnchor, x, y);
-	UpdateMicroButtons();
-end
-
-function UpdateMicroButtons()
-	local playerLevel = UnitLevel("player");
-	local factionGroup = UnitFactionGroup("player");
-
-
-	if ( CharacterFrame and CharacterFrame:IsShown() ) then
-		CharacterMicroButton:SetButtonState("PUSHED", true);
-		CharacterMicroButton_SetPushed();
-	else
-		CharacterMicroButton:SetButtonState("NORMAL");
-		CharacterMicroButton_SetNormal();
+function MainMenuMicroButton_ShowAlert(alert, text, tutorialIndex)
+	if not g_microButtonAlertsEnabled then
+		return false;
 	end
 
-	if ( SpellBookFrame and SpellBookFrame:IsShown() ) then
-		SpellbookMicroButton:SetButtonState("PUSHED", true);
-	else
-		SpellbookMicroButton:SetButtonState("NORMAL");
+	if tutorialIndex and GetCVarBitfield("closedInfoFrames", tutorialIndex) then
+		return false;
 	end
 
-	if ( PlayerTalentFrame and PlayerTalentFrame:IsShown() ) then
-		TalentMicroButton:SetButtonState("PUSHED", true);
-	else
-		if ( playerLevel < SHOW_SPEC_LEVEL ) then
-			TalentMicroButton:Hide();
-			QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMLEFT", 0, 0);
-		else
-			TalentMicroButton:Show();
-			QuestLogMicroButton:SetPoint("BOTTOMLEFT", "TalentMicroButton", "BOTTOMRIGHT", -3, 0);
+	local isHighestPriority = false;
+	for i, priorityFrameName in ipairs(MAIN_MENU_MICRO_ALERT_PRIORITY) do
+		local priorityFrame = _G[priorityFrameName];
+		if alert == priorityFrame then
+			isHighestPriority = true;
 		end
-		TalentMicroButton:SetButtonState("NORMAL");
-	end
 
-	if ( QuestLogFrame and QuestLogFrame:IsVisible() ) then
-		QuestLogMicroButton:SetButtonState("PUSHED", 1);
-	else
-		QuestLogMicroButton:SetButtonState("NORMAL");
-	end
-
-	SocialsMicroButton:UpdateMicroButton();
-
-	GuildMicroButton:UpdateMicroButton();
-
-	if (  WorldMapFrame and WorldMapFrame:IsShown() ) then
-		WorldMapMicroButton:SetButtonState("PUSHED", true);
-	else
-		WorldMapMicroButton:SetButtonState("NORMAL");
-	end
-
-	if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
-		or ( KeyBindingFrame and KeyBindingFrame:IsShown())
-		or ( MacroFrame and MacroFrame:IsShown()) ) then
-		MainMenuMicroButton:SetButtonState("PUSHED", true);
-		MainMenuMicroButton_SetPushed();
-	else
-		MainMenuMicroButton:SetButtonState("NORMAL");
-		MainMenuMicroButton_SetNormal();
-	end
-
-	if ( HelpFrame and HelpFrame:IsVisible() ) then
-		HelpMicroButton:SetButtonState("PUSHED", 1);
-	else
-		HelpMicroButton:SetButtonState("NORMAL");
-	end
-
-	-- Keyring microbutton
-	if (KeyRingButton) then
-		if ( IsBagOpen(KEYRING_CONTAINER) ) then
-			KeyRingButton:SetButtonState("PUSHED", 1);
-		else
-			KeyRingButton:SetButtonState("NORMAL");
-		end
-	end
-end
-
-function SocialsMicroButton_UpdateNotificationIcon(self)
-	if CommunitiesFrame_IsEnabled() and self:IsEnabled() then
-		--self.NotificationOverlay:SetShown(HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages());
-		if ( not C_SocialRestrictions.IsChatDisabled() and (HasUnseenCommunityInvitations() or CommunitiesUtil.DoesAnyCommunityHaveUnreadMessages())) then
-			if ((not CommunitiesFrame or not CommunitiesFrame:IsShown()) and not FriendsFrame:IsShown()) then
-				self:LockHighlight();
+		if priorityFrame:IsShown() then
+			if not isHighestPriority then
+				-- Higher priority is shown
+				return false;
 			end
+
+			-- Lower priority alert is visible, kill it
+			priorityFrame:Hide();
 		end
-	else
-		--self.NotificationOverlay:SetShown(false);
 	end
+	alert.Text:SetText(text);
+	alert:SetHeight(alert.Text:GetHeight()+42);
+	alert.tutorialIndex = tutorialIndex;
+	alert:Show();
+
+	g_visibleMicroButtonAlerts[alert] = true;
+
+	return alert:IsShown();
+end
+
+function MainMenuMicroButton_HideAlert(microButton)
+	-- no-op for Classic
 end

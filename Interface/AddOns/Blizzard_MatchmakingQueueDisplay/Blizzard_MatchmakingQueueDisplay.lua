@@ -121,7 +121,7 @@ function QueueTypeSettingsFrameMixin:UpdateButtons()
 	local isPartyLeader = C_WoWLabsMatchmaking.IsPartyLeader();
 	local partySize = C_WoWLabsMatchmaking.GetPartySize();
 	local isAlone = C_WoWLabsMatchmaking.IsAloneInWoWLabsParty();
-	local currentEventRealmQueues = C_GameEnvironmentManager.GetCurrentEventRealmQueues();
+	local currentEventRealmQueues = C_GameRules.GetCurrentEventRealmQueues();
 
 	local trainingActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormTraining) == Enum.EventRealmQueues.PlunderstormTraining;
 	local trioActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormTrio) == Enum.EventRealmQueues.PlunderstormTrio;
@@ -166,7 +166,7 @@ function QueueTypeSettingsFrameMixin:UpdateButtons()
 end
 
 function QueueTypeSettingsFrameMixin:IsSelectionActive()
-	local currentEventRealmQueues = C_GameEnvironmentManager.GetCurrentEventRealmQueues();
+	local currentEventRealmQueues = C_GameRules.GetCurrentEventRealmQueues();
 
 	if self.QueueContainer.Training:IsSelected() then
 		return bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormTraining) == Enum.EventRealmQueues.PlunderstormTraining;
@@ -306,7 +306,7 @@ function QueueReadyButtonMixin:HasValidQueue()
 		return true;
 	end
 
-	local currentEventRealmQueues = C_GameEnvironmentManager.GetCurrentEventRealmQueues();
+	local currentEventRealmQueues = C_GameRules.GetCurrentEventRealmQueues();
 	local trioActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormTrio) == Enum.EventRealmQueues.PlunderstormTrio;
 	local duoActive = bit.band(currentEventRealmQueues, Enum.EventRealmQueues.PlunderstormDuo) == Enum.EventRealmQueues.PlunderstormDuo;
 	local partySize = C_WoWLabsMatchmaking.GetPartySize();

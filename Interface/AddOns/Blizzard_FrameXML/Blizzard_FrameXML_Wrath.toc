@@ -12,6 +12,7 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 Classic\SecureTemplatesBase.xml
 Classic\SecureTemplates.lua
+Classic\SecureTemplates_Shared.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
 Classic\SecureTemplates.xml
@@ -21,7 +22,6 @@ WardrobeOutfits.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
 Classic\CharacterFrameTemplates.xml
-Classic\Sound.lua
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml
 Classic\AlertFrames.lua
@@ -52,8 +52,8 @@ TBC\WorldStateFrame.xml
 Classic\TalentFrameBase_Shared.lua
 Wrath\TalentFrameBase.lua
 Classic\Blizzard_TalentUITemplates.xml
-Classic\MovieFrame.lua
-Classic\MovieFrame.xml
+MovieFrame.lua
+MovieFrame.xml
 Classic\RolePoll.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml

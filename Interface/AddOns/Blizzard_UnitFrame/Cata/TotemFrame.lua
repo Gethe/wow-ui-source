@@ -12,7 +12,7 @@ function TotemFrameMixin:UpdateClassSpecificLayout()
 	elseif (class == "DRUID") then
 		local form  = GetShapeshiftFormID();
 		if (form == MOONKIN_FORM or not form) then
-			if (GetPrimaryTalentTree() == 1) then
+			if (C_SpecializationInfo.GetSpecialization() == 1) then
 				self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 115, -88);
 			else
 				self:SetPoint("TOPLEFT", PlayerFrame, "BOTTOMLEFT", 99, 38);

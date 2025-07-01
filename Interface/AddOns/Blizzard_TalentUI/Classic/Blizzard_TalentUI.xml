@@ -1,73 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<CheckButton name="PlayerSpecTabTemplate" virtual="true" hidden="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size x="64" y="64"/>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset x="-3" y="11"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnClick>
-				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-				PlayerSpecTab_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				PlayerSpecTab_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-		<NormalTexture/>
-		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
-		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
-	</CheckButton>
-	<Button name="PlayerTalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				PlayerTalentTab_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PlayerTalentTab_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick>
-				PlayerTalentTab_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				PlayerTalentFrameTab_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Button>
-	<Button name="PlayerGlyphTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				PlayerGlyphTab_OnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				PlayerGlyphTab_OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick>
-				PlayerGlyphTab_OnClick(self, button, down);
-			</OnClick>
-			<OnEnter>
-				PlayerTalentFrameTab_OnEnter(self, motion);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-		</Scripts>
-	</Button>
+	
 	<Button name="PlayerTalentButtonTemplate" inherits="TalentButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
@@ -81,95 +14,50 @@
 	</Button>
 
 	<Frame name="PlayerTalentFrame" enableMouse="true" toplevel="true" parent="UIParent" hidden="true">
-		<Size>
-			<AbsDimension x="384" y="512"/>
-		</Size>
+		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="30" top="0" bottom="45"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="PlayerTalentFramePortrait">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="8" y="-7"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="8" y="-7"/>
 					</Anchors>
-				</Texture>
-				<Texture name="PlayerTalentFrameActiveSpecTabHighlight" file="Interface\SpellBook\SpellBook-SkillLineTab-Glow" hidden="true">
-					<Size x="74" y="86"/>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture name="PlayerTalentFrameTopLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="PlayerTalentFrameTopRight" file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPRIGHT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="PlayerTalentFrameBottomLeft" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="256" y="256"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMLEFT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
 				<Texture name="PlayerTalentFrameBottomRight" file="Interface\PaperDollInfoFrame\UI-Character-General-BottomRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
+					<Size x="128" y="256"/>
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset>
-								<AbsDimension x="2" y="-1"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="PlayerTalentFrameTitleText" inherits="GameFontNormal" text="TALENTS">
 					<Anchors>
-						<Anchor point="TOP">
-							<Offset>
-								<AbsDimension x="0" y="-18"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOP" x="0" y="-18"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -177,9 +65,7 @@
 		<Frames>
 			<Button name="PlayerTalentFrameCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOPRIGHT">
-						<Offset x="-44" y="-25"/>
-					</Anchor>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-44" y="-25"/>
 				</Anchors>
 			</Button>
 			<Frame name="PlayerTalentFrameStatusFrame" hidden="true">
@@ -190,27 +76,21 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture name="PlayerTalentFramePointsLeft" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
 							</Anchors>
 							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePointsMiddle" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="208" y="20"/>
-							</Size>
+							<Size x="208" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="PlayerTalentFramePointsLeft" relativePoint="RIGHT"/>
 							</Anchors>
 							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 						</Texture>
 						<Texture name="PlayerTalentFramePointsRight" file="Interface\Common\Common-Input-Border">
-							<Size>
-								<AbsDimension x="8" y="20"/>
-							</Size>
+							<Size x="8" y="20"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="PlayerTalentFramePointsMiddle" relativePoint="RIGHT"/>
 							</Anchors>
@@ -218,9 +98,7 @@
 						</Texture>
 						<FontString name="PlayerTalentFrameStatusText" inherits="GameFontNormal" text="TALENT_ACTIVE_SPEC_STATUS">
 							<Anchors>
-								<Anchor point="CENTER">
-									<Offset x="0" y="0"/>
-								</Anchor>
+								<Anchor point="CENTER" x="0" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -229,9 +107,7 @@
 			<Button name="PlayerTalentFrameActivateButton" inherits="UIPanelButtonTemplate" text="TALENT_SPEC_ACTIVATE">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="TOP">
-						<Offset x="0" y="-45"/>
-					</Anchor>
+					<Anchor point="TOP" x="0" y="-45"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="PlayerTalentFrameActivateButton_OnLoad"/>
@@ -244,15 +120,9 @@
 			<Frame name="PlayerTalentFramePointsBar">
 				<Size x="331" y="26"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="16" y="0"/>
-					</Anchor>
-					<Anchor point="RIGHT">
-						<Offset x="-36" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOM">
-						<Offset x="0" y="81"/>
-					</Anchor>
+					<Anchor point="LEFT" x="16" y="0"/>
+					<Anchor point="RIGHT" x="-36" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="81"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -265,30 +135,18 @@
 						<Texture name="$parentBorderLeft" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="4" y="0"/>
-								</Anchor>
-								<Anchor point="TOP">
-									<Offset x="0" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="5"/>
-								</Anchor>
+								<Anchor point="LEFT" x="4" y="0"/>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="BOTTOM" x="0" y="5"/>
 							</Anchors>
 							<TexCoords left="0.0" right="0.01171875" top="0.421875" bottom="0.5625"/>
 						</Texture>
 						<Texture name="$parentBorderRight" file="Interface\Buttons\UI-Button-Borders2">
 							<Size x="6" y="18"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-4" y="0"/>
-								</Anchor>
-								<Anchor point="TOP">
-									<Offset x="0" y="-5"/>
-								</Anchor>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="5"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-4" y="0"/>
+								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="BOTTOM" x="0" y="5"/>
 							</Anchors>
 							<TexCoords left="0.3046875" right="0.31640625" top="0.421875" bottom="0.5625"/>
 						</Texture>
@@ -304,17 +162,13 @@
 						<FontString name="PlayerTalentFrameSpentPointsText" inherits="GameFontNormalSmall" justifyH="LEFT">
 							<Size x="0" y="15"/>
 							<Anchors>
-								<Anchor point="LEFT">
-									<Offset x="12" y="0"/>
-								</Anchor>
+								<Anchor point="LEFT" x="12" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString name="PlayerTalentFrameTalentPointsText" inherits="GameFontNormalSmall" justifyH="RIGHT">
 							<Size x="0" y="15"/>
 							<Anchors>
-								<Anchor point="RIGHT">
-									<Offset x="-12" y="0"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-12" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -323,15 +177,9 @@
 			<Frame name="PlayerTalentFramePreviewBar" hidden="true">
 				<Size x="331" y="26"/>
 				<Anchors>
-					<Anchor point="LEFT">
-						<Offset x="20" y="0"/>
-					</Anchor>
-					<Anchor point="RIGHT">
-						<Offset x="-36" y="0"/>
-					</Anchor>
-					<Anchor point="BOTTOM">
-						<Offset x="0" y="81"/>
-					</Anchor>
+					<Anchor point="LEFT" x="20" y="0"/>
+					<Anchor point="RIGHT" x="-36" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="81"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -348,9 +196,7 @@
 					<Button name="PlayerTalentFrameResetButton" inherits="UIPanelButtonTemplate" text="RESET">
 						<Size x="80" y="22"/>
 						<Anchors>
-							<Anchor point="RIGHT">
-								<Offset x="-4" y="0"/>
-							</Anchor>
+							<Anchor point="RIGHT" x="-4" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnEnter function="PlayerTalentFrameResetButton_OnEnter"/>
@@ -373,9 +219,7 @@
 						<Size x="296" y="26"/>
 						<Anchors>
 							<Anchor point="LEFT"/>
-							<Anchor point="RIGHT" relativeTo="$parentButtonBorder" relativePoint="LEFT">
-								<Offset x="0" y="0"/>
-							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parentButtonBorder" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -410,18 +254,10 @@
 				</Frames>
 			</Frame>
 			<ScrollFrame name="PlayerTalentFrameScrollFrame" inherits="UIPanelScrollFrameTemplate">
-				<Size>
-					<AbsDimension x="296" y="332"/>
-				</Size>
+				<Size x="296" y="332"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-65" y="-77"/>
-						</Offset>
-					</Anchor>
-					<Anchor point="BOTTOM" relativeTo="PlayerTalentFramePointsBar" relativePoint="TOP">
-						<Offset x="0" y="0"/>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-65" y="-77"/>
+					<Anchor point="BOTTOM" relativeTo="PlayerTalentFramePointsBar" relativePoint="TOP" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
@@ -429,12 +265,8 @@
 							<Size x="256" y="256"/>
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
-								<Anchor point="RIGHT">
-									<Offset x="-40" y="0"/>
-								</Anchor>
-								<Anchor point="BOTTOM">
-									<Offset x="0" y="76"/>
-								</Anchor>
+								<Anchor point="RIGHT" x="-40" y="0"/>
+								<Anchor point="BOTTOM" x="0" y="76"/>
 							</Anchors>
 							<TexCoords left="0.0" right="1.0" top="0.0" bottom="1.0"/>
 						</Texture>
@@ -465,28 +297,16 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture name="PlayerTalentFrameScrollFrameBackgroundTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="256"/>
-							</Size>
+							<Size x="31" y="256"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="5"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
 							</Anchors>
 							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
 						</Texture>
 						<Texture name="PlayerTalentFrameScrollFrameBackgroundBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
-							<Size>
-								<AbsDimension x="31" y="106"/>
-							</Size>
+							<Size x="31" y="106"/>
 							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-2" y="-2"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
 							</Anchors>
 							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
 						</Texture>
@@ -496,20 +316,14 @@
 					<Frame name="PlayerTalentFrameActiveTalentGroupFrame" hidden="true">
 						<Size x="0" y="0"/>
 						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset x="-2" y="4"/>
-							</Anchor>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset x="2" y="-4"/>
-							</Anchor>
+							<Anchor point="TOPLEFT" x="-2" y="4"/>
+							<Anchor point="BOTTOMRIGHT" x="2" y="-4"/>
 						</Anchors>
 					</Frame>
 				</Frames>
 				<ScrollChild>
 					<Frame name="PlayerTalentFrameScrollChildFrame">
-						<Size>
-							<AbsDimension x="320" y="50"/>
-						</Size>
+						<Size x="320" y="50"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
@@ -630,15 +444,9 @@
 				</ScrollChild>
 			</ScrollFrame>
 			<Frame name="PlayerTalentFrameScrollButtonOverlay" parent="PlayerTalentFrameScrollFrameScrollBarScrollDownButton" hidden="true">
-				<Size>
-					<AbsDimension x="32" y="32"/>
-				</Size>
+				<Size x="32" y="32"/>
 				<Anchors>
-					<Anchor point="CENTER">
-						<Offset>
-							<AbsDimension x="0" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -648,63 +456,28 @@
 			</Frame>
 			<Button name="PlayerTalentFrameTab1" inherits="PlayerTalentTabTemplate" id="1">
 				<Anchors>
-					<Anchor point="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="15" y="46"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMLEFT" x="15" y="46"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab2" inherits="PlayerTalentTabTemplate" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab1" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab1" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab3" inherits="PlayerTalentTabTemplate" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab2" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<Button name="PlayerTalentFrameTab4" inherits="PlayerGlyphTabTemplate" text="GLYPHS" id="4">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab3" relativePoint="RIGHT">
-						<Offset>
-							<AbsDimension x="-15" y="0"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="LEFT" relativeTo="PlayerTalentFrameTab3" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 			<CheckButton name="PlayerSpecTab1" inherits="PlayerSpecTabTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-32" y="-65"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-32" y="-65"/>
 				</Anchors>
-<!--
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentOverlayIcon" file="Interface\TalentFrame\UI-TalentFrame-DualTalentSpec">
-							<Size x="18" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset x="0" y="0"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.390625" right="0.671875" top="0.0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
--->
 				<Scripts>
 					<OnLoad>
 						PlayerSpecTab_Load(self, "spec1");
@@ -713,27 +486,8 @@
 			</CheckButton>
 			<CheckButton name="PlayerSpecTab2" inherits="PlayerSpecTabTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab1" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-22"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab1" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
 				</Anchors>
-<!--
-				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentOverlayIcon" file="Interface\TalentFrame\UI-TalentFrame-DualTalentSpec">
-							<Size x="18" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER">
-									<Offset x="0" y="0"/>
-								</Anchor>
-							</Anchors>
-							<TexCoords left="0.671875" right="0.9765625" top="0.0" bottom="1.0"/>
-						</Texture>
-					</Layer>
-				</Layers>
--->
 				<Scripts>
 					<OnLoad>
 						PlayerSpecTab_Load(self, "spec2");
@@ -742,11 +496,7 @@
 			</CheckButton>
 			<CheckButton name="PlayerSpecTab3" inherits="PlayerSpecTabTemplate" id="3">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab2" relativePoint="BOTTOMLEFT">
-						<Offset>
-							<AbsDimension x="0" y="-39"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" relativeTo="PlayerSpecTab2" relativePoint="BOTTOMLEFT" x="0" y="-39"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>

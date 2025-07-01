@@ -18,11 +18,8 @@ function SpaceToFitDirectionalLayoutMixin:GetAvailableSpace()
 	end
 end
 
-function SpaceToFitDirectionalLayoutMixin:GetChildSize(child)
+function SpaceToFitDirectionalLayoutMixin:GetChildSpaceRequired(child)
 	-- Override in your derived Mixin.
-
-	local width, height = child:GetSize();
-	return math.max(width, height);
 end
 
 function SpaceToFitDirectionalLayoutMixin:UpdateSpacing(children)
@@ -35,8 +32,8 @@ function SpaceToFitDirectionalLayoutMixin:UpdateSpacing(children)
 	if spaceAvailable then
 		local numChildren = #children;
 		if numChildren >= 1 then
-			local childSize = self:GetChildSize(children[1]);
-			local spaceRequired = numChildren * childSize;
+			local childSpaceRequired = self:GetChildSpaceRequired(children[1]);
+			local spaceRequired = numChildren * childSpaceRequired;
 			local leftOverSpace = spaceAvailable - spaceRequired;
 
 			if leftOverSpace < (baseSpacing * numChildren) then
@@ -86,7 +83,7 @@ function SpaceToFitVerticalLayoutMixin:GetAvailableSpace()
 	return (topMax - bottomMin) - self.minBottomSpacing;
 end
 
-function SpaceToFitVerticalLayoutMixin:GetChildSize(child)
+function SpaceToFitVerticalLayoutMixin:GetChildSpaceRequired(child)
 	-- Overrides SpaceToFitDirectionalLayoutMixin.
 
 	return child:GetHeight();
@@ -116,7 +113,7 @@ function SpaceToFitHorizontalLayoutMixin:LayoutChildren(children, expandToWidth)
 	return HorizontalLayoutMixin.LayoutChildren(self, children, expandToWidth);
 end
 
-function SpaceToFitHorizontalLayoutMixin:GetChildSize(child)
+function SpaceToFitHorizontalLayoutMixin:GetChildSpaceRequired(child)
 	-- Overrides SpaceToFitDirectionalLayoutMixin.
 
 	return child:GetWidth();

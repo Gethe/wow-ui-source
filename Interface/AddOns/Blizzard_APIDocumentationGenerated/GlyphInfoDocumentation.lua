@@ -6,6 +6,26 @@ local GlyphInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetGlyphInfoByID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "glyphID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "glyphType", Type = "number", Nilable = false },
+				{ Name = "isKnown", Type = "bool", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "link", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =

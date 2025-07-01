@@ -3,10 +3,8 @@
 ## DefaultState: enabled
 ## AllowLoad: Both
 ## AllowLoadGameType: cata
-## Dependencies: Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu
-## OptionalDep: Blizzard_FontStyles_Glue, Blizzard_FontStyles_Frame
+## Dependencies: Blizzard_Fonts_Shared, Blizzard_SharedXMLBase, Blizzard_PrintHandler, Blizzard_Menu
 Shared\LocalizationMachinery.lua
-EnvironmentUtil.lua
 ProjectConstants.lua
 SharedConstants.lua
 middleclass.lua
@@ -14,7 +12,6 @@ Classic\GlueCheck.lua
 Classic\Stubs.lua
 Classic\Stubs.xml
 Classic\ClassicCvarUtil.lua
-Color.lua
 
 ColorUtil.lua
 TBC\ClassColors.lua
@@ -30,6 +27,7 @@ PredictedSetting.lua
 SecureUtil.lua
 Classic\SecureCurrencyUtil.lua
 TimeUtil.lua
+BenchmarkUtil.lua
 EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
@@ -86,6 +84,9 @@ Shared\Scroll\TrimScrollBar.xml
 Classic\Scroll\TrimScrollBar.xml
 Shared\Scroll\ScrollTemplates.lua
 Shared\Scroll\ScrollTemplates.xml
+Shared\ButtonTray\ButtonTrayUtil.lua
+Shared\ButtonTray\ButtonTray.lua
+Shared\ButtonTray\ButtonTray.xml
 Dump.lua
 
 Shared\Selector\Blizzard_SelectorUI.lua
@@ -171,9 +172,11 @@ CharacterModelFrameMixin.lua
 
 DialogUtil.lua
 
+Classic\Sound.lua
+
 Classic\SharedUtils.lua
 ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
-Classic\VASErrorLookup.lua
+Shared\VASErrorLookup.lua

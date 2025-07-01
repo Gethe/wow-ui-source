@@ -1,3 +1,5 @@
+TextureUtil = {};
+
 function GetTextureInfo(obj)
 	if obj:GetObjectType() == "Texture" then
 		local assetName = obj:GetAtlas();
@@ -118,6 +120,31 @@ function GetIconForRoleEnum(role, showDisabled)
 	end
 
 	return GetIconForRole(LFGRoleEnumToString[role], showDisabled);
+end
+
+local SmallLFGRoleIcons = {
+	["GUIDE"] = "UI-LFG-RoleIcon-Leader-Micro",
+	["TANK"] = "UI-LFG-RoleIcon-Tank-Micro",
+	["HEALER"] = "UI-LFG-RoleIcon-Healer-Micro",
+	["DAMAGER"] = "UI-LFG-RoleIcon-DPS-Micro",
+};
+
+function TextureUtil.GetSmallIconForRole(role)
+	if not SmallLFGRoleIcons[role] then
+		error("Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return SmallLFGRoleIcons[role];
+end
+
+function TextureUtil.GetSmallIconForRoleEnum(role)
+	if not LFGRoleEnumToString[role] then
+		assertsafe(false, "Unknown role: " .. tostring(role));
+		return;
+	end
+
+	return TextureUtil.GetSmallIconForRole(LFGRoleEnumToString[role]);
 end
 
 local MicroLFGRoleIcons = {

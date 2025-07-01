@@ -28,6 +28,8 @@ SecondsFormatterConstants =
 	DontConvertToLower = false,
 	RoundUpLastUnit = true,
 	DontRoundUpLastUnit = false,
+	RoundUpIntervals = true,
+	DontRoundUpIntervals = false,
 }
 
 SecondsFormatter.Abbreviation = 
@@ -61,11 +63,13 @@ SecondsFormatterMixin = {}
 -- approximationSeconds: threshold for representing the seconds as an approximation (ex. "< 2 hours").
 -- roundUpLastUnit: determines if the last unit in the output format string is ceiled (floored by default).
 -- convertToLower: converts the format string to lowercase.
-function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower)
+-- roundUpIntervals: determines if units can be promoted to a higher interval after (ex. 60m -> 1h).
+function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower, roundUpIntervals)
 	self:SetApproximationSeconds(approximationSeconds or 0);
 	self:SetMinInterval(SecondsFormatter.Interval.Seconds);
 	self:SetDefaultAbbreviation(defaultAbbreviation or SecondsFormatter.Abbreviation.None);
-	self:SetCanRoundUpLastUnit(roundUpLastUnit or false);
+	self:SetCanRoundUpLastUnit(roundUpLastUnit or SecondsFormatterConstants.DontRoundUpLastUnit);
+	self:SetCanRoundUpIntervals(roundUpIntervals or SecondsFormatterConstants.DontRoundUpIntervals);
 	self:SetDesiredUnitCount(2);
 	self:SetStripIntervalWhitespace(false);
 	self:SetConvertToLower(convertToLower or false);
@@ -122,6 +126,14 @@ end
 
 function SecondsFormatterMixin:CanRoundUpLastUnit()
 	return self.roundUpLastUnit;
+end
+
+function SecondsFormatterMixin:SetCanRoundUpIntervals(roundUpIntervals)
+	self.roundUpIntervals = roundUpIntervals;
+end
+
+function SecondsFormatterMixin:CanRoundUpIntervals()
+	return self.roundUpIntervals;
 end
 
 function SecondsFormatterMixin:SetDesiredUnitCount(unitCount)
@@ -198,23 +210,24 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 	local desiredCount = self:GetDesiredUnitCount(seconds);
 	local convertToLower = self.convertToLower;
 
+	local intervalUnits = {};
+	for interval, value in pairs(SecondsFormatter.Interval) do
+		intervalUnits[value] = 0;
+	end
+
 	local currentInterval = maxInterval;
 	while ((appendedCount < desiredCount) and (currentInterval >= minInterval)) do
 		local intervalDescription = self:GetIntervalDescription(currentInterval);
 		local intervalSeconds = intervalDescription.seconds;
 		if (seconds >= intervalSeconds) then
 			appendedCount = appendedCount + 1;
-			if (output ~= "") then
-				output = output..TIME_UNIT_DELIMITER;
-			end
 
-			local formatString = self:GetFormatString(currentInterval, abbreviation, convertToLower);
 			local quotient = seconds / intervalSeconds;
 			if (quotient > 0) then
 				if (self:CanRoundUpLastUnit() and ((minInterval == currentInterval) or (appendedCount == desiredCount))) then
-					output = output..formatString:format(math.ceil(quotient));
+					intervalUnits[currentInterval] = math.ceil(quotient);
 				else
-					output = output..formatString:format(math.floor(quotient));
+					intervalUnits[currentInterval] = math.floor(quotient);
 				end
 			else
 				break;
@@ -224,6 +237,35 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 		end
 
 		currentInterval = currentInterval - 1;
+	end
+
+	if self:CanRoundUpIntervals() then
+		-- Intervals are promoted to a higher interval if possible (60m -> 1h) so that a value isn't expressed
+		-- as 1h 60m as a result of individual interval round-up. This promotion can only happen within the
+		-- min interval, max interval band so that we don't promote to an interval we don't intend to display.
+		for interval, value in ipairs(intervalUnits) do
+			local intervalDescription = self:GetIntervalDescription(interval);
+			local intervalSeconds = intervalDescription.seconds;
+
+			if value == intervalSeconds then
+				local nextInterval = interval + 1;
+				if nextInterval <= maxInterval then
+					intervalUnits[nextInterval] = intervalUnits[nextInterval] + 1;
+					intervalUnits[interval] = 0;
+				end
+			end
+		end
+	end
+
+	for interval, value in ipairs_reverse(intervalUnits) do
+		if value > 0 then
+			if (output ~= "") then
+				output = output..TIME_UNIT_DELIMITER;
+			end
+
+			local formatString = self:GetFormatString(interval, abbreviation, convertToLower);
+			output = output..formatString:format(value);
+		end
 	end
 
 	-- Return the zero format if an acceptable representation couldn't be formed.

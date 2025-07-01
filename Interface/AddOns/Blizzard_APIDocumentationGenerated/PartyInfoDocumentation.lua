@@ -33,6 +33,7 @@ local PartyInfo =
 		{
 			Name = "GetActiveCategories",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -42,6 +43,7 @@ local PartyInfo =
 		{
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -51,6 +53,20 @@ local PartyInfo =
 			Returns =
 			{
 				{ Name = "invalidQueues", Type = "table", InnerType = "QueueSpecificInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMinLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "minLevel", Type = "number", Nilable = false },
 			},
 		},
 		{

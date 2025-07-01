@@ -252,6 +252,10 @@ function ItemButtonMixin:RegisterBagButtonUpdateItemContextMatching()
 	EventRegistry:RegisterCallback("ItemButton.UpdateItemContextMatching", self.OnUpdateItemContextMatching, self);
 end
 
+function GetItemButtonIconTexture(button)
+	return button.Icon or button.icon or _G[button:GetName().."IconTexture"];
+end
+
 function ItemButtonMixin:GetItemButtonIconTexture()
 	return GetItemButtonIconTexture(self);
 end

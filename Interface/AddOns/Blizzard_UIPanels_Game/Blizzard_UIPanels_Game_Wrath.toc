@@ -1,21 +1,25 @@
 ## Title: Blizzard_UIPanels_Game
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_CastingBar, Blizzard_UnitFrame, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
 ## LoadFirst: 1
 ## AllowLoad: game
 ## AllowLoadGameType: wrath
 Classic\SpellBookFrame.lua
-Classic\SpellBookFrame.xml
+Vanilla\SpellBookFrame.lua
+Vanilla\SpellBookFrame.xml
 Classic\SkillFrame.lua
 Classic\SkillFrame.xml
 Classic\ReputationFrame.lua
 Wrath\ReputationFrame.lua
 Wrath\ReputationFrame.xml
+Classic\FriendshipStatusBar.lua
+Classic\FriendshipStatusBar.xml
 Vanilla\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Vanilla\HonorFrame.xml
+Wrath\QuestFrameTemplates_WrathSpecific.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
@@ -75,6 +79,7 @@ Wrath\VehicleSeatIndicator.xml
 Classic\RatingMenuFrame.xml
 Classic\PVPFrameBase.lua
 Wrath\PVPFrame.lua
+Wrath\PVPFrameHelpers.lua
 Classic\PVPFrameTemplates.xml
 Wrath\PVPFrame.xml
 Wrath\BattlefieldFrame.lua

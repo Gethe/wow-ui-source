@@ -32,13 +32,7 @@ function WorldFrame_OnUpdate(self, elapsed)
 		end
 	end
 	-- Process dialog onUpdates if the map is up or the ui is hidden
-	local dialog;
-	for i = 1, STATICPOPUP_NUMDIALOGS, 1 do
-		dialog = _G["StaticPopup"..i];
-		if ( dialog and dialog:IsShown() and not dialog:IsVisible() ) then
-			StaticPopup_OnUpdate(dialog, elapsed);
-		end
-	end
+	StaticPopup_UpdateAll(elapsed);
 
 	-- Process breathbar onUpdates if the map is up or the ui is hidden
 	local bar;

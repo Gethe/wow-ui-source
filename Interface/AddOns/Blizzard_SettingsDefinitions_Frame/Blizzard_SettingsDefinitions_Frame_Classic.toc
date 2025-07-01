@@ -21,5 +21,6 @@ Social.lua
 Keybindings.xml
 # NOTE: Accessibility.lua should be the only file loaded in classic, only mainline needs the xml, but classic may need an older version of this lua file.
 Accessibility.lua
-Colorblind.xml
+Classic\Colorblind.xml
 TextToSpeech.xml
+Subtitles.xml

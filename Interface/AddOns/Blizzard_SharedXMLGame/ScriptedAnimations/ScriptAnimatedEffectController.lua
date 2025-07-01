@@ -78,7 +78,10 @@ function ScriptAnimatedEffectControllerMixin:DeltaUpdate(elapsedTime)
 	if self.actor then
 		if self.actor:IsActive() then
 			self.actor:DeltaUpdate(elapsedTime);
-		else
+		end
+
+		-- Delta Update can change the state, if it did, we want to play the finish effect before doing the rest of the loop
+		if not self.actor:IsActive() then
 			self:FinishEffect();
 		end
 	end

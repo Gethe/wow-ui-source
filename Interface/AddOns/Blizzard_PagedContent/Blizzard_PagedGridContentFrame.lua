@@ -45,7 +45,8 @@ function BasePagedGridContentFrameMixin:OnElementSpaceTakenFromView(splitData, e
 end
 
 function BasePagedGridContentFrameMixin:OnElementAddedToView(splitData, elementData, elementTemplateInfo)
-	local elementStride = self:GetElementStride(elementTemplateInfo, elementData.isHeader);
+	local isFirstInRow = splitData.filledStrideInCurrentRow == 0;
+	local elementStride = self:GetElementStride(elementTemplateInfo, elementData.isHeader, isFirstInRow);
 	splitData.filledStrideInCurrentRow = splitData.filledStrideInCurrentRow + elementStride;
 end
 

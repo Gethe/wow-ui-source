@@ -1,0 +1,10 @@
+## Title: Blizzard Challenges UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: Game
+## AllowLoadGameType: mists
+## Dependencies: Blizzard_GroupFinder
+Mists\Blizzard_ChallengesUI.lua
+Mists\Blizzard_ChallengesUI.xml
+Mists\Localization.lua

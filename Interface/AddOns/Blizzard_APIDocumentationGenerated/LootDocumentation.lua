@@ -29,6 +29,43 @@ local Loot =
 			},
 		},
 		{
+			Name = "BonusRollActivate",
+			Type = "Event",
+			LiteralName = "BONUS_ROLL_ACTIVATE",
+		},
+		{
+			Name = "BonusRollDeactivate",
+			Type = "Event",
+			LiteralName = "BONUS_ROLL_DEACTIVATE",
+		},
+		{
+			Name = "BonusRollFailed",
+			Type = "Event",
+			LiteralName = "BONUS_ROLL_FAILED",
+		},
+		{
+			Name = "BonusRollResult",
+			Type = "Event",
+			LiteralName = "BONUS_ROLL_RESULT",
+			Payload =
+			{
+				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "currencyID", Type = "number", Nilable = true },
+				{ Name = "isSecondaryResult", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "BonusRollStarted",
+			Type = "Event",
+			LiteralName = "BONUS_ROLL_STARTED",
+		},
+		{
 			Name = "CancelLootRoll",
 			Type = "Event",
 			LiteralName = "CANCEL_LOOT_ROLL",
@@ -174,6 +211,40 @@ local Loot =
 			Name = "OpenMasterLootList",
 			Type = "Event",
 			LiteralName = "OPEN_MASTER_LOOT_LIST",
+		},
+		{
+			Name = "PetBattleLootReceived",
+			Type = "Event",
+			LiteralName = "PET_BATTLE_LOOT_RECEIVED",
+			Payload =
+			{
+				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerLootSpecUpdated",
+			Type = "Event",
+			LiteralName = "PLAYER_LOOT_SPEC_UPDATED",
+		},
+		{
+			Name = "ShowLootToast",
+			Type = "Event",
+			LiteralName = "SHOW_LOOT_TOAST",
+			Payload =
+			{
+				{ Name = "typeIdentifier", Type = "cstring", Nilable = false },
+				{ Name = "itemLink", Type = "cstring", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+				{ Name = "sex", Type = "number", Nilable = false },
+				{ Name = "personalLootToast", Type = "bool", Nilable = false },
+				{ Name = "toastMethod", Type = "number", Nilable = false },
+				{ Name = "lessAwesome", Type = "bool", Nilable = false },
+				{ Name = "upgraded", Type = "bool", Nilable = false },
+				{ Name = "corrupted", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "ShowLootToastLegendaryLooted",

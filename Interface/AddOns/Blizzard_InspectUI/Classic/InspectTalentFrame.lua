@@ -14,15 +14,32 @@ end
 
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+		talentInfoQuery.talentIndex = self:GetID();
+		talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+		talentInfoQuery.isPet = InspectTalentFrame.pet;
+		talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if talentInfo then
+			GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		end
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-		InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+
+	local talentInfoQuery = {};
+	talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+	talentInfoQuery.talentIndex = self:GetID();
+	talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+	talentInfoQuery.isPet = InspectTalentFrame.pet;
+	talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+	local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+	if talentInfo then
+		GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+	end
 end
 
 function InspectTalentFrame_UpdateTabs()
@@ -34,7 +51,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				local _, name, _, icon, _, _, pointsSpent, background, previewPointsSpent = C_SpecializationInfo.GetSpecializationInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, nil, nil, InspectTalentFrame.talentGroup);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;
@@ -54,7 +71,7 @@ function InspectTalentFrame_UpdateTabs()
 end
 
 function InspectTalentFrame_Update()
-	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
+	InspectTalentFrame.talentGroup = C_SpecializationInfo.GetActiveSpecGroup(InspectTalentFrame.inspect);
 	InspectTalentFrame.unit = InspectFrame.unit;
 
 	-- update spec info first

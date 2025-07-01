@@ -1,0 +1,473 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ItemUpgradeStatTemplate" hidden="true" virtual="true">
+		<Size x="165" y="15"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture  parentKey="BG" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true" justifyH="RIGHT">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
+					<Size x="50" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="100" y ="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ItemUpgradeStatTemplateRight" inherits="ItemUpgradeStatTemplate" virtual="true">
+		<Size x="207" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ItemIncText" inherits="GameFontNormalSmall" justifyH="RIGHT">
+					<Size x="40" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
+					<Size x="50" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemIncText" x="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="ItemText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="100" y ="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.ItemLevelText" x="8"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="ItemUpgradeEffectRowTemplate" virtual="true">
+		<Size x="382" y="100"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftBg" hidden="true">
+					<Size x="165" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+				<Texture parentKey="RightBg" hidden="true">
+					<Size x="207" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="175" y="0"/>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.15"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="LeftText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="150" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+				<FontString parentKey="RightText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="192" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="183" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ItemUpgradeFrame" inherits="EtherealFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" mixin="ItemUpgradeMixin">
+		<Size x="428" y="434"/>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="MarbleBg" file="Interface\FrameGeneral\UI-Background-Marble" horizTile="true" vertTile="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture setAllPoints="true">
+					<Color r="0.302" g="0.102" b="0.204" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-4">
+				<Texture parentKey="Lines" file="Interface\Transmogrify\EtherealLines.png" horizTile="true" vertTile="true" alpha="0.1" setAllPoints="true"/>
+				<Texture parentKey="MissingFadeOut" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
+				<Texture parentKey="ReceiptBG" file="Interface\Reforging\Reforge-Partchment" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-30"/>
+						<Anchor point="BOTTOMRIGHT" x="-15" y="36"/>
+					</Anchors>
+					<TexCoords left="0" right="0.732421875" top="0" bottom="0.705078125"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture  parentKey="HorzBar">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-154"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-24" y="-155"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.2"/>
+				</Texture>
+				<FontString parentKey="MissingDescription" inherits="GameFontNormalMed3" justifyH="CENTER" text="ITEM_UPGRADE_DESCRIPTION">
+					<Size x="250" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.5"/>
+				</FontString>
+				<FontString parentKey="ItemUpgradedNotification" inherits="GameFontNormalLarge" justifyH="CENTER" text="ITEM_UPGRADE_ITEM_UPGRADED_NOTIFICATION" hidden="true">
+					<Animations>
+						<AnimationGroup parentKey="FinishedAnim">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
+							<Alpha startDelay="2" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
+							<Scripts>
+								<OnFinished>
+									self:GetParent():Hide();
+								</OnFinished>
+							</Scripts>
+						</AnimationGroup>
+					</Animations>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-80"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NoMoreUpgrades" text="ITEM_UPGRADE_NO_MORE_UPGRADES" inherits="GameFontNormalMed3" hidden="true">
+					<Size x="167" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="-20" y="-60" />
+					</Anchors>
+					<Color r="1" g="0.1" b="0.1"/>
+				</FontString>
+				<FontString parentKey="TitleTextLeft" inherits="GameFontNormalMed3" justifyH="LEFT" text="REFORGE_CURRENT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="23" y="-136"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="TitleTextRight" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="207" y="-136"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="UpgradeStatus" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.TitleTextLeft" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Frame parentKey="LeftItemLevel" hidden="true">
+				<Size x="180" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-7" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+							<Size x="50" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.iLvlText" relativePoint="RIGHT" x="8" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RightItemLevel" hidden="true">
+				<Size x="207" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-7" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="incText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+							<Size x="40" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="iLvlText" inherits="GameFontNormalLarge" justifyH="RIGHT">
+							<Size x="40" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" x="46" y="0"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="0" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" x="94"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentArray="LeftStat" inherits="ItemUpgradeStatTemplateLeft">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HorzBar" x="0" y="-38" />
+				</Anchors>
+			</Frame>
+			<Frame parentArray="RightStat" inherits="ItemUpgradeStatTemplateRight">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
+				</Anchors>
+			</Frame>
+			<Frame parentArray="EffectRow" inherits="ItemUpgradeEffectRowTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.HorzBar" x="0" y="-38" />
+				</Anchors>
+			</Frame>
+			<Button parentKey="ItemButton" mixin="ItemUpgradeItemMixin">
+				<Size x="58" y="58"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-64"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="IconTexture"/>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Grabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Frame" relativePoint="LEFT" x="2" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.16406250" top="0.58203125" bottom="0.67773438"/>
+						</Texture>
+						<Texture parentKey="TextFrame" file="Interface\Reforging\Reforge-Texture" >
+							<Size x="348" y="73"/>	
+							<TexCoords left="0.13281250" right="0.81250000" top="0.00781250" bottom="0.57812500"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="-10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TextGrabber" file="Interface\Transmogrify\Textures.png">
+							<Size x="20" y="49"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TextFrame" relativePoint="RIGHT" x="-11" y="0"/>
+							</Anchors>
+							<TexCoords right="0.00781250" left="0.16406250" top="0.58203125" bottom="0.67773438"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ItemName" inherits="GameFontNormalMed3" justifyH="LEFT">
+							<Size x="250" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="18" y="10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="BoundStatus" inherits="GameFontNormal" justifyH="LEFT">
+							<Size x="260" y="12"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemName" relativePoint="BOTTOMLEFT" y="-5"/>
+							</Anchors>
+							<Color r="1" g="1" b="1" a="1"/>
+						</FontString>
+						<FontString parentKey="MissingText" inherits="GameFontNormalMed3" justifyH="LEFT" text="UPGRADE_MISSING_ITEM">
+							<Size x="250" y="30"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="50" y="0"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5" a="0.5"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Frame" file="Interface\Reforging\Reforge-Texture">
+							<Size x="78" y="77"/>	
+							<TexCoords left="0.81640625" right="0.96875000" top="0.00781250" bottom="0.60937500"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Cost" enableMouse="true" mixin="ItemUpgradeCurrencyMixin">
+						<Size x="32" y="13"/> 
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-19" y="17"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" hidden="true">
+									<Size x="13" y="13"/> 
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Amount" inherits="GameFontNormal" justifyH="RIGHT">
+									<Size x="0" y="12"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2" y=""/>
+									</Anchors>
+									<Color r="1" g="1" b="1" a="1"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnHover"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetUpgradeItem();
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+					<OnClick method="AddItemClick"/>
+					<OnDragStart method="AddItemClick"/>
+					<OnReceiveDrag method="AddItemClick"/>
+				</Scripts>
+				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+				<HighlightTexture file="Interface\Reforging\Reforge-Texture" alphaMode="ADD">
+					<Size x="67" y="67"/>	
+					<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>	
+				</HighlightTexture>
+			</Button>
+			<Frame parentKey="ButtonFrame">
+				<Size x="0" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Frames>
+					<Frame name="ItemUpgradeFrameMoneyFrame" inherits="ThinGoldEdgeTemplate">
+						<Size x="260" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="2" y="5"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="Currency" inherits="BackpackTokenTemplate" hidden="false">
+								<Anchors>
+									<Anchor point="RIGHT" x="-6" y="-2"/>
+								</Anchors>
+								<Scripts>
+									<OnEnter>
+										GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+										GameTooltip:SetCurrencyByID(self.currencyID);
+									</OnEnter>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+
+					<Button name="ItemUpgradeFrameUpgradeButton" inherits="MagicButtonTemplate, TruncatedButtonTemplate" text="UPGRADE" mixin="ItemUpgradeUpgradeButtonMixin">
+						<Size x="160" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="UpgradeClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture>
+							<Size x="334" y="21"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="5"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="ButtonBorder" inherits="_UI-Frame-InnerBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="1" y="25"/>
+								<Anchor point="BOTTOMRIGHT" x="-3" y="25"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ButtonBottomBorder" inherits="_UI-Frame-BtnBotTile">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="-8" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="FinishedGlow" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="FinishedAnim">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.1" order="1" />
+						<Alpha startDelay="0.1" fromAlpha="1" toAlpha="0" duration="0.5" order="2" />
+					</AnimationGroup>
+				</Animations>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="FinishedFlare" file="Interface\Reforging\Valor-Flare" alphaMode="ADD">
+							<Size x="256" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="ItemUpgradeFrame" y="-23"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="ItemUpgradeFrame" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetAlpha(0);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

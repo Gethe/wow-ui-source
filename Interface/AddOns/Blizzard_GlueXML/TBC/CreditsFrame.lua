@@ -130,15 +130,16 @@ end
 
 local function CreateCreditsTextureTilePath(self, info, textureIndex)
 	local path = CREDITS_ART_INFO[self.expansion].path;
+
+	if (self.expansion == LE_EXPANSION_CATACLYSM) then
+		return string.format("Interface\\Glues\\Credits\\CATACLYSM\\%s%d", info.file, textureIndex);
+	elseif (self.expansion == LE_EXPANSION_MISTS_OF_PANDARIA) then
+		return string.format("Interface\\Glues\\Credits\\Pandaria\\%s%d", info.file, textureIndex);
+	end
+
 	if path then
-		if (self.expansion == LE_EXPANSION_CATACLYSM) then
-			return string.format("Interface\\Glues\\Credits\\CATACLYSM\\%s%d", path, info.file, textureIndex);
-		end
 		return string.format("Interface\\Glues\\Credits\\%s\\%s%d", path, info.file, textureIndex);
 	else
-		if (self.expansion == LE_EXPANSION_CATACLYSM) then
-			return string.format("Interface\\Glues\\Credits\\CATACLYSM\\%s%d", info.file, textureIndex);
-		end
 		return string.format("Interface\\Glues\\Credits\\%s%d", info.file, textureIndex);
 	end
 end

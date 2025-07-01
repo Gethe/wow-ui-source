@@ -79,9 +79,10 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                    threatFrame, "player", _G[thisName.."NumericalThreat"],
 						healthBar.MyHealPredictionBar,
 						healthBar.OtherHealPredictionBar,
-						nil, nil, nil,
-						nil, nil,
-						nil, nil);
+						healthBar.TotalAbsorbBar, healthBar.TotalAbsorbBarOverlay,
+						self.textureFrame.overAbsorbGlow, self.textureFrame.overHealAbsorbGlow,
+						healthBar.HealAbsorbBar, healthBar.HealAbsorbBarLeftShadow,
+						healthBar.HealAbsorbBarRightShadow, nil);
 
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -267,6 +268,12 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	elseif (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
+		local petLevel = UnitBattlePetLevel(self.unit);
+		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+		self.levelText:SetText(petLevel);
+		self.levelText:Show();
+		self.highLevelTexture:Hide();
 	elseif ( targetEffectiveLevel > 0 ) then
 		-- Normal level target
 		self.levelText:SetText(targetEffectiveLevel);
@@ -345,13 +352,13 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckBattlePet(self)
-	--[[if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
+	if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
 		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	else
 		self.petBattleIcon:Hide();
-	end]]
+	end
 end
 
 

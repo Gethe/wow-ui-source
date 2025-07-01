@@ -6,6 +6,15 @@ local LobbyMatchmakerInfo =
 
 	Functions =
 	{
+		{
+			Name = "IsInQueue",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInQueue", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

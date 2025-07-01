@@ -13,6 +13,8 @@ RANGE_INDICATOR = "●";
 COOLDOWN_TYPE_LOSS_OF_CONTROL = 1;
 COOLDOWN_TYPE_NORMAL = 2;
 
+local countdownForCooldownsCVarName = "countdownForCooldowns";
+
 -- Table of actionbar pages and whether they're viewable or not
 VIEWABLE_ACTION_BAR_PAGES = {1, 1, 1, 1, 1, 1};
 
@@ -108,16 +110,16 @@ local function CheckUseActionButton(button, checkingFromDown)
 	end
 end
 
-local isInPetBattle = false;
+local isInPetBattle = C_PetBattles.IsInBattle;
 local function CheckPetActionButtonEvent(id, isDown)
-	--[[if isInPetBattle() and PetBattleFrame then
+	if isInPetBattle() and PetBattleFrame then
 		if isDown then
 			PetBattleFrame_ButtonDown(id);
 		else
 			PetBattleFrame_ButtonUp(id);
 		end
 		return true;
-	end]]
+	end
 
 	return false;
 end
@@ -200,12 +202,21 @@ function ActionBarButtonEventsFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_FLAGS");
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED");
+
+	CVarCallbackRegistry:SetCVarCachable(countdownForCooldownsCVarName);
+	CVarCallbackRegistry:RegisterCallback(countdownForCooldownsCVarName, ActionBarButtonEventsFrame_OnCountdownForCooldownsChanged, self);
 end
 
 function ActionBarButtonEventsFrame_OnEvent(self, event, ...)
 	-- pass event down to the buttons
 	for k, frame in pairs(self.frames) do
 		ActionButton_OnEvent(frame, event, ...);
+	end
+end
+
+function ActionBarButtonEventsFrame_OnCountdownForCooldownsChanged(self)
+	for k, frame in pairs(self.frames) do
+		ActionButton_UpdateCooldownNumberHidden(frame);
 	end
 end
 
@@ -236,6 +247,7 @@ function ActionBarActionEventsFrame_OnLoad(self)
 	self:RegisterEvent("SPELL_UPDATE_ICON");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
+	self:RegisterEvent("UPDATE_SUMMONPETS_ACTION");
 end
 
 function ActionBarActionEventsFrame_OnEvent(self, event, ...)
@@ -549,6 +561,12 @@ function ActionButton_UpdateCount(self)
 	end
 end
 
+-- Determine whether cooldowns display countdown numbers for action bar buttons and spell flyout buttons.
+function ActionButton_UpdateCooldownNumberHidden(actionButton)
+	local shouldBeHidden = CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
+	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
+end
+
 function ActionButton_UpdateCooldown(self)
 	local start, duration, enable, charges, maxCharges, chargeStart, chargeDuration;
 	local modRate = 1.0;
@@ -564,8 +582,8 @@ function ActionButton_UpdateCooldown(self)
 	if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
 		self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge");
 		self.cooldown:SetSwipeColor(0, 0, 0);
-		self.cooldown:SetHideCountdownNumbers(false);
 		self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
+		ActionButton_UpdateCooldownNumberHidden(self);
 	end
 
 	if ( charges and maxCharges and maxCharges > 1 and charges < maxCharges ) then

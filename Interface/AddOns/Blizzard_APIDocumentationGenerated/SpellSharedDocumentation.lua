@@ -15,6 +15,18 @@ local SpellShared =
 			},
 		},
 		{
+			Name = "SpellCooldownInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false, Documentation = { "If cooldown is active, time started; 0 if no cooldown; Current time if isEnabled is false" } },
+				{ Name = "duration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds if active; 0 if cooldown is inactive" } },
+				{ Name = "isEnabled", Type = "bool", Nilable = false, Documentation = { "False if cooldown is on hold (ex: some cooldowns only start after an active spell is cancelled); True otherwise" } },
+				{ Name = "modRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
+				{ Name = "activeCategory", Type = "number", Nilable = true, Documentation = { "Indicates which category is responsible for determining the duration. A nil value indicates the duration was determined through some other logic, e.g. the spell is on hold." } },
+			},
+		},
+		{
 			Name = "SpellPowerCostInfo",
 			Type = "Structure",
 			Fields =

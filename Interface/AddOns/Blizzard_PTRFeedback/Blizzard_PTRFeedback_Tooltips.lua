@@ -155,8 +155,8 @@ function PTR_IssueReporter.SetupSkillTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupTalentTooltips()
-    hooksecurefunc(GameTooltip, "SetTalent", function(self, talentTab, talentNumber)        
-        local id = string.format("%s-%s", GetTalentTabInfo(talentTab), talentNumber)
+    hooksecurefunc(GameTooltip, "SetTalent", function(self, talentID)        
+        local id = tostring(talentID);
         local name = GameTooltipTextLeft1:GetText()
         if (id) then 
             PTR_IssueReporter.HookIntoTooltip(self, PTR_IssueReporter.TooltipTypes.talent, id, name)

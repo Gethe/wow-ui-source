@@ -5,37 +5,23 @@
 		<TexCoords left="0.01562500" right="0.59375000" top="0.74218750" bottom="0.91406250"/>
 	</Texture>
 
-	<CheckButton name="SpellFlyoutButtonTemplate" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true">
+	<CheckButton name="SpellFlyoutButtonTemplate" mixin="SpellFlyoutButtonMixin" motionScriptsWhileDisabled="true" inherits="ActionButtonTemplate,SecureFrameTemplate" virtual="true">
 		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
 		<Size x="28" y="28"/>
+		<KeyValues>
+			<KeyValue key="maxDisplayCount" value="99"/>
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
-				self:RegisterForDrag("LeftButton");
-				_G[self:GetName().."Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
-				self.maxDisplayCount = 99;
-				_G[self:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64);
-			</OnLoad>
-			<OnClick>
-				SpellFlyoutButton_OnClick(self);
-			</OnClick>
-			<OnEnter>
-				SpellFlyoutButton_SetTooltip(self);
-			</OnEnter>
-			<OnLeave>
-				GameTooltip:Hide();
-			</OnLeave>
-			<OnDragStart>
-				if (not self:GetParent().isActionBar or not GetCVarBool("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
-				if (self.spellID) then
-				PickupSpell(self.spellID);
-				end
-				end
-			</OnDragStart>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 		<NormalTexture/>
 	</CheckButton>
 
-	<Frame name="SpellFlyout" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true">
+	<Frame name="SpellFlyout" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate" enableMouse="true" mixin="SpellFlyoutMixin">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="SpellFlyoutBackgroundEnd" inherits="ActionBarFlyoutButton-FlyoutTop" parentKey="BgEnd"/>
@@ -53,10 +39,10 @@
 			<CheckButton name="SpellFlyoutButton1" inherits="SpellFlyoutButtonTemplate"/>
 		</Frames>
 		<Scripts>
-			<OnLoad function="SpellFlyout_OnLoad"/>
-			<OnShow function="SpellFlyout_OnShow"/>
-			<OnHide function="SpellFlyout_OnHide"/>
-			<OnEvent function="SpellFlyout_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 </Ui>

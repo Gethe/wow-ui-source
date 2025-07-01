@@ -74,7 +74,9 @@
 				GarrisonFollowerTooltip:ClearAllPoints();
 				GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 				local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(self.ID);
-				GarrisonFollowerTooltip_ShowWithData(data);
+				if data then
+					GarrisonFollowerTooltip_ShowWithData(data);
+				end
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then

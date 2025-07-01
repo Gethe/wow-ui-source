@@ -155,7 +155,7 @@ function AddonList_HasAnyChanged()
 	for i = 1, C_AddOns.GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		local reason = select(5, C_AddOns.GetAddOnInfo(i))
@@ -219,15 +219,15 @@ function AddonList_OnLoad(self)
 		self.shouldReload = false;
 		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
-		local playerName = UnitName("player");
+		local character = GetAddonCharacter();
 		for i = 1, C_AddOns.GetNumAddOns() do
-			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, playerName) > 0);
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
 		end
 	end
-	
+
 	AddonListScrollFrameScrollChildFrame:SetParent(AddonListScrollFrame);
 
 	self.Dropdown:SetWidth(140);
@@ -300,7 +300,7 @@ function AddonList_Update()
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
 			local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 			if ( not InGlue() ) then
-				enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > 0);
+				enabled = (C_AddOns.GetAddOnEnableState(addonIndex, character) > 0);
 			else
 				enabled = (checkboxState > 0);
 			end
@@ -521,7 +521,7 @@ function AddonList_HasOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
@@ -547,7 +547,7 @@ function AddonList_DisableOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then

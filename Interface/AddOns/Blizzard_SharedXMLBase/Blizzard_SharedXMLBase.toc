@@ -1,5 +1,6 @@
 ## Title: Blizzard_SharedXMLBase
 ## AllowLoad: Both
+Compat.lua
 ErrorUtil.lua
 Mixin.lua
 TableUtil.lua
@@ -25,6 +26,10 @@ SecureTypes.lua
 ProxyUtil.lua
 Pools.lua
 ButtonStateBehavior.lua
+EnvironmentUtil.lua
+Color.lua
 ColorSwatch.xml
 ColorSwatch.lua
 FrameWatcher.lua
+TaggableObject.lua
+TimedCallback.lua

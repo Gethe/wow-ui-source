@@ -27,6 +27,14 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CreateFontString",
 			Type = "Function",
 
@@ -355,6 +363,21 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetHighestFrameLevel",
+			Type = "Function",
+			Documentation = { "Returns the highest framelevel of the frame and its first order children, or all children if iterateAllChildren is true." },
+
+			Arguments =
+			{
+				{ Name = "iterateAllChildren", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "frameLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHitRectInsets",
 			Type = "Function",
 
@@ -562,6 +585,20 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "clampedToScreen", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDrawLayerEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "layer", Type = "DrawLayer", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -836,6 +873,16 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "alpha", Type = "SingleColorValue", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "gradient", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 			},
 		},
 		{

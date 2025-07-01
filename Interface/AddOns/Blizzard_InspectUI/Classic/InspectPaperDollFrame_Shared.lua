@@ -3,6 +3,14 @@ function InspectPaperDollFrame_OnLoad(self)
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("INSPECT_READY");
+	if(not C_PaperDollInfo.IsRangedSlotShown()) then
+		InspectRangedSlot:Hide();
+		InspectMainHandSlot:SetPoint("TOPLEFT", self:GetParent(), "BOTTOMLEFT", 132, 50);
+	end
+	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		InspectModelFrameRotateRightButton:Hide();
+		InspectModelFrameRotateLeftButton:Hide();
+	end
 end
 
 function InspectPaperDollFrame_OnEvent(self, event, unit)
@@ -41,7 +49,9 @@ function InspectPaperDollFrame_UpdateButtons()
 	InspectPaperDollItemSlotButton_Update(InspectTrinket1Slot);
 	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
 	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
-	InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
+	if(C_PaperDollInfo.IsRangedSlotShown()) then
+		InspectPaperDollItemSlotButton_Update(InspectRangedSlot);
+	end
 end
 
 local factionLogoTextures = {
@@ -69,11 +79,21 @@ function InspectPaperDollFrame_OnShow()
 	else
 		InspectFaction:Hide();
 	end
+	if(ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM)) then
+		SetPaperDollBackground(InspectModelFrame, InspectFrame.unit);
+		InspectModelFrameBackgroundTopLeft:SetDesaturated(1);
+		InspectModelFrameBackgroundTopRight:SetDesaturated(1);
+		InspectModelFrameBackgroundBotLeft:SetDesaturated(1);
+		InspectModelFrameBackgroundBotRight:SetDesaturated(1);
+	end
 end
 
 function InspectPaperDollItemSlotButton_OnLoad(self)
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	local slotName = self:GetName();
+	if(not C_PaperDollInfo.IsRangedSlotShown() and slotName == "InspectRangedSlot") then
+		return;
+	end
 	local id;
 	local textureName;
 	local checkRelic;

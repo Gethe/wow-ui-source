@@ -32,19 +32,8 @@
 		<Size x="195" y="18"/>
 		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>
 	</Texture>
-
-	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="0" y="-104"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="70"/>
-		</HitRectInsets>
+	<Frame name="QuestFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
+		<Size x="338" y="496"/>
 		<Layers>
 			<Layer level="ARTWORK">
                 <Texture name="QuestFramePortrait">
@@ -59,7 +48,7 @@
 			<Frame name="QuestNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP" x="0" y="-23"/>
+					<Anchor point="TOP" relativeTo="QuestFrame" relativePoint="TOP" x="0" y="-5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -72,21 +61,12 @@
                     <OnLoad function="RaiseFrameLevelByTwo"/>
                 </Scripts>
 			</Frame>
-			<Button name="QuestFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="QuestFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-42" y="-31"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
  			<Frame name="QuestFrameRewardPanel" inherits="QuestFramePanelTemplate" hidden="true">
  				<Frames>
 					<Button name="QuestFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-39" y="73"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestRewardCancelButton_OnClick"/>
@@ -95,7 +75,7 @@
 					<Button name="QuestFrameCompleteQuestButton" inherits="UIPanelButtonTemplate" text="COMPLETE_QUEST">
 						<Size x="120" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="22" y="72"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestRewardCompleteButton_OnClick"/>
@@ -118,7 +98,7 @@
  					<Button name="QuestFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-39" y="73"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestGoodbyeButton_OnClick"/>
@@ -127,7 +107,7 @@
 					<Button name="QuestFrameCompleteButton" inherits="UIPanelButtonTemplate" text="CONTINUE">
 						<Size x="120" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="22" y="72"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestProgressCompleteButton_OnClick"/>
@@ -137,7 +117,7 @@
 						<ScrollChild>
 							<Frame name="QuestProgressScrollChildFrame">
 								<Size>
-									<AbsDimension x="300" y="334"/>
+									<AbsDimension x="300" y="403"/>
 								</Size>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -272,7 +252,7 @@
 					<Button name="QuestFrameDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-39" y="72"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestDetailDeclineButton_OnClick"/>
@@ -281,7 +261,7 @@
 					<Button name="QuestFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 						<Size x="77" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="23" y="72"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="QuestFrame" relativePoint="BOTTOMLEFT" x="6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick function="QuestDetailAcceptButton_OnClick"/>
@@ -290,7 +270,7 @@
 					<ScrollFrame name="QuestDetailScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
-								<Size x="300" y="334"/>
+								<Size x="300" y="403"/>
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
@@ -302,27 +282,11 @@
 				</Scripts>
  			</Frame>
 			<Frame name="QuestFrameGreetingPanel" inherits="QuestFramePanelTemplate" hidden="true">
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-							<Size>
-								<AbsDimension x="128" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="22" y="68"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Frames>
 					<Button name="QuestFrameGreetingGoodbyeButton" inherits="UIPanelButtonTemplate" text="GOODBYE">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-39" y="73"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="QuestFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -333,7 +297,7 @@
 					<ScrollFrame name="QuestGreetingScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestGreetingScrollChildFrame">
-								<Size x="300" y="334"/>
+								<Size x="300" y="403"/>
 								<Layers>
 									<Layer>
 										<FontString name="GreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">
@@ -497,6 +461,11 @@
 					<OnShow function="QuestFrameGreetingPanel_OnShow"/>
 				</Scripts>
  			</Frame>
+			<StatusBar parentKey="FriendshipStatusBar" inherits="NPCFriendshipStatusBarTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="80" y="-41"/>
+				</Anchors>
+			</StatusBar>
  		</Frames>
 		<Scripts>
 			<OnLoad function="QuestFrame_OnLoad"/>
@@ -505,7 +474,6 @@
 			<OnHide function="QuestFrame_OnHide"/>
 		</Scripts>
  	</Frame>
-
 	<ModelScene name="QuestModelScene" inherits="PanningModelSceneMixinTemplate" hidden="true">
 		<Size x="198" y="230"/>
 		<Layers>

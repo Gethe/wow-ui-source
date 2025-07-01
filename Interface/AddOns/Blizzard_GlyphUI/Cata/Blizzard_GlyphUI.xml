@@ -1,56 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_GlyphUI.lua"/>
-
-
-<!--	
-size=1024,1024
-	<Texture name="GlyphsActivate.png" >
-		<Size x="437" y="433"/>	
-		<TexCoords left="0.00097656" right="0.42773438" top="0.00097656" bottom="0.42382813"/>	
-	</Texture>
-	<Texture name="GlyphsBG.png" >
-		<Size x="437" y="433"/>	
-		<TexCoords left="0.42968750" right="0.85644531" top="0.00097656" bottom="0.42382813"/>	
-	</Texture>
-	<Texture name="MajorGlyphFrame.png" >
-		<Size x="66" y="66"/>	
-		<TexCoords left="0.85839844" right="0.92285156" top="0.00097656" bottom="0.06542969"/>	
-	</Texture>
-	<Texture name="MinorGlyphFrame.png" >
-		<Size x="61" y="61"/>	
-		<TexCoords left="0.92480469" right="0.98437500" top="0.00097656" bottom="0.06054688"/>	
-	</Texture>
-	<Texture name="MajorGlyphGlow.png" >
-		<Size x="80" y="80"/>	
-		<TexCoords left="0.85839844" right="0.93652344" top="0.06738281" bottom="0.14550781"/>	
-	</Texture>
-	<Texture name="MinorGlyphGlow.png" >
-		<Size x="75" y="75"/>	
-		<TexCoords left="0.85839844" right="0.93164063" top="0.14746094" bottom="0.22070313"/>	
-	</Texture>
-	<Texture name="PrimeGlyphFrame.png" >
-		<Size x="82" y="82"/>	
-		<TexCoords left="0.85839844" right="0.93847656" top="0.22265625" bottom="0.30273438"/>	
-	</Texture>
-	<Texture name="PrimeGlyphGlow.png" >
-		<Size x="96" y="96"/>	
-		<TexCoords left="0.85839844" right="0.95214844" top="0.30468750" bottom="0.39843750"/>	
-	</Texture>
-	<Texture name="GlyphsLevelCover_45.png" >
-		<Size x="218" y="248"/>	
-		<TexCoords left="0.00097656" right="0.21386719" top="0.42578125" bottom="0.66796875"/>	
-	</Texture>
-	<Texture name="GlyphsLevelCover_85.png" >
-		<Size x="284" y="227"/>	
-		<TexCoords left="0.21582031" right="0.49316406" top="0.42578125" bottom="0.64746094"/>	
-	</Texture>
-	<Texture name="GlyphsListBG.png" >
-		<Size x="158" y="378"/>	
-		<TexCoords left="0.49511719" right="0.64941406" top="0.42578125" bottom="0.79492188"/>	
-	</Texture>
--->
-
 
 	<Button name="GlyphSpellButtonTemplate" virtual="true">
 		<Size x="160" y="30"/>

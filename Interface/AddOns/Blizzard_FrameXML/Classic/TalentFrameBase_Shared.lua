@@ -231,25 +231,35 @@ function TalentFrame_ResetBranches(TalentFrame)
 	end
 end
 
-local sortedTabPointsSpentBuf = { };
-function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
-	-- initialize some cache info
-	cache.primaryTabIndex = 0;
-	cache.totalPointsSpent = 0;
+function TalentFrame_UpdateSpecInfoCacheFromSpecializationInfo(cache, inspect, pet)
+	local sex = pet and UnitSex("pet") or UnitSex("player");
+	for i = 1, MAX_TALENT_TABS do
+		cache[i] = cache[i] or { };
+		if ( i <= cache.numTabs ) then
+			local id, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(i, inspect, nil, nil, sex);
 
-	local preview = GetCVarBool("previewTalentsOption");
+			-- cache the info we care about
+			cache[i].name = name;
+			cache[i].icon = icon;
+		else
+			cache[i].name = nil;
+		end
+	end
+end
+
+local sortedTabPointsSpentBuf = { };
+function TalentFrame_UpdateSpecInfoCacheFromTalentTabInfo(cache, inspect, pet, talentGroup)
+	cache.totalPointsSpent = 0;
 
 	local highPointsSpent = 0;
 	local highPointsSpentIndex;
 	local lowPointsSpent = huge;
 	local lowPointsSpentIndex;
 
-	local numTabs = GetNumTalentTabs(inspect, pet);
-	cache.numTabs = numTabs;
 	for i = 1, MAX_TALENT_TABS do
 		cache[i] = cache[i] or { };
-		if ( i <= numTabs ) then
-			local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(i, inspect, pet, talentGroup);
+		if ( i <= cache.numTabs ) then
+			local id, name, description, icon, _, _, pointsSpent, background, previewPointsSpent, isUnlocked = C_SpecializationInfo.GetSpecializationInfo(i, inspect, pet, nil, nil, talentGroup);
 
 			local displayPointsSpent = pointsSpent + previewPointsSpent;
 
@@ -292,12 +302,37 @@ function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
 	end
 
 	if ( highPointsSpentIndex and lowPointsSpentIndex ) then
-		-- now that our points spent buffer is filled, we can compute the mid points spent
-		local midPointsSpentIndex = rshift(numTabs, 1) + 1;
+		-- Now that our points spent buffer is filled, we can compute the mid points spent.
+		local midPointsSpentIndex = rshift(cache.numTabs, 1) + 1;
 		local midPointsSpent = sortedTabPointsSpentBuf[midPointsSpentIndex];
-		-- now let's use our crazy formula to determine which tab is the primary one
-		if ( 3*(midPointsSpent-lowPointsSpent) < 2*(highPointsSpent-lowPointsSpent) ) then
+		-- Now let's use our crazy formula to determine which tab is the primary one.
+		if ( (3 * (midPointsSpent - lowPointsSpent)) < (2 * (highPointsSpent - lowPointsSpent)) ) then
 			cache.primaryTabIndex = highPointsSpentIndex;
 		end
+	end
+end
+
+function TalentFrame_UpdateSpecInfoCache(cache, inspect, pet, talentGroup)
+	-- initialize some cache info
+	cache.primaryTabIndex = 0;
+
+	local usingSpecializations = true;
+	local numTabs = 0;
+	-- Can't get num specializations before initialized.
+	if (C_SpecializationInfo.IsInitialized()) then
+		numTabs = GetNumSpecializations(inspect);
+
+		-- Handle pre-Mists data.
+		if numTabs == 0 then
+			numTabs = GetNumTalentTabs(inspect, pet);
+			usingSpecializations = false;
+		end
+	end
+	cache.numTabs = numTabs;
+
+	if usingSpecializations then
+		TalentFrame_UpdateSpecInfoCacheFromSpecializationInfo(cache, inspect, pet);
+	else
+		TalentFrame_UpdateSpecInfoCacheFromTalentTabInfo(cache, inspect, pet, talentGroup);
 	end
 end

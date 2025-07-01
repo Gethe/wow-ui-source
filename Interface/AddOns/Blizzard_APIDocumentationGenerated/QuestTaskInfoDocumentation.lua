@@ -23,6 +23,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestInfoByQuestID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -40,6 +41,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestLocation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -56,6 +58,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestProgressBarInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -70,6 +73,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestTimeLeftMinutes",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -84,6 +88,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestTimeLeftSeconds",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -98,6 +103,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestZoneID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -112,6 +118,7 @@ local QuestTaskInfo =
 		{
 			Name = "GetQuestsOnMap",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{

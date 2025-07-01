@@ -80,6 +80,10 @@ function CharacterFrameMixin:OnLoad()
 	self.TitleText:SetMaxLines(1);
 	self.TitleText:SetHeight(13);
 
+	if(ClassicExpansionAtMost(LE_EXPANSION_CATACLYSM)) then
+		CharacterFrameExpandButton:Show();
+	end
+
 	-- Tab Handling code
 	PanelTemplates_SetNumTabs(self, NUM_CHARACTERFRAME_TABS);
 	PanelTemplates_SetTab(self, 1);
@@ -91,13 +95,13 @@ function CharacterFrameMixin:OnLoad()
 end
 
 function CharacterFrameMixin:UpdatePortrait()
-	local masteryIndex = GetPrimaryTalentTree();
+	local masteryIndex = C_SpecializationInfo.GetSpecialization();
 	if (masteryIndex == nil) then
 		local _, class = UnitClass("player");
 		CharacterFramePortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 		CharacterFramePortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]));
 	else
-		local _, _, _, icon = GetTalentTabInfo(masteryIndex);
+		local _, _, _, icon = C_SpecializationInfo.GetSpecializationInfo(masteryIndex);
 		CharacterFramePortrait:SetTexCoord(0, 1, 0, 1);
 		SetPortraitToTexture(CharacterFramePortrait, icon);	
 	end
@@ -210,6 +214,11 @@ function CharacterFrameMixin:OnShow()
 	ShowTextStatusBarText(PetFrameHealthBar);
 	ShowTextStatusBarText(PetFrameManaBar);
 
+	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		MonkStaggerBar.showNumeric = true;
+		ShowTextStatusBarText(MonkStaggerBar);
+	end
+
 	ShowWatchedReputationBarText();
 	
 	MicroButtonPulseStop(CharacterMicroButton);	--Stop the button pulse
@@ -234,6 +243,11 @@ function CharacterFrameMixin:OnHide()
 	HideTextStatusBarText(MainMenuExpBar);
 	HideTextStatusBarText(PetFrameHealthBar);
 	HideTextStatusBarText(PetFrameManaBar);
+
+	if(ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		MonkStaggerBar.showNumeric = nil;
+		HideTextStatusBarText(MonkStaggerBar);
+	end
 
 	HideWatchedReputationBarText();
 

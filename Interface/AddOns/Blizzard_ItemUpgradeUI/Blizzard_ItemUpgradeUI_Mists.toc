@@ -1,0 +1,6 @@
+## Title: Blizzard Item Upgrade UI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_Colors
+## AllowLoadGameType: mists
+Mists/Blizzard_ItemUpgradeUI.lua
+Mists/Blizzard_ItemUpgradeUI.xml

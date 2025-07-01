@@ -5,6 +5,6 @@
 ## LoadWith: Blizzard_UIParent
 ## AllowLoad: game
 ## AllowLoadGameType: wrath
-Classic\UIParentPanelManager_Shared.lua
+Classic\UIParentPanelManager.lua
 Wrath\UIParentPanelManager.lua
 Shared\UpdateUIPanelPositions.lua

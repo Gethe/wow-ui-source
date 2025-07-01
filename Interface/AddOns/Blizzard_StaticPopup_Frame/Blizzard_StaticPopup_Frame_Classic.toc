@@ -5,7 +5,6 @@
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 Classic\StaticPopup.lua
-Classic\StaticPopupGlyphs.lua
 Classic\StaticPopupSpecial.lua
 Classic\StaticPopupSpecial.xml
 Classic\InviteConfirmationDialog.lua

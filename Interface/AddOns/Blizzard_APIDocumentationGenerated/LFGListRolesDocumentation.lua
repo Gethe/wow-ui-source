@@ -9,6 +9,7 @@ local LFGListRoles =
 		{
 			Name = "GetRoles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -18,6 +19,7 @@ local LFGListRoles =
 		{
 			Name = "GetSavedRoles",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{

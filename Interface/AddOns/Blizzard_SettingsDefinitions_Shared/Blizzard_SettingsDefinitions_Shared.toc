@@ -3,6 +3,8 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar
 ## AllowLoad: Both
+## LoadSavedVariablesFirst: 1
+## SavedVariablesPerCharacter: NewSettingsSeen
 Groups.lua
 Graphics.xml
 Audio.xml

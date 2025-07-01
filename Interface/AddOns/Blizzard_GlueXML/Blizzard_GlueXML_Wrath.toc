@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs
+## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: wrath
@@ -17,15 +17,19 @@ Classic\AccountLogin.lua
 Classic\AccountLogin.xml
 TBC\RealmList.lua
 TBC\RealmList.xml
+Vanilla\CharacterSelectConstants.lua
 Classic\CharacterServicesPatchwerk.xml
+Classic\CharacterSelect\CharacterSelectUI.lua
+Classic\CharacterSelect\CharacterSelectUI.xml
 Classic\CharacterSelect.lua
-TBC\CharacterSelect.xml
+Classic\CharacterSelect.xml
 Shared\AccountReactivate.lua
 Shared\AccountReactivate.xml
 Classic\KioskModeSplash.lua
 Classic\KioskModeSplash.xml
 Classic\CharacterServicesShared.lua
-CharacterServicesTemplates.lua
+Classic\CharacterServicesTemplatesUtil.lua
+Shared\CharacterServicesTemplates.lua
 Classic\CharacterServicesTemplates.xml
 Classic\CharacterServicesFlowMixin.lua
 Classic\CharacterServices.lua
@@ -55,8 +59,6 @@ Classic\CinematicsFrame.lua
 Classic\CinematicsFrame.xml
 TBC\CreditsFrame.lua
 TBC\CreditsFrame.xml
-Classic\GlueMenuFrame.lua
-Classic\GlueMenuFrame.xml
 SocialContract.lua
 SocialContract.xml
 Classic\RealmWarning.lua

@@ -172,8 +172,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="2">
-				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
-				<Texture name="$parentOverHealAbsorbGlow" parentKey="overHealAbsorbGlow"/>
+				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+				<Texture name="$parentOverHealAbsorbGlow" parentKey="overHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" ignoreParentAlpha="true"/>

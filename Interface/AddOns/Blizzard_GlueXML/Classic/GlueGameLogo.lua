@@ -1,8 +1,9 @@
 GlueGameLogoMixin = { };
 
 function GlueGameLogoMixin:OnLoad()
-	self:RegisterEvent("GAME_MODE_CHANGED");
+	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	self.gameLogoDefaultHeight = self:GetHeight();
+	self.gameModeRecordID = C_GameRules.GetCurrentGameModeRecordID();
 end
 
 function GlueGameLogoMixin:OnShow()
@@ -10,7 +11,11 @@ function GlueGameLogoMixin:OnShow()
 end
 
 function GlueGameLogoMixin:OnEvent(event)
-	if (event == "GAME_MODE_CHANGED") then
+	if (event == "GAME_MODE_DISPLAY_INFO_UPDATED") then
+		-- Use the current game mode logo whenever the game mode display info is updated.
+		-- This can be overwritten via `GlueGameLogoMixin:SetGameMode` if desaired.
+		self.gameModeRecordID = C_GameRules.GetCurrentGameModeRecordID();
+
 		self:UpdateLogoTexture();
 	end
 end
@@ -47,9 +52,8 @@ function GlueGameLogoMixin:UpdateLogoTexture()
 	local logoHeight = 0;
 	local logoVerticalOffset = 0;
 
-	local gameModeRecordID = self.gameModeRecordID or C_GameModeManager.GetCurrentGameModeRecordID();
-	if gameModeRecordID then
-		local gameModeDisplayInfo = C_GameModeManager.GetGameModeDisplayInfo(gameModeRecordID);
+	if self.gameModeRecordID ~= nil then
+		local gameModeDisplayInfo = C_GameRules.GetGameModeDisplayInfoByRecordID(self.gameModeRecordID);
 		if gameModeDisplayInfo then
 			logo = gameModeDisplayInfo.logo;
 			if self.useShrunkenLogoHeight and gameModeDisplayInfo.logoShrunkenHeight > 0 then
@@ -61,7 +65,7 @@ function GlueGameLogoMixin:UpdateLogoTexture()
 		end
 	end
 
-	local expansionLogo = self:GetDisplayedExpansionLogo(expansionLevel, releaseType, gameMode);
+	local expansionLogo = self:GetDisplayedExpansionLogo(expansionLevel, releaseType);
 	logo = logo or expansionLogo;
 
 	if logo then

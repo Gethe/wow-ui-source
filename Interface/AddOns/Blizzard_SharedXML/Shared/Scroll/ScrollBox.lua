@@ -182,6 +182,61 @@ function ScrollBoxBaseMixin:Layout()
 	end
 end
 
+function ScrollBoxBaseMixin:SetEdgeFadeLength(length)
+	-- Each length is the size of the alpha gradient to use when more data is available to be scrolled into view
+	-- Create the base vector assuming that the orientation is vertical and swap if not.
+	self.edgeFade = CreateVector2D(0, math.abs(length));
+	
+	if self:IsHorizontal() then
+		local y, x = self.edgeFade:GetXY(); -- swapped!!
+		self.edgeFade:SetXY(x, y); -- do the swap.
+	end
+end
+
+function ScrollBoxBaseMixin:HasEdgeFade()
+	return self.edgeFade ~= nil;
+end
+
+function ScrollBoxBaseMixin:ApplyEdgeFade(...)
+	if self:HasEdgeFade() then
+		for i = 1, select("#", ...) do
+			local strength = Saturate(select(i, ...));
+			self:SetAlphaGradient(i - 1, self.edgeFade:Clone():ScaleBy(strength));
+		end
+	end
+end
+
+function ScrollBoxBaseMixin:CalculateEdgeFade()
+	local firstStrength, secondStrength = 1, 1;
+	local offset = self:GetScrollPercentage();
+	if offset ~= nil then
+		if offset < 0.15 then
+			firstStrength = ClampedPercentageBetween(offset, 0, 0.15);
+		end
+
+		if offset > 0.85 then
+			secondStrength = 1 - ClampedPercentageBetween(offset, 0.85, 1);
+		end
+
+		return firstStrength, secondStrength;
+	end
+
+	return 0, 0;
+end
+
+function ScrollBoxBaseMixin:ClearEdgeFade()
+	self:ClearAlphaGradient();
+	self.edgeFade = nil;
+end
+
+function ScrollBoxBaseMixin:ShouldUseShadowsForEdgeFade()
+	return self.alwaysUseShadowsForEdgeFade or not self:HasEdgeFade();
+end
+
+function ScrollBoxBaseMixin:SetUseShadowsForEdgeFade(useShadows)
+	self.alwaysUseShadowsForEdgeFade = useShadows;
+end
+
 function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 	local view = self:GetView();
 	if view then
@@ -196,11 +251,15 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 
 		local scrollPercentage = self:GetScrollPercentage();
 		self:TriggerEvent(BaseScrollBoxEvents.OnScroll, scrollPercentage, self:GetVisibleExtentPercentage(), self:GetPanExtentPercentage());
-		
-		local hasScrollableExtent = self:HasScrollableExtent();
-		local showLower = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
-		local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
-		self:SetShadowsShown(showUpper, showLower);
+
+		if self:ShouldUseShadowsForEdgeFade() then
+			local hasScrollableExtent = self:HasScrollableExtent();
+			local showUpper = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
+			local showLower = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
+			self:SetShadowsShown(showLower, showUpper);
+		end
+
+		self:ApplyEdgeFade(self:CalculateEdgeFade());
 	end
 end
 

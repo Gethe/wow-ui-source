@@ -7,6 +7,37 @@ local AddOnProfiler =
 	Functions =
 	{
 		{
+			Name = "AddMeasuredCallEvent",
+			Type = "Function",
+			Documentation = { "Adds a measured event to any ongoing measured calls. If no such calls are currently taking place, this function does nothing." },
+
+			Arguments =
+			{
+				{ Name = "name", Type = "stringView", Nilable = false, Documentation = { "User-defined string describing the measured event. This should be kept under 48 bytes to avoid memory allocations." } },
+			},
+		},
+		{
+			Name = "AddPerformanceMessageShown",
+			Type = "Function",
+			Documentation = { "Internal API for telemetry." },
+
+			Arguments =
+			{
+				{ Name = "msg", Type = "AddOnPerformanceMessage", Nilable = false },
+			},
+		},
+		{
+			Name = "CheckForPerformanceMessage",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Optimized check for determining if AddOns are severely impacting UI performance." },
+
+			Returns =
+			{
+				{ Name = "msg", Type = "AddOnPerformanceMessage", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAddOnMetric",
 			Type = "Function",
 			Documentation = { "Gets an AddOn profiler value - all times returned are in milliseconds." },
@@ -23,9 +54,9 @@ local AddOnProfiler =
 			},
 		},
 		{
-			Name = "GetOverallMetric",
+			Name = "GetApplicationMetric",
 			Type = "Function",
-			Documentation = { "Sum of an AddOn profiler value for all addons" },
+			Documentation = { "Overall profiling data for the entire application (not just the UI)" },
 
 			Arguments =
 			{
@@ -38,6 +69,47 @@ local AddOnProfiler =
 			},
 		},
 		{
+			Name = "GetOverallMetric",
+			Type = "Function",
+			Documentation = { "Overall profiling data for all addons" },
+
+			Arguments =
+			{
+				{ Name = "metric", Type = "AddOnProfilerMetric", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTicksPerSecond",
+			Type = "Function",
+			Documentation = { "Returns the number of profiling clock ticks that occur within a single real-time second." },
+
+			Returns =
+			{
+				{ Name = "frequency", Type = "BigInteger", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTopKAddOnsForMetric",
+			Type = "Function",
+			Documentation = { "Gets top K AddOns for a given metric." },
+
+			Arguments =
+			{
+				{ Name = "metric", Type = "AddOnProfilerMetric", Nilable = false },
+				{ Name = "k", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "results", Type = "table", InnerType = "AddOnProfilerResult", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabled",
 			Type = "Function",
 			Documentation = { "AddOn profiler will be enabled for all users, but this will return false if it ever isn't" },
@@ -45,6 +117,23 @@ local AddOnProfiler =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "MeasureCall",
+			Type = "Function",
+			Documentation = { "Performs a profiled measurement of a single function call with any supplied arguments." },
+
+			Arguments =
+			{
+				{ Name = "func", Type = "LuaValueVariant", Nilable = false },
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "results", Type = "AddOnProfilerCallResults", Nilable = false },
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
 			},
 		},
 	},
@@ -56,25 +145,48 @@ local AddOnProfiler =
 	Tables =
 	{
 		{
-			Name = "AddOnProfilerMetric",
-			Type = "Enumeration",
-			NumValues = 12,
-			MinValue = 0,
-			MaxValue = 11,
+			Name = "AddOnPerformanceMessage",
+			Type = "Structure",
 			Fields =
 			{
-				{ Name = "SessionAverageTime", Type = "AddOnProfilerMetric", EnumValue = 0, Documentation = { "Average time since application startup" } },
-				{ Name = "RecentAverageTime", Type = "AddOnProfilerMetric", EnumValue = 1, Documentation = { "Average time over the last 60 ticks" } },
-				{ Name = "EncounterAverageTime", Type = "AddOnProfilerMetric", EnumValue = 2, Documentation = { "Average time over the duration of a boss encounter" } },
-				{ Name = "LastTime", Type = "AddOnProfilerMetric", EnumValue = 3, Documentation = { "Total time in the most recent tick" } },
-				{ Name = "PeakTime", Type = "AddOnProfilerMetric", EnumValue = 4, Documentation = { "Highest time recorded since application startup" } },
-				{ Name = "CountTimeOver1Ms", Type = "AddOnProfilerMetric", EnumValue = 5, Documentation = { "Number of ticks where time exceeded 1ms" } },
-				{ Name = "CountTimeOver5Ms", Type = "AddOnProfilerMetric", EnumValue = 6, Documentation = { "Number of ticks where time exceeded 5ms" } },
-				{ Name = "CountTimeOver10Ms", Type = "AddOnProfilerMetric", EnumValue = 7, Documentation = { "Number of ticks where time exceeded 10ms" } },
-				{ Name = "CountTimeOver50Ms", Type = "AddOnProfilerMetric", EnumValue = 8, Documentation = { "Number of ticks where time exceeded 50ms" } },
-				{ Name = "CountTimeOver100Ms", Type = "AddOnProfilerMetric", EnumValue = 9, Documentation = { "Number of ticks where time exceeded 100ms" } },
-				{ Name = "CountTimeOver500Ms", Type = "AddOnProfilerMetric", EnumValue = 10, Documentation = { "Number of ticks where time exceeded 500ms" } },
-				{ Name = "CountTimeOver1000Ms", Type = "AddOnProfilerMetric", EnumValue = 11, Documentation = { "Number of ticks where time exceeded 1000ms" } },
+				{ Name = "type", Type = "AddOnPerformanceMessageType", Nilable = false },
+				{ Name = "metric", Type = "AddOnProfilerMetric", Nilable = false },
+				{ Name = "addOnName", Type = "string", Nilable = true },
+				{ Name = "metricValue", Type = "number", Nilable = false },
+				{ Name = "thresholdValue", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AddOnProfilerCallEvent",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false, Documentation = { "User-defined string describing the measured event." } },
+				{ Name = "allocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Snapshot of the allocated byte count when this event was recorded." } },
+				{ Name = "deallocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Snapshot of the deallocated byte count when this event was recorded." } },
+				{ Name = "elapsedMilliseconds", Type = "number", Nilable = false, Documentation = { "Snapshot of the elapsed milliseconds when this event was recorded." } },
+				{ Name = "elapsedTicks", Type = "BigInteger", Nilable = false, Documentation = { "Snapshot of the elapsed tick count when this event was recorded." } },
+			},
+		},
+		{
+			Name = "AddOnProfilerCallResults",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "elapsedMilliseconds", Type = "number", Nilable = false, Documentation = { "Total number of milliseconds spent executing the function." } },
+				{ Name = "elapsedTicks", Type = "BigInteger", Nilable = false, Documentation = { "Total number of profiling clock ticks spent executing the function." } },
+				{ Name = "allocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Total number of bytes allocated during call execution." } },
+				{ Name = "deallocatedBytes", Type = "BigUInteger", Nilable = false, Documentation = { "Total number of bytes deallocated during call execution." } },
+				{ Name = "events", Type = "table", InnerType = "AddOnProfilerCallEvent", Nilable = false, Documentation = { "Events recorded by any AddMeasuredCallEvent calls that took place during function execution." } },
+			},
+		},
+		{
+			Name = "AddOnProfilerResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "addOnName", Type = "cstring", Nilable = false },
+				{ Name = "metricValue", Type = "number", Nilable = false },
 			},
 		},
 	},

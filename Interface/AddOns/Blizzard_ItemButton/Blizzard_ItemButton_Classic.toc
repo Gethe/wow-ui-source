@@ -1,7 +1,7 @@
 ## Title: Blizzard_ItemButton
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FontStyles_Frame, Blizzard_SharedXML
+## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 Shared\ItemButtonTemplate.lua

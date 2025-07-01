@@ -18,7 +18,7 @@
 		 /script WorldFrame:SetUserPlaced(false);
 		 and then log out or reload the UI
 	-->
-	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true">
+	<WorldFrame name="WorldFrame" movable="true" resizable="true" clipChildren="true" setAllPoints="true" frameLevel="1" propagateMouseInput="Both" retainClickThroughOverride="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="FramerateLabel" hidden="true" inherits="SystemFont_Shadow_Med1" text="FRAMERATE_LABEL">

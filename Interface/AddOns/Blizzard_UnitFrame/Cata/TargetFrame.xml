@@ -279,6 +279,10 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="overAbsorbGlow" inherits="OverAbsorbGlowTemplate" hidden="1"/>
+						<Texture parentKey="overHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate" hidden="1"/>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
 						<Texture name="$parentPrestigeBadge" hidden="true">
 							<Size x="30" y="30"/>
 							<Anchors>
@@ -296,6 +300,8 @@
 				<Frames>
 					<Frame parentKey="MyHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
 					<Frame parentKey="OtherHealPredictionBar" inherits="TargetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame parentKey="HealAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame parentKey="TotalAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
 				</Frames>
 				<Scripts>
 					<OnLoad>

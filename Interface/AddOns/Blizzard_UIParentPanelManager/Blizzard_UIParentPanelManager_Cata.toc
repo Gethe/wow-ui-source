@@ -5,6 +5,6 @@
 ## LoadWith: Blizzard_UIParent
 ## AllowLoad: game
 ## AllowLoadGameType: cata
-Classic\UIParentPanelManager_Shared.lua
+Classic\UIParentPanelManager.lua
 Cata\UIParentPanelManager.lua
 Shared\UpdateUIPanelPositions.lua

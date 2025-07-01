@@ -319,7 +319,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	frame.moneyWidth = width;
 
 	-- attach text now that denominations have been computed
-	local prefixText = _G[frameName.."PrefixText"];
+	local prefixText = frameName and _G[frameName.."PrefixText"];
 	if ( prefixText ) then
 		if ( prefixText:GetText() and money > 0 ) then
 			prefixText:Show();
@@ -339,7 +339,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			prefixText:Hide();
 		end
 	end
-	local suffixText = _G[frameName.."SuffixText"];
+	local suffixText = frameName and _G[frameName.."SuffixText"];
 	if ( suffixText ) then
 		if ( suffixText:GetText() and money > 0 ) then
 			suffixText:Show();

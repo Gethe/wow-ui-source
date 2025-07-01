@@ -195,6 +195,7 @@ local Item =
 		{
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -301,6 +302,7 @@ local Item =
 		{
 			Name = "GetItemGem",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -317,6 +319,7 @@ local Item =
 		{
 			Name = "GetItemGemID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -388,6 +391,7 @@ local Item =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -418,6 +422,7 @@ local Item =
 		{
 			Name = "GetItemInfoInstant",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -623,7 +628,7 @@ local Item =
 
 			Arguments =
 			{
-				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 
 			Returns =
@@ -651,6 +656,7 @@ local Item =
 		{
 			Name = "GetItemSpecInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -665,6 +671,7 @@ local Item =
 		{
 			Name = "GetItemSpell",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -680,6 +687,7 @@ local Item =
 		{
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -696,6 +704,7 @@ local Item =
 		{
 			Name = "GetItemUniqueness",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -711,6 +720,7 @@ local Item =
 		{
 			Name = "GetItemUniquenessByID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -1190,6 +1200,18 @@ local Item =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "setID", Type = "number", Nilable = true },
 				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ItemUpgradeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "currentLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "maxItemLevel", Type = "number", Nilable = false },
+				{ Name = "trackString", Type = "cstring", Nilable = true },
+				{ Name = "trackStringID", Type = "number", Nilable = true },
 			},
 		},
 	},

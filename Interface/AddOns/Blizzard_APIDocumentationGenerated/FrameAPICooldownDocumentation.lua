@@ -108,6 +108,19 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "GetHideCountdownNumbers",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hideNumbers", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetReverse",
 			Type = "Function",
 
@@ -131,6 +144,19 @@ local FrameAPICooldown =
 			Returns =
 			{
 				{ Name = "rotationRadians", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUseAuraDisplayTime",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "useAuraDisplayTime", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -253,6 +279,18 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "SetEdgeColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+			},
+		},
+		{
 			Name = "SetEdgeScale",
 			Type = "Function",
 
@@ -334,6 +372,16 @@ local FrameAPICooldown =
 			{
 				{ Name = "low", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
 				{ Name = "high", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "SetUseAuraDisplayTime",
+			Type = "Function",
+			Documentation = { "Aura durations are displayed slightly differently than cooldown durations. Setting this to true will adjust the display logic to stay in sync with aura timers." },
+
+			Arguments =
+			{
+				{ Name = "useAuraDisplayTime", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
