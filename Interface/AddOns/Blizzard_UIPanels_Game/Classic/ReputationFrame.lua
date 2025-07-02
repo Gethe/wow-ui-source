@@ -89,7 +89,7 @@ function ReputationFrame_Update()
 			local isCappedFriendship;
 			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
 			
-			if (repInfo.friendshipFactionID > 0) then
+			if (repInfo and repInfo.friendshipFactionID > 0) then
 				factionStandingtext = repInfo.reaction;
 				if ( repInfo.nextThreshold ) then
 					barMin, barMax, barValue = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
