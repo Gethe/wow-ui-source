@@ -463,21 +463,21 @@ function LevelUpDisplay_BuildPetBattleWinnerList(self)
 	self.unlockList = {};
 	self.winnerString = PET_BATTLE_RESULT_LOSE;
 	if(C_PetBattles.IsWildBattle()) then
-		self.winnerSoundKitID = 34090; --UI_PetBattle_PVE_Defeat
+		self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_PVE_DEFEAT;
 	elseif(C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY)) then
-		self.winnerSoundKitID = 34094; --UI_PetBattle_Special_Defeat
+		self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_SPECIAL_DEFEAT;
 	else
-		self.winnerSoundKitID = 34092; --UI_PetBattle_PVP_Defeat
+		self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_PVP_DEFEAT;
 	end
 
 	if ( self.winner == LE_BATTLE_PET_ALLY ) then
 		self.winnerString = PET_BATTLE_RESULT_WIN;
 		if(C_PetBattles.IsWildBattle()) then
-			self.winnerSoundKitID = 34089; --UI_PetBattle_PVE_Victory
+			self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_PVE_VICTORY;
 		elseif(C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY)) then
-			self.winnerSoundKitID = 34093; --UI_PetBattle_Special_Victory
+			self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_SPECIAL_VICTORY;
 		else
-			self.winnerSoundKitID = 34091; --UI_PetBattle_PVP_Victory
+			self.winnerSoundKitID = SOUNDKIT.UI_PETBATTLE_PVP_VICTORY;
 		end
 	end;
 	self.currSpell = 1;
@@ -702,13 +702,13 @@ function LevelUpDisplay_Start(self, beginUnlockList)
 			elseif ( self.type == TOAST_PET_BATTLE_WINNER ) then
 				LevelUpDisplay_BuildPetBattleWinnerList(self);
 				self.levelFrame.singleline:SetText(self.winnerString);
-				PlaySoundKitID(self.winnerSoundKitID);
+				PlaySound(self.winnerSoundKitID);
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_QUEST_BOSS_EMOTE ) then
 				LevelUpDisplay_BuildEmptyList(self);
 				self.levelFrame.blockText:SetText(self.bossText);
 				if (self.sound and self.sound == true) then
-					PlaySound("RaidBossEmoteWarning");
+					PlaySound(SOUNDKIT.RAID_BOSS_EMOTE_WARNING);
 				end
 				playAnim = self.levelFrame.fastReveal;
 			elseif (self.type == TOAST_PET_BATTLE_CAPTURE ) then
