@@ -3372,72 +3372,13 @@ function GearSetEditButton_OnMouseDown(self, button)
 
 	local parentButton = self:GetParent();
 
-	local function GetSetID()
-		return parentButton.setID;
-	end
-
-	local function IsSelected(i)
-		return C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID()) == i;
-	end
-
-	local function SetSelected(i)
-		local currentSpecIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(GetSetID());
-		if ( currentSpecIndex ~= i ) then
-			C_EquipmentSet.AssignSpecToEquipmentSet(GetSetID(), i);
-		else
-			C_EquipmentSet.UnassignEquipmentSetSpec(GetSetID());
-		end
-
-		GearSetButton_UpdateSpecInfo(parentButton);
-		PaperDollEquipmentManagerPane_Update(true);
-	end
-
 	MenuUtil.CreateContextMenu(PaperDollFrame.EquipmentManagerPane, function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_PAPERDOLL_FRAME");
 		
 		rootDescription:CreateButton(EQUIPMENT_SET_EDIT, function()
 			GearSetButton_OpenPopup(parentButton);
 		end);
-
-		rootDescription:CreateTitle(EQUIPMENT_SET_ASSIGN_TO_SPEC);
-
-		for i = 1, GetNumSpecializations() do
-			local specID = C_SpecializationInfo.GetSpecializationInfo(i);
-			local text = select(2, GetSpecializationInfoByID(specID));
-			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
-		end
 	end)
-end
-
-function GearSetButton_SetSpecInfo(self, specID)
-	if ( specID and specID > 0 ) then
-		self.specID = specID;
-		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
-		SetPortraitToTexture(self.SpecIcon, texture);
-		self.SpecIcon:Show();
-		self.SpecRing:Show();
-	else
-		self.specID = nil;
-		self.SpecIcon:Hide();
-		self.SpecRing:Hide();
-	end
-
-end
-
-function GearSetButton_UpdateSpecInfo(self)
-	if ( not self.setID ) then
-		GearSetButton_SetSpecInfo(self, nil);
-		return;
-	end
-
-	local specIndex = C_EquipmentSet.GetEquipmentSetAssignedSpec(self.setID);
-	if ( not specIndex ) then
-		GearSetButton_SetSpecInfo(self, nil);
-		return;
-	end
-
-	local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex);
-	GearSetButton_SetSpecInfo(self, specID);
 end
 
 function GearSetButton_OnClick (self, button, down)
@@ -3743,8 +3684,6 @@ function PaperDollEquipmentManagerPane_InitButton(button, elementData)
 			button.Stripe:Hide();
 		end
 	end
-
-	GearSetButton_UpdateSpecInfo(button);
 end
 
 function PaperDollEquipmentManagerPane_Update(equipmentSetsDirty)
