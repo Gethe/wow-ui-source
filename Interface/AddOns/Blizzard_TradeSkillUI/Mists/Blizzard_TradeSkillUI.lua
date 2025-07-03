@@ -97,7 +97,11 @@ function SetAllInventorySlotsFiltered(filtered)
 	end
 end
 
-function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSkillLine)	
+function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSkillLine)
+	if not TradeSkillFrame:IsShown() then
+		return;
+	end
+
 	local function IsSlotChecked(filterIndex) 
 		return GetTradeSkillInvSlotFilter(filterIndex) == 1;
 	end

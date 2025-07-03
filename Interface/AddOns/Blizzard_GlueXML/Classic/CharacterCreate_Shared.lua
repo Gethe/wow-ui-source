@@ -68,7 +68,8 @@ function CharacterCreateEnumerateRaces()
 			end
 			local currentRace = C_PaidServices.GetCurrentRaceID();
 			local currentClass = C_PaidServices.GetCurrentClassID();
-			if (currentFaction == raceData.factionInternalName and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
+			local factionCheck = currentFaction == raceData.factionInternalName or raceData.isNeutralRace;
+			if (factionCheck and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
 				disable = false;
 			end
 		elseif isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
