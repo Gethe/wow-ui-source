@@ -76,3 +76,6 @@ FloatingPetBattleTooltip.lua
 FloatingPetBattleTooltip.xml
 BattlePetTooltip.lua
 BattlePetTooltip.xml
+LossOfControlFrame.lua
+Classic\LossOfControlFrame.lua
+LossOfControlFrame.xml

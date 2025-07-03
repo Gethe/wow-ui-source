@@ -818,6 +818,16 @@ function WardrobeSetsCollectionMixin:GetSelectedSetID()
 	return self.selectedSetID;
 end
 
+function WardrobeSetsCollectionMixin:HasSetsToShow()
+	local sets;
+	if ( not C_Transmog.IsAtTransmogNPC() ) then
+		sets = SetsDataProvider:GetBaseSets();
+	else
+		sets = SetsDataProvider:GetUsableSets();
+	end
+	return sets and sets[1];
+end
+
 function WardrobeSetsCollectionMixin:SetAppearanceTooltip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
 	self.tooltipTransmogSlot = C_Transmog.GetSlotForInventoryType(frame.invType);

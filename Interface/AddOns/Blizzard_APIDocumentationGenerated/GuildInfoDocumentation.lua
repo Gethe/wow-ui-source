@@ -523,6 +523,15 @@ local GuildInfo =
 			Type = "Event",
 			LiteralName = "TABARD_SAVE_PENDING",
 		},
+		{
+			Name = "UnitGuildLevel",
+			Type = "Event",
+			LiteralName = "UNIT_GUILD_LEVEL",
+			Payload =
+			{
+				{ Name = "newLevel", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -2094,7 +2094,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 	-- code which we don't want for this dialog
 	text = INSTANCE_LOCK_TIMER,
 	textOnEnterScript = InstanceLock_OnEnter,
-	textOnLeaveScript = GameTooltip_Hide,
+	textOnLeaveScript = function() GameTooltip:Hide() end,
 	button1 = ACCEPT,
 	button2 = INSTANCE_LEAVE,
 	OnShow = function(dialog, data)
@@ -2121,7 +2121,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 
 	end,
 	OnUpdate = function(dialog, elapsed)
-		local enforceTime = data;
+		local enforceTime = dialog.data.enforceTime;
 		if ( enforceTime ) then
 			local lockTimeleft = dialog.lockTimeleft - elapsed;
 			if ( lockTimeleft <= 0 ) then
@@ -2162,7 +2162,7 @@ StaticPopupDialogs["INSTANCE_LOCK"] = {
 		dialog.lockTimeleft = nil;
 	end,
 	DisplayButton2 = function(dialog, data)
-		local enforceTime = data;
+		local enforceTime = data.enforceTime;
 		return enforceTime ~= nil;
 	end,
 	timeout = 0,

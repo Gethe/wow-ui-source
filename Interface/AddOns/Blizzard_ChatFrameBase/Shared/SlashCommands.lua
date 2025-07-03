@@ -69,7 +69,12 @@ end
 
 SecureCmdList["CANCELAURA"] = function(msg)
 	local spell = SecureCmdOptionParse(msg);
-	if ( spell ) then
+
+	local spellID = tonumber(spell);
+
+	if spellID then
+		C_Spell.CancelSpellByID(spellID);
+	elseif spell then
 		CancelSpellByName(spell);
 	end
 end

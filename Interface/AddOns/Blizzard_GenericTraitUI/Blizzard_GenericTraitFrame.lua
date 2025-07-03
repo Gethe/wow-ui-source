@@ -76,7 +76,11 @@ local GenericTraitFrameLayoutOptions = {
 		HeaderOffset = { x = 0, y = -37 },
 		CurrencyOffset = { x = 40, y = -14 },
 		PanOffset = { x = 12, y = -15 },
-	}
+	},
+
+	ReshiiWraps = {
+		Title = GENERIC_TRAIT_FRAME_RESHII_WRAPS_TITLE,
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -102,6 +106,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Titan Console (OC Delve)
 	[1061] = GenericTraitFrameLayoutOptions.TitanConsole,
+
+	-- Reshii Wraps (11.2.0 Cloak)
+	[1115] = GenericTraitFrameLayoutOptions.ReshiiWraps,
 };
 
 function GetGenericTraitFrameLayoutInfo(treeID)

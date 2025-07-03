@@ -348,6 +348,7 @@ function StaticPopup_Show(which, text_arg1, text_arg2, data, insertedFrame, cust
 	dialog.enterClicksFirstButton = dialogInfo.enterClicksFirstButton;
 	dialog.insertedFrame = insertedFrame;
 	dialog.customOnHideScript = customOnHideScript;
+	dialog.progressBarDuration = nil;
 
 	dialog:SetParent(GetAppropriateTopLevelParent());
 	dialog:Init(which, text_arg1, text_arg2, data, insertedFrame);

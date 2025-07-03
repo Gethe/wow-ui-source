@@ -1282,6 +1282,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PlayerIsInCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsInCombat", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PortGraveyard",
 			Type = "Function",
 		},
@@ -1494,6 +1503,15 @@ local PlayerScript =
 
 	Events =
 	{
+		{
+			Name = "PlayerInCombatChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			Payload =
+			{
+				{ Name = "inCombat", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

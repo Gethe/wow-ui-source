@@ -13,21 +13,27 @@ function DressUpItemLink(link, forcedFrame)
 	return false;
 end
 
-function DressUpItemLocation(itemLocation)
+function DressUpItemLocation(itemLocation, forcedFrame)
 	if( itemLocation and itemLocation:IsValid() ) then 
 		local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
 		-- non-equippable items won't have an appearanceID
 		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
-			return DressUpItemTransmogInfo(itemTransmogInfo);
+			return DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame);
 		end
 	end
 	return false;
 end
 
 function DressUpTransmogLink(link)
-	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
+	if not link then
 		return false;
 	end
+
+	local linkType = LinkUtil.ExtractLink(link);
+	if linkType ~= LinkTypes.TransmogIllusion and linkType ~= LinkTypes.TransmogAppearance then
+		return false;
+	end
+
 	return DressUpVisual(link);
 end
 
@@ -150,19 +156,21 @@ end
 function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
 	local forcePlayerRefresh = true;
+	local link = nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 end
 
 function DressUpBattlePetLink(link, forcedFrame)
 	if( link ) then 
 		local linkType, linkOptions = LinkUtil.ExtractLink(link);
-		local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
 		if ( linkType == "item") then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			end
 		elseif ( linkType == "battlepet" ) then
+			local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
 			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
 			if ( speciesID == tonumber(linkID)) then
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
@@ -211,12 +219,14 @@ function DressUpMountLink(link, forcedFrame)
 		local shouldSetModelFromHyperlink = false;
 
 		local linkType, linkOptions = LinkUtil.ExtractLink(link);
-		local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 		if linkType == "item" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
 		elseif linkType == "spell" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
 		elseif linkType == "mount" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
 			shouldSetModelFromHyperlink = true;
 		end
@@ -355,7 +365,7 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh,
 	end
 end
 
-function DressUpItemTransmogInfo(itemTransmogInfo)
+function DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
 	DressUpFrame_Show(frame);
 
@@ -370,7 +380,7 @@ end
 
 function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh)
 	local frame = GetFrameAndSetBackground();
-	local itemModifiedAppearanceIDs, fromLink = nil,
+	local itemModifiedAppearanceIDs, fromLink = nil, nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();

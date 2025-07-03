@@ -444,8 +444,6 @@ end
 function EditModeMagnetismManager:ApplyMagnetism(systemFrame)
 	local magneticFrameInfos = self:GetMagneticFrameInfos(systemFrame);
 	if magneticFrameInfos then
-		systemFrame:ClearAllPoints();
-
 		for index, magneticFrameInfo in ipairs(magneticFrameInfos) do
 			systemFrame:SnapToFrame(magneticFrameInfo);
 		end

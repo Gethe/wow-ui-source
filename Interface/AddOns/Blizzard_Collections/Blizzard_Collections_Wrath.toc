@@ -20,8 +20,8 @@ Classic\Blizzard_HeirloomCollection.lua
 Classic\Blizzard_HeirloomCollection.xml
 Classic\Blizzard_Wardrobe.lua
 Classic\Blizzard_Wardrobe.xml
-Wrath\Blizzard_Wardrobe_Sets.lua
-Wrath\Blizzard_Wardrobe_Sets.xml
+Shared\Blizzard_Wardrobe_Sets.lua
+Shared\Blizzard_Wardrobe_Sets.xml
 Wrath\Blizzard_Wardrobe.lua
 Wrath\Blizzard_Wardrobe.xml
 Classic\Localization.lua

@@ -18,6 +18,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "ClearAllPoints",
 			Type = "Function",
+			Documentation = { "Clears all points and immediately invalidates the rect. (Prior to 11.2.0, this would only invalidate rect immediately for AnchoringRestricted regions.)" },
 
 			Arguments =
 			{

@@ -6,7 +6,7 @@
 			<KeyValue key="reserved" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-100" y="200"/>
+			<Anchor point="BOTTOMRIGHT" x="-50" y="140"/>
 		</Anchors>
 		<Scripts>
 			<OnDragStart>

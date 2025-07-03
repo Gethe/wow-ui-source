@@ -6,6 +6,20 @@ local FrameScript =
 	Functions =
 	{
 		{
+			Name = "CreateFromMixins",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "object", Type = "LuaValueVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateWindow",
 			Type = "Function",
 
@@ -73,6 +87,21 @@ local FrameScript =
 			Returns =
 			{
 				{ Name = "location", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "Mixin",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "object", Type = "LuaValueVariant", Nilable = false },
+				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "outObject", Type = "LuaValueVariant", Nilable = false },
 			},
 		},
 		{

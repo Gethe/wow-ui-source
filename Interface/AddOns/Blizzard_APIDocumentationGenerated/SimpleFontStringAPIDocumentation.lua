@@ -47,6 +47,14 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -61,6 +69,20 @@ local SimpleFontStringAPI =
 			{
 				{ Name = "characterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "inside", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "start", Type = "number", Nilable = false },
+				{ Name = "length", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -89,6 +111,20 @@ local SimpleFontStringAPI =
 				{ Name = "fontFile", Type = "cstring", Nilable = true },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFontHeight",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "calculated", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

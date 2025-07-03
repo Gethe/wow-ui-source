@@ -7,6 +7,15 @@ local Spell =
 	Functions =
 	{
 		{
+			Name = "CancelSpellByID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesSpellExist",
 			Type = "Function",
 			Documentation = { "Returns true if the spell exists, regardless of whether the player has learned it" },

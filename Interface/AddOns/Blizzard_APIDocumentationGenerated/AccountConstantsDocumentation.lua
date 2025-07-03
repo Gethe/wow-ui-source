@@ -195,6 +195,18 @@ local AccountConstants =
 			},
 		},
 		{
+			Name = "ChallengeModeHistoryStatus",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Normal", Type = "ChallengeModeHistoryStatus", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryStatus", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "DisableAccountProfilesFlags",
 			Type = "Enumeration",
 			NumValues = 6,

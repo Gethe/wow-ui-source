@@ -581,37 +581,37 @@ end
 
 local SELECTION_PADDING = 2;
 
-function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
-	local function GetLeftOffset()
-		return select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
-	end
-	local function GetRightOffset()
-		return select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
-	end
-	local function GetTopOffset()
-		return select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
-	end
-	local function GetBottomOffset()
-		return select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
-	end
+function EditModeSystemMixin:GetLeftOffset()
+	return select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetRightOffset()
+	return select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetTopOffset()
+	return select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetBottomOffset()
+	return select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
+end
 
+function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
 	local offset;
 	if point == "LEFT" then
-		offset = GetLeftOffset();
+		offset = self:GetLeftOffset();
 	elseif point == "RIGHT" then
-		offset = GetRightOffset();
+		offset = self:GetRightOffset();
 	elseif point == "TOP" then
-		offset = GetTopOffset();
+		offset = self:GetTopOffset();
 	elseif point == "BOTTOM" then
-		offset = GetBottomOffset();
+		offset = self:GetBottomOffset();
 	elseif point == "TOPLEFT" then
-		offset = forYOffset and GetTopOffset() or GetLeftOffset();
+		offset = forYOffset and self:GetTopOffset() or self:GetLeftOffset();
 	elseif point == "TOPRIGHT" then
-		offset = forYOffset and GetTopOffset() or GetRightOffset();
+		offset = forYOffset and self:GetTopOffset() or self:GetRightOffset();
 	elseif point == "BOTTOMLEFT" then
-		offset = forYOffset and GetBottomOffset() or GetLeftOffset();
+		offset = forYOffset and self:GetBottomOffset() or self:GetLeftOffset();
 	elseif point == "BOTTOMRIGHT" then
-		offset = forYOffset and GetBottomOffset() or GetRightOffset();
+		offset = forYOffset and self:GetBottomOffset() or self:GetRightOffset();
 	else
 		-- Center
 		local selectionCenterX, selectionCenterY = self.Selection:GetCenter();
@@ -737,6 +737,9 @@ end
 
 function EditModeSystemMixin:SnapToFrame(frameInfo)
 	local offsetX, offsetY = self:GetSnapOffsets(frameInfo);
+
+	-- ClearAllPoints after GetSnapOffsets since it uses the existing rect to calculate the offset
+	self:ClearAllPoints();
 	self:SetPoint(frameInfo.point, frameInfo.frame, frameInfo.relativePoint, offsetX, offsetY);
 end
 
@@ -1218,31 +1221,35 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 end
 
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 17);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -3);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -4, 6);
+	if self.systemIndex ~= self.lastSystemIndex then
+		self.lastSystemIndex = self.systemIndex;
+
+		self.Selection:ClearAllPoints();
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 17);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -3);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -4, 6);
+		end
 	end
 
 	self:UpdateClampOffsets();
@@ -1633,13 +1640,18 @@ function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
 end
 
 function EditModeCastBarSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
-	else
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
+	if self.lockedToPlayerFrame ~= lockToPlayerFrame then
+		self.lockedToPlayerFrame = lockToPlayerFrame;
+
+		self.Selection:ClearAllPoints();
+		if lockToPlayerFrame then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+		else
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+		end
 	end
 
 	self:UpdateClampOffsets();
@@ -2093,9 +2105,12 @@ function EditModeObjectiveTrackerSystemMixin:OnDragStop()
 end
 
 function EditModeObjectiveTrackerSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -30, 0);
-	self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	if not self.selectedAnchored then
+		self.selectedAnchored = true;
+		self.Selection:ClearAllPoints();
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -30, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	end
 end
 
 function EditModeObjectiveTrackerSystemMixin:ResetToDefaultPosition()
@@ -2684,14 +2699,20 @@ function EditModeSystemSelectionBaseMixin:SetSystem(system)
 end
 
 function EditModeSystemSelectionBaseMixin:ShowHighlighted()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
+	if self.textureShown ~= "highlight" then
+		NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
+		self.textureShown = "highlight";
+	end
 	self.isSelected = false;
 	self:UpdateLabelVisibility();
 	self:Show();
 end
 
 function EditModeSystemSelectionBaseMixin:ShowSelected()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
+	if self.textureShown ~= "selected" then
+		NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
+		self.textureShown = "selected";
+	end
 	self.isSelected = true;
 	self:UpdateLabelVisibility();
 	self:CheckShowInstructionalTooltip();

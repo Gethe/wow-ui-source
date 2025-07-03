@@ -1085,9 +1085,8 @@ end
 
 function ContainerFrameMixin:UpdateCooldowns()
 	for i, itemButton in self:EnumerateValidItems() do
-		local info = C_Container.GetContainerItemInfo(itemButton:GetBagID(), itemButton:GetID());
-		local texture = info and info.iconFileID;
-		itemButton:UpdateCooldown(texture);
+		local hasItem = C_Container.HasContainerItem(itemButton:GetBagID(), itemButton:GetID());
+		itemButton:UpdateCooldown(hasItem);
 	end
 end
 

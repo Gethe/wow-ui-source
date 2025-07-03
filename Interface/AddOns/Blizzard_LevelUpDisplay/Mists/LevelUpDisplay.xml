@@ -32,6 +32,7 @@
 						<Anchor point="TOPLEFT" x="8" y="0"/>
 					</Anchors>
 				</Texture>
+				
 				<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="name">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"  relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="10" y="2"/>
@@ -43,13 +44,63 @@
 					</Anchors>
 					<Color r="0.0" g="1.0" b="0.0"/>
 				</FontString>
+				
+				<FontString name="$parentUpperWhite" parentKey="upperwhite" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="10" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentBottomGiant" parentKey="bottomGiant" inherits="GameFont_Gigantic" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-6"/>
+					</Anchors>
+				</FontString>
+
+				<!-- Pet Battle Capture with Rarity -->
+				<FontString name="$parentRarityUpperWhite" parentKey="rarityUpperwhite" inherits="SystemFont_Shadow_Large" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentIcon" x="10" y="12"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRarityBottomHuge" parentKey="rarityMiddleHuge" inherits="GameFontNormalHuge" justifyH="LEFT" justifyV="BOTTOM">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$parentIcon" x="10" y="1"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentRarityIcon" parentKey="rarityIcon" file="Interface\PetBattles\PetBattle-StatIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$parentIcon" x="10" y="-8"/>
+					</Anchors>
+					<TexCoords left="0.5" right="1.0" top="0.0" bottom="0.5"/>
+				</Texture>
+				<FontString name="$parentRarityValue" inherits="GameFontHighlight" parentKey="rarityValue" text="" hidden="true">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentRarityIcon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture name="$parentIconBorder" parentKey="iconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeKey="$parent.icon"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeKey="$parent.icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture name="$parentSubIcon" parentKey="subIcon" file="Interface\LevelUp\LevelUpTex">
 					<Size x="22" y="22"/>
 					<Anchors>
 						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMLEFT" x="2" y="2"/>
 					</Anchors>
+				</Texture>
+				<Texture name="$parentSubIconRight" parentKey="subIconRight" file="Interface\LevelUp\LevelUpTex" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentIcon" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Size x="22" y="22"/>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -61,9 +112,13 @@
 			<AnimationGroup parentKey="hideAnim">
 				<Alpha fromAlpha="1" toAlpha="0" duration="1.0" order="1" />
 				<Scripts>
-					<OnFinished>
-						LevelUpDisplay:Hide();
-					</OnFinished>
+					<OnFinished function="LevelUpDisplay_AnimOutFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="fastHideAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="1" />
+				<Scripts>
+					<OnFinished function="LevelUpDisplay_AnimOutFinished"/>
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
@@ -123,13 +178,7 @@
 					<Size x="418" y="7"/>
 					<Animations>
 						<AnimationGroup parentKey="grow">
-							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1">
-								<Scripts>
-									<OnFinished>
-										self:GetParent():GetParent():Show();
-									</OnFinished>
-								</Scripts>
-							</Scale>
+							<Scale scaleX="0.001" scaleY="1.0" duration="0.0" startDelay="1.5" order="1" parentKey="anim1"/>
 							<Scale scaleX="1000.0" scaleY="1.0" duration="0.5" order="2"/>
 							<Scripts>
 								<OnPlay>
@@ -156,7 +205,19 @@
 								LevelUpDisplayGLine.grow:Play();
 							</OnPlay>
 							<OnFinished>
-								LevelUpDisplay_AnimStep(LevelUpDisplay);
+								LevelUpDisplay_AnimStep(LevelUpDisplay, false);
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="fastReveal">
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.5" order="1" />
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.5" order="2"/>
+						<Scripts>
+							<OnPlay>
+								LevelUpDisplayGLine.grow:Play();
+							</OnPlay>
+							<OnFinished>
+								LevelUpDisplay_AnimStep(LevelUpDisplay, true);
 							</OnFinished>
 						</Scripts>
 					</AnimationGroup>
@@ -177,6 +238,16 @@
 						<FontString inherits="SystemFont_Shadow_Large" justifyH="CENTER" parentKey="reachedText">
 							<Anchors>
 								<Anchor point="BOTTOM" relativeTo="$parentLevel" relativePoint="TOP" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentTextLine" inherits="GameFont_Gigantic" parentKey="singleline" text="">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentBlockText" inherits="GameFontNormalHuge" parentKey="blockText">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -294,8 +365,8 @@
 			<Frame name="$parentChallengeModeFrame" parentKey="challengeModeFrame" alpha="0">
 				<Animations>
 					<AnimationGroup parentKey="challengeComplete">
-						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" endDelay="2.5" order="1"/>
-						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" endDelay="2.5" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 						<Scripts>
 							<OnPlay>
 								LevelUpDisplayGLine.grow:Play();
@@ -334,8 +405,8 @@
 			<Frame parentKey="challengeModeBits" alpha="0" setAllPoints="true">
 				<Animations>
 					<AnimationGroup parentKey="fadeIn">
-						<Alpha fromAlpha="0" toAlpha = "1" duration="0.7" startDelay="0.7" endDelay="2.3" order="1"/>
-						<Alpha fromAlpha="1" toAlpha = "0" duration="0.5" order="2"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" endDelay="2.3" order="1"/>
+						<Alpha fromAlpha="1" toAlpha="0" duration="0.5" order="2"/>
 					</AnimationGroup>
 				</Animations>
 				<Layers>
@@ -390,7 +461,6 @@
 		<Scripts>
 			<OnLoad function="LevelUpDisplay_OnLoad"/>
 			<OnEvent function="LevelUpDisplay_OnEvent"/>
-			<OnShow function="LevelUpDisplay_OnShow"/>
 		</Scripts>
 	</Frame>
 	

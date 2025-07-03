@@ -150,3 +150,7 @@ function ItemQualityColorOverrideMixin:OpenColorPicker(frame)
 
 	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
+
+function Settings.GetColorblindSettingsLabel()
+	return COLORS_LABEL;
+end

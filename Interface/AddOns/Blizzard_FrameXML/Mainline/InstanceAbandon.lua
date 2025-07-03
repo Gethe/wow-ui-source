@@ -106,7 +106,8 @@ end
 
 function InstanceAbandonMixin:OnEvent(event, ...)
 	if event == "INSTANCE_ABANDON_VOTE_STARTED" then
-		self:CheckShowVoteDialog();
+		local playSound = true;
+		self:CheckShowVoteDialog(playSound);
 	elseif event == "INSTANCE_ABANDON_VOTE_UPDATED" then
 		self:Refresh();
 	elseif event == "INSTANCE_ABANDON_VOTE_FINISHED" then
@@ -153,7 +154,7 @@ function InstanceAbandonMixin:Refresh()
 	self:Layout();
 end
 
-function InstanceAbandonMixin:CheckShowVoteDialog()
+function InstanceAbandonMixin:CheckShowVoteDialog(playSound)
 	local duration, timeLeft = C_PartyInfo.GetInstanceAbandonVoteTime();
 	if timeLeft > 0 then
 		InstanceAbandonFrame:Show();
@@ -165,6 +166,9 @@ function InstanceAbandonMixin:CheckShowVoteDialog()
 			dialog = StaticPopup_Show("VOTE_ABANDON_INSTANCE_WAIT", nil, nil, nil, InstanceAbandonFrame);
 		end
 		StaticPopup_SetProgressBarTime(dialog, duration, timeLeft);
+		if playSound then
+			PlaySound(SOUNDKIT.UI_INSTANCE_ABANDON_VOTE);
+		end
 	end
 end
 

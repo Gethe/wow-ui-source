@@ -35,6 +35,28 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "ClearAttribute",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cleared", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearAttributes",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CreateFontString",
 			Type = "Function",
 
@@ -527,6 +549,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "HasAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasAlphaGradient", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFixedFrameLevel",
 			Type = "Function",
 
@@ -617,6 +652,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsFrameBuffer",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isFrameBuffer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGamePadButtonEnabled",
 			Type = "Function",
 
@@ -640,6 +688,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHighlightLocked",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "locked", Type = "bool", Nilable = false },
 			},
 		},
 		{

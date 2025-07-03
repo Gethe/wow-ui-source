@@ -66,6 +66,15 @@ local SimpleFrameScriptObjectAPI =
 			{
 			},
 		},
+		{
+			Name = "SetToDefaults",
+			Type = "Function",
+			Documentation = { "Reset all script accessible values to their default values." },
+
+			Arguments =
+			{
+			},
+		},
 	},
 
 	Events =

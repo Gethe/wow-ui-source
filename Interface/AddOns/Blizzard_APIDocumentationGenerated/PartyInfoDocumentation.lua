@@ -268,15 +268,6 @@ local PartyInfo =
 			},
 		},
 		{
-			Name = "HasChallengeModeLeaver",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "hasLeaver", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "InviteUnit",
 			Type = "Function",
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },

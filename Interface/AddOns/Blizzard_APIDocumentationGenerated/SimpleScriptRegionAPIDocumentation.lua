@@ -45,6 +45,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "ClearScripts",
+			Type = "Function",
+			Documentation = { "Remove all script handlers set through Scripts in XML or SetScript in Lua" },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 
@@ -561,6 +570,20 @@ local SimpleScriptRegionAPI =
 			Arguments =
 			{
 				{ Name = "show", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "ShouldButtonPassThrough",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "button", Type = "MouseButton", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldPassThrough", Type = "bool", Nilable = false },
 			},
 		},
 		{
