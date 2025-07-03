@@ -205,21 +205,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Texture parentKey="SpecRing" atlas="equipmentmanager-spec-border" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="18" y="-18"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-3">
-				<Texture parentKey="SpecIcon">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SpecRing" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="$parentHighlightBar" parentKey="HighlightBar" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alpha="0.4" alphaMode="ADD" hidden="true">
 					<TexCoords left="0.2" right="0.8" top="0" bottom="1"/>
