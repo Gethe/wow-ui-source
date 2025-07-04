@@ -1,0 +1,108 @@
+name: Update Context7 Documentation
+
+on:
+  # Trigger on pushes to specific branches
+  push:
+    branches:
+      - classic_era
+      - classic_era_ptr
+      - classic
+      - classic_beta
+      - live
+      - ptr
+
+  # Manual trigger with branch selection
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update'
+        required: true
+        default: 'classic_era'
+        type: choice
+        options:
+          - classic_era
+          - classic_era_ptr
+          - classic
+          - classic_beta
+          - live
+          - ptr
+      operation:
+        description: 'Operation to perform'
+        required: true
+        default: 'refresh'
+        type: choice
+        options:
+          - add
+          - refresh
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Define branches and their corresponding Context7 library names
+        include:
+          - branch: classic_era
+            library_name: "/RagedUnicorn/wow-ui-source-classic-era"
+          - branch: classic_era_ptr
+            library_name: "/RagedUnicorn/wow-ui-source-classic-era-ptr"
+          - branch: classic
+            library_name: "/RagedUnicorn/wow-ui-source-classic"
+          - branch: classic_beta
+            library_name: "/RagedUnicorn/wow-ui-source-classic-beta"
+          - branch: live
+            library_name: "/RagedUnicorn/wow-ui-source-live"
+          - branch: ptr
+            library_name: "/RagedUnicorn/wow-ui-source-ptr"
+
+    # Only run for the current branch or manually selected branch
+    if: |
+      (github.event_name == 'push' && github.ref_name == matrix.branch) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.branch == matrix.branch)
+
+    steps:
+      - name: Checkout specific branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0  # Fetch full history for better documentation parsing
+
+      - name: Update Context7 Documentation
+        id: context7
+        uses: rennf93/upsert-context7@v1.0
+        with:
+          operation: ${{ github.event.inputs.operation || 'refresh' }}
+          library-name: ${{ matrix.library_name }}
+          timeout: 1800  # 30 minutes for large repositories
+        continue-on-error: true
+
+      - name: Show result
+        run: |
+          echo "Branch: ${{ matrix.branch }}"
+          echo "Library: ${{ matrix.library_name }}"
+          echo "Success: ${{ steps.context7.outputs.success }}"
+          echo "Status: ${{ steps.context7.outputs.status-code }}"
+          echo "Message: ${{ steps.context7.outputs.message }}"
+
+      - name: Handle failure
+        if: steps.context7.outputs.success == 'false'
+        run: |
+          echo "❌ Context7 update failed for ${{ matrix.branch }}"
+          echo "Error: ${{ steps.context7.outputs.message }}"
+          exit 1
+
+  # Separate job for initial setup (add operation for new branches)
+  initial-setup:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.operation == 'add'
+    steps:
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Add new library to Context7
+        uses: rennf93/upsert-context7@v1.0
+        with:
+          operation: add
+          # Context7 will auto-detect the repo URL from the current context
