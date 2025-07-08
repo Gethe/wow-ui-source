@@ -102,6 +102,7 @@ local ReportSystem =
 		{
 			Name = "SendReport",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =

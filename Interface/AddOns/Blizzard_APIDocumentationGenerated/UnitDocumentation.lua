@@ -471,6 +471,7 @@ local Unit =
 		{
 			Name = "ReportPlayerIsPVPAFK",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

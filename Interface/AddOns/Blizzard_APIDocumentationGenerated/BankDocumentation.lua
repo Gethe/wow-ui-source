@@ -201,6 +201,7 @@ local Bank =
 		{
 			Name = "PurchaseBankTab",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

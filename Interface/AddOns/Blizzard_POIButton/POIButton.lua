@@ -486,7 +486,9 @@ function POIButtonMixin:OnClick(button)
 
 		if QuestUtils_IsQuestWatched(questID) then
 			if IsShiftKeyDown() then
-				C_QuestLog.RemoveQuestWatch(questID);
+				if QuestUtil.CanRemoveQuestWatch() then
+					C_QuestLog.RemoveQuestWatch(questID);
+				end
 				return;
 			end
 		else

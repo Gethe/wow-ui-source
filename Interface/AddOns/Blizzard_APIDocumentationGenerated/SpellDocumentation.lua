@@ -9,6 +9,7 @@ local Spell =
 		{
 			Name = "CancelSpellByID",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

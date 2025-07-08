@@ -54,6 +54,7 @@ local AnimaDiversionUI =
 		{
 			Name = "SelectAnimaNode",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

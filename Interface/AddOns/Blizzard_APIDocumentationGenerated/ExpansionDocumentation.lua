@@ -206,6 +206,7 @@ local Expansion =
 		{
 			Name = "SendSubscriptionInterstitialResponse",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -275,6 +276,7 @@ local Expansion =
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
 				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{

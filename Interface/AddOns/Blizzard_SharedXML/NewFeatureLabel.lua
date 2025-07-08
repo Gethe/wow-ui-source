@@ -16,6 +16,8 @@ function NewFeatureLabelMixin:NewFeatureLabel_OnShow()
 	if self.animateGlow then
 		self.Fade:Play();
 	end
+
+	self:MarkDirty();
 end
 
 function NewFeatureLabelMixin:OnHide()

@@ -19,6 +19,7 @@ local AddOnProfiler =
 		{
 			Name = "AddPerformanceMessageShown",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Internal API for telemetry." },
 
 			Arguments =

@@ -8,6 +8,7 @@
 Mainline\Localization.lua
 Mainline\GlueTooltip.xml
 ServerAlert.lua
+Mainline\ServerAlert.xml
 ServerAlert.xml
 Mainline\AccountLogin.lua
 Mainline\AccountLogin.xml

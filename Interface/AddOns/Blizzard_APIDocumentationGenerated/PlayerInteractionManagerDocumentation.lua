@@ -27,6 +27,7 @@ local PlayerInteractionManager =
 		{
 			Name = "InteractUnit",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -80,6 +81,7 @@ local PlayerInteractionManager =
 		{
 			Name = "ReopenInteraction",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

@@ -27,6 +27,7 @@ local SCHEDULED_EVENTS_INDENT = 16;
 local ELEMENT_SPACING = 3;
 local SCHEDULED_ENTRY_HEIGHT = nil;		-- calculated when first needed
 local SCHEDULED_HEADER_SPACING = 8;		-- spacing from header to first event
+local MAX_UPDATE_TIMER_DURATION = 60 * 60 * 24;		-- one day
 
 local EntryType = EnumUtil.MakeEnum(
 	"OngoingHeader",
@@ -403,9 +404,12 @@ function EventSchedulerMixin:AddAllEvents(dataProvider, ongoingEvents, scheduled
 
 	-- set up refresh timer
 	if nextUpdateTime then
-		self.timer = C_Timer.NewTimer(nextUpdateTime - time(), function()
-			self:Refresh();
-		end);			
+		local duration = nextUpdateTime - time();
+		if duration >= 0 and duration <= MAX_UPDATE_TIMER_DURATION then
+			self.timer = C_Timer.NewTimer(duration, function()
+				self:Refresh();
+			end);
+		end
 	end
 end
 

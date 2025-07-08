@@ -579,7 +579,7 @@ function PetBattleCatchButton_OnEnter(self)
 end
 
 function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
-	local abilities = C_PetJournal.GetPetAbilityList(speciesID);
+	local abilities = C_PetJournal.GetPetAbilityListTable(speciesID);
 	for _, ability in pairs(abilities)  do
 		if ability.level == targetLevel then
 			return ability.abilityID; 

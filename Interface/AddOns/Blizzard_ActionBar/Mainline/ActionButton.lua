@@ -890,7 +890,7 @@ end
 function ActionBarActionButtonMixin:UpdateSpellAlert()
 	local spellType, id, subType  = GetActionInfo(self.action);
 
-	local show = (spellType == "spell" or spellType == "macro") and IsSpellOverlayed(id);
+	local show = (spellType == "spell" or spellType == "macro") and C_SpellActivationOverlay.IsSpellOverlayed(id);
 	if show then
 		ActionButtonSpellAlertManager:ShowAlert(self);
 	else

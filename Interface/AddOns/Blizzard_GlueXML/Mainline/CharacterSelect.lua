@@ -179,7 +179,8 @@ function CharacterSelectFrameMixin:OnShow()
     --Clear out the addons selected item
 	AddonList_ClearCharacterDropdown();
 
-    AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+	CharacterSelect_UpdateLogo();
+	CharSelectAccountUpgradePanel:EvaluateShownState();
 
     if( IsKioskGlueEnabled() ) then
         CharacterSelectUI:Hide();
@@ -518,7 +519,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
         end
 	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
-        AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		CharSelectAccountUpgradePanel:EvaluateShownState();
 		CopyCharacterButton:UpdateButtonState();
 		UpdateCharacterList();
 	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
@@ -597,10 +598,12 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
         local FROM_LOGIN_STATE_CHANGE = true;
         CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
-		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		CharacterSelect_UpdateLogo();
+		CharSelectAccountUpgradePanel:EvaluateShownState();
 		UpdateCharacterList();
 	elseif ( event == "UPDATE_EXPANSION_LEVEL" or event == "MIN_EXPANSION_LEVEL_UPDATED" or event == "MAX_EXPANSION_LEVEL_UPDATED" or event == "INITIAL_HOTFIXES_APPLIED" ) then
-		AccountUpgradePanel_Update(CharSelectAccountUpgradeButton.isExpanded);
+		CharacterSelect_UpdateLogo();
+		CharSelectAccountUpgradePanel:EvaluateShownState();
 	elseif ( event == "SOCIAL_CONTRACT_STATUS_UPDATE") then
 		self.showSocialContract = ...;
 		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
@@ -646,7 +649,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		local charID = CharacterSelectListUtil.GetCharIDFromIndex(self.selectedIndex);
 		CharacterSelectUI:SetCharacterDisplay(charID);
 	elseif (event == "ACCOUNT_DATA_RESTORING") then
-	    GlueDialog_Show("COPY_IN_PROGRESS");
+	    StaticPopup_Show("COPY_IN_PROGRESS");
 	end
 end
 
@@ -811,7 +814,7 @@ function UpdateCharacterList(skipSelect)
 		end
 		return;
 	end
-	
+
     if CharacterSelect.selectedIndex == 0 or CharacterSelect.selectedIndex > numChars then
         CharacterSelect.selectedIndex = 1;
     end
@@ -1073,16 +1076,6 @@ function CharacterSelectServerAlertFrameMixin:OnLoad()
 	self:UpdateEnabled();
 end
 
-function CharacterSelectServerAlertFrameMixin:OnShow()
-	CollapsibleServerAlertMixin.OnShow(self);
-
-	AccountUpgradePanel_UpdateExpandState();
-end
-
-function CharacterSelectServerAlertFrameMixin:OnHide()
-	AccountUpgradePanel_UpdateExpandState();
-end
-
 function CharacterSelectServerAlertFrameMixin:OnEvent(event, ...)
 	if event == "LAUNCHER_LOGIN_STATUS_CHANGED" then
 		self:UpdateEnabled();
@@ -1096,20 +1089,8 @@ function CharacterSelectServerAlertFrameMixin:UpdateEnabled()
 	self:SetSuppressed(shouldSuppressServerAlert);
 end
 
-function CharacterSelectServerAlertFrameMixin:OnToggled(expanded, isUserInput)
-	CollapsibleServerAlertMixin.OnToggled(self, expanded, isUserInput);
-
-	if isUserInput then
-		AccountUpgradePanel_SetLastUserExpandedFrame(expanded and self or nil);
-	end
-
-	AccountUpgradePanel_UpdateExpandState();
-end
-
 function CharacterSelectServerAlertFrameMixin:GetMaxFrameHeight()
-	local bottom = GetLeftSideAlertBottomOffset();
-	local top = CharSelectAccountUpgradeButton:IsShown() and CharSelectAccountUpgradeMiniPanel.banner:GetBottom() or CharacterSelectLogo:GetBottom();
-	return math.min(top - bottom, CollapsibleServerAlertMixin.GetMaxFrameHeight(self));
+	return math.min(self:GetTop() - GetLeftSideAlertBottomOffset(), CollapsibleServerAlertMixin.GetMaxFrameHeight(self));
 end
 
 -- Account upgrade panel
@@ -1156,7 +1137,7 @@ function AccountUpgradePanel_GetBannerInfo()
 		end
 
 		local shouldShowBanner = true;
-		return nil, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_SUBSCRIBE, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		return nil, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_SUBSCRIBE, features, expansionDisplayInfo.textureKit;
 	elseif IsVeteranTrialAccount() then
 		local features = {
 			{ icon = "Interface\\Icons\\achievement_bg_returnxflags_def_wsg", text = VETERAN_FEATURE_1 },
@@ -1171,7 +1152,7 @@ function AccountUpgradePanel_GetBannerInfo()
 		end
 
 		local shouldShowBanner = true;
-		return currentExpansionLevel, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_RESUBSCRIBE, expansionDisplayInfo.logo, expansionDisplayInfo.banner, features;
+		return currentExpansionLevel, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_RESUBSCRIBE, features, expansionDisplayInfo.textureKit;
 	else
 		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
 		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
@@ -1181,7 +1162,7 @@ function AccountUpgradePanel_GetBannerInfo()
 				return currentExpansionLevel, false;
 			end
 
-			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.logo, expansionDisplayInfo.banner, expansionDisplayInfo.features;
+			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.features, expansionDisplayInfo.textureKit;
 		else
 			return currentExpansionLevel, shouldShowBanner;
 		end
@@ -1191,138 +1172,6 @@ end
 function CharacterSelect_UpdateLogo()
 	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
 	SetExpansionLogo(CharacterSelectLogo, currentExpansionLevel);
-end
-
-local UpgradePanelServerAlertSpacing = 35;
-local function AccountUpgradePanel_GetTotalSpaceAvailable()
-	local bottomEdge = GetLeftSideAlertBottomOffset();
-	return CharacterSelectLogo:GetBottom() - bottomEdge;
-end
-
-local function AccountUpgradePanel_GetFullBannerSize()
-	local SpacingRequired = 30;
-	return SpacingRequired + (CharSelectAccountUpgradeButton:GetTop() - CharSelectAccountUpgradePanel:GetBottom());
-end
-
-local function AccountUpgradePanel_CheckFit()
-	local totalSpace = AccountUpgradePanel_GetTotalSpaceAvailable();
-	local totalSpaceUsed = (AccountUpgradePanel_GetFullBannerSize() + CharacterSelectServerAlertFrame:GetEffectiveHeight() + UpgradePanelServerAlertSpacing);
-	return totalSpaceUsed <= totalSpace;
-end
-
--- Generally, server alert takes precedence over the account upgrade panel if both won't fit expanded,
--- but if the player presses the expand button for the upgrade panel we want to force it open.
-local s_lastUserExpandedFrame = nil;
-function AccountUpgradePanel_SetLastUserExpandedFrame(frame)
-	s_lastUserExpandedFrame = frame;
-end
-
-function AccountUpgradePanel_Update(isExpanded, isUserInput)
-	if isUserInput then
-		SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
-		AccountUpgradePanel_SetLastUserExpandedFrame(isExpanded and CharSelectAccountUpgradeButton or nil);
-	end
-	CharacterSelect_UpdateLogo();
-
-	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, upgradeLogo, upgradeBanner, features = AccountUpgradePanel_GetBannerInfo();
-    if ( shouldShowBanner ) then
-		CharSelectAccountUpgradeButton:SetText(upgradeButtonText);
-
-		local showChains = CharacterSelectLogo:IsShown() and (not currentExpansionLevel or currentExpansionLevel < LE_EXPANSION_WAR_WITHIN);
-		CharSelectAccountUpgradeButton.TopChain1:SetShown(showChains);
-		CharSelectAccountUpgradeButton.TopChain2:SetShown(showChains);
-
-        CharSelectAccountUpgradeButton:Show();
-        if ( isExpanded ) then
-            CharSelectAccountUpgradePanel:Show();
-            CharSelectAccountUpgradeMiniPanel:Hide();
-			CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradePanel, "BOTTOM", 0, -UpgradePanelServerAlertSpacing);
-
-			if not AccountUpgradePanel_CheckFit() then
-				CharacterSelectServerAlertFrame:SetExpanded(false);
-			end
-
-			CharSelectAccountUpgradePanel.logo:SetTexture(upgradeLogo);
-            CharSelectAccountUpgradePanel.banner:SetAtlas(upgradeBanner, true);
-
-            local featureFrames = CharSelectAccountUpgradePanel.featureFrames;
-            for i=1, #features do
-                local frame = featureFrames[i];
-                if ( not frame ) then
-                    frame = CreateFrame("FRAME", "CharSelectAccountUpgradePanelFeature"..i, CharSelectAccountUpgradePanel, "UpgradeFrameFeatureTemplate");
-                    frame:SetPoint("TOPLEFT", featureFrames[i - 1], "BOTTOMLEFT", 0, 0);
-                end
-
-                frame.icon:SetTexture(features[i].icon);
-                frame.text:SetText(features[i].text);
-            end
-            for i=#features + 1, #featureFrames do
-                featureFrames[i]:Hide();
-            end
-
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Up");
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Down");
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollUp-Disabled");
-        else
-            CharSelectAccountUpgradePanel:Hide();
-            CharSelectAccountUpgradeMiniPanel:Show();
-			CharacterSelectServerAlertFrame:SetPoint("TOP", CharSelectAccountUpgradeMiniPanel, "BOTTOM", 0, -UpgradePanelServerAlertSpacing);
-			CharacterSelectServerAlertFrame:UpdateCollapsedState();
-
-            CharSelectAccountUpgradeMiniPanel.logo:SetTexture(upgradeLogo);
-            CharSelectAccountUpgradeMiniPanel.banner:SetAtlas(upgradeBanner, true);
-
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up");
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Down");
-            CharSelectAccountUpgradeButtonExpandCollapseButton:SetDisabledTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Disabled");
-        end
-	else
-		CharSelectAccountUpgradePanel:Hide();
-		CharSelectAccountUpgradeButton:Hide();
-		CharSelectAccountUpgradeMiniPanel:Hide();
-		CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
-    end
-    CharSelectAccountUpgradeButton.isExpanded = isExpanded;
-end
-
-function AccountUpgradePanel_ToggleExpandState(isUserInput)
-	AccountUpgradePanel_Update(not CharSelectAccountUpgradeButton.isExpanded, isUserInput);
-end
-
-function AccountUpgradePanel_UpdateExpandState()
-	local expandDesired = GetCVarBool("expandUpgradePanel");
-	local shouldBeExpanded = expandDesired or CharSelectAccountUpgradeButton.isExpanded;
-    if ( CharacterSelectServerAlertFrame:IsShown() ) then
-		local availableHeight = AccountUpgradePanel_GetTotalSpaceAvailable();
-		local collapsedServerAlertHeight = CharacterSelectServerAlertFrame:GetCollapsedHeight();
-		local fullServerAlertHeight = CharacterSelectServerAlertFrame:GetHeight();
-		local serverAlertHeight = CharacterSelectServerAlertFrame:ShouldBeCollapsed() and collapsedServerAlertHeight or fullServerAlertHeight;
-		local leftOverHeight = availableHeight - (serverAlertHeight + UpgradePanelServerAlertSpacing);
-		local fullHeight = AccountUpgradePanel_GetFullBannerSize();
-		local maxSpaceAvailable = availableHeight - collapsedServerAlertHeight;
-		local canExpand = maxSpaceAvailable >= fullHeight;
-		local maxHeight = fullServerAlertHeight + fullHeight + UpgradePanelServerAlertSpacing;
-		local canCollapse = not GameLimitedMode_IsActive() or (maxHeight > availableHeight);
-		CharSelectAccountUpgradeButton.expandCollapseButton:SetShown(canExpand and canCollapse);
-		shouldBeExpanded = not canCollapse or (canExpand and shouldBeExpanded and ((leftOverHeight >= fullHeight) or (s_lastUserExpandedFrame == CharSelectAccountUpgradeButton)));
-    elseif ( GameLimitedMode_IsActive() ) then
-		shouldBeExpanded = true;
-        CharSelectAccountUpgradeButton.expandCollapseButton:Hide();
-    else
-        CharSelectAccountUpgradeButton.expandCollapseButton:Show();
-    end
-	AccountUpgradePanel_Update(shouldBeExpanded);
-	CharacterSelect_UpdateGameRoomBillingFrameAnchors();
-	CharacterSelectServerAlertFrame:UpdateHeight();
-end
-
-function CharSelectAccountUpgradeButton_OnClick(self)
-    PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-	if IsVeteranTrialAccount() then
-		SubscriptionRequestDialog_Open();
-	else
-		UpgradeAccount();
-	end
 end
 
 function CharacterTemplatesFrame_Update()
@@ -1495,7 +1344,7 @@ function CharacterSelect_UpdateButtonState()
 	CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld and not isCollectionsActive);
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not isCollectionsActive);
 	CharacterSelectUI.VisibilityToggleButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
-    CharSelectAccountUpgradeButton:SetEnabled(not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and not inCompetitiveMode and not inKioskMode);
+    CharSelectAccountUpgradePanel.UpgradeButton:SetEnabled(not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and not inCompetitiveMode and not inKioskMode);
 
 	-- Character list related buttons.
 	local maxGroupsReached = CharacterSelectListUtil.GetTotalGroupCount() >= GetMaxWarbandGroupCount();
@@ -2706,7 +2555,7 @@ function CopyCharacterFrame_OnShow(self)
 
 	local regions = C_CharacterServices.GetLiveRegionCharacterCopySourceRegions();
 	self.selectedRegion = regions[1];
-	
+
 	local function IsSelected(regionID)
 		return self.selectedRegion == regionID;
 	end
@@ -2930,4 +2779,126 @@ end
 
 function FlowErrorContainerMixin:OnLeave()
 	GetAppropriateTooltip():Hide();
+end
+
+CollapsableUpgradeFrameMixin = {
+	MAX_UPGRADE_FEATURES = 3,
+	BG_EXPANDED_FORMAT_STRING = "subsupgrade-banner-%s-bg",
+	BG_COLLAPSED_FORMAT_STRING = "subsupgrade-banner-%s-short-bg",
+	BG_EXPANDED_HEIGHT = 364,
+	BG_COLLAPSED_HEIGHT = 190,
+};
+
+function CollapsableUpgradeFrameMixin:OnLoad()
+	self.isExpanded = GetCVarBool("expandUpgradePanel");
+	self.featureFramePool = CreateFramePool("FRAME", self.Features, "UpgradeFrameFeatureTemplate");
+
+	self.ExpandBar.ExpandButton:ClearAllPoints();
+	self.ExpandBar.ExpandButton:SetPoint("TOPRIGHT", -13, -13);
+
+	self.ExpandBar:SetExpandTarget(self.Features);
+	self.ExpandBar:SetOnToggleCallback(GenerateClosure(self.OnToggled, self));
+
+	self.UpgradeButton:SetScript("OnClick", GenerateClosure(self.OnUpgradeButtonClick, self));
+	self.UpgradeButton.PointerFrame.Anim:Play();
+
+	self:RegisterEvent("ACCOUNT_DATA_INITIALIZED");
+end
+
+function CollapsableUpgradeFrameMixin:OnShow()
+	local currentExpansionLevel, _shouldShowBanner, upgradeButtonText, features, textureKit = AccountUpgradePanel_GetBannerInfo();
+	local upgradeLogo = GetDisplayedExpansionLogo(currentExpansionLevel);
+	self:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit);
+	self.ExpandBar.TrialBG:SetShown(currentExpansionLevel == nil);
+	self.textureKit = textureKit;
+	self:EvaluateCollapsedState();
+end
+
+function CollapsableUpgradeFrameMixin:OnHide()
+	CharacterSelectServerAlertFrame:UpdateHeight();
+end
+
+function CollapsableUpgradeFrameMixin:OnEvent(event, ...)
+	self.isExpanded = GetCVarBool("expandUpgradePanel");
+	self:EvaluateCollapsedState();
+end
+
+function CollapsableUpgradeFrameMixin:OnUpgradeButtonClick()
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
+	if IsVeteranTrialAccount() then
+		SubscriptionRequestDialog_Open();
+	else
+		UpgradeAccount();
+	end
+end
+
+function CollapsableUpgradeFrameMixin:EvaluateShownState()
+	local _currentExpansionLevel, shouldShowBanner = AccountUpgradePanel_GetBannerInfo();
+	if shouldShowBanner then
+		CharacterSelectServerAlertFrame:SetPoint("TOP", self, "BOTTOM", 0, -20);
+		CharacterSelectLogo:Hide();
+		self:Show();
+	else
+		CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
+		CharacterSelectLogo:Show();
+		self:Hide();
+    end
+end
+
+function CollapsableUpgradeFrameMixin:OnToggled(isExpanded, isUserInput)
+	if isUserInput then
+		SetCVar("expandUpgradePanel", isExpanded and "1" or "0");
+	end
+
+	self.isExpanded = isExpanded;
+	self:OnExpandedStateChanged();
+end
+
+function CollapsableUpgradeFrameMixin:EvaluateCollapsedState()
+	if not self:IsShown() then
+		return;
+	end
+
+	local expandDesired = GetCVarBool("expandUpgradePanel");
+	local forceExpanded = GameLimitedMode_IsActive();
+	local shouldBeExpanded = forceExpanded or expandDesired or self.isExpanded;
+
+	self:SetExpandedState(shouldBeExpanded, forceExpanded);
+	CharacterSelect_UpdateGameRoomBillingFrameAnchors();
+end
+
+function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit)
+	self.UpgradeButton:SetText(upgradeButtonText);
+
+	self.featureFramePool:ReleaseAll();
+
+
+	for index, feature in ipairs(features) do
+		if index <= self.MAX_UPGRADE_FEATURES then
+			local featureFrame = self.featureFramePool:Acquire();
+			featureFrame.Icon:SetTexture(feature.icon);
+			featureFrame.Text:SetText(feature.text);
+			featureFrame.layoutIndex = index;
+			featureFrame:Show();
+		end
+    end
+
+	self.Features:Layout();
+	self.ExpandBar.Logo:SetTexture(upgradeLogo);
+end
+
+function CollapsableUpgradeFrameMixin:OnExpandedStateChanged()
+	local fmtString = self.isExpanded and self.BG_EXPANDED_FORMAT_STRING or self.BG_COLLAPSED_FORMAT_STRING;
+	SetupTextureKitOnFrame(self.textureKit or "generic", self.Background, fmtString, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+
+	local bgHeight = self.isExpanded and self.BG_EXPANDED_HEIGHT or self.BG_COLLAPSED_HEIGHT;
+	self:SetHeight(bgHeight);
+
+	CharacterSelectServerAlertFrame:UpdateHeight();
+end
+
+function CollapsableUpgradeFrameMixin:SetExpandedState(expanded, locked)
+	self.isExpanded = expanded;
+	self.ExpandBar:SetExpandedState(expanded, locked);
+	self:OnExpandedStateChanged();
 end

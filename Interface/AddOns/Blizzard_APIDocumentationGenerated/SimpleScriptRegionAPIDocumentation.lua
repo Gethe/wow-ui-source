@@ -69,6 +69,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouse",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -78,6 +79,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -87,6 +89,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -493,6 +496,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetCollapsesLayout",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -502,6 +506,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseClickEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -511,6 +516,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseMotionEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -520,6 +526,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -529,6 +536,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPassThroughButtons",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -538,6 +547,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPropagateMouseClicks",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -547,6 +558,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPropagateMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{

@@ -8,6 +8,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "AdjustPointsOffset",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "ClearAllPoints",
 			Type = "Function",
+			IsProtectedFunction = true,
 			Documentation = { "Clears all points and immediately invalidates the rect. (Prior to 11.2.0, this would only invalidate rect immediately for AnchoringRestricted regions.)" },
 
 			Arguments =
@@ -27,6 +29,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "ClearPoint",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -36,6 +39,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "ClearPointsOffset",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -97,6 +101,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "SetAllPoints",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -107,6 +112,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "SetHeight",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -116,6 +122,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "SetPoint",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -129,6 +136,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "SetSize",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -139,6 +147,7 @@ local SimpleScriptRegionResizingAPI =
 		{
 			Name = "SetWidth",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{

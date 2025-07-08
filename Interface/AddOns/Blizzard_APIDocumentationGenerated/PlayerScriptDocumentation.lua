@@ -1454,6 +1454,7 @@ local PlayerScript =
 		{
 			Name = "SitStandOrDescendStart",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SplashFrameCanBeShown",

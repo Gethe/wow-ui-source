@@ -62,6 +62,7 @@ local LFGListInfo =
 		{
 			Name = "CreateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -450,6 +451,7 @@ local LFGListInfo =
 		{
 			Name = "Search",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -465,6 +467,7 @@ local LFGListInfo =
 		{
 			Name = "SetEntryTitle",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -503,6 +506,7 @@ local LFGListInfo =
 		{
 			Name = "UpdateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

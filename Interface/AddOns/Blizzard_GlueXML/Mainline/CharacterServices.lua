@@ -1438,11 +1438,13 @@ function RPEUpgradeMinimizedFrameMixin:OnLoad()
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnShow()
-	AccountUpgradePanel_UpdateExpandState();
+	CharSelectAccountUpgradePanel:EvaluateCollapsedState();
+	CharacterSelectServerAlertFrame:UpdateHeight();
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnHide()
-	AccountUpgradePanel_UpdateExpandState();
+	CharSelectAccountUpgradePanel:EvaluateCollapsedState();
+	CharacterSelectServerAlertFrame:UpdateHeight();
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnEnter()

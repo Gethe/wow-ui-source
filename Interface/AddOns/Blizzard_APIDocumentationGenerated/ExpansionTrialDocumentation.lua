@@ -9,10 +9,12 @@ local ExpansionTrial =
 		{
 			Name = "OnTrialLevelUpDialogClicked",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "OnTrialLevelUpDialogShown",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

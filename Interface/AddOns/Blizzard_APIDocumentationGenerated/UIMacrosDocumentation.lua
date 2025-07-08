@@ -37,6 +37,7 @@ local UIMacros =
 		{
 			Name = "RunMacroText",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -47,6 +48,7 @@ local UIMacros =
 		{
 			Name = "SetMacroExecuteLineCallback",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

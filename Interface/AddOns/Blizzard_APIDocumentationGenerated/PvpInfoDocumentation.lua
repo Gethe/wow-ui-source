@@ -1005,6 +1005,7 @@ local PvpInfo =
 		{
 			Name = "SetPVP",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1014,6 +1015,7 @@ local PvpInfo =
 		{
 			Name = "SetWarModeDesired",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1054,10 +1056,12 @@ local PvpInfo =
 		{
 			Name = "TogglePVP",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "ToggleWarMode",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

@@ -476,6 +476,7 @@ local CurrencyInfo =
 		{
 			Name = "RequestCurrencyFromAccountCharacter",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -507,6 +508,7 @@ local CurrencyInfo =
 		{
 			Name = "SetCurrencyFilter",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

@@ -186,15 +186,15 @@ end
 function CharacterSelectListCharacterMixin:OnEnter()
 	self.InnerContent:OnEnter(self:IsSelected());
 	self:SetTooltipAndShow();
-	CharSelectAccountUpgradeButtonPointerFrame:Show();
-	CharSelectAccountUpgradeButtonGlow:Show();
+	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Show();
+	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Show();
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
 function CharacterSelectListCharacterMixin:OnLeave()
 	self.InnerContent:OnLeave(self:IsSelected());
-	CharSelectAccountUpgradeButtonPointerFrame:Hide();
-	CharSelectAccountUpgradeButtonGlow:Hide();
+	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Hide();
+	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Hide();
 	GlueTooltip:Hide();
 end
 
@@ -385,7 +385,7 @@ end
 
 function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
-	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradeButton:IsEnabled() then
+	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradePanel.UpgradeButton:IsEnabled() then
 		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
 	else
 		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID());

@@ -489,6 +489,7 @@ local ChatInfo =
 		{
 			Name = "SendChatMessage",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

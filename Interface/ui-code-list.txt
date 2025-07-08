@@ -1549,6 +1549,7 @@ Interface\AddOns\Blizzard_GlueXML\Mainline\Localization.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\RealmList.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\RealmList.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\Redlist.xml
+Interface\AddOns\Blizzard_GlueXML\Mainline\ServerAlert.xml
 Interface\AddOns\Blizzard_GlueXML\Mists\CharacterCreate.lua
 Interface\AddOns\Blizzard_GlueXML\Mists\CharacterCreate.xml
 Interface\AddOns\Blizzard_GlueXML\Mists\CharacterSelectConstants.lua

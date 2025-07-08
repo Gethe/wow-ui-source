@@ -52,6 +52,7 @@ local GameCursor =
 		{
 			Name = "DeleteCursorItem",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "DropCursorMoney",

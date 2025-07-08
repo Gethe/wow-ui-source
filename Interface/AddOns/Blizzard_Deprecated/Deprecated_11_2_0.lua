@@ -9,3 +9,7 @@ end
 -- Starting this patch, region:ClearAllPoints() will immediately invalidate the rect.
 -- This means you cannot rely on calling GetWidth, GetHeight, GetTop/Left/Bottom/Right, or GetRect after ClearAllPoints.
 -- Any measurement calculations relying on the previous rect should occur before calling ClearAllPoints.
+
+function IsSpellOverlayed(spellID)
+	return C_SpellActivationOverlay.IsSpellOverlayed(spellID);
+end

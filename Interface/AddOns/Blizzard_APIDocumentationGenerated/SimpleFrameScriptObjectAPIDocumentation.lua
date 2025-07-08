@@ -69,6 +69,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "SetToDefaults",
 			Type = "Function",
+			IsProtectedFunction = true,
 			Documentation = { "Reset all script accessible values to their default values." },
 
 			Arguments =

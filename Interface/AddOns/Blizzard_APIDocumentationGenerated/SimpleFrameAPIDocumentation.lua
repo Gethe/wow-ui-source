@@ -37,6 +37,7 @@ local SimpleFrameAPI =
 		{
 			Name = "ClearAttribute",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -51,6 +52,7 @@ local SimpleFrameAPI =
 		{
 			Name = "ClearAttributes",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -181,6 +183,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableGamePadButton",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -190,6 +193,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableGamePadStick",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -199,6 +203,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableKeyboard",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -590,6 +595,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Hide",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -857,6 +863,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Lower",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -865,6 +872,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Raise",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -969,6 +977,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetClampRectInsets",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -981,6 +990,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetClampedToScreen",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1018,6 +1028,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFixedFrameLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1027,6 +1038,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFixedFrameStrata",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1045,6 +1057,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFrameLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1054,6 +1067,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFrameStrata",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1072,6 +1086,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHitRectInsets",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1094,6 +1109,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHyperlinksEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1103,6 +1119,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetID",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1121,6 +1138,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetIgnoreParentScale",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1148,6 +1166,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetPropagateKeyboardInput",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1178,6 +1197,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetScale",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1187,6 +1207,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetShown",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1196,6 +1217,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetToplevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1214,6 +1236,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetUsingParentLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1232,6 +1255,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Show",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1240,6 +1264,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StartMoving",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1249,6 +1274,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StartSizing",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1259,6 +1285,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StopMovingOrSizing",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{

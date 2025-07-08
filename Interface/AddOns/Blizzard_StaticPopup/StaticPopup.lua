@@ -746,14 +746,37 @@ function StaticPopup_EscapePressed()
 	return closed;
 end
 
+local nextDialogFallbackID = CreateCounter(42); -- Start the ids large enough that no other popup with an id would overlap this space.
+local dialogFallbackIDs = SecureTypes.CreateSecureMap();
+
+local function AssignDialogFallbackID(dialog)
+	dialogFallbackIDs[dialog] = nextDialogFallbackID();
+end
+
+local function CheckDialogFallbackID(dialog)
+	local fallbackID = dialogFallbackIDs[dialog];
+	if not fallbackID then
+		fallbackID = nextDialogFallbackID();
+		dialogFallbackIDs[dialog] = fallbackID;
+	end
+
+	return fallbackID;
+end
+
 local function DialogOrderComparator(d1, d2)
+	local d1IsSpecial = d1.special;
+	local d2IsSpecial = d2.special;
+	if d1IsSpecial ~= d2IsSpecial then
+		return not d1IsSpecial;
+	end
+
 	local id1 = d1:GetID();
 	local id2 = d2:GetID();
 	if id1 and id2 and id1 ~= id2 then
 		return id1 < id2;
 	end
 
-	return d1 < d2;
+	return CheckDialogFallbackID(d1) < CheckDialogFallbackID(d2);
 end
 
 function StaticPopup_SetUpPosition(dialog)
@@ -807,6 +830,7 @@ end
 
 function StaticPopupSpecial_Show(dialog)
 	dialog.special = true;
+	AssignDialogFallbackID(dialog);
 
 	if dialog.exclusive then
 		StaticPopup_HideExclusive();

@@ -411,7 +411,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			rightOffset = rightOffset + rightPadding;
 			if (child.align == "bottom") then
 				local bottomOffset = frameBottomPadding + bottomPadding;
-				child:SetPoint("BOTTOMRIGH", -rightOffset, bottomOffset);
+				child:SetPoint("BOTTOMRIGHT", -rightOffset, bottomOffset);
 			elseif (child.align == "center") then
 				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
 				child:SetPoint("RIGHT", -rightOffset, -topOffset);

@@ -10,6 +10,7 @@ Cata\Localization.lua
 Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua
+Classic\ServerAlert.xml
 ServerAlert.xml
 Classic\GlueGameLogo.lua
 Classic\GlueGameLogo.xml

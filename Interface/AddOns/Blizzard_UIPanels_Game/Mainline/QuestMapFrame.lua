@@ -395,7 +395,9 @@ function QuestLogMixin:SetHeaderQuestsTracked(headerLogIndex, setTracked)
 				if setTracked and not questTracked then
 					C_QuestLog.AddQuestWatch(questID);
 				elseif not setTracked and questTracked then
-					C_QuestLog.RemoveQuestWatch(questID);
+					if QuestUtil.CanRemoveQuestWatch() then
+						C_QuestLog.RemoveQuestWatch(questID);
+					end
 				end
 			end
 		end
@@ -435,9 +437,11 @@ function QuestLogHeaderCodeMixin:OnClick(button)
 				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
 			end);
 
-			rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
-				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
-			end);
+			if QuestUtil.CanRemoveQuestWatch() then
+				rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
+					QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+				end);
+			end
 		end);
 	end
 end
@@ -1208,7 +1212,8 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 	end
 
 	-- Need to be able to remove watch if the quest got disabled
-	local enableTrackButton = isWatched or not isQuestDisabled;
+	local canRemoveQuestWatch = QuestUtil.CanRemoveQuestWatch();
+	local enableTrackButton = (isWatched and canRemoveQuestWatch) or (not isWatched and not isQuestDisabled);
 	QuestMapFrame.DetailsFrame.TrackButton:SetEnabled(enableTrackButton);
 	QuestLogPopupDetailFrame.TrackButton:SetEnabled(enableTrackButton);
 
@@ -1483,7 +1488,9 @@ end
 
 function QuestMapQuestOptions_TrackQuest(questID)
 	if QuestUtils_IsQuestWatched(questID) then
-		C_QuestLog.RemoveQuestWatch(questID);
+		if QuestUtil.CanRemoveQuestWatch() then
+			C_QuestLog.RemoveQuestWatch(questID);
+		end
 	else
 		if C_QuestLog.GetNumQuestWatches() >= Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
@@ -2369,10 +2376,14 @@ function QuestMapLogTitleButton_CreateContextMenu(self)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
 
-		local text = QuestUtils_IsQuestWatched(self.questID) and UNTRACK_QUEST or TRACK_QUEST;
-		rootDescription:CreateButton(text, function()
-			QuestMapQuestOptions_TrackQuest(self.questID);
-		end);
+		local questIsWatched = QuestUtils_IsQuestWatched(self.questID);
+		local canRemoveQuestWatch = QuestUtil.CanRemoveQuestWatch();
+		if not questIsWatched or canRemoveQuestWatch then
+			local text = questIsWatched and UNTRACK_QUEST or TRACK_QUEST;
+			rootDescription:CreateButton(text, function()
+				QuestMapQuestOptions_TrackQuest(self.questID);
+			end);
+		end
 
 		if C_SuperTrack.GetSuperTrackedQuestID() ~= self.questID then
 			rootDescription:CreateButton(SUPER_TRACK_QUEST, function()

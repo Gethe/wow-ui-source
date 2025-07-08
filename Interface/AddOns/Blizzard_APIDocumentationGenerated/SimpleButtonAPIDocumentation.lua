@@ -50,6 +50,7 @@ local SimpleButtonAPI =
 		{
 			Name = "Disable",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -58,6 +59,7 @@ local SimpleButtonAPI =
 		{
 			Name = "Enable",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -262,6 +264,7 @@ local SimpleButtonAPI =
 		{
 			Name = "RegisterForClicks",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -271,6 +274,7 @@ local SimpleButtonAPI =
 		{
 			Name = "RegisterForMouse",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -317,6 +321,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{

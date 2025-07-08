@@ -155,8 +155,7 @@ function GlueParentMixin:OnEvent(event, ...)
 		if ( secondaryScreen ) then
 			GlueParent_CheckFitSecondaryScreen(secondaryScreen);
 		end
-
-		AccountUpgradePanel_UpdateExpandState();
+		CharacterSelectServerAlertFrame:UpdateHeight();
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
 			StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");

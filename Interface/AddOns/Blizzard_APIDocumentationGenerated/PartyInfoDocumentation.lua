@@ -75,6 +75,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmInviteUnit",
 			Type = "Function",
+			RequiresValidInviteTarget = true,
 			Documentation = { "Immediately invites the named unit to a party, with no regard for potentially destructive actions." },
 
 			Arguments =
@@ -95,6 +96,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmRequestInviteFromUnit",
 			Type = "Function",
+			RequiresValidInviteTarget = true,
 			Documentation = { "Immediately request an invite into the target party, this is the confirmation function to call after RequestInviteFromUnit, or if you would like to skip the confirmation process." },
 
 			Arguments =
@@ -270,6 +272,7 @@ local PartyInfo =
 		{
 			Name = "InviteUnit",
 			Type = "Function",
+			RequiresValidInviteTarget = true,
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
 
 			Arguments =
@@ -372,6 +375,7 @@ local PartyInfo =
 		{
 			Name = "RequestInviteFromUnit",
 			Type = "Function",
+			RequiresValidInviteTarget = true,
 			Documentation = { "Attempt to request an invite into the target party, requires confirmation in some cases (e.g. there is a party sync in progress)." },
 
 			Arguments =
@@ -385,6 +389,7 @@ local PartyInfo =
 		{
 			Name = "SetInstanceAbandonVoteResponse",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Vote on whether to abandon instance, true for yes, false for no" },
 
 			Arguments =
@@ -404,6 +409,7 @@ local PartyInfo =
 		{
 			Name = "StartInstanceAbandonVote",
 			Type = "Function",
+			HasRestrictions = true,
 			Documentation = { "Start the vote" },
 		},
 	},

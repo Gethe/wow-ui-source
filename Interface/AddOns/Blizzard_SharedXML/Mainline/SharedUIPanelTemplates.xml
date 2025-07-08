@@ -2888,17 +2888,17 @@
 		<Size x="280" y="44"/>
 		<Frames>
 			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate">
-				<Size x="20" y="20"/>
+				<Size x="28" y="28"/>
 				<KeyValues>
 					<!--Default values, override as needed.-->
-					<KeyValue key="highlightExpandedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
-					<KeyValue key="highlightCollapsedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
-					<KeyValue key="normalExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
-					<KeyValue key="normalCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
-					<KeyValue key="pushedExpandedAtlas" value="Campaign_HeaderIcon_OpenPressed" type="string"/>
-					<KeyValue key="pushedCollapsedAtlas" value="Campaign_HeaderIcon_ClosedPressed" type="string"/>
-					<KeyValue key="disabledExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
-					<KeyValue key="disabledCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+					<KeyValue key="highlightExpandedAtlas" value="common-button-collapseExpand-hover" type="string"/>
+					<KeyValue key="highlightCollapsedAtlas" value="common-button-collapseExpand-hover" type="string"/>
+					<KeyValue key="normalExpandedAtlas" value="common-button-collapseexpand-up" type="string"/>
+					<KeyValue key="normalCollapsedAtlas" value="common-button-collapseexpand-down" type="string"/>
+					<KeyValue key="pushedExpandedAtlas" value="common-button-collapseExpand-up-pressed" type="string"/>
+					<KeyValue key="pushedCollapsedAtlas" value="common-button-collapseExpand-down-pressed" type="string"/>
+					<KeyValue key="disabledExpandedAtlas" value="common-button-collapseExpand-up-disabled" type="string"/>
+					<KeyValue key="disabledCollapsedAtlas" value="common-button-collapseExpand-down-disabled" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>

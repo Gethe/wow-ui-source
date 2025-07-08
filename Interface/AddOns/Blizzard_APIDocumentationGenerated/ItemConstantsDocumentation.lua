@@ -625,6 +625,18 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "WeaponSlot",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "MainHand", Type = "WeaponSlot", EnumValue = 0 },
+				{ Name = "OffHand", Type = "WeaponSlot", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ItemConsts",
 			Type = "Constants",
 			Values =

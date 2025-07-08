@@ -42,7 +42,12 @@ function CharacterSelectUIMixin:OnLoad()
 
 		self.VisibilityToggleButton:SetShown(visibilityState);
 
-		CharacterSelect_UpdateLogo();
+		if visibilityState then
+			CharSelectAccountUpgradePanel:EvaluateShownState();
+		else
+			CharacterSelectLogo:Show();
+		end
+
 		SetCharacterSelectUIVisibilityState(visibilityState);
 	end
 	self.VisibilityToggleButton:SetScript("OnClick", VisibilityToggleOnClick);

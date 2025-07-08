@@ -402,6 +402,15 @@ function QuestUtil.UntrackWorldQuest(questID)
 	ObjectiveTrackerManager:UpdateAll();
 end
 
+function QuestUtil.CanRemoveQuestWatch()
+	-- Prevent players in the New Player Experience from being able to untrack quests.
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		return false;
+	end
+
+	return true;
+end
+
 function QuestUtil.IsQuestTrackableTask(questID)
 	return C_QuestLog.IsQuestTask(questID) and not C_QuestLog.IsQuestBounty(questID);
 end
