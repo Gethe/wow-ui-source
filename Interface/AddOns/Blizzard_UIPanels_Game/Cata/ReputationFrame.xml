@@ -714,6 +714,7 @@
 				self:RegisterEvent("ENABLE_XP_GAIN");
 				self:RegisterEvent("DISABLE_XP_GAIN");
 				self:RegisterEvent("CVAR_UPDATE");
+				self:RegisterEvent("PLAYER_MAX_LEVEL_UPDATE");
 			</OnLoad>
 			<OnEvent>
 				local arg1, arg2 = ...;
@@ -725,6 +726,8 @@
 				elseif( event == "PLAYER_LEVEL_UP" or event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN" ) then
 					ReputationWatchBar_Update(arg1);
 					UIParent_ManageFramePositions()
+				elseif(event == "PLAYER_MAX_LEVEL_UPDATE") then
+					ReputationWatchBar_Update();
 				elseif( event == "CVAR_UPDATE" and arg1 == "XP_BAR_TEXT" ) then
 					if( arg2 == "1" ) then
 						ShowWatchedReputationBarText("lock");
