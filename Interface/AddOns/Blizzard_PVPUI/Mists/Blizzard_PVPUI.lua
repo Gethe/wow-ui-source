@@ -641,7 +641,11 @@ function HonorQueueFrameBonusFrame_Update()
 			button = HonorQueueFrame.BonusFrame["WorldPVP"..i.."Button"];
 			local worldPvpInfo = C_PvP.GetWorldPVPAreaInfo(index);
 			button.Contents.Title:SetText(worldPvpInfo.name);
-			HonorQueueFrameBonusFrame_SetButtonState(button, worldPvpInfo.canEnter, worldPvpInfo.minLevel);
+			local minLevelToDisplay = nil;
+			if not worldPvpInfo.canQueue then
+				minLevelToDisplay = worldPvpInfo.minLevel;
+			end
+			HonorQueueFrameBonusFrame_SetButtonState(button, worldPvpInfo.canEnter and worldPvpInfo.isActive, minLevelToDisplay);
 			if ( worldPvpInfo.canEnter ) then
 				HonorQueueFrameBonusFrame_UpdateWorldPVPTime(button, worldPvpInfo.isActive, worldPvpInfo.startTime);
 				if ( not selectButton ) then

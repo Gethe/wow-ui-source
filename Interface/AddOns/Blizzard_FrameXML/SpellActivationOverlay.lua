@@ -75,6 +75,8 @@ local vFlippedPositions = {
 
 function SpellActivationOverlayMixin:ShowOverlay(spellID, texturePath, position, scale, r, g, b)
 	local overlay = self:GetOverlay(spellID, position);
+	local alreadyShown = overlay:IsShown() and overlay.spellID == spellID;
+
 	overlay.spellID = spellID;
 	overlay.position = position;
 	
@@ -128,7 +130,9 @@ function SpellActivationOverlayMixin:ShowOverlay(spellID, texturePath, position,
 	overlay.texture:SetVertexColor(r / 255, g / 255, b / 255);
 	
 	overlay.animOut:Stop();	--In case we're in the process of animating this out.
-	PlaySound(SOUNDKIT.UI_POWER_AURA_GENERIC);
+	if not alreadyShown then
+		PlaySound(SOUNDKIT.UI_POWER_AURA_GENERIC);
+	end
 	overlay:Show();
 end
 
