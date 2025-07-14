@@ -217,7 +217,8 @@ function GameDialogMixin:SetupMoneyFrame(dialogInfo)
 	self.MoneyFrame:SetShown(dialogInfo.hasMoneyFrame);
 	self.MoneyInputFrame:SetShown(not dialogInfo.hasMoneyFrame and dialogInfo.hasMoneyInputFrame);
 
-	if dialogInfo.hasMoneyFrame then
+	local canSetUserScaled = dialogInfo.hasMoneyFrame and self.MoneyFrame.SetIsUseScaled ~= nil;
+	if canSetUserScaled then
 		self.MoneyFrame:SetIsUserScaled();
 	end
 

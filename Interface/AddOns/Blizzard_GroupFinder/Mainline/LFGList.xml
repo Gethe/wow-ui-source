@@ -48,7 +48,28 @@
 			<Layer level="ARTWORK" textureSubLevel="3">
 				<Texture parentKey="RoleIconWithBackground" parentArray="Textures" atlas="roleicon-tiny-dps" setAllPoints="true"/>
 			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="LeaverIcon" parentArray="Textures" atlas="groupfinder-icon-leaver" hidden="true">
+					<Size x="12" y="12"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="LfgListLeaverBadgeTemplate" mixin="LfgListLeaverBadgeMixin" virtual="true">
+		<Size x="12" y="12"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeaverIcon" atlas="groupfinder-icon-leaver" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
 	</Frame>
 	
 	<Frame name="LFGListGroupDataDisplayTemplate" virtual="true">
@@ -155,53 +176,37 @@
 	</Button>
 	<Button name="LFGListApplicantMemberTemplate" virtual="true">
 		<Size x="250" y="20"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" text="NAME">
-					<Size x="100" y="10"/>
-					<Anchors>
-						<Anchor point="LEFT" x="7" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Rating" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="218" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 		<Frames>
-			<Frame parentKey="FriendIcon">
-				<Size x="20" y="19"/>
+			<Frame parentKey="LeaverIcon">
+				<Size x="14" y="12"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="LEFT" x="7" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" atlas="groupfinder-icon-friend" setAllPoints="true"/>
+						<Texture parentKey="Icon" atlas="groupfinder-icon-leaver">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>							
+						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnEnter>
-						if ( self.relationship == "friend" ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(LFG_LIST_FRIEND, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-							GameTooltip:Show();
-						elseif ( self.relationship == "guild" ) then
-							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-							GameTooltip:SetText(LFG_LIST_GUILD_MEMBER, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1, true);
-							GameTooltip:Show();
-						else
-							GameTooltip:Hide();
-						end
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
+			</Frame>
+			<Frame parentKey="FriendIcon">
+				<Size x="16" y="19"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LeaverIcon" relativePoint="RIGHT" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-icon-friend" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Frame>
 			<Button parentKey="RoleIcon1" motionScriptsWhileDisabled="true">
 				<Size x="18" y="18"/>
@@ -258,6 +263,27 @@
 				</Scripts>
 			</Button>
 		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalSmall" justifyH="LEFT" text="NAME">
+					<Size x="100" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.FriendIcon" relativePoint="RIGHT" x="0" y="0"/>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="95"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ItemLevel" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="177" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Rating" inherits="GameFontNormalSmall" justifyH="CENTER" text="529">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="218" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>		
 		<Scripts>
 			<OnEnter>
 				LFGListApplicantMember_OnEnter(self:GetParent());
@@ -1027,10 +1053,16 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-8" y="-58"/>
+						</Anchors>
+					</DropdownButton>
 					<EditBox parentKey="SearchBox" secureReferenceKey="LFGListSearchBox" securityDisableSetText="true" inherits="SearchBoxTemplate" letters="64">
 						<Size x="319" y="18"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.CategoryName" relativePoint="BOTTOMLEFT" x="4" y="-7"/>
+							<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-2" y="0"/>
 						</Anchors>
 						<Scripts>
 							<!--Note: The clearButton's OnClick is also changed in Lua-->
@@ -1042,11 +1074,6 @@
 							<OnEditFocusLost function="LFGListSearchPanelSearchBox_OnEditFocusLost"/>
 						</Scripts>
 					</EditBox>
-					<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="2" y="0"/>
-						</Anchors>
-					</DropdownButton>
 					<Frame parentKey="AutoCompleteFrame" frameLevel="20">
 						<Size x="0" y="30"/>
 						<Anchors>
@@ -1211,6 +1238,11 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame parentKey="LeaverBadge" inherits="LfgListLeaverBadgeTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.SignUpButton" relativePoint="LEFT" x="-6"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad function="LFGListSearchPanel_OnLoad"/>
@@ -1871,6 +1903,11 @@
 							</Button>
 						</Frames>
 					</Button>
+					<Frame parentKey="LeaverBadge" inherits="LfgListLeaverBadgeTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.ListGroupButton" relativePoint="LEFT" x="-6"/>
+						</Anchors>
+					</Frame>
 					<Button parentKey="CancelButton" inherits="LFGListMagicButtonTemplate" text="BACK">
 						<Size x="135" y="22"/>
 						<Anchors>

@@ -359,14 +359,14 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 					end
 
 					if (match) then
-						local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
+						local locationData = EquipmentManager_GetLocationData(packedLocation);
 
-						if ((player == true) and (bags == true)) then
+						if ((locationData.isPlayer == true) and (locationData.isBags == true)) then
 							if (potentialUpgrades[i] == nil) then
 								potentialUpgrades[i] = {};
 							end
 
-							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemLink, i, bag, slot));
+							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemLink, i, locationData.bag, locationData.slot));
 						end
 					end
 				end

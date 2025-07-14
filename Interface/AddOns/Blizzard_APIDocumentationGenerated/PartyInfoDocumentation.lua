@@ -145,6 +145,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetAvailableLootMethods",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "methods", Type = "table", InnerType = "LootMethod", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInstanceAbandonShutdownTime",
 			Type = "Function",
 			Documentation = { "Returns the total duration of the shutdown time after a vote passes and how much time is left before it ends" },
@@ -219,6 +228,17 @@ local PartyInfo =
 				{ Name = "outRelationType", Type = "PartyRequestJoinRelation", Nilable = false },
 				{ Name = "outIsQuickJoin", Type = "bool", Nilable = false },
 				{ Name = "outClubId", Type = "ClubId", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLootMethod",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+				{ Name = "masterLootPartyID", Type = "number", Nilable = true },
+				{ Name = "masterLooterRaidID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -395,6 +415,21 @@ local PartyInfo =
 			Arguments =
 			{
 				{ Name = "response", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLootMethod",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+				{ Name = "lootMaster", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{

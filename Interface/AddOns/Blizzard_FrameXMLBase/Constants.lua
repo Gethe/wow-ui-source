@@ -146,7 +146,6 @@ LOOT_ROLL_TYPE_DISENCHANT = 3;
 ITEM_INVENTORY_LOCATION_PLAYER		= 0x00100000;
 ITEM_INVENTORY_LOCATION_BAGS		= 0x00200000;
 ITEM_INVENTORY_LOCATION_BANK		= 0x00400000;
-ITEM_INVENTORY_LOCATION_VOIDSTORAGE	= 0x00800000;
 ITEM_INVENTORY_BAG_BIT_OFFSET 		= 8; -- Number of bits that the bag index in GetInventoryItemsForSlot gets shifted to the left.
 
 -- Inventory slots
@@ -181,15 +180,10 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 
 -- Container constants
 BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
-BANK_CONTAINER = Enum.BagIndex.Bank;
-BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
-REAGENTBANK_CONTAINER = Enum.BagIndex.Reagentbank;
 
 NUM_BAG_SLOTS = Constants.InventoryConstants.NumBagSlots;
 NUM_REAGENTBAG_SLOTS = Constants.InventoryConstants.NumReagentBagSlots;
 NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS;
-NUM_BANKGENERIC_SLOTS = Constants.InventoryConstants.NumGenericBankSlots;
-NUM_BANKBAGSLOTS = Constants.InventoryConstants.NumBankBagSlots;
 
 ITEM_INVENTORY_BANK_BAG_OFFSET = NUM_TOTAL_EQUIPPED_BAG_SLOTS; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag

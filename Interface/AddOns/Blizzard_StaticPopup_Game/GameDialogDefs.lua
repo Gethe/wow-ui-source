@@ -451,20 +451,6 @@ StaticPopupDialogs["CONFIRM_BUY_GUILDBANK_TAB"] = {
 	timeout = 0,
 	hideOnEscape = 1
 };
-StaticPopupDialogs["CONFIRM_BUY_REAGENTBANK_TAB"] = {
-	text = CONFIRM_BUY_REAGNETBANK_TAB,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(dialog, data)
-		BuyReagentBank();
-	end,
-	OnShow = function(dialog, data)
-		MoneyFrame_Update(dialog.MoneyFrame, GetReagentBankCost());
-	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1
-};
 
 StaticPopupDialogs["TOO_MANY_LUA_ERRORS"] = {
 	text = TOO_MANY_LUA_ERRORS,
@@ -2716,22 +2702,6 @@ StaticPopupDialogs["CONFIRM_RANK_AUTHENTICATOR_REMOVE"] = {
 	showAlert = 1,
 	hideOnEscape = 1,
 	whileDead = 1,
-};
-StaticPopupDialogs["VOID_DEPOSIT_CONFIRM"] = {
-	text = VOID_STORAGE_DEPOSIT_CONFIRMATION.."\n"..CONFIRM_CONTINUE,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		VoidStorage_UpdateTransferButton();
-	end,
-	OnCancel = function(dialog, data)
-		VoidStorage_CloseConfirmationDialog(data.slot);
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1,
-	hasItemFrame = 1
 };
 
 StaticPopupDialogs["GUILD_IMPEACH"] = {

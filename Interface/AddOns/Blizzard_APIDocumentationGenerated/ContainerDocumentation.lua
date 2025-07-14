@@ -513,11 +513,16 @@ local Container =
 			Type = "Function",
 		},
 		{
-			Name = "SortBankBags",
+			Name = "SortBank",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
 		},
 		{
-			Name = "SortReagentBankBags",
+			Name = "SortBankBags",
 			Type = "Function",
 		},
 		{

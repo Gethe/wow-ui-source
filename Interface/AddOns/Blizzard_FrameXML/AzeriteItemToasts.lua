@@ -30,7 +30,7 @@ end
 
 function AzeriteItemLevelUpToastMixin:PlayAzeriteItemPowerToast(azeriteItemLocation, azeriteItemID, newPowerLevel, unlockedEmpoweredItemsInfo)
 	local item;
-	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+	if AzeriteUtil.IsAzeriteItemLocationBankTab(azeriteItemLocation) then
 		-- We can't create the Azerite item by GUID or itemLocation if it's in the Player's bank bags.
 		item = Item:CreateFromItemID(azeriteItemID);
 	else

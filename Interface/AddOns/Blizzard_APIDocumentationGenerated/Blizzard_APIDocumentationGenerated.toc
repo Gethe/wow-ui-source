@@ -21,7 +21,6 @@ AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
-BagIndexConstantsDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
 BarberShopInternalDocumentation.lua
@@ -257,7 +256,6 @@ VehicleDocumentation.lua
 VideoDocumentation.lua
 VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
-VoidStorageInfoDocumentation.lua
 WorldLootObjectDocumentation.lua
 WorldStateInfoDocumentation.lua
 WowEntitlementInfoDocumentation.lua
@@ -269,6 +267,7 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 ArtifactUIDocumentation.lua
+BagIndexConstantsDocumentation.lua
 CVarDocumentation.lua
 ChromieTimeUIDocumentation.lua
 CinematicListDocumentation.lua
@@ -294,6 +293,7 @@ FrameAPITabardModelDocumentation.lua
 GarrisonInfoDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
+InstanceLeaverInfoDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua

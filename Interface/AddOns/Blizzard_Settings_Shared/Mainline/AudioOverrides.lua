@@ -41,6 +41,6 @@ function AudioOverrides.CreateGameplaySoundEffectsSettings(category, layout, vol
 
 	local initializer = CreateSettingsCheckboxSliderInitializer(
 			cbSetting, GAMEPLAY_SFX_VOLUME, ENABLE_GAMEPLAY_SFX,
-			sliderSetting, volumeOptions, GAMEPLAY_SFX_VOLUME, OPTION_TOOLTIP_GAMEPLAY_SFX_VOLUME);
+			sliderSetting, volumeOptions, GAMEPLAY_SFX_VOLUME, OPTION_TOOLTIP_GAMEPLAY_SFX_VOLUME, "GameplaySoundEffects");
 	layout:AddInitializer(initializer);
 end

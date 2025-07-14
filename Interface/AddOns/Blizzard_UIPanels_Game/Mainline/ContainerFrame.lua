@@ -1,7 +1,8 @@
-NUM_CONTAINER_FRAMES = 13;
 NUM_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots;
 NUM_REAGENTBAG_FRAMES = Constants.InventoryConstants.NumReagentBagSlots;
 NUM_TOTAL_BAG_FRAMES = Constants.InventoryConstants.NumBagSlots + Constants.InventoryConstants.NumReagentBagSlots;
+-- We need container frames for all your bags + your backpack
+NUM_CONTAINER_FRAMES = NUM_TOTAL_BAG_FRAMES + 1;
 CONTAINER_OFFSET_Y = 85;
 CONTAINER_OFFSET_X = -4;
 
@@ -57,29 +58,29 @@ local BagUpdaterFrame = CreateFrame("FRAME");
 Mixin(BagUpdaterFrame, BagUpdaterMixin);
 BagUpdaterFrame:SetScript("OnUpdate", BagUpdaterFrame.Clean);
 
-local function ContainerFrame_IsBankBag(id)
-	return id > NUM_TOTAL_BAG_FRAMES;
-end
-
 local function ContainerFrame_IsHeldBag(id)
 	return id >= Enum.BagIndex.Backpack and id <= NUM_TOTAL_BAG_FRAMES;
 end
 
 local function ContainerFrame_IsGenericHeldBag(id)
-	-- This doesn't include specialized bags like the reagent bag or bank bags; it includes the backpack
+	-- This doesn't include specialized bags like the reagent bag; it includes the backpack
 	return id >= Enum.BagIndex.Backpack and id <= Constants.InventoryConstants.NumBagSlots;
-end
-
-local function ContainerFrame_IsMainBank(id)
-	return id == Enum.BagIndex.Bank;
 end
 
 local function ContainerFrame_IsBackpack(id)
 	return id == Enum.BagIndex.Backpack;
 end
 
+local function ContainerFrame_IsCharacterBankTab(id)
+	return id >= Enum.BagIndex.CharacterBankTab_1 and id <= Enum.BagIndex.CharacterBankTab_6;
+end
+
 local function ContainerFrame_IsAccountBankTab(id)
 	return id >= Enum.BagIndex.AccountBankTab_1 and id <= Enum.BagIndex.AccountBankTab_5;
+end
+
+local function ContainerFrame_IsBankTab(id)
+	return ContainerFrame_IsCharacterBankTab(id) or ContainerFrame_IsAccountBankTab(id);
 end
 
 function ContainerFrame_IsReagentBag(id)
@@ -91,7 +92,7 @@ local function ContainerFrame_IsProfessionBag(id)
 end
 
 function ContainerFrame_CanContainerUseFilterMenu(id)
-	if ContainerFrame_IsMainBank(id) then
+	if ContainerFrame_IsBankTab(id) then
 		return false;
 	end
 
@@ -480,10 +481,6 @@ function BaseContainerFrameMixin:IsBackpack()
 	return false;
 end
 
-function BaseContainerFrameMixin:IsBankBag()
-	return ContainerFrame_IsBankBag(self:GetID());
-end
-
 function BaseContainerFrameMixin:EnumerateItems()
 	return ipairs(self.Items);
 end
@@ -551,13 +548,6 @@ function ContainerFrame_OnEvent(self, event, ...)
 			ContainerFrameSettingsManager:ClearFilterFlag(bagID);
 			self:UpdateFilterIcon();
 		end
-	elseif event == "BANK_BAG_SLOT_FLAGS_UPDATED" then
-		local bagID = ...;
-		local bankBagID = bagID + NUM_TOTAL_EQUIPPED_BAG_SLOTS;
-		if self:MatchesBagID(bagID) then
-			ContainerFrameSettingsManager:ClearFilterFlag(bankBagID);
-			self:UpdateFilterIcon();
-		end
 	end
 end
 
@@ -589,9 +579,7 @@ local function AddButtons_BagCleanup(description, bagID)
 
 	do
 		local function IsSelected()
-			if ContainerFrame_IsMainBank(bagID) then
-				return C_Container.GetBankAutosortDisabled();
-			elseif ContainerFrame_IsBackpack(bagID) then
+			if ContainerFrame_IsBackpack(bagID) then
 				return C_Container.GetBackpackAutosortDisabled();
 			end
 			return C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort);
@@ -599,9 +587,7 @@ local function AddButtons_BagCleanup(description, bagID)
 
 		local function SetSelected()
 			local value = not IsSelected();
-			if ContainerFrame_IsMainBank(bagID) then
-				C_Container.SetBankAutosortDisabled(value);
-			elseif ContainerFrame_IsBackpack(bagID) then
+			if ContainerFrame_IsBackpack(bagID) then
 				C_Container.SetBackpackAutosortDisabled(value);
 			else
 				C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort, value);
@@ -613,7 +599,7 @@ local function AddButtons_BagCleanup(description, bagID)
 	end
 
 	-- ignore junk selling from this bag or backpack
-	if not ContainerFrame_IsMainBank(bagID) then
+	if not ContainerFrame_IsBankTab(bagID) then
 		local function IsSelected()
 			if ContainerFrame_IsBackpack(bagID) then
 				return C_Container.GetBackpackSellJunkDisabled();
@@ -658,7 +644,7 @@ function ContainerFrame_OnLoad(self)
 		rootDescription:SetTag("MENU_CONTAINER_FRAME");
 
 		local bagID = self:GetBagID();
-		if not (ContainerFrame_IsHeldBag(bagID) or ContainerFrame_IsBankBag(bagID)) then
+		if not (ContainerFrame_IsHeldBag(bagID) or ContainerFrame_IsBankTab(bagID)) then
 			return;
 		end
 
@@ -757,15 +743,11 @@ function ContainerFrameMixin:MatchesBagID(id)
 end
 
 function ContainerFrameMixin:CanUseForBagID(id)
-	if ContainerFrame_IsBankBag(id) then
-		return self.canUseForBankBag;
-	end
-
 	if ContainerFrame_IsReagentBag(id) then
 		return self.canUseForReagentBag;
 	end
 
-	return true; -- NOTE: Bank bags can still be used for regular bags.
+	return true;
 end
 
 function ContainerFrameMixin:GetFirstButtonOffsetY()
@@ -800,20 +782,12 @@ function ContainerFrameMixin:IsPlusTwoBag()
 	return false;
 end
 
-function ContainerFrameMixin:GetTextureSuffix()
-	if self:IsBankBag() then
-		return "-Bank";
-	end
-
-	return "";
-end
-
 function ContainerFrameMixin:UpdateName()
 	self:SetTitle(C_Container.GetBagName(self:GetBagID()));
 end
 
 function ContainerFrameMixin:GetBackgroundColor()
-	return ContainerFrame_IsBankBag(self:GetBagID()) and BANK_BAG_BACKGROUND_COLOR or PANEL_BACKGROUND_COLOR;
+	return PANEL_BACKGROUND_COLOR;
 end
 
 function ContainerFrameMixin:UpdateBackground()
@@ -1105,10 +1079,6 @@ end
 function ContainerFrame_UpdateAll()
 	for i, frame in ContainerFrameUtil_EnumerateContainerFrames() do
 		frame:UpdateIfShown();
-	end
-
-	if BankFrame:IsShown() then
-		BankFrame_UpdateItems(BankFrame);
 	end
 end
 
@@ -1406,7 +1376,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 
 				-- No error for bad items or empty slots.
 				return;
-			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and (not VoidStorageFrame or not VoidStorageFrame:IsShown()) and
+			elseif ( not BankFrame:IsShown() and (not GuildBankFrame or not GuildBankFrame:IsShown()) and not MailFrame:IsShown() and
 						(not AuctionFrame or not AuctionFrame:IsShown()) and not TradeFrame:IsShown() and (not ItemUpgradeFrame or not ItemUpgradeFrame:IsShown()) and
 						(not ObliterumForgeFrame or not ObliterumForgeFrame:IsShown()) and (not ChallengesKeystoneFrame or not ChallengesKeystoneFrame:IsShown()) ) then
 				local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
@@ -1442,7 +1412,8 @@ function ContainerFrameItemButton_OnClick(self, button)
 		if BankUtil_IsAccountBankDepositRefundable(itemLocation) then
 			StaticPopup_Show("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM", nil, nil, { itemToDeposit = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation)), targetItemLocation = nil });
 		else
-			C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), BankFrame:IsShown() and BankFrame.selectedTab == 2);
+			local isReagentBankOpen = false;
+			C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), isReagentBankOpen);
 		end
 		StackSplitFrame:Hide();
 	end
@@ -1891,13 +1862,12 @@ function ContainerFramePortraitButtonMixin:OnHide()
 	HelpTip:Hide(UIParent, TUTORIAL_HUD_REVAMP_BAG_CHANGES);
 end
 
-local function OpenAllBagsInternal(includeBank)
+local function OpenAllBagsInternal()
 	OpenBackpack();
 
 	local startIndex  = ContainerFrameSettingsManager:IsUsingCombinedBags() and (Constants.InventoryConstants.NumBagSlots + 1) or 1;
-	local endIndex = includeBank and (NUM_TOTAL_BAG_FRAMES + NUM_BANKBAGSLOTS) or NUM_TOTAL_BAG_FRAMES;
 
-	for i = startIndex, endIndex do
+	for i = startIndex, NUM_TOTAL_BAG_FRAMES do
 		OpenBag(i);
 	end
 
@@ -1921,8 +1891,7 @@ function OpenAllBags(frame, forceUpdate)
 		FRAME_THAT_OPENED_BAGS = frame:GetName();
 	end
 
-	local excludeBank = false;
-	OpenAllBagsInternal(excludeBank);
+	OpenAllBagsInternal();
 end
 
 function ToggleAllBags()
@@ -1953,28 +1922,8 @@ function ToggleAllBags()
 	end
 
 	if bagsOpen < totalBags then
-		local excludeBank = false;
-		OpenAllBagsInternal(excludeBank);
+		OpenAllBagsInternal();
 		return;
-	elseif BankFrame:IsShown() then
-		bagsOpen = 0;
-		totalBags = 0;
-		for i = NUM_TOTAL_BAG_FRAMES + 1, (NUM_TOTAL_BAG_FRAMES + NUM_BANKBAGSLOTS) do
-			if C_Container.GetContainerNumSlots(i) > 0 then
-				totalBags = totalBags + 1;
-			end
-
-			if IsBagOpen(i) then
-				CloseBag(i);
-				bagsOpen = bagsOpen + 1;
-			end
-		end
-
-		if bagsOpen < totalBags then
-			local includeBank = true;
-			OpenAllBagsInternal(includeBank);
-			return;
-		end
 	end
 
 	assert(IsAnyBagOpen() == false);
@@ -2205,7 +2154,7 @@ end
 
 function ContainerFrameSettingsManager:IsUsingCombinedBags(optionalID)
 	if optionalID then
-		if not ContainerFrame_IsGenericHeldBag(optionalID) or ContainerFrame_IsBankBag(optionalID) then
+		if not ContainerFrame_IsGenericHeldBag(optionalID) or ContainerFrame_IsBankTab(optionalID) then
 			return false;
 		end
 	end

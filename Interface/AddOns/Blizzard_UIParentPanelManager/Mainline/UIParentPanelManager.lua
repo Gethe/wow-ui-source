@@ -81,7 +81,7 @@ UIPanelWindows["MerchantFrame"] =				{ area = "left",			pushable = 0};
 UIPanelWindows["TabardFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 UIPanelWindows["MailFrame"] =					{ area = "left",			pushable = 0};
-UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,	width = 425 };
+UIPanelWindows["BankFrame"] =					{ area = "left",			pushable = 6,	width = 738 };
 UIPanelWindows["QuestLogPopupDetailFrame"] =	{ area = "left",			pushable = 0,	whileDead = 1 };
 UIPanelWindows["QuestFrame"] =					{ area = "left",			pushable = 0};
 UIPanelWindows["GuildRegistrarFrame"] =			{ area = "left",			pushable = 0};

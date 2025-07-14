@@ -18,7 +18,7 @@ function InspectTalentFrameMixin:OnEvent(event, unit)
 	end
 	
 	if ( event == "PLAYER_TARGET_CHANGED" ) then
-		InspectGlyphFrameGlyph_OnClear(self);
+		self:OnClear();
 	end
 end
 
@@ -26,13 +26,13 @@ function InspectTalentFrameMixin:OnShow()
 	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 end
 
-InspectGlyphFrameGlyphMixin = {};
-
-function InspectGlyphFrameGlyphMixin:OnClear()
+function InspectTalentFrameMixin:OnClear()
 	InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs, true);
 	InspectTalentFrameSpec_OnClear(self);
 	TalentFrame_Clear(self.InspectTalents);
 end
+
+InspectGlyphFrameGlyphMixin = {};
 
 --------------------------------------------------------------------------------
 ------------------  Glyph Button Functions     ---------------------------

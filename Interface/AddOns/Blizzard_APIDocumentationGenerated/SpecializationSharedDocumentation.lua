@@ -12,7 +12,7 @@ local SpecializationShared =
 			Arguments =
 			{
 				{ Name = "classID", Type = "number", Nilable = false },
-				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 

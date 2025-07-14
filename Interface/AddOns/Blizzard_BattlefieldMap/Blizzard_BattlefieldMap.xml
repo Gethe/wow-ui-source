@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_BattlefieldMap.lua"/>
-
 	<Button name="BattlefieldMapTab" hidden="false" frameStrata="LOW" parent="UIParent" movable="true" mixin="BattlefieldMapTabMixin">
 		<Size x="64" y="32"/>
 		<Anchors>

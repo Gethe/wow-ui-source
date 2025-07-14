@@ -1296,6 +1296,19 @@ function LFGListEntryCreation_UpdateValidState(self)
 
 	self.ListGroupButton.DisableStateClickButton:SetShown(mythicPlusDisableActivity);
 	self.ListGroupButton:SetEnabled(not errorText and not mythicPlusDisableActivity);
+
+	-- leaver, can add to errorText but won't disable ListGroupButton
+	if activityInfo.isMythicPlusActivity and C_InstanceLeaver.IsPlayerLeaver() then
+		self.LeaverBadge:Show();
+		if not errorText then
+			errorText = RED_FONT_COLOR:WrapTextInColorCode(MYTHIC_PLUS_DESERTER_FLAGGED_SHORT);
+		else
+			errorText = errorText.."|n|n"..RED_FONT_COLOR:WrapTextInColorCode(MYTHIC_PLUS_DESERTER_FLAGGED_SHORT);
+		end
+	else
+		self.LeaverBadge:Hide();
+	end
+
 	self.ListGroupButton.errorText = errorText;
 end
 
@@ -1901,8 +1914,7 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 	local grayedOut = not pendingStatus and (status == "failed" or status == "cancelled" or status == "declined" or status == "declined_full" or status == "declined_delisted" or status == "invitedeclined" or status == "timedout" or status == "inviteaccepted" or status == "invitedeclined");
 	local noTouchy = (status == "invited");
 
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
-
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, _faction, _raceID, _specID, isLeaver = C_LFGList.GetApplicantMemberInfo(appID, memberIdx);
 	member.memberIdx = memberIdx;
 
 	member.Name:SetWidth(0);
@@ -1921,18 +1933,25 @@ function LFGListApplicationViewer_UpdateApplicantMember(member, appID, memberIdx
 		member.Name:SetText("");
 	end
 
+	member.LeaverIcon:SetShown(isLeaver);
+	member.LeaverIcon.Icon:SetDesaturated(grayedOut);
+	member.LeaverIcon:SetAlpha(grayedOut and 0.5 or 1.0);
+
 	member.FriendIcon:SetShown(relationship);
 	member.FriendIcon.relationship = relationship;
 	member.FriendIcon.Icon:SetDesaturated(grayedOut);
 	member.FriendIcon:SetAlpha(grayedOut and 0.5 or 1.0);
 
-	--Adjust name width depending on whether we have the friend icon
-	local nameLength = 100;
-	if ( relationship ) then
-		nameLength = nameLength - 22;
-	end
-	if ( member.Name:GetWidth() > nameLength ) then
-		member.Name:SetWidth(nameLength);
+	if isLeaver and relationship then
+		member.FriendIcon:SetPoint("LEFT", member.LeaverIcon, "RIGHT");
+		member.Name:SetPoint("LEFT", member.FriendIcon, "RIGHT");
+	elseif isLeaver then
+		member.Name:SetPoint("LEFT", member.LeaverIcon, "RIGHT");
+	elseif relationship then
+		member.FriendIcon:SetPoint("LEFT", 7, 0);
+		member.Name:SetPoint("LEFT", member.FriendIcon, "RIGHT");
+	else
+		member.Name:SetPoint("LEFT", 7, 0);
 	end
 
 	LFGListApplicationViewer_UpdateRoleIcons(member, grayedOut, tank, healer, damage, noTouchy, assignedRole);
@@ -2059,7 +2078,7 @@ function LFGListApplicantMember_OnEnter(self)
 		return;
 	end
 	local applicantInfo = C_LFGList.GetApplicantInfo(applicantID);
-	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
+	local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID, isLeaver = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
 	local bestDungeonScoreForEntry = C_LFGList.GetApplicantDungeonScoreForListing(applicantID, memberIdx, activeEntryInfo.activityIDs[1]);
 	local bestOverallScore = C_LFGList.GetApplicantBestDungeonScore(applicantID, memberIdx);
 	local pvpRatingForEntry = C_LFGList.GetApplicantPvpRatingInfoForListing(applicantID, memberIdx, activeEntryInfo.activityIDs[1]);
@@ -2095,6 +2114,33 @@ function LFGListApplicantMember_OnEnter(self)
 	if ( activityInfo.useHonorLevel ) then
 		GameTooltip:AddLine(string.format(LFG_LIST_HONOR_LEVEL_CURRENT_PVP, honorLevel), 1, 1, 1);
 	end
+
+	if isLeaver then
+		local textureSettings = {
+			width = 12,
+			height = 12,
+			anchor = Enum.TooltipTextureAnchor.LeftCenter,
+			margin = { left = 3, right = 5, top = 0, bottom = 0 },
+		};
+		GameTooltip:AddLine(MYTHIC_PLUS_DESERTER);
+		GameTooltip:AddAtlas("groupfinder-icon-leaver", textureSettings);
+	end
+
+	if relationship then
+		local textureSettings = {
+			width = 20,
+			height = 19,
+			anchor = Enum.TooltipTextureAnchor.LeftCenter,
+			margin = { left = -2, right = 2, top = -4, bottom = -3 },
+		};
+		if relationship == "friend" then
+			GameTooltip:AddLine(FRIEND);
+		elseif relationship == "guild" then
+			GameTooltip:AddLine(LFG_LIST_GUILD_MEMBER);
+		end
+		GameTooltip:AddAtlas("groupfinder-icon-friend", textureSettings);
+	end
+
 	if ( applicantInfo.comment and applicantInfo.comment ~= "" ) then
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(string.format(LFG_LIST_COMMENT_FORMAT, applicantInfo.comment), LFG_LIST_COMMENT_FONT_COLOR.r, LFG_LIST_COMMENT_FONT_COLOR.g, LFG_LIST_COMMENT_FONT_COLOR.b, true);
@@ -2679,38 +2725,66 @@ end
 
 function LFGListSearchPanel_UpdateButtonStatus(self)
 	--Update the SignUpButton
+	local tooltipText;
 	local resultID = self.selectedResult;
 	local numApplications, numActiveApplications = C_LFGList.GetNumApplications();
 	local messageApply = LFGListUtil_GetActiveQueueMessage(true);
 	local availTank, availHealer, availDPS = C_LFGList.GetAvailableRoles();
 	if ( messageApply ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = messageApply;
+		tooltipText = messageApply;
 	elseif ( not LFGListUtil_IsAppEmpowered() ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_APP_UNEMPOWERED;
+		tooltipText = LFG_LIST_APP_UNEMPOWERED;
 	elseif ( IsInGroup(LE_PARTY_CATEGORY_HOME) and C_LFGList.IsCurrentlyApplying() ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_APP_CURRENTLY_APPLYING;
+		tooltipText = LFG_LIST_APP_CURRENTLY_APPLYING;
 	elseif ( numActiveApplications >= MAX_LFG_LIST_APPLICATIONS ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = string.format(LFG_LIST_HIT_MAX_APPLICATIONS, MAX_LFG_LIST_APPLICATIONS);
+		tooltipText = string.format(LFG_LIST_HIT_MAX_APPLICATIONS, MAX_LFG_LIST_APPLICATIONS);
 	elseif ( GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) > MAX_PARTY_MEMBERS + 1 ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_MAX_MEMBERS;
+		tooltipText = LFG_LIST_MAX_MEMBERS;
 	elseif ( not (availTank or availHealer or availDPS) ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_MUST_CHOOSE_SPEC;
+		tooltipText = LFG_LIST_MUST_CHOOSE_SPEC;
 	elseif ( GroupHasOfflineMember(LE_PARTY_CATEGORY_HOME) ) then
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_OFFLINE_MEMBER;
+		tooltipText = LFG_LIST_OFFLINE_MEMBER;
 	elseif ( resultID ) then
 		self.SignUpButton:Enable();
-		self.SignUpButton.tooltip = nil;
 	else
 		self.SignUpButton:Disable();
-		self.SignUpButton.tooltip = LFG_LIST_SELECT_A_SEARCH_RESULT;
+		tooltipText = LFG_LIST_SELECT_A_SEARCH_RESULT;
 	end
+
+	local showLeaverInfo = false;
+	-- Display the leaver badge and add text to the Sign Up tooltip if the selected group is for a mythic+ activity
+	if self.selectedResult and C_InstanceLeaver.IsPlayerLeaver() then
+		local resultInfo = C_LFGList.GetSearchResultInfo(self.selectedResult);
+		if resultInfo and resultInfo.activityIDs then
+			for i, activityID in ipairs(resultInfo.activityIDs) do
+				local activityInfo = C_LFGList.GetActivityInfoTable(activityID);
+				if activityInfo and activityInfo.isMythicPlusActivity then
+					showLeaverInfo = true;
+					break;
+				end
+			end
+		end
+	end
+
+	if showLeaverInfo then
+		self.LeaverBadge:Show();
+		if not tooltipText then
+			tooltipText = RED_FONT_COLOR:WrapTextInColorCode(MYTHIC_PLUS_DESERTER_FLAGGED_SHORT);
+		else
+			tooltipText = tooltipText.."|n|n"..RED_FONT_COLOR:WrapTextInColorCode(MYTHIC_PLUS_DESERTER_FLAGGED_SHORT);
+		end
+	else
+		self.LeaverBadge:Hide();
+	end
+
+	self.SignUpButton.tooltip = tooltipText;
 
 	local isPartyLeader = UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
 	local canBrowseWhileQueued = C_LFGList.HasActiveEntryInfo() and isPartyLeader;
@@ -3551,7 +3625,6 @@ function LFGListGroupDataDisplayRoleCount_Update(self, displayData, disabled)
 end
 
 function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, disabled, iconOrder, showClassesByRole)
-
 	--Show/hide the required icons
 	for i=1, #self.Icons do
 		local icon = self.Icons[i];
@@ -3566,6 +3639,11 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 		end
 	end
 
+	local leaversByRole = { };
+	if not showClassesByRole then
+		leaversByRole["TANK"], leaversByRole["HEALER"], leaversByRole["DAMAGER"] = C_LFGList.GetGroupLeaverCountsByRole();
+	end
+
 	--Note that icons are numbered from right to left
 	local iconIndex = numPlayers;
 	for i=1, #iconOrder do
@@ -3577,6 +3655,13 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 				icon.RoleIcon:Hide();
 				icon.ClassCircle:Hide();
 
+				local showLeaverIcon = false;
+				if leaversByRole[role] and leaversByRole[role] > 0 then
+					showLeaverIcon = true;
+					leaversByRole[role] = leaversByRole[role] - 1;
+				end
+				icon.LeaverIcon:SetShown(showLeaverIcon);
+
 				iconIndex = iconIndex - 1;
 				if ( iconIndex < 1 ) then
 					return;
@@ -3584,6 +3669,7 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 			end
 		else
 			local classesByRole = displayData.classesByRole[role];
+			local leaversByClass = displayData.leaversByClass;
 			for class, num in pairs(classesByRole) do
 				for k=1, num do
 					local icon = self.Icons[iconIndex];
@@ -3592,6 +3678,13 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 					icon.RoleIcon:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS[role], false);
 					icon.ClassCircle:Show();
 					icon.ClassCircle:SetAtlas("groupfinder-icon-class-color-"..class, false);
+
+					local showLeaverIcon = false;
+					if leaversByClass and leaversByClass[class] and leaversByClass[class] > 0 then
+						showLeaverIcon = true;
+						leaversByClass[class] = leaversByClass[class] - 1;
+					end
+					icon.LeaverIcon:SetShown(showLeaverIcon);
 					
 					iconIndex = iconIndex - 1;
 					if ( iconIndex < 1 ) then
@@ -3609,6 +3702,7 @@ function LFGListGroupDataDisplayEnumerate_Update(self, numPlayers, displayData, 
 		icon.RoleIconWithBackground:SetAtlas("groupfinder-icon-emptyslot", false);
 		icon.ClassCircle:Hide();
 		icon.RoleIcon:Hide();
+		icon.LeaverIcon:Hide();
 	end
 end
 
@@ -4142,14 +4236,17 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	end
 
 	local memberInfoList = {};
+	local groupHasLeaver = false;
 
 	--enumerates both class and role
 	if ( activityInfo.displayType == Enum.LFGListDisplayType.ClassEnumerate or activityInfo.displayType == Enum.LFGListDisplayType.RoleEnumerate ) then
 		for i=1, searchResultInfo.numMembers do
-			local memberInfo = C_LFGList.GetSearchResultPlayerInfo(resultID, i);
-
+			local memberInfo = C_LFGList.GetSearchResultPlayerInfo(resultID, i);			
 			if memberInfo and memberInfo.assignedRole then
-				table.insert(memberInfoList, {role = memberInfo.assignedRole, class = memberInfo.classFilename, classLocalized = memberInfo.className, specLocalized = memberInfo.specName, isLeader = memberInfo.isLeader});
+				table.insert(memberInfoList, {role = memberInfo.assignedRole, class = memberInfo.classFilename, classLocalized = memberInfo.className, specLocalized = memberInfo.specName, isLeader = memberInfo.isLeader, isLeaver = memberInfo.isLeaver });
+			end
+			if not groupHasLeaver then
+				groupHasLeaver = memberInfo and memberInfo.isLeaver;
 			end
 		end
 	end
@@ -4163,7 +4260,11 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			local classColor = RAID_CLASS_COLORS[memberInfo.class] or NORMAL_FONT_COLOR;
 			local roleIcon = CreateAtlasMarkup(LFG_LIST_GROUP_DATA_ATLASES_BORDERLESS[memberInfo.role], 13, 13, 0, 0);
 			local leaderString = memberInfo.isLeader and " "..leaderIcon or "";
-			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString, classColor.r, classColor.g, classColor.b);
+			local leaverString = "";
+			if memberInfo.isLeaver then
+				leaverString = " "..CreateAtlasMarkup("groupfinder-icon-leaver", 12, 12, 0, 0);
+			end
+			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
@@ -4194,6 +4295,11 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( searchResultInfo.isDelisted ) then
 		tooltip:AddLine(" ");
 		tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+	end
+
+	if groupHasLeaver then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddErrorLine(tooltip, MYTHIC_PLUS_DESERTER_GROUP_WARNING);
 	end
 
 	tooltip:Show();
@@ -4436,4 +4542,14 @@ function LFGListSearchBackButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	LFGListFrame_SetActivePanel(frame, frame.CategorySelection);
 	self:GetParent().shouldAlwaysShowCreateGroupButton = false;
+end
+
+LfgListLeaverBadgeMixin = { };
+
+function LfgListLeaverBadgeMixin:OnEnter()
+	GameTooltip:SetOwner(self.LeaverIcon, "ANCHOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, MYTHIC_PLUS_DESERTER_FLAGGED);
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddErrorLine(GameTooltip, MYTHIC_PLUS_DESERTER_GROUPS_AFFECTED);
+	GameTooltip:Show();
 end

@@ -241,6 +241,12 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local tooltipFunc = GenerateClosure(Settings.InitTooltip, name, tooltip);
 		containerFrame:SetTooltipFunc(tooltipFunc);
 
+		local newTagShown = IsNewSettingInCurrentVersion(setting:GetVariable());
+		containerFrame.NewFeature:SetShown(newTagShown);
+		if newTagShown then
+			MarkNewSettingAsSeen(setting:GetVariable());
+		end
+
 		local function OnSettingValueChanged(o, setting, value)
 			control.Dropdown:GenerateMenu();
 		end
@@ -267,6 +273,12 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local initTooltip = GenerateClosure(Settings.InitTooltip, name, tooltip);
 		sliderWithSteppers.Slider:SetTooltipFunc(initTooltip);
 		containerFrame:SetTooltipFunc(initTooltip);
+
+		local newTagShown = IsNewSettingInCurrentVersion(setting:GetVariable());
+		containerFrame.NewFeature:SetShown(newTagShown);
+		if newTagShown then
+			MarkNewSettingAsSeen(setting:GetVariable());
+		end
 
 		self.cbrHandles:RegisterCallback(sliderWithSteppers, MinimalSliderWithSteppersMixin.Event.OnValueChanged, OnSliderValueChanged);
 
@@ -439,6 +451,22 @@ function SettingsAdvancedQualitySectionInitializer:GetExtent()
 		count = count + 1;
 	end
 	return reservedHeight + (templateHeight * count) + ((count - 1) * spacing);
+end
+
+function SettingsAdvancedQualitySectionInitializer:IsNewTagShown()
+	for _, setting in pairs(self.data.settings) do
+		if IsNewSettingInCurrentVersion(setting:GetVariable()) then
+			return true;
+		end
+	end
+
+	for _, raidSetting in pairs(self.data.raidSettings) do
+		if IsNewSettingInCurrentVersion(raidSetting:GetVariable()) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function CreateAdvancedQualitySectionInitializer(name, settings, raidSettings)

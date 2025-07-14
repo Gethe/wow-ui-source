@@ -204,6 +204,24 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsAccountBankEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAccountBankEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCharacterBankEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCharacterBankEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDisplayRaceNative",
 			Type = "Function",
 

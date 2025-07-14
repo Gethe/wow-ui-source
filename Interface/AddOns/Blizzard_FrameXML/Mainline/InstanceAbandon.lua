@@ -54,6 +54,13 @@ StaticPopupDialogs["WARN_LEAVE_RESTRICTED_CHALLENGE_MODE"] = {
 	showAlert = 1,
 };
 
+StaticPopupDialogs["KEYSTONE_DESERTER_NOTIFICATION"] = {
+	button1 = CLOSE,
+	text = "%s",
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
 function InstanceAbandonMixin:OnLoad()
 	self:RegisterEvent("INSTANCE_ABANDON_VOTE_STARTED");
 	self:RegisterEvent("INSTANCE_ABANDON_VOTE_UPDATED");
@@ -62,6 +69,7 @@ function InstanceAbandonMixin:OnLoad()
 	self:RegisterEvent("CHALLENGE_MODE_LEAVER_TIMER_STARTED");
 	self:RegisterEvent("CHALLENGE_MODE_LEAVER_TIMER_ENDED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("INSTANCE_LEAVER_STATUS_CHANGED");
 end
 
 function InstanceAbandonMixin:OnShow()
@@ -126,6 +134,12 @@ function InstanceAbandonMixin:OnEvent(event, ...)
 		self:CheckShowLeaverWarningDialog();
 	elseif event == "CHALLENGE_MODE_LEAVER_TIMER_ENDED" then
 		StaticPopup_Hide("WARN_LEAVE_RESTRICTED_CHALLENGE_MODE");
+	elseif event == "INSTANCE_LEAVER_STATUS_CHANGED" then
+		local isLeaver = ...;
+		if isLeaver then
+			local text = RED_FONT_COLOR:WrapTextInColorCode(MYTHIC_PLUS_DESERTER_FLAGGED).."|n|n"..MYTHIC_PLUS_DESERTER_CONSEQUENCE;
+			StaticPopup_Show("KEYSTONE_DESERTER_NOTIFICATION", text);
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:CheckShowVoteDialog();
 		self:CheckShowLeaverWarningDialog();

@@ -126,12 +126,15 @@ end
 SettingsNewTagMixin = { };
 
 function SettingsNewTagMixin:IsNewTagShown()
-	return self.data.newTagID and IsNewSettingInCurrentVersion(self.data.newTagID);
+	if self.data.newTagID then
+		return IsNewSettingInCurrentVersion(self.data.newTagID);
+	end
 end
 
 function SettingsNewTagMixin:MarkSettingAsSeen()
 	if self.data.newTagID then
 		MarkNewSettingAsSeen(self.data.newTagID);
+		return true;
 	end
 end
 
@@ -198,13 +201,19 @@ function SettingsListElementInitializer:GetSetting()
 end
 
 function SettingsListElementInitializer:IsNewTagShown()
-	local setting = self:GetSetting();
-	return setting and IsNewSettingInCurrentVersion(setting:GetVariable());
+	local returnVal = SettingsNewTagMixin.IsNewTagShown(self);
+	if returnVal == nil then
+		local setting = self:GetSetting();
+		returnVal = setting and IsNewSettingInCurrentVersion(setting:GetVariable());
+	end
+	return returnVal;
 end
 
 function SettingsListElementInitializer:MarkSettingAsSeen()
-	local setting = self:GetSetting();
-	MarkNewSettingAsSeen(setting:GetVariable());
+	if not SettingsNewTagMixin.MarkSettingAsSeen(self) then
+		local setting = self:GetSetting();
+		MarkNewSettingAsSeen(setting:GetVariable());
+	end
 end
 
 function SettingsListElementInitializer:SetSettingIntercept(interceptFunction)
@@ -633,16 +642,6 @@ function SettingsButtonControlMixin:Release()
 	SettingsListElementMixin.Release(self);
 end
 
-function SettingsButtonControlMixin:IsNewTagShown()
-	return self.data.newTagID and IsNewSettingInCurrentVersion(self.data.newTagID);
-end
-
-function SettingsButtonControlMixin:MarkSettingAsSeen()
-	if self.data.newTagID then
-		MarkNewSettingAsSeen(self.data.newTagID);
-	end
-end
-
 function SettingsButtonControlMixin:SetButtonState(enabled)
 	self.Button:SetEnabled(enabled);
 end
@@ -857,7 +856,7 @@ function SettingsCheckboxSliderControlMixin:Release()
 	SettingsListElementMixin.Release(self);
 end
 
-function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, sliderSetting, sliderOptions, sliderLabel, sliderTooltip)
+function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, sliderSetting, sliderOptions, sliderLabel, sliderTooltip, newTagID)
 	local data =
 	{
 		name = cbLabel,
@@ -869,6 +868,7 @@ function CreateSettingsCheckboxSliderInitializer(cbSetting, cbLabel, cbTooltip, 
 		sliderOptions = sliderOptions,
 		sliderLabel = sliderLabel,
 		sliderTooltip = sliderTooltip,
+		newTagID = newTagID,
 	};
 	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxSliderControlTemplate", data);
 	initializer:AddSearchTags(cbLabel, sliderLabel);

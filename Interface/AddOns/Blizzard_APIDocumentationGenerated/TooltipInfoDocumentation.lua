@@ -1220,52 +1220,6 @@ local TooltipInfo =
 			},
 		},
 		{
-			Name = "GetVoidDepositItem",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
-			Name = "GetVoidItem",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "tab", Type = "luaIndex", Nilable = false },
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
-			Name = "GetVoidWithdrawalItem",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "data", Type = "TooltipData", Nilable = false },
-			},
-		},
-		{
 			Name = "GetWeeklyReward",
 			Type = "Function",
 			MayReturnNothing = true,

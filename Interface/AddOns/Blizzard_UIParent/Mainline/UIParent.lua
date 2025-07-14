@@ -550,10 +550,6 @@ function Calendar_LoadUI()
 	UIParentLoadAddOn("Blizzard_Calendar");
 end
 
-function VoidStorage_LoadUI()
-	UIParentLoadAddOn("Blizzard_VoidStorageUI");
-end
-
 function ArchaeologyFrame_LoadUI()
 	UIParentLoadAddOn("Blizzard_ArchaeologyUI");
 end

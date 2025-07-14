@@ -1308,17 +1308,6 @@ function UIParent_OnEvent(self, event, ...)
 			ShowUIPanel(EncounterJournal);
 			EJSuggestFrame_OpenFrame();
 		end
-	-- Events for Void Storage UI handling
-	elseif ( event == "VOID_STORAGE_OPEN" ) then
-		VoidStorage_LoadUI();
-		if ( VoidStorageFrame_Show ) then
-			VoidStorageFrame_Show();
-		end
-	elseif ( event == "VOID_STORAGE_CLOSE" ) then
-		if ( VoidStorageFrame_Hide ) then
-			VoidStorageFrame_Hide();
-		end
-
 	--Events for Trial caps
 	elseif ( event == "TRIAL_CAP_REACHED_MONEY" ) then
 		TrialAccountCapReached_Inform("money");

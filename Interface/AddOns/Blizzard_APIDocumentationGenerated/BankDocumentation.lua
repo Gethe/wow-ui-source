@@ -7,6 +7,15 @@ local Bank =
 	Functions =
 	{
 		{
+			Name = "AreAnyBankTypesViewable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areAnyBankTypesViewable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AutoDepositItemsIntoBank",
 			Type = "Function",
 
@@ -100,6 +109,48 @@ local Bank =
 			},
 		},
 		{
+			Name = "DoesBankTypeSupportAutoDeposit",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesBankTypeSupportAutoDeposit", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesBankTypeSupportMoneyTransfer",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesBankTypeSupportMoneyTransfer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "FetchBankLockedReason",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reason", Type = "BankLockedReason", Nilable = true },
+			},
+		},
+		{
 			Name = "FetchDepositedMoney",
 			Type = "Function",
 
@@ -114,7 +165,7 @@ local Bank =
 			},
 		},
 		{
-			Name = "FetchNextPurchasableBankTabCost",
+			Name = "FetchNextPurchasableBankTabData",
 			Type = "Function",
 
 			Arguments =
@@ -124,7 +175,7 @@ local Bank =
 
 			Returns =
 			{
-				{ Name = "nextPurchasableTabCost", Type = "BigUInteger", Nilable = true },
+				{ Name = "nextPurchasableTabData", Type = "PurchasableBankTabData", Nilable = true },
 			},
 		},
 		{
@@ -167,6 +218,15 @@ local Bank =
 			Returns =
 			{
 				{ Name = "purchasedBankTabIDs", Type = "table", InnerType = "BagIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "FetchViewableBankTypes",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "viewableBankTypes", Type = "table", InnerType = "BankType", Nilable = false },
 			},
 		},
 		{
@@ -282,11 +342,6 @@ local Bank =
 			},
 		},
 		{
-			Name = "PlayerbankbagslotsChanged",
-			Type = "Event",
-			LiteralName = "PLAYERBANKBAGSLOTS_CHANGED",
-		},
-		{
 			Name = "PlayerbankslotsChanged",
 			Type = "Event",
 			LiteralName = "PLAYERBANKSLOTS_CHANGED",
@@ -295,29 +350,24 @@ local Bank =
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 		},
-		{
-			Name = "PlayerreagentbankslotsChanged",
-			Type = "Event",
-			LiteralName = "PLAYERREAGENTBANKSLOTS_CHANGED",
-			Payload =
-			{
-				{ Name = "slot", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "ReagentbankPurchased",
-			Type = "Event",
-			LiteralName = "REAGENTBANK_PURCHASED",
-		},
-		{
-			Name = "ReagentbankUpdate",
-			Type = "Event",
-			LiteralName = "REAGENTBANK_UPDATE",
-		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "BankLockedReason",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "BankLockedReason", EnumValue = 0 },
+				{ Name = "NoAccountInventoryLock", Type = "BankLockedReason", EnumValue = 1 },
+				{ Name = "BankDisabled", Type = "BankLockedReason", EnumValue = 2 },
+				{ Name = "BankConversionFailed", Type = "BankLockedReason", EnumValue = 3 },
+			},
+		},
 		{
 			Name = "BankTabData",
 			Type = "Structure",
@@ -328,6 +378,20 @@ local Bank =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "depositFlags", Type = "BagSlotFlags", Nilable = false },
+				{ Name = "tabCleanupConfirmation", Type = "cstring", Nilable = false },
+				{ Name = "tabNameEditBoxHeader", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "PurchasableBankTabData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "tabCost", Type = "BigUInteger", Nilable = false },
+				{ Name = "canAfford", Type = "bool", Nilable = false },
+				{ Name = "purchasePromptTitle", Type = "cstring", Nilable = false },
+				{ Name = "purchasePromptBody", Type = "cstring", Nilable = false },
+				{ Name = "purchasePromptConfirmation", Type = "cstring", Nilable = false },
 			},
 		},
 	},
