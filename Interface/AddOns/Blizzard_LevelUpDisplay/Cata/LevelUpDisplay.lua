@@ -804,10 +804,10 @@ function LevelUpDisplay_AnimStep(self, fast)
 			self.spellFrame.rarityMiddleHuge:SetText(spellInfo.subText);
 			if (spellInfo.quality) then
 				self.spellFrame.iconBorder:Show();
-				self.spellFrame.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[spellInfo.quality-1].r, ITEM_QUALITY_COLORS[spellInfo.quality-1].g, ITEM_QUALITY_COLORS[spellInfo.quality-1].b);
+				self.spellFrame.iconBorder:SetVertexColor(ITEM_QUALITY_COLORS[spellInfo.quality].r, ITEM_QUALITY_COLORS[spellInfo.quality].g, ITEM_QUALITY_COLORS[spellInfo.quality].b);
 				self.spellFrame.rarityIcon:Show();
-				self.spellFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..spellInfo.quality]);
-				self.spellFrame.rarityValue:SetTextColor(ITEM_QUALITY_COLORS[spellInfo.quality-1].r, ITEM_QUALITY_COLORS[spellInfo.quality-1].g, ITEM_QUALITY_COLORS[spellInfo.quality-1].b);
+				self.spellFrame.rarityValue:SetText(_G["BATTLE_PET_BREED_QUALITY"..(spellInfo.quality+1)]);
+				self.spellFrame.rarityValue:SetTextColor(ITEM_QUALITY_COLORS[spellInfo.quality].r, ITEM_QUALITY_COLORS[spellInfo.quality].g, ITEM_QUALITY_COLORS[spellInfo.quality].b);
 				self.spellFrame.rarityValue:Show();
 			end
 			self.spellFrame.showAnim:Play();

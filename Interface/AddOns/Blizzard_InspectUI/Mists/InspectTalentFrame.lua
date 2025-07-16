@@ -28,7 +28,7 @@ end
 
 InspectGlyphFrameGlyphMixin = {};
 
-function InspectGlyphFrameGlyphMixin:OnClear()
+function InspectGlyphFrameGlyph_OnClear(self)
 	InspectGlyphFrameGlyph_UpdateGlyphs(self.InspectGlyphs, true);
 	InspectTalentFrameSpec_OnClear(self);
 	TalentFrame_Clear(self.InspectTalents);
