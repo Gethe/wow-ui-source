@@ -1142,9 +1142,16 @@ end
 function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	local activeSpecializationIndex = nil;
 	local selectedSpec = TalentUIUtil.GetSelectedSpec();
-	if (not self.isPet and not IsPlayerInitialSpec()) or (self.isPet and IsPetActive()) then
+	local isActiveSpecSelected = TalentUIUtil.IsActiveSpecSelected();
+	if not self.isPet or IsPetActive() then
 		activeSpecializationIndex = C_SpecializationInfo.GetSpecialization(nil, self.isPet, selectedSpec.talentGroup);
 	end
+
+	-- Initial spec should be treated as "no spec" in the UI.
+	if IsInitialSpec(activeSpecializationIndex) then
+		activeSpecializationIndex = nil;
+	end
+
 	local shownSpec = spec or activeSpecializationIndex or 1;
 	local numSpecs = GetNumSpecializations(nil, self.isPet);
 	local petNotActive = self.isPet and not IsPetActive();
@@ -1160,12 +1167,12 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 			button.selected = false;
 			button.selectedTex:Hide();
 		end
-		if ( i == activeSpecializationIndex ) then
+		if ( i == activeSpecializationIndex and (not self.isPet or isActiveSpecSelected) ) then
 			button.learnedTex:Show();
 		else
 			button.learnedTex:Hide();
 		end
-		if ( TalentUIUtil.IsActiveSpecSelected() and ( not activeSpecializationIndex or i == activeSpecializationIndex ) ) then
+		if ( isActiveSpecSelected and ( not activeSpecializationIndex or i == activeSpecializationIndex ) ) then
 			button.bg:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
 		else
 			button.bg:SetTexCoord(0.00390625, 0.87890625, 0.67187500, 0.75000000);
@@ -1215,7 +1222,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 	scrollChild.roleName:SetText(_G[role1]);
 	scrollChild.roleIcon:SetTexCoord(GetTexCoordsForRole(role1));
 	-- disable stuff if not in active spec or have picked a specialization and not looking at it
-	local disable = (not TalentUIUtil.IsActiveSpecSelected()) or ( activeSpecializationIndex and shownSpec ~= activeSpecializationIndex ) or petNotActive;
+	local disable = (not isActiveSpecSelected) or ( activeSpecializationIndex and shownSpec ~= activeSpecializationIndex ) or petNotActive;
 	if ( disable and not self.disabled ) then
 		self.disabled = true;
 		self.bg:SetDesaturated(true);
@@ -1246,7 +1253,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		scrollChild.scrollwork_bottomright:SetDesaturated(false);
 	end
 	-- disable Learn button
-	if ( self.isPet and (not petNotActive) and disable ) then
+	if ( self.isPet and isActiveSpecSelected and (not petNotActive) and disable ) then
 		self.learnButton:Enable();
 		self.learnButton.Flash:Show();
 		self.learnButton.FlashAnim:Play();
