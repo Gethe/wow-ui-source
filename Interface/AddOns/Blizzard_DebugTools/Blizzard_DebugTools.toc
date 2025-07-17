@@ -1,10 +1,11 @@
-## Title: Blizzard UI Debug Tools
+## Title: Blizzard_DebugTools
 ## Notes: Tools for developing addons
-## Author: Blizzard Entertainment
 ## Special Thanks: Iriel, Kirov, Esamynn
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: Both
+DebugObjectUtil.lua
+Blizzard_TextureInfoGenerator.lua
 Blizzard_DebugTools.lua
 Blizzard_DebugTools.xml
 Blizzard_TableInspectorDataProvider.lua

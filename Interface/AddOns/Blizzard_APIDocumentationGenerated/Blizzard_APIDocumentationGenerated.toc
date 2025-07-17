@@ -432,7 +432,9 @@ SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
 SpellConstantsDocumentation.lua
+SpellIDDocumentation.lua
 SpellSharedDocumentation.lua
+TalentAndGlyphConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TimerConstantsDocumentation.lua

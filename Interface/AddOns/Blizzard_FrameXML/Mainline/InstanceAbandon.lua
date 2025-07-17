@@ -50,7 +50,6 @@ StaticPopupDialogs["WARN_LEAVE_RESTRICTED_CHALLENGE_MODE"] = {
 		return string.format(WARN_LEAVE_RESTRICTED_CHALLENGE_MODE, timeleft)
 	end,
 	whileDead = 1,
-	hideOnEscape = 1,
 	showAlert = 1,
 };
 

@@ -412,7 +412,7 @@ end
 
 SecureCmdList["PET_DISMISS"] = function(msg)
 	if ( PetCanBeAbandoned() ) then
-		CastSpellByID(HUNTER_DISMISS_PET);
+		CastSpellByID(Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET);
 	else
 		PetDismiss();
 	end

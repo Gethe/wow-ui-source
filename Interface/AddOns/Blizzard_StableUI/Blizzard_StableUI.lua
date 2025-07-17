@@ -148,7 +148,9 @@ local function FindFirstUnusedStableSlot()
 end
 
 local function IsActivePetSlotUnlocked(activePetSlot)
-	return IsSpellKnown(CALL_PET_SPELL_IDS[activePetSlot]);
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	return C_SpellBook.IsSpellInSpellBook(CALL_PET_SPELL_IDS[activePetSlot], spellBank, includeOverrides);
 end
 
 local function GetFirstActivePetSlot()

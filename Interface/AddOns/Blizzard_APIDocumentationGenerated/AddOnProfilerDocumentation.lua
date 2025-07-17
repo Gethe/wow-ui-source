@@ -128,13 +128,13 @@ local AddOnProfiler =
 			Arguments =
 			{
 				{ Name = "func", Type = "LuaValueVariant", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "arguments", Type = "LuaValueVariant", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =
 			{
 				{ Name = "results", Type = "AddOnProfilerCallResults", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "returns", Type = "LuaValueVariant", Nilable = false, StrideIndex = 1 },
 			},
 		},
 	},

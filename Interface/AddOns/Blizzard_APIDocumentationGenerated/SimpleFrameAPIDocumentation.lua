@@ -217,13 +217,13 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "attributeName", Type = "cstring", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "arguments", Type = "cstring", Nilable = true, StrideIndex = 1 },
 			},
 
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "returns", Type = "cstring", Nilable = true, StrideIndex = 1 },
 			},
 		},
 		{
@@ -279,7 +279,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "scriptObject", Type = "ScriptObject", Nilable = false, StrideIndex = 1 },
+				{ Name = "children", Type = "SimpleFrame", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -508,7 +508,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "scriptObject", Type = "ScriptObject", Nilable = false, StrideIndex = 1 },
+				{ Name = "regions", Type = "SimpleRegion", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -906,7 +906,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "MouseButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{

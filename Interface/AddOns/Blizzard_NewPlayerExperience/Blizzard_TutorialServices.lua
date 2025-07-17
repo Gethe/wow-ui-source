@@ -11,7 +11,9 @@ end
 
 function Class_AddSpellToActionBarService:CanBegin(args)
 	local spellID, warningString, spellMicroButtonString, optionalPreferredActionBar, requiredForm = unpack(args);
-	if spellID and IsSpellKnown(spellID) then
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	if spellID and C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides) then
 		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
 		return button == nil;
 	end

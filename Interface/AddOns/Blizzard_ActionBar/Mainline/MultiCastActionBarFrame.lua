@@ -947,7 +947,9 @@ end
 function MultiCastSummonSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
 	for index, spellId in ipairs(TOTEM_MULTI_CAST_SUMMON_SPELLS) do
-		knownMultiCastSummonSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = false;
+		knownMultiCastSummonSpells[index] = (C_SpellBook.IsSpellInSpellBook(spellId, spellBank, includeOverrides) and spellId) or nil;
 	end
 
 	-- update the spell button
@@ -1026,7 +1028,9 @@ end
 function MultiCastRecallSpellButton_Update(self)
 	-- first update which multi-cast spells we actually know
 	for index, spellId in ipairs(TOTEM_MULTI_CAST_RECALL_SPELLS) do
-		knownMultiCastRecallSpells[index] = (IsSpellKnown(spellId) and spellId) or nil;
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = false;
+		knownMultiCastRecallSpells[index] = (C_SpellBook.IsSpellInSpellBook(spellId, spellBank, includeOverrides) and spellId) or nil;
 	end
 
 	-- update the spell button

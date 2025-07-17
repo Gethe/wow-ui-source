@@ -331,7 +331,9 @@ function PetJournalHealPetSpellFrameMixin:OnLoad()
 end
 
 function PetJournalHealPetSpellFrameMixin:IsAvailable()
-	return IsSpellKnown(self.spellID) and C_PetJournal.IsJournalUnlocked();
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	return C_SpellBook.IsSpellInSpellBook(self.spellID, spellBank, includeOverrides) and C_PetJournal.IsJournalUnlocked();
 end
 
 function PetJournalHealPetSpellFrameMixin:IsLocked()
@@ -339,7 +341,9 @@ function PetJournalHealPetSpellFrameMixin:IsLocked()
 end
 
 function PetJournalHealPetSpellFrameMixin:OnSetTooltip(tooltip)
-	if not IsSpellKnown(self.spellID) then
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	if not C_SpellBook.IsSpellInSpellBook(self.spellID, spellBank, includeOverrides) then
 		GameTooltip_AddErrorLine(tooltip, PET_BATTLE_HEAL_SPELL_UNKNOWN);
 	elseif not C_PetJournal.IsJournalUnlocked() then
 		GameTooltip_AddErrorLine(tooltip, PET_JOURNAL_HEAL_SPELL_LOCKED);

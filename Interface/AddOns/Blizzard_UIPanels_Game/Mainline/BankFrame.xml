@@ -36,7 +36,7 @@
 		</KeyValues>
 	</CheckButton>
 
-	<Frame name="BankPanelTabSettingsMenuTemplate" inherits="IconSelectorPopupFrameTemplate, CallbackRegistrantTemplate" mixin="BankPanelTabSettingsMenuMixin" virtual="true">
+	<Frame name="BankPanelTabSettingsMenuTemplate" inherits="IconSelectorPopupFrameTemplate, CallbackRegistrantTemplate" mixin="BankPanelTabSettingsMenuMixin" enableMouse="true" virtual="true">
 		<KeyValues>
 			<!-- This text is dynamically updated based on the bank type -->
 			<KeyValue key="editBoxHeaderText" value="CHARACTER_BANK_TAB_NAME_PROMPT" type="global"/>
@@ -510,6 +510,16 @@
 		</Scripts>
 	</Frame>
 
+	<!--
+		Script-only template for use by addons to create buttons that open the bank tab purchase dialog.
+		Requires setting the 'overrideBankType' attribute to a appropriate Enum.BankType value.
+	-->
+	<Button name="BankPanelPurchaseButtonScriptTemplate" mixin="BankPanelPurchaseTabButtonMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
 	<Frame name="BankPanelPurchasePromptTemplate" mixin="BankPanelPurchasePromptMixin" inherits="BankPanelPromptTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="TabCostFrame">
@@ -528,14 +538,11 @@
 						</Scripts>
 					</Frame>
 
-					<Button parentKey="PurchaseButton" inherits="UIPanelButtonTemplate" text="BANKSLOTPURCHASE" mixin="BankPanelPurchaseTabButtonMixin">
+					<Button parentKey="PurchaseButton" inherits="BankPanelPurchaseButtonScriptTemplate, UIPanelButtonTemplate" text="BANKSLOTPURCHASE">
 						<Size x="105" y="21"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.MoneyDisplay" relativePoint="RIGHT" x="12"/>
 						</Anchors>
-						<Scripts>
-							<OnClick method="OnClick"/>
-						</Scripts>
 					</Button>
 				</Frames>
 				<Layers>

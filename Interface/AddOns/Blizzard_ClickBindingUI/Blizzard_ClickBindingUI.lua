@@ -630,7 +630,9 @@ function ClickBindingFrameMixin:OnEvent(event, ...)
 		local toRemove = {};
 
 		self.dataProvider:ForEach(function(element)
-			if element.bindingInfo and (element.bindingInfo.type == Enum.ClickBindingType.Spell) and not IsSpellKnown(element.bindingInfo.actionID) then
+			local spellBank = Enum.SpellBookSpellBank.Player;
+			local includeOverrides = false;
+			if element.bindingInfo and (element.bindingInfo.type == Enum.ClickBindingType.Spell) and not C_SpellBook.IsSpellInSpellBook(element.bindingInfo.actionID, spellBank, includeOverrides) then
 				table.insert(toRemove, element)
 			end
 		end);

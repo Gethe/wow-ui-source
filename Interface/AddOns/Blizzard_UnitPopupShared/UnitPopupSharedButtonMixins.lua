@@ -976,7 +976,7 @@ function UnitPopupPetDismissButtonMixin:GetText(contextData)
 end
 
 function UnitPopupPetDismissButtonMixin:CanShow(contextData)
-	if PetCanBeAbandoned() and not IsSpellKnown(HUNTER_DISMISS_PET) then
+	if PetCanBeAbandoned() and not C_SpellBook.IsSpellKnown(Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET) then
 		return false;
 	end
 
@@ -985,7 +985,7 @@ end
 
 function UnitPopupPetDismissButtonMixin:OnClick(contextData)
 	if PetCanBeAbandoned() then
-		CastSpellByID(HUNTER_DISMISS_PET);
+		CastSpellByID(Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET);
 	else
 		PetDismiss();
 	end

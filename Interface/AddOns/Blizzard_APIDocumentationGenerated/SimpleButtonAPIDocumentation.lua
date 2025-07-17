@@ -268,7 +268,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "ClickButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -278,7 +278,7 @@ local SimpleButtonAPI =
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "ClickButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{

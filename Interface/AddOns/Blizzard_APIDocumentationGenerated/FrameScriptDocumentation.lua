@@ -11,7 +11,7 @@ local FrameScript =
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "mixins", Type = "LuaValueVariant", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =
@@ -96,7 +96,7 @@ local FrameScript =
 			Arguments =
 			{
 				{ Name = "object", Type = "LuaValueVariant", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "mixins", Type = "LuaValueVariant", Nilable = false, StrideIndex = 1 },
 			},
 
 			Returns =

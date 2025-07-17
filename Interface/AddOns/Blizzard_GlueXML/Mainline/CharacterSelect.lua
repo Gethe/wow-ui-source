@@ -207,7 +207,7 @@ function CharacterSelectFrameMixin:OnShow()
 
     if (C_StoreGlue.GetDisconnectOnLogout()) then
         C_StoreSecure.SetDisconnectOnLogout(false);
-        StaticPopup_Hide();
+        StaticPopup_HideAll();
         C_Login.DisconnectFromServer();
     end
 
@@ -497,7 +497,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignNearest);
 		end
     elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-        StaticPopup_Hide();
+        StaticPopup_HideAll();
         local message = ...;
         CharacterRenameDialog:Show();
         CharacterRenameText1:SetText(_G[message]);
@@ -563,7 +563,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
     elseif event == "CHARACTER_DELETION_RESULT" then
         local success, errorToken = ...;
         if success then
-            StaticPopup_Hide();
+            StaticPopup_HideAll();
         else
             StaticPopup_Show("OKAY", _G[errorToken]);
         end
@@ -648,8 +648,6 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
 		local charID = CharacterSelectListUtil.GetCharIDFromIndex(self.selectedIndex);
 		CharacterSelectUI:SetCharacterDisplay(charID);
-	elseif (event == "ACCOUNT_DATA_RESTORING") then
-	    StaticPopup_Show("COPY_IN_PROGRESS");
 	end
 end
 
@@ -2613,7 +2611,7 @@ function CopyCharacterFrame_OnEvent(self, event, ...)
         self.SearchButton:Enable();
     elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED" or event == "KEY_BINDINGS_COPY_COMPLETE") then
         local success, token = ...;
-        StaticPopup_Hide();
+        StaticPopup_HideAll();
         self:Hide();
         if (not success) then
             StaticPopup_Show("OKAY", COPY_FAILED);

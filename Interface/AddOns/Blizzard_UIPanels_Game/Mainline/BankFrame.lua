@@ -1135,10 +1135,20 @@ end
 
 BankPanelPurchaseTabButtonMixin = CreateFromMixins(BankPanelSystemMixin);
 
+function BankPanelPurchaseTabButtonMixin:GetBankTypeForTabPurchase()
+	local overrideBankType = self:GetAttribute("overrideBankType");
+
+	if overrideBankType ~= nil then
+		return overrideBankType;
+	end
+
+	return self:GetActiveBankType();
+end
+
 function BankPanelPurchaseTabButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 	local textArg1, textArg2 = nil, nil;
-	StaticPopup_Show("CONFIRM_BUY_BANK_TAB", textArg1, textArg2, { bankType = self:GetActiveBankType() });
+	StaticPopup_Show("CONFIRM_BUY_BANK_TAB", textArg1, textArg2, { bankType = self:GetBankTypeForTabPurchase() });
 end
 
 BankPanelMoneyFrameMixin = CreateFromMixins(BankPanelSystemMixin);
