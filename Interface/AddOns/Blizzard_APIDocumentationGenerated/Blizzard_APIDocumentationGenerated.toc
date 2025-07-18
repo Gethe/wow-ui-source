@@ -380,6 +380,7 @@ SoftTargetConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
 SpellConstantsDocumentation.lua
 SpellSharedDocumentation.lua
+TalentAndGlyphConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
 TimerConstantsDocumentation.lua
@@ -413,6 +414,5 @@ AuctionHouseConstants_ClassicDocumentation.lua
 CurrencyConstants_ClassicDocumentation.lua
 ItemConstants_ClassicDocumentation.lua
 QuestConstants_ClassicDocumentation.lua
-TalentAndGlyphConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
 # End documentation files here

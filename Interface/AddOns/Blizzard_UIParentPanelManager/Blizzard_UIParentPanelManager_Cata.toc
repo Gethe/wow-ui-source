@@ -1,7 +1,7 @@
 ## Title: Blizzard_UIParentPanelManager
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent
+## Dependencies: Blizzard_UIParent, Blizzard_UIPanels_Game
 ## LoadWith: Blizzard_UIParent
 ## AllowLoad: game
 ## AllowLoadGameType: cata
