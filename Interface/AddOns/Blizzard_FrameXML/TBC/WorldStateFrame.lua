@@ -420,7 +420,7 @@ function WorldStateScoreFrame_Update()
 
 	-- Show average matchmaking rating at the bottom
 	if WorldStateScoreFrame.teamAverageRating ~= nil then
-		if isRatedBG or (isArena and isRegistered) then
+		if isRanked then
 			local _, ourAverageMMR, theirAverageMMR;
 			local myFaction = GetBattlefieldArenaFaction();
 			_, _, _, ourAverageMMR = GetBattlefieldTeamInfo(myFaction);

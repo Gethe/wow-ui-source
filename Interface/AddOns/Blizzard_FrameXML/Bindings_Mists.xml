@@ -927,6 +927,37 @@
 		TargetLastTarget();
 	</Binding>
 
+	<Binding name="TARGETARENA1" category="BINDING_HEADER_TARGETING">
+		TargetUnit("arena1");
+	</Binding>
+	<Binding name="TARGETARENA2" category="BINDING_HEADER_TARGETING">
+		TargetUnit("arena2");
+	</Binding>
+	<Binding name="TARGETARENA3" category="BINDING_HEADER_TARGETING">
+		TargetUnit("arena3");
+	</Binding>
+	<Binding name="TARGETARENA4" category="BINDING_HEADER_TARGETING">
+		TargetUnit("arena4");
+	</Binding>
+	<Binding name="TARGETARENA5" category="BINDING_HEADER_TARGETING">
+		TargetUnit("arena5");
+	</Binding>
+	<Binding name="FOCUSARENA1" category="BINDING_HEADER_TARGETING">
+		FocusUnit("arena1");
+	</Binding>
+	<Binding name="FOCUSARENA2" category="BINDING_HEADER_TARGETING">
+		FocusUnit("arena2");
+	</Binding>
+	<Binding name="FOCUSARENA3" category="BINDING_HEADER_TARGETING">
+		FocusUnit("arena3");
+	</Binding>
+	<Binding name="FOCUSARENA4" category="BINDING_HEADER_TARGETING">
+		FocusUnit("arena4");
+	</Binding>
+	<Binding name="FOCUSARENA5" category="BINDING_HEADER_TARGETING">
+		FocusUnit("arena5");
+	</Binding>
+
 	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local SHOW_ENEMIES = GetCVarBool("nameplateShowEnemies");
 		if ( SHOW_ENEMIES ) then

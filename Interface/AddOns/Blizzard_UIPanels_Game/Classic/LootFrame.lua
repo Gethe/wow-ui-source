@@ -567,6 +567,7 @@ function MasterLooterFrame_Show(selectedLootButton)
 
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
+	MasterLooterFrame:ClearAllPoints();
 	MasterLooterFrame:SetPoint("TOPLEFT", selectedLootButton, "BOTTOMLEFT", 0, 0);
 end
 
