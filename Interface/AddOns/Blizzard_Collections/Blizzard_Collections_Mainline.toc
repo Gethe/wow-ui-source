@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## Dependencies: Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil
+## Dependencies: Blizzard_ContentTracking, Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil
 
 ## AllowLoadGameType: mainline
 Mainline\Blizzard_CollectionTemplates.xml

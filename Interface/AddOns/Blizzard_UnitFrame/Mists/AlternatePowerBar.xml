@@ -14,11 +14,7 @@
 						<AbsDimension x="128" y="16"/>
 					</Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-17" y="0"/>
-							</Offset>
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-17" y="0"/>
 					</Anchors>
 					<Color r="0" g="0" b="0" a="0.5"/>
 					<TexCoords left="0" right="1" top="0.5" bottom="1"/>
@@ -90,6 +86,7 @@
 		<BarColor r="0" g="0" b="1.0"/>
 	</StatusBar>
 	<StatusBar name="PlayerFrameAlternateManaBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">	<!--Primarily for Druids in forms (at the moment)-->
+		<Size x="104" y="12"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT">
 				<Offset>
@@ -98,22 +95,4 @@
 			</Anchor>
 		</Anchors>
 	</StatusBar>
-	<!--StatusBar name="PlayerFrameAlternateEnergyBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame">
-		<Anchors>
-			<Anchor point="TOPLEFT">
-				<Offset>
-					<AbsDimension x="114" y="-10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>`
-		<Scripts>
-			<OnLoad>
-				self.powerName = "ENERGY";
-				self.powerIndex = 3;
-				AlternatePowerBar_OnLoad(self);
-				_G[self:GetName().."Border"]:SetTexCoord(0.0234375, 0.6875, 0.0, 1.0);
-				_G[self:GetName().."Border"]:SetPoint("TOPLEFT", -10, 4)
-			</OnLoad>
-		</Scripts>
-	</StatusBar-->
 </Ui>

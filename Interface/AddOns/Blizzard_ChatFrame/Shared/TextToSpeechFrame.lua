@@ -47,6 +47,16 @@ StaticPopupDialogs["TTS_CONFIRM_SAVE_SETTINGS"] = {
 	end,
 };
 
+local function GetTTSLayoutColumnCount(scale)
+	scale = scale or TextSizeManager:GetScale();
+
+	if scale > 1 then
+		return 1;
+	else
+		return 2;
+	end
+end
+
 local function FormatVoiceText(voice)
 	return voice.name;
 end
@@ -194,8 +204,21 @@ function TextToSpeechFrame_Update(self)
 	container.NarrateMyMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.NarrateMyMessages));
 	container.UseAlternateVoiceForSystemMessagesCheckButton:SetChecked(C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice));
 
-	if ChatConfigTextToSpeechMessageSettingsChatTypeContainer then
-		TextToSpeechFrame_UpdateMessageCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer);
+	local ttsMessageSettings = ChatConfigTextToSpeechMessageSettings;
+	if ttsMessageSettings then
+		TextToSpeechFrame_UpdateMessageCheckboxes(ttsMessageSettings);
+
+		ttsMessageSettings:SetScript("OnShow", function()
+			EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function(_owner, scale)
+				TextToSpeechFrame_UpdateCheckboxLayout(ttsMessageSettings, scale);
+			end, ttsMessageSettings);
+
+			TextToSpeechFrame_UpdateCheckboxLayout(ttsMessageSettings, TextSizeManager:GetScale());
+		end);
+
+		ttsMessageSettings:SetScript("OnHide", function()
+			EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", ttsMessageSettings);
+		end);
 	end
 
 	container.TtsVoiceDropdown:GenerateMenu();
@@ -431,7 +454,7 @@ function TextToSpeechFrame_CheckLoad(self)
 		TextToSpeechFrame_SetupVoiceDropdown(self);
 		TextToSpeechFrame_SetupAlternateVoiceDropdown(self);
 
-		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettingsChatTypeContainer, TEXT_TO_SPEECH_CHAT_TYPES, "TextToSpeechChatTypeCheckButtonTemplate");
+		TextToSpeechFrame_CreateCheckboxes(ChatConfigTextToSpeechMessageSettings, TEXT_TO_SPEECH_CHAT_TYPES, "TextToSpeechChatTypeCheckButtonTemplate");
 
 		local maxSettingsDepth = 2;
 		if TEXTTOSPEECH_CONFIG and not tCompare(TEXTTOSPEECH_CONFIG, DefaultLegacySettings, maxSettingsDepth) then
@@ -540,13 +563,42 @@ local channelsWithTtsName =
 	MONEY = true,
 };
 
+function TextToSpeechFrame_UpdateCheckboxLayout(frame, scale)
+	local secondColIndex = 15;
+	local columnCount = GetTTSLayoutColumnCount(scale);
+
+	local previousCheckBox = nil;
+
+	local frameHeight = 0;
+	local frameTop = frame:GetTop();
+
+	for index, checkBox in ipairs(frame.checkBoxes) do
+		checkBox:ClearAllPoints();
+
+		if index == secondColIndex and columnCount > 1 then
+			checkBox:SetPoint("TOP", frame.SubTitle, "BOTTOM", 0, -8);
+			checkBox:SetPoint("LEFT", frame, "CENTER", 0, 0);
+		elseif previousCheckBox then
+			checkBox:SetPoint("TOPLEFT", previousCheckBox, "BOTTOMLEFT", 0, 4);
+		else
+			checkBox:SetPoint("TOPLEFT", frame.SubTitle, "BOTTOMLEFT", 0, -8);
+		end
+
+		previousCheckBox = checkBox;
+
+		frameHeight = math.max(frameHeight, frameTop - checkBox:GetBottom());
+	end
+
+	frame:SetHeight(frameHeight);
+end
+
 function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate)
 	local checkBoxNameString = frame:GetName().."Checkbox";
 	local checkBoxName, checkBox;
 	local checkBoxFontString;
-	local secondColIndex = 15;
 
 	frame.checkBoxTable = checkBoxTable;
+	frame.checkBoxes = {};
 	for index, value in ipairs(checkBoxTable) do
 		--If no checkbox then create it
 		checkBoxName = checkBoxNameString..index;
@@ -554,23 +606,21 @@ function TextToSpeechFrame_CreateCheckboxes(frame, checkBoxTable, checkBoxTempla
 		if ( not checkBox ) then
 			checkBox = CreateFrame("CheckButton", checkBoxName, frame, checkBoxTemplate);
 			checkBox:SetID(index);
+
+			table.insert(frame.checkBoxes, checkBox);
 		end
-		if ( index == secondColIndex ) then
-			checkBox:SetPoint("TOP", frame, "TOP", 8, -8);
-			checkBox:SetPoint("LEFT", frame, "CENTER", 0, 0);
-		elseif ( index > 1 ) then
-			checkBox:SetPoint("TOPLEFT", checkBoxNameString..(index-1), "BOTTOMLEFT", 0, 4);
-		else
-			checkBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, -8);
-		end
+
 		checkBox.type = value;
 		checkBox:SetChecked(TextToSpeechFrame_GetChatTypeEnabled(value));
 		checkBoxFontString = checkBox.text;
+		checkBoxFontString:SetWidth(0);
 		checkBoxFontString:SetText((channelsWithTtsName[value] and _G[value.."_TTS_LABEL"] or _G[value]) or value);
 		local r, g, b = GetMessageTypeColor(value);
 		checkBoxFontString:SetVertexColor(r, g, b);
 		checkBoxFontString:SetMaxLines(1);
 	end
+
+	TextToSpeechFrame_UpdateCheckboxLayout(frame);
 end
 
 function TextToSpeechChatTypeCheckButton_OnClick(self, button)
@@ -932,14 +982,6 @@ function TextToSpeechFrame_MessageEventHandler(frame, event, ...)
 		if chatTypeInfo and chatTypeInfo.id then
 			TextToSpeechFrame_PlayMessage(frame, message, chatTypeInfo.id, false, messageFromPlayer);
 		end
-	end
-end
-
-local function GetTTSLayoutColumnCount(scale)
-	if scale > 1 then
-		return 1;
-	else
-		return 2;
 	end
 end
 

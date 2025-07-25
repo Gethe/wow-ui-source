@@ -1542,7 +1542,7 @@ CHAT_CONFIG_CATEGORIES = {
 	[3] = "ChatConfigChannelSettings",
 	[4] = "ChatConfigOtherSettings",
 	[5] = "ChatConfigTextToSpeechSettings",
-	[6] = "ChatConfigTextToSpeechMessageSettings",
+	[6] = "ChatConfigTextToSpeechMessageSettingsScroll",
 	[7] = "ChatConfigTextToSpeechChannelSettings",
 };
 

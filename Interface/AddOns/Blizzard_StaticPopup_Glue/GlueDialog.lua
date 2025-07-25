@@ -18,19 +18,19 @@ do
 			StaticPopup_OnClick(dialog, self:GetID());
 		end);
 	end
-	
+
 	function GlueDialogMixin:OnLoad()
 		local container = self.Container;
 		container.BG.Top:SetAtlas(GlueDialogBackgroundTop, TextureKitConstants.UseAtlasSize);
 		-- Bottom texture is assigned in SetBackground depending on dialogInfo .darken value.
 		container.BG.Bottom:SetPoint("TOPLEFT", 8, -9);
 		container.BG.Bottom:SetPoint("BOTTOMRIGHT", -8, 9);
-		
+
 		container.Text.origWidth = self.Container.Text:GetWidth();
 		container.HtmlText.origWidth = self.Container.HtmlText:GetWidth();
 		container.origWidth = self.Container:GetWidth();
 		container.alertWidth = 600;
-	
+
 		SetupButton(self, container.Button1);
 		SetupButton(self, container.Button2);
 		SetupButton(self, container.Button3);
@@ -84,8 +84,8 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 			button2:SetPoint("BOTTOM", button3, "TOP", 0, 10);
 			button1:SetPoint("BOTTOM", button2, "TOP", 0, 10);
 		else
-			button1:SetPoint("BOTTOMLEFT", self.Container, "BOTTOMLEFT", 75, 18);
-			button2:SetPoint("LEFT", button1, "RIGHT", 15, 0);
+			button2:SetPoint("BOTTOM", self.Container, "BOTTOM", 0, 18);
+			button1:SetPoint("RIGHT", button2, "LEFT", -15, 0);
 			button3:SetPoint("LEFT", button2, "RIGHT", 15, 0);
 		end
 

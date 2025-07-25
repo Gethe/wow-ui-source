@@ -746,9 +746,9 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept = function(dialog, data)
 end;
 
 StaticPopupDialogs["SET_FRIENDNOTE"].OnShow = function(dialog, data)
-	local accountInfo = C_BattleNet.GetAccountInfoByID(FriendsFrame.NotesID);
-	if accountInfo and accountInfo.note ~= "" then
-		dialog:GetEditBox():SetText(accountInfo.note);
+	local info = C_FriendList.GetFriendInfo(FriendsFrame.NotesID);
+	if info.notes then
+		dialog:GetEditBox():SetText(info.notes);
 	end
 	dialog:GetEditBox():SetFocus();
 end;

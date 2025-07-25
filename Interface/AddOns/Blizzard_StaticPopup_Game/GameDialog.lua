@@ -38,6 +38,8 @@ do
 			SetupButton(self, button);
 		end
 
+		SetupButton(self, self.ExtraButton);
+
 		self.Text:SetOwningDialog(self);
 		self.EditBox:SetOwningDialog(self);
 

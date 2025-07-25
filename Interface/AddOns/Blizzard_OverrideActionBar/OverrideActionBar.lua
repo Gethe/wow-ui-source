@@ -50,7 +50,7 @@ function OverrideActionBarMixin:OnLoad()
 
 	--Setup the XP bar
 	local divWidth = self.xpBar.XpMid:GetWidth()/19;
-	local xpos = 6;	
+	local xpos = 6;
 	for i=1,19 do
 		local texture = self.xpBar:CreateTexture("OverrideActionBarXpDiv"..i, "ARTWORK", nil, 2);
 		texture:SetSize(7, 14);
@@ -114,6 +114,11 @@ function OverrideActionBarMixin:OnShow()
 
 	EditModeManagerFrame:BlockEnteringEditMode(self);
 	EditModeManagerFrame:UpdateBottomActionBarPositions();
+
+	if not PlayerCastingBarFrame:IsAttachedToPlayerFrame() and PlayerCastingBarFrame:IsInDefaultPosition() then
+		self.playerBarReplaced = true;
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self, { overrideAnchor = CreateAnchor("BOTTOM", self, "TOP" , 0, 30) });
+	end
 end
 
 function OverrideActionBarMixin:OnHide()
@@ -123,6 +128,11 @@ function OverrideActionBarMixin:OnHide()
 	UIParent_ManageFramePositions();
 
 	EditModeManagerFrame:UnblockEnteringEditMode(self);
+
+	if self.playerBarReplaced then
+		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		self.playerBarReplaced = false;
+	end
 end
 
 function OverrideActionBarMixin:UpdateMicroButtons()
@@ -275,7 +285,7 @@ function OverrideActionBarMixin:Setup(skin, barIndex)
 		OverrideActionBarPowerBar:Hide();
 	end
 
-	self:RegisterEvent("PLAYER_LEVEL_UP");	
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 
 	self:UpdateXpBar();

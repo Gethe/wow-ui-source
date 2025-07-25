@@ -2364,7 +2364,7 @@ Interface\AddOns\Blizzard_UIPanels_Game\Mainline\WorldMapFrameTemplates.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\BankFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\ContainerFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\PVPFrameHelpers.lua
-Interface\AddOns\Blizzard_UIPanels_Game\Mists\QuestFrameTemplates_MistsSpecific.xml
+Interface\AddOns\Blizzard_UIPanels_Game\Mists\QuestScrollFrameAndPanelTemplates.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\SpellBookFrame.lua
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\SpellBookFrame.xml
 Interface\AddOns\Blizzard_UIPanels_Game\Mists\WatchFrame.lua

@@ -18,7 +18,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="InstanceAbandonFrame" mixin="InstanceAbandonMixin" inherits="VerticalLayoutFrame">
+	<Frame name="InstanceAbandonFrame" mixin="InstanceAbandonMixin" inherits="VerticalLayoutFrame" hidden="true">
 		<Size x="200" y="300"/>
 		<Frames>
 			<Frame parentKey="StatusFrame">
@@ -50,8 +50,8 @@
 						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
 						<KeyValue key="layoutIndex" value="3" type="number"/>
 						<KeyValue key="align" value="center" type="string"/>
-						<KeyValue key="topPadding" value="12" type="number"/>
-						<KeyValue key="bottomPadding" value="6" type="number"/>
+						<KeyValue key="topPadding" value="10" type="number"/>
+						<KeyValue key="bottomPadding" value="0" type="number"/>
 					</KeyValues>
 					<Color color="HIGHLIGHT_FONT_COLOR"/>
 				</FontString>

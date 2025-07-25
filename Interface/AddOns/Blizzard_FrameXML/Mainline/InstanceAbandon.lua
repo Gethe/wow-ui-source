@@ -5,12 +5,12 @@ StaticPopupDialogs["VOTE_ABANDON_INSTANCE_VOTE"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		C_PartyInfo.SetInstanceAbandonVoteResponse(true);
+		InstanceAbandonFrame:SetResponse(true);
 	end,
 	OnCancel = function(dialog, data, reason)
 		-- prevents reentry from OnAccept processing
 		if reason == "clicked" then
-			C_PartyInfo.SetInstanceAbandonVoteResponse(false);
+			InstanceAbandonFrame:SetResponse(false);
 		end
 	end,
 	whileDead = 1,
@@ -120,6 +120,7 @@ function InstanceAbandonMixin:OnEvent(event, ...)
 	elseif event == "INSTANCE_ABANDON_VOTE_FINISHED" then
 		StaticPopup_Hide("VOTE_ABANDON_INSTANCE_VOTE");
 		StaticPopup_Hide("VOTE_ABANDON_INSTANCE_WAIT");
+		self:SetResponse(nil);
 		local votePassed = ...;
 		if votePassed then
 			self:CheckShowShutdownDialog();
@@ -155,7 +156,7 @@ function InstanceAbandonMixin:Refresh()
 		end
 	end
 
-	local response = C_PartyInfo.GetInstanceAbandonVoteResponse();
+	local response = self:GetResponse();
 	if response == nil then
 		self.ResponseText:Hide();
 	else
@@ -167,12 +168,32 @@ function InstanceAbandonMixin:Refresh()
 	self:Layout();
 end
 
+function InstanceAbandonMixin:SetResponse(response)
+	local dialog = StaticPopup_FindVisible("VOTE_ABANDON_INSTANCE_VOTE");
+	if not dialog or response == nil then
+		self.response = nil;
+	else
+		-- store the response so we can immediately reflect the state without waiting on server
+		self.response = response;
+		C_PartyInfo.SetInstanceAbandonVoteResponse(response);
+		StaticPopup_ReleaseInsertedFrame(dialog);
+		self:CheckShowVoteDialog();
+	end
+end
+
+function InstanceAbandonMixin:GetResponse()
+	if self.response == nil then
+		return C_PartyInfo.GetInstanceAbandonVoteResponse();
+	end
+	return self.response;
+end
+
 function InstanceAbandonMixin:CheckShowVoteDialog(playSound)
 	local duration, timeLeft = C_PartyInfo.GetInstanceAbandonVoteTime();
 	if timeLeft > 0 then
 		InstanceAbandonFrame:Show();
 		local dialog;
-		local response = C_PartyInfo.GetInstanceAbandonVoteResponse();
+		local response = self:GetResponse();
 		if response == nil then
 			dialog = StaticPopup_Show("VOTE_ABANDON_INSTANCE_VOTE", nil, nil, nil, InstanceAbandonFrame);
 		else

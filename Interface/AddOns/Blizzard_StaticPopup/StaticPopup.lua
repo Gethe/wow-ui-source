@@ -506,6 +506,14 @@ function StaticPopup_UpdateAll(elapsed)
 	end
 end
 
+function StaticPopup_ReleaseInsertedFrame(dialog)
+	if dialog.insertedFrame then
+		dialog.insertedFrame:Hide();
+		dialog.insertedFrame:SetParent(nil);
+		dialog.insertedFrame = nil;
+	end
+end
+
 function StaticPopup_OnShow(dialog)
 	dialog:Raise();
 
@@ -553,10 +561,7 @@ function StaticPopup_OnHide(dialog)
 		dialog:SetScript("OnKeyDown", nil);
 	end
 
-	if dialog.insertedFrame then
-		dialog.insertedFrame:Hide();
-		dialog.insertedFrame:SetParent(nil);
-	end
+	StaticPopup_ReleaseInsertedFrame(dialog);
 
 	StaticPopup_CollapseTable();
 end
@@ -858,7 +863,7 @@ function StaticPopupSpecial_Toggle(dialog)
 end
 
 function StaticPopup_ReparentDialogs()
-	for dialog in ipairs(shownDialogFrames) do
+	for _, dialog in ipairs(shownDialogFrames) do
 		dialog:SetParent(GetFullScreenFrame());
 		dialog:SetFrameStrata("DIALOG");
 	end

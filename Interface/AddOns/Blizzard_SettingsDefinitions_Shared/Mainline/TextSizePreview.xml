@@ -14,13 +14,13 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="TitleText" inherits="UserScaledFontHeader" justifyH="LEFT" text="TEXT_SCALE_PREVIEW_TITLE">
-					<Size x="160" y="0"/>
+					<Size x="250" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMRIGHT"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="BodyText" inherits="UserScaledFontBody" justifyH="LEFT" text="TEXT_SCALE_PREVIEW_BODY">
-					<Size x="160" y="0"/>
+					<Size x="250" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
 					</Anchors>
