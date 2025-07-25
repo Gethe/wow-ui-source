@@ -184,7 +184,7 @@ function InspectTalentFrameSpecMixin:OnEnter()
 end
 
 function InspectTalentFrameSpecMixin:OnLeave()
-	GameTooltip:SetMinimumWidth(0, 0);
+	GameTooltip:SetMinimumWidth(0, false);
 	GameTooltip:Hide();
 end
 

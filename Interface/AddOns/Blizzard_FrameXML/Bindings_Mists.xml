@@ -381,112 +381,6 @@
 		Settings.SetValue("lockActionBars", not selfCast);
 	</Binding>
 
-	<!-- Multicast bindings header="MULTICASTFUNCTIONS" -->
-	<Binding name="MULTICASTSUMMONBUTTON1" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "up" ) then
-			MultiCastSummonSpellButtonUp(1);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(1);
-		else
-			MultiCastActionButtonUp(1);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(2);
-		else
-			MultiCastActionButtonUp(2);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(3);
-		else
-			MultiCastActionButtonUp(3);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(4);
-		else
-			MultiCastActionButtonUp(4);
-		end
-	</Binding>
-	<Binding name="MULTICASTSUMMONBUTTON2" runOnUp="true" header="BLANK" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "up" ) then
-			MultiCastSummonSpellButtonUp(2);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(5);
-		else
-			MultiCastActionButtonUp(5);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(6);
-		else
-			MultiCastActionButtonUp(6);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON7" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(7);
-		else
-			MultiCastActionButtonUp(7);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON8" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(8);
-		else
-			MultiCastActionButtonUp(8);
-		end
-	</Binding>
-	<Binding name="MULTICASTSUMMONBUTTON3" runOnUp="true" header="BLANK2" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "up" ) then
-			MultiCastSummonSpellButtonUp(3);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON9" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(9);
-		else
-			MultiCastActionButtonUp(9);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON10" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(10);
-		else
-			MultiCastActionButtonUp(10);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON11" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(11);
-		else
-			MultiCastActionButtonUp(11);
-		end
-	</Binding>
-	<Binding name="MULTICASTACTIONBUTTON12" runOnUp="true" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "down" ) then
-			MultiCastActionButtonDown(12);
-		else
-			MultiCastActionButtonUp(12);
-		end
-	</Binding>
-	<Binding name="MULTICASTRECALLBUTTON1" runOnUp="true" header="BLANK3" category="BINDING_HEADER_MULTICASTFUNCTIONS">
-		if ( keystate == "up" ) then
-			MultiCastRecallSpellButtonUp(1);
-		end
-	</Binding>
-
 	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
 	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
 		if ( keystate == "down" ) then
@@ -1105,6 +999,12 @@
 	</Binding>
 	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
 		ToggleSpellBook(BOOKTYPE_PET);
+	</Binding>
+	<Binding name="TOGGLECOREABILITIESBOOK">
+		ToggleSpellBook(BOOKTYPE_CORE_ABILITIES);
+	</Binding>
+	<Binding name="TOGGLEWHATHASCHANGEDBOOK">
+		ToggleSpellBook(BOOKTYPE_WHAT_HAS_CHANGED);
 	</Binding>
 	<Binding name="TOGGLEINSCRIPTION" category="BINDING_HEADER_INTERFACE">
 		ToggleGlyphFrame();
