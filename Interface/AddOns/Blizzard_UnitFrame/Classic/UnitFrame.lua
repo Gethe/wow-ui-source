@@ -76,12 +76,14 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.threatNumericIndicator = threatNumericIndicator;
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
-	self.totalAbsorbBar = totalAbsorbBar;
-	self.overAbsorbGlow = overAbsorbGlow;
-	self.overHealAbsorbGlow = overHealAbsorbGlow;
-	self.healAbsorbBar = healAbsorbBar;
-	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
-	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
+	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+		self.totalAbsorbBar = totalAbsorbBar;
+		self.overAbsorbGlow = overAbsorbGlow;
+		self.overHealAbsorbGlow = overHealAbsorbGlow;
+		self.healAbsorbBar = healAbsorbBar;
+		self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
+		self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
+	end
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
 
 	if ( self.myManaCostPredictionBar ) then
@@ -99,10 +101,10 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.healthbar, "BOTTOMLEFT", 7, 0);
 		self.overHealAbsorbGlow:SetPoint("TOPRIGHT", self.healthbar, "TOPLEFT", 7, 0);
 	end
-	if ( healAbsorbBarLeftShadow ) then
+	if ( self.healAbsorbBarLeftShadow ) then
 		self.healAbsorbBarLeftShadow:ClearAllPoints();
 	end
-	if ( healAbsorbBarRightShadow ) then
+	if ( self.healAbsorbBarRightShadow ) then
 		self.healAbsorbBarRightShadow:ClearAllPoints();
 	end
 	if (self.healthbar) then

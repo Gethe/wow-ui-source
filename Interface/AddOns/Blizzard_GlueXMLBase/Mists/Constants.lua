@@ -457,7 +457,6 @@ CREDITS_ART_INFO = {
 			{ file="YaunkaConcept1", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 		[LE_RELEASE_TYPE_CLASSIC] = {
-			-- TODO: CLASS-37727: Figure out what texture this is supposed to be
 			{ file="crane01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},

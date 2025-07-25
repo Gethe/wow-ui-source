@@ -1128,7 +1128,7 @@ function SpecButton_OnEnter(self)
 end
 
 function SpecButton_OnLeave(self)
-	GameTooltip:SetMinimumWidth(0, 0);
+	GameTooltip:SetMinimumWidth(0, false);
 	GameTooltip:Hide();
 end
 

@@ -106,7 +106,15 @@
 				<Frames>
 					<Frame name="PetFrameMyHealPredictionBar" inherits="PetFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
 					<Frame name="PetFrameOtherHealPredictionBar" inherits="PetFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame name="PetFrameHealAbsorbBar" inherits="PetFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame name="PetFrameTotalAbsorbBar" inherits="PetFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
 				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="PetFrameOverAbsorbGlow" inherits="OverAbsorbGlowTemplate"/>
+						<Texture name="PetFrameOverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate"/>
+					</Layer>
+				</Layers>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -121,8 +129,6 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			<StatusBar name="$parentMyHealPredictionBar" inherits="MyHealPredictionBarTemplate"/>
-			<StatusBar name="$parentOtherHealPredictionBar" inherits="OtherHealPredictionBarTemplate"/>
 			<StatusBar name="PetFrameManaBar" inherits="TextStatusBar">
 				<Size x="69" y="8"/>
 				<Anchors>

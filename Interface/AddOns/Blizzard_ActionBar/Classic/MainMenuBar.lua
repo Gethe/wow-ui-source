@@ -73,6 +73,10 @@ function MainMenuBar_OnLoad(self)
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("BAG_UPDATE");
 
+	if (ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA)) then
+		self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	end
+
 	MainMenuBar.state = "player";
 	MainMenuBarPageNumber:SetText(GetActionBarPage());
 
@@ -89,6 +93,40 @@ local firstEnteringWorld = true;
 function MainMenuBar_OnEvent(self, event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainMenuBarPageNumber:SetText(GetActionBarPage());
+	elseif ( event == "CURRENCY_DISPLAY_UPDATE" ) then
+		local showTokenFrame = GetCVarBool("showTokenFrame");
+		if ( not showTokenFrame ) then
+			local name, isHeader, isExpanded, isUnused, isWatched, count, icon;
+			local hasNormalTokens;
+			local currencyTab = HonorFrame_GetCurrencyFrame();
+			for index=1, GetCurrencyListSize() do
+				name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
+				if ( (not isHeader) and (count>0) ) then
+					hasNormalTokens = true;
+				end
+			end
+			if ( (not showTokenFrame) and (hasNormalTokens) ) then
+				SetCVar("showTokenFrame", 1);
+				if ( not CharacterFrame:IsVisible() ) then
+					MicroButtonPulse(CharacterMicroButton, 60);
+				end
+				if ( not TokenFrame:IsVisible() ) then
+					SetButtonPulse(currencyTab, 60, 1);
+				end
+			end
+			
+			if ( hasNormalTokens or showTokenFrame ) then
+				TokenFrame_LoadUI();
+				TokenFrame_Update();
+				BackpackTokenFrame_Update();
+			else
+				currencyTab:Hide();
+			end
+		else
+			TokenFrame_LoadUI();
+			TokenFrame_Update();
+			BackpackTokenFrame_Update();
+		end
 	elseif ( event == "UNIT_LEVEL" ) then
 		local unitToken = ...;
 		if ( unitToken == "player" ) then

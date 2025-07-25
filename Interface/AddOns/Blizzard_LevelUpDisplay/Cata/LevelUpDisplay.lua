@@ -594,7 +594,7 @@ function LevelUpDisplay_AddBattlePetLootReward(self, typeIdentifier, itemLink, q
 			quality = rarity, --Item quality
 		};
 	elseif ( typeIdentifier == "currency" ) then
-		local name, currencyQuantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = C_CurrencyInfo.GetCurrencyInfo(itemLink);
+		local name, currencyQuantity, icon, earnedThisWeek, weeklyMax, maxQuantity, discovered, rarity = C_CurrencyInfo.GetCurrencyInfoFromLink(itemLink);
 		info = {
 			entryType = "petbattleloot",
 			text = BATTLE_PET_LOOT_RECEIVED,
