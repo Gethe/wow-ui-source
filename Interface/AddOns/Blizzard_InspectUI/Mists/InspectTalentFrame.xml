@@ -62,7 +62,7 @@
 	</Frame>
 	
 	<!-- Glyph icons (major and minor), taken from GlyphTemplate in Blizzard_GlyphUI.xml, line 138 -->
-	<Button name="InspectGlyphTemplate" virtual="true" mixin="InspectGlyphFrameGlyphMixin">
+	<Button name="InspectGlyphTemplate" virtual="true" mixin="InspectGlyphMixin">
 		<Size x="72" y="72"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -90,7 +90,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnShow function="InspectGlyphFrameGlyph_UpdateSlot"/>
+			<OnShow method="OnShow"/>
 			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -124,7 +124,7 @@
 		</Layers>
 		<Frames>
 			<!-- Specialization -->
-			<Frame name="Specialization" parentKey="InspectSpec" mixin="InspectTalentFrameSpecMixin">
+			<Frame parentKey="InspectSpec" mixin="InspectSpecMixin">
 				<Size x="300" y="100"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-45"/>
@@ -138,7 +138,7 @@
 							</Anchors>
 							<TexCoords left="0.00390625" right="0.49218750" top="0.00195313" bottom="0.24609375"/>
 						</Texture>
-						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyH="BOTTOM" parentKey="specName">
+						<FontString name="$parentSpecName" inherits="BossEmoteNormalHuge" justifyV="BOTTOM" parentKey="specName">
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentRing" relativePoint="RIGHT" x="-3" y="1"/>
 							</Anchors>
@@ -173,14 +173,14 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnShow function="InspectTalentFrameSpec_OnShow"/>
+					<OnShow method="OnShow"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
 			
 			<!-- Talents -->
-			<Frame name="Talents" parentKey="InspectTalents">
+			<Frame parentKey="InspectTalents" mixin="InspectTalentsMixin">
 				<Size x="300" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="12" y="0"/>
@@ -218,13 +218,13 @@
 					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow function="InspectTalentFrameTalents_OnShow"/>
-					<OnLoad function="InspectTalentFrameTalents_OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
 			
 			<!-- Glyphs -->
-			<Frame name="InspectGlyphs" parentKey="InspectGlyphs">
+			<Frame parentKey="InspectGlyphs" mixin="InspectGlyphsMixin">
 			<Size x="300" y="300"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="180" y="-150"/>

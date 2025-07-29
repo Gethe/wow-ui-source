@@ -62,7 +62,7 @@ end
 function GlyphFrameGlyph_UpdateSlot (self)
 	local id = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
-	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename = GetGlyphSocketInfo(id, talentGroup);
+	local enabled, glyphType, glyphTooltipIndex, glyphSpell, iconFilename, glyphID = GetGlyphSocketInfo(id, talentGroup);
 
 	if ( glyphType == GLYPHTYPE_MINOR ) then
 		GlyphFrameGlyph_SetGlyphType(self, GLYPHTYPE_MINOR);
@@ -87,6 +87,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.setting:SetTexture("Interface\\Spellbook\\UI-GlyphFrame-Locked");
 		self.setting:SetTexCoord(.1, .9, .1, .9);
 	elseif ( not glyphSpell ) then
+		self.glyphID = nil;
 		slotAnimation.glyph = nil;	
 		if ( slotAnimation.sparkle ) then
 			slotAnimation.sparkle:StopAnimating();
@@ -102,6 +103,7 @@ function GlyphFrameGlyph_UpdateSlot (self)
 		self.glyph:Hide();
 		self.ring:Show();
 	else
+		self.glyphID = glyphID;
 		slotAnimation.glyph = true;
 		self.spell = glyphSpell;
 		self.shine:Show();
@@ -231,34 +233,34 @@ function GlyphFrameGlyph_OnUpdate (self, elapsed)
 end
 
 function GlyphFrameGlyph_OnClick (self, button)
-	local id = self:GetID();
+	local glyphSlotIndex = self:GetID();
 	local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup;
 
 	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		local link = GetGlyphLink(id, talentGroup);
+		local link = C_GlyphInfo.GetGlyphLink(glyphSlotIndex, self.glyphID);
 		if ( link ) then
 			ChatEdit_InsertLink(link);
 		end
 	elseif ( button == "RightButton" ) then
 		if ( IsShiftKeyDown() and talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then
 			local glyphName;
-			local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
+			local _, _, _, glyphSpell = GetGlyphSocketInfo(glyphSlotIndex, talentGroup);
 			if ( glyphSpell ) then
 				glyphName = GetSpellInfo(glyphSpell);
-				StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = id});
+				StaticPopup_Show("CONFIRM_REMOVE_GLYPH", nil, nil, {name = glyphName, id = glyphSlotIndex});
 			end
 		end
 	elseif ( talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then
-		if ( self.glyph:IsShown() and GlyphMatchesSocket(id) ) then
+		if ( self.glyph:IsShown() and GlyphMatchesSocket(glyphSlotIndex) ) then
 			local glyphName;
-			local _, _, _, glyphSpell = GetGlyphSocketInfo(id, talentGroup);
+			local _, _, _, glyphSpell = GetGlyphSocketInfo(glyphSlotIndex, talentGroup);
 			local newGlyphName = GetPendingGlyphInfo();
 			if ( glyphSpell and newGlyphName ) then
 				glyphName = GetSpellInfo(glyphSpell);
-				StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {id = id, currentName = glyphName, name = newGlyphName});
+				StaticPopup_Show("CONFIRM_GLYPH_PLACEMENT", nil, nil, {id = glyphSlotIndex, currentName = glyphName, name = newGlyphName});
 			end
 		else
-			PlaceGlyphInSocket(id);
+			PlaceGlyphInSocket(glyphSlotIndex);
 		end
 	end
 end
