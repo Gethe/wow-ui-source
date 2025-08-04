@@ -291,7 +291,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 			goldButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 			silverButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
-			copperButton.Text:SetPoint("RIGHT", copperButton.NormalTexture, "LEFT", 0, MONEY_TEXT_VADJUST);
+			copperButton.Text:SetPoint("RIGHT", copperButton:GetNormalTexture(), "LEFT", 0, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(goldDisplay);
 		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);

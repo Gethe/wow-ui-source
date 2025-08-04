@@ -1,8 +1,22 @@
+local securecallfunction = securecallfunction;
+
 local atGlues = C_Glue.IsOnGlueScreen();
 local dialogFrames = {};
 local shownDialogFrames = {};
 local queuedDialogInfo = {};
 local showConditions = {};
+
+local StaticPopupAttributes = {
+	ReallocateShownDialogs = "reallocate-shown-dialogs",
+};
+
+local StaticPopupAttributeDelegate = CreateFrame("Frame");
+StaticPopupAttributeDelegate:SetForbidden();
+StaticPopupAttributeDelegate:SetScript("OnAttributeChanged", function(_self, attr, _value)
+	if attr == StaticPopupAttributes.ReallocateShownDialogs then
+		shownDialogFrames = {};
+	end
+end);
 
 StaticPopupDialogs = {}; -- Definitions
 StaticPopupTimeoutSec = 60;
@@ -55,6 +69,15 @@ local function StaticPopup_CollapseTable()
 		if not dialog:IsShown() then
 			table.remove(shownDialogFrames, index);
 		end
+	end
+
+	-- If this was the last dialog then reallocate the table. This is to resolve
+	-- situations where ipairs/ipairs_reverse iterations over this table can
+	-- taint in cases where an addon-initiated dialog was just removed and
+	-- a tainted nil value has been left behind in the table in its place.
+
+	if #shownDialogFrames == 0 then
+		StaticPopupAttributeDelegate:SetAttribute(StaticPopupAttributes.ReallocateShownDialogs, true);
 	end
 end
 
@@ -113,13 +136,17 @@ function StaticPopup_FindVisible(which, data)
 	return nil;
 end
 
-function StaticPopup_Visible(which)
+local function SecureStaticPopup_Visible(which)
 	for _, dialog in ipairs(shownDialogFrames) do
 		if dialog.which == which then
 			return dialog:GetName(), dialog;
 		end
 	end
 	return nil;
+end
+
+function StaticPopup_Visible(which)
+	return securecallfunction(SecureStaticPopup_Visible, which);
 end
 
 function StaticPopup_ForEachShownDialog(func)
