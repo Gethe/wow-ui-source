@@ -54,7 +54,7 @@ function MonkStaggerBarMixin:EvaluateUnit()
 	local meetsRequirements = false;
 
 	local _, class = UnitClass(self:GetUnit());
-	meetsRequirements = class == self.requiredClass and GetSpecialization() == self.requiredSpec;
+	meetsRequirements = class == self.requiredClass and C_SpecializationInfo.GetSpecialization() == self.requiredSpec;
 
 	self:SetBarEnabled(meetsRequirements);
 end

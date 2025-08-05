@@ -181,7 +181,8 @@ function AccountStoreBaseCardMixin:SelectCard()
 			end
 		end);
 	else
-		GlueDialog_Show("ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND", confirmation, itemInfo);
+		local text2 = nil;
+		StaticPopup_Show("ACCOUNT_STORE_BEGIN_PURCHASE_OR_REFUND", confirmation, text2, itemInfo);
 	end
 end
 

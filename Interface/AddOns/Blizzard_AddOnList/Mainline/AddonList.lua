@@ -37,10 +37,10 @@ if ( InGlue() ) then
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
 		button2 = LOAD_ADDONS,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonDialog_Show("CONFIRM_DISABLE_ADDONS");
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("CONFIRM_LOAD_ADDONS");
 		end,
 	}
@@ -49,11 +49,11 @@ if ( InGlue() ) then
 		text = CONFIRM_LOAD_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_AddOns.SetAddonVersionCheck(false);
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -62,11 +62,11 @@ if ( InGlue() ) then
 		text = CONFIRM_DISABLE_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonList_DisableOutOfDate();
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -329,7 +329,7 @@ end
 local function TriStateCheckbox_SetState(checked, checkButton)
 	local checkedTexture = checkButton.CheckedTexture;
 	if ( not checkedTexture ) then
-		message("Can't find checked texture");
+		SetBasicMessageDialogText("Can't find checked texture");
 	end
 	if ( not checked or checked == Enum.AddOnEnableState.None ) then
 		-- nil or Enum.AddOnEnableState.None means not checked

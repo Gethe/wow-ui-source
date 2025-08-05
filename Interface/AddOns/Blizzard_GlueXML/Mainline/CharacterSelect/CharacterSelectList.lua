@@ -33,7 +33,8 @@ function CharacterSelectListMixin:OnLoad()
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
 			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
-			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+			local text2 = nil;
+			StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
 		else
 			createCharacterCallback();
 		end

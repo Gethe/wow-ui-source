@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SharedXML, Blizzard_HelpPlate
-## OptionalDep: Blizzard_StaticPopup, Blizzard_GlueDialogs, Blizzard_UIParent
+## OptionalDep: Blizzard_StaticPopup_Glue, Blizzard_StaticPopup_Game, Blizzard_UIParent
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
 NewDefinitionsFramework.lua

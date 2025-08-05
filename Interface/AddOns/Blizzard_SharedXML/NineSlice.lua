@@ -185,7 +185,7 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 	end
 end
 
-do 
+do
 	local function ForEachPiece(fn)
 		return function(container)
 			for pieceIndex, setup in ipairs(nineSliceSetup) do
@@ -297,13 +297,17 @@ function NineSlicePanelMixin:SetVertexColor(r, g, b, a)
 	self:SetBorderColor(r, g, b, a);
 end
 
-function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+function NineSlicePanelMixin:SetBlendMode(blendMode, excludedPieces)
 	for _, section in ipairs(nineSliceSetup) do
-		if section.pieceName ~= "Center" then
+		if not excludedPieces or not excludedPieces[section.pieceName] then
 			local piece = self[section.pieceName];
 			if piece then
 				piece:SetBlendMode(blendMode);
 			end
 		end
 	end
+end
+
+function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+	self:SetBlendMode(blendMode, { Center = true });
 end

@@ -478,48 +478,56 @@
 					<OnShow function="ChatConfigOtherSettings_OnShow"/>
 				</Scripts>
 			</Frame>
-			<Frame name="ChatConfigTextToSpeechSettings">
-				<Size x="10" y="10"/>
+			<ScrollFrame name="ChatConfigTextToSpeechSettings" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame" x="0" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ChatConfigBackgroundFrame" x="-24" y="5"/>
 				</Anchors>
-				<Frames>
+				<ScrollChild>
 					<Frame name="TextToSpeechFrame" inherits="TextToSpeechFrameTemplate">
+						<Size x="590" y="1"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT"/>
 						</Anchors>
 					</Frame>
-				</Frames>
+				</ScrollChild>
 				<Scripts>
 					<OnShow function="ChatConfigTextToSpeechSettings_OnShow"/>
 				</Scripts>
-			</Frame>
-			<Frame name="ChatConfigTextToSpeechMessageSettings">
-				<Size x="10" y="10"/>
+			</ScrollFrame>
+			<ScrollFrame name="ChatConfigTextToSpeechMessageSettingsScroll" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
+					<KeyValue key="scrollBarTopY" value="-5" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame"/>
+					<Anchor point="TOPLEFT" relativeTo="ChatConfigBackgroundFrame" x="0" y="-11"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="ChatConfigBackgroundFrame" x="-24" y="5"/>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<FontString name="$parentSubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="16" y="-16"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame name="ChatConfigTextToSpeechMessageSettingsChatTypeContainer">
-						<Size x="450" y="300"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="16" y="-32"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
-						</KeyValues>
+				<ScrollChild>
+					<Frame name="ChatConfigTextToSpeechMessageSettings">
+						<Size x="570" y="500"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="SubTitle" text="TEXT_TO_SPEECH_CHAT_MESSAGE_TYPES" inherits="UserScaledFontGameNormal" justifyH="LEFT" justifyV="TOP">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="8" y="0"/>
+										<Anchor point="TOPRIGHT" x="-8" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
 					</Frame>
-				</Frames>
-			</Frame>
+				</ScrollChild>
+			</ScrollFrame>
 			<Frame name="ChatConfigTextToSpeechChannelSettings">
 				<Size x="10" y="10"/>
 				<Anchors>
@@ -592,8 +600,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										local dialog = StaticPopup_Show("COPY_COMBAT_FILTER");
-										dialog.data = CHATCONFIG_SELECTED_FILTER;
+										StaticPopup_Show("COPY_COMBAT_FILTER", nil, nil, CHATCONFIG_SELECTED_FILTER);
 									</OnClick>
 								</Scripts>
 							</Button>

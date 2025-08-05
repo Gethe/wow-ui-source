@@ -4,14 +4,8 @@ StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	whileDead = 1,
-	OnAccept = function (self)
+	OnAccept = function(dialog, data)
 		C_Calendar.ContextMenuEventRemove();
-	end,
-	OnShow = function (self)
-		CalendarFrame_PushModal(self);
-	end,
-	OnHide = function (self)
-		CalendarFrame_PopModal();
 	end,
 	timeout = 0,
 	hideOnEscape = 1,
@@ -21,11 +15,9 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 	text = CALENDAR_ERROR,
 	button1 = OKAY,
 	whileDead = 1,
-	OnShow = function (self)
-		--CalendarFrame_PushModal(self);
+	OnShow = function(dialog, data)
 	end,
-	OnHide = function (self)
-		--CalendarFrame_PopModal();
+	OnHide = function(dialog, data)
 	end,
 	timeout = 0,
 	showAlert = 1,
@@ -1913,7 +1905,7 @@ end
 
 function CalendarEventFrameBlocker_OnShow(self)
 	local eventFrame = CalendarFrame_GetEventFrame();
-	if ( eventFrame and eventFrame:IsShown() ) then
+	if ( eventFrame and (not eventFrame:IsShown() or CalendarTexturePickerFrame:IsShown()) ) then
 		-- can't do SetAllPoints because the eventFrame anchors haven't been determined yet
 		--CalendarEventFrameBlocker:SetAllPoints(eventFrame);
 		CalendarEventFrameBlocker:SetWidth(eventFrame:GetWidth());
@@ -1924,7 +1916,7 @@ function CalendarEventFrameBlocker_OnShow(self)
 			eventFrameOverlay:Show();
 			-- EventFrameBlocker should already be shown by this point, but make sure it should *actually* be shown
 			-- Only block the event frame if it is NOT an event frame in edit mode, or if it is NOT a CalendarViewHolidayFrame
-			-- Not using _CalendarFrame_TryShowEventFrameBlocker here since it is already shown, and we want to ensure the 
+			-- Not using _CalendarFrame_TryShowEventFrameBlocker here since it is already shown, and we want to ensure the
 			-- CalendarEventFrameBlocker blocks event editing while selecting an event icon texture
 			if ( (eventFrame.mode and eventFrame.mode ~= "edit") or (eventFrame:GetName() ~= "CalendarViewHolidayFrame") ) then
 				CalendarEventFrameBlocker:Show();
@@ -2470,7 +2462,7 @@ function CalendarViewHolidayFrame_Update()
 
 			CalendarViewHolidayFrame.ScrollingFont:SetText(description);
 			CalendarViewHolidayFrame.Texture:SetTexture();
-			
+
 			local texture = CALENDAR_CALENDARTYPE_TEXTURES["HOLIDAY"]["INFO"];
 			local tcoords = CALENDAR_CALENDARTYPE_TCOORDS["HOLIDAY"];
 			if ( texture ) then
@@ -2510,7 +2502,7 @@ function CalendarViewRaidFrame_Update()
 		local name = GetDungeonNameWithDifficulty(raidInfo.name, raidInfo.difficultyName);
 		CalendarViewRaidFrame.Header:Setup(name);
 
-		CalendarViewRaidFrame.ScrollingFont:SetText(string.format(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name, 
+		CalendarViewRaidFrame.ScrollingFont:SetText(string.format(CALENDAR_RAID_LOCKOUT_DESCRIPTION, name,
 			GameTime_GetFormattedTime(raidInfo.time.hour, raidInfo.time.minute, true)));
 	end
 end
@@ -2602,7 +2594,7 @@ end
 function CalendarCreateEventInviteList_InitButton(button, elementData)
 	local inviteIndex = elementData.index;
 	local inviteInfo = C_Calendar.EventGetInvite(inviteIndex);
-		
+
 	CalendarEventInviteList_InitButtonShared(button, inviteIndex, inviteInfo);
 
 	-- set the onclick handler based on the parent mode
@@ -2641,11 +2633,11 @@ function CalendarEventInviteList_AnchorSortButtons(inviteList)
 	local nameSortButton = inviteList.sortButtons.name;
 	local invitePartyIcon = inviteButton.PartyIcon;
 	nameSortButton:SetPoint("LEFT", invitePartyIcon, "LEFT");
-	
+
 	local classSortButton = inviteList.sortButtons.class;
 	local inviteClass = inviteButton.Class;
 	classSortButton:SetPoint("LEFT", inviteClass, "LEFT");
-	
+
 	local statusSortButton = inviteList.sortButtons.status;
 	local inviteSort = inviteButton.Status;
 	statusSortButton:SetPoint("RIGHT", inviteSort, "RIGHT");
@@ -2769,7 +2761,7 @@ function CalendarViewEventDescriptionContainer_OnLoad(self)
 	ScrollUtil.InitScrollBar(scrollBox, self.ScrollBar);
 	CalendarEvent_InitManagedScrollBarVisibility(self, scrollBox, self.ScrollBar);
 end
- 
+
 function CalendarViewEventFrame_Update()
 	local eventInfo = C_Calendar.GetEventInfo();
 	if ( not eventInfo or not eventInfo.title ) then
@@ -3639,7 +3631,7 @@ function CalendarCreateEventDescriptionContainer_OnLoad(self)
 
 	local scrollBox = self.ScrollingEditBox:GetScrollBox();
 	ScrollUtil.RegisterScrollBoxWithScrollBar(scrollBox, self.ScrollBar);
-	
+
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", self.ScrollingEditBox, "TOPLEFT", 0, 0),
 		CreateAnchor("BOTTOMRIGHT", self.ScrollingEditBox, "BOTTOMRIGHT", -18, -1),
@@ -4243,7 +4235,7 @@ function CalendarEventPickerFrame_OnLoad(self)
 	self:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST");
 	self.dayButton = nil;
 	self.selectedEvent = nil;
-	
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CalendarEventPickerButtonTemplate", function(button, elementData)
 		CalendarEventPickerFrame_InitButton(button, elementData);
@@ -4332,7 +4324,7 @@ function CalendarEventPickerFrame_InitButton(button, elementData)
 		buttonTitle:SetPoint("BOTTOMLEFT", buttonTime, "BOTTOMLEFT");
 	end
 	buttonTitle:SetFormattedText(CALENDAR_CALENDARTYPE_NAMEFORMAT[event.calendarType][event.sequenceType], title);
-	
+
 	-- set event color
 	local eventColor = _CalendarFrame_GetEventColor(event.calendarType, event.modStatus, event.inviteStatus);
 	buttonTitle:SetTextColor(eventColor.r, eventColor.g, eventColor.b);
@@ -4429,7 +4421,7 @@ end
 
 function CalendarTexturePickerFrame_OnLoad(self)
 	self.selectedTextureIndex = nil;
-	
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CalendarTexturePickerButtonTemplate", function(button, elementData)
 		CalendarTexturePicker_InitButton(button, elementData);
@@ -4500,7 +4492,7 @@ function CalendarTexturePicker_InitButton(button, elementData)
 	local dungeonCacheEntry = CalendarEventDungeonCache[cacheIndex];
 	local eventType = CalendarTexturePickerFrame.eventType;
 	local selectedTextureIndex = CalendarTexturePickerFrame.selectedTextureIndex;
-	
+
 	if ( dungeonCacheEntry.textureIndex ) then
 		-- this is a texture
 		button.textureIndex = dungeonCacheEntry.textureIndex;

@@ -1,0 +1,55 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<AnimationGroup name="DelvesToastAnimInTemplate" parentKey="animIn" virtual="true">
+		<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+		<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+	</AnimationGroup>
+
+	<AnimationGroup name="DelvesToastAnimOutTemplate" parentKey="waitAndAnimOut" mixin="DefaultAnimOutMixin" virtual="true">
+		<Alpha startDelay="4" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut"/>
+		<Scripts>
+			<OnFinished method="OnFinished"/>
+		</Scripts>
+	</AnimationGroup>
+
+	<ContainedAlertFrame name="DelvesToastFrame" hyperlinksEnabled="true" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="true" mixin="DelvesToastMixin">
+		<Size x="360" y="80"/>
+		<Animations>
+			<AnimationGroup inherits="DelvesToastAnimInTemplate"/>
+			<AnimationGroup inherits="DelvesToastAnimOutTemplate"/>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="UI-Frame-Delves-notification-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="Text" inherits="FriendsFont_Large" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="0" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="75" y="0"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="3"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnHyperlinkClick method="OnHyperlinkClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+</Ui>

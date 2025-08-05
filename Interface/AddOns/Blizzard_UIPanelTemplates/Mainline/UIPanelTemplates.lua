@@ -2,7 +2,6 @@
 ITEM_SEARCHBAR_LIST = {
 	"BagItemSearchBox",
 	"GuildItemSearchBox",
-	"VoidItemSearchBox",
 	"BankItemSearchBox",
 };
 

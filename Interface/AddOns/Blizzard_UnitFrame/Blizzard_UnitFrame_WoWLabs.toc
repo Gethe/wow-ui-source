@@ -14,6 +14,7 @@ UnitFrame.lua
 UnitFrame.xml
 PlayerFrame.xml
 PartyFrame.xml
+Shared\TargetFrame.lua
 TargetFrame.xml
 TotemFrame.xml
 PetFrame.xml

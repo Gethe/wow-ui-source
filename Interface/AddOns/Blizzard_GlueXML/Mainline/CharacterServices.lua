@@ -852,7 +852,7 @@ function CharacterUpgradeFlow:Finish(controller)
 		end
 		if (guid ~= results.playerguid) then
 			-- Bail because guid has changed!
-			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 			self:Restart(controller);
 			return false;
 		end
@@ -1159,8 +1159,8 @@ function RPEUpgradeFlow:CanInitialize()
 end
 
 local function SetKeepQuestsAndContinue(keepQuests)
-	return function()
-		GlueDialog.data.keepQuests = keepQuests;
+	return function(dialog, data)
+		data.keepQuests = keepQuests;
 		CharacterServicesMasterFinishButton_OnClick();
     end
 end
@@ -1177,12 +1177,12 @@ StaticPopupDialogs["RPE_UPGRADE_CONFIRM"] = {
     text = RPE_UPGRADE_CONFIRMATION,
     button1 = RPE_CONFIRM,
     button2 = CANCEL,
-    OnAccept = function()
-		GlueDialog.data.warningState = "accepted";
+    OnAccept = function(dialog, data)
+		data.warningState = "accepted";
 		CharacterServicesMasterFinishButton_OnClick();
     end,
-    OnCancel = function()
-		GlueDialog.data.warningState = "declined";
+    OnCancel = function(dialog, data)
+		data.warningState = "declined";
 		CharacterServicesMasterFinishButton_OnClick();
 	end,
 }
@@ -1196,7 +1196,7 @@ function RPEUpgradeFlow:Finish(controller)
 	local guid = GetCharacterGUID(results.characterID);
 	if (guid ~= results.playerguid) then
 		-- Bail because guid has changed!
-		message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+		SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 		self:Restart(controller);
 		return false;
 	end
@@ -1212,7 +1212,8 @@ function RPEUpgradeFlow:Finish(controller)
 	if results.warningState == nil then
 		local specName = GetSpecializationNameForSpecID(results.spec);
 		local formattedText = string.format(StaticPopupDialogs["RPE_UPGRADE_CONFIRM"].text, specName);
-		GlueDialog_Show("RPE_UPGRADE_CONFIRM", formattedText, self:GetCurrentStep());
+		local text2 = nil;
+		StaticPopup_Show("RPE_UPGRADE_CONFIRM", formattedText, text2, self:GetCurrentStep());
 		return false;
 	elseif results.warningState == "declined" then
 		self:Restart(controller);
@@ -1222,7 +1223,8 @@ function RPEUpgradeFlow:Finish(controller)
 	elseif results.warningState == "accepted" then
 		local serviceInfo = GetServiceCharacterInfo(guid);
 		if serviceInfo.rpeResetQuestClearAvailable and results.keepQuests == nil then
-			GlueDialog_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, self:GetCurrentStep());
+			local text2 = nil;
+			StaticPopup_Show("RPE_UPGRADE_QUEST_CLEAR_CONFIRM", nil, text2, self:GetCurrentStep());
 			return false;
 		else
 			if results.keepQuests == nil then
@@ -1436,11 +1438,13 @@ function RPEUpgradeMinimizedFrameMixin:OnLoad()
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnShow()
-	AccountUpgradePanel_UpdateExpandState();
+	CharSelectAccountUpgradePanel:EvaluateCollapsedState();
+	CharacterSelectServerAlertFrame:UpdateHeight();
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnHide()
-	AccountUpgradePanel_UpdateExpandState();
+	CharSelectAccountUpgradePanel:EvaluateCollapsedState();
+	CharacterSelectServerAlertFrame:UpdateHeight();
 end
 
 function RPEUpgradeMinimizedFrameMixin:OnEnter()

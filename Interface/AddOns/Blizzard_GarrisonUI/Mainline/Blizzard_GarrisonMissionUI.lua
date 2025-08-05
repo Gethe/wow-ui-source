@@ -527,13 +527,13 @@ StaticPopupDialogs["DEACTIVATE_FOLLOWER"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.SetFollowerInactive(self.data, true);
+	OnAccept = function(dialog, data)
+		C_Garrison.SetFollowerInactive(data, true);
 	end,
-	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data);
+	OnShow = function(dialog, data)
+		local quality = C_Garrison.GetFollowerQuality(data);
 
-		local name = C_Garrison.GetFollowerName(self.data);
+		local name = C_Garrison.GetFollowerName(data);
 		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
 		if colorData then
 			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
@@ -541,7 +541,7 @@ StaticPopupDialogs["DEACTIVATE_FOLLOWER"] = {
 
 		local cost = GetMoneyString(C_Garrison.GetFollowerActivationCost());
 		local uses = C_Garrison.GetNumFollowerDailyActivations();
-		self.text:SetFormattedText(GARRISON_DEACTIVATE_FOLLOWER_CONFIRMATION, name, cost, uses);
+		dialog:SetFormattedText(GARRISON_DEACTIVATE_FOLLOWER_CONFIRMATION, name, cost, uses);
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -553,22 +553,22 @@ StaticPopupDialogs["ACTIVATE_FOLLOWER"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.SetFollowerInactive(self.data, false);
+	OnAccept = function(dialog, data)
+		C_Garrison.SetFollowerInactive(data, false);
 	end,
-	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data);
+	OnShow = function(dialog, data)
+		local quality = C_Garrison.GetFollowerQuality(data);
 
-		local name = C_Garrison.GetFollowerName(self.data);
+		local name = C_Garrison.GetFollowerName(data);
 		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
 		if colorData then
 			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
 		end
 
-		local followerInfo = C_Garrison.GetFollowerInfo(self.data);
+		local followerInfo = C_Garrison.GetFollowerInfo(data);
 		local uses = C_Garrison.GetNumFollowerActivationsRemaining(GarrisonFollowerOptions[followerInfo.followerTypeID].garrisonType);
-		self.text:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);
-		MoneyFrame_Update(self.moneyFrame, C_Garrison.GetFollowerActivationCost());
+		dialog:SetFormattedText(GARRISON_ACTIVATE_FOLLOWER_CONFIRMATION, name, uses);
+		MoneyFrame_Update(dialog.MoneyFrame, C_Garrison.GetFollowerActivationCost());
 	end,
 	showAlert = 1,
 	timeout = 0,

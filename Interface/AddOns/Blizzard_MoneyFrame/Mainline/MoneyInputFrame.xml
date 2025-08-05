@@ -1,241 +1,131 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="MoneyInputFrameTemplate" virtual="true">
+	<EditBox name="MoneyFrameEditBoxTemplate" mixin="MoneyFrameEditBoxMixin" historyLines="0" numeric="true" autoFocus="false" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="coinAtlas" value="..." type="string"/>
+			<KeyValue key="coinSymbol" value="..." type="global"/>
+			<KeyValue key="baseWidth" value="..." type="number"/>
+			<KeyValue key="baseHeight" value="..." type="number"/>
+		</KeyValues>
+		-->
+		<KeyValues>
+			<KeyValue key="baseHeight" value="20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="0"/>
+						<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
+					<Size x="8" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+				</Texture>
+				<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+					<Size x="10" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="texture">
+					<KeyValues>
+						<KeyValue key="baseWidth" value="13" type="number"/>
+						<KeyValue key="baseHeight" value="13" type="number"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+					<Size x="13" y="13"/>
+				</Texture>
+				<FontString parentKey="label" font="GameFontHighlightRight" hidden="true">
+					<Size x="0" y="18"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnEscapePressed function="EditBox_ClearFocus"/>
+			<OnTextChanged function="MoneyInputFrame_OnTextChanged"/>
+			<OnEditFocusLost function="EditBox_ClearHighlight"/>
+			<OnEditFocusGained function="EditBox_HighlightText"/>
+		</Scripts>
+		<FontString inherits="ChatFontNormal"/>
+	</EditBox>
+
+	<Frame name="MoneyInputFrameTemplate" mixin="MoneyInputFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="baseWidth" value="176" type="number"/>
+			<KeyValue key="baseHeight" value="18" type="number"/>
+		</KeyValues>
 		<Size x="176" y="18"/>
 		<Frames>
-			<EditBox parentKey="gold" name="$parentGold" letters="7" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="gold" name="$parentGold" inherits="MoneyFrameEditBoxTemplate" letters="7">
+				<KeyValues>
+					<KeyValue key="coinAtlas" value="coin-gold" type="string"/>
+					<KeyValue key="coinSymbol" value="GOLD_AMOUNT_SYMBOL" type="global"/>
+					<KeyValue key="coinDisplayOffsetX" value="-4" type="number"/>
+					<KeyValue key="darkenOnDigits" value="9" type="number"/>
+					<KeyValue key="baseWidth" value="70" type="number"/>
+				</KeyValues>
 				<Size x="70" y="20"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="0" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="10" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="texture" atlas="coin-gold">
-							<Size x="13" y="13"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-4" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="GOLD_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-4" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnLoad>
-						self.darkenOnDigits = 9;
-					</OnLoad>
-					<OnTabPressed>
-						if ( IsShiftKeyDown() and self:GetParent().previousFocus ) then
-							self:GetParent().previousFocus:SetFocus();
-						else
-							self:GetParent().silver:SetFocus();
-						end
-					</OnTabPressed>
-					<OnEnterPressed>
-						self:GetParent().silver:SetFocus();
-					</OnEnterPressed>
-					<OnEscapePressed>
-						EditBox_ClearFocus(self);
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self);
-					</OnTextChanged>
-					<OnEditFocusLost>
-						EditBox_ClearHighlight(self);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						EditBox_HighlightText(self);
-					</OnEditFocusGained>
+					<OnTabPressed function="MoneyFrameEditBoxGold_OnTabPressed"/>
+					<OnEnterPressed function="MoneyFrameEditBoxGold_OnEnterPressed"/>
 				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<EditBox parentKey="silver" name="$parentSilver" letters="2" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="silver" name="$parentSilver" inherits="MoneyFrameEditBoxTemplate" letters="2">
+				<KeyValues>
+					<KeyValue key="coinAtlas" value="coin-silver" type="string"/>
+					<KeyValue key="coinSymbol" value="SILVER_AMOUNT_SYMBOL" type="global"/>
+					<KeyValue key="baseWidth" value="48" type="number"/>
+				</KeyValues>
 				<Size x="48" y="20"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.gold" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-10" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="10" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-							<Texture parentKey="texture" atlas="coin-silver">
-							<Size x="13" y="13"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-14" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="SILVER_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-14" y="0"/>
-							</Anchors>
-						</FontString>						
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnTabPressed>
-						if ( IsShiftKeyDown() or not self:GetParent().copper:IsShown() ) then
-							self:GetParent().gold:SetFocus();
-						else
-							self:GetParent().copper:SetFocus();
-						end
-					</OnTabPressed>
-					<OnEnterPressed>
-						if ( not self:GetParent().copper:IsShown() ) then
-							self:GetParent().gold:SetFocus();
-						else
-							self:GetParent().copper:SetFocus();
-						end
-					</OnEnterPressed>
-					<OnEscapePressed>
-						EditBox_ClearFocus(self);
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self);
-					</OnTextChanged>
-					<OnEditFocusLost>
-						EditBox_ClearHighlight(self);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						EditBox_HighlightText(self);
-					</OnEditFocusGained>
+					<OnTabPressed function="MoneyFrameEditBoxSilver_OnTabPressed"/>
+					<OnEnterPressed function="MoneyFrameEditBoxSilver_OnEnterPressed"/>
 				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
-			<EditBox parentKey="copper" name="$parentCopper" letters="2" historyLines="0" numeric="true" autoFocus="false">
+			<EditBox parentKey="copper" name="$parentCopper" inherits="MoneyFrameEditBoxTemplate" letters="2">
+				<KeyValues>
+					<KeyValue key="coinAtlas" value="coin-copper" type="string"/>
+					<KeyValue key="coinSymbol" value="COPPER_AMOUNT_SYMBOL" type="global"/>
+					<KeyValue key="baseWidth" value="48" type="number"/>
+				</KeyValues>
 				<Size x="48" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.silver" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.silver" relativePoint="RIGHT" x="10" y="0"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="left" name="$parentLeft" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="0"/>
-							</Anchors>
-							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture parentKey="right" name="$parentRight" file="Interface\Common\Common-Input-Border">
-							<Size x="8" y="20"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-10" y="0"/>
-							</Anchors>
-							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
-							<Size x="10" y="20"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.left" relativePoint="RIGHT"/>
-								<Anchor point="RIGHT" relativeKey="$parent.right" relativePoint="LEFT"/>
-							</Anchors>
-							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="texture" atlas="coin-copper">
-							<Size x="13" y="13"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-14" y="0"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="label" font="GameFontHighlightLeft" text="COPPER_AMOUNT_SYMBOL" hidden="true" justifyH="RIGHT">
-							<Size x="18" y="18"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="-14" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnTabPressed>
-						if ( IsShiftKeyDown() ) then
-							self:GetParent().silver:SetFocus();
-						else
-							if ( self:GetParent().nextFocus ) then
-								self:GetParent().nextFocus:SetFocus();
-							else
-								self:ClearFocus();
-							end
-						end
-					</OnTabPressed>
-					<OnEnterPressed>
-						if ( self:GetParent().nextFocus ) then
-							self:GetParent().nextFocus:SetFocus();
-						else
-							self:ClearFocus();
-						end
-					</OnEnterPressed>
-					<OnEscapePressed>
-						EditBox_ClearFocus(self);
-					</OnEscapePressed>
-					<OnTextChanged>
-						MoneyInputFrame_OnTextChanged(self);
-					</OnTextChanged>
-					<OnEditFocusLost>
-						EditBox_ClearHighlight(self);
-					</OnEditFocusLost>
-					<OnEditFocusGained>
-						EditBox_HighlightText(self);
-					</OnEditFocusGained>
+					<OnTabPressed function="MoneyFrameEditBoxCopper_OnTabPressed"/>
+					<OnEnterPressed function="MoneyFrameEditBoxCopper_OnEnterPressed"/>
 				</Scripts>
-				<FontString inherits="ChatFontNormal"/>
 			</EditBox>
 		</Frames>
 		<Scripts>
-			<OnShow>
-				MoneyInputFrame_OnShow(self);
-			</OnShow>
+			<OnShow function="MoneyInputFrame_OnShow"/>
 		</Scripts>
 	</Frame>
 	<Frame name="FixedCoinFrameTemplate" virtual="true" hidden="true">

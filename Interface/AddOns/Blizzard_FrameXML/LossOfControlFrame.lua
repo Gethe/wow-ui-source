@@ -1,3 +1,8 @@
+--[[
+Howdy!
+Classic MoP also uses this so please be mindful when editting :)
+]]
+
 -- can't scale text with animations, use raid warning scaling
 local abilityNameTimings = {
 	["RAID_NOTICE_MIN_HEIGHT"] = 22.0,
@@ -30,7 +35,9 @@ local DISPLAY_TYPE_NONE = 0;
 
 LOSS_OF_CONTROL_ACTIVE_INDEX = 1;
 
-function LossOfControlFrame_OnLoad(self)
+LossOfControlMixin = {};
+
+function LossOfControlMixin:OnLoad()
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
 	-- figure out some string widths - our base width is for under 10 seconds which should be almost all loss of control durations
@@ -44,9 +51,9 @@ function LossOfControlFrame_OnLoad(self)
 	end);
 end
 
-function LossOfControlFrame_OnEvent(self, event, ...)
+function LossOfControlMixin:OnEvent(event, ...)
 	if ( event == "LOSS_OF_CONTROL_UPDATE" ) then
-		LossOfControlFrame_UpdateDisplay(self, false);
+		self:UpdateDisplay(false);
 	elseif ( event == "LOSS_OF_CONTROL_ADDED" ) then
 		local unitToken, eventIndex = ...;
 		local data = C_LossOfControl.GetActiveLossOfControlData(eventIndex);
@@ -55,14 +62,14 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 		if ( data.displayType == DISPLAY_TYPE_ALERT ) then
 			-- only display an alert type if there's nothing up or it has higher priority. If same priority, it needs to have longer time remaining
 			if ( not self:IsShown() or priority > self.priority or ( priority == self.priority and timeRemaining and ( not self.TimeLeft.timeRemaining or timeRemaining > self.TimeLeft.timeRemaining ) ) ) then
-				LossOfControlFrame_SetUpDisplay(self, true, data);
+				self:SetUpDisplay(true, data);
 			end
 			return;
 		end
 		if ( eventIndex == LOSS_OF_CONTROL_ACTIVE_INDEX ) then
 			self.fadeDelayTime = nil;
 			self.fadeTime = nil;
-			LossOfControlFrame_SetUpDisplay(self, true);
+			self:SetUpDisplay(true);
 		end
 	elseif ( event == "CVAR_UPDATE" ) then
 		local cvar, value = ...;
@@ -84,7 +91,7 @@ function LossOfControlFrame_OnEvent(self, event, ...)
 	end
 end
 
-function LossOfControlFrame_OnUpdate(self, elapsed)
+function LossOfControlMixin:OnUpdate(elapsed)
 	RaidNotice_UpdateSlot(self.AbilityName, abilityNameTimings, elapsed);
 	RaidNotice_UpdateSlot(self.TimeLeft.NumberText, timeLeftTimings, elapsed);
 	RaidNotice_UpdateSlot(self.TimeLeft.SecondsText, timeLeftTimings, elapsed);
@@ -109,16 +116,16 @@ function LossOfControlFrame_OnUpdate(self, elapsed)
 	else
 		self:SetAlpha(1.0);
 	end
-	LossOfControlFrame_UpdateDisplay(self);
+	self:UpdateDisplay();
 end
 
-function LossOfControlFrame_OnHide(self)
+function LossOfControlMixin:OnHide()
 	self.fadeTime = nil;
 	self.fadeDelayTime = nil;
 	self.priority = nil;
 end
 
-function LossOfControlFrame_SetUpDisplay(self, animate, data)
+function LossOfControlMixin:SetUpDisplay(animate, data)
 	if ( not data ) then
 		data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
 	end
@@ -156,7 +163,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, data)
 		else
 			CooldownFrame_Set(self.Cooldown, startTime, duration, true);
 		end
-		LossOfControlTimeLeftFrame_SetTime(timeLeftFrame, timeRemaining);
+		self:SetTime(timeRemaining);
 		-- align stuff
 		local abilityWidth = self.AbilityName:GetWidth();
 		local longestTextWidth = max(abilityWidth, (timeLeftFrame.numberWidth + timeLeftFrame.secondsWidth));
@@ -187,7 +194,7 @@ function LossOfControlFrame_SetUpDisplay(self, animate, data)
 	end
 end
 
-function LossOfControlFrame_UpdateDisplay(self)
+function LossOfControlMixin:UpdateDisplay()
 	-- if displaying an alert, wait for it to go away on its own
 	if ( self.fadeTime ) then
 		return;
@@ -196,30 +203,32 @@ function LossOfControlFrame_UpdateDisplay(self)
 	local data = C_LossOfControl.GetActiveLossOfControlData(LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if ( data and data.displayText and data.displayType == DISPLAY_TYPE_FULL ) then
 		if ( data.spellID ~= self.spellID or data.startTime ~= self.startTime ) then
-			LossOfControlFrame_SetUpDisplay(self, false, data);
+			self:SetUpDisplay(false, data);
 		end
 		if ( not self.Anim:IsPlaying() and data.startTime ) then
 			CooldownFrame_Set(self.Cooldown, data.startTime, data.duration, true, true);
 		end
-		LossOfControlTimeLeftFrame_SetTime(self.TimeLeft, data.timeRemaining);
+		self:SetTime(data.timeRemaining);
 	else
 		self:Hide();
 	end
 end
 
-function LossOfControlTimeLeftFrame_SetTime(self, timeRemaining)
-	if( timeRemaining ) then
+function LossOfControlMixin:SetTime(timeRemaining)
+	local timeLeft = self.TimeLeft;
+	
+	if timeRemaining then
 		if ( timeRemaining >= 10 ) then
-			self.NumberText:SetFormattedText("%d", timeRemaining);
+			timeLeft.NumberText:SetFormattedText("%d", timeRemaining);
 		elseif (timeRemaining < 9.95) then -- From 9.95 to 9.99 it will print 10.0 instead of 9.9
-			self.NumberText:SetFormattedText("%.1F", timeRemaining);
+			timeLeft.NumberText:SetFormattedText("%.1F", timeRemaining);
 		end
-		self:Show();
-		self.timeRemaining = timeRemaining;
-		self.numberWidth = self.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
+		timeLeft:Show();
+		timeLeft.timeRemaining = timeRemaining;
+		timeLeft.numberWidth = timeLeft.NumberText:GetStringWidth() + LOSS_OF_CONTROL_TIME_OFFSET;
 	else
-		self:Hide();
-		self.numberWidth = 0;
+		timeLeft:Hide();
+		timeLeft.numberWidth = 0;
 	end
 end
 

@@ -410,7 +410,6 @@ function GuildControlUI_CheckClicked(self)
 	end
 	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates + 1;
 	GuildControlSetRankFlag(self:GetID(), self:GetChecked());
-	--WithdrawGoldEditBox_Update();
 end
 
 

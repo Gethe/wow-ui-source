@@ -7,8 +7,10 @@
 ## AllowLoad: Game
 ActionButtonUtil.lua
 Shared\MainMenuBarMicroButtons.lua
-Cata\MainMenuBarMicroButtons.lua
+Classic\MainMenuBarMicroButtons.lua
+Mists\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.xml
+Mists\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua
 Classic\MainMenuBar.xml
 Classic\ActionButtonTemplate.xml
@@ -26,4 +28,8 @@ Classic\MultiCastActionBarFrame.lua
 Classic\MultiCastActionBarFrame.xml
 Cata\SpellFlyout.lua
 Cata\SpellFlyout.xml
+Cata\ExtraActionBar.lua
+Cata\ExtraActionBar.xml
+Shared\ActionButtonSpellAlerts.lua
+Shared\ActionButtonSpellAlerts.xml
 Classic\Localization.lua

@@ -8,6 +8,7 @@ local URL =
 		{
 			Name = "LaunchURL",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

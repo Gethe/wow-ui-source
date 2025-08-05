@@ -47,6 +47,7 @@ Wrath\SoundKitConstants.lua
 CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
+TypeUtil.lua
 SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml
@@ -179,6 +180,6 @@ ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
-Classic\VASErrorLookup.lua
+Shared\VASErrorLookup.lua
 
 CommonUIPanelTemplates.xml

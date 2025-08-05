@@ -8,7 +8,7 @@
 			</Anchors>
 			<Layers>
 				<Layer level="ARTWORK">
-					<FontString parentKey="IndexLabel" font="GameFontNormalCenter">
+					<FontString parentKey="IndexLabel" font="GameFontNormal" justifyH="CENTER">
 						<Size x="70" y="16"/>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="16"/>

@@ -58,7 +58,6 @@ do
 		[Enum.UICursorType.Item] = true,
 		[Enum.UICursorType.Merchant] = true,
 		[Enum.UICursorType.GuildBank] = true,
-		[Enum.UICursorType.VoidItem] = true,
 	};
 
 	function MainMenuBarBagManager:OnCursorChanged(isDefault, newCursorType, oldCursorType, oldCursorVirtualID)

@@ -26,9 +26,9 @@ function HeirloomsJournal_OnShow(self)
 			-- Default to current class/spec view otherwise
 			local classDisplayName, classTag, classID = UnitClass("player");
 			local specID = nil;
-			local specIndex = GetSpecialization();
+			local specIndex = C_SpecializationInfo.GetSpecialization();
 			if specIndex then
-				specID = GetSpecializationInfo(specIndex);
+				specID = C_SpecializationInfo.GetSpecializationInfo(specIndex);
 			else
 				specID = UNSPECIFIED_SPEC_FILTER;
 			end

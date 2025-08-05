@@ -105,8 +105,8 @@ function CharacterFrameMixin:OnLoad()
 end
 
 function CharacterFrameMixin:SetPortraitToSpecIcon()
-	local specialization = GetSpecialization();
-	local icon = specialization ~= nil and select(4, GetSpecializationInfo(specialization));
+	local specialization = C_SpecializationInfo.GetSpecialization();
+	local icon = specialization ~= nil and select(4, C_SpecializationInfo.GetSpecializationInfo(specialization));
 	if not icon then
 		local name, fileName, classID = UnitClass("player");
 		self:SetPortraitToClassIcon(fileName);

@@ -319,6 +319,12 @@
 		</Scripts>
 	</Button>
 
+	<Button name="UIPanelButtonUserScaledTemplate" inherits="UIPanelButtonTemplate, UserScaledFrameTemplate" virtual="true">
+		<NormalFont style="UserScaledFontGameNormal"/>
+		<DisabledFont style="UserScaledFontGameDisable"/>
+		<HighlightFont style="UserScaledFontGameHighlight"/>
+	</Button>
+
 	<!--A super simple standard button that will widen on load to fit its text if its
 	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
 	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
@@ -402,9 +408,7 @@
 	</CheckButton>
 
 	<Slider name="UISliderTemplate" orientation="HORIZONTAL" enableMouse="true" virtual="true">
-		<HitRectInsets>
-			<AbsInset left="0" right="0" top="-10" bottom="-10"/>
-		</HitRectInsets>
+		<HitRectInsets left="0" right="0" top="-10" bottom="-10"/>
 		<Frames>
 			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate" useParentLevel="true">
 				<KeyValues>
@@ -1394,6 +1398,7 @@
 	TruncatedButtonTemplate
 	This button template will truncate any text that goes out of the button. If text is truncated,
 	the button will have a tooltip with the full text.
+	meta comment: TooltipIfTruncated, TooltipWhenTruncated
 *******************************************************************************
 -->
 	<Button name="TruncatedButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
@@ -1417,6 +1422,7 @@
 	TruncatedTooltipFontStringWrapperTemplate
 	This frame template will automatically add a tooltip to the frame if the contained FontString is truncated
 	Note that you MUST have a child FontString with ParentKey "Text"
+	meta comment: TooltipIfTruncated, TooltipWhenTruncated
 *******************************************************************************
 -->
 	<Frame name="TruncatedTooltipFontStringWrapperTemplate" inherits="ResizeLayoutFrame" mixin="TruncatedTooltipFontStringWrapperMixin" virtual="true">
@@ -2077,7 +2083,7 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- See DropdownWithSteppersTemplate for dropdown requirements. -->
 	<Frame name="DropdownWithSteppersAndLabelTemplate" inherits="DropdownWithSteppersTemplate" mixin="DropdownWithSteppersAndLabelMixin" virtual="true">
 		<Layers>
@@ -2851,7 +2857,7 @@
 			<KeyValue key="rightPadding" value="28" type="number"/>
 			<KeyValue key="spacing" value="0" type="number"/>
 
-			<!-- 
+			<!--
 			dialogHeaderFont: font for the header text
 			<KeyValue key="dialogHeaderFont" value="GameFontNormal" type="string"/>
 			-->
@@ -2882,17 +2888,17 @@
 		<Size x="280" y="44"/>
 		<Frames>
 			<Button parentKey="ExpandButton" mixin="SquareExpandButtonMixin" inherits="UIButtonTemplate">
-				<Size x="20" y="20"/>
+				<Size x="28" y="28"/>
 				<KeyValues>
 					<!--Default values, override as needed.-->
-					<KeyValue key="highlightExpandedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
-					<KeyValue key="highlightCollapsedAtlas" value="128-RedButton-ArrowUpGlow-Highlight" type="string"/>
-					<KeyValue key="normalExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
-					<KeyValue key="normalCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
-					<KeyValue key="pushedExpandedAtlas" value="Campaign_HeaderIcon_OpenPressed" type="string"/>
-					<KeyValue key="pushedCollapsedAtlas" value="Campaign_HeaderIcon_ClosedPressed" type="string"/>
-					<KeyValue key="disabledExpandedAtlas" value="Campaign_HeaderIcon_Open" type="string"/>
-					<KeyValue key="disabledCollapsedAtlas" value="Campaign_HeaderIcon_Closed" type="string"/>
+					<KeyValue key="highlightExpandedAtlas" value="common-button-collapseExpand-hover" type="string"/>
+					<KeyValue key="highlightCollapsedAtlas" value="common-button-collapseExpand-hover" type="string"/>
+					<KeyValue key="normalExpandedAtlas" value="common-button-collapseexpand-up" type="string"/>
+					<KeyValue key="normalCollapsedAtlas" value="common-button-collapseexpand-down" type="string"/>
+					<KeyValue key="pushedExpandedAtlas" value="common-button-collapseExpand-up-pressed" type="string"/>
+					<KeyValue key="pushedCollapsedAtlas" value="common-button-collapseExpand-down-pressed" type="string"/>
+					<KeyValue key="disabledExpandedAtlas" value="common-button-collapseExpand-up-disabled" type="string"/>
+					<KeyValue key="disabledCollapsedAtlas" value="common-button-collapseExpand-down-disabled" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-13" y="0"/>
@@ -2942,7 +2948,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="UIPanelInfoButton" virtual="true">
 		<Size x="16" y="16"/>
 		<Layers>
@@ -2962,7 +2968,7 @@
 				self.texture:SetPoint("TOPLEFT", 0, 0);
 			</OnMouseUp>
 		</Scripts>
-		<HighlightTexture file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\FriendsFrame\InformationIcon-Highlight" alphaMode="ADD">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parentTexture" relativePoint="TOPLEFT"/>
 			</Anchors>

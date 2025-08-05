@@ -40,7 +40,7 @@ StaticPopupDialogs["CHARACTER_CREATE_FAILURE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = nil,
-    OnAccept = function ()
+    OnAccept = function(dialog, data)
 		if CharacterCreateFrame:IsShown() then
 			CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
 		end
@@ -134,25 +134,25 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "RACE_FACTION_CHANGE_STARTED" then
 		local changeType = ...;
 		if changeType == "RACE" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
 		elseif changeType == "FACTION" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
 		end
 	elseif event == "RACE_FACTION_CHANGE_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 			C_Log.LogMessage("From RACE_FACTION_CHANGE_RESULT");
 		else
 			showError = errorCode;
 		end
 	elseif event == "CUSTOMIZE_CHARACTER_STARTED" then
-		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+		StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
 	elseif event == "CUSTOMIZE_CHARACTER_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 			C_Log.LogMessage("From CUSTOMIZE_CHARACTER_RESULT");
 		else
@@ -186,7 +186,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 	if showError then
 		self:UpdateForwardButton();
-		GlueDialog_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
+		StaticPopup_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
 	end
 end
 
@@ -201,7 +201,7 @@ function CharacterCreateMixin:OnShow()
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		if not fullCharacterCreateDisabled then
-			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
+			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName or "");
 		end
 	else
 		self.currentPaidServiceName = nil;
@@ -313,7 +313,8 @@ function CharacterCreateMixin:OnStoreVASPurchaseError()
 				break;
 			end
 		end
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+		local text2 = nil;
+		StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, text2, exitAfterError);
 	end
 end
 
@@ -325,7 +326,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterCreateFrame:Exit();
 		else
 			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+			local text2 = nil;
+			StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, text2, exitAfterError);
 		end
 	end
 end
@@ -702,9 +704,9 @@ end
 
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
-		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+		StaticPopup_Show("CONFIRM_PAID_SERVICE");
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);

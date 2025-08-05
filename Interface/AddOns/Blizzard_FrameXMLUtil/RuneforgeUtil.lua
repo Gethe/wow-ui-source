@@ -301,8 +301,8 @@ end
 
 function RuneforgeUtil.GetPreviewClassAndSpec()
 	local classID = select(3, UnitClass("player"));
-	local spec = GetSpecialization();
-	local specID = spec and GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or nil;
+	local spec = C_SpecializationInfo.GetSpecialization();
+	local specID = spec and C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")) or nil;
 	return classID, specID;
 end
 

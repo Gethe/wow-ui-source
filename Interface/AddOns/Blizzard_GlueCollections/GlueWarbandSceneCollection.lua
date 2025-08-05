@@ -32,7 +32,7 @@ StaticPopupDialogs["CONFIRM_WARBAND_SCENES_APPLY_ALL"] = {
 	text = WARBAND_SCENE_COLLECTION_APPLY_ALL_CONFIRM,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-    OnAccept = function ()
+    OnAccept = function(dialog, data)
 		CharacterSelectUI.CollectionsFrame.GlueWarbandSceneJournal:UpdateWarbandScenes();
     end,
 	cover = true
@@ -51,7 +51,7 @@ function GlueWarbandSceneJounalMixin:OnLoad()
 	self.ApplyButton:SetScript("OnClick", function()
 		-- If apply for all checkbox is set, confirm before saving.
 		if self.ApplyForAllCheckbox:GetChecked() then
-			GlueDialog_Show("CONFIRM_WARBAND_SCENES_APPLY_ALL");
+			StaticPopup_Show("CONFIRM_WARBAND_SCENES_APPLY_ALL");
 		else
 			self:UpdateWarbandScenes();
 		end

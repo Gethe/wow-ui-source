@@ -42,7 +42,12 @@ function CharacterSelectUIMixin:OnLoad()
 
 		self.VisibilityToggleButton:SetShown(visibilityState);
 
-		CharacterSelect_UpdateLogo();
+		if visibilityState then
+			CharSelectAccountUpgradePanel:EvaluateShownState();
+		else
+			CharacterSelectLogo:Show();
+		end
+
 		SetCharacterSelectUIVisibilityState(visibilityState);
 	end
 	self.VisibilityToggleButton:SetScript("OnClick", VisibilityToggleOnClick);
@@ -71,6 +76,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_LIST_MAIL_RECEIVED");
 	self:RegisterEvent("ACCOUNT_CONVERSION_DISPLAY_STATE");
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
+	self:RegisterEvent("MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME");
 
 	local function OnCollectionsShow()
 		if self.ModelFFX:IsShown() then
@@ -153,22 +159,27 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		local shouldDisplay = ...;
 
 		if shouldDisplay then
-			GlueDialog_Show("ACCOUNT_CONVERSION_DISPLAY");
+			StaticPopup_Show("ACCOUNT_CONVERSION_DISPLAY");
 		else
-			GlueDialog_Hide("ACCOUNT_CONVERSION_DISPLAY");
+			StaticPopup_Hide("ACCOUNT_CONVERSION_DISPLAY");
 
 			-- Show the retrieving character list dialog again once conversion is complete if needed.
 			if CharacterSelect.retrievingCharacters then
 				-- Do not stop showing the login queue dialog if currently showing.
-				local visibleGlueDialog = GlueDialog_GetVisible();
-				if visibleGlueDialog ~= "QUEUED_WITH_FCM" and visibleGlueDialog ~= "QUEUED_NORMAL" then
-					GlueDialog_Show("RETRIEVING_CHARACTER_LIST");
+				if not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") then
+					StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
 				end
 			end
 		end
 	elseif event == "ACCOUNT_CVARS_LOADED" then
 		local isExpanded = GetCVarBool("expandWarbandCharacterList");
 		self:ExpandCharacterList(isExpanded);
+	elseif event == "MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME" then
+		local characterID = ...;
+
+		if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then
+			self:SetupOverlayFrameForCharacter(characterID);
+		end
 	end
 end
 
@@ -707,7 +718,7 @@ function CharacterDeletionDialogMixin:DeleteCharacter()
 	self:Hide();
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 	CharacterSelectCharacterFrame:ClearSearch();
-	GlueDialog_Show("CHAR_DELETE_IN_PROGRESS");
+	StaticPopup_Show("CHAR_DELETE_IN_PROGRESS");
 end
 
 
@@ -785,7 +796,8 @@ function CharacterListEditGroupFrameMixin:OnDelete()
 	end;
 
 	local formattedText = string.format(StaticPopupDialogs["CONFIRM_DELETE_CHARACTER_GROUP"].text, self.groupName);
-	GlueDialog_Show("CONFIRM_DELETE_CHARACTER_GROUP", formattedText, deleteGroupCallback);
+	local text2 = nil;
+	StaticPopup_Show("CONFIRM_DELETE_CHARACTER_GROUP", formattedText, text2, deleteGroupCallback);
 	self:Hide();
 end
 

@@ -161,7 +161,7 @@ end
 StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WHILE_RESSURECTABLE"] = {	text = WOW_LABS_CONFIRM_LEAVE_MATCH,
 	button1 = WOW_LABS_REMATCH,
 	button2 = WOW_LABS_STAY,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(PLUNDER_CURRENCY_ID);
 		if currencyInfo.quantity <= 0 then
 			LeaveMatch();	
@@ -169,7 +169,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WHILE_RESSURECTABLE"] = {	text = WOW_LAB
 			StaticPopup_Show(GetNumGroupMembers() > 1 and "CONFIRM_LEAVE_MATCH_WITH_PLUNDER" or "CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO");
 		end
 	end,
-	OnCancel = function() end,
+	OnCancel = function(dialog, data) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -194,7 +194,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO"] = {
 	button1 = WOW_LABS_REMATCH,
 	button2 = WOW_LABS_STAY,
 	OnAccept = LeaveMatch,
-	OnCancel = function() end,
+	OnCancel = function(dialog, data) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,

@@ -1260,15 +1260,15 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.titleContainer:ApplyCursorRelicToSlot(data.relicSlotIndex);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
-	OnUpdate = function (self)
+	OnUpdate = function(dialog, elapsed)
 		if ( not CursorHasItem() ) then
-			self:Hide();
+			dialog:Hide();
 		end
 	end,
 

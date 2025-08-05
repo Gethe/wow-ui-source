@@ -471,6 +471,7 @@ local Unit =
 		{
 			Name = "ReportPlayerIsPVPAFK",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -528,20 +529,6 @@ local Unit =
 			Returns =
 			{
 				{ Name = "hasCursor", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "ShowBossFrameWhenUninteractable",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{

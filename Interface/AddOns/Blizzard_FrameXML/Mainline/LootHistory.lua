@@ -335,6 +335,7 @@ function LootHistoryFrameMixin:OnHide()
 
 	self.ScrollBox:RemoveDataProvider();
 	self.selectedEncounterID = nil;
+	self.PerfectAnimFrame:StopPerfectRollAnim();
 end
 
 function LootHistoryFrameMixin:OnEvent(event, ...)

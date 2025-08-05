@@ -3,8 +3,8 @@ StaticPopupDialogs["CONFIRM_RECRUIT_FOLLOWER"] = {
 	text = GARRISON_CONFIRM_RECRUIT_FOLLOWER,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.RecruitFollower(self.data);
+	OnAccept = function(dialog, data)
+		C_Garrison.RecruitFollower(data);
 	end,
 	timeout = 0,
 	hideOnEscape = 1

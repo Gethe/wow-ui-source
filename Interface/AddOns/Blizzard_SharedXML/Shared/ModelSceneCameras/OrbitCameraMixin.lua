@@ -146,6 +146,14 @@ function OrbitCameraMixin:GetZoomDistance()
 	return self:CalculateZoomDistanceFromPercent(self:GetZoomPercent());
 end
 
+-- If min and max values are the same, zoom cannot really happen.
+function OrbitCameraMixin:GetZoomAvailable()
+	if self:GetMinZoomDistance() and self:GetMaxZoomDistance() then
+		return self:GetMinZoomDistance() ~= self:GetMaxZoomDistance();
+	end
+	return false;
+end
+
 function OrbitCameraMixin:ZoomBy(distance)
 	self:SetZoomDistance(self:GetZoomDistance() - distance);
 end

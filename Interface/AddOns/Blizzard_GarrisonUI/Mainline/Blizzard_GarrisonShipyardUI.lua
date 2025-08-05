@@ -12,17 +12,17 @@ GarrisonFollowerOptions[Enum.GarrisonFollowerType.FollowerType_6_0_Boat].mission
 --- Static Popups                                                             ---
 ---------------------------------------------------------------------------------
 
-local warningIconText = "|T" .. STATICPOPUP_TEXTURE_ALERT .. ":15:15:0:-2|t";
+local warningIconText = "|T" .. GameDialogAlertTextureName .. ":15:15:0:-2|t";
 StaticPopupDialogs["DANGEROUS_MISSIONS"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnShow = function(self)
-		self.text:SetFormattedText(GARRISON_SHIPYARD_DANGEROUS_MISSION_WARNING, warningIconText, warningIconText);
+	OnShow = function(dialog, data)
+		dialog:SetFormattedText(GARRISON_SHIPYARD_DANGEROUS_MISSION_WARNING, warningIconText, warningIconText);
 	end,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		SetCVar("dangerousShipyardMissionWarningAlreadyShown", "1");
-		self.data:OnClickStartMissionButtonConfirm();
+		data:OnClickStartMissionButtonConfirm();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -36,25 +36,25 @@ StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 24,
-	OnAccept = function(self)
-		local text = self.editBox:GetText();
-		C_Garrison.RenameFollower(self.data, text);
+	OnAccept = function(dialog, data)
+		local text = dialog:GetEditBox():GetText();
+		C_Garrison.RenameFollower(data, text);
 	end,
-	OnAlt = function(self)
-		C_Garrison.RenameFollower(self.data, "");
+	OnAlt = function(dialog, data)
+		C_Garrison.RenameFollower(data, "");
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		local text = parent.editBox:GetText();
-		C_Garrison.RenameFollower(parent.data, text);
-		parent:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		local text = editBox:GetText();
+		C_Garrison.RenameFollower(data, text);
+		dialog:Hide();
 	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
+	OnShow = function(dialog, data)
+		dialog:GetEditBox():SetFocus();
 	end,
-	OnHide = function(self)
+	OnHide = function(dialog, data)
 		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
+		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -65,19 +65,19 @@ StaticPopupDialogs["GARRISON_SHIP_DECOMMISSION"] = {
 	text = "",
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		C_Garrison.RemoveFollower(self.data, true);
+	OnAccept = function(dialog, data)
+		C_Garrison.RemoveFollower(data, true);
 		PlaySound(SOUNDKIT.UI_GARRISON_SHIPYARD_DECOMISSION_SHIP);
 	end,
-	OnShow = function(self)
-		local quality = C_Garrison.GetFollowerQuality(self.data);
-		local name = C_Garrison.GetFollowerName(self.data);
+	OnShow = function(dialog, data)
+		local quality = C_Garrison.GetFollowerQuality(data);
+		local name = C_Garrison.GetFollowerName(data);
 		local colorData = ColorManager.GetColorDataForFollowerQuality(quality);
 		if colorData then
 			name = colorData.hex..name..FONT_COLOR_CODE_CLOSE;
 		end
 
-		self.text:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
+		dialog:SetFormattedText(GARRISON_SHIP_DECOMMISSION_CONFIRMATION, name);
 	end,
 	showAlert = 1,
 	timeout = 0,

@@ -3,467 +3,17 @@ local DUNGEON_SCORE_LINK_ITERATE = 3;
 local PVP_LINK_ITERATE_BRACKET = 4; 
 local PVP_LINK_INDEX_START = 7;
 
-function SetItemRef(link, text, button, chatFrame)
+function SetItemRef(link, text, button, frame)
+	local contextData = { button = button, frame = frame };
+	local response = LinkUtil.ProcessLink(link, text, contextData);
 
-	-- Going forward, use linkType and linkData instead of strsub and strsplit everywhere
-	local linkType, linkData = LinkUtil.SplitLinkData(link);
-
-	if ( strsub(link, 1, 6) == "player" ) then
-		local namelink, isGMLink, isCommunityLink;
-		if ( strsub(link, 7, 8) == "GM" ) then
-			namelink = strsub(link, 10);
-			isGMLink = true;
-		elseif ( strsub(link, 7, 15) == "Community") then
-			namelink = strsub(link, 17);
-			isCommunityLink = true;
-		else
-			namelink = strsub(link, 8);
-		end
-
-		local name, lineID, chatType, chatTarget, communityClubID, communityStreamID, communityEpoch, communityPosition;
-
-		if ( isCommunityLink ) then
-			name, communityClubID, communityStreamID, communityEpoch, communityPosition = strsplit(":", namelink);
-		else
-			name, lineID, chatType, chatTarget = strsplit(":", namelink);
-		end
-		if ( name and (strlen(name) > 0) ) then
-			if ( IsModifiedClick("CHATLINK") ) then
-				local staticPopup;
-				staticPopup = StaticPopup_Visible("ADD_IGNORE");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_FRIEND");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("ADD_GUILDMEMBER");
-				if ( staticPopup ) then
-					-- If add ignore dialog is up then enter the name into the editbox
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				staticPopup = StaticPopup_Visible("CHANNEL_INVITE");
-				if ( staticPopup ) then
-					_G[staticPopup.."EditBox"]:SetText(name);
-					return;
-				end
-				if ( ChatEdit_GetActiveWindow() ) then
-					ChatEdit_InsertLink(name);
-				else
-					C_FriendList.SendWho(WHO_TAG_EXACT..name, Enum.SocialWhoOrigin.ITEM);
-				end
-
-			elseif ( button == "RightButton" and (not isGMLink) and FriendsFrame_ShowDropdown) then
-				FriendsFrame_ShowDropdown(name, 1, lineID, chatType, chatFrame, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
-			else
-				ChatFrame_SendTell(name, chatFrame);
-			end
-		end
+	if response == LinkProcessorResponse.Handled then
 		return;
-	elseif ( strsub(link, 1, 8) == "BNplayer" ) then
-		local namelink, isCommunityLink;
-		if ( strsub(link, 9, 17) == "Community" ) then
-			namelink = strsub(link, 19);
-			isCommunityLink = true;
-		else
-			namelink = strsub(link, 10);
-		end
-
-		local name, bnetIDAccount, lineID, chatType, chatTarget, communityClubID, communityStreamID, communityEpoch, communityPosition;
-		if ( isCommunityLink ) then
-			name, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition = strsplit(":", namelink);
-		else
-			name, bnetIDAccount, lineID, chatType, chatTarget = strsplit(":", namelink);
-		end
-		if ( name and (strlen(name) > 0) ) then
-			if ( IsModifiedClick("CHATLINK") ) then
-				-- Disable SHIFT-CLICK for battlenet friends, so we don't put an encoded bnetIDAccount in chat
-			elseif ( button == "RightButton" ) then
-				if ( isCommunityLink or not BNIsSelf(bnetIDAccount) ) then
-					FriendsFrame_ShowBNDropdown(name, 1, nil, chatType, chatFrame, nil, bnetIDAccount, communityClubID, communityStreamID, communityEpoch, communityPosition);
-				end
-			else
-				if ( BNIsFriend(bnetIDAccount)) then
-					ChatFrame_SendBNetTell(name);
-				else
-					local displayName = BNGetDisplayName(bnetIDAccount);
-					ChatFrame_SendBNetTell(displayName)
-				end
-			end
-		end
-		return;
-	elseif ( strsub(link, 1, 7) == "channel" ) then
-		if ( IsModifiedClick("CHATLINK") ) then
-			local chanLink = strsub(link, 9);
-			local chatType, chatTarget = strsplit(":", chanLink);
-			ChannelFrame:Toggle();
-		elseif ( button == "LeftButton" ) then
-			local chanLink = strsub(link, 9);
-			local chatType, chatTarget = strsplit(":", chanLink);
-
-			if ( strupper(chatType) == "CHANNEL" ) then
-				if ( GetChannelName(tonumber(chatTarget))~=0 ) then
-					ChatFrame_OpenChat("/"..chatTarget, chatFrame);
-				end
-			elseif ( strupper(chatType) == "PET_BATTLE_COMBAT_LOG" or strupper(chatType) == "PET_BATTLE_INFO" ) then
-				--Don't do anything
-			else
-				ChatFrame_OpenChat("/"..chatType, chatFrame);
-			end
-		elseif ( button == "RightButton" ) then
-			local chanLink = strsub(link, 9);
-			local chatType, chatTarget = strsplit(":", chanLink);
-			if not ( (strupper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
-				ChatChannelDropdown_Show(chatFrame, strupper(chatType), chatTarget, Chat_GetColoredChatName(strupper(chatType), chatTarget));
-			end
-		end
-		return;
-	elseif ( strsub(link, 1, 6) == "GMChat" ) then
-		GMChatStatusFrame_OnClick();
-		return;
-	elseif ( strsub(link, 1, 7) == "levelup" ) then
-		local chatLinkLevelToastsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.ChatLinkLevelToastsDisabled);
-		if not chatLinkLevelToastsDisabled then
-			local _, level, levelUpType, arg1 = strsplit(":", link);
-			EventToastManagerSideDisplay:DisplayToastsByLevel(level);
-		end
-		return;
-	elseif ( strsub(link, 1, 6) == "pvpbgs" ) then
-		TogglePVPUI();
-		return;
-	elseif ( strsub(link, 1, 12) == "battleground" ) then
-		PVEFrame_ShowFrame("PVPUIFrame", HonorFrame);
-		HonorFrame_SetType("specific");
-		local _, bgID = strsplit(":", link);
-		HonorFrameSpecificList_FindAndSelectBattleground(tonumber(bgID));
-		return;
-	elseif ( strsub(link, 1, 3) == "lfd" ) then
-		ToggleLFDParentFrame();
-		return;
-	elseif ( strsub(link, 1, 8) == "specpane" ) then
-		PlayerSpellsUtil.OpenToClassSpecializationsTab();
-		return;
-	elseif ( strsub(link, 1, 10) == "talentpane" ) then
-		PlayerSpellsUtil.OpenToClassTalentsTab();
-		return;
-	elseif ( strsub(link, 1, 20) == "delvecompanionconfig" ) then
-		ShowUIPanel(DelvesCompanionConfigurationFrame);
-		ShowUIPanel(DelvesCompanionAbilityListFrame);
-		return;
-	elseif ( strsub(link, 1, 14) == "mountequipment" ) then
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-		return;
-	elseif ( strsub(link, 1, 11) == "honortalent" ) then
-		PlayerSpellsUtil.OpenToClassTalentsTab();
-		return;
-	elseif ( strsub(link, 1, 10) == "worldquest" ) then
-		OpenWorldMap();
-		return;
-	elseif ( strsub(link, 1, 7) == "journal" ) then
-		if ( not HandleModifiedItemClick(GetFixedLink(text)) ) then
-			AdventureGuideUtil.OpenHyperLink(strsplit(":", link));
-		end
-		return;
-	elseif ( strsub(link, 1, 8) == "urlIndex" ) then
-		local _, index = strsplit(":", link);
-		LoadURLIndex(tonumber(index));
-		return;
-	elseif ( strsub(link, 1, 11) == "lootHistory" ) then
-		local _, encounterID = strsplit(":", link);
-		SetLootHistoryFrameToEncounter(tonumber(encounterID));
-		return;
-	elseif ( strsub(link, 1, 13) == "battlePetAbil" ) then
-		local _, abilityID, maxHealth, power, speed = strsplit(":", link);
-		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text);
-			HandleModifiedItemClick(fixedLink);
-		else
-			FloatingPetBattleAbility_Show(tonumber(abilityID), tonumber(maxHealth), tonumber(power), tonumber(speed));
-		end
-		return;
-	elseif ( strsub(link, 1, 9) == "battlepet" ) then
-		local _, speciesID, level, breedQuality, maxHealth, power, speed, battlePetID = strsplit(":", link);
-		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text, tonumber(breedQuality));
-			HandleModifiedItemClick(fixedLink);
-		else
-			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
-		end
-		return;
-	elseif ( strsub(link, 1, 19) == "garrfollowerability" ) then
-		local _, garrFollowerAbilityID = strsplit(":", link);
-		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text);
-			HandleModifiedItemClick(fixedLink);
-		else
-			FloatingGarrisonFollowerAbility_Toggle(tonumber(garrFollowerAbilityID));
-		end
-		return;
-	elseif ( strsub(link, 1, 12) == "garrfollower" ) then
-		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
-		if ( IsModifiedClick() ) then
-			local fixedLink = GetFixedLink(text, tonumber(quality));
-			HandleModifiedItemClick(fixedLink);
-		else
-			FloatingGarrisonFollower_Toggle(tonumber(garrisonFollowerID), tonumber(quality), tonumber(level), tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
-		end
-		return;
-	elseif ( strsub(link, 1, 11) == "garrmission" ) then
-		local garrMissionID, garrMissionDBID = link:match("garrmission:(%d+):([0-9a-fA-F]+)")
-		if (garrMissionID and garrMissionDBID and strlen(garrMissionDBID) == 16) then
-			if ( IsModifiedClick() ) then
-				local fixedLink = GetFixedLink(text);
-				HandleModifiedItemClick(fixedLink);
-			else
-				FloatingGarrisonMission_Toggle(tonumber(garrMissionID), "0x"..(garrMissionDBID:upper()));
-			end
-		end
-		return;
-	elseif ( strsub(link, 1, 5) == "death" ) then
-		local _, id = strsplit(":", link);
-		OpenDeathRecapUI(id);
-		return;
-	elseif ( strsub(link, 1, 7) == "sharess" ) then
-		local _, index = strsplit(":", link);
-		SocialFrame_LoadUI();
-		Social_ShowScreenshot(tonumber(index));
-		return;
-	elseif ( strsub(link, 1, 12) == "shareachieve" ) then
-		local _, achievementID, earned = strsplit(":", link);
-		SocialFrame_LoadUI();
-		Social_ShowAchievement(tonumber(achievementID), StringToBoolean(earned));
-		return;
-	elseif ( strsub(link, 1, 9) == "shareitem" ) then
-		local strippedItemLink, earned = link:match("^shareitem:(.-):(%d+)$");
-		local itemLink = LinkUtil.FormatLink("item", nil, strippedItemLink);
-		SocialFrame_LoadUI();
-		Social_ShowItem(itemLink, earned);
-		return;
-	elseif ( strsub(link, 1, 16) == "transmogillusion" ) then
-		local fixedLink = GetFixedLink(text);
-		if ( not HandleModifiedItemClick(fixedLink) ) then
-			DressUpTransmogLink(link);
-		end
-		return;
-	elseif ( strsub(link, 1, 18) == "transmogappearance" ) then
-		local _, sourceID = strsplit(":", link);
-		if ( IsModifiedClick("CHATLINK") ) then
-			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-			HandleModifiedItemClick(itemLink);
-		elseif ( IsModifiedClick("DRESSUP") ) then
-			local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-			DressUpItemLink(itemLink);
-		else
-			TransmogUtil.OpenCollectionToItem(sourceID);
-		end
-		return;
-	elseif ( strsub(link, 1, 11) == "transmogset" ) then
-		local _, setID = strsplit(":", link);
-		TransmogUtil.OpenCollectionToSet(setID);
-		return;
-	elseif ( strsub(link, 1, 6) == "outfit" ) then
-		local fixedLink = GetFixedLink(text);
-		if not HandleModifiedItemClick(fixedLink) then
-			local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
-			if itemTransmogInfoList then
-				local showOutfitDetails = true;
-				DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
-			end
-		end
-		return;
-	elseif ( strsub(link, 1, 3) == "api" ) then
-		APIDocumentation_LoadUI();
-
-		local command = APIDocumentation.Commands.Default;
-		if button == "RightButton" then
-			command = APIDocumentation.Commands.CopyAPI;
-		elseif IsModifiedClick("CHATLINK") then
-			command = APIDocumentation.Commands.OpenDump;
-		end
-
-		APIDocumentation:HandleAPILink(link, command);
-		return;
-	elseif ( strsub(link, 1, 13) == "storecategory" ) then
-		local _, category = strsplit(":", link);
-		if category == "token" then
-			StoreFrame_SetTokenCategory();
-			ToggleStoreUI();
-		elseif category == "games" then
-			StoreFrame_OpenGamesCategory();
-		elseif category == "services" then
-			StoreFrame_SetServicesCategory();
-			ToggleStoreUI();
-		elseif category == "gametime" then
-			StoreInterfaceUtil.OpenToSubscriptionProduct();
-		end
-	elseif ( strsub(link, 1, 4) == "item" ) then
-		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			local name, itemLink = C_Item.GetItemInfo(text);
-			if ChatEdit_InsertLink(itemLink) then
-				return;
-			end
-		end
-	elseif ( strsub(link, 1, 10) == "clubTicket" ) then
-		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			if ChatEdit_InsertLink(text) then
-				return;
-			end
-		end
-		local _, ticketId = strsplit(":", link);
-		if ( CommunitiesFrame_IsEnabled() ) then
-			CommunitiesHyperlink.OnClickLink(ticketId);
-		end
-		return;
-	elseif ( strsub(link, 1, 13) == "calendarEvent" ) then
-		local _, monthOffset, monthDay, index = strsplit(":", link);
-		local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
-		if dayEvent then
-			Calendar_LoadUI();
-
-			if not CalendarFrame:IsShown() then
-				Calendar_Toggle();
-			end
-
-			C_Calendar.OpenEvent(monthOffset, monthDay, index);
-		end
-		return;
-	elseif ( strsub(link, 1, 9) == "community" ) then
-		if ( CommunitiesFrame_IsEnabled() ) then
-			local _, clubId = strsplit(":", link);
-			clubId = tonumber(clubId);
-			CommunitiesHyperlink.OnClickReference(clubId);
-		end
-		return;
-	elseif ( strsub(link, 1, 9) == "azessence" ) then
-		if ChatEdit_InsertLink(link) then
-			return;
-		end
-	elseif ( strsub(link, 1, 10) == "clubFinder" ) then
-		if ( IsModifiedClick("CHATLINK") and button == "LeftButton" ) then
-			if ChatEdit_InsertLink(text) then
-				return;
-			end
-		end
-		local _, clubFinderId = strsplit(":", link);
-		CommunitiesFrame:ClubFinderHyperLinkClicked(clubFinderId);
-		return;
-	elseif ( strsub(link, 1, 8) == "worldmap" ) then
-		local waypoint = C_Map.GetUserWaypointFromHyperlink(link);
-		if waypoint then
-			C_Map.SetUserWaypoint(waypoint);
-			OpenWorldMap(waypoint.uiMapID);
-		end
-		return;
-	elseif ( strsub(link, 1, 15) == "censoredmessage" ) then
-		local hyperlinkLineID = tonumber(select(2, strsplit(":", link)));
-
-		-- Uncensor this line so that the original text can be retrieved from C_ChatInfo.GetChatLineText.
-		C_ChatInfo.UncensorChatLine(hyperlinkLineID);
-
-		local function DoesMessageLineIDMatch(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...)
-			-- eventArgs only present if the line was censored.
-			local lineID = eventArgs and eventArgs[11];
-			return lineID == hyperlinkLineID;
-		end
-
-		local _event = nil;
-		local _eventArgs = nil;
-		local function SetMessage(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...)
-			local lineID = eventArgs[11];
-
-			-- Original text is routed through the tts system, which prepends the message with "<player whispers> text.
-			local text = C_ChatInfo.GetChatLineText(lineID);
-			-- The displayed message
-			local formattedText = MessageFormatter(text);
-			
-			-- Report hyperlink is appended to the display message.
-			local reportHyperlink = CENSORED_MESSAGE_REPORT:format(lineID);
-			formattedText = formattedText..reportHyperlink;
-
-			_event = event;
-			_eventArgs = eventArgs;
-			-- The tts handler should only include the original text, not the formatted text; what is displayed is not the
-			-- same as what is spoken.
-			_eventArgs[1] = text;
-			return formattedText, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...;
-		end
-
-		-- The line may be present in multiple chat windows, particularly if chat settings are configured to
-		-- send the line to both the default chat window and a whisper tab.
-		ChatFrameUtil.ForEachChatFrame(function(chatFrame)
-			chatFrame:TransformMessages(DoesMessageLineIDMatch, SetMessage);
-		end);
-		
-		-- If we captured event and eventArgs in SetMessage, then we successfully replaced the message and need to route it
-		-- through tts.
-		if _event and _eventArgs then
-			TextToSpeechFrame_MessageEventHandler(chatFrame, _event, SafeUnpack(_eventArgs));
-		end
-		return;
-	elseif ( strsub(link, 1, 21) ==  "reportcensoredmessage" ) then 
-		local hyperlinkLineID = tonumber(select(2, strsplit(":", link)));
-		local playerLocation = PlayerLocation:CreateFromChatLineID(hyperlinkLineID);
-		local reportTarget = C_ChatInfo.GetChatLineSenderGUID(hyperlinkLineID);
-		local playerName = C_ChatInfo.GetChatLineSenderName(hyperlinkLineID);
-
-		local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.Chat);
-		reportInfo:SetReportTarget(reportTarget);
-		reportInfo:SetReportedChatInline();
-		ReportFrame:InitiateReport(reportInfo, playerName, playerLocation);
-		return; 
-	elseif ( strsub(link, 1, 12) ==  "dungeonScore" ) then 
-		DisplayDungeonScoreLink(link);
-		return; 
-	elseif ( strsub(link, 1, 9) == "pvpRating" ) then
-		DisplayPvpRatingLink(link);
-		return;
-	elseif ( strsub(link, 1, 14) == "aadcopenconfig" ) then
-		Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
-		return;
-	elseif ( strsub(link, 1, 6) == "layout" ) then
-		local fixedLink = GetFixedLink(text);
-		if not HandleModifiedItemClick(fixedLink) then
-			EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
-		end
-		return;
-	elseif (strsub(link, 1, 11) == "talentbuild") then
-		local fixedLink = GetFixedLink(text);
-		if not HandleModifiedItemClick(fixedLink) then
-			PlayerSpellsUtil.InspectLoadout(linkData);
-		end
-		return;
-	elseif ( strsub(link, 1, 13) == "perksactivity" ) then
-		local _, perksActivityID = strsplit(":", link);
-		if ( not EncounterJournal ) then
-			EncounterJournal_LoadUI();
-		end
-		MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
-		return;
-	elseif ( strsub(link, 1, 5) == "addon" ) then
-		-- local links only
-		EventRegistry:TriggerEvent("SetItemRef", link, text, button, chatFrame);
-		return;
-	elseif ( strsub(link, 1, 12) == "warbandScene" ) then
-		local _, warbandSceneID = strsplit(":", link);
-		local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(tonumber(warbandSceneID));
-		if warbandSceneInfo then
-			ItemRefTooltip:ClearHandlerInfo();
-			ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
-
-			local isOwned = C_WarbandScene.HasWarbandScene(warbandSceneInfo.warbandSceneID);
-			SharedCollectionUtil.ShowWarbandSceneEntryTooltip(ItemRefTooltip, warbandSceneInfo, isOwned);
-		end
-		return;
-	elseif ( strsub(link, 1, 8) == "eventpoi" ) then
-		local _, areaPoiID = strsplit(":", link);
-		OpenMapToEventPoi(tonumber(areaPoiID));
 	end
+
+	-- Links that are unhandled or request a fallthrough to default logic
+	-- should be routed through the ItemRef tooltip.
+
 	if ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);
@@ -535,14 +85,14 @@ function GetBattlePetAbilityHyperlink(abilityID, maxHealth, power, speed)
 	end
 
 	local linkDisplayText = ("[%s]"):format(name);
-	return ("|cff4e96f7%s|r"):format(LinkUtil.FormatLink("battlePetAbil", linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
+	return ("|cff4e96f7%s|r"):format(LinkUtil.FormatLink(LinkTypes.BattlePetAbility, linkDisplayText, abilityID, maxHealth or 100, power or 0, speed or 0));
 end
 
 function GetGMLink(gmName, linkDisplayText, lineID)
 	if lineID then
-		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName, lineID or 0);
+		return LinkUtil.FormatLink(LinkTypes.PlayerGM, linkDisplayText, gmName, lineID or 0);
 	else
-		return LinkUtil.FormatLink("playerGM", linkDisplayText, gmName);
+		return LinkUtil.FormatLink(LinkTypes.PlayerGM, linkDisplayText, gmName);
 	end
 end
 
@@ -561,16 +111,16 @@ end
 
 function GetBNPlayerCommunityLink(playerName, linkDisplayText, bnetIDAccount, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return LinkUtil.FormatLink("BNplayerCommunity", linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink(LinkTypes.BNPlayerCommunity, linkDisplayText, playerName, bnetIDAccount, clubId, streamId, epoch, position);
 end
 
 function GetPlayerCommunityLink(playerName, linkDisplayText, clubId, streamId, epoch, position)
 	clubId, streamId, epoch, position = SanitizeCommunityData(clubId, streamId, epoch, position);
-	return LinkUtil.FormatLink("playerCommunity", linkDisplayText, playerName, clubId, streamId, epoch, position);
+	return LinkUtil.FormatLink(LinkTypes.PlayerCommunity, linkDisplayText, playerName, clubId, streamId, epoch, position);
 end
 
 function GetClubTicketLink(ticketId, clubName, clubType)
-	local link = LinkUtil.FormatLink("clubTicket", CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
+	local link = LinkUtil.FormatLink(LinkTypes.ClubTicket, CLUB_INVITE_HYPERLINK_TEXT:format(clubName), ticketId);
 	if clubType == Enum.ClubType.BattleNet then
 		return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
 	else
@@ -590,7 +140,7 @@ function GetClubFinderLink(clubFinderId, clubName)
 	else
 		linkGlobalString = ""
 	end
-	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink("clubFinder", linkGlobalString:format(clubName), clubFinderId));
+	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink(LinkTypes.ClubFinder, linkGlobalString:format(clubName), clubFinderId));
 end
 
 function DungeonScoreLinkAddDungeonsToTable()
@@ -746,7 +296,7 @@ function GetDungeonScoreLink(dungeonScore, playerName)
 	local runHistory = C_MythicPlus.GetRunHistory(true, true);
 	local bestSeasonScore, bestSeasonNumber = C_MythicPlus.GetSeasonBestMythicRatingFromThisExpansion(); 
 	local dungeonScoreTable = { C_ChallengeMode.GetOverallDungeonScore(), UnitGUID("player"), playerName, class, math.ceil(avgItemLevel), UnitLevel("player"), runHistory and #runHistory or 0, bestSeasonScore, bestSeasonNumber, unpack(DungeonScoreLinkAddDungeonsToTable())};
-	return NORMAL_FONT_COLOR:WrapTextInColorCode(LinkUtil.FormatLink("dungeonScore", DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
+	return NORMAL_FONT_COLOR:WrapTextInColorCode(LinkUtil.FormatLink(LinkTypes.DungeonScore, DUNGEON_SCORE_LINK, unpack(dungeonScoreTable)));
 end		
 
 function GetPvpRatingLink(playerName)
@@ -754,13 +304,13 @@ function GetPvpRatingLink(playerName)
 	local _, _, class = UnitClass("player");
 	local avgItemLevel, avgItemLevelEquipped, avgItemLevelPvP = GetAverageItemLevel();
 	local pvpRatingTable = { UnitGUID("player"), playerName, class, math.ceil(avgItemLevelPvP), UnitLevel("player"), unpack(AddPvpRatingsToTable())};
-	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink("pvpRating", PVP_PERSONAL_RATING_LINK, unpack(pvpRatingTable)));
+	return fontColor:WrapTextInColorCode(LinkUtil.FormatLink(LinkTypes.PvPRating, PVP_PERSONAL_RATING_LINK, unpack(pvpRatingTable)));
 end
 
 function GetCalendarEventLink(monthOffset, monthDay, index)
 	local dayEvent = C_Calendar.GetDayEvent(monthOffset, monthDay, index);
 	if dayEvent then
-		return LinkUtil.FormatLink("calendarEvent", dayEvent.title, monthOffset, monthDay, index);
+		return LinkUtil.FormatLink(LinkTypes.CalendarEvent, dayEvent.title, monthOffset, monthDay, index);
 	end
 
 	return nil;
@@ -769,7 +319,7 @@ end
 function GetCommunityLink(clubId)
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
-		local link = LinkUtil.FormatLink("community", COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
+		local link = LinkUtil.FormatLink(LinkTypes.Community, COMMUNITY_REFERENCE_FORMAT:format(clubInfo.name), clubId);
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
 			return BATTLENET_FONT_COLOR:WrapTextInColorCode(link);
 		else

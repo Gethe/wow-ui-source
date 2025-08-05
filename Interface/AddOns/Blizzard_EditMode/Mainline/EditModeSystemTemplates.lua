@@ -20,12 +20,13 @@ function EditModeSystemMixin:OnSystemLoad()
 
 	EditModeManagerFrame:RegisterSystemFrame(self);
 
-	self.Selection:SetGetLabelTextFunction(function() return self:GetSystemName(); end);
 	self:SetupSettingsDialogAnchor();
 	self.snappedFrames = {};
 	self.downKeys = {};
 
 	self.settingDisplayInfoMap = EditModeSettingDisplayInfoManager:GetSystemSettingDisplayInfoMap(self.system);
+
+	self.Selection:SetSystem(self);
 end
 
 function EditModeSystemMixin:SetupVisibilityFunctionOverrides()
@@ -165,7 +166,7 @@ end
 function EditModeSystemMixin:SetShownOverride(shown)
 	if shown then
 		return self:Show();
-	else 
+	else
 		return self:Hide();
 	end
 end
@@ -580,37 +581,37 @@ end
 
 local SELECTION_PADDING = 2;
 
-function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
-	local function GetLeftOffset()
-		return select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
-	end
-	local function GetRightOffset()
-		return select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
-	end
-	local function GetTopOffset()
-		return select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
-	end
-	local function GetBottomOffset()
-		return select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
-	end
+function EditModeSystemMixin:GetLeftOffset()
+	return select(4, self.Selection:GetPoint(1)) - SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetRightOffset()
+	return select(4, self.Selection:GetPoint(2)) + SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetTopOffset()
+	return select(5, self.Selection:GetPoint(1)) + SELECTION_PADDING;
+end
+function EditModeSystemMixin:GetBottomOffset()
+	return select(5, self.Selection:GetPoint(2)) - SELECTION_PADDING;
+end
 
+function EditModeSystemMixin:GetSelectionOffset(point, forYOffset)
 	local offset;
 	if point == "LEFT" then
-		offset = GetLeftOffset();
+		offset = self:GetLeftOffset();
 	elseif point == "RIGHT" then
-		offset = GetRightOffset();
+		offset = self:GetRightOffset();
 	elseif point == "TOP" then
-		offset = GetTopOffset();
+		offset = self:GetTopOffset();
 	elseif point == "BOTTOM" then
-		offset = GetBottomOffset();
+		offset = self:GetBottomOffset();
 	elseif point == "TOPLEFT" then
-		offset = forYOffset and GetTopOffset() or GetLeftOffset();
+		offset = forYOffset and self:GetTopOffset() or self:GetLeftOffset();
 	elseif point == "TOPRIGHT" then
-		offset = forYOffset and GetTopOffset() or GetRightOffset();
+		offset = forYOffset and self:GetTopOffset() or self:GetRightOffset();
 	elseif point == "BOTTOMLEFT" then
-		offset = forYOffset and GetBottomOffset() or GetLeftOffset();
+		offset = forYOffset and self:GetBottomOffset() or self:GetLeftOffset();
 	elseif point == "BOTTOMRIGHT" then
-		offset = forYOffset and GetBottomOffset() or GetRightOffset();
+		offset = forYOffset and self:GetBottomOffset() or self:GetRightOffset();
 	else
 		-- Center
 		local selectionCenterX, selectionCenterY = self.Selection:GetCenter();
@@ -736,6 +737,9 @@ end
 
 function EditModeSystemMixin:SnapToFrame(frameInfo)
 	local offsetX, offsetY = self:GetSnapOffsets(frameInfo);
+
+	-- ClearAllPoints after GetSnapOffsets since it uses the existing rect to calculate the offset
+	self:ClearAllPoints();
 	self:SetPoint(frameInfo.point, frameInfo.frame, frameInfo.relativePoint, offsetX, offsetY);
 end
 
@@ -820,6 +824,10 @@ end
 
 function EditModeSystemMixin:SetSelectionShown(shown)
 	self.Selection:SetShown(shown);
+end
+
+function EditModeSystemMixin:ShowEditInstructions(shown)
+	self.Selection:ShowEditInstructions(shown);
 end
 
 function EditModeSystemMixin:OnEditModeEnter()
@@ -1021,7 +1029,7 @@ function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarArt()
 end
 
 function EditModeActionBarSystemMixin:UpdateSystemSettingHideBarScrolling()
-	if(self.ActionBarPageNumber) then 
+	if(self.ActionBarPageNumber) then
 	self.ActionBarPageNumber:SetShown(not self:GetSettingValueBool(Enum.EditModeActionBarSetting.HideBarScrolling));
 	end
 end
@@ -1213,31 +1221,35 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 end
 
 function EditModeUnitFrameSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 17);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
-	elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -3);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -4, 6);
+	if self.systemIndex ~= self.lastSystemIndex then
+		self.lastSystemIndex = self.systemIndex;
+
+		self.Selection:ClearAllPoints();
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Player then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -16);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 17);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Target then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Focus then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 20, -18);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 18);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+		elseif self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Pet then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -3);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -4, 6);
+		end
 	end
 
 	self:UpdateClampOffsets();
@@ -1419,7 +1431,7 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 	end
 
 	if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
-		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame 
+		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame
 	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
 		self:UpdateSystemSettingBuffsOnTop();
 	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
@@ -1628,13 +1640,18 @@ function EditModeCastBarSystemMixin:SetupSettingsDialogAnchor()
 end
 
 function EditModeCastBarSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	if self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame) then
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
-	else
-		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+	local lockToPlayerFrame = self:GetSettingValueBool(Enum.EditModeCastBarSetting.LockToPlayerFrame);
+	if self.lockedToPlayerFrame ~= lockToPlayerFrame then
+		self.lockedToPlayerFrame = lockToPlayerFrame;
+
+		self.Selection:ClearAllPoints();
+		if lockToPlayerFrame then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+		else
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, -12);
+		end
 	end
 
 	self:UpdateClampOffsets();
@@ -1649,7 +1666,7 @@ function EditModeCastBarSystemMixin:UpdateSystemSettingLockToPlayerFrame()
 	elseif not self:IsInDefaultPosition() and self.attachedToPlayerFrame then
 		-- If we aren't locked to the player frame and we aren't in our default position then
 		-- try to detach from the player frame and break any connections.
-		-- Only do this when not in our default position since our default position is in the UIParent bottom layout frame 
+		-- Only do this when not in our default position since our default position is in the UIParent bottom layout frame
 		-- which we would not want to unparent from
 		self:SetParent(UIParent);
 		self:UpdateSystemSettingBarSize();
@@ -2088,9 +2105,12 @@ function EditModeObjectiveTrackerSystemMixin:OnDragStop()
 end
 
 function EditModeObjectiveTrackerSystemMixin:AnchorSelectionFrame()
-	self.Selection:ClearAllPoints();
-	self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -30, 0);
-	self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	if not self.selectedAnchored then
+		self.selectedAnchored = true;
+		self.Selection:ClearAllPoints();
+		self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", -30, 0);
+		self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	end
 end
 
 function EditModeObjectiveTrackerSystemMixin:ResetToDefaultPosition()
@@ -2669,20 +2689,42 @@ function EditModeSystemSelectionBaseMixin:OnLoad()
 	if self.HorizontalLabel then
 		self.HorizontalLabel:SetFontObjectsToTry("GameFontHighlightLarge", "GameFontHighlightMedium", "GameFontHighlightSmall");
 	end
+
+	NineSliceUtil.ApplyLayout(self.MouseOverHighlight, EditModeSystemSelectionLayout, self.highlightTextureKit);
+	self.MouseOverHighlight:SetBlendMode("ADD");
+end
+
+function EditModeSystemSelectionBaseMixin:SetSystem(system)
+	self.system = system;
 end
 
 function EditModeSystemSelectionBaseMixin:ShowHighlighted()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
+	if self.textureShown ~= "highlight" then
+		NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.highlightTextureKit);
+		self.textureShown = "highlight";
+	end
 	self.isSelected = false;
 	self:UpdateLabelVisibility();
 	self:Show();
 end
 
 function EditModeSystemSelectionBaseMixin:ShowSelected()
-	NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
+	if self.textureShown ~= "selected" then
+		NineSliceUtil.ApplyLayout(self, EditModeSystemSelectionLayout, self.selectedTextureKit);
+		self.textureShown = "selected";
+	end
 	self.isSelected = true;
 	self:UpdateLabelVisibility();
+	self:CheckShowInstructionalTooltip();
 	self:Show();
+end
+
+function EditModeSystemSelectionBaseMixin:IsSelected()
+	return self.isSelected;
+end
+
+function EditModeSystemSelectionBaseMixin:ShouldShowLabelText()
+	return self:IsSelected() or self:IsShowingEditInstructions();
 end
 
 function EditModeSystemSelectionBaseMixin:OnDragStart()
@@ -2697,25 +2739,59 @@ function EditModeSystemSelectionBaseMixin:OnMouseDown()
 	EditModeManagerFrame:SelectSystem(self.parent);
 end
 
-EditModeSystemSelectionMixin = {};
-
-function EditModeSystemSelectionMixin:SetGetLabelTextFunction(getLabelText)
-	self.getLabelText = getLabelText;
+function EditModeSystemSelectionBaseMixin:OnEnter()
+	self:ShowEditInstructions(true);
+	self:CheckShowInstructionalTooltip();
 end
 
-function EditModeSystemSelectionMixin:UpdateLabelVisibility()
-	if self.getLabelText then
-		self.Label:SetText(self.getLabelText());
+function EditModeSystemSelectionBaseMixin:OnLeave()
+	self:ShowEditInstructions(false);
+	self:HideInstructionalTooltip();
+end
+
+function EditModeSystemSelectionBaseMixin:ShowEditInstructions(shown)
+	self.instructionsShown = shown;
+
+	self.MouseOverHighlight:SetShown(shown);
+	self:UpdateLabelVisibility();
+end
+
+function EditModeSystemSelectionBaseMixin:IsShowingEditInstructions()
+	return self.instructionsShown;
+end
+
+function EditModeSystemSelectionBaseMixin:CheckShowInstructionalTooltip()
+	if not self:IsSelected() then
+		local tooltip = GetAppropriateTooltip();
+		tooltip:SetOwner(self, "ANCHOR_CURSOR");
+		tooltip:SetText(self.system:GetSystemName());
+		tooltip:Show();
+	else
+		self:HideInstructionalTooltip();
+	end
+end
+
+function EditModeSystemSelectionBaseMixin:HideInstructionalTooltip()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
+end
+
+function EditModeSystemSelectionBaseMixin:GetLabelText()
+	if self:IsSelected() then
+		return self.system:GetSystemName();
 	end
 
-	self.Label:SetShown(self.isSelected);
+	return HUD_EDIT_MODE_INSTRUCTIONS_CLICK_TO_EDIT;
 end
 
-EditModeSystemSelectionDoubleLabelMixin = {};
+EditModeSystemSelectionMixin = CreateFromMixins(EditModeSystemSelectionBaseMixin);
 
-function EditModeSystemSelectionDoubleLabelMixin:SetGetLabelTextFunction(getLabelText)
-	self.getLabelText = getLabelText;
+function EditModeSystemSelectionMixin:UpdateLabelVisibility()
+	self.Label:SetText(self:GetLabelText());
+	self.Label:SetShown(self:ShouldShowLabelText());
 end
+
+EditModeSystemSelectionDoubleLabelMixin = CreateFromMixins(EditModeSystemSelectionBaseMixin);
 
 function EditModeSystemSelectionDoubleLabelMixin:SetVerticalState(vertical)
 	self.isVertical = vertical;
@@ -2723,12 +2799,11 @@ function EditModeSystemSelectionDoubleLabelMixin:SetVerticalState(vertical)
 end
 
 function EditModeSystemSelectionDoubleLabelMixin:UpdateLabelVisibility()
-	if self.getLabelText then
-		local labelText = self.getLabelText();
-		self.HorizontalLabel:SetText(labelText);
-		self.VerticalLabel:SetText(labelText);
-	end
+	local labelText = self:GetLabelText();
+	self.HorizontalLabel:SetText(labelText);
+	self.VerticalLabel:SetText(labelText);
 
-	self.HorizontalLabel:SetShown(self.isSelected and not self.isVertical);
-	self.VerticalLabel:SetShown(self.isSelected and self.isVertical);
+	local showLabel = self:ShouldShowLabelText();
+	self.HorizontalLabel:SetShown(showLabel and not self.isVertical);
+	self.VerticalLabel:SetShown(showLabel and self.isVertical);
 end

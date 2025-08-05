@@ -63,6 +63,7 @@ MovieFrame.xml
 BossBannerToast.xml
 EventToastManager.xml
 EquipmentManager.lua
+Shared\EquipmentManager.lua
 RolePoll.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml

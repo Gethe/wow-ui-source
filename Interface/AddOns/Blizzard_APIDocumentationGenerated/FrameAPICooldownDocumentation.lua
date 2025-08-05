@@ -279,6 +279,18 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "SetEdgeColor",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "colorR", Type = "number", Nilable = false },
+				{ Name = "colorG", Type = "number", Nilable = false },
+				{ Name = "colorB", Type = "number", Nilable = false },
+				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+			},
+		},
+		{
 			Name = "SetEdgeScale",
 			Type = "Function",
 

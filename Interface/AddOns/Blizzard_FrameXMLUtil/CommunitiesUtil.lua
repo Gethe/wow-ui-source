@@ -70,6 +70,8 @@ local function CompareMembers(lhsMemberInfo, rhsMemberInfo)
 		return lhsMemberInfo.role < rhsMemberInfo.role;
 	elseif lhsMemberInfo.name and rhsMemberInfo.name then
 		return lhsMemberInfo.name < rhsMemberInfo.name;
+	elseif lhsMemberInfo.name or rhsMemberInfo.name then
+		return lhsMemberInfo.name ~= nil;
 	else
 		return lhsMemberInfo.memberId < rhsMemberInfo.memberId;
 	end

@@ -69,7 +69,7 @@ function Class_PerksProgramFreezeItemWatcher:OnPerkProgramFrameShow()
 end
 
 function Class_PerksProgramFreezeItemWatcher:OnProductFrozen()
-	if PerksProgramFrame:HasFrozenItem() then
+	if PerksProgramFrame and PerksProgramFrame:HasFrozenItem() then
 		self:FinishTutorial();
 		return;
 	end

@@ -717,7 +717,7 @@ function EncounterJournal_OnShow(self)
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
 		local spec, role;
 
-		spec = GetSpecialization();
+		spec = C_SpecializationInfo.GetSpecialization();
 		if (spec) then
 			role = GetSpecializationRoleEnum(spec);
 		else
@@ -1933,7 +1933,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			local spec, role;
 
-			spec = GetSpecialization();
+			spec = C_SpecializationInfo.GetSpecialization();
 			if (spec) then
 				role = GetSpecializationRoleEnum(spec);
 			else
@@ -2276,9 +2276,9 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 	if useSpec then
 		classID, specID = EJ_GetLootFilter();
 		if specID == 0 then
-			local spec = GetSpecialization();
+			local spec = C_SpecializationInfo.GetSpecialization();
 			if spec and classID == select(3, UnitClass("player")) then
-				specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+				specID = C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
 			else
 				specID = -1;
 			end
@@ -2949,9 +2949,19 @@ local AdventureJournal_RightDescriptionFonts = {
 	-- "SystemFont_Small", -- 10pt font
 };
 
+function EJSuggestFrame_GetDisplayFrame(suggestionIndex)
+	assert(suggestionIndex <= AJ_MAX_NUM_SUGGESTIONS);
+	if suggestionIndex == 1 then
+		return EncounterJournal.suggestFrame.Suggestion3;
+	elseif suggestionIndex == 2 then
+		return EncounterJournal.suggestFrame.Suggestion2;
+	elseif suggestionIndex == 3 then
+		return EncounterJournal.suggestFrame.Suggestion1;
+	end
+end
+
 function EJSuggestFrame_RefreshDisplay()
 	local instanceSelect = EncounterJournal.instanceSelect;
-	local tab = EncounterJournal.suggestTab;
 	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
@@ -2973,10 +2983,10 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.iconRing:Hide();
 	end
 
-	-- setup the primary suggestion display
-	if ( #self.suggestions > 0 ) then
-		local suggestion = self.Suggestion1;
-		local data = self.suggestions[1];
+	-- setup the big suggestion display with the last one
+	local data = self.suggestions[AJ_MAX_NUM_SUGGESTIONS];
+	if ( data ) then
+		local suggestion = EJSuggestFrame_GetDisplayFrame(AJ_MAX_NUM_SUGGESTIONS);
 
 		local centerDisplay = suggestion.centerDisplay;
 		local titleText = centerDisplay.title.text;
@@ -3047,21 +3057,20 @@ function EJSuggestFrame_RefreshDisplay()
 	end
 
 	-- setup secondary suggestions display
-	if ( #self.suggestions > 1 ) then
+	if ( #self.suggestions > 0 ) then
 		local minTitleIndex = 1;
 		local minDescIndex = 1;
 
-		for i = 2, #self.suggestions do
-			local suggestion = self["Suggestion"..i];
-			if ( not suggestion ) then
+		for i = 1, AJ_MAX_NUM_SUGGESTIONS - 1 do
+			local suggestionData = self.suggestions[i];
+			local suggestion = EJSuggestFrame_GetDisplayFrame(i);
+			if ( not suggestionData or not suggestion ) then
 				break;
 			end
 
 			suggestion.centerDisplay:Show();
-
-			local data = self.suggestions[i];
-			suggestion.centerDisplay.title.text:SetText(data.title);
-			suggestion.centerDisplay.description.text:SetText(data.description ~= "" and data.description or " ");
+			suggestion.centerDisplay.title.text:SetText(suggestionData.title);
+			suggestion.centerDisplay.description.text:SetText(suggestionData.description ~= "" and suggestionData.description or " ");
 
 			-- find largest font that will not truncate the title
 			for fontIndex = minTitleIndex, #AdventureJournal_RightTitleFonts do
@@ -3082,8 +3091,8 @@ function EJSuggestFrame_RefreshDisplay()
 				end
 			end
 
-			if ( data.buttonText and #data.buttonText > 0 ) then
-				suggestion.centerDisplay.button:SetText( data.buttonText );
+			if ( suggestionData.buttonText and #suggestionData.buttonText > 0 ) then
+				suggestion.centerDisplay.button:SetText( suggestionData.buttonText );
 
 				local btnWidth = max(suggestion.centerDisplay.button:GetTextWidth()+42, 116);
 				btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
@@ -3093,9 +3102,9 @@ function EJSuggestFrame_RefreshDisplay()
 
 			suggestion.icon:Show();
 			suggestion.iconRing:Show();
-			if ( data.iconPath ) then
+			if ( suggestionData.iconPath ) then
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-				suggestion.icon:SetTexture(data.iconPath);
+				suggestion.icon:SetTexture(suggestionData.iconPath);
 			else
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				suggestion.icon:SetTexture(QUESTION_MARK_ICON);

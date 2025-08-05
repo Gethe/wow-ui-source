@@ -224,6 +224,7 @@ local GuildInfo =
 		{
 			Name = "RemoveFromGuild",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -233,6 +234,7 @@ local GuildInfo =
 		{
 			Name = "RequestGuildRename",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -242,6 +244,7 @@ local GuildInfo =
 		{
 			Name = "RequestGuildRenameRefund",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "RequestRenameNameCheck",
@@ -264,6 +267,7 @@ local GuildInfo =
 		{
 			Name = "SetGuildRankOrder",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -292,6 +296,7 @@ local GuildInfo =
 		{
 			Name = "SetNote",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -522,6 +527,15 @@ local GuildInfo =
 			Name = "TabardSavePending",
 			Type = "Event",
 			LiteralName = "TABARD_SAVE_PENDING",
+		},
+		{
+			Name = "UnitGuildLevel",
+			Type = "Event",
+			LiteralName = "UNIT_GUILD_LEVEL",
+			Payload =
+			{
+				{ Name = "newLevel", Type = "number", Nilable = false },
+			},
 		},
 	},
 

@@ -389,16 +389,24 @@ function TokenFrameMixin:Update()
 
 	self.ScrollBox:SetDataProvider(CreateDataProvider(currencyList), ScrollBoxConstants.RetainScrollPosition);
 
-	-- If we're updating the currency list while the "Options" popup is open then we should refresh it as well
-	if self.selectedID and self.Popup:IsShown() then
+	if self.selectedID then
 		local function FindSelectedTokenButton(button, elementData)
 			return elementData.currencyIndex == self.selectedID;
-		end	
-
+		end
 		local selectedEntry = self.ScrollBox:FindFrameByPredicate(FindSelectedTokenButton);
-		if selectedEntry then
+
+		-- If we're updating the currency list while the "Options" popup is open then we should refresh it as well
+		if selectedEntry and self.Popup:IsShown() then
 			self:UpdatePopup(selectedEntry);
 		end
+
+		-- We want to hide the Currency Transfer Menu if we select a different currency than the one we currency have open for transferring
+		local currencyTransferMismatch = selectedEntry and CurrencyTransferMenu:GetCurrencyID() ~= selectedEntry.elementData.currencyID;
+		if currencyTransferMismatch then
+			HideUIPanel(CurrencyTransferMenu);
+		end
+	else
+		HideUIPanel(CurrencyTransferMenu);
 	end
 
 	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnDataRangeChanged, GenerateClosure(self.RefreshAccountTransferableCurrenciesTutorial), self);

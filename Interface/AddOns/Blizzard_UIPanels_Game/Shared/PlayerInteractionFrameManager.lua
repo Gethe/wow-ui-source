@@ -81,10 +81,6 @@ local InteractionManagerFrameInfo = {
 		frame = "WardrobeFrame",
 		loadFunc = CollectionsJournal_LoadUI 
 	},
-	[Enum.PlayerInteractionType.VoidStorageBanker] = {
-		frame = "VoidStorageFrame",
-		loadFunc = VoidStorage_LoadUI
-	},
 	[Enum.PlayerInteractionType.BlackMarketAuctioneer] = {
 		frame = "BlackMarketFrame",
 		showFunc = "BlackMarketFrame_Show",

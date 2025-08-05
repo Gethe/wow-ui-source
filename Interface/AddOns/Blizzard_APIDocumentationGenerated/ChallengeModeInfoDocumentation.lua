@@ -126,6 +126,16 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetLeaverPenaltyWarningTimeLeft",
+			Type = "Function",
+			Documentation = { "Returns how much time is left before player is automatically flagged as a leaver (and removed from the group) for exiting a restricted challenge mode instance" },
+
+			Returns =
+			{
+				{ Name = "timeLeftSeconds", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "GetMapScoreInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -161,6 +171,7 @@ local ChallengeModeInfo =
 				{ Name = "timeLimit", Type = "number", Nilable = false },
 				{ Name = "texture", Type = "number", Nilable = true },
 				{ Name = "backgroundTexture", Type = "number", Nilable = false },
+				{ Name = "mapID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -232,6 +243,15 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "GetStartTime",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSlottedKeystone",
 			Type = "Function",
 
@@ -247,6 +267,15 @@ local ChallengeModeInfo =
 			Returns =
 			{
 				{ Name = "challengeModeActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsChallengeModeResettable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canReset", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -294,6 +323,19 @@ local ChallengeModeInfo =
 			LiteralName = "CHALLENGE_MODE_COMPLETED",
 		},
 		{
+			Name = "ChallengeModeCompletedRewards",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_COMPLETED_REWARDS",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "medal", Type = "number", Nilable = false },
+				{ Name = "timeMS", Type = "number", Nilable = false },
+				{ Name = "money", Type = "number", Nilable = false },
+				{ Name = "rewards", Type = "table", InnerType = "ChallengeModeReward", Nilable = false },
+			},
+		},
+		{
 			Name = "ChallengeModeDeathCountUpdated",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_DEATH_COUNT_UPDATED",
@@ -318,6 +360,16 @@ local ChallengeModeInfo =
 			LiteralName = "CHALLENGE_MODE_LEADERS_UPDATE",
 		},
 		{
+			Name = "ChallengeModeLeaverTimerEnded",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_ENDED",
+		},
+		{
+			Name = "ChallengeModeLeaverTimerStarted",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_STARTED",
+		},
+		{
 			Name = "ChallengeModeMapsUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MAPS_UPDATE",
@@ -326,6 +378,17 @@ local ChallengeModeInfo =
 			Name = "ChallengeModeMemberInfoUpdated",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MEMBER_INFO_UPDATED",
+		},
+		{
+			Name = "ChallengeModeNewRecord",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_NEW_RECORD",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "timeMS", Type = "number", Nilable = false },
+				{ Name = "medal", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "ChallengeModeReset",
@@ -369,6 +432,27 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "ChallengeModeBestTime",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
+				{ Name = "durationMs", Type = "number", Nilable = false },
+				{ Name = "members", Type = "table", InnerType = "ChallengeModeBestTimeMember", Nilable = false },
+			},
+		},
+		{
+			Name = "ChallengeModeBestTimeMember",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "classFileName", Type = "cstring", Nilable = false },
+				{ Name = "className", Type = "cstring", Nilable = false },
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "ChallengeModeCompletionMemberInfo",
 			Type = "Structure",
 			Fields =
@@ -397,6 +481,17 @@ local ChallengeModeInfo =
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },
 				{ Name = "isYou", Type = "bool", Nilable = false },
 				{ Name = "members", Type = "table", InnerType = "ChallengeModeGuildAttemptMember", Nilable = false },
+			},
+		},
+		{
+			Name = "ChallengeModeReward",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rewardID", Type = "number", Nilable = false },
+				{ Name = "displayInfoID", Type = "number", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "isCurrency", Type = "bool", Nilable = false },
 			},
 		},
 	},

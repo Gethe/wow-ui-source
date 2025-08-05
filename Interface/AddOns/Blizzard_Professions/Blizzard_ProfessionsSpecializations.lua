@@ -11,16 +11,16 @@ StaticPopupDialogs["PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB"] =
 	wide = true,
 	wideText = true,
 
-	OnAccept = function(self, info)
-		info.onAccept();
+	OnAccept = function(dialog, data)
+		data.onAccept();
 	end,
 
-	OnShow = function(self, info)
-		local headerText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE:format(info.specName).."\n\n");
-		local bodyKey = info.hasAnyConfigChanges and PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_UNAPPLIED or PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB;
-		local bodyText = NORMAL_FONT_COLOR:WrapTextInColorCode(bodyKey:format(info.specName, info.profName));
-		self.text:SetText(headerText..bodyText);
-		self.text:Show();
+	OnShow = function(dialog, data)
+		local headerText = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_TITLE:format(data.specName).."\n\n");
+		local bodyKey = data.hasAnyConfigChanges and PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB_UNAPPLIED or PROFESSIONS_SPECIALIZATION_CONFIRM_PURCHASE_TAB;
+		local bodyText = NORMAL_FONT_COLOR:WrapTextInColorCode(bodyKey:format(data.specName, data.profName));
+		dialog:SetText(headerText..bodyText);
+		dialog:GetTextFontString():Show();
 	end,
 
 	hideOnEscape = 1,

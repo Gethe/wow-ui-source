@@ -1,0 +1,66 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="InstanceAbandonPopup" inherits="StaticPopupTemplate" hidden="true" movable="true" registerForDrag="LeftButton" clampedToScreen="true">
+		<KeyValues>
+			<KeyValue key="reserved" value="true" type="boolean"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" x="-50" y="140"/>
+		</Anchors>
+		<Scripts>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+
+	<Frame name="InstanceAbandonFrame" mixin="InstanceAbandonMixin" inherits="VerticalLayoutFrame" hidden="true">
+		<Size x="200" y="300"/>
+		<Frames>
+			<Frame parentKey="StatusFrame">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true">
+							<Color r="1" g="0" b="0" a="0"/>
+						</Texture>
+					</Layer>					
+				</Layers>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>				
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="VoteText" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate">
+					<Size x="264"/>
+					<KeyValues>
+						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+						<KeyValue key="topPadding" value="12" type="number"/>
+					</KeyValues>
+				</FontString>
+				<FontString parentKey="ResponseText" inherits="UserScaledFontGameNormal, UserScaledFontStringTemplate" hidden="true">
+					<KeyValues>
+						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+						<KeyValue key="topPadding" value="10" type="number"/>
+						<KeyValue key="bottomPadding" value="0" type="number"/>
+					</KeyValues>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

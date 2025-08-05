@@ -1,0 +1,313 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Font name="GlueFontNormalExtraSmall" inherits="SystemFont_Shadow_Outline_Small" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontHighlightExtraSmall" inherits="SystemFont_Shadow_Outline_Small" virtual="true">
+		<Color color="WHITE_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontDisableExtraSmall" inherits="SystemFont_Shadow_Outline_Small" virtual="true">
+		<Color color="DISABLED_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontNormal" inherits="SystemFont_Outline_Med2" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color color="BLACK_FONT_COLOR"/>
+		</Shadow>
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontHighlight" inherits="GlueFontNormal" virtual="true">
+		<Color color="WHITE_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontDisable" inherits="GlueFontNormal" virtual="true">
+		<Color color="DISABLED_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontNormalLarge" inherits="SystemFont_Shadow_Outline_Large" spacing="2" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GlueFontHighlightLarge" inherits="GlueFontNormalLarge" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="GlueFontDisableLarge" inherits="GlueFontNormalLarge" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+
+	<Font name="QuestTitleFont" inherits="QuestFont_Shadow_Huge" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+
+	<Font name="QuestFont" inherits="SystemFont_Med2" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+
+	<Font name="GameFontNormal" inherits="SystemFont_Shadow_Med1" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontNormalLeft" inherits="GameFontNormal" justifyH="LEFT" virtual="true"/>
+	
+	<Font name="GameFontNormalSmall" inherits="SystemFont_Shadow_Small" virtual="true">
+		<Color color="NORMAL_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontNormalSmallLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontHighlight" inherits="GameFontNormal" virtual="true">
+		<Color color="WHITE_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+
+	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
+		<Color color="GREEN_FONT_COLOR"/>
+	</Font>	
+
+	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
+
+	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
+
+	<Font name="CombatLogFont" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
+
+	<Font name="ObjectiveFont" inherits="GameFontHighlight" justifyH="LEFT" justifyV="TOP" virtual="true">
+		<Color r="0.8" g="0.8" b="0.8"/>
+	</Font>
+
+	<Font name="GameFontDisable" inherits="GameFontNormal" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+
+	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color color="WHITE_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontHighlightSmallRight" inherits="GameFontHighlightSmall" justifyH="RIGHT" virtual="true"/>
+	
+	<Font name="GameFontHighlightExtraSmall" inherits="GameFontHighlightSmall" virtual="true">
+		<Color color="WHITE_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontHighlightSmallLeftTop" inherits="GameFontHighlightSmallLeft" justifyV="TOP" virtual="true"/>
+
+	<Font name="GameFontHighlightExtraSmallLeft" inherits="GameFontHighlightExtraSmall" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontHighlightExtraSmallLeftTop" inherits="GameFontHighlightExtraSmallLeft" justifyV="TOP" virtual="true"/>
+
+	<Font name="GameFontHighlightSmallOutline" inherits="GameFontHighlightSmall"  virtual="true"/>
+	
+	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color color="DISABLED_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontDarkGraySmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.35" g="0.35" b="0.35"/>
+	</Font>
+
+	<Font name="GameFontGreenSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="0.1" g="1.0" b="0.1"/>
+	</Font>
+
+	<Font name="GameFontRedSmall" inherits="GameFontNormalSmall" virtual="true">
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+
+	<Font name="GameFontNormalSmallBattleNetBlueLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true">
+		<Color r="0.510" g="0.773" b="1.0"/>
+	</Font>
+
+	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontDisableSmall2" inherits="SystemFont_Small2" virtual="true">
+		<Color color="DISABLED_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftBottom" inherits="GameFontNormalLeft" justifyV="BOTTOM" virtual="true"/>
+
+	<Font name="GameFontNormalLeftGreen" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.0" g="1.0" b="0.0"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftYellow" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="1.0" b="0.0"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftOrange" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.5" b="0.25"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftLightGreen" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.25" g=".75" b="0.25"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftGrey" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="DISABLED_FONT_COLOR"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftLightGrey" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftLightBlue" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.53" g="0.67" b="1.0"/>
+	</Font>
+
+	<Font name="GameFontNormalLeftRed" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.9" g="0.0" b="0.0"/>
+	</Font>
+
+	<Font name="GameFontNormalLarge" inherits="SystemFont_Shadow_Large" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	
+	<Font name="GameFontNormalLarge2" inherits="SystemFont_Shadow_Large2" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="GameFontNormalLargeOutline" inherits="SystemFont_Shadow_Large_Outline" outline="NORMAL" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="GameFontNormalLargeLeft" inherits="GameFontNormalLarge" justifyH="LEFT" virtual="true"/>
+
+	<Font name="GameFontNormalLargeLeftTop" inherits="GameFontNormalLargeLeft" justifyV="TOP" virtual="true"/>
+
+	<Font name="GameFontRedLarge" inherits="GameFontNormalLarge" virtual="true">
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+
+	<Font name="GameFontHighlightLarge" inherits="GameFontNormalLarge" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="GameFontDisableLarge" inherits="GameFontNormalLarge" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+	
+	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="QuestDifficulty_Impossible" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="IMPOSSIBLE_DIFFICULTY_COLOR"/>
+	</Font>
+
+	<Font name="QuestDifficulty_VeryDifficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="DIFFICULT_DIFFICULTY_COLOR"/>
+	</Font>
+
+	<Font name="QuestDifficulty_Difficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="FAIR_DIFFICULTY_COLOR"/>
+	</Font>
+
+	<Font name="QuestDifficulty_Standard" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="EASY_DIFFICULTY_COLOR"/>
+	</Font>
+
+	<Font name="QuestDifficulty_Trivial" inherits="GameFontNormalLeft" virtual="true">
+		<Color color="TRIVIAL_DIFFICULTY_COLOR"/>
+	</Font>
+
+	<Font name="QuestDifficulty_Header" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.7" g="0.7" b="0.7"/>
+	</Font>
+
+	<Font name="LFGActivityHeader" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.7" g="0.7" b="0.7"/>
+	</Font>
+
+	<Font name="LFGActivityEntry" inherits="GameFontNormalLeft" virtual="true"/>
+
+	<Font name="LFGActivityEntryTrivial" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+
+	<Font name="LFGActivityEntryDifficult" inherits="GameFontNormalLeft" virtual="true">
+		<Color r="1.0" g="0.5" b="0.25"/>
+	</Font>
+
+	<Font name="CharacterCreateTooltipFont" inherits="SystemFont_Outline_Med2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="Number14FontWhite" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number14FontGray" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="0.5" g="0.5" b="0.5"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="NumberFontNormal" inherits="NumberFont_Outline_Med" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
+
+	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+
+	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
+
+	<Font name="NumberFontNormalYellow" inherits="NumberFontNormal" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<!-- The user-scaled styles should be last because they will likely inherit from existing styles -->
+	<Font name="UserScaledFontBody" inherits="UserScaledFontSystem_Body" justifyH="LEFT" justifyV="TOP" canBeUserScaled="true" virtual="true">
+		<Color color="HIGHLIGHT_FONT_COLOR"/>
+	</Font>
+
+	<Font name="UserScaledFontHeader" inherits="UserScaledFontSystem_Header" justifyH="LEFT" justifyV="TOP" canBeUserScaled="true" virtual="true">
+		<Color color="HIGHLIGHT_FONT_COLOR"/>
+	</Font>
+
+	<Font name="UserScaledFontGlueNormal" inherits="GlueFontNormal" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGlueDisable" inherits="GlueFontDisable" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGlueHighlight" inherits="GlueFontHighlight" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGlueNormalLarge" inherits="GlueFontNormalLarge" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGlueNormalExtraSmall" inherits="GlueFontNormalExtraSmall" canBeUserScaled="true" virtual="true"/>
+	
+	<Font name="UserScaledFontGameNormal" inherits="GameFontNormal" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameDisable" inherits="GameFontDisable" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameHighlight" inherits="GameFontHighlight" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameHighlightRight" inherits="GameFontHighlightRight" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameNormalSmall" inherits="GameFontNormalSmall" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameDisableSmall" inherits="GameFontDisableSmall" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontGameHighlightSmall" inherits="GameFontHighlightSmall" canBeUserScaled="true" virtual="true"/>
+
+	<Font name="UserScaledFontGameNormalLarge" inherits="GameFontNormalLarge" canBeUserScaled="true" virtual="true"/>
+
+	<Font name="UserScaledChatFontNormal" inherits="ChatFontNormal" canBeUserScaled="true" justifyH="LEFT" virtual="true"/>
+
+	<Font name="UserScaledFontNumberNormalRight" inherits="NumberFontNormalRight" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontNumberNormalRightRed" inherits="NumberFontNormalRightRed" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontNumberNormalRightYellow" inherits="NumberFontNormalRightYellow" canBeUserScaled="true" virtual="true"/>
+	<Font name="UserScaledFontNumberNormalRightGray" inherits="NumberFontNormalRightGray" canBeUserScaled="true" virtual="true"/>
+</Ui>

@@ -12,11 +12,12 @@
 							</Anchors>
 							<Layers>
 								<Layer level="OVERLAY">
-									<FontString parentKey="Text" inherits="GlueFontRedLarge" text="RESET_WARNING">
+									<FontString parentKey="Text" inherits="GlueFontNormalLarge" text="RESET_WARNING">
 										<Size x="400" y="48"/>
 										<Anchors>
 											<Anchor point="TOP" x="0" y="-32"/>
 										</Anchors>
+										<Color color="ERROR_COLOR"/>
 									</FontString>
 								</Layer>
 							</Layers>

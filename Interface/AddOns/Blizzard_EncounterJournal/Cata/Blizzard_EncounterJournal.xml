@@ -1179,100 +1179,8 @@
 		</Scripts>
 	</Button>
 
-	<Button name="BottomEncounterTierTabTemplate" inherits="PanelTabButtonTemplate" virtual="true">
-		<Size x="120" y="36"/>	
-		<HitRectInsets>
-			<AbsInset left="-12" right="-12" top="0" bottom="0"/>
-		</HitRectInsets>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentMid" inherits="_DungeonGridTab-Mid" parentKey="mid" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeft" inherits="UI-EJ-DungeonGridTab-Left" parentKey="left">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRight" inherits="UI-EJ-DungeonGridTab-Right" parentKey="right">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">	
-				<Texture name="$parentMidSelect" inherits="_DungeonGridTab-MidSelect" parentKey="midSelect" horizTile="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftSelect" inherits="UI-EJ-DungeonGridTab-LeftSelect" parentKey="leftSelect" hidden="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightSelect" inherits="UI-EJ-DungeonGridTab-RightSelect" parentKey="rightSelect" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentSelectedGlow" inherits="UI-EJ-DungeonGridTab-SelectedGlow" parentKey="selectedGlow" hidden="true">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="-18" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="18" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">	
-				<Texture name="$parentMidHighlight" inherits="_DungeonGridTab-MidHighlight" parentKey="midHighlight" horizTile="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentLeftHighlight" inherits="UI-EJ-DungeonGridTab-LeftHighlight" parentKey="leftHighlight">
-					<Anchors>
-						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentRightHighlight" inherits="UI-EJ-DungeonGridTab-RightHighlight" parentKey="rightHighlight">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="0"/>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalFont style="GameFontNormalLarge"/>
-		<HighlightFont style="GameFontHighlightLarge"/>
-		<DisabledFont style="GameFontHighlightLarge"/>
-		<ButtonText>
-			<Anchors>
-				<Anchor point="CENTER" x="0" y="-3"/>
-			</Anchors>
-		</ButtonText>
+	<Button name="BottomEncounterTierTabTemplate" inherits="CharacterFrameTabButtonTemplate" parentArray="Tabs" virtual="true">
 		<Scripts>
-			<OnLoad>
-			</OnLoad>
-			<OnEnable>
-				self.leftSelect:Hide();
-				self.midSelect:Hide();
-				self.rightSelect:Hide();
-			</OnEnable>
-			<OnDisable>
-				self.leftSelect:Show();
-				self.midSelect:Show();
-				self.rightSelect:Show();
-			</OnDisable>
 			<OnClick>
 				EJ_ContentTab_OnClick(self);
 			</OnClick>
@@ -2036,7 +1944,11 @@
 			</Button>
 			<Button name="$parentRaidTab" inherits="BottomEncounterTierTabTemplate" text="RAIDS" id="2" parentKey="raidsTab">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentDungeonTab" relativePoint="RIGHT" x="25" y="0"/>
+					<Anchor point="LEFT" relativeTo="$parentDungeonTab" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-15" y="0"/>
+						</Offset>
+					</Anchor>
 				</Anchors>
 			</Button>
 

@@ -6,6 +6,20 @@ local SpellActivationOverlay =
 
 	Functions =
 	{
+		{
+			Name = "IsSpellOverlayed",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSpellOverlayed", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

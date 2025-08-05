@@ -51,8 +51,8 @@ StaticPopupDialogs["GARRISON_CANCEL_UPGRADE_BUILDING"] = {
 	text = GARRISON_CANCEL_UPGRADE_BUILDING,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		GarrisonBuildingFrameTimerCancel_OnConfirm(self.data);
+	OnAccept = function(dialog, data)
+		GarrisonBuildingFrameTimerCancel_OnConfirm(data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -65,8 +65,8 @@ StaticPopupDialogs["GARRISON_CANCEL_BUILD_BUILDING"] = {
 	text = GARRISON_CANCEL_BUILD_BUILDING,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		GarrisonBuildingFrameTimerCancel_OnConfirm(self.data);
+	OnAccept = function(dialog, data)
+		GarrisonBuildingFrameTimerCancel_OnConfirm(data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -908,8 +908,7 @@ function GarrisonBuildingFrameTimerCancel_OnClick(self, button)
 	if (rank > 1) then
 		popupText = "GARRISON_CANCEL_UPGRADE_BUILDING";
 	end
-	local dialog = StaticPopup_Show(popupText);
-	dialog.data = GarrisonBuildingFrame.selectedBuilding;
+	StaticPopup_Show(popupText, nil, nil, GarrisonBuildingFrame.selectedBuilding);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 

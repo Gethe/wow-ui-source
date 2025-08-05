@@ -3,12 +3,11 @@
 ## AllowLoadGameType: mainline
 ## LoadFirst: 1
 ## RequiredDep: Blizzard_SharedXML
-## OptionalDep: Blizzard_GlueParent, Blizzard_GlueDialogs, Blizzard_FrameXMLBase
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_Shared_SimpleCheckout, Blizzard_FrameXMLBase
 ## UseSecureEnvironment: 1
 
 Blizzard_Shared_StoreButtonMixin.lua
 Blizzard_Shared_StoreUITemplates.xml
-Blizzard_Shared_SimpleCheckout.xml
 Blizzard_Shared_ProductCardTemplates.xml
 Blizzard_Shared_StoreUI.xml
 Blizzard_Shared_StoreUIInsecure.lua

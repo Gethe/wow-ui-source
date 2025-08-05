@@ -2919,15 +2919,16 @@ function ExpandBarMixin:OnLeave()
 end
 
 function ExpandBarMixin:OnClick()
-	PlaySound(self.ExpandButton:GetOnClickSoundKit());
+	if not self:IsLocked() then
+		PlaySound(self.ExpandButton:GetOnClickSoundKit());
 
-	local isUserInput = true;
-	self:Toggle(isUserInput);
+		local isUserInput = true;
+		self:Toggle(isUserInput);
+	end
 end
 
 function ExpandBarMixin:Toggle(isUserInput)
 	local shouldBeShown = not self.target:IsShown();
-	self.target:SetShown(shouldBeShown);
 	self:SetExpandedState(shouldBeShown);
 
 	if self.onToggleCallback then
@@ -2947,8 +2948,18 @@ function ExpandBarMixin:IsExpanded()
 	return self.target:IsShown();
 end
 
-function ExpandBarMixin:SetExpandedState(expanded)
+function ExpandBarMixin:SetExpandedState(expanded, locked)
 	self.ExpandButton:SetExpandedState(expanded);
+	self.target:SetShown(expanded);
+
+	if locked ~= nil then
+		self.ExpandButton:SetShown(not locked);
+		self.locked = locked;
+	end
+end
+
+function ExpandBarMixin:IsLocked()
+	return self.locked;
 end
 
 function ExpandBarMixin:UpdateExpandedState()

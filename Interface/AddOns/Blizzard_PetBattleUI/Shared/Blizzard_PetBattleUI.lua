@@ -32,7 +32,7 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	maxLetters = 30,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		C_PetBattles.ForfeitGame();
 	end,
 	timeout = 0,
@@ -45,7 +45,7 @@ StaticPopupDialogs["PET_BATTLE_FORFEIT_NO_PENALTY"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	maxLetters = 30,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		C_PetBattles.ForfeitGame();
 	end,
 	timeout = 0,
@@ -579,7 +579,7 @@ function PetBattleCatchButton_OnEnter(self)
 end
 
 function PetBattleFrame_GetAbilityAtLevel(speciesID, targetLevel)
-	local abilities = C_PetJournal.GetPetAbilityList(speciesID);
+	local abilities = C_PetJournal.GetPetAbilityListTable(speciesID);
 	for _, ability in pairs(abilities)  do
 		if ability.level == targetLevel then
 			return ability.abilityID; 

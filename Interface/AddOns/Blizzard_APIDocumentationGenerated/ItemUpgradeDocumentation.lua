@@ -193,6 +193,11 @@ local ItemUpgrade =
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
 		},
+		{
+			Name = "ItemUpgradeMasterUpdate",
+			Type = "Event",
+			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
+		},
 	},
 
 	Tables =

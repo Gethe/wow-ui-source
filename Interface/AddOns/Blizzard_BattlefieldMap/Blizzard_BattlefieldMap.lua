@@ -174,13 +174,12 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 				BattlefieldMapOptions = defaultOptions;
 			end
 
-			BattlefieldMapTab:ClearAllPoints();
 			if ( BattlefieldMapOptions.position ) then
+				BattlefieldMapTab:ClearAllPoints();
 				BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
 				BattlefieldMapTab:SetUserPlaced(true);
-			else
-				UIParent_ManageFramePositions();
 			end
+
 			self:RefreshAlpha();
 			self:UpdateUnitsVisibility();
 			self:UnregisterEvent("ADDON_LOADED");

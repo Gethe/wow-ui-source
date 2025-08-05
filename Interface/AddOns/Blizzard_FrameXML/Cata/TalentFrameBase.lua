@@ -40,11 +40,11 @@ function TalentFrame_Update(TalentFrame)
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		isActiveTalentGroup = true;
 	else
-		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
+		isActiveTalentGroup = TalentFrame.talentGroup == C_SpecializationInfo.GetActiveSpecGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
 	-- Setup Frame
 	local base;
-	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local id, name, description, icon, _, _, pointsSpent, background, previewPointsSpent, isUnlocked = C_SpecializationInfo.GetSpecializationInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, nil, nil, TalentFrame.talentGroup);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..background.."-";
 	else
@@ -68,7 +68,7 @@ function TalentFrame_Update(TalentFrame)
 	local numTalents = GetNumTalents(selectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
-		message("Too many talents in talent frame!");
+		SetBasicMessageDialogText("Too many talents in talent frame!");
 	end
 
 	-- get unspent talent points
@@ -88,23 +88,28 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[talentFrameTalentName..i];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional, goldBorder =
-				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-				
-			-- Temp hack - For now, we are just ignoring the "goldBorder" flag and putting the gold border on any "exceptional" talents
-			goldBorder = isExceptional;
+			local talentInfoQuery = {};
+			talentInfoQuery.specializationIndex = selectedTab;
+			talentInfoQuery.talentIndex = i;
+			talentInfoQuery.isInspect = TalentFrame.inspect;
+			talentInfoQuery.isPet = TalentFrame.pet;
+			talentInfoQuery.groupIndex = TalentFrame.talentGroup;
+			local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+
+			if ( talentInfo and talentInfo.tier <= MAX_NUM_TALENT_TIERS) then
+				-- Temp hack - For now, we are just ignoring the "goldBorder" flag and putting the gold border on any "exceptional" talents.
+				talentInfo.goldBorder = talentInfo.isExceptional;
 			
-			if ( talentName and tier <= MAX_NUM_TALENT_TIERS) then
 				local displayRank;
 				if ( preview ) then
-					displayRank = previewRank;
+					displayRank = talentInfo.previewRank;
 				else
-					displayRank = rank;
+					displayRank = talentInfo.rank;
 				end
 
 				button.Rank:SetText(displayRank);
-				SetTalentButtonLocation(button, tier, column, talentButtonSize, initialOffsetX, initialOffsetY, buttonSpacingX, buttonSpacingY);
-				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
+				SetTalentButtonLocation(button, talentInfo.tier, talentInfo.column, talentButtonSize, initialOffsetX, initialOffsetY, buttonSpacingX, buttonSpacingY);
+				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
 			
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
 				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
@@ -114,15 +119,15 @@ function TalentFrame_Update(TalentFrame)
 				end
 
 				-- is this talent's tier unlocked?
-				if ( isUnlocked and ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
+				if ( isUnlocked and ((talentInfo.tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
 					tierUnlocked = 1;
 				else
 					tierUnlocked = nil;
 				end
 					
-				SetItemButtonTexture(button, iconTexture); 
+				SetItemButtonTexture(button, talentInfo.icon); 
 				
-				if (goldBorder and button.GoldBorder) then
+				if (talentInfo.goldBorder and button.GoldBorder) then
 					button.GoldBorder:Show();
 					button.Slot:Hide();
 					button.SlotShadow:Hide();
@@ -136,9 +141,9 @@ function TalentFrame_Update(TalentFrame)
 				
 				-- Talent must meet prereqs or the player must have no points to spend
 				local prereqsSet =
-					TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, preview,
+					TalentFrame_SetPrereqs(TalentFrame, talentInfo.tier, talentInfo.column, forceDesaturated, tierUnlocked, preview,
 					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
-				if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
+				if ( prereqsSet and ((preview and talentInfo.meetsPreviewPrereq) or (not preview and talentInfo.meetsPrereq)) ) then
 					SetItemButtonDesaturated(button, nil);
 					button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
 					button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD");
@@ -148,7 +153,7 @@ function TalentFrame_Update(TalentFrame)
 					
 					button.GoldBorder:SetDesaturated(nil);
 
-					if ( displayRank < maxRank ) then
+					if ( displayRank < talentInfo.maxRank ) then
 						-- Rank is green if not maxed out
 						button.Rank:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 						
@@ -161,7 +166,7 @@ function TalentFrame_Update(TalentFrame)
 						end
 						
 						if (button.GlowBorder) then
-							if (unspentPoints > 0 and not goldBorder) then
+							if (unspentPoints > 0 and not talentInfo.goldBorder) then
 								button.GlowBorder:Show();
 							else
 								button.GlowBorder:Hide();
@@ -169,7 +174,7 @@ function TalentFrame_Update(TalentFrame)
 						end
 						
 						if (button.GoldBorderGlow) then
-							if (unspentPoints > 0 and goldBorder) then
+							if (unspentPoints > 0 and talentInfo.goldBorder) then
 								button.GoldBorderGlow:Show();
 							else
 								button.GoldBorderGlow:Hide();
@@ -194,7 +199,7 @@ function TalentFrame_Update(TalentFrame)
 					button:ClearHighlightTexture();
 					button.GoldBorder:SetDesaturated(1);
 					button.Slot:SetVertexColor(0.5, 0.5, 0.5);
-					if ( rank == 0 ) then
+					if ( talentInfo.rank == 0 ) then
 						button.RankBorder:Hide();
 						button.Rank:Hide();
 					else
@@ -212,7 +217,7 @@ function TalentFrame_Update(TalentFrame)
 					end
 				end
 				
-				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].goldBorder = goldBorder;
+				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].goldBorder = talentInfo.goldBorder;
 				
 				button:Show();
 			else
@@ -327,7 +332,7 @@ function TalentFrame_GetArrowTexture(TalentFrame)
 	local arrowTexture = _G[talentFrameName.."Arrow"..TalentFrame.arrowIndex];
 	TalentFrame.arrowIndex = TalentFrame.arrowIndex + 1;
 	if ( not arrowTexture ) then
-		message("Not enough arrow textures");
+		SetBasicMessageDialogText("Not enough arrow textures");
 	else
 		arrowTexture:Show();
 		return arrowTexture;
@@ -340,7 +345,7 @@ function TalentFrame_GetBranchTexture(TalentFrame)
 	TalentFrame.textureIndex = TalentFrame.textureIndex + 1;
 	if ( not branchTexture ) then
 		--branchTexture = CreateTexture("TalentFrameBranch"..TalentFrame.textureIndex);
-		message("Not enough branch textures");
+		SetBasicMessageDialogText("Not enough branch textures");
 	else
 		branchTexture:Show();
 		return branchTexture;

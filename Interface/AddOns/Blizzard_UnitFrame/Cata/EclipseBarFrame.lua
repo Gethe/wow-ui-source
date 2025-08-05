@@ -32,9 +32,9 @@ function EclipseBarFrameMixin:ShouldDisplay()
 
 	if class == "DRUID" and (form == MOONKIN_FORM or not form) then
 		if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
-			return GetSpecialization() == SPEC_DRUID_BALANCE;
+			return C_SpecializationInfo.GetSpecialization() == SPEC_DRUID_BALANCE;
 		else
-			return GetPrimaryTalentTree() == 1;
+			return C_SpecializationInfo.GetSpecialization() == 1;
 		end
 	end
 

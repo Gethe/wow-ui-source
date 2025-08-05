@@ -33,9 +33,6 @@ FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
-ADDFRIENDFRAME_WOWHEIGHT = 218;
-ADDFRIENDFRAME_BNETHEIGHT = 296;
-
 FRIEND_TAB_COUNT = 4;
 FRIEND_TAB_FRIENDS = 1;
 FRIEND_TAB_WHO = 2;
@@ -316,6 +313,13 @@ function FriendsFrame_OnLoad(self)
 			WhoList_InitButton(button, elementData);
 		end);
 
+		-- Scrollable text in the Who List can be resized by the player so the extent may change during a session
+		view:SetElementExtentCalculator(function(dataIndex, elementData)
+			local fontHeight = GetFontInfo(elementData.fontObject).height;
+			local padding = fontHeight + 2;
+			return fontHeight + padding;
+		end);
+
 		ScrollUtil.InitScrollBoxListWithScrollBar(WhoFrame.ScrollBox, WhoFrame.ScrollBar, view);
 	end
 
@@ -393,6 +397,8 @@ function FriendsFrame_Update()
 
 	FriendsTabHeader:SetShown(selectedTab == FRIEND_TAB_FRIENDS);
 
+	FriendsFrame_UpdateInsetVisibility();
+
 	if selectedTab == FRIEND_TAB_FRIENDS then
 		local selectedHeaderTab = PanelTemplates_GetSelectedTab(FriendsTabHeader) or FRIEND_HEADER_TAB_FRIENDS;
 
@@ -438,6 +444,15 @@ function FriendsFrame_Update()
 		FriendsFrameTitleText:SetText(QUICK_JOIN);
 		FriendsFrame_ShowSubFrame("QuickJoinFrame");
 	end
+end
+
+function FriendsFrame_UpdateInsetVisibility()
+	local selectedTab = PanelTemplates_GetSelectedTab(FriendsFrame) or FRIEND_TAB_FRIENDS;
+
+	-- Hide the inset when viewing the list of raid groups in the RaidUI (See RaidUI.lua/xml)
+	local isRaidTabSelected = selectedTab == FRIEND_TAB_RAID;
+	local isRaidListVisible = isRaidTabSelected and IsInRaid();
+	FriendsFrameInset:SetShown(not isRaidListVisible);
 end
 
 function FriendsFrame_UpdateQuickJoinTab(numGroups)
@@ -636,10 +651,7 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 		if StaticPopup_Show then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
-				local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
-				if dialog then
-					dialog.data = inviteID;
-				end
+				StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName, nil, inviteID);
 			end);
 		end
 	end);
@@ -899,9 +911,10 @@ function WhoList_InitButton(button, elementData)
 	local variableText = variableColumnTable[whoSortValue];
 	button.Variable:SetText(variableText);
 
-	if button.Variable:IsTruncated() or button.Name:IsTruncated() then
+	if button.Variable:IsTruncated() or button.Level:IsTruncated() or button.Name:IsTruncated() then
 		button.tooltip1 = info.fullName;
-		button.tooltip2 = variableText;
+		button.tooltip2 = WHO_LIST_LEVEL_TOOLTIP:format(info.level);
+		button.tooltip3 = variableText;
 	end
 
 	local selected = WhoFrame.selectedWho == index;
@@ -956,7 +969,8 @@ function WhoList_Update()
 	local dataProvider = CreateDataProvider();
 	for index = 1, numWhos do
 		local info = C_FriendList.GetWhoInfo(index);
-		dataProvider:Insert({index=index, info=info});
+		-- All scrollable text in the Who List uses font that can be resized by the player
+		dataProvider:Insert({index=index, info=info, fontObject=UserScaledFontGameNormalSmall, });
 	end
 	WhoFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
@@ -984,15 +998,42 @@ function WhoFrameDropdown_OnLoad(self)
 			WhoList_Update();
 		end
 
-		self:SetWidth(101);
+		WhoFrameDropdown_Initialize(self);
+
 		self:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_FRIENDS_WHO");
 
-			rootDescription:CreateRadio(ZONE, IsSelected, SetSelected, {value = 1, sortType = "zone"});
-			rootDescription:CreateRadio(GUILD, IsSelected, SetSelected, {value = 2, sortType = "guild"});
-			rootDescription:CreateRadio(RACE, IsSelected, SetSelected, {value = 3, sortType = "race"});
+			local userScaledFontObject = self.fontObject;
+			local radioHeight = GetFontInfo(userScaledFontObject).height + 4;
+			local zoneOption = rootDescription:CreateRadio(ZONE, IsSelected, SetSelected, {value = 1, sortType = "zone"});
+			zoneOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
+
+			local guildOption = rootDescription:CreateRadio(GUILD, IsSelected, SetSelected, {value = 2, sortType = "guild"});
+			guildOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
+
+			local raceOption = rootDescription:CreateRadio(RACE, IsSelected, SetSelected, {value = 3, sortType = "race"});
+			raceOption:AddInitializer(function(button, description, menu)
+				button.fontString:SetFontObject(userScaledFontObject);
+				button:SetHeight(radioHeight);
+			end);
 		end);
 	end
+end
+
+-- This dropdown is slightly larger than normal to match the other "Who" headers that use resizable text 
+function WhoFrameDropdown_Initialize(self)
+	self.Text:SetFontObject(self.fontObject);
+	self.Text:ClearAllPoints();
+	self.Text:SetPoint("LEFT", self, 8, 0);
+	self.Text:SetPoint("RIGHT", self.Arrow, "LEFT", -8, 0);
+
+	self.Arrow:SetPoint("RIGHT", self, -1, -2);
 end
 
 function WhoFrameDropdown_OnShow(self)
@@ -1201,18 +1242,18 @@ function FriendsFrameAddFriendButton_OnClick(self)
 			AddFriendEntryFrame_Init(true);
 			AddFriendFrame.editFocus = AddFriendNameEditBox;
 			if InGlue() then
-				GlueDialog_Show("ADD_FRIEND");
+				StaticPopup_Show("ADD_FRIEND");
 			else
 				StaticPopupSpecial_Show(AddFriendFrame);
 				if ( GetCVarBool("addFriendInfoShown") ) then
-					AddFriendFrame_ShowEntry();
+					AddFriendFrame:ShowEntry();
 				else
-					AddFriendFrame_ShowInfo();
+					AddFriendFrame:ShowInfo();
 				end
 			end
 		else
 			if InGlue() then
-				GlueDialog_Show("ADD_FRIEND");
+				StaticPopup_Show("ADD_FRIEND");
 			else
 				StaticPopup_Show("ADD_FRIEND");
 			end
@@ -1363,8 +1404,58 @@ function OpenFriendsFrame(tab)
 	end
 end
 
-function WhoFrameEditBox_OnEnterPressed(self)
-	C_FriendList.SendWho(self:GetText(), Enum.SocialWhoOrigin.SOCIAL);
+WhoFrameEditBoxMixin = {};
+
+function WhoFrameEditBoxMixin:OnLoad()
+	-- Hiding this art so we can show the backdrop instead
+	self.Left:Hide();
+	self.Middle:Hide();
+	self.Right:Hide();
+
+	self.searchIcon:SetAtlas("glues-characterSelect-icon-search", TextureKitConstants.IgnoreAtlasSize);
+
+	self.Instructions:SetFontObject(self.instructionsFontObject);
+	-- This text can be scaled so we try to fit all (or least most) of the text and then truncate + tooltip where necessary
+	self.Instructions:SetMaxLines(2);
+end
+
+function WhoFrameEditBoxMixin:OnShow()
+	EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
+		self:AdjustHeightToFitInstructions();
+	end, self);
+
+	self:AdjustHeightToFitInstructions();
+	EditBox_ClearFocus(self);
+end
+
+function WhoFrameEditBoxMixin:AdjustHeightToFitInstructions()
+	local linesShown = math.min(self.Instructions:GetNumLines(), self.Instructions:GetMaxLines());
+	local totalInstructionHeight = linesShown * self.Instructions:GetLineHeight();
+	local padding = 20;
+	self:SetHeight(totalInstructionHeight + padding);
+end
+
+function WhoFrameEditBoxMixin:OnHide()
+	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
+end
+
+function WhoFrameEditBoxMixin:OnEnter()
+	local isTruncated = self.Instructions:IsShown() and self.Instructions:IsTruncated();
+	if not isTruncated then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_AddHighlightLine(GameTooltip, self.instructionText);
+	GameTooltip:Show();
+end
+
+function WhoFrameEditBoxMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function WhoFrameEditBoxMixin:OnEnterPressed()
+	C_FriendList.SendWho(self:GetText(), Enum.SocialWhoOrigin.Social);
 	self:ClearFocus();
 end
 
@@ -1850,64 +1941,77 @@ function FriendsFrameTooltip_SetLine(line, anchor, text, yOffset)
 	return line;
 end
 
-function AddFriendFrame_OnShow()
+AddFriendFrameMixin = {};
+
+function AddFriendFrameMixin:OnLoad()
+	self.exclusive = true;
+	self.hideOnEscape = true;
+end
+
+function AddFriendFrameMixin:OnShow()
 	local factionGroup = UnitFactionGroup("player");
 	if ( factionGroup and factionGroup ~= "Neutral" ) then
 		local textureFile = "Interface\\FriendsFrame\\PlusManz-"..factionGroup;
-		AddFriendInfoFrameFactionIcon:SetTexture(textureFile);
-		AddFriendInfoFrameFactionIcon:Show();
-		AddFriendEntryFrameRightIcon:SetTexture(textureFile);
-		AddFriendEntryFrameRightIcon:Show();
-		AddFriendInfoFrameFactionIcon:Show();
+		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
+		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
+		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder:SetSecondaryIcon(textureFile);
+		AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:Show();
 	else
-		AddFriendInfoFrameFactionIcon:Hide();
+		AddFriendInfoFrame.InfoContainer.RightTextContainer.IconHolder.SecondaryIcon:Hide();
 	end
 end
 
-function AddFriendFrame_ShowInfo()
-	AddFriendFrame:SetWidth(AddFriendInfoFrame:GetWidth());
-	AddFriendFrame:SetHeight(AddFriendInfoFrame:GetHeight());
+function AddFriendFrameMixin:OnHide()
+	self.editFocus = nil;
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+end
+
+function AddFriendFrameMixin:Resize()
+	self:Layout();
+end
+
+function AddFriendFrameMixin:ShowInfo()
 	AddFriendInfoFrame:Show();
 	AddFriendEntryFrame:Hide();
+	self:Resize();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
-function AddFriendFrame_ShowEntry()
-	AddFriendFrame:SetWidth(AddFriendEntryFrame:GetWidth());
-	AddFriendFrame:SetHeight(AddFriendEntryFrame:GetHeight());
+function AddFriendFrameMixin:ShowEntry()
 	AddFriendInfoFrame:Hide();
-	AddFriendEntryFrame:Show();
 	if ( BNFeaturesEnabledAndConnected() ) then
-		AddFriendFrame.BNconnected = true;
-		AddFriendEntryFrameLeftTitle:SetAlpha(1);
-		AddFriendEntryFrameLeftDescription:SetTextColor(1, 1, 1);
-		AddFriendEntryFrameLeftIcon:SetVertexColor(1, 1, 1);
-		AddFriendEntryFrameLeftFriend:SetVertexColor(1, 1, 1);
+		self.BNconnected = true;
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetAlpha(1);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetTextColor(1, 1, 1);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.SecondaryIcon:SetVertexColor(1, 1, 1);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.FriendIcon:SetVertexColor(1, 1, 1);
 		local _, battleTag, _, _, _, _, isRIDEnabled = BNGetInfo();
 		if ( battleTag and isRIDEnabled ) then
-			AddFriendEntryFrameLeftTitle:SetText(REAL_ID);
-			AddFriendEntryFrameLeftDescription:SetText(REALID_BATTLETAG_FRIEND_LABEL);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(REAL_ID);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_BATTLETAG_FRIEND_LABEL);
 			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG_OR_EMAIL);
 		elseif ( isRIDEnabled ) then
-			AddFriendEntryFrameLeftTitle:SetText(REAL_ID);
-			AddFriendEntryFrameLeftDescription:SetText(REALID_FRIEND_LABEL);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(REAL_ID);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_FRIEND_LABEL);
 			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_EMAIL);
 		elseif ( battleTag ) then
-			AddFriendEntryFrameLeftTitle:SetText(BATTLETAG);
-			AddFriendEntryFrameLeftDescription:SetText(BATTLETAG_FRIEND_LABEL);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(BATTLETAG);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(BATTLETAG_FRIEND_LABEL);
 			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG);
 		end
 	else
-		AddFriendFrame.BNconnected = nil;
-		AddFriendEntryFrameLeftTitle:SetAlpha(0.35);
-		AddFriendEntryFrameLeftDescription:SetText(BATTLENET_UNAVAILABLE);
-		AddFriendEntryFrameLeftDescription:SetTextColor(1, 0, 0);
-		AddFriendEntryFrameLeftIcon:SetVertexColor(.4, .4, .4);
-		AddFriendEntryFrameLeftFriend:SetVertexColor(.4, .4, .4);
+		self.BNconnected = nil;
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetAlpha(0.35);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(BATTLENET_UNAVAILABLE);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetTextColor(1, 0, 0);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.SecondaryIcon:SetVertexColor(.4, .4, .4);
+		AddFriendEntryFrame.OptionsContainer.LeftTextContainer.IconHolder.FriendIcon:SetVertexColor(.4, .4, .4);
 	end
-	if ( AddFriendFrame.editFocus ) then
-		AddFriendFrame.editFocus:SetFocus();
+	if ( self.editFocus ) then
+		self.editFocus:SetFocus();
 	end
+	AddFriendEntryFrame:Show();
+	self:Resize();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
@@ -1929,18 +2033,15 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 end
 
 function AddFriendEntryFrame_Init(clearText)
-	AddFriendEntryFrame:SetHeight(ADDFRIENDFRAME_WOWHEIGHT);
-	AddFriendFrame:SetHeight(ADDFRIENDFRAME_WOWHEIGHT);
 	AddFriendEntryFrameAcceptButton:SetText(ADD_FRIEND);
-	AddFriendEntryFrameRightTitle:SetAlpha(1);
-	AddFriendEntryFrameRightDescription:SetAlpha(1);
-	AddFriendEntryFrameRightIcon:SetVertexColor(1, 1, 1);
-	AddFriendEntryFrameRightFriend:SetVertexColor(1, 1, 1);
-	AddFriendEntryFrameLeftIcon:SetAlpha(0.5);
+	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Title:SetAlpha(1);
+	AddFriendEntryFrame.OptionsContainer.RightTextContainer.Description:SetAlpha(1);
+	AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.SecondaryIcon:SetVertexColor(1, 1, 1);
+	AddFriendEntryFrame.OptionsContainer.RightTextContainer.IconHolder.FriendIcon:SetVertexColor(1, 1, 1);
 	if ( AddFriendFrame.BNconnected ) then
-		AddFriendEntryFrameOrLabel:SetVertexColor(1, 1, 1);
+		AddFriendEntryFrame.OptionsContainer.OrLabel:SetVertexColor(1, 1, 1);
 	else
-		AddFriendEntryFrameOrLabel:SetVertexColor(0.3, 0.3, 0.3);
+		AddFriendEntryFrame.OptionsContainer.OrLabel:SetVertexColor(0.3, 0.3, 0.3);
 	end
 	if ( clearText ) then
 		AddFriendNameEditBox:SetText("");
@@ -1995,10 +2096,11 @@ function WhoListButtonMixin:OnClick(button)
 end
 
 function WhoListButtonMixin:OnEnter()
-	if self.tooltip1 and self.tooltip2 then
+	if self.tooltip1 and self.tooltip2 and self.tooltip3 then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip:SetText(self.tooltip1);
 		GameTooltip:AddLine(self.tooltip2, 1, 1, 1);
+		GameTooltip:AddLine(self.tooltip3, 1, 1, 1);
 		GameTooltip:Show();
 	end
 end
@@ -2754,4 +2856,73 @@ function IsValidBattlenetName(text)
 		return true;
 	end
 	return false;
+end
+
+AddFriendIconHolderMixin = {};
+
+function AddFriendIconHolderMixin:OnLoad()
+	self.SecondaryIcon:SetPoint("BOTTOMLEFT", self.FriendIcon, "BOTTOM", self.secondaryIconXOffset or 0, 7);
+	if self.secondaryIcon then
+		self:SetSecondaryIcon(self.secondaryIcon);
+	end
+end
+
+function AddFriendIconHolderMixin:SetSecondaryIcon(icon)
+	self.SecondaryIcon:SetTexture(icon);
+end
+
+AddFriendEntryFrameInfoButtonMixin = {};
+
+function AddFriendEntryFrameInfoButtonMixin:OnLoad()
+	UserScaledElementMixin.OnLoad_UserScaledElement(self);
+
+	-- Unlike other buttons that use this button template, this one scales with font size
+	-- Let's reanchor the assets so they scale properly
+	self:InitResizableTextures();
+end
+
+function AddFriendEntryFrameInfoButtonMixin:InitResizableTextures()
+	self.texture:ClearAllPoints();
+	self.texture:SetPoint("TOPLEFT", self);
+	self.texture:SetPoint("BOTTOMRIGHT", self);
+
+	self.HighlightTexture:ClearAllPoints();
+	self.HighlightTexture:SetPoint("TOPLEFT", self);
+	self.HighlightTexture:SetPoint("BOTTOMRIGHT", self);
+end
+
+function AddFriendEntryFrameInfoButtonMixin:OnClick()
+	if AddFriendNameEditBox:HasFocus() then
+		AddFriendFrame.editFocus = AddFriendNameEditBox;
+	else
+		AddFriendFrame.editFocus = nil;
+	end
+	AddFriendFrame:ShowInfo();
+end
+
+AddFriendCloseButtonMixin = {};
+
+function AddFriendCloseButtonMixin:OnClick()
+	StaticPopupSpecial_Hide(AddFriendFrame);
+end
+
+WhoFrameColumnHeaderMixin = {};
+
+function WhoFrameColumnHeaderMixin:OnClick()
+	if self.sortType then
+		C_FriendList.SortWho(self.sortType);
+	end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
+function WhoFrameColumnHeaderMixin:OnEnter()
+	if self.Text:IsTruncated() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip_AddHighlightLine(GameTooltip, self.Text:GetText());
+		GameTooltip:Show();
+	end
+end
+
+function WhoFrameColumnHeaderMixin:OnLeave()
+	GameTooltip:Hide();
 end

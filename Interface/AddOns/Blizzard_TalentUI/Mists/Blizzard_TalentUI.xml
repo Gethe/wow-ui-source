@@ -867,7 +867,7 @@
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						local talentGroup = PlayerTalentFrame and PlayerTalentFrame.talentGroup or 1;
-						if ( talentGroup == GetActiveSpecGroup() ) then
+						if ( talentGroup == C_SpecializationInfo.GetActiveSpecGroup() ) then
 							if ( PlayerTalentFrame_GetTalentSelections() and LearnTalents(PlayerTalentFrame_GetTalentSelections()) ) then
 								PlayerTalentFrame_ClearTalentSelections();
 							end

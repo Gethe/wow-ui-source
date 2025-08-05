@@ -21,11 +21,11 @@ StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
 	button1 = YES,
 	button2 = NO,
 	
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, true);
 		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT_APPROVAL);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, false);
 	end,
 	timeout = 0,

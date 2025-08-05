@@ -1005,6 +1005,7 @@ local PvpInfo =
 		{
 			Name = "SetPVP",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1014,6 +1015,7 @@ local PvpInfo =
 		{
 			Name = "SetWarModeDesired",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1054,10 +1056,12 @@ local PvpInfo =
 		{
 			Name = "TogglePVP",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "ToggleWarMode",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 
@@ -1640,9 +1644,11 @@ local PvpInfo =
 			{
 				{ Name = "canQueue", Type = "bool", Nilable = false },
 				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "bgIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "hasRandomWinToday", Type = "bool", Nilable = false },
 				{ Name = "minLevel", Type = "number", Nilable = false },
 				{ Name = "maxLevel", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -1685,6 +1691,21 @@ local PvpInfo =
 				{ Name = "validRoles", Type = "table", InnerType = "cstring", Nilable = false },
 				{ Name = "rewardSpellID", Type = "number", Nilable = false },
 				{ Name = "rewardItemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "WorldPVPBattlegroundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bgID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
+				{ Name = "canQueue", Type = "bool", Nilable = false },
+				{ Name = "canEnter", Type = "bool", Nilable = false },
+				{ Name = "startTime", Type = "time_t", Nilable = false },
+				{ Name = "minLevel", Type = "number", Nilable = false },
+				{ Name = "maxLevel", Type = "number", Nilable = false },
 			},
 		},
 	},

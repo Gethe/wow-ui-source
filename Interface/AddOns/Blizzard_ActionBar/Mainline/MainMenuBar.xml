@@ -119,7 +119,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="5">
-						<FontString parentKey="Text" inherits="GameFontNormalCenter">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER">
 							<Size x="17" y="10"/>
 							<Anchors>
 								<Anchor point="CENTER" x="-1"/>

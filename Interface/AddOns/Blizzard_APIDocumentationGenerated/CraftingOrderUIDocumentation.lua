@@ -57,6 +57,7 @@ local CraftingOrderUI =
 		{
 			Name = "ClaimOrder",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -262,6 +263,7 @@ local CraftingOrderUI =
 		{
 			Name = "PlaceNewOrder",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

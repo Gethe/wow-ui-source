@@ -117,10 +117,6 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 end
 
-local function ShouldShowTargetFrame(targetFrame)
-	return UnitExists(targetFrame.unit) or ShowBossFrameWhenUninteractable(targetFrame.unit);
-end
-
 function TargetFrameMixin:Update()
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.

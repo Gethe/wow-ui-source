@@ -47,10 +47,10 @@ function MerchantFrame_OnLoad(self)
 		local sex = UnitSex("player");
 		
 		for index = 1, GetNumSpecializations() do
-			local isInspect = nil;
-			local isPet = nil;
+			local isInspect = false;
+			local isPet = false;
 			local inspectTarget = nil;
-			local name = select(2, GetSpecializationInfo(index, isInspect, isPet, inspectTarget, sex));
+			local name = select(2, C_SpecializationInfo.GetSpecializationInfo(index, isInspect, isPet, inspectTarget, sex));
 
 			local filter = (LE_LOOT_FILTER_SPEC1 + index) - 1;
 			rootDescription:CreateRadio(name, IsSelected, SetSelected, filter);

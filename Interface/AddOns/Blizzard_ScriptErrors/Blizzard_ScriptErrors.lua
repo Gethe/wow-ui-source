@@ -41,7 +41,9 @@ local function HandleLuaError(errorMessage)
 	end
 
 	if ProcessExceptionClient then
-		ProcessExceptionClient(string.format("%sLocals: %s", errorMessage or "", locals or ""), errorMessage);
+		-- Skip HandleLuaError and the C++ error handler
+		local framesToSkip = 2;
+		ProcessExceptionClient(string.format("%s\nLocals: %s", errorMessage or "", locals or ""), errorMessage, framesToSkip);
 	end
 end
 

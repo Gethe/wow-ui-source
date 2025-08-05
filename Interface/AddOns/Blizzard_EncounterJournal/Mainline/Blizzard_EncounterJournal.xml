@@ -2100,7 +2100,7 @@
 					<Frame parentKey="Suggestion1">
 						<Size x="335" y="337"/>
 						<KeyValues>
-							<KeyValue key="index" value="1" type="number"/>
+							<KeyValue key="index" value="3" type="number"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="28" y="-18" />
@@ -2276,7 +2276,7 @@
 							<Anchor point="TOPLEFT" relativeKey="$parent.Suggestion2" relativePoint="BOTTOMLEFT" x="0" y="-11" />
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="index" value="3" type="number"/>
+							<KeyValue key="index" value="1" type="number"/>
 						</KeyValues>
 					</Frame>
 				</Frames>

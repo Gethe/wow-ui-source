@@ -160,9 +160,9 @@ function ReactivateAccountDialog_OnEvent(self, event, ...)
 		local result = ...;
 		if (result ~= LE_TOKEN_RESULT_SUCCESS) then
 			if (result == LE_TOKEN_RESULT_ERROR_NONE_FOR_SALE) then
-				GlueDialog_Show("TOKEN_NONE_FOR_SALE");
+				StaticPopup_Show("TOKEN_NONE_FOR_SALE");
 			else
-				GlueDialog_Show("TOKEN_ERROR_HAS_OCCURRED");
+				StaticPopup_Show("TOKEN_ERROR_HAS_OCCURRED");
 			end
 			if (AccountReactivationInProgressDialog:IsShown()) then
 				AccountReactivationInProgressDialog:Hide();
@@ -191,7 +191,7 @@ function ReactivateAccountDialog_CanOpen()
 		return false;
 	elseif (not CharacterSelect_HasVeteranEligibilityInfo()) then
 		return false;
-	elseif (GlueDialog:IsShown()) then
+	elseif (StaticPopup_IsAnyDialogShown()) then
 		return false;
 	end
 

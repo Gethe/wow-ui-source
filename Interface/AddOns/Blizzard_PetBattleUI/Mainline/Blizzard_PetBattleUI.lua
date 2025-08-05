@@ -6,6 +6,10 @@ function PetBattleFrame_OnHide(self)
 	EditModeManagerFrame:UnblockEnteringEditMode(self);
 end
 
+function PetBattleXPBar_OnLoad(self)
+	self:SetBarTextPrefix(XP);
+end
+
 function PetBattleXPBar_OnEnter(self)
 	self:ShowStatusBarText();
 	if ( self.tooltip ) then
@@ -17,4 +21,10 @@ end
 function PetBattleXPBar_OnLeave(self)
 	self:HideStatusBarText();
 	GameTooltip:Hide();
+end
+
+MicroButtonFrameMixin = {};
+
+function MicroButtonFrameMixin:OnShow()
+	OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -3, 4, true);
 end

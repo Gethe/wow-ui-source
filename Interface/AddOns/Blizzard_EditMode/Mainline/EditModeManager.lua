@@ -37,7 +37,7 @@ function EditModeManagerFrameMixin:OnLoad()
 		self:SetEnableAdvancedOptions(isChecked, isUserInput);
 	end
 	self.EnableAdvancedOptionsCheckButton:SetCallback(onEnableAdvancedOptionsCheckboxChecked);
-	
+
 	local function OnCloseCallback()
 		if self:HasActiveChanges() then
 			self:ShowRevertWarningDialog();
@@ -229,7 +229,7 @@ function EditModeManagerFrameMixin:SetHasActiveChanges(hasActiveChanges)
 		self.hasActiveChanges = true;
 	else
 		self.hasActiveChanges = false;
-	end	
+	end
 	self.SaveChangesButton:SetEnabled(hasActiveChanges);
 	self.RevertAllChangesButton:SetEnabled(hasActiveChanges);
 end
@@ -579,7 +579,7 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 
 	local layoutInfo = self:GetActiveLayoutInfo();
 	local isPresetLayout = layoutInfo.layoutType == Enum.EditModeLayoutType.Preset;
-	local isOverrideLayout = layoutInfo.layoutType == Enum.EditModeLayoutType.Override; 
+	local isOverrideLayout = layoutInfo.layoutType == Enum.EditModeLayoutType.Override;
 
 	for index, bar in ipairs(barsToUpdate) do
 		if bar and bar:IsShown() and bar:IsInDefaultPosition() then
@@ -784,6 +784,10 @@ function EditModeManagerFrameMixin:GetAccountSettingValueBool(setting)
 	return self:GetAccountSettingValue(setting) == 1;
 end
 
+function EditModeManagerFrameMixin:HasAccountSettings()
+	return self.accountSettings ~= nil;
+end
+
 function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.accountSettings = C_EditMode.GetAccountSettings();
 	self:UpdateAccountSettingMap();
@@ -797,9 +801,9 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetPartyFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPartyFrames));
 	self.AccountSettings:SetRaidFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowRaidFrames));
 	self.AccountSettings:SetActionBarShown(StanceBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowStanceBar));
-	if(PetActionBar) then 
+	if(PetActionBar) then
 		self.AccountSettings:SetActionBarShown(PetActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetActionBar));
-	end 
+	end
 	self.AccountSettings:SetActionBarShown(PossessActionBar, self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPossessActionBar));
 	self.AccountSettings:SetCastBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCastBar));
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
@@ -1052,7 +1056,7 @@ local function SetPresetEnabledState(elementDescription, disableOnMaxLayouts, di
 	local reason = GetDisableReason(disableOnMaxLayouts, disableOnActiveChanges);
 	local enabled = reason == nil;
 	elementDescription:SetEnabled(enabled);
-	
+
 	if not enabled then
 		elementDescription:SetTooltip(function(tooltip, elementDescription)
 			GameTooltip_SetTitle(tooltip, MenuUtil.GetElementText(elementDescription));
@@ -1123,7 +1127,7 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 				radio:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
 					self:ShowRenameLayoutDialog(index, layoutInfo);
 				end);
-				
+
 				radio:DeactivateSubmenu();
 
 				radio:AddInitializer(function(button, description, menu)
@@ -1132,7 +1136,7 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 					gearButton:SetScript("OnClick", function()
 						description:ForceOpenSubmenu();
 					end);
-				
+
 					MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
 						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
 					end);
@@ -1173,7 +1177,7 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 			self:ShowNewLayoutDialog();
 		end);
 		SetPresetEnabledState(newLayoutButton, disableOnMaxLayouts, not disableOnActiveChanges);
-		
+
 		-- import layout
 		local importLayoutButton = rootDescription:CreateButton(HUD_EDIT_MODE_IMPORT_LAYOUT, function()
 			self:ShowImportLayoutDialog();
@@ -1217,16 +1221,16 @@ end
 
 function EditModeManagerFrameMixin:SetOverrideLayout(overrideLayoutIndex)
 	local overrideLayouts = EditModePresetLayoutManager:GetCopyOfOverrideLayouts();
-	if(not overrideLayouts) then 
-		self.overrideLayoutInfo = nil; 
+	if(not overrideLayouts) then
+		self.overrideLayoutInfo = nil;
 		return;
 	end
 
 	local overrideLayout = overrideLayouts[overrideLayoutIndex];
-	self.overrideLayoutInfo = overrideLayout or nil; 
-	if(overrideLayout) then 
+	self.overrideLayoutInfo = overrideLayout or nil;
+	if(overrideLayout) then
 	self:UpdateLayoutInfo(C_EditMode.GetLayouts());
-	end		
+	end
 end
 
 function EditModeManagerFrameMixin:ClearOverrideLayout()
@@ -1235,9 +1239,9 @@ function EditModeManagerFrameMixin:ClearOverrideLayout()
 end
 
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
-	if(self.overrideLayoutInfo) then 
-		return self.overrideLayoutInfo; 
-	else 
+	if(self.overrideLayoutInfo) then
+		return self.overrideLayoutInfo;
+	else
 	return self.layoutInfo and self.layoutInfo.layouts[self.layoutInfo.activeLayout];
 end
 end
@@ -1441,8 +1445,24 @@ function EditModeManagerFrameMixin:UnblockEnteringEditMode(blockingFrame)
 end
 
 function EditModeManagerFrameMixin:CanEnterEditMode()
-	local editModeDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.EditModeDisabled);
-	return (not editModeDisabled) and (not C_PlayerInfo.IsPlayerNPERestricted()) and TableIsEmpty(self.FramesBlockingEditMode);
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.EditModeDisabled) then
+		return false;
+	end
+
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		return false;
+	end
+
+	-- We cannot continue until account settings are created because opening edit mode depends on them.
+	if not self:HasAccountSettings() then
+		return false;
+	end
+
+	if not TableIsEmpty(self.FramesBlockingEditMode) then
+		return false;
+	end
+
+	return true;
 end
 
 function EditModeManagerFrameMixin:GetBestLayoutIndex(layoutInfo)
@@ -1560,148 +1580,58 @@ function EditModeGridSpacingSliderMixin:OnSliderValueChanged(value)
 	EditModeManagerFrame:SetGridSpacing(value, isUserInput);
 end
 
+local function SetupEditModeCheckBoxFunctions(self, keyName, onCheckFn, onMouseOverFn)
+	local checkBox = self.SettingsContainer[keyName];
+	self.settingsCheckButtons[keyName] = checkBox;
+	checkBox:SetCallback(onCheckFn);
+	checkBox:SetMouseOverCallback(onMouseOverFn);
+end
+
+local function SetupEditModeCheckBox(self, keyName, onCheckFnName, onMouseOverFnName)
+	local callback = function(...) self[onCheckFnName](self, ...); end;
+	local mouseover = function(...) self[onMouseOverFnName](self, ...) end;
+	SetupEditModeCheckBoxFunctions(self, keyName, callback, mouseover);
+
+	if not self[onMouseOverFnName] then
+		self[onMouseOverFnName] = function() assertsafe(false, "Missing function; EditMode requires implementation for " .. tostring(onMouseOverFnName)); end;
+	end
+end
+
+local checkBoxSetupData =
+{
+	TargetAndFocus = { callbackName = "SetTargetAndFocusShown", mouseoverName = "SetTargetAndFocusMouseOver", },
+	PartyFrames = { callbackName = "SetPartyFramesShown", mouseoverName = "SetPartyFramesMouseOver", },
+	RaidFrames = { callbackName = "SetRaidFramesShown", mouseoverName = "SetRaidFramesMouseOver", },
+	CastBar = { callbackName = "SetCastBarShown", mouseoverName = "SetCastBarMouseOver", },
+	EncounterBar = { callbackName = "SetEncounterBarShown", mouseoverName = "SetEncounterBarMouseOver", },
+	ExtraAbilities = { callbackName = "SetExtraAbilitiesShown", mouseoverName = "SetExtraAbilitiesMouseOver", },
+	BuffsAndDebuffs = { callbackName = "SetBuffsAndDebuffsShown", mouseoverName = "SetBuffsAndDebuffsMouseOver", },
+	TalkingHeadFrame = { callbackName = "SetTalkingHeadFrameShown", mouseoverName = "SetTalkingHeadFrameMouseOver", },
+	VehicleLeaveButton = { callbackName = "SetVehicleLeaveButtonShown", mouseoverName = "SetVehicleLeaveButtonMouseOver", },
+	BossFrames = { callbackName = "SetBossFramesShown", mouseoverName = "SetBossFramesMouseOver", },
+	ArenaFrames = { callbackName = "SetArenaFramesShown", mouseoverName = "SetArenaFramesMouseOver", },
+	LootFrame = { callbackName = "SetLootFrameShown", mouseoverName = "SetLootFrameMouseOver", },
+	HudTooltip = { callbackName = "SetHudTooltipShown", mouseoverName = "SetHudTooltipMouseOver", },
+	StatusTrackingBar2 = { callbackName = "SetStatusTrackingBar2Shown", mouseoverName = "SetStatusTrackingBar2MouseOver", },
+	DurabilityFrame = { callbackName = "SetDurabilityFrameShown", mouseoverName = "SetDurabilityFrameMouseOver", },
+	PetFrame = { callbackName = "SetPetFrameShown", mouseoverName = "SetPetFrameMouseOver", },
+	TimerBars = { callbackName = "SetTimerBarsShown", mouseoverName = "SetTimerBarsMouseOver", },
+	VehicleSeatIndicator = { callbackName = "SetVehicleSeatIndicatorShown", mouseoverName = "SetVehicleSeatIndicatorMouseOver", },
+	ArchaeologyBar = { callbackName = "SetArchaeologyBarShown", mouseoverName = "SetArchaeologyBarMouseOver", },
+	CooldownViewer = { callbackName = "SetCooldownViewerShown", mouseoverName = "SetCooldownViewerMouseOver", },
+	StanceBar = { callbackName = "SetStanceBarShown", mouseoverName = "SetStanceBarMouseOver", },
+	PetActionBar = { callbackName = "SetPetActionBarShown", mouseoverName = "SetPetActionBarMouseOver", },
+	PossessActionBar = { callbackName = "SetPossessActionBarShown", mouseoverName = "SetPossessActionBarMouseOver", },
+};
+
 EditModeAccountSettingsMixin = {};
 
 function EditModeAccountSettingsMixin:OnLoad()
 	self.settingsCheckButtons = {};
 
-	local function onTargetAndFocusCheckboxChecked(isChecked, isUserInput)
-		self:SetTargetAndFocusShown(isChecked, isUserInput);
+	for keyName, setupData in pairs(checkBoxSetupData) do
+		SetupEditModeCheckBox(self, keyName, setupData.callbackName, setupData.mouseoverName);
 	end
-	self.settingsCheckButtons.TargetAndFocus = self.SettingsContainer.TargetAndFocus;
-	self.settingsCheckButtons.TargetAndFocus:SetCallback(onTargetAndFocusCheckboxChecked);
-
-	local function onPartyFramesCheckboxChecked(isChecked, isUserInput)
-		self:SetPartyFramesShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.PartyFrames = self.SettingsContainer.PartyFrames;
-	self.settingsCheckButtons.PartyFrames:SetCallback(onPartyFramesCheckboxChecked);
-
-	local function onRaidFramesCheckboxChecked(isChecked, isUserInput)
-		self:SetRaidFramesShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.RaidFrames = self.SettingsContainer.RaidFrames;
-	self.settingsCheckButtons.RaidFrames:SetCallback(onRaidFramesCheckboxChecked);
-
-	local function onStanceBarCheckboxChecked(isChecked, isUserInput)
-		self:SetActionBarShown(StanceBar, isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.StanceBar = self.SettingsContainer.StanceBar;
-	self.settingsCheckButtons.StanceBar:SetCallback(onStanceBarCheckboxChecked);
-
-	local function onPetActionBarCheckboxChecked(isChecked, isUserInput)
-		self:SetActionBarShown(PetActionBar, isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.PetActionBar = self.SettingsContainer.PetActionBar;
-	self.settingsCheckButtons.PetActionBar:SetCallback(onPetActionBarCheckboxChecked);
-
-	local function onPossessActionBarCheckboxChecked(isChecked, isUserInput)
-		self:SetActionBarShown(PossessActionBar, isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.PossessActionBar = self.SettingsContainer.PossessActionBar;
-	self.settingsCheckButtons.PossessActionBar:SetCallback(onPossessActionBarCheckboxChecked);
-
-	local function onCastBarCheckboxChecked(isChecked, isUserInput)
-		self:SetCastBarShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.CastBar = self.SettingsContainer.CastBar;
-	self.settingsCheckButtons.CastBar:SetCallback(onCastBarCheckboxChecked);
-
-	local function onEncounterBarCheckboxChecked(isChecked, isUserInput)
-		self:SetEncounterBarShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.EncounterBar = self.SettingsContainer.EncounterBar;
-	self.settingsCheckButtons.EncounterBar:SetCallback(onEncounterBarCheckboxChecked);
-
-	local function onExtraAbilitiesCheckboxChecked(isChecked, isUserInput)
-		self:SetExtraAbilitiesShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.ExtraAbilities = self.SettingsContainer.ExtraAbilities;
-	self.settingsCheckButtons.ExtraAbilities:SetCallback(onExtraAbilitiesCheckboxChecked);
-
-	local function onBuffsAndDebuffsCheckboxChecked(isChecked, isUserInput)
-		self:SetBuffsAndDebuffsShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.BuffsAndDebuffs = self.SettingsContainer.BuffsAndDebuffs;
-	self.settingsCheckButtons.BuffsAndDebuffs:SetCallback(onBuffsAndDebuffsCheckboxChecked);
-
-	local function onTalkingHeadFrameCheckboxChecked(isChecked, isUserInput)
-		self:SetTalkingHeadFrameShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.TalkingHeadFrame = self.SettingsContainer.TalkingHeadFrame;
-	self.settingsCheckButtons.TalkingHeadFrame:SetCallback(onTalkingHeadFrameCheckboxChecked);
-
-	local function onVehicleLeaveButtonCheckboxChecked(isChecked, isUserInput)
-		self:SetVehicleLeaveButtonShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.VehicleLeaveButton = self.SettingsContainer.VehicleLeaveButton;
-	self.settingsCheckButtons.VehicleLeaveButton:SetCallback(onVehicleLeaveButtonCheckboxChecked);
-
-	local function onBossFramesCheckboxChecked(isChecked, isUserInput)
-		self:SetBossFramesShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.BossFrames = self.SettingsContainer.BossFrames;
-	self.settingsCheckButtons.BossFrames:SetCallback(onBossFramesCheckboxChecked);
-
-	local function onArenaFramesCheckboxChecked(isChecked, isUserInput)
-		self:SetArenaFramesShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.ArenaFrames = self.SettingsContainer.ArenaFrames;
-	self.settingsCheckButtons.ArenaFrames:SetCallback(onArenaFramesCheckboxChecked);
-
-	local function onLootFrameCheckboxChecked(isChecked, isUserInput)
-		self:SetLootFrameShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.LootFrame = self.SettingsContainer.LootFrame;
-	self.settingsCheckButtons.LootFrame:SetCallback(onLootFrameCheckboxChecked);
-
-	local function onHudTooltipCheckboxChecked(isChecked, isUserInput)
-		self:SetHudTooltipShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.HudTooltip = self.SettingsContainer.HudTooltip;
-	self.settingsCheckButtons.HudTooltip:SetCallback(onHudTooltipCheckboxChecked);
-
-	local function onStatusTrackingBar2CheckboxChecked(isChecked, isUserInput)
-		self:SetStatusTrackingBar2Shown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.StatusTrackingBar2 = self.SettingsContainer.StatusTrackingBar2;
-	self.settingsCheckButtons.StatusTrackingBar2:SetCallback(onStatusTrackingBar2CheckboxChecked);
-
-	local function onDurabilityFrameCheckboxChecked(isChecked, isUserInput)
-		self:SetDurabilityFrameShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.DurabilityFrame = self.SettingsContainer.DurabilityFrame;
-	self.settingsCheckButtons.DurabilityFrame:SetCallback(onDurabilityFrameCheckboxChecked);
-
-	local function onPetFrameCheckboxChecked(isChecked, isUserInput)
-		self:SetPetFrameShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.PetFrame = self.SettingsContainer.PetFrame;
-	self.settingsCheckButtons.PetFrame:SetCallback(onPetFrameCheckboxChecked);
-
-	local function onTimerBarsCheckboxChecked(isChecked, isUserInput)
-		self:SetTimerBarsShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.TimerBars = self.SettingsContainer.TimerBars;
-	self.settingsCheckButtons.TimerBars:SetCallback(onTimerBarsCheckboxChecked);
-
-	local function onVehicleSeatIndicatorCheckboxChecked(isChecked, isUserInput)
-		self:SetVehicleSeatIndicatorShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.VehicleSeatIndicator = self.SettingsContainer.VehicleSeatIndicator;
-	self.settingsCheckButtons.VehicleSeatIndicator:SetCallback(onVehicleSeatIndicatorCheckboxChecked);
-
-	local function onArchaeologyBarCheckboxChecked(isChecked, isUserInput)
-		self:SetArchaeologyBarShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.ArchaeologyBar = self.SettingsContainer.ArchaeologyBar;
-	self.settingsCheckButtons.ArchaeologyBar:SetCallback(onArchaeologyBarCheckboxChecked);
-
-	local function onCooldownViewerCheckboxChecked(isChecked, isUserInput)
-		self:SetCooldownViewerShown(isChecked, isUserInput);
-	end
-	self.settingsCheckButtons.CooldownViewer = self.SettingsContainer.CooldownViewer;
-	self.settingsCheckButtons.CooldownViewer:SetCallback(onCooldownViewerCheckboxChecked);
 
 	self:LayoutSettings();
 end
@@ -1857,6 +1787,11 @@ function EditModeAccountSettingsMixin:SetTargetAndFocusShown(shown, isUserInput)
 	end
 end
 
+function EditModeAccountSettingsMixin:SetTargetAndFocusMouseOver(...)
+	TargetFrame:ShowEditInstructions(...);
+	FocusFrame:ShowEditInstructions(...);
+end
+
 function EditModeAccountSettingsMixin:RefreshPartyFrames()
 	local showPartyFrames = self.settingsCheckButtons.PartyFrames:IsControlChecked();
 	if showPartyFrames then
@@ -1882,6 +1817,10 @@ function EditModeAccountSettingsMixin:SetPartyFramesShown(shown, isUserInput)
 	else
 		self.settingsCheckButtons.PartyFrames:SetControlChecked(shown);
 	end
+end
+
+function EditModeAccountSettingsMixin:SetPartyFramesMouseOver(...)
+	PartyFrame:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:RefreshRaidFrames()
@@ -1911,6 +1850,81 @@ function EditModeAccountSettingsMixin:SetRaidFramesShown(shown, isUserInput)
 		self:RefreshRaidFrames();
 	else
 		self.settingsCheckButtons.RaidFrames:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetRaidFramesMouseOver(...)
+	CompactRaidFrameContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetCastBarMouseOver(...)
+	PlayerCastingBarFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetEncounterBarMouseOver(...)
+	EncounterBar:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetExtraAbilitiesMouseOver(...)
+	ExtraAbilityContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetBuffsAndDebuffsMouseOver(...)
+	BuffFrame:ShowEditInstructions(...);
+	DebuffFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetTalkingHeadFrameMouseOver(...)
+	TalkingHeadFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetVehicleLeaveButtonMouseOver(...)
+	MainMenuBarVehicleLeaveButton:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetBossFramesMouseOver(...)
+	BossTargetFrameContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetArenaFramesMouseOver(...)
+	CompactArenaFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetLootFrameMouseOver(...)
+	LootFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetHudTooltipMouseOver(...)
+	GameTooltipDefaultContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetStatusTrackingBar2MouseOver(...)
+	SecondaryStatusTrackingBarContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetDurabilityFrameMouseOver(...)
+	DurabilityFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetPetFrameMouseOver(...)
+	PetFrame:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetTimerBarsMouseOver(...)
+	MirrorTimerContainer:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetVehicleSeatIndicatorMouseOver(...)
+	VehicleSeatIndicator:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetArchaeologyBarMouseOver(...)
+	ArcheologyDigsiteProgressBar:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetCooldownViewerMouseOver(...)
+	for index, cooldownViewer in ipairs(self:GetCooldownViewerFrames()) do
+		cooldownViewer:ShowEditInstructions(...);
 	end
 end
 
@@ -1955,6 +1969,30 @@ function EditModeAccountSettingsMixin:SetActionBarShown(bar, shown, isUserInput)
 	else
 		self.settingsCheckButtons[barName]:SetControlChecked(shown);
 	end
+end
+
+function EditModeAccountSettingsMixin:SetStanceBarShown(...)
+	self:SetActionBarShown(StanceBar, ...);
+end
+
+function EditModeAccountSettingsMixin:SetPetActionBarShown(...)
+	self:SetActionBarShown(PetActionBar, ...);
+end
+
+function EditModeAccountSettingsMixin:SetPossessActionBarShown(...)
+	self:SetActionBarShown(PossessActionBar, ...);
+end
+
+function EditModeAccountSettingsMixin:SetStanceBarMouseOver(...)
+	StanceBar:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetPetActionBarMouseOver(...)
+	PetActionBar:ShowEditInstructions(...);
+end
+
+function EditModeAccountSettingsMixin:SetPossessActionBarMouseOver(...)
+	PossessActionBar:ShowEditInstructions(...);
 end
 
 function EditModeAccountSettingsMixin:SetCastBarShown(shown, isUserInput)
@@ -2364,11 +2402,16 @@ function EditModeAccountSettingsMixin:SetCooldownViewerShown(shown, isUserInput)
 	end
 end
 
+function EditModeAccountSettingsMixin:GetCooldownViewerFrames()
+	local frames = { EssentialCooldownViewer, UtilityCooldownViewer, BuffIconCooldownViewer, BuffBarCooldownViewer };
+	assertsafe(#frames == Enum.EditModeCooldownViewerSystemIndicesMeta.NumValues, "Missing cooldown viewer frame.");
+	return frames;
+end
+
 function EditModeAccountSettingsMixin:RefreshCooldownViewer()
 	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked();
 
-	local cooldownViewerFrames = {EssentialCooldownViewer, UtilityCooldownViewer, BuffIconCooldownViewer, BuffBarCooldownViewer};
-	assertsafe(#cooldownViewerFrames == Enum.EditModeCooldownViewerSystemIndicesMeta.NumValues, "Missing cooldown viewer frame.");
+	local cooldownViewerFrames = self:GetCooldownViewerFrames();
 
 	if showCooldownViewer then
 		for _, cooldownViewer in ipairs(cooldownViewerFrames) do

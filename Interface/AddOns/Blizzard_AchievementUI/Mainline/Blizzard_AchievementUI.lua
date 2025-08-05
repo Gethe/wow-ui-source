@@ -179,7 +179,7 @@ end
 
 local function AchievementFrame_OnAchievementLinkedInChat(achievementID)
 	local chatType = ChatEdit_GetActiveChatType();
-	if chatType == "WHISPER" then		
+	if chatType == "WHISPER" then
 		C_AchievementTelemetry.LinkAchievementInWhisper(achievementID);
 	elseif chatType == "CHANNEL" then
 		local editBox = ChatEdit_GetActiveWindow();
@@ -361,7 +361,7 @@ local function InitAchievementPage()
 	else
 		AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 		AchievementFrameAchievements_UpdateDataProvider();
-		
+
 		-- Restore selection
 		local achievementId = GetSelectedAchievement();
 		if achievementId > 0 then
@@ -426,7 +426,7 @@ function AchievementFrameComparisonTab_OnClick (tabIndex)
 		AchievementFrameGuildEmblemLeft:Hide();
 		AchievementFrameGuildEmblemRight:Hide();
 	end
-	
+
 	AchievementFrameCategoriesBG:SetTexCoord(0, 0.5, 0, 1);
 	AchievementFrame_UpdateTabs(tabIndex);
 	SwitchAchievementSearchTab(tabIndex);
@@ -585,7 +585,7 @@ function AchievementFrameCategories_SelectElementData(elementData, ignoreCollaps
 	local changeCollapsed = not ignoreCollapse and not (elementData.parent and selection.parent == category);
 	local oldCollapsed = elementData.collapsed;
 	local isChild = elementData.isChild;
-	
+
 	local categories = achievementFunctions.categories;
 	for index, iterElementData in ipairs(categories) do
 		if iterElementData.selected then
@@ -628,7 +628,7 @@ function AchievementFrameCategories_SelectElementData(elementData, ignoreCollaps
 	if frame then
 		frame:UpdateSelectionState(true);
 	end
-	
+
 	-- No change in the contents of the list. We only changed the selection.
 	if not isChild and changeCollapsed then
 		AchievementFrameCategories_UpdateDataProvider();
@@ -721,7 +721,7 @@ function AchievementFrameCategories_OnCategoryChanged(category)
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparison.StatContainer);
 			AchievementFrameComparison_UpdateStatsDataProvider();
 		end
-		
+
 		local numAchievements, numCompleted, completedOffset = ACHIEVEMENTUI_SELECTEDFILTER(category);
 		local fosShown = numAchievements == 0 and IsCategoryFeatOfStrength(category);
 		AchievementFrameAchievementsFeatOfStrengthText:SetShown(fosShown);
@@ -807,7 +807,7 @@ function AchievementFrameAchievements_OnLoad (self)
 	view:SetElementResetter(AchievementResetter);
 	view:SetPadding(2,0,0,4,0);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-	
+
 	g_achievementSelectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Deselectable, SelectionBehaviorFlags.Intrusive);
 	g_achievementSelectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
 		if selected then
@@ -1180,7 +1180,7 @@ function AchievementTemplateMixin:Init(elementData)
 	self.Shield.id = id;
 	self.Description:SetText(description);
 	self.HiddenDescription:SetText(description);
-	self.numLines = ceil(self.HiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
+	self.numLines = math.ceil(self.HiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 	self.Icon.texture:SetTexture(icon);
 	if ( completed or wasEarnedByMe ) then
 		self.completed = true;
@@ -1257,7 +1257,7 @@ function AchievementTemplateMixin:Collapse()
 	self.Tabard:Hide();
 	self.GuildCornerL:Hide();
 	self.GuildCornerR:Hide();
-	
+
 	self.Description:Show();
 	self.HiddenDescription:Hide();
 
@@ -1287,7 +1287,7 @@ function AchievementTemplateMixin:Expand(height)
 	end
 	self:SetHeight(height);
 	self:GetHeight(); -- debug check
-	self.Background:SetTexCoord(0, 1, max(0, 1-(height / 256)), 1);
+	self.Background:SetTexCoord(0, 1, math.max(0, 1-(height / 256)), 1);
 
 	self.HiddenDescription:Show();
 	self.Description:Hide();
@@ -1359,7 +1359,7 @@ end
 function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 	local totalHeight = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
 	local objectivesHeight = 0;
-	
+
 
 	-- text check width
 	if ( not AchievementFrame.textCheckWidth ) then
@@ -1371,7 +1371,7 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(elementData.category, elementData.index);
 	if completed and GetPreviousAchievement(id) then
 		local achievementCount = 1;
-		
+
 		local nextID = id;
 		while GetPreviousAchievement(nextID) do
 			achievementCount = achievementCount + 1;
@@ -1398,51 +1398,51 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 		local numCriteria = GetAchievementNumCriteria(id);
 		for i = 1, numCriteria do
 			local criteriaString, criteriaType, criteriaCompleted, quantity, reqQuantity, charName, criteriaFlags, assetID, quantityString = GetAchievementCriteriaInfo(id, i);
-	
+
 			if criteriaType == CRITERIA_TYPE_ACHIEVEMENT and assetID then
 				metas = metas + 1;
 				if metas == 1 or (math.fmod(metas, 2) ~= 0) then
 					numMetaRows = numMetaRows + 1;
 				end
-	
+
 			elseif bit.band(criteriaFlags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
 				progressBars = progressBars + 1;
 				numCriteriaRows = numCriteriaRows + 1;
 			else
 				textStrings = textStrings + 1;
-					
+
 				local stringWidth = 0;
 				local maxCriteriaContentWidth;
 				if criteriaCompleted then
 					maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - ACHIEVEMENTUI_CRITERIACHECKWIDTH;
 					AchievementFrame.PlaceholderName:SetText(criteriaString);
-					stringWidth = min(AchievementFrame.PlaceholderName:GetStringWidth(),maxCriteriaContentWidth);
+					stringWidth = math.min(AchievementFrame.PlaceholderName:GetStringWidth(), maxCriteriaContentWidth);
 				else
 					maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - AchievementFrame.textCheckWidth;
 					local dashedString = "- "..criteriaString;
 					AchievementFrame.PlaceholderName:SetText(dashedString);
-					stringWidth = min(AchievementFrame.PlaceholderName:GetStringWidth() - AchievementFrame.textCheckWidth, maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
+					stringWidth = math.min(AchievementFrame.PlaceholderName:GetStringWidth() - AchievementFrame.textCheckWidth, maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
 				end
 
 				if AchievementFrame.PlaceholderName:GetWidth() > maxCriteriaContentWidth then
 					AchievementFrame.PlaceholderName:SetWidth(maxCriteriaContentWidth);
 				end
-	
-				maxCriteriaWidth = max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
+
+				maxCriteriaWidth = math.max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
 				numCriteriaRows = numCriteriaRows + 1;
 			end
 		end
-		
+
 		if textStrings > 0 and progressBars > 0 then
 		elseif textStrings > 1 then
-			local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH / maxCriteriaWidth);
+			local numColumns = math.floor(ACHIEVEMENTUI_MAXCONTENTWIDTH / maxCriteriaWidth);
 			local forceColumns = numColumns == 1 and textStrings >= FORCE_COLUMNS_MIN_CRITERIA and maxCriteriaWidth <= FORCE_COLUMNS_MAX_WIDTH;
 			if forceColumns then
 				numColumns = 2;
 			end
-			
+
 			if numColumns > 1 then
-				numCriteriaRows = ceil(numCriteriaRows/numColumns);
+				numCriteriaRows = math.ceil(numCriteriaRows/numColumns);
 			end
 		end
 
@@ -1459,7 +1459,7 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 	totalHeight = totalHeight + objectivesHeight;
 
 	AchievementFrame.PlaceholderHiddenDescription:SetText(description);
-	local numLines = ceil(AchievementFrame.PlaceholderHiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
+	local numLines = math.ceil(AchievementFrame.PlaceholderHiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 	if (totalHeight ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT) or (numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED) then
 		local descriptionHeight = AchievementFrame.PlaceholderHiddenDescription:GetHeight();
 		totalHeight = totalHeight + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
@@ -1664,7 +1664,7 @@ end
 
 function AchievementsObjectivesMixin:GetMeta(index)
 	local frame = self:GetElementAtIndex("MetaCriteriaTemplate", self.metas, index, AchievementButton_LocalizeMetaAchievement);
-	
+
 	if ( InGuildView() ) then
 		frame.Border:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
 		frame.Border:SetTexCoord(0.89062500, 0.97070313, 0.00195313, 0.08203125);
@@ -1759,7 +1759,7 @@ function AchievementObjectives_DisplayProgressiveAchievement (objectivesFrame, i
 	end
 
 	objectivesFrame:SetHeight(math.ceil(i/6) * ACHIEVEMENTUI_PROGRESSIVEHEIGHT);
-	objectivesFrame:SetWidth(min(i, 6) * ACHIEVEMENTUI_PROGRESSIVEWIDTH);
+	objectivesFrame:SetWidth(math.min(i, 6) * ACHIEVEMENTUI_PROGRESSIVEWIDTH);
 	objectivesFrame.mode = ACHIEVEMENTMODE_PROGRESSIVE;
 end
 
@@ -1780,10 +1780,10 @@ end
 
 ACHIEVEMENTUI_SELECTEDFILTER = AchievementFrame_GetCategoryNumAchievements_All;
 
-AchievementFrameFilters = { 
+AchievementFrameFilters = {
 	{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
 	{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
-	{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete} 
+	{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete}
 };
 
 function AchievementFrame_SetFilter(value)
@@ -1959,14 +1959,14 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				criteria.Name:SetPoint("LEFT", criteria.Check, "RIGHT", 0, 2);
 				criteria.Check:Show();
 				criteria.Name:SetText(criteriaString);
-				stringWidth = min(criteria.Name:GetStringWidth(),maxCriteriaContentWidth);
+				stringWidth = math.min(criteria.Name:GetStringWidth(), maxCriteriaContentWidth);
 			else
 				maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - objectivesFrame.textCheckWidth;
 				criteria.Check:SetPoint("LEFT", 0, -3);
 				criteria.Name:SetPoint("LEFT", criteria.Check, "RIGHT", 5, 2);
 				criteria.Check:Hide();
 				criteria.Name:SetText("- "..criteriaString);
-				stringWidth = min(criteria.Name:GetStringWidth() - objectivesFrame.textCheckWidth,maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
+				stringWidth = math.min(criteria.Name:GetStringWidth() - objectivesFrame.textCheckWidth, maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
 			end
 			if ( criteria.Name:GetWidth() > maxCriteriaContentWidth ) then
 				criteria.Name:SetWidth(maxCriteriaContentWidth);
@@ -1974,7 +1974,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			criteria:SetParent(objectivesFrame);
 			criteria:Show();
 			criteria:SetWidth(stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
-			maxCriteriaWidth = max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
+			maxCriteriaWidth = math.max(maxCriteriaWidth, stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
 			numCriteriaRows = numCriteriaRows + 1;
 		end
 	end
@@ -1991,7 +1991,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		end
 	elseif ( textStrings > 1 ) then
 		-- Figure out if we can make multiple columns worth of criteria instead of one long one
-		local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
+		local numColumns = math.floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
 		-- But if we have a lot of criteria, force 2 columns
 		local forceColumns = false;
 		if ( numColumns == 1 and textStrings >= FORCE_COLUMNS_MIN_CRITERIA and maxCriteriaWidth <= FORCE_COLUMNS_MAX_WIDTH ) then
@@ -2004,6 +2004,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			--	AddExtraCriteriaRow();
 			--end
 		end
+
 		if ( numColumns > 1 ) then
 			local step;
 			local rows = 1;
@@ -2032,7 +2033,7 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 					criTable[i]:SetPoint("TOPLEFT", criTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
 				end
 			end
-			numCriteriaRows = ceil(numCriteriaRows/numColumns);
+			numCriteriaRows = math.ceil(numCriteriaRows/numColumns);
 		end
 	end
 
@@ -2107,7 +2108,7 @@ function AchievementStatTemplateMixin:Init(elementData)
 		self.id = category;
 	else
 		local id, name = GetAchievementInfo(category);
-		
+
 		self.id = id;
 
 		self:SetText(name);
@@ -2204,7 +2205,7 @@ function AchievementFrameStats_UpdateDataProvider ()
 			end
 		end
 		achievementFunctions.lastCategory = category;
-		
+
 		local newDataProvider = CreateDataProvider();
 		for index = 1, #categories do
 			local stat = categories[index];
@@ -2559,15 +2560,15 @@ function AchievementFrame_SelectAchievement(id, forceSelect)
 	if ( (not AchievementFrame:IsShown() and not forceSelect) or (not C_AchievementInfo.IsValidAchievement(id)) ) then
 		return;
 	end
-	
+
 	local achCompleted = select(4, GetAchievementInfo(id));
 	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
 		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
 	end
-	
-	-- Figure out if this is part of a progressive achievement; if it is and it's incomplete, make sure the previous level was completed. 
+
+	-- Figure out if this is part of a progressive achievement; if it is and it's incomplete, make sure the previous level was completed.
 	-- If not, find the first incomplete achievement in the chain and display that instead.
 	local displayedId = AchievementFrame_FindDisplayedAchievement(id);
 	local category = GetAchievementCategory(displayedId);
@@ -2630,13 +2631,13 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 		-- If this is a progressive achievement, show the total score.
 		points = AchievementButton_GetProgressivePoints(id);
 	end
-	
+
 	if ( self.id ~= id ) then
 		self.id = id;
-	
+
 		local player = self.Player;
 		local friend = self.Friend;
-	
+
 		local saturatedStyle = "normal";
 		if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
 			player.accountWide = true;
@@ -2646,15 +2647,15 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 			player.accountWide = nil;
 			friend.accountWide = nil;
 		end
-	
+
 		local friendCompleted, friendMonth, friendDay, friendYear = GetAchievementComparisonInfo(id);
 		player.Label:SetText(name);
-	
+
 		player.Description:SetText(description);
-	
+
 		player.Icon.texture:SetTexture(icon);
 		friend.Icon.texture:SetTexture(icon);
-	
+
 		if ( points > 0 ) then
 			player.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
 			friend.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
@@ -2664,10 +2665,10 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 		end
 		AchievementShield_SetPoints(points, player.Shield.Points, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT1, ACHIEVEMENTCOMPARISON_PLAYERSHIELDFONT2);
 		AchievementShield_SetPoints(points, friend.Shield.Points, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1, ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT2);
-	
+
 		player.Shield.wasEarnedByMe = not (completed and not wasEarnedByMe);
 		player.Shield.earnedBy = earnedBy;
-	
+
 		if ( completed ) then
 			player.completed = true;
 			player.DateCompleted:SetText(FormatShortDate(day, month, year));
@@ -2680,7 +2681,7 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 			player.DateCompleted:Hide();
 			player:Desaturate();
 		end
-	
+
 		if ( friendCompleted ) then
 			friend.completed = true;
 			friend.Status:SetText(FormatShortDate(friendDay, friendMonth, friendYear));
@@ -3342,17 +3343,17 @@ function AchievementFullSearchResultsButtonMixin:Init(elementData)
 
 	local achievementID = GetFilteredAchievementID(index);
 	local _, name, _, completed, _, _, _, description, _, icon, _, _, _, _ = GetAchievementInfo(achievementID);
-	
+
 	self.Name:SetText(name);
 	self.Icon:SetTexture(icon);
 	self.achievementID = achievementID;
-	
+
 	if ( completed ) then
 		self.ResultType:SetText(ACHIEVEMENTFRAME_FILTER_COMPLETED);
 	else
 		self.ResultType:SetText(ACHIEVEMENTFRAME_FILTER_INCOMPLETE);
 	end
-	
+
 	local categoryID = GetAchievementCategory(achievementID);
 	local categoryName, parentCategoryID = GetCategoryInfo(categoryID);
 	local path = categoryName;
@@ -3360,7 +3361,7 @@ function AchievementFullSearchResultsButtonMixin:Init(elementData)
 		categoryName, parentCategoryID = GetCategoryInfo(parentCategoryID);
 		path = categoryName.." > "..path;
 	end
-	
+
 	self.Path:SetText(path);
 end
 
@@ -3444,7 +3445,7 @@ function AchievementFrame_SetSearchPreviewSelection(selectedIndex)
 	end
 
 	searchPreviewContainer.ShowAllSearchResults.SelectedTexture:Hide();
-	
+
 	if ( numShown <= 0 ) then
 		-- Default to the first entry.
 		selectedIndex = 1;

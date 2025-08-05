@@ -13,36 +13,21 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_TYPE"] = {
 	text = CLASS_TRIAL_CHOOSE_BOOST_TYPE_TEXT,
 	button1 = ACCEPT,
 	button2 = ACCEPT,
-	button3 = CANCEL,
 	selectCallbackByIndex = true,
-	OnShow = function(self)
-		if #self.data >= 2 then
-			local info1 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[1]);
-			self.button1:SetText(info1.flowTitle);
-			local info2 = C_CharacterServices.GetCharacterServiceDisplayData(self.data[2]);
-			self.button2:SetText(info2.flowTitle);
-
-			local maxWidth = math.max(self.button1:GetTextWidth(), self.button2:GetTextWidth());
-			local buttonWidth = maxWidth + 60;
-			self.button1:SetWidth(buttonWidth);
-			self.button2:SetWidth(buttonWidth);
-		else
-			self:Hide();
-		end
+	OnButton1 = function(dialog, data)
+		ClassTrialChooseBoostType_OnClick(dialog, data[1]);
 	end,
-	OnButton1 = function(self, data)
-		ClassTrialChooseBoostType_OnClick(self, data[1]);
+	OnButton2 = function(dialog, data)
+		ClassTrialChooseBoostType_OnClick(dialog, data[2]);
 	end,
-	OnButton2 = function(self, data)
-		ClassTrialChooseBoostType_OnClick(self, data[2]);
-	end,
-	OnButton3 = function ()
+	OnCloseClicked = function(dialog, data)
 		ClassTrialThanksForPlayingDialog:ShowThanks();
 	end,
 
 	timeout = 0,
 	whileDead = 1,
-	verticalButtonLayout = true,
+	closeButton = true,
+	closeButtonIsHide = true,
 	fullScreenCover = true,
 };
 
@@ -51,12 +36,12 @@ StaticPopupDialogs["CLASS_TRIAL_CHOOSE_BOOST_LOGOUT_PROMPT"] = {
 	button1 = CAMP_NOW,
 	button2 = CANCEL,
 
-	OnAccept = function(self, boostType)
+	OnAccept = function(dialog, boostType)
 		C_CharacterServices.SetAutomaticBoost(boostType);
 		C_CharacterServices.SetAutomaticBoostCharacter(UnitGUID("player"));
 		Logout();
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, boostType)
 		ClassTrialThanksForPlayingDialog:ShowThanks();
 	end,
 
@@ -128,7 +113,10 @@ function ClassTrialDialogMixin:BuyCharacterBoost()
 		local classTrialBoostDistributions = upgradeDistributions[classTrialBoostType];
 		local activeBoostDistributions = upgradeDistributions[activeBoostType];
 		if classTrialBoostDistributions and classTrialBoostDistributions.amount >= 1 and activeBoostDistributions and activeBoostDistributions.amount >= 1 then
-			StaticPopup_Show("CLASS_TRIAL_CHOOSE_BOOST_TYPE", nil, nil, { activeBoostType, classTrialBoostType });
+			local which = "CLASS_TRIAL_CHOOSE_BOOST_TYPE";
+			StaticPopup_SetButtonText(which, 1, C_CharacterServices.GetCharacterServiceDisplayData(activeBoostType).flowTitle);
+			StaticPopup_SetButtonText(which, 2, C_CharacterServices.GetCharacterServiceDisplayData(classTrialBoostType).flowTitle);
+			StaticPopup_Show(which, nil, nil, { activeBoostType, classTrialBoostType });
 		elseif classTrialBoostDistributions and classTrialBoostDistributions.amount >= 1 then
 			ClassTrialDialogMixin:StartCharacterUpgrade(classTrialBoostType);
 		else

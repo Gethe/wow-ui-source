@@ -285,7 +285,7 @@ local ItemConstants =
 				{ Name = "SingingThunder", Type = "ItemGemColor", EnumValue = 134217728 },
 				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
 				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
-				{ Name = "FutureUse", Type = "ItemGemColor", EnumValue = 1073741824 },
+				{ Name = "Fiber", Type = "ItemGemColor", EnumValue = 1073741824 },
 			},
 		},
 		{
@@ -402,7 +402,7 @@ local ItemConstants =
 				{ Name = "SingingThunder", Type = "ItemSocketType", EnumValue = 27 },
 				{ Name = "SingingSea", Type = "ItemSocketType", EnumValue = 28 },
 				{ Name = "SingingWind", Type = "ItemSocketType", EnumValue = 29 },
-				{ Name = "FutureUse", Type = "ItemSocketType", EnumValue = 30 },
+				{ Name = "Fiber", Type = "ItemSocketType", EnumValue = 30 },
 			},
 		},
 		{
@@ -514,24 +514,23 @@ local ItemConstants =
 		{
 			Name = "SlotRegion",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "SlotRegion", EnumValue = 0 },
 				{ Name = "PlayerEquip", Type = "SlotRegion", EnumValue = 1 },
 				{ Name = "PlayerBags", Type = "SlotRegion", EnumValue = 2 },
 				{ Name = "PlayerInv", Type = "SlotRegion", EnumValue = 3 },
-				{ Name = "Bank", Type = "SlotRegion", EnumValue = 4 },
-				{ Name = "ReagentBank", Type = "SlotRegion", EnumValue = 5 },
-				{ Name = "AccountBank", Type = "SlotRegion", EnumValue = 6 },
+				{ Name = "CharacterBank", Type = "SlotRegion", EnumValue = 4 },
+				{ Name = "AccountBank", Type = "SlotRegion", EnumValue = 5 },
 			},
 		},
 		{
 			Name = "SlotRegionMask",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 6,
 			MinValue = 1,
 			MaxValue = 64,
 			Fields =
@@ -540,17 +539,16 @@ local ItemConstants =
 				{ Name = "PlayerEquip", Type = "SlotRegionMask", EnumValue = 2 },
 				{ Name = "PlayerBags", Type = "SlotRegionMask", EnumValue = 4 },
 				{ Name = "PlayerInv", Type = "SlotRegionMask", EnumValue = 8 },
-				{ Name = "Bank", Type = "SlotRegionMask", EnumValue = 16 },
-				{ Name = "ReagentBank", Type = "SlotRegionMask", EnumValue = 32 },
+				{ Name = "CharacterBank", Type = "SlotRegionMask", EnumValue = 16 },
 				{ Name = "AccountBank", Type = "SlotRegionMask", EnumValue = 64 },
 			},
 		},
 		{
 			Name = "SubcontainerType",
 			Type = "Enumeration",
-			NumValues = 38,
+			NumValues = 40,
 			MinValue = 0,
-			MaxValue = 37,
+			MaxValue = 39,
 			Fields =
 			{
 				{ Name = "Bag", Type = "SubcontainerType", EnumValue = 0 },
@@ -591,6 +589,8 @@ local ItemConstants =
 				{ Name = "CraftingOrderReagents", Type = "SubcontainerType", EnumValue = 35 },
 				{ Name = "AccountBankTabs", Type = "SubcontainerType", EnumValue = 36 },
 				{ Name = "CurrencyTransfer", Type = "SubcontainerType", EnumValue = 37 },
+				{ Name = "CharacterBankTabs", Type = "SubcontainerType", EnumValue = 38 },
+				{ Name = "HousingDecorConversion", Type = "SubcontainerType", EnumValue = 39 },
 			},
 		},
 		{
@@ -625,6 +625,18 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "WeaponSlot",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "MainHand", Type = "WeaponSlot", EnumValue = 0 },
+				{ Name = "OffHand", Type = "WeaponSlot", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "ItemConsts",
 			Type = "Constants",
 			Values =
@@ -636,6 +648,7 @@ local ItemConstants =
 				{ Name = "CURRENT_ITEM_SAVE_VERSION", Type = "number", Value = DEFAULT_ITEM_SAVE_VERSION },
 				{ Name = "DEFAULT_ARTIFACT_POWERS_VERSION", Type = "number", Value = 1 },
 				{ Name = "CURRENT_ARTIFACT_POWERS_VERSION", Type = "number", Value = DEFAULT_ARTIFACT_POWERS_VERSION },
+				{ Name = "DEFAULT_RETENTION", Type = "number", Value = 7 },
 			},
 		},
 		{

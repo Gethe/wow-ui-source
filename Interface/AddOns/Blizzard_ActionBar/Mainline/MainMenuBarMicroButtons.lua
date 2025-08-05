@@ -692,7 +692,7 @@ function PlayerSpellsMicroButtonMixin:GetAnySpellBookAlert()
 		return nil;
 	end
 
-	local newSpecID = GetSpecialization();
+	local newSpecID = C_SpecializationInfo.GetSpecialization();
 	local playerAtMax = UnitLevel("player") >= GetMaxLevelForLatestExpansion();
 	local specUsedAlready = GetCVarBitfield("maxLevelSpecsUsed", newSpecID);
 
@@ -777,7 +777,7 @@ function PlayerSpellsMicroButtonMixin:OnEvent(event, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		self.tooltipText =  MicroButtonTooltipText(PLAYERSPELLS_BUTTON, "TOGGLETALENTS");
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self.oldSpecID = GetSpecialization();
+		self.oldSpecID = C_SpecializationInfo.GetSpecialization();
 	end
 end
 
@@ -1359,7 +1359,7 @@ function EJMicroButtonMixin:UpdateLastEvaluations()
 	self.lastEvaluatedLevel = playerLevel;
 
 	if (playerLevel == GetMaxLevelForPlayerExpansion()) then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 
 		self.lastEvaluatedSpec = spec;
@@ -1399,7 +1399,7 @@ function EJMicroButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 		if ( playerLevel == GetMaxLevelForPlayerExpansion() and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
 			self.lastEvaluatedSpec = spec;

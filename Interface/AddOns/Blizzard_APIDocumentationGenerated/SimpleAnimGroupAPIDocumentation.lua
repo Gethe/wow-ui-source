@@ -52,7 +52,7 @@ local SimpleAnimGroupAPI =
 
 			Returns =
 			{
-				{ Name = "scriptObject", Type = "ScriptObject", Nilable = false, StrideIndex = 1 },
+				{ Name = "anims", Type = "SimpleAnim", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{

@@ -8,7 +8,7 @@ end
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
-	
+
 	self:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 		GameTooltip_SetTitle(GameTooltip, ADDONS);
@@ -48,7 +48,7 @@ function AddonCompartmentMixin:OnLoad()
 					else
 						texture:SetTexture(icon);
 					end
-				end 
+				end
 				texture:SetShown(hasIcon);
 
 				local fontString = button.fontString;
@@ -86,10 +86,16 @@ function AddonCompartmentMixin:RegisterAddons()
 			addonData.icon = C_AddOns.GetAddOnMetadata(addonIndex, "IconTexture") or C_AddOns.GetAddOnMetadata(addonIndex, "IconAtlas");
 
 			local function CallAddonGlobalFunc(addonCompartmentFunc, addonName, ...)
-				forceinsecure();
 				if reason == "DEMAND_LOADED" and not C_AddOns.IsAddOnLoaded(addonName) then
 					C_AddOns.LoadAddOn(addonName);
 				end
+
+				local name, title, notes, loadable, reason, security = C_AddOns.GetAddOnInfo(addonName);
+				if security ~= "SECURE" then
+					-- Must taint otherwise addons would be able to arbitrarily run global functions untainted.
+					forceinsecure();
+				end
+
 				_G[addonCompartmentFunc](addonName, ...);
 			end
 

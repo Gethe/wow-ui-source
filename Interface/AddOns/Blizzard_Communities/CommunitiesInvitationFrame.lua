@@ -1,6 +1,7 @@
 
 local COMMUNITIES_INVITATION_FRAME_EVENTS = {
 	"CLUB_MEMBER_UPDATED",
+	"CLUB_MEMBERS_UPDATED",
 	"PLAYER_REPORT_SUBMITTED",
 };
 
@@ -16,8 +17,8 @@ function CommunitiesInvitationFrameMixin:OnHide()
 end
 
 function CommunitiesInvitationFrameMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_UPDATED" then
-		local clubId, memberId = ...;
+	if event == "CLUB_MEMBER_UPDATED" or event == "CLUB_MEMBERS_UPDATED" then
+		local clubId, _memberId = ...;
 		if clubId == self.clubId then
 			local invitationInfo = C_Club.GetInvitationInfo(self.clubId);
 			self:DisplayInvitation(invitationInfo);

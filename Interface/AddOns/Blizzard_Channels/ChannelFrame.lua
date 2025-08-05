@@ -47,6 +47,7 @@ do
 		self:RegisterEvent("CLUB_STREAM_ADDED");
 		self:RegisterEvent("CLUB_STREAM_REMOVED");
 		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+		self:RegisterEvent("CLUB_MEMBERS_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_PRESENCE_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
@@ -74,7 +75,7 @@ do
 
 		local channel = self:GetList():GetSelectedChannelButton();
 		if channel and channel:ChannelIsCommunity() then
-			C_Club.SetClubPresenceSubscription(channel.clubId);
+			self:SetFocusedClub(channel.clubId);
 		end
 
 		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
@@ -83,11 +84,26 @@ do
 	end
 
 	function ChannelFrameMixin:OnHide()
-		C_Club.ClearClubPresenceSubscription();
-
+		self:SetFocusedClub(nil);
 		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
 		StaticPopupSpecial_Hide(CreateChannelPopup);
 	end
+end
+
+function ChannelFrameMixin:SetFocusedClub(clubId)
+	if self.focusedClubId == clubId then
+		return;
+	end
+
+	if self.focusedClubId then
+		C_Club.UnfocusMembers(self.focusedClubId);
+		C_Club.ClearClubPresenceSubscription();
+	end
+	if clubId then
+		C_Club.FocusMembers(clubId);
+		C_Club.SetClubPresenceSubscription(clubId);
+	end
+	self.focusedClubId = clubId;
 end
 
 function ChannelFrameMixin:OnEvent(event, ...)
@@ -143,6 +159,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 	elseif event == "CLUB_STREAM_REMOVED" then
 		self:OnClubStreamRemoved(...);
 	elseif event == "CLUB_MEMBER_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBERS_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);
 	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);
@@ -667,8 +685,8 @@ end
 
 local channelTypeToNameLookup =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHANNEL_NAME_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHANNEL_NAME_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHANNEL_NAME_INSTANCE,
 };
 
 function ChannelFrame_GetIdealChannelName(channel)

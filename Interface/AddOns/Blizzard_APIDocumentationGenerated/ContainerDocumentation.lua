@@ -342,6 +342,21 @@ local Container =
 			},
 		},
 		{
+			Name = "HasContainerItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBattlePayItem",
 			Type = "Function",
 
@@ -498,11 +513,16 @@ local Container =
 			Type = "Function",
 		},
 		{
-			Name = "SortBankBags",
+			Name = "SortBank",
 			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "bankType", Type = "BankType", Nilable = false },
+			},
 		},
 		{
-			Name = "SortReagentBankBags",
+			Name = "SortBankBags",
 			Type = "Function",
 		},
 		{

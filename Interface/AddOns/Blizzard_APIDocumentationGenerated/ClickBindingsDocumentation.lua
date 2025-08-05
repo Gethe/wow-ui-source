@@ -23,6 +23,7 @@ local ClickBindings =
 		{
 			Name = "ExecuteBinding",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -105,10 +106,12 @@ local ClickBindings =
 		{
 			Name = "ResetCurrentProfile",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SetProfileByInfo",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

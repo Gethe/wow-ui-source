@@ -170,10 +170,12 @@ local EncounterJournal =
 		{
 			Name = "OnClose",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "OnOpen",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "ResetSlotFilter",
@@ -209,6 +211,7 @@ local EncounterJournal =
 		{
 			Name = "SetTab",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

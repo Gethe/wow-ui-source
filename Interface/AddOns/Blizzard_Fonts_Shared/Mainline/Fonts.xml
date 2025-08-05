@@ -446,24 +446,6 @@
 		</Member>
 	</FontFamily>
 
-	<FontFamily name="NumberFont_Normal_Med" virtual="true">
-		<Member alphabet="roman">
-			<Font font="Fonts\ARIALN.TTF" height="14"/>
-		</Member>
-		<Member alphabet="korean">
-			<Font font="Fonts\2002.TTF" height="13"/>
-		</Member>
-		<Member alphabet="simplifiedchinese">
-			<Font font="Fonts\ARKai_C.ttf" height="12"/>
-		</Member>
-		<Member alphabet="traditionalchinese">
-			<Font font="Fonts\arheiuhk_bd.TTF" height="12"/>
-		</Member>
-		<Member alphabet="russian">
-			<Font font="Fonts\ARIALN.TTF" height="14"/>
-		</Member>
-	</FontFamily>
-
 	<FontFamily name="NumberFont_Outline_Huge" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\skurri.ttf" height="30" outline="NORMAL"/>
@@ -509,15 +491,6 @@
 			</Font>
 		</Member>
 	</FontFamily>
-
-	<Font name="QuestFont_Shadow_Huge" inherits="QuestFont_Huge" virtual="true">
-		<Shadow>
-			<Offset>
-				<AbsDimension x="1" y="-1"/>
-			</Offset>
-			<Color r="0.49" g="0.35" b="0.05"/>
-		</Shadow>
-	</Font>
 
 	<FontFamily name="QuestFont_Outline_Huge" virtual="true">
 		<Member alphabet="roman">

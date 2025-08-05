@@ -59,7 +59,9 @@ function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			rootDescription:SetTag("MENU_PROFESSIONS_RECIPE_TRACKER");
 
 			local recipeId = GetRecipeID(block);
-			if not IsRecraftBlock(block) and IsSpellKnown(recipeId) then
+			local spellBank = Enum.SpellBookSpellBank.Player;
+			local includeOverrides = false;
+			if not IsRecraftBlock(block) and C_SpellBook.IsSpellInSpellBook(recipeId, spellBank, includeOverrides) then
 				rootDescription:CreateButton(PROFESSIONS_TRACKING_VIEW_RECIPE, function()
 			C_TradeSkillUI.OpenRecipe(recipeID);
 				end);

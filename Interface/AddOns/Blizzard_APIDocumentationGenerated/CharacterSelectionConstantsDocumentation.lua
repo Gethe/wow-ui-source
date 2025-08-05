@@ -33,6 +33,19 @@ local CharacterSelectionConstants =
 			},
 		},
 		{
+			Name = "WarbandPlacementDisplayInfoType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Model", Type = "WarbandPlacementDisplayInfoType", EnumValue = 0 },
+				{ Name = "Creature", Type = "WarbandPlacementDisplayInfoType", EnumValue = 1 },
+				{ Name = "Item", Type = "WarbandPlacementDisplayInfoType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "WarbandSceneAnimationEvent",
 			Type = "Enumeration",
 			NumValues = 10,
@@ -85,15 +98,35 @@ local CharacterSelectionConstants =
 			},
 		},
 		{
+			Name = "WarbandSceneAnimationStandStateFlags",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 1,
+			MaxValue = 256,
+			Fields =
+			{
+				{ Name = "Maintain", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 1 },
+				{ Name = "Stand", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 2 },
+				{ Name = "SitOnGround", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 4 },
+				{ Name = "Kneel", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 8 },
+				{ Name = "ReadyStance", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 16 },
+				{ Name = "SitOnChairLow", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 32 },
+				{ Name = "SitOnChairMedium", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 64 },
+				{ Name = "SitOnChairHigh", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 128 },
+				{ Name = "Sleep", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 256 },
+			},
+		},
+		{
 			Name = "WarbandScenePlacementType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Character", Type = "WarbandScenePlacementType", EnumValue = 0 },
 				{ Name = "Pet", Type = "WarbandScenePlacementType", EnumValue = 1 },
+				{ Name = "Chair", Type = "WarbandScenePlacementType", EnumValue = 2 },
 			},
 		},
 	},

@@ -252,30 +252,9 @@
 			<OnClick method="OnClick" inherit="append"/>
 		</Scripts>
 	</Button>
-	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin">
-		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="GuildMicroButton" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="-3" y="0"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
-			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
-			<KeyValue key="commandName" value="TOGGLECOLLECTIONS" type="string"/>
-			<KeyValue key="layoutIndex" value="8" type="number"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
-			<OnClick method="OnClick" inherit="append"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Button>
 	<Button name="PVPMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent">
 		<Anchors>
-			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
+			<Anchor point="BOTTOMLEFT" relativeTo="SocialsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>
@@ -404,9 +383,30 @@
 			</OnDisable>
 		</Scripts>
 	</Button>
-	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin">
+	<Button name="CollectionsMicroButton" inherits="MainMenuBarMicroButton" mixin="CollectionMicroButtonMixin">
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" relativeTo="LFGMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="lastNumMountsNeedingFanfare" value="0" type="number"/>
+			<KeyValue key="lastNumPetsNeedingFanfare" value="0" type="number"/>
+			<KeyValue key="commandName" value="TOGGLECOLLECTIONS" type="string"/>
+			<KeyValue key="layoutIndex" value="8" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnClick method="OnClick" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
+	<Button name="EJMicroButton" inherits="MainMenuBarMicroButton" mixin="EJMicroButtonMixin">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="CollectionsMicroButton" relativePoint="BOTTOMRIGHT">
 				<Offset>
 					<AbsDimension x="-3" y="0"/>
 				</Offset>

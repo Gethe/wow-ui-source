@@ -48,7 +48,7 @@ end
 function PriestBarMixin:CheckAndShow()
 	self = self or PriestBarFrame;
 	-- check spec
-	local spec = GetSpecialization();
+	local spec = C_SpecializationInfo.GetSpecialization();
 	if ( spec == SPEC_PRIEST_SHADOW ) then
 		if ( self.hasReqLevel ) then
 			local adjustAttachments;

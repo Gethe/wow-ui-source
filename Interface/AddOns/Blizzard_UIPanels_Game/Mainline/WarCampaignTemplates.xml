@@ -101,8 +101,8 @@
 				</FontString>
 				<FontString parentKey="Progress" inherits="SystemFont_Shadow_Small2">
 					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>				
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="TOPLEFT" x="16" y="-39"/>
 					</Anchors>
@@ -129,7 +129,7 @@
 						<Anchor point="TOPLEFT" x="0" y="5"/>
 						<Anchor point="TOPRIGHT" x="0" y="5"/>
 					</Anchors>
-				</Texture>	
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -167,8 +167,8 @@
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="SelectedHighlight" atlas="questlog-header-glow-yellow" useAtlasSize="true">
 					<KeyValues>
- 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
- 					</KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Background" y="9"/>
 					</Anchors>
@@ -208,7 +208,7 @@
 	<Button name="CampaignHeaderMinimalTemplate" inherits="ResizeLayoutFrame" mixin="QuestLogHeaderCodeMixin, CampaignHeaderMinimalMixin, CampaignHeaderCollapsibleMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="leftPadding" value="11" type="number"/>
-			<KeyValue key="minimumCollapsedHeight" value="40" type="number"/>
+			<KeyValue key="minimumHeight" value="22" type="number"/>
 			<KeyValue key="fixedWidth" value="289" type="number"/>
 		</KeyValues>
 		<Size x="1" y="1"/>

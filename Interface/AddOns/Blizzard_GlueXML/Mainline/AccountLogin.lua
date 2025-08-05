@@ -72,7 +72,7 @@ function AccountLogin_CheckLoginState(self)
 	end
 
 	if ( auroraState == LE_AURORA_STATE_LEGAL_AGREEMENT ) then
-		GlueDialog_Show("OKAY_LEGAL_REDIRECT");
+		StaticPopup_Show("OKAY_LEGAL_REDIRECT");
 	end
 
 	self.UI.TokenEntryDialog:SetShown(tokenEntryShown);
@@ -173,9 +173,9 @@ function AccountLogin_Login()
 	PlaySound(SOUNDKIT.GS_LOGIN);
 
 	if ( AccountLogin.UI.AccountEditBox:GetText() == "" ) then
-		GlueDialog_Show("OKAY", LOGIN_ENTER_NAME);
+		StaticPopup_Show("OKAY", LOGIN_ENTER_NAME);
 	elseif ( AccountLogin.UI.PasswordEditBox:GetText() == "" ) then
-		GlueDialog_Show("OKAY", LOGIN_ENTER_PASSWORD);
+		StaticPopup_Show("OKAY", LOGIN_ENTER_PASSWORD);
 	else
 		local username = AccountLogin.UI.AccountEditBox:GetText();
 		C_Login.Login(string.gsub(username, "||", "|"), AccountLogin.UI.PasswordEditBox);
@@ -418,7 +418,7 @@ function CaptchaEntry_OnShow(self)
 	local success, width, height = C_Login.SetCaptchaTexture(self.Background.CaptchaImage);
 	if ( not success ) then
 		C_Login.DisconnectFromServer();
-		GlueDialog_Show("OKAY", CAPTCHA_LOADING_FAILED);
+		StaticPopup_Show("OKAY", CAPTCHA_LOADING_FAILED);
 		return;
 	end
 
@@ -481,7 +481,7 @@ function AccountLogin_CheckAutoLogin()
 				end
 			end
 		elseif ( not AccountLogin.timerStarted ) then
-			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+			StaticPopup_Show("CANCEL", LOGIN_STATE_CONNECTING);
 			if ( WasScreenFirstDisplayed() ) then
 				AccountLogin_StartAutoLoginTimer();
 			end

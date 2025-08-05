@@ -40,8 +40,11 @@
 		<PushedTexture atlas="UI-QuestTrackerButton-QuestItem-Frame"/>
 		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
 		<Animations>
-			<AnimationGroup parentKey="GlowAnim" looping="BOUNCE">
+			<AnimationGroup parentKey="GlowAnim" looping="BOUNCE" mixin="QuestObjectiveItemGlowAnimMixin">
 				<Alpha childKey="Glow" fromAlpha="0" toAlpha="1" duration="1"/>
+				<Scripts>
+					<OnLoop method="OnLoop"/>
+				</Scripts>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

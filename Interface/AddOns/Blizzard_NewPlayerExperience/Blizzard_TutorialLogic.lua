@@ -37,7 +37,9 @@ function TutorialLogic:CheckFormSpells()
 		local warningString = nil;
 		local preferredActionBar = nil;
 		for i, spellID in ipairs(formSpells) do
-			if IsSpellKnown(spellID) then
+			local spellBank = Enum.SpellBookSpellBank.Player;
+			local includeOverrides = false;
+			if C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides) then
 				TutorialManager:Queue(Class_AddSpellToActionBarService.name, spellID, warningString, NPEV2_SPELLBOOK_TUTORIAL, preferredActionBar, form);
 			end
 		end

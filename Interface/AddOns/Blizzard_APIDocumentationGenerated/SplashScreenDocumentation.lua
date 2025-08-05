@@ -31,10 +31,12 @@ local SplashScreen =
 		{
 			Name = "SendSplashScreenActionLaunchedTelem",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SendSplashScreenCloseTelem",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

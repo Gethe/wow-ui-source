@@ -128,6 +128,24 @@ MODEL_CAMERA_CONFIG = {
 	}
 };
 
+function CharacterCreate_UpdateLabels()
+	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
+	CharacterCreateRaceInfoFrameTitle:SetText(race);
+
+	local classData = C_CharacterCreation.GetSelectedClass();
+	CharacterCreateClassInfoFrameTitle:SetText(classData.name);
+	
+	local classes = C_CharacterCreation.GetAvailableClasses();
+
+	for i=1, CharacterCreate.numClasses, 1 do
+		local button = _G["CharacterCreateClassButton"..i];
+		local className = classes[button.classID].name;
+		button.nameFrame.text:SetText(className);
+	end
+
+	CharacterCreateEnumerateClasses();
+end
+
 function CharacterCreate_SelectForm(alternate)
 	CharacterCreateAlternateFormTop:SetChecked(not alternate);
 	CharacterCreateAlternateFormBottom:SetChecked(alternate);
@@ -313,9 +331,10 @@ function SetCharacterRace(id)
 	--twain SetSelectedRace(id);
 	local name, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
 
-	-- Set Race
+	CharacterCreate_UpdateLabels();
+	
 	local race, fileString = C_CharacterCreation.GetNameForRace(CharacterCreate.selectedRace);
-	CharacterCreateRaceInfoFrameTitle:SetText(race);
+	-- Set Race
 	fileString = strupper(fileString);
 
 	-- Loop over all the ability strings we can find and concatenate them into a giant block.
@@ -371,7 +390,6 @@ function SetCharacterRace(id)
 		CharacterCreateAlternateFormBottom:Hide();
 	end
 	
-	CharacterCreateEnumerateClasses();
 	SetDefaultClass();
 
 	-- Hair customization stuff
@@ -408,8 +426,6 @@ function SetCharacterClass(id)
 	CharacterCreate.selectedClass = id;
 	for i=1, CharacterCreate.numClasses, 1 do
 		local button = _G["CharacterCreateClassButton"..i];
-		local className = classes[button.classID].name;
-		button.nameFrame.text:SetText(className);
 		if ( button.classID == id ) then
 			button:SetChecked(1);
 		else
@@ -427,7 +443,7 @@ function SetCharacterClass(id)
 		abilityIndex = abilityIndex + 1;
 		tempText = _G["CLASS_INFO_"..classData.fileName..abilityIndex];
 	end
-	CharacterCreateClassInfoFrameTitle:SetText(classData.name);
+	CharacterCreate_UpdateLabels();
 	CharacterCreateClassInfoFrameScrollFrameScrollBar:SetValue(0);
 	CharacterCreateClassInfoFrameScrollFrameScrollChildBulletText:SetText(abilityText);	
 	CharacterCreateClassInfoFrameScrollFrameScrollChildInfoText:SetText(_G["CLASS_"..strupper(classData.fileName)] .. "\n\n");
@@ -438,6 +454,8 @@ end
 
 function SetCharacterGender(sex)
 	C_CharacterCreation.SetSelectedSex(sex);
+
+	CharacterCreate_UpdateLabels();
 
 	if ( sex == Enum.UnitSex.Male ) then
 		CharacterCreateGenderButtonMale:SetChecked(true);
@@ -471,7 +489,6 @@ function SetCharacterGender(sex)
 
 	-- Update class labels to reflect gender change
 	-- Set Class
-	CharacterCreateEnumerateClasses(); -- Update class tooltips.
 
 	-- Update preview models if on customization step
 	if ( CharacterCreatePreviewFrame:IsShown() ) then

@@ -5,4 +5,4 @@
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Mainline\AutoComplete.lua
-Mainline\AutoComplete.xml
+AutoComplete.xml

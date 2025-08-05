@@ -136,8 +136,7 @@ local ItemConstants_Mainline =
 			Values =
 			{
 				{ Name = "NumBagSlots", Type = "number", Value = NUM_BAG_SLOTS },
-				{ Name = "NumGenericBankSlots", Type = "number", Value = BANK_NUM_GENERIC_SLOTS },
-				{ Name = "NumBankBagSlots", Type = "number", Value = NUM_BANKBAG_SLOTS },
+				{ Name = "NumCharacterBankSlots", Type = "number", Value = NUM_CHARACTERBANK_SLOTS },
 				{ Name = "NumReagentBagSlots", Type = "number", Value = NUM_REAGENTBAG_SLOTS },
 				{ Name = "NumAccountBankSlots", Type = "number", Value = NUM_ACCOUNTBANK_SLOTS },
 				{ Name = "MAX_TRANSACTION_BANK_TABS", Type = "number", Value = 0 },

@@ -395,7 +395,9 @@ function QuestLogMixin:SetHeaderQuestsTracked(headerLogIndex, setTracked)
 				if setTracked and not questTracked then
 					C_QuestLog.AddQuestWatch(questID);
 				elseif not setTracked and questTracked then
-					C_QuestLog.RemoveQuestWatch(questID);
+					if QuestUtil.CanRemoveQuestWatch() then
+						C_QuestLog.RemoveQuestWatch(questID);
+					end
 				end
 			end
 		end
@@ -435,9 +437,11 @@ function QuestLogHeaderCodeMixin:OnClick(button)
 				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
 			end);
 
-			rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
-				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
-			end);
+			if QuestUtil.CanRemoveQuestWatch() then
+				rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
+					QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+				end);
+			end
 		end);
 	end
 end
@@ -1030,7 +1034,7 @@ function QuestLogQuestDetailsMixin:OnLoad()
 end
 
 function QuestLogQuestDetailsMixin:OnShow()
-	self.Bg:SetAtlas(QuestUtil.GetDefaultQuestMapBackgroundTexture());
+	self.Bg:SetAtlas(QuestTextContrast.GetDefaultDetailsBackgroundAtlas());
 	self:AdjustBackgroundTexture(self.Bg);
 	QuestMapFrame.QuestSessionManagement:SetSuppressed(true);
 end
@@ -1208,7 +1212,8 @@ function QuestMapFrame_UpdateQuestDetailsButtons()
 	end
 
 	-- Need to be able to remove watch if the quest got disabled
-	local enableTrackButton = isWatched or not isQuestDisabled;
+	local canRemoveQuestWatch = QuestUtil.CanRemoveQuestWatch();
+	local enableTrackButton = (isWatched and canRemoveQuestWatch) or (not isWatched and not isQuestDisabled);
 	QuestMapFrame.DetailsFrame.TrackButton:SetEnabled(enableTrackButton);
 	QuestLogPopupDetailFrame.TrackButton:SetEnabled(enableTrackButton);
 
@@ -1483,7 +1488,9 @@ end
 
 function QuestMapQuestOptions_TrackQuest(questID)
 	if QuestUtils_IsQuestWatched(questID) then
-		C_QuestLog.RemoveQuestWatch(questID);
+		if QuestUtil.CanRemoveQuestWatch() then
+			C_QuestLog.RemoveQuestWatch(questID);
+		end
 	else
 		if C_QuestLog.GetNumQuestWatches() >= Constants.QuestWatchConsts.MAX_QUEST_WATCHES then
 			UIErrorsFrame:AddMessage(OBJECTIVES_WATCH_TOO_MANY, 1.0, 0.1, 0.1, 1.0);
@@ -1638,6 +1645,7 @@ do
 	AddSpacingPair(QuestLogButtonTypes.HeaderCampaign, QuestLogButtonTypes.HeaderCampaign, 2);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaign, 12);
 	AddSpacingPair(QuestLogButtonTypes.Quest, QuestLogButtonTypes.HeaderCampaignMinimal, 10);
+	AddSpacingPair(QuestLogButtonTypes.HeaderCampaignMinimal, QuestLogButtonTypes.HeaderCampaignMinimal, 6);
 	AddSpacingPair(QuestLogButtonTypes.None, QuestLogButtonTypes.HeaderCallings, 0);
 	AddSpacingPair(QuestLogButtonTypes.Any, QuestLogButtonTypes.HeaderCallings, 10);
 
@@ -1744,12 +1752,24 @@ local function QuestLogQuests_BuildQuestInfoContainer()
 	return questInfoContainer;
 end
 
+local function QuestLogQuests_IsCampaignQuestForSorting(info)
+	if info.questClassification == Enum.QuestClassification.Campaign then
+		return true;
+	end
+
+	if not info.isHeader and info.header and info.header.questClassification == Enum.QuestClassification.Campaign then
+		return true;
+	end
+
+	return false;
+end
+
 local function QuestLogQuests_GetCampaignInfos(questInfoContainer)
 	local infos = {};
 
-	-- questInfoContainer is sorted with all campaigns coming first
+	-- Ideally questInfoContainer is sorted with all campaigns coming first
 	for index, info in ipairs(questInfoContainer) do
-		if info.questClassification == Enum.QuestClassification.Campaign then
+		if QuestLogQuests_IsCampaignQuestForSorting(info) then
 			table.insert(infos, info);
 		else
 			break;
@@ -1771,17 +1791,23 @@ local function QuestLogQuests_GetCovenantCallingsInfos(questInfoContainer)
 	return infos;
 end
 
-local nonNormalQuestClassifications =
-{
-	[Enum.QuestClassification.Campaign] = true,
-	[Enum.QuestClassification.Calling] = true,
-};
+local function QuestLogQuests_IsNormalQuestForSorting(info)
+	if info.questClassification == Enum.QuestClassification.Calling then
+		return false;
+	end
+
+	if QuestLogQuests_IsCampaignQuestForSorting(info) then
+		return false;
+	end
+
+	return true;
+end
 
 local function QuestLogQuests_GetQuestInfos(questInfoContainer)
 	local infos = {};
 
 	for index, info in ipairs(questInfoContainer) do
-		if not nonNormalQuestClassifications[info.questClassification] then
+		if QuestLogQuests_IsNormalQuestForSorting(info) then
 			table.insert(infos, info);
 		end
 	end
@@ -2283,7 +2309,7 @@ function QuestMapLogTitleButton_OnEnter(self)
 
 	GameTooltip:Show();
 	tooltipButton = self;
-    EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
+	EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
 	POIButtonHighlightManager:SetHighlight(questID);
 end
 
@@ -2350,10 +2376,14 @@ function QuestMapLogTitleButton_CreateContextMenu(self)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_QUEST_MAP_LOG_TITLE");
 
-		local text = QuestUtils_IsQuestWatched(self.questID) and UNTRACK_QUEST or TRACK_QUEST;
-		rootDescription:CreateButton(text, function()
-			QuestMapQuestOptions_TrackQuest(self.questID);
-		end);
+		local questIsWatched = QuestUtils_IsQuestWatched(self.questID);
+		local canRemoveQuestWatch = QuestUtil.CanRemoveQuestWatch();
+		if not questIsWatched or canRemoveQuestWatch then
+			local text = questIsWatched and UNTRACK_QUEST or TRACK_QUEST;
+			rootDescription:CreateButton(text, function()
+				QuestMapQuestOptions_TrackQuest(self.questID);
+			end);
+		end
 
 		if C_SuperTrack.GetSuperTrackedQuestID() ~= self.questID then
 			rootDescription:CreateButton(SUPER_TRACK_QUEST, function()
@@ -2449,7 +2479,7 @@ function QuestLogPopupDetailFrame_Show(questID)
 	QuestLogPopupDetailFrame_Update(true);
 	ShowUIPanel(QuestLogPopupDetailFrame);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
-	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
+	QuestLogPopupDetailFrame.Bg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
 
 	-- portrait
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();

@@ -1,7 +1,7 @@
 ## Title: Blizzard_ActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Colors, Blizzard_HelpPlate
+## Dependencies: Blizzard_StoreUI, Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Colors, Blizzard_HelpPlate
 ## AllowLoadGameType: standard
 ## AllowLoad: Game
 ActionButtonUtil.lua

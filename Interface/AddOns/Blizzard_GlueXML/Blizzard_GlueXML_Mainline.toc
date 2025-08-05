@@ -1,13 +1,14 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay, Blizzard_GlueCollections, Blizzard_HelpPlate, Blizzard_GlueMenuFrame, Blizzard_CharacterSelectNavBar
+## Dependencies: Blizzard_StaticPopup_Glue, Blizzard_LoginWarningDialogs, Blizzard_TimerunningUtil, Blizzard_Menu, Blizzard_MoneyFrame, Blizzard_MatchmakingQueueDisplay, Blizzard_GlueCollections, Blizzard_HelpPlate, Blizzard_GlueMenuFrame, Blizzard_CharacterSelectNavBar
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: mainline
 Mainline\Localization.lua
 Mainline\GlueTooltip.xml
 ServerAlert.lua
+Mainline\ServerAlert.xml
 ServerAlert.xml
 Mainline\AccountLogin.lua
 Mainline\AccountLogin.xml
