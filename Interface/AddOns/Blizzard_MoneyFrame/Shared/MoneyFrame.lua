@@ -104,7 +104,7 @@ MoneyTypeInfo["PLAYER_TRADE"] = {
 	end,
 
 	PickupFunc = function(self, amount)
-		PickupTradeMoney(amount);
+		C_TradeInfo.PickupTradeMoney(amount);
 	end,
 
 	DropFunc = function(self)

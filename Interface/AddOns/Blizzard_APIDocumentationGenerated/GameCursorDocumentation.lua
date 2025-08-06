@@ -57,6 +57,7 @@ local GameCursor =
 		{
 			Name = "DropCursorMoney",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "EquipCursorItem",
@@ -83,6 +84,7 @@ local GameCursor =
 		{
 			Name = "PickupPlayerMoney",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
