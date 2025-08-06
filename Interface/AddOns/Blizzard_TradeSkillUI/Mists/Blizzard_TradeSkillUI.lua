@@ -106,7 +106,8 @@ function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSki
 		return GetTradeSkillInvSlotFilter(filterIndex) == 1;
 	end
 
-	local function SetSlotChecked(filterIndex) 
+	local function SetSlotChecked(filterIndex)
+		SetTradeSkillSubClassFilter(0);
 		if(IsSlotChecked(filterIndex)) then
 			SetTradeSkillInvSlotFilter(filterIndex, 0, 1);
 		else
@@ -114,16 +115,17 @@ function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSki
 		end	
 	end
 
-	local function IsSubClassSelected(filterIndex) 
-		return GetTradeSkillSubClassFilter(filterIndex) == 1;
+	local function IsSubClassSelected(filterIndex)
+		return (GetTradeSkillSubClassFilter(filterIndex) == 1);
 	end
 
 	local function SetSubClassSelected(filterIndex)
-		local on = 1;
+		SetTradeSkillInvSlotFilter(0);
 		if(IsSubClassSelected(filterIndex)) then
-			on = 0;
-		end
-		SetTradeSkillSubClassFilter(filterIndex, on, 0);
+			SetTradeSkillSubClassFilter(filterIndex, 0, 1);
+		else
+			SetTradeSkillSubClassFilter(filterIndex, 1, 1);
+		end	
 	end
 
 	dropdown:SetupMenu(function(dropdown, rootDescription)
@@ -144,6 +146,7 @@ function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSki
 		for filterIndex, name in ipairs({GetTradeSkillInvSlots()}) do 
 			slotsSubmenu:CreateCheckbox(name, IsSlotChecked, SetSlotChecked, filterIndex);
 		end
+		slotsSubmenu:CreateCheckbox(ALL_INVENTORY_SLOTS, IsSlotChecked, SetSlotChecked, 0);
 
 		local subClassSubmenu = rootDescription:CreateButton(TRADESKILL_FILTER_CATEGORY);
 		for index, name in ipairs({GetTradeSkillSubClasses()}) do
@@ -151,6 +154,7 @@ function TradeSkillFrame_InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSki
 				subClassSubmenu:CreateCheckbox(name, IsSubClassSelected, SetSubClassSelected, index);
 			end
 		end
+		subClassSubmenu:CreateCheckbox(ALL_SUBCLASSES, IsSubClassSelected, SetSubClassSelected, 0);
 	end);
 end
 

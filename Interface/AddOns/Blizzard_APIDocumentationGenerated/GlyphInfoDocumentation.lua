@@ -26,6 +26,22 @@ local GlyphInfo =
 				{ Name = "link", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "GetGlyphLink",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "glyphIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "glyphID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "stringView", Nilable = false },
+			},
+		},
 	},
 
 	Events =

@@ -338,9 +338,9 @@
 			</StatusBar>
 
 			<EditBox name="$parentSearchBox" autoFocus="false">
-				<Size x="160" y="20"/>
+				<Size x="155" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="TradeSkillRankFrame" relativePoint="BOTTOMLEFT" x="5" y="-13"/>
+					<Anchor point="TOPLEFT" relativeTo="TradeSkillRankFrame" relativePoint="BOTTOMLEFT" x="13" y="-13"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -430,7 +430,7 @@
 						</Texture>
 						<Texture name="TradeSkillExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
 							<Size>
-								<AbsDimension x="38" y="32"/>
+								<AbsDimension x="50" y="32"/>
 							</Size>
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="TradeSkillExpandTabLeft" relativePoint="RIGHT">

@@ -69,7 +69,7 @@ COMBAT_TEXT_TYPE_INFO["SPELL_RESIST"] = {r = 0.79, g = 0.3, b = 0.85, cvar = "fl
 COMBAT_TEXT_TYPE_INFO["SPELL_BLOCK"] = {r = 1, g = 1, b = 1, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["SPELL_ABSORB"] = {r = 0.79, g = 0.3, b = 0.85, cvar = "floatingCombatTextDamageReduction"};
 COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL"] = {r = 0.1, g = 1, b = 0.1, show = 1};
---COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_CRIT"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
 --COMBAT_TEXT_TYPE_INFO["PERIODIC_ENERGIZE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
 COMBAT_TEXT_TYPE_INFO["SPELL_CAST"] = {r = 0.1, g = 1, b = 0.1, show = 1};
@@ -91,14 +91,24 @@ COMBAT_TEXT_TYPE_INFO["MANA_LOW"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCo
 COMBAT_TEXT_TYPE_INFO["ENTERING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
 COMBAT_TEXT_TYPE_INFO["LEAVING_COMBAT"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextCombatState"};
 COMBAT_TEXT_TYPE_INFO["COMBO_POINTS"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextComboPoints"};
---COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
---COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
---COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
---COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
---COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
-
-
+COMBAT_TEXT_TYPE_INFO["RUNE"] = {r = 0.1, g = 0.1, b = 1, cvar = "floatingCombatTextEnergyGains"};
+COMBAT_TEXT_TYPE_INFO["PERIODIC_HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["HEAL_CRIT_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["HEAL_ABSORB"] = {r = 0.1, g = 1, b = 0.1, show = 1};
+COMBAT_TEXT_TYPE_INFO["ABSORB_ADDED"] = {r = 0.1, g = 1, b = 0.1, show = 1};
 COMBAT_TEXT_TYPE_INFO["PROC_RESISTED"] = {r = 1, g = 0.1, b = 0.1, cvar = "floatingCombatTextDamageReduction"};
+
+COMBAT_TEXT_RUNE = {};
+COMBAT_TEXT_RUNE[1] = COMBAT_TEXT_RUNE_BLOOD;
+COMBAT_TEXT_RUNE[2] = COMBAT_TEXT_RUNE_UNHOLY;
+COMBAT_TEXT_RUNE[3] = COMBAT_TEXT_RUNE_FROST;
+COMBAT_TEXT_RUNE[4] = COMBAT_TEXT_RUNE_DEATH;
+
+COMBAT_TEXT_RUNE_COLOR = {};
+COMBAT_TEXT_RUNE_COLOR[1] = COMBAT_TEXT_RUNE_BLOOD_COLOR;
+COMBAT_TEXT_RUNE_COLOR[2] = COMBAT_TEXT_RUNE_UNHOLY_COLOR;
+COMBAT_TEXT_RUNE_COLOR[3] = COMBAT_TEXT_RUNE_FROST_COLOR;
+COMBAT_TEXT_RUNE_COLOR[4] = COMBAT_TEXT_RUNE_DEATH_COLOR;
 
 local FrameEvents =
 {
@@ -378,7 +388,15 @@ function CombatText_OnEvent(self, event, ...)
 		message = format(COMBAT_TEXT_COMBO_POINTS, data);
 	elseif ( messageType == "RUNE" ) then
 		if ( data == true ) then
-			message = COMBAT_TEXT_RUNE_DEATH;
+			local runeType = GetRuneType(arg1);
+			local color = COMBAT_TEXT_RUNE_COLOR[runeType];
+
+			message = COMBAT_TEXT_RUNE[runeType];
+			if color then
+				info.r = color.r;
+				info.g = color.g;
+				info.b = color.b;
+			end
 		else
 			message = nil;
 		end
