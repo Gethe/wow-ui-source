@@ -149,6 +149,10 @@ function StaticPopup_Visible(which)
 	return securecallfunction(SecureStaticPopup_Visible, which);
 end
 
+function StaticPopup_IsSpecial(dialog)
+	return dialog.special;
+end
+
 function StaticPopup_ForEachShownDialog(func)
 	for _, dialog in ipairs(shownDialogFrames) do
 		func(dialog);
@@ -413,7 +417,13 @@ end
 function StaticPopup_Hide(which, data)
 	for _, dialog in ipairs_reverse(shownDialogFrames) do
 		if (dialog.which == which) and (not data or (data == dialog.data)) then
+			local needsOnHideCall = dialog:IsShown() and not dialog:IsVisible();
+
 			dialog:Hide();
+
+			if needsOnHideCall then
+				StaticPopup_OnHide(dialog);
+			end
 		end
 	end
 end
@@ -436,7 +446,6 @@ function StaticPopup_HideAll()
 end
 
 function StaticPopup_OnUpdate(dialog, elapsed)
-	local which = dialog.which;
 	local dialogInfo = dialog.dialogInfo;
 
 	if dialog.timeleft > 0 then
@@ -525,9 +534,10 @@ function StaticPopup_UpdateProgressBar(dialog, percent)
 end
 
 -- This is intended to be used to continue ticking dialogs while the entire UI is hidden
+-- Do not allow special dialogs to run StaticPopup_OnUpdate.
 function StaticPopup_UpdateAll(elapsed)
 	for _, dialog in ipairs(shownDialogFrames) do
-		if not dialog:IsVisible() then
+		if not dialog:IsVisible() and not StaticPopup_IsSpecial(dialog) then
 			StaticPopup_OnUpdate(dialog, elapsed);
 		end
 	end

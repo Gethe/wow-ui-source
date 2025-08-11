@@ -422,6 +422,23 @@ end
 function ObjectiveTrackerModuleMixin:AnchorBlock(block)
 	block:ClearAllPoints();
 	local anchorFrame, offsetY, relativePoint = self:GetNextBlockAnchoring();
+
+	if anchorFrame == block then
+		local currentContentText = "";
+		if self.currentContentList then
+			currentContentText = table.concat(self.currentContentList, ",");
+		end
+		local oldContentText = "";
+		if self.oldContentList then
+			oldContentText = table.concat(self.oldContentList, ",");
+		end
+		local blockText = "";
+		if self.lastBlock then
+			blockText = string.format("block = %s, last block ID = %d, lastBlock = %s", tostring(block), (self.lastBlock.id or 0), tostring(self.lastBlock));
+		end
+		assertsafe(false, "Bad anchor, entry count: %d, old contents = %s, new contents = %s, block ID = %d, %s", (self.entryCount or 0), oldContentText, currentContentText, (block.id or 0), blockText);
+	end
+
 	block:SetPoint("TOP", anchorFrame, relativePoint, 0, offsetY);
 	block:SetPoint("LEFT", block.offsetX or self.blockOffsetX, 0);
 	if not block.fixedWidth then
