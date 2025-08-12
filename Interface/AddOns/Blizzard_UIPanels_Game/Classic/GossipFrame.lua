@@ -23,10 +23,16 @@ function GossipFrameMixin:OnEvent(event, ...)
 	end
 end
 
+local function IsFrequentRecurring(meta, frequency)
+	return not meta and (frequency == Enum.QuestFrequency.Daily or frequency == Enum.QuestFrequency.Weekly or frequency == Enum.QuestFrequency.ResetByScheduler);
+end
+
 GossipAvailableQuestButtonMixin = CreateFromMixins(GossipSharedAvailableQuestButtonMixin);
 function GossipAvailableQuestButtonMixin:Setup(questInfo)
 	if (questInfo.isLegendary) then
 		self.Icon:SetTexture("Interface\\GossipFrame\\AvailableLegendaryQuestIcon");
+	elseif (IsFrequentRecurring(questInfo.isMeta, questInfo.frequency)) then
+		self.Icon:SetTexture("Interface\\GossipFrame\\DailyQuestIcon");
 	else
 		self.Icon:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon");
 	end
@@ -37,6 +43,8 @@ GossipActiveQuestButtonMixin = CreateFromMixins(GossipSharedActiveQuestButtonMix
 function GossipActiveQuestButtonMixin:Setup(questInfo)
 	if (questInfo.isLegendary) then
 		self.Icon:SetTexture("Interface\\GossipFrame\\ActiveLegendaryQuestIcon");
+	elseif (IsFrequentRecurring(questInfo.isMeta, questInfo.frequency)) then
+		self.Icon:SetTexture("Interface\\GossipFrame\\DailyActiveQuestIcon");
 	else
 		self.Icon:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon");
 	end

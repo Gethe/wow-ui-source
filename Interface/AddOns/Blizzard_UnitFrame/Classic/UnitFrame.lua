@@ -724,6 +724,7 @@ function UnitFrameHealthBar_OnUpdate(self)
 				self:SetValue(currValue);
 				self.currValue = currValue;
 				TextStatusBar_UpdateTextString(self);
+				UnitFrameHealPredictionBars_Update(self:GetParent());
 			end
 		end
 
