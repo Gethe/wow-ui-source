@@ -14,32 +14,33 @@
 		<HighlightFont style="GameFontHighlight"/>
 		<DisabledFont style="GameFontDisable"/>
 	</Button>
-	<Frame name="AnimatedShineTemplate" virtual="true">
+
+	<Frame name="AnimatedShineTemplate" mixin="AnimatedShineMixin" virtual="true">
 		<Size x="37" y="37"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parent1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+				<Texture parentKey="Shine1" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
 					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
-				<Texture name="$parent2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+				<Texture parentKey="Shine2" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
 					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
-				<Texture name="$parent3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+				<Texture parentKey="Shine3" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
 					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 					<TexCoords left="0.3984375" right="0.4453125" top="0.40234375" bottom="0.44921875"/>
 				</Texture>
-				<Texture name="$parent4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
+				<Texture parentKey="Shine4" file="Interface\ItemSocketingFrame\UI-ItemSockets" alphaMode="ADD" hidden="true">
 					<Size x="13" y="13"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>

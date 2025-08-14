@@ -298,9 +298,10 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text">
+						<FontString name="$parentText" inherits="GlueFontNormalSmall" parentKey="text" nonspacewrap="true">
+							<Size x="120"/>
 							<Anchors>
-								<Anchor point="BOTTOM" x="2" y="-7"/>
+								<Anchor point="CENTER" y="-28"/>
 							</Anchors>
 						</FontString>
 					</Layer>

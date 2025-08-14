@@ -40,7 +40,7 @@ StaticPopupDialogs["CHARACTER_CREATE_FAILURE"] = {
 	text = "",
 	button1 = OKAY,
 	button2 = nil,
-    OnAccept = function ()
+    OnAccept = function(dialog, data)
 		if CharacterCreateFrame:IsShown() then
 			CharacterCreateFrame:SetMode(CHAR_CREATE_MODE_CUSTOMIZE);
 		end
@@ -134,25 +134,25 @@ function CharacterCreateMixin:OnEvent(event, ...)
 	elseif event == "RACE_FACTION_CHANGE_STARTED" then
 		local changeType = ...;
 		if changeType == "RACE" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
 		elseif changeType == "FACTION" then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
 		end
 	elseif event == "RACE_FACTION_CHANGE_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 			C_Log.LogMessage("From RACE_FACTION_CHANGE_RESULT");
 		else
 			showError = errorCode;
 		end
 	elseif event == "CUSTOMIZE_CHARACTER_STARTED" then
-		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+		StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
 	elseif event == "CUSTOMIZE_CHARACTER_RESULT" then
 		local success, errorCode = ...;
 		if success then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 			C_Log.LogMessage("From CUSTOMIZE_CHARACTER_RESULT");
 		else
@@ -186,7 +186,7 @@ function CharacterCreateMixin:OnEvent(event, ...)
 
 	if showError then
 		self:UpdateForwardButton();
-		GlueDialog_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
+		StaticPopup_Show("CHARACTER_CREATE_FAILURE", _G[showError]);
 	end
 end
 
@@ -201,7 +201,7 @@ function CharacterCreateMixin:OnShow()
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
 		if not fullCharacterCreateDisabled then
-			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName);
+			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName or "");
 		end
 	else
 		self.currentPaidServiceName = nil;
@@ -299,7 +299,7 @@ function CharacterCreateMixin:BeginVASTransaction()
 end
 
 function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
-	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+	return errorID == Enum.VasTransactionPurchaseResult.DbNameNotAvailable or errorID == Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName;
 end
 
 function CharacterCreateMixin:OnStoreVASPurchaseError()
@@ -313,7 +313,8 @@ function CharacterCreateMixin:OnStoreVASPurchaseError()
 				break;
 			end
 		end
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+		local text2 = nil;
+		StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, text2, exitAfterError);
 	end
 end
 
@@ -325,7 +326,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterCreateFrame:Exit();
 		else
 			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+			local text2 = nil;
+			StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, text2, exitAfterError);
 		end
 	end
 end
@@ -702,9 +704,9 @@ end
 
 function CharacterCreateMixin:CreateCharacter()
 	if self.paidServiceType then
-		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+		StaticPopup_Show("CONFIRM_PAID_SERVICE");
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
 		if Kiosk.IsEnabled() then
 			KioskModeSplash:SetAutoEnterWorld(true);
@@ -997,6 +999,8 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
 				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTimerunning then
+			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TIMERUNNING;
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1369,7 +1373,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.GetTimerunningSeasonID() then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.IsTimerunningEnabled() then
 			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction (or timerunning which also skips the faction choice)
 			return self.selectedFaction;
 		else
@@ -1392,7 +1396,7 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
-		not C_CharacterCreation.GetTimerunningSeasonID();
+		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
@@ -2194,7 +2198,7 @@ function CharacterCreateZoneChoiceMixin:Setup()
 	end
 
 	-- No zone choice / NPE for Timerunning characters.
-	if (C_CharacterCreation.GetTimerunningSeasonID()) then
+	if (C_CharacterCreation.IsTimerunningEnabled()) then
 		self:SetUseNPE(false);
 		self.shouldShow = false;
 		return;

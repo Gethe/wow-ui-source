@@ -376,7 +376,7 @@ local GarrisonInfo =
 				{ Name = "researchRank", Type = "number", Nilable = false },
 				{ Name = "garrTalentTreeID", Type = "number", Nilable = false },
 				{ Name = "talentPointIndex", Type = "number", Nilable = false },
-				{ Name = "isRespec", Type = "number", Nilable = false },
+				{ Name = "isRespec", Type = "bool", Nilable = false },
 			},
 
 			Returns =

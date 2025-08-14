@@ -101,7 +101,7 @@ function PvPTalentListButtonMixin:OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
-	GameTooltip:SetPvpTalent(self.talentID, false, GetActiveSpecGroup(true), self.owner.selectedSlotIndex);
+	GameTooltip:SetPvpTalent(self.talentID, false, C_SpecializationInfo.GetActiveSpecGroup(true), self.owner.selectedSlotIndex);
 
 	if (self.talentInfo.dependenciesUnmet) then
 		local unmetReason = self.talentInfo.dependenciesUnmetReason or TALENT_BUTTON_TOOLTIP_PVP_TALENT_REQUIREMENT_ERROR;

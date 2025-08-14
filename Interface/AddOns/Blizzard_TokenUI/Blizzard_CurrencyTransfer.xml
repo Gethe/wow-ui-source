@@ -185,54 +185,87 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture parentKey="TransactionDivider" atlas="activities-divider" useAtlasSize="true">
+			<Layer level="OVERLAY">
+				<Texture parentKey="CelebrationBackgroundFlash" atlas="transfer-panel-background" useAtlasSize="false" alphaMode="ADD" alpha="0">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Inset" y="-18"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Inset" y="-18"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ConfirmButton" inherits="CurrencyTransferConfirmButtonTemplate">
+			<Frame parentKey="Content">
 				<Anchors>
-					<Anchor point="BOTTOM" x="-54" y="8"/>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
-			</Button>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="TransactionDivider" atlas="activities-divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="14" y="-16"/>
+								<Anchor point="RIGHT" x="-9" y="-16"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ConfirmButton" inherits="CurrencyTransferConfirmButtonTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="-54" y="8"/>
+						</Anchors>
+					</Button>
 
-			<Button parentKey="CancelButton" inherits="CurrencyTransferCancelButtonTemplate">
-				<Anchors>
-					<Anchor point="BOTTOM" x="54" y="8"/>
-				</Anchors>
-			</Button>
+					<Button parentKey="CancelButton" inherits="CurrencyTransferCancelButtonTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="54" y="8"/>
+						</Anchors>
+					</Button>
 
-			<Frame parentKey="SourceSelector" inherits="CurrencyTransferSourceSelectorTemplate"/>
+					<Frame parentKey="SourceSelector" inherits="CurrencyTransferSourceSelectorTemplate"/>
 
-			<Frame parentKey="AmountSelector" inherits="CurrencyTransferAmountSelectorTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMLEFT" y="-14"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMRIGHT" y="-14"/>
-				</Anchors>
+					<Frame parentKey="AmountSelector" inherits="CurrencyTransferAmountSelectorTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMLEFT" y="-14"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.SourceSelector" relativePoint="BOTTOMRIGHT" y="-14"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="SourceBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
+						<KeyValues>
+							<KeyValue key="showTransferCost" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMLEFT" y="-36"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMRIGHT" y="-36"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="PlayerBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
+						<KeyValues>
+							<KeyValue key="showTransferCost" value="false" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMLEFT" y="-6"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMRIGHT" y="-6"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</Frame>
 
-			<Frame parentKey="SourceBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
-				<KeyValues>
-					<KeyValue key="showTransferCost" value="true" type="boolean"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMLEFT" y="-36"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.AmountSelector" relativePoint="BOTTOMRIGHT" y="-36"/>
-				</Anchors>
+			<Frame parentKey="AnimationHolder">
+				<Animations>
+					<AnimationGroup parentKey="TransferCelebration" setToFinalAlpha="true">
+						<Alpha childKey="$parent.CelebrationBackgroundFlash" startDelay="0.025" smoothing="IN" duration="1" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
 			</Frame>
 
-			<Frame parentKey="PlayerBalancePreview" inherits="CurrencyTransferBalancePreviewTemplate">
-				<KeyValues>
-					<KeyValue key="showTransferCost" value="false" type="boolean"/>
-				</KeyValues>
+			<Frame parentKey="TransferringSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="80" y="80"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMLEFT" y="-6"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SourceBalancePreview" relativePoint="BOTTOMRIGHT" y="-6"/>
+					<Anchor point="CENTER" relativeKey="$parent.Background"/>
 				</Anchors>
 			</Frame>
 		</Frames>

@@ -692,7 +692,7 @@ function PlayerSpellsMicroButtonMixin:GetAnySpellBookAlert()
 		return nil;
 	end
 
-	local newSpecID = GetSpecialization();
+	local newSpecID = C_SpecializationInfo.GetSpecialization();
 	local playerAtMax = UnitLevel("player") >= GetMaxLevelForLatestExpansion();
 	local specUsedAlready = GetCVarBitfield("maxLevelSpecsUsed", newSpecID);
 
@@ -777,7 +777,7 @@ function PlayerSpellsMicroButtonMixin:OnEvent(event, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		self.tooltipText =  MicroButtonTooltipText(PLAYERSPELLS_BUTTON, "TOGGLETALENTS");
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		self.oldSpecID = GetSpecialization();
+		self.oldSpecID = C_SpecializationInfo.GetSpecialization();
 	end
 end
 
@@ -1322,23 +1322,6 @@ function EJMicroButtonMixin:EvaluateAlertVisibility()
 	local alertShown = false;
 	if self.playerEntered and self.varsLoaded and self.zoneEntered then
 		if self:IsEnabled() then
-			local showAlert = not Kiosk.IsEnabled() and not GetCVarBool("hideAdventureJournalAlerts");
-			if( showAlert ) then
-				-- display alert if the player hasn't opened the journal for a long time
-				local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
-				if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
-					alertShown = MainMenuMicroButton_ShowAlert(self, AJ_MICRO_BUTTON_ALERT_TEXT);
-					if alertShown then
-						MicroButtonPulse(EJMicroButton);
-					end
-				end
-
-				if ( lastTimeOpened ~= 0 ) then
-					SetCVar("advJournalLastOpened", GetServerTime() );
-				end
-
-				self:UpdateAlerts(true);
-			end
 			self:UpdateLastEvaluations();
 		end
 	end
@@ -1359,7 +1342,7 @@ function EJMicroButtonMixin:UpdateLastEvaluations()
 	self.lastEvaluatedLevel = playerLevel;
 
 	if (playerLevel == GetMaxLevelForPlayerExpansion()) then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 
 		self.lastEvaluatedSpec = spec;
@@ -1399,7 +1382,7 @@ function EJMicroButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 		if ( playerLevel == GetMaxLevelForPlayerExpansion() and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
 			self.lastEvaluatedSpec = spec;
@@ -1537,12 +1520,25 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 end
 
 function StoreMicroButtonMixin:UpdateMicroButton()
-	if ( StoreFrame and StoreFrame_IsShown() ) then
-		self:SetPushed();
-		DisableMicroButtons(true);
+	local useNewCashShop = GetCVarBool("useNewCashShop");
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		if CatalogShopFrame and wasShown then
+			self:SetPushed();
+			DisableMicroButtons(true);
+		else
+			EnableMicroButtons();
+			self:SetNormal();
+		end
 	else
-		EnableMicroButtons();
-		self:SetNormal();
+		local wasShown = StoreFrame_IsShown();
+		if ( StoreFrame and wasShown ) then
+			self:SetPushed();
+			DisableMicroButtons(true);
+		else
+			EnableMicroButtons();
+			self:SetNormal();
+		end
 	end
 
 	self:Show();

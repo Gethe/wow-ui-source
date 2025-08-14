@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Texture name="QuestLogHighlightTextureTemplate" alphaMode="ADD" alpha="0.4" virtual="true"/>
-		
+
 	<Button name="QuestLogPathButtonTemplate" frameLevel="10" hidden="true" virtual="true">
 		<Size x="16" y="24"/>
 		<Layers>
@@ -42,58 +42,13 @@
 		</Scripts>
 	</Button>
 
-	<Button name="QuestLogHeaderCollapseButtonTemplate" registerForClicks="LeftButtonUp" mixin="QuestLogHeaderCollapseButtonMixin" propagateMouseInput="Both" virtual="true">
-		<Size x="20" y="20"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>							
-				</Texture>
-			</Layer>
-		</Layers>
-		<HighlightTexture alphaMode="ADD" alpha="0.4">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-			</Anchors>
-		</HighlightTexture>
-	</Button>
+	<Button name="QuestLogHeaderCodeTemplate" inherits="ListHeaderCodeTemplate" mixin="QuestLogHeaderCodeMixin" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true"/>
 
-	<Button name="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderCodeMixin" registerForClicks="LeftButtonUp" virtual="true">
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Button>
-
-	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
-		<Size x="289" y="22"/>
+	<Button name="QuestLogHeaderTemplate" inherits="ListHeaderVisualTemplate, QuestLogHeaderCodeTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="leftPadding" value="9" type="number"/>
 		</KeyValues>
-		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
-			<Size x="234" y="10"/>
-			<Anchors>
-				<Anchor point="LEFT" x="8" y="1"/>
-			</Anchors>
-		</ButtonText>
-		<NormalTexture atlas="questlog-tab"/>
-		<HighlightTexture atlas="questlog-tab" alphaMode="ADD" alpha="0.4"/>
-		<NormalFont style="Game15Font_Shadow"/>
-		<HighlightFont style="Game15Font_Shadow"/>
-		<Frames>
-			<Button parentKey="CollapseButton" inherits="QuestLogHeaderCollapseButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" x="-6"/>
-				</Anchors>							
-			</Button>
-		</Frames>
+		<Size x="289" y="22"/>
 	</Button>
 
 	<Button name="CovenantCallingsHeaderTemplate" inherits="QuestLogHeaderTemplate" registerForClicks="LeftButtonUp" mixin="CovenantCallingsHeaderMixin" virtual="true">
@@ -138,7 +93,7 @@
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
 					</Anchors>
 				</Texture>
-			</Layer>	
+			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Divider" atlas="QuestLog-frame-devider">
 					<Size x="0" y="15"/>
@@ -164,27 +119,27 @@
 		<Size x="14" y="14"/>
 		<HitRectInsets>
 			<AbsInset left="-10" right="-10" top="-10" bottom="-10"/>
-		</HitRectInsets>		
+		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture atlas="questlog-icon-ticksquare" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>					
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="CheckMark" atlas="questlog-icon-checkmark-yellow" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" x="1" y="1"/>
-					</Anchors>					
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture atlas="questlog-icon-ticksquare" useAtlasSize="true" inherits="QuestLogHighlightTextureTemplate">
 					<Anchors>
 						<Anchor point="CENTER"/>
-					</Anchors>					
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -197,7 +152,7 @@
 					<Anchor point="TOPRIGHT" y="-8"/>
 				</Anchors>
 			</Frame>
-		</Frames>	
+		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
@@ -308,45 +263,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="QuestLogTabButtonTemplate" parentArray="TabButtons" mixin="QuestLogTabButtonMixin" virtual="true">
-		<Size x="43" y="55"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="questlog-tab-side" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER" x="-2"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" atlas="QuestLog-Tab-side-Glow-select" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>			
-			<Layer level="HIGHLIGHT">
-				<Texture atlas="QuestLog-Tab-side-Glow-hover" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
-		</Scripts>
-	</Frame>
+
+	<Frame name="QuestLogTabButtonTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
 
 	<Frame name="QuestLogPopupDetailFrame" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplate, QuestFramePanelTemplate">
 		<Size x="338" y="496"/>
@@ -508,7 +426,7 @@
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.EventsTab" relativePoint="BOTTOM" x="0" y="-3"/>
 				</Anchors>
-			</Frame>			
+			</Frame>
 			<!-- This frame is for the others to anchor relative to because QuestSessionManagement will move things up.
 					 They could have been children but I didn't want to push them another level down in the hierarchy. -->
 			<Frame parentKey="ContentsAnchor">
@@ -517,7 +435,7 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="RIGHT"/>
 					<Anchor point="BOTTOM"/>
-				</Anchors>				
+				</Anchors>
 			</Frame>
 			<Frame parentKey="QuestsFrame" parentArray="ContentFrames">
 				<KeyValues>
@@ -575,8 +493,8 @@
 								<Anchors>
 									<Anchor point="TOPLEFT"/>
 								</Anchors>
-								<Frames>									
-									<Frame parentKey="Separator" hidden="true">								
+								<Frames>
+									<Frame parentKey="Separator" hidden="true">
 										<Size x="304" y="15"/>
 										<KeyValues>
 											<KeyValue key="leftPadding" value="2" type="number"/>
@@ -1013,7 +931,7 @@
 			<Frame parentKey="MapLegend" parentArray="ContentFrames" inherits="MapLegendFrameTemplate" hidden="true">
 				<KeyValues>
 					<KeyValue key="displayMode" value="QuestLogDisplayMode.MapLegend" type="global"/>
-				</KeyValues>				
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ContentsAnchor" y="-29"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ContentsAnchor" x="-22"/>

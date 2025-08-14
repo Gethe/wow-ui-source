@@ -212,7 +212,7 @@ end
 
 function ClassSpecFrameMixin:GetCurrentSpecIndex()
 	local talentGroup = 1;
-	return GetSpecialization(nil, false, talentGroup);
+	return C_SpecializationInfo.GetSpecialization(nil, false, talentGroup);
 end
 
 function ClassSpecFrameMixin:SetSpecActivateStarted(specIndex)
@@ -329,7 +329,7 @@ function ClassSpecContentFrameMixin:Setup(index, sex, frameWidth, numSpecs)
 	self.isLeftMostSpec = index == 1;
 	self.isRightMostSpec = index == numSpecs;
 
-	local specID, name, description, icon, _, primaryStat = GetSpecializationInfo(index, false, false, nil, sex);
+	local specID, name, description, icon, _, primaryStat = C_SpecializationInfo.GetSpecializationInfo(index, false, false, nil, sex);
 
 	if not specID then
 		return;

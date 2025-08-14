@@ -423,7 +423,14 @@ function ProfessionsCrafterOrderViewMixin:OnEvent(event, ...)
 			local function Update()
 				-- Clear recrafting so that we go back to the order complete view if we were recrafting
 				self.recraftingOrderID = nil;
-				self:SetOrder(C_CraftingOrders.GetClaimedOrder());
+
+				-- Claimed order may have disappeared by the time animation finishes, close the UI in that case.
+				local order = C_CraftingOrders.GetClaimedOrder();
+				if order then
+					self:SetOrder(order);
+				else
+					self:CloseOrder();
+				end
 			end
 
 			if self.OrderDetails.SchematicForm.Details.QualityMeter.animating then

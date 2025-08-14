@@ -5,4 +5,4 @@
 ## AllowLoadGameType: mists
 ## AllowLoad: Game
 Classic\MainMenuBarBagButtons.lua
-Wrath\MainMenuBarBagButtons.xml
+Mists\MainMenuBarBagButtons.xml

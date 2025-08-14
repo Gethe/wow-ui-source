@@ -1371,9 +1371,7 @@
 						<BarTexture file="Interface\TargetingFrame\UI-StatusBar" />
 						<BarColor r="0.45" g="0.45" b="1.0" />
 						<Scripts>
-							<OnLoad inherit="prepend">
-								self:SetBarTextPrefix(XP);
-							</OnLoad>
+							<OnLoad inherit="prepend" function="PetBattleXPBar_OnLoad"/>
 							<OnEnter function="PetBattleXPBar_OnEnter"/>
 							<OnLeave function="PetBattleXPBar_OnLeave"/>
 						</Scripts>
@@ -1543,7 +1541,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Frame parentKey="MicroButtonFrame">
+					<Frame parentKey="MicroButtonFrame" mixin="MicroButtonFrameMixin">
 						<Size x="140" y="56"/>
 						<Anchors>
 							<Anchor point="RIGHT" x="-30" y="-5"/>
@@ -1572,9 +1570,7 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnShow>
-								OverrideMicroMenuPosition(self, "TOPLEFT", self, "TOPLEFT", -3, 4, true);
-							</OnShow>
+							<OnShow method="OnShow"/>
 						</Scripts>
 					</Frame>
 				</Frames>

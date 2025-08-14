@@ -55,6 +55,7 @@ local PingManager =
 		{
 			Name = "SendMacroPing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -65,6 +66,7 @@ local PingManager =
 		{
 			Name = "TogglePingListener",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

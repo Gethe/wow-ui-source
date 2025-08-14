@@ -5,12 +5,13 @@ local CooldownViewerConstants =
 		{
 			Name = "CooldownSetSpellFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "HideAura", Type = "CooldownSetSpellFlags", EnumValue = 1 },
+				{ Name = "HideByDefault", Type = "CooldownSetSpellFlags", EnumValue = 2 },
 			},
 		},
 		{

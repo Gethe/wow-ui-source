@@ -52,6 +52,7 @@ local CVar =
 		{
 			Name = "GetCVarDefault",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
 
 			Arguments =
 			{
@@ -100,6 +101,9 @@ local CVar =
 		{
 			Name = "SetCVar",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
 
 			Arguments =
 			{
@@ -115,6 +119,10 @@ local CVar =
 		{
 			Name = "SetCVarBitfield",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			RequiresIndexInRange = true,
 
 			Arguments =
 			{

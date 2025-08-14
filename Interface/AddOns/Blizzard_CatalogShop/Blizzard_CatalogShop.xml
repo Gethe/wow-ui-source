@@ -1,0 +1,420 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<GameTooltip name="CatalogShopTooltip" inherits="SharedTooltipTemplate" >
+		<KeyValues>
+			<KeyValue key="textLeft1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textRight1Font" value="GameFontNormalLarge2" type="string"/>
+			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
+			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
+		</KeyValues>
+	</GameTooltip>
+
+	<Frame name="CatalogShopFrame" mixin="CatalogShopMixin" frameStrata="FULLSCREEN" parent="UIParent" inherits="PortraitFrameTemplate, PingReceiverAttributeTemplate" enableMouse="true" hidden="true">
+		<Size x="1615" y="932"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-41"/>
+		</Anchors>
+		
+		<Frames>
+			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" setAllPoints="true" >
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1" >						
+						<Texture parentKey="Background_1" setAllPoints="true" />
+						<Texture parentKey="Background_2" setAllPoints="true" />
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="3" >
+						<Texture parentKey="LeftShadow" atlas="shop-list-bg" >
+							<Size x="712"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FadeInBackground_1" setToFinalAlpha="true">
+						<Alpha order="1" duration="0.33" fromAlpha="0" toAlpha="1" smoothing="OUT" childKey="Background_1" />
+					</AnimationGroup>
+					<AnimationGroup parentKey="FadeInBackground_2" setToFinalAlpha="true">
+						<Alpha order="1" duration="0.33" fromAlpha="0" toAlpha="1" smoothing="OUT" childKey="Background_2" />
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+			
+			<Frame parentKey="ProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" mixin="ProductContainerFrameMixin" frameLevel="500" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-104"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="noSearchResultsText" value="CATALOG_SHOP_NO_SEARCH_RESULTS" type="global" />
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="NoSearchResults" inherits="SystemFont_Huge2" hidden="true" >
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="CENTER" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="HeaderFrame" inherits="CatalogShopHeaderFrameTemplate" frameLevel="200" >
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-23"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ProductDetailsContainerFrame" inherits="CatalogShopProductDetailsContainerFrameTemplate"  frameLevel="500" hidden="true" >
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="16" y="-2"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="RaceChoiceDialog" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="ResizeLayoutFrame, DialogPopupTemplate" mixin="CatalogShopRaceChoiceMixin" enableMouse="true">
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="ModelSceneContainerFrame" mixin="CatalogShopModelSceneContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOMLEFT" x="550" y="0"/>
+					<Anchor point="BOTTOMLEFT" x="550" y="0" />
+					<Anchor point="RIGHT" x="0" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<!-- 72,70-->
+						<!-- x,y from upper right, -70,-123, width,height = 176,176, alpha=0.2-->
+						<Texture parentKey="WatermarkLogoTexture" atlas="logo-wow-classic" alpha="0.2">
+							<Size x="176" y="176" />
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-72" y="-70"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PMTImageForNoModel" hidden="true">
+							<Size x="530" y="299"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<CheckButton parentKey="AlternateFormButton" inherits="RingedMaskedButtonTemplate" mixin="CatalogShopAlteredFormButtonMixin"  frameLevel="1000">
+						<Size x="70" y="70"/>
+						<KeyValues>
+							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+							<KeyValue key="ringWidth" value="139" type="number"/>
+							<KeyValue key="ringHeight" value="140" type="number"/>
+							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+							<KeyValue key="flipTextures" value="true" type="boolean"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-420" y="-25"/>
+						</Anchors>
+					</CheckButton>
+					<CheckButton parentKey="NormalFormButton" inherits="RingedMaskedButtonTemplate" mixin="CatalogShopAlteredFormButtonMixin" frameLevel="1000">
+						<Size x="70" y="70"/>
+						<KeyValues>
+							<KeyValue key="ringAtlas" value="charactercreate-ring-metallight" type="string"/>
+							<KeyValue key="ringWidth" value="139" type="number"/>
+							<KeyValue key="ringHeight" value="140" type="number"/>
+							<KeyValue key="checkedTextureSize" value="118" type="number"/>
+							<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
+							<KeyValue key="tooltipYOffset" value="-5" type="number"/>
+							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
+							<KeyValue key="flipTextures" value="true" type="boolean"/>
+							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.AlternateFormButton" relativePoint="LEFT" x="-20" y="0" />
+						</Anchors>
+					</CheckButton>
+					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ModelFrame" inherits="ModelSceneFrameTemplate" setAllPoints="true" />
+						</Frames>
+					</ModelScene>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnUpdate method="OnUpdate" />
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="WoWTokenContainerFrame"  mixin="WoWTokenContainerFrameMixin" frameLevel="500" hidden="true" >
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" frameLevel="300" >
+						<Size x="700" y="700" />
+						<KeyValues>
+							<KeyValue key="playLoopingSoundFX" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" x="-150" y="0" />
+						</Anchors>
+						<Frames>
+							<Frame parentKey="WoWTokenIconFrame" frameLevel="400" setAllPoints="true">
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="WoWTokenIcon" atlas="wow-token-gold" >
+											<Size x="270" y="277" />
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>				
+			</Frame>
+
+			<Frame parentKey="ToyContainerFrame"  mixin="ToyContainerFrameMixin" frameLevel="500" hidden="true" >
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" frameLevel="300" >
+						<Size x="500" y="500" />
+						<KeyValues>
+							<KeyValue key="playLoopingSoundFX" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="RIGHT" x="-261" y="0" />
+							<Anchor point="TOP" relativePoint="TOP" x="0" y="-10" />
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ToyIconFrame" frameLevel="400" setAllPoints="true" >
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" >
+											<Size x="145" y="145"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="IconBorder" atlas="shop-gold-rim" useAtlasSize="true" >
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="ServicesContainerFrame"  mixin="ServicesContainerFrameMixin" frameLevel="500" hidden="true" >
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" frameLevel="300" >
+						<Size x="700" y="700" />
+						<KeyValues>
+							<KeyValue key="playLoopingSoundFX" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" x="-150" y="0" />
+						</Anchors>
+						<Frames>
+							<Frame parentKey="ServicesIconFrame" frameLevel="400" setAllPoints="true" >
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Icon" >
+											<Size x="224" y="224"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="IconBorder" atlas="tokens-frame-large" >
+											<Size x="292" y="292"/>
+											<Anchors>
+												<Anchor point="CENTER" x="0" y="0" />
+											</Anchors>
+										</Texture>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="ProductCounter" atlas="tokens-counterbg-large" hidden="true" >
+											<Size x="102" y="102" />
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="0" y="0"/>
+											</Anchors>
+										</Texture>
+										<FontString parentKey="ProductCounterText" inherits="Game60Font" justifyV="MIDDLE" justifyH="CENTER" hidden="true" >
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.ProductCounter" relativePoint="CENTER" x="0" y="0"/>
+											</Anchors>
+											<Color color="WHITE_FONT_COLOR"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" >
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="422" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-45" y="45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ProductName" inherits="SystemFont_Huge4" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="422" />
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="10" type="number"/>
+								<KeyValue key="topPadding" value="12" type="number"/>
+								<KeyValue key="bottomPadding" value="15" type="number"/>
+							</KeyValues>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="ProductDescription" inherits="System15Font" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="422" />
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="20" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="25" type="number"/>
+							</KeyValues>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ButtonContainer" >
+						<Size x="422" y="50"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="30" type="number"/>
+							<KeyValue key="topPadding" value="0" type="number"/>
+							<KeyValue key="bottomPadding" value="21" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Button parentKey="PurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="CatalogShopPurchaseButtonMixin" frameLevel="2000" >
+								<Size x="165" y="50"/>
+								<Anchors>
+									<Anchor point="LEFT" x="28" y="0"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="catalogShopOnClickMethod" value="PurchaseProduct" type="string"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+										<Size x="18" y="18"/>
+									</Frame>
+								</Frames>
+							</Button>
+							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="Details" >
+								<Size x="165" y="50"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="-28" y="0"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="catalogShopOnClickMethod" value="ShowProductDetails" type="string"/>
+								</KeyValues>
+							</Button>
+						</Frames>
+					</Frame>
+					<Frame parentKey="Border" inherits="NineSlicePanelTemplate" frameLevel="980">
+						<Layers>
+							<Layer level="ARTWORK" >
+								<Texture parentKey="Border" atlas="generic-frame-chamfered-12d-2o" setAllPoints="true" />
+							</Layer>
+						</Layers>
+					</Frame>					
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad" />
+				</Scripts>
+			</Frame>
+			
+			<Frame parentKey="CatalogShopErrorFrame" inherits="CatalogShopErrorFrameTemplate" frameLevel="1000">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0" />
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CatalogShopLoadingScreenFrame" inherits="CatalogShopLoadingScreenTemplate" hidden="true" frameLevel="200">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-23"/>
+					<Anchor point="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>			
+			
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad_CatalogShop" inherit="prepend" />
+			<OnEvent method="OnEvent_CatalogShop" inherit="prepend" />
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnAttributeChanged method="OnAttributeChanged" />
+		</Scripts>
+	</Frame>
+	
+</Ui>

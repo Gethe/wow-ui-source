@@ -1,11 +1,7 @@
 
-local TalentSelectionChoiceFramePadding = 0;
-local TalentSelectionChoiceFrameStride = 5;
-
-
 TalentSelectionChoiceFrameMixin = {};
 
-local TalentSelectionChoiceFrameEvents = {
+local TALENT_SELECTION_FRAME_DIALOG_STYLE_EVENTS = {
 	"GLOBAL_MOUSE_DOWN",
 	"GLOBAL_MOUSE_UP",
 };
@@ -18,16 +14,20 @@ TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition = {
 
 function TalentSelectionChoiceFrameMixin:OnLoad()
 	self.selectionFrameArray = {};
-	self.widthPadding = TalentSelectionChoiceFramePadding;
-	self.heightPadding = TalentSelectionChoiceFramePadding;
 end
 
 function TalentSelectionChoiceFrameMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, TalentSelectionChoiceFrameEvents);
+	BaseLayoutMixin.OnShow(self);
+
+	if self.dialogStyle then
+		FrameUtil.RegisterFrameForEvents(self, TALENT_SELECTION_FRAME_DIALOG_STYLE_EVENTS);
+	end
 end
 
 function TalentSelectionChoiceFrameMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, TalentSelectionChoiceFrameEvents);
+	if self.dialogStyle then
+		FrameUtil.UnregisterFrameForEvents(self, TALENT_SELECTION_FRAME_DIALOG_STYLE_EVENTS);
+	end
 end
 
 function TalentSelectionChoiceFrameMixin:OnEvent(event, ...)
@@ -64,6 +64,7 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 
 		newSelectionFrame:SetParent(self);
 		newSelectionFrame:Init(talentFrame);
+		newSelectionFrame:SetLayoutIndex(i);
 
 		local isCurrentSelection = entryID == currentSelection;
 		newSelectionFrame:SetEntryID(entryID);
@@ -73,7 +74,7 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 		table.insert(self.selectionFrameArray, newSelectionFrame);
 	end
 
-	self:UpdateTrayLayout();
+	self:MarkDirty();
 end
 
 function TalentSelectionChoiceFrameMixin:UpdateSelectionOptions(canSelectChoice, currentSelection, baseCost)
@@ -84,6 +85,7 @@ function TalentSelectionChoiceFrameMixin:UpdateSelectionOptions(canSelectChoice,
 		local isCurrentSelection = entryID == currentSelection;
 		local entryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(entryID);
 		selectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
+		selectionFrame:UpdateSpendText();
 	end
 end
 
@@ -91,29 +93,19 @@ function TalentSelectionChoiceFrameMixin:GetBaseTraitCurrenciesCost()
 	return self.baseCost;
 end
 
-function TalentSelectionChoiceFrameMixin:UpdateTrayLayout()
-	local stride = TalentSelectionChoiceFrameStride;
-	local xPadding = 5;
-	local yPadding = 0;
-	local layout = GridLayoutUtil.CreateStandardGridLayout(stride, xPadding, yPadding);
-
-	local anchorOffset = TalentSelectionChoiceFramePadding;
-	GridLayoutUtil.ApplyGridLayout(self.selectionFrameArray, AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", anchorOffset, -anchorOffset), layout);
-
-	self.isTrayLayoutDirty = nil;
-
-	self:Layout();
-end
-
 function TalentSelectionChoiceFrameMixin:UpdateVisualState()
 	for i, selectionFrame in ipairs(self.selectionFrameArray) do
 		selectionFrame:UpdateVisualState();
+		selectionFrame:UpdateSpendText();
 	end
 end
 
 function TalentSelectionChoiceFrameMixin:SetSelectedEntryID(selectedEntryID)
 	self.baseButton:SetSelectedEntryID(selectedEntryID);
-	self:Hide();
+
+	if self.dialogStyle then
+		self:Hide();
+	end
 end
 
 function TalentSelectionChoiceFrameMixin:GetHorizontalSelectionPositionForIndex(index)
@@ -123,10 +115,10 @@ function TalentSelectionChoiceFrameMixin:GetHorizontalSelectionPositionForIndex(
 		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight;
 	end
 
-	local column = (index - 1) % TalentSelectionChoiceFrameStride + 1;
+	local column = (index - 1) % self.stride + 1;
 	if column == 1 then
 		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft;
-	elseif column == TalentSelectionChoiceFrameStride then
+	elseif column == self.stride then
 		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight;
 	else
 		return TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.Inner;
@@ -212,6 +204,10 @@ function TalentSelectionChoiceMixin:OnClick(button)
 			end
 
 			if self.isCurrentSelection then
+				if self:CanPurchaseRank() then
+					self:PurchaseRank();
+					self:UpdateSpendText();
+				end
 				return;
 			end
 
@@ -237,9 +233,52 @@ function TalentSelectionChoiceMixin:OnDragStart()
 	end
 end
 
+function TalentSelectionChoiceMixin:CanPurchaseRank()
+	local baseButton = self:GetBaseButton();
+	return baseButton.nodeInfo and not baseButton:IsInspecting() and not baseButton:IsLocked() and baseButton.nodeInfo.canPurchaseRank and baseButton:CanAfford();
+end
+
+function TalentSelectionChoiceMixin:CanRefundRank()
+	local baseButton = self:GetBaseButton();
+	return baseButton.nodeInfo and not baseButton:IsInspecting() 
+		and not baseButton:GetTalentFrame():IsLocked() 
+		and baseButton.nodeInfo.canRefundRank 
+		and baseButton.nodeInfo.ranksPurchased 
+		and (baseButton.nodeInfo.ranksPurchased > 0);
+end
+
+function TalentSelectionChoiceMixin:PurchaseRank()
+	local baseButton = self:GetBaseButton();
+	baseButton:PlaySelectSound();
+	baseButton:GetTalentFrame():PurchaseRank(baseButton:GetNodeID());
+	baseButton:UpdateMouseOverInfo();
+end
+
 function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
-	local rankShown = self.isCurrentSelection and 1 or 0;
-	GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(rankShown, self.entryInfo.maxRanks));
+	local baseButton = self:GetBaseButton();
+	local nodeInfo = self:GetNodeInfo();
+	local increasedRanks = nodeInfo.entryIDToRanksIncreased and nodeInfo.entryIDToRanksIncreased[self:GetEntryID()] or 0;
+	local hasIncreasedRanks = increasedRanks and increasedRanks > 0;
+	local rankShown = self.isCurrentSelection and (nodeInfo and nodeInfo.currentRank or 0) or increasedRanks;
+	
+	local rankLine = TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(rankShown, self.entryInfo.maxRanks);
+	if FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.HideMaxRank) then
+		rankLine = TALENT_BUTTON_TOOLTIP_RANK_NO_MAX_FORMAT:format(rankShown);
+	end
+
+	GameTooltip_AddColoredLine(tooltip, rankLine, hasIncreasedRanks and GREEN_FONT_COLOR or HIGHLIGHT_FONT_COLOR);
+
+	if hasIncreasedRanks then
+		local increasedTraitDataList = C_Traits.GetIncreasedTraitData(baseButton:GetNodeID(), self:GetEntryID());
+		for	_index, increasedTraitData in ipairs(increasedTraitDataList) do
+			local r, g, b = C_Item.GetItemQualityColor(increasedTraitData.itemQualityIncreasing);
+			local qualityColor = CreateColor(r, g, b, 1);
+			local coloredItemName = qualityColor:WrapTextInColorCode(increasedTraitData.itemNameIncreasing);
+			local wrapText = true;
+			GameTooltip_AddColoredLine(tooltip, TALENT_FRAME_INCREASED_RANKS_TEXT:format(increasedTraitData.numPointsIncreased, coloredItemName), GREEN_FONT_COLOR, wrapText);
+		end
+	end
+
 	GameTooltip_AddBlankLineToTooltip(tooltip);
 
 	TalentDisplayMixin.AddTooltipInfo(self, tooltip);
@@ -346,6 +385,10 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 			return selectionVisualState;
 		end
 
+		if selectionBaseButton:HasIncreasedRanks() then
+			return TalentButtonUtil.BaseVisualState.Maxed;
+		end
+
 		if selectionBaseButton:IsGated() then
 			return TalentButtonUtil.BaseVisualState.Gated;
 		end
@@ -354,15 +397,25 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 			return TalentButtonUtil.BaseVisualState.Locked;
 		end
 
+		local nodeInfo = selectionBaseButton:GetNodeInfo();
+		if nodeInfo and nodeInfo.increasedRanks then
+			return TalentButtonUtil.BaseVisualState.Maxed;
+		end
+
 		return TalentButtonUtil.BaseVisualState.Disabled;
 	elseif self.isCurrentSelection then
 		-- The entry must be selected before it should be visually displayed as an error.
 		if self.entryInfo.isDisplayError then
 			return TalentButtonUtil.BaseVisualState.DisplayError;
 		end
+		if selectionBaseButton.nodeInfo.currentRank < selectionBaseButton.nodeInfo.maxRanks then
+			return TalentButtonUtil.BaseVisualState.Selectable;
+		end
 		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif self:IsInspecting() then
 		return TalentButtonUtil.BaseVisualState.Disabled;
+	elseif not self:IsChoiceAvailable() and selectionBaseButton:HasIncreasedRanks() then
+		return TalentButtonUtil.BaseVisualState.Maxed;
 	elseif selectionVisualState == TalentButtonUtil.BaseVisualState.Gated then
 		return selectionVisualState;
 	elseif selectionVisualState == TalentButtonUtil.BaseVisualState.Locked then
@@ -370,12 +423,6 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 	end
 
 	return self:IsChoiceAvailable() and TalentButtonUtil.BaseVisualState.Selectable or TalentButtonUtil.BaseVisualState.Disabled;
-end
-
-function TalentSelectionChoiceMixin:ApplyVisualState(visualState)
-	TalentButtonArtMixin.ApplyVisualState(self, visualState);
-
-	self:UpdateSpendText();
 end
 
 function TalentSelectionChoiceMixin:GetCombinedCost()
@@ -413,30 +460,21 @@ function TalentSelectionChoiceMixin:CanSelectChoice()
 	return self.canSelectChoice;
 end
 
-function TalentSelectionChoiceMixin:UpdateSearchIcon()
-	-- Overrides TalentButtonArtMixin.
-	TalentButtonArtMixin.UpdateSearchIcon(self);
-
-	if self.SearchIcon and self.SearchIcon:IsShown() then
-		local horizontalPos = self:GetParent():GetHorizontalSelectionPositionForIndex(self.selectionIndex);
-		if horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft then
-			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPLEFT");
-		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.Inner then
-			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOP");
-		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight then
-			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPRIGHT");
-		end
-	end
-end
-
 function TalentSelectionChoiceMixin:CalculateSpendText()
-	if not self:GetParent():GetTalentFrame():ShouldHideSingleRankNumbers() then
+	local nodeInfo = self:GetNodeInfo();
+	if not self:GetParent():GetTalentFrame():ShouldHideSingleRankNumbers() or (nodeInfo and nodeInfo.maxRanks > 1) then
 		if not self.isCurrentSelection then
+			if nodeInfo then
+				local increasedRanks = nodeInfo.entryIDToRanksIncreased and nodeInfo.entryIDToRanksIncreased[self:GetEntryID()];
+				if increasedRanks and increasedRanks > 0 then
+					return tostring(increasedRanks);
+				end
+			end
+
 			if self:IsChoiceAvailable() then
 				return "0";
 			end
 		else
-			local nodeInfo = self:GetNodeInfo();
 			if nodeInfo then
 				return tostring(nodeInfo.currentRank);
 			end
@@ -505,4 +543,28 @@ end
 function TalentSelectionChoiceMixin:ShouldShowTooltipErrors()
 	local selectionBaseButton = self:GetBaseButton();
 	return selectionBaseButton:ShouldShowTooltipErrors();
+end
+
+TalentSelectionChoiceArtMixin = CreateFromMixins(TalentSelectionChoiceMixin);
+
+function TalentSelectionChoiceArtMixin:UpdateSearchIcon()
+	-- Overrides TalentButtonArtMixin.
+	TalentButtonArtMixin.UpdateSearchIcon(self);
+
+	if self.SearchIcon and self.SearchIcon:IsShown() then
+		local horizontalPos = self:GetParent():GetHorizontalSelectionPositionForIndex(self.selectionIndex);
+		if horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterLeft then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPLEFT");
+		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.Inner then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOP");
+		elseif horizontalPos == TalentSelectionChoiceFrameMixin.HorizontalSelectionPosition.OuterRight then
+			self.SearchIcon:SetPoint("CENTER", self.Icon, "TOPRIGHT");
+		end
+	end
+end
+
+function TalentSelectionChoiceArtMixin:ApplyVisualState(visualState)
+	TalentButtonArtMixin.ApplyVisualState(self, visualState);
+
+	self:UpdateSpendText();
 end

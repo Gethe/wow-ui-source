@@ -33,6 +33,12 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="0"/>
 				</Anchors>
 			</EventFrame>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="false">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

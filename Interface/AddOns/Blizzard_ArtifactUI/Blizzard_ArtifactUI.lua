@@ -4,10 +4,10 @@ StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 	text = ARTIFACT_RESPEC,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self) C_ArtifactUI.ConfirmRespec(); HideUIPanel(ArtifactFrame); end,
-	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
-	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
-	OnUpdate = function(self, elapsed)
+	OnAccept = function(dialog, data) C_ArtifactUI.ConfirmRespec(); HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnUpdate = function(dialog, elapsed)
 		if ( not C_ArtifactUI.CheckRespecNPC() ) then
 			StaticPopup_Hide("CONFIRM_ARTIFACT_RESPEC");
 			HideUIPanel(ArtifactFrame);
@@ -22,10 +22,10 @@ StaticPopupDialogs["CONFIRM_ARTIFACT_RESPEC"] = {
 StaticPopupDialogs["NOT_ENOUGH_POWER_ARTIFACT_RESPEC"] = {
 	text = ARTIFACT_RESPEC_NOT_ENOUGH_POWER,
 	button1 = OKAY,
-	OnAccept = function(self) HideUIPanel(ArtifactFrame); end,
-	OnCancel = function(self) HideUIPanel(ArtifactFrame); end,
-	OnAlt = function(self) HideUIPanel(ArtifactFrame); end,
-	OnUpdate = function(self, elapsed)
+	OnAccept = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnCancel = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnAlt = function(dialog, data) HideUIPanel(ArtifactFrame); end,
+	OnUpdate = function(dialog, elapsed)
 		if ( not C_ArtifactUI.CheckRespecNPC() ) then
 			StaticPopup_Hide("NOT_ENOUGH_POWER_ARTIFACT_RESPEC");
 			HideUIPanel(ArtifactFrame);
@@ -274,7 +274,7 @@ function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 			local itemLink = itemInfo.hyperlink;
 			local itemID = itemInfo.itemID;
 
-			if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+			if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) and not CursorHasItem() then
 				self.PerksTab:ShowHighlightForRelicItemID(itemID, itemLink);
 				self.PerksTab.TitleContainer:RefreshRelicHighlights(itemID, itemLink);
 			end
@@ -288,7 +288,7 @@ function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 		local itemLink = itemInfo.hyperlink;
 		local itemID = itemInfo.itemID;
 
-		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
+		if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
 			self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
 			self.PerksTab.TitleContainer:RefreshRelicHighlights();
 		end

@@ -56,7 +56,9 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 	if mouseButton ~= "RightButton" then
 		local questID = block.id;
 		if IsModifiedClick("QUESTWATCHTOGGLE") then
-			C_QuestLog.RemoveQuestWatch(questID);
+			if QuestUtil.CanRemoveQuestWatch() then
+				C_QuestLog.RemoveQuestWatch(questID);
+			end
 		else
 			local quest = QuestCache:Get(questID);
 			if quest.isAutoComplete and quest:IsComplete() then
@@ -93,9 +95,11 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 				QuestMapFrame_OpenToQuestDetails(questID);
 			end);
 
-			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				C_QuestLog.RemoveQuestWatch(questID);
-			end);
+			if QuestUtil.CanRemoveQuestWatch() then
+				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+					C_QuestLog.RemoveQuestWatch(questID);
+				end);
+			end
 
 			if C_QuestLog.IsPushableQuest(questID) and IsInGroup() then
 				rootDescription:CreateButton(SHARE_QUEST, function()

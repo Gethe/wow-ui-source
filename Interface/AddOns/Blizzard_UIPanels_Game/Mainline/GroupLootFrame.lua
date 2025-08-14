@@ -539,7 +539,7 @@ function EncounterJournalLinkButtonMixin:OnClick()
 
 	local specialization = GetLootSpecialization();
 	if ( specialization == 0 ) then
-		specialization = GetSpecializationInfo(GetSpecialization());
+		specialization = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 	end
 	EncounterJournal_SetClassAndSpecFilter(EncounterJournal, select(3, UnitClass("player")), specialization);
 	-- EncounterJournal_OpenJournal takes an itemID but only checks if it exists, not what it is.

@@ -1,0 +1,595 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Texture name="catalog-itemicon-border-glowspin" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="253" y="256"/>
+		<TexCoords left="0.56542969" right="0.81250000" top="0.00097656" bottom="0.25097656"/>
+	</Texture>
+	<Texture name="catalog-itemicon-border-glowpulse" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="145" y="138"/>
+		<TexCoords left="0.81445313" right="0.95605469" top="0.00097656" bottom="0.13574219"/>
+	</Texture>
+
+	<Frame name="GlowPulseAnimContainerTemplate" hidden="false" mixin="GlowPulseAnimContainerMixin" virtual="true" >
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="playLoopingSoundFX" value="false" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ShopRays" >				
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Bloom" alphaMode="BLEND" atlas="shop-toast-token-glow" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RaysLarge" alphaMode="ADD" atlas="shop-toast-token-rays01" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RaysSmall" alphaMode="BLEND" atlas="shop-toast-token-rays02" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="RayAnim" looping="REPEAT" setToFinalAlpha="true">
+						<Alpha childKey="Bloom" duration="2" order="1" smoothing="IN" fromAlpha="0.8" toAlpha="1"/>
+						<Alpha childKey="Bloom" duration="2" order="1" startDelay="2" smoothing="OUT" fromAlpha="1" toAlpha="0.8"/>
+						<Rotation childKey="RaysLarge" duration="60" order="1" degrees="360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="RaysLarge" duration="4" order="1" fromAlpha="0.8" toAlpha="1"/>
+						<Alpha childKey="RaysLarge" duration="4" order="1" startDelay="4" fromAlpha="1" toAlpha="0.8"/>
+						<Rotation childKey="RaysSmall" duration="60" order="1" degrees="-360">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="RaysSmall" duration="17.5" order="1" fromAlpha="1" toAlpha="0.75"/>
+						<Alpha childKey="RaysSmall" duration="17.5" order="1" startDelay="17.5" fromAlpha="0.75" toAlpha="1"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
+	<Button name="CatalogShopButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopButtonMixin" virtual="true" >
+		<Size x="180" y="30"/>
+		<NormalFont style="GameFontNormalLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+		<Scripts>
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
+
+	<Button name="CatalogShopRedGoldButtonTemplate" inherits="SharedGoldRedButtonTemplate" mixin="CatalogShopButtonMixin" virtual="true" >
+		<Size x="180" y="30"/>
+		<NormalFont style="GameFontNormalLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>		
+		<Scripts>
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
+
+	<Frame name="CatalogShopLoadingScreenTemplate" mixin="CatalogShopLoadingScreenMixin" virtual="true" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="ShopLoading">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Pillar" atlas="shop-loading-pillar" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-438" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Sign">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Sign" atlas="shop-loading-sign" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="CENTER" x="-288" y="248"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Chain02" atlas="shop-loading-sign-link-02" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-297" y="285"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Chain03" atlas="shop-loading-sign-link-03" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-299.5" y="250"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Chain03-back" atlas="shop-loading-sign-link-03back" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="CENTER" x="-290" y="275"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Glow" alpha="0.25" alphaMode="ADD" atlas="shop-loading-sign-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="-360" y="650"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="SignMask" atlas="shop-loading-sign-mask" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOP" relativePoint="CENTER" x="-294" y="404"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Glow" />
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="StartLoad" setToFinalAlpha="true">
+						<Rotation childKey="Sign" duration="0.5" order="1" smoothing="IN_OUT" degrees="-2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Sign" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" degrees="2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Translation childKey="Sign" duration="0.5" order="1" smoothing="IN_OUT" offsetX="-2" offsetY="0"/>
+						<Translation childKey="Sign" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" offsetX="2" offsetY="0"/>
+						<Rotation childKey="Sign" duration="0.75" order="1" startDelay="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Sign" duration="0.75" order="1" startDelay="1.75" smoothing="OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Translation childKey="Sign" duration="0.75" order="1" startDelay="1" smoothing="IN_OUT" offsetX="-1" offsetY="0"/>
+						<Translation childKey="Sign" duration="0.75" order="1" startDelay="1.75" smoothing="OUT" offsetX="1" offsetY="0"/>
+						<Rotation childKey="Chain02" duration="0.5" order="1" smoothing="IN_OUT" degrees="-0.75">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain02" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" degrees="0.75">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain02" duration="0.75" order="1" startDelay="1" smoothing="IN_OUT" degrees="-0.5">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain02" duration="0.75" order="1" startDelay="1.75" smoothing="OUT" degrees="0">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="0.5" order="1" smoothing="IN_OUT" degrees="-2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" degrees="2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="0.75" order="1" startDelay="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="0.75" order="1" startDelay="1.75" smoothing="OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="0.5" order="1" smoothing="IN_OUT" degrees="-2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" degrees="2">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="0.75" order="1" startDelay="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="0.75" order="1" startDelay="1.75" smoothing="OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Translation childKey="Glow" duration="1.7" order="1" startDelay="0.3" smoothing="IN_OUT" offsetX="0" offsetY="-1100"/>
+						<Scripts>
+							<OnFinished>
+									self:GetParent().ShopLoadLoop:Play();
+							</OnFinished>
+						</Scripts>
+					</AnimationGroup>
+					<AnimationGroup parentKey="ShopLoadLoop" looping="REPEAT" setToFinalAlpha="true">
+						<Rotation childKey="Sign" duration="1" order="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Sign" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Translation childKey="Sign" duration="1" order="1" smoothing="IN_OUT" offsetX="-1" offsetY="0"/>
+						<Translation childKey="Sign" duration="1" order="1" startDelay="1" smoothing="IN_OUT" offsetX="1" offsetY="0"/>
+						<Rotation childKey="Chain02" duration="1" order="1" smoothing="IN_OUT" degrees="-0.5">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain02" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="0.5">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="1" order="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="1" order="1" smoothing="IN_OUT" degrees="-1">
+							<Origin point="TOP"/>
+						</Rotation>
+						<Rotation childKey="Chain03-back" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="1">
+							<Origin point="TOP"/>
+						</Rotation>
+					</AnimationGroup>					
+				</Animations>
+			</Frame>
+			<Frame parentKey="Background" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="texture1" atlas="shop-loading-background" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Sparkle">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" atlas="shop-loading-sparkle-flipbook">
+							<Size x="204" y="134"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-248" y="-39"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="SparkleAnim" setToFinalAlpha="true">
+						<FlipBook childKey="Flipbook" duration="0.8" order="1" startDelay="1" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" />							
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+	
+	<Button name="NavigationBarButtonTemplate" mixin="NavigationBarButtonMixin" virtual="true">
+		<Size x="40" y="40"/>
+		<NormalTexture parentKey="NormalTexture" atlas="shop-header-menu-bg-divider" useAtlasSize="true" >
+			<Anchors>
+				<Anchor point="RIGHT" />
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture parentKey="HighlightTexture" atlas="shop-header-menu-selected-middle" setAllPoints="true" alphaMode="ADD" alpha="0.5" >
+			<Anchors>
+				<Anchor point="LEFT" x="-1"/>
+				<Anchor point="RIGHT" x="1" />
+				<Anchor point="TOP" />
+				<Anchor point="BOTTOM" />
+			</Anchors>
+		</HighlightTexture>
+		<PushedTexture parentKey="PushedTexture" atlas="shop-header-menu-selected-middle" setAllPoints="true" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Label" inherits="GameFontNormalMed2">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="shop-header-menu-selected-middle" setAllPoints="true" alphaMode="ADD" hidden="true" >
+					<Anchors>
+						<Anchor point="LEFT" x="-1"/>
+						<Anchor point="RIGHT" x="1" />
+						<Anchor point="TOP" />
+						<Anchor point="BOTTOM" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SelectedBottom" atlas="shop-header-menu-selected-line-middle" setAllPoints="false" alphaMode="ADD" hidden="true" >
+					<Size y="6"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0"/>
+						<Anchor point="RIGHT" x="0" />
+						<Anchor point="BOTTOM" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="NavigationBarNavigationButtonTemplate" mixin="NavigationBarNavigationButtonMixin" virtual="true" >
+		<Size x="40" y="40"/>
+		<KeyValues>
+			<!--
+			<KeyValue key="OnClickNavigate" value="navigate function" type="string"/>
+			<KeyValue key="atlas" value="atlas to use" type="string"/>
+			-->
+		</KeyValues>
+		<NormalTexture parentKey="NormalTexture" atlas="shop-header-menu-BG" setAllPoints="true" />
+		<HighlightTexture parentKey="HighlightTexture" atlas="shop-header-menu-BG" setAllPoints="true" alphaMode="ADD" alpha="0.5" />
+		<PushedTexture parentKey="PushedTexture" atlas="shop-header-menu-BG" setAllPoints="true" />
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" atlas="common-icon-backarrow" useAtlasSize="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="NavigationBarTemplate" mixin="NavigationBarMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Frames>
+			<Button parentKey="ScrollBackwards" inherits="NavigationBarNavigationButtonTemplate" hidden="true" >
+				<KeyValues>
+					<KeyValue key="OnClickNavigate" value="SelectPreviousNavButton" type="string"/>
+					<KeyValue key="atlas" value="shop-header-arrow" type="string"/>
+					<KeyValue key="direction" value="backwards" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ScrollForwards" inherits="NavigationBarNavigationButtonTemplate" hidden="true" >
+				<KeyValues>
+					<KeyValue key="OnClickNavigate" value="SelectNextNavButton" type="string"/>
+					<KeyValue key="atlas" value="shop-header-arrow" type="string"/>
+					<KeyValue key="direction" value="forwards" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="NavButtonScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBackwards" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollForwards" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+	
+	<Frame name="CatalogShopProductContainerFrameTemplate" mixin="CatalogShopProductContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
+		<Size x="596" y="778" />
+		<Frames>
+			<Frame parentKey="ProductsHeader">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="26" y="49" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-63"/>
+				</Anchors>
+				<Layers>
+					<!-- These should be converted to a vertical box element -->
+					<Layer level="OVERLAY">
+						<FontString parentKey="ProductName" inherits="Game32Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
+							<Size x="544" y="0"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="16" type="number"/>
+							</KeyValues>
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="LEFT" x="20" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ProductType" hidden="true" collapsesLayout="true" inherits="Game32Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
+							<Size x="544" y="0"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="LEFT" x="20" y="0"/>
+								<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ProductDescription" hidden="true" collapsesLayout="true" inherits="GameFontNormal" mixin="AutoScalingFontStringMixin" maxLines="3" justifyH="LEFT">
+							<Size x="544" y="0"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="LEFT" x="20" y="0"/>
+								<Anchor point="TOP" relativeKey="$parent.ProductType" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="ProductsScrollBoxContainer" setAllPoints="true" frameLevel="1000">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="0" y="30" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="-25"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="-4"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="8"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ShadowLayer" setAllPoints="true" frameLevel="1100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsScrollBoxContainer"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProductsScrollBoxContainer"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" >
+						<Texture parentKey="topProductRule" atlas="shop-list-rule" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOP" relativePoint="TOP" x="0" y="2"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="-10" y="0"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="30" y="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="bottomProductRule" atlas="shop-list-rule" useAtlasSize="true" >
+							<TexCoords left="0" right="1" top="1" bottom="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="14"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="-10" y="0"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="30" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="CatalogShopProductDetailsContainerFrameTemplate" mixin="CatalogShopProductDetailsContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
+		<Size x="540" />
+		<Frames>
+			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" ignoreParentScale="true" text="Back" >
+				<Size x="124" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="26" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="HideProductDetails" type="string"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="RaceButton" hidden="true" inherits="CatalogShopButtonTemplate, DialogButtonTemplate" mixin="CatalogShopDetailsRaceButtonMixin" frameLevel="2000" ignoreParentScale="true" text="Race" >
+				<Size x="140" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.BackButton" relativePoint="RIGHT" x="0" y="0" />
+				</Anchors>
+			</Button>
+			<Frame parentKey="DetailsProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" frameLevel="500">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="-59"/>
+					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="ModelSceneFrameTemplate" frameLevel="0" virtual="true">
+		<Size x="10" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="dropShadow" atlas="shop-drop-shadow" alpha="0.8" useAtlasSize="true" />
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CatalogShopErrorFrameTemplate" mixin="CatalogShopErrorFrameMixin" enableMouse="false" hidden="true" virtual="true">
+		<Size x="320" y="250" />
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" >
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="50" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Line" >
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-20" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="GameFontNormalLarge">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP" x="0" y="6" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Description" inherits="GameFontHighlight" justifyV="TOP">
+					<Size x="250" y="0" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WebsiteWarning" inherits="GameFontNormalSmall" justifyH="CENTER">
+					<Size x="270" y="0" />
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="0" y="-6" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate" />
+			<Button parentKey="AcceptButton" mixin="" inherits="SharedButtonTemplate">
+				<Size x="120" y="22" />
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="AcceptError" type="string"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="WebsiteButton" inherits="SharedButtonTemplate">
+				<Size x="120" y="22" />
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="WebsiteError" type="string"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
+</Ui>

@@ -184,7 +184,7 @@ function AzeriteEmpoweredItemTierMixin:UpdatePowerStates()
 	end
 
 	local isSelectionActive = not self:IsAnyTierRevealing() and not self:IsAnimating() and self:IsSelectionActive();
-	local specID = GetSpecializationInfo(GetSpecialization())
+	local specID = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 	for powerIndex, azeritePowerButton in ipairs(self.azeritePowerButtons) do
 		local isSpecAllowed = C_AzeriteEmpoweredItem.IsPowerAvailableForSpec(azeritePowerButton:GetAzeritePowerID(), specID);
 		azeritePowerButton:SetCanBeSelectedDetails(isSelectionActive, self.meetsPowerLevelRequirement, self.tierInfo.unlockLevel, isSpecAllowed, self:HasAnySelected());

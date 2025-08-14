@@ -200,6 +200,21 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetConfigVariationID",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "systemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "variationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConfigsByType",
 			Type = "Function",
 
@@ -242,6 +257,22 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "entryInfo", Type = "TraitEntryInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIncreasedTraitData",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "entryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemName", Type = "table", InnerType = "IncreasedTraitData", Nilable = false },
 			},
 		},
 		{
@@ -491,6 +522,22 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "PurchaseAllRanks",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "ignoreCost", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PurchaseRank",
 			Type = "Function",
 
@@ -615,6 +662,52 @@ local SharedTraits =
 		{
 			Name = "TalentTestUnlearnSpells",
 			Type = "Function",
+		},
+		{
+			Name = "TryPurchaseAllRanks",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TryPurchaseToNode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TryRefundToNode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "entryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -744,6 +837,16 @@ local SharedTraits =
 	Tables =
 	{
 		{
+			Name = "IncreasedTraitData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemNameIncreasing", Type = "string", Nilable = false },
+				{ Name = "itemQualityIncreasing", Type = "ItemQuality", Nilable = false },
+				{ Name = "numPointsIncreased", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "TraitCondInfo",
 			Type = "Structure",
 			Fields =
@@ -849,6 +952,8 @@ local SharedTraits =
 				{ Name = "isVisible", Type = "bool", Nilable = false },
 				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this node fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
+				{ Name = "ranksIncreased", Type = "number", Nilable = false },
+				{ Name = "entryIDToRanksIncreased", Type = "LuaValueVariant", Nilable = false, Documentation = { "A map of the entry IDs on this node to the number of ranks increased. This covers all entries on the node, which is important in the case of selection nodes where we have more than one option that could be increased." } },
 				{ Name = "activeRank", Type = "number", Nilable = false },
 				{ Name = "currentRank", Type = "number", Nilable = false },
 				{ Name = "activeEntry", Type = "TraitEntryRankInfo", Nilable = true },
@@ -918,6 +1023,7 @@ local SharedTraits =
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "gates", Type = "table", InnerType = "TraitGateInfo", Nilable = false },
 				{ Name = "hideSingleRankNumbers", Type = "bool", Nilable = false },
+				{ Name = "rootNodeID", Type = "number", Nilable = true },
 			},
 		},
 		{

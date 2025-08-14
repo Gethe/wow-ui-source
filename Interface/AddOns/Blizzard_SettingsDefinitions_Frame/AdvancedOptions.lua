@@ -70,7 +70,10 @@ local function Register()
 	end);
 
 	InterfaceOverrides.RunSettingsCallback(function()
-		local tooltipFn = function()
+		local addSearchTags = false;
+
+		-- Cooldown Viewer enable checkbox
+		local function TooltipFn()
 			local isAvailable, failureReason = C_CooldownViewer.IsCooldownViewerAvailable();
 			if isAvailable then
 				return ENABLE_COOLDOWN_VIEWER_TOOLTIP;
@@ -79,8 +82,28 @@ local function Register()
 			end
 		end
 
-		local _setting, initializer = Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, tooltipFn);
-		initializer:AddModifyPredicate(C_CooldownViewer.IsCooldownViewerAvailable);
+		Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, TooltipFn);
+
+		local function ShowDesiredPanelFromSettingsPanel(panel)
+			local skipTransitionBackToOpeningPanel = true;
+			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
+			ShowUIPanel(panel);
+		end
+
+		-- Open Edit Mode
+		local function OpenEditMode()
+			ShowDesiredPanelFromSettingsPanel(EditModeManagerFrame);
+		end
+		local editModeInitializer = CreateSettingsButtonInitializer("", COOLDOWN_VIEWER_OPTIONS_OPEN_EDIT_MODE, OpenEditMode, nil, addSearchTags);
+		layout:AddInitializer(editModeInitializer);
+
+		-- Open Cooldown Manager
+		local function OpenCooldownManager()
+			ShowDesiredPanelFromSettingsPanel(CooldownViewerSettings);
+		end
+
+		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags);
+		layout:AddInitializer(managerInitializer);
 	end);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);

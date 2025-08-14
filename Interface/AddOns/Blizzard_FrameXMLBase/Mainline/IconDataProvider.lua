@@ -91,9 +91,13 @@ local function FillOutExtraIconsMapWithTalents(extraIconsMap)
 	for specIndex = 1, GetNumSpecGroups(isInspect) do
 		for tier = 1, MAX_TALENT_TIERS do
 			for column = 1, NUM_TALENT_COLUMNS do
-				local icon = select(3, GetTalentInfo(tier, column, specIndex));
-				if icon ~= nil then
-					extraIconsMap[icon] = true;
+				local talentInfoQuery = {};
+				talentInfoQuery.tier = tier;
+				talentInfoQuery.column = column;
+				talentInfoQuery.specializationIndex = specIndex;
+				local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+				if talentInfo and talentInfo.icon then
+					extraIconsMap[talentInfo.icon] = true;
 				end
 			end
 		end

@@ -28,13 +28,16 @@ CHAT_FRAME_MIN_WIDTH = 296;
 
 CURRENT_CHAT_FRAME_ID = nil;
 
-CHAT_FRAME_DEFAULT_FONT_SIZE = 14;
+CHAT_FRAME_DEFAULT_FONT_SIZE = 18;
 
 CHAT_FONT_HEIGHTS = {
-	[1] = 12,
-	[2] = 14,
-	[3] = 16,
-	[4] = 18
+	12,
+	14,
+	16,
+	18,
+	20,
+	24,
+	27,
 };
 
 CHAT_FRAME_TEXTURES = {
@@ -294,12 +297,7 @@ function FCF_Tab_SetupMenu(self)
 			-- EditModeManagerFrame is not available at glues.
 			if (EditModeManagerFrame and (tabChatFrame == DEFAULT_CHAT_FRAME)) then
 				-- If you are the default chat frame then show the enter edit mode option
-				local button = rootDescription:CreateButton(HUD_EDIT_MODE_MENU, function()
-					ShowUIPanel(EditModeManagerFrame);
-				end);
-				if not EditModeManagerFrame:CanEnterEditMode() then
-					button:SetEnabled(false);
-				end
+				EditModeManagerFrame:CreateEnterEditModeMenuButton(rootDescription, HUD_EDIT_MODE_MENU);
 			else
 				-- If you aren't the default chat frame then show lock/unlock option
 				local text;
@@ -479,6 +477,37 @@ function FCF_OpenNewWindow(name, noDefaultChannels)
 	return chatFrame, chatFrameIndex;
 end
 
+local function GetDefaultChatConversationIconDisplayInfo()
+	return {
+		width = 16,
+		height = 16,
+		xOffset = 0,
+		yOffset = -2,
+		allowColorOverride = true,
+	};
+end
+
+local function GetRecentAllyChatConversationIconDisplayInfo(conversationIcon)
+	return {
+		icon = "friendslist-recentallies-yellow",
+		width = 13,
+		height = 13,
+		xOffset = -1,
+		yOffset = 0,
+		allowColorOverride = false,
+	};
+end
+
+local function ApplyConversationIconTexture(textureObject, iconDisplayInfo)
+	textureObject:SetSize(iconDisplayInfo.width, iconDisplayInfo.height);
+	local isAtlas = C_Texture.GetAtlasInfo(iconDisplayInfo.icon) ~= nil;
+	if isAtlas then
+		textureObject:SetAtlas(iconDisplayInfo.icon, TextureKitConstants.IgnoreAtlasSize);
+	else
+		textureObject:SetTexture(iconDisplayInfo.icon);
+	end
+end
+
 function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	local chatTab = _G[chatFrame:GetName().."Tab"];
 	--If the frame was already registered, unregister it.
@@ -527,6 +556,27 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame.editBox:SetAttribute("stickyType", "SAY");
 	end
 
+	--Setting up the icon display info
+	-- First reset to defaults...
+	local conversationIcon = chatTab.conversationIcon;
+	conversationIcon.iconDisplayInfo = GetDefaultChatConversationIconDisplayInfo();
+	-- ... then override if needed...
+	if chatType == "WHISPER" or chatType == "BN_WHISPER" then
+		if C_RecentAllies.IsRecentAllyByFullName(chatTarget) then
+			conversationIcon.iconDisplayInfo = GetRecentAllyChatConversationIconDisplayInfo();
+		else
+			conversationIcon.iconDisplayInfo.icon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
+		end
+	elseif chatType == "PET_BATTLE_COMBAT_LOG" then
+		conversationIcon.iconDisplayInfo.icon = "Interface\\Icons\\Tracking_WildPet";
+	else
+		conversationIcon.iconDisplayInfo.icon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
+	end
+	-- ... and copy to the minFrame if needed.
+	if chatFrame.minFrame then
+		chatFrame.minFrame.conversationIcon.iconDisplayInfo = CopyTable(conversationIcon.iconDisplayInfo);
+	end
+
 	-- Set up the colors
 	local info = ChatTypeInfo[chatType];
 	chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
@@ -535,18 +585,10 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	chatFrame:SetResizeBounds(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
 
 	--Set the icon
-	local icon;
-	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-		icon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
-	elseif ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
-		icon = "Interface\\Icons\\Tracking_WildPet";
-	else
-		icon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
-	end
-
-	chatTab.conversationIcon:SetTexture(icon);
-	if ( chatFrame.minFrame ) then
-		chatFrame.minFrame.conversationIcon:SetTexture(icon);
+	chatTab.conversationIcon:SetPoint("RIGHT", chatTab:GetFontString(), "LEFT", conversationIcon.iconDisplayInfo.xOffset, conversationIcon.iconDisplayInfo.yOffset);
+	ApplyConversationIconTexture(chatTab.conversationIcon, chatTab.conversationIcon.iconDisplayInfo);
+	if chatFrame.minFrame then
+		ApplyConversationIconTexture(chatFrame.minFrame.conversationIcon, chatFrame.minFrame.conversationIcon.iconDisplayInfo);
 	end
 
 	--Register this frame
@@ -576,7 +618,8 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 
 		conversationIcon = chatTab:CreateTexture(chatTab:GetName().."ConversationIcon", "ARTWORK", "ChatTabConversationIconTemplate");
 		conversationIcon:ClearAllPoints();
-		conversationIcon:SetPoint("RIGHT", chatTab:GetFontString(), "LEFT", 0, -2);
+		conversationIcon.iconDisplayInfo = GetDefaultChatConversationIconDisplayInfo();
+		conversationIcon:SetPoint("RIGHT", chatTab:GetFontString(), "LEFT", 0, conversationIcon.iconDisplayInfo.iconYOffset);
 		chatTab.conversationIcon = conversationIcon;
 
 		chatTab.Text:ClearAllPoints();
@@ -587,6 +630,8 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		chatFrame = CreateFrame("ScrollingMessageFrame", "ChatFrame"..maxTempIndex, UIParent, "FloatingChatFrameTemplate", maxTempIndex);
 
 		maxTempIndex = maxTempIndex + 1;
+	elseif chatTab then
+		chatTab.conversationIcon.iconDisplayInfo = GetDefaultChatConversationIconDisplayInfo();
 	end
 
 	--Copy chat settings from the source frame.
@@ -652,8 +697,7 @@ function FCF_RemoveAllMessagesFromChanSender(chatFrame, chanSender)
 end
 
 function FCF_RenameChatWindow_Popup()
-	local dialog = StaticPopup_Show("NAME_CHAT");
-	dialog.data = FCF_GetCurrentChatFrameID();
+	StaticPopup_Show("NAME_CHAT", nil, nil, FCF_GetCurrentChatFrameID());
 end
 
 function FCF_NewChatWindow()
@@ -1146,8 +1190,9 @@ function FCFTab_UpdateColors(self, selected)
 	self.HighlightRight:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 	self.glow:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 
-	if ( self.conversationIcon ) then
-		self.conversationIcon:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	if self.conversationIcon then
+		local allowColorOverride = self.conversationIcon.iconDisplayInfo.allowColorOverride;
+		self.conversationIcon:SetVertexColor(allowColorOverride and colorTable.r or 1, allowColorOverride and colorTable.g or 1, allowColorOverride and colorTable.b or 1);
 	end
 
 	local minimizedFrame = _G["ChatFrame"..self:GetID().."Minimized"];
@@ -1650,24 +1695,37 @@ function FCF_CreateMinimizedFrame(chatFrame)
 
 	minFrame:SetText(chatFrame.name);
 
-	--Copy the colors from the minimized frame.
-	minFrame.selectedColorTable = chatTab.selectedColorTable;
-	FCFMin_UpdateColors(minFrame);
+	if minFrame.conversationIcon then
+		minFrame.conversationIcon.iconDisplayInfo = GetDefaultChatConversationIconDisplayInfo();
+	end
 
 	if ( not chatFrame.isTemporary ) then
 		minFrame.conversationIcon:Hide();
 	else
-		local conversationIcon;
+		local conversationIcon = minFrame.conversationIcon;
 		if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
-			conversationIcon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
+			if C_RecentAllies.IsRecentAllyByFullName(chatFrame.chatTarget) then
+				conversationIcon.iconDisplayInfo = GetRecentAllyChatConversationIconDisplayInfo();
+			else
+				conversationIcon.iconDisplayInfo.icon = "Interface\\ChatFrame\\UI-ChatWhisperIcon";
+			end
 		elseif ( chatFrame.chatType == "PET_BATTLE_COMBAT_LOG" ) then
-			conversationIcon = "Interface\\Icons\\Tracking_WildPet";
+			conversationIcon.iconDisplayInfo.icon = "Interface\\Icons\\Tracking_WildPet";
 		else
-			conversationIcon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
+			conversationIcon.iconDisplayInfo.icon = "Interface\\ChatFrame\\UI-ChatConversationIcon";
 		end
 
-		minFrame.conversationIcon:SetTexture(conversationIcon);
+		local isAtlas = C_Texture.GetAtlasInfo(conversationIcon.iconDisplayInfo.icon) ~= nil;
+		if isAtlas then
+			conversationIcon:SetAtlas(conversationIcon.iconDisplayInfo.icon, TextureKitConstants.IgnoreAtlasSize);
+		else
+			conversationIcon:SetTexture(conversationIcon);
+		end
 	end
+
+	--Copy the colors from the minimized frame.
+	minFrame.selectedColorTable = chatTab.selectedColorTable;
+	FCFMin_UpdateColors(minFrame);
 
 	if (chatFrame.isTemporary) then
 		minFrame.Text:SetJustifyH("LEFT");
@@ -1695,7 +1753,10 @@ function FCFMin_UpdateColors(minFrame)
 	minFrame.HighlightRight:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 	minFrame.glow:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
 
-	minFrame.conversationIcon:SetVertexColor(colorTable.r, colorTable.g, colorTable.b);
+	if minFrame.conversationIcon then
+		local allowColorOverride = minFrame.conversationIcon.iconDisplayInfo.allowColorOverride;
+		minFrame.conversationIcon:SetVertexColor(allowColorOverride and colorTable.r or 1, allowColorOverride and colorTable.g or 1, allowColorOverride and colorTable.b or 1);
+	end
 end
 
 --This function just makes the position be reset the next time the minimize frame is shown.

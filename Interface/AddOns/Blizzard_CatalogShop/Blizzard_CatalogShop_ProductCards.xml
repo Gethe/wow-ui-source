@@ -1,0 +1,239 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+
+	<!-- Default Product Card Template -->
+	<Button name="DefaultCatalogShopCardTemplate" clipChildren="true" motionScriptsWhileDisabled="true" virtual="true">
+		<Frames>
+			<Frame parentKey="InvisibleMouseOverFrame" mixin="InvisibleMouseOverFrameMixin" enableMouse="true" hidden="true">
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BackgroundContainer" frameLevel="100" setAllPoints="true" >
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" setAllPoints="true" />
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="FrameBackground" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<ModelScene parentKey="ModelScene" frameLevel="200" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate" />
+
+			<Frame parentKey="ForegroundContainer" frameLevel="1000" setAllPoints="true" >
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="SquareIconBorder" atlas="shop-gold-rim" hidden="true" >
+							<Size x="105" y="99"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-44" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CircleIconBorder" atlas="tokens-frame-large" hidden="true" >
+							<Size x="109" y="109"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-40" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="ProductCounter" atlas="tokens-counterbg-large" hidden="true" >
+							<Size x="38" y="38" />
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CircleIconBorder" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ProductCounterText" inherits="Game22Font" justifyV="MIDDLE" justifyH="CENTER" hidden="true" >
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ProductCounter" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="DividerTop" atlas="shop-card-label-bg" hidden="true" useAtlasSize="true" />
+						<FontString parentKey="Price" inherits="SystemFont_Huge2" wordwrap="true" justifyH="RIGHT">
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Name" inherits="SystemFont_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
+							<Color color="WHITE_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="14" type="number"/>
+							</KeyValues>
+						</FontString>
+						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-22" y="-22" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="TimeRemainingIcon" atlas="icon-clock" hidden="true" useAtlasSize="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="20" y="-20" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TimeRemaining" inherits="GameFontHighlightLarge" wordwrap="false" justifyV="MIDDLE" justifyH="LEFT" />
+						<Texture parentKey="RectIcon" hidden="true">
+							<Size x="85" y="85"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.SquareIconBorder" x="0" y="0" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CircleIcon" hidden="true">
+							<Size x="84" y="84"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.CircleIconBorder" x="0" y="0" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="HoverTexture" hidden="true" alphaMode="ADD" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+			<OnClick method="OnClick" />
+			<OnMouseDown method="OnMouseDown" />
+			<OnMouseUp method="OnMouseUp" />
+		</Scripts>
+	</Button>
+
+	<!-- Section Header Template -->
+	<Frame name="CatalogShopSectionHeaderTemplate" mixin="CatalogShopSectionHeaderMixin" virtual="true">
+		<Size x="557" y="42"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="headerText" justifyH="LEFT" inherits="GameFontNormalLarge">
+					<Size x="0" y="42"/>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="sectionHeaderRule" atlas="shop-list-rule" useAtlasSize="true" >
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.headerText" relativePoint="RIGHT" x="0" y="-8"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+
+	<!-- Small Product Card Templates -->
+	<Button name="SmallCatalogShopProductCardTemplate" mixin="SmallCatalogShopProductCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
+		<Size x="195" y="267"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
+		</KeyValues>
+	</Button>
+	<Button name="SmallCatalogShopProductDetailsCardTemplate" mixin="SmallCatalogShopProductDetailsCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
+		<Size x="195" y="267"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
+		</KeyValues>
+	</Button>
+	<Button name="SmallCatalogShopSubscriptionDetailsCardTemplate" mixin="SmallCatalogShopSubscriptionDetailsCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
+		<Size x="195" y="267"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<!-- Wide Product Card Template -->
+	<Button name="WideCatalogShopProductCardTemplate" mixin="WideCatalogShopProductCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
+		<Size x="558" y="322"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-wide-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-wide-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
+		</KeyValues>
+	</Button>
+	<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="WoWTokenCatalogShopProductCardTemplate" mixin="WoWTokenCatalogShopProductCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
+		<Size x="558" y="270"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-wide-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-wide-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" clipChildren="true" frameLevel="300" >
+				<Size x="300" y="300" />
+				<KeyValues>
+					<KeyValue key="playLoopingSoundFX" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="10" />
+				</Anchors>
+			</Frame>			
+			<Frame parentKey="WoWTokenFrame" frameLevel="400" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="WoWTokenIcon" atlas="wow-token-gold" >
+							<Size x="135" y="138" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HeaderBackground" atlas="shop-card-wide-text-shadow" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-9" />
+								<Anchor point="LEFT" x="0" y="0" />
+								<Anchor point="RIGHT" x="0" y="0" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="false" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

@@ -186,15 +186,15 @@ end
 function CharacterSelectListCharacterMixin:OnEnter()
 	self.InnerContent:OnEnter(self:IsSelected());
 	self:SetTooltipAndShow();
-	CharSelectAccountUpgradeButtonPointerFrame:Show();
-	CharSelectAccountUpgradeButtonGlow:Show();
+	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Show();
+	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Show();
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
 function CharacterSelectListCharacterMixin:OnLeave()
 	self.InnerContent:OnLeave(self:IsSelected());
-	CharSelectAccountUpgradeButtonPointerFrame:Hide();
-	CharSelectAccountUpgradeButtonGlow:Hide();
+	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Hide();
+	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Hide();
 	GlueTooltip:Hide();
 end
 
@@ -242,6 +242,8 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 
 	self:UpdateVASState();
 
+	self:UpdateTimerunningConversionState();
+
 	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
 	local arrowShown = self:CanSelect() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self.characterID);
 	self:SetArrowButtonShown(arrowShown);
@@ -263,6 +265,10 @@ function CharacterSelectListCharacterMixin:GetCharacterInfo()
 	return self.characterInfo;
 end
 
+local function ShouldHideCharacterListTokens()
+	return CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown();
+end
+
 function CharacterSelectListCharacterMixin:UpdateVASState()
 	local paidServiceButton = self.PaidServiceButton;
 	local restoreCharacterServiceFrame = self.RestoreCharacterServiceFrame;
@@ -273,7 +279,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	notificationButton:SetHasInProgress(false, tooltip1, tooltip2);
 	restoreCharacterServiceFrame:Hide();
 
-	if CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown() then
+	if ShouldHideCharacterListTokens() then
 		paidServiceButton:Hide();
 		return;
 	end
@@ -368,6 +374,36 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	end
 end
 
+function CharacterSelectListCharacterMixin:UpdateTimerunningConversionState()
+	if not GameRulesUtil.IsTimerunningSeasonActive() then
+		return;
+	end
+
+	if not self.EarlyTimerunningConversionButton then
+		self.EarlyTimerunningConversionButton = CreateFrame("BUTTON", nil, self, "TimerunningConversionButtonTemplate");
+		self.EarlyTimerunningConversionButton:SetPoint("RIGHT", self, "LEFT", -5, 0);
+	end
+
+	local earlyTimerunningConversionButton = self.EarlyTimerunningConversionButton;
+
+	if not self:IsSelected() or ShouldHideCharacterListTokens() or CharacterSelect.undeleting then
+		earlyTimerunningConversionButton:Hide();
+		return;
+	end
+
+	local guid = self:GetCharacterGUID();
+	if guid then
+		local charTimerunningConversionAllowed = IsCharacterTimerunningConversionAllowed(guid);
+
+		if charTimerunningConversionAllowed then
+			earlyTimerunningConversionButton:SetPoint("RIGHT", self.PaidServiceButton:IsShown() and self.PaidServiceButton or self ,"LEFT" ,-5, 0);
+			earlyTimerunningConversionButton:Show();
+		else
+			earlyTimerunningConversionButton:Hide();
+		end
+	end
+end
+
 function CharacterSelectListCharacterMixin:SetArrowButtonShown(shown)
 	if shown and not self.Arrow:IsShown() then
 		self.Arrow:Show();
@@ -385,7 +421,7 @@ end
 
 function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
-	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradeButton:IsEnabled() then
+	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradePanel.UpgradeButton:IsEnabled() then
 		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
 	else
 		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID());
@@ -1208,7 +1244,7 @@ function RestoreCharacterServiceButtonMixin:OnClick()
 	local guid = GetCharacterGUID(characterID);
 	CharacterSelect.pendingUndeleteGuid = guid;
 	local timeStr = SecondsToTime(CHARACTER_UNDELETE_COOLDOWN, false, true, 1, false);
-	GlueDialog_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
+	StaticPopup_Show("UNDELETE_CONFIRM", UNDELETE_CONFIRMATION:format(timeStr));
 end
 
 function RestoreCharacterServiceButtonMixin:OnEnter()

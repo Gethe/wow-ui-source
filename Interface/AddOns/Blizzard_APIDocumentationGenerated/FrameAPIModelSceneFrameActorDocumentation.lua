@@ -36,6 +36,20 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
+			Name = "DetachFromMount",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "rider", Type = "ModelSceneFrameActor", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "Dress",
 			Type = "Function",
 

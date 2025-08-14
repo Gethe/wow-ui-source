@@ -3,10 +3,10 @@ StaticPopupDialogs["LOADOUT_CONFIRM_DELETE_DIALOG"] = {
 	button1 = DELETE,
 	button2 = CANCEL,
 	timeout = 0,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		ClassTalentLoadoutEditDialog:OnDeleteConfirmed();
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 	end,
 	whileDead = 1,
 	hideOnEscape = 1,
@@ -18,10 +18,10 @@ StaticPopupDialogs["LOADOUT_CONFIRM_SHARED_ACTION_BARS"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	timeout = 0,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		ClassTalentLoadoutEditDialog:OnSharedActionBarsConfirmed();
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 	end,
 	whileDead = 1,
 	hideOnEscape = 1,

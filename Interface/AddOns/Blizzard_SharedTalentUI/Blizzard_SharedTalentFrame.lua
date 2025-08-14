@@ -121,7 +121,9 @@ TalentFrameBaseMixin:GenerateCallbackEvents(
 {
 	"TalentButtonAcquired",
 	"TalentButtonReleased",
+	"TalentButtonNodeUpdated",
 	"CommitStatusChanged",
+	"ConfigCommitted",
 });
 
 TalentFrameBaseMixin.CommitUpdateReasons = {
@@ -153,7 +155,8 @@ function TalentFrameBaseMixin:OnLoad()
 	self:UpdatePadding();
 
 	self.talentButtonCollection = CreateFramePoolCollection();
-	self.talentDislayFramePool = CreateFramePoolCollection();
+	self.talentDisplayFramePool = CreateFramePoolCollection();
+	self.talentAnimationFramePoolCollection = CreateFramePoolCollection();
 	self.edgePool = CreateFramePoolCollection();
 	self.gatePool = CreateFramePool("FRAME", self.ButtonsParent, "TalentFrameGateTemplate");
 	self.nodeIDToButton = {};
@@ -171,6 +174,7 @@ function TalentFrameBaseMixin:OnLoad()
 	self.dirtySubTreeIDSet = {};
 	self.panOffsetX = 0;
 	self.panOffsetY = 0;
+	self.eventRegisteredNodes = {};
 
 	self.areBaseCommitVisualsActive = false;
 
@@ -268,6 +272,8 @@ function TalentFrameBaseMixin:OnUpdate()
 				self:UpdateEdgesForButton(button);
 			end
 		end
+
+		EventRegistry:TriggerEvent("TalentFrameBase.ButtonsUpdated", self:GetTalentTreeID());
 	end
 end
 
@@ -352,6 +358,8 @@ function TalentFrameBaseMixin:OnTraitConfigUpdated(configID)
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 		self:UpdateTreeCurrencyInfo();
 	end
+
+	EventRegistry:TriggerEvent("TalentFrameBase.ConfigUpdated");
 end
 
 function TalentFrameBaseMixin:UpdatePadding()
@@ -388,6 +396,11 @@ function TalentFrameBaseMixin:SetZoomLevel(zoomLevel)
 end
 
 function TalentFrameBaseMixin:SetZoomLevelInternal(zoomLevel)
+	local frameWidth, frameHeight = self:GetPanViewSize();
+	if (frameWidth == 0) or (frameHeight == 0) then
+		return;
+	end
+
 	local oldPanWidth, oldPanHeight = self:GetPanExtents();
 
 	self.ButtonsParent:SetScale(zoomLevel);
@@ -396,7 +409,6 @@ function TalentFrameBaseMixin:SetZoomLevelInternal(zoomLevel)
 	local panWidthDelta = newPanWidth - oldPanWidth;
 	local panHeightDelta = newPanHeight - oldPanHeight;
 
-	local frameWidth, frameHeight = self:GetPanViewSize();
 	local left, top = self:GetPanViewCornerPosition();
 	local cursorX, cursorY = GetScaledCursorPosition();
 	local relativeCursorX = (cursorX - left);
@@ -526,6 +538,18 @@ function TalentFrameBaseMixin:GetTalentButtonByNodeID(nodeID)
 	return self.nodeIDToButton[nodeID];
 end
 
+function TalentFrameBaseMixin:GetRootTalentButton()
+	if not self.talentTreeInfo then
+		return nil;
+	end
+	
+	if not self.talentTreeInfo.rootNodeID then
+		return nil;
+	end
+
+	return self:GetTalentButtonByNodeID(self.talentTreeInfo.rootNodeID);
+end
+
 function TalentFrameBaseMixin:InvokeTalentButtonMethodByNodeID(methodName, nodeID, ...)
 	local button = self:GetTalentButtonByNodeID(nodeID);
 	if button then
@@ -535,13 +559,13 @@ function TalentFrameBaseMixin:InvokeTalentButtonMethodByNodeID(methodName, nodeI
 	return false;
 end
 
-function TalentFrameBaseMixin:PlaySelectSoundForButton(unused_button)
+function TalentFrameBaseMixin:PlaySelectSoundForButton(_button)
 	if self.defaultSelectSound then
 		PlaySound(self.defaultSelectSound);
 	end
 end
 
-function TalentFrameBaseMixin:PlayDeselectSoundForButton(unused_button)
+function TalentFrameBaseMixin:PlayDeselectSoundForButton(_button)
 	if self.defaultDeselectSound then
 		PlaySound(self.defaultDeselectSound);
 	end
@@ -589,14 +613,23 @@ function TalentFrameBaseMixin:AcquireTalentDisplayFrame(talentType, specializedM
 
 	local nodeInfo = nil;
 	local templateType = self.getTemplateType(nodeInfo, talentType, useLarge);
-	local resetterFunction = nil;
+
+	local function TalentDisplayResetFunction(pool, display, isNew)
+		if isNew then
+			display:Init(self);
+		else
+			display:OnRelease();
+			Pool_HideAndClearAnchors(pool, display);
+		end
+	end
+
 	local forbidden = false;
-	local pool = self.talentDislayFramePool:GetOrCreatePool("BUTTON", self, templateType, resetterFunction, forbidden, specializedMixin);
+	local pool = self.talentDisplayFramePool:GetOrCreatePool("BUTTON", self, templateType, TalentDisplayResetFunction, forbidden, specializedMixin);
 	return pool:Acquire();
 end
 
 function TalentFrameBaseMixin:ReleaseTalentDisplayFrame(displayFrame)
-	self.talentDislayFramePool:Release(displayFrame);
+	self.talentDisplayFramePool:Release(displayFrame);
 end
 
 function TalentFrameBaseMixin:GetSpecializedSelectionChoiceMixin(entryInfo, talentType)
@@ -758,7 +791,7 @@ function TalentFrameBaseMixin:UpdateEdgeFrameLevel(edgeFrame)
 	self:SetElementFrameLevel(edgeFrame, self:GetFrameLevelForEdge(edgeFrame:GetStartButton(), edgeFrame:GetEndButton()));
 end
 
-function TalentFrameBaseMixin:GetFrameLevelForEdge(startButton, unused_endButton)
+function TalentFrameBaseMixin:GetFrameLevelForEdge(startButton, _endButton)
 	-- By default, layer edges under buttons. Override in your derived Mixin as desired.
 	return startButton:GetFrameLevel() - 1;
 end
@@ -789,14 +822,14 @@ function TalentFrameBaseMixin:ShouldInstantiateNode(nodeID, nodeInfo)
 	return true;
 end
 
-function TalentFrameBaseMixin:GetFrameLevelForButton(unused_nodeInfo)
+function TalentFrameBaseMixin:GetFrameLevelForButton(_nodeInfo, _visualState)
 	-- By default, draw over edges. Override in your derived Mixin as desired.
 	return 100;
 end
 
 function TalentFrameBaseMixin:UpdateButtonFrameLevel(talentButton)
 	local frameLevelOffset = talentButton.frameLevelOffset or 0;
-	local frameLevel = talentButton:GetParent():GetFrameLevel() + self:GetFrameLevelForButton(talentButton:GetNodeInfo()) + frameLevelOffset;
+	local frameLevel = talentButton:GetParent():GetFrameLevel() + self:GetFrameLevelForButton(talentButton:GetNodeInfo(), talentButton:GetVisualState()) + frameLevelOffset;
 	self:SetElementFrameLevel(talentButton, frameLevel);
 end
 
@@ -861,6 +894,7 @@ function TalentFrameBaseMixin:ReleaseAllTalentButtons()
 
 	self.edgePool:ReleaseAll();
 	self.talentButtonCollection:ReleaseAll();
+	self.talentAnimationFramePoolCollection:ReleaseAll();
 	self.buttonsWithDirtyEdges = {};
 end
 
@@ -937,6 +971,33 @@ function TalentFrameBaseMixin:OnButtonNodeIDSet(talentButton, oldNodeID, newNode
 
 	if newNodeID ~= nil then
 		self.nodeIDToButton[newNodeID] = talentButton;
+	end
+end
+
+function TalentFrameBaseMixin:RegisterNodeForUpdateInfoEvent(nodeID)
+	if not nodeID then
+		return;
+	end
+
+	self.eventRegisteredNodes[nodeID] = TalentFrameBaseMixin.Event.TalentButtonNodeUpdated;
+end
+
+function TalentFrameBaseMixin:DeregisterNodeForUpdateInfoEvent(nodeID)
+	if not nodeID then
+		return;
+	end
+
+	self.eventRegisteredNodes[nodeID] = nil;
+end
+
+function TalentFrameBaseMixin:OnButtonUpdateNodeInfo(nodeID)
+	if not nodeID or not self.eventRegisteredNodes then
+		return;
+	end
+
+	local event = self.eventRegisteredNodes[nodeID];
+	if event then
+		self:TriggerEvent(event, nodeID);
 	end
 end
 
@@ -1456,6 +1517,17 @@ function TalentFrameBaseMixin:RollbackConfig(ignoreSound)
 	return C_Traits.RollbackConfig(self:GetConfigID());
 end
 
+function TalentFrameBaseMixin:HasAnyPurchasedRanks()
+	for button in self:EnumerateAllTalentButtons() do
+		local nodeInfo = button:GetNodeInfo();
+		if nodeInfo and (nodeInfo.ranksPurchased > 0) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function TalentFrameBaseMixin:TryPlaySound(soundKit)
 	if not self.suppressedSounds or not tContains(self.suppressedSounds, soundKit) then
 		PlaySound(soundKit);
@@ -1543,6 +1615,10 @@ end
 
 function TalentFrameBaseMixin:SetSelection(nodeID, entryID)
 	return self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID);
+end
+
+function TalentFrameBaseMixin:HasMassPurchase()
+	return self.TryPurchaseToNode and self.TryRefundToNode;
 end
 
 function TalentFrameBaseMixin:ClearCascadeRepurchaseHistory()
@@ -1740,4 +1816,21 @@ end
 function TalentFrameBaseMixin:ShouldShowConfirmation()
 	-- Override in your derived Mixin as desired.
 	return false;
+end
+
+function TalentFrameBaseMixin:AcquireAnimation(animState, template, parent)
+	local pool = self.talentAnimationFramePoolCollection:GetOrCreatePool("FRAME", nil, template, TalentButtonAnimUtil.TalentButtonAnimationReset);
+	local anim = pool:Acquire();
+	anim:Init(parent, template, animState);
+	return anim;
+end
+
+function TalentFrameBaseMixin:ReleaseAnimation(template, animation)
+	local pool = self.talentAnimationFramePoolCollection:GetPool(template);
+	pool:Release(animation);
+end
+
+function TalentFrameBaseMixin:GetButtonAnimationStates()
+	-- Override in your derived Mixin as desired
+	return nil;
 end

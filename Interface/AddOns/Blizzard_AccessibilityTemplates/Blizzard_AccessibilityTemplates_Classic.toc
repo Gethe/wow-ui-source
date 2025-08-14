@@ -1,6 +1,0 @@
-## Title: Blizzard_AccessibilityTemplates
-## RequiredDep: Blizzard_SharedXML
-## AllowLoad: both
-## AllowLoadGameType: classic
-Classic\AccessibilityTemplates.lua
-AccessibilityIntrinsics.xml

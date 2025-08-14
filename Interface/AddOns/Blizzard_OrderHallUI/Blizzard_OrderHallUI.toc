@@ -4,5 +4,4 @@
 ## LoadOnDemand: 1
 
 Blizzard_OrderHallTalents.xml
-Blizzard_OrderHallCommandBar.xml
 Localization.lua

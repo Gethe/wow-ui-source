@@ -223,6 +223,7 @@ local TradeSkillUITypes =
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "orderSource", Type = "CraftingOrderReagentSource", Nilable = true },
 				{ Name = "required", Type = "bool", Nilable = false },
+				{ Name = "hiddenInCraftingForm", Type = "bool", Nilable = false },
 			},
 		},
 		{

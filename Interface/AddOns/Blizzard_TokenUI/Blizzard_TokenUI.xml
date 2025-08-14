@@ -1,59 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="TokenHeaderTemplate" mixin="TokenHeaderMixin" virtual="true">
-		<Size y="26"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" atlas="Options_ListExpand_Left" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Right" atlas="Options_ListExpand_Right" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Middle" atlas="_Options_ListExpand_Middle" useAtlasSize="false">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormalLeft">
-					<Size y="15"/>
-					<Anchors>
-						<Anchor point="LEFT" x="10"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightLeft" atlas="Options_ListExpand_Left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="HighlightRight" atlas="Options_ListExpand_Right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="HighlightMiddle" atlas="_Options_ListExpand_Middle" useAtlasSize="false" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Button name="TokenHeaderTemplate" inherits="ListHeaderThreeSliceTemplate" mixin="TokenHeaderMixin" virtual="true">
 		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad_TokenHeaderTemplate" inherit="append"/>
 		</Scripts>
 	</Button>
 
@@ -216,7 +166,7 @@
 					<Anchor point="TOPRIGHT" x="-38" y="-30"/>
 				</Anchors>
 			</DropdownButton>
-			
+
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

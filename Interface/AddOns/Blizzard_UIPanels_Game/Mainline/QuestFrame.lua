@@ -153,7 +153,7 @@ function QuestRewardCompleteButton_OnClick()
 		if ( money and money > 0 ) then
 			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
 			if ( QuestFrame.dialog ) then
-				MoneyFrame_Update(QuestFrame.dialog:GetName().."MoneyFrame", money);
+				MoneyFrame_Update(QuestFrame.dialog.MoneyFrame, money);
 			end
 		else
 			GetQuestReward(QuestInfoFrame.itemChoice);
@@ -335,7 +335,7 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
-			if QuestUtil.QuestTextContrastUseLightText() then
+			if QuestTextContrast.UseLightText() then
 				questTitleButton:GetFontString():SetFixedColor(true);
 				questTitleButton:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
 			else
@@ -372,8 +372,8 @@ function QuestFrameGreetingPanel_OnShow()
 		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
-			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta = GetAvailableQuestInfo(i - numActiveQuests);
-			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta, questInfoID = GetAvailableQuestInfo(i - numActiveQuests);
+			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 			
 			local title = GetAvailableTitle(i - numActiveQuests);
 			if ( isTrivial ) then
@@ -383,7 +383,7 @@ function QuestFrameGreetingPanel_OnShow()
 				questTitleButton:SetFormattedText(NORMAL_QUEST_DISPLAY, title);
 				questTitleButton.Icon:SetVertexColor(1,1,1);
 			end
-			if QuestUtil.QuestTextContrastUseLightText() then
+			if QuestTextContrast.UseLightText() then
 				questTitleButton:GetFontString():SetFixedColor(true);
 				questTitleButton:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
 			else
@@ -580,11 +580,11 @@ function QuestFrame_SetMaterial(frame, material)
 		frame.MaterialBotLeft:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotLeft");
 		frame.MaterialBotRight:SetTexture("Interface\\ItemTextFrame\\ItemText-"..material.."-BotRight");
 	end
-	frame.Bg:SetAtlas(QuestUtil.GetDefaultQuestBackgroundTexture());
+	frame.Bg:SetAtlas(QuestTextContrast.GetDefaultBackgroundAtlas());
 end
 
 function QuestFrame_GetMaterial()
-	local questTextContrastEnabled = QuestUtil.QuestTextContrastEnabled();
+	local questTextContrastEnabled = QuestTextContrast.IsEnabled();
 	local material = GetQuestBackgroundMaterial();
 	if questTextContrastEnabled or not material then
 		return "Parchment", not questTextContrastEnabled;
@@ -595,7 +595,7 @@ end
 
 function QuestFrame_SetTitleTextColor(fontString, material)
 	local temp, materialTitleTextColor = GetMaterialTextColors(material);
-	if QuestUtil.QuestTextContrastUseLightText() then
+	if QuestTextContrast.UseLightText() then
 		temp, materialTitleTextColor = GetMaterialTextColors("Stone");
 	end
 	fontString:SetTextColor(materialTitleTextColor[1], materialTitleTextColor[2], materialTitleTextColor[3]);
@@ -603,7 +603,7 @@ end
 
 function QuestFrame_SetTextColor(fontString, material)
 	local materialTextColor = GetMaterialTextColors(material);
-	if QuestUtil.QuestTextContrastUseLightText() then
+	if QuestTextContrast.UseLightText() then
 		materialTextColor = GetMaterialTextColors("Stone");
 	end
 	fontString:SetTextColor(materialTextColor[1], materialTextColor[2], materialTextColor[3]);

@@ -9,6 +9,7 @@ local GamePad =
 		{
 			Name = "AddSDLMapping",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local GamePad =
 		{
 			Name = "ApplyConfigs",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "AxisIndexToConfigName",
@@ -88,6 +90,7 @@ local GamePad =
 		{
 			Name = "DeleteConfig",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -207,6 +210,7 @@ local GamePad =
 		{
 			Name = "SetConfig",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

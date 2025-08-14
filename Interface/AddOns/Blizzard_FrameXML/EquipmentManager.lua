@@ -9,7 +9,7 @@ local EQUIP_ITEM = 1;
 local UNEQUIP_ITEM = 2;
 local SWAP_ITEM = 3;
 
-for i = BANK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 	EQUIPMENTMANAGER_BAGSLOTS[i] = {};
 end
 
@@ -18,7 +18,7 @@ EquipmentManager = CreateFrame("FRAME");
 function EquipmentManager_UpdateFreeBagSpace ()
 	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
 
-	for i = BANK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS + GetNumBankSlots() do
+	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS + C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) do
 		local _, bagType = C_Container.GetContainerNumFreeSlots(i);
 		local freeSlots = C_Container.GetContainerFreeSlots(i);
 		if ( freeSlots ) then
@@ -71,11 +71,11 @@ EquipmentManager:RegisterEvent("BANKFRAME_OPENED");
 EquipmentManager:RegisterEvent("BANKFRAME_CLOSED");
 
 function EquipmentManager_EquipItemByLocation (location, invSlot)
-	local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location);
+	local locationData = EquipmentManager_GetLocationData(location);
 
 	ClearCursor();
 
-	if ( not bags and slot == invSlot ) then --We're trying to reequip an equipped item in the same spot, ignore it.
+	if ( not locationData.isBags and locationData.slot == invSlot ) then --We're trying to reequip an equipped item in the same spot, ignore it.
 		return nil;
 	end
 
@@ -84,11 +84,11 @@ function EquipmentManager_EquipItemByLocation (location, invSlot)
 	local action = {};
 	action.type = (currentItemID and SWAP_ITEM) or EQUIP_ITEM;
 	action.invSlot = invSlot;
-	action.player = player;
-	action.bank = bank;
-	action.bags = bags;
-	action.slot = slot;
-	action.bag = bag;
+	action.player = locationData.isPlayer;
+	action.bank = locationData.isBank;
+	action.bags = locationData.isBags;
+	action.slot = locationData.slot;
+	action.bag = locationData.bag;
 
 	return action;
 end
@@ -129,41 +129,6 @@ function EquipmentManager_EquipInventoryItem (action)
 	EQUIPMENTMANAGER_INVENTORYSLOTS[action.invSlot] = SLOT_LOCKED;
 
 	return true;
-end
-
-function EquipmentManager_UnpackLocation (location) -- Use me, I'm here to be used.
-	if ( location < 0 ) then
-		return false, false, false, 0;
-	end
-
-	local player = (bit.band(location, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0);
-	local bank = (bit.band(location, ITEM_INVENTORY_LOCATION_BANK) ~= 0);
-	local bags = (bit.band(location, ITEM_INVENTORY_LOCATION_BAGS) ~= 0);
-	local voidStorage = (bit.band(location, ITEM_INVENTORY_LOCATION_VOIDSTORAGE) ~= 0);
-	local tab, voidSlot;
-
-	if ( player ) then
-		location = location - ITEM_INVENTORY_LOCATION_PLAYER;
-	elseif ( bank ) then
-		location = location - ITEM_INVENTORY_LOCATION_BANK;
-	elseif ( voidStorage ) then
-		location = location - ITEM_INVENTORY_LOCATION_VOIDSTORAGE;
-		tab = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
-		voidSlot = location - bit.lshift(tab, ITEM_INVENTORY_BAG_BIT_OFFSET);
-	end
-
-	if ( bags ) then
-		location = location - ITEM_INVENTORY_LOCATION_BAGS;
-		local bag = bit.rshift(location, ITEM_INVENTORY_BAG_BIT_OFFSET);
-		local slot = location - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET);
-
-		if ( bank ) then
-			bag = bag + ITEM_INVENTORY_BANK_BAG_OFFSET;
-		end
-		return player, bank, bags, voidStorage, slot, bag, tab, voidSlot
-	else
-		return player, bank, bags, voidStorage, location, nil, tab, voidSlot
-	end
 end
 
 function EquipmentManager_UnequipItemInSlot (invSlot)
@@ -227,38 +192,22 @@ function EquipmentManager_PutItemInInventory (action)
 	end
 
 	if ( _isAtBank ) then
-		for slot, flag in next, bagSlots[BANK_CONTAINER] do
-			if ( flag == SLOT_EMPTY ) then
-				firstSlot = min(firstSlot or slot, slot);
-			end
-		end
-		if ( firstSlot ) then
-			bagSlots[BANK_CONTAINER][firstSlot] = SLOT_LOCKED;
-			PickupInventoryItem(firstSlot + BANK_CONTAINER_INVENTORY_OFFSET);
-
-			if ( action ) then
-				action.bag = BANK_CONTAINER;
-				action.slot = firstSlot;
-			end
-			return true;
-		else
-			for bag = NUM_TOTAL_EQUIPPED_BAG_SLOTS + 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS + GetNumBankSlots() do
-				if ( bagSlots[bag] ) then
-					for slot, flag in next, bagSlots[bag] do
-						if ( flag == SLOT_EMPTY ) then
-							firstSlot = min(firstSlot or slot, slot);
-						end
+		for bag = NUM_TOTAL_EQUIPPED_BAG_SLOTS + 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS + C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) do
+			if ( bagSlots[bag] ) then
+				for slot, flag in next, bagSlots[bag] do
+					if ( flag == SLOT_EMPTY ) then
+						firstSlot = min(firstSlot or slot, slot);
 					end
-					if ( firstSlot ) then
-						bagSlots[bag][firstSlot] = SLOT_LOCKED;
-						C_Container.PickupContainerItem(bag, firstSlot);
+				end
+				if ( firstSlot ) then
+					bagSlots[bag][firstSlot] = SLOT_LOCKED;
+					C_Container.PickupContainerItem(bag, firstSlot);
 
-						if ( action ) then
-							action.bag = bag;
-							action.slot = firstSlot;
-						end
-						return true;
+					if ( action ) then
+						action.bag = bag;
+						action.slot = firstSlot;
 					end
+					return true;
 				end
 			end
 		end
@@ -269,17 +218,14 @@ function EquipmentManager_PutItemInInventory (action)
 end
 
 function EquipmentManager_GetItemInfoByLocation (location)
-	local player, bank, bags, voidStorage, slot, bag, tab, voidSlot = EquipmentManager_UnpackLocation(location);
-	if ( not player and not bank and not bags and not voidStorage ) then -- Invalid location
+	local locationData = EquipmentManager_GetLocationData(location);
+	if TableIsEmpty(locationData) then -- Invalid location
 		return;
 	end
-
+	
+	local bag, slot = locationData.bag, locationData.slot;
 	local itemID, name, textureName, count, durability, maxDurability, invType, locked, start, duration, enable, setTooltip, quality, isUpgrade, isBound, _; -- luacheck: ignore 221 (variable 'isBound' is never set)
-	if ( voidStorage ) then
-		itemID, textureName, _, _, _, quality = GetVoidItemInfo(tab, voidSlot);
-		isBound = true;
-		setTooltip = function () GameTooltip:SetVoidItem(tab, voidSlot) end;
-	elseif ( not bags ) then -- and (player or bank)
+	if ( not locationData.isBags ) then -- and (locationData.isPlayer or locationData.isBank)
 		itemID = GetInventoryItemID("player", slot);
 		isBound = true;
 		name, _, _, _, _, _, _, _, invType, textureName = C_Item.GetItemInfo(itemID);
@@ -291,7 +237,7 @@ function EquipmentManager_GetItemInfoByLocation (location)
 		end
 
 		setTooltip = function () GameTooltip:SetInventoryItem("player", slot) end;
-	else -- bags
+	else -- locationData.isBags
 		itemID = C_Container.GetContainerItemID(bag, slot);
 		name, _, _, _, _, _, _, _, invType = C_Item.GetItemInfo(itemID);
 		local info = C_Container.GetContainerItemInfo(bag, slot);

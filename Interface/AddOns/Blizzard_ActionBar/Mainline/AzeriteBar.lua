@@ -27,7 +27,7 @@ end
 function AzeriteBarMixin:Update()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
 	local xp, totalLevelXp;
-	if not azeriteItemLocation or AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+	if not azeriteItemLocation or AzeriteUtil.IsAzeriteItemLocationBankTab(azeriteItemLocation) then
 		xp, totalLevelXp = 0, 1;
 		self.level = -1;
 	else
@@ -92,7 +92,7 @@ function AzeriteBarMixin:OnEnter()
 	self:UpdateOverlayFrameText();
 
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
-	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+	if AzeriteUtil.IsAzeriteItemLocationBankTab(azeriteItemLocation) then
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
 		GameTooltip:SetText(HEART_OF_AZEROTH_MISSING_ERROR, HIGHLIGHT_FONT_COLOR:GetRGB());
 	else
@@ -105,7 +105,7 @@ function AzeriteBarMixin:OnLeave()
 	GameTooltip_Hide();
 
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
-	if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
+	if AzeriteUtil.IsAzeriteItemLocationBankTab(azeriteItemLocation) then
 		self:CancelItemLoadCallback();
 	end
 end

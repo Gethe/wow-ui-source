@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="RecentAlliesListTemplate" mixin="RecentAlliesListMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" x="-19"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RecentAlliesDividerTemplate" virtual="true">
+		<Size y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\FriendsFrame\UI-FriendsFrame-OnlineDivider" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="RecentAlliesEntryPartyButtonTemplate" mixin="RecentAlliesEntryPartyButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="24" y="32"/>
+		<NormalTexture name="$parentNormalTexture" setAllPoints="true" file="Interface\FriendsFrame\TravelPass-Invite">
+			<TexCoords left="0.01562500" right="0.39062500" top="0.27343750" bottom="0.52343750"/>
+		</NormalTexture>
+		<PushedTexture name="$parentPushedTexture" setAllPoints="true" file="Interface\FriendsFrame\TravelPass-Invite">
+			<TexCoords left="0.42187500" right="0.79687500" top="0.27343750" bottom="0.52343750"/>
+		</PushedTexture>
+		<DisabledTexture name="$parentDisabledTexture" setAllPoints="true" file="Interface\FriendsFrame\TravelPass-Invite">
+			<TexCoords left="0.01562500" right="0.39062500" top="0.00781250" bottom="0.25781250"/>
+		</DisabledTexture>
+		<HighlightTexture name="$parentHighlightTexture" setAllPoints="true" file="Interface\FriendsFrame\TravelPass-Invite" alphaMode="ADD">
+			<TexCoords left="0.42187500" right="0.79687500" top="0.00781250" bottom="0.25781250"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="RecentAlliesEntryFriendRequestPendingDisplayTemplate" virtual="true">
+		<Size x="13" y="13"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="icon-clock" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="RecentAlliesEntryPinDisplayTemplate" mixin="RecentAlliesEntryPinDisplayMixin" virtual="true">
+		<Size x="15" y="15"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="friendslist-recentallies-pin-yellow" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="RecentAlliesEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" mixin="RecentAlliesEntryMixin" virtual="true">
+		<Size y="53"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="OnlineStatusIcon" file="Interface\FriendsFrame\StatusIcon-Offline">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PartyButton" inherits="RecentAlliesEntryPartyButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="StateIconContainer">
+				<Size x="32" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-24"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="FriendRequestPendingDisplay" inherits="RecentAlliesEntryFriendRequestPendingDisplayTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PinDisplay" inherits="RecentAlliesEntryPinDisplayTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="CharacterData">
+				<Size y="44"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.OnlineStatusIcon" relativePoint="TOPRIGHT" x="2" y="-2"/>
+					<Anchor point="RIGHT" relativeKey="$parent.StateIconContainer" relativePoint="LEFT" x="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+							 <!-- Name width set dynamically -->
+							<Size y="14"/>
+							<KeyValues>
+								<KeyValue key="maxWidth" value="150" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="NameDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" x="6" y="-2"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="7" y="2"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+						<FontString parentKey="Level" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+							<Size y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NameDivider" relativePoint="RIGHT" x="3"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="LevelDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Level" relativePoint="TOPRIGHT" x="3" y="-2"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="3" y="2"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+						<FontString parentKey="Class" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+							<Size y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.LevelDivider" relativePoint="RIGHT" x="3"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="MostRecentInteraction" inherits="Game11Font" justifyH="LEFT" maxLines="1">
+							<Size y="14"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" y="-1"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Class" relativePoint="BOTTOMRIGHT" y="-1"/>
+							</Anchors>
+							<Color color="FRIENDS_GRAY_COLOR"/>
+						</FontString>
+						<FontString parentKey="Location" inherits="Game11Font" justifyH="LEFT" maxLines="1">
+							<Size y="14"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.MostRecentInteraction" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.MostRecentInteraction" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color color="FRIENDS_GRAY_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight">
+			<Anchors>
+				<Anchor point="TOPLEFT" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" y="1"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture parentKey="HighlightTexture" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" y="-1"/>
+				<Anchor point="BOTTOMRIGHT" y="1"/>
+			</Anchors>
+			<Color color="HIGHLIGHT_LIGHT_BLUE"/>
+		</HighlightTexture>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

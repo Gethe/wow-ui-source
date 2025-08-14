@@ -4,13 +4,13 @@ local function DefineGameSettingsApplyDefaultsDialog()
 		button1 = ALL_SETTINGS,
 		button3 = CURRENT_SETTINGS,
 		button2 = CANCEL,
-		OnAccept = function(self)
+		OnAccept = function(dialog, data)
 			SettingsPanel:SetAllSettingsToDefaults();
 		end,
-		OnAlt = function(self)
+		OnAlt = function(dialog, data)
 			SettingsPanel:SetCurrentCategorySettingsToDefaults();
 		end,
-		OnCancel = function() end,
+		OnCancel = function(dialog, data) end,
 		hideOnEscape = 1,
 		whileDead = 1,
 		fullScreenCover = true,
@@ -23,13 +23,13 @@ local function DefineGameSettingsConfirmDiscardDialog()
 		button1 = SETTINGS_UNAPPLIED_EXIT,
 		button2 = SETTINGS_UNAPPLIED_APPLY_AND_EXIT,
 		button3 = SETTINGS_UNAPPLIED_CANCEL,
-		OnButton1 = function(self)
+		OnButton1 = function(dialog, data)
 			SettingsPanel:ExitWithoutCommit();
 		end,
-		OnButton2 = function(self)
+		OnButton2 = function(dialog, data)
 			SettingsPanel:ExitWithCommit();
 		end,
-		OnButton3 = function(self)
+		OnButton3 = function(dialog, data)
 		end,
 		selectCallbackByIndex = true,
 		hideOnEscape = 1,
@@ -43,36 +43,27 @@ local function DefineGameSettingsTimedRevertDialog()
 		text = "",
 		button1 = SETTINGS_CONFIRM_TIMEOUT_BUTTON,
 		button2 = SETTINGS_CANCEL_TIMEOUT_BUTTON,
-		OnAccept = function(self)
+		OnAccept = function(dialog, data)
 			SettingsPanel:DiscardRevertableSettings();
 		end,
-		OnCancel = function(self)
+		OnCancel = function(dialog, data)
 			SettingsPanel:RevertSettings();
 		end,
-		OnShow = function(self, duration)
-			self.duration = duration;
+		OnShow = function(dialog, duration)
+			dialog.duration = duration;
 		end,
-		OnHide = function(self)
-			self.duration = nil;
+		OnHide = function(dialog, data)
+			dialog.duration = nil;
 		end,
-		OnUpdate = function(self, elapsed)
-			self.duration = self.duration - elapsed;
-			local time = math.max(self.duration + 1, 1);
-			self.text:SetText(SETTINGS_TIMED_CONFIRMATION:format(time));
-			StaticPopup_Resize(self, "GAME_SETTINGS_TIMED_CONFIRMATION");
+		OnUpdate = function(dialog, elapsed)
+			dialog.duration = dialog.duration - elapsed;
+			local time = math.max(dialog.duration + 1, 1);
+			dialog:SetText(SETTINGS_TIMED_CONFIRMATION:format(time));
+			dialog:Resize("GAME_SETTINGS_TIMED_CONFIRMATION");
 		end,
 		whileDead = 1,
 		fullScreenCover = true,
 	};
-
-	if C_Glue.IsOnGlueScreen() then
-		StaticPopupDialogs["GAME_SETTINGS_TIMED_CONFIRMATION"].OnUpdate = function(self, elapsed)
-			self.duration = self.duration - elapsed;
-			local time = math.max(self.duration + 1, 1);
-			GlueDialogText:SetText(SETTINGS_TIMED_CONFIRMATION:format(time));
-			GlueDialog_Resize(StaticPopupDialogs["GAME_SETTINGS_TIMED_CONFIRMATION"], "GAME_SETTINGS_TIMED_CONFIRMATION");
-		end;
-	end
 end
 
 local function DefineGameSettingsDefaultKeybindings()
@@ -80,7 +71,7 @@ local function DefineGameSettingsDefaultKeybindings()
 		text = CONFIRM_RESET_KEYBINDINGS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function(self)
+		OnAccept = function(dialog, data)
 			KeybindListener:ResetBindingsToDefault();
 		end,
 		timeout = 0,

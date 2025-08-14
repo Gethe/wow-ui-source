@@ -49,6 +49,7 @@
 -- 4. Add extra padding along the secondary axis based on sections.
 -- 5. Apply the initial anchor to each frame, with offsets for each based driection and the sizes and spacings calculated for sections and regions.
 
+local INFINITE_GUARD = 1000;
 
 GridLayoutUtil = {};
 
@@ -507,7 +508,7 @@ function GridLayoutUtilSectionStrategy.SplitRegionsIntoSectionsBySize(maxSection
 	local currentSection = sectionGroup:AddEmptySection();
 	local currentSectionSize = 0;
 
-	local infiniteGuard = 300;
+	local infiniteGuard = INFINITE_GUARD;
 	for i = 1, infiniteGuard do
 		local region = regionDataProvider(i);
 		if region == nil then
@@ -597,7 +598,7 @@ GridLayoutUtilCrossSectionStrategy = {};
 function GridLayoutUtilCrossSectionStrategy.CalculateGridCrossSections(layoutManager, sectionGroup)
 	local crossSectionGroups = {};
 
-	local infiniteGuard = 300;
+	local infiniteGuard = INFINITE_GUARD;
 	for crossSectionIndex = 1, infiniteGuard do
 		local crossSection = CreateAndInitFromMixin(GridLayoutSectionGroupMixin, layoutManager);
 		local crossSectionIsEmpty = true;

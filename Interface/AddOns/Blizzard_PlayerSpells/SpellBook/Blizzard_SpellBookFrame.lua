@@ -597,7 +597,9 @@ function AssistedCombatRotationSpellFrameMixin:ShowTooltip()
 	local rotationSpells = C_AssistedCombat.GetRotationSpells();
 	for i, spellID in ipairs(rotationSpells) do
 		spellID = C_Spell.GetOverrideSpell(spellID);
-		if IsSpellKnownOrOverridesKnown(spellID) then
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = true;
+		if C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides) then
 			TryInsertSpell(spellID);
 		end
 	end

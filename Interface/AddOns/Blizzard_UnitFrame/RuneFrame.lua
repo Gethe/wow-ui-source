@@ -43,7 +43,7 @@ function RuneFrameMixin:OnEvent(event, ...)
 end
 
 function RuneFrameMixin:UpdateRunes(isSpecChange)
-	local specIndex = GetSpecialization();
+	local specIndex = C_SpecializationInfo.GetSpecialization();
 
 	local numNewlyDepletedRunes = 0;
 	for i = 1, #self.Runes do

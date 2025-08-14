@@ -1,0 +1,228 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	
+	<Button name="TalentButtonArtTemplate" mixin="TalentButtonArtMixin" inherits="TalentDisplayTemplate" virtual="true">
+		<KeyValues>
+			<!--
+			GetEdgeDiameterOffset: Method that takes the angle of the incoming edge to determine offset adjustment
+									required for the length of the edges. (self, angle) -> edgeDiameterOffset
+			artSet: A table of atlases, see TalentButtonArtMixin.
+			sizingAdjustment: A table of adjustments to make to the width and height of various regions, see TalentButtonArtMixin.
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetSquareEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Square" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.Circle" type="global"/>
+			-->
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="DisabledOverlay" hidden="true">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StateBorder" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StateBorderHover" texelSnappingBias="0.0" snapToPixelGrid="false" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<FontString parentKey="SpendText" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" x="11" y="4"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="SelectableIcon" atlas="talents-icon-learnableplus" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="SpendTextShadow1" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER" parentArray="spendTextShadows">
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpendText" relativePoint="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SpendTextShadow2" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER" parentArray="spendTextShadows">
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.SpendText" relativePoint="CENTER" x="1" y="1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SpendTextShadow3" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER" parentArray="spendTextShadows">
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.SpendText" relativePoint="CENTER" x="-1" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SpendTextShadow4" inherits="SystemFont16_Shadow_ThickOutline" justifyH="CENTER" parentArray="spendTextShadows">
+					<Color r="0" g="0" b="0"/>
+					<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.SpendText" relativePoint="CENTER" x="1" y="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="DisabledOverlayMask" atlas="UI-Frame-IconMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.DisabledOverlay" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="DisabledOverlay"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Alpha fromAlpha="0" toAlpha="1" duration="0.36" order="1" smoothing="OUT"/>
+							<Alpha fromAlpha="1" toAlpha="0" duration="0.36" order="2" smoothing="IN"/>
+						</AnimationGroup>
+					</Animations>
+					<Scripts>
+						<OnShow>
+							self.Anim:Play();
+						</OnShow>
+						<OnHide>
+							self.Anim:Stop();
+						</OnHide>
+					</Scripts>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Ghost" texelSnappingBias="0.0" snapToPixelGrid="false" alpha="0.8" hidden="true">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SearchIcon" hidden="true" inherits="TalentButtonSearchIconTemplate">
+				<KeyValues>
+					<KeyValue key="mouseoverSize" value="18" type="number"/>
+				</KeyValues>
+				<Size x="63" y="63"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Button>
+
+	<Button name="TalentButtonCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetCircleEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Circle" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+	</Button>
+
+	<Button name="TalentButtonSmallCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<!-- NOTE: Only the Legion version of this is currently available, if we want to use this in the future, we need new assets -->
+			<KeyValue key="buttonSizeScaleOverride" value="0.5" type="number"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionSmallCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.Small" type="global"/>
+		</KeyValues>
+		<Size x="30" y="30"/>
+	</Button>
+
+	<Button name="TalentButtonSquareTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetSquareEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Square" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+	</Button>
+
+	<Button name="TalentButtonLegionSmallCircleTemplate" inherits="TalentButtonSmallCircleTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionSmallCircle" type="global"/>
+		</KeyValues>
+		<Size x="20" y="20"/>
+	</Button>
+	
+	<Button name="TalentButtonLegionCircleTemplate" inherits="TalentButtonCircleTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionCircle" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="TalentButtonLegionSquareTemplate" inherits="TalentButtonSquareTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionSquare" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="TalentButtonLegionInfiniteNode" inherits="TalentButtonCircleTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonSizeScaleOverride" value="1.5" type="number"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegionInfiniteCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.LegionInfinite" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="TalentButtonLargeSquareTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LargeSquare" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.Large" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
+
+	<Button name="TalentButtonLargeCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LargeCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.Large" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
+</Ui>

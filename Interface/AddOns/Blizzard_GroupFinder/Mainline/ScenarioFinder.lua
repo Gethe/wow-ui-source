@@ -1,6 +1,5 @@
 function ScenarioQueueFrame_Update()
-	local timeRunningSeason = PlayerGetTimerunningSeasonID();
-	if not timeRunningSeason then
+	if not PlayerIsTimerunning() then
 		return;
 	end
 

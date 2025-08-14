@@ -115,6 +115,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectRatedBGData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ratedBGData", Type = "InspectRatedBGData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInspectRatedSoloShuffleData",
 			Type = "Function",
 
@@ -145,6 +154,20 @@ local PaperDollInfo =
 			{
 				{ Name = "stagger", Type = "number", Nilable = false },
 				{ Name = "staggerAgainstTarget", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsInventorySlotEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotName", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -336,6 +359,16 @@ local PaperDollInfo =
 				{ Name = "gamesPlayed", Type = "number", Nilable = false },
 				{ Name = "roundsWon", Type = "number", Nilable = false },
 				{ Name = "roundsPlayed", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InspectRatedBGData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "played", Type = "number", Nilable = false },
+				{ Name = "won", Type = "number", Nilable = false },
 			},
 		},
 	},

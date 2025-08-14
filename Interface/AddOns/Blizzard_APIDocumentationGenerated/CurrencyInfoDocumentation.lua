@@ -476,6 +476,7 @@ local CurrencyInfo =
 		{
 			Name = "RequestCurrencyFromAccountCharacter",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -507,6 +508,7 @@ local CurrencyInfo =
 		{
 			Name = "SetCurrencyFilter",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -568,6 +570,11 @@ local CurrencyInfo =
 			Name = "CurrencyTransferLogUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_TRANSFER_LOG_UPDATE",
+		},
+		{
+			Name = "CurrencyTransferSuccess",
+			Type = "Event",
+			LiteralName = "CURRENCY_TRANSFER_SUCCESS",
 		},
 		{
 			Name = "PlayerMoney",

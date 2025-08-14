@@ -309,7 +309,7 @@ end
 
 function AzeriteEmpoweredItemUIMixin:UpdateTiers()
 	local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem();
-	local azeriteItemPowerLevel = azeriteItemLocation and not AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
+	local azeriteItemPowerLevel = azeriteItemLocation and not AzeriteUtil.IsAzeriteItemLocationBankTab(azeriteItemLocation) and C_AzeriteItem.GetPowerLevel(azeriteItemLocation) or 0;
 
 	for tierIndex, tierFrame in ipairs(self.tiersByIndex) do
 		tierFrame:Update(azeriteItemPowerLevel);

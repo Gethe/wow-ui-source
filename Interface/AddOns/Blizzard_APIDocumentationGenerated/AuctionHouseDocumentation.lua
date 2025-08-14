@@ -55,6 +55,7 @@ local AuctionHouse =
 		{
 			Name = "CancelAuction",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -86,6 +87,7 @@ local AuctionHouse =
 		{
 			Name = "ConfirmPostCommodity",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -98,6 +100,7 @@ local AuctionHouse =
 		{
 			Name = "ConfirmPostItem",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -791,6 +794,7 @@ local AuctionHouse =
 		{
 			Name = "PlaceBid",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -801,6 +805,7 @@ local AuctionHouse =
 		{
 			Name = "PostCommodity",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -818,6 +823,7 @@ local AuctionHouse =
 		{
 			Name = "PostItem",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -999,6 +1005,7 @@ local AuctionHouse =
 		{
 			Name = "StartCommoditiesPurchase",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

@@ -106,7 +106,7 @@ end
 function MoneyFrame_SetType(self, type)
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
-		message("Invalid money type: "..type);
+		SetBasicMessageDialogText("Invalid money type: "..type);
 		return;
 	end
 	self.info = info;
@@ -140,7 +140,7 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 			MoneyFrame_Update(moneyFrame, money);
 		end
 	else
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
 end
 
@@ -148,10 +148,10 @@ local function InitCoinButton(button, atlas, iconWidth)
 	if not button or not atlas then
 		return;
 	end
-	local texture = button:CreateTexture();
+
+	local texture = button:GetNormalTexture() or button:CreateTexture();
 	texture:SetAtlas(atlas, true);
-	texture:SetWidth(iconWidth);
-	texture:SetHeight(iconWidth);
+	texture:SetSize(iconWidth, iconWidth);
 	texture:SetPoint("RIGHT");
 	button:SetNormalTexture(texture);
 end
@@ -171,14 +171,79 @@ local function GetMoneyFrame(frameOrName)
 	return nil;
 end
 
+local function MoneyFrame_MarkIconsDirty(frame)
+	frame.moneyIconsDirty = true;
+end
+
+local function MoneyFrame_MarkIconsClean(frame)
+	frame.moneyIconsDirty = false;
+end
+
+local function MoneyFrame_AreIconsDirty(frame, isColorBlindCvarValue)
+	return frame.moneyIconsDirty or (isColorBlindCvarValue ~= frame.colorblind) or (frame.vadjust ~= MONEY_TEXT_VADJUST);
+end
+
+local function MoneyFrame_UpdateFromUserScaledTextChange(frame)
+	MoneyFrame_Update(frame, frame.lastArgMoney, frame.lastArgForceShow);
+end
+
+local function MoneyFrame_SetUserScaledTextScale(frame, scale)
+	if frame.userScaledTextScale ~= scale then
+		frame.userScaledTextScale = scale;
+		MoneyFrame_MarkIconsDirty(frame);
+		MoneyFrame_UpdateFromUserScaledTextChange(frame);
+	end
+end
+
+local function MoneyFrame_GetIconSizeData(frame)
+	local iconWidth = MONEY_ICON_WIDTH;
+	local spacing = MONEY_BUTTON_SPACING;
+	if frame.small then
+		iconWidth = MONEY_ICON_WIDTH_SMALL;
+		spacing = MONEY_BUTTON_SPACING_SMALL;
+	end
+
+	if frame.userScaledTextScale then
+		iconWidth = iconWidth * frame.userScaledTextScale;
+		spacing = spacing * frame.userScaledTextScale;
+	end
+
+	return iconWidth, spacing;
+end
+
+-- NOTE: These aren't completely integrated into UserScaledTextElements, sticking with a one-off API for now.
+-- This could read values from the templates as well, but then the template type would need to be looked up.
+local MONEY_FRAME_HEIGHT = 28;
+local MONEY_FRAME_HEIGHT_SMALL = 13;
+
+local function MoneyFrame_GetFrameHeight(frame)
+	local height = MONEY_FRAME_HEIGHT;
+	if frame.small then
+		height = MONEY_FRAME_HEIGHT_SMALL;
+	end
+
+	if frame.userScaledTextScale then
+		return height * frame.userScaledTextScale;
+	end
+
+	return height;
+end
+
 function MoneyFrame_Update(frameName, money, forceShow)
 	local frame = GetMoneyFrame(frameName);
 	forceShow = forceShow or frame.forceShow;
+	money = money or 0;
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
+
+	-- Store how much money the frame is displaying as well as storing the parameter values from this call in case userScaled text sizes change and this needs to be called again with the previous values.
+	frame.lastArgMoney = money;
+	frame.lastArgForceShow = forceShow;
+	frame.staticMoney = money;
+	frame.showTooltip = nil;
 
 	-- Breakdown the money into denominations
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
@@ -190,18 +255,13 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	local silverButton = frame.SilverButton;
 	local copperButton = frame.CopperButton;
 
-	local iconWidth = MONEY_ICON_WIDTH;
-	local spacing = MONEY_BUTTON_SPACING;
-	if ( frame.small ) then
-		iconWidth = MONEY_ICON_WIDTH_SMALL;
-		spacing = MONEY_BUTTON_SPACING_SMALL;
-	end
-
+	local iconWidth, spacing = MoneyFrame_GetIconSizeData(frame);
 	local maxDisplayWidth = frame.maxDisplayWidth;
 
 	-- Set values for each denomination
-	if ( CVarCallbackRegistry:GetCVarValueBool("colorblindMode") ) then
-		if ( not frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
+	local isColorBlindModeDesired = CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
+	if isColorBlindModeDesired then
+		if MoneyFrame_AreIconsDirty(frame, isColorBlindModeDesired) then
 			frame.colorblind = true;
 			frame.vadjust = MONEY_TEXT_VADJUST;
 			goldButton:ClearNormalTexture();
@@ -221,7 +281,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		copperButton:SetWidth(copperButton:GetTextWidth());
 		copperButton:Show();
 	else
-		if ( frame.colorblind or not frame.vadjust or frame.vadjust ~= MONEY_TEXT_VADJUST ) then
+		if MoneyFrame_AreIconsDirty(frame, isColorBlindModeDesired) then
 			frame.colorblind = nil;
 			frame.vadjust = MONEY_TEXT_VADJUST;
 
@@ -231,7 +291,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 			goldButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
 			silverButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
-			copperButton.Text:SetPoint("RIGHT", -iconWidth, MONEY_TEXT_VADJUST);
+			copperButton.Text:SetPoint("RIGHT", copperButton:GetNormalTexture(), "LEFT", 0, MONEY_TEXT_VADJUST);
 		end
 		goldButton:SetText(goldDisplay);
 		goldButton:SetWidth(goldButton:GetTextWidth() + iconWidth);
@@ -244,9 +304,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		copperButton:Show();
 	end
 
-	-- Store how much money the frame is displaying
-	frame.staticMoney = money;
-	frame.showTooltip = nil;
+	MoneyFrame_MarkIconsClean(frame);
 
 	-- If not collapsable or not using maxDisplayWidth don't need to continue
 	if ( not info.collapse and not maxDisplayWidth ) then
@@ -356,7 +414,8 @@ function MoneyFrame_Update(frameName, money, forceShow)
 		end
 	end
 
-	frame:SetWidth(width);
+	local frameHeight = MoneyFrame_GetFrameHeight(frame);
+	frame:SetSize(width, frameHeight);
 
 	-- check if we need to toggle mouse events for the currency buttons to present tooltip
 	-- the events are always enabled if info.canPickup is true
@@ -409,4 +468,37 @@ function SmallDenominationTemplate_OnLeave(self)
 	local tooltip = GetAppropriateTooltip();
 	tooltip:Hide();
 	ResetCursor();
+end
+
+
+function MoneyFrameButton_OnEnter(self)
+	MoneyFrame_OnEnter(self:GetParent());
+end
+
+function MoneyFrameButton_OnLeave(self)
+	MoneyFrame_OnLeave(self:GetParent());
+end
+
+function MoneyInputFrameButton_OpenPopup(self)
+	MoneyInputFrame_OpenPopup(self:GetParent());
+end
+
+SmallMoneyFrameMixin = {};
+
+function SmallMoneyFrameMixin:SetIsUserScaled()
+	if self.isUserScaled then
+		return;
+	end
+
+	self.isUserScaled = true;
+
+	SetMoneyFrameColorByFrame(self);
+	Mixin(self, UserScaledElementMixin);
+	MoneyFrame_SetUserScaledTextScale(self, TextSizeManager:GetScale());
+
+	self.OnTextScaleUpdated = function(self, scale, registrationInfo)
+		MoneyFrame_SetUserScaledTextScale(self, scale);
+	end;
+
+	TextSizeManager:RegisterObject(self);
 end

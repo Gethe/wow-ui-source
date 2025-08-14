@@ -13,6 +13,7 @@ local CooldownViewer =
 			Arguments =
 			{
 				{ Name = "category", Type = "CooldownViewerCategory", Nilable = false },
+				{ Name = "allowUnlearned", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -79,6 +80,7 @@ local CooldownViewer =
 				{ Name = "selfAura", Type = "bool", Nilable = false },
 				{ Name = "hasAura", Type = "bool", Nilable = false },
 				{ Name = "charges", Type = "bool", Nilable = false },
+				{ Name = "isKnown", Type = "bool", Nilable = false },
 				{ Name = "flags", Type = "CooldownSetSpellFlags", Nilable = false },
 			},
 		},

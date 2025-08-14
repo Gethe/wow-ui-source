@@ -43,7 +43,7 @@ function UIThemeContainerMixin:GetCVarValue()
 end
 
 function UIThemeContainerMixin:IsDarkMode(cvarValue)
-	return QuestUtil.QuestTextContrastUseLightText(cvarValue);
+	return QuestTextContrast.UseLightText(cvarValue);
 end
 
 local CONTRAST_LIGHT_MODE = false;
@@ -76,7 +76,7 @@ end
 
 function UIThemeContainerMixin:UpdateBackground(cvarValue)
 	if self.backgroundTexture then
-		self.backgroundTexture:SetAtlas(QuestUtil.GetBackgroundTexture(self.textureKit), TextureKitConstants.UseAtlasSize);
+		self.backgroundTexture:SetAtlas(QuestTextContrast.GetTextureKitBackgroundAtlas(self.textureKit), TextureKitConstants.UseAtlasSize);
 	end
 end
 

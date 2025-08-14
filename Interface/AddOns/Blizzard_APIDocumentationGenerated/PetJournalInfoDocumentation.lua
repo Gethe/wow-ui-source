@@ -15,6 +15,15 @@ local PetJournalInfo =
 			Type = "Function",
 		},
 		{
+			Name = "DismissSummonedPet",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
 
@@ -180,6 +189,20 @@ local PetJournalInfo =
 			Returns =
 			{
 				{ Name = "hasFavorites", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrentlySummoned",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSummoned", Type = "bool", Nilable = false },
 			},
 		},
 		{

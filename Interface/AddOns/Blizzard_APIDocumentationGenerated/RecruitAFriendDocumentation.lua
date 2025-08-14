@@ -23,6 +23,7 @@ local RecruitAFriend =
 		{
 			Name = "ClaimActivityReward",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -38,6 +39,7 @@ local RecruitAFriend =
 		{
 			Name = "ClaimNextReward",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -52,6 +54,7 @@ local RecruitAFriend =
 		{
 			Name = "GenerateRecruitmentLink",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Returns =
 			{
@@ -147,6 +150,7 @@ local RecruitAFriend =
 		{
 			Name = "RemoveRAFRecruit",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -161,6 +165,7 @@ local RecruitAFriend =
 		{
 			Name = "RequestUpdatedRecruitmentInfo",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Returns =
 			{

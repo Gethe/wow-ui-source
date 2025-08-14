@@ -93,7 +93,6 @@ end
 function EquipmentFlyout_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
-	self:RegisterEvent("VOID_STORAGE_UPDATE");
 end
 
 function EquipmentFlyout_OnHide(self)
@@ -105,7 +104,6 @@ function EquipmentFlyout_OnHide(self)
 	self.button = nil;
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
-	self:UnregisterEvent("VOID_STORAGE_UPDATE");
 end
 
 function EquipmentFlyout_OnEvent (self, event, ...)
@@ -117,8 +115,6 @@ function EquipmentFlyout_OnEvent (self, event, ...)
 		if ( arg1 == "player" ) then
 			EquipmentFlyout_Show(self.button);
 		end
-	elseif ( event == "VOID_STORAGE_UPDATE" ) then
-		EquipmentFlyout_Show(self.button);
 	end
 end
 

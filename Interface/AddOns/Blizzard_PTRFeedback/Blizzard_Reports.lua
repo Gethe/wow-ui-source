@@ -27,7 +27,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
     
     local GetSpecID = function()
         -- There are rare occurrences where it appeared either GetSpecID or GetCurrentiLvl were returning nil, in case nothing is returned for the select, sending 0 for data completeness
-        return select(1, GetSpecializationInfo(GetSpecialization() or 1)) or 0
+        return select(1, C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization() or 1)) or 0
     end
     
     local GetCurrentiLvl = function()
@@ -94,7 +94,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
     end
     
     local IsTimerunningActive = function()
-        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
+        if (C_UnitAuras.GetPlayerAuraBySpellID(1213439)) then
             return 1
         end
         

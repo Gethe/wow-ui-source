@@ -1,13 +1,13 @@
 Voice_PartyChannelTypeToChatInfoType =
 {
-	[Enum.ChatChannelType.Private_Party] = "PARTY",
-	[Enum.ChatChannelType.Public_Party] = "INSTANCE_CHAT",
+	[Enum.ChatChannelType.PrivateParty] = "PARTY",
+	[Enum.ChatChannelType.PublicParty] = "INSTANCE_CHAT",
 };
 
 Voice_RaidChannelTypeToChatInfoType =
 {
-	[Enum.ChatChannelType.Private_Party] = "RAID",
-	[Enum.ChatChannelType.Public_Party] = "INSTANCE_CHAT",
+	[Enum.ChatChannelType.PrivateParty] = "RAID",
+	[Enum.ChatChannelType.PublicParty] = "INSTANCE_CHAT",
 };
 
 function Voice_GetChatInfoForChannelType(channel)
@@ -112,8 +112,8 @@ end
 
 local partyCategoryToChannelType =
 {
-	[LE_PARTY_CATEGORY_HOME] = Enum.ChatChannelType.Private_Party;
-	[LE_PARTY_CATEGORY_INSTANCE] = Enum.ChatChannelType.Public_Party;
+	[LE_PARTY_CATEGORY_HOME] = Enum.ChatChannelType.PrivateParty;
+	[LE_PARTY_CATEGORY_INSTANCE] = Enum.ChatChannelType.PublicParty;
 };
 
 function GetChannelTypeFromPartyCategory(partyCategory)
@@ -127,5 +127,5 @@ function GetPartyCategoryFromChannelType(channelType)
 end
 
 function IsPublicVoiceChannel(channel)
-	return channel and channel.channelType == Enum.ChatChannelType.Public_Party;
+	return channel and channel.channelType == Enum.ChatChannelType.PublicParty;
 end

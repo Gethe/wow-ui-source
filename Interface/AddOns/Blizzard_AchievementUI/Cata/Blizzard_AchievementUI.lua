@@ -5,6 +5,15 @@ ACHIEVEMENTUI_SUMMARYCATEGORIES = {92, 96, 97, 95, 168, 169, 201, 155};
 ACHIEVEMENTUI_DEFAULTGUILDSUMMARYACHIEVEMENTS = {5362, 4860, 4989, 4947};
 ACHIEVEMENTUI_GUILDSUMMARYCATEGORIES = {15088, 15077, 15078, 15079, 15080, 15089};
 
+local FORCE_COLUMNS_MAX_WIDTH = 220;				-- if no columns normally, force 2 if max criteria width is <= this and number of criteria >= MIN_CRITERIA
+local FORCE_COLUMNS_MIN_CRITERIA = 20;
+local FORCE_COLUMNS_LEFT_OFFSET = -10;				-- offset for left column
+local FORCE_COLUMNS_RIGHT_OFFSET = 24;				-- offset for right column
+local FORCE_COLUMNS_RIGHT_COLUMN_SPACE = 150;		-- max room for first entry of the right column due to achievement shield
+
+AchievementFrameFilterStrings = {ACHIEVEMENT_FILTER_ALL_EXPLANATION, 
+ACHIEVEMENT_FILTER_COMPLETE_EXPLANATION, ACHIEVEMENT_FILTER_INCOMPLETE_EXPLANATION};
+
 local GUILD_FEAT_OF_STRENGTH_ID = 15093;
 local GUILD_CATEGORY_ID = 15076;
 local IN_GUILD_VIEW;
@@ -78,7 +87,11 @@ function AchievementFrame_OnLoad (self)
 		rootDescription:SetTag("MENU_ACHIEVEMENT_FILTER", block);
 
 		for i, filter in ipairs(AchievementFrameFilters) do
-			rootDescription:CreateRadio(filter.text, IsFilterSelected, SetFilterSelected, filter);
+			local radio = rootDescription:CreateRadio(filter.text, IsFilterSelected, SetFilterSelected, filter);
+			radio:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, ACHIEVEMENT_FILTER_TITLE);
+				GameTooltip_AddNormalLine(tooltip, AchievementFrameFilterStrings[i]);
+			end);
 		end
 	end);
 
@@ -1445,13 +1458,17 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 			end
 			
 			local stringWidth = 0;
+			local maxCriteriaContentWidth;
 			if ( completed ) then
+				maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - ACHIEVEMENTUI_CRITERIACHECKWIDTH;
 				criteria.check:SetPoint("LEFT", 18, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 0, 2);
 				criteria.check:Show();
 				criteria.name:SetText(criteriaString);
 				stringWidth = criteria.name:GetStringWidth();
+				stringWidth = min(criteria.name:GetStringWidth(),maxCriteriaContentWidth);
 			else
+				maxCriteriaContentWidth = ACHIEVEMENTUI_MAXCONTENTWIDTH - objectivesFrame.textCheckWidth;
 				criteria.check:SetPoint("LEFT", 0, -3);
 				criteria.name:SetPoint("LEFT", criteria.check, "RIGHT", 5, 2);
 				criteria.check:Hide();
@@ -1460,9 +1477,12 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				else
 					criteria.name:SetText("  ");
 				end
-				stringWidth = criteria.name:GetStringWidth() - objectivesFrame.textCheckWidth;	-- don't want the "- " to be included in the width
+				stringWidth = min(criteria.name:GetStringWidth() - objectivesFrame.textCheckWidth,maxCriteriaContentWidth);	-- don't want the "- " to be included in the width
 			end
-				
+			if ( criteria.name:GetWidth() > maxCriteriaContentWidth ) then
+				criteria.name:SetWidth(maxCriteriaContentWidth);
+			end
+			
 			criteria:SetParent(objectivesFrame);
 			criteria:Show();
 			criteria:SetWidth(stringWidth + ACHIEVEMENTUI_CRITERIACHECKWIDTH);
@@ -1484,6 +1504,18 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	elseif ( textStrings > 1 ) then
 		-- Figure out if we can make multiple columns worth of criteria instead of one long one
 		local numColumns = floor(ACHIEVEMENTUI_MAXCONTENTWIDTH/maxCriteriaWidth);
+		-- But if we have a lot of criteria, force 2 columns
+		local forceColumns = false;
+		if ( numColumns == 1 and textStrings >= FORCE_COLUMNS_MIN_CRITERIA and maxCriteriaWidth <= FORCE_COLUMNS_MAX_WIDTH ) then
+			numColumns = 2;
+			forceColumns = true;
+			-- if top right criteria would run into the achievement shield, move them all down 1 row
+			-- this assumes description is 1 or 2 lines, otherwise this wouldn't be a problem
+			if ( AchievementFrame.criteriaTable[2].name:GetStringWidth() > FORCE_COLUMNS_RIGHT_COLUMN_SPACE and progressBars == 0 ) then
+				initialOffset = initialOffset - AchievementFrame.criteriaTable[2]:GetHeight();
+				extraRows = extraRows + 1;
+			end
+		end
 		if ( numColumns > 1 ) then
 			local step;
 			local rows = 1;
@@ -1497,7 +1529,15 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				
 				if ( rows == 1 ) then
 					AchievementFrame.criteriaTable[i]:ClearAllPoints();
-					AchievementFrame.criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns), initialOffset);
+					local xOffset = 0;
+					if ( forceColumns ) then
+						if ( position == 1 ) then
+							xOffset = FORCE_COLUMNS_LEFT_OFFSET;
+						elseif ( position == 2 ) then
+							xOffset = FORCE_COLUMNS_RIGHT_OFFSET;
+						end
+					end
+					AchievementFrame.criteriaTable[i]:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", (position - 1)*(ACHIEVEMENTUI_MAXCONTENTWIDTH/numColumns)+ xOffset, initialOffset);
 				else
 					AchievementFrame.criteriaTable[i]:ClearAllPoints();
 					AchievementFrame.criteriaTable[i]:SetPoint("TOPLEFT", AchievementFrame.criteriaTable[position + ((rows - 2) * numColumns)], "BOTTOMLEFT", 0, 0);
@@ -1571,6 +1611,7 @@ function AchievementFrameSummary_ToggleView()
 			end
 		end
 	end
+	
 	-- categories
 	for i = 1, 8 do
 		local statusBar = _G["AchievementFrameSummaryCategoriesCategory"..i];
@@ -1614,6 +1655,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			if ( not buttons ) then
 				buttons = AchievementFrameSummaryAchievements.buttons;
 			end
+			button.isSummary = true;
 			AchievementFrameSummary_LocalizeButton(button);
 		end;
 		
@@ -2139,7 +2181,13 @@ function AchievementComparisonPlayerButton_Saturate (self)
 			self.saturatedStyle = "normal";
 		end
 	end
-
+	if ( self.isSummary ) then
+		if ( self.accountWide ) then
+			self.titleBar:SetAlpha(1);
+		else
+			self.titleBar:SetAlpha(0.5);
+		end
+	end
 	self.glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.icon:Saturate();
 	self.shield:Saturate();
@@ -2165,7 +2213,13 @@ function AchievementComparisonPlayerButton_Desaturate (self)
 			self.titleBar:SetTexCoord(0, 1, 0.91796875, 0.99609375);
 		end
 	end
-
+	if ( self.isSummary ) then
+		if ( self.accountWide ) then
+			self.titleBar:SetAlpha(1);
+		else
+			self.titleBar:SetAlpha(0.5);
+		end
+	end
 	self.glow:SetVertexColor(.22, .17, .13);
 	self.icon:Desaturate();
 	self.shield:Desaturate();

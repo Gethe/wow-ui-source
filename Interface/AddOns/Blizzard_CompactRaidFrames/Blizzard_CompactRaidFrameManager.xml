@@ -107,32 +107,9 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-	<Frame name="CRFManagerDividerVertical" virtual ="true">
-		<Size x="2" y="40"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture atlas="GM-bgOpen-divider-vertical">
-					<Size x="2" y="31"/>
-					<Anchors>
-						<Anchor point ="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
-	<Frame name="CRFManagerDividerHorizontal" virtual ="true">
-		<Size x="222" y="2"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture atlas="GM-bgOpen-divider-horizontal">
-					<Size x="215" y="2"/>
-					<Anchors>
-						<Anchor point ="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-	</Frame>
+	<Texture name="CRFManagerDividerVertical" atlas="GM-bgOpen-divider-vertical" useAtlasSize="true" virtual="true"/>
+	<Texture name="CRFManagerDividerHorizontal" atlas="GM-bgOpen-divider-horizontal" useAtlasSize="true" virtual="true"/>
+
 	<Frame name="CompactRaidFrameManager" enableMouse="true" frameStrata="MEDIUM" hidden="true" toplevel="true" parent="UIParent">
 		<Size x="222" y="140"/>
 		<Anchors>
@@ -140,36 +117,7 @@
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture name="$parentBG-leads" parentKey="BGLeads" atlas="GM-bgOpen-leads" hidden="true" parentArray="backgrounds">
-					<Size x="222" y="474"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBG-assists" parentKey="BGAssists" atlas="GM-bgOpen-assists" hidden="true" parentArray="backgrounds">
-					<Size x="222" y="432"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBG-regulars" parentKey="BGRegulars"  atlas="GM-bgOpen-regulars" hidden="true" parentArray="backgrounds">
-					<Size x="222" y="267"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBG-party-leads" parentKey="BGPartyLeads"  atlas="GM-bgOpen-party-leads" hidden="true" parentArray="backgrounds">
-					<Size x="222" y="344"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBG-party-regulars" parentKey="BGPartyRegulars"  atlas="GM-bgOpen-party-regulars" hidden="true" parentArray="backgrounds">
-					<Size x="222" y="238"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
+				<Texture parentKey="Background" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -180,7 +128,7 @@
 					<KeyValue key="normalTex" value="gm-btnforward-normal" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" x="-7" y="-20"/>
+					<Anchor point="RIGHT" x="-7" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -243,18 +191,12 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Frame name="$parentOptionFlowContainer" parentKey="optionsFlowContainer">
-						<Size x="222" y="474"/>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="-10" y="-48"/>
-						</Anchors>
-					</Frame>
 					<Frame name="$parentFilterOptions" parentKey="filterOptions">
 						<Size x="222" y="95"/>
 						<Frames>
 							<Button name="$parentFilterRoleTank" inherits="CRFManagerFilterRoleButtonTemplate" parentKey="filterRoleTank" mixin="RaidFrameFilterRoleTankMixin">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="4"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="13" y="4"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad method="OnLoad"/>
@@ -391,21 +333,11 @@
 						</Scripts>
 					</Button>
 					<Frame name="$parentRaidMarkers" mixin="CRFRaidMarkersMixin" parentKey="raidMarkers" hidden="true">
-						<Size x="222" y="122"/>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture name="$parentBG-regular" atlas="GM-tab-body">
-									<Size x="194" y="85"/>
-									<Anchors>
-										<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="19" y="-30"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
+						<Size x="222" y="99"/>
 						<Frames>
 							<Button name="$parentRaidMarkerUnitTab" parentKey="raidMarkerUnitTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_UNIT_MARKER">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="20" y="-15"/>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="10" y="0"/>
 								</Anchors>
 							</Button>
 							<Button name="$parentRaidMarkerGroundTab" parentKey="raidMarkerGroundTab" inherits="CRFManagerMarkerTabTemplate" parentArray="Tabs" text="GROUPMANAGER_GROUND_MARKER">
@@ -414,35 +346,39 @@
 								</Anchors>
 							</Button>
 						</Frames>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="BG" atlas="GM-tab-body">
+									<Size x="194" y="85"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.raidMarkerUnitTab" relativePoint="BOTTOMLEFT" x="-2" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
 							<OnLoad method="OnLoad"/>
 						</Scripts>
 					</Frame>
-					<Frame parentKey="RestrictPingsLabel">
-						<Size x="1" y="18"/>
-						<Layers>
-							<Layer>
-								<FontString parentKey="Label" inherits="GameFontNormal" text="RAID_MANAGER_RESTRICT_PINGS_TO">
-									<Anchors>
-										<Anchor point="LEFT" relativePoint="LEFT" x="0" y="2"/>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
+				</Frames>
+				<Layers>
+					<Layer>
+						<FontString parentKey="RestrictPingsLabel" inherits="GameFontNormalLeft" text="RAID_MANAGER_RESTRICT_PINGS_TO">
+							<Size x="158" y="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
 					<DropdownButton parentKey="RestrictPingsDropdown" name="$parentRestrictPingsDropdown" inherits="WowStyle1DropdownTemplate"/>
 				</Frames>
 			</Frame>
-			<Frame name="parentBottomButtons" parentKey="BottomButtons">
-				<Size x="222" y="40"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="10"/>
-				</Anchors>
+			<Frame parentKey="BottomButtons">
+				<Size x="160" y="53"/>
 				<Frames>
 					<Button name="$parentLeavePartyButton" inherits="UIPanelButtonTemplate" mixin="LeavePartyButtonMixin" text="PARTY_LEAVE">
 						<Size x="160" y="24"/>
 						<Anchors>
-							<Anchor point="TOP" relativePoint="TOP" x="0" y="5"/>
+							<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
 						</Anchors>
 						<Scripts>
 							<OnClick method="OnClick"/>

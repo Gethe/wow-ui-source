@@ -6,6 +6,8 @@ local strlen = strlen;
 local tinsert = tinsert;
 local tremove = tremove;
 
+OFFSPEC_TAB_OFFSET = 40;
+
 function SpellBookFrameMixin:OnLoad()
 	self:RegisterEvent("SPELLS_CHANGED");
 	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
@@ -214,6 +216,12 @@ function SpellBookFrameMixin:UpdatePages()
 end
 
 function SpellButtonMixin:OnClick(button)
+
+	if IsModifiedClick() then
+		self:OnModifiedClick(button);
+		return;
+	end
+
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;
@@ -850,12 +858,19 @@ end
 
 function SpellBookCoreAbilitiesMixin:UpdateTabs()
 	local numSpecs = GetNumSpecializations();
-	local currentSpec = GetSpecialization();
+	local currentSpec;
+
+	if ( not IsPlayerInitialSpec() ) then
+		currentSpec = C_SpecializationInfo.GetSpecialization();
+	else
+		currentSpec = nil;
+	end
+
 	local index = 1;
 	local tab;
 	if ( currentSpec ) then
 		tab = SpellBook_GetCoreAbilitySpecTab(index);
-		local id, name, description, icon = GetSpecializationInfo(currentSpec);
+		local id, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(currentSpec);
 		tab:SetID(currentSpec);
 		tab:SetNormalTexture(icon);
 		tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -874,7 +889,7 @@ function SpellBookCoreAbilitiesMixin:UpdateTabs()
 	for i=1, numSpecs do
 		if ( not currentSpec or currentSpec ~= i ) then
 			tab = SpellBook_GetCoreAbilitySpecTab(index);
-			local id, name, description, icon = GetSpecializationInfo(i);
+			local id, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(i);
 			tab:SetID(i);
 			tab:SetNormalTexture(icon);
 			tab:SetChecked(SpellBookCoreAbilitiesFrame.selectedSpec == tab:GetID());
@@ -892,12 +907,18 @@ end
 function SpellBook_UpdateCoreAbilitiesTab()
 	SpellBookFrame:UpdatePages();
 	SpellBookCoreAbilitiesFrame:UpdateTabs();
+	local currentSpec;
+
+	if ( not IsPlayerInitialSpec() ) then
+		currentSpec = C_SpecializationInfo.GetSpecialization();
+	else
+		currentSpec = nil;
+	end
 	
-	local currentSpec = GetSpecialization();
 	local desaturate = currentSpec and (currentSpec ~= SpellBookCoreAbilitiesFrame.selectedSpec);
-	local specID, displayName = GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
+	local specID, displayName = C_SpecializationInfo.GetSpecializationInfo(SpellBookCoreAbilitiesFrame.selectedSpec);
 	local draggable = false;
-	if ( GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
+	if ( C_SpecializationInfo.GetSpecialization() == SpellBookCoreAbilitiesFrame.selectedSpec ) then
 		draggable = true;
 	end
 	

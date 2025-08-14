@@ -13,6 +13,10 @@ function ClassTalentSearchMixin:InitializeSearch()
 
 	-- Initialize search controller
 	self.searchController = CreateAndInitFromMixin(SpellSearchControllerMixin, searchSources);
+	local function CanSearchActionBar()
+		return not self:IsInspecting();
+	end
+	self.SearchPreviewContainer:AddSuggestedResult(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self), CanSearchActionBar);
 
 	self.isInspecting = self:IsInspecting();
 
@@ -39,12 +43,6 @@ function ClassTalentSearchMixin:UpdateEnabledSearchTypes()
 	local disableActionBarSearch = self.isInspecting;
 	local forceClearSearch = wasInspecting ~= self.isInspecting;
 	self.searchController:SetFilterDisabled(SpellSearchUtil.FilterType.ActionBar, disableActionBarSearch, forceClearSearch);
-
-	if disableActionBarSearch then
-		self.SearchPreviewContainer:DisableDefaultResultButton();
-	else
-		self.SearchPreviewContainer:SetDefaultResultButton(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
-	end
 end
 
 function ClassTalentSearchMixin:SetPreviewResultSearch(previewSearchText)

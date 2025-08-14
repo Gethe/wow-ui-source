@@ -1,7 +1,12 @@
 ## Title: Blizzard_CooldownViewer
-## Author: Blizzard Entertainment
-## DefaultState: enabled
 ## AllowLoadGameType: standard
 ## Dependencies: Blizzard_EditMode
+CooldownViewerSettingsConstants.lua
+CooldownViewerSettingsDataStoreSerialization.lua
+CooldownViewerSettingsLayoutManager.lua
+CooldownViewerSettingsDataProvider.lua
+CooldownViewerItemData.lua
+CooldownViewerSettings.lua
+CooldownViewerSettings.xml
 CooldownViewer.lua
 CooldownViewer.xml

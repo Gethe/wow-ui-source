@@ -62,6 +62,7 @@ local ItemInteractionUI =
 		{
 			Name = "PerformItemInteraction",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "Reset",

@@ -545,6 +545,7 @@ local Map =
 		{
 			Name = "OpenWorldMap",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

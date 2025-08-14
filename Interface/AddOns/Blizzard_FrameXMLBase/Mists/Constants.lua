@@ -39,27 +39,6 @@ FACTION_BAR_COLORS = {
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
 
-
-
-MATERIAL_TEXT_COLOR_TABLE = {
-	["Default"] = {0.18, 0.12, 0.06},
-	["Stone"] = {1.0, 1.0, 1.0},
-	["Parchment"] = {0.18, 0.12, 0.06},
-	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
-};
-MATERIAL_TITLETEXT_COLOR_TABLE = {
-	["Default"] = {0, 0, 0},
-	["Stone"] = {0.93, 0.82, 0},
-	["Parchment"] = {0, 0, 0},
-	["Marble"] = {0.93, 0.82, 0},
-	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
-};
-
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
 FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
 FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
@@ -118,7 +97,28 @@ CLASS_MASTERY_SPELLS = {
 --
 -- Glyph
 --
-SHOW_INSCRIPTION_LEVEL = 15;
+NUM_GLYPH_SLOTS = 6;
+
+GLYPH_TYPE_MAJOR = 1;
+GLYPH_TYPE_MINOR = 2;
+--GLYPH_TYPE_PRIME = 3;
+
+SHOW_INSCRIPTION_LEVEL = 25;
+
+GLYPH_ID_MINOR_1 = 1;
+GLYPH_ID_MINOR_2 = 3;
+GLYPH_ID_MINOR_3 = 5;
+
+GLYPH_ID_MAJOR_1 = 2;
+GLYPH_ID_MAJOR_2 = 4;
+GLYPH_ID_MAJOR_3 = 6;
+
+--[[
+		2
+	3   	1
+4   	5   	6
+]]--
+
 INSCRIPTION_AVAILABLE = true;
 
 
@@ -154,9 +154,8 @@ PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor
 -- Guild
 MAX_GUILDBANK_TABS = 8;
 MAX_BUY_GUILDBANK_TABS = 6;
-MAX_GOLD_WITHDRAW = 1000;
 MAX_GOLD_WITHDRAW_DIGITS = 9;
-
+MAX_ITEM_WITHDRAW_DIGITS = 6;
 
 -- Quest
 

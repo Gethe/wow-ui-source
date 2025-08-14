@@ -33,3 +33,4 @@ ColorSwatch.lua
 FrameWatcher.lua
 TaggableObject.lua
 TimedCallback.lua
+RegionLayoutManager.lua

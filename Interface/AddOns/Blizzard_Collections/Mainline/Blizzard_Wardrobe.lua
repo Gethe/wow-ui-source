@@ -57,8 +57,8 @@ function TransmogFrameMixin:OnLoad()
 		local currentSpecOnly = true;
 		rootDescription:CreateRadio(TRANSMOG_ALL_SPECIALIZATIONS, IsSelected, SetSelected, not currentSpecOnly);
 
-		local spec = GetSpecialization();
-		local name = spec and select(2, GetSpecializationInfo(spec)) or nil;
+		local spec = C_SpecializationInfo.GetSpecialization();
+		local name = spec and select(2, C_SpecializationInfo.GetSpecializationInfo(spec)) or nil;
 		if name then
 			rootDescription:CreateRadio(TRANSMOG_CURRENT_SPECIALIZATION, IsSelected, SetSelected, currentSpecOnly);
 
@@ -138,6 +138,11 @@ function TransmogFrameMixin:HandleFormChanged()
 end
 
 function TransmogFrameMixin:OnShow()
+	if( not C_Transmog.IsTransmogEnabled() ) then
+		self:OnHide();
+		return;
+	end
+
 	HideUIPanel(CollectionsJournal);
 	WardrobeCollectionFrame:SetContainer(WardrobeFrame);
 
@@ -537,7 +542,7 @@ function WardrobeOutfitDropdownOverrideMixin:GetItemTransmogInfoList()
 end
 
 function WardrobeOutfitDropdownOverrideMixin:GetLastOutfitID()
-	local specIndex = GetSpecialization();
+	local specIndex = C_SpecializationInfo.GetSpecialization();
 	return tonumber(GetCVar("lastTransmogOutfitIDSpec"..specIndex));
 end
 

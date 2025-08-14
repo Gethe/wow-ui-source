@@ -15,19 +15,27 @@
 			<KeyValue key="selectedTextureKit" value="editmode-actionbar-selected" type="string"/>
 			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 		</KeyValues>
+		<Frames>
+			<Frame parentKey="MouseOverHighlight" inherits="NineSliceCodeTemplate" setAllPoints="true" alpha="0.4" hidden="true">
+				<Scripts>
+					<OnLoad function="nop"/>
+				</Scripts>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 
 	<Frame name="EditModeSystemSelectionTemplate" inherits="EditModeSystemSelectionBaseTemplate" mixin="EditModeSystemSelectionMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Label" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true">
-				</FontString>
+				<FontString parentKey="Label" inherits="GameFontHighlightLarge" mixin="ShrinkUntilTruncateFontStringMixin" setAllPoints="true" ignoreParentScale="true" hidden="true"/>
 			</Layer>
 		</Layers>
 	</Frame>

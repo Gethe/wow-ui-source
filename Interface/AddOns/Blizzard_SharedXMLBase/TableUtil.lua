@@ -289,7 +289,7 @@ function TableUtil.Transform(tbl, op)
 	return result;
 end
 
--- Returns the value in a table deemed smallest by evaluating each value returned by the op function parameter. 
+-- Returns the value in a table deemed smallest by evaluating each value returned by the op function parameter.
 -- The return of the op function must return a number.
 function TableUtil.FindMin(tbl, op)
 	local result = nil;
@@ -304,7 +304,7 @@ function TableUtil.FindMin(tbl, op)
 	return result;
 end
 
--- Returns the value in a table deemed largest by evaluating each value returned by the op function parameter. 
+-- Returns the value in a table deemed largest by evaluating each value returned by the op function parameter.
 -- The return of the op function must return a number.
 function TableUtil.FindMax(tbl, op)
 	local result = nil;
@@ -413,7 +413,7 @@ function CopyTransformedValuesAsKeys(tbl, transformOp)
 end
 
 -- Addresses the problem where nil values within a varargs list are not preserved when constructing
--- a table, resulting a table with a smaller size than expected. Should be paired with a call to 
+-- a table, resulting a table with a smaller size than expected. Should be paired with a call to
 -- SafeUnpack when unpacking the table.
 function SafePack(...)
 	local tbl = { ... };
@@ -521,10 +521,10 @@ end
 function GetKeysArraySortedByValue(tbl)
 	local keysArray = GetKeysArray(tbl);
 
-	table.sort(keysArray, function(a, b) 
+	table.sort(keysArray, function(a, b)
 		return tbl[a] < tbl[b];
 	end);
-	
+
 	return keysArray;
 end
 

@@ -439,8 +439,8 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE"] = {
 	text = "%s",
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		self.data.owner:OnConfirm();
+	OnAccept = function(dialog, data)
+		data.owner:OnConfirm();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -459,30 +459,29 @@ StaticPopupDialogs["CONFIRM_PLAYER_CHOICE_WITH_CONFIRMATION_STRING"] = {
 	hasEditBox = 1,
 	maxLetters = 32,
 
-	OnAccept = function(self)
-		self.data.owner:OnConfirm();
+	OnAccept = function(dialog, data)
+		data.owner:OnConfirm();
 	end,
-	OnShow = function(self)
-		self.button1:Disable();
-		self.button2:Enable();
-		self.editBox:SetFocus();
+	OnShow = function(dialog, data)
+		dialog:GetButton1():Disable();
+		dialog:GetButton2():Enable();
+		dialog:GetEditBox():SetFocus();
 	end,
-	OnHide = function(self)
-		self.editBox:SetText("");
+	OnHide = function(dialog, data)
+		dialog:GetEditBox():SetText("");
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		if parent.button1:IsEnabled() then
-			parent.data.owner:OnConfirm();
-			parent:Hide();
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		if dialog:GetButton1():IsEnabled() then
+			data.owner:OnConfirm();
+			dialog:Hide();
 		end
 	end,
-	EditBoxOnTextChanged = function (self)
-		local parent = self:GetParent();
-		StaticPopup_StandardConfirmationTextHandler(self, parent.data.confirmationString);
+	EditBoxOnTextChanged = function(editBox, data)
+		StaticPopup_StandardConfirmationTextHandler(editBox, data.confirmationString);
 	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide();
+	EditBoxOnEscapePressed = function(editBox, data)
+		editBox:GetParent():Hide();
 		ClearCursor();
 	end
 };

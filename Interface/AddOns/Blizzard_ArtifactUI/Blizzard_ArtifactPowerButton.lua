@@ -44,7 +44,7 @@ end
 function ArtifactPowerButtonMixin:OnEnter()
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		local _, cursorItemID = GetCursorInfo();
-		if cursorItemID and IsArtifactRelicItem(cursorItemID) then
+		if cursorItemID and C_ItemSocketInfo.IsArtifactRelicItem(cursorItemID) then
 			-- no tooltip
 			return;
 		end

@@ -62,6 +62,7 @@ local LFGListInfo =
 		{
 			Name = "CreateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -266,6 +267,17 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetGroupLeaverCountsByRole",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "tankLeavers", Type = "number", Nilable = false },
+				{ Name = "healerLeavers", Type = "number", Nilable = false },
+				{ Name = "damageLeavers", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetKeystoneForActivity",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -450,6 +462,7 @@ local LFGListInfo =
 		{
 			Name = "Search",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -465,6 +478,7 @@ local LFGListInfo =
 		{
 			Name = "SetEntryTitle",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -503,6 +517,7 @@ local LFGListInfo =
 		{
 			Name = "UpdateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -852,6 +867,7 @@ local LFGListInfo =
 				{ Name = "assignedRole", Type = "cstring", Nilable = false },
 				{ Name = "lfgRoles", Type = "LFGRoles", Nilable = false },
 				{ Name = "isLeader", Type = "bool", Nilable = false },
+				{ Name = "isLeaver", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

@@ -23,7 +23,7 @@ function MonkStaggerBarMixin:OnLoad()
 	local _, class = UnitClass("player")
 	self.class = class
 	if (class == "MONK") then
-		if (self.specRestriction == GetSpecialization()) then
+		if (self.specRestriction == C_SpecializationInfo.GetSpecialization()) then
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("UNIT_DISPLAYPOWER");
 			self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");	
@@ -43,7 +43,7 @@ function MonkStaggerBarMixin:OnEvent(event, arg1)
 		if ( arg1 == nil or arg1 == parent.unit) then
 			AlternatePowerBar_SetLook(self);
 			self:UpdatePowerType();
-			if (self.specRestriction == GetSpecialization()) then
+			if (self.specRestriction == C_SpecializationInfo.GetSpecialization()) then
 				self:RegisterEvent("PLAYER_ENTERING_WORLD");
 				self:RegisterEvent("UNIT_DISPLAYPOWER");
 				self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR");	
@@ -94,7 +94,7 @@ function MonkStaggerBarMixin:UpdateMaxValues()
 end
 
 function MonkStaggerBarMixin:UpdatePowerType()
-	if (self.class == "MONK" and self.specRestriction == GetSpecialization() 
+	if (self.class == "MONK" and self.specRestriction == C_SpecializationInfo.GetSpecialization() 
 			and not UnitHasVehiclePlayerFrameUI("player") ) then
 		self.pauseUpdates = false;
 		self:UpdateValue();

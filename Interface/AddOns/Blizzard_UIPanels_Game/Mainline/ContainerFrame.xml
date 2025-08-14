@@ -264,12 +264,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ContainerFrameBankTemplate" inherits="ContainerFrameTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="canUseForBankBag" value="true" type="boolean"/>
-		</KeyValues>
-	</Frame>
-
 	<Frame name="ContainerFrameReagentBagTemplate" inherits="ContainerFrameTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="canUseForReagentBag" value="true" type="boolean"/>
@@ -292,13 +286,6 @@
 	<Frame name="ContainerFrame4" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame5" inherits="ContainerFrameTemplate"/>
 	<Frame name="ContainerFrame6" inherits="ContainerFrameReagentBagTemplate"/>
-	<Frame name="ContainerFrame7" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame8" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame9" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame10" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame11" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame12" inherits="ContainerFrameBankTemplate"/>
-	<Frame name="ContainerFrame13" inherits="ContainerFrameBankTemplate"/>
 
 	<Frame name="ContainerFrameCombinedBags" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameCombinedBagsMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" movable="true" enableMouse="true" hidden="true">
 		<KeyValues>

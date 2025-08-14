@@ -8,7 +8,7 @@ end
 
 CurrencyTransferToggleButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin);
 
-local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
+local CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURRENCY_TRANSFER_FAILED",
 	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
@@ -32,16 +32,16 @@ function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(dataReady, fa
 end
 
 function CurrencyTransferToggleButtonMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS);
+	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS);
 	C_CurrencyInfo.RequestCurrencyDataForAccountCharacters();
 end
 
 function CurrencyTransferToggleButtonMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS);
+	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS);
 end
 
 function CurrencyTransferToggleButtonMixin:OnEvent(event, ...)
-	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" or event == "CURRENCY_TRANSFER_FAILED" or event == "CURRENCY_TRANSFER_INITIATED" then
+	if tContains(CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS, event) then
 		self:UpdateEnabledState();
 	end
 end
@@ -101,6 +101,8 @@ CurrencyTransferMenuMixin = CreateFromMixins(CallbackRegistryMixin);
 local CURRENCY_TRANSFER_MENU_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURRENCY_TRANSFER_FAILED",
+	"CURRENCY_TRANSFER_INITIATED",
+	"CURRENCY_TRANSFER_SUCCESS"
 };
 
 CurrencyTransferMenuMixin:GenerateCallbackEvents({
@@ -126,6 +128,11 @@ function CurrencyTransferMenuMixin:OnEvent(event, ...)
 		end
 	elseif event == "CURRENCY_TRANSFER_FAILED" then
 		HideUIPanel(self);
+	elseif event == "CURRENCY_TRANSFER_INITIATED" then
+		self:FullRefresh();
+	elseif event == "CURRENCY_TRANSFER_SUCCESS" then
+		self:ResetCurrencyAmountSelector();
+		self:PlayTransferCelebration();
 	end
 end
 
@@ -137,9 +144,26 @@ function CurrencyTransferMenuMixin:InitializeFrameVisuals()
 	self.Inset:ClearAllPoints();
 	self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", 11, -28);
 	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 35);
-	self.SourceSelector:ClearAllPoints();
-	self.SourceSelector:SetPoint("TOPLEFT", self.Inset, "TOPLEFT", 20, -30);
-	self.SourceSelector:SetPoint("TOPRIGHT", self.Inset, "TOPRIGHT", -20, -30);
+	self.Content.SourceSelector:ClearAllPoints();
+	self.Content.SourceSelector:SetPoint("TOPLEFT", self.Inset, "TOPLEFT", 20, -30);
+	self.Content.SourceSelector:SetPoint("TOPRIGHT", self.Inset, "TOPRIGHT", -20, -30);
+end
+
+function CurrencyTransferMenuMixin:QueueTransferringSpinner()
+	-- Try to avoid showing the transferring spinner in cases where the transfer completes immediately
+	C_Timer.After(0.3, function()
+		self:CheckPlayTransferringSpinner();
+	end);
+end
+
+function CurrencyTransferMenuMixin:CheckPlayTransferringSpinner()
+	self:SetTransferringSpinnerShown(self:IsShown() and C_CurrencyInfo.IsCurrencyTransferInProgress());
+end
+
+function CurrencyTransferMenuMixin:SetTransferringSpinnerShown(shown)
+	-- We shouldn't show the spinner and the content of the transfer menu at the same time
+	self.TransferringSpinner:SetShown(shown);
+	self.Content:SetShown(not shown);
 end
 
 function CurrencyTransferMenuMixin:OnCurrencyTransferRequested(requestedCurrencyID)
@@ -168,9 +192,9 @@ function CurrencyTransferMenuMixin:OnCurrencyTransferSourceSelected(sourceCharac
 		return;
 	end
 
-	self.SourceSelector:RefreshSelectedSource();
-	self.AmountSelector:ValidateAndSetValue();
-	self.SourceBalancePreview:SetCharacterAndCurrencyBalance(sourceCharacterData.characterName, self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
+	self.Content.SourceSelector:RefreshSelectedSource();
+	self.Content.AmountSelector:ValidateAndSetValue();
+	self.Content.SourceBalancePreview:SetCharacterAndCurrencyBalance(sourceCharacterData.characterName, self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
 end
 
 function CurrencyTransferMenuMixin:OnCurrencyTransferAmountUpdated(amount)
@@ -178,7 +202,7 @@ function CurrencyTransferMenuMixin:OnCurrencyTransferAmountUpdated(amount)
 		return;
 	end
 
-	self.ConfirmButton:SetEnabled(amount > 0);
+	self.Content.ConfirmButton:SetEnabled(amount > 0);
 	self:RefreshSourceCharacterBalancePreview();
 	self:RefreshPlayerBalancePreview();
 end
@@ -193,11 +217,16 @@ function CurrencyTransferMenuMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_MENU_EVENTS);
 	self:ClearTransferData();
+	self:StopTransferCelebration();
 end
 
 function CurrencyTransferMenuMixin:ClearTransferData()
 	self.currencyInfo = nil;
 	self.sourceCharacterData = nil;
+end
+
+function CurrencyTransferMenuMixin:ResetCurrencyAmountSelector()
+	self.Content.AmountSelector:Reset();
 end
 
 function CurrencyTransferMenuMixin:SetCurrency(currencyID)
@@ -282,36 +311,57 @@ function CurrencyTransferMenuMixin:GetSourceCharacterName()
 end
 
 function CurrencyTransferMenuMixin:GetRequestedCurrencyTransferAmount()
-	return self.AmountSelector:GetRequestedCurrencyTransferAmount();
+	return self.Content.AmountSelector:GetRequestedCurrencyTransferAmount();
 end
 
 function CurrencyTransferMenuMixin:GetTotalCurrencyTransferCost()
-	return self.AmountSelector:CalculateTotalCurrencyTransferCost(self.currencyInfo.currencyID);
+	return self.Content.AmountSelector:CalculateTotalCurrencyTransferCost(self.currencyInfo.currencyID);
 end
 
 function CurrencyTransferMenuMixin:GetCurrencyTransferLoss()
-	return self.AmountSelector:CalculateCurrencyTransferLoss(self.currencyInfo.currencyID);
+	return self.Content.AmountSelector:CalculateCurrencyTransferLoss(self.currencyInfo.currencyID);
 end
 
 function CurrencyTransferMenuMixin:RefreshSourceCharacterBalancePreview()
-	self.SourceBalancePreview:SetCurrencyBalance(self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
+	self.Content.SourceBalancePreview:SetCurrencyBalance(self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
 end
 
 function CurrencyTransferMenuMixin:RefreshPlayerBalancePreview()
 	local transferAmount = self:GetRequestedCurrencyTransferAmount();
-	self.PlayerBalancePreview:SetCharacterAndCurrencyBalance(UnitName("player"), self:GetPlayerCurrencyQuantity() + transferAmount);
+	self.Content.PlayerBalancePreview:SetCharacterAndCurrencyBalance(UnitName("player"), self:GetPlayerCurrencyQuantity() + transferAmount);
 end
 
 function CurrencyTransferMenuMixin:FullRefresh()
-	if not self.currencyInfo then 
+	if not self.currencyInfo then
+		HideUIPanel(self);
 		return;
+	end
+
+	local canTransfer, failureReason = C_CurrencyInfo.CanTransferCurrency(self.currencyInfo.currencyID);
+	if not canTransfer and failureReason ~= Enum.AccountCurrencyTransferResult.TransactionInProgress then
+		HideUIPanel(self);
+		return;
+	end
+
+	if C_CurrencyInfo.IsCurrencyTransferInProgress() then
+		self:QueueTransferringSpinner();
+	else
+		self:SetTransferringSpinnerShown(false);
 	end
 
 	self:RefreshCurrencyInfo();
 	self:RefreshMenuTitle();
 	self:RefreshPlayerBalancePreview();
-	self.SourceSelector:RefreshRosterCurrencyData();
-	self.SourceSelector:AutoSelectHighestQuantitySource();
+	self.Content.SourceSelector:RefreshRosterCurrencyData();
+	self.Content.SourceSelector:AutoSelectHighestQuantitySource();
+end
+
+function CurrencyTransferMenuMixin:PlayTransferCelebration()
+	self.AnimationHolder.TransferCelebration:Restart();
+end
+
+function CurrencyTransferMenuMixin:StopTransferCelebration()
+	self.AnimationHolder.TransferCelebration:Stop();
 end
 
 CurrencyTransferBalancePreviewMixin = CreateFromMixins(CurrencyTransferSystemMixin);
@@ -351,7 +401,6 @@ function CurrencyTransferConfirmButtonMixin:OnClick()
 	local CurrencyTransferMenu = self:GetCurrencyTransferMenu();
 	local sourceCharacterData = CurrencyTransferMenu:GetSourceCharacterData();
 	C_CurrencyInfo.RequestCurrencyFromAccountCharacter(sourceCharacterData.characterGUID, CurrencyTransferMenu:GetCurrencyID(), CurrencyTransferMenu:GetRequestedCurrencyTransferAmount());
-	HideUIPanel(CurrencyTransferMenu);
 end
 
 CurrencyTransferCancelButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin);

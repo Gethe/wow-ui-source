@@ -57,7 +57,6 @@ LOCALIZED_CLASS_NAMES_FEMALE = LocalizedClassList(true);
 --
 -- Spell
 --
-HUNTER_DISMISS_PET = 2641;
 WARLOCK_METAMORPHOSIS = 103958;
 WARLOCK_SOULBURN = 117198;
 WARLOCK_GREEN_FIRE = 101508;
@@ -146,7 +145,6 @@ LOOT_ROLL_TYPE_DISENCHANT = 3;
 ITEM_INVENTORY_LOCATION_PLAYER		= 0x00100000;
 ITEM_INVENTORY_LOCATION_BAGS		= 0x00200000;
 ITEM_INVENTORY_LOCATION_BANK		= 0x00400000;
-ITEM_INVENTORY_LOCATION_VOIDSTORAGE	= 0x00800000;
 ITEM_INVENTORY_BAG_BIT_OFFSET 		= 8; -- Number of bits that the bag index in GetInventoryItemsForSlot gets shifted to the left.
 
 -- Inventory slots
@@ -181,15 +179,10 @@ INVSLOTS_EQUIPABLE_IN_COMBAT = {
 
 -- Container constants
 BACKPACK_CONTAINER = Enum.BagIndex.Backpack;
-BANK_CONTAINER = Enum.BagIndex.Bank;
-BANK_CONTAINER_INVENTORY_OFFSET = 39; -- Used for PickupInventoryItem
-REAGENTBANK_CONTAINER = Enum.BagIndex.Reagentbank;
 
 NUM_BAG_SLOTS = Constants.InventoryConstants.NumBagSlots;
 NUM_REAGENTBAG_SLOTS = Constants.InventoryConstants.NumReagentBagSlots;
 NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_BAG_SLOTS + NUM_REAGENTBAG_SLOTS;
-NUM_BANKGENERIC_SLOTS = Constants.InventoryConstants.NumGenericBankSlots;
-NUM_BANKBAGSLOTS = Constants.InventoryConstants.NumBankBagSlots;
 
 ITEM_INVENTORY_BANK_BAG_OFFSET = NUM_TOTAL_EQUIPPED_BAG_SLOTS; -- Number of bags before the first bank bag
 CONTAINER_BAG_OFFSET = 30; -- Used for PutItemInBag
@@ -785,14 +778,5 @@ RELIC_TALENT_LINK_STYLE_POTENTIAL = 2;
 RELIC_TALENT_LINK_STYLE_ACTIVE = 3;
 RELIC_TALENT_LINK_STYLE_UPCOMING = 4;
 RELIC_TALENT_LINK_STYLE_AVAILABLE = 5;
-
--- TODO: Need to be able to expose this from client...
-Enum.ChatChannelType = {
-	None = 0,
-	Custom = 1,
-	Private_Party = 2,
-	Public_Party = 3,
-	Communities = 4,
-};
 
 TOOLTIP_INDENT_OFFSET = 10;

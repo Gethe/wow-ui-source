@@ -1,7 +1,7 @@
 CVarCallbackRegistry:SetCVarCachable("colorblindMode");
 
 local function Register()
-	local category, layout = Settings.RegisterVerticalLayoutCategory(COLORS_LABEL);
+	local category, layout = Settings.RegisterVerticalLayoutCategory(Settings.GetColorblindSettingsLabel());
 
 	-- Enable Colorblind Mode
 	Settings.SetupCVarCheckbox(category, "colorblindMode", USE_COLORBLIND_MODE, OPTION_TOOLTIP_USE_COLORBLIND_MODE);

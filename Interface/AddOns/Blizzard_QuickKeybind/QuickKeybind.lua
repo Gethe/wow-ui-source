@@ -159,10 +159,10 @@ end
 function QuickKeybindFrameMixin:OnHide()
 	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeDisabled");
 
-	if EditModeManagerFrame:IsEditModeActive() then
-		ShowUIPanel(EditModeManagerFrame);
-	elseif not GameMenuFrame:IsShown() then
-		SettingsPanel:Open();
+	if not EditModeManagerFrame:ShowIfActive() then
+		if not GameMenuFrame:IsShown() then
+			SettingsPanel:Open();
+		end
 	end
 
 	ActionButtonUtil.HideAllActionButtonGrids();

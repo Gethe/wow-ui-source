@@ -194,7 +194,7 @@ function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActive(...));
 end
 
-local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency, _isRepeatable, _isImportant, _isMeta)
+local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency, _isRepeatable, _isImportant, _isMeta, questInfoID)
 	local quest = QuestCache:Get(questID);
 	-- allow for possible overrides. For most things, prefer what the client API classification returns
 	if isComplete == nil then
@@ -205,7 +205,7 @@ local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency
 		frequency = quest.frequency;
 	end
 
-	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID, questInfoID);
 	local isLegendary = classification == Enum.QuestClassification.Legendary;
 	local isRepeatable = classification == Enum.QuestClassification.Recurring;
 	local isImportant = classification == Enum.QuestClassification.Important;
@@ -216,10 +216,10 @@ local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency
 	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta;
 end
 
-function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant, isMeta)
+function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID)
 	local unusedIsComplete = false;
 	local isCampaign, isCalling;
-	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 	return QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 
@@ -227,9 +227,9 @@ function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOfferForQuestID(...));
 end
 
-function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta)
+function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID)
 	local isCampaign, isCalling;
-	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 	return QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 
@@ -335,70 +335,6 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 	end
 end
 
-local function GetQuestTextContrastValue(cvarValue)
-	return tonumber(cvarValue or GetCVarNumberOrDefault("QuestTextContrast"));
-end
-
-function QuestUtil.QuestTextContrastEnabled(cvarValue)
-	return GetQuestTextContrastValue(cvarValue) > 0;
-end
-
-function QuestUtil.QuestTextContrastUseLightText(cvarValue)
-	return QuestUtil.ShouldQuestTextContrastSettingUseLightText(GetQuestTextContrastValue(cvarValue));
-end
-
-function QuestUtil.ShouldQuestTextContrastSettingUseLightText(cvarValue)
-	--Use light text when the background is dark
-	return GetQuestTextContrastValue(cvarValue) == 4;
-end
-
-function QuestUtil.GetDefaultQuestBackgroundTexture()
-	return QuestUtil.GetQuestBackgroundAtlas(GetQuestTextContrastValue(cvarValue));
-end
-
-local questBackgroundAtlas =
-{
-	[0] = "QuestBG-Parchment",
-	[1] = "QuestBG-Parchment-Accessibility",
-	[2] = "QuestBG-Parchment-Accessibility2",
-	[3] = "QuestBG-Parchment-Accessibility3",
-	[4] = "QuestBG-Parchment-Accessibility4",
-}
-
-function QuestUtil.GetQuestBackgroundAtlas(questTextContrastSetting)
-	if questTextContrastSetting ~= nil then
-		return questBackgroundAtlas[questTextContrastSetting];
-	end
-end
-
-local defaultQuestMapBackgroundTexture =
-{
-	[0] = "QuestDetailsBackgrounds",
-	[1] = "QuestDetailsBackgrounds-Accessibility",
-	[2] = "QuestDetailsBackgrounds-Accessibility_Light",
-	[3] = "QuestDetailsBackgrounds-Accessibility_Medium",
-	[4] = "QuestDetailsBackgrounds-Accessibility_Dark",
-}
-
-function QuestUtil.GetDefaultQuestMapBackgroundTexture(cvarValue)
-	local contrast = GetQuestTextContrastValue(cvarValue);
-	if contrast ~= nil then
-		return defaultQuestMapBackgroundTexture[contrast];
-	end
-end
-
-function QuestUtil.GetBackgroundTexture(textureKit)
-	if textureKit then
-		local backgroundAtlas = GetFinalNameFromTextureKit("QuestBG-%s", textureKit);
-		local atlasInfo = C_Texture.GetAtlasInfo(backgroundAtlas);
-		if atlasInfo then
-			return backgroundAtlas;
-		end
-	end
-	
-	return QuestUtil.GetDefaultQuestBackgroundTexture();
-end
-
 function QuestUtil.IsShowingQuestDetails(questID)
 	return QuestLogPopupDetailFrame_IsShowingQuest(questID);
 end
@@ -464,6 +400,15 @@ function QuestUtil.UntrackWorldQuest(questID)
 		end
 	end
 	ObjectiveTrackerManager:UpdateAll();
+end
+
+function QuestUtil.CanRemoveQuestWatch()
+	-- Prevent players in the New Player Experience from being able to untrack quests.
+	if C_PlayerInfo.IsPlayerNPERestricted() then
+		return false;
+	end
+
+	return true;
 end
 
 function QuestUtil.IsQuestTrackableTask(questID)

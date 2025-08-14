@@ -32,6 +32,9 @@ function RaidFrame_OnLoad(self)
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(RaidInfoFrame.ScrollBox, RaidInfoFrame.ScrollBar, view);
+
+	ScrollUtil.RegisterScrollBoxWithScrollBar(self.RaidFrameNotInRaid.ScrollingDescription:GetScrollBox(), self.RaidFrameNotInRaid.ScrollingDescriptionScrollBar);
+	self.RaidFrameNotInRaid.ScrollingDescription:SetText(RAID_DESCRIPTION);
 end
 
 function RaidFrame_OnShow(self)
@@ -109,6 +112,10 @@ function RaidFrame_Update()
 		RaidFrameConvertToRaidButton:Hide();
 		RaidFrameNotInRaid:Hide();
 		ButtonFrameTemplate_HideButtonBar(FriendsFrame);
+	end
+
+	if RaidFrame:GetParent() == FriendsFrame then
+		FriendsFrame_UpdateInsetVisibility();
 	end
 
 	if ( RaidGroupFrame_Update ) then

@@ -8,7 +8,7 @@ end
 
 function LootJournalItemsMixin:SetClassAndSpecFiltersFromSpecialization()
 	local _, _, classID = UnitClass("player");
-	local specID = GetSpecializationInfo(GetSpecialization());
+	local specID = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 	self:SetClassAndSpecFilters(classID, specID);
 end
 
@@ -99,9 +99,9 @@ end
 function LootJournalItemSetsMixin:GetPreviewClassAndSpec()
 	local classID, specID = self:GetClassAndSpecFilters();
 	if specID == 0 then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		if spec and classID == select(3, UnitClass("player")) then
-			specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+			specID = C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
 		else
 			specID = -1;
 		end
@@ -147,7 +147,7 @@ function LootJournalItemSetsMixin:SetClassAndSpecFilters(newClassFilter, newSpec
 			-- if player's class, choose active spec
 			-- otherwise use 1st spec
 			if classID == newClassFilter then
-				newSpecFilter = GetSpecializationInfo(GetSpecialization());
+				newSpecFilter = C_SpecializationInfo.GetSpecializationInfo(C_SpecializationInfo.GetSpecialization());
 			else
 				local sex = UnitSex("player");
 				newSpecFilter = GetSpecializationInfoForClassID(newClassFilter, 1, sex);

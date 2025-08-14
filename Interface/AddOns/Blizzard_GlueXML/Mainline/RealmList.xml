@@ -346,7 +346,7 @@
 									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 								</Anchors>
 							</EventFrame>
-							<Button name="RealmListCancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
+							<Button name="RealmListCancelButton" inherits="GlueButtonTemplate" text="CANCEL">
 								<Size x="125" y="26"/>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" x="-53" y="19"/>
@@ -358,7 +358,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="RealmListOkButton" inherits="GlueDialogButtonTemplate" text="OKAY">
+							<Button name="RealmListOkButton" inherits="GlueButtonTemplate" text="OKAY">
 								<Size x="125" y="26"/>
 								<Anchors>
 									<Anchor point="RIGHT" relativeTo="RealmListCancelButton" relativePoint="LEFT" x="-5" y="0"/>

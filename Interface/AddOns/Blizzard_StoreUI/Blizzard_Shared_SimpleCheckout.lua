@@ -44,7 +44,7 @@ function SimpleCheckoutMixin:OnHide()
 	
 	if (C_Glue.IsOnGlueScreen() and self.closeShopOnHide) then
 		_G.SetStoreUIShown(false);
-		_G.GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+		_G.StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		self.closeShopOnHide = false;
 	end
 	

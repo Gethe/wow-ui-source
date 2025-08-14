@@ -9,6 +9,7 @@ local AzeriteEssence =
 		{
 			Name = "ActivateEssence",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -214,6 +215,7 @@ local AzeriteEssence =
 		{
 			Name = "SetPendingActivationEssence",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

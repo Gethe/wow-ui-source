@@ -199,6 +199,7 @@
 	<!-- Tab Template-->
 	<Texture name="ChatTabConversationIconTemplate" file="Interface\ChatFrame\UI-ChatConversationIcon" virtual="true">
 		<Size x="16" y="16"/>
+		<!-- Size and various other display values can be changed dynamically (See GetDefaultChatConversationIconDisplayInfo and GetRecentAllyChatConversationIconDisplayInfo) -->
 	</Texture>
 	<Button name="ChatTabArtTemplate" virtual="true" alpha="0.4">
 		<Size x="64" y="32"/>

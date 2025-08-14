@@ -14,12 +14,13 @@ Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua
 Mists\AlternatePowerBar.xml
-Cata\PartyFrameTemplates.xml
+Classic\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
+Shared\TargetFrame.lua
 Wrath\TargetFrame.lua
 Cata\TargetFrame.xml
 Shared\TotemFrame.lua
-Cata\TotemFrame.lua
+Mists\TotemFrame.lua
 Shared\TotemFrame.xml
 Cata\PetFrame.lua
 Classic\PetFrame_Shared.lua

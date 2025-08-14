@@ -1,0 +1,4 @@
+## Title: Blizzard Challenges UI
+## LoadOnDemand: 1
+Mainline\Blizzard_ChallengesUI.xml
+Mainline\Localization.lua

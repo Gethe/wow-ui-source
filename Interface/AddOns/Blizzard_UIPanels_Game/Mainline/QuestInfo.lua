@@ -26,7 +26,7 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 
 	if ( template.canHaveSealMaterial ) then
 		local questFrame = parentFrame:GetParent():GetParent();
-		if QuestUtil.QuestTextContrastEnabled() then
+		if QuestTextContrast.IsEnabled() then
 			questFrame.SealMaterialBG:Hide();
 		else
 			local questID;
@@ -63,10 +63,10 @@ function QuestInfo_Display(template, parentFrame, acceptButton, material, mapVie
 			MapQuestInfoRewardsFrame:Hide();
 		end
 	end
-	if ( QuestInfoFrame.material ~= material or QuestBgTextContrast ~= QuestUtil.QuestTextContrastUseLightText()) then
+	if ( QuestInfoFrame.material ~= material or QuestBgTextContrast ~= QuestTextContrast.UseLightText()) then
 		QuestInfoFrame.material = material;
 		local textColor, titleTextColor = GetMaterialTextColors(material);
-		QuestBgTextContrast = QuestUtil.QuestTextContrastUseLightText();
+		QuestBgTextContrast = QuestTextContrast.UseLightText();
 		if QuestBgTextContrast then
 			textColor, titleTextColor = GetMaterialTextColors("Stone");
 		end
@@ -165,7 +165,7 @@ function QuestInfo_ShowType()
 	QuestInfoQuestType:SetShown(added);
 
 	if added then
-		if QuestUtil.QuestTextContrastUseLightText() then
+		if QuestTextContrast.UseLightText() then
 			local textColor, titleTextColor = GetMaterialTextColors("Stone");
 			QuestInfoQuestType:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		else
@@ -217,7 +217,7 @@ function QuestInfo_ShowObjectives()
 		numVisibleObjectives = numVisibleObjectives + 1;
 		objective = AcquireObjective(numVisibleObjectives);
 		objective:SetText(WAYPOINT_OBJECTIVE_FORMAT_OPTIONAL:format(waypointText));
-		if QuestUtil.QuestTextContrastUseLightText() then
+		if QuestTextContrast.UseLightText() then
 			textColor, titleTextColor = GetMaterialTextColors("Stone");
 			objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
 		else
@@ -237,14 +237,14 @@ function QuestInfo_ShowObjectives()
 				text = type;
 			end
 			if ( finished ) then
-				if QuestUtil.QuestTextContrastUseLightText() then
+				if QuestTextContrast.UseLightText() then
 					objective:SetTextColor(QUEST_OBJECTIVE_COMPLETED_FONT_COLOR_DARK_BACKGROUND:GetRGB());
 				else
 					objective:SetTextColor(QUEST_OBJECTIVE_COMPLETED_FONT_COLOR:GetRGB());
 				end
 				text = text.." ("..COMPLETE..")";
 			else
-				if QuestUtil.QuestTextContrastUseLightText() then
+				if QuestTextContrast.UseLightText() then
 					textColor, titleTextColor = GetMaterialTextColors("Stone");
 					objective:SetTextColor(textColor[1], textColor[2], textColor[3]);
 				else
@@ -463,6 +463,7 @@ local QUEST_INFO_SPELL_REWARD_ORDERING = {
 	Enum.QuestCompleteSpellType.QuestlineUnlock,
 	Enum.QuestCompleteSpellType.QuestlineReward,
 	Enum.QuestCompleteSpellType.QuestlineUnlockPart,
+	Enum.QuestCompleteSpellType.PossibleReward,
 };
 
 local QUEST_INFO_SPELL_REWARD_TO_HEADER = {
@@ -476,6 +477,7 @@ local QUEST_INFO_SPELL_REWARD_TO_HEADER = {
 	[Enum.QuestCompleteSpellType.QuestlineUnlock] = REWARD_QUESTLINE_UNLOCK,
 	[Enum.QuestCompleteSpellType.QuestlineReward] = REWARD_QUESTLINE_REWARD,
 	[Enum.QuestCompleteSpellType.QuestlineUnlockPart] = REWARD_QUESTLINE_UNLOCK_PART,
+	[Enum.QuestCompleteSpellType.PossibleReward] = REWARD_POSSIBLE_QUEST_REWARD,
 };
 
 local function GetRewardSpellBucketType(spellInfo)
@@ -653,7 +655,9 @@ function QuestInfo_ShowRewards()
 	for index, spellID in ipairs(spellRewards) do
 		if spellID and spellID > 0 then
 			local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
-			local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+			local spellBank = Enum.SpellBookSpellBank.Player;
+			local includeOverrides = true;
+			local knownSpell = C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides);
 
 			-- only allow the spell reward if user can learn it
 			if spellInfo and spellInfo.texture and not knownSpell and (not spellInfo.isBoostSpell or IsCharacterNewlyBoosted()) and (not spellInfo.garrFollowerID or not C_Garrison.IsFollowerCollected(spellInfo.garrFollowerID)) then
@@ -662,7 +666,9 @@ function QuestInfo_ShowRewards()
 			end
 		else
 			if ProcessExceptionClient then
-				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index));
+				local framesToSkip = 0;
+				ProcessExceptionClient(string.format("Bad rewardSpellId from quest '%d' at rewardSpellIndex '%d'", questID, index), "Bad rewardSpellId from quest", framesToSkip);
+
 			end
 		end
 	end

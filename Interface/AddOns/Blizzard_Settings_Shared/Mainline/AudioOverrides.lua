@@ -34,3 +34,13 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 		layout:AddInitializer(initializer);
 	end
 end
+
+function AudioOverrides.CreateGameplaySoundEffectsSettings(category, layout, volumeOptions)
+	local cbSetting = Settings.RegisterCVarSetting(category, "Sound_EnableGameplaySFX", Settings.VarType.Boolean, ENABLE_GAMEPLAY_SFX);
+	local sliderSetting = Settings.RegisterCVarSetting(category, "Sound_GameplaySFX", Settings.VarType.Number, GAMEPLAY_SFX_VOLUME);
+
+	local initializer = CreateSettingsCheckboxSliderInitializer(
+			cbSetting, GAMEPLAY_SFX_VOLUME, ENABLE_GAMEPLAY_SFX,
+			sliderSetting, volumeOptions, GAMEPLAY_SFX_VOLUME, OPTION_TOOLTIP_GAMEPLAY_SFX_VOLUME, "GameplaySoundEffects");
+	layout:AddInitializer(initializer);
+end

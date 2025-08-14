@@ -30,6 +30,18 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "DelveAssistActionData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "assistedPlayer", Type = "string", Nilable = false },
+				{ Name = "mapName", Type = "cstring", Nilable = true },
+				{ Name = "creatureName", Type = "cstring", Nilable = true },
+				{ Name = "receivedSpellID", Type = "number", Nilable = true },
+				{ Name = "assistAction", Type = "AssistActionType", Nilable = false },
+			},
+		},
+		{
 			Name = "DelvesConsts",
 			Type = "Constants",
 			Values =

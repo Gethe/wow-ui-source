@@ -2082,7 +2082,9 @@ end
 
 function Class_AddHunterTameSpells:KnowsRequiredSpells()
 	for i, spellID in ipairs(TutorialData.HunterTamePetSpells) do
-		if not IsSpellKnown(spellID) then
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = false;
+		if not C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides) then
 			return false;
 		end
 	end

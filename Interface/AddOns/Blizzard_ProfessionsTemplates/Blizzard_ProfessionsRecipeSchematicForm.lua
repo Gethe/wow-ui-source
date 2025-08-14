@@ -5,11 +5,11 @@ StaticPopupDialogs["PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnShow = function(self, data)
-		self.text:SetText(PROFESSIONS_RECRAFTING_REPLACE_OPTIONAL:format(data.itemName));
+	OnShow = function(dialog, data)
+		dialog:SetText(PROFESSIONS_RECRAFTING_REPLACE_OPTIONAL:format(data.itemName));
 	end,
 
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.callback();
 	end,
 
@@ -784,6 +784,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		self.recraftSlot.InputSlot:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
+				-- If the user currently has an item on the cursor that could transition to recraft, drop it here instead of opening the flyout.
+				if self.recraftSlot.InputSlot:CheckDropCursorItemOnSlot() then
+					return;
+				end
+
 				local flyout = ToggleProfessionsItemFlyout(self.recraftSlot.InputSlot, self);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
@@ -864,31 +869,32 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
-		local reagentType = reagentSlotSchematic.reagentType;
-		-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
-		local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
-		local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
-		
-		local slots = self.reagentSlots[sectionType];
-		if not slots then
-			slots = {};
-			self.reagentSlots[sectionType] = slots;
-		end
+		if isRecraft or not reagentSlotSchematic.hiddenInCraftingForm then
+			local reagentType = reagentSlotSchematic.reagentType;
+			-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
+			local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+			local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
+			
+			local slots = self.reagentSlots[sectionType];
+			if not slots then
+				slots = {};
+				self.reagentSlots[sectionType] = slots;
+			end
 
-		local slot = self.reagentSlotPool:Acquire();
-		if isModifyingRequiredSlot then
-			table.insert(slots, 1, slot);
-		else
-			table.insert(slots, slot);
-		end
+			local slot = self.reagentSlotPool:Acquire();
+			if isModifyingRequiredSlot then
+				table.insert(slots, 1, slot);
+			else
+				table.insert(slots, slot);
+			end
 
-		slot:SetParent(slotParents[sectionType]);
-		
-		slot.CustomerState:SetShown(false);
-		slot:Init(self.transaction, reagentSlotSchematic);
-		slot:Show();
+			slot:SetParent(slotParents[sectionType]);
+			
+			slot.CustomerState:SetShown(false);
+			slot:Init(self.transaction, reagentSlotSchematic);
+			slot:Show();
 
-		if reagentType == Enum.CraftingReagentType.Basic then
+			if reagentType == Enum.CraftingReagentType.Basic then
 			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 				slot.Button:SetScript("OnClick", function(button, buttonName, down)
 					if IsShiftKeyDown() then
@@ -951,7 +957,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					GameTooltip:Show();
 				end);
 			end
-		elseif not (self.isInspection and reagentType == Enum.CraftingReagentType.Finishing) then
+			elseif not (self.isInspection and reagentType == Enum.CraftingReagentType.Finishing) then
 			local locked, lockedReason;
 
 			if not self.isInspection then
@@ -1121,6 +1127,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					end
 				end
 			end);
+			end
 		end
 	end
 	

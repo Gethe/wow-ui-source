@@ -1,25 +1,25 @@
 local partyChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local raidChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local partyChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 local raidChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 function Voice_GetChannelActivatePrompt(channel)

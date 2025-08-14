@@ -454,15 +454,21 @@
 			<OnEnter>
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				if ( self.name ) then
-				GameTooltip:AddDoubleLine(self.name, self.date, nil, nil, nil, .5, .5, .5);
+					GameTooltip:AddDoubleLine(self.name, self.date, nil, nil, nil, .5, .5, .5);
 				end
 				if ( self.desc ) then
-				GameTooltip:AddLine(self.desc, 1, 1, 1, true);
+					GameTooltip:AddLine(self.desc, 1, 1, 1, 1);
 				end
 				if ( self.numCriteria ) then
-				for i = 1, self.numCriteria do
-				GameTooltip:AddLine(self["criteria"..i]);
-				end
+					if ( self.numCriteria > 30 ) then
+						for i = 1, self.numCriteria, 2 do
+							GameTooltip:AddDoubleLine(self["criteria"..i], self["criteria"..(i+1)]);
+						end
+					else
+						for i = 1, self.numCriteria do
+							GameTooltip:AddLine(self["criteria"..i]);
+						end
+					end
 				end
 				GameTooltip:Show();
 			</OnEnter>
@@ -1924,6 +1930,10 @@
 			<OnClick>
 				AchievementStatButton_OnClick(self, button, down);
 			</OnClick>
+			<OnEnter function="AchievementStatButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
 		</Scripts>
 		<ButtonText parentKey="text">
 			<Size x="400" y="13"/>

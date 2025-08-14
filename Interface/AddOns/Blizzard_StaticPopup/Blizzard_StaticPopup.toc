@@ -1,0 +1,5 @@
+## Title: Blizzard_StaticPopup
+## DefaultState: enabled
+## AllowLoad: Both
+StaticPopup.lua
+SharedTemplates.lua

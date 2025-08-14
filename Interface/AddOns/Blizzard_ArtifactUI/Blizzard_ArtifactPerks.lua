@@ -760,7 +760,7 @@ end
 
 function ArtifactPerksMixin:RefreshCursorHighlights()
 	local type, itemID, itemLink = GetCursorInfo();
-	if type == "item" and IsArtifactRelicItem(itemID) then
+	if type == "item" and C_ItemSocketInfo.IsArtifactRelicItem(itemID) then
 		self:HideHighlightForRelicItemID(itemID, itemLink);
 	end
 end
@@ -1260,15 +1260,15 @@ StaticPopupDialogs["CONFIRM_RELIC_REPLACE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.titleContainer:ApplyCursorRelicToSlot(data.relicSlotIndex);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 		ClearCursor();
 	end,
-	OnUpdate = function (self)
+	OnUpdate = function(dialog, elapsed)
 		if ( not CursorHasItem() ) then
-			self:Hide();
+			dialog:Hide();
 		end
 	end,
 
@@ -1297,7 +1297,7 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 				return true;
 			else
 				local _, itemID = GetCursorInfo();
-				if itemID and IsArtifactRelicItem(itemID) then
+				if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) then
 					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
 					return true;
 				else

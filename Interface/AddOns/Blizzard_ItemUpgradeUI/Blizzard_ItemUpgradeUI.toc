@@ -1,5 +1,0 @@
-## Title: Blizzard Item Upgrade UI
-## LoadOnDemand: 1
-## Dependencies: Blizzard_Colors
-Blizzard_ItemUpgradeUI.lua
-Blizzard_ItemUpgradeUI.xml

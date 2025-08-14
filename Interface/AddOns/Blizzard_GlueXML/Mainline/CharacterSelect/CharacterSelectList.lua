@@ -33,7 +33,8 @@ function CharacterSelectListMixin:OnLoad()
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
 			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
-			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+			local text2 = nil;
+			StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
 		else
 			createCharacterCallback();
 		end
@@ -205,7 +206,8 @@ function CharacterSelectListMixin:InitScrollBox()
 
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
-	local left = 82;
+	local counterPositioning = select(4, self.ScrollBox:GetPointByName("TOPLEFT"));
+	local left = math.abs(counterPositioning - 10);
 	local pad = 0;
 	local spacing = 2;
 	view:SetPadding(pad, pad, left, pad, spacing);

@@ -729,42 +729,42 @@
 	</Button>
 	<Frame name="RaidGroup1" inherits="RaidGroupTemplate" id="1">
 		<Anchors>
-			<Anchor point="TOPLEFT" x="3" y="-58"/>
+			<Anchor point="TOPRIGHT" relativePoint="TOP" x="-8" y="-58"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup2" inherits="RaidGroupTemplate" id="2">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup1" relativePoint="RIGHT" x="3" y="0"/>
+			<Anchor point="TOPLEFT" relativePoint="TOP" x="8" y="-58"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup3" inherits="RaidGroupTemplate" id="3">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM" x="0" y="-14"/>
+			<Anchor point="TOP" relativeTo="RaidGroup1" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup4" inherits="RaidGroupTemplate" id="4">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup3" relativePoint="RIGHT" x="3" y="0"/>
+			<Anchor point="TOP" relativeTo="RaidGroup2" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup5" inherits="RaidGroupTemplate" id="5">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM" x="0" y="-14"/>
+			<Anchor point="TOP" relativeTo="RaidGroup3" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup6" inherits="RaidGroupTemplate" id="6">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup5" relativePoint="RIGHT" x="3" y="0"/>
+			<Anchor point="TOP" relativeTo="RaidGroup4" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup7" inherits="RaidGroupTemplate" id="7">
 		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM" x="0" y="-14"/>
+			<Anchor point="TOP" relativeTo="RaidGroup5" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Frame name="RaidGroup8" inherits="RaidGroupTemplate" id="8">
 		<Anchors>
-			<Anchor point="LEFT" relativeTo="RaidGroup7" relativePoint="RIGHT" x="3" y="0"/>
+			<Anchor point="TOP" relativeTo="RaidGroup6" relativePoint="BOTTOM" y="-14"/>
 		</Anchors>
 	</Frame>
 	<Button name="RaidGroupButton1" inherits="RaidGroupButtonTemplate" id="1"/>

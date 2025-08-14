@@ -48,13 +48,13 @@ function VoiceTranscription_GetChatTypeAndInfo()
 	local channelType = C_VoiceChat.GetActiveChannelType();
 	local chatInfo = nil;
 
-	if (channelType == Enum.ChatChannelType.Private_Party) then
+	if (channelType == Enum.ChatChannelType.PrivateParty) then
 		if (IsInRaid()) then
 			chatType = "RAID";
 		else
 			chatType = "PARTY";
 		end
-	elseif (channelType == Enum.ChatChannelType.Public_Party) then
+	elseif (channelType == Enum.ChatChannelType.PublicParty) then
 		chatType = "INSTANCE_CHAT";
 	elseif (channelType == Enum.ChatChannelType.Communities) then
 		local channel = C_VoiceChat.GetChannel(C_VoiceChat.GetActiveChannelID()) or {};

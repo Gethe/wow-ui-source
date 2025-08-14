@@ -96,9 +96,9 @@ function MoneyInputFrame_OnTextChanged(self)
 			moneyFrame.fixedCopper:Show();
 			moneyFrame.fixedCopper.amount:SetText(moneyFrame.copper:GetNumber());
 			moneyFrame.copper:Hide();
-			moneyFrame.gold:SetWidth(self.normalWidth);
+			moneyFrame.gold:SetDesiredWidth(self.baseWidth);
 		else
-			moneyFrame.gold:SetWidth(self.minWidth);
+			moneyFrame.gold:SetDesiredWidth(self.minWidth);
 			moneyFrame.silver:Show();
 			moneyFrame.fixedSilver:Hide();
 			moneyFrame.copper:Show();
@@ -129,10 +129,9 @@ end
 
 function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
 	local goldFrame = frame.gold;
-	goldFrame.normalWidth = goldFrame:GetWidth();
 	goldFrame.minWidth = width;
 	goldFrame.expandOnDigits = expandOnDigits;
-	goldFrame:SetWidth(width);
+	goldFrame:SetDesiredWidth(width);
 	if ( frame.goldOnly ) then
 		return;
 	end
@@ -235,7 +234,7 @@ function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
 	local copper = MoneyInputFrame_GetCopper(moneyFrame);
 	if ( copper > GetMoney() ) then
 		if UIErrorsFrame then
-			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);			
+			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);
 		end
 	else
 		PickupPlayerMoney(copper);
@@ -266,4 +265,107 @@ end
 
 function LargeMoneyInputBoxMixin:OnTextChanged()
 	self:GetParent():OnAmountChanged();
+end
+
+function MoneyFrameEditBoxGold_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() and moneyFrame.previousFocus then
+		moneyFrame.previousFocus:SetFocus();
+	else
+		moneyFrame.silver:SetFocus();
+	end
+end
+
+function MoneyFrameEditBoxGold_OnEnterPressed(self)
+	self:GetParent().silver:SetFocus();
+end
+
+function MoneyFrameEditBoxSilver_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() or not moneyFrame.copper:IsShown() then
+		moneyFrame.gold:SetFocus();
+	else
+		moneyFrame.copper:SetFocus();
+	end
+end
+
+function MoneyFrameEditBoxSilver_OnEnterPressed(self)
+	local moneyFrame = self:GetParent();
+	if not moneyFrame.copper:IsShown() then
+		moneyFrame.gold:SetFocus();
+	else
+		moneyFrame.copper:SetFocus();
+	end
+end
+
+function MoneyFrameEditBoxCopper_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() then
+		moneyFrame.silver:SetFocus();
+	else
+		if moneyFrame.nextFocus then
+			moneyFrame.nextFocus:SetFocus();
+		else
+			self:ClearFocus();
+		end
+	end
+end
+
+function MoneyFrameEditBoxCopper_OnEnterPressed(self)
+	local moneyFrame = self:GetParent();
+	if moneyFrame.nextFocus then
+		moneyFrame.nextFocus:SetFocus();
+	else
+		self:ClearFocus();
+	end
+end
+
+MoneyFrameEditBoxMixin = {};
+
+function MoneyFrameEditBoxMixin:OnLoad()
+	self.texture:SetAtlas(self.coinAtlas);
+	self.label:SetText(self.coinSymbol);
+end
+
+function MoneyFrameEditBoxMixin:SetIsUserScaled()
+	if self.isUserScaled then
+		return;
+	end
+
+	self.isUserScaled = true;
+	self.label:SetFontObject(UserScaledFontGameHighlightRight);
+	self:SetFontObject(UserScaledChatFontNormal);
+
+	Mixin(self, UserScaledElementMixin);
+	Mixin(self.texture, UserScaledElementMixin);
+
+	local scale = TextSizeManager:GetScale();
+	self:OnTextScaleUpdated(scale, self);
+	self.texture:OnTextScaleUpdated(scale, self.texture);
+
+	TextSizeManager:RegisterObject(self);
+	TextSizeManager:RegisterObject(self.texture);
+end
+
+function MoneyFrameEditBoxMixin:SetDesiredWidth(width)
+	-- NOTE: This acts as a passthrough to SetWidth until the frame becomes user-scaled, at which point the UserScaledElement method overrides.
+	self:SetWidth(width);
+end
+
+MoneyInputFrameMixin = {};
+
+function MoneyInputFrameMixin:SetIsUserScaled()
+	if self.isUserScaled then
+		return;
+	end
+
+	self.isUserScaled = true;
+	self.gold:SetIsUserScaled();
+	self.silver:SetIsUserScaled();
+	self.copper:SetIsUserScaled();
+
+	Mixin(self, UserScaledElementMixin);
+
+	self:OnTextScaleUpdated(TextSizeManager:GetScale(), self);
+	TextSizeManager:RegisterObject(self);
 end

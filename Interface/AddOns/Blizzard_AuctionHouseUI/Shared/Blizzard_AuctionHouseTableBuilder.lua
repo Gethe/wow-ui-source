@@ -346,7 +346,14 @@ function AuctionHouseTableExtraInfoMixin:Populate(rowData, dataIndex)
 		if linkType == "battlepet" then
 			local speciesID, level, breedQuality = strsplit(":", linkOptions);
 			local qualityColor = ColorManager.GetColorDataForBagItemQuality(tonumber(breedQuality));
-			self.Text:SetText(qualityColor and qualityColor:WrapTextInColorCode(level) or level);
+			if qualityColor and qualityColor.wrapTextInColorCode then
+				self.Text:SetText(qualityColor and qualityColor:WrapTextInColorCode(level) or level);
+			else
+				self.Text:SetText(level);
+				if qualityColor then
+					self.Text:SetTextColor(qualityColor.r, qualityColor.g, qualityColor.b);
+				end
+			end
 			self.Text:Show();
 		end
 	end

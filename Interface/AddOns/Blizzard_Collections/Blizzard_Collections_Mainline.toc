@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
-## Dependencies: Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil
+## Dependencies: Blizzard_ContentTracking, Blizzard_ClassMenu, Blizzard_Flyout, Blizzard_PagedContent, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_FrameXMLUtil
 
 ## AllowLoadGameType: mainline
 Mainline\Blizzard_CollectionTemplates.xml
@@ -14,7 +14,7 @@ Mainline\Blizzard_MountCollection.xml
 Shared\Blizzard_PetCollection.xml
 Mainline\Blizzard_ToyBox.xml
 Mainline\Blizzard_HeirloomCollection.xml
-Mainline\Blizzard_Wardrobe_Sets.xml
+Shared\Blizzard_Wardrobe_Sets.xml
 Mainline\Blizzard_Wardrobe.xml
 Mainline\Blizzard_WarbandSceneCollection.lua
 Mainline\Blizzard_WarbandSceneCollection.xml

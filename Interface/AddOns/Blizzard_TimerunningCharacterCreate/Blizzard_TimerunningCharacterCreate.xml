@@ -112,7 +112,7 @@
 						</FontString>
 						<FontString parentKey="QuestsHeader" inherits="GameFontHighlightMed2Outline" text="TIMERUNNING_POPUP_QUESTS_HEADER" justifyH="LEFT">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.Logo" relativePoint="BOTTOM" x="-15" y="44"/>
+								<Anchor point="TOP" relativeKey="$parent.Logo" relativePoint="BOTTOM" x="-24" y="40"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="QuestsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
@@ -158,7 +158,7 @@
 							</Anchors>
 							<Size x="220"/>
 						</FontString>
-						<Texture parentKey="RewardsBird" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
+						<Texture parentKey="RewardsImage" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
 							<Anchors>
 								<Anchor point="CENTER" x="193" y="-8"/>
 							</Anchors>
@@ -403,7 +403,7 @@
 			<Frame name="TimerunningChoiceDialogCreateTimerunning" inherits="TimerunningChoiceDialogTemplate">
 				<KeyValues>
 					<KeyValue key="headerText" value="TIMERUNNING_CHOICE_TIMERUNNING_HEADER" type="global"/>
-					<KeyValue key="descriptionText" value="TIMERUNNING_CHOICE_PANDARIA_DESCRIPTION" type="global"/>
+					<!-- KeyValue key="descriptionText" set via the OnLoad for Timerunning options -->
 					<KeyValue key="isTimerunning" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
@@ -429,14 +429,11 @@
 		</Scripts>
 	</Frame>
 	
-	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" parent="VisibilityFramesContainer" frameStrata="HIGH" enableMouse="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="271" y="-13"/>
-		</Anchors>
+	<Button name="TimerunningEventBanner" mixin="TimerunningEventBannerMixin" frameStrata="HIGH" enableMouse="true" hidden="true" parent="GlueParent">
 		<Size x="317" y="106"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Header" text="TIMERUNNING_BANNER_PANDARIA_HEADER" inherits="GameFontHighlight">
+				<FontString parentKey="Header" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="84" y="-20"/>
 						<Anchor point="BOTTOMRIGHT" x="-25" y="50"/>
@@ -466,5 +463,42 @@
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
+	</Button>
+
+	<Button name="TimerunningConversionButtonTemplate" mixin="TimerunningConversionButtonMixin" virtual="true">
+		<Size x="58" y="58"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="timerunning-glues-convert-icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightIcon" atlas="timerunning-glues-convert-icon" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" atlas="collections-itemborder-collected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightBorder" atlas="collections-itemborder-collected" useAtlasSize="true" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 </Ui>

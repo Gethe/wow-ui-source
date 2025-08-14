@@ -277,7 +277,7 @@ function EJMicroButtonMixin:UpdateLastEvaluations()
 	self.lastEvaluatedLevel = playerLevel;
 
 	if (playerLevel == GetMaxLevelForPlayerExpansion()) then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 
 		self.lastEvaluatedSpec = spec;
@@ -311,7 +311,7 @@ function EJMicroButtonMixin:OnEvent(event, ...)
 		end
 	elseif ( event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" ) then
 		local playerLevel = UnitLevel("player");
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		local ilvl = GetAverageItemLevel();
 		if ( playerLevel == GetMaxLevelForPlayerExpansion() and ((not self.lastEvaluatedSpec or self.lastEvaluatedSpec ~= spec) or (not self.lastEvaluatedIlvl or self.lastEvaluatedIlvl < ilvl))) then
 			self.lastEvaluatedSpec = spec;

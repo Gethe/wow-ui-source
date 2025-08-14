@@ -49,7 +49,7 @@
 			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="-75" y="-67"/>
+					<Anchor point="TOPLEFT" x="-115" y="-67"/>
 					<Anchor point="BOTTOMRIGHT" x="-32" y="83"/>
 				</Anchors>
 			</Frame>

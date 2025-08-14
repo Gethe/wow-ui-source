@@ -37,10 +37,10 @@ if ( InGlue() ) then
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
 		button2 = LOAD_ADDONS,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonDialog_Show("CONFIRM_DISABLE_ADDONS");
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("CONFIRM_LOAD_ADDONS");
 		end,
 	}
@@ -49,11 +49,11 @@ if ( InGlue() ) then
 		text = CONFIRM_LOAD_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_AddOns.SetAddonVersionCheck(false);
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -62,11 +62,11 @@ if ( InGlue() ) then
 		text = CONFIRM_DISABLE_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonList_DisableOutOfDate();
 			CharacterSelect_CheckDialogStates();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -194,18 +194,6 @@ function AddonList_HasAnyChanged()
 	return false
 end
 
-function AddonList_HasNewVersion()
-	local hasNewVersion = false;
-	for i=1, C_AddOns.GetNumAddOns() do
-		local name, title, notes, loadable, reason, security, newVersion = C_AddOns.GetAddOnInfo(i);
-		if ( newVersion ) then
-			hasNewVersion = true;
-			break;
-		end
-	end
-	return hasNewVersion;
-end
-
 local function AddonList_Hide(save)
 	AddonList.save = save
 
@@ -329,7 +317,7 @@ end
 local function TriStateCheckbox_SetState(checked, checkButton)
 	local checkedTexture = checkButton.CheckedTexture;
 	if ( not checkedTexture ) then
-		message("Can't find checked texture");
+		SetBasicMessageDialogText("Can't find checked texture");
 	end
 	if ( not checked or checked == Enum.AddOnEnableState.None ) then
 		-- nil or Enum.AddOnEnableState.None means not checked
@@ -349,7 +337,10 @@ end
 
 function AddonList_InitAddon(entry, treeNode)
 	local addonIndex = treeNode:GetData().addonIndex;
-	local name, title, notes, _, _, security = C_AddOns.GetAddOnInfo(addonIndex);
+	local name = C_AddOns.GetAddOnName(addonIndex);
+	local title = C_AddOns.GetAddOnTitle(addonIndex);
+	local notes = C_AddOns.GetAddOnNotes(addonIndex);
+	local security = C_AddOns.GetAddOnSecurity(addonIndex);
 
 	-- Get the character from the current list (nil is all characters)
 	local character = GetAddonCharacter();
@@ -450,13 +441,17 @@ function AddonList_Update()
 		-- Category is an addon defined field that allows for tree view organization of similar addons.
 		local category = C_AddOns.GetAddOnMetadata(i, "Category");
 
-		local name, title, _, _, _, security = C_AddOns.GetAddOnInfo(i);
+		local name = C_AddOns.GetAddOnName(i);
+		local title = C_AddOns.GetAddOnTitle(i);
+		local security = C_AddOns.GetAddOnSecurity(i);
 
 		local titleL = title:lower();
 		local groupL = group:lower();
 		local categoryL = category and category:lower();
+		local offset = 1;
+		local plain = true;
 
-		local match = #filterText == 0 or titleL:find(filterText) or groupL:find(filterText) or (categoryL and categoryL:find(filterText));
+		local match = #filterText == 0 or titleL:find(filterText, offset, plain) or groupL:find(filterText, offset, plain) or (categoryL and categoryL:find(filterText, offset, plain));
 		if match then
 			local groupNode = addonGroupToTreeNode[group];
 
@@ -838,16 +833,20 @@ local function AddonTooltip_AddAddonMetric(tooltip, addon, label, metric, warnin
 end
 
 function AddonTooltip_Update(owner)
-	local name, title, notes, _, _, security = C_AddOns.GetAddOnInfo(owner:GetID());
+	local id = owner:GetID();
+	local name = C_AddOns.GetAddOnName(id);
+	local title = C_AddOns.GetAddOnTitle(id);
+	local notes = C_AddOns.GetAddOnNotes(id);
+	local security = C_AddOns.GetAddOnSecurity(id);
 	AddonTooltip:ClearLines();
 	if ( security == "BANNED" ) then
 		AddonTooltip:SetText(ADDON_BANNED_TOOLTIP);
 	else
 		local tooltipTitle = title or name;
-		local version = C_AddOns.GetAddOnMetadata(owner:GetID(), "Version");
+		local version = C_AddOns.GetAddOnMetadata(id, "Version");
 		AddonTooltip:AddDoubleLine(tooltipTitle, version);
 		AddonTooltip:AddLine(notes, 1.0, 1.0, 1.0, true);
-		AddonTooltip:AddLine(AddonTooltip_BuildDeps(C_AddOns.GetAddOnDependencies(owner:GetID())));
+		GameTooltip_AddColoredLine(AddonTooltip, AddonTooltip_BuildDeps(C_AddOns.GetAddOnDependencies(id)), NORMAL_FONT_COLOR, true);
 	end
 	if ADDON_ACTIONS_BLOCKED[name] then
 		AddonTooltip:AddLine(INTERFACE_ACTION_BLOCKED_TOOLTIP:format(ADDON_ACTIONS_BLOCKED[name]));

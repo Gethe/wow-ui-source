@@ -175,7 +175,9 @@ do -- Miscellaneous (SubClasses Added in TBC)
 	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
 		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.Junk);
 		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.Reagent);
-		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.CompanionPet);
+		if not ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+			miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.CompanionPet);
+		end
 		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.Holiday);
 		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.Other);
 		miscellaneousCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.Mount);
@@ -186,6 +188,15 @@ do -- Quest Items (Added in TBC)
 	if ClassicExpansionAtLeast(LE_EXPANSION_BURNING_CRUSADE) then
 		local questItemsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_QUEST_ITEMS);
 		questItemsCategory:AddFilter(Enum.ItemClass.Questitem);
+	end
+end
+
+do -- Battle Pets (Added in MoP)
+	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+		local battlePetsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_BATTLE_PETS);
+		battlePetsCategory:AddFilter(Enum.ItemClass.Battlepet);
+		battlePetsCategory:GenerateSubCategoriesAndFiltersFromSubClass(Enum.ItemClass.Battlepet);
+		battlePetsCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Miscellaneous, Enum.ItemMiscellaneousSubclass.CompanionPet);
 	end
 end
 

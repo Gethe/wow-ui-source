@@ -436,7 +436,7 @@ end
 
 function ClassTalentsFrameMixin:GenerateChatLink()
 	local linkDisplayText = ("[%s]"):format(TALENT_BUILD_CHAT_LINK_TEXT:format(PlayerUtil.GetSpecName(), PlayerUtil.GetClassName()));
-	local linkText = LinkUtil.FormatLink("talentbuild", linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
+	local linkText = LinkUtil.FormatLink(LinkTypes.TalentBuild, linkDisplayText, PlayerUtil.GetCurrentSpecID(), UnitLevel("player"), self:GetLoadoutExportString());
 	local chatLink = PlayerUtil.GetClassColor():WrapTextInColorCode(linkText);
 	return chatLink;
 end
@@ -671,7 +671,7 @@ function ClassTalentsFrameMixin:UpdateTalentButtonPosition(talentButton)
 	end
 end
 
-function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo)
+function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
 	-- Overrides TalentFrameBaseMixin.
 
 	local posY = nodeInfo.posY;

@@ -1,0 +1,11 @@
+## Title: Blizzard_SimpleCheckout
+## AllowLoad: Both
+## AllowLoadGameType: mainline
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent
+## UseSecureEnvironment: 1
+
+Blizzard_SimpleCheckout.lua
+
+Blizzard_SimpleCheckout.xml

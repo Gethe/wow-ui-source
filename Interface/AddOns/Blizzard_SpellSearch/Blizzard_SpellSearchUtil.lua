@@ -8,6 +8,7 @@ SpellSearchUtil.MatchType = {
 	NotOnActionBar = 5,
 	OnInactiveBonusBar = 6,
 	OnDisabledActionBar = 7,
+	AssistedCombat = 8,
 };
 
 SpellSearchUtil.SourceType = {
@@ -20,6 +21,7 @@ SpellSearchUtil.FilterType = {
 	Text = 1,
 	ActionBar = 2,
 	Name = 3,
+	AssistedCombat = 4,
 };
 
 SpellSearchUtil.ActionBarStatusTooltips = {
@@ -34,37 +36,6 @@ SpellSearchUtil.ActionBarStatusMatchTypes = {
 	[ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars] = SpellSearchUtil.MatchType.NotOnActionBar,
 	[ActionButtonUtil.ActionBarActionStatus.OnInactiveBonusBar] = SpellSearchUtil.MatchType.OnInactiveBonusBar,
 	[ActionButtonUtil.ActionBarActionStatus.OnDisabledActionBar] = SpellSearchUtil.MatchType.OnDisabledActionBar,
-};
-
-SpellSearchUtil.MatchTypeStyles = {
-	[SpellSearchUtil.MatchType.RelatedMatch] = {
-		icon = "talents-search-relatedmatch",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_RELATED_MATCH
-	},
-	[SpellSearchUtil.MatchType.DescriptionMatch] = {
-		icon = "talents-search-match",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_MATCH
-	},
-	[SpellSearchUtil.MatchType.NameMatch] = {
-		icon = "talents-search-match",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_MATCH
-	},
-	[SpellSearchUtil.MatchType.ExactMatch] = {
-		icon = "talents-search-exactmatch",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_EXACT_MATCH
-	},
-	[SpellSearchUtil.MatchType.NotOnActionBar] = {
-		icon = "talents-search-notonactionbar",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_NOT_ON_ACTIONBAR
-	},
-	[SpellSearchUtil.MatchType.OnInactiveBonusBar] = {
-		icon = "talents-search-notonactionbarhidden",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_ON_INACTIVE_BONUSBAR
-	},
-	[SpellSearchUtil.MatchType.OnDisabledActionBar] = {
-		icon = "talents-search-notonactionbarhidden",
-		tooltipText = TALENT_FRAME_SEARCH_TOOLTIP_ON_DISABLED_ACTIONBAR
-	},
 };
 
 function SpellSearchUtil.DoStringsMatch(string1, string2)

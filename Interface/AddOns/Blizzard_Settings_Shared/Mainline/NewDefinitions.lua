@@ -39,6 +39,17 @@ NewSettings["11.1.7"] = {
 	"assistedCombatHighlight",
 };
 
+NewSettings["11.2.0"] = {
+	"PROXY_ACCESSIBILITY_FONT_SIZE",
+	"PROXY_SPELL_DENSITY",
+	"PROXY_RAID_SPELL_DENSITY",
+	"GameplaySoundEffects",
+};
+
+NewSettings["11.2.5"] = {
+	"cooldownViewerEnabled",
+};
+
 NewSettingsPredicates["ASSISTED_COMBAT_ROTATION"] = function()
 	return C_AssistedCombat.IsAvailable();
 end;

@@ -21,6 +21,7 @@ InterfaceUtil.lua
 UnitUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
+GameRulesUtil.lua
 TabGroup.lua
 SmoothStatusBar.lua
 PredictedSetting.lua
@@ -41,12 +42,13 @@ BindingUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
-
+LoopingSoundEffect.lua
 Wrath\SoundKitConstants.lua
 
 CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
+TypeUtil.lua
 SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml
@@ -58,6 +60,11 @@ Shared\Frame\EventScrollFrame.lua
 Shared\Frame\EventScrollFrame.xml
 Shared\Frame\EventEditBox.lua
 Shared\Frame\EventEditBox.xml
+ScriptedAnimations\ScriptedAnimationEffects.lua
+ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+ScriptedAnimations\ScriptAnimatedEffectController.lua
+ScriptedAnimations\ScriptAnimatedModelScene.lua
+ScriptedAnimations\ScriptAnimatedModelScene.xml
 DataProvider.lua
 IndexRangeDataProvider.lua
 TreeListDataProvider.lua
@@ -68,10 +75,13 @@ Shared\Scroll\ScrollUtil.lua
 Shared\Scroll\ScrollController.lua
 Shared\Scroll\ScrollBoxPadding.lua
 Shared\Scroll\ScrollBoxViewUtil.lua
+Shared\Scroll\ScrollBoxStride.lua
 Shared\Scroll\ScrollBoxView.lua
 Shared\Scroll\ScrollBoxListView.lua
 Shared\Scroll\ScrollBoxLinearView.lua
+Shared\Scroll\ScrollBoxBiaxalView.lua
 Shared\Scroll\ScrollBoxTreeView.lua
+Shared\Scroll\ScrollBoxSequenceView.lua
 Shared\Scroll\ScrollBoxGridView.lua
 Shared\Scroll\ScrollBox.lua
 Shared\Scroll\ScrollBox.xml
@@ -179,6 +189,6 @@ ToolWindowOwnerMixin.lua
 AlertFrameIntrinsic.lua
 AlertFrameIntrinsic.xml
 
-Classic\VASErrorLookup.lua
+Shared\VASErrorLookup.lua
 
 CommonUIPanelTemplates.xml

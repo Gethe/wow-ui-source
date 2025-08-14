@@ -10,9 +10,19 @@ function PetFrame_AdjustPoint(self)
 	elseif ( class == "SHAMAN" or class == "DRUID" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -100);
 	elseif ( class == "WARLOCK" ) then
- 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
+		if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		else
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -80);
+		end
 	elseif ( class == "PALADIN" ) then
 		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+	elseif ( class == "PRIEST" ) then
+		if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+			self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 60, -90);
+		end
+	elseif ( class == "MONK" ) then
+		self:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 90, -100);
 	end
 end
 

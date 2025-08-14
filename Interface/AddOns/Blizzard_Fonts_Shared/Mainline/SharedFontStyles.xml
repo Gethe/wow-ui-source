@@ -1,26 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Font name="GameFontNormal" inherits="SystemFont_Shadow_Med1" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
 	<Font name="GameFontNormal_NoShadow" inherits="SystemFont_Med1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="GameFontNormalCenter" inherits="GameFontNormal" justifyH="CENTER" virtual="true"/>
-	<Font name="GameFontNormalLeft" inherits="GameFontNormal" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontDisable" inherits="GameFontNormal" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
-	<Font name="GameFontDisableLeft" inherits="GameFontDisable" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontHighlight" inherits="GameFontNormal" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="GameFontHighlight_NoShadow" inherits="SystemFont_Med1" virtual="true">
 		<Color r="1.0" g="1" b="1"/>
 	</Font>
-	<Font name="GameFontHighlightLeft" inherits="GameFontHighlight" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontHighlightCenter" inherits="GameFontHighlight" justifyH="CENTER" virtual="true"/>
-	<Font name="GameFontHighlightRight" inherits="GameFontHighlight" justifyH="RIGHT" virtual="true"/>
 	<Font name="GameFontNormalHuge" inherits="SystemFont_Shadow_Huge1" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -29,9 +14,6 @@
 	</Font>
 	<Font name="GameFontDisableHuge" inherits="GameFontNormalHuge" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
-	<Font name="GameFontNormalSmall" inherits="SystemFont_Shadow_Small" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
 	<Font name="GameFontNormalSmallOutline" inherits="SystemFont_Shadow_Small_Outline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
@@ -72,20 +54,8 @@
 	<Font name="GameFontNormalMed2" inherits="SystemFont_Shadow_Med2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
-	<Font name="GameFontNormalLarge" inherits="SystemFont_Shadow_Large" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
 	<Font name="GameFontNormalMed2Outline" inherits="SystemFont_Shadow_Med2_Outline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="GameFontNormalLargeOutline" inherits="SystemFont_Shadow_Large_Outline" outline="NORMAL" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="GameFontDisableSmall" inherits="GameFontNormalSmall" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
-	<Font name="GameFontDisableSmall2" inherits="SystemFont_Small2" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
 	<Font name="GameFontNormalShadowOutline22" inherits="SystemFont22_Shadow_Outline" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
@@ -117,15 +87,6 @@
 	<Font name="GameFontBlackSmall" inherits="SystemFont_Small" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
-	<Font name="GameFontRed" inherits="GameFontNormal" virtual="true">
-		<Color r="1.0" g="0.1" b="0.1"/>
-	</Font>
-    <Font name="GameFontRedLarge" inherits="GameFontNormalLarge" virtual="true">
-        <Color r="1.0" g="0.1" b="0.1"/>
-    </Font>
-	<Font name="GameFontGreen" inherits="GameFontNormal" virtual="true">
-		<Color color="GREEN_FONT_COLOR"/>
-	</Font>
 	<Font name="GameFontBlack" inherits="SystemFont_Med1" virtual="true">
 		<Color r="0" g="0" b="0"/>
 	</Font>
@@ -141,9 +102,6 @@
 	<Font name="GameFontHighlightMed2Outline" inherits="SystemFont_Shadow_Med2_Outline" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
-	<Font name="GameFontHighlightLarge" inherits="GameFontNormalLarge" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
 	<Font name="GameFontNormalMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
 	</Font>
@@ -153,18 +111,9 @@
 	<Font name="GameFontDisableMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
-	<Font name="GameFontDisableLarge" inherits="GameFontNormalLarge" virtual="true">
-		<Color r="0.5" g="0.5" b="0.5"/>
-	</Font>
 	<Font name="GameFontDisableMed2" inherits="GameFontNormalMed2" virtual="true">
 		<Color r="0.5" g="0.5" b="0.5"/>
 	</Font>
-	<Font name="GameFontHighlightSmall" inherits="GameFontNormalSmall" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="GameFontNormalSmallLeft" inherits="GameFontNormalSmall" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontHighlightSmallLeft" inherits="GameFontHighlightSmall" justifyH="LEFT" virtual="true"/>
-	<Font name="GameFontDisableSmallLeft" inherits="GameFontDisableSmall" justifyH="LEFT" virtual="true"/>
 	<Font name="GameFontHighlightSmall2" inherits="SystemFont_Small2" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
@@ -173,12 +122,6 @@
 	</Font>
 	<Font name="GameFontNormalSmall2" inherits="SystemFont_Shadow_Small2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="GameFontNormalLarge2" inherits="SystemFont_Shadow_Large2" virtual="true">
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="GameFontHighlightLarge2" inherits="GameFontNormalLarge2" virtual="true">
-		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>
 	<Font name="GameFontNormalWTF2" inherits="SystemFont_WTF2" virtual="true">
 		<Color r="1.0" g="0.82" b="0"/>
@@ -258,21 +201,6 @@
 	<Font name="MovieSubtitleFont" inherits="SystemFont22_Shadow_Outline" virtual="true">
 		<Color color="NORMAL_FONT_COLOR"/>
 	</Font>
-
-	<Font name="NumberFontNormal" inherits="NumberFont_Outline_Med" virtual="true" >
-		<Color r="1.0" g="1.0" b="1.0"/>
-	</Font>
-	<Font name="NumberFontNormalRight" inherits="NumberFontNormal" justifyH="RIGHT" virtual="true"/>
-	<Font name="NumberFontNormalRightRed" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.1" b="0.1"/>
-	</Font>
-	<Font name="NumberFontNormalRightYellow" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="1.0" g="0.82" b="0"/>
-	</Font>
-	<Font name="NumberFontNormalRightGray" inherits="NumberFontNormalRight" virtual="true" >
-		<Color r="0.6" g="0.6" b="0.6"/>
-	</Font>
-
 	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
 		<Color r="1.0" g="1.0" b="1.0"/>
 	</Font>

@@ -17,28 +17,28 @@ StaticPopupDialogs["BATTLE_PET_RENAME"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 16,
-	OnAccept = function(self)
-		local text = self.editBox:GetText();
-		C_PetJournal.SetCustomName(self.data, text);
+	OnAccept = function(dialog, data)
+		local text = dialog:GetEditBox():GetText();
+		C_PetJournal.SetCustomName(data, text);
 		PetJournal_UpdateAll();
 	end,
-	OnAlt = function(self)
-		C_PetJournal.SetCustomName(self.data, "");
+	OnAlt = function(dialog, data)
+		C_PetJournal.SetCustomName(data, "");
 		PetJournal_UpdateAll();
 	end,
-	EditBoxOnEnterPressed = function(self)
-		local parent = self:GetParent();
-		local text = parent.editBox:GetText();
-		C_PetJournal.SetCustomName(parent.data, text);
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		local text = editBox:GetText();
+		C_PetJournal.SetCustomName(data, text);
 		PetJournal_UpdateAll();
-		parent:Hide();
+		dialog:Hide();
 	end,
-	OnShow = function(self)
-		self.editBox:SetFocus();
+	OnShow = function(dialog, data)
+		dialog:GetEditBox():SetFocus();
 	end,
-	OnHide = function(self)
+	OnHide = function(dialog, data)
 		ChatEdit_FocusActiveWindow();
-		self.editBox:SetText("");
+		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -50,10 +50,10 @@ StaticPopupDialogs["BATTLE_PET_PUT_IN_CAGE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	maxLetters = 30,
-	OnAccept = function(self)
-		PetJournal_SetPendingCage(self.data);
-		C_PetJournal.CagePetByID(self.data);
-		if (PetJournalPetCard.petID == self.data) then
+	OnAccept = function(dialog, data)
+		PetJournal_SetPendingCage(data);
+		C_PetJournal.CagePetByID(data);
+		if (PetJournalPetCard.petID == data) then
 			PetJournal_ShowPetCard(1);
 		end
 	end,
@@ -68,9 +68,9 @@ StaticPopupDialogs["BATTLE_PET_RELEASE"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	maxLetters = 30,
-	OnAccept = function(self)
-		C_PetJournal.ReleasePetByID(self.data);
-		if (PetJournalPetCard.petID == self.data) then
+	OnAccept = function(dialog, data)
+		C_PetJournal.ReleasePetByID(data);
+		if (PetJournalPetCard.petID == data) then
 			PetJournal_ShowPetCard(1);
 		end
 	end,
@@ -331,7 +331,9 @@ function PetJournalHealPetSpellFrameMixin:OnLoad()
 end
 
 function PetJournalHealPetSpellFrameMixin:IsAvailable()
-	return IsSpellKnown(self.spellID) and C_PetJournal.IsJournalUnlocked();
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	return C_SpellBook.IsSpellInSpellBook(self.spellID, spellBank, includeOverrides) and C_PetJournal.IsJournalUnlocked();
 end
 
 function PetJournalHealPetSpellFrameMixin:IsLocked()
@@ -339,7 +341,9 @@ function PetJournalHealPetSpellFrameMixin:IsLocked()
 end
 
 function PetJournalHealPetSpellFrameMixin:OnSetTooltip(tooltip)
-	if not IsSpellKnown(self.spellID) then
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	if not C_SpellBook.IsSpellInSpellBook(self.spellID, spellBank, includeOverrides) then
 		GameTooltip_AddErrorLine(tooltip, PET_BATTLE_HEAL_SPELL_UNKNOWN);
 	elseif not C_PetJournal.IsJournalUnlocked() then
 		GameTooltip_AddErrorLine(tooltip, PET_JOURNAL_HEAL_SPELL_LOCKED);

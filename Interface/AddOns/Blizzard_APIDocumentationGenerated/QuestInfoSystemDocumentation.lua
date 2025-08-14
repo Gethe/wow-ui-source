@@ -13,6 +13,7 @@ local QuestInfoSystem =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
+				{ Name = "questInfoID", Type = "number", Nilable = true },
 			},
 
 			Returns =

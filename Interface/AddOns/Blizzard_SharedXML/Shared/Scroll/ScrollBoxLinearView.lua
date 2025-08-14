@@ -1,53 +1,12 @@
-
-ScrollBoxLinearPaddingMixin = CreateFromMixins(ScrollBoxPaddingMixin);
-
-function ScrollBoxLinearPaddingMixin:Init(top, bottom, left, right, spacing)
-	ScrollBoxPaddingMixin.Init(self, top, bottom, left, right);
-	self:SetSpacing(spacing or 0);
-end
-
-function ScrollBoxLinearPaddingMixin:GetSpacing()
-	return self.spacing;
-end
-
-function ScrollBoxLinearPaddingMixin:SetSpacing(spacing)
-	self.spacing = spacing;
-end
-
-function CreateScrollBoxLinearPadding(top, bottom, left, right, spacing)
-	return CreateAndInitFromMixin(ScrollBoxLinearPaddingMixin, top, bottom, left, right, spacing);
-end
-
 ScrollBoxLinearBaseViewMixin = CreateFromMixins(ScrollBoxViewMixin);
 
 function ScrollBoxLinearBaseViewMixin:SetPadding(top, bottom, left, right, spacing)
-	local padding = CreateScrollBoxLinearPadding(top, bottom, left, right, spacing);
-	ScrollBoxViewMixin.SetPadding(self, padding);
+	local padding = CreateScrollBoxPadding(top, bottom, left, right, spacing);
+	ScrollBoxListViewMixin.SetPadding(self, padding);
 end
 
 function ScrollBoxLinearBaseViewMixin:GetSpacing()
 	return self.padding:GetSpacing();
-end
-
-function ScrollBoxLinearBaseViewMixin:GetStride()
-	return 1;
-end
-
-local function CreateFrameLevelCounter(frameLevelPolicy, referenceFrameLevel, range)
-	if frameLevelPolicy == ScrollBoxViewMixin.FrameLevelPolicy.Ascending then
-		local frameLevel = referenceFrameLevel + 1;
-		return function()
-			frameLevel = frameLevel + 1;
-			return frameLevel;
-		end
-	elseif frameLevelPolicy == ScrollBoxViewMixin.FrameLevelPolicy.Descending then
-		local frameLevel = referenceFrameLevel + 1 + range;
-		return function()
-			frameLevel = frameLevel - 1;
-			return frameLevel;
-		end
-	end
-	return nil;
 end
 
 function ScrollBoxLinearBaseViewMixin:LayoutInternal(layoutFunction)
@@ -59,23 +18,18 @@ function ScrollBoxLinearBaseViewMixin:LayoutInternal(layoutFunction)
 
 	local spacing = self:GetSpacing();
 	local scrollTarget = self:GetScrollTarget();
-	local frameLevelCounter = CreateFrameLevelCounter(self:GetFrameLevelPolicy(), scrollTarget:GetFrameLevel(), frameCount);
+	local frameLevelCounter = ScrollBoxViewUtil.CreateFrameLevelCounter(self:GetFrameLevelPolicy(), 
+		scrollTarget:GetFrameLevel(), frameCount);
 	
-	local total = 0;
 	local offset = 0;
 	for index, frame in ipairs(frames) do
 		local extent = layoutFunction(index, frame, offset, scrollTarget);
 		offset = offset + extent + spacing;
-		total = total + extent;
 
 		if frameLevelCounter then
 			frame:SetFrameLevel(frameLevelCounter());
 		end
 	end
-
-	local spacingTotal = math.max(0, frameCount - 1) * spacing;
-	local extentTotal = total + spacingTotal;
-	return extentTotal;
 end
 
 function ScrollBoxLinearBaseViewMixin:SetElementIndentCalculator(elementIndentCalculator)
@@ -97,15 +51,31 @@ function ScrollBoxLinearBaseViewMixin:GetLayoutFunction()
 	return Layout;
 end
 
-function ScrollBoxLinearBaseViewMixin:Layout()
-	return self:LayoutInternal(self:GetLayoutFunction());
+function ScrollBoxLinearBaseViewMixin:Layout(scrollBox)
+	self:LayoutInternal(self:GetLayoutFunction());
 end
 
-ScrollBoxListLinearViewMixin = CreateFromMixins(ScrollBoxListViewMixin, ScrollBoxLinearBaseViewMixin);
+function ScrollBoxLinearBaseViewMixin:HasBiaxalLayout()
+	return false;
+end
+
+ScrollBoxListLinearViewMixin = CreateFromMixins(ScrollBoxListViewMixin, ScrollBoxListStrideMixin, ScrollBoxLinearBaseViewMixin);
 
 function ScrollBoxListLinearViewMixin:Init(top, bottom, left, right, spacing)
 	ScrollBoxListViewMixin.Init(self);
 	self:SetPadding(top, bottom, left, right, spacing);
+end
+
+function ScrollBoxListLinearViewMixin:GetStride()
+	return 1;
+end
+
+function ScrollBoxListLinearViewMixin:HasIdenticalStrideExtent()
+	return self:HasIdenticalElementExtent();
+end
+
+function ScrollBoxListLinearViewMixin:GetIdenticalStrideExtent()
+	return self:GetIdenticalElementExtent();
 end
 
 function ScrollBoxListLinearViewMixin:SetScrollBox(scrollBox)
@@ -116,34 +86,176 @@ function ScrollBoxListLinearViewMixin:SetScrollBox(scrollBox)
 	end
 end
 
+function ScrollBoxListLinearViewMixin:GetExtentSpacing()
+	return self:GetSpacing();
+end
+
+function ScrollBoxListLinearViewMixin:ResizeFrame(scrollBox, frame, dataIndex, elementData)
+	local extent = self:CalculateFrameExtent(dataIndex, elementData);
+	scrollBox:SetFrameExtent(frame, extent);
+end
+
 function ScrollBoxListLinearViewMixin:InitDefaultDrag(scrollBox)
 	return ScrollUtil.InitDefaultLinearDragBehavior(scrollBox);
 end
 
-function ScrollBoxListLinearViewMixin:CalculateDataIndices(scrollBox)
-	return ScrollBoxListViewMixin.CalculateDataIndices(self, scrollBox, self:GetStride(), self:GetSpacing());
+function ScrollBoxListLinearViewMixin:SetElementExtent(extent)
+	self:ClearCachedData();
+	ScrollBoxListViewMixin.SetElementExtent(self, extent);
 end
 
-function ScrollBoxListLinearViewMixin:GetExtent(scrollBox)
-	return ScrollBoxListViewMixin.GetExtent(self, scrollBox, self:GetStride(), self:GetSpacing());
+function ScrollBoxListLinearViewMixin:SetElementExtentCalculator(elementExtentCalculator)
+	self:ClearElementExtentData();
+	self.elementExtentCalculator = elementExtentCalculator;
+end
+
+function ScrollBoxListLinearViewMixin:GetElementExtentCalculator()
+	return self.elementExtentCalculator;
+end
+
+function ScrollBoxListLinearViewMixin:ClearElementExtentData()
+	self:ClearCachedData();
+	ScrollBoxListViewMixin.ClearElementExtentData(self);
+end
+
+function ScrollBoxListLinearViewMixin:ClearCachedData()
+	self.calculatedElementExtents = nil;
+	self.templateExtents = nil;
+end
+
+do
+	local function HasEqualTemplateInfoExtents(view, infos)
+		local templateInfo = infos[next(infos)];
+		if not templateInfo then
+			return false;
+		end
+
+		local templateInfoExtent = view:GetExtentFromInfo(templateInfo);
+		if templateInfoExtent <= 0 then
+			return false;
+		end
+	
+		for frameTemplate, info in pairs(infos) do
+			local extent = view:GetExtentFromInfo(info);
+			if not ApproximatelyEqual(templateInfoExtent, extent) then
+				return false;
+			end
+		end
+	
+		return true;
+	end
+	
+	function ScrollBoxListLinearViewMixin:HasIdenticalElementExtent()
+		if self.elementExtent then
+			return true;
+		end
+
+		if self.elementExtentCalculator then
+			return false;
+		end
+
+		if self.templateInfoDirty then
+			self.templateInfoDirty = nil;
+	
+			local infos = self.templateInfoCache:GetTemplateInfos();
+			self.hasEqualTemplateInfoExtents = HasEqualTemplateInfoExtents(self, infos);
+		end
+		
+		return self.hasEqualTemplateInfoExtents;
+	end
+end
+
+function ScrollBoxListLinearViewMixin:GetIdenticalElementExtent()
+	assert(self:HasIdenticalElementExtent());
+	if self.elementExtent then
+		return self.elementExtent;
+	end
+
+	local infos = self.templateInfoCache:GetTemplateInfos();
+	local info = infos[next(infos)];
+	return self:GetExtentFromInfo(info);
+end
+
+function ScrollBoxListLinearViewMixin:CalculateFrameExtent(dataIndex, elementData)
+	if self.elementExtent then
+		return self.elementExtent;
+	end
+
+	if self.elementExtentCalculator then
+		return self.elementExtentCalculator(dataIndex, elementData);
+	end
+
+	return self:GetTemplateExtentFromElementData(elementData);
+end
+
+function ScrollBoxListLinearViewMixin:HasAnyExtentOrSizeCalculator()
+	return self.elementExtentCalculator ~= nil;
 end
 
 function ScrollBoxListLinearViewMixin:RecalculateExtent(scrollBox)
-	return ScrollBoxListViewMixin.RecalculateExtent(self, scrollBox, self:GetStride(), self:GetSpacing());
+	local function CalculateExtents(tbl, size)
+		for dataIndex, elementData in self:EnumerateDataProvider() do
+			local extent = self:CalculateFrameExtent(dataIndex, elementData);
+			table.insert(tbl, extent);
+		end
+
+		return self:GetExtentTo(scrollBox, size);
+	end
+
+	local extent = 0;
+	if self:HasDataProvider() then
+		local function CalculateTemplateExtents(size)
+			self.templateExtents = {};
+			return CalculateExtents(self.templateExtents, size);
+		end
+
+
+		--[[
+		CalculateTemplateExtents is ordered first here is because self.templateExtents will only 
+		be assigned after all other options were checked. Once set, it is assumed that it is the 
+		priority option, until explicitly cleared.
+		]]--
+		local size = self:GetDataProviderSize();
+		local isTblSizeDifferent = self.templateExtents and #self.templateExtents ~= size;
+		if isTblSizeDifferent then
+			extent = CalculateTemplateExtents(size);
+		elseif self:HasIdenticalElementExtent() then
+			extent = self:GetExtentTo(scrollBox, size);
+		elseif self.elementExtentCalculator then
+			self.calculatedElementExtents = {};
+			extent = CalculateExtents(self.calculatedElementExtents, size);
+		else
+			extent = CalculateTemplateExtents(size);
+		end
+	end
+	
+	local padding = scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding();
+	self:SetExtent(extent + padding);
 end
 
-function ScrollBoxListLinearViewMixin:GetExtentUntil(scrollBox, dataIndex)
-	return ScrollBoxListViewMixin.GetExtentUntil(self, scrollBox, dataIndex, self:GetStride(), self:GetSpacing());
-end
+function ScrollBoxListLinearViewMixin:GetElementExtent(dataIndex)
+	local size = self:GetDataProviderSize();
+	if dataIndex > size then
+		return 0;
+	end
 
-function ScrollBoxListLinearViewMixin:GetPanExtent()
-	return ScrollBoxListViewMixin.GetPanExtent(self, self:GetSpacing());
+	if self:HasIdenticalElementExtent() then 
+		return self:GetIdenticalElementExtent();
+	end
+
+	if self.calculatedElementExtents then
+		return self.calculatedElementExtents[dataIndex];
+	elseif self.templateExtents then
+		return self.templateExtents[dataIndex];
+	end
+	return 0;
 end
 
 function CreateScrollBoxListLinearView(top, bottom, left, right, spacing)
 	return CreateAndInitFromMixin(ScrollBoxListLinearViewMixin, top or 0, bottom or 0, left or 0, right or 0, spacing or 0);
 end
 
+-- Simple option for scrolling regions without a data provider.
 ScrollBoxLinearViewMixin = CreateFromMixins(ScrollBoxLinearBaseViewMixin);
 
 function ScrollBoxLinearViewMixin:Init(top, bottom, left, right, spacing)
@@ -174,7 +286,9 @@ function ScrollBoxLinearViewMixin:GetPanExtent()
 	return self.panExtent or 0;
 end
 
-function ScrollBoxLinearViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
+-- FIXME - Investigate this being necessary here. If actually required, add another
+-- accessor and update ScrollBoxBaseMixin accordingly.
+function ScrollBoxLinearViewMixin:HasBiaxalLayout()
 	return true;
 end
 
@@ -189,16 +303,9 @@ function ScrollBoxLinearViewMixin:RecalculateExtent(scrollBox)
 	for index, frame in ipairs(frames) do
 		extent = extent + self:GetFrameExtent(frame);
 	end
-
-	local space = ScrollBoxViewUtil.CalculateSpacingUntil(#frames, self:GetStride(), self:GetSpacing());
-	self:SetExtent(extent + space + scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding());
-end
-
-function ScrollBoxLinearViewMixin:GetExtent(scrollBox)
-	if not self:IsExtentValid() then
-		self:RecalculateExtent(scrollBox);
-	end
-	return self.extent;
+	local space = math.max(#frames - 1, 0) * self:GetSpacing();
+	local padding = scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding();
+	self:SetExtent(extent + space + padding);
 end
 
 function CreateScrollBoxLinearView(top, bottom, left, right, spacing)

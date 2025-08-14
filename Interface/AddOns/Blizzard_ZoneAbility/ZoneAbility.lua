@@ -105,7 +105,7 @@ end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	-- Leaving this as a surgical fix for timerunning for now.
-	local hideZoneAbilities = PlayerGetTimerunningSeasonID() and HasVehicleActionBar();
+	local hideZoneAbilities = PlayerIsTimerunning() and HasVehicleActionBar();
 
 	local zoneAbilities = hideZoneAbilities and {} or GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);

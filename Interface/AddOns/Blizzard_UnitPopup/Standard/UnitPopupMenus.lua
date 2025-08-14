@@ -23,6 +23,7 @@ function UnitPopupMenuSelf:GetEntries()
 		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupPartyInstanceLeaveButtonMixin,
 		UnitPopupPartyLeaveButtonMixin,
+		UnitPopupPartyInstanceAbandonButtonMixin,
 	}
 end
 

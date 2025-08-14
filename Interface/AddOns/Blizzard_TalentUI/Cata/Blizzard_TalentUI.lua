@@ -2,10 +2,10 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	text = CONFIRM_LEARN_PREVIEW_TALENTS,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self)
+	OnAccept = function(dialog, data)
 		LearnPreviewTalents(PlayerTalentFrame.pet);
 	end,
-	OnCancel = function (self)
+	OnCancel = function(dialog, data)
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -347,7 +347,7 @@ function PlayerTalentFrame_OnLoad(self)
 	SetPortraitToTexture(PlayerTalentFramePortrait, "Interface\\Icons\\Ability_Marksmanship");
 	
 	-- initialize active spec
-	PlayerTalentFrame_UpdateActiveSpec(GetActiveTalentGroup(false, false));
+	PlayerTalentFrame_UpdateActiveSpec(C_SpecializationInfo.GetActiveSpecGroup(false, false));
 end
 
 function PlayerTalentFrame_OnShow(self)
@@ -529,9 +529,9 @@ function PlayerTalentFrame_Refresh()
 end
 
 function PlayerTalentFrame_Update(playerLevel)
-	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
+	local activeTalentGroup, numTalentGroups = C_SpecializationInfo.GetActiveSpecGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
 	PlayerTalentFrame.primaryTree = GetPreviewPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup) 
-			or GetPrimaryTalentTree(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+			or C_SpecializationInfo.GetSpecialization(PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
 			
 	-- update specs
 	if ( not PlayerTalentFrame_UpdateSpecs(activeTalentGroup, numTalentGroups) ) then
@@ -697,8 +697,7 @@ local function PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, spellId, sp
 end
 
 function PlayerTalentFramePanel_UpdateSummary(self)
-
-	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(self.talentTree, self.inspect, self.pet, self.talentGroup);
+	local id, name, description, icon, _, _, pointsSpent, background, previewPointsSpent, isUnlocked = C_SpecializationInfo.GetSpecializationInfo(self.talentTree, self.inspect, self.pet, nil, nil, self.talentGroup);
 	local role1, role2 = GetTalentTreeRoles(self.talentTree, self.inspect, self.pet);
 	
 	if (self.Summary and icon) then
@@ -828,14 +827,14 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		end	
 		
 		-- Update mastery
-		local masterySpell, masterySpell2 = GetTalentTreeMasterySpells(self.talentTree);
-		if (UnitLevel("player") >= SHOW_MASTERY_LEVEL and masterySpell) then
+		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(self.talentTree);
+		if (UnitLevel("player") >= SHOW_MASTERY_LEVEL and masterySpells[1]) then
 			local _, class = UnitClass("player");
-			local masteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+			local masteryKnown = C_SpellBook.IsSpellInSpellBook(CLASS_MASTERY_SPELLS[class]);
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then
-				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, masterySpell, masterySpell2, TALENT_MASTERY_LABEL, desaturateBonuses or not masteryKnown);
+				PlayerTalentFramePanel_UpdateBonusAbility(bonusFrame, masterySpells[1], masterySpells[2], TALENT_MASTERY_LABEL, desaturateBonuses or not masteryKnown);
 				if (not masteryKnown) then
 					bonusFrame.extraTooltip = GRAY_FONT_COLOR_CODE..TALENT_MASTERY_TOOLTIP_NOT_KNOWN..FONT_COLOR_CODE_CLOSE;
 				end
@@ -896,7 +895,7 @@ function PlayerTalentFramePanel_ShowOrHideHeaderIcon(self)
 end
 
 function PlayerTalentFramePanel_Update(self)
-	local id, name, description, icon, pointsSpent, background, previewPointsSpent, isUnlocked = GetTalentTabInfo(self.talentTree, self.inspect, self.pet, self.talentGroup);
+	local id, name, description, icon, _, _, pointsSpent, background, previewPointsSpent, isUnlocked = C_SpecializationInfo.GetSpecializationInfo(self.talentTree, self.inspect, self.pet, nil, nil, self.talentGroup);
 	local primaryTree = PlayerTalentFrame.primaryTree;
 	if (self.PointsSpent) then
 		self.PointsSpent:SetText(pointsSpent+previewPointsSpent);
@@ -1112,15 +1111,32 @@ end
 
 function PlayerTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
-			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+		talentInfoQuery.talentIndex = self:GetID();
+		talentInfoQuery.isInspect = PlayerTalentFrame.inspect;
+		talentInfoQuery.isPet = PlayerTalentFrame.pet;
+		talentInfoQuery.groupIndex = PlayerTalentFrame.talentGroup;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if talentInfo then
+			GameTooltip:SetTalent(talentInfo.talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+		end
 	end
 end
 
 function PlayerTalentFrameTalent_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");	
-	GameTooltip:SetTalent(self:GetParent().talentTree, self:GetID(),
-		PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local talentInfoQuery = {};
+	talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
+	talentInfoQuery.talentIndex = self:GetID();
+	talentInfoQuery.isInspect = PlayerTalentFrame.inspect;
+	talentInfoQuery.isPet = PlayerTalentFrame.pet;
+	talentInfoQuery.groupIndex = PlayerTalentFrame.talentGroup;
+	local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+	if talentInfo then
+		GameTooltip:SetTalent(talentInfo.talentID, PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+	end
 	self.UpdateTooltip = PlayerTalentFrameTalent_OnEnter;
 end
 
@@ -1133,7 +1149,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	local selectedTab = PanelTemplates_GetSelectedTab(PlayerTalentFrame);
 	local primaryTree = PlayerTalentFrame.primaryTree;
 	if (not activeTalentGroup or not numTalentGroups) then
-		activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
+		activeTalentGroup, numTalentGroups = C_SpecializationInfo.GetActiveSpecGroup(false, PlayerTalentFrame.pet), GetNumTalentGroups(false, PlayerTalentFrame.pet);
 	end
 	
 	-- show the activate button if this is not the active spec
@@ -1211,7 +1227,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 			PlayerTalentFrameHeaderSubText:Hide();
 			PlayerTalentFrameHeaderHelpBox:Show();
 			for i = 1, 3 do
-				local _, _, _, _, _, _, _, isUnlocked = GetTalentTabInfo(i, false, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup);
+				local _, _, _, _, _, _, _, _, _, isUnlocked = C_SpecializationInfo.GetSpecializationInfo(i, false, PlayerTalentFrame.pet, nil, nil, PlayerTalentFrame.talentGroup);
 				if (isUnlocked) then
 					_G["PlayerTalentFrameHeaderHelpBoxArrow"..i]:Show();
 				else
@@ -1542,7 +1558,7 @@ function PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups)
 	local normalTexture = self:GetNormalTexture();
 	if ( hasMultipleTalentGroups ) then
 		local primaryTree = GetPreviewPrimaryTalentTree(false, false, spec.talentGroup) 
-				or GetPrimaryTalentTree(false, false, spec.talentGroup);
+				or C_SpecializationInfo.GetSpecialization(false, false, spec.talentGroup);
 		
 		local specInfoCache = talentSpecInfoCache[specIndex];
 		if ( primaryTree and primaryTree > 0 and specInfoCache) then
@@ -1568,7 +1584,7 @@ function PlayerSpecTab_Load(self, specIndex)
 	local checkedTexture = self:GetCheckedTexture();
 	checkedTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight");
 
-	local activeTalentGroup, numTalentGroups = GetActiveTalentGroup(false, false), GetNumTalentGroups(false, false);
+	local activeTalentGroup, numTalentGroups = C_SpecializationInfo.GetActiveSpecGroup(false, false), GetNumTalentGroups(false, false);
 	PlayerSpecTab_Update(self, activeTalentGroup, numTalentGroups);
 end
 

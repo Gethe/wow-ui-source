@@ -59,24 +59,24 @@ function SpellSearchPreviewContainerMixin:OnLoad()
 	end);
 	self.ScrollBox:SetView(view);
 
-	self.DefaultResultButton:SetScript("OnClick", GenerateClosure(self.OnDefaultResultButtonClicked, self));
-	self.DefaultResultButton:SetScript("OnEnter", GenerateClosure(self.OnDefaultResultButtonEnter, self));
+	local resetFunc = nil;
+	local forbidden = nil;
+	local function postCreate(button)
+		button:SetScript("OnEnter", GenerateClosure(self.OnSuggestedResultButtonEnter, self, button));
+		button:SetScript("OnClick", GenerateClosure(self.OnSuggestedResultButtonClicked, self, button));
+	end
+	self.suggestedResultButtonsPool = CreateFramePool("BUTTON", self, "SpellSearchSuggestedResultButtonTemplate", resetFunc, forbidden, postCreate);
+
+	self.suggestedResultInfos = { };
 end
 
 function SpellSearchPreviewContainerMixin:OnShow()
 	self.ScrollBox:ScrollToBegin(ScrollBoxConstants.NoScrollInterpolation);
 end
 
-function SpellSearchPreviewContainerMixin:SetDefaultResultButton(buttonText, buttonCallback)
-	self.defaultButtonCallback = buttonCallback;
-	self.DefaultResultButton.Text:SetText(buttonText);
-	self:UpdateResultsDisplay();
-end
-
-function SpellSearchPreviewContainerMixin:DisableDefaultResultButton()
-	self.defaultButtonCallback = nil;
-	self.DefaultResultButton.Text:SetText(nil);
-	self:UpdateResultsDisplay();
+function SpellSearchPreviewContainerMixin:AddSuggestedResult(buttonText, clickCallback, canShowPredicate)
+	local info = { text = buttonText, clickCallback = clickCallback, canShowPredicate = canShowPredicate };
+	table.insert(self.suggestedResultInfos, info);
 end
 
 function SpellSearchPreviewContainerMixin:SetPreviewResults(previewResults)
@@ -112,9 +112,11 @@ function SpellSearchPreviewContainerMixin:SetPreviewResults(previewResults)
 end
 
 function SpellSearchPreviewContainerMixin:UpdateResultsDisplay()
+	self.suggestedResultButtonsPool:ReleaseAll();
+
+	local hideDisplay = true;
 	-- Have results, show results
 	if self.ScrollBox:HasDataProvider() then
-		self.DefaultResultButton:Hide();
 		local view = self.ScrollBox:GetView();
 		local viewHeight = view:GetExtent();
 
@@ -124,17 +126,41 @@ function SpellSearchPreviewContainerMixin:UpdateResultsDisplay()
 
 		self:SetSize(self:GetWidth(), viewHeight);
 		self.ScrollBox:Show();
+		hideDisplay = false;
 
-	-- No results but have default button, show that
-	elseif self.defaultButtonCallback then
-		self.ScrollBox:Hide();
-		self.OverflowCount:Hide();
+	-- No results but have suggested results, show any that are valid
+	elseif #self.suggestedResultInfos > 0 then
+		local numShown = 0;
+		local lastButton;
+		for i, info in ipairs(self.suggestedResultInfos) do
+			if not info.canShowPredicate or info.canShowPredicate() then
+				local button = self.suggestedResultButtonsPool:Acquire();
+				button:Show();
+				button.Text:SetText(info.text);
+				numShown = numShown + 1;
+				button.displayIndex = numShown;
+				button.clickCallback = info.clickCallback;
+				if lastButton then
+					button:SetPoint("TOPLEFT", lastButton, "BOTTOMLEFT");
+					button:SetPoint("TOPRIGHT", lastButton, "BOTTOMRIGHT");
+				else
+					button:SetPoint("TOPLEFT");
+					button:SetPoint("TOPRIGHT");
+				end
+				lastButton = button;
+			end
+		end
 
-		self:SetSize(self:GetWidth(), self.DefaultResultButton:GetHeight()+3);
-		self.DefaultResultButton:Show();
+		if numShown > 0 then
+			self.ScrollBox:Hide();
+			self.OverflowCount:Hide();
+			self:SetSize(self:GetWidth(), lastButton:GetHeight() * numShown + 3);
+			hideDisplay = false;
+		end
+	end
 
-	-- No results, no default button, show nothing
-	else
+	-- No results, no suggested results, show nothing
+	if hideDisplay then
 		self:Hide();
 	end
 end
@@ -145,18 +171,30 @@ function SpellSearchPreviewContainerMixin:ClearResults()
 	end
 
 	self.highlightedIndex = 0;
-	self.DefaultResultButton.HighlightTexture:Hide();
+	for button in self.suggestedResultButtonsPool:EnumerateActive() do
+		button.HighlightTexture:Hide();
+	end
 	self.OverflowCount:Hide();
 
 	self:UpdateResultsDisplay();
 end
 
 function SpellSearchPreviewContainerMixin:HighlightPreviewResult(index)
-	-- No results, highlight the default button if we're using it
+	-- No results, highlight a suggested result button if there are any
 	if not self.ScrollBox:HasDataProvider() then
-		if self.defaultButtonCallback then
-			self.highlightedIndex = 1;
-			self.DefaultResultButton.HighlightTexture:Show();
+		local numButtons = self.suggestedResultButtonsPool:GetNumActive();
+		if numButtons > 0 then
+			-- Keep index within bounds
+			index = (index - 1) % self.suggestedResultButtonsPool:GetNumActive() + 1;
+
+			for button in self.suggestedResultButtonsPool:EnumerateActive() do
+				if button.displayIndex == index then
+					self.highlightedIndex = index;
+					button.HighlightTexture:Show();
+				else
+					button.HighlightTexture:Hide();
+				end
+			end
 		end
 		return;
 	end
@@ -188,11 +226,13 @@ function SpellSearchPreviewContainerMixin:SelectHighlightedResult()
 		return false;
 	end
 
-	-- No results, could only be highlighting the default button
+	-- No results, could only be highlighting a suggested result button
 	if not self.ScrollBox:HasDataProvider() then
-		if self.defaultButtonCallback then
-			self:OnDefaultResultButtonClicked();
-			return true;
+		for button in self.suggestedResultButtonsPool:EnumerateActive() do
+			if button.displayIndex == self.highlightedIndex then
+				self:OnSuggestedResultButtonClicked(button);
+				return true;
+			end
 		end
 		return false;
 	end
@@ -212,15 +252,15 @@ function SpellSearchPreviewContainerMixin:SelectPreviewResult(resultInfo)
 	self:GetParent():OnPreviewSearchResultClicked(resultInfo);
 end
 
-function SpellSearchPreviewContainerMixin:OnDefaultResultButtonClicked()
-	if self.defaultButtonCallback then
+function SpellSearchPreviewContainerMixin:OnSuggestedResultButtonClicked(button)
+	if button.clickCallback then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		self.defaultButtonCallback();
+		button.clickCallback();
 	end
 end
 
-function SpellSearchPreviewContainerMixin:OnDefaultResultButtonEnter()
-	self:HighlightPreviewResult(1);
+function SpellSearchPreviewContainerMixin:OnSuggestedResultButtonEnter(button)
+	self:HighlightPreviewResult(button.displayIndex);
 end
 
 

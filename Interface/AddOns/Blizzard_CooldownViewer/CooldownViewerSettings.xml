@@ -1,0 +1,242 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CooldownViewerSettingsDraggedItemTemplate" mixin="CooldownViewerSettingsDraggedItemMixin" frameStrata="TOOLTIP" virtual="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" virtual="true">
+		<Size x="38" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerSettingsBarItemTemplate" mixin="CooldownViewerSettingsBarItemMixin" registerForDrag="LeftButton" virtual="true">
+		<Size x="317" y="38"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="Bar" frameLevel="511">
+				<Size y="19"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<BarTexture parentKey="FillTexture" atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
+					<Color r="1.0" g="0.5" b="0.25"/>
+				</BarTexture>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
+							<Size y="30"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-2" y="-2"/>
+								<Anchor point="RIGHT" x="6" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" x="5"/>
+								<Anchor point="RIGHT" x="-25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsCategoryMixin" inherits="ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="minimumHeight" value="22" type="number"/>
+			<KeyValue key="minimumWidth" value="344" type="number"/>
+			<KeyValue key="maximumWidth" value="344" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="Header" inherits="ListHeaderThreeSliceTemplate" registerForClicks="LeftButtonUp">
+				<Size x="0" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="Container" inherits="GridLayoutFrame">
+				<KeyValues>
+					<KeyValue key="childXPadding" value="8" type="number"/>
+					<KeyValue key="childYPadding" value="8" type="number"/>
+					<KeyValue key="isHorizontal" value="true" type="boolean"/>
+					<KeyValue key="stride" value="7" type="number"/>
+					<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+					<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+					<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="315" y="70"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="13" y="-15"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerSettingsBarCategoryTemplate" inherits="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsBarCategoryMixin" virtual="true">
+
+	</Frame>
+
+	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
+
+	<Frame name="CooldownViewerSettings" inherits="ButtonFrameTemplate, CallbackRegistrantTemplate" parent="UIParent" toplevel="true" mixin="CooldownViewerSettingsMixin" hidden="true">
+		<Size x="399" y="609"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="16" y="-116"/> <!-- Temp, make this into a managed panel of some kind -->
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="character-panel-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="SpellsTab" inherits="CooldownViewerSettingsTabTemplate">
+				<KeyValues>
+					<KeyValue key="displayMode" value="spells" type="string"/>
+					<KeyValue key="activeAtlas" value="icon_cooldownmanager" type="string"/>
+					<KeyValue key="inactiveAtlas" value="icon_cooldownmanager" type="string"/>
+					<KeyValue key="tooltipText" value="COOLDOWN_VIEWER_SETTINGS_TAB_SPELLS" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-28"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="AurasTab" inherits="CooldownViewerSettingsTabTemplate">
+				<KeyValues>
+					<KeyValue key="displayMode" value="auras" type="string"/>
+					<KeyValue key="activeAtlas" value="icon_trackedbuffs" type="string"/>
+					<KeyValue key="inactiveAtlas" value="icon_trackedbuffs" type="string"/>
+					<KeyValue key="tooltipText" value="COOLDOWN_VIEWER_SETTINGS_TAB_BUFFS" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.SpellsTab" relativePoint="BOTTOM" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+			<EditBox parentKey="SearchBox" mixin="CooldownViewerSettingsSearchBoxMixin" inherits="SearchBoxTemplate">
+				<KeyValues>
+					<KeyValue key="instructionText" value="COOLDOWN_VIEWER_SETTINGS_SEARCH_INSTRUCTIONS" type="global"/>
+				</KeyValues>
+				<Size x="290" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="72" y="-30"/>
+				</Anchors>
+				<Size x="184" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged method="CooldownViewerSettingsSearch_OnTextChanged" inherit="append"/>
+				</Scripts>
+			</EditBox>
+			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</DropdownButton>
+			<ScrollFrame parentKey="CooldownScroll" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarHideIfUnscrollable" value="false" type="boolean"/>
+					<KeyValue key="scrollBarHideTrackIfThumbExceedsTrack" value="true" type="boolean"/>
+					<KeyValue key="scrollBarTopY" value="0" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="17" y="-72"/>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="29"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame parentKey="Content" mixin="CooldownViewerSettingsContentMixin">
+						<Size x="300" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			<Button parentKey="SaveLayoutButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
+				<Size x="164" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="-14" y="3"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="UndoButton" registerForClicks="LeftButtonUp" inherits="IconButtonTemplate">
+				<KeyValues>
+					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
+					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
+					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP" type="global"/>
+					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SaveLayoutButton" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ReorderMarker" mixin="CooldownViewerSettingsReorderMarkerMixin" hidden="true">
+				<Size x="8" y="52"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" file="Interface\ChatFrame\UI-ChatFrame-DockHighlight" alphaMode="ADD">
+							<Size x="52" y="52"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -49,6 +49,8 @@ Mainline\LowHealthFrame.xml
 Mainline\CombatFeedback.lua
 Mainline\ReadyCheck.lua
 Mainline\ReadyCheck.xml
+Mainline\InstanceAbandon.lua
+Mainline\InstanceAbandon.xml
 CustomizationDebugFrame.xml
 Mainline\RaidWarning.xml
 Shared\CinematicFrame.lua
@@ -63,6 +65,7 @@ MovieFrame.xml
 BossBannerToast.xml
 EventToastManager.xml
 EquipmentManager.lua
+Shared\EquipmentManager.lua
 RolePoll.xml
 SpellActivationOverlay.xml
 GuildInviteFrame.xml
@@ -81,6 +84,7 @@ FloatingPetBattleTooltip.lua
 FloatingPetBattleTooltip.xml
 BattlePetTooltip.lua
 BattlePetTooltip.xml
+LossOfControlFrame.lua
 LossOfControlFrame.xml
 ArtifactToasts.xml
 AzeriteItemToasts.xml

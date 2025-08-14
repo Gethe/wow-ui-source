@@ -21,11 +21,11 @@ StaticPopupDialogs["DIALOG_REPLACE_MOUNT_EQUIPMENT"] = {
 	button1 = YES,
 	button2 = NO,
 	
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, true);
 		PlaySound(SOUNDKIT.UI_MOUNT_SLOTEQUIPMENT_APPROVAL);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 		MountJournal_OnDialogApplyEquipmentChoice(MountJournal, false);
 	end,
 	timeout = 0,
@@ -422,7 +422,8 @@ function MountJournal_OnEvent(self, event, ...)
 		MountJournal_FullUpdate(self);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
-			MountJournal_UpdateMountDisplay(true);
+			local forceSceneChange = true;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
 		end
 	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
 		MountJournal_UpdateEquipment(self);
@@ -437,7 +438,8 @@ function MountJournal_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_FORM_CHANGED" ) then
 		local showPlayer = GetCVarBool("mountJournalShowPlayer");
 		if(self:IsVisible() and showPlayer) then
-			MountJournal_UpdateMountDisplay(true);
+			local forceSceneChange =  true;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
 		end
 	end
 end
@@ -633,8 +635,8 @@ function MountJournal_FullUpdate(self)
 		if (not MountJournal.selectedSpellID) then
 			MountJournal_Select(1);
 		end
-
-		MountJournal_UpdateMountDisplay();
+		local forceSceneChange = true;
+		MountJournal_UpdateMountDisplay(forceSceneChange);
 	end
 end
 
@@ -688,7 +690,8 @@ function MountJournal_UpdateMountList()
 	if ( not showMounts ) then
 		MountJournal.selectedSpellID = nil;
 		MountJournal.selectedMountID = nil;
-		MountJournal_UpdateMountDisplay();
+		local forceSceneChange = true;
+		MountJournal_UpdateMountDisplay(forceSceneChange);
 		MountJournal.MountCount.Count:SetText(0);
 	end
 end
@@ -721,11 +724,11 @@ function MountJournal_OnModelLoaded(mountActor)
 	mountActor:Show();
 end
 
-function MountJournal_UpdateMountDisplay(forceSceneChange)
+function MountJournal_UpdateMountDisplay(forceSceneChange, refreshPlayer)
 	if ( MountJournal.selectedMountID ) then
 		local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(MountJournal.selectedMountID);
 		local needsFanfare = C_MountJournal.NeedsFanfare(MountJournal.selectedMountID);
-		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or forceSceneChange or MountJournal_GetPendingMountChanges()) then
+		if ( MountJournal.MountDisplay.lastDisplayed ~= spellID or MountJournal_GetPendingMountChanges()) or forceSceneChange or refreshPlayer then
 			MountJournal_SetPendingMountChanges(false);
 			local creatureDisplayID, descriptionText, sourceText, isSelfMount, _, modelSceneID, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(MountJournal.selectedMountID);
 			if not creatureDisplayID then
@@ -755,7 +758,9 @@ function MountJournal_UpdateMountDisplay(forceSceneChange)
 
 			MountJournal.MountDisplay.lastDisplayed = spellID;
 
-			MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+			if forceSceneChange then
+				MountJournal.MountDisplay.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+			end
 
 			MountJournal.MountDisplay.ModelScene:PrepareForFanfare(needsFanfare);
 
@@ -832,7 +837,8 @@ function MountJournal_SetSelected(selectedMountID, selectedSpellID)
 	local oldSelectedID = MountJournal.selectedMountID;
 	MountJournal.selectedSpellID = selectedSpellID;
 	MountJournal.selectedMountID = selectedMountID;
-	MountJournal_UpdateMountDisplay();
+	local forceSceneChange = true;
+	MountJournal_UpdateMountDisplay(forceSceneChange);
 	
 	if oldSelectedID ~= selectedMountID then
 		local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
@@ -864,7 +870,8 @@ function MountJournalMountButton_UseMount(mountID)
 		local function OnFinishedCallback()
 			C_MountJournal.ClearFanfare(mountID);
 			MountJournal_UpdateMountList();
-			MountJournal_UpdateMountDisplay();
+			local forceSceneChange = true;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
 		end
 
 		MountJournal.MountDisplay.ModelScene:StartUnwrapAnimation(OnFinishedCallback);
@@ -1149,7 +1156,9 @@ function PlayerPreviewToggle:OnClick()
 	else
 		SetCVar("mountJournalShowPlayer", 0);
 	end
-	MountJournal_UpdateMountDisplay(true);
+	local forceSceneChange = false;
+	local refreshPlayer = true;
+	MountJournal_UpdateMountDisplay(forceSceneChange, refreshPlayer);
 end
 
 
