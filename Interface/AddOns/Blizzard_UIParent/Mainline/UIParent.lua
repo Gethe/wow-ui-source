@@ -1783,7 +1783,7 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopupDialogs["GOSSIP_CONFIRM"].hasMoneyFrame = nil;
 		end
-		local dialog = StaticPopup_Show("GOSSIP_CONFIRM", arg2, nil, arg1);
+		StaticPopup_Show("GOSSIP_CONFIRM", arg2, nil, arg1);
 		if ( dialog and arg3 > 0 ) then
 			MoneyFrame_Update(dialog.MoneyFrame, arg3);
 		end

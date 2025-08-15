@@ -72,6 +72,34 @@ function InstanceAbandonMixin:OnLoad()
 end
 
 function InstanceAbandonMixin:OnShow()
+	if not self.textures then
+		-- init
+		local numIcons = 5;
+		local iconSize = 48;
+		local iconSpacing = 6;
+		local sidePadding = 60;
+		local topPadding = 10;
+
+		self.StatusFrame.textures = { };
+		local lastTexture;
+		for i = 1, numIcons do
+			local texture = self.StatusFrame:CreateTexture(nil, "ARTWORK");
+			texture:SetSize(iconSize, iconSize);
+			if lastTexture then
+				texture:SetPoint("LEFT", lastTexture, "RIGHT", iconSpacing, 0);
+			else
+				texture:SetPoint("TOPLEFT", sidePadding, -topPadding);
+			end
+			tinsert(self.StatusFrame.textures, texture);
+			lastTexture = texture;
+		end
+		local width = sidePadding * 2 + numIcons * iconSize + (numIcons - 1) * iconSpacing;
+		local height = topPadding + iconSize;
+		self.StatusFrame:SetSize(width, height);
+
+		self.VoteText:SetFontObject("UserScaledFontGameNormal");
+	end
+
 	local votesRequired, keystoneOwnerVoteWeight = C_PartyInfo.GetInstanceAbandonVoteRequirements();
 
 	if C_PartyInfo.IsChallengeModeKeystoneOwner() then
@@ -83,42 +111,11 @@ function InstanceAbandonMixin:OnShow()
 	self:Refresh();
 end
 
-function InstanceAbandonMixin:Init()
-	local numIcons = 5;
-	local iconSize = 48;
-	local iconSpacing = 6;
-	local sidePadding = 60;
-	local topPadding = 10;
-
-	self.StatusFrame.textures = { };
-	local lastTexture;
-	for i = 1, numIcons do
-		local texture = self.StatusFrame:CreateTexture(nil, "ARTWORK");
-		texture:SetSize(iconSize, iconSize);
-		if lastTexture then
-			texture:SetPoint("LEFT", lastTexture, "RIGHT", iconSpacing, 0);
-		else
-			texture:SetPoint("TOPLEFT", sidePadding, -topPadding);
-		end
-		tinsert(self.StatusFrame.textures, texture);
-		lastTexture = texture;
-	end
-	local width = sidePadding * 2 + numIcons * iconSize + (numIcons - 1) * iconSpacing;
-	local height = topPadding + iconSize;
-	self.StatusFrame:SetSize(width, height);
-
-	self.VoteText:SetFontObject("UserScaledFontGameNormal");
-end
-
 function InstanceAbandonMixin:OnEvent(event, ...)
 	if event == "INSTANCE_ABANDON_VOTE_STARTED" then
 		local playSound = true;
 		self:CheckShowVoteDialog(playSound);
 	elseif event == "INSTANCE_ABANDON_VOTE_UPDATED" then
-		if not InstanceAbandonFrame:IsShown() then
-			local playSound = false;
-			self:CheckShowVoteDialog(playSound);
-		end
 		self:Refresh();
 	elseif event == "INSTANCE_ABANDON_VOTE_FINISHED" then
 		StaticPopup_Hide("VOTE_ABANDON_INSTANCE_VOTE");
@@ -150,11 +147,6 @@ function InstanceAbandonMixin:OnEvent(event, ...)
 end
 
 function InstanceAbandonMixin:Refresh()
-	-- this addon is always loaded, don't set up textures until needed
-	if not self.textures then
-		self:Init();
-	end
-
 	local numVoted = C_PartyInfo.GetNumInstanceAbandonGroupVoteResponses();
 	for i, texture in ipairs(self.StatusFrame.textures) do
 		if i <= numVoted then

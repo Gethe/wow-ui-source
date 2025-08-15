@@ -623,7 +623,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 end
 
 function UnitFrameHealthBar_RefreshUpdateEvent(self)
-	if ( self.frequentUpdates ) then
+	if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
 		self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 		self:UnregisterEvent("UNIT_HEALTH");
 	else
