@@ -25,3 +25,39 @@ function CatalogShopInboundInterface.EscapePressed()
 	CatalogShopFrame:SetAttribute("action", "EscapePressed");
 	return CatalogShopFrame:GetAttribute("escaperesult");
 end
+
+function CatalogShopInboundInterface.SelectSubscriptionProduct()
+	CatalogShopFrame:SetAttribute("selectsubscription", true);
+end
+
+function CatalogShopInboundInterface.SetTokenCategory()
+	CatalogShopFrame:SetAttribute("settokencategory");
+end
+
+function CatalogShopInboundInterface.CheckForFree(event)
+	CatalogShopFrame:SetAttribute("checkforfree", event);
+end
+
+function CatalogShopInboundInterface.OpenGamesCategory()
+	CatalogShopFrame:SetAttribute("opengamescategory");
+end
+
+function CatalogShopInboundInterface.SetGamesCategory()
+	CatalogShopFrame:SetAttribute("setgamescategory");
+end
+
+function CatalogShopInboundInterface.SetServicesCategory()
+	CatalogShopFrame:SetAttribute("setservicescategory");
+end
+
+function CatalogShopInboundInterface.SelectBoost(boostType, reason, guid)
+	local data = {};
+	data.boostType = boostType;
+	data.reason = reason;
+	data.guid = guid;
+	CatalogShopFrame:SetAttribute("selectboost", data);
+end
+
+function CatalogShopInboundInterface.SelectGameTimeProduct()
+	CatalogShopFrame:SetAttribute("selectgametime", true);
+end

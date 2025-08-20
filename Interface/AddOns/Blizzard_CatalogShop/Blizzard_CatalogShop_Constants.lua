@@ -85,4 +85,16 @@ CatalogShopConstants =
 		Weeks = 6,
 		Months = 7,
 	},
+
+	CategoryLinks =
+	{
+		Pets = "pets",
+		Mounts = "mounts",
+		Transmogs = "transmogs",
+		Subscriptions = "subscriptions",
+		GameUpgrades = "game upgrades",
+		Services = "services",
+		Featured = "featured",
+		Housing = "housing",
+	}
 };

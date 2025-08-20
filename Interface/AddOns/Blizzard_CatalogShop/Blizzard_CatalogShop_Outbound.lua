@@ -9,24 +9,12 @@ function CatalogShopOutboundInterface.UpdateMicroButtons()
 	securecall("UpdateMicroButtons");
 end
 
-function CatalogShopOutboundInterface.IsCharacterSelectVisible()
-	return securecall("CharacterSelect_IsVisible");
+function CatalogShopOutboundInterface.SetItemTooltip(itemID, left, top, point)
+	securecall("StoreSetItemTooltip", itemID, left, top, point);
 end
 
-function CatalogShopOutboundInterface.StoreFrameShowGlueDialog(text, guid, realmName, shouldHandle)
-	securecall("StoreFrame_ShowGlueDialog", text, guid, realmName, shouldHandle);
-end
-
-function CatalogShopOutboundInterface.ConfirmClassTrialApplyToken(guid, boostType)
-	securecall("ClassTrial_ConfirmApplyToken", guid, boostType);
-end
-
-function CatalogShopOutboundInterface.IsCharacterSelectUndeleting()
-	return securecall("CharacterSelect_IsUndeleting");
-end
-
-function CatalogShopOutboundInterface.IsExpansionTrialUpgradeDialogShowing()
-	return securecall("ClassTrial_IsExpansionTrialUpgradeDialogShowing");
+function CatalogShopOutboundInterface.ClearItemTooltip()
+	securecall("GameTooltip_Hide");
 end
 
 function CatalogShopOutboundInterface.UpdateDialogs()

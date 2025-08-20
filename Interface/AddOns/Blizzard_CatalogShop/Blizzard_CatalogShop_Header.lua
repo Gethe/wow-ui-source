@@ -9,7 +9,7 @@ function CatalogShopHeaderFrameMixin:SetCategories(...)
 	local function CreateCategoryButtonInfo(categoryID)
 		local categoryInfo = C_CatalogShop.GetCategoryInfo(categoryID);
 		if categoryInfo then
-			return { ID = categoryID, label = categoryInfo.displayName };
+			return { ID = categoryID, label = categoryInfo.displayName, linkTag = categoryInfo.linkTag };
 		end
 	end
 

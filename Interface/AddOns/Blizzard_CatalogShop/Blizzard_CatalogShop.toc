@@ -24,6 +24,7 @@ Blizzard_CatalogShop_ProductCards.xml
 Blizzard_CatalogShop_Header.xml
 Blizzard_CatalogShop_Inbound.lua
 Blizzard_CatalogShop_Outbound.lua
+Blizzard_CatalogShop_Unsecure.lua
 Blizzard_CatalogShop_ErrorLookup.lua
 
 

@@ -582,8 +582,13 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
 		TargetFrame_OnVariablesLoaded();
-
-		StoreFrame_CheckForFree(event);
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(self, value);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
@@ -1347,7 +1352,13 @@ function UIParent_OnEvent(self, event, ...)
 		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		StoreFrame_CheckForFree(event);
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(self, value);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
 		local itemName = C_Item.GetItemInfo(WOW_TOKEN_ITEM_ID);

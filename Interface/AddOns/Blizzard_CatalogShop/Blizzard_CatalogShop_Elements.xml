@@ -507,7 +507,7 @@
 					<Anchor point="LEFT" relativeKey="$parent.BackButton" relativePoint="RIGHT" x="0" y="0" />
 				</Anchors>
 			</Button>
-			<Frame parentKey="DetailsProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" frameLevel="500">
+			<Frame parentKey="DetailsProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" mixin="DetailsProductContainerFrameMixin" frameLevel="500">
 				<Anchors>
 					<Anchor point="LEFT" x="0" y="-59"/>
 					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>

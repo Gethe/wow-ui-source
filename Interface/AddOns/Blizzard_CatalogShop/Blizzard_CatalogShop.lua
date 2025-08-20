@@ -65,9 +65,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					if not StoreOutbound.TryHideModelPreviewFrame() then
-						StoreFrame:SetAttribute("action", "EscapePressed");
-					end
+					CatalogShopFrame:SetAttribute("action", "EscapePressed");
 				end
 			end
 		);
@@ -361,9 +359,7 @@ function CatalogShopMixin:OnShow()
 	else
 		GlueParent_AddModalFrame(self);
 	end
-
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + CatalogShopConstants.ScreenPadding.Horizontal, self:GetHeight() + CatalogShopConstants.ScreenPadding.Vertical);
-
 	C_CatalogShop.OpenCatalogShopInteraction();
 end
 
@@ -398,6 +394,19 @@ function CatalogShopMixin:GetHideArmorSetting()
 	return self.hidePlayerArmorSetting;
 end
 
+function CatalogShopMixin:GetCatalogShopLinkTag()
+	return self.linkTag; -- ok to be nil
+end
+
+function CatalogShopMixin:SetCatalogShopLinkTag(linkTag)
+	if self:IsShown() then
+		self.HeaderFrame.CatalogShopNavBar:SelectCatorgyByLinkTag(linkTag);
+		self.linkTag = nil;
+	else
+		self.linkTag = linkTag;
+	end
+end
+
 function CatalogShopMixin:OnAttributeChanged(name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -415,12 +424,29 @@ function CatalogShopMixin:OnAttributeChanged(name, value)
 					self:Hide();
 					handled = true;
 				end
-			--elseif (ServicesLogoutPopup:IsShown()) then
-				--ServicesLogoutPopup:Hide();
-				--handled = true;
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
+	elseif ( name == "selectsubscription" ) then
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Subscriptions);
+	elseif ( name == "selectgametime" ) then
+		-- legacy - game time is now subscriptions
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Subscriptions);
+	elseif ( name == "settokencategory" ) then
+		-- the WoW Token is in the Services Category
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
+	elseif ( name == "checkforfree" ) then
+		-- legacy - this is no longer used
+		--assertsafe(false, "ASSERT - for Cash Shop 2.0 this is a no-op.  If you get this error, contact the Shop Team Engineers.");
+	elseif ( name == "opengamescategory" ) then
+		self:Show();
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.GameUpgrades);
+	elseif ( name == "setgamescategory" ) then
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.GameUpgrades);
+	elseif ( name == "setservicescategory" ) then
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
+	elseif ( name == "selectboost") then
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
 	end
 end
 

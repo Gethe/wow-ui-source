@@ -205,6 +205,7 @@ function FramePositionDelegate:ShowUIPanel(frame, force, contextKey)
 	end
 
 	-- If the store-frame is open, we don't let people open up any other panels (just as if it were full-screened)
+	-- TODO: Replace with MirrorVar
 	local useNewCashShop = GetCVarBool("useNewCashShop");
 	if useNewCashShop then
 		if ( CatalogShopInboundInterface.IsShown() ) then

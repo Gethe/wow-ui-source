@@ -1,6 +1,8 @@
 local REORDER_MARKER_BEFORE_TARGET = false;
 local REORDER_MARKER_AFTER_TARGET = true;
 
+COOLDOWN_BAR_DEFAULT_COLOR = CreateColor(1, 0.5, 0.25);
+
 CooldownViewerSettingsDraggedItemMixin = {};
 function CooldownViewerSettingsDraggedItemMixin:SetToCursor(cooldownItem)
 	self.Icon:SetTexture(cooldownItem:GetTextureFileID());
@@ -121,7 +123,18 @@ function CreateCategoryObjectLookup()
 	return lookup;
 end
 
-CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin);
+CooldownViewerBaseReorderTargetMixin = {};
+
+function CooldownViewerBaseReorderTargetMixin:OnEnter()
+	EventRegistry:TriggerEvent("CooldownViewerSettings.OnEnterItem", self);
+end
+
+function CooldownViewerBaseReorderTargetMixin:GetBestCooldownItemTarget(_mouseX, _mouseY)
+	-- This can be overridden in derived mixins
+	return self;
+end
+
+CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, CooldownViewerBaseReorderTargetMixin);
 
 function CooldownViewerSettingsItemMixin:RefreshData()
 	if not self:IsEmptyCategory() then
@@ -177,7 +190,7 @@ end
 
 function CooldownViewerSettingsItemMixin:OnEnter()
 	CooldownViewerItemDataMixin.OnEnter(self);
-	EventRegistry:TriggerEvent("CooldownViewerSettings.OnEnterItem", self);
+	CooldownViewerBaseReorderTargetMixin.OnEnter(self);
 end
 
 function CooldownViewerSettingsItemMixin:RefreshTooltip(...)
@@ -289,6 +302,14 @@ function CooldownViewerSettingsBarItemMixin:RefreshData()
 	end
 end
 
+function CooldownViewerSettingsBarItemMixin:RefreshIconState()
+	CooldownViewerSettingsItemMixin.RefreshIconState(self);
+
+	local info = self:GetCooldownInfo();
+	local isDisabled = not info.isKnown or self:IsReorderLocked();
+	self.Bar.FillTexture:SetVertexColor((isDisabled and DISABLED_FONT_COLOR or COOLDOWN_BAR_DEFAULT_COLOR):GetRGB());
+end
+
 function CooldownViewerSettingsBarItemMixin:UpdateReorderMarkerPosition(marker, _cursorX, cursorY)
 	marker:SetHorizontal();
 
@@ -302,7 +323,13 @@ function CooldownViewerSettingsBarItemMixin:UpdateReorderMarkerPosition(marker, 
 	end
 end
 
-CooldownViewerSettingsCategoryMixin = {};
+CooldownViewerContainerReorderTargetMixin = CreateFromMixins(CooldownViewerBaseReorderTargetMixin);
+
+function CooldownViewerContainerReorderTargetMixin:GetBestCooldownItemTarget(cursorX, cursorY)
+	return self:GetNearestItemToCursorWeighted(cursorX, cursorY);
+end
+
+CooldownViewerSettingsCategoryMixin = CreateFromMixins(CooldownViewerContainerReorderTargetMixin);
 
 function CooldownViewerSettingsCategoryMixin:OnLoad()
 	self.itemPool = CreateFramePool("Frame", self.Container, self:GetItemTemplate());
@@ -385,6 +412,31 @@ function CooldownViewerSettingsCategoryMixin:RefreshLayout()
 
 	self.Container:Layout();
 	self:ApplyFilter();
+end
+
+function CooldownViewerSettingsCategoryMixin:GetNearestItemToCursorWeighted(cursorX, cursorY)
+	local nearestItem = nil;
+	local nearestVertical = math.huge;
+	local nearestHorizontal = math.huge;
+
+	for item in self.itemPool:EnumerateActive() do
+		local itemLeft, itemRight, itemBottom, itemTop = RegionUtil.GetSides(item);
+		local itemCenterX = (itemLeft + itemRight) / 2;
+		local itemCenterY = (itemBottom + itemTop) / 2;
+		local horizontalDistance = math.abs(itemCenterX - cursorX);
+		local verticalDistance = math.abs(itemCenterY - cursorY);
+		if cursorY > itemBottom and cursorY < itemTop then
+			verticalDistance = 0;
+		end
+
+		if verticalDistance < nearestVertical or (nearestVertical == verticalDistance and horizontalDistance < nearestHorizontal) then
+			nearestItem = item;
+			nearestVertical = verticalDistance;
+			nearestHorizontal = horizontalDistance;
+		end
+	end
+
+	return nearestItem;
 end
 
 function CooldownViewerSettingsCategoryMixin:ApplyFilter()
@@ -518,7 +570,7 @@ function CooldownViewerSettingsMixin:SetupScrollFrame()
 end
 
 function CooldownViewerSettingsMixin:IsReordering()
-	return self.reorderItem ~= nil;
+	return self:GetReorderSourceItem() ~= nil;
 end
 
 function CooldownViewerSettingsMixin:BeginOrderChange(cooldownItem, eatNextGlobalMouseUp)
@@ -526,10 +578,10 @@ function CooldownViewerSettingsMixin:BeginOrderChange(cooldownItem, eatNextGloba
 		return;
 	end
 
-	self.reorderItem = cooldownItem;
+	self:SetReorderSourceItem(cooldownItem);
+	self:SetReorderTarget(cooldownItem);
 	self.reorderOffset = 0;
 	self.eatNextGlobalMouseUp = eatNextGlobalMouseUp;
-	self:SetReorderTarget(cooldownItem);
 
 	cooldownItem:SetReorderLocked(true);
 	PickupCooldownItemCursor(cooldownItem);
@@ -540,13 +592,13 @@ function CooldownViewerSettingsMixin:BeginOrderChange(cooldownItem, eatNextGloba
 end
 
 function CooldownViewerSettingsMixin:EndOrderChange()
-	local sourceObj = self.reorderItem;
-	local destObj = self:GetReorderTarget();
-	if sourceObj ~= destObj then
-		if destObj:IsEmptyCategory() then
-			self:GetDataProvider():SetCooldownToCategory(sourceObj:GetCooldownID(), destObj:GetEmptyCategory():GetCategory());
+	local sourceItem = self:GetReorderSourceItem();
+	local targetItem = self:GetReorderTargetItem();
+	if sourceItem ~= targetItem then
+		if targetItem:IsEmptyCategory() then
+			self:GetDataProvider():SetCooldownToCategory(sourceItem:GetCooldownID(), targetItem:GetEmptyCategory():GetCategory());
 		else
-			self:GetDataProvider():ChangeOrderIndex(sourceObj:GetOrderIndex(), destObj:GetOrderIndex(), self.reorderOffset);
+			self:GetDataProvider():ChangeOrderIndex(sourceItem:GetOrderIndex(), targetItem:GetOrderIndex(), self.reorderOffset);
 		end
 	end
 
@@ -555,9 +607,9 @@ function CooldownViewerSettingsMixin:EndOrderChange()
 end
 
 function CooldownViewerSettingsMixin:CancelOrderChange(cooldownItem, ...)
-	self.reorderItem:SetReorderLocked(false);
-	self.reorderItem = nil;
+	self:GetReorderSourceItem():SetReorderLocked(false);
 	self.ReorderMarker:Hide();
+	self:ClearReorderTargets();
 
 	ClearCooldownItemCursor();
 
@@ -580,8 +632,28 @@ function CooldownViewerSettingsMixin:GetReorderTarget()
 	return self.reorderTarget;
 end
 
-function CooldownViewerSettingsMixin:ClearReorderTarget()
+function CooldownViewerSettingsMixin:SetReorderTargetItem(item)
+	if self:IsReordering() then
+		self.reorderTargetItem = item;
+	end
+end
+
+function CooldownViewerSettingsMixin:GetReorderTargetItem()
+	return self.reorderTargetItem;
+end
+
+function CooldownViewerSettingsMixin:SetReorderSourceItem(item)
+	self.reorderSourceItem = item;
+end
+
+function CooldownViewerSettingsMixin:GetReorderSourceItem()
+	return self.reorderSourceItem;
+end
+
+function CooldownViewerSettingsMixin:ClearReorderTargets()
 	self.reorderTarget = nil;
+	self.reorderTargetItem = nil;
+	self.reorderSourceItem = nil;
 end
 
 function CooldownViewerSettingsMixin:OnUpdate(_elapsed)
@@ -601,12 +673,18 @@ function CooldownViewerSettingsMixin:UpdateReorderMarker()
 	local scale = GetAppropriateTopLevelParent():GetScale();
 	cursorX, cursorY = cursorX / scale, cursorY / scale;
 
-	self.ReorderMarker:ClearAllPoints();
-	local isMarkerAfterTarget = target:UpdateReorderMarkerPosition(self.ReorderMarker, cursorX, cursorY);
-	if isMarkerAfterTarget then
-		self.reorderOffset = 1;
-	else
-		self.reorderOffset = 0;
+	-- TODO: This needs to handle dragging over collapsed headers where there are no item targets, but there's still enough info to know to change categories.
+	-- For now just leaving the marker alone...
+	local cooldownItemTarget = target:GetBestCooldownItemTarget(cursorX, cursorY);
+	self:SetReorderTargetItem(cooldownItemTarget);
+	if cooldownItemTarget then
+		self.ReorderMarker:ClearAllPoints();
+		local isMarkerAfterTarget = cooldownItemTarget:UpdateReorderMarkerPosition(self.ReorderMarker, cursorX, cursorY);
+		if isMarkerAfterTarget then
+			self.reorderOffset = 1;
+		else
+			self.reorderOffset = 0;
+		end
 	end
 end
 

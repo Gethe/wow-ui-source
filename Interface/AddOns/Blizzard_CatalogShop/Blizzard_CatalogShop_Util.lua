@@ -382,7 +382,66 @@ function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, d
 	newDisplayData.mainHandItemModifiedAppearanceID = productData.mainHandItemModifiedAppearanceID or nil;
 	newDisplayData.offHandItemModifiedAppearanceID = productData.offHandItemModifiedAppearanceID or nil;
 
+	newDisplayData.specialActorID_1 = productInfo.specialActorID_1;
+	newDisplayData.specialActorID_2 = productInfo.specialActorID_2;
+	newDisplayData.specialActorID_3 = productInfo.specialActorID_3;
+	newDisplayData.specialActorID_4 = productInfo.specialActorID_4;
+	newDisplayData.specialActorID_5 = productInfo.specialActorID_5;
+
+	newDisplayData.customLoopingSoundStart = productInfo.customLoopingSoundStart;
+	newDisplayData.customLoopingSoundMiddle = productInfo.customLoopingSoundMiddle;
+	newDisplayData.customLoopingSoundEnd = productInfo.customLoopingSoundEnd;
 	return newDisplayData;
+end
+
+function CatalogShopUtil.HasSpecialActors(displayData)
+	-- Check if the displayData has any special actors
+	if not displayData then
+		return false;
+	end
+
+	return displayData.specialActorID_1 or displayData.specialActorID_2 or displayData.specialActorID_3 or
+		   displayData.specialActorID_4 or displayData.specialActorID_5;
+end
+
+function CatalogShopUtil.SetupSpecialActor(modelScene, actorTag, creatureDisplayInfo)
+	if not modelScene then
+		return;
+	end
+	local specialActor = modelScene:GetActorByTag(actorTag);
+	if specialActor then
+		specialActor:SetModelByCreatureDisplayID(creatureDisplayInfo);
+		specialActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+	end
+end
+
+function CatalogShopUtil.SetupSpecialActors(displayData, modelScene)
+	if not displayData then
+		return;
+	end
+	if not modelScene then
+		return;
+	end
+
+	if displayData.specialActorID_1 then
+		CatalogShopUtil.SetupSpecialActor(modelScene, "special1", displayData.specialActorID_1);
+	end
+
+	if displayData.specialActorID_2 then
+		CatalogShopUtil.SetupSpecialActor(modelScene, "special2", displayData.specialActorID_2);
+	end
+
+	if displayData.specialActorID_3 then
+		CatalogShopUtil.SetupSpecialActor(modelScene, "special3", displayData.specialActorID_3);
+	end
+
+	if displayData.specialActorID_4 then
+		CatalogShopUtil.SetupSpecialActor(modelScene, "special4", displayData.specialActorID_4);
+	end
+
+	if displayData.specialActorID_5 then
+		CatalogShopUtil.SetupSpecialActor(modelScene, "special5", displayData.specialActorID_5);
+	end
 end
 
 -- BUNDLES
@@ -463,6 +522,10 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 				CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
 			end
 		end
+	end
+
+	if CatalogShopUtil.HasSpecialActors(displayData) then
+		CatalogShopUtil.SetupSpecialActors(displayData, modelScene);
 	end
 
 	-- Calling update model scene on the bundle to pick up camera changes
@@ -987,7 +1050,13 @@ function CatalogShopUtil.SetServicesContainerIcon(icon, displayInfo)
 end
 
 function CatalogShopUtil.SetAlternateProductIcon(icon, displayInfo)
-	if displayInfo.otherProductImageAtlasName then
+	if displayInfo and displayInfo.otherProductImageAtlasName then
 		icon:SetAtlas(displayInfo.otherProductImageAtlasName);
+	end
+end
+
+function CatalogShopUtil.SetAlternateProductURLImage(texture, displayInfo)
+	if displayInfo and displayInfo.otherProductPMTURL then
+		C_Texture.SetURLTexture(texture, displayInfo.otherProductPMTURL);
 	end
 end

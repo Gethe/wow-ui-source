@@ -134,6 +134,17 @@ local SimpleScriptRegionResizingAPI =
 			},
 		},
 		{
+			Name = "SetPointsOffset",
+			Type = "Function",
+			IsProtectedFunction = true,
+
+			Arguments =
+			{
+				{ Name = "x", Type = "uiUnit", Nilable = false },
+				{ Name = "y", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "SetSize",
 			Type = "Function",
 			IsProtectedFunction = true,

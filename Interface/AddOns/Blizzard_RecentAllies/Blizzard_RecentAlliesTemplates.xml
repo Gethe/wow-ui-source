@@ -16,6 +16,13 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
 			</EventFrame>
+
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -194,7 +201,6 @@
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 </Ui>

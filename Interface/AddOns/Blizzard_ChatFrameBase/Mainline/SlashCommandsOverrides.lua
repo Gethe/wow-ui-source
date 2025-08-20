@@ -34,59 +34,6 @@ SecureCmdList["PET_AUTOCASTTOGGLE"] = function(msg)
 	end
 end
 
-SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
-	-- GAME RULES TODO:: This should be an explicit game rule.
-	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
-		return;
-	end
-
-	local pet = SecureCmdOptionParse(msg);
-	if ( type(pet) == "string" ) then
-		local _, petID = C_PetJournal.FindPetIDByName(string.trim(pet));
-		if ( petID ) then
-			C_PetJournal.SummonPetByGUID(petID);
-		else
-			C_PetJournal.SummonPetByGUID(pet);
-		end
-	end
-end
-
-SecureCmdList["RANDOMPET"] = function(msg)
-	-- GAME RULES TODO:: This should be an explicit game rule.
-	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
-		return;
-	end
-
-	if ( SecureCmdOptionParse(msg) ) then
-		C_PetJournal.SummonRandomPet(false);
-	end
-end
-
-SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
-	-- GAME RULES TODO:: This should be an explicit game rule.
-	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
-		return;
-	end
-
-	if ( SecureCmdOptionParse(msg) ) then
-		C_PetJournal.SummonRandomPet(true);
-	end
-end
-
-SecureCmdList["DISMISSBATTLEPET"] = function(msg)
-	-- GAME RULES TODO:: This should be an explicit game rule.
-	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
-		return;
-	end
-
-	if ( SecureCmdOptionParse(msg) ) then
-		local petID = C_PetJournal.GetSummonedPetGUID();
-		if ( petID ) then
-			C_PetJournal.SummonPetByGUID(petID);
-		end
-	end
-end
-
 SecureCmdList["USE_TOY"] = function(msg)
 	-- GAME RULES TODO:: This should be an explicit game rule.
 	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
@@ -137,8 +84,18 @@ if not C_Glue.IsOnGlueScreen() then
 	end
 end
 
+local abandonCooldownFormatter = CreateFromMixins(SecondsFormatterMixin);
+abandonCooldownFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, true);
+
 SecureCmdList["ABANDON"] = function(msg)
-	if C_PartyInfo.ChallengeModeRestrictionsActive() then
+	local _duration, cooldownTimeLeft = C_PartyInfo.GetInstanceAbandonVoteCooldownTime();
+	if cooldownTimeLeft then
+		local cooldownTimeLeftFormatted = abandonCooldownFormatter:Format(cooldownTimeLeft);
+		local cooldownTimeLeftText = VOTE_TO_ABANDON_ON_COOLDOWN:format(cooldownTimeLeftFormatted);
+
+		local info = ChatTypeInfo["SYSTEM"];
+		DEFAULT_CHAT_FRAME:AddMessage(cooldownTimeLeftText, info.r, info.g, info.b, info.id);
+	elseif C_PartyInfo.ChallengeModeRestrictionsActive() then
 		C_PartyInfo.StartInstanceAbandonVote();
 	end
 end
@@ -180,16 +137,6 @@ SlashCmdList["CHAT_AFK"] = function(msg)
 	end
 
 	C_ChatInfo.SendChatMessage(msg, "AFK");
-end
-
-SlashCmdList["RAID_INFO"] = function(msg)
-	RaidFrame.slashCommand = 1;
-	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
-		ToggleRaidFrame();
-		RaidInfoFrame:Show();
-	elseif ( not RaidFrame:IsVisible() ) then
-		ToggleRaidFrame();
-	end
 end
 
 SlashCmdList["DUNGEONS"] = function(msg)

@@ -5,6 +5,10 @@ local RecentAlliesListEvents = {
 };
 
 function RecentAlliesListMixin:OnLoad()
+	self:InitializeScrollBox();
+end
+
+function RecentAlliesListMixin:InitializeScrollBox()
 	local elementSpacing = 1;
 	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
 	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
@@ -14,18 +18,37 @@ function RecentAlliesListMixin:OnLoad()
 		else
 			factory("RecentAlliesEntryTemplate", function(button, elementData)
 				button:Initialize(elementData);
+				button:SetScript("OnClick", function(button, mouseButtonName)
+					if mouseButtonName == "LeftButton" then
+						self.selectionBehavior:ToggleSelect(button);
+					elseif mouseButtonName == "RightButton" then
+						button:OpenMenu();
+					end
+				end);
 			end);
 		end
 	end);
 
-	local selectedEntryGUID = nil;
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Intrusive);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end, self);
 end
 
 function RecentAlliesListMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, RecentAlliesListEvents);
 
+	C_RecentAllies.TryRequestRecentAlliesData();
 	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
+end
+
+function RecentAlliesListMixin:SelectFirstRecentAlly()
+	self.selectionBehavior:SelectFirstElementData();
 end
 
 function RecentAlliesListMixin:OnHide()
@@ -39,7 +62,16 @@ function RecentAlliesListMixin:OnEvent(event, ...)
 end
 
 function RecentAlliesListMixin:Refresh(retainScrollPosition)
+	local dataReady = C_RecentAllies.IsRecentAllyDataReady();
+	self:SetLoadingSpinnerShown(not dataReady);
+	if not dataReady then
+		return;
+	end
+
 	self.ScrollBox:SetDataProvider(self:BuildRecentAlliesDataProvider(), retainScrollPosition);
+	if not retainScrollPosition then
+		self:SelectFirstRecentAlly();
+	end
 end
 
 -- Assumes the data provider has pinned recent allies presorted to the front
@@ -76,6 +108,13 @@ function RecentAlliesListMixin:BuildRecentAlliesDataProvider()
 	return dataProvider;
 end
 
+function RecentAlliesListMixin:SetLoadingSpinnerShown(shown)
+	-- We shouldn't show the spinner and the scrolling list at the same time
+	self.LoadingSpinner:SetShown(shown);
+	self.ScrollBox:SetShown(not shown);
+	self.ScrollBar:SetShown(not shown);
+end
+
 RecentAlliesEntryMixin = {};
 
 function RecentAlliesEntryMixin:OnLoad()
@@ -92,6 +131,8 @@ function RecentAlliesEntryMixin:Initialize(elementData)
 	self:InitializeCharacterData(elementData.characterData);
 	self:InitializeStateDisplay(elementData.stateData);
 	self:SetMostRecentInteraction();
+
+	self:SetSelected(SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData));
 end
 
 function RecentAlliesEntryMixin:OnEnter()
@@ -219,7 +260,7 @@ end
 
 function RecentAlliesEntryMixin:SetMostRecentInteraction()
 	local mostRecentInteraction = self:GetMostRecentInteraction();
-	self.CharacterData.MostRecentInteraction:SetText(mostRecentInteraction and RecentAlliesUtil.GetInteractionName(mostRecentInteraction.type) or "");
+	self.CharacterData.MostRecentInteraction:SetText(mostRecentInteraction and mostRecentInteraction.description or "");
 end
 
 function RecentAlliesEntryMixin:ConvertInteractionToTooltipString(interactionData)
@@ -282,10 +323,8 @@ function RecentAlliesEntryMixin:SetCharacterLocation(location)
 	self.CharacterData.Location:SetText(location);
 end
 
-function RecentAlliesEntryMixin:OnClick(button)
-	if button == "RightButton" then
-		self:OpenMenu();
-	end
+function RecentAlliesEntryMixin:SetSelected(selected)
+	self:SetHighlightLocked(selected);
 end
 
 function RecentAlliesEntryMixin:OpenMenu()

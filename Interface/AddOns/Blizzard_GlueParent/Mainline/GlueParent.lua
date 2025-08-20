@@ -828,7 +828,13 @@ function UpgradeAccount()
 		StoreInterfaceUtil.OpenToSubscriptionProduct();
 	else
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-			StoreFrame_SetGamesCategory();
+			-- TODO: Replace with MirrorVar
+			local useNewCashShop = GetCVarBool("useNewCashShop");
+			if useNewCashShop then
+				CatalogShopInboundInterface.SetGamesCategory();
+			else
+				StoreFrame_SetGamesCategory();
+			end
 			ToggleStoreUI();
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);

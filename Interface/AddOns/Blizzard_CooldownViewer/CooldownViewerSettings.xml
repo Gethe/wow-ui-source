@@ -48,7 +48,7 @@
 					<Anchor point="RIGHT"/>
 				</Anchors>
 				<BarTexture parentKey="FillTexture" atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
-					<Color r="1.0" g="0.5" b="0.25"/>
+					<Color color="COOLDOWN_BAR_DEFAULT_COLOR"/>
 				</BarTexture>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -93,7 +93,7 @@
 					<Anchor point="TOPRIGHT"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="Container" inherits="GridLayoutFrame">
+			<Frame parentKey="Container" mixin="CooldownViewerContainerReorderTargetMixin" inherits="GridLayoutFrame">
 				<KeyValues>
 					<KeyValue key="childXPadding" value="8" type="number"/>
 					<KeyValue key="childYPadding" value="8" type="number"/>
@@ -111,6 +111,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Frame>
 

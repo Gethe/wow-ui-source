@@ -391,3 +391,64 @@ function WowTokenGameTimeTutorialStoreButton_OnLoad(self)
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 end
 
+AuctionHouseStoreButtonMixin = {};
+function AuctionHouseStoreButtonMixin:OnLoad()
+	WowTokenGameTimeTutorialStoreButton_OnLoad(self);
+end
+
+function AuctionHouseStoreButtonMixin:OnEvent(event)
+	WowTokenGameTimeTutorialStoreButton_OnEvent(self, event);
+end
+
+function AuctionHouseStoreButtonMixin:OnClick()
+	ToggleStoreUI();
+	-- TODO: Replace with MirrorVar
+	local useNewCashShop = GetCVarBool("useNewCashShop");
+	if useNewCashShop then
+		CatalogShopInboundInterface.SetTokenCategory();
+	else
+		StoreFrame_SetTokenCategory();
+	end
+end
+
+function AuctionHouseStoreButtonMixin:OnMouseDown()
+	if (self:IsEnabled()) then
+		local fontString = self:GetFontString();
+		self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
+	end
+end
+
+function AuctionHouseStoreButtonMixin:OnMouseUp()
+	if (self:IsEnabled()) then
+		local fontString = self:GetFontString();
+		self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
+	end
+end
+
+function AuctionHouseStoreButtonMixin:OnEnable()
+	self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-left");
+	self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-middle");
+	self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-right");
+	self.Logo:SetDesaturated(false);
+	self.Logo:SetAlpha(1);
+end
+
+function AuctionHouseStoreButtonMixin:OnDisable()
+	self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-left");
+	self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-middle");
+	self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-right");
+	self.Logo:SetDesaturated(true);
+	self.Logo:SetAlpha(0.4);
+end
+
+function AuctionHouseStoreButtonMixin:OnEnter()
+	if (self.tooltip) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		GameTooltip:Show();
+	end
+end
+
+function AuctionHouseStoreButtonMixin:OnLeave()
+	GameTooltip_Hide(self);
+end

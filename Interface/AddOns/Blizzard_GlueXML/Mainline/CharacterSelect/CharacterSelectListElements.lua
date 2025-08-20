@@ -1107,7 +1107,13 @@ function CharacterSelectListNotificationButtonMixin:OnClickLock()
 	local isAccountLocked = self.lockCharacterSelectButton.isAccountLocked;
 	if not isAccountLocked and self:CanUnlockByExpansionPurchase() then
 		ToggleStoreUI();
-		StoreFrame_SetGamesCategory();
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			CatalogShopInboundInterface.SetGamesCategory();
+		else
+			StoreFrame_SetGamesCategory();
+		end
 		return;
 	end
 
@@ -1191,7 +1197,13 @@ function CharacterSelectListNotificationButtonMixin:ShowStoreFrameForBoostType(b
 		ToggleStoreUI();
 	end
 
-	StoreFrame_SelectBoost(boostType, reason, guid);
+	-- TODO: Replace with MirrorVar
+	local useNewCashShop = GetCVarBool("useNewCashShop");
+	if useNewCashShop then
+		CatalogShopInboundInterface.SelectBoost(boostType, reason, guid);
+	else
+		StoreFrame_SelectBoost(boostType, reason, guid);
+	end
 end
 
 

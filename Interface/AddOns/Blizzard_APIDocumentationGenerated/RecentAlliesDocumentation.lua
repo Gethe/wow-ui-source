@@ -92,6 +92,16 @@ local RecentAllies =
 			},
 		},
 		{
+			Name = "IsRecentAllyDataReady",
+			Type = "Function",
+			RequiresRecentAllies = true,
+
+			Returns =
+			{
+				{ Name = "isReady", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRecentAllyPinned",
 			Type = "Function",
 			RequiresRecentAllies = true,
@@ -125,12 +135,6 @@ local RecentAllies =
 			},
 		},
 		{
-			Name = "RequestRecentAlliesDataFromServer",
-			Type = "Function",
-			HasRestrictions = true,
-			RequiresRecentAllies = true,
-		},
-		{
 			Name = "SetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
@@ -152,6 +156,12 @@ local RecentAllies =
 				{ Name = "isPinned", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "TryRequestRecentAlliesData",
+			Type = "Function",
+			RequiresRecentAllies = true,
+			HasRestrictions = true,
+		},
 	},
 
 	Events =
@@ -160,6 +170,11 @@ local RecentAllies =
 			Name = "RecentAlliesCacheUpdate",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_CACHE_UPDATE",
+		},
+		{
+			Name = "RecentAlliesDataReady",
+			Type = "Event",
+			LiteralName = "RECENT_ALLIES_DATA_READY",
 		},
 		{
 			Name = "RecentAlliesSystemStatusUpdated",
@@ -210,6 +225,7 @@ local RecentAllies =
 			Fields =
 			{
 				{ Name = "type", Type = "RolodexType", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
 				{ Name = "timestamp", Type = "time_t", Nilable = false },
 				{ Name = "contextData", Type = "RecentAllyInteractionContextData", Nilable = false },
 			},

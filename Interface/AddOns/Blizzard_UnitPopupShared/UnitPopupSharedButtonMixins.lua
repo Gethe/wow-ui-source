@@ -13,11 +13,11 @@ function DisplayUnitPopupTooltip(button, tooltipParams)
 
 	if tooltipParams.tooltipInstruction then
 		GameTooltip_AddInstructionLine(tooltip, tooltipParams.tooltipInstruction);
-end
+	end
 
 	if tooltipParams.tooltipWarning then
 		GameTooltip_AddColoredLine(tooltip, tooltipParams.tooltipWarning, RED_FONT_COLOR, true);
-end
+	end
 
 	tooltip:Show();
 end
@@ -51,8 +51,12 @@ local function ConfigureButtonDescription(description, entry, contextData)
 		ConfigureButton(button, entry, contextData);
 	end);
 
-	description:SetOnEnter(function(button)
+	local function onEnter(button)
 		if not CanShowTooltip(entry, contextData) then
+			if button.showingTooltip then
+				button.showingTooltip = nil;
+				description:HandleOnLeave(button);
+			end
 			return false;
 		end
 
@@ -71,10 +75,20 @@ local function ConfigureButtonDescription(description, entry, contextData)
 				tooltipInstruction = tooltipInstruction,
 				tooltipWarning = tooltipWarning,
 			}
-	
+
+			if entry:ShouldPollTooltip() then
+				button.UpdateTooltip = onEnter;
+			else
+				button.UpdateTooltip = nil;
+			end
+
 			DisplayUnitPopupTooltip(button, tooltipParams);
+
+			button.showingTooltip = true;
 		end
-	end);
+	end
+
+	description:SetOnEnter(onEnter);
 end
 
 UnitPopupButtonBaseMixin = { };
@@ -155,6 +169,10 @@ function UnitPopupButtonBaseMixin:TooltipWhileDisabled()
 end
 
 function UnitPopupButtonBaseMixin:NoTooltipWhileEnabled()
+	return nil;
+end
+
+function UnitPopupButtonBaseMixin:ShouldPollTooltip()
 	return nil;
 end
 
@@ -940,6 +958,33 @@ end
 
 function UnitPopupPartyInstanceAbandonButtonMixin:OnClick(contextData)
 	C_PartyInfo.StartInstanceAbandonVote();
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:NoTooltipWhileEnabled()
+	return true;
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:ShouldPollTooltip()
+	return true;
+end
+
+local PartyInstanceAbandonFormatter = CreateFromMixins(SecondsFormatterMixin);
+PartyInstanceAbandonFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, true);
+
+function UnitPopupPartyInstanceAbandonButtonMixin:GetTooltipText()
+	local _duration, timeLeft = C_PartyInfo.GetInstanceAbandonVoteCooldownTime();
+	if timeLeft then
+		local cooldownTimeLeftText = PartyInstanceAbandonFormatter:Format(timeLeft);
+		return VOTE_TO_ABANDON_ON_COOLDOWN:format(cooldownTimeLeftText);
+	elseif IsEncounterInProgress() then
+		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
+	else
+		return nil;
+	end
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

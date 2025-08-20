@@ -220,10 +220,35 @@ function NavigationBarMixin:SetupScrolling()
 	end
 end
 
+function NavigationBarMixin:SelectCatorgyByLinkTag(linkTag)
+	if not linkTag then
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+
+	local dataProvider = self.NavButtonScrollBox:GetDataProvider();
+	if not dataProvider then
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+
+	local elementData = dataProvider:FindElementDataByPredicate(function(elementData)
+		return elementData.linkTag and elementData.linkTag == linkTag;
+	end);
+
+	if not elementData then
+		--assertsafe(false, "ASSERT - Category Link Tag was specified but not found: "..linkTag);
+		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+		return;
+	end
+	self.selectionBehavior:SelectElementData(elementData);
+end
+
 function NavigationBarMixin:Init(buttonInfos)
 	self:SetupNavigationScrollView();
-	self:SetupNavigationData(buttonInfos);	
-	self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
+	self:SetupNavigationData(buttonInfos);
+	local linkTag = CatalogShopFrame:GetCatalogShopLinkTag(); -- ok for this to be nil
+	self:SelectCatorgyByLinkTag(linkTag)
 	self:SetupScrolling();
 end
 

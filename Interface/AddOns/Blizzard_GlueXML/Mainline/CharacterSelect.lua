@@ -1218,6 +1218,7 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI(contextKey)
+	-- TODO: Replace with MirrorVar
 	local useNewCashShop = GetCVarBool("useNewCashShop");
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();

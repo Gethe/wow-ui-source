@@ -185,6 +185,10 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 		local productCardType = displayInfo.productType;
 
 		self.WatermarkLogoTexture:Hide();
+		self.PMTImageForNoModel:Hide();
+		self.PMTImageForNoModelMask:Hide();
+		self.PMTImageForNoModelBorder:Hide();
+		self.OtherProductWarningText:Hide();
 
 		if productCardType == CatalogShopConstants.ProductCardType.Bundle then
 			local forceHidePlayer = false;
@@ -199,6 +203,13 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 				forceHideButtons = true;
 				self.WatermarkLogoTexture:Show();
 				CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
+				self.PMTImageForNoModel:Show();
+				self.PMTImageForNoModelMask:Show();
+				self.PMTImageForNoModelBorder:Show();
+				-- Add support for correct localized flavor based on PMT attribute [WOW11-145789]
+				self.OtherProductWarningText:SetText("This item is only available on [NYI].")
+				self.OtherProductWarningText:Show();
+				CatalogShopUtil.SetAlternateProductURLImage(self.PMTImageForNoModel, displayInfo);
 			elseif productCardType == CatalogShopConstants.ProductCardType.Mount then
 				forceSceneChange = true;--forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
 				CatalogShopUtil.SetupModelSceneForMounts(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceSceneChange, forceHidePlayer);
@@ -224,8 +235,8 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 				forceHideButtons = true;
 			end
 			CatalogShopFrame:SetCurrentActor(currentActor);
-			CatalogShopFrame:SetCurrentModelSceneData(modelScene, defaultModelSceneID, displayInfo.overridePreviewModelSceneID);
 		end
+		CatalogShopFrame:SetCurrentModelSceneData(modelScene, defaultModelSceneID, displayInfo.overridePreviewModelSceneID);
 	end
 	self:UpdateFormButtonVisibility(forceHideButtons);
 	EventRegistry:TriggerEvent("CatalogShopModel.OnProductSelectedAfterModel", self.currentData);

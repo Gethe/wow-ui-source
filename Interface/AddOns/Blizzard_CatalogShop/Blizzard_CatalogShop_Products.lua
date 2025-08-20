@@ -17,7 +17,7 @@ function CatalogShopProductContainerFrameMixin:Init()
 	self.usesScrollBox = true;
 end
 
-function CatalogShopProductContainerFrameMixin:SetData(headerData, scrollBoxData)
+function CatalogShopProductContainerFrameMixin:SetupProductHeaderFrame(headerData)
 	-- Set up ProductsHeader
 	if headerData.Name then
 		self.ProductsHeader.ProductName:Show();
@@ -37,18 +37,9 @@ function CatalogShopProductContainerFrameMixin:SetData(headerData, scrollBoxData
 	else
 		self.ProductsHeader.ProductDescription:Hide();
 	end
-	-- Init ProductsScrollBoxContainer
-	if scrollBoxData then
-		self.scrollBoxData = scrollBoxData;
-		self.ProductsScrollBoxContainer:Show();
-		self.ShadowLayer:Show();
-	else
-		self.ProductsScrollBoxContainer:Hide();
-		self.ShadowLayer:Hide();
-	end
 end
 
-function CatalogShopProductContainerFrameMixin:SetupScrollView()
+function CatalogShopProductContainerFrameMixin:SetupScrollView(elementFactory)
 	local scrollContainer = self.ProductsScrollBoxContainer;
 
 	local view;
@@ -59,10 +50,7 @@ function CatalogShopProductContainerFrameMixin:SetupScrollView()
 	local horizontalSpacing = -14;
 	local verticalSpacing = -12;
 	view = CreateScrollBoxListSequenceView(topPadding, bottomPadding, leftPadding, rightPadding, horizontalSpacing, verticalSpacing);
-
-	if self.scrollBoxData and self.scrollBoxData.ElementFactory then
-		view:SetElementFactory(self.scrollBoxData.ElementFactory);
-	end
+	view:SetElementFactory(elementFactory);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(scrollContainer.ScrollBox, scrollContainer.ScrollBar, view);
 
@@ -131,10 +119,8 @@ function CatalogShopProductContainerFrameMixin:UpdateProducts(resetSelection)
 	local scrollContainer = self.ProductsScrollBoxContainer;
 	scrollContainer.selectionBehavior:ClearSelections();
 
-	local dataProvider = self.scrollBoxData:GetDataProvider();
-
 	local hasExpirableItems = false;
-
+	local dataProvider = self.getDataProviderFunc();
 	scrollContainer.ScrollBox:SetDataProvider(dataProvider);
 
 	if self.NoSearchResults then
@@ -293,21 +279,18 @@ end
 -----------------------------------------------------------------------------------
 --- ProductContainerFrameMixin
 -----------------------------------------------------------------------------------
-
 ProductContainerFrameMixin = CreateFromMixins(CatalogShopProductContainerFrameMixin);
 function ProductContainerFrameMixin:OnLoad()
 	CatalogShopProductContainerFrameMixin.OnLoad(self);
-
-	if self.NoSearchResults then
-		self.NoSearchResults:SetText(self.noSearchResultsText);
-	end
+	self.NoSearchResults:SetText(self.noSearchResultsText);
 end
 
 function ProductContainerFrameMixin:Init()
-	CatalogShopProductContainerFrameMixin.Init(self);
+	self.usesScrollBox = true;
+	self:InitProductContainer();	
 end
 
-function ProductContainerFrameMixin:SetupCategoryProductData()
+function ProductContainerFrameMixin:InitProductContainer()
 	local function sectionProductSortComparator(lhs, rhs)
 		-- If the section IDs aren't the same, then use that as sort orderInPage
 		if lhs.sectionID ~= rhs.sectionID then
@@ -354,7 +337,7 @@ function ProductContainerFrameMixin:SetupCategoryProductData()
 		return true;
 	end
 
-	local function productContainerDataProvider()
+	local function GetProductContainerDataProvider()
 		local dataProvider = CreateDataProvider();
 
 		for _, sectionData in ipairs(self.sectionData) do
@@ -373,10 +356,10 @@ function ProductContainerFrameMixin:SetupCategoryProductData()
 				end
 			end
 		end
-
 		dataProvider:SetSortComparator(sectionProductSortComparator);
 		return dataProvider;
 	end
+	self.getDataProviderFunc = GetProductContainerDataProvider;
 
 	local function InitializeSection(frame, elementData)
 		frame:Init();
@@ -395,7 +378,7 @@ function ProductContainerFrameMixin:SetupCategoryProductData()
 		end);
 	end
 
-	local function productContainerElementFactory(factory, elementData)
+	local function GetProductContainerElementFactory(factory, elementData)
 		if elementData.elementType == CatalogShopConstants.ScrollViewElementType.Header then
 			factory(CatalogShopConstants.CardTemplate.Header, InitializeSection)
 		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
@@ -412,16 +395,7 @@ function ProductContainerFrameMixin:SetupCategoryProductData()
 			end
 		end
 	end
-
-	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
-	local headerData = { Name = categoryInfo.displayName };
-	local scrollBoxData = {
-		ElementFactory = productContainerElementFactory,
-		GetDataProvider = productContainerDataProvider
-	};
-
-	CatalogShopProductContainerFrameMixin.SetData(self, headerData, scrollBoxData);
-	self:SetupScrollView();
+	self:SetupScrollView(GetProductContainerElementFactory);
 end
 
 function ProductContainerFrameMixin:OnCategorySelected(categoryID)
@@ -437,8 +411,13 @@ function ProductContainerFrameMixin:OnCategorySelected(categoryID)
 			table.insert(data.productIDs, productID);
 		end
 		table.insert(self.sectionData, data);
-	end
-
-	self:SetupCategoryProductData();
+	end	
 	self:AllDataRefresh(resetSelection);
+
+	-- Init ProductsScrollBoxContainer
+	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
+	self.ShadowLayer:SetShown(self.usesScrollBox);
+
+	local headerData = { Name = categoryInfo.displayName };
+	self:SetupProductHeaderFrame(headerData);
 end

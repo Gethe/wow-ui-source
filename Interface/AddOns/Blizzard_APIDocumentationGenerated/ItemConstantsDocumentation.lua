@@ -644,7 +644,7 @@ local ItemConstants =
 			{
 				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
 				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
-				{ Name = "INVALID_TRANSACTION_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
+				{ Name = "INVALID_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
 				{ Name = "DEFAULT_ITEM_SAVE_VERSION", Type = "number", Value = 2 },
 				{ Name = "CURRENT_ITEM_SAVE_VERSION", Type = "number", Value = DEFAULT_ITEM_SAVE_VERSION },
 				{ Name = "DEFAULT_ARTIFACT_POWERS_VERSION", Type = "number", Value = 1 },

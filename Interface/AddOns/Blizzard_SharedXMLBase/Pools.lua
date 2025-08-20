@@ -7,7 +7,7 @@ local CreateProxyDirectory = ProxyUtil.CreateProxyDirectory;
 local CreateProxyMixin = ProxyUtil.CreateProxyMixin;
 local SetPrivateReference = ProxyUtil.SetPrivateReference;
 local ReleasePrivateReference = ProxyUtil.ReleasePrivateReference;
-local ProxyConvertablePrivateMixin = Mixin(ProxyConvertableMixin);
+local ProxyConvertablePrivateMixin = CreateFromMixins(ProxyConvertableMixin);
 local CreateFromMixinsPrivate = CreateFromMixins;
 
 local enableProxyReporting = false; -- For debugging purposes only.

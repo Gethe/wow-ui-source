@@ -72,7 +72,7 @@ end
 
 function DialogButtonMixin:ToggleDialog()
 	local isDialogOpen = self:IsDialogOpen();
-	if IsDialogOpen then
+	if isDialogOpen then
 		EventRegistry:UnregisterCallback(DialogPopupEvent_Hidden, self);
 		self.dialog:DetatchFromButton();
 	else

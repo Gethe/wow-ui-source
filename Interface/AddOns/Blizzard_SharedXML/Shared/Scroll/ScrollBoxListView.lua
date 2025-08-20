@@ -289,7 +289,11 @@ function ScrollBoxListViewMixin:SetDataProvider(dataProvider, retainScrollPositi
 	if dataProvider == nil then
 		error("SetDataProvider() dataProvider was nil. Call RemoveDataProvider() if this was your intent.");
 	end
-	
+
+	if self.elementFactory == nil then
+		error("SetDataProvider() elementFactory was nil. Call SetElementFactory() before setting the data provider.");
+	end
+
 	self:RemoveDataProviderInternal();
 
 	self.dataProvider = dataProvider;

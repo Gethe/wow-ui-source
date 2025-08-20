@@ -75,7 +75,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="ProductDetailsContainerFrame" inherits="CatalogShopProductDetailsContainerFrameTemplate"  frameLevel="500" hidden="true" >
+			<Frame parentKey="ProductDetailsContainerFrame" inherits="CatalogShopProductDetailsContainerFrameTemplate" frameLevel="500" hidden="true" >
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="16" y="-2"/>
 					<Anchor point="LEFT" x="0" y="0"/>
@@ -99,19 +99,41 @@
 					<Anchor point="RIGHT" x="0" y="0" />
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<!-- 72,70-->
-						<!-- x,y from upper right, -70,-123, width,height = 176,176, alpha=0.2-->
+					<Layer level="BACKGROUND">
 						<Texture parentKey="WatermarkLogoTexture" atlas="logo-wow-classic" alpha="0.2">
-							<Size x="176" y="176" />
+							<Size x="80" y="80" />
 							<Anchors>
 								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-72" y="-70"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="PMTImageForNoModel" hidden="true">
-							<Size x="530" y="299"/>
+							<Size x="650" y="376"/>
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="0"/>
+								<Anchor point="CENTER" x="50" y="90"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="PMTImageForNoModelMask" hidden="true" setAllPoints="true" atlas="shop-card-wide-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="620" y="350"/>
+							<Anchors>
+								<Anchor point="CENTER" x="50" y="90"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="PMTImageForNoModel"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<FontString parentKey="OtherProductWarningText" inherits="GameFontHighlightLarge" hidden="true" justifyH="CENTER">
+							<Size x="700" y="0" />
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.PMTImageForNoModel" relativePoint="BOTTOM" x="0" y="-20" />
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PMTImageForNoModelBorder" hidden="true" setAllPoints="true" atlas="shop-card-wide-frame-default">
+							<Size x="650" y="376"/>
+							<Anchors>
+								<Anchor point="CENTER" x="50" y="90"/>
 							</Anchors>
 						</Texture>
 					</Layer>

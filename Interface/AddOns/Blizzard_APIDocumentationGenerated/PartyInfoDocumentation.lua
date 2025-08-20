@@ -165,6 +165,18 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetInstanceAbandonVoteCooldownTime",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the total duration of the abandon vote cooldown and how much time is left before it ends" },
+
+			Returns =
+			{
+				{ Name = "durationSeconds", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "timeLeftSeconds", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "GetInstanceAbandonVoteRequirements",
 			Type = "Function",
 			Documentation = { "Returns values controlling the vote" },

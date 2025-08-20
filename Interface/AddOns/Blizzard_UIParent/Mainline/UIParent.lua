@@ -933,6 +933,7 @@ function ToggleStoreUI(contextKey)
 		return;
 	end
 
+	-- TODO: Replace with MirrorVar
 	local useNewCashShop = GetCVarBool("useNewCashShop");
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
@@ -1287,7 +1288,13 @@ function UIParent_OnEvent(self, event, ...)
 
 		NPETutorial_AttemptToBegin(event);
 
-		StoreFrame_CheckForFree(event);
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(event);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
@@ -2107,7 +2114,13 @@ function UIParent_OnEvent(self, event, ...)
 		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		StoreFrame_CheckForFree(event);
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(self, value);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
 		TopBannerManager_LoadingScreenEnabled();
 	elseif ( event == "LOADING_SCREEN_DISABLED" ) then

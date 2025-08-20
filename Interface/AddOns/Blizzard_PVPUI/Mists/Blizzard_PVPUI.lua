@@ -30,7 +30,7 @@ StaticPopupDialogs["CONFIRM_JOIN_SOLO"] = {
 -- PVP FRAME  (Unlike reference, this is now a tab of the GroupFinderFrame)
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorQueueFrame", "ConquestQueueFrame", "WarGamesQueueFrame" }
+local pvpFrames = { "HonorQueueFrame", "ConquestQueueFrame", "WarGamesQueueFrame", "LFGListPVPStub" }
 
 function PVPQueueFrame_OnLoad(self)
 	local englishFaction = UnitFactionGroup("player");
@@ -50,6 +50,9 @@ function PVPQueueFrame_OnLoad(self)
 
 	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
+
+	SetPortraitToTexture(self.CategoryButton4.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.CategoryButton4.Name:SetText(LFGLIST_NAME);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then
 		HonorQueueFrame.BonusFrame.BattlegroundTexture:SetTexCoord(HORDE_TEX_COORDS.left, HORDE_TEX_COORDS.right,

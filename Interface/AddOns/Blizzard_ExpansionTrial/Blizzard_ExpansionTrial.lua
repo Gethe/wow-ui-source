@@ -103,8 +103,16 @@ function ExpansionTrialCheckPointDialogMixin:OnButtonClick()
 	if self:IsShowingExpansionTrialUpgrade() then
 		ForceLogout();
 	else
-		SetStoreUIShown(true);
-		StoreFrame_SetGamesCategory();
+		-- TODO: Replace with MirrorVar
+		local useNewCashShop = GetCVarBool("useNewCashShop");
+		if useNewCashShop then
+			local shown = true;
+			CatalogShopInboundInterface.SetShown(shown)
+			CatalogShopInboundInterface.SetGamesCategory();
+		else
+			SetStoreUIShown(true);
+			StoreFrame_SetGamesCategory();
+		end
 		C_ExpansionTrial.OnTrialLevelUpDialogClicked();
 	end
 
