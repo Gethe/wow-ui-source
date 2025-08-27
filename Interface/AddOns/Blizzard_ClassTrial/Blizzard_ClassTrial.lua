@@ -77,8 +77,7 @@ function ClassTrial_ShowStoreServices(guid, boostType)
 	if not StoreFrame_IsShown or not StoreFrame_IsShown() then
 		ToggleStoreUI();
 	end
-	-- TODO: Replace with MirrorVar
-	local useNewCashShop = GetCVarBool("useNewCashShop");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		CatalogShopInboundInterface.SelectBoost(boostType, "forClassTrialUnlock", guid);
 	else
@@ -267,8 +266,7 @@ function ExpansionTrialDialogMixin:OnButtonClick()
 	if self.expansionTrialUpgrade then
 		ForceLogout();
 	else
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			local shown = true;
 			CatalogShopInboundInterface.SetShown(shown)

@@ -202,6 +202,9 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	local cardType = displayInfo.productType;
 	local container = self.ForegroundContainer;
 
+	--TODO RNM - this call is asserting
+	--C_CatalogShop.ProductDisplayedTelemetry(self.productInfo.categoryID, self.productInfo.sectionID, self.productInfo.catalogShopProductID);
+
 	-- based on values in productInfo we need to set a correct background
 	self.BackgroundContainer.Background:SetAtlas(self.defaultBackground);
 
@@ -224,11 +227,18 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		end
 	elseif cardType == CatalogShopConstants.ProductCardType.Subscription then
 		local licenseTermType = self.productInfo.licenseTermType;
+		local licenseTermDuration = self.productInfo.licenseTermDuration;
+		local subTexture;
 		if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
-			local licenseTermDuration = self.productInfo.licenseTermDuration;
-			local subTexture = "wow-sub-"..licenseTermDuration.."mo";
+			subTexture = "wow-sub-"..licenseTermDuration.."mo";
+		elseif licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+			subTexture = "wow-sub-"..licenseTermDuration.."day";
+		end
+		if subTexture then
 			container.RectIcon:Show();
 			container.RectIcon:SetAtlas(subTexture);
+		else
+			container.RectIcon:Hide();
 		end
 	else
 		-- An unknown license implies a product from another Game (Classic, etc.)
@@ -408,6 +418,28 @@ function WideCatalogShopProductCardMixin:Layout()
 	local backgroundTexture = self.productInfo and self.productInfo.optionalWideCardBackgroundTexture or self.defaultBackground;
 	if backgroundTexture then
 		self.BackgroundContainer.Background:SetAtlas(backgroundTexture);
+	end
+end
+
+--------------------------------------------------
+-- SUBSCRIPTION WIDE CATALOG SHOP PRODUCT CARD MIXIN
+SubscriptionWideCatalogShopProductCardMixin = CreateFromMixins(WideCatalogShopProductCardMixin);
+function SubscriptionWideCatalogShopProductCardMixin:OnLoad()
+	WideCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function SubscriptionWideCatalogShopProductCardMixin:Layout()
+	WideCatalogShopProductCardMixin.Layout(self);
+	self:UpdateTimeRemaining();
+
+	local container = self.ForegroundContainer;
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+	if self.productInfo and self.productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+		-- the days icons is a different aspect ratio
+		container.RectIcon:SetSize(162, 180);
+	else
+		container.RectIcon:SetSize(162, 144);
 	end
 end
 

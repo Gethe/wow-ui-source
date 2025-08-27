@@ -1151,6 +1151,8 @@ function UIButtonMixin:OnClick(...)
 end
 
 function UIButtonMixin:OnEnter()
+	self:RunCustomTextFormatter();
+
 	if self.onEnterHandler and self.onEnterHandler(self) then
 		return;
 	end
@@ -1185,6 +1187,8 @@ function UIButtonMixin:OnEnter()
 end
 
 function UIButtonMixin:OnLeave()
+	self:RunCustomTextFormatter();
+
 	local tooltip = GetAppropriateTooltip();
 	tooltip:Hide();
 end
@@ -1205,6 +1209,56 @@ end
 
 function UIButtonMixin:GetOnClickSoundKit()
 	return self.onClickSoundKit;
+end
+
+function UIButtonMixin:SetCustomTextFormatter(customTextFormatter)
+	if self.customTextFormatter then
+		self:ClearCustomTextFormatter();
+	end
+
+	self.customTextFormatter = customTextFormatter;
+
+	local function OverrideScriptForFormatter(scriptName, scriptFunction)
+		local originalHandler = self:GetScript(scriptName);
+		self["original"..scriptName.."Script"] = originalHandler;
+		self:SetScript(scriptName, function(...)
+			if originalHandler then
+				originalHandler(...);
+			end
+
+			scriptFunction(...);
+		end);
+	end
+
+	OverrideScriptForFormatter("OnEnable", self.RunCustomTextFormatter);
+	OverrideScriptForFormatter("OnDisable", self.RunCustomTextFormatter);
+
+	self:RunCustomTextFormatter();
+end
+
+function UIButtonMixin:ClearCustomTextFormatter()
+	self.customTextFormatter = nil;
+
+	local function RestoreOriginalScriptHandler(scriptName)
+		local memberName = "original"..scriptName.."Script";
+		local originalHandler = self[memberName];
+		self[memberName] = nil;
+		if originalHandler then
+			self:SetScript(scriptName, originalHandler);
+		end
+	end
+
+	RestoreOriginalScriptHandler("OnEnable");
+	RestoreOriginalScriptHandler("OnDisable");
+end
+
+function UIButtonMixin:RunCustomTextFormatter()
+	if self.customTextFormatter then
+		local highlight = self:IsMouseMotionFocus();
+		local enabled = self:IsEnabled();
+		self.Text:SetText(self.customTextFormatter(self, enabled, highlight));
+		self:SetWidth(self:GetTextWidth() + 20); -- Add some padding to the width so that the text doesn't get cut off.
+	end
 end
 
 function UIButtonMixin:SetOnEnterHandler(onEnterHandler)

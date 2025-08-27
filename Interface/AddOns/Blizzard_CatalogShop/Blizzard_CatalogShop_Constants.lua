@@ -20,6 +20,7 @@ CatalogShopConstants =
 		Wide = "WideCatalogShopProductCardTemplate",
 		Small = "SmallCatalogShopProductCardTemplate",
 		Token = "WoWTokenCatalogShopProductCardTemplate",
+		WideCardSubscription = "SubscriptionWideCatalogShopProductCardTemplate",
 		DetailsSmall = "SmallCatalogShopProductDetailsCardTemplate",
 		DetailsSubscriptionSmall = "SmallCatalogShopSubscriptionDetailsCardTemplate",
 	},
@@ -49,6 +50,7 @@ CatalogShopConstants =
 		Token = "WoW Token",
 		Bundle = "Bundle",
 		Subscription = "Subscription",
+		TradersTenders = "Tender",
 	},
 
 	DefaultCameraTag = 

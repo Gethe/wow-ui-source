@@ -3,6 +3,30 @@ local REORDER_MARKER_AFTER_TARGET = true;
 
 COOLDOWN_BAR_DEFAULT_COLOR = CreateColor(1, 0.5, 0.25);
 
+StaticPopupDialogs["REVERT_COOLDOWN_LAYOUT_CHANGES"] = {
+	text = COOLDOWN_VIEWER_SETTINGS_DIALOG_TEXT_REVERT_CHANGES,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		data:ResetToRestorePoint();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
+StaticPopupDialogs["RESET_COOLDOWN_LAYOUT_TO_DEFAULT"] = {
+	text = COOLDOWN_VIEWER_SETTINGS_DIALOG_TEXT_RESET_LAYOUT_TO_DEFAULT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		data:ResetCurrentToDefaults();
+	end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 CooldownViewerSettingsDraggedItemMixin = {};
 function CooldownViewerSettingsDraggedItemMixin:SetToCursor(cooldownItem)
 	self.Icon:SetTexture(cooldownItem:GetTextureFileID());
@@ -485,7 +509,7 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetupTabs();
 	self:SetupEventHandlers();
 	self:SetupDropdownMenu();
-	self:SetupSaveButtons();
+	self:SetupPanelButtons();
 	self:SetupScrollFrame();
 
 	self.layoutManager = CreateFromMixins(CooldownViewerLayoutManagerMixin);
@@ -537,7 +561,7 @@ function CooldownViewerSettingsMixin:SetupDropdownMenu()
 		rootDescription:CreateCheckbox(COOLDOWN_VIEWER_SETTINGS_SHOW_UNLEARNED, IsShowingUnlearned, ToggleSetShowUnlearned);
 
 		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_RESET_LAYOUT_TO_DEFAULT, function()
-			CooldownViewerSettings:ResetCurrentToDefaults();
+			StaticPopup_Show("RESET_COOLDOWN_LAYOUT_TO_DEFAULT", nil, nil, self);
 		end);
 
 		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_SHOW_OPTIONS, function()
@@ -548,13 +572,13 @@ function CooldownViewerSettingsMixin:SetupDropdownMenu()
 	end);
 end
 
-function CooldownViewerSettingsMixin:SetupSaveButtons()
-	self.SaveLayoutButton:SetOnClickHandler(function(_layoutButton, _button, _isDown)
-		self:SaveCurrentLayout();
+function CooldownViewerSettingsMixin:SetupPanelButtons()
+	self.UndoButton:SetOnClickHandler(function(_layoutButton, _button, _isDown)
+		StaticPopup_Show("REVERT_COOLDOWN_LAYOUT_CHANGES", nil, nil, self);
 	end);
 
-	self.UndoButton:SetOnClickHandler(function(_layoutButton, _button, _isDown)
-		self:ResetToRestorePoint();
+	self.UndoButton:SetCustomTextFormatter(function(button, enabled, highlight)
+		return COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES .. " " .. CreateAtlasMarkup(enabled and "common-icon-undo" or "common-icon-undo-disable");
 	end);
 end
 
@@ -731,6 +755,8 @@ function CooldownViewerSettingsMixin:OnShow()
 end
 
 function CooldownViewerSettingsMixin:OnHide()
+	self:SaveCurrentLayout();
+
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 
 	CallbackRegistrantMixin.OnHide(self);
@@ -915,8 +941,11 @@ function CooldownViewerSettingsMixin:DoesCooldownMatchTextFilter(cooldownItem, t
 	return true;
 end
 
-function CooldownViewerSettingsMixin:ShowUIPanel()
-	EditModeManagerFrame:CheckHideAndLockEditMode();
+function CooldownViewerSettingsMixin:ShowUIPanel(fromEditMode)
+	if fromEditMode then
+		EditModeManagerFrame:CheckHideAndLockEditMode();
+	end
+
 	ShowUIPanel(self);
 end
 
@@ -955,16 +984,17 @@ end
 
 function CooldownViewerSettingsMixin:SaveCurrentLayout()
 	local layoutManager = self:GetLayoutManager();
-	layoutManager:SaveLayouts();
+	local savedSomething = layoutManager:SaveLayouts();
 	layoutManager:CreateRestorePoint();
+
+	if savedSomething then
+		UIErrorsFrame:AddExternalWarningMessage(COOLDOWN_VIEWER_SETTINGS_LAYOUT_SAVED_MESSAGE);
+	end
 end
 
 function CooldownViewerSettingsMixin:UpdateSaveButtonStates()
 	local hasPendingChanges = self:GetLayoutManager():HasPendingChanges();
-	self.SaveLayoutButton:SetEnabled(hasPendingChanges);
-	GlowEmitterFactory:SetShown(hasPendingChanges, self.SaveLayoutButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow);
 	self.UndoButton:SetEnabled(hasPendingChanges);
-	self.UndoButton.Icon:SetDesaturated(not hasPendingChanges);
 end
 
 function CooldownViewerSettingsMixin:ShowOptionsPanel(fromEditMode)

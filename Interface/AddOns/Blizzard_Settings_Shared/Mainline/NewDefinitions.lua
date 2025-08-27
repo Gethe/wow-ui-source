@@ -47,7 +47,7 @@ NewSettings["11.2.0"] = {
 };
 
 NewSettings["11.2.5"] = {
-	"cooldownViewerEnabled",
+	"ADVANCED_COOLDOWN_SETTINGS",
 };
 
 NewSettingsPredicates["ASSISTED_COMBAT_ROTATION"] = function()

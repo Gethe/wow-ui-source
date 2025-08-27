@@ -828,8 +828,7 @@ function UpgradeAccount()
 		StoreInterfaceUtil.OpenToSubscriptionProduct();
 	else
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-			-- TODO: Replace with MirrorVar
-			local useNewCashShop = GetCVarBool("useNewCashShop");
+			local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 			if useNewCashShop then
 				CatalogShopInboundInterface.SetGamesCategory();
 			else

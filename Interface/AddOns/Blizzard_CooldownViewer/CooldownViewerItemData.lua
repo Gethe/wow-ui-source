@@ -168,6 +168,18 @@ function CooldownViewerItemDataMixin:GetSpellID()
 	return cooldownInfo.spellID;
 end
 
+function CooldownViewerItemDataMixin:GetTooltipSpellID()
+	-- NOTE: This doesn't apply to auraInstanceID at all, call this if it's known
+	-- that a spellID is needed for the tooltip.
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
+		return cooldownInfo.overrideTooltipSpellID;
+	end
+
+	local spellID = self:GetSpellID();
+	return spellID;
+end
+
 function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
 	local spellID = self:GetSpellID();
 	if not spellID then
@@ -192,6 +204,12 @@ function CooldownViewerItemDataMixin:GetFallbackSpellTexture()
 end
 
 function CooldownViewerItemDataMixin:GetSpellTexture()
+	-- Overriding the tooltip also serves to override the texture
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
+		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
+	end
+
 	local linkedSpellID = self:GetLinkedSpell();
 	if linkedSpellID then
 		return C_Spell.GetSpellTexture(linkedSpellID);
@@ -287,7 +305,7 @@ function CooldownViewerItemDataMixin:RefreshTooltip()
 	if self.auraInstanceID then
 		tooltip:SetUnitBuffByAuraInstanceID("player", self.auraInstanceID);
 	else
-		local spellID = self:GetSpellID();
+		local spellID = self:GetTooltipSpellID();
 		if spellID then
 			local isPet = false;
 			tooltip:SetSpellByID(spellID, isPet);

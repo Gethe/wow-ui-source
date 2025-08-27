@@ -402,8 +402,7 @@ end
 
 function AuctionHouseStoreButtonMixin:OnClick()
 	ToggleStoreUI();
-	-- TODO: Replace with MirrorVar
-	local useNewCashShop = GetCVarBool("useNewCashShop");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		CatalogShopInboundInterface.SetTokenCategory();
 	else

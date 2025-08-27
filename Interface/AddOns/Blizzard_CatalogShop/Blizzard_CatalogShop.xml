@@ -389,7 +389,7 @@
 									</Frame>
 								</Frames>
 							</Button>
-							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="Details" >
+							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_DETAILS" >
 								<Size x="165" y="50"/>
 								<Anchors>
 									<Anchor point="RIGHT" x="-28" y="0"/>

@@ -144,8 +144,7 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.StoreCategory, function(link, text, linkData, contextData)
 	local category = string.split(":", linkData.options);
 	if category == "token" then
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.SetTokenCategory();
 		else
@@ -153,16 +152,14 @@ LinkUtil.RegisterLinkHandler(LinkTypes.StoreCategory, function(link, text, linkD
 		end
 		ToggleStoreUI();
 	elseif category == "games" then
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.OpenGamesCategory();
 		else
 			StoreFrame_OpenGamesCategory();
 		end
 	elseif category == "services" then
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.SetServicesCategory();
 		else

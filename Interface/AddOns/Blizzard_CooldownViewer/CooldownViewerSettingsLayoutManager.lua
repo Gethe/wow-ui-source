@@ -19,8 +19,10 @@ function CooldownViewerLayoutManagerMixin:IsLoaded()
 end
 
 function CooldownViewerLayoutManagerMixin:SaveLayouts()
+	local hadSomethingToSave = self:HasPendingChanges();
 	self:GetSerializer():WriteData();
 	self:SetHasPendingChanges(false);
+	return hadSomethingToSave;
 end
 
 function CooldownViewerLayoutManagerMixin:GetDataProvider()

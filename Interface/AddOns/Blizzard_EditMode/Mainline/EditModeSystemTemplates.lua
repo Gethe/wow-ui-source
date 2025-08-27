@@ -2664,7 +2664,8 @@ function EditModeCooldownViewerSystemMixin:AddExtraButtons(extraButtonPool)
 	local settingsButton = extraButtonPool:Acquire();
 	settingsButton.layoutIndex = 5;
 	settingsButton:SetText(HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS);
-	settingsButton:SetOnClickHandler(function() CooldownViewerSettings:ShowUIPanel(); end);
+	local fromEditMode = true;
+	settingsButton:SetOnClickHandler(function() CooldownViewerSettings:ShowUIPanel(fromEditMode); end);
 	settingsButton:Show();
 
 	local optionsButton = extraButtonPool:Acquire();

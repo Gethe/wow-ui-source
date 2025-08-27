@@ -173,8 +173,28 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "IsShop2Enabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "value", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "OpenCatalogShopInteraction",
 			Type = "Function",
+		},
+		{
+			Name = "ProductDisplayedTelemetry",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryId", Type = "number", Nilable = false },
+				{ Name = "sectionId", Type = "number", Nilable = false },
+				{ Name = "catalogShopProductID", Type = "number", Nilable = false },
+			},
 		},
 		{
 			Name = "ProductSelectedTelemetry",
@@ -182,7 +202,10 @@ local CatalogShop =
 
 			Arguments =
 			{
+				{ Name = "categoryId", Type = "number", Nilable = false },
+				{ Name = "sectionId", Type = "number", Nilable = false },
 				{ Name = "catalogShopProductID", Type = "number", Nilable = false },
+				{ Name = "wasCodeSelection", Type = "bool", Nilable = false },
 			},
 		},
 		{

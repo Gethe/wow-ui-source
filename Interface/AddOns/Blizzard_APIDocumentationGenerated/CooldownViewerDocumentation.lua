@@ -76,6 +76,7 @@ local CooldownViewer =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
+				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = true },
 				{ Name = "linkedSpellIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "selfAura", Type = "bool", Nilable = false },
 				{ Name = "hasAura", Type = "bool", Nilable = false },

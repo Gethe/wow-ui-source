@@ -137,6 +137,7 @@ local MythicPlusInfo =
 			{
 				{ Name = "includePreviousWeeks", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeIncompleteRuns", Type = "bool", Nilable = false, Default = false },
+				{ Name = "currentSeasonOnly", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -318,6 +319,9 @@ local MythicPlusInfo =
 				{ Name = "thisWeek", Type = "bool", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "runScore", Type = "number", Nilable = false },
+				{ Name = "durationSec", Type = "number", Nilable = false },
+				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "season", Type = "number", Nilable = false },
 			},
 		},
 		{

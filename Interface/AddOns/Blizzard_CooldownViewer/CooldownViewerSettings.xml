@@ -19,6 +19,9 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" setAllPoints="true" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
@@ -200,23 +203,14 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-			<Button parentKey="SaveLayoutButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp" text="TALENT_FRAME_APPLY_BUTTON_TEXT">
+			<Button parentKey="UndoButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp" text="COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES">
+				<KeyValues>
+					<KeyValue key="tooltipTitle" value="COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES_TOOLTIP" type="global"/>
+					<KeyValue key="disabledTooltip" value="COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES_TOOLTIP" type="global"/>
+				</KeyValues>
 				<Size x="164" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="-14" y="3"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="UndoButton" registerForClicks="LeftButtonUp" inherits="IconButtonTemplate">
-				<KeyValues>
-					<KeyValue key="iconAtlas" value="talents-button-undo" type="string"/>
-					<KeyValue key="useAtlasSize" value="true" type="boolean"/>
-					<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
-					<KeyValue key="tooltipText" value="TALENT_FRAME_DISCARD_CHANGES_BUTTON_TOOLTIP" type="global"/>
-					<KeyValue key="tooltipTextColor" value="HIGHLIGHT_FONT_COLOR" type="global"/>
-				</KeyValues>
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SaveLayoutButton" relativePoint="RIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOM" x="0" y="3"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="ReorderMarker" mixin="CooldownViewerSettingsReorderMarkerMixin" hidden="true">

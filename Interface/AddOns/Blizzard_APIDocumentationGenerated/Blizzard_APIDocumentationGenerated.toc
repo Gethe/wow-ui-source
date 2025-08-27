@@ -389,6 +389,7 @@ GuildConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
+ItemConstants_SharedDocumentation.lua
 ItemQualitiesDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua

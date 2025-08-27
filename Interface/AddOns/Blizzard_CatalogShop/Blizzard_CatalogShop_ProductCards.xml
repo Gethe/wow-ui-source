@@ -190,9 +190,26 @@
 			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
 		</KeyValues>
 	</Button>
-	<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
+
+	<!-- Subscription Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="SubscriptionWideCatalogShopProductCardTemplate" mixin="SubscriptionWideCatalogShopProductCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
+		<Size x="558" y="322"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-wide-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-wide-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-wide-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
+		</KeyValues>
+	</Button>
+	
+		<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
 	<Button name="WoWTokenCatalogShopProductCardTemplate" mixin="WoWTokenCatalogShopProductCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
-		<Size x="558" y="270"/>
+		<Size x="558" y="322"/>
 		<KeyValues>
 			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
 			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>

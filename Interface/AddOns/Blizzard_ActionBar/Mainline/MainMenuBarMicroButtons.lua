@@ -1520,8 +1520,7 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 end
 
 function StoreMicroButtonMixin:UpdateMicroButton()
-	-- TODO: Replace with MirrorVar
-	local useNewCashShop = GetCVarBool("useNewCashShop");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
 		if CatalogShopFrame and wasShown then

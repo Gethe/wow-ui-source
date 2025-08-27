@@ -15,6 +15,7 @@ end
 
 function CatalogShopProductContainerFrameMixin:Init()
 	self.usesScrollBox = true;
+	self.selectionWasAutomatic = false;		-- Initialize the variable
 end
 
 function CatalogShopProductContainerFrameMixin:SetupProductHeaderFrame(headerData)
@@ -136,6 +137,7 @@ function CatalogShopProductContainerFrameMixin:UpdateProducts(resetSelection)
 	-- Try to preserve selection. If not select first product
 	self.silenceSelectionSounds = true;
 	if resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
+		self.selectionWasAutomatic = true;		-- The selection is being reset, keep track for later telemetry
 		self:SelectFirstProduct();
 	end
 	self.silenceSelectionSounds = false;
@@ -157,6 +159,17 @@ end
 
 function CatalogShopProductContainerFrameMixin:OnShow()
 	local resetSelection = true;
+
+	local selectedProductInfo = self:GetSelectedProductInfo();
+	if selectedProductInfo then
+		local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
+		local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
+			return elementData.catalogShopProductID == selectedProductInfo.catalogShopProductID;
+		end);
+		if foundElementData then
+			self:OnProductSelected(foundElementData);
+		end
+	end
 end
 
 function CatalogShopProductContainerFrameMixin:OnHide()
@@ -180,6 +193,10 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	self.selectedProductInfo = productInfo;
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.selectedProductInfo.catalogShopProductID);
 	local productCardType = productInfo.sceneDisplayData.productCardType;
+
+	--TODO RNM - this call is asserting
+	--C_CatalogShop.ProductSelectedTelemetry(self.selectedProductInfo.categoryID, self.selectedProductInfo.sectionID, self.selectedProductInfo.catalogShopProductID, self.selectionWasAutomatic);
+	self.selectionWasAutomatic = false;			-- Reset the variable.
 
 	CatalogShopFrame:HidePreviewFrames();
 
@@ -227,10 +244,17 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		iconFrame.ProductCounterText:Hide();
 		iconFrame.IconBorder:Hide();
 
+		local licenseTermType = self.selectedProductInfo.licenseTermType;
 		local licenseTermDuration = self.selectedProductInfo.licenseTermDuration;
-		local subTexture = "wow-sub-"..licenseTermDuration.."mo";
+		local subTexture;
+		if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
+			subTexture = "wow-sub-"..licenseTermDuration.."mo";
+			iconFrame.Icon:SetSize(270, 240);
+		elseif licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+			subTexture = "wow-sub-"..licenseTermDuration.."day";
+			iconFrame.Icon:SetSize(270, 300);
+		end
 		iconFrame.Icon:SetAtlas(subTexture);
-		iconFrame.Icon:SetSize(270, 240);
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end
@@ -269,6 +293,7 @@ function CatalogShopProductContainerFrameMixin:GetSelectedProductInfo()
 end
 
 function CatalogShopProductContainerFrameMixin:SelectFirstProduct()
+	self.ignoreNextSelectionForTelemetry = true;
 	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData(IsElementDataItemInfo);
 end
 
@@ -387,6 +412,8 @@ function ProductContainerFrameMixin:InitProductContainer()
 			if scrollViewSize == 1 then
 				if elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Token then
 					factory(CatalogShopConstants.CardTemplate.Token, InitializeButton)
+				elseif elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Subscription then
+					factory(CatalogShopConstants.CardTemplate.WideCardSubscription, InitializeButton)
 				else
 					factory(CatalogShopConstants.CardTemplate.Wide, InitializeButton)
 				end

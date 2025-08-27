@@ -933,8 +933,7 @@ function ToggleStoreUI(contextKey)
 		return;
 	end
 
-	-- TODO: Replace with MirrorVar
-	local useNewCashShop = GetCVarBool("useNewCashShop");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
 		if ( not wasShown ) then
@@ -1288,8 +1287,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		NPETutorial_AttemptToBegin(event);
 
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.CheckForFree(event);
 		else
@@ -2114,8 +2112,7 @@ function UIParent_OnEvent(self, event, ...)
 		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.CheckForFree(self, value);
 		else

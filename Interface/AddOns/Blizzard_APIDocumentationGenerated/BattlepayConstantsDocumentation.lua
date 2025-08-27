@@ -3,6 +3,18 @@ local BattlepayConstants =
 	Tables =
 	{
 		{
+			Name = "CanRedeemTokenForBalanceResult",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Ok", Type = "CanRedeemTokenForBalanceResult", EnumValue = 0 },
+				{ Name = "FailureCap", Type = "CanRedeemTokenForBalanceResult", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "VasTransactionPurchaseResult",
 			Type = "Enumeration",
 			NumValues = 144,

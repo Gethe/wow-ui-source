@@ -102,7 +102,7 @@ local function Register()
 			ShowDesiredPanelFromSettingsPanel(CooldownViewerSettings);
 		end
 
-		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags);
+		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags, "ADVANCED_COOLDOWN_SETTINGS");
 		layout:AddInitializer(managerInitializer);
 	end);
 

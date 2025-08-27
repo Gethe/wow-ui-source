@@ -103,8 +103,7 @@ function ExpansionTrialCheckPointDialogMixin:OnButtonClick()
 	if self:IsShowingExpansionTrialUpgrade() then
 		ForceLogout();
 	else
-		-- TODO: Replace with MirrorVar
-		local useNewCashShop = GetCVarBool("useNewCashShop");
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			local shown = true;
 			CatalogShopInboundInterface.SetShown(shown)

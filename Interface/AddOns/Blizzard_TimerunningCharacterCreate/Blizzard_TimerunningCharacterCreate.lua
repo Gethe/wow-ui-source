@@ -124,8 +124,10 @@ local TIMERUNNING_LOCALE_SUFFIX_OVERRIDES = {
 
 function TimerunningFirstTimeDialogMixin:UpdateState()
 	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID() or Constants.TimerunningConsts.TIMERUNNING_SEASON_NONE;
+	local seenTimerunningFirstLoginPopup = GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup");
+	local neverShow = seenTimerunningFirstLoginPopup == -1;
 	-- There is no current legion dialog art, so the frame is being hidden until then
-	local shouldShow = activeTimerunningSeasonID ~= TIMERUNNING_SEASON_NONE and GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup") ~= activeTimerunningSeasonID;
+	local shouldShow = not neverShow and activeTimerunningSeasonID ~= TIMERUNNING_SEASON_NONE and seenTimerunningFirstLoginPopup ~= activeTimerunningSeasonID;
 	local canShow = (IsConnectedToServer() and (CharacterSelect:IsShown()) or (CharacterCreateFrame:IsShown() and (not TimerunningChoicePopup or not TimerunningChoicePopup:IsShown())) and (not IsBetaBuild()));
 	self:SetShown(canShow and shouldShow);
 	self.InfoPanel.CreateButton:SetEnabled(IsTimerunningEnabled());

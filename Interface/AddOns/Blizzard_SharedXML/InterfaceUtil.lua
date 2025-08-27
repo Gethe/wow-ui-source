@@ -18,8 +18,7 @@ StoreInterfaceUtil = {};
 
 -- Returns true if there is a subscription product available and the store was toggled.
 function StoreInterfaceUtil.OpenToSubscriptionProduct()
-	-- TODO: Replace with MirrorVar
-	local useNewCashShop = GetCVarBool("useNewCashShop");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		-- TODO: do we need to check for free game time to show:
 		-- CatalogShopInboundInterface.SelectGameTimeProduct()

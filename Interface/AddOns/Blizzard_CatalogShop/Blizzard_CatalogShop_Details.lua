@@ -87,6 +87,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 	local function GetDetailContainerElementFactory(factory, elementData)
 		if elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Subscription then
 			factory(CatalogShopConstants.CardTemplate.DetailsSubscriptionSmall, InitializeButton);
+		elseif elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Tender then
+			-- TODO tender work here
+			factory(CatalogShopConstants.CardTemplate.DetailsSmall, InitializeButton);
 		else
 			factory(CatalogShopConstants.CardTemplate.DetailsSmall, InitializeButton);
 		end

@@ -102,7 +102,7 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="ARTWORK" textureSubLevel="1" >
 						<Texture parentKey="Pillar" atlas="shop-loading-pillar" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-438" y="0"/>
@@ -117,7 +117,12 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
-					<Layer level="ARTWORK">
+					<Layer level="ARTWORK" textureSubLevel="2" >
+						<Texture parentKey="Chain03-back" atlas="shop-loading-sign-link-03back" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="CENTER" x="-290" y="275"/>
+							</Anchors>
+						</Texture>						
 						<Texture parentKey="Sign" atlas="shop-loading-sign" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="CENTER" x="-288" y="248"/>
@@ -132,12 +137,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="-299.5" y="250"/>
 							</Anchors>
-						</Texture>
-						<Texture parentKey="Chain03-back" atlas="shop-loading-sign-link-03back" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="CENTER" x="-290" y="275"/>
-							</Anchors>
-						</Texture>
+						</Texture>						
 						<Texture parentKey="Glow" alpha="0.25" alphaMode="ADD" atlas="shop-loading-sign-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-360" y="650"/>
@@ -492,7 +492,7 @@
 	<Frame name="CatalogShopProductDetailsContainerFrameTemplate" mixin="CatalogShopProductDetailsContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
 		<Size x="540" />
 		<Frames>
-			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" ignoreParentScale="true" text="Back" >
+			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" ignoreParentScale="true" text="CATALOG_SHOP_BACK" >
 				<Size x="124" y="30"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="26" y="-10"/>
@@ -501,7 +501,7 @@
 					<KeyValue key="catalogShopOnClickMethod" value="HideProductDetails" type="string"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="RaceButton" hidden="true" inherits="CatalogShopButtonTemplate, DialogButtonTemplate" mixin="CatalogShopDetailsRaceButtonMixin" frameLevel="2000" ignoreParentScale="true" text="Race" >
+			<Button parentKey="RaceButton" hidden="true" inherits="CatalogShopButtonTemplate, DialogButtonTemplate" mixin="CatalogShopDetailsRaceButtonMixin" frameLevel="2000" ignoreParentScale="true" text="CATALOG_SHOP_RACE" >
 				<Size x="140" y="32"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.BackButton" relativePoint="RIGHT" x="0" y="0" />

@@ -227,7 +227,7 @@ function CooldownViewerDataStoreSerializationMixin:ReadData()
 	assertsafe(type(settingsDataVersion) == "number", "Deserialized table did not contain version in expected location, or there was no reader for version %s", tostring(settingsDataVersion));
 
 	local reader = versionedDataReaders[settingsDataVersion];
-	assertsafe(type(reader) == "function", "Reader missing for data version %s", tostring(dataVersion));
+	assertsafe(type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion));
 
 	reader(deserializedTable, layoutManager);
 end
