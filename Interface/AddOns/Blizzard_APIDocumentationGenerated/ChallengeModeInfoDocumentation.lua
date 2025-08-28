@@ -255,6 +255,16 @@ local ChallengeModeInfo =
 			LiteralName = "CHALLENGE_MODE_LEADERS_UPDATE",
 		},
 		{
+			Name = "ChallengeModeLeaverTimerEnded",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_ENDED",
+		},
+		{
+			Name = "ChallengeModeLeaverTimerStarted",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_LEAVER_TIMER_STARTED",
+		},
+		{
 			Name = "ChallengeModeMapsUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_MAPS_UPDATE",

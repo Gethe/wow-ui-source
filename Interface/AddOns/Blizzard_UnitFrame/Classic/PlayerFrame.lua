@@ -130,7 +130,7 @@ function PlayerFrame_UpdatePartyLeader()
 		PlayerGuideIcon:Hide();
 	end
 
-	local lootMethod, lootMaster = GetLootMethod();
+	local lootMethod, lootMaster = C_PartyInfo.GetLootMethod();
 	if ( lootMaster == 0 and IsInGroup() ) then
 		PlayerMasterIcon:Show();
 	else

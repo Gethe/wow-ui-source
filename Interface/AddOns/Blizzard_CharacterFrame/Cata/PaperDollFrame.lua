@@ -2146,7 +2146,9 @@ function Mastery_OnEnter(statFrame)
 	GameTooltip:SetText(title);
 
 	-- Class mastery spells are not used in MoP.
-	local isClassMasteryKnownOrUnused = ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+	local spellBank = Enum.SpellBookSpellBank.Player;
+	local includeOverrides = false;
+	local isClassMasteryKnownOrUnused = ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) or C_SpellBook.IsSpellInSpellBook(CLASS_MASTERY_SPELLS[class], spellBank, includeOverrides);
 
 	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
 	if (isClassMasteryKnownOrUnused and primaryTalentTree) then
@@ -3492,9 +3494,8 @@ function GearManagerPopupFrameMixin:OkayButton_OnClick()
 			UIErrorsFrame:AddMessage(EQUIPMENT_SETS_CANT_RENAME, 1.0, 0.1, 0.1, 1.0);
 			return;
 		elseif ( self.mode == IconSelectorPopupFrameModes.New ) then
-			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", text);
+			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", text, nil, setID);
 			if ( dialog ) then
-				dialog.data = setID;
 				dialog.selectedIcon = iconTexture;
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
@@ -3735,10 +3736,8 @@ function PaperDollEquipmentManagerPaneSaveSet_OnClick (self)
 	local selectedSetID = PaperDollFrame.EquipmentManagerPane.selectedSetID
 	if (selectedSetID) then
 		local selectedSetName = C_EquipmentSet.GetEquipmentSetInfo(selectedSetID);
-		local dialog = StaticPopup_Show("CONFIRM_SAVE_EQUIPMENT_SET", selectedSetName);
-		if ( dialog ) then
-			dialog.data = selectedSetID;
-		else
+		local dialog = StaticPopup_Show("CONFIRM_SAVE_EQUIPMENT_SET", selectedSetName, nil, selectedSetID);
+		if ( not dialog ) then
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		end
 	end

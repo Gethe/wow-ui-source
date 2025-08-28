@@ -360,6 +360,12 @@
 		</Scripts>
 	</Button>
 
+	<Button name="UIPanelButtonUserScaledTemplate" inherits="UIPanelButtonTemplate, UserScaledFrameTemplate" virtual="true">
+		<NormalFont style="UserScaledFontGameNormal"/>
+		<DisabledFont style="UserScaledFontGameDisable"/>
+		<HighlightFont style="UserScaledFontGameHighlight"/>
+	</Button>
+
 	<!--A super simple standard button that will widen on load to fit its text if its
 	localized version is bigger than its current size + 40 padding.  It will never reshrink.-->
 	<Button name="UIPanelDynamicResizeButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
@@ -1141,6 +1147,9 @@
 	</EditBox>
 
 	<EditBox name="SearchBoxTemplate" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
+		<KeyValues>
+			<KeyValue key="instructionText" value="SEARCH" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">

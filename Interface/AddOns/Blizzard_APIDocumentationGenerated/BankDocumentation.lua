@@ -47,6 +47,20 @@ local Bank =
 
 	Tables =
 	{
+		{
+			Name = "BankLockedReason",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "BankLockedReason", EnumValue = 0 },
+				{ Name = "NoAccountInventoryLock", Type = "BankLockedReason", EnumValue = 1 },
+				{ Name = "BankDisabled", Type = "BankLockedReason", EnumValue = 2 },
+				{ Name = "BankConversionFailed", Type = "BankLockedReason", EnumValue = 3 },
+			},
+		},
 	},
 };
 

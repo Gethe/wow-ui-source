@@ -83,7 +83,7 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -176,7 +176,7 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{

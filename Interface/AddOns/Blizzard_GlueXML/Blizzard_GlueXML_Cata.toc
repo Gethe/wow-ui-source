@@ -1,7 +1,7 @@
 ## Title: Blizzard_GlueXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_GlueDialogs, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
+## Dependencies: Blizzard_StaticPopup_Glue, Blizzard_LoginWarningDialogs, Blizzard_HelpPlate, Blizzard_GlueMenuFrame
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## AllowLoadGameType: cata
@@ -10,6 +10,7 @@ Cata\Localization.lua
 Classic\GlueTooltip.lua
 Classic\GlueTooltip.xml
 ServerAlert.lua
+Classic\ServerAlert.xml
 ServerAlert.xml
 Classic\GlueGameLogo.lua
 Classic\GlueGameLogo.xml

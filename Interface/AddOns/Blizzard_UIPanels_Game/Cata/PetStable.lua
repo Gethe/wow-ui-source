@@ -224,8 +224,10 @@ function PetStable_Update(updateModel)
 	for i=1, NUM_PET_ACTIVE_SLOTS do
 		local button = _G["PetStableActivePet"..i];
 		local petSlot = PetStable_GetPetSlot(i, true);
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = false;
 		PetStable_UpdateSlot(button, petSlot);
-		if (IsSpellKnown(CALL_PET_SPELL_IDS[i]) or GetStablePetInfo(petSlot)) then
+		if (C_SpellBook.IsSpellInSpellBook(CALL_PET_SPELL_IDS[i], spellBank, includeOverrides) or GetStablePetInfo(petSlot)) then
 			button:Enable();
 			button.Background:SetDesaturated(false);
 			button.Border:SetDesaturated(false);

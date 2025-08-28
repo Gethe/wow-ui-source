@@ -3,12 +3,10 @@
 ## AllowLoadGameType: cata
 ## LoadFirst: 1
 ## RequiredDep: Blizzard_SharedXML
-## OptionalDep: Blizzard_GlueParent, Blizzard_GlueDialogs, Blizzard_FrameXMLBase
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_Shared_SimpleCheckout, Blizzard_FrameXMLBase
 ## UseSecureEnvironment: 1
 
 Classic\StoreConstants.lua
-Classic\Blizzard_SimpleCheckout.lua
-Classic\Blizzard_SimpleCheckout.xml
 Classic\Blizzard_StoreUIPatchwerk.xml
 Classic\Blizzard_StoreUIInbound.lua
 Classic\Blizzard_StoreUIOutbound.lua

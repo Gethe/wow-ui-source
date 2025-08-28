@@ -928,7 +928,7 @@ end
 
 function CooldownViewerCooldownItemMixin:RefreshOverlayGlow()
 	local spellID = self:GetSpellID();
-	local isSpellOverlayed = spellID and IsSpellOverlayed(spellID) or false;
+	local isSpellOverlayed = spellID and C_SpellActivationOverlay.IsSpellOverlayed(spellID) or false;
 	if isSpellOverlayed then
 		ActionButtonSpellAlertManager:ShowAlert(self);
 	else

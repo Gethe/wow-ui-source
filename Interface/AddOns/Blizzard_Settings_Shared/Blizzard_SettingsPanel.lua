@@ -68,7 +68,7 @@ function SettingsPanelMixin:OnLoad()
 	local settingsList = self:GetSettingsList();
 	settingsList.Header.DefaultsButton.Text:SetText(SETTINGS_DEFAULTS);
 	settingsList.Header.DefaultsButton:SetScript("OnClick", function(button, buttonName, down)
-		ShowAppropriateDialog("GAME_SETTINGS_APPLY_DEFAULTS");
+		StaticPopup_Show("GAME_SETTINGS_APPLY_DEFAULTS");
 	end);
 
 	self.SearchBox:HookScript("OnTextChanged", GenerateClosure(self.OnSearchTextChanged, self));
@@ -212,7 +212,7 @@ end
 
 function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 	if self:HasUnappliedSettings() then
-		ShowAppropriateDialog("GAME_SETTINGS_CONFIRM_DISCARD");
+		StaticPopup_Show("GAME_SETTINGS_CONFIRM_DISCARD");
 	else
 		self:ExitWithCommit(skipTransitionBackToOpeningPanel);
 	end
@@ -341,10 +341,10 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 
 	if #self.revertableSettings > 0 then
 		local duration = 8.0;
-		ShowAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
+		StaticPopup_Show("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
 		local function Timer()
 			self:RevertSettings();
-			HideAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION");
+			StaticPopup_Hide("GAME_SETTINGS_TIMED_CONFIRMATION");
 		end
 		self.Timer = C_Timer.NewTimer(duration, Timer);
 	end

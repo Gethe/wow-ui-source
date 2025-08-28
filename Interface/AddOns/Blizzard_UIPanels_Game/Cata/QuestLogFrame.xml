@@ -227,7 +227,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="100">
+			<Layer level="OVERLAY">
 				<FontString name="QuestLogTitleText" inherits="GameFontNormal" text="QUEST_LOG">
 					<Size x="300" y="14"/>
 					<Anchors>
@@ -499,7 +499,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-6" y="7"/>
 					</Anchors>
-				</Texture>		
+				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
 				<Texture name="$parentPageBg" file="Interface\QuestFrame\QuestBG">

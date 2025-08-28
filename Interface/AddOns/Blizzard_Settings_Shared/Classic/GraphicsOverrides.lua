@@ -100,8 +100,7 @@ function GraphicsOverrides.CreateHiResOptions(category, layout)
 
 	if not C_BattleNet.AreHighResTexturesInstalled() then
 		local function OnClick()
-			local dialog = GlueDialog_Show or StaticPopup_Show;
-		    dialog("DOWNLOAD_HIGH_RES_TEXTURES");
+		    StaticPopup_Show("DOWNLOAD_HIGH_RES_TEXTURES");
 		end
 
 		local addSearchTags = true;

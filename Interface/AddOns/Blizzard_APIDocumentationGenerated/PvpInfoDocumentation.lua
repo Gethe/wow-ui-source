@@ -305,6 +305,7 @@ local PvpInfo =
 		{
 			Name = "SetPVP",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -314,6 +315,7 @@ local PvpInfo =
 		{
 			Name = "TogglePVP",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

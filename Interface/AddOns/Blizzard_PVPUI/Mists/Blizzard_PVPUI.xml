@@ -420,7 +420,7 @@
 		<Frames>
 			<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="10" y="-100" />
+					<Anchor point="TOPLEFT" x="10" y="-80" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -475,6 +475,21 @@
 			<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">
 				<Anchors>
 					<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-23" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentName" parentKey="Name" inherits="GameFontNormalMed3" spacing="2" justifyH="LEFT">
+							<Size x="106" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="-5" y="0" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentCategoryButton3" relativePoint="BOTTOM" x="0" y="-23" />
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -1104,6 +1119,22 @@
 					<OnLoad  function="WarGamesQueueFrame_OnLoad"/>
 					<OnEvent function="WarGamesQueueFrame_OnEvent"/>
 					<OnShow  function="WarGamesQueueFrame_OnShow"/>
+				</Scripts>
+			</Frame>
+			<!-- Premade group finder -->
+			<Frame name="LFGListPVPStub" hidden="true">
+				<Size x="338" y="428"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="224" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						LFGListFrame:SetParent(self);
+						LFGListFrame:ClearAllPoints();
+						LFGListFrame:SetAllPoints(self);
+						LFGListFrame:SetFrameLevel(self:GetFrameLevel());
+						LFGListFrame_SetBaseFilters(LFGListFrame, Enum.LFGListFilter.PvE);
+					</OnShow>
 				</Scripts>
 			</Frame>
 		</Frames>

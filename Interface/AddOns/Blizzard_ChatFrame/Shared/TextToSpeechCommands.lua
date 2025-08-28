@@ -247,28 +247,6 @@ TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_HELP,
 	SLASH_TEXTTOSPEECH_HELP_HELP
 );
 
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SPEED,
-	function(cmd, rate)
-		if TextToSpeech_SetRate(rate) then
-			cmd:GetCommands():SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_RATE, rate));
-			return true;
-		end
-
-		return false;
-	end, nil, SLASH_TEXTTOSPEECH_HELP_SPEED, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX
-);
-
-TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_VOLUME,
-	function(cmd, volume)
-		if TextToSpeech_SetVolume(volume) then
-			cmd:GetCommands():SpeakConfirmation(SLASH_TEXTTOSPEECH_CONFIRMATION:format(TEXT_TO_SPEECH_ADJUST_VOLUME, volume));
-			return true;
-		end
-
-		return false;
-	end, nil, SLASH_TEXTTOSPEECH_HELP_VOLUME, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX
-);
-
 local function GetVoiceRange()
 	local voices = C_VoiceChat.GetTtsVoices();
 	local minVoiceID = math.huge;

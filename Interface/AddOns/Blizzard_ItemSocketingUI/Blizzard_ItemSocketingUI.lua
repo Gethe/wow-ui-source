@@ -21,7 +21,8 @@ local GEM_TYPE_INFO =	{	Yellow = {textureKit="yellow", r=0.97, g=0.82, b=0.29},
 							Fragrance = {textureKit="hydraulic", r=1, g=1, b=1},
 							SingingThunder = {textureKit="yellow", r=0.97, g=0.82, b=0.29},
 							SingingSea = {textureKit="blue",r=0.47, g=0.67, b=1},
-							SingingWind = {textureKit="red", r=1, g=0.47, b=0.47}
+							SingingWind = {textureKit="red", r=1, g=0.47, b=0.47},
+							Fiber = {textureKit="hydraulic", r=1, g=1, b=1}
 						};
 
 ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;

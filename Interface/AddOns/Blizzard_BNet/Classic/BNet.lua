@@ -135,7 +135,7 @@ function BNToastMixin:OnCustomMessageChanged(toastData)
 end
 
 function BNToastMixin:OnVariablesLoaded()
-	self:SetToastDuration(GetCVar("toastDuration"));
+	AlertFrame_SetDuration(self, GetCVar("toastDuration"));
 	self:SetToastsEnabled(GetCVarBool("showToastWindow"));
 end
 
@@ -181,10 +181,6 @@ function BNToastMixin:SetToastsEnabled(enabled)
 	else
 		self:DisableToasts();
 	end
-end
-
-function BNToastMixin:SetToastDuration(duration)
-	self.duration = duration;
 end
 
 function BNToastMixin:ShowToast()

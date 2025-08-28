@@ -2,10 +2,10 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	text = CONFIRM_LEARN_PREVIEW_TALENTS,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self)
+	OnAccept = function(dialog, data)
 		LearnPreviewTalents(PlayerTalentFrame.pet);
 	end,
-	OnCancel = function (self)
+	OnCancel = function(dialog, data)
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -830,7 +830,7 @@ function PlayerTalentFramePanel_UpdateSummary(self)
 		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(self.talentTree);
 		if (UnitLevel("player") >= SHOW_MASTERY_LEVEL and masterySpells[1]) then
 			local _, class = UnitClass("player");
-			local masteryKnown = IsSpellKnown(CLASS_MASTERY_SPELLS[class]);
+			local masteryKnown = C_SpellBook.IsSpellInSpellBook(CLASS_MASTERY_SPELLS[class]);
 			numSmallBonuses = numSmallBonuses+1;
 			local bonusFrame = _G[self.Summary:GetName().."Bonus"..numSmallBonuses];
 			if (bonusFrame) then

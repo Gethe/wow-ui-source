@@ -53,6 +53,7 @@ local UnitRole =
 		{
 			Name = "UnitSetRole",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -68,6 +69,7 @@ local UnitRole =
 		{
 			Name = "UnitSetRoleEnum",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

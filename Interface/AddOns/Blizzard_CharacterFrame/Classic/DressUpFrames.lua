@@ -33,9 +33,15 @@ function DressUpItemLink(link)
 end
 
 function DressUpTransmogLink(link)
-	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
+	if not link then
 		return false;
 	end
+
+	local linkType = LinkUtil.ExtractLink(link);
+	if linkType ~= LinkTypes.TransmogIllusion and linkType ~= LinkTypes.TransmogAppearance then
+		return false;
+	end
+
 	return DressUpVisual(link);
 end
 

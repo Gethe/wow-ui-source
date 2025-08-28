@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+..\..\Blizzard_SharedXML\UI.xsd">
 
 	<Button name="ChallengesDungeonButtonTemplate" virtual="true">
 		<Size x="208" y="32"/>
@@ -142,7 +142,7 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
+
 	<Frame name="ChallengesFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
 		<Frames>
 			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate">
@@ -319,7 +319,7 @@
 					<Anchor point="TOPLEFT" x="8" y="-64"/>
 				</Anchors>
 			</Button>
-			
+
 			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDetails" x="0" y="-246"/>

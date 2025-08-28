@@ -727,6 +727,10 @@ function AlertFrame_PlayAnimations(frame)
 	end
 end
 
+function AlertFrame_SetDuration(frame, duration)
+	frame.duration = duration;
+end
+
 function AlertFrame_ShowNewAlert(frame)
 	frame:Show();
 	AlertFrame_PlayAnimations(frame);

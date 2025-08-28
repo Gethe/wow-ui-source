@@ -169,7 +169,8 @@ function SpellBookFrameMixin:UpdatePages()
 		ShowAllSpellRanksCheckbox:Hide();
 	end
 end
-function SpellButtonMixin:OnClick(button)
+
+function SpellButtonMixin:OnIconClick(button)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS ) then
 		return;

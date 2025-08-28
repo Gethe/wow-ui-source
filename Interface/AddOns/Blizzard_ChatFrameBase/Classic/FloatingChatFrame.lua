@@ -613,8 +613,7 @@ function FCF_GetNumActiveChatFrames()
 end
 
 function FCF_RenameChatWindow_Popup()
-	local dialog = StaticPopup_Show("NAME_CHAT");
-	dialog.data = FCF_GetCurrentChatFrameID();
+	StaticPopup_Show("NAME_CHAT", nil, nil, FCF_GetCurrentChatFrameID());
 end
 
 function FCF_NewChatWindow()

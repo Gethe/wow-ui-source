@@ -87,7 +87,10 @@ function ReputationFrame_Update()
 
 			-- check if this is a friendship faction 
 			local isCappedFriendship;
-			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+			local repInfo;
+			if(factionID) then
+				repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+			end
 			
 			if (repInfo and repInfo.friendshipFactionID > 0) then
 				factionStandingtext = repInfo.reaction;

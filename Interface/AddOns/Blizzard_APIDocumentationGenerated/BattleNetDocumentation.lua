@@ -119,6 +119,7 @@ local BattleNet =
 		{
 			Name = "InstallHighResTextures",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

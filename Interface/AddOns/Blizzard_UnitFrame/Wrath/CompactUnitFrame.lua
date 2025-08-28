@@ -332,7 +332,7 @@ function CompactUnitFrame_UpdateAll(frame)
 end
 
 function CompactUnitFrame_UpdateInVehicle(frame)
-	--[[local shouldTargetVehicle = UnitHasVehicleUI(frame.unit);
+	local shouldTargetVehicle = UnitHasVehicleUI(frame.unit);
 	local unitVehicleToken;
 	
 	if ( shouldTargetVehicle ) then
@@ -349,7 +349,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 			shouldTargetVehicle = false;
 		end
 	end
-
+	
 	if ( shouldTargetVehicle ) then
 		if ( not frame.hasValidVehicleDisplay ) then
 			frame.hasValidVehicleDisplay = true;
@@ -364,7 +364,7 @@ function CompactUnitFrame_UpdateInVehicle(frame)
 			frame:SetAttribute("unit", frame.displayedUnit);
 			CompactUnitFrame_UpdateUnitEvents(frame);
 		end
-	end]]
+	end
 end
 
 function CompactUnitFrame_UpdateVisible(frame)

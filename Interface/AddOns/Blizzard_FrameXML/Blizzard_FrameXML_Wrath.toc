@@ -65,3 +65,4 @@ Classic\LootHistory.lua
 Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
+Shared\EquipmentManager.lua

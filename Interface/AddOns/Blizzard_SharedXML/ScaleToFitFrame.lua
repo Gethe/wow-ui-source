@@ -23,12 +23,12 @@ function ScaleToFitFrameMixin:Refresh()
 end
 
 function ScaleToFitFrameMixin:SetMaxWidth(maxWidth)
-	self.maxWidth = maxWidth;
+	self.maxWidth = math.max(maxWidth, 1);
 	self:UpdateScaleToFit();
 end
 
 function ScaleToFitFrameMixin:SetMaxHeight(maxHeight)
-	self.maxHeight = maxHeight;
+	self.maxHeight = math.max(maxHeight, 1);
 	self:UpdateScaleToFit();
 end
 

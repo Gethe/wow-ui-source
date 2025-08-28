@@ -116,7 +116,7 @@ end
 function TargetFrame_Update (self)
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
-	if ( not UnitExists(self.unit) and not ShowBossFrameWhenUninteractable(self.unit) ) then
+	if ( not ShouldShowTargetFrame(self) ) then
 		self:Hide();
 	else
 		self:Show();

@@ -9,6 +9,7 @@ local Calendar =
 		{
 			Name = "AddEvent",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "AreNamesReady",
@@ -830,6 +831,7 @@ local Calendar =
 		{
 			Name = "UpdateEvent",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

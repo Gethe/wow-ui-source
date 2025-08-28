@@ -194,6 +194,7 @@ local Expansion =
 				{ Name = "logo", Type = "fileID", Nilable = false },
 				{ Name = "banner", Type = "textureAtlas", Nilable = false },
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{

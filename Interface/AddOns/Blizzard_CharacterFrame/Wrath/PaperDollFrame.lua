@@ -2195,10 +2195,8 @@ end
 function GearManagerDialogDeleteSet_OnClick (self)
 	local selectedSet = GearManagerDialog.selectedSet;
 	if ( selectedSet ) then
-		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name);
-		if ( dialog ) then
-			dialog.data = selectedSet.id;
-		else
+		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name, nil, selectedSet.id);
+		if ( not dialog ) then
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		end
 	end
@@ -2500,9 +2498,8 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	local icon = popup.selectedTexture;
 	local setID = C_EquipmentSet.GetEquipmentSetID(popup.name);
 	if ( setID ) then	
-		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
+		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name, nil, setID);
 		if ( dialog ) then
-			dialog.data = setID;
 			dialog.selectedIcon = icon;
 		else
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);

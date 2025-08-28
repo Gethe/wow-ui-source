@@ -39,27 +39,6 @@ FACTION_BAR_COLORS = {
 	[8] = {r = 0, g = 0.6, b = 0.1},
 };
 
-
-
-MATERIAL_TEXT_COLOR_TABLE = {
-	["Default"] = {0.18, 0.12, 0.06},
-	["Stone"] = {1.0, 1.0, 1.0},
-	["Parchment"] = {0.18, 0.12, 0.06},
-	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
-};
-MATERIAL_TITLETEXT_COLOR_TABLE = {
-	["Default"] = {0, 0, 0},
-	["Stone"] = {0.93, 0.82, 0},
-	["Parchment"] = {0, 0, 0},
-	["Marble"] = {0.93, 0.82, 0},
-	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
-};
-
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
 FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
 FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
@@ -138,9 +117,8 @@ PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor
 -- Guild
 MAX_GUILDBANK_TABS = 6;
 MAX_BUY_GUILDBANK_TABS = 6;
-MAX_GOLD_WITHDRAW = 1000;
 MAX_GOLD_WITHDRAW_DIGITS = 9;
-
+MAX_ITEM_WITHDRAW_DIGITS = 6;
 
 -- Quest
 

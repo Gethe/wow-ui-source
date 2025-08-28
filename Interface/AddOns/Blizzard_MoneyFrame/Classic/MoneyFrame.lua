@@ -89,7 +89,7 @@ function MoneyFrame_SetType(self, type)
 
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
-		message("Invalid money type: "..(type or "INVALID TYPE"));
+		SetBasicMessageDialogText("Invalid money type: "..(type or "INVALID TYPE"));
 		return;
 	end
 	self.info = info;
@@ -123,7 +123,7 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 			MoneyFrame_Update(moneyFrame, money);
 		end
 	else
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
 end
 
@@ -149,7 +149,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
 
 	-- Breakdown the money into denominations
@@ -380,7 +380,7 @@ function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 		return;
 	end
 
@@ -419,7 +419,7 @@ function MoneyFrame_UpdateAlignment(frameName, widths)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 		return;
 	end
 

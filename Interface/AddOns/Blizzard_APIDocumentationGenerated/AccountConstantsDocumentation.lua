@@ -70,9 +70,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 62,
+			NumValues = 63,
 			MinValue = 0,
-			MaxValue = 61,
+			MaxValue = 62,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -137,6 +137,7 @@ local AccountConstants =
 				{ Name = "LgVendorPurchase", Type = "AccountTransType", EnumValue = 59 },
 				{ Name = "SaveWarbandGroups", Type = "AccountTransType", EnumValue = 60 },
 				{ Name = "Profile", Type = "AccountTransType", EnumValue = 61 },
+				{ Name = "WarbandSceneCollection", Type = "AccountTransType", EnumValue = 62 },
 			},
 		},
 		{
@@ -168,6 +169,42 @@ local AccountConstants =
 				{ Name = "IsLegacy", Type = "BnetAccountFlag", EnumValue = 131072 },
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "ChallengeModeHistoryFlags", EnumValue = 0 },
+				{ Name = "ConfirmedLeaver", Type = "ChallengeModeHistoryFlags", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryResult",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Successful", Type = "ChallengeModeHistoryResult", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryResult", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryStatus",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Normal", Type = "ChallengeModeHistoryStatus", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryStatus", EnumValue = 1 },
 			},
 		},
 		{

@@ -15,6 +15,7 @@ Wrath\AlternatePowerBar.lua
 Wrath\AlternatePowerBar.xml
 Classic\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
+Shared\TargetFrame.lua
 Wrath\TargetFrame.lua
 Wrath\TargetFrame.xml
 Shared\TotemFrame.lua

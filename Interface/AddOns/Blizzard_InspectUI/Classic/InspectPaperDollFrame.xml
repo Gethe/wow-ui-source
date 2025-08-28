@@ -41,7 +41,7 @@
 	<Button name="InspectPaperDollItemSlotButtonLeftTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
+				<Texture name="$parentFrame" inherits="Char-LeftSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4"/>
 					</Anchors>
@@ -52,7 +52,7 @@
 	<Button name="InspectPaperDollItemSlotButtonRightTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-RightSlot">	
+				<Texture name="$parentFrame" inherits="Char-RightSlot">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="4"/>
 					</Anchors>
@@ -63,7 +63,7 @@
 	<Button name="InspectPaperDollItemSlotButtonBottomTemplate" inherits="InspectPaperDollItemSlotButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
+				<Texture name="$parentFrame" inherits="Char-BottomSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="8"/>
 					</Anchors>
@@ -426,7 +426,7 @@
 							</Anchor>
 						</Anchors>
 						<Layers>
-							<Layer level="BACKGROUND" name="SecondaryHandSlotRightTexture">
+							<Layer level="BACKGROUND">
 								<Texture inherits="Char-Slot-Bottom-Right">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>

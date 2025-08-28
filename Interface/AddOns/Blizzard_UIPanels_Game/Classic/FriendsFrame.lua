@@ -13,7 +13,6 @@ GUILDMEMBERS_TO_DISPLAY = 13;
 FRIENDS_FRAME_GUILD_HEIGHT = 14;
 GUILD_DETAIL_NORM_HEIGHT = 195
 GUILD_DETAIL_OFFICER_HEIGHT = 255
-GUILD_NUM_RANK_FLAGS = 13;
 
 FRIENDS_SCROLLFRAME_HEIGHT = 307;
 FRIENDS_BUTTON_TYPE_DIVIDER = 1;
@@ -641,10 +640,7 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 		if StaticPopup_Show then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteID, accountName = BNGetFriendInviteInfo(self.inviteIndex);
-				local dialog = StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName);
-				if dialog then
-					dialog.data = inviteID;
-				end
+				StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName, nil, inviteID);
 			end);
 		end
 	end);
@@ -2426,13 +2422,10 @@ GUILDFRAME_POPUPS = {
 };
 
 function GuildControlPopupFrame_OnLoad()
-	local buttonText;
-	for i=1, 17 do	
-		buttonText = _G["GuildControlPopupFrameCheckbox"..i.."Text"];
-		if ( buttonText ) then
-			buttonText:SetText(_G["GUILDCONTROL_OPTION"..i]);
-		end
+	for idx, checkbox in pairs(GuildControlPopupFrameCheckboxes.PermissionCheckboxes) do	
+		checkbox.Text:SetText(_G["GUILDCONTROL_OPTION"..checkbox:GetID()]);
 	end
+
 	GuildControlTabPermissionsViewTabText:SetText(GUILDCONTROL_VIEW_TAB);
 	GuildControlTabPermissionsDepositItemsText:SetText(GUILDCONTROL_DEPOSIT_ITEMS);
 	GuildControlTabPermissionsUpdateTextText:SetText(GUILDCONTROL_OPTION19); --option # is a lie, we're simply repurposing this globalstring from mainline
@@ -2440,6 +2433,18 @@ function GuildControlPopupFrame_OnLoad()
 
 	if not C_GuildBank.IsGuildBankEnabled() then
 		GuildControlPopupFrame_HideGuildBankOptions();
+	end
+end
+
+function GuildControlPopupFrame_SetAllCheckboxesEnabled(enable)
+	for idx, checkbox in pairs(GuildControlPopupFrameCheckboxes.PermissionCheckboxes) do	
+		checkbox:SetEnabled(enable);
+	end
+end
+
+function GuildControlCheckboxUpdate(flags)
+	for idx, checkbox in pairs(GuildControlPopupFrameCheckboxes.PermissionCheckboxes) do
+		checkbox:SetChecked(flags[checkbox:GetID()]);
 	end
 end
 
@@ -2510,11 +2515,7 @@ end
 
 function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUpdate)
 	local rankID = GuildControlGetRank();
-	-- Skip non-tab specific updates to fix Bug  ID: 110210
-	if ( not skipCheckboxUpdate ) then
-		-- Update permission flags
-		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(rankID));
-	end
+	local isGuildLeaderRank = rankID == 1;
 	
 	GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(rankID));
 	if ( GuildControlPopupFrame.previousSelectedRank and GuildControlPopupFrame.previousSelectedRank ~= rankID ) then
@@ -2522,103 +2523,88 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 	end
 	GuildControlPopupFrame.previousSelectedRank = rankID;
 
-	--If rank to modify is guild master then gray everything out
-	if ( IsGuildLeader() and rankID == 1 ) then
-		GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlTabPermissionsDepositItems:SetChecked(1);
-		GuildControlTabPermissionsViewTab:SetChecked(1);
-		GuildControlTabPermissionsUpdateText:SetChecked(1);
-		GuildControlTabPermissionsDepositItems:Disable();
-		GuildControlTabPermissionsViewTab:Disable();
-		GuildControlTabPermissionsUpdateText:Disable();
-		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawItemsEditBox:SetNumeric(nil);
-		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
-		GuildControlWithdrawItemsEditBox:ClearFocus();
-		GuildControlWithdrawItemsEditBoxMask:Show();
-		GuildControlWithdrawGoldText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetNumeric(nil);
-		GuildControlWithdrawGoldEditBox:SetMaxLetters(0);
-		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
-		GuildControlWithdrawGoldEditBox:ClearFocus();
-		GuildControlWithdrawGoldEditBoxMask:Show();
-		GuildControlPopupFrameCheckbox15:Disable();
-		GuildControlPopupFrameCheckbox16:Disable();
-	else
-		if ( GetNumGuildBankTabs() == 0 ) then
-			-- No tabs, no permissions! Disable the tab related doohickies
-			GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			GuildControlTabPermissionsViewTab:Disable();
-			GuildControlTabPermissionsDepositItems:Disable();
-			GuildControlTabPermissionsUpdateText:Disable();
-			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
-			GuildControlWithdrawItemsEditBox:ClearFocus();
-			GuildControlWithdrawItemsEditBoxMask:Show();
-		else
-			GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			GuildControlTabPermissionsViewTab:Enable();
-			GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBox:SetNumeric(1);
-			GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-			GuildControlWithdrawItemsEditBoxMask:Hide();
-		end
-		
-		GuildControlWithdrawGoldText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetNumeric(1);
-		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
-		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBoxMask:Hide();
-		GuildControlPopupFrameCheckbox15:Enable();
-		GuildControlPopupFrameCheckbox16:Enable();
-
-		-- Update tab specific info
-		local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
-		if ( rankID == 1 ) then
-			--If is guildmaster then force checkboxes to be selected
-			viewTab = 1;
-			canDeposit = 1;
-			canUpdateText = 1;
-		elseif ( loadPendingTabPermissions ) then
-			local permissions = PENDING_GUILDBANK_PERMISSIONS[GuildControlPopupFrameTabPermissions.selectedTab];
-			local value;
-			value = permissions[GuildControlTabPermissionsViewTab:GetID()];
-			if ( value ) then
-				viewTab = value;
-			end
-			value = permissions[GuildControlTabPermissionsDepositItems:GetID()];
-			if ( value ) then
-				canDeposit = value;
-			end
-			value = permissions[GuildControlTabPermissionsUpdateText:GetID()];
-			if ( value ) then
-				canUpdateText = value;
-			end
-			value = permissions["withdraw"];
-			if ( value ) then
-				numWithdrawals = value;
-			end
-		end
-		GuildControlTabPermissionsViewTab:SetChecked(viewTab);
-		GuildControlTabPermissionsDepositItems:SetChecked(canDeposit);
-		GuildControlTabPermissionsUpdateText:SetChecked(canUpdateText);
-		GuildControlWithdrawItemsEditBox:SetText(numWithdrawals);
-		local goldWithdrawLimit = GetGuildBankWithdrawGoldLimit();
-		-- Only write to the editbox if the value hasn't been changed by the player
-		if ( not GuildControlPopupFrame.goldChanged ) then
-			if ( goldWithdrawLimit >= 0 ) then
-				GuildControlWithdrawGoldEditBox:SetText(goldWithdrawLimit);
-			else
-				-- This is for the guild leader who defaults to -1
-				GuildControlWithdrawGoldEditBox:SetText(MAX_GOLD_WITHDRAW);
-			end
-		end
-		GuildControlPopup_UpdateDepositCheckbox();
+	-- Skip non-tab specific updates to fix Bug  ID: 110210
+	if ( not skipCheckboxUpdate ) then
+		-- Update permission flags
+		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(rankID));
 	end
+	
+	--If rank to modify is guild master then disable all checkboxes
+	GuildControlPopupFrame_SetAllCheckboxesEnabled(not isGuildLeaderRank);
+
+	GuildControlPopupframe_UpdateGoldWithdrawalOptions(isGuildLeaderRank);
+
+	GuildControlPopupframe_UpdateItemWithdrawalOptions(loadPendingTabPermissions, isGuildLeaderRank);
+end
+
+function GuildControlPopupframe_UpdateGoldWithdrawalOptions(isGuildLeaderRank)
+	local canWithdrawGold = GuildControlPopupFrameCheckbox15:GetChecked();
+	local canRepair = GuildControlPopupFrameCheckbox16:GetChecked();
+
+	local goldWithdrawLimit = GetGuildBankWithdrawGoldLimit();
+	if ( goldWithdrawLimit < 0 ) then -- A -1 withdraw limit means "unlimited"
+		GuildControlWithdrawGoldEditBox:SetMaxLetters(0);
+		GuildControlWithdrawGoldEditBox:SetNumeric(false);
+		GuildControlWithdrawGoldEditBox:SetText(UNLIMITED);
+	else
+		GuildControlWithdrawGoldEditBox:SetMaxLetters(MAX_GOLD_WITHDRAW_DIGITS);
+		GuildControlWithdrawGoldEditBox:SetNumeric(true);
+		GuildControlWithdrawGoldEditBox:SetText(goldWithdrawLimit);
+	end
+
+	if ( isGuildLeaderRank ) then
+		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlWithdrawGoldEditBoxMask:Show();
+	else
+		if ( not canWithdrawGold and not canRepair ) then
+			GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			GuildControlWithdrawGoldEditBoxMask:Show();
+		else
+			GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+			GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			GuildControlWithdrawGoldEditBoxMask:Hide();
+		end
+	end
+	GuildControlWithdrawGoldEditBox:ClearFocus();
+end
+
+function GuildControlPopupframe_UpdateItemWithdrawalOptions(loadPendingTabPermissions, isGuildLeaderRank)
+	local viewTab, canDeposit, canUpdateText, numWithdrawals = GetGuildBankTabPermissions(GuildControlPopupFrameTabPermissions.selectedTab);
+	if ( loadPendingTabPermissions ) then
+		local permissions = PENDING_GUILDBANK_PERMISSIONS[GuildControlPopupFrameTabPermissions.selectedTab];
+		local value;
+		value = permissions[GuildControlTabPermissionsViewTab:GetID()];
+		if ( value ) then
+			viewTab = value;
+		end
+		value = permissions[GuildControlTabPermissionsDepositItems:GetID()];
+		if ( value ) then
+			canDeposit = value;
+		end
+		value = permissions[GuildControlTabPermissionsUpdateText:GetID()];
+		if ( value ) then
+			canUpdateText = value;
+		end
+		value = permissions["withdraw"];
+		if ( value ) then
+			numWithdrawals = value;
+		end
+	end
+	if(numWithdrawals < 0) then -- A -1 withdraw limit means "unlimited"
+		GuildControlWithdrawItemsEditBox:SetMaxLetters(0);
+		GuildControlWithdrawItemsEditBox:SetNumeric(false);
+		GuildControlWithdrawItemsEditBox:SetText(UNLIMITED);
+	else
+		GuildControlWithdrawItemsEditBox:SetMaxLetters(MAX_ITEM_WITHDRAW_DIGITS);
+		GuildControlWithdrawItemsEditBox:SetNumeric(true);
+		GuildControlWithdrawItemsEditBox:SetText(numWithdrawals);
+	end
+	GuildControlTabPermissionsViewTab:SetChecked(viewTab);
+	GuildControlTabPermissionsDepositItems:SetChecked(canDeposit);
+	GuildControlTabPermissionsUpdateText:SetChecked(canUpdateText);
+	GuildControlPopup_UpdateBankTabOptions(viewTab, isGuildLeaderRank);
 	
 	--Only show available tabs
 	local tab;
@@ -2630,6 +2616,7 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 		
 		if ( i <= numTabs ) then
 			tab:Show();
+			tab:Enable();
 			tab.tooltip = name;
 			permissionsTabBackground = _G["GuildBankTabPermissionsTab"..i.."Background"];
 			permissionsText = _G["GuildBankTabPermissionsTab"..i.."Text"];
@@ -2644,28 +2631,48 @@ function GuildControlPopupframe_Update(loadPendingTabPermissions, skipCheckboxUp
 				permissionsTabBackground:SetHeight(28);
 				permissionsText:SetPoint("CENTER", permissionsTabBackground, "CENTER", 0, -5);
 			end
-			if ( IsGuildLeader() and rankID == 1 ) then
-				tab:Disable();
-			else
-				tab:Enable();
-			end
 		else
 			tab:Hide();
 		end
 	end
 end
 
-function WithdrawGoldEditBox_Update()
-	if ( not GuildControlPopupFrameCheckbox15:GetChecked() and not GuildControlPopupFrameCheckbox16:GetChecked() ) then
-		GuildControlWithdrawGoldAmountText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:ClearFocus();
-		GuildControlWithdrawGoldEditBoxMask:Show();
+function GuildControlPopup_UpdateBankTabOptions(canView, guildLeaderOverride)
+	local bankHasTabs = GetNumGuildBankTabs() > 0;
+	GuildControlTabPermissionsViewTab:SetEnabled(bankHasTabs and not guildLeaderOverride);
+	GuildControlTabPermissionsDepositItems:SetEnabled(bankHasTabs and canView and not guildLeaderOverride);
+	GuildControlTabPermissionsUpdateText:SetEnabled(bankHasTabs and canView  and not guildLeaderOverride);
+
+	if(bankHasTabs) then
+		GuildBankTabLabel:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlTabPermissionsViewTabText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	else
-		GuildControlWithdrawGoldAmountText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		GuildControlWithdrawGoldEditBoxMask:Hide();
+		GuildBankTabLabel:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlTabPermissionsViewTabText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
+
+	if(bankHasTabs and canView) then
+		GuildControlTabPermissionsDepositItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlTabPermissionsUpdateTextText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+
+		if (guildLeaderOverride) then
+			GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+			GuildControlWithdrawItemsEditBoxMask:Show();
+		else
+			GuildControlWithdrawItemsEditBox:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+			GuildControlWithdrawItemsEditBoxMask:Hide();
+		end
+	else
+		GuildControlTabPermissionsDepositItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlTabPermissionsUpdateTextText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlTabPermissionsWithdrawItemsText:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+
+		GuildControlWithdrawItemsEditBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+		GuildControlWithdrawItemsEditBoxMask:Show();
+	end
+
+	GuildControlWithdrawItemsEditBox:ClearFocus();
 end
 
 function GuildControlPopupAcceptButton_OnClick()
@@ -2680,7 +2687,6 @@ function GuildControlPopupAcceptButton_OnClick()
 	GuildStatus_Update();
 	GuildControlPopupAcceptButton:Disable();
 	GuildControlPopupFrameDropdown:GenerateMenu();
-	GuildControlPopupFrame:Hide();
 	ClearPendingGuildBankPermissions();
 end
 
@@ -2695,12 +2701,7 @@ function GuildControlPopupFrameDropdown_OnLoad(self)
 
 	local function SetSelected(i)
 		GuildControlPopupFrame.numSkipUpdates = 0;
-		GuildControlSetRank(i);
-		GuildControlCheckboxUpdate(C_GuildInfo.GuildControlGetRankFlags(i));
-		GuildControlPopupFrameEditBox:SetText(GuildControlGetRankName(i));
-		GuildControlPopupFrameAddRankButton_OnUpdate();
-		GuildControlPopupFrameRemoveRankButton_OnUpdate();
-		GuildControlPopupAcceptButton:Disable();
+		GuildControlPopupFrameDropdownButton_ClickedRank(i, true);
 	end
 
 	self:SetupMenu(function(dropdown, rootDescription)
@@ -2713,25 +2714,17 @@ function GuildControlPopupFrameDropdown_OnLoad(self)
 	end);
 end
 
-function GuildControlPopupFrameDropdownButton_ClickedRank(rank)
+function GuildControlPopupFrameDropdownButton_ClickedRank(rank, skipRegenerateRanksDropdown)
 	GuildControlSetRank(rank);
 	GuildControlPopupFrame.rank = GuildControlGetRankName(rank);
 	GuildControlPopupFrame.goldChanged = nil;
 	GuildControlPopupframe_Update();
-	GuildControlPopupFrameAddRankButton_OnUpdate(GuildControlPopupFrameAddRankButton);
+	GuildControlPopupFrameAddRankButton_OnUpdate();
 	GuildControlPopupFrameRemoveRankButton_OnUpdate();
 	GuildControlPopupAcceptButton:Disable();
-	GuildControlPopupFrameDropdown:GenerateMenu();
-end
-
-function GuildControlCheckboxUpdate(flags)
-	for i=1, GUILD_NUM_RANK_FLAGS do
-		local checkbox = _G["GuildControlPopupFrameCheckbox"..i];
-		if ( checkbox ) then
-			checkbox:SetChecked(flags[i]);
-		else
-			message("GuildControlPopupFrameCheckbox"..i.." does not exist!");
-		end
+	if ( not skipRegenerateRanksDropdown ) then
+		-- Skip regenerating ranks menu when selecting a rank
+		GuildControlPopupFrameDropdown:GenerateMenu();
 	end
 end
 
@@ -2760,16 +2753,6 @@ function GuildControlPopupFrameRemoveRankButton_OnUpdate()
 		end
 	else
 		GuildControlPopupFrameRemoveRankButton:Hide();
-	end
-end
-
-function GuildControlPopup_UpdateDepositCheckbox()
-	if(GuildControlTabPermissionsViewTab:GetChecked()) then
-		GuildControlTabPermissionsDepositItems:Enable();
-		GuildControlTabPermissionsUpdateText:Enable();
-	else
-		GuildControlTabPermissionsDepositItems:Disable();
-		GuildControlTabPermissionsUpdateText:Disable();
 	end
 end
 

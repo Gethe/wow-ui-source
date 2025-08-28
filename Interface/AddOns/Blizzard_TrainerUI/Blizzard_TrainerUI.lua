@@ -14,18 +14,18 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		BuyTrainerService(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame.showSkillDetails = nil;
 		ClassTrainer_SetSelection(ClassTrainerFrame.selectedService);
 		ClassTrainerFrame_Update();
 	end,
-	OnShow = function(self)
+	OnShow = function(dialog, data)
 		local profCount = GetNumPrimaryProfessions();
 		if ( profCount == 0 ) then
-			_G[self:GetName().."Text"]:SetText(format(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
+			dialog:SetText(format(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
 		else
-			_G[self:GetName().."Text"]:SetText(format(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
+			dialog:SetText(format(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService)));
 		end
 	end,
 	showAlert = 1,

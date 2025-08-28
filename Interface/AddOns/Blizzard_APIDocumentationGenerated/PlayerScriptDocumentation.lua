@@ -129,6 +129,10 @@ local PlayerScript =
 			Type = "Function",
 		},
 		{
+			Name = "ConfirmPetUnlearn",
+			Type = "Function",
+		},
+		{
 			Name = "ConfirmTalentWipe",
 			Type = "Function",
 		},
@@ -464,6 +468,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "IsGuildLeader",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInGuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemPreferredArmorType",
 			Type = "Function",
 
@@ -538,6 +560,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "PlayerIsInCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsInCombat", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -677,6 +708,7 @@ local PlayerScript =
 		{
 			Name = "SitStandOrDescendStart",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "StartAttack",
@@ -717,6 +749,15 @@ local PlayerScript =
 
 	Events =
 	{
+		{
+			Name = "PlayerInCombatChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			Payload =
+			{
+				{ Name = "inCombat", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

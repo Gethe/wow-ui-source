@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	
+
 	<Button name="PVEFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" parentArray="Tabs" virtual="true">
 		<Scripts>
 			<OnClick function="PVEFrame_TabOnClick"/>
@@ -198,8 +198,8 @@
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="altAnchorPoint" value="TOPLEFT" type="string"/>
-							<KeyValue key="altXOffset" value="10" type="int"/>
-							<KeyValue key="altYOffset" value="-100" type="int"/>
+							<KeyValue key="altXOffset" value="10" type="number"/>
+							<KeyValue key="altYOffset" value="-100" type="number"/>
 						</KeyValues>
 					</Button>
 					<Button name="$parentGroupButton2" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton2" id="2">
@@ -214,8 +214,8 @@
 						<KeyValues>
 							<KeyValue key="altAnchorPoint" value="TOP" type="string"/>
 							<KeyValue key="altAnchorRelativePoint" value="BOTTOM" type="string"/>
-							<KeyValue key="altXOffset" value="0" type="int"/>
-							<KeyValue key="altYOffset" value="-23" type="int"/>
+							<KeyValue key="altXOffset" value="0" type="number"/>
+							<KeyValue key="altYOffset" value="-23" type="number"/>
 						</KeyValues>
 					</Button>
 					<Button name="$parentGroupButton4" inherits="GroupFinderGroupButtonTemplate" parentKey="groupButton4" id="4">

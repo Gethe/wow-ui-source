@@ -415,6 +415,7 @@
 		<xs:attribute name="height" type="xs:float"/>
 		<xs:attribute name="fixedSize" type="xs:boolean" default="false"/>
 		<xs:attribute name="filter" type="xs:boolean" default="false"/>
+		<xs:attribute name="canBeUserScaled" type="xs:boolean" default="false"/>
 	</xs:complexType>
 
 	<xs:element name="Font" substitutionGroup="UiField">

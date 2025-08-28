@@ -40,7 +40,7 @@ function WarlockPowerFrameMixin:OnEvent(event, arg1, arg2)
 		DemonicFuryBarFrame:CheckAndSetState();
 	elseif ( event == "SPELLS_CHANGED" ) then
 		if ( self.reqSpellID ) then
-			if ( IsPlayerSpell(self.reqSpellID) ) then
+			if ( C_SpellBook.IsSpellKnown(self.reqSpellID) ) then
 				self:UnregisterEvent("SPELLS_CHANGED");
 				self.reqSpellID = nil;
 				-- clear spec to force reevaluation
@@ -77,7 +77,7 @@ function WarlockPowerFrameMixin:SetUpCurrentPower(shouldAnim)
 			self:SetScript("OnUpdate", nil);
 			-- set up Affliction
 			-- only show shard bar if soulburn is known
-			if ( IsPlayerSpell(WARLOCK_SOULBURN) ) then
+			if ( C_SpellBook.IsSpellKnown(WARLOCK_SOULBURN) ) then
 				self.activeBar = ShardBarFrame;
 				self.activeBar.OnEvent = ShardBarFrame.Update;
 				ShardBarFrame:Show();
@@ -101,7 +101,7 @@ function WarlockPowerFrameMixin:SetUpCurrentPower(shouldAnim)
 			ShardBarFrame:Hide();
 			-- set up Destruction
 			-- only show if burning embers is known
-			if ( IsPlayerSpell(WARLOCK_BURNING_EMBERS) ) then
+			if ( C_SpellBook.IsSpellKnown(WARLOCK_BURNING_EMBERS) ) then
 				self.activeBar = BurningEmbersBarFrame;
 				self.activeBar.OnEvent = BurningEmbersBarFrame.Update;
 				self.activeBar.SetPower = BurningEmbersBarFrame.SetPower;
@@ -354,7 +354,7 @@ end
 function BurningEmbersBarMixin:SetColorTextures()
 	local frame = BurningEmbersBarFrame;
 	local textureFile;
-	if ( IsSpellKnown(WARLOCK_GREEN_FIRE) ) then
+	if ( C_SpellBook.IsSpellKnown(WARLOCK_GREEN_FIRE) ) then
 		if ( not frame.hasGreenFire ) then
 			frame.hasGreenFire = true;
 			textureFile = "Interface\\PlayerFrame\\Warlock-DestructionUI-Green";

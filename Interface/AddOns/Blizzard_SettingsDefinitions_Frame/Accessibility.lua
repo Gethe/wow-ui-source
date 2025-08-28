@@ -1,23 +1,3 @@
-QuestTextPreviewMixin = { };
-
-function QuestTextPreviewMixin:OnShow()
-	self:UpdatePreview(GetCVarNumberOrDefault("QuestTextContrast"));
-end
-
-function QuestTextPreviewMixin:UpdatePreview(value)
-	local atlas = QuestUtil.GetQuestBackgroundAtlas(value)
-	local useLightText = QuestUtil.ShouldQuestTextContrastSettingUseLightText(value)
-
-	self.Background:SetAtlas(atlas);
-
-	local textColor, titleTextColor = GetMaterialTextColors("Parchment");
-	if useLightText then
-		textColor, titleTextColor = GetMaterialTextColors("Stone");
-	end
-	self.TitleText:SetTextColor(titleTextColor[1], titleTextColor[2], titleTextColor[3]);
-	self.BodyText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-end
-
 ArachnophobiaMixin = {};
 
 function ArachnophobiaMixin:OnLoad()
@@ -26,6 +6,35 @@ function ArachnophobiaMixin:OnLoad()
 	self.SubTextContainer:SetPoint("TOPLEFT", self.Checkbox, "TOPRIGHT", 0, 0);
 	self.SubTextContainer.SubText:ClearAllPoints();
 	self.SubTextContainer.SubText:SetPoint("LEFT", self.Checkbox, "RIGHT", 8, 0);
+end
+
+local function RegisterMinimumCharacterNameSize(category)
+	local cvarName = "WorldTextMinSize";
+	local minValue, maxValue, step = 0, 64, 2;
+
+	local function CanModifySetting()
+		return not C_Glue.IsOnGlueScreen() and C_CVar.GetCVar(cvarName) ~= nil;
+	end	
+
+	local function GetValue()
+		if CanModifySetting() then
+			GetCVarNumberOrDefault(cvarName);
+		end
+
+		return 0;
+	end
+
+	local function SetValue(value)
+		SetCVar(cvarName, value);
+	end
+
+	local setting = Settings.RegisterProxySetting(category, "PROXY_MINIMUM_CHARACTER_NAME_SIZE", Settings.VarType.Number, MINIMUM_CHARACTER_NAME_SIZE_TEXT, 0, GetValue, SetValue);
+
+	local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+	options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+	local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_MINIMUM_CHARACTER_NAME_SIZE);
+	initializer:AddModifyPredicate(CanModifySetting);
 end
 
 local function Register()
@@ -38,63 +47,8 @@ local function Register()
 	-- Alternate Full Screen Effects
 	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
 
-	-- Quest Text Contrast
-	if C_CVar.GetCVar("questTextContrast") then
-		do
-			local function GetValue()
-				return GetCVarNumberOrDefault("questTextContrast");
-			end
-			
-			local function SetValue(value)
-				SetCVar("questTextContrast", value);
-			end
-
-			local function OnOptionEnter(optionData)
-				SettingsPanel.QuestTextPreview:UpdatePreview(optionData.value);
-			end
-		
-			local function GetOptions()
-				local container = Settings.CreateControlTextContainer();
-				container:Add(0, QUEST_BG_DEFAULT);
-				container:Add(1, QUEST_BG_LIGHT1);
-				container:Add(2, QUEST_BG_LIGHT2);
-				container:Add(3, QUEST_BG_LIGHT3);
-				container:Add(4, QUEST_BG_DARK);
-
-				local data = container:GetData();
-				for index, optionData in ipairs(data) do
-					optionData.onEnter = OnOptionEnter;
-				end
-				return data;
-			end
-
-			local defaultValue = 0;
-			local setting = Settings.RegisterProxySetting(category, "PROXY_QUEST_TEXT_CONTRAST",
-				Settings.VarType.Number, ENABLE_QUEST_TEXT_CONTRAST, defaultValue, GetValue, SetValue);
-
-			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ENABLE_QUEST_TEXT_CONTRAST);
-
-			local function OnShow()
-				SettingsPanel.QuestTextPreview:Show();
-			end
-
-			local function OnHide()
-				SettingsPanel.QuestTextPreview:Hide();
-			end
-			
-			initializer.OnShow = OnShow;
-			initializer.OnHide = OnHide;
-		end
-	end
-
-	-- Minimum Character Name Size
-	do
-		local minValue, maxValue, step = 0, 64, 2;
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
-
-		Settings.SetupCVarSlider(category, "WorldTextMinSize", options, MINIMUM_CHARACTER_NAME_SIZE_TEXT, OPTION_TOOLTIP_MINIMUM_CHARACTER_NAME_SIZE);
-	end
+	-- Minimum Name Size
+	RegisterMinimumCharacterNameSize(category);
 
 	-- Motion Sickness
 	do

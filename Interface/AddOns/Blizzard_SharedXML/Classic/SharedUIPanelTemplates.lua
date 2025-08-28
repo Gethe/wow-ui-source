@@ -279,7 +279,7 @@ end
 function SearchBoxTemplate_OnLoad(self)
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(SEARCH);
+	self.Instructions:SetText(self.instructionText);
 	self.Instructions:ClearAllPoints();
 	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
 	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
