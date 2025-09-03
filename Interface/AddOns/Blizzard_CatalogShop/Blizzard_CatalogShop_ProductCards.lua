@@ -36,7 +36,6 @@ end
 -- CATALOG SHOP DEFAULT PRODUCT CARD MIXIN
 CatalogShopDefaultProductCardMixin = {};
 function CatalogShopDefaultProductCardMixin:OnLoad()
-
 	-- set the tooltip here
 	-- set any override fonts
 
@@ -141,21 +140,31 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 	self.defaultCardModelSceneID = defaultCardModelSceneID;
 	self.overrideCardModelSceneID = useWideCardSettings and displayInfo.overrideWideCardModelSceneID or displayInfo.overrideCardModelSceneID;
 
-	if cardType == CatalogShopConstants.ProductCardType.Bundle then
+		CatalogShopUtil.ClearSpecialActors(self.ModelScene);
+
+
+	if cardType == CatalogShopConstants.ProductType.Bundle then
 		local forceHidePlayer = false;
 		CatalogShopUtil.SetupModelSceneForBundle(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceHidePlayer);
-	elseif cardType == CatalogShopConstants.ProductCardType.Mount then
+	elseif cardType == CatalogShopConstants.ProductType.Mount then
 		local forceHidePlayer = true;
 		CatalogShopUtil.SetupModelSceneForMounts(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange, forceHidePlayer);
-	elseif cardType == CatalogShopConstants.ProductCardType.Pet then
+	elseif cardType == CatalogShopConstants.ProductType.Pet then
 		CatalogShopUtil.SetupModelSceneForPets(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 		mainActor = self.ModelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Pet);
-	elseif cardType == CatalogShopConstants.ProductCardType.Transmog then
+	elseif cardType == CatalogShopConstants.ProductType.Transmog then
 		CatalogShopUtil.SetupModelSceneForTransmogs(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
+	elseif cardType == CatalogShopConstants.ProductType.Decor then
+		CatalogShopUtil.SetupModelSceneForDecor(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 	else
 		--error("Invalid Cateogry Type");
 		self.ModelScene:ClearScene();
 	end
+
+	if CatalogShopUtil.HasSpecialActors(displayData) then
+		CatalogShopUtil.SetupSpecialActors(displayData, self.modelScene);
+	end
+
 	if mainActor then
 		mainActor:StopAnimationKit();
 		mainActor:SetSpellVisualKit(nil);
@@ -171,7 +180,7 @@ function CatalogShopDefaultProductCardMixin:UpdateTimeRemaining()
 	local productInfo = self:GetElementData();
 	local container = self.ForegroundContainer;
 
-	local shouldShowTimeRemaining = productInfo.hasTimeRemaining and not productInfo.purchased;
+	local shouldShowTimeRemaining = productInfo.hasTimeRemaining and not productInfo.isFullyOwned;
 	if shouldShowTimeRemaining then
 		local timeRemainingSecs = C_CatalogShop.GetProductAvailabilityTimeRemainingSecs(productInfo.catalogShopProductID);
 
@@ -202,8 +211,10 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	local cardType = displayInfo.productType;
 	local container = self.ForegroundContainer;
 
-	--TODO RNM - this call is asserting
-	--C_CatalogShop.ProductDisplayedTelemetry(self.productInfo.categoryID, self.productInfo.sectionID, self.productInfo.catalogShopProductID);
+	-- Skip telemetry if this product is a bundle child (we dont track those)
+	if not self.productInfo.isBundleChild then
+		C_CatalogShop.ProductDisplayedTelemetry(self.productInfo.categoryID, self.productInfo.sectionID, self.productInfo.catalogShopProductID);
+	end
 
 	-- based on values in productInfo we need to set a correct background
 	self.BackgroundContainer.Background:SetAtlas(self.defaultBackground);
@@ -211,61 +222,187 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	self:HideCardVisuals();
 	container.RectIcon:SetSize(85.0,85.0);		-- Resetting the size since certain element types want to change it
 
-	if cardType == CatalogShopConstants.ProductCardType.Toy then
+	-- An unknown license implies a product from another Game (Classic, etc.)
+	if displayInfo.hasUnknownLicense then
 		container.RectIcon:Show();
-		container.RectIcon:SetTexture(displayInfo.iconFileDataID);
-		container.SquareIconBorder:Show();
-	elseif cardType == CatalogShopConstants.ProductCardType.Services then
-		container.CircleIcon:Show();
-		CatalogShopUtil.SetServicesContainerIcon(container.CircleIcon, displayInfo);
-		container.CircleIconBorder:Show();
-
-		if self.productInfo.bundleChildrenSize > 1 then
-			container.ProductCounter:Show();
-			container.ProductCounterText:Show();
-			container.ProductCounterText:SetText(self.productInfo.bundleChildrenSize);
-		end
-	elseif cardType == CatalogShopConstants.ProductCardType.Subscription then
-		local licenseTermType = self.productInfo.licenseTermType;
-		local licenseTermDuration = self.productInfo.licenseTermDuration;
-		local subTexture;
-		if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
-			subTexture = "wow-sub-"..licenseTermDuration.."mo";
-		elseif licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
-			subTexture = "wow-sub-"..licenseTermDuration.."day";
-		end
-		if subTexture then
-			container.RectIcon:Show();
-			container.RectIcon:SetAtlas(subTexture);
-		else
-			container.RectIcon:Hide();
-		end
+		container.RectIcon:SetSize(88.0,88.0);		-- Adjust the icon size to fight aliasing.
+		CatalogShopUtil.SetAlternateProductIcon(container.RectIcon, displayInfo);
 	else
-		-- An unknown license implies a product from another Game (Classic, etc.)
-		if displayInfo.hasUnknownLicense then
-			container.RectIcon:Show();
-			container.RectIcon:SetSize(88.0,88.0);		-- Adjust the icon size to fight aliasing.
-			CatalogShopUtil.SetAlternateProductIcon(container.RectIcon, displayInfo);
-		else
-			self.ModelScene:Show();
-			self.ModelScene:ClearAllPoints();
-			self.ModelScene:SetPoint("TOPLEFT", 13, -13);
-			self.ModelScene:SetPoint("BOTTOMRIGHT", -13, 10);
-			self.ModelScene:SetViewInsets(0, 0, 0, 0);
-			self:SetModelScene(self.productInfo, true, displayInfo, cardType);
-		end
+		self.ModelScene:Show();
+		self.ModelScene:ClearAllPoints();
+		self.ModelScene:SetPoint("TOPLEFT", 13, -13);
+		self.ModelScene:SetPoint("BOTTOMRIGHT", -13, 10);
+		self.ModelScene:SetViewInsets(0, 0, 0, 0);
+		self:SetModelScene(self.productInfo, true, displayInfo, cardType);
 	end
 	
 	container.Name:SetText(self.productInfo.name);
 	container.Price:SetText(self.productInfo.price);
-	container.PurchasedIcon:SetShown(self.productInfo.purchased);
+	container.PurchasedIcon:SetShown(self.productInfo.isFullyOwned);
+end
+
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP PRODUCT CARD MIXIN
+SmallCatalogShopProductCardMixin = {};
+function SmallCatalogShopProductCardMixin:OnLoad()
+	CatalogShopDefaultProductCardMixin.OnLoad(self);
+end
+
+function SmallCatalogShopProductCardMixin:Layout()
+	CatalogShopDefaultProductCardMixin.Layout(self);
+
+	local container = self.ForegroundContainer;
+
+	local divider = container.DividerTop;
+	divider:SetShown(true);
+	divider:ClearAllPoints();
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 100);
+	divider:SetPoint("LEFT", 0, 0);
+	divider:SetPoint("RIGHT", 0, 0);
+
+	local nameElement = container.Name;
+	nameElement:ClearAllPoints();
+	nameElement:SetJustifyH("CENTER");
+	nameElement:SetJustifyV("MIDDLE");
+	nameElement:SetPoint("TOP", divider, "TOP", 0, -6);
+	nameElement:SetPoint("LEFT", 15, 0);
+	nameElement:SetPoint("RIGHT", -15, 0);
+	nameElement:SetPoint("BOTTOM", 0, 50);
+
+	local priceElement = container.Price;
+	priceElement:ClearAllPoints();
+	priceElement:SetSize(0, 20);
+	priceElement:SetJustifyH("CENTER");
+	priceElement:SetPoint("BOTTOM", 0, 20);
+	priceElement:SetPoint("LEFT", 15, 0);
+	priceElement:SetPoint("RIGHT", -15, 0);
+
+	local timeRemaining = container.TimeRemaining;
+	timeRemaining:ClearAllPoints();
+	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
+	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
+
+	local background = self.BackgroundContainer.Background;
+	background:ClearAllPoints();
+	background:SetPoint("TOPLEFT", 12, -12);
+	background:SetPoint("BOTTOMRIGHT", -13, 11);
+
+	self:UpdateTimeRemaining();
 end
 
 --------------------------------------------------
--- SMALL CATALOG SHOP PRODUCT DETAILS CARD MIXIN
-SmallCatalogShopProductDetailsCardMixin = CreateFromMixins(CatalogShopDefaultProductCardMixin);
-function SmallCatalogShopProductDetailsCardMixin:OnLoad()
-	CatalogShopDefaultProductCardMixin.OnLoad(self);
+-- SMALL CATALOG SHOP SERVICES CARD MIXIN
+SmallCatalogShopServicesCardMixin = {};
+function SmallCatalogShopServicesCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+local function ServicesCardLayout(card)
+	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
+
+	local container = card.ForegroundContainer;
+
+	container.CircleIcon:Show();
+	CatalogShopUtil.SetServicesContainerIcon(container.CircleIcon, displayInfo);
+	container.CircleIconBorder:Show();
+
+	if card.productInfo.bundleChildrenSize > 1 then
+		container.ProductCounter:Show();
+		container.ProductCounterText:Show();
+		container.ProductCounterText:SetText(card.productInfo.bundleChildrenSize);
+	end
+end
+
+function SmallCatalogShopServicesCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+	ServicesCardLayout(self);
+end
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP SUBSCRIPTION AND GAME TIME CARD MIXIN
+SmallCatalogShopSubscriptionCardMixin = {};
+function SmallCatalogShopSubscriptionCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+local function SubscriptionGameTimeCardLayout(card)
+	local container = card.ForegroundContainer;
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+
+	local licenseTermType = card.productInfo.licenseTermType;
+	local licenseTermDuration = card.productInfo.licenseTermDuration;
+	local subTexture;
+	if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
+		subTexture = "wow-sub-"..licenseTermDuration.."mo";
+		container.RectIcon:SetSize(135, 120);
+	elseif licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+		subTexture = "wow-sub-"..licenseTermDuration.."day";
+		-- the days icons is a different aspect ratio
+		container.RectIcon:SetSize(135, 150);
+	end
+
+	if subTexture then
+		container.RectIcon:Show();
+		container.RectIcon:SetAtlas(subTexture);
+	else
+		container.RectIcon:Hide();
+	end
+end
+
+function SmallCatalogShopSubscriptionCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+	SubscriptionGameTimeCardLayout(self);
+end
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP TENDER CARD MIXIN
+SmallCatalogShopTenderCardMixin = {};
+function SmallCatalogShopTenderCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function SmallCatalogShopTenderCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+end
+
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP TOYS CARD MIXIN
+SmallCatalogShopToysCardMixin = {};
+function SmallCatalogShopToysCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+local function ToysCardLayout(card)
+	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
+
+	local container = card.ForegroundContainer;
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+	container.RectIcon:SetSize(85, 85);
+
+	container.RectIcon:Show();
+	container.RectIcon:SetTexture(displayInfo.iconFileDataID);
+	container.SquareIconBorder:Show();
+end
+
+function SmallCatalogShopToysCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+	ToysCardLayout(self);
+end
+
+
+--------------------------------------------------
+-- DETAILS DEFAULT CATALOG SHOP PRODUCT CARD MIXIN
+DetailsCatalogShopProductCardMixin = {};
+function DetailsCatalogShopProductCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function DetailsCatalogShopProductCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
 
 	local container = self.ForegroundContainer;
 
@@ -297,82 +434,63 @@ function SmallCatalogShopProductDetailsCardMixin:OnLoad()
 	background:SetPoint("BOTTOMRIGHT", -13, 11);
 end
 
-function SmallCatalogShopProductDetailsCardMixin:Layout()
-	CatalogShopDefaultProductCardMixin.Layout(self);
+--------------------------------------------------
+-- DETAILS CATALOG SHOP SERVICES CARD MIXIN
+DetailsCatalogShopServicesCardMixin = {};
+function DetailsCatalogShopServicesCardMixin:OnLoad()
+	DetailsCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function DetailsCatalogShopServicesCardMixin:Layout()
+	DetailsCatalogShopProductCardMixin.Layout(self);
+	ServicesCardLayout(self);
 end
 
 --------------------------------------------------
--- SMALL CATALOG SHOP SUBSCRIPTION DETAILS CARD MIXIN
-SmallCatalogShopSubscriptionDetailsCardMixin = CreateFromMixins(SmallCatalogShopProductDetailsCardMixin);
-function SmallCatalogShopSubscriptionDetailsCardMixin:OnLoad()
-	SmallCatalogShopProductDetailsCardMixin.OnLoad(self);
+-- DETAILS CATALOG SHOP SUBSCRIPTION CARD MIXIN
+DetailsCatalogShopSubscriptionCardMixin = {};
+function DetailsCatalogShopSubscriptionCardMixin:OnLoad()
+	DetailsCatalogShopProductCardMixin.OnLoad(self);
 end
 
-function SmallCatalogShopSubscriptionDetailsCardMixin:Layout()
-	CatalogShopDefaultProductCardMixin.Layout(self);
-
-	local container = self.ForegroundContainer;
-	container.RectIcon:ClearAllPoints();
-	container.RectIcon:SetPoint("CENTER", 0, 40);
-	container.RectIcon:SetSize(135, 120);
+function DetailsCatalogShopSubscriptionCardMixin:Layout()
+	DetailsCatalogShopProductCardMixin.Layout(self);
+	SubscriptionGameTimeCardLayout(self);
 end
-
 
 --------------------------------------------------
--- SMALL CATALOG SHOP PRODUCT CARD MIXIN
-SmallCatalogShopProductCardMixin = CreateFromMixins(CatalogShopDefaultProductCardMixin);
-function SmallCatalogShopProductCardMixin:OnLoad()
-	CatalogShopDefaultProductCardMixin.OnLoad(self);
-
-	local container = self.ForegroundContainer;
-
-	local divider = container.DividerTop;
-	divider:SetShown(true);
-	divider:ClearAllPoints();
-	divider:SetPoint("TOP", container, "BOTTOM", 0, 100);
-	divider:SetPoint("LEFT", 0, 0);
-	divider:SetPoint("RIGHT", 0, 0);
-
-	local nameElement = container.Name;
-	nameElement:ClearAllPoints();
-	nameElement:SetJustifyH("CENTER");
-	nameElement:SetJustifyV("MIDDLE");
-	nameElement:SetPoint("TOP", divider, "TOP", 0, -6);
-	nameElement:SetPoint("LEFT", 15, 0);
-	nameElement:SetPoint("RIGHT", -15, 0);
-	nameElement:SetPoint("BOTTOM", 0, 50);
-
-	local priceElement = container.Price;
-	priceElement:ClearAllPoints();
-	priceElement:SetSize(0, 20);
-	priceElement:SetJustifyH("CENTER");
-	priceElement:SetPoint("BOTTOM", 0, 20);
-	priceElement:SetPoint("LEFT", 15, 0);
-	priceElement:SetPoint("RIGHT", -15, 0);
-
-	local timeRemaining = container.TimeRemaining;
-	timeRemaining:ClearAllPoints();
-	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
-	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
-
-	local background = self.BackgroundContainer.Background;
-	background:ClearAllPoints();
-	background:SetPoint("TOPLEFT", 12, -12);
-	background:SetPoint("BOTTOMRIGHT", -13, 11);
+-- DETAILS CATALOG SHOP TENDER CARD MIXIN
+DetailsCatalogShopTenderCardMixin = {};
+function DetailsCatalogShopTenderCardMixin:OnLoad()
+	DetailsCatalogShopProductCardMixin.OnLoad(self);
 end
 
-function SmallCatalogShopProductCardMixin:Layout()
-	CatalogShopDefaultProductCardMixin.Layout(self);
-	self:UpdateTimeRemaining();
+function DetailsCatalogShopTenderCardMixin:Layout()
+	DetailsCatalogShopProductCardMixin.Layout(self);
 end
 
+--------------------------------------------------
+-- DETAILS CATALOG SHOP TOYS CARD MIXIN
+DetailsCatalogShopToysCardMixin = {};
+function DetailsCatalogShopToysCardMixin:OnLoad()
+	DetailsCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function DetailsCatalogShopToysCardMixin:Layout()
+	DetailsCatalogShopProductCardMixin.Layout(self);
+	ToysCardLayout(self);
+end
 
 
 --------------------------------------------------
 -- WIDE CATALOG SHOP PRODUCT CARD MIXIN
-WideCatalogShopProductCardMixin = CreateFromMixins(CatalogShopDefaultProductCardMixin);
+WideCatalogShopProductCardMixin = {};
 function WideCatalogShopProductCardMixin:OnLoad()
 	CatalogShopDefaultProductCardMixin.OnLoad(self);
+end
+
+function WideCatalogShopProductCardMixin:Layout()
+	CatalogShopDefaultProductCardMixin.Layout(self);
 
 	local container = self.ForegroundContainer;
 	local divider = container.DividerTop;
@@ -408,49 +526,59 @@ function WideCatalogShopProductCardMixin:OnLoad()
 	background:ClearAllPoints();
 	background:SetPoint("TOPLEFT", 12, -12);
 	background:SetPoint("BOTTOMRIGHT", -13, 11);
-end
-
-function WideCatalogShopProductCardMixin:Layout()
-	CatalogShopDefaultProductCardMixin.Layout(self);
-	self:UpdateTimeRemaining();
 
 	-- based on values in productInfo we need to set a correct background
 	local backgroundTexture = self.productInfo and self.productInfo.optionalWideCardBackgroundTexture or self.defaultBackground;
 	if backgroundTexture then
 		self.BackgroundContainer.Background:SetAtlas(backgroundTexture);
 	end
+
+	self:UpdateTimeRemaining();
 end
 
 --------------------------------------------------
--- SUBSCRIPTION WIDE CATALOG SHOP PRODUCT CARD MIXIN
-SubscriptionWideCatalogShopProductCardMixin = CreateFromMixins(WideCatalogShopProductCardMixin);
-function SubscriptionWideCatalogShopProductCardMixin:OnLoad()
+-- WIDE CATALOG SHOP SUBSCRIPTION CARD MIXIN
+WideSubscriptionCatalogShopCardMixin = {};
+function WideSubscriptionCatalogShopCardMixin:OnLoad()
 	WideCatalogShopProductCardMixin.OnLoad(self);
 end
 
-function SubscriptionWideCatalogShopProductCardMixin:Layout()
+function WideSubscriptionCatalogShopCardMixin:Layout()
 	WideCatalogShopProductCardMixin.Layout(self);
 	self:UpdateTimeRemaining();
 
 	local container = self.ForegroundContainer;
 	container.RectIcon:ClearAllPoints();
 	container.RectIcon:SetPoint("CENTER", 0, 40);
-	if self.productInfo and self.productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+
+	local subTexture;
+	local licenseTermType = self.productInfo.licenseTermType;
+	local licenseTermDuration = self.productInfo.licenseTermDuration;
+	if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
+		subTexture = "wow-sub-"..licenseTermDuration.."mo";
+		container.RectIcon:SetSize(162, 144);
+	else
+		subTexture = "wow-sub-"..licenseTermDuration.."day";
 		-- the days icons is a different aspect ratio
 		container.RectIcon:SetSize(162, 180);
+	end
+
+	if subTexture then
+		container.RectIcon:Show();
+		container.RectIcon:SetAtlas(subTexture);
 	else
-		container.RectIcon:SetSize(162, 144);
+		container.RectIcon:Hide();
 	end
 end
 
 --------------------------------------------------
--- WOW TOKEN CATALOG SHOP PRODUCT CARD MIXIN
-WoWTokenCatalogShopProductCardMixin = CreateFromMixins(WideCatalogShopProductCardMixin);
-function WoWTokenCatalogShopProductCardMixin:OnLoad()
+-- WOW TOKEN CATALOG SHOP CARD MIXIN
+WideWoWTokenCatalogShopCardMixin = {};
+function WideWoWTokenCatalogShopCardMixin:OnLoad()
 	WideCatalogShopProductCardMixin.OnLoad(self);
 end
 
-function WoWTokenCatalogShopProductCardMixin:Layout()
+function WideWoWTokenCatalogShopCardMixin:Layout()
 	WideCatalogShopProductCardMixin.Layout(self);
 	self:UpdateTimeRemaining();
 

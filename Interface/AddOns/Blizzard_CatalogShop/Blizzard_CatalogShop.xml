@@ -20,8 +20,8 @@
 			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" setAllPoints="true" >
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1" >						
-						<Texture parentKey="Background_1" setAllPoints="true" />
-						<Texture parentKey="Background_2" setAllPoints="true" />
+						<Texture parentKey="Background_1" atlas="shop-bg-map-blue" setAllPoints="true" />
+						<Texture parentKey="Background_2" atlas="shop-bg-map-blue" setAllPoints="true" />
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="3" >
 						<Texture parentKey="LeftShadow" atlas="shop-list-bg" >
@@ -190,6 +190,14 @@
 				</Scripts>
 			</Frame>
 
+			<Frame parentKey="ForegroundContainer" hidden="true" frameLevel="300" setAllPoints="true" >
+				<Layers>
+					<Layer level="OVERLAY" >						
+						<Texture parentKey="Foreground" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>
+			
 			<Frame parentKey="WoWTokenContainerFrame"  mixin="WoWTokenContainerFrameMixin" frameLevel="500" hidden="true" >
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -367,6 +375,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame name="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
+						<Size x="422" y="41"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="25" type="number"/>
+							<KeyValue key="topPadding" value="0" type="number"/>
+							<KeyValue key="bottomPadding" value="0" type="number"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="ButtonContainer" >
 						<Size x="422" y="50"/>
 						<KeyValues>

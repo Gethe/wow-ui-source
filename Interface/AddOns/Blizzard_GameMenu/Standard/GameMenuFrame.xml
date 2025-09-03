@@ -20,6 +20,11 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="NewExternalEventFrame" inherits="NewFeatureLabelTemplate" scale="0.8">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

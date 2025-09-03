@@ -374,6 +374,32 @@ function TalentSelectionChoiceMixin:AddTooltipErrors(tooltip)
 	end
 end
 
+function TalentSelectionChoiceMixin:GetTooltipEntryInfoInternal()
+	local tooltipEntryInfo = {};
+	local ranksIncreased = 0;
+
+	local nodeInfo = self:GetBaseButton():GetNodeInfo();
+	if nodeInfo then
+		tooltipEntryInfo.currEntryInfo = CopyTableSafe(nodeInfo.activeEntry);
+		tooltipEntryInfo.nextEntryInfo = CopyTableSafe(nodeInfo.nextEntry);
+		tooltipEntryInfo.ranksPurchased = nodeInfo.ranksPurchased;
+
+		if not nodeInfo.activeEntry or nodeInfo.activeEntry.entryID ~= self.entryID then
+			-- This is a non-active entry in a selection node, so the base rank will always be zero
+			tooltipEntryInfo.currEntryInfo = {
+				entryID = self.entryID,
+				rank = 0,
+			}
+
+			tooltipEntryInfo.ranksPurchased = 0;
+		end
+
+		ranksIncreased = nodeInfo.entryIDToRanksIncreased and nodeInfo.entryIDToRanksIncreased[self.entryID] or nodeInfo.ranksIncreased;
+	end
+
+	return tooltipEntryInfo, ranksIncreased;
+end
+
 function TalentSelectionChoiceMixin:CalculateVisualState()
 	-- Overrides TalentDisplayMixin.
 

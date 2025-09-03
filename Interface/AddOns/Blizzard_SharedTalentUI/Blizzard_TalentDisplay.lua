@@ -306,6 +306,41 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 	end
 end
 
+-- This function returns the tooltipEntryInfo and the ranks increased for the hovered Entry,
+-- The tooltipEntryInfo is expected in the format:
+-- {
+--		[Nilable] currEntryInfo = the currently hovered entries entryID and rank
+--		[Nilable] nextEntryInfo = the currently hovered entries entryID and next rank
+--		ranksPurchased = the amount of currently purchased ranks in the entry
+-- }
+function TalentDisplayMixin:GetTooltipEntryInfoInternal()
+	local tooltipEntryInfo = {};
+	local ranksIncreased = 0;
+	if self.nodeInfo then
+		tooltipEntryInfo.currEntryInfo = CopyTableSafe(self.nodeInfo.activeEntry);
+		tooltipEntryInfo.nextEntryInfo = CopyTableSafe(self.nodeInfo.nextEntry);
+		tooltipEntryInfo.ranksPurchased = self.nodeInfo.ranksPurchased;
+
+		ranksIncreased = self.nodeInfo.ranksIncreased;
+	end
+
+	return tooltipEntryInfo, ranksIncreased;
+end
+
+function TalentDisplayMixin:GetTooltipEntryInfo()
+	local tooltipEntryInfo, ranksIncreased = self:GetTooltipEntryInfoInternal();
+	
+	if tooltipEntryInfo.currEntryInfo then
+		tooltipEntryInfo.currEntryInfo.rank = tooltipEntryInfo.currEntryInfo.rank + ranksIncreased;
+	end
+
+	if tooltipEntryInfo.nextEntryInfo then
+		tooltipEntryInfo.nextEntryInfo.rank = tooltipEntryInfo.nextEntryInfo.rank + ranksIncreased;
+	end
+
+	return tooltipEntryInfo;
+end
+
 function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
 	local blankLineAdded = tooltipInfoIgnored or false;
 	if self:ShouldShowSubText() then
@@ -319,26 +354,19 @@ function TalentDisplayMixin:AddTooltipDescription(tooltip, tooltipInfoIgnored)
 		end
 	end
 
-	if self.nodeInfo then
-		local activeEntry = self.nodeInfo.activeEntry;
-		if activeEntry then
-			if not blankLineAdded then
-				GameTooltip_AddBlankLineToTooltip(tooltip);
-			end
-
-			tooltip:AppendInfo("GetTraitEntry", activeEntry.entryID, activeEntry.rank);
-		end
-
-		local nextEntry = self.nodeInfo.nextEntry;
-		if nextEntry and self.nodeInfo.ranksPurchased > 0 then
+	local tooltipEntryInfo = self:GetTooltipEntryInfo();
+	if tooltipEntryInfo.currEntryInfo then
+		if not blankLineAdded then
 			GameTooltip_AddBlankLineToTooltip(tooltip);
-			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
-			tooltip:AppendInfo("GetTraitEntry", nextEntry.entryID, nextEntry.rank);
 		end
-	elseif self.entryID then
-		-- If this tooltip isn't coming from a node, we can't know what rank to show other than 1.
-		local rank = 1;
-		tooltip:AppendInfo("GetTraitEntry", self.entryID, rank);
+
+		tooltip:AppendInfo("GetTraitEntry", tooltipEntryInfo.currEntryInfo.entryID, tooltipEntryInfo.currEntryInfo.rank);
+	end
+
+	if tooltipEntryInfo.nextEntryInfo and tooltipEntryInfo.ranksPurchased > 0 then
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+		GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_NEXT_RANK);
+		tooltip:AppendInfo("GetTraitEntry", tooltipEntryInfo.nextEntryInfo.entryID, tooltipEntryInfo.nextEntryInfo.rank);
 	end
 end
 

@@ -128,8 +128,8 @@ end
 
 function RecentAlliesEntryMixin:Initialize(elementData)
 	self.elementData = elementData;
-	self:InitializeCharacterData(elementData.characterData);
-	self:InitializeStateDisplay(elementData.stateData);
+	self:InitializeCharacterData();
+	self:InitializeStateDisplay();
 	self:SetMostRecentInteraction();
 
 	self:SetSelected(SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData));
@@ -183,12 +183,14 @@ function RecentAlliesEntryMixin:AddCharacterDataToTooltip(tooltip)
 	AddCharacterFactionToTooltip(tooltip, characterData);
 end
 
-local function AddCurrentLocationToTooltip(tooltip, stateData)
-	GameTooltip_AddHighlightLine(tooltip, stateData.currentLocation);
+local function TryAddCurrentLocationToTooltip(tooltip, stateData)
+	if stateData.currentLocation then
+		GameTooltip_AddHighlightLine(tooltip, stateData.currentLocation);
+	end
 end
 
 function RecentAlliesEntryMixin:AddStateDataToTooltip(tooltip)
-	AddCurrentLocationToTooltip(tooltip, self.elementData.stateData);
+	TryAddCurrentLocationToTooltip(tooltip, self.elementData.stateData);
 end
 
 function RecentAlliesEntryMixin:AddInteractionsToTooltip(tooltip)
@@ -228,7 +230,8 @@ function RecentAlliesEntryMixin:GetMostRecentInteraction()
 	end
 end
 
-function RecentAlliesEntryMixin:InitializeStateDisplay(stateData)
+function RecentAlliesEntryMixin:InitializeStateDisplay()
+	local stateData = self.elementData.stateData;
 	self:UpdateOnlineStatusIcon();
 	self:UpdateBackgroundForOnlineStatus(stateData.isOnline);
 
@@ -292,35 +295,47 @@ function RecentAlliesEntryMixin:UpdateBackgroundForOnlineStatus(online)
 	self.NormalTexture:SetColorTexture(bestBackgroundColor:GetRGBA());
 end
 
-function RecentAlliesEntryMixin:InitializeCharacterData(characterData)
-	self:SetCharacterName(characterData.name);
-	self:SetCharacterLevel(characterData.level);
-	self:SetCharacterClass(characterData.classID);
+function RecentAlliesEntryMixin:InitializeCharacterData()
+	self:SetCharacterName();
+	self:SetCharacterLevel();
+	self:SetCharacterClass();
+	self:RefreshCharacterDataDividerColor();
 end
 
-function RecentAlliesEntryMixin:SetCharacterName(characterName)
-	self.CharacterData.Name:SetText(characterName);
+local function GetBestCharacterDataDisplayColor(stateData)
+	return stateData and stateData.isOnline and NORMAL_FONT_COLOR or FRIENDS_GRAY_COLOR;
+end
+
+function RecentAlliesEntryMixin:SetCharacterName()
+	self.CharacterData.Name:SetText(GetBestCharacterDataDisplayColor(self.elementData.stateData):WrapTextInColorCode(self.elementData.characterData.name));
 	self.CharacterData.Name:SetWidth(math.min(self.CharacterData.Name:GetUnboundedStringWidth(), self.CharacterData.Name.maxWidth));
 end
 
-function RecentAlliesEntryMixin:SetCharacterLevel(level)
-	self.CharacterData.Level:SetText(level);
+function RecentAlliesEntryMixin:SetCharacterLevel()
+	self.CharacterData.Level:SetText(GetBestCharacterDataDisplayColor(self.elementData.stateData):WrapTextInColorCode(self.elementData.characterData.level));
 	self.CharacterData.Level:SetWidth(self.CharacterData.Level:GetUnboundedStringWidth());
 end
 
-function RecentAlliesEntryMixin:SetCharacterClass(classID)
-	local classInfo = C_CreatureInfo.GetClassInfo(classID);
+function RecentAlliesEntryMixin:SetCharacterClass()
+	local classInfo = C_CreatureInfo.GetClassInfo(self.elementData.characterData.classID);
 	if not classInfo then
 		self.CharacterData.Class:SetText("");
 		return;
 	end
 
-	local classColor = GetClassColorObj(classInfo.classFile) or HIGHLIGHT_FONT_COLOR;
-	self.CharacterData.Class:SetText(classColor:WrapTextInColorCode(classInfo.className));
+	local bestFontColor = self.elementData.stateData.isOnline and GetClassColorObj(classInfo.classFile) or FRIENDS_GRAY_COLOR;
+	self.CharacterData.Class:SetText(bestFontColor:WrapTextInColorCode(classInfo.className));
 end
 
 function RecentAlliesEntryMixin:SetCharacterLocation(location)
-	self.CharacterData.Location:SetText(location);
+	self.CharacterData.Location:SetText(location or "");
+end
+
+function RecentAlliesEntryMixin:RefreshCharacterDataDividerColor()
+	local bestDividerColor = GetBestCharacterDataDisplayColor(self.elementData.stateData)
+	for index, divider in ipairs(self.CharacterData.Dividers) do
+		divider:SetVertexColor(bestDividerColor:GetRGB());
+	end
 end
 
 function RecentAlliesEntryMixin:SetSelected(selected)
@@ -371,12 +386,27 @@ RecentAlliesEntryPinDisplayMixin = {};
 
 function RecentAlliesEntryPinDisplayMixin:Init(stateData)
 	self.pinExpirationDate = stateData.pinExpirationDate;
+	self:RefreshPinExpirationIcon();
+end
+
+local function IsPinNearingExpiration(pinExpirationDate)
+	if not pinExpirationDate then
+		return false;
+	end
+
+	local remainingDays = (pinExpirationDate - GetServerTime()) / SECONDS_PER_DAY;
+	return remainingDays <= Constants.RecentAlliesConsts.PIN_EXPIRATION_WARNING_DAYS;
+end
+
+function RecentAlliesEntryPinDisplayMixin:RefreshPinExpirationIcon()
+	self.Icon:SetAtlas(IsPinNearingExpiration(self.pinExpirationDate) and "friendslist-recentallies-pin" or "friendslist-recentallies-pin-yellow", TextureKitConstants.IgnoreAtlasSize);
 end
 
 function RecentAlliesEntryPinDisplayMixin:OnEnter()
 	if self.pinExpirationDate then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		local timeUntilExpiration = GetServerTime() - self.pinExpirationDate;
+		-- Set to a minimum of 1 second (lowest we should show is "< 1 Hour")
+		local timeUntilExpiration = math.max(self.pinExpirationDate - GetServerTime(), 1);
 		local wrapText = false;
 		GameTooltip_AddHighlightLine(GameTooltip, RECENT_ALLY_PIN_EXPIRING_TOOLTIP:format(RecentAlliesUtil.GetFormattedTime(timeUntilExpiration), wrapText));
 		GameTooltip:Show();

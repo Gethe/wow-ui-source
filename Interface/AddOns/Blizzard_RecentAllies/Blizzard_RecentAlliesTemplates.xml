@@ -137,7 +137,7 @@
 								<Anchor point="TOPLEFT"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="NameDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+						<Texture parentKey="NameDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true" parentArray="Dividers">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="TOPRIGHT" x="6" y="-2"/>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="7" y="2"/>
@@ -150,7 +150,7 @@
 								<Anchor point="LEFT" relativeKey="$parent.NameDivider" relativePoint="RIGHT" x="3"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="LevelDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true">
+						<Texture parentKey="LevelDivider" atlas="charactercreate-customize-dropdown-linemouseover-middle" useAtlasSize="true" parentArray="Dividers">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.Level" relativePoint="TOPRIGHT" x="3" y="-2"/>
 								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="3" y="2"/>

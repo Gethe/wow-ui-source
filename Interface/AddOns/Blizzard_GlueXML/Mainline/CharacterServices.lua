@@ -252,7 +252,7 @@ end
 
 function CharacterSelectBlockBase:Initialize(results)
 	for i = 1, 3 do
-		if (self.frame.BonusResults[i]) then
+		if self.frame.BonusResults[i] then
 			self.frame.BonusResults[i]:Hide();
 		end
 	end
@@ -263,43 +263,34 @@ function CharacterSelectBlockBase:Initialize(results)
 	self:ClearResultInfo();
 	self.lastSelectedIndex = CharacterSelect.selectedIndex;
 
-	if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
+	if CharacterUpgrade_IsCreatedCharacterUpgrade() then
 		CharacterSelect_UpdateButtonState();
 
-		if (self.createNum < GetNumCharacters()) then
-			local scrollBox = CharacterSelectCharacterFrame.ScrollBox;
-			scrollBox:ScrollToEnd();
+		self.index = CharacterSelect.selectedIndex;
+		self.charid = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+		self.playerguid = GetCharacterGUID(self.charid);
 
-			local last = true;
-			CharacterSelect.selectedIndex = CharacterSelectListUtil.GetFirstOrLastCharacterIndex(last);
-			CharacterSelectCharacterFrame:UpdateCharacterSelection();
+		local frame = CharacterSelectCharacterFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+			return CharacterSelectListUtil.GetCharacterPositionData(self.playerguid, elementData) ~= nil;
+		end);
 
-			self.index = CharacterSelect.selectedIndex;
-			self.charid = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-			self.playerguid = GetCharacterGUID(self.charid);
-
-			local frame = scrollBox:FindFrameByPredicate(function(frame, elementData)
-				return CharacterSelectListUtil.GetCharacterPositionData(self.playerguid, elementData) ~= nil;
-			end);
-
-			if frame then
-				local frameElementData = frame:GetElementData();
-				if frameElementData.isGroup then
-					for _, character in ipairs(frame.groupButtons) do
-						if character:GetCharacterID() == self.charid then
-							clearButtonScripts(character);
-							break;
-						end
+		if frame then
+			local frameElementData = frame:GetElementData();
+			if frameElementData.isGroup then
+				for _, character in ipairs(frame.groupButtons) do
+					if character:GetCharacterID() == self.charid then
+						clearButtonScripts(character);
+						break;
 					end
-				else
-					clearButtonScripts(frame);
 				end
+			else
+				clearButtonScripts(frame);
 			end
-
-			CharacterServicesMaster_Update();
-
-			return;
 		end
+
+		CharacterServicesMaster_Update();
+
+		return;
 	end
 
 	CharacterServicesCharacterSelector:Show();
@@ -964,12 +955,8 @@ function CharacterUpgradeSelectCharacterFrame_OnLoad(self)
 end
 
 function CharacterUpgrade_SetupFlowForNewCharacter(characterType)
-	if characterType == Enum.CharacterCreateType.Boost then
-		CharacterUpgradeCharacterSelectBlock.createNum = GetNumCharacters();
-
-		if CharacterServicesMaster.flow then
-			CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;
-		end
+	if characterType == Enum.CharacterCreateType.Boost and CharacterServicesMaster.flow then
+		CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = CharacterServicesMaster.flow.data;
 	end
 end
 

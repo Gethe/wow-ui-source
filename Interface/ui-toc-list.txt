@@ -288,6 +288,7 @@ Interface\AddOns\Blizzard_UIParent\Blizzard_UIParent_TBC.toc
 Interface\AddOns\Blizzard_UIWidgets\Blizzard_UIWidgets_Mainline.toc
 Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Mainline.toc
 Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_Mists.toc
+Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_TBC.toc
 Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame_WoWLabs.toc
 Interface\AddOns\Blizzard_UnitPopupShared\Blizzard_UnitPopupShared_Mainline.toc
 Interface\AddOns\Blizzard_UnitPopup\Blizzard_UnitPopup_Mainline.toc

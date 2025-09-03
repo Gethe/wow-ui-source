@@ -60,7 +60,7 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		local dataProvider = CreateDataProvider();
 		for _, childInfo in ipairs(self.bundleChildInfo) do
 			local productInfo = CatalogShopFrame:GetProductInfo(childInfo.childProductID);
-			if productInfo then
+			if productInfo and (not productInfo.isHidden) then
 				productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
 				productInfo.isBundleChild = true;
 				productInfo.displayOrder = childInfo.displayOrder;
@@ -84,14 +84,21 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		end);
 	end
 
-	local function GetDetailContainerElementFactory(factory, elementData)
-		if elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Subscription then
-			factory(CatalogShopConstants.CardTemplate.DetailsSubscriptionSmall, InitializeButton);
-		elseif elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Tender then
-			-- TODO tender work here
-			factory(CatalogShopConstants.CardTemplate.DetailsSmall, InitializeButton);
+	local function GetDetailContainerElementFactory(factory, elementData)		
+		if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
+			-- Subscriptions and Game Time
+			factory(CatalogShopConstants.CardTemplate.DetailsSubscription, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toys then
+			-- Toys
+			factory(CatalogShopConstants.CardTemplate.DetailsToys, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Tender then
+			-- Trader's Tender
+			factory(CatalogShopConstants.CardTemplate.DetailsTender, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
+			-- Services
+			factory(CatalogShopConstants.CardTemplate.DetailsServices, InitializeButton);
 		else
-			factory(CatalogShopConstants.CardTemplate.DetailsSmall, InitializeButton);
+			factory(CatalogShopConstants.CardTemplate.Details, InitializeButton);
 		end
 	end
 	self:SetupScrollView(GetDetailContainerElementFactory);

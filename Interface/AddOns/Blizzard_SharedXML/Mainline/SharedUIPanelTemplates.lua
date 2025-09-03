@@ -2910,7 +2910,9 @@ function MainMenuFrameMixin:OnLoad()
 		self.Header:SetHeaderFont(self.dialogHeaderFont);
 	end
 
-	self.buttonPool = CreateFramePool("BUTTON", self, self.buttonTemplate, HideAndClearAnchorsAndLayoutIndex);
+	self.buttonPool = CreateFramePoolCollection();
+	self.buttonPool:CreatePool("BUTTON", self, self.buttonTemplate, HideAndClearAnchorsAndLayoutIndex);
+	self.buttonPool:CreatePool("BUTTON", self, self.goldRedButtonTemplate, HideAndClearAnchorsAndLayoutIndex);
 	self:Reset();
 end
 
@@ -2920,8 +2922,9 @@ function MainMenuFrameMixin:Reset()
 	self.nextLayoutIndex = 1;
 end
 
-function MainMenuFrameMixin:AddButton(text, callback, isDisabled, disabledText)
-	local newButton = self.buttonPool:Acquire();
+function MainMenuFrameMixin:AddButton(text, callback, isDisabled, disabledText, useGoldRedButtonTemplate)
+	local template = useGoldRedButtonTemplate and self.goldRedButtonTemplate or self.buttonTemplate;
+	local newButton = self.buttonPool:Acquire(template);
 
 	newButton.layoutIndex = self.nextLayoutIndex;
 	self.nextLayoutIndex = self.nextLayoutIndex + 1;

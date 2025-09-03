@@ -14,15 +14,30 @@ CatalogShopConstants =
 		Product = 2,
 	},
 
+	Default =
+	{
+		PreviewBackgroundTexture = "shop-bg-map-blue",
+	},
+
 	CardTemplate =
 	{
 		Header = "CatalogShopSectionHeaderTemplate",
 		Wide = "WideCatalogShopProductCardTemplate",
+		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
+		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",
+
 		Small = "SmallCatalogShopProductCardTemplate",
-		Token = "WoWTokenCatalogShopProductCardTemplate",
-		WideCardSubscription = "SubscriptionWideCatalogShopProductCardTemplate",
-		DetailsSmall = "SmallCatalogShopProductDetailsCardTemplate",
-		DetailsSubscriptionSmall = "SmallCatalogShopSubscriptionDetailsCardTemplate",
+		SmallServices = "SmallCatalogShopServicesCardTemplate",
+		SmallSubscription = "SmallCatalogShopSubscriptionCardTemplate",
+		SmallTender = "SmallCatalogShopTenderCardTemplate",
+		SmallToys = "SmallCatalogShopToysCardTemplate",
+
+
+		Details = "DetailsCatalogShopProductCardTemplate",
+		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
+		DetailsSubscription = "DetailsCatalogShopSubscriptionCardTemplate",
+		DetailsTender = "DetailsCatalogShopTenderCardTemplate",
+		DetailsToys = "DetailsCatalogShopToysCardTemplate",
 	},
 
 	ScreenPadding =
@@ -38,9 +53,10 @@ CatalogShopConstants =
 		Toy = "actor",
 		Celebrate = "fanfare",
 		Transmog = "transmog",
+		Decor = "decor",
 	},
 
-	ProductCardType =
+	ProductType =
 	{
 		Pet = "Pet",
 		Mount = "Mount",
@@ -51,6 +67,25 @@ CatalogShopConstants =
 		Bundle = "Bundle",
 		Subscription = "Subscription",
 		TradersTenders = "Tender",
+		Decor = "Decor",
+	},
+
+	-- These names match up with names in CatalogShop_C::GetOtherFlavorGameData
+	GameTypes =
+	{
+		Classic = "classic",
+		Modern = "modern",
+	},
+
+	GameTypeGlobalStringTag =
+	{
+		Classic = CATALOG_SHOP_WOW_FLAVOR_CLASSIC,
+		Modern = CATALOG_SHOP_WOW_FLAVOR_MODERN,
+	},
+
+	ShopGlobalStringTag =
+	{
+		MissingLicenseCaptionText = CATALOG_SHOP_MISSING_LICENSE_ITEM,
 	},
 
 	DefaultCameraTag = 

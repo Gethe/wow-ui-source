@@ -266,8 +266,9 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		self.HeaderFrame:SetCategories(self.categoryIDs);
 	elseif event == "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH" then
 		local productID = ...;
-		--self.ProductContainerFrame:UpdateSpecificProduct(productID);
-		if self.ProductDetailsContainerFrame:IsShown() then
+		if self.ProductContainerFrame:IsShown() then
+			self.ProductContainerFrame:UpdateSpecificProduct(productID);
+		elseif self.ProductDetailsContainerFrame:IsShown() then
 			-- If the details frame is shown, update it with the specific product info
 			self.ProductDetailsContainerFrame:UpdateSpecificProduct(productID);
 		end
@@ -375,6 +376,7 @@ function CatalogShopMixin:OnHide()
 
 	C_CatalogShop.CloseCatalogShopInteraction();
 	SimpleCheckout:Hide();
+	self.ForegroundContainer:Hide();
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
@@ -468,9 +470,9 @@ function CatalogShopMixin:OnError(errorID, needsAck, internalErr)
 	local title, msg, link = ErrorLookupInterface.GetErrorMessage(errorID);
 
 	if ( IsGMClient() and not HideGMOnly() ) then
-		self:ShowError(self, title.." ("..internalErr..")", msg, link, needsAck);
+		self:ShowError(title.." ("..internalErr..")", msg, link, needsAck);
 	else
-		self:ShowError(self, title, msg, link, needsAck);
+		self:ShowError(title, msg, link, needsAck);
 	end
 end
 
@@ -534,7 +536,19 @@ end
 
 function CatalogShopMixin:OnProductSelected(data)
 	local backgroundTexture = data and data.backgroundTexture or nil;
-	self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+	if backgroundTexture and backgroundTexture ~= "" then
+		self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
+	else
+		self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
+	end
+
+	local foregroundTexture = data and data.foregroundTexture or nil;
+	if foregroundTexture and foregroundTexture ~= "" then
+		self.ForegroundContainer.Foreground:SetAtlas(foregroundTexture);
+		self.ForegroundContainer:Show();
+	else
+		self.ForegroundContainer:Hide();
+	end
 
 	-- Show the right side details frame if our product container frame is shown (enables purchase and details)
 	self.CatalogShopDetailsFrame:SetShown(self.ProductContainerFrame:IsShown());
@@ -573,72 +587,75 @@ end
 
 function CatalogShopMixin:GetProductInfo(productID)
 	local productInfo = C_CatalogShop.GetProductInfo(productID)
-	if productInfo then
-		local productDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(productInfo.catalogShopProductID);
-		if not productDisplayInfo then
-			error("CatalogShopMixin:GetProductInfo : product display info not found!")
-			return productInfo;
-		end
+	if not productInfo then
+		return nil;
+	end
+
+	local productDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(productInfo.catalogShopProductID);
+	if not productDisplayInfo then
+		error("CatalogShopMixin:GetProductInfo : product display info not found!")
+		return productInfo;
+	end
 		
-		local defaultPreviewModelSceneID = productDisplayInfo.defaultPreviewModelSceneID;
-		local overridePreviewModelSceneID = productDisplayInfo.overridePreviewModelSceneID or nil;
-		local defaultCardModelSceneID = productDisplayInfo.defaultCardModelSceneID;
-		local overrideCardModelSceneID = productDisplayInfo.overrideCardModelSceneID or nil;
-		local defaultWideCardModelSceneID = productDisplayInfo.defaultWideCardModelSceneID;
-		local overrideWideCardModelSceneID = productDisplayInfo.overrideWideCardModelSceneID or nil;
+	local defaultPreviewModelSceneID = productDisplayInfo.defaultPreviewModelSceneID;
+	local overridePreviewModelSceneID = productDisplayInfo.overridePreviewModelSceneID or nil;
+	local defaultCardModelSceneID = productDisplayInfo.defaultCardModelSceneID;
+	local overrideCardModelSceneID = productDisplayInfo.overrideCardModelSceneID or nil;
+	local defaultWideCardModelSceneID = productDisplayInfo.defaultWideCardModelSceneID;
+	local overrideWideCardModelSceneID = productDisplayInfo.overrideWideCardModelSceneID or nil;
 
-		-- get preview scene display data
-		productInfo.sceneDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID);
+	-- get preview scene display data
+	productInfo.sceneDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID);
 
-		-- get small card display data - should always be here
-		productInfo.cardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID);
+	-- get small card display data - should always be here
+	productInfo.cardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID);
 
-		-- get wide card display data if set
-		if defaultWideCardModelSceneID then
-			productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
-		end
+	-- get wide card display data if set
+	if defaultWideCardModelSceneID then
+		productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
+	end
 				
 		-- get bundle children display data
-		if productDisplayInfo.productType == CatalogShopConstants.ProductCardType.Bundle then
-			local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
+	if productDisplayInfo.productType == CatalogShopConstants.ProductType.Bundle then
+		local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
+		if productInfo.sceneDisplayData then
+			productInfo.sceneDisplayData.bundleChildrenDisplayData = {};
+		end
+		if productInfo.cardDisplayData then
+			productInfo.cardDisplayData.bundleChildrenDisplayData = {};
+		end
+		if productInfo.wideCardDisplayData then
+			productInfo.wideCardDisplayData.bundleChildrenDisplayData = {};
+		end
+		for _, childData in ipairs(childrenProductData) do
+			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
 			if productInfo.sceneDisplayData then
-				productInfo.sceneDisplayData.bundleChildrenDisplayData = {};
+				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
+				childProductData.displayOrder = childData.displayOrder or 999;
+				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+				childProductData.cameraDisplayData = nil;
+				table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
 			end
 			if productInfo.cardDisplayData then
-				productInfo.cardDisplayData.bundleChildrenDisplayData = {};
+				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
+				childProductData.displayOrder = childData.displayOrder or 999;
+				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+				childProductData.cameraDisplayData = nil;
+				table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
 			end
 			if productInfo.wideCardDisplayData then
-				productInfo.wideCardDisplayData.bundleChildrenDisplayData = {};
-			end
-			for _, childData in ipairs(childrenProductData) do
-				local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-				if productInfo.sceneDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.cardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.wideCardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
+				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
+				childProductData.displayOrder = childData.displayOrder or 999;
+				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+				childProductData.cameraDisplayData = nil;
+				table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
 			end
 		end
 	end
+
 	return productInfo;
 end
 
@@ -742,7 +759,7 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	self.ProductDescription:SetText(CatalogShopUtil.GetDescriptionText(selectedProductInfo, displayInfo));
 	
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
-	self.ButtonContainer.PurchaseButton:SetEnabled(not selectedProductInfo.purchased);
+	self.ButtonContainer.PurchaseButton:SetEnabled(not selectedProductInfo.isFullyOwned);
 	self:MarkDirty();
 end
 

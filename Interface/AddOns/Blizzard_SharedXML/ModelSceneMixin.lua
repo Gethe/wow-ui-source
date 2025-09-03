@@ -140,7 +140,7 @@ function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, di
 		if disablePlayerMountPreview or isSelfMount then
 			playerActor:ClearModel();
 		else
-			local sheathWeapons = true;
+			local sheatheWeapons = true;
 			local autoDress = true;
 			local hideWeapons = true;
 
@@ -148,7 +148,7 @@ function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, di
 				local characterIndex = nil;  -- defaults to selected character.
 				playerActor:SetPlayerModelFromGlues(characterIndex, sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
 			else
-				playerActor:SetModelByUnit("player", sheathWeapons, autoDress, hideWeapons, usePlayerNativeForm);
+				playerActor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
 			end
 			local calcMountScale = mountActor:CalculateMountScale(playerActor);
 			local inverseScale = 1 / calcMountScale; 

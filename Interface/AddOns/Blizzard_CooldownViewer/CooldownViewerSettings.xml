@@ -44,7 +44,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar parentKey="Bar" frameLevel="511">
+			<StatusBar parentKey="Bar" frameLevel="511" frameStrata="LOW">
 				<Size y="19"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="5"/>

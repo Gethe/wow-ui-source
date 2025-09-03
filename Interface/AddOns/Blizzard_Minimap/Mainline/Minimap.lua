@@ -834,6 +834,11 @@ function ExpansionLandingPageMinimapButtonMixin:SetBestLandingPageMode()
 end
 
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
+	if not GameRulesUtil.ShouldShowExpansionLandingPageButton() then
+		self:Hide();
+		return;
+	end
+
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
 	self:SetBestLandingPageMode();

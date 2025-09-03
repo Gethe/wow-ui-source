@@ -70,6 +70,7 @@ EventSchedulerUIDocumentation.lua
 EventUtilsDocumentation.lua
 ExpansionDocumentation.lua
 ExpansionInfoDocumentation.lua
+ExternalEventURLDocumentation.lua
 FogOfWarDocumentation.lua
 FontDocumentation.lua
 FrameAPIBlobDocumentation.lua
@@ -355,7 +356,6 @@ BountySharedDocumentation.lua
 ButtonConstantsDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
-CatalogShopConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 CharacterSelectionConstantsDocumentation.lua
 ChatConstantsDocumentation.lua
@@ -426,6 +426,7 @@ QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+RecentAlliesConstantsDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 ReportSystemConstantsDocumentation.lua
 RolodexConstantsDocumentation.lua

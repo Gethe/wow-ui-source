@@ -228,7 +228,7 @@ end
 
 function CooldownViewerSettingsItemMixin:SetReorderLocked(locked)
 	self.reorderLocked = locked;
-	self:RefreshIconState();
+	self:RefreshData();
 end
 
 function CooldownViewerSettingsItemMixin:IsReorderLocked()
@@ -270,18 +270,25 @@ function CooldownViewerSettingsItemMixin:AssignToCategory(category)
 	CooldownViewerSettings:RefreshLayout();
 end
 
+function CooldownViewerSettingsItemMixin:CheckCreateFilterOverlay(filterOverlayKey, anchorToRegion)
+	local overlay = self[filterOverlayKey];
+	if not overlay then
+		overlay = self:CreateTexture(nil, "OVERLAY", nil, 7);
+		overlay:SetColorTexture(0, 0, 0, 0.8);
+		overlay:SetAllPoints(anchorToRegion);
+		self[filterOverlayKey] = overlay;
+	end
+
+	return overlay;
+end
+
 function CooldownViewerSettingsItemMixin:ApplyFilter(passesFilter)
 	if passesFilter or self:IsEmptyCategory() then
 		if self.FilterOverlay then
 			self.FilterOverlay:Hide();
 		end
 	else
-		if not self.FilterOverlay then
-			self.FilterOverlay = self:CreateTexture(nil, "OVERLAY", nil, 7);
-			self.FilterOverlay:SetColorTexture(0, 0, 0, 0.8);
-			self.FilterOverlay:SetAllPoints(self);
-		end
-
+		self:CheckCreateFilterOverlay("FilterOverlay", self.Icon);
 		self.FilterOverlay:Show();
 	end
 end
@@ -332,6 +339,19 @@ function CooldownViewerSettingsBarItemMixin:RefreshIconState()
 	local info = self:GetCooldownInfo();
 	local isDisabled = not info.isKnown or self:IsReorderLocked();
 	self.Bar.FillTexture:SetVertexColor((isDisabled and DISABLED_FONT_COLOR or COOLDOWN_BAR_DEFAULT_COLOR):GetRGB());
+end
+
+function CooldownViewerSettingsBarItemMixin:ApplyFilter(passesFilter)
+	CooldownViewerSettingsItemMixin.ApplyFilter(self, passesFilter);
+
+	if passesFilter or self:IsEmptyCategory() then
+		if self.BarFilterOverlay then
+			self.BarFilterOverlay:Hide();
+		end
+	else
+		self:CheckCreateFilterOverlay("BarFilterOverlay", self.Bar);
+		self.BarFilterOverlay:Show();
+	end
 end
 
 function CooldownViewerSettingsBarItemMixin:UpdateReorderMarkerPosition(marker, _cursorX, cursorY)

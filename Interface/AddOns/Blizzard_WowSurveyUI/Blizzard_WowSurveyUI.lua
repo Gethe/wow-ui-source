@@ -1,14 +1,15 @@
 
 StaticPopupDialogs["WOW_SURVEY"] = {
 	text = USER_SURVEY_DIALOG_TEXT,
-	button1 = NO,
+	button1 = YES,
 	button2 = LATER,
-	button3 = YES,
+	button3 = NO,
 	selectCallbackByIndex = true,
 	OnShow = function(dialog, data)
 		WowSurveyStatusFrame:Hide();
 	end,
 	OnButton1 = function(dialog, data)
+		C_WowSurvey.OpenSurvey();
 		dialog.accepted = true;
 	end,
 	OnButton2 = function(dialog, data)
@@ -16,7 +17,6 @@ StaticPopupDialogs["WOW_SURVEY"] = {
 		dialog.accepted = false;
 	end,
 	OnButton3 = function(dialog, data)
-		C_WowSurvey.OpenSurvey();
 		dialog.accepted = true;
 	end,
 	OnHide = function(dialog, data)

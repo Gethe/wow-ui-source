@@ -496,3 +496,80 @@ function CatalogShopLoadingScreenMixin:OnHide()
 	self.loopingSoundEmitter:FinishLoopingSound();
 end
 
+
+----------------------------------------------------------------------------------
+-- CarouselControlMixin
+----------------------------------------------------------------------------------
+CarouselControlMixin = {};
+function CarouselControlMixin:OnLoad()
+	EventRegistry:RegisterCallback("CatalogShopModel.TransmogLoaded.CheckCarousel", self.CheckCarousel, self);
+	EventRegistry:RegisterCallback("CatalogShopModel.TransmogLoaded.HideCarousel", self.HideCarousel, self);
+
+	local function OnCarouselButtonClick(button, buttonName, down)
+		PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
+		self.carouselIndex = self.carouselIndex + button.incrementAmount;
+		self.carouselIndex = Clamp(self.carouselIndex, 1, #self.items);
+		self:UpdateCarousel();
+
+		self.currentItem = self.items[self.carouselIndex];
+
+		if self.actor then
+			CatalogShopUtil.CatalogShopTryOn(self.actor, self.currentItem);
+			-- TODO do we need to notify any other UI elements of what happened here
+			--EventRegistry:TriggerEvent("CatalogShop.Carousel.TransmogChanged", self.currentItem);
+		end
+	end
+
+	local leftButton = self.CarouselLeftButton;
+	leftButton.incrementAmount = -1;
+	leftButton:SetScript("OnClick", OnCarouselButtonClick );
+
+	local rightButton = self.CarouselRightButton;
+	rightButton.incrementAmount = 1;
+	rightButton:SetScript("OnClick", OnCarouselButtonClick );
+end
+
+function CarouselControlMixin:HideCarousel()
+	self:Hide();
+end
+
+function CarouselControlMixin:CheckCarousel(modelScene, actor, playerData)
+	if not playerData or C_Glue.IsOnGlueScreen() then
+		self:Hide();
+		return;
+	end
+	local itemModifiedAppearanceIDs = playerData.itemModifiedAppearanceIDs;
+	self:SetCarouselItems(modelScene, actor, itemModifiedAppearanceIDs);
+end
+
+function CarouselControlMixin:UpdateCarouselText()
+	local carouselText = format(CATALOG_SHOP_CAROUSEL_INDEX, self.carouselIndex, #self.items);
+	self.CarouselLabelContainer.Label:SetText(carouselText);
+end
+
+function CarouselControlMixin:UpdateCarouselButtons()
+	local count = #self.items;
+	local enablePreviousButton = self.carouselIndex > 1;
+	local enableNextButton = self.carouselIndex < count;
+	self.CarouselLeftButton:SetEnabled(enablePreviousButton);
+	self.CarouselRightButton:SetEnabled(enableNextButton);
+end
+
+function CarouselControlMixin:UpdateCarousel()
+	self:UpdateCarouselText();
+	self:UpdateCarouselButtons();
+end
+
+function CarouselControlMixin:SetCarouselItems(modelScene, actor, itemModifiedAppearanceIDs)
+	self.carouselIndex = 1;
+	self.actor = actor;
+	self.modelScene = modelScene;
+	self.items = itemModifiedAppearanceIDs;
+	local count = self.items and #self.items or 0;
+	local allSameType = CatalogShopUtil.ItemAppearancesHaveSameCategory(self.items);
+	local showCarousel = count > 1 and allSameType;
+	if showCarousel then
+		self:UpdateCarousel();
+	end
+	self:SetShown(showCarousel);	
+end

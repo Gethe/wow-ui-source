@@ -280,6 +280,44 @@
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
+
+	<Frame name="CarouselControlTemplate" mixin="CarouselControlMixin" virtual="true">
+		<Frames>
+			<Button parentKey="CarouselLeftButton">
+				<Size x="42" y="41"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="50" y="0"/>
+				</Anchors>
+				<NormalTexture atlas="shop-icon-carousel-default-left"/>
+				<PushedTexture atlas="shop-icon-carousel-pressed-left"/>
+				<DisabledTexture atlas="shop-icon-carousel-disabled-left"/>
+			</Button>
+			<Button parentKey="CarouselRightButton">
+				<Size x="42" y="41"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-50" y="0"/>
+				</Anchors>
+				<NormalTexture atlas="shop-icon-carousel-default-right"/>
+				<PushedTexture atlas="shop-icon-carousel-pressed-right"/>
+				<DisabledTexture atlas="shop-icon-carousel-disabled-right"/>
+			</Button>
+			<Frame parentKey="CarouselLabelContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CarouselLeftButton" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CarouselRightButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Label" inherits="GameFontNormalMed2" setAllPoints="true" justifyH="CENTER" text="XX XX" >
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
 	
 	<Button name="NavigationBarButtonTemplate" mixin="NavigationBarButtonMixin" virtual="true">
 		<Size x="40" y="40"/>

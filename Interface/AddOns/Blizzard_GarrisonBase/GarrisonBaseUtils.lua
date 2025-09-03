@@ -350,6 +350,10 @@ function IsGarrisonLandingPageFeatured()
 end
 
 function ShowGarrisonLandingPage(garrTypeID)
+	if not GameRulesUtil.GarrisonLandingPageAllowed() then
+		return;
+	end
+
 	if (not garrTypeID) then
 		garrTypeID = C_Garrison.GetLandingPageGarrisonType();
 	end

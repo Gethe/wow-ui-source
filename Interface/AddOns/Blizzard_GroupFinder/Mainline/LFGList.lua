@@ -2322,8 +2322,12 @@ end
 local function LFGListAdvancedFiltersActivitiesAllChecked(enabled)
 	local seasonGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentSeason, Enum.LFGListFilter.PvE));
 	local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
+	local timerunningGroups = {};
+	if PlayerIsTimerunning() then
+		timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+	end
 	
-	return #enabled.activities == (#seasonGroups + #expansionGroups);
+	return #enabled.activities == (#seasonGroups + #expansionGroups + #timerunningGroups);
 end
 
 local function LFGListAdvancedFiltersDifficultyNoneChecked(enabled)
@@ -2357,6 +2361,11 @@ local function LFGListAdvancedFiltersCheckAllDungeons(enabled)
 
 	tAppendAll(allDungeons, seasonGroups);
 	tAppendAll(allDungeons, expansionGroups);
+
+	if PlayerIsTimerunning() then
+		local timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+		tAppendAll(allDungeons, timerunningGroups);
+	end
 
 	enabled.activities = allDungeons;
 end
@@ -2451,10 +2460,22 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 			local seasonGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(seasonGroups);
 
-			rootDescription:CreateSpacer();
+			if not TableIsEmpty(seasonGroups) then
+				rootDescription:CreateSpacer();
+			end
 
 			local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(expansionGroups);
+
+			if not TableIsEmpty(expansionGroups) then
+				rootDescription:CreateSpacer();
+			end
+
+			if PlayerIsTimerunning() then
+				local timerunning = PlayerIsTimerunning() and Enum.LFGListFilter.Timerunning or 0;
+				local timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+				AddGroup(timerunningGroups);
+			end
 		end
 
 		rootDescription:CreateSpacer();

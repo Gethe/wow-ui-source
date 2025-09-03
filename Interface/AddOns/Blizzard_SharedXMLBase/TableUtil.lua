@@ -227,6 +227,14 @@ function CopyTable(settings, shallow)
 	return copy;
 end
 
+function CopyTableSafe(settings, shallow)
+	if not settings then
+		return nil;
+	end
+
+	return CopyTable(settings, shallow);
+end
+
 function MergeTable(destination, source)
 	for k, v in pairs(source) do
 		destination[k] = v;

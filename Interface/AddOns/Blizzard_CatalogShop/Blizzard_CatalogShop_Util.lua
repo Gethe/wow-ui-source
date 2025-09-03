@@ -269,12 +269,13 @@ end
 function CatalogShopUtil.ExtractProductInfoForDisplayData(productInfo)
 	local data = {};
 	if productInfo then
-		data.productCardType = productInfo.productType;
+		data.productType = productInfo.productType;
 		data.creatureDisplayInfoID = productInfo.creatureDisplayInfoIDs and productInfo.creatureDisplayInfoIDs[1] or nil;	-- RNM : Currently only grabbing first or nil (#CAROUSEL)
 		data.spellVisualID = productInfo.spellVisualIDs and productInfo.spellVisualIDs[1] or nil;	-- RNM : Currently only grabbing first or nil
 		data.itemModifiedAppearanceIDs = productInfo.itemModifiedAppearanceIDs;
 		data.mainHandItemModifiedAppearanceID = productInfo.mainHandItemModifiedAppearanceID;
 		data.offHandItemModifiedAppearanceID = productInfo.offHandItemModifiedAppearanceID;
+		data.decorFileDataID = productInfo.decorFileDataID;
 	end
 	return data
 end
@@ -375,12 +376,13 @@ function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, d
 	newDisplayData.selectedModelSceneID = selectedModelSceneID;
 
 	local productData = CatalogShopUtil.ExtractProductInfoForDisplayData(productInfo);
-	newDisplayData.productCardType = productData.productCardType or nil;
+	newDisplayData.productType = productData.productType or nil;
 	newDisplayData.creatureDisplayInfoID = productData.creatureDisplayInfoID or nil;
 	newDisplayData.spellVisualID = productData.spellVisualID or nil;
 	newDisplayData.itemModifiedAppearanceIDs = productData.itemModifiedAppearanceIDs or nil;
 	newDisplayData.mainHandItemModifiedAppearanceID = productData.mainHandItemModifiedAppearanceID or nil;
 	newDisplayData.offHandItemModifiedAppearanceID = productData.offHandItemModifiedAppearanceID or nil;
+	newDisplayData.decorFileDataID = productData.decorFileDataID or nil;
 
 	newDisplayData.specialActorID_1 = productInfo.specialActorID_1;
 	newDisplayData.specialActorID_2 = productInfo.specialActorID_2;
@@ -410,8 +412,36 @@ function CatalogShopUtil.SetupSpecialActor(modelScene, actorTag, creatureDisplay
 	end
 	local specialActor = modelScene:GetActorByTag(actorTag);
 	if specialActor then
-		specialActor:SetModelByCreatureDisplayID(creatureDisplayInfo);
-		specialActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
+		if creatureDisplayInfo == "player" then
+			local modelSceneID = modelScene:GetModelSceneID();
+			local _modelSceneType, _cameraIDs, _actorIDs, flags = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
+			local playerData = {};
+			playerData.overrideActorName = actorTag;
+			playerData.modelScene = modelScene;
+			playerData.forceSceneChange = true;
+			playerData.sheatheWeapon = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
+			playerData.hideWeapon = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
+			playerData.autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+			playerData.useNativeForm = true;
+			playerData.noCameraSpin = bit.band(flags, Enum.UIModelSceneFlags.NoCameraSpin) == Enum.UIModelSceneFlags.NoCameraSpin;
+
+			local modelLoadedCB = nil;
+			if C_Glue.IsOnGlueScreen() then
+				specialActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB);
+			else
+				specialActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB);
+			end
+		else
+			local creatureDisplayID = tonumber(creatureDisplayInfo);
+			specialActor:SetModelByCreatureDisplayID(creatureDisplayID);
+		end
+	end
+end
+
+function CatalogShopUtil.ClearSpecialActor(modelScene, actorTag)
+	local specialActor = modelScene:GetActorByTag(actorTag);
+	if specialActor then
+		specialActor:ClearModel();
 	end
 end
 
@@ -444,14 +474,26 @@ function CatalogShopUtil.SetupSpecialActors(displayData, modelScene)
 	end
 end
 
+function CatalogShopUtil.ClearSpecialActors(modelScene)
+	if not modelScene then
+		return;
+	end
+
+	CatalogShopUtil.ClearSpecialActor(modelScene, "special1");
+	CatalogShopUtil.ClearSpecialActor(modelScene, "special2");
+	CatalogShopUtil.ClearSpecialActor(modelScene, "special3");
+	CatalogShopUtil.ClearSpecialActor(modelScene, "special4");
+	CatalogShopUtil.ClearSpecialActor(modelScene, "special5");
+end
+
 -- BUNDLES
 function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, displayData, modelLoadedCB, forceHidePlayer)
 -- This is for displaying the contents of a bundle in a single model scene. We are expecting a naming convention ('tag'+numeral. ) -- > continue this documentation
 -- We derive context from the actor script tag within the modelScene
 
-	local forceSceneChange = true;
-	modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
-	forceSceneChange = false;		-- When adding the child products to the model scene we never want to forceSceneChange
+	local forceEvenIfSame = true;
+	modelScene:SetFromModelSceneID(modelSceneID, forceEvenIfSame);
+	local forceSceneChange = false;		-- When adding the child products to the model scene we never want to forceSceneChange
 
 	-- Create the actor tags for bundle child products based on their type and displayOrder
 		-- Sort the bundle children by their displayOrder
@@ -466,10 +508,10 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 	local nextToy = 1;
 	local nextMog = 1;
 	for _, childDisplayData in ipairs(displayData.bundleChildrenDisplayData) do
-		if childDisplayData.productCardType == CatalogShopConstants.ProductCardType.Pet then
+		if childDisplayData.productType == CatalogShopConstants.ProductType.Pet then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Pet .. tostring(nextPet);
 			nextPet = nextPet + 1;
-		elseif childDisplayData.productCardType == CatalogShopConstants.ProductCardType.Mount then
+		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Mount then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Mount .. tostring(nextMount);
 			-- RNMTODO : Look for transmog-rider#
 			local riderTag = "player-rider" .. tostring(nextMount);
@@ -481,10 +523,10 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 				childDisplayData.mountRiderTag = riderTag;
 			end
 			nextMount = nextMount + 1;
-		elseif childDisplayData.productCardType == CatalogShopConstants.ProductCardType.Toy then
+		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Toy then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Toy .. tostring(nextToy);
 			nextToy = nextToy + 1;
-		elseif childDisplayData.productCardType == CatalogShopConstants.ProductCardType.Transmog then
+		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Transmog then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Transmog .. tostring(nextMog);
 			nextMog = nextMog + 1;
 		end
@@ -509,23 +551,19 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 		local foundChildDisplayData = FindChildDisplayDataMatchingTag(tag);
 		if foundChildDisplayData then
 			lastFoundTag = tag;
-			if foundChildDisplayData.productCardType == CatalogShopConstants.ProductCardType.Mount then
+			if foundChildDisplayData.productType == CatalogShopConstants.ProductType.Mount then
 				local _modelSceneId = nil;
 				local shouldHidePlayer = forceHidePlayer or not foundChildDisplayData.showRider;
 				CatalogShopUtil.SetupModelSceneForMounts(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, shouldHidePlayer, tag, foundChildDisplayData.mountRiderTag);
-			elseif foundChildDisplayData.productCardType == CatalogShopConstants.ProductCardType.Pet then
+			elseif foundChildDisplayData.productType == CatalogShopConstants.ProductType.Pet then
 				local _modelSceneId = nil;
 				CatalogShopUtil.SetupModelSceneForPets(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, tag);
-			elseif foundChildDisplayData.productCardType == CatalogShopConstants.ProductCardType.Transmog then
+			elseif foundChildDisplayData.productType == CatalogShopConstants.ProductType.Transmog then
 				local _modelSceneId = nil;
 				local _preserveCurrentView = false;
 				CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
 			end
 		end
-	end
-
-	if CatalogShopUtil.HasSpecialActors(displayData) then
-		CatalogShopUtil.SetupSpecialActors(displayData, modelScene);
 	end
 
 	-- Calling update model scene on the bundle to pick up camera changes
@@ -636,11 +674,12 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 		return nil;
 	end
 	if modelLoadedCB then
-		actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, playerData.modelScene, actor));
+		actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, playerData.modelScene, actor, playerData));
 	end
 
-	if playerData.forceSceneChange or playerData.useNativeForm ~= playerData.modelScene.useNativeForm then
-		playerData.modelScene.useNativeForm = useNativeForm;
+	local forceSetPlayer = true; -- TODO we were using playerData.forceSceneChange, which is not correct.  we need to solve this
+	if forceSetPlayer or playerData.useNativeForm ~= playerData.modelScene.useNativeForm then
+		playerData.modelScene.useNativeForm = playerData.useNativeForm;
 		local holdBowString = true;
 		actor:SetModelByUnit("player", playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, holdBowString);
 	else
@@ -686,7 +725,7 @@ function CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB
 		return nil;
 	end
 	if modelLoadedCB then
-		actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, playerData.modelScene, actor));
+		actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, playerData.modelScene, actor, playerData));
 	end
 
 	local characterIndex = nil;  -- defaults to selected character.
@@ -728,13 +767,19 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 		if displayData.overrideActorDisplayBucket and #displayData.overrideActorDisplayBucket > 0 then
 			actorDisplayData = displayData.overrideActorDisplayBucket[1];
 		elseif displayData.actorDisplayBucket and #displayData.actorDisplayBucket > 0 then
-			actorDisplayData = displayData.actorDisplayBucket[1];
+			for i, actorDisplayBucket in ipairs(displayData.actorDisplayBucket) do
+				if displayData.modelSceneTag == actorDisplayBucket.scriptTag then
+					actorDisplayData = actorDisplayBucket;
+					break;
+				end
+			end
+			if not actorDisplayData then
+				actorDisplayData = displayData.actorDisplayBucket[1];
+			end
 		end
 	end
 
-	--local actorDisplayData = displayData.overrideActorDisplayBucket[1] or displayData.actorDisplayBucket[1] or nil;
 	if actorDisplayData then
-
 		hideWeapon = actorDisplayData.hideWeapon;
 		sheatheWeapon = actorDisplayData.sheatheWeapon;
 
@@ -786,10 +831,36 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 			end
 			actor:SetModelByCreatureDisplayID(creatureDisplayID);
 			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-			displayData.animationKitID = CatalogShopConstants.DefaultAnimID.PetDefault;
-			displayData.desiredScale = 0.35; -- TODO - FIX THIS, we neeed this data from BattlePetSpecies record
-			actor:SetRequestedScale(displayData.desiredScale);
+			--displayData.animationKitID = CatalogShopConstants.DefaultAnimID.PetDefault;
+			--displayData.desiredScale = 0.35; -- TODO - FIX THIS, we neeed this data from BattlePetSpecies record
+			--actor:SetRequestedScale(displayData.desiredScale);
 						
+			local tryUseOverrideAnim = true;
+			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
+		end
+	end
+	EventRegistry:TriggerEvent("CatalogShop.OnModelSceneChanged", modelScene);
+end
+
+-- DECOR
+function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange)
+	if not displayData then
+		error("CatalogShopUtil.SetupModelSceneForDecor : invalid displayData");
+		return;
+	end
+
+	if displayData.decorFileDataID then
+		if forceSceneChange then
+			modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+		end
+
+		local actor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Decor);
+		if actor then
+			if modelLoadedCB then
+				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
+			end
+			actor:SetModelByFileID(displayData.decorFileDataID);
+
 			local tryUseOverrideAnim = true;
 			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
 		end
@@ -932,20 +1003,20 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 	end
 
 	-- APPLY CHANGES TO ACTOR
-	local productCardType = displayData.productCardType;
+	local productType = displayData.productType;
 	local isTransmogScene = false;
 	local actor;
 	local modelSceneTag = displayData.modelSceneTag or nil;
 
 	if modelSceneTag == nil then
-		if productCardType == CatalogShopConstants.ProductCardType.Mount then
+		if productType == CatalogShopConstants.ProductType.Mount then
 			modelSceneTag = CatalogShopConstants.DefaultActorTag.Mount;
-		elseif productCardType == CatalogShopConstants.ProductCardType.Pet then
+		elseif productType == CatalogShopConstants.ProductType.Pet then
 			modelSceneTag = CatalogShopConstants.DefaultActorTag.Pet;
 		end
 	end
 
-	if productCardType == CatalogShopConstants.ProductCardType.Transmog then
+	if productType == CatalogShopConstants.ProductType.Transmog then
 		actor = modelScene.CachedPlayerActor;
 		isTransmogScene = true;
 	elseif modelSceneTag ~= nil then
@@ -961,6 +1032,9 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 	else
 		-- TODO we have something else, maybe a bundle?
 		local actorDisplayBucket = displayData.actorDisplayBucket;
+		if not actorDisplayBucket then
+			return;
+		end
 		for i, actorDisplayData in ipairs(actorDisplayBucket) do
 			actor = modelScene:GetActorByTag(actorDisplayData.scriptTag);
 			if actor then
@@ -1028,11 +1102,11 @@ function CatalogShopUtil.GetDescriptionText(productInfo, displayInfo)
 	local cardType = displayInfo.productType;
 
 	-- TODO: Investigate alternative text for some types (WOW11-138782)
-	if cardType == CatalogShopConstants.ProductCardType.Pet
-		or cardType == CatalogShopConstants.ProductCardType.Mount
-		or cardType == CatalogShopConstants.ProductCardType.Toy
-		or cardType == CatalogShopConstants.ProductCardType.Transmog
-		or cardType == CatalogShopConstants.ProductCardType.Token then
+	if cardType == CatalogShopConstants.ProductType.Pet
+		or cardType == CatalogShopConstants.ProductType.Mount
+		or cardType == CatalogShopConstants.ProductType.Toy
+		or cardType == CatalogShopConstants.ProductType.Transmog
+		or cardType == CatalogShopConstants.ProductType.Token then
 		return displayInfo.itemDescription;
 	else
 		return productInfo.description;
@@ -1059,4 +1133,81 @@ function CatalogShopUtil.SetAlternateProductURLImage(texture, displayInfo)
 	if displayInfo and displayInfo.otherProductPMTURL then
 		C_Texture.SetURLTexture(texture, displayInfo.otherProductPMTURL);
 	end
+end
+
+function CatalogShopUtil.SetMissingLicenseCaptionText(text, displayInfo)
+	if not displayInfo then
+		text:SetText("");
+		return;
+	end
+
+	local secureEnv = GetCurrentEnvironment();
+
+	if displayInfo.otherProductGameTitleBaseTag then
+		local gameNameStr = nil;
+		if displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Classic then
+			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Classic;
+		elseif displayInfo.otherProfuctGameType == CatalogShopConstants.GameTypes.Modern then
+			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Modern;
+		end
+		-- At this point gameNameStr should be nil (no special name format), "%s Classic", or "World of Warcraft: %s"
+
+		if gameNameStr then
+			local gameTitleStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
+			gameNameStr = gameNameStr:format(gameTitleStr);
+		else
+			gameNameStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
+		end
+		-- At this point gameNameStr is a fully described game title "Mists of Pandaria Classic" or "World of Warcraft: The War Within"
+
+		gameNameStr = CatalogShopConstants.ShopGlobalStringTag.MissingLicenseCaptionText:format(gameNameStr);
+		-- At this point the text is complete and holds something like "This product is available in Mists of Pandaria Classic"
+
+		text:SetText(gameNameStr);
+	else
+		text:SetText("");
+	end
+end
+
+local function IsWeapon(categoryID)
+	local firstWeaponCategory = Enum.TransmogCollectionType.Wand;
+	local lastWeaponCategory = Enum.TransmogCollectionType.Warglaives;
+	if categoryID >= firstWeaponCategory and categoryID <= lastWeaponCategory then
+		return true;
+	end
+	return false;
+end
+
+function CatalogShopUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceIDs)
+	local firstCategoryID = nil;
+	if not itemModifiedAppearanceIDs or #itemModifiedAppearanceIDs == 0 then
+		return false;
+	end
+
+	-- weapons have multiple category slots and we want to treat them as a single slot for the purpose of 
+	-- iterating over transmog items in a carousel.
+	-- Example: a transmog set is all Enum.TransmogCollectionType.Back, we want to return TRUE so this will carousel
+	-- or - this transmog set has ALL weapons (but different slots) - we want to return TRUE so this will carousel
+	local usingWeaponBucket = false;
+
+	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
+		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		if not firstCategoryID then
+			firstCategoryID = categoryID;
+			if IsWeapon(firstCategoryID) then
+				usingWeaponBucket = true;
+			end
+		end
+
+		if usingWeaponBucket then
+			if not IsWeapon(categoryID) then
+				return false;
+			end
+		else
+			if firstCategoryID ~= categoryID then
+				return false;
+			end
+		end
+	end
+	return true;
 end

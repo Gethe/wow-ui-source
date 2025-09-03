@@ -249,7 +249,15 @@ TimerunningEventBannerMixin = {};
 local TimerunningTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 TimerunningTimeRemainingFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, false);
 function TimerunningTimeRemainingFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Days;
+	if not seconds then
+		return SecondsFormatter.Interval.Days;
+	elseif seconds > SECONDS_PER_DAY then
+		return SecondsFormatter.Interval.Days;
+	elseif seconds > SECONDS_PER_HOUR then
+		return SecondsFormatter.Interval.Hours;
+	end
+
+	return SecondsFormatter.Interval.Minutes;
 end
 
 function TimerunningEventBannerMixin:OnLoad()

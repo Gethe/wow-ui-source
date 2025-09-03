@@ -1774,6 +1774,13 @@
 		<DisabledFont style="GameFontDisable"/>
 	</Button>
 
+	<Button name="SharedGoldRedButtonExtraLargeTemplate" inherits="BigGoldRedThreeSliceButtonTemplate" virtual="true">
+		<Size x="200" y="36"/>
+		<NormalFont style="GameFontHighlightLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+	</Button>
+
 	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
 		<Size x="20" y="20"/>
 		<!--
@@ -2880,6 +2887,7 @@
 	<Frame name="MainMenuFrameTemplate" mixin="MainMenuFrameMixin" inherits="VerticalLayoutFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="MainMenuFrameButtonTemplate" type="string"/>
+			<KeyValue key="goldRedButtonTemplate" value="SharedGoldRedButtonExtraLargeTemplate " type="string"/>
 
 			<KeyValue key="topPadding" value="48" type="number"/>
 			<KeyValue key="bottomPadding" value="34" type="number"/>

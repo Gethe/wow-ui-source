@@ -434,26 +434,28 @@ function LFDQueueFrame_OnShow(self)
 			LFDQueueFrame_SetTypeInternal(dungeonType);
 		end
 
-		local followerRadio = rootDescription:CreateRadio(LFG_TYPE_FOLLOWER_DUNGEON, IsSelected, SetSelected, "follower");
-		if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN) then
-			followerRadio:AddInitializer(function(button, description, menu)
-				local newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
-				local x = (newFeatureFrame:GetTextWidth() / 2) + 5;
-				newFeatureFrame:SetPoint("LEFT", button.fontString, "RIGHT", x, 0);
-			end);
-		end
+		if GameRulesUtil.ShouldShowFollowerDungeonOptionInLFG() then
+			local followerRadio = rootDescription:CreateRadio(LFG_TYPE_FOLLOWER_DUNGEON, IsSelected, SetSelected, "follower");
+			if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN) then
+				followerRadio:AddInitializer(function(button, description, menu)
+					local newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+					local x = (newFeatureFrame:GetTextWidth() / 2) + 5;
+					newFeatureFrame:SetPoint("LEFT", button.fontString, "RIGHT", x, 0);
+				end);
+			end
 
-		followerRadio:SetOnEnter(function(button)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN, true);
-		end);
-
-		local disableFollowerDungeonOptionMessage = GetFollowerDungeonFailureMessage();
-		if disableFollowerDungeonOptionMessage then
-			followerRadio:SetEnabled(false);
-			followerRadio:SetTooltip(function(tooltip, description)
-				GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
-				GameTooltip_AddErrorLine(tooltip, disableFollowerDungeonOptionMessage);
+			followerRadio:SetOnEnter(function(button)
+				SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FOLLOWER_DUNGEON_SEEN, true);
 			end);
+
+			local disableFollowerDungeonOptionMessage = GetFollowerDungeonFailureMessage();
+			if disableFollowerDungeonOptionMessage then
+				followerRadio:SetEnabled(false);
+				followerRadio:SetTooltip(function(tooltip, description)
+					GameTooltip_SetTitle(tooltip, YOU_MAY_NOT_QUEUE_FOR_THIS);
+					GameTooltip_AddErrorLine(tooltip, disableFollowerDungeonOptionMessage);
+				end);
+			end
 		end
 
 		rootDescription:CreateRadio(SPECIFIC_DUNGEONS, IsSelected, SetSelected, "specific");

@@ -2813,9 +2813,17 @@ function CollapsableUpgradeFrameMixin:OnLoad()
 end
 
 function CollapsableUpgradeFrameMixin:OnShow()
-	local currentExpansionLevel, _shouldShowBanner, upgradeButtonText, features, textureKit = AccountUpgradePanel_GetBannerInfo();
+	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, features, textureKit = AccountUpgradePanel_GetBannerInfo();
+
+	--  Necessary for an edge case that can't be reliably reproduce where the results of
+	-- AccountUpgradePanel_GetBannerInfo changed since the last time EvaluateShownState was called.
+	if shouldShowBanner ~= true then
+		self:Hide();
+		return;
+	end
+
 	local upgradeLogo = GetDisplayedExpansionLogo(currentExpansionLevel);
-	self:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit);
+	self:UpdateContent(upgradeButtonText, upgradeLogo, features);
 	self.ExpandBar.TrialBG:SetShown(currentExpansionLevel == nil);
 	self.textureKit = textureKit;
 	self:EvaluateCollapsedState();
@@ -2874,11 +2882,10 @@ function CollapsableUpgradeFrameMixin:EvaluateCollapsedState()
 	CharacterSelect_UpdateGameRoomBillingFrameAnchors();
 end
 
-function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit)
+function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLogo, features)
 	self.UpgradeButton:SetText(upgradeButtonText);
 
 	self.featureFramePool:ReleaseAll();
-
 
 	for index, feature in ipairs(features) do
 		if index <= self.MAX_UPGRADE_FEATURES then
@@ -2888,7 +2895,7 @@ function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLo
 			featureFrame.layoutIndex = index;
 			featureFrame:Show();
 		end
-    end
+	end
 
 	self.Features:Layout();
 	self.ExpandBar.Logo:SetTexture(upgradeLogo);

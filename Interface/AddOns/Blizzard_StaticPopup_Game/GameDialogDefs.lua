@@ -1577,7 +1577,7 @@ StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
 	end,
 	OnShow = function(dialog, data)
 		local currentNote = data.interactionData.note;
-		dialog:GetEditBox():SetText(currentNote);
+		dialog:GetEditBox():SetText(currentNote or "");
 		
 		dialog:GetEditBox():SetFocus();
 	end,

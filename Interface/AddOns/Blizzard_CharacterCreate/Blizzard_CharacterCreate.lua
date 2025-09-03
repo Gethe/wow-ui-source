@@ -592,7 +592,7 @@ function CharacterCreateMixin:NavBack()
 		if( IsKioskGlueEnabled() ) then
 			GlueParent_SetScreen("kioskmodesplash");
 		else
-			if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+			if CharacterUpgrade_IsCreatedCharacterTrialBoost() or CharacterUpgrade_IsCreatedCharacterUpgrade() then
 				CharacterUpgrade_ResetBoostData();
 			end
 

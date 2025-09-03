@@ -96,14 +96,30 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 	local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
 		return elementData.catalogShopProductID == productID;
 	end);
+
 	if foundElementData then
 		MergeTable(foundElementData, productInfo);
-		EventRegistry:TriggerEvent("CatalogShop.OnProductInfoChanged", foundElementData);
 
-		-- Retrigger selection behavior because the selected product was incomplete
 		local selectedProductInfo = self:GetSelectedProductInfo();
-		if selectedProductInfo.catalogShopProductID == foundElementData.catalogShopProductID then
-			self:OnProductSelected(foundElementData);
+		local selectedProductIsUpdating = selectedProductInfo and selectedProductInfo.catalogShopProductID == foundElementData.catalogShopProductID;
+
+		if foundElementData.isHidden then
+			local dataProvider = scrollBox:GetDataProvider();
+			if dataProvider then
+				dataProvider:Remove(foundElementData);
+
+				-- Reset selection because the selected product is now gone
+				if selectedProductIsUpdating then
+					self:SelectFirstProductSilent();
+				end
+			end
+		else
+			EventRegistry:TriggerEvent("CatalogShop.OnProductInfoChanged", foundElementData);
+
+			-- Retrigger selection behavior because the selected product was incomplete
+			if selectedProductIsUpdating then
+				self:OnProductSelected(foundElementData);
+			end
 		end
 	end
 end
@@ -135,12 +151,10 @@ function CatalogShopProductContainerFrameMixin:UpdateProducts(resetSelection)
 	end
 
 	-- Try to preserve selection. If not select first product
-	self.silenceSelectionSounds = true;
 	if resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
 		self.selectionWasAutomatic = true;		-- The selection is being reset, keep track for later telemetry
-		self:SelectFirstProduct();
+		self:SelectFirstProductSilent();
 	end
-	self.silenceSelectionSounds = false;
 end
 
 function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
@@ -192,10 +206,12 @@ end
 function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	self.selectedProductInfo = productInfo;
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.selectedProductInfo.catalogShopProductID);
-	local productCardType = productInfo.sceneDisplayData.productCardType;
+	local productType = productInfo.sceneDisplayData.productType;
 
-	--TODO RNM - this call is asserting
-	--C_CatalogShop.ProductSelectedTelemetry(self.selectedProductInfo.categoryID, self.selectedProductInfo.sectionID, self.selectedProductInfo.catalogShopProductID, self.selectionWasAutomatic);
+	-- Skip telemetry if this product is a bundle child (we dont track those)
+	if not self.selectedProductInfo.isBundleChild then
+		C_CatalogShop.ProductSelectedTelemetry(self.selectedProductInfo.categoryID, self.selectedProductInfo.sectionID, self.selectedProductInfo.catalogShopProductID, self.selectionWasAutomatic);
+	end
 	self.selectionWasAutomatic = false;			-- Reset the variable.
 
 	CatalogShopFrame:HidePreviewFrames();
@@ -208,7 +224,7 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		modelSceneAllowsRotation = ModelSceneShouldAllowRotation(displayInfo.defaultPreviewModelSceneID);
 	end
 	-- Additionally, never allow camera rotation for a Bundle type product
-	local canRotateModelScene = modelSceneAllowsRotation and (productCardType ~= CatalogShopConstants.ProductCardType.Bundle);
+	local canRotateModelScene = modelSceneAllowsRotation and (productType ~= CatalogShopConstants.ProductType.Bundle);
 	if canRotateModelScene then
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseDown", CatalogShopFrame.CachedModelSceneOnMouseDownFunc);
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseUp", CatalogShopFrame.CachedModelSceneOnMouseUpFunc);
@@ -217,12 +233,12 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseUp", nil);
 	end
 
-	if productCardType == CatalogShopConstants.ProductCardType.Token then
+	if productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
-	elseif productCardType == CatalogShopConstants.ProductCardType.Toy then
+	elseif productType == CatalogShopConstants.ProductType.Toy then
 		CatalogShopFrame.ToyContainerFrame:Show();
 		CatalogShopFrame.ToyContainerFrame.AnimContainer.ToyIconFrame.Icon:SetTexture(displayInfo.iconFileDataID);
-	elseif productCardType == CatalogShopConstants.ProductCardType.Services then
+	elseif productType == CatalogShopConstants.ProductType.Services then
 		CatalogShopFrame.ServicesContainerFrame:Show();
 
 		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
@@ -237,7 +253,7 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 			iconFrame.ProductCounterText:Hide();
 		end
 		iconFrame.Icon:SetSize(224, 224);
-	elseif productCardType == CatalogShopConstants.ProductCardType.Subscription then
+	elseif productType == CatalogShopConstants.ProductType.Subscription then
 		CatalogShopFrame.ServicesContainerFrame:Show();
 		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
 		iconFrame.ProductCounter:Hide();
@@ -297,6 +313,12 @@ function CatalogShopProductContainerFrameMixin:SelectFirstProduct()
 	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData(IsElementDataItemInfo);
 end
 
+function CatalogShopProductContainerFrameMixin:SelectFirstProductSilent()
+	self.silenceSelectionSounds = true;
+	self:SelectFirstProduct();
+	self.silenceSelectionSounds = false;
+end
+
 function CatalogShopProductContainerFrameMixin:GetSelectedProductInfo()
 	return self.selectedProductInfo;
 end
@@ -343,6 +365,11 @@ function ProductContainerFrameMixin:InitProductContainer()
 	local function addProductToDataProvider(dataProvider, categoryID, sectionID, productID)
 		local productInfo = CatalogShopFrame:GetProductInfo(productID);
 		if not productInfo then
+			return false;
+		end
+
+		-- If the product is hidden, skip it
+		if productInfo.isHidden then
 			return false;
 		end
 
@@ -408,17 +435,28 @@ function ProductContainerFrameMixin:InitProductContainer()
 			factory(CatalogShopConstants.CardTemplate.Header, InitializeSection)
 		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
 			local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
-			local scrollViewSize = sectionInfo.scrollGridSize or 3;
+			
+			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
 			if scrollViewSize == 1 then
-				if elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Token then
-					factory(CatalogShopConstants.CardTemplate.Token, InitializeButton)
-				elseif elementData.cardDisplayData.productCardType == CatalogShopConstants.ProductCardType.Subscription then
+				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Token then
+					factory(CatalogShopConstants.CardTemplate.WideCardToken, InitializeButton)
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
 					factory(CatalogShopConstants.CardTemplate.WideCardSubscription, InitializeButton)
 				else
 					factory(CatalogShopConstants.CardTemplate.Wide, InitializeButton)
 				end
 			else
-				factory(CatalogShopConstants.CardTemplate.Small, InitializeButton)
+				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
+					factory(CatalogShopConstants.CardTemplate.SmallServices, InitializeButton)
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
+					factory(CatalogShopConstants.CardTemplate.SmallSubscriptions, InitializeButton)
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Tender then
+					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton)
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
+					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton)
+				else
+					factory(CatalogShopConstants.CardTemplate.Small, InitializeButton)
+				end
 			end
 		end
 	end

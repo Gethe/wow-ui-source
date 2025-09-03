@@ -1,9 +1,33 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-
+	<!-- Section Header Template -->
+	<Frame name="CatalogShopSectionHeaderTemplate" mixin="CatalogShopSectionHeaderMixin" virtual="true">
+		<Size x="557" y="42"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="headerText" justifyH="LEFT" inherits="GameFontNormalLarge">
+					<Size x="0" y="42"/>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="sectionHeaderRule" atlas="shop-list-rule" useAtlasSize="true" >
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.headerText" relativePoint="RIGHT" x="0" y="-8"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+	
 	<!-- Default Product Card Template -->
-	<Button name="DefaultCatalogShopCardTemplate" clipChildren="true" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="DefaultCatalogShopCardTemplate" clipChildren="true" mixin="CatalogShopDefaultProductCardMixin" motionScriptsWhileDisabled="true" virtual="true">
 		<Frames>
 			<Frame parentKey="InvisibleMouseOverFrame" mixin="InvisibleMouseOverFrameMixin" enableMouse="true" hidden="true">
 				<Scripts>
@@ -106,32 +130,12 @@
 		</Scripts>
 	</Button>
 
-	<!-- Section Header Template -->
-	<Frame name="CatalogShopSectionHeaderTemplate" mixin="CatalogShopSectionHeaderMixin" virtual="true">
-		<Size x="557" y="42"/>
-		<Layers>
-			<Layer>
-				<FontString parentKey="headerText" justifyH="LEFT" inherits="GameFontNormalLarge">
-					<Size x="0" y="42"/>
-					<Color color="WHITE_FONT_COLOR"/>
-					<Anchors>
-						<Anchor point="LEFT" x="20" y="0" />
-					</Anchors>
-				</FontString>
-				<Texture parentKey="sectionHeaderRule" atlas="shop-list-rule" useAtlasSize="true" >
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.headerText" relativePoint="RIGHT" x="0" y="-8"/>
-						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad" />
-		</Scripts>
-	</Frame>
 
-	<!-- Small Product Card Templates -->
+
+	<!--
+		Small Card Templates are used in the main catalog view.
+
+		Generic Small Product Card Templates -->
 	<Button name="SmallCatalogShopProductCardTemplate" mixin="SmallCatalogShopProductCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
 		<Size x="195" y="267"/>
 		<KeyValues>
@@ -146,36 +150,44 @@
 			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
 		</KeyValues>
 	</Button>
-	<Button name="SmallCatalogShopProductDetailsCardTemplate" mixin="SmallCatalogShopProductDetailsCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
-		<Size x="195" y="267"/>
-		<KeyValues>
-			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
-			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
-			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
-			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
-		</KeyValues>
-	</Button>
-	<Button name="SmallCatalogShopSubscriptionDetailsCardTemplate" mixin="SmallCatalogShopSubscriptionDetailsCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
-		<Size x="195" y="267"/>
-		<KeyValues>
-			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
-			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
-			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
-			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
-			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
-		</KeyValues>
-	</Button>
 
-	<!-- Wide Product Card Template -->
+	<!-- Services Small Card Template -->
+	<Button name="SmallCatalogShopServicesCardTemplate" mixin="SmallCatalogShopServicesCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+	
+	<!-- Subscription Small Card Template -->
+	<Button name="SmallCatalogShopSubscriptionCardTemplate" mixin="SmallCatalogShopSubscriptionCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+	
+	<!-- Tender Small Card Template -->
+	<Button name="SmallCatalogShopTenderCardTemplate" mixin="SmallCatalogShopTenderCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Toys Small Card Template -->
+	<Button name="SmallCatalogShopToysCardTemplate" mixin="SmallCatalogShopToysCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	
+	<!--
+		Details Card Templates are structually similar to Small Product Card Templates, however
+		they're used in a different context (the details pane) and have different mixins to handle
+		
+		Generic Details Card Template -->
+	<Button name="DetailsCatalogShopProductCardTemplate" mixin="DetailsCatalogShopProductCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Services Details Card Template -->
+	<Button name="DetailsCatalogShopServicesCardTemplate" mixin="DetailsCatalogShopServicesCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Subscription and Game Time Details Card Template -->
+	<Button name="DetailsCatalogShopSubscriptionCardTemplate" mixin="DetailsCatalogShopSubscriptionCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Trader's Tender Card Template -->
+	<Button name="DetailsCatalogShopTenderCardTemplate" mixin="DetailsCatalogShopTenderCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Toys Details Card Template -->
+	<Button name="DetailsCatalogShopToysCardTemplate" mixin="DetailsCatalogShopToysCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+	
+
+	<!--
+		Large Card Templates are used in the main catalog view, frequently in the Featured section of the catalog, or other important sections.
+
+		Generic Wide Product Card Template -->
 	<Button name="WideCatalogShopProductCardTemplate" mixin="WideCatalogShopProductCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
 		<Size x="558" y="322"/>
 		<KeyValues>
@@ -192,35 +204,10 @@
 	</Button>
 
 	<!-- Subscription Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
-	<Button name="SubscriptionWideCatalogShopProductCardTemplate" mixin="SubscriptionWideCatalogShopProductCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
-		<Size x="558" y="322"/>
-		<KeyValues>
-			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>
-			<KeyValue key="selectedFrameTexture" value="shop-card-wide-frame-selected" type="string"/>
-			<KeyValue key="hoverFrameTexture" value="shop-card-wide-frame-hover" type="string"/>
-			<KeyValue key="discountedBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="ownedBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="expiringBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="newBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
-		</KeyValues>
-	</Button>
+	<Button name="WideSubscriptionCatalogShopCardTemplate" mixin="WideSubscriptionCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" />
 	
 		<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
-	<Button name="WoWTokenCatalogShopProductCardTemplate" mixin="WoWTokenCatalogShopProductCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
-		<Size x="558" y="322"/>
-		<KeyValues>
-			<KeyValue key="defaultBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="defaultFrameTexture" value="shop-card-wide-frame-default" type="string"/>
-			<KeyValue key="selectedFrameTexture" value="shop-card-wide-frame-selected" type="string"/>
-			<KeyValue key="hoverFrameTexture" value="shop-card-wide-frame-hover" type="string"/>
-			<KeyValue key="discountedBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="ownedBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="expiringBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="newBackground" value="shop-card-wide-bg" type="string"/>
-			<KeyValue key="classicTexture" value="shop-card-wide-bg" type="string"/>
-		</KeyValues>
+	<Button name="WideWoWTokenCatalogShopCardTemplate" mixin="WideWoWTokenCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
 		<Frames>
 			<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" clipChildren="true" frameLevel="300" >
 				<Size x="300" y="300" />
