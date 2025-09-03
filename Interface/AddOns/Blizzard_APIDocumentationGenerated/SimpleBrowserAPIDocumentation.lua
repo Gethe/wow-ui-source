@@ -71,16 +71,6 @@ local SimpleBrowserAPI =
 			},
 		},
 		{
-			Name = "NavigateTo",
-			Type = "Function",
-			Documentation = { "Not functional in public builds" },
-
-			Arguments =
-			{
-				{ Name = "url", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "OpenExternalLink",
 			Type = "Function",
 
