@@ -2391,3 +2391,13 @@ end
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
 end
+
+UIPanelIconDropdownButtonMixin = { };
+
+function UIPanelIconDropdownButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
+end
+
+function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
+end

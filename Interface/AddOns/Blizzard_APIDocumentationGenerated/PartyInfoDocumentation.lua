@@ -7,6 +7,15 @@ local PartyInfo =
 	Functions =
 	{
 		{
+			Name = "ChallengeModeRestrictionsActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "restrictionsActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmLeaveParty",
 			Type = "Function",
 			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },

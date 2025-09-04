@@ -3,7 +3,7 @@
 ## AllowLoadGameType: mists
 ## LoadFirst: 1
 ## RequiredDep: Blizzard_SharedXML
-## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_Shared_SimpleCheckout, Blizzard_FrameXMLBase
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_SimpleCheckout, Blizzard_FrameXMLBase
 ## UseSecureEnvironment: 1
 
 Classic\StoreConstants.lua
