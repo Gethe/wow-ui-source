@@ -2993,11 +2993,13 @@ function FriendsIgnoreListMixin:OnLoad()
 end
 
 function FriendsIgnoreListMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", true);
 	IgnoreList_Update();
 end
 
 function FriendsIgnoreListMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", false);
 end
 

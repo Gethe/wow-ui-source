@@ -1584,13 +1584,29 @@ function TalentFrameBaseMixin:ReportConfigCommitError()
 	end
 end
 
+function TalentFrameBaseMixin:SetSuppressingConfigOperationErrors(suppress)
+	local wasSuppressingConfigOperationErrors= self.suppressConfigOperationErrors;
+	self.suppressConfigOperationErrors = suppress;
+	return wasSuppressingConfigOperationErrors;
+end
+
+function TalentFrameBaseMixin:AttemptConfigOperationWithErrorsSuppressed(operation, ...)
+	local wasSuppressingConfigOperations = self:SetSuppressingConfigOperationErrors(true);
+	local operationSuccessful = self:AttemptConfigOperation(operation, ...);
+	self:SetSuppressingConfigOperationErrors(wasSuppressingConfigOperations);
+	return operationSuccessful;
+end
+
 function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 	if not self:CheckAndReportCommitOperation() then
 		return false;
 	end
 
 	if not operation(self:GetConfigID(), ...) then
-		UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+		if not self.suppressConfigOperationErrors then
+			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+		end
+
 		return false;
 	end
 

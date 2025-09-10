@@ -78,8 +78,8 @@ function CatalogShopModelSceneContainerFrameMixin:OnUpdate()
 	end
 end
 
-function CatalogShopModelSceneContainerFrameMixin:UpdateFormButtonVisibility(forceHideButtons)
-	if forceHideButtons then
+function CatalogShopModelSceneContainerFrameMixin:UpdateFormButtonVisibility(forceHideFormButtons)
+	if forceHideFormButtons then
 		self.NormalFormButton:Hide();
 		self.AlternateFormButton:Hide();
 		return;
@@ -173,7 +173,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 
 	local dataHasChanged = true;
 	local shouldSetupModelScene = forceSceneChange or dataHasChanged;
-	local forceHideButtons = false;
+	local forceHideFormButtons = false;
 	local currentActor;
 	local modelScene = self.MainModelScene;
 
@@ -195,6 +195,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 		CatalogShopUtil.ClearSpecialActors(modelScene)
 
 		if productType == CatalogShopConstants.ProductType.Bundle then
+			forceHideFormButtons = true;
 			local forceHidePlayer = false;
 			local bestActorTag = CatalogShopUtil.SetupModelSceneForBundle(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceHidePlayer);
 			modelScene:Show();
@@ -204,7 +205,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 			-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 			if displayInfo.hasUnknownLicense then
 				modelScene:Hide();
-				forceHideButtons = true;
+				forceHideFormButtons = true;
 				self.WatermarkLogoTexture:Show();
 				CatalogShopUtil.SetAlternateProductIcon(self.WatermarkLogoTexture, displayInfo);
 				self.PMTImageForNoModel:Show();
@@ -225,7 +226,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 				CatalogShopUtil.SetupModelSceneForPets(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 				modelScene:Show();
 				self.previousMainModelSceneID = defaultModelSceneID;
-				forceHideButtons = true;
+				forceHideFormButtons = true;
 				currentActor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Pet);
 			elseif productType == CatalogShopConstants.ProductType.Transmog then --transmogs
 				if forceSceneChange == nil then
@@ -240,11 +241,11 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 				CatalogShopUtil.SetupModelSceneForDecor(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 				modelScene:Show();
 				self.previousMainModelSceneID = defaultModelSceneID;
-				forceHideButtons = true;
+				forceHideFormButtons = true;
 				currentActor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Decor);
 			else
 				modelScene:Hide();
-				forceHideButtons = true;
+				forceHideFormButtons = true;
 			end
 			CatalogShopFrame:SetCurrentActor(currentActor);
 		end
@@ -253,7 +254,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 		end
 		CatalogShopFrame:SetCurrentModelSceneData(modelScene, defaultModelSceneID, displayInfo.overridePreviewModelSceneID);
 	end
-	self:UpdateFormButtonVisibility(forceHideButtons);
+	self:UpdateFormButtonVisibility(forceHideFormButtons);
 	EventRegistry:TriggerEvent("CatalogShopModel.OnProductSelectedAfterModel", self.currentData);
 end
 

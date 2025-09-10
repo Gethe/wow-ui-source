@@ -225,4 +225,22 @@
 		</KeyValues>
 		<Size x="64" y="64"/>
 	</Button>
+
+	<Frame name="TalentButtonCircularGlowTemplate" inherits="AnimateWhileShownTemplate" virtual="true">
+		<Size x="80" y="80"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="GlowTexture" atlas="lemixArtifact-node-circle-glw-FX" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="GlowTexture" fromAlpha="0" toAlpha="1" duration="1.0" order="1"/>
+				<Alpha childKey="GlowTexture" fromAlpha="1" toAlpha="0" duration="1.0" order="2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
 </Ui>

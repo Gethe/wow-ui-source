@@ -1,4 +1,4 @@
-ScrollBoxLinearBaseViewMixin = CreateFromMixins(ScrollBoxViewMixin);
+ScrollBoxLinearBaseViewMixin = {};
 
 function ScrollBoxLinearBaseViewMixin:SetPadding(top, bottom, left, right, spacing)
 	local padding = CreateScrollBoxPadding(top, bottom, left, right, spacing);
@@ -123,8 +123,67 @@ function ScrollBoxListLinearViewMixin:ClearCachedData()
 	self.templateExtents = nil;
 end
 
+function ScrollBoxListLinearViewMixin:HasIdenticalElementExtent()
+	if self.elementExtentCalculator then
+		return false;
+	end
+
+	if self.elementExtent then
+		return true;
+	end
+	
+	return self.hasIdenticalTemplateExtent;
+end
+
+function ScrollBoxListLinearViewMixin:GetIdenticalElementExtent()
+	assert(self:HasIdenticalElementExtent());
+	if self.elementExtent then
+		return self.elementExtent;
+	end
+
+	local info = self:GetFirstTemplateInfo();
+	return self:GetExtentFromInfo(info);
+end
+
+function ScrollBoxListLinearViewMixin:GetTemplateExtentFromElementData(elementData)
+	local frameTemplate, initializer = self:GetFactoryDataFromElementData(elementData);
+	return self:GetTemplateExtent(frameTemplate);
+end
+
+function ScrollBoxListLinearViewMixin:CalculateFrameExtent(dataIndex, elementData)
+	if self.elementExtent then
+		return self.elementExtent;
+	end
+
+	if self.elementExtentCalculator then
+		return self.elementExtentCalculator(dataIndex, elementData);
+	end
+
+	return self:GetTemplateExtentFromElementData(elementData);
+end
+
+function ScrollBoxListLinearViewMixin:GetElementExtent(dataIndex)
+	local size = self:GetDataProviderSize();
+	if dataIndex < 1 or dataIndex > size then
+		return 0;
+	end
+
+	if self.calculatedElementExtents then
+		return self.calculatedElementExtents[dataIndex];
+	elseif self:HasIdenticalElementExtent() then 
+		return self:GetIdenticalElementExtent();
+	elseif self.templateExtents then
+		return self.templateExtents[dataIndex];
+	end
+	return 0;
+end
+
+function ScrollBoxListLinearViewMixin:HasAnyExtentOrSizeCalculator()
+	return self.elementExtentCalculator ~= nil;
+end
+
 do
-	local function HasEqualTemplateInfoExtents(view, infos)
+	local function HasEqualTemplateInfoExtent(view, infos)
 		local templateInfo = infos[next(infos)];
 		if not templateInfo then
 			return false;
@@ -144,111 +203,38 @@ do
 	
 		return true;
 	end
-	
-	function ScrollBoxListLinearViewMixin:HasIdenticalElementExtent()
-		if self.elementExtent then
-			return true;
-		end
 
-		if self.elementExtentCalculator then
-			return false;
-		end
-
-		if self.templateInfoDirty then
-			self.templateInfoDirty = nil;
-	
-			local infos = self.templateInfoCache:GetTemplateInfos();
-			self.hasEqualTemplateInfoExtents = HasEqualTemplateInfoExtents(self, infos);
-		end
-		
-		return self.hasEqualTemplateInfoExtents;
-	end
-end
-
-function ScrollBoxListLinearViewMixin:GetIdenticalElementExtent()
-	assert(self:HasIdenticalElementExtent());
-	if self.elementExtent then
-		return self.elementExtent;
-	end
-
-	local infos = self.templateInfoCache:GetTemplateInfos();
-	local info = infos[next(infos)];
-	return self:GetExtentFromInfo(info);
-end
-
-function ScrollBoxListLinearViewMixin:CalculateFrameExtent(dataIndex, elementData)
-	if self.elementExtent then
-		return self.elementExtent;
-	end
-
-	if self.elementExtentCalculator then
-		return self.elementExtentCalculator(dataIndex, elementData);
-	end
-
-	return self:GetTemplateExtentFromElementData(elementData);
-end
-
-function ScrollBoxListLinearViewMixin:HasAnyExtentOrSizeCalculator()
-	return self.elementExtentCalculator ~= nil;
-end
-
-function ScrollBoxListLinearViewMixin:RecalculateExtent(scrollBox)
-	local function CalculateExtents(tbl, size)
-		for dataIndex, elementData in self:EnumerateDataProvider() do
-			local extent = self:CalculateFrameExtent(dataIndex, elementData);
+	local function CalculateExtents(view, tbl, size)
+		for dataIndex, elementData in view:EnumerateDataProvider() do
+			local extent = view:CalculateFrameExtent(dataIndex, elementData);
 			table.insert(tbl, extent);
 		end
-
-		return self:GetExtentTo(scrollBox, size);
-	end
-
-	local extent = 0;
-	if self:HasDataProvider() then
-		local function CalculateTemplateExtents(size)
-			self.templateExtents = {};
-			return CalculateExtents(self.templateExtents, size);
-		end
-
-
-		--[[
-		CalculateTemplateExtents is ordered first here is because self.templateExtents will only 
-		be assigned after all other options were checked. Once set, it is assumed that it is the 
-		priority option, until explicitly cleared.
-		]]--
-		local size = self:GetDataProviderSize();
-		local isTblSizeDifferent = self.templateExtents and #self.templateExtents ~= size;
-		if isTblSizeDifferent then
-			extent = CalculateTemplateExtents(size);
-		elseif self:HasIdenticalElementExtent() then
-			extent = self:GetExtentTo(scrollBox, size);
-		elseif self.elementExtentCalculator then
-			self.calculatedElementExtents = {};
-			extent = CalculateExtents(self.calculatedElementExtents, size);
-		else
-			extent = CalculateTemplateExtents(size);
-		end
+	
+		return view:GetExtentTo(scrollBox, size);
 	end
 	
-	local padding = scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding();
-	self:SetExtent(extent + padding);
-end
+	function ScrollBoxListLinearViewMixin:RecalculateExtent(scrollBox)
+		self:PrepareRecalculateExtent();
+	
+		local infos = self.templateInfoCache:GetTemplateInfos();
+		self.hasIdenticalTemplateExtent = HasEqualTemplateInfoExtent(self, infos);
 
-function ScrollBoxListLinearViewMixin:GetElementExtent(dataIndex)
-	local size = self:GetDataProviderSize();
-	if dataIndex > size then
-		return 0;
+		local extent = 0;
+		local size = self:GetDataProviderSize();
+		if size > 0 then
+			if self.elementExtentCalculator then
+				self.calculatedElementExtents = {};
+				extent = CalculateExtents(self, self.calculatedElementExtents, size);
+			elseif self:HasIdenticalElementExtent() then
+				extent = self:GetExtentTo(scrollBox, size);
+			else
+				self.templateExtents = {};
+				extent = CalculateExtents(self, self.templateExtents, size);
+			end
+		end
+	
+		self:SetExtent(extent + scrollBox:GetExtentPadding());
 	end
-
-	if self:HasIdenticalElementExtent() then 
-		return self:GetIdenticalElementExtent();
-	end
-
-	if self.calculatedElementExtents then
-		return self.calculatedElementExtents[dataIndex];
-	elseif self.templateExtents then
-		return self.templateExtents[dataIndex];
-	end
-	return 0;
 end
 
 function CreateScrollBoxListLinearView(top, bottom, left, right, spacing)
@@ -256,7 +242,7 @@ function CreateScrollBoxListLinearView(top, bottom, left, right, spacing)
 end
 
 -- Simple option for scrolling regions without a data provider.
-ScrollBoxLinearViewMixin = CreateFromMixins(ScrollBoxLinearBaseViewMixin);
+ScrollBoxLinearViewMixin = CreateFromMixins(ScrollBoxViewMixin, ScrollBoxLinearBaseViewMixin);
 
 function ScrollBoxLinearViewMixin:Init(top, bottom, left, right, spacing)
 	ScrollBoxViewMixin.Init(self);
@@ -304,8 +290,7 @@ function ScrollBoxLinearViewMixin:RecalculateExtent(scrollBox)
 		extent = extent + self:GetFrameExtent(frame);
 	end
 	local space = math.max(#frames - 1, 0) * self:GetSpacing();
-	local padding = scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding();
-	self:SetExtent(extent + space + padding);
+	self:SetExtent(extent + space + scrollBox:GetExtentPadding());
 end
 
 function CreateScrollBoxLinearView(top, bottom, left, right, spacing)

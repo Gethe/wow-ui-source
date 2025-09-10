@@ -507,7 +507,9 @@ function CatalogShopMixin:PurchaseProduct()
 end
 
 function CatalogShopMixin:HideProductDetails()
-	local productInfo = self:GetSelectedProductInfo();
+	-- clear the product we had selected for the details frame
+	self.ProductDetailsContainerFrame.DetailsProductContainerFrame:SetSelectedProductInfo(nil);
+	local productInfo = self.ProductContainerFrame:GetSelectedProductInfo();
 	local showDetails = false;
 	self:ToggleProductDetails(showDetails, productInfo);
 end
@@ -629,29 +631,32 @@ function CatalogShopMixin:GetProductInfo(productID)
 		end
 		for _, childData in ipairs(childrenProductData) do
 			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-			if productInfo.sceneDisplayData then
-				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
-				childProductData.displayOrder = childData.displayOrder or 999;
-				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-				childProductData.cameraDisplayData = nil;
-				table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
-			end
-			if productInfo.cardDisplayData then
-				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
-				childProductData.displayOrder = childData.displayOrder or 999;
-				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-				childProductData.cameraDisplayData = nil;
-				table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
-			end
-			if productInfo.wideCardDisplayData then
-				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
-				childProductData.displayOrder = childData.displayOrder or 999;
-				-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-				-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-				childProductData.cameraDisplayData = nil;
-				table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
+			-- If this product has an otherProductGameType then we can't use this product in our model scene (it's from another game)
+			if childProductDisplayInfo.otherProductGameType == nil then
+				if productInfo.sceneDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
+				end
+				if productInfo.cardDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
+				end
+				if productInfo.wideCardDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
+				end
 			end
 		end
 	end
@@ -756,8 +761,25 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	-- update state based on product info
 
 	self.ProductName:SetText(selectedProductInfo.name);
-	self.ProductDescription:SetText(CatalogShopUtil.GetDescriptionText(selectedProductInfo, displayInfo));
-	
+
+	local descriptionStr = CatalogShopUtil.GetDescriptionText(selectedProductInfo);
+	if (descriptionStr == "") then
+		self.ProductDescription:SetShown(false);
+	else
+		self.ProductDescription:SetShown(true);
+		self.ProductDescription:SetText(descriptionStr);
+	end
+
+	local productTypeStr = CatalogShopUtil.GetTypeText(selectedProductInfo);
+	if (productTypeStr) then
+		self.ProductType:SetShown(true);
+		self.ProductType:SetText(productTypeStr);
+	else
+		self.ProductType:SetShown(false);
+	end
+
+	self.LegalDisclaimerText:SetShown(true);
+
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
 	self.ButtonContainer.PurchaseButton:SetEnabled(not selectedProductInfo.isFullyOwned);
 	self:MarkDirty();

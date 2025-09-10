@@ -2,6 +2,7 @@ RemixArtifactFrameMixin = {};
 
 local RemixArtifactFrameEvents = {
 	"TRAIT_TREE_CURRENCY_INFO_UPDATED",
+	"TRY_PURCHASE_TO_NODE_PARTIAL_SUCCESS",
 };
 
 function RemixArtifactFrameMixin:OnLoad()
@@ -108,6 +109,10 @@ function RemixArtifactFrameMixin:OnEvent(event, ...)
 				end
 			end
 		end
+	elseif event == "TRY_PURCHASE_TO_NODE_PARTIAL_SUCCESS" then
+		local nodeID = ...;
+		self:PlaySelectSoundForNode(nodeID);
+		self:ShowPurchaseVisuals(nodeID);
 	end
 end
 
@@ -390,11 +395,24 @@ function RemixArtifactFrameMixin:GetButtonAnimationStates()
 end
 
 function RemixArtifactFrameMixin:TryPurchaseToNode(nodeID)
-	return self:AttemptConfigOperation(C_Traits.TryPurchaseToNode, nodeID);
+	if self:AttemptConfigOperationWithErrorsSuppressed(C_Traits.TryPurchaseToNode, nodeID) then
+		self:PlaySelectSoundForNode(nodeID);
+		self:ShowPurchaseVisuals(nodeID);
+
+		return true;
+	end
+
+	return false;
 end
 
 function RemixArtifactFrameMixin:TryRefundToNode(nodeID, entryID)
-	return self:AttemptConfigOperation(C_Traits.TryRefundToNode, nodeID, entryID);
+	if self:AttemptConfigOperationWithErrorsSuppressed(C_Traits.TryRefundToNode, nodeID, entryID) then
+		self:PlayDeselectSoundForNode(nodeID);
+
+		return true;
+	end
+
+	return false;
 end
 
 RemixArtifactCurrencyFrameMixin = {};

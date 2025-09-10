@@ -222,7 +222,7 @@ function CooldownViewerSettingsItemMixin:RefreshTooltip(...)
 		CooldownViewerItemDataMixin.RefreshTooltip(self, ...);
 	else
 		local tooltip = GetAppropriateTooltip();
-		GameTooltip_SetTitle(tooltip, "Empty Slot"); -- TODO: Not sure what's going to be displayed here yet.
+		GameTooltip_SetTitle(tooltip, COOLDOWN_VIEWER_SETTINGS_EMPTY_SLOT_TOOLTIP);
 	end
 end
 

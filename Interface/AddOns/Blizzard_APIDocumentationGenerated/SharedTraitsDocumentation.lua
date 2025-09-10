@@ -832,6 +832,15 @@ local SharedTraits =
 				{ Name = "treeID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "TryPurchaseToNodePartialSuccess",
+			Type = "Event",
+			LiteralName = "TRY_PURCHASE_TO_NODE_PARTIAL_SUCCESS",
+			Payload =
+			{
+				{ Name = "nodeFinishedOn", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

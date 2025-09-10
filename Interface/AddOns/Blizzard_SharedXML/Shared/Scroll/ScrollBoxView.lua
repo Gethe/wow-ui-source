@@ -77,11 +77,8 @@ function ScrollBoxViewMixin:SetExtent(extent)
 	self.extent = extent;
 end
 
-function ScrollBoxViewMixin:GetExtent(scrollBox)
-	if not self:IsExtentValid() then
-		self:RecalculateExtent(scrollBox);
-	end
-	return self.extent;
+function ScrollBoxViewMixin:GetExtent()
+	return self.extent or 0;
 end
 
 function ScrollBoxViewMixin:GetScrollTarget()

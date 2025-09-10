@@ -288,18 +288,18 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="50" y="0"/>
 				</Anchors>
-				<NormalTexture atlas="shop-icon-carousel-default-left"/>
-				<PushedTexture atlas="shop-icon-carousel-pressed-left"/>
-				<DisabledTexture atlas="shop-icon-carousel-disabled-left"/>
+				<NormalTexture atlas="shop-icon-carousel-back-up"/>
+				<PushedTexture atlas="shop-icon-carousel-back-pressed"/>
+				<DisabledTexture atlas="shop-icon-carousel-back-disabled"/>
 			</Button>
 			<Button parentKey="CarouselRightButton">
 				<Size x="42" y="41"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-50" y="0"/>
 				</Anchors>
-				<NormalTexture atlas="shop-icon-carousel-default-right"/>
-				<PushedTexture atlas="shop-icon-carousel-pressed-right"/>
-				<DisabledTexture atlas="shop-icon-carousel-disabled-right"/>
+				<NormalTexture atlas="shop-icon-carousel-next-up"/>
+				<PushedTexture atlas="shop-icon-carousel-next-pressed"/>
+				<DisabledTexture atlas="shop-icon-carousel-next-disabled"/>
 			</Button>
 			<Frame parentKey="CarouselLabelContainer">
 				<Anchors>
@@ -338,6 +338,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Label" inherits="GameFontNormalMed2">
+					<Color color="WHITE_FONT_COLOR"/>
 					<Anchors>
 						<Anchor point="CENTER" relativePoint="CENTER" />
 					</Anchors>
@@ -468,10 +469,25 @@
 					</Layer>
 				</Layers>
 			</Frame>
-
+			
+			<Frame parentKey="LegalDisclaimerFrame" hyperlinksEnabled="true" enableMouse="true">
+				<Size x="0" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="20" y="0" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMRIGHT" x="0" y="-30" />
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<FontString parentKey="LegalDisclaimerText" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="CATALOG_SHOP_DISCLAIMER_ALL_PRODUCTS">
+							<Color color="GRAY_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			
 			<Frame parentKey="ProductsScrollBoxContainer" setAllPoints="true" frameLevel="1000">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="0" y="30" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.LegalDisclaimerFrame" relativePoint="BOTTOMLEFT" x="-20" y="0" />
 					<Anchor point="BOTTOMRIGHT" x="0" y="-25"/>
 				</Anchors>
 				<Frames>
@@ -514,7 +530,6 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
@@ -523,7 +538,7 @@
 			<OnEvent method="OnEvent"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnUpdate method="OnUpdate" />
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 

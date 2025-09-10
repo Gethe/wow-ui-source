@@ -347,54 +347,78 @@
 
 			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" >
 				<KeyValues>
-					<KeyValue key="fixedWidth" value="422" type="string"/>
+					<KeyValue key="fixedWidth" value="320" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-45" y="45"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="ProductName" inherits="SystemFont_Huge4" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" >
-							<Size x="422" />
+						<FontString parentKey="ProductName" inherits="GameFontNormalHuge3" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="290" />
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="10" type="number"/>
-								<KeyValue key="topPadding" value="12" type="number"/>
-								<KeyValue key="bottomPadding" value="15" type="number"/>
+								<KeyValue key="topPadding" value="15" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
 							<Color color="WHITE_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="ProductDescription" inherits="System15Font" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" >
-							<Size x="422" />
+						<FontString parentKey="ProductType" inherits="SystemFont_Small2" wordwrap="true" maxLines="1" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="290" />
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="15" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="ProductDescription" inherits="SystemFont_Small2" wordwrap="true" maxLines="4" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="290" />
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="20" type="number"/>
 								<KeyValue key="topPadding" value="0" type="number"/>
-								<KeyValue key="bottomPadding" value="25" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
 							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="LegalDisclaimerText" inherits="SystemFont_Small" wordwrap="true" text="CATALOG_SHOP_DISCLAIMER_ALL_PRODUCTS" justifyH="CENTER" justifyV="MIDDLE" >
+							<Size x="290" />
+							<Color color="GRAY_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="25" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Frame name="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
-						<Size x="422" y="41"/>
+						<Size x="320" y="41"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="25" type="number"/>
+							<KeyValue key="layoutIndex" value="30" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="0" type="number"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="ButtonContainer" >
-						<Size x="422" y="50"/>
+						<Size x="320" y="50"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="30" type="number"/>
+							<KeyValue key="layoutIndex" value="35" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="21" type="number"/>
+							<KeyValue key="leftPadding" value="0" type="number"/>
 						</KeyValues>
 						<Frames>
 							<Button parentKey="PurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="CatalogShopPurchaseButtonMixin" frameLevel="2000" >
-								<Size x="165" y="50"/>
+								<Size x="141" y="50"/>
+								<NormalColor color="YELLOW_FONT_COLOR"/>
 								<Anchors>
-									<Anchor point="LEFT" x="28" y="0"/>
+									<Anchor point="LEFT" x="15" y="0"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="catalogShopOnClickMethod" value="PurchaseProduct" type="string"/>
@@ -406,9 +430,10 @@
 								</Frames>
 							</Button>
 							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_DETAILS" >
-								<Size x="165" y="50"/>
+								<Size x="141" y="50"/>
+								<NormalColor color="WHITE_FONT_COLOR"/>
 								<Anchors>
-									<Anchor point="RIGHT" x="-28" y="0"/>
+									<Anchor point="RIGHT" x="-15" y="0"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="catalogShopOnClickMethod" value="ShowProductDetails" type="string"/>

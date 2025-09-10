@@ -71,7 +71,7 @@
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.CircleIconBorder" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<FontString parentKey="ProductCounterText" inherits="Game22Font" justifyV="MIDDLE" justifyH="CENTER" hidden="true" >
+						<FontString parentKey="ProductCounterText" inherits="Game22Font" justifyV="TOP" justifyH="CENTER" hidden="true" >
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.ProductCounter" relativePoint="CENTER" x="0" y="0"/>
 							</Anchors>
@@ -82,6 +82,12 @@
 						<Texture parentKey="DividerTop" atlas="shop-card-label-bg" hidden="true" useAtlasSize="true" />
 						<FontString parentKey="Price" inherits="SystemFont_Huge2" wordwrap="true" justifyH="RIGHT">
 							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Huge2" wordwrap="true" justifyH="LEFT">
+							<Color color="GREEN_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Huge2" wordwrap="true" justifyH="LEFT">
+							<Color color="GRAY_FONT_COLOR"/>
 						</FontString>
 						<FontString parentKey="Name" inherits="SystemFont_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
 							<Color color="WHITE_FONT_COLOR"/>
@@ -111,6 +117,24 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.CircleIconBorder" x="0" y="0" />
 							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" >
+						<Texture parentKey="DiscountSaleTag" atlas="shop-saletag" useAtlasSize="true" hidden="true" >
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-3" y="-11" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="DiscountAmount" inherits="SystemFont_Shadow_Large" wordwrap="false" justifyV="MIDDLE" justifyH="RIGHT" hidden="true" >
+							<Size x="60" y="19"/>
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-8" y="-33" />
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >
+							<Size x="1" y="2"/>
+							<Color color="GRAY_FONT_COLOR"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="1">

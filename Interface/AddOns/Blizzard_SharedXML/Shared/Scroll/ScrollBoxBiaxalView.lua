@@ -53,49 +53,18 @@ function ScrollBoxListBiaxalViewMixin:ClearCachedData()
 	self.templateSizes = nil;
 end
 
-do
-	local function HasEqualTemplateInfoSize(view, infos)
-		local templateInfo = infos[next(infos)];
-		if not templateInfo then
-			return false;
-		end
-
-		local width = templateInfo.width;
-		local height = templateInfo.height;
-		if width <= 0 or height <= 0 then
-			return false;
-		end
-
-		for frameTemplate, info in pairs(infos) do
-			if not ApproximatelyEqual(width, info.width) or not ApproximatelyEqual(height, info.height) then
-				return false;
-			end
-		end
-	
-		return true;
+function ScrollBoxListBiaxalViewMixin:HasIdenticalElementSize()
+	if self.elementSizeCalculator then
+		return false;
 	end
-	
-	function ScrollBoxListBiaxalViewMixin:HasIdenticalElementSize()
-		if self.elementSizeCalculator then
-			return false;
-		end
 
-		if self.templateInfoDirty then
-			self.templateInfoDirty = nil;
-	
-			local infos = self.templateInfoCache:GetTemplateInfos();
-			self.hasEqualTemplateInfoExtents = HasEqualTemplateInfoSize(self, infos);
-		end
-		
-		return self.hasEqualTemplateInfoExtents;
-	end
+	return self.hasIdenticalTemplateSize;
 end
 
 function ScrollBoxListBiaxalViewMixin:GetIdenticalElementSize()
 	assert(self:HasIdenticalElementSize());
 
-	local infos = self.templateInfoCache:GetTemplateInfos();
-	local info = infos[next(infos)];
+	local info = self:GetFirstTemplateInfo();
 	return info.width, info.height;
 end
 
@@ -119,16 +88,14 @@ end
 
 function ScrollBoxListBiaxalViewMixin:GetElementSize(dataIndex)
 	local size = self:GetDataProviderSize();
-	if dataIndex > size then
+	if dataIndex < 1 or dataIndex > size then
 		return 0, 0;
-	end
-
-	if self:HasIdenticalElementSize() then 
-		return self:GetIdenticalElementSize();
 	end
 
 	if self.calculatedElementSizes then
 		return unpack(self.calculatedElementSizes[dataIndex]);
+	elseif self:HasIdenticalElementSize() then 
+		return self:GetIdenticalElementSize();
 	elseif self.templateSizes then
 		return unpack(self.templateSizes[dataIndex]);
 	end
@@ -145,53 +112,65 @@ function ScrollBoxListBiaxalViewMixin:CalculateFrameExtent(dataIndex, elementDat
 	end
 
 	local width, height = self:CalculateFrameSize(dataIndex, elementData);
-	-- Extent is always in terms of height because this view does not support horizontal layout.
 	return height;
 end
 
 function ScrollBoxListBiaxalViewMixin:GetElementExtent(dataIndex)
 	local width, height = self:GetElementSize(dataIndex);
-	-- Extent is always in terms of height because this view does not support horizontal layout.
 	return height;
 end
 
-function ScrollBoxListBiaxalViewMixin:RecalculateExtent(scrollBox)
-	local function CalculateSizes(tbl, size)
-		for dataIndex, elementData in self:EnumerateDataProvider() do
-			local frameWidth, frameHeight = self:CalculateFrameSize(dataIndex, elementData);
+do
+	local function HasIdenticalTemplateSize(view, infos)
+		local templateInfo = infos[next(infos)];
+		if not templateInfo then
+			return false;
+		end
+
+		local width = templateInfo.width;
+		local height = templateInfo.height;
+		if width <= 0 or height <= 0 then
+			return false;
+		end
+
+		for frameTemplate, info in pairs(infos) do
+			if not ApproximatelyEqual(width, info.width) or not ApproximatelyEqual(height, info.height) then
+				return false;
+			end
+		end
+	
+		return true;
+	end
+
+	local function CalculateSizes(view, tbl, size)
+		for dataIndex, elementData in view:EnumerateDataProvider() do
+			local frameWidth, frameHeight = view:CalculateFrameSize(dataIndex, elementData);
 			table.insert(tbl, {frameWidth, frameHeight});
 		end
 		
-		return self:GetExtentTo(scrollBox, size);
+		return view:GetExtentTo(scrollBox, size);
 	end
 
-	-- Extent is always in terms of height because this view does not support horizontal layout.
-	local extent = 0;
-	if self:HasDataProvider() then
-		local function CalculateTemplateSizes(size)
-			self.templateSizes = {};
-			return CalculateSizes(self.templateSizes, size);
-		end
+	function ScrollBoxListBiaxalViewMixin:RecalculateExtent(scrollBox)
+		self:PrepareRecalculateExtent();
 
-		--[[
-		CalculateTemplateSizes is ordered first here is because self.templateExtents will only 
-		be assigned after all other options were checked. Once set, it is assumed that it is the 
-		priority option, until explicitly cleared.
-		]]--
+		local infos = self.templateInfoCache:GetTemplateInfos();
+		self.hasIdenticalTemplateSize = HasIdenticalTemplateSize(self, infos);
+
+		local extent = 0;
 		local size = self:GetDataProviderSize();
-		local isTblSizeDifferent = self.templateSizes and #self.templateSizes ~= size;
-		if isTblSizeDifferent then
-			extent = CalculateTemplateSizes(size);
-		elseif self:HasIdenticalElementSize() then 
-			extent = self:GetExtentTo(scrollBox, size);
-		elseif self.elementSizeCalculator then
-			self.calculatedElementSizes = {};
-			extent = CalculateSizes(self.calculatedElementSizes, size);
-		else
-			extent = CalculateTemplateSizes(size);
+		if size > 0 then
+			if self.elementSizeCalculator then
+				self.calculatedElementSizes = {};
+				extent = CalculateSizes(self, self.calculatedElementSizes, size);
+			elseif self:HasIdenticalElementSize() then 
+				extent = self:GetExtentTo(scrollBox, size);
+			else
+				self.templateSizes = {};
+				extent = CalculateSizes(self, self.templateSizes, size);
+			end
 		end
+	
+		self:SetExtent(extent + scrollBox:GetExtentPadding());
 	end
-
-	local padding = scrollBox:GetUpperPadding() + scrollBox:GetLowerPadding();
-	self:SetExtent(extent + padding);
 end

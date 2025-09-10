@@ -20,13 +20,6 @@ function ScrollBoxListViewMixin:Init()
 
 	self.frameFactory = CreateFrameFactory();
 	self.templateInfoCache = self.frameFactory:GetTemplateInfoCache();
-	self.templateInfoCache:SetInfoAddedCallback(function(info)
-		-- We need to know when a new infos was added so we can reevaluate if
-		-- the extents of each template are identical. This state could be stored
-		-- in the cache, but it has no use for the dirty state, so we're subscribing
-		-- for it instead.
-		self.templateInfoDirty = true;
-	end);
 
 	self.factory = function(frameTemplateOrFrameType, initializer)
 		local frame, new = self.frameFactory:Create(self:GetScrollTarget(), frameTemplateOrFrameType, self.frameFactoryResetter);
@@ -66,6 +59,11 @@ end
 
 function ScrollBoxListViewMixin:GetTemplateInfo(frameTemplate)
 	return self.templateInfoCache:GetTemplateInfo(frameTemplate);
+end
+
+function ScrollBoxListViewMixin:GetFirstTemplateInfo()
+	local infos = self.templateInfoCache:GetTemplateInfos();
+	return infos[next(infos)];
 end
 
 function ScrollBoxListViewMixin:AssignAccessors(frame, elementData)
@@ -534,9 +532,31 @@ do
 	end
 end
 
-function ScrollBoxListViewMixin:GetTemplateExtentFromElementData(elementData)
+-- An optimization to avoid unnecessarily fetching the template and template info
+-- is planned in a future version. In the meantime, this must occur before calculating
+-- the extent.
+function ScrollBoxListViewMixin:PrepareRecalculateExtent()
+	local dataProvider = self:GetDataProvider();
+	if not dataProvider then
+		return;
+	end
+
+	local size = self:GetDataProviderSize();
+	if size == 0 then
+		return;
+	end
+
+	-- IndexRangeDataProvider is virtual and can represent thousands
+	-- of elements whom are only ever represented by a single template.
+	local enumerateSize = dataProvider:IsVirtual() and 1 or size;
+	for dataIndex, elementData in self:EnumerateDataProvider(1, enumerateSize) do
+		self:CacheTemplateInfoFromElementData(elementData);
+	end
+end
+
+function ScrollBoxListViewMixin:CacheTemplateInfoFromElementData(elementData)
 	local frameTemplate, initializer = self:GetFactoryDataFromElementData(elementData);
-	return self:GetTemplateExtent(frameTemplate);
+	self:GetTemplateInfo(frameTemplate);
 end
 
 function ScrollBoxListViewMixin:GetTemplateExtent(frameTemplate)

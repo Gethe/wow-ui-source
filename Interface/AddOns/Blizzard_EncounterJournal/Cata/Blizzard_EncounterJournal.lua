@@ -2290,6 +2290,14 @@ function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
 	EncounterJournal.searchBox:SetSearchPreviewSelectionToAllResults();
 end
 
+function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
+	jtype = tonumber(jtype);
+	id = tonumber(id);
+	difficultyID = tonumber(difficultyID);
+	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
+	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	ShowUIPanel(EncounterJournal);
 	if instanceID then

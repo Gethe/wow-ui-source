@@ -91,7 +91,7 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toys then
 			-- Toys
 			factory(CatalogShopConstants.CardTemplate.DetailsToys, InitializeButton);
-		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Tender then
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.TradersTenders then
 			-- Trader's Tender
 			factory(CatalogShopConstants.CardTemplate.DetailsTender, InitializeButton);
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
@@ -114,13 +114,14 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
 	self.ShadowLayer:SetShown(self.usesScrollBox);
 
-	local desc = CatalogShopUtil.GetDescriptionText(self.productInfo, self.displayInfo);
+	local desc = CatalogShopUtil.GetDescriptionText(self.productInfo);
 	if productInfo.isBundle then
 		self.sectionData = nil;
 		self.bundleChildInfo = C_CatalogShop.GetProductIDsForBundle(productInfo.catalogShopProductID);
 		local headerData = {
 			Name = self.productInfo.name,
 			Description = desc,
+			showLegal = true,
 		};
 		self:SetupProductHeaderFrame(headerData);
 	else
@@ -128,10 +129,18 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 			Name = self.productInfo.name,
 			Type = self.displayInfo.productType,
 			Description = desc,
+			showLegal = true,
 		};
 		self:SetupProductHeaderFrame(headerData);
 		self.bundleChildInfo = nil;
 	end
+
+	local function onHyperlinkClicked(frame, link, text, button)
+		C_CatalogShop.OnLegalDisclaimerClicked(self.productInfo.catalogShopProductID);
+	end
+
+	self.LegalDisclaimerFrame:SetScript("OnHyperlinkClick", onHyperlinkClicked);
+
 	-- Only show the bundle container if our product is a bundle.
 	self:AllDataRefresh(true);
 end

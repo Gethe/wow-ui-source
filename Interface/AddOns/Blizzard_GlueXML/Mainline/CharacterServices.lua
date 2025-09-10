@@ -54,7 +54,7 @@ local function IsBoostFlowValidForCharacter(flowData, level, boostInProgress, is
 		return false;
 	end
 
-	if IsCharacterTimerunning(playerGUID) then
+	if playerGUID and IsCharacterTimerunning(playerGUID) then
 		return false;
 	end
 

@@ -1,6 +1,30 @@
 ----------------------------------------------------------------------------------
 -- Local Helpers
 ---------------------------------------------------------------------------------
+
+local function GetBundleOverrideRaceID()
+	local ALLIANCE_BUNDLE_RACE_OVERRIDE = 1;
+	local HORDE_BUNDLE_RACE_OVERRIDE = 10;
+	local overrideRaceID = ALLIANCE_BUNDLE_RACE_OVERRIDE;
+	local factionGroup;
+
+	if C_Glue.IsOnGlueScreen() then
+		factionGroup = "Alliance";
+	else
+		factionGroup = UnitFactionGroup("player");
+	end
+	if ( factionGroup and factionGroup ~= "Neutral" ) then
+		if ( factionGroup == "Alliance" ) then
+			overrideRaceID = ALLIANCE_BUNDLE_RACE_OVERRIDE;
+		else
+			overrideRaceID = HORDE_BUNDLE_RACE_OVERRIDE;
+		end
+	else
+		overrideRaceID = ALLIANCE_BUNDLE_RACE_OVERRIDE;
+	end
+	return overrideRaceID;
+end
+
 local function UpdateCamera(camera, cameraDisplayData)
 	if camera and cameraDisplayData then
 		local x, y, z = camera:GetTarget();
@@ -202,7 +226,7 @@ end
 
 local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameActorTag)
 	local _, _, defaultActorIDs = C_ModelInfo.GetModelSceneInfoByID(modelSceneID);
-	if #defaultActorIDs > 0 then
+	if defaultActorIDs and #defaultActorIDs > 0 then
 		local returnActorInfo;
 		for i, defaultActorID in ipairs(defaultActorIDs) do
 			local tempActorInfo = C_ModelInfo.GetModelSceneActorInfoByID(defaultActorID);
@@ -341,7 +365,9 @@ function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, d
 						local useAlternateForm = true;
 						local playerRaceName, playerRaceNameActorTag = CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm);
 						local alternateFormActorInfo = GetDefaultActorInfo(productInfo.defaultPreviewModelSceneID, playerRaceName, playerRaceNameActorTag);
-						actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+						if alternateFormActorInfo then
+							actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+						end
 					end
 				end
 				table.insert(newDisplayData.actorDisplayBucket, actorDisplayData);
@@ -364,7 +390,9 @@ function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, d
 					local useAlternateForm = true;
 					local playerRaceName, playerRaceNameActorTag = CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm);
 					local alternateFormActorInfo = GetDefaultActorInfo(productInfo.defaultPreviewModelSceneID, playerRaceName, playerRaceNameActorTag);
-					actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+					if alternateFormActorInfo then
+						actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+					end
 				end
 			end
 			table.insert(newDisplayData.overrideActorDisplayBucket, actorDisplayData);
@@ -426,10 +454,11 @@ function CatalogShopUtil.SetupSpecialActor(modelScene, actorTag, creatureDisplay
 			playerData.noCameraSpin = bit.band(flags, Enum.UIModelSceneFlags.NoCameraSpin) == Enum.UIModelSceneFlags.NoCameraSpin;
 
 			local modelLoadedCB = nil;
+			local customRaceID = nil;
 			if C_Glue.IsOnGlueScreen() then
-				specialActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB);
+				specialActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID);
 			else
-				specialActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB);
+				specialActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID);
 			end
 		else
 			local creatureDisplayID = tonumber(creatureDisplayInfo);
@@ -653,7 +682,7 @@ function CatalogShopUtil.SetupModelSceneForPlayer(modelScene, modelSceneID, disp
 end
 
 -- GETTING PLAYER WHILE INGAME
-function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB)
+function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID)
 	if not playerData then
 		return;
 	end
@@ -681,7 +710,7 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 	if forceSetPlayer or playerData.useNativeForm ~= playerData.modelScene.useNativeForm then
 		playerData.modelScene.useNativeForm = playerData.useNativeForm;
 		local holdBowString = true;
-		actor:SetModelByUnit("player", playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, holdBowString);
+		actor:SetModelByUnit("player", playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, holdBowString, customRaceID);
 	else
 		if playerData.autoDress then
 			actor:Dress();
@@ -702,7 +731,7 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 end
 
 -- GETTING PLAYER WHILE AT GLUES
-function CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB)
+function CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID)
 	if not playerData then
 		return;
 	end
@@ -729,7 +758,7 @@ function CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB
 	end
 
 	local characterIndex = nil;  -- defaults to selected character.
-	actor:SetPlayerModelFromGlues(characterIndex, playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm);
+	actor:SetPlayerModelFromGlues(characterIndex, playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, customRaceID);
 	if playerData.itemModifiedAppearanceIDs then
 		for i, itemModifiedAppearanceID in ipairs(playerData.itemModifiedAppearanceIDs) do
 			actor:TryOn(itemModifiedAppearanceID);
@@ -743,15 +772,17 @@ function CatalogShopUtil.SetupModelSceneForTransmogs(modelScene, modelSceneID, d
 	if modelScene.CachedPlayerActor then
 		modelScene.CachedPlayerActor:ClearModel();
 	end
-	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
+	local isFromBundle = false;
+	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, false);
 end
 
 function CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView)
-	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
+	local isFromBundle = true;
+	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, isFromBundle);
 end
 
 -- TRANSMOGS
-function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView)
+function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, isFromBundle)
 	if forceSceneChange then
 		modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 	end
@@ -796,11 +827,16 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	local hasSubItems = data and data.hasSubItems or nil; -- not valid yet
 	local overrideActorName = displayData.modelSceneTag;
 	local playerData = CatalogShopUtil.TranslatePlayerModelData(modelScene, overrideActorName, itemModifiedAppearanceIDs, hasSubItems, sheatheWeapon, autoDress, hideWeapon, useNativeForm, forceSceneChange);
-	
+
+	-- Bundles need a custom race override because the cards and scenes are frequently crowded
+	local customRaceID = nil;
+	if isFromBundle then
+		customRaceID = GetBundleOverrideRaceID();
+	end
 	if C_Glue.IsOnGlueScreen() then
-		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB);
+		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID);
 	else
-		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB);
+		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID);
 	end
 
 	if displayData and not preserveCurrentView then
@@ -932,7 +968,7 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 		local useNativeForm = CatalogShopFrame:GetUseNativeForm();
 
 		local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
-		if hasAlternateForm and not useNativeForm then
+		if hasAlternateForm and actorDisplayData.alternateFormData and not useNativeForm then
 			x, y, z = actorDisplayData.alternateFormData.posX, actorDisplayData.alternateFormData.posY, actorDisplayData.alternateFormData.posZ;
 		end
 		actor:SetPosition(x, y, z);
@@ -1098,19 +1134,21 @@ function CatalogShopUtil.GetSecureMoneyString(money, separateThousands, forceCol
 	return moneyString;
 end
 
-function CatalogShopUtil.GetDescriptionText(productInfo, displayInfo)
-	local cardType = displayInfo.productType;
+function CatalogShopUtil.GetDescriptionText(productInfo)
+	return productInfo.description;
+end
 
-	-- TODO: Investigate alternative text for some types (WOW11-138782)
-	if cardType == CatalogShopConstants.ProductType.Pet
-		or cardType == CatalogShopConstants.ProductType.Mount
-		or cardType == CatalogShopConstants.ProductType.Toy
-		or cardType == CatalogShopConstants.ProductType.Transmog
-		or cardType == CatalogShopConstants.ProductType.Token then
-		return displayInfo.itemDescription;
-	else
-		return productInfo.description;
+function CatalogShopUtil.GetTypeText(productInfo)
+	-- Grab our current environment so we can access the loaded global strings
+	local secureEnv = GetCurrentEnvironment();
+	if (productInfo.type) then
+		if (productInfo.isBundle or false) then
+			return string.format(secureEnv[productInfo.type], productInfo.bundleChildrenSize);
+		else
+			return secureEnv[productInfo.type];
+		end
 	end
+	return nil;
 end
 
 function CatalogShopUtil.SetServicesContainerIcon(icon, displayInfo)

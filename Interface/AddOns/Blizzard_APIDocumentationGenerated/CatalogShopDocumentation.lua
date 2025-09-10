@@ -182,6 +182,15 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "OnLegalDisclaimerClicked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "catalogShopProductID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "OpenCatalogShopInteraction",
 			Type = "Function",
 		},
@@ -370,6 +379,7 @@ local CatalogShop =
 				{ Name = "specialActorID_5", Type = "string", Nilable = true },
 				{ Name = "gameFlavorID", Type = "number", Nilable = true },
 				{ Name = "decorFileDataID", Type = "number", Nilable = true },
+				{ Name = "quantity", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -379,12 +389,15 @@ local CatalogShop =
 			{
 				{ Name = "catalogShopProductID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "type", Type = "string", Nilable = true },
 				{ Name = "description", Type = "string", Nilable = false },
 				{ Name = "iconTexture", Type = "string", Nilable = false },
 				{ Name = "isFullyOwned", Type = "bool", Nilable = false },
 				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "refundable", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "string", Nilable = false },
+				{ Name = "originalPrice", Type = "string", Nilable = false },
+				{ Name = "discountPercentage", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
 				{ Name = "mountTypeName", Type = "string", Nilable = false },

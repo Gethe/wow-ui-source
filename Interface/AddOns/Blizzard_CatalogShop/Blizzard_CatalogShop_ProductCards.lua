@@ -235,10 +235,59 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		self.ModelScene:SetViewInsets(0, 0, 0, 0);
 		self:SetModelScene(self.productInfo, true, displayInfo, cardType);
 	end
-	
-	container.Name:SetText(self.productInfo.name);
-	container.Price:SetText(self.productInfo.price);
-	container.PurchasedIcon:SetShown(self.productInfo.isFullyOwned);
+
+	local isFullyOwned = self.productInfo.isFullyOwned;
+	local discountPercentage = self.productInfo.discountPercentage or 0;
+	if discountPercentage > 0 and not isFullyOwned then
+		local priceElement = container.OriginalPrice;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(0, 20);
+		priceElement:SetPoint("BOTTOM", 0, 20);
+		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
+		priceElement:SetText(self.productInfo.originalPrice);
+
+		local discountPriceElement = container.DiscountPrice;
+		discountPriceElement:ClearAllPoints();
+		discountPriceElement:SetSize(0, 20);
+		discountPriceElement:SetPoint("BOTTOM", 0, 20);
+		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
+		discountPriceElement:SetText(self.productInfo.price);
+
+		--DrawLine(self, parent, self.startX - x, self.startY - y, self.endX - x, self.endY - y, self.thickness or 32, 1);
+		local strikeThrough = container.Strikethrough;
+		strikeThrough:ClearAllPoints();
+		strikeThrough:SetPoint("LEFT", priceElement, "LEFT", 0, 0);
+		strikeThrough:SetPoint("RIGHT", priceElement, "RIGHT", 0, 0);
+		strikeThrough:Show();
+
+		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+		container.DiscountAmount:Show();
+
+		container.DiscountSaleTag:Show();
+		container.DiscountPrice:Show();
+		container.OriginalPrice:Show();
+		container.Strikethrough:Show();
+		container.Price:Hide();
+	else
+		local priceElement = container.Price;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(0, 20);
+		priceElement:SetJustifyH("CENTER");
+		priceElement:SetPoint("BOTTOM", 0, 20);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetText(self.productInfo.price);
+		priceElement:Show();
+
+		container.DiscountSaleTag:Hide();
+		container.DiscountAmount:Hide();
+		container.DiscountPrice:Hide();
+		container.OriginalPrice:Hide();
+		container.Strikethrough:Hide();				
+	end
+
+	container.Name:SetText(self.productInfo.name);	
+	container.PurchasedIcon:SetShown(isFullyOwned);
 end
 
 
@@ -257,26 +306,18 @@ function SmallCatalogShopProductCardMixin:Layout()
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
-	divider:SetPoint("TOP", container, "BOTTOM", 0, 100);
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 82);
 	divider:SetPoint("LEFT", 0, 0);
 	divider:SetPoint("RIGHT", 0, 0);
 
 	local nameElement = container.Name;
 	nameElement:ClearAllPoints();
 	nameElement:SetJustifyH("CENTER");
-	nameElement:SetJustifyV("MIDDLE");
-	nameElement:SetPoint("TOP", divider, "TOP", 0, -6);
+	nameElement:SetJustifyV("TOP");
+	nameElement:SetPoint("TOP", divider, "TOP", 0, -5);
 	nameElement:SetPoint("LEFT", 15, 0);
 	nameElement:SetPoint("RIGHT", -15, 0);
-	nameElement:SetPoint("BOTTOM", 0, 50);
-
-	local priceElement = container.Price;
-	priceElement:ClearAllPoints();
-	priceElement:SetSize(0, 20);
-	priceElement:SetJustifyH("CENTER");
-	priceElement:SetPoint("BOTTOM", 0, 20);
-	priceElement:SetPoint("LEFT", 15, 0);
-	priceElement:SetPoint("RIGHT", -15, 0);
+	nameElement:SetPoint("BOTTOM", 0, 37);
 
 	local timeRemaining = container.TimeRemaining;
 	timeRemaining:ClearAllPoints();
@@ -363,8 +404,36 @@ function SmallCatalogShopTenderCardMixin:OnLoad()
 	SmallCatalogShopProductCardMixin.OnLoad(self);
 end
 
+local function TenderCardLayout(card)
+	local container = card.ForegroundContainer;
+	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
+	local quantity = displayInfo and displayInfo.quantity or nil;
+
+	if not quantity then
+		container.RectIcon:Hide();
+		return;
+	end
+
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+
+	local subTexture;
+	subTexture = "tender-"..quantity;
+	local atlasWidth = 160;
+	local atlasHeight = 160;
+	container.RectIcon:SetSize(atlasWidth, atlasHeight);
+
+	if subTexture then
+		container.RectIcon:Show();
+		container.RectIcon:SetAtlas(subTexture);
+	else
+		container.RectIcon:Hide();
+	end
+end
+
 function SmallCatalogShopTenderCardMixin:Layout()
 	SmallCatalogShopProductCardMixin.Layout(self);
+	TenderCardLayout(self);
 end
 
 
@@ -409,7 +478,7 @@ function DetailsCatalogShopProductCardMixin:Layout()
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
-	divider:SetPoint("TOP", container, "BOTTOM", 0, 100);
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 83);
 	divider:SetPoint("LEFT", 0, 0);
 	divider:SetPoint("RIGHT", 0, 0);
 
@@ -420,10 +489,14 @@ function DetailsCatalogShopProductCardMixin:Layout()
 	nameElement:SetPoint("TOP", divider, "TOP", 0, -6);
 	nameElement:SetPoint("LEFT", 15, 0);
 	nameElement:SetPoint("RIGHT", -15, 0);
-	nameElement:SetPoint("BOTTOM", 0, 50);
+	nameElement:SetPoint("BOTTOM", 0, 25);
 
-	local priceElement = container.Price;
-	priceElement:Hide();
+	container.Price:Hide();
+	container.DiscountSaleTag:Hide();
+	container.DiscountAmount:Hide();
+	container.DiscountPrice:Hide();
+	container.OriginalPrice:Hide();
+	container.Strikethrough:Hide();
 
 	local timeRemaining = container.TimeRemaining;
 	timeRemaining:Hide();
@@ -467,6 +540,7 @@ end
 
 function DetailsCatalogShopTenderCardMixin:Layout()
 	DetailsCatalogShopProductCardMixin.Layout(self);
+	TenderCardLayout(self);
 end
 
 --------------------------------------------------
@@ -496,7 +570,7 @@ function WideCatalogShopProductCardMixin:Layout()
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
-	divider:SetPoint("TOP", container, "BOTTOM", 0, 100);
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 83);
 	divider:SetPoint("LEFT", 0, 0);
 	divider:SetPoint("RIGHT", 0, 0);
 
@@ -509,14 +583,6 @@ function WideCatalogShopProductCardMixin:Layout()
 	nameElement:SetPoint("RIGHT", -15, 0);
 	nameElement:SetPoint("BOTTOM", 0, 50);
 
-	local priceElement = container.Price;
-	priceElement:ClearAllPoints();
-	priceElement:SetSize(0, 20);
-	priceElement:SetJustifyH("CENTER");
-	priceElement:SetPoint("BOTTOM", 0, 20);
-	priceElement:SetPoint("LEFT", 15, 0);
-	priceElement:SetPoint("RIGHT", -15, 0);
-
 	local timeRemaining = container.TimeRemaining;
 	timeRemaining:ClearAllPoints();
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
@@ -528,7 +594,7 @@ function WideCatalogShopProductCardMixin:Layout()
 	background:SetPoint("BOTTOMRIGHT", -13, 11);
 
 	-- based on values in productInfo we need to set a correct background
-	local backgroundTexture = self.productInfo and self.productInfo.optionalWideCardBackgroundTexture or self.defaultBackground;
+	local backgroundTexture = self.productInfo and self.productInfo.wideCardBGTexture or self.defaultBackground;
 	if backgroundTexture then
 		self.BackgroundContainer.Background:SetAtlas(backgroundTexture);
 	end
@@ -551,7 +617,10 @@ function WideSubscriptionCatalogShopCardMixin:Layout()
 	container.RectIcon:ClearAllPoints();
 	container.RectIcon:SetPoint("CENTER", 0, 40);
 
-	local subTexture;
+	local subTexture = nil;
+	--[[
+	Taking this out for now 
+
 	local licenseTermType = self.productInfo.licenseTermType;
 	local licenseTermDuration = self.productInfo.licenseTermDuration;
 	if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
@@ -562,7 +631,7 @@ function WideSubscriptionCatalogShopCardMixin:Layout()
 		-- the days icons is a different aspect ratio
 		container.RectIcon:SetSize(162, 180);
 	end
-
+	--]]
 	if subTexture then
 		container.RectIcon:Show();
 		container.RectIcon:SetAtlas(subTexture);
@@ -600,7 +669,7 @@ function WideWoWTokenCatalogShopCardMixin:Layout()
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
-	divider:SetPoint("TOP", container, "BOTTOM", 0, 80);
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 86);
 	divider:SetPoint("LEFT", 0, 0);
 	divider:SetPoint("RIGHT", 0, 0);
 end

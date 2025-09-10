@@ -373,10 +373,29 @@ function TalentButtonBaseMixin:PlayDeselectSound()
 end
 
 function TalentButtonBaseMixin:StartGlow()
-	-- Only square glows are currently supported. We will need a circular glow added to the GlowEmitter if we want this on other buttons 
-	GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow, 26, 0, self:GetWidth() + 64, self:GetHeight() + 52);
+	local entryInfo = self:GetEntryInfo();
+	local isCircular = entryInfo and (entryInfo.type == Enum.TraitNodeEntryType.SpendCircle);
+	if isCircular then
+		if not self.circularGlowTexture then
+			self.circularGlowTexture = CreateFrame("FRAME", nil, self, "TalentButtonCircularGlowTemplate");
+		end
+
+		self.circularGlowTexture:SetFrameLevel(self:GetFrameLevel() - 1);
+		self.circularGlowTexture:Show();
+		GlowEmitterFactory:Hide(self);
+	else
+		GlowEmitterFactory:Show(self, GlowEmitterMixin.Anims.GreenGlow, 26, 0, self:GetWidth() + 64, self:GetHeight() + 52);
+
+		if self.circularGlowTexture then
+			self.circularGlowTexture:Hide();
+		end
+	end
 end
 
 function TalentButtonBaseMixin:StopGlow()
 	GlowEmitterFactory:Hide(self);
+
+	if self.circularGlowTexture then
+		self.circularGlowTexture:Hide();
+	end
 end

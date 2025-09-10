@@ -38,6 +38,8 @@ function CatalogShopProductContainerFrameMixin:SetupProductHeaderFrame(headerDat
 	else
 		self.ProductsHeader.ProductDescription:Hide();
 	end
+	self.LegalDisclaimerFrame:SetShown(headerData.showLegal or false);
+
 end
 
 function CatalogShopProductContainerFrameMixin:SetupScrollView(elementFactory)
@@ -204,7 +206,7 @@ function ModelSceneShouldAllowRotation(modelSceneID)
 end
 
 function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
-	self.selectedProductInfo = productInfo;
+	self:SetSelectedProductInfo(productInfo);
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.selectedProductInfo.catalogShopProductID);
 	local productType = productInfo.sceneDisplayData.productType;
 
@@ -271,6 +273,22 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 			iconFrame.Icon:SetSize(270, 300);
 		end
 		iconFrame.Icon:SetAtlas(subTexture);
+	elseif productType == CatalogShopConstants.ProductType.TradersTenders then
+		CatalogShopFrame.ServicesContainerFrame:Show();
+		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
+		iconFrame.ProductCounter:Hide();
+		iconFrame.ProductCounterText:Hide();
+		iconFrame.IconBorder:Hide();
+
+		local quantity = displayInfo and displayInfo.quantity or nil;
+		if quantity then
+			local subTexture;
+			subTexture = "tender-"..quantity;
+			local atlasWidth = 320;
+			local atlasHeight = 320;
+			iconFrame.Icon:SetSize(atlasWidth, atlasHeight);
+			iconFrame.Icon:SetAtlas(subTexture);
+		end
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end
@@ -304,10 +322,6 @@ function CatalogShopProductContainerFrameMixin:OnUpdate(deltaTime)
 	end
 end
 
-function CatalogShopProductContainerFrameMixin:GetSelectedProductInfo()
-	return self.selectedProductInfo;
-end
-
 function CatalogShopProductContainerFrameMixin:SelectFirstProduct()
 	self.ignoreNextSelectionForTelemetry = true;
 	self.ProductsScrollBoxContainer.selectionBehavior:SelectFirstElementData(IsElementDataItemInfo);
@@ -317,6 +331,10 @@ function CatalogShopProductContainerFrameMixin:SelectFirstProductSilent()
 	self.silenceSelectionSounds = true;
 	self:SelectFirstProduct();
 	self.silenceSelectionSounds = false;
+end
+
+function CatalogShopProductContainerFrameMixin:SetSelectedProductInfo(productInfo)
+	self.selectedProductInfo = productInfo;
 end
 
 function CatalogShopProductContainerFrameMixin:GetSelectedProductInfo()
@@ -483,6 +501,9 @@ function ProductContainerFrameMixin:OnCategorySelected(categoryID)
 	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
 	self.ShadowLayer:SetShown(self.usesScrollBox);
 
-	local headerData = { Name = categoryInfo.displayName };
+	local headerData = {
+		Name = categoryInfo.displayName,
+		showLegal = false,
+	};
 	self:SetupProductHeaderFrame(headerData);
 end

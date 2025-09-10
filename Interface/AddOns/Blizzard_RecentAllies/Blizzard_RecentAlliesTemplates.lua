@@ -20,6 +20,7 @@ function RecentAlliesListMixin:InitializeScrollBox()
 				button:Initialize(elementData);
 				button:SetScript("OnClick", function(button, mouseButtonName)
 					if mouseButtonName == "LeftButton" then
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						self.selectionBehavior:ToggleSelect(button);
 					elseif mouseButtonName == "RightButton" then
 						button:OpenMenu();

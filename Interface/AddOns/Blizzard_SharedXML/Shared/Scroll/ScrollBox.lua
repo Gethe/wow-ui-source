@@ -140,21 +140,40 @@ function ScrollBoxBaseMixin:IsUpdateLocked()
 end
 
 function ScrollBoxBaseMixin:FullUpdateInternal()
-	-- The OnSizeChanged script is removed during a full update. This is to address the problem where calling 
-	-- GetDerivedScrollOffset results in a call to GetSize() that triggers this script and executes a separate update.
-	-- That update will cause erroneous executions including accessing element extents that have not yet been calculated
-	-- aside from the obvious problem of running an update inside an update. The only update we expect is below after the
-	-- derived extents have been recalculated.
+	--[[
+	Multiple measurement APIs on the ScrollBox frame can cause OnSizeChanged to be dispatched, creating a circular update
+	loop when called from within FullUpdateInternal() or Update(). Update() has a lock mechanism to prevent reentrance, however
+	this function removes the OnSizeChanged script complete until all updates are complete.
+	]]--
+
 	local oldOnSizeChanged = self:GetScript("OnSizeChanged");
 	self:SetScript("OnSizeChanged", nil);
 
+	--[[
+	Obtain the current scroll offset before any adjustments are made to the total extent in the call
+	to RecalculateDerivedExtent() below. This value is used after the new extents are calculated to
+	adjust the scroll position so that the contents do not appear displaced as result of
+	additions or removals in the data provider.
+	]]--
 	local oldScrollOffset = self:GetDerivedScrollOffset();
 
-	-- Note to do some optimizations so that recalculations of element extents is only
-	-- done when either data provider size changes or an element's size changes, and to avoid
-	-- recalculating every extent if we can just recalculate a single element.
+	--[[
+	When identical element extents are not used, this will require iterating through every element
+	in the data provider and calling a calculation function to obtain the total extent. While it would
+	be more efficient to correct the extent based on the elements added or removed from the data provider,
+	it is a difficult optimization to implement because ScrollBox utilizes multiple different data
+	providers with different data structures.
+
+	An optimization to start with might be to have each data provider implement a counter that is updated
+	on any insertion, replacement, or removal. While this wouldn't provide full context about the change,
+	it would serve as an indicator that the data provider was unmodified since the last update, making an
+	extent calculation unnecessary. Note however that this would be a view dependent optimization as Biaxal
+	views can have their extents changed as a result of width changes, regardless of the data provider
+	remaining unchanged.
+	]]--
 	self:RecalculateDerivedExtent();
 
+	-- After the extent is calculated, correct the scroll position to undo the displacement.
 	local scrollRange = self:GetDerivedScrollRange();
 	if scrollRange > 0 then
 		local deltaScrollOffset = (self:GetDerivedScrollOffset() - oldScrollOffset);
@@ -434,7 +453,7 @@ end
 function ScrollBoxBaseMixin:GetDerivedExtent()
 	local view = self:GetView();
 	if view then
-		return view:GetExtent(self);
+		return view:GetExtent();
 	end
 	return 0;
 end
@@ -481,6 +500,10 @@ function ScrollBoxBaseMixin:GetBottomPadding()
 		return padding:GetBottom();
 	end
 	return 0;
+end
+
+function ScrollBoxBaseMixin:GetExtentPadding()
+	return self:GetUpperPadding() + self:GetLowerPadding();
 end
 
 function ScrollBoxBaseMixin:GetUpperPadding()

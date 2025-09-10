@@ -167,6 +167,11 @@ local RecentAllies =
 	Events =
 	{
 		{
+			Name = "LetRecentAlliesSeeLocationSettingUpdated",
+			Type = "Event",
+			LiteralName = "LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED",
+		},
+		{
 			Name = "RecentAlliesCacheUpdate",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_CACHE_UPDATE",

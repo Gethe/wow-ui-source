@@ -227,9 +227,9 @@ local AccountConstants =
 		{
 			Name = "ItemCollectionType",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "ItemCollectionNone", Type = "ItemCollectionType", EnumValue = 0 },
@@ -242,7 +242,9 @@ local AccountConstants =
 				{ Name = "ItemCollectionWarbandScene", Type = "ItemCollectionType", EnumValue = 7 },
 				{ Name = "ItemCollectionRoom", Type = "ItemCollectionType", EnumValue = 8 },
 				{ Name = "ItemCollectionExteriorFixture", Type = "ItemCollectionType", EnumValue = 9 },
-				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 9 },
+				{ Name = "ItemCollectionRoomThemes", Type = "ItemCollectionType", EnumValue = 10 },
+				{ Name = "ItemCollectionRoomMaterials", Type = "ItemCollectionType", EnumValue = 11 },
+				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 11 },
 			},
 		},
 	},
