@@ -43,6 +43,7 @@
 		<Scripts>
 			<OnEnter method="OnHover"/>
 			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
 		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -80,6 +81,13 @@
 								<AbsDimension x="-10" y="-18"/>
 							</Offset>
 						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentExtended" inherits="GameFontHighlightSmall" text="EXTENDED" justifyH="RIGHT" parentKey="Extended">
+					<Size x="150" y="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Reset" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Reset" relativePoint="BOTTOMRIGHT" x="0" y="-8"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -351,6 +359,20 @@
 							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 					</EventFrame>
+					<Button name="RaidInfoExtendButton" inherits="UIPanelButtonTemplate" text="EXTEND_RAID_LOCK">
+						<Size x="200" y="20"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="14" y="13"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:GetParent():ExtendButton_OnClick();
+							</OnClick>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontHighlightSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
 					<Button name="RaidInfoCancelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 						<Size>
 							<AbsDimension x="90" y="20"/>

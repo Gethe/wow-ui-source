@@ -32,37 +32,60 @@ end
 function RaidInfoFrameMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView();
     view:SetElementInitializer("RaidInfoInstanceTemplate", function(button, elementData)
-        local savedInstances = GetNumSavedInstances();
-		local index = elementData.index;
+		local function InitButton(extended, locked, reset, name, difficulty, instanceID)
+			if button.Name then
+				if extended or locked then
+					button.Name:SetText(name);
+				else
+					button.Name:SetFormattedText("|cff808080%s|r", name);
+				end
+			end
 
+			if button.Reset then
+				if extended or locked then
+					button.Reset:SetText(SecondsToTime(reset, true, nil, 3));
+				else
+					button.Reset:SetFormattedText("|cff808080%s|r", RAID_INSTANCE_EXPIRES_EXPIRED);
+				end
+			end
+
+			if button.Difficulty then
+				button.Difficulty:SetText(difficulty);
+			end
+
+			if button.ID then
+				button.ID:SetText(instanceID);
+				button.ID:SetShown(not extended);
+			end
+
+			if button.Extended then
+				button.Extended:SetShown(extended);
+			end
+		end
+
+		local index = elementData.index;
 		if not index then
 			return;
 		end
 
-		if index > savedInstances then -- Should never happen
-			return;
+		if elementData.isInstance then
+			local savedInstances = GetNumSavedInstances();
+			if index > savedInstances then -- Should never happen
+				return;
+			end
+
+			local name, instanceID, reset, difficulty, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName = GetSavedInstanceInfo(index);
+			InitButton(extended, locked, reset, name, difficultyName, instanceID);
+			button.raidIndex = index;
+			button.instanceID = instanceID;
+		else
+			local name, _, reset = GetSavedWorldBossInfo(index);
+			local locked = true;
+			local extended = false;
+			InitButton(extended, locked, reset, name, RAID_INFO_WORLD_BOSS, instanceID);
+			button.raidIndex = nil;
+			button.instanceID = nil;
 		end
-
-		button.raidIndex = index;
-
-		local instanceName, instanceID, instanceReset, _, _, _, _, _, _, instanceDifficulty, encountersTotal = GetSavedInstanceInfo(index);
-
-		if button.Name then
-			button.Name:SetText(instanceName);
-		end
-
-		if button.Difficulty then
-			button.Difficulty:SetText(instanceDifficulty);
-		end
-
-		if button.ID then
-			button.ID:SetText(instanceID);
-		end
-
-		if button.Reset then
-			button.Reset:SetText(SecondsToTime(instanceReset, true, nil, 3));
-		end
-
     end);
 
     ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
@@ -106,6 +129,35 @@ end
 
 function RaidInstanceFrameMixin:OnLeave()
 	GameTooltip_Hide();
+end
+
+function RaidInstanceFrameMixin:OnClick()
+	if self.instanceID and IsModifiedClick("CHATLINK") then
+		--Currently this isn't supported in Classic
+		--ChatEdit_InsertLink(GetSavedInstanceChatLink(self:GetElementData().index));
+	else
+		local oldSelectedIndex = RaidInfoFrame.selectedIndex;
+		local oldSelectedIsInstance = RaidInfoFrame.selectedIsInstance;
+		local elementData = self:GetElementData();
+		RaidInfoFrame.selectedIndex = elementData.index;
+		RaidInfoFrame.selectedIsInstance = elementData.isInstance;
+
+		local function UpdateButtonSelected(index, isInstance, selected)
+			if index then
+				local button = RaidInfoFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+					return elementData.index == index and elementData.isInstance == isInstance;
+				end);
+				if button then
+					RaidInfoFrame:SetButtonSelected(button, selected);
+				end
+			end
+		end;
+
+		UpdateButtonSelected(oldSelectedIndex, oldSelectedIsInstance, false);
+		UpdateButtonSelected(RaidInfoFrame.selectedIndex, RaidInfoFrame.selectedIsInstance, true);
+
+		RaidInfoFrame:UpdateButtons();
+	end
 end
 
 function RaidFrameMixin:OnShow()
@@ -212,19 +264,61 @@ end
 -- Populates Raid Info Data
 function RaidInfoFrameMixin:UpdateRaids()
 	local dataProvider = CreateDataProvider();
-
-	local savedInstances = GetNumSavedInstances();
-
-	for i = 1, savedInstances do
-		dataProvider:Insert({index=i});
+	for index = 1, GetNumSavedInstances() do
+		dataProvider:Insert({index=index, isInstance=true});
 	end
 
-    self.ScrollBox:SetDataProvider(dataProvider);
+	for index = 1, GetNumSavedWorldBosses() do
+		dataProvider:Insert({index=index});
+	end
+
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
+	self:UpdateButtons();
 end
 
 function RaidInfoFrameMixin:OnEvent(event, ...)
 	if ( event == "UPDATE_INSTANCE_INFO" ) then
 		self:UpdateRaids();
+	end
+end
+
+function RaidInfoFrameMixin:UpdateButtons()
+	if not RaidInfoExtendButton then
+		-- Not all flavors of Classic have the UI / support for the raid extend feature
+	elseif self.selectedIndex then
+		if self.selectedIsInstance then
+			local _, _, _, _, locked, extended, _, _, _, _, _, _, extendDisabled, _ = GetSavedInstanceInfo(self.selectedIndex);
+			RaidInfoExtendButton:SetEnabled(not extendDisabled);
+			RaidInfoExtendButton.doExtend = not extended;
+			if extended then
+				RaidInfoExtendButton:SetText(UNEXTEND_RAID_LOCK);
+			else
+				RaidInfoExtendButton:SetText(locked and EXTEND_RAID_LOCK or REACTIVATE_RAID_LOCK);
+			end
+		else
+			RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+			RaidInfoExtendButton:Disable();
+		end
+	else
+		RaidInfoExtendButton:SetText(EXTEND_RAID_LOCK);
+		RaidInfoExtendButton:Disable();
+	end
+end
+
+function RaidInfoFrameMixin:ExtendButton_OnClick()
+	if(self.selectedIndex and self.selectedIndex <= GetNumSavedInstances()) then
+		SetSavedInstanceExtend(self.selectedIndex, RaidInfoExtendButton.doExtend);
+		RequestRaidInfo();
+		self:UpdateRaids();
+	end
+end
+
+function RaidInfoFrameMixin:SetButtonSelected(button, selected)
+	if selected then
+		button:LockHighlight();
+	else
+		button:UnlockHighlight();
 	end
 end
 

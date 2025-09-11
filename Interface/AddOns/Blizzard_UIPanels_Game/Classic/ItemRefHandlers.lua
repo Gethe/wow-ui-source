@@ -86,8 +86,6 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AdventureGuide, function(link, text, link
 		end
 		EncounterJournal_OpenJournalLink(string.split(":", link));
 	end
-
-	return LinkProcessorResponse.Unhandled;
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.LootHistory, function(link, text, linkData, contextData)
