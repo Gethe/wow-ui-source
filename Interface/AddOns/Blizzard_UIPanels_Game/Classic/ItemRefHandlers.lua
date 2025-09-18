@@ -67,7 +67,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.LevelUpToast, function(link, text, linkDa
 	LevelUpDisplay_ShowSideDisplay(tonumber(level), _G[levelUpType], arg1);
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.ClassSpecializationUI, function(link, text, linkData, contextData)
+LinkUtil.RegisterLinkHandler(LinkTypes.SpecializationsUI, function(link, text, linkData, contextData)
 	ToggleTalentFrame(SPECIALIZATION_TAB);
 end);
 

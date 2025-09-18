@@ -500,3 +500,9 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	buttonTexture:SetHeight(iconWidth);
 	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
 end
+
+SmallMoneyFrameMixin = {};
+
+function SmallMoneyFrameMixin:SetIsUserScaled()
+	-- Classic does not support user scaled money frames, see WOW12-16834
+end
