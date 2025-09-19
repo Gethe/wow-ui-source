@@ -1003,6 +1003,20 @@ function PaperDollFrame_SetSpellPower(statFrame, unit)
 	statFrame:Show();
 end
 
+local function GetSecondaryBonus(rating, base, bonusCoeff)	
+	-- For Legion Remix Timerunners, secondary stat bonuses all come from auras not actual stats
+	-- BonusCoeff is only from mastery, all other call sights should be 1
+	-- default bonus coeff call sights where we don't use this
+	if PlayerIsTimerunning() then
+		return base;
+	end
+
+	if not bonusCoeff then
+		bonusCoeff = 1;
+	end
+	return (GetCombatRatingBonus(rating) * bonusCoeff);
+end
+
 function PaperDollFrame_SetCritChance(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -1041,7 +1055,7 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, critChance, true, critChance);
 
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE)..FONT_COLOR_CODE_CLOSE;
-	local extraCritChance = GetCombatRatingBonus(rating);
+	local extraCritChance = GetSecondaryBonus(rating, critChance);
 	local extraCritRating = GetCombatRating(rating);
 	if (GetCritChanceProvidesParryEffect()) then
 		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(extraCritRating), extraCritChance, GetCombatRatingBonusForCombatRatingValue(CR_PARRY, extraCritRating));
@@ -1136,7 +1150,9 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	if (not statFrame.tooltip2) then
 		statFrame.tooltip2 = STAT_HASTE_TOOLTIP;
 	end
-	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
+	local hasteRating = GetCombatRating(rating);
+	local hasteBonus = GetSecondaryBonus(rating, haste);
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(hasteRating), hasteBonus);
 
 	statFrame:Show();
 end
@@ -1172,9 +1188,9 @@ function Mastery_OnEnter(statFrame)
 
 	local _, class = UnitClass("player");
 	local mastery, bonusCoeff = GetMasteryEffect();
-	local masteryBonus = GetCombatRatingBonus(CR_MASTERY) * bonusCoeff;
+	local masteryBonus = GetSecondaryBonus(CR_MASTERY, mastery, bonusCoeff);
 
-	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();	
 	if (primaryTalentTree) then
 		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(primaryTalentTree)
 		local hasAddedAnyMasterySpell = false;

@@ -543,15 +543,12 @@ function LFDQueueFrameRandomCooldownFrame_OnLoad(self)
 	self:SetFrameLevel(LFDQueueFrame:GetFrameLevel() + 9);	--This value also needs to be set when SetParent is called in LFDQueueFrameRandomCooldownFrame_Update.
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
-	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
+	self:RegisterEvent("LFG_COOLDOWNS_UPDATED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 end
 
 function LFDQueueFrameRandomCooldownFrame_OnEvent(self, event, ...)
-	local arg1 = ...;
-	if ( event ~= "UNIT_AURA" or arg1 == "player" or strsub(arg1, 1, 5) == "party" ) then
-		LFDQueueFrameRandomCooldownFrame_Update();
-	end
+	LFDQueueFrameRandomCooldownFrame_Update();
 end
 
 function LFDQueueFrameRandomCooldownFrame_Update()

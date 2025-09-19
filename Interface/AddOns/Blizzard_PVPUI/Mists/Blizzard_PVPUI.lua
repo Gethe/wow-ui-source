@@ -339,7 +339,7 @@ function HonorQueueFrame_UpdateQueueButtons()
 	local canQueue;
 	local isWorldPVP;
 	if ( HonorQueueFrame.type == "specific" ) then
-		if ( HonorQueueFrame.SpecificFrame.selectionID ) then
+		if ( HonorQueueFrame.SpecificFrame.bgID ) then
 			canQueue = true;
 		end
 	elseif ( HonorQueueFrame.type == "bonus" ) then
@@ -370,8 +370,8 @@ function HonorQueueFrame_Queue(isParty, forceSolo)
 		return;
 	end
 	local HonorQueueFrame = HonorQueueFrame;
-	if ( HonorQueueFrame.type == "specific" and HonorQueueFrame.SpecificFrame.selectionID ) then
-		JoinBattlefield(HonorQueueFrame.SpecificFrame.selectionID, isParty);
+	if ( HonorQueueFrame.type == "specific" and HonorQueueFrame.SpecificFrame.bgID ) then
+		JoinBattlefield(HonorQueueFrame.SpecificFrame.bgID, isParty);
 	elseif ( HonorQueueFrame.type == "bonus" and HonorQueueFrame.BonusFrame.selectedButton ) then
 		if ( HonorQueueFrame.BonusFrame.selectedButton.worldID ) then
 			JoinWorldPVPQueue(false, isParty, HonorQueueFrame.BonusFrame.selectedButton.bgID);
@@ -389,7 +389,7 @@ function HonorQueueFrameSpecificList_Update()
 	local buttons = scrollFrame.buttons;
 	local numButtons = #buttons;
 	local numBattlegrounds = GetNumBattlegroundTypes();
-	local selectionID = scrollFrame.selectionID;
+	local bgID = scrollFrame.bgID;
 	local buttonCount = -offset;
 
 	for i = 1, numBattlegrounds do
@@ -403,7 +403,7 @@ function HonorQueueFrameSpecificList_Update()
 				button.SizeText:SetFormattedText(PVP_TEAMTYPE, maxPlayers, maxPlayers);
 				button.InfoText:SetText(gameType);
 				button.Icon:SetTexture(iconTexture or DEFAULT_BG_TEXTURE);
-				if ( selectionID == battleGroundID ) then
+				if ( bgID == battleGroundID ) then
 					button.SelectedTexture:Show();
 					button.NameText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 					button.SizeText:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
@@ -450,6 +450,7 @@ function HonorQueueFrameSpecificList_FindAndSelectBattleground(bgID)
 	end
 
 	HonorQueueFrame.SpecificFrame.selectionID = bgButtonIndex;
+	HonorQueueFrame.SpecificFrame.bgID = bgID;
 	-- scroll the list if necessary
 	if ( numBattlegrounds > MAX_SHOWN_BATTLEGROUNDS ) then
 		local offset;
@@ -472,6 +473,7 @@ end
 function HonorQueueFrameSpecificBattlegroundButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	HonorQueueFrame.SpecificFrame.selectionID = self.selectionID;
+	HonorQueueFrame.SpecificFrame.bgID = self.bgID;
 	HonorQueueFrameSpecificList_ResetInfo();
 	HonorQueueFrameSpecificList_Update();
 end

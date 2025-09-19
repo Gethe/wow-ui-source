@@ -288,6 +288,7 @@ local MythicPlusInfo =
 				{ Name = "day", Type = "number", Nilable = false },
 				{ Name = "hour", Type = "number", Nilable = false },
 				{ Name = "minute", Type = "number", Nilable = false },
+				{ Name = "weekday", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

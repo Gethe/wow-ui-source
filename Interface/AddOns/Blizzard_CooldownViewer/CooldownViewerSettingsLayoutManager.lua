@@ -300,15 +300,6 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownOrderToActiveLayout(order
 	end
 end
 
-function CooldownViewerLayoutManagerMixin:ReadCooldownOrderFromActiveLayout()
-	local layout = self:GetActiveLayout();
-	if layout then
-		return self:ReadCooldownOrderFromLayout(layout);
-	end
-
-	return nil;
-end
-
 function CooldownViewerLayoutManagerMixin:WriteCooldownOrderToLayout(layout, orderedCooldownIDs)
 	-- NOTE: This should not trigger pending changes because its called when deserializing.
 	-- NOTE: This must be a copy to ensure that tables are never reused because of how the dataProvider
@@ -317,7 +308,7 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownOrderToLayout(layout, ord
 end
 
 function CooldownViewerLayoutManagerMixin:ReadCooldownOrderFromLayout(layout)
-	return layout.orderedCooldownIDs;
+	return layout and layout.orderedCooldownIDs;
 end
 
 function CooldownViewerLayoutManagerMixin:WriteCooldownInfo_KeyValue(cooldownInfo, key, value)

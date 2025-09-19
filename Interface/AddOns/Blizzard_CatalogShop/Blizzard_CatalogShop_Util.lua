@@ -580,6 +580,7 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 		local foundChildDisplayData = FindChildDisplayDataMatchingTag(tag);
 		if foundChildDisplayData then
 			lastFoundTag = tag;
+			foundChildDisplayData.isBundleChildProduct = true;
 			if foundChildDisplayData.productType == CatalogShopConstants.ProductType.Mount then
 				local _modelSceneId = nil;
 				local shouldHidePlayer = forceHidePlayer or not foundChildDisplayData.showRider;
@@ -657,28 +658,6 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 		end
 	end
 	EventRegistry:TriggerEvent("CatalogShop.OnModelSceneChanged", modelScene);
-end
-
--- DEFAULT PLAYER
-function CatalogShopUtil.SetupModelSceneForPlayer(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, optionalData)
-	CatalogShopUtil.SetupModelSceneForTransmogs(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange);
-
-	if modelScene.CachedPlayerActor then
-		if optionalData then
-			if optionalData.yaw then
-				local playerCamera = modelScene:GetCameraByTag(CatalogShopConstants.DefaultCameraTag.Primary);
-				playerCamera:SetYaw(math.rad(optionalData.yaw));
-			end
-
-			if optionalData.Offset then
-				local currentX, currentY, currentZ= modelScene.CachedPlayerActor:GetPosition();
-				local x = currentX + optionalData.Offset.x;
-				local y = currentY + optionalData.Offset.y;
-				local z = currentY + optionalData.Offset.z;
-				modelScene.CachedPlayerActor:SetPosition(x, y, z);
-			end
-		end
-	end
 end
 
 -- GETTING PLAYER WHILE INGAME
@@ -772,24 +751,21 @@ function CatalogShopUtil.SetupModelSceneForTransmogs(modelScene, modelSceneID, d
 	if modelScene.CachedPlayerActor then
 		modelScene.CachedPlayerActor:ClearModel();
 	end
-	local isFromBundle = false;
-	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, false);
+	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
 end
 
 function CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView)
-	local isFromBundle = true;
-	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, isFromBundle);
+	CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
 end
 
 -- TRANSMOGS
-function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView, isFromBundle)
+function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, preserveCurrentView)
 	if forceSceneChange then
 		modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 	end
 
 	local hideWeapon, sheatheWeapon, autoDress = false, true, true;
 	local useNativeForm = CatalogShopFrame:GetUseNativeForm();
-
 	--local itemModifiedAppearanceID;
 	local itemModifiedAppearanceIDs;
 
@@ -828,11 +804,20 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	local overrideActorName = displayData.modelSceneTag;
 	local playerData = CatalogShopUtil.TranslatePlayerModelData(modelScene, overrideActorName, itemModifiedAppearanceIDs, hasSubItems, sheatheWeapon, autoDress, hideWeapon, useNativeForm, forceSceneChange);
 
-	-- Bundles need a custom race override because the cards and scenes are frequently crowded
 	local customRaceID = nil;
-	if isFromBundle then
+	local isBundleChildProduct = displayData and displayData.isBundleChildProduct or false;
+	if isBundleChildProduct then
+		-- Bundles need a custom race override because the cards and scenes are frequently crowded
 		customRaceID = GetBundleOverrideRaceID();
+		playerData.useNativeForm = true;
+	else
+		-- we always want to show non-bundle cards as the real race
+		local modelSceneContext = displayData and displayData.modelSceneContext;
+		if modelSceneContext ~= CatalogShopConstants.ModelSceneContext.PreviewScene then
+			playerData.useNativeForm = true;
+		end
 	end
+
 	if C_Glue.IsOnGlueScreen() then
 		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID);
 	else
@@ -866,11 +851,7 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
 			end
 			actor:SetModelByCreatureDisplayID(creatureDisplayID);
-			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-			--displayData.animationKitID = CatalogShopConstants.DefaultAnimID.PetDefault;
-			--displayData.desiredScale = 0.35; -- TODO - FIX THIS, we neeed this data from BattlePetSpecies record
-			--actor:SetRequestedScale(displayData.desiredScale);
-						
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);			
 			local tryUseOverrideAnim = true;
 			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
 		end
@@ -951,7 +932,7 @@ function CatalogShopUtil.CatalogShopTryOn(actor, itemModifiedAppearanceID, allow
 	end
 end
 
-function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isPlayerTransmogScene, tryUseOverrideAnim)
+function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isPlayerTransmogScene, tryUseOverrideAnim, isOverrideData)
 	if not actorDisplayData then
 		return;
 	end
@@ -967,11 +948,13 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 		end
 		local useNativeForm = CatalogShopFrame:GetUseNativeForm();
 
-		local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
-		if hasAlternateForm and actorDisplayData.alternateFormData and not useNativeForm then
-			x, y, z = actorDisplayData.alternateFormData.posX, actorDisplayData.alternateFormData.posY, actorDisplayData.alternateFormData.posZ;
+		if not isOverrideData then
+			local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
+			if hasAlternateForm and actorDisplayData.alternateFormData and not useNativeForm then
+				x, y, z = actorDisplayData.alternateFormData.posX, actorDisplayData.alternateFormData.posY, actorDisplayData.alternateFormData.posZ;
+			end
+			actor:SetPosition(x, y, z);
 		end
-		actor:SetPosition(x, y, z);
 
 		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
 		actor:SetSpellVisualKit(nil);
@@ -1063,7 +1046,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 	if actor then
 		CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isTransmogScene, tryUseOverrideAnim)
 		if overrideActorDiplayData then
-			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim)
+			local isOverrideData = true;
+			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
 		end
 	else
 		-- TODO we have something else, maybe a bundle?
@@ -1076,7 +1060,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 			if actor then
 				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isTransmogScene, tryUseOverrideAnim)
 				if overrideActorDiplayData then
-					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim)
+					local isOverrideData = true;
+					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
 				end
 			end
 		end
@@ -1167,46 +1152,6 @@ function CatalogShopUtil.SetAlternateProductIcon(icon, displayInfo)
 	end
 end
 
-function CatalogShopUtil.SetAlternateProductURLImage(texture, displayInfo)
-	if displayInfo and displayInfo.otherProductPMTURL then
-		C_Texture.SetURLTexture(texture, displayInfo.otherProductPMTURL);
-	end
-end
-
-function CatalogShopUtil.SetMissingLicenseCaptionText(text, displayInfo)
-	if not displayInfo then
-		text:SetText("");
-		return;
-	end
-
-	local secureEnv = GetCurrentEnvironment();
-
-	if displayInfo.otherProductGameTitleBaseTag then
-		local gameNameStr = nil;
-		if displayInfo.otherProductGameType == CatalogShopConstants.GameTypes.Classic then
-			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Classic;
-		elseif displayInfo.otherProfuctGameType == CatalogShopConstants.GameTypes.Modern then
-			gameNameStr = CatalogShopConstants.GameTypeGlobalStringTag.Modern;
-		end
-		-- At this point gameNameStr should be nil (no special name format), "%s Classic", or "World of Warcraft: %s"
-
-		if gameNameStr then
-			local gameTitleStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
-			gameNameStr = gameNameStr:format(gameTitleStr);
-		else
-			gameNameStr = secureEnv[displayInfo.otherProductGameTitleBaseTag];
-		end
-		-- At this point gameNameStr is a fully described game title "Mists of Pandaria Classic" or "World of Warcraft: The War Within"
-
-		gameNameStr = CatalogShopConstants.ShopGlobalStringTag.MissingLicenseCaptionText:format(gameNameStr);
-		-- At this point the text is complete and holds something like "This product is available in Mists of Pandaria Classic"
-
-		text:SetText(gameNameStr);
-	else
-		text:SetText("");
-	end
-end
-
 local function IsWeapon(categoryID)
 	local firstWeaponCategory = Enum.TransmogCollectionType.Wand;
 	local lastWeaponCategory = Enum.TransmogCollectionType.Warglaives;
@@ -1248,4 +1193,25 @@ function CatalogShopUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceI
 		end
 	end
 	return true;
+end
+
+-- Function for sub time and game time texture names
+function CatalogShopUtil.GetTimeTexture(productInfo, productType)
+	local prefix;
+	if productType == CatalogShopConstants.ProductType.Subscription then
+		prefix = "sub";
+	elseif productType == CatalogShopConstants.ProductType.GameTime then
+		prefix = "game";
+	else
+		return nil;
+	end
+
+	local textureName = prefix.."-time-"..productInfo.licenseTermDuration;
+	if productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
+		return textureName.."mo";
+	elseif productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+		return textureName.."day";
+	else
+		return nil;
+	end
 end

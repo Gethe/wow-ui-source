@@ -1,12 +1,3 @@
-ItemButtonConstants =
-{
-	ContextMatch =
-	{
-		Standard = 1,
-		RuneForging = 2,
-	},
-};
-
 function GetFormattedItemQuantity(quantity, maxQuantity)
 	if quantity > (maxQuantity or 9999) then
 		return "*";

@@ -17,8 +17,9 @@ end
 
 function ServerAlertBoxMixin:GetContentHeight()
 	local MIN_CONTENT_HEIGHT = 40;
+	local VERTICAL_PADDING = 22;
 	local textHeight = self.ScrollFrame.Text:GetContentHeight();
-	return self:IsShown() and math.max(textHeight, MIN_CONTENT_HEIGHT) or 0;
+	return self:IsShown() and math.max(textHeight + VERTICAL_PADDING, MIN_CONTENT_HEIGHT) or 0;
 end
 
 -- The default server alert is just a box. The collapsible version includes a box and an expand bar.

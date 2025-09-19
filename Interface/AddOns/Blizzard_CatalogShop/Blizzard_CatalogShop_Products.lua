@@ -38,7 +38,7 @@ function CatalogShopProductContainerFrameMixin:SetupProductHeaderFrame(headerDat
 	else
 		self.ProductsHeader.ProductDescription:Hide();
 	end
-	self.LegalDisclaimerFrame:SetShown(headerData.showLegal or false);
+	self.ProductsHeader.LegalDisclaimerText:SetShown(headerData.showLegal or false);
 
 end
 
@@ -102,26 +102,14 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 	if foundElementData then
 		MergeTable(foundElementData, productInfo);
 
+		EventRegistry:TriggerEvent("CatalogShop.OnProductInfoChanged", foundElementData);
+
 		local selectedProductInfo = self:GetSelectedProductInfo();
 		local selectedProductIsUpdating = selectedProductInfo and selectedProductInfo.catalogShopProductID == foundElementData.catalogShopProductID;
 
-		if foundElementData.isHidden then
-			local dataProvider = scrollBox:GetDataProvider();
-			if dataProvider then
-				dataProvider:Remove(foundElementData);
-
-				-- Reset selection because the selected product is now gone
-				if selectedProductIsUpdating then
-					self:SelectFirstProductSilent();
-				end
-			end
-		else
-			EventRegistry:TriggerEvent("CatalogShop.OnProductInfoChanged", foundElementData);
-
-			-- Retrigger selection behavior because the selected product was incomplete
-			if selectedProductIsUpdating then
-				self:OnProductSelected(foundElementData);
-			end
+		-- Retrigger selection behavior because the selected product was incomplete
+		if selectedProductIsUpdating then
+			self:OnProductSelected(foundElementData);
 		end
 	end
 end
@@ -235,7 +223,12 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseUp", nil);
 	end
 
-	if productType == CatalogShopConstants.ProductType.Token then
+	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
+	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
+	if displayInfo.hasUnknownLicense then
+		CatalogShopFrame.CrossGameContainerFrame:Show();
+		CatalogShopFrame.CrossGameContainerFrame:SetDisplayInfo(displayInfo);
+	elseif productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
 	elseif productType == CatalogShopConstants.ProductType.Toy then
 		CatalogShopFrame.ToyContainerFrame:Show();
@@ -255,24 +248,19 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 			iconFrame.ProductCounterText:Hide();
 		end
 		iconFrame.Icon:SetSize(224, 224);
-	elseif productType == CatalogShopConstants.ProductType.Subscription then
+	elseif productType == CatalogShopConstants.ProductType.Subscription or productType == CatalogShopConstants.ProductType.GameTime then
+		-- Both sub time and game time have the same display type, but their Atlases are distinct
 		CatalogShopFrame.ServicesContainerFrame:Show();
 		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
 		iconFrame.ProductCounter:Hide();
 		iconFrame.ProductCounterText:Hide();
 		iconFrame.IconBorder:Hide();
+		iconFrame.Icon:SetSize(320, 320);
 
-		local licenseTermType = self.selectedProductInfo.licenseTermType;
-		local licenseTermDuration = self.selectedProductInfo.licenseTermDuration;
-		local subTexture;
-		if licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
-			subTexture = "wow-sub-"..licenseTermDuration.."mo";
-			iconFrame.Icon:SetSize(270, 240);
-		elseif licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
-			subTexture = "wow-sub-"..licenseTermDuration.."day";
-			iconFrame.Icon:SetSize(270, 300);
+		local timeTexture = CatalogShopUtil.GetTimeTexture(self.selectedProductInfo, productType);
+		if timeTexture then
+			iconFrame.Icon:SetAtlas(timeTexture);
 		end
-		iconFrame.Icon:SetAtlas(subTexture);
 	elseif productType == CatalogShopConstants.ProductType.TradersTenders then
 		CatalogShopFrame.ServicesContainerFrame:Show();
 		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
@@ -289,9 +277,21 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 			iconFrame.Icon:SetSize(atlasWidth, atlasHeight);
 			iconFrame.Icon:SetAtlas(subTexture);
 		end
+	elseif productType == CatalogShopConstants.ProductType.Access then
+		CatalogShopFrame.ServicesContainerFrame:Show();
+		local iconFrame = CatalogShopFrame.ServicesContainerFrame.AnimContainer.ServicesIconFrame;
+		iconFrame.ProductCounter:Hide();
+		iconFrame.ProductCounterText:Hide();
+		iconFrame.IconBorder:Hide();
+		iconFrame.Icon:SetSize(320, 320);
+
+		if productInfo.previewIconTexture then
+			iconFrame.Icon:SetAtlas(productInfo.previewIconTexture);
+		end
 	else
 		CatalogShopFrame.ModelSceneContainerFrame:Show();
 	end
+
 	EventRegistry:TriggerEvent("CatalogShop.OnProductSelected", productInfo);
 
 	if not self.silenceSelectionSounds then
@@ -420,7 +420,9 @@ function ProductContainerFrameMixin:InitProductContainer()
 					atLeastOneProductAdded = atLeastOneProductAdded or productAdded;
 				end
 				-- Only add a header section if we added atleast one product for this Section (filtering can cause this to be 0)
-				if atLeastOneProductAdded then
+				-- Additionally only add a header if the section name has a valid string
+				local headerIsBlank = (not sectionData.sectionDisplayName) or (sectionData.sectionDisplayName == "");
+				if (not headerIsBlank) and atLeastOneProductAdded then
 					-- Add our section header element if we have products to Show
 					addSectionToDataProvider(dataProvider, self.categoryID, sectionID);
 				end
@@ -457,23 +459,29 @@ function ProductContainerFrameMixin:InitProductContainer()
 			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
 			if scrollViewSize == 1 then
 				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Token then
-					factory(CatalogShopConstants.CardTemplate.WideCardToken, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.WideCardToken, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
-					factory(CatalogShopConstants.CardTemplate.WideCardSubscription, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.WideCardSubscription, InitializeButton);
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.GameTime then
+					factory(CatalogShopConstants.CardTemplate.WideCardGameTime, InitializeButton);
 				else
-					factory(CatalogShopConstants.CardTemplate.Wide, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.Wide, InitializeButton);
 				end
 			else
 				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
-					factory(CatalogShopConstants.CardTemplate.SmallServices, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.SmallServices, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
-					factory(CatalogShopConstants.CardTemplate.SmallSubscriptions, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.SmallSubscriptions, InitializeButton);
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.GameTime then
+					factory(CatalogShopConstants.CardTemplate.SmallGameTime, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Tender then
-					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
-					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton);
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
+					factory(CatalogShopConstants.CardTemplate.SmallAccess, InitializeButton);
 				else
-					factory(CatalogShopConstants.CardTemplate.Small, InitializeButton)
+					factory(CatalogShopConstants.CardTemplate.Small, InitializeButton);
 				end
 			end
 		end
@@ -489,6 +497,8 @@ function ProductContainerFrameMixin:OnCategorySelected(categoryID)
 	local sectionIDs = C_CatalogShop.GetSectionIDsForCategory(categoryID);
 	for _, sectionID in ipairs(sectionIDs) do
 		local data = {ID = sectionID, productIDs = {}};
+		local sectionInfo = C_CatalogShop.GetCategorySectionInfo(categoryID, sectionID);
+		data.sectionDisplayName = sectionInfo.displayName;
 		local sectionProductIDs = C_CatalogShop.GetProductIDsForCategorySection(categoryID, sectionID);
 		for _, productID in ipairs(sectionProductIDs) do
 			table.insert(data.productIDs, productID);
@@ -505,5 +515,5 @@ function ProductContainerFrameMixin:OnCategorySelected(categoryID)
 		Name = categoryInfo.displayName,
 		showLegal = false,
 	};
-	self:SetupProductHeaderFrame(headerData);
+	self.ProductsHeader:Init(headerData);
 end

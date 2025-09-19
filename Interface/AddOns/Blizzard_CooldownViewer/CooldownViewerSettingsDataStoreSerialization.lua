@@ -53,22 +53,32 @@ function CooldownViewerDataStoreSerializationMixin:SetSerializationPersistenceOb
 end
 
 function CooldownViewerDataStoreSerializationMixin:GetSerializedData()
-	if self.persistenceObject then
-		return self.persistenceObject:GetSerializedData();
+	if self.cachedSerializedData then
+		return self.cachedSerializedData;
 	end
 
-	return GetCVar("cooldownViewerLayouts");
+	if self.persistenceObject then
+		self.cachedSerializedData = self.persistenceObject:GetSerializedData();
+	else
+		self.cachedSerializedData = C_CooldownViewer.GetLayoutData();
+	end
+
+	return self.cachedSerializedData;
 end
 
 function CooldownViewerDataStoreSerializationMixin:SetSerializedData(serializedData)
+	self.cachedSerializedData = nil;
+
 	if self.persistenceObject then
 		self.persistenceObject:SetSerializedData(serializedData);
 	else
-		SetCVar("cooldownViewerLayouts", serializedData);
+		C_CooldownViewer.SetLayoutData(serializedData);
 	end
 end
 
 function CooldownViewerDataStoreSerializationMixin:ClearSerializedData()
+	self.cachedSerializedData = nil;
+
 	if self.persistenceObject then
 		self.persistenceObject:ClearSerializedData();
 	else

@@ -1055,9 +1055,6 @@ function CooldownViewerMixin:OnLoad()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
-	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
-	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-	self:RegisterEvent("COOLDOWN_VIEWER_TABLE_HOTFIXED");
 
 	EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
 	CVarCallbackRegistry:RegisterCallback(cooldownViewerEnabledCVar, self.OnCooldownViewerEnabledCVarChanged, self);
@@ -1099,11 +1096,10 @@ function CooldownViewerMixin:OnShow()
 		self:RefreshLayout();
 	end
 
-	CooldownViewerSettings:GetDataProvider():IncrementShowCount();
-
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", RefreshFromSettingsUpdate, self);
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnSettingsLoaded", RefreshFromSettingsUpdate, self);
-	EventRegistry:RegisterCallback("CooldownViewerSettings.OnSpecChanged", RefreshFromSettingsUpdate, self);
+
+	self:RefreshLayout();
 end
 
 function CooldownViewerMixin:OnHide()
@@ -1113,11 +1109,8 @@ function CooldownViewerMixin:OnHide()
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("PLAYER_TOTEM_UPDATE");
 
-	CooldownViewerSettings:GetDataProvider():DecrementShowCount();
-
 	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnDataChanged", self);
 	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnSettingsLoaded", self);
-	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnSpecChanged", self);
 end
 
 function CooldownViewerMixin:OnVariablesLoaded()
@@ -1131,12 +1124,6 @@ end
 function CooldownViewerMixin:OnEvent(event, ...)
 	if event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_LEVEL_CHANGED" then
 		self:UpdateShownState();
-	elseif event == "TRAIT_CONFIG_UPDATED" then
-		self:RefreshLayout();
-	elseif event == "PLAYER_PVP_TALENT_UPDATE" then
-		self:RefreshLayout();
-	elseif event == "COOLDOWN_VIEWER_TABLE_HOTFIXED" then
-		self:RefreshLayout();
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local baseSpellID, overrideSpellID = ...;
 		for itemFrame in self.itemFramePool:EnumerateActive() do

@@ -54,7 +54,7 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 
 		local createCharacterCallback = function()
 			-- Don't show the popup with the create character choice since the player just selected timerunner.
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+			StaticPopup_Show("TIMERUNNING_CHOICE_WARNING");
 		end;
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
@@ -181,6 +181,12 @@ StaticPopupDialogs["TIMERUNNING_CHOICE_WARNING"] = {
 		TimerunningChoicePopup:Hide();
 		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, GetActiveTimerunningSeasonID());
 	end,
+	OnCancel = function(dialog, data)
+		if GlueParent_GetCurrentScreen() == "charcreate" then
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		end
+	end,
+	cover = true,
 };
 
 TimerunningChoiceDialogMixin = {};
@@ -204,11 +210,11 @@ function TimerunningChoiceDialogMixin:OnLoad()
 			C_LiveEvent.OnLiveEventPopupClicked(GetActiveTimerunningSeasonID());
 		end
 
-		if self.isTimerunning and GlueParent_GetCurrentScreen() == "charcreate" then
+		TimerunningChoicePopup:Hide();
+		if self.isTimerunning then
 			StaticPopup_Show("TIMERUNNING_CHOICE_WARNING");
 		else
-			TimerunningChoicePopup:Hide();
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, self.isTimerunning and GetActiveTimerunningSeasonID() or nil);
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
 		end
 	end);
 end

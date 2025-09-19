@@ -37,6 +37,15 @@ local CooldownViewer =
 			},
 		},
 		{
+			Name = "GetLayoutData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "data", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCooldownViewerAvailable",
 			Type = "Function",
 
@@ -46,10 +55,24 @@ local CooldownViewer =
 				{ Name = "failureReason", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "SetLayoutData",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "data", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "CooldownViewerDataLoaded",
+			Type = "Event",
+			LiteralName = "COOLDOWN_VIEWER_DATA_LOADED",
+		},
 		{
 			Name = "CooldownViewerSpellOverrideUpdated",
 			Type = "Event",

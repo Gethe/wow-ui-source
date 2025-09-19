@@ -25,19 +25,30 @@ CatalogShopConstants =
 		Wide = "WideCatalogShopProductCardTemplate",
 		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
 		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",
+		WideCardGameTime = "WideGameTimeCatalogShopCardTemplate",
 
 		Small = "SmallCatalogShopProductCardTemplate",
 		SmallServices = "SmallCatalogShopServicesCardTemplate",
 		SmallSubscription = "SmallCatalogShopSubscriptionCardTemplate",
+		SmallGameTime = "SmallCatalogShopGameTimeCardTemplate",
 		SmallTender = "SmallCatalogShopTenderCardTemplate",
 		SmallToys = "SmallCatalogShopToysCardTemplate",
-
+		SmallAccess = "SmallCatalogShopAccessCardTemplate",
 
 		Details = "DetailsCatalogShopProductCardTemplate",
 		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
 		DetailsSubscription = "DetailsCatalogShopSubscriptionCardTemplate",
+		DetailsGameTime = "DetailsCatalogShopGameTimeCardTemplate",
 		DetailsTender = "DetailsCatalogShopTenderCardTemplate",
 		DetailsToys = "DetailsCatalogShopToysCardTemplate",
+		DetailsAccess = "DetailsCatalogShopAccessCardTemplate",
+	},
+
+	ModelSceneContext =
+	{
+		SmallCard = 1,
+		WideCard = 2,
+		PreviewScene = 3,
 	},
 
 	ScreenPadding =
@@ -68,6 +79,8 @@ CatalogShopConstants =
 		Subscription = "Subscription",
 		TradersTenders = "Tender",
 		Decor = "Decor",
+		Access = "Access",
+		GameTime = "Game Time",
 	},
 
 	-- These names match up with names in CatalogShop_C::GetOtherFlavorGameData

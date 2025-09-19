@@ -1694,12 +1694,7 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 				local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
 
 				if ( usingDifferentLanguage or not usingEmote ) then
-					local senderGUID = arg12;
-					if ShouldAddRecentAllyIconToName(self.chatType, senderGUID) then
-						playerLinkDisplayText = CHAT_MSG_RECENT_ALLY_NAME_FORMAT:format(coloredName, CreateAtlasMarkup("friendslist-recentallies-yellow", 11, 11));
-					else
-						playerLinkDisplayText = ("[%s]"):format(coloredName);
-					end
+					playerLinkDisplayText = ("[%s]"):format(coloredName);
 				end
 
 				local isCommunityType = type == "COMMUNITIES_CHANNEL";
@@ -1720,6 +1715,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
 					else
 						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
+						local senderGUID = arg12;
+						if not usingEmote and ShouldAddRecentAllyIconToName(self.chatType, senderGUID) then
+							playerLink = playerLink .. " " .. CreateAtlasMarkup("friendslist-recentallies-yellow", 11, 11);
+						end
 					end
 				end
 

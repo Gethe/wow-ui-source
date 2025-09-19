@@ -72,6 +72,16 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetFailureInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "errorResultEnum", Type = "StoreError", Nilable = true },
+				{ Name = "errorResultRaw", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetProductAvailabilityTimeRemainingSecs",
 			Type = "Function",
 
@@ -292,6 +302,11 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "CatalogShopRebuildScrollBox",
+			Type = "Event",
+			LiteralName = "CATALOG_SHOP_REBUILD_SCROLL_BOX",
+		},
+		{
 			Name = "CatalogShopRemovePendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_REMOVE_PENDING_PRODUCT",
@@ -299,6 +314,11 @@ local CatalogShop =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "CatalogShopResultError",
+			Type = "Event",
+			LiteralName = "CATALOG_SHOP_RESULT_ERROR",
 		},
 		{
 			Name = "CatalogShopSpecificProductRefresh",
@@ -412,6 +432,7 @@ local CatalogShop =
 				{ Name = "smallCardFGTexture", Type = "string", Nilable = true },
 				{ Name = "wideCardBGTexture", Type = "string", Nilable = true },
 				{ Name = "wideCardFGTexture", Type = "string", Nilable = true },
+				{ Name = "previewIconTexture", Type = "string", Nilable = true },
 				{ Name = "hasTimeRemaining", Type = "bool", Nilable = false },
 				{ Name = "optionalWideCardBackgroundTexture", Type = "string", Nilable = true },
 				{ Name = "isBundle", Type = "bool", Nilable = false },

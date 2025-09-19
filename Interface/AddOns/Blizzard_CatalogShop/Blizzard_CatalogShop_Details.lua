@@ -17,6 +17,9 @@ function CatalogShopProductDetailsContainerFrameMixin:OnShow()
 end
 
 function CatalogShopProductDetailsContainerFrameMixin:OnHide()
+	-- when we hide the Details Frame, we need to clear that ScrollBox
+	local dataProvider = CreateDataProvider();
+	self.DetailsProductContainerFrame.ProductsScrollBoxContainer.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function CatalogShopProductDetailsContainerFrameMixin:OnEvent(event, ...)
@@ -81,15 +84,19 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		frame:SetSelected(isSelected);
 		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
+			EventRegistry:TriggerEvent("CatalogShop.OnBundleChildSelected", productInfo);
 		end);
 	end
 
 	local function GetDetailContainerElementFactory(factory, elementData)		
 		if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Subscription then
-			-- Subscriptions and Game Time
+			-- Subscription
 			factory(CatalogShopConstants.CardTemplate.DetailsSubscription, InitializeButton);
-		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toys then
-			-- Toys
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.GameTime then
+			-- Game Time
+			factory(CatalogShopConstants.CardTemplate.DetailsGameTime, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
+			-- Toy
 			factory(CatalogShopConstants.CardTemplate.DetailsToys, InitializeButton);
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.TradersTenders then
 			-- Trader's Tender
@@ -97,6 +104,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Services then
 			-- Services
 			factory(CatalogShopConstants.CardTemplate.DetailsServices, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
+			-- Access
+			factory(CatalogShopConstants.CardTemplate.DetailsAccess, InitializeButton);
 		else
 			factory(CatalogShopConstants.CardTemplate.Details, InitializeButton);
 		end
@@ -109,10 +119,6 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 	self.displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.productInfo.catalogShopProductID);
 
 	self.ProductsHeader:SetShown(true);
-	self.usesScrollBox = productInfo.isBundle or false;
-	-- Init ProductsScrollBoxContainer
-	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
-	self.ShadowLayer:SetShown(self.usesScrollBox);
 
 	local desc = CatalogShopUtil.GetDescriptionText(self.productInfo);
 	if productInfo.isBundle then
@@ -123,7 +129,7 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 			Description = desc,
 			showLegal = true,
 		};
-		self:SetupProductHeaderFrame(headerData);
+		self.ProductsHeader:Init(headerData);
 	else
 		local headerData = {
 			Name = self.productInfo.name,
@@ -131,16 +137,21 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 			Description = desc,
 			showLegal = true,
 		};
-		self:SetupProductHeaderFrame(headerData);
+		self.ProductsHeader:Init(headerData);
 		self.bundleChildInfo = nil;
 	end
 
 	local function onHyperlinkClicked(frame, link, text, button)
 		C_CatalogShop.OnLegalDisclaimerClicked(self.productInfo.catalogShopProductID);
 	end
+	self.ProductsHeader:SetScript("OnHyperlinkClick", onHyperlinkClicked);
 
-	self.LegalDisclaimerFrame:SetScript("OnHyperlinkClick", onHyperlinkClicked);
+	-- Force the VerticalLayoutFrame to update the layout immediately. This allows the scrollbox to have accurate layout info from it's anchor.
+	self.ProductsHeader:Layout();
 
-	-- Only show the bundle container if our product is a bundle.
+	-- Init ProductsScrollBoxContainer AFTER the VerticalLayoutFrame has been built (via call to Layout)
+	self.usesScrollBox = productInfo.isBundle or false;
+	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
+	self.ShadowLayer:SetShown(self.usesScrollBox);
 	self:AllDataRefresh(true);
 end

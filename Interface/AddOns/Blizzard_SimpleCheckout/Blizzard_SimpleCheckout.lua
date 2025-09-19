@@ -29,7 +29,7 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
 				self:SetFocus();
-				CatalogShopFrame:SetAlpha(0);
+				CatalogShopFrame:HideForCheckout();
 			else
 				self:Hide();
 			end

@@ -59,6 +59,12 @@ Shared\VASErrorLookup.lua
 SelectableButton.lua
 SelectableButton.xml
 ButtonGroup.lua
+Shared\Button\UIButtonTemplate.lua
+Shared\Button\UIButtonTemplate.xml
+Shared\Button\ThreeSliceButtonTemplate.lua
+Shared\Button\ThreeSliceButtonTemplate.xml
+Shared\Button\IconButtonTemplate.lua
+Shared\Button\IconButtonTemplate.xml
 Shared\Frame\EventFrame.lua
 Shared\Frame\EventFrame.xml
 Shared\Frame\EventButton.lua
@@ -67,6 +73,8 @@ Shared\Frame\EventScrollFrame.lua
 Shared\Frame\EventScrollFrame.xml
 Shared\Frame\EventEditBox.lua
 Shared\Frame\EventEditBox.xml
+Shared\FrameTemplate\RingedFrameTemplate.lua
+Shared\FrameTemplate\RingedFrameTemplate.xml
 ScriptedAnimations\ScriptedAnimationEffects.lua
 ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
 ScriptedAnimations\ScriptAnimatedEffectController.lua

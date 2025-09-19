@@ -40,13 +40,18 @@
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" setAllPoints="true" />
 					</Layer>
-					<Layer level="BORDER">
-						<Texture parentKey="FrameBackground" setAllPoints="true" />
-					</Layer>
 				</Layers>
 			</Frame>
 
 			<ModelScene parentKey="ModelScene" frameLevel="200" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate" />
+
+			<Frame parentKey="SelectedContainer" frameLevel="300" setAllPoints="true" >
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="FrameBackground" setAllPoints="true" />
+					</Layer>
+				</Layers>
+			</Frame>			
 
 			<Frame parentKey="ForegroundContainer" frameLevel="1000" setAllPoints="true" >
 				<Layers>
@@ -92,7 +97,7 @@
 						<FontString parentKey="Name" inherits="SystemFont_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
 							<Color color="WHITE_FONT_COLOR"/>
 							<KeyValues>
-								<KeyValue key="minLineHeight" value="14" type="number"/>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
 							</KeyValues>
 						</FontString>
 						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" alphaMode="ADD">
@@ -125,11 +130,11 @@
 								<Anchor point="TOPRIGHT" x="-3" y="-11" />
 							</Anchors>
 						</Texture>
-						<FontString parentKey="DiscountAmount" inherits="SystemFont_Shadow_Large" wordwrap="false" justifyV="MIDDLE" justifyH="RIGHT" hidden="true" >
+						<FontString parentKey="DiscountAmount" inherits="SystemFont_Shadow_Large" wordwrap="false" justifyV="MIDDLE" justifyH="CENTER" hidden="true" >
 							<Size x="60" y="19"/>
 							<Color color="WHITE_FONT_COLOR"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-8" y="-33" />
+								<Anchor point="TOPRIGHT" x="2" y="-33" />
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >
@@ -180,6 +185,9 @@
 	
 	<!-- Subscription Small Card Template -->
 	<Button name="SmallCatalogShopSubscriptionCardTemplate" mixin="SmallCatalogShopSubscriptionCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Small Card Template -->
+	<Button name="SmallCatalogShopGameTimeCardTemplate" mixin="SmallCatalogShopGameTimeCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 	
 	<!-- Tender Small Card Template -->
 	<Button name="SmallCatalogShopTenderCardTemplate" mixin="SmallCatalogShopTenderCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
@@ -187,7 +195,9 @@
 	<!-- Toys Small Card Template -->
 	<Button name="SmallCatalogShopToysCardTemplate" mixin="SmallCatalogShopToysCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
-	
+	<!-- Access Small Card Template -->
+	<Button name="SmallCatalogShopAccessCardTemplate" mixin="SmallCatalogShopAccessCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
 	<!--
 		Details Card Templates are structually similar to Small Product Card Templates, however
 		they're used in a different context (the details pane) and have different mixins to handle
@@ -198,15 +208,20 @@
 	<!-- Services Details Card Template -->
 	<Button name="DetailsCatalogShopServicesCardTemplate" mixin="DetailsCatalogShopServicesCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
-	<!-- Subscription and Game Time Details Card Template -->
+	<!-- Subscription Details Card Template -->
 	<Button name="DetailsCatalogShopSubscriptionCardTemplate" mixin="DetailsCatalogShopSubscriptionCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Details Card Template -->
+	<Button name="DetailsCatalogShopGameTimeCardTemplate" mixin="DetailsCatalogShopGameTimeCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
 	<!-- Trader's Tender Card Template -->
 	<Button name="DetailsCatalogShopTenderCardTemplate" mixin="DetailsCatalogShopTenderCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
 	<!-- Toys Details Card Template -->
 	<Button name="DetailsCatalogShopToysCardTemplate" mixin="DetailsCatalogShopToysCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
-	
+
+	<!-- Access Details Card Template -->
+	<Button name="DetailsCatalogShopAccessCardTemplate" mixin="DetailsCatalogShopAccessCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
 
 	<!--
 		Large Card Templates are used in the main catalog view, frequently in the Featured section of the catalog, or other important sections.
@@ -229,11 +244,14 @@
 
 	<!-- Subscription Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
 	<Button name="WideSubscriptionCatalogShopCardTemplate" mixin="WideSubscriptionCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="WideGameTimeCatalogShopCardTemplate" mixin="WideGameTimeCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" />
 	
 		<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
 	<Button name="WideWoWTokenCatalogShopCardTemplate" mixin="WideWoWTokenCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
 		<Frames>
-			<Frame parentKey="AnimContainer" inherits="GlowPulseAnimContainerTemplate" clipChildren="true" frameLevel="300" >
+			<Frame parentKey="AnimContainer" hidden="true" inherits="GlowPulseAnimContainerTemplate" clipChildren="true" frameLevel="300" >
 				<Size x="300" y="300" />
 				<KeyValues>
 					<KeyValue key="playLoopingSoundFX" value="false" type="boolean"/>

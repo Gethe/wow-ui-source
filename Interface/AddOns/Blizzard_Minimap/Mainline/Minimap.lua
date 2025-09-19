@@ -26,7 +26,7 @@ local REMOVED_FILTERS = {
 };
 
 local ALWAYS_ON_FILTERS = {
-	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
+	[Enum.MinimapTrackingFilter.QuestPOIs] = true,
 	[Enum.MinimapTrackingFilter.TaxiNode] = true,
 	[Enum.MinimapTrackingFilter.Innkeeper] = true,
 	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,

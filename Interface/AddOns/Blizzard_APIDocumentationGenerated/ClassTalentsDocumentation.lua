@@ -205,6 +205,7 @@ local ClassTalents =
 				{ Name = "configID", Type = "number", Nilable = false },
 				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "importString", Type = "string", Nilable = true },
 			},
 
 			Returns =
@@ -339,6 +340,7 @@ local ClassTalents =
 			Arguments =
 			{
 				{ Name = "entries", Type = "table", InnerType = "ImportLoadoutEntryInfo", Nilable = false },
+				{ Name = "importString", Type = "string", Nilable = true },
 			},
 
 			Returns =

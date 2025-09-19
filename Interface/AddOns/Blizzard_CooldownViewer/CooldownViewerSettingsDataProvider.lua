@@ -2,35 +2,22 @@ CooldownViewerSettingsDataProviderMixin = {};
 
 function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	self:SetLayoutManager(layoutManager);
-end
+	self:SwitchToBestLayoutForSpec();
 
-function CooldownViewerSettingsDataProviderMixin:IncrementShowCount()
-	self.showCount = (self.showCount or 0) + 1;
-	self:UpdateEventRegistrationForShowCount();
-end
+	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", self.SwitchToBestLayoutForSpec, self);
 
-function CooldownViewerSettingsDataProviderMixin:DecrementShowCount()
-	if self.showCount and self.showCount > 0 then
-		self.showCount = self.showCount - 1;
-		self:UpdateEventRegistrationForShowCount();
+	local function RefreshFromExternalUpdate()
+		self:MarkDirty();
+		self:TriggerDataChangeInternal();
 	end
-end
 
-function CooldownViewerSettingsDataProviderMixin:UpdateEventRegistrationForShowCount()
-	if self.showCount == 1 then
-		EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", function()
-			self:SwitchToBestLayoutForSpec();
-
-			EventRegistry:TriggerEvent("CooldownViewerSettings.OnSpecChanged");
-		end, self);
-	elseif self.showCount == 0 then
-		EventRegistry:UnregisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", self);
-	end
+	EventRegistry:RegisterFrameEventAndCallback("COOLDOWN_VIEWER_TABLE_HOTFIXED", RefreshFromExternalUpdate, self);
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_PVP_TALENT_UPDATE", RefreshFromExternalUpdate, self);
+	EventRegistry:RegisterFrameEventAndCallback("SPELLS_CHANGED", RefreshFromExternalUpdate, self);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SetLayoutManager(layoutManager)
 	self.layoutManager = layoutManager;
-	self:SwitchToBestLayoutForSpec();
 end
 
 function CooldownViewerSettingsDataProviderMixin:GetLayoutManager()
@@ -80,7 +67,7 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 
 	local cooldownInfoByID = {};
 	local cooldownDefaultsByID = {};
-	local orderedCooldownIDs = {};
+	local defaultOrderedCooldownIDs = {};
 
 	for categoryIndex, cooldownCategory in pairs(CooldownViewerSettingsDataProvider_GetCategories()) do
 		local cooldownIDs = C_CooldownViewer.GetCooldownViewerCategorySet(cooldownCategory, ALLOW_ALL_COOLDOWNS_IN_SET);
@@ -106,81 +93,55 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 				cooldownDefaultsByID[cooldownID] = { category = cooldownCategory, };
 
 				cooldownInfoByID[cooldownID] = info;
-				table.insert(orderedCooldownIDs, cooldownID);
+				table.insert(defaultOrderedCooldownIDs, cooldownID);
 			end
+		end
+	end
+
+	local layoutManager = self:GetLayoutManager();
+	local currentTag = layoutManager and layoutManager:GetSerializer():GetCurrentClassAndSpecTag();
+	local activeLayout = layoutManager and layoutManager:GetActiveLayout();
+	local activeLayoutMatchesCurrentSpec = (activeLayout and currentTag) and (layoutManager:GetSpecTagForLayout(activeLayout) == currentTag);
+	local persistedLayoutOrderedCooldownIDs = activeLayoutMatchesCurrentSpec and layoutManager:ReadCooldownOrderFromLayout(activeLayout);
+	local layoutOrderedCooldownIDs = persistedLayoutOrderedCooldownIDs and CopyTable(persistedLayoutOrderedCooldownIDs);
+	
+	if layoutOrderedCooldownIDs then
+		-- Ensure there's nothing in saved data that's not in static data (don't save things that cannot exist)
+		local invertedDefaultIDs = tInvert(defaultOrderedCooldownIDs); -- NOTE: tInvert returns a copy, it doesn't modify the original.
+		for savedIndex = #layoutOrderedCooldownIDs, 1, -1 do
+			local savedID = layoutOrderedCooldownIDs[savedIndex];
+			if not invertedDefaultIDs[savedID] then
+				table.remove(layoutOrderedCooldownIDs, savedIndex);
+			end
+		end
+
+		-- Ensure that saved data contains all ids in static data (this needs to persist, just write to the end if there are new ones, allow the player to arrange/recategorize later)
+		local invertedSavedIDs = tInvert(layoutOrderedCooldownIDs);
+		for _, defaultID in ipairs(defaultOrderedCooldownIDs) do
+			if not invertedSavedIDs[defaultID] then
+				table.insert(layoutOrderedCooldownIDs, defaultID);
+			end
+		end
+
+		assertsafe(#layoutOrderedCooldownIDs == #defaultOrderedCooldownIDs, "Length of CooldownIDs for saved and display data should match but don't.");
+		layoutManager:WriteCooldownOrderToActiveLayout(layoutOrderedCooldownIDs);
+	end
+
+	if activeLayoutMatchesCurrentSpec then
+		for cooldownID, cooldownInfo in pairs(cooldownInfoByID) do
+			-- TODO: Rather than running through all the existing cooldowns in the provider, maybe come up with a way to enumerate all the
+			-- cooldown overrides in the layoutManager and update only the relevant ones...maybe six of one, half dozen of the other, not sure yet.
+			layoutManager:DeserializeCooldownInfo(cooldownInfo);
 		end
 	end
 
 	self.displayDataDirty = false;
 	self.displayData = {
 		cooldownInfoByID = cooldownInfoByID,
-		orderedCooldownIDs = orderedCooldownIDs,
-		defaultOrderedCooldownIDs = CopyTable(orderedCooldownIDs),
+		orderedCooldownIDs = layoutOrderedCooldownIDs or defaultOrderedCooldownIDs,
+		defaultOrderedCooldownIDs = defaultOrderedCooldownIDs,
 		cooldownDefaultsByID = cooldownDefaultsByID,
-
 	};
-end
-
-function CooldownViewerSettingsDataProviderMixin:SetCooldownDisplayOrder(orderedIDs)
-	local displayData = self:GetDisplayData();
-	assertsafe(displayData ~= nil and displayData.orderedCooldownIDs ~= nil, "This was called before initialization");
-	displayData.orderedCooldownIDs = orderedIDs;
-end
-
-function CooldownViewerSettingsDataProviderMixin:LoadSavedData()
-	assertsafe(not self.loadSavedDataGuardActive, "This method should not need to be reentrant."); -- TODO: Remove when it's confirmed that this is no longer an issue
-	self.loadSavedDataGuardActive = true;
-
-	local manager = self:GetLayoutManager();
-	if manager and self:GetDisplayData() then
-		self:LoadSavedData_CooldownOrder(manager);
-		self:LoadSavedData_CooldownInfo(manager);
-	end
-
-	self.loadSavedDataGuardActive = nil;
-end
-
-function CooldownViewerSettingsDataProviderMixin:LoadSavedData_CooldownOrder(layoutManager)
-	local defaultIDs = self:GetDefaultOrderedCooldownIDs();
-	local savedCooldownOrder = layoutManager:ReadCooldownOrderFromActiveLayout();
-	if savedCooldownOrder then
-		local savedIDs = CopyTable(savedCooldownOrder);
-		local cooldownInfoIDsToRemoveFromSavedData = {};
-
-		-- Ensure there's nothing in saved data that's not in static data (don't save things that cannot exist)
-		local invertedDefaultIDs = tInvert(defaultIDs);
-		for savedIndex = #savedIDs, 1, -1 do
-			local savedID = savedIDs[savedIndex];
-			if not invertedDefaultIDs[savedID] then
-				table.remove(savedIDs, savedIndex);
-				table.insert(cooldownInfoIDsToRemoveFromSavedData, savedID);
-			end
-		end
-
-		-- Ensure that saved data contains all ids in static data (this needs to persist, just write to the end if there are new ones, allow the player to arrange/recategorize later)
-		local invertedSavedIDs = tInvert(savedIDs);
-		for _, providerID in ipairs(defaultIDs) do
-			if not invertedSavedIDs[providerID] then
-				table.insert(savedIDs, providerID);
-			end
-		end
-
-		assertsafe(#savedIDs == #defaultIDs, "CooldownIDs for saved and display data should match but don't.");
-
-		-- Update the current display and the layout with the processed lists, in a typical case this will result in no changes.
-		-- If that becomes an issue, change tracking can be added to LoadSavedData_CooldownOrder to avoid the rewrites.
-		self:SetCooldownDisplayOrder(savedIDs);
-		layoutManager:WriteCooldownOrderToActiveLayout(savedIDs);
-	end
-end
-
-function CooldownViewerSettingsDataProviderMixin:LoadSavedData_CooldownInfo(layoutManager)
-	local displayData = self:GetDisplayData();
-	for cooldownID, cooldownInfo in pairs(displayData.cooldownInfoByID) do
-		-- TODO: Rather than running through all the existing cooldowns in the provider, maybe come up with a way to enumerate all the
-		-- cooldown overrides in the layoutManager and update only the relevant ones...maybe six of one, half dozen of the other, not sure yet.
-		layoutManager:DeserializeCooldownInfo(cooldownInfo);
-	end
 end
 
 function CooldownViewerSettingsDataProviderMixin:ResetCurrentToDefaults()
@@ -207,7 +168,6 @@ function CooldownViewerSettingsDataProviderMixin:ResetToRestorePoint()
 	if layoutManager and self:GetDisplayData() then
 		layoutManager:ResetToRestorePoint();
 		self:MarkDirty();
-		self:LoadSavedData();
 		self:TriggerDataChangeInternal();
 	end
 end
@@ -217,7 +177,7 @@ function CooldownViewerSettingsDataProviderMixin:SwitchToBestLayoutForSpec()
 	if layoutManager then
 		self:MarkDirty();
 		layoutManager:SwitchToBestLayoutForSpec();
-		self:LoadSavedData();
+		self:TriggerDataChangeInternal();
 	end
 end
 
@@ -226,7 +186,6 @@ function CooldownViewerSettingsDataProviderMixin:SetActiveLayoutName(layoutName)
 	if layoutManager then
 		self:MarkDirty();
 		if layoutManager:SetActiveLayoutName(layoutName) then
-			self:LoadSavedData();
 			self:TriggerDataChangeInternal();
 		end
 	end

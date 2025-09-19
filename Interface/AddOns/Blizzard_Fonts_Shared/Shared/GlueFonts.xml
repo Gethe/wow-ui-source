@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<!-- This GlueFonts.xml is loaded before GlueFontStyles.xml Set up Font objects to be localized in GlueFonts.xml not GlueFontStyles.xml -->
 	<FontFamily name="SystemFont_Outline_Med1" virtual="true">
 		<Member alphabet="roman">
 			<Font font="Fonts\FRIZQT__.TTF" height="12" outline="NORMAL"/>
@@ -589,4 +588,5 @@
 			</Font>
 		</Member>
 	</FontFamily>
+
 </Ui>

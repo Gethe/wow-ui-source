@@ -1133,7 +1133,7 @@
 						LFGListFrame:ClearAllPoints();
 						LFGListFrame:SetAllPoints(self);
 						LFGListFrame:SetFrameLevel(self:GetFrameLevel());
-						LFGListFrame_SetBaseFilters(LFGListFrame, Enum.LFGListFilter.PvE);
+						LFGListFrame_SetBaseFilters(LFGListFrame, Enum.LFGListFilter.PvP);
 					</OnShow>
 				</Scripts>
 			</Frame>

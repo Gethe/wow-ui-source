@@ -546,6 +546,7 @@
 									<Color r="0.345" g="0.667" b="0.867" />
 								</FontString>
 								<FontString parentKey="UnavailableLabel" inherits="FriendsFont_Normal" text="BATTLENET_UNAVAILABLE" hidden="true">
+									<Size x="150"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -586,7 +587,7 @@
 							</DropdownButton>
 							<Button parentKey="UnavailableInfoButton" inherits="UIPanelInfoButton" hidden="true">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="4" y="0"/>
+									<Anchor point="LEFT" relativeKey="$parent.UnavailableLabel" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>

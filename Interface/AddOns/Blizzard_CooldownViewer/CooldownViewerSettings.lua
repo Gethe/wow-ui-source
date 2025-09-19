@@ -295,7 +295,9 @@ end
 
 function CooldownViewerSettingsItemMixin:SetAsCooldown(cooldownID, orderIndex)
 	self.emptyCategory = nil;
-	self:SetCooldownID(cooldownID);
+
+	local forceSet = true;
+	self:SetCooldownID(cooldownID, forceSet);
 	self:SetOrderIndex(orderIndex);
 end
 
@@ -532,27 +534,47 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetupPanelButtons();
 	self:SetupScrollFrame();
 
-	self.layoutManager = CreateFromMixins(CooldownViewerLayoutManagerMixin);
-	self.dataSerialization = CreateFromMixins(CooldownViewerDataStoreSerializationMixin);
-	self.dataProvider = CreateFromMixins(CooldownViewerSettingsDataProviderMixin);
+	self:SetLayoutManager(CreateFromMixins(CooldownViewerLayoutManagerMixin));
+	self:SetDataProvider(CreateFromMixins(CooldownViewerSettingsDataProviderMixin));
+	self:SetSerializer(CreateFromMixins(CooldownViewerDataStoreSerializationMixin));
 
 	local function LoadCooldownSettings()
-		self.layoutManager:Init(self.dataProvider, self.dataSerialization);
-		self.dataSerialization:Init(self.layoutManager);
-		self.dataProvider:Init(self.layoutManager);
+		local manager = self:GetLayoutManager();
+		local dataProvider = self:GetDataProvider();
+		local serializer = self:GetSerializer();
+
+		manager:Init(dataProvider, serializer);
+		serializer:Init(manager);
+		dataProvider:Init(manager);
 
 		EventRegistry:TriggerEvent("CooldownViewerSettings.OnSettingsLoaded", self);
 	end
 
-	EventUtil.ContinueAfterAllEvents(LoadCooldownSettings, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD");
+	EventUtil.ContinueAfterAllEvents(LoadCooldownSettings, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD", "COOLDOWN_VIEWER_DATA_LOADED");
 end
 
 function CooldownViewerSettingsMixin:GetDataProvider()
 	return self.dataProvider;
 end
 
+function CooldownViewerSettingsMixin:SetDataProvider(provider)
+	self.dataProvider = provider;
+end
+
 function CooldownViewerSettingsMixin:GetLayoutManager()
 	return self.layoutManager;
+end
+
+function CooldownViewerSettingsMixin:SetLayoutManager(manager)
+	self.layoutManager = manager;
+end
+
+function CooldownViewerSettingsMixin:GetSerializer()
+	return self.dataSerialization;
+end
+
+function CooldownViewerSettingsMixin:SetSerializer(serializer)
+	self.dataSerialization = serializer;
 end
 
 function CooldownViewerSettingsMixin:SetupTabs()
@@ -570,7 +592,7 @@ end
 function CooldownViewerSettingsMixin:SetupEventHandlers()
 	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.BeginOrderChange", self.BeginOrderChange);
 	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.OnEnterItem", self.OnEnterItem);
-	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.OnSpecChanged", self.RefreshLayout);
+	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.OnDataChanged", self.RefreshLayout);
 	self:AddDynamicEventMethod(EventRegistry, "CooldownViewerSettings.OnPendingChanges", self.UpdateSaveButtonStates);
 end
 
@@ -757,7 +779,6 @@ function CooldownViewerSettingsMixin:OnShow()
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
 
 	CallbackRegistrantMixin.OnShow(self);
-	self:GetDataProvider():IncrementShowCount();
 
 	if self.displayMode then
 		self:RefreshLayout();
@@ -780,7 +801,6 @@ function CooldownViewerSettingsMixin:OnHide()
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 
 	CallbackRegistrantMixin.OnHide(self);
-	self:GetDataProvider():DecrementShowCount();
 	EditModeManagerFrame:ShowIfActive();
 	EventRegistry:TriggerEvent("CooldownViewerSettings.OnHide", self);
 end

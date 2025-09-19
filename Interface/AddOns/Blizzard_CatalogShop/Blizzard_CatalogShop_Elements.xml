@@ -72,7 +72,7 @@
 
 	<Button name="CatalogShopButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopButtonMixin" virtual="true" >
 		<Size x="180" y="30"/>
-		<NormalFont style="GameFontNormalLarge"/>
+		<NormalFont style="GameFontWhiteLarge"/>
 		<HighlightFont style="GameFontHighlightLarge"/>
 		<DisabledFont style="GameFontDisableLarge"/>
 		<Scripts>
@@ -280,7 +280,37 @@
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
+	
+	<Frame name="CatalogShopUnavailableScreenTemplate" mixin="CatalogShopUnavailableScreenMixin" virtual="true" setAllPoints="true">
+		<Frames>
+			<Frame parentKey="Background" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="texture1" atlas="shop-bg-environment-unavailable-murloc" setAllPoints="true"/>
 
+						<FontString parentKey="ShopUnavailable" inherits="Game40Font_Shadow2" text="CATALOG_SHOP_NOT_AVAILABLE">
+							<Color color="NORMAL_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="93" y="-100"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ShopTryBackLater" inherits="SystemFont_Huge2" text="CATALOG_SHOP_TRY_AGAIN_LATER">
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ShopUnavailable" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+	
 	<Frame name="CarouselControlTemplate" mixin="CarouselControlMixin" virtual="true">
 		<Frames>
 			<Button parentKey="CarouselLeftButton">
@@ -427,58 +457,61 @@
 	<Frame name="CatalogShopProductContainerFrameTemplate" mixin="CatalogShopProductContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
 		<Size x="596" y="778" />
 		<Frames>
-			<Frame parentKey="ProductsHeader">
+			<Frame parentKey="ProductsHeader" inherits="VerticalLayoutFrame" mixin="ProductsHeaderMixin" hyperlinksEnabled="true" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="752" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="26" y="49" />
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-63"/>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<!-- These should be converted to a vertical box element -->
 					<Layer level="OVERLAY">
-						<FontString parentKey="ProductName" inherits="Game32Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
+						<FontString parentKey="ProductName" inherits="Game32Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="2" justifyH="LEFT">
 							<Size x="544" y="0"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="16" type="number"/>
+								<KeyValue key="layoutIndex" value="10" type="number"/>
+								<KeyValue key="topPadding" value="12" type="number"/>
+								<KeyValue key="bottomPadding" value="15" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
 							<Color color="WHITE_FONT_COLOR"/>
-							<Anchors>
-								<Anchor point="LEFT" x="20" y="0"/>
-							</Anchors>
 						</FontString>
-						<FontString parentKey="ProductType" hidden="true" collapsesLayout="true" inherits="Game32Font_Shadow2" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
+						<FontString parentKey="ProductType" inherits="Game16Font" mixin="AutoScalingFontStringMixin" maxLines="1" justifyH="LEFT">
 							<Size x="544" y="0"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>
+								<KeyValue key="layoutIndex" value="20" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="15" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
 							<Color color="WHITE_FONT_COLOR"/>
-							<Anchors>
-								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeKey="$parent.ProductName" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
 						</FontString>
-						<FontString parentKey="ProductDescription" hidden="true" collapsesLayout="true" inherits="GameFontNormal" mixin="AutoScalingFontStringMixin" maxLines="3" justifyH="LEFT">
+						<FontString parentKey="ProductDescription" inherits="GameFontNormal" mixin="ProductDescriptionMixin, AutoScalingFontStringMixin" maxLines="6" justifyH="LEFT">
 							<Size x="544" y="0"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>
+								<KeyValue key="layoutIndex" value="30" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="15" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
-							<Anchors>
-								<Anchor point="LEFT" x="20" y="0"/>
-								<Anchor point="TOP" relativeKey="$parent.ProductType" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							</Anchors>
+							<Scripts>
+								<OnEnter method="OnEnter"/>
+								<OnLeave method="OnLeave"/>
+							</Scripts>							
 						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-			
-			<Frame parentKey="LegalDisclaimerFrame" hyperlinksEnabled="true" enableMouse="true">
-				<Size x="0" y="30"/>
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="20" y="0" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMRIGHT" x="0" y="-30" />
-				</Anchors>
-				<Layers>
-					<Layer level="BORDER">
-						<FontString parentKey="LegalDisclaimerText" inherits="GameFontNormal" justifyH="LEFT" justifyV="MIDDLE" text="CATALOG_SHOP_DISCLAIMER_ALL_PRODUCTS">
+						<FontString parentKey="LegalDisclaimerText" inherits="GameFontNormal" justifyH="LEFT" text="CATALOG_SHOP_DISCLAIMER_ALL_PRODUCTS">
+							<Size x="544" y="0"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="12" type="number"/>
+								<KeyValue key="layoutIndex" value="40" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="15" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
 							<Color color="GRAY_FONT_COLOR"/>
 						</FontString>
 					</Layer>
@@ -487,14 +520,14 @@
 			
 			<Frame parentKey="ProductsScrollBoxContainer" setAllPoints="true" frameLevel="1000">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LegalDisclaimerFrame" relativePoint="BOTTOMLEFT" x="-20" y="0" />
-					<Anchor point="BOTTOMRIGHT" x="0" y="-25"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="45"/>
 				</Anchors>
 				<Frames>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0" />
-							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0" />
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-20" y="0"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -545,25 +578,19 @@
 	<Frame name="CatalogShopProductDetailsContainerFrameTemplate" mixin="CatalogShopProductDetailsContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
 		<Size x="540" />
 		<Frames>
-			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" ignoreParentScale="true" text="CATALOG_SHOP_BACK" >
-				<Size x="124" y="30"/>
+			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_BACK" >
+				<Size x="141" y="50"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="26" y="-10"/>
+					<Anchor point="TOPLEFT" x="0" y="-10"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="catalogShopOnClickMethod" value="HideProductDetails" type="string"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="RaceButton" hidden="true" inherits="CatalogShopButtonTemplate, DialogButtonTemplate" mixin="CatalogShopDetailsRaceButtonMixin" frameLevel="2000" ignoreParentScale="true" text="CATALOG_SHOP_RACE" >
-				<Size x="140" y="32"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.BackButton" relativePoint="RIGHT" x="0" y="0" />
-				</Anchors>
-			</Button>
 			<Frame parentKey="DetailsProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" mixin="DetailsProductContainerFrameMixin" frameLevel="500">
 				<Anchors>
-					<Anchor point="LEFT" x="0" y="-59"/>
-					<Anchor point="TOP" relativeKey="$parent.BackButton" relativePoint="BOTTOM" x="0" y="-10"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BackButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="52" y="0"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -588,10 +615,14 @@
 
 	<Frame name="CatalogShopErrorFrameTemplate" mixin="CatalogShopErrorFrameMixin" enableMouse="false" hidden="true" virtual="true">
 		<Size x="320" y="250" />
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="40" />
+		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Icon" >
 					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="CENTER" x="0" y="50" />
 					</Anchors>
 				</Texture>
@@ -599,17 +630,20 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="Line" >
 					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="CENTER" x="0" y="-20" />
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Title" inherits="GameFontNormalLarge">
 					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP" x="0" y="6" />
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontHighlight" justifyV="TOP">
 					<Size x="250" y="0" />
 					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6" />
 					</Anchors>
 				</FontString>

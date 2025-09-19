@@ -1,7 +1,7 @@
 CooldownViewerItemDataMixin = {};
 
-function CooldownViewerItemDataMixin:SetCooldownID(cooldownID)
-	if self.cooldownID ~= cooldownID then
+function CooldownViewerItemDataMixin:SetCooldownID(cooldownID, forceSet)
+	if self.cooldownID ~= cooldownID or forceSet then
 		self.cooldownID = cooldownID;
 		self:OnCooldownIDSet();
 	end

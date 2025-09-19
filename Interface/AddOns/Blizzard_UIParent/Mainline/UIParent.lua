@@ -1729,8 +1729,12 @@ function UIParent_OnEvent(self, event, ...)
 		local spellID, confirmType = ...;
 		if ( confirmType == Enum.ConfirmationPromptUIType.StaticText ) then
 			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert ) then
+			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT_ALERT", spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarning ) then
 			StaticPopup_Hide("SPELL_CONFIRMATION_WARNING", spellID);
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert ) then
+			StaticPopup_Hide("SPELL_CONFIRMATION_WARNING_ALERT", spellID);
 		elseif ( confirmType == Enum.ConfirmationPromptUIType.BonusRoll ) then
 			BonusRollFrame_CloseBonusRoll();
 		end

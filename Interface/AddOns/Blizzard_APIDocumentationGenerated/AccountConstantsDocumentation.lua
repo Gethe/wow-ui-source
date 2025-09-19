@@ -5,9 +5,9 @@ local AccountConstants =
 		{
 			Name = "AccountData",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 19,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 18,
 			Fields =
 			{
 				{ Name = "Config", Type = "AccountData", EnumValue = 0 },
@@ -27,6 +27,8 @@ local AccountConstants =
 				{ Name = "UIEditModeChar", Type = "AccountData", EnumValue = 14 },
 				{ Name = "FrontendChatSettings", Type = "AccountData", EnumValue = 15 },
 				{ Name = "CharacterListOrder", Type = "AccountData", EnumValue = 16 },
+				{ Name = "CooldownManager", Type = "AccountData", EnumValue = 17 },
+				{ Name = "CooldownManager2", Type = "AccountData", EnumValue = 18 },
 			},
 		},
 		{

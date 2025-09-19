@@ -25,6 +25,7 @@ end
 ----------------------------------------------------------------------------------
 function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_DATA_REFRESH");
+	self:RegisterEvent("CATALOG_SHOP_REBUILD_SCROLL_BOX");
 	self:RegisterEvent("CATALOG_SHOP_FETCH_SUCCESS");
 	self:RegisterEvent("CATALOG_SHOP_FETCH_FAILURE");
 	self:RegisterEvent("CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH");
@@ -32,6 +33,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
+	self:RegisterEvent("CATALOG_SHOP_RESULT_ERROR");
 	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
 	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
@@ -48,9 +50,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED")
 	-- RNM: Removed becuase this was no longer used in Shop 2.0 
 	-- self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
-
 	self:InitVariables();
-
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnCategorySelected", self.OnCategorySelected, self);
@@ -87,6 +87,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	else
 		self.tooltip:SetParent(UIParent);
 	end
+	self.tooltip:SetFrameStrata("TOOLTIP");
 
 	self.JustFinishedOrdering = false;
 	self.JustOrderedBoost = false;
@@ -159,64 +160,25 @@ function CatalogShopMixin:FetchCurrentModelSceneData()
 	return self.ModelSceneData;
 end
 
+function CatalogShopMixin:GetAppropriateTooltip()
+	return self.tooltip;
+end
 
-function CatalogShopMixin:ShowTooltip(name, description, isToken)
-	local tooltip = CatalogShopTooltip;
-	local STORETOOLTIP_MAX_WIDTH = isToken and 300 or 250;
-	local stringMaxWidth = STORETOOLTIP_MAX_WIDTH - 20;
-	tooltip.ProductName:SetWidth(stringMaxWidth);
-	tooltip.Description:SetWidth(stringMaxWidth);
+function CatalogShopMixin:ShowTooltip(targetFrame, name, description, isToken)
+	local tooltip = self:GetAppropriateTooltip();
+
+	targetFrame = targetFrame or self;
+	tooltip:SetOwner(targetFrame, "ANCHOR_BOTTOMLEFT", 0, 0);
+
+	GameTooltip_AddNormalLine(tooltip, name);
+	GameTooltip_AddBlankLineToTooltip(tooltip);
+	GameTooltip_AddNormalLine(tooltip, description);
 
 	tooltip:Show();
-	tooltip.ProductName:SetText(name);
-
-	if (isToken) then
-		local price = C_WowTokenPublic.GetCurrentMarketPrice();
-		if (price) then
-			description = description .. string.format(BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE, GetSecureMoneyString(price));
-		else
-			description = description .. string.format(BLIZZARD_STORE_TOKEN_CURRENT_MARKET_PRICE, TOKEN_MARKET_PRICE_NOT_AVAILABLE);
-		end
-	end
-	tooltip.Description:SetText(description);
-
-	-- 10 pixel buffer between top, 10 between name and description, 10 between description and bottom
-	local nheight, dheight = tooltip.ProductName:GetHeight(), tooltip.Description:GetHeight();
-	local buffer = 11;
-
-	local bufferCount = 2;
-	if (not name or name == "") then
-		tooltip.Description:ClearAllPoints();
-		tooltip.Description:SetPoint("TOPLEFT", 10, -11);
-	else
-		tooltip.Description:ClearAllPoints();
-		tooltip.Description:SetPoint("TOPLEFT", tooltip.ProductName, "BOTTOMLEFT", 0, -2);
-	end
-
-	if (not description or description == "") then
-		dheight = 0;
-	else
-		dheight = dheight + 2;
-	end
-
-	local width = math.max(tooltip.ProductName:GetStringWidth(), tooltip.Description:GetStringWidth());
-	if ((width + 20) < STORETOOLTIP_MAX_WIDTH) then
-		tooltip:SetWidth(width + 20);
-	else
-		tooltip:SetWidth(STORETOOLTIP_MAX_WIDTH);
-	end
-	tooltip:SetHeight(buffer*bufferCount + nheight + dheight);
-	local parent = tooltip:GetParent();
-	local modelFrameLevel = 200; -- just a reasonable safe default value
-	for card in StoreFrame.productCardPoolCollection:EnumerateActive() do -- luacheck: ignore 512 (loop is executed at most once)
-		modelFrameLevel = card.ModelScene:GetFrameLevel() + 2;
-		break;
-	end
-	tooltip:SetFrameLevel(modelFrameLevel);
 end
 
 function CatalogShopMixin:HideTooltip()
-	local tooltip = CatalogShopTooltip;
+	local tooltip = self:GetAppropriateTooltip();
 	tooltip:Hide();
 end
 
@@ -225,6 +187,7 @@ function CatalogShopMixin:HidePreviewFrames()
 	self.ToyContainerFrame:Hide();
 	self.ModelSceneContainerFrame:Hide();
 	self.ServicesContainerFrame:Hide();
+	self.CrossGameContainerFrame:Hide();
 end
 
 function CatalogShopMixin:ShowLoadingScreen()
@@ -247,16 +210,50 @@ function CatalogShopMixin:ShowLoadingScreen()
 	self:HidePreviewFrames();
 end
 
-function CatalogShopMixin:HideLoadingScreen()
+function CatalogShopMixin:HideLoadingScreen(fromError)
 	if not self.CatalogShopLoadingScreenFrame:IsShown() then
 		return;
 	end
 	self.CatalogShopLoadingScreenFrame:Hide();
 	self.CatalogShopLoadingScreenFrame.FxModelScene:ClearEffects();
 
+	if not fromError then
+		self.BackgroundContainer:Show();
+		self.ProductContainerFrame:Show();
+		self.HeaderFrame:Show();
+	end
+end
+
+function CatalogShopMixin:ShowUnavailableScreen()
+	if self.CatalogShopUnavailableScreenFrame:IsShown() then
+		return;
+	end
+	local fromError = true;
+	self:HideLoadingScreen(fromError);
+
+	self.ProductContainerFrame:Hide();
+	self.ProductDetailsContainerFrame:Hide();
+	self.CatalogShopDetailsFrame:Hide();
+	self.CatalogShopUnavailableScreenFrame:Show();
+end
+
+function CatalogShopMixin:HideUnavailableScreen()
+	self.CatalogShopUnavailableScreenFrame:Hide();
+
 	self.BackgroundContainer:Show();
 	self.ProductContainerFrame:Show();
+	self.CatalogShopDetailsFrame:Show();
 	self.HeaderFrame:Show();
+end
+
+function CatalogShopMixin:ShowAfterCheckout()
+	self.ModelSceneContainerFrame:Show();
+	self:SetAlpha(1);
+end
+
+function CatalogShopMixin:HideForCheckout()
+	self.ModelSceneContainerFrame:Hide();
+	self:SetAlpha(0);
 end
 
 function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
@@ -264,6 +261,9 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--... handle it
 		self.categoryIDs = C_CatalogShop.GetAvailableCategoryIDs();
 		self.HeaderFrame:SetCategories(self.categoryIDs);
+	elseif event == "CATALOG_SHOP_REBUILD_SCROLL_BOX" then
+		local resetSelection = false;
+		self.ProductContainerFrame:UpdateProducts(resetSelection);
 	elseif event == "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH" then
 		local productID = ...;
 		if self.ProductContainerFrame:IsShown() then
@@ -276,7 +276,7 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--... handle it
 	
 	elseif event =="SIMPLE_CHECKOUT_CLOSED" then
-		self:SetAlpha(1);
+		self:ShowAfterCheckout();
 
 		if self.justPurchasedProductID then
 			C_Timer.After(0.25, function ()
@@ -287,10 +287,11 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 
 	elseif event =="CATALOG_SHOP_FETCH_SUCCESS" then
 		self:HideLoadingScreen();
-
+		self:HideUnavailableScreen();
 	elseif event =="CATALOG_SHOP_FETCH_FAILURE" then
 		-- handle error
 		self:HideLoadingScreen();
+		self:ShowUnavailableScreen();
 
 	elseif event =="CATALOG_SHOP_PURCHASE_SUCCESS" then
 		local justPurchasedProductID = ...;
@@ -303,10 +304,12 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		end
 	elseif event == "CATALOG_SHOP_RESULT_ERROR" then
 		-- TODO fix this C_StoreSecure call
-		local err, internalErr = C_StoreSecure.GetFailureInfo();
+		--self:ShowUnavailableScreen();
+		local err, internalErr = C_CatalogShop.GetFailureInfo();
 		self:OnError(err, true, internalErr);
 	elseif ( event == "STORE_PURCHASE_ERROR" ) then
-		-- TODO fix this C_StoreSecure call
+		-- TODO fix this C_StoreSecure call		
+		--self:ShowUnavailableScreen();
 		local err, internalErr = C_StoreSecure.GetFailureInfo();
 		self:OnError(err, true, internalErr);
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
@@ -352,6 +355,7 @@ function CatalogShopMixin:IsLoading()
 end
 
 function CatalogShopMixin:OnShow()
+	self:HideUnavailableScreen();
 	self:ShowLoadingScreen();
 	self:SetAttribute("isshown", true);
 
@@ -537,6 +541,7 @@ function CatalogShopMixin:WebsiteError()
 end
 
 function CatalogShopMixin:OnProductSelected(data)
+	-- Background texture fills the whole window and is behind everything
 	local backgroundTexture = data and data.backgroundTexture or nil;
 	if backgroundTexture and backgroundTexture ~= "" then
 		self.BackgroundContainer:SetBackgroundTexture(backgroundTexture);
@@ -544,6 +549,7 @@ function CatalogShopMixin:OnProductSelected(data)
 		self.BackgroundContainer:SetBackgroundTexture(CatalogShopConstants.Default.PreviewBackgroundTexture);
 	end
 
+	-- Foreground texture fills the whole window and is in front of the background texture
 	local foregroundTexture = data and data.foregroundTexture or nil;
 	if foregroundTexture and foregroundTexture ~= "" then
 		self.ForegroundContainer.Foreground:SetAtlas(foregroundTexture);
@@ -552,8 +558,9 @@ function CatalogShopMixin:OnProductSelected(data)
 		self.ForegroundContainer:Hide();
 	end
 
-	-- Show the right side details frame if our product container frame is shown (enables purchase and details)
-	self.CatalogShopDetailsFrame:SetShown(self.ProductContainerFrame:IsShown());
+	-- Show the right side details frame if our product container frame is shown OR if the selected product is a bundle (enables purchase and details)
+	local selectedProductInfo = CatalogShopFrame:GetSelectedProductInfo();
+	self.CatalogShopDetailsFrame:SetShown(self.ProductContainerFrame:IsShown() or (selectedProductInfo and selectedProductInfo.isBundle));
 end
 
 function CatalogShopMixin:OnNoProductsSelected()
@@ -575,9 +582,11 @@ function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.ProductContainerFrame:SetShown(not showDetails);
 	self.ProductDetailsContainerFrame:SetShown(showDetails);
 	self.CatalogShopDetailsFrame:SetShown(not showDetails);
+	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
 		self.ProductDetailsContainerFrame:UpdateProductInfo(productInfo);
 	end
+	self.CatalogShopDetailsFrame:MarkDirty();
 end
 
 local RED_TEXT_SECONDS_THRESHOLD = 3600;
@@ -617,7 +626,7 @@ function CatalogShopMixin:GetProductInfo(productID)
 		productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
 	end
 				
-		-- get bundle children display data
+	-- get bundle children display data
 	if productDisplayInfo.productType == CatalogShopConstants.ProductType.Bundle then
 		local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
 		if productInfo.sceneDisplayData then
@@ -748,15 +757,30 @@ end
 ----------------------------------------------------------------------------------
 CatalogShopProductDetailsFrameMixin = {};
 function CatalogShopProductDetailsFrameMixin:OnLoad()
-	EventRegistry:RegisterCallback("CatalogShopModel.OnProductSelectedAfterModel", self.UpdateState, self);
+	EventRegistry:RegisterCallback("CatalogShopModel.OnProductSelectedAfterModel", self.SetDetailsFrameProductInfo, self);
+	EventRegistry:RegisterCallback("CatalogShopModel.OnProductSelectEarlyOut", self.SetDetailsFrameProductInfo, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", self.OnProductInfoChanged, self);
+	EventRegistry:RegisterCallback("CatalogShop.OnBundleChildSelected", self.SetDetailsFrameProductInfo, self);
+	self.currentProductInfo = nil;
+end
+
+function CatalogShopProductDetailsFrameMixin:SetDetailsFrameProductInfo(productInfo)
+	if productInfo == self:GetDetailsFrameProductInfo() then
+		return;
+	end
+	self.currentProductInfo = productInfo;
+	self:UpdateState();
+end
+
+function CatalogShopProductDetailsFrameMixin:GetDetailsFrameProductInfo()
+	return self.currentProductInfo;
 end
 
 function CatalogShopProductDetailsFrameMixin:UpdateState()
 	CatalogShopFrame:HideLoadingScreen();
 	CatalogShopFrame.CatalogShopDetailsFrame:SetShown(true);
 
-	local selectedProductInfo = CatalogShopFrame:GetSelectedProductInfo();
+	local selectedProductInfo = self:GetDetailsFrameProductInfo();
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(selectedProductInfo.catalogShopProductID);
 	-- update state based on product info
 
@@ -778,19 +802,40 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		self.ProductType:SetShown(false);
 	end
 
-	self.LegalDisclaimerText:SetShown(true);
+	local isBundleChild = selectedProductInfo.isBundleChild;
+	self.LegalDisclaimerText:SetShown(not isBundleChild);
+
+	local function onHyperlinkClicked(frame, link, text, button)
+		C_CatalogShop.OnLegalDisclaimerClicked(selectedProductInfo.catalogShopProductID);
+	end
+	self:SetScript("OnHyperlinkClick", onHyperlinkClicked);
+
+	local isTokenOnGlues = (C_Glue.IsOnGlueScreen() and displayInfo.productType == CatalogShopConstants.ProductType.Token);
+	local isPurchasable = (not isTokenOnGlues and not selectedProductInfo.isFullyOwned);
 
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
-	self.ButtonContainer.PurchaseButton:SetEnabled(not selectedProductInfo.isFullyOwned);
+	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
+
+	-- Adjust for the text field explaining you need to be logged in to buy a token
+	self.ButtonContainer.NoPriceInGlues:SetShown(isTokenOnGlues);
+	if isTokenOnGlues then
+		self.ButtonContainer:SetSize(320, 80);
+	else
+		self.ButtonContainer:SetSize(320, 50);
+	end
+
 	self:MarkDirty();
 end
 
+-- This function is called when the main frame's product changes, and we want to verify that we're being told to be set to that frame's product only in this function.
+-- This may read a bit confusing but it's because elements outside this heirarchy affect the CatalogShopFrame's seleted product and this function reacts to events fired
+-- by anyone so extra guards are necessary
 function CatalogShopProductDetailsFrameMixin:OnProductInfoChanged(productInfo)
 	local selectedProductInfo = CatalogShopFrame:GetSelectedProductInfo();
 
-	-- if the selected product was changed, update state
+	-- if the catalog shop frame's selected product was changed, update ourself
 	if productInfo and selectedProductInfo and (productInfo.catalogShopProductID == selectedProductInfo.catalogShopProductID) then
-		self:UpdateState();
+		self:SetDetailsFrameProductInfo(productInfo);
 	end
 end
 

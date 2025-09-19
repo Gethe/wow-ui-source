@@ -268,14 +268,15 @@ local TraitConstants =
 		{
 			Name = "TraitSystemFlag",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
 				{ Name = "ShowSpendConfirmation", Type = "TraitSystemFlag", EnumValue = 2 },
 				{ Name = "AllowEditInCombat", Type = "TraitSystemFlag", EnumValue = 4 },
+				{ Name = "AllowEditInChallengeMode", Type = "TraitSystemFlag", EnumValue = 8 },
 			},
 		},
 		{
