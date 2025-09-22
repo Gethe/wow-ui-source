@@ -2476,7 +2476,7 @@ function StoreProductCard_UpdateState(card)
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and (card:IsMouseMotionFocus() or card.BuyButton:IsMouseMotionFocus())) then
+		if (not card.Description and (card:IsMouseMotionFocus() or (card.BuyButton and card.BuyButton:IsMouseMotionFocus()))) then
 			if (isRotating) then
 				StoreTooltip:Hide()
 			else

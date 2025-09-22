@@ -71,7 +71,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.SpecializationsUI, function(link, text, l
 	ToggleTalentFrame(SPECIALIZATION_TAB);
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.ClassTalentsUI, function(link, text, linkData, contextData)
+LinkUtil.RegisterLinkHandler(LinkTypes.TalentsUI, function(link, text, linkData, contextData)
 	ToggleTalentFrame(TALENTS_TAB);
 end);
 

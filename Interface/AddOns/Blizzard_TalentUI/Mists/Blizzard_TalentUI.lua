@@ -18,7 +18,8 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 			self.Text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
 			self.Text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, RED_FONT_COLOR_CODE, cost, resourceName);
-			self.button1:Disable();
+			local button = self:GetButton1();
+			button:Disable();
 		end
 	end,
 	OnCancel = function (self)
@@ -50,7 +51,8 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 			self.Text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
 			self.Text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, RED_FONT_COLOR_CODE, cost, resourceName);
-			self.button1:Disable();
+			local button = self:GetButton1();
+			button:Disable();
 		end
 	end,
 	OnCancel = function (self)
