@@ -2,10 +2,10 @@ StaticPopupDialogs["CONFIRM_LEARN_PREVIEW_TALENTS"] = {
 	text = CONFIRM_LEARN_PREVIEW_TALENTS,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function (self)
+	OnAccept = function(dialog, data)
 		LearnPreviewTalents(PlayerTalentFrame.pet);
 	end,
-	OnCancel = function (self)
+	OnCancel = function(dialog, data)
 	end,
 	hideOnEscape = 1,
 	timeout = 0,

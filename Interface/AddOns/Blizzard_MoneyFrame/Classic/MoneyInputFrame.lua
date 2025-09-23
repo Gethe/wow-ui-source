@@ -234,3 +234,9 @@ function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
 		PickupPlayerMoney(copper);
 	end
 end
+
+MoneyInputFrameMixin = {};
+
+function MoneyInputFrameMixin:SetIsUserScaled()
+	-- Classic does not support user scaled money frames, see WOW12-16834
+end

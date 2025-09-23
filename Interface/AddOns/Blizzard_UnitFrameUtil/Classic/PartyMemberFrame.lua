@@ -248,7 +248,7 @@ function PartyMemberFrame_UpdateLeader (self)
 		leaderIcon:Hide();
 	end
 
-	local lootMethod, lootMaster = GetLootMethod();
+	local lootMethod, lootMaster = C_PartyInfo.GetLootMethod();
 	if ( lootMaster == id ) then
 		masterIcon:Show();
 	else

@@ -266,6 +266,14 @@ function SpellButtonMixin:OnModifiedClick(button)
 	end
 end
 
+function SpellButtonMixin:OnClick(button)
+	if IsModifiedClick() then
+		self:OnModifiedClick(button);
+	else
+		self:OnIconClick(button);
+	end
+end
+
 function SpellButtonMixin:PreClick()
 	self:SetChecked(false);
 end

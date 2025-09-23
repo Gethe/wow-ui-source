@@ -358,7 +358,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 															};
 	end	
 	
-	local dungeons = GetLevelUpInstances(self.level, false);
+	local dungeons = C_LFGInfo.GetLevelUpInstances(self.level, false);
 	for _,dungeon in pairs(dungeons) do
 		local dungeonInfo = C_LFGInfo.GetDungeonInfo(dungeon);
 		name, icon, link = dungeonInfo.name, dungeonInfo.iconID, dungeonInfo.link;
@@ -373,7 +373,7 @@ function LevelUpDisplay_BuildCharacterList(self)
 		end
 	end
 	
-	local raids = GetLevelUpInstances(self.level, true);
+	local raids = C_LFGInfo.GetLevelUpInstances(self.level, true);
 	for _,raid in pairs(raids) do
 		local raidInfo = C_LFGInfo.GetDungeonInfo(raid);
 		name, icon, link = raidInfo.name, raidInfo.iconID, raidInfo.link;

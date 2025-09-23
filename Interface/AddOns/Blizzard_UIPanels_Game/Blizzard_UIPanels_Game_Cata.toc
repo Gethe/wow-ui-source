@@ -20,7 +20,7 @@ Cata\HonorFrame.lua
 Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Cata\HonorFrame.xml
-Wrath\QuestFrameTemplates_WrathSpecific.xml
+Wrath\QuestScrollFrameAndPanelTemplates.xml
 Wrath\QuestFrameTemplates.xml
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
@@ -47,6 +47,8 @@ Shared\TaxiFrame.lua
 Shared\TaxiFrame.xml
 Classic\ItemRef.lua
 Classic\ItemRef.xml
+Classic\ItemRefHandlers.lua
+Shared\ItemRefHandlersShared.lua
 Classic\ProductChoice.lua
 Classic\ProductChoice.xml
 Classic\FriendsFrame.lua

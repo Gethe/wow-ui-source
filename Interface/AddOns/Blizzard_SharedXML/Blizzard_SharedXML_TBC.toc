@@ -45,6 +45,7 @@ TBC\SoundKitConstants.lua
 CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
+TypeUtil.lua
 SelectableButton.xml
 NewFeatureLabel.xml
 Shared\Frame\EventFrame.lua

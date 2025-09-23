@@ -1,7 +1,7 @@
 ## Title: Blizzard_SettingsDefinitions_Shared
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar
+## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar, Blizzard_Colors, Blizzard_AccessibilityTemplates
 ## AllowLoad: Both
 ## LoadSavedVariablesFirst: 1
 ## SavedVariablesPerCharacter: NewSettingsSeen
@@ -11,3 +11,9 @@ Audio.xml
 Languages.xml
 Network.lua
 Mac.lua
+AccessibilitySettingsPreview.lua
+[Family]\QuestTextPreview.lua [AllowLoadGameType mainline]
+[Family]\QuestTextPreview.xml [AllowLoadGameType mainline]
+[Family]\TextSizePreview.lua [AllowLoadGameType mainline]
+[Family]\TextSizePreview.xml [AllowLoadGameType mainline]
+[Family]\Text.lua [AllowLoadGameType mainline]

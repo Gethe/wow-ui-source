@@ -24,9 +24,8 @@ function UnitPopupTeamPromoteButtonMixin:OnClick(contextData)
 	local name = contextData.name;
 	local team = PVPTeamDetails.team;
 	local arenaName, teamIndex = GetArenaTeam(team);
-	local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, arenaName, teamIndex);
+	local dialog = StaticPopup_Show("CONFIRM_TEAM_PROMOTE", name, arenaName, team);
 	if dialog then
-		dialog.data = team;
 		dialog.data2 = name;
 	end
 end
@@ -57,9 +56,8 @@ function UnitPopupTeamKickButtonMixin:OnClick(contextData)
 	local name = contextData.name;
 	local team = PVPTeamDetails.team;
 	local arenaName, teamIndex = GetArenaTeam(team);
-	local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, arenaName, teamIndex );
+	local dialog = StaticPopup_Show("CONFIRM_TEAM_KICK", name, arenaName, team);
 	if dialog then
-		dialog.data = team;
 		dialog.data2 = name;
 	end
 end
@@ -85,10 +83,7 @@ end
 function UnitPopupTeamLeaveButtonMixin:OnClick(contextData)
 	local team = PVPTeamDetails.team;
 	local arenaName = GetArenaTeam(team);
-	local dialog = StaticPopup_Show("CONFIRM_TEAM_LEAVE", arenaName);
-	if dialog then
-		dialog.data = team;
-	end
+	StaticPopup_Show("CONFIRM_TEAM_LEAVE", arenaName, nil, team);
 end
 
 UnitPopupTeamDisbandButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -118,10 +113,7 @@ end
 function UnitPopupTeamDisbandButtonMixin:OnClick(contextData)
 	local team = PVPTeamDetails.team;
 	local arenaName = GetArenaTeam(team);
-	local dialog = StaticPopup_Show("CONFIRM_TEAM_DISBAND", arenaName);
-	if dialog then
-		dialog.data = team;
-	end
+	StaticPopup_Show("CONFIRM_TEAM_DISBAND", arenaName, nil, team);
 end
 
 function UnitPopupLootThresholdButtonMixin:GetColor()

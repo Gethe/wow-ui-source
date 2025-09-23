@@ -279,7 +279,7 @@ end
 function SearchBoxTemplate_OnLoad(self)
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(SEARCH);
+	self.Instructions:SetText(self.instructionText);
 	self.Instructions:ClearAllPoints();
 	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
 	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
@@ -2390,4 +2390,14 @@ end
 
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
+end
+
+UIPanelIconDropdownButtonMixin = { };
+
+function UIPanelIconDropdownButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
+end
+
+function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
 end

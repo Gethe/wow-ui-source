@@ -3,6 +3,7 @@
 ## Version: 1.0
 ## LoadOnDemand: 1
 ## AllowLoad: game
+## Dependencies: Blizzard_HelpPlate, Blizzard_GroupFinder
 ## AllowLoadGameType: mists
 Mists\Blizzard_PVPUI.lua
 Mists\Blizzard_PVPUI.xml

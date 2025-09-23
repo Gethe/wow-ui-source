@@ -512,16 +512,18 @@ function WardrobeSetsCollectionMixin:OnShow()
 		self:Refresh();
 	end
 
-	local latestSource = C_TransmogSets.GetLatestSource();
-	if ( latestSource ~= Constants.Transmog.NoTransmogID ) then
-		local sets = C_TransmogSets.GetSetsContainingSourceID(latestSource);
-		local setID = sets and sets[1];
-		if ( setID ) then
-			self:SelectSet(setID);
-			local baseSetID = C_TransmogSets.GetBaseSetID(setID);
-			self:ScrollToSet(baseSetID, ScrollBoxConstants.AlignCenter);
+	if defaultSetID then
+		local latestSource = C_TransmogSets.GetLatestSource();
+		if ( latestSource ~= Constants.Transmog.NoTransmogID ) then
+			local sets = C_TransmogSets.GetSetsContainingSourceID(latestSource);
+			local setID = sets and sets[1];
+			if ( setID ) then
+				self:SelectSet(setID);
+				local baseSetID = C_TransmogSets.GetBaseSetID(setID);
+				self:ScrollToSet(baseSetID, ScrollBoxConstants.AlignCenter);
+			end
+			self:ClearLatestSource();
 		end
-		self:ClearLatestSource();
 	end
 
 	self.DetailsFrame.VariantSetsDropdown:SetupMenu(function(dropdown, rootDescription)

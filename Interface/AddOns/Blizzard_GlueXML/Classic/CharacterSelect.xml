@@ -790,33 +790,6 @@
 									</Layer>
 								</Layers>
 								<Frames>
-									<Button name="$parentExpandCollapseButton" parentKey="expandCollapseButton">
-										<Size x="32" y="32"/>
-										<Anchors>
-											<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="-34" y="2"/>
-										</Anchors>
-										<Layers>
-											<Layer level="OVERLAY">
-												<Texture name="$parentIconFrame" file="Interface\AchievementFrame\UI-Achievement-IconFrame">
-													<Size x="32" y="32"/>
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-													<TexCoords left="0" right="0.5625" top="0" bottom="0.5625"/>
-												</Texture>
-											</Layer>
-										</Layers>
-										<Scripts>
-											<OnClick>
-												PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-												AccountUpgradePanel_ToggleExpandState();
-											</OnClick>
-										</Scripts>
-										<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
-										<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
-										<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
-										<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-									</Button>
 									<Frame name="$parentPointerFrame" parentKey="PointerFrame" hidden="true">
 										<Size x="64" y="64" />
 										<Anchors>
@@ -848,105 +821,12 @@
 									</Frame>
 								</Frames>
 								<Scripts>
-									<OnLoad>
-										self.isExpanded = GetCVarBool("expandUpgradePanel");
-										self:RegisterEvent("ACCOUNT_DATA_INITIALIZED");
-									</OnLoad>
-									<OnShow>
-										AccountUpgradePanel_UpdateExpandState();
-									</OnShow>
-									<OnEvent>
-										if ( event == "ACCOUNT_DATA_INITIALIZED" ) then
-											AccountUpgradePanel_UpdateExpandState();
-										end
-									</OnEvent>
+									<OnLoad function="AccountUpgradePanel_OnLoad"/>
+									<OnShow function="AccountUpgradePanel_Update"/>
+									<OnEvent function="AccountUpgradePanel_OnEvent"/>
 									<OnClick function="CharSelectAccountUpgradeButton_OnClick"/>
 								</Scripts>
 							</Button>
-							<Frame name="CharSelectAccountUpgradeMiniPanel" inherits="UpgradeFrameBorderedTemplate">
-								<Size x="200" y="100"/>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectAccountUpgradeButton" relativePoint="BOTTOM" x="0" y="15"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="-1">
-										<Texture name="$parentBG" setAllPoints="true">
-											<Color r="0.0" g="0.0" b="0.0"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture name="$parentBanner" parentKey="banner" file="Interface\Glues\AccountUpgrade\banners">
-											<Size x="198" y="138"/>
-											<Anchors>
-												<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture name="$parentUpgradeLogo" parentKey="logo">
-											<Size x="154" y="77"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Scripts>
-									<OnLoad>
-										self:SetFrameLevel(CharSelectAccountUpgradeButton:GetFrameLevel() - 1);
-									</OnLoad>
-								</Scripts>
-							</Frame>
-							<Frame name="CharSelectAccountUpgradePanel" inherits="UpgradeFrameBorderedTemplate">
-								<Size x="200" y="250"/>
-								<Anchors>
-									<Anchor point="TOP" relativeTo="CharSelectAccountUpgradeButton" relativePoint="BOTTOM" x="0" y="-47"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BACKGROUND" textureSubLevel="-1">
-										<Texture name="$parentChains1" file="Interface\Glues\AccountUpgrade\golden-main">
-											<Size x="20" y="67"/>
-											<Anchors>
-												<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="18" y="-3"/>
-											</Anchors>
-											<TexCoords left="0.148" right="0.227" top="0.293" bottom="0.508"/>
-										</Texture>
-										<Texture name="$parentChains2" file="Interface\Glues\AccountUpgrade\golden-main">
-											<Size x="20" y="67"/>
-											<Anchors>
-												<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-18" y="-3"/>
-											</Anchors>
-											<TexCoords left="0.148" right="0.227" top="0.293" bottom="0.508"/>
-										</Texture>
-										<Texture name="$parentBG" setAllPoints="true">
-											<Color r="0.0" g="0.0" b="0.0" a="0.8"/>
-										</Texture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture name="$parentBanner" parentKey="banner" file="Interface\Glues\AccountUpgrade\banners">
-											<Size x="198" y="138"/>
-											<Anchors>
-												<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="0"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="OVERLAY">
-										<Texture name="$parentUpgradeLogo" parentKey="logo">
-											<Size x="154" y="77"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP" x="0" y="10"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-								<Frames>
-									<Frame name="$parentFeature1" inherits="UpgradeFrameFeatureTemplate">
-										<Anchors>
-											<Anchor point="TOPLEFT" x="-5" y="-90"/>
-										</Anchors>
-									</Frame>
-								</Frames>
-							</Frame>
 							<Button name="CharacterSelectBackButton" inherits="GlueButtonSmallTemplate" text="BACK">
 								<Size x="100" y="35"/>
 								<Anchors>
@@ -2054,12 +1934,8 @@
 								<Scripts>
 									<OnLoad inherit="prepend" function="CharacterSelectServerAlert_OnLoad"/>
 									<OnEvent function="CharacterSelectServerAlert_OnEvent"/>
-									<OnShow>
-										AccountUpgradePanel_UpdateExpandState();
-									</OnShow>
-									<OnHide>
-										AccountUpgradePanel_UpdateExpandState();
-									</OnHide>
+									<OnShow function="AccountUpgradePanel_Update"/>
+									<OnHide function="AccountUpgradePanel_Update"/>
 								</Scripts>
 							</Frame>
 							<Frame name="BillingWarningFrame" hidden="true">

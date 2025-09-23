@@ -45,6 +45,15 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "ClearScripts",
+			Type = "Function",
+			Documentation = { "Remove all script handlers set through Scripts in XML or SetScript in Lua" },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 
@@ -60,6 +69,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouse",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -69,6 +79,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -78,6 +89,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -484,6 +496,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetCollapsesLayout",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -493,6 +506,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseClickEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -502,6 +516,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseMotionEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -511,6 +526,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -520,15 +536,19 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPassThroughButtons",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "MouseButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
 			Name = "SetPropagateMouseClicks",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -538,6 +558,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPropagateMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -561,6 +583,20 @@ local SimpleScriptRegionAPI =
 			Arguments =
 			{
 				{ Name = "show", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "ShouldButtonPassThrough",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "button", Type = "MouseButton", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldPassThrough", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -47,7 +47,7 @@ function TradeSkillFrame_OnShow(self)
 end
 
 function TradeSkillFrame_SetupSubClassDropdown(self)
-	if not TradeSkillFrame:IsShown() then
+	if not TradeSkillFrame:IsShown() or not self then
 		return;
 	end
 
@@ -81,7 +81,7 @@ function TradeSkillFrame_SetupSubClassDropdown(self)
 end
 
 function TradeSkillFrame_SetupInvSlotDropdown(self)
-	if not TradeSkillFrame:IsShown() then
+	if not TradeSkillFrame:IsShown() or not self then
 		return;
 	end
 

@@ -8,6 +8,7 @@ local SimpleLineAPI =
 		{
 			Name = "ClearAllPoints",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{

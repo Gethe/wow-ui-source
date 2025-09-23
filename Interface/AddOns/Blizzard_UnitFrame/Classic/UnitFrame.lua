@@ -559,7 +559,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 	if ( frequentUpdates ) then
 		statusbar:RegisterEvent("VARIABLES_LOADED");
 	end
-	if ( GetCVarBool("predictedHealth") and frequentUpdates ) then
+	if ( frequentUpdates ) then
 		statusbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 	else
 		statusbar:RegisterUnitEvent("UNIT_HEALTH", unit);
@@ -582,7 +582,7 @@ function UnitFrameHealthBar_OnEvent(self, event, ...)
 		TextStatusBar_OnEvent(self, event, ...);
 	elseif ( event == "VARIABLES_LOADED" ) then
 		self:UnregisterEvent("VARIABLES_LOADED");
-		if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
+		if ( self.frequentUpdates ) then
 			self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 			self:UnregisterEvent("UNIT_HEALTH");
 		else

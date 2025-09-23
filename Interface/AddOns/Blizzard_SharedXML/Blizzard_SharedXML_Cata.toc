@@ -47,6 +47,7 @@ Wrath\SoundKitConstants.lua
 CircularBuffer.lua
 FontableFrameMixin.lua
 StringUtil.lua
+TypeUtil.lua
 SelectableButton.lua
 SelectableButton.xml
 NewFeatureLabel.xml

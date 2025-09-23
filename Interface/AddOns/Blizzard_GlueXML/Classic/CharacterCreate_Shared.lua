@@ -22,7 +22,7 @@ function CharacterCreateEnumerateRaces()
 	local races = C_CharacterCreation.GetAvailableRaces();
 	CharacterCreate.numRaces = #races;
 	if ( CharacterCreate.numRaces > MAX_RACES ) then
-		message("Too many races!  Update MAX_RACES");
+		SetBasicMessageDialogText("Too many races!  Update MAX_RACES");
 		return;
 	end
 
@@ -119,7 +119,7 @@ function CharacterCreateEnumerateClasses()
 	CharacterCreate.numClasses = numDisplayClasses;
 	
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
-		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
+		SetBasicMessageDialogText("Too many classes!  Update MAX_CLASSES_PER_RACE");
 		return;
 	end
 
@@ -303,35 +303,35 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			CharacterSelect.selectGuid = guid;
 			GlueParent_SetScreen("charselect");
 		elseif (C_Reincarnation.IsReincarnating()) then
-			GlueDialog_Show("OKAY", CHAR_CREATE_REINCARNATION_FAILED);
+			StaticPopup_Show("OKAY", CHAR_CREATE_REINCARNATION_FAILED);
 			-- Kick them back out to character select
 		else	
-			GlueDialog_Show("OKAY", _G[errorCode]);
+			StaticPopup_Show("OKAY", _G[errorCode]);
 		end
 	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
-		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+		StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
 	elseif ( event == "CUSTOMIZE_CHARACTER_RESULT" ) then
 		local success, err = ...;
 		if ( success ) then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 		else
-			GlueDialog_Show("OKAY", _G[err]);
+			StaticPopup_Show("OKAY", _G[err]);
 		end
 	elseif ( event == "RACE_FACTION_CHANGE_STARTED" ) then
 		local changeType = ...;
 		if ( changeType == "RACE" ) then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
 		elseif ( changeType == "FACTION" ) then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
 		end
 	elseif ( event == "RACE_FACTION_CHANGE_RESULT" ) then
 		local success, err = ...;
 		if ( success ) then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 		else
-			GlueDialog_Show("OKAY", _G[err]);
+			StaticPopup_Show("OKAY", _G[err]);
 		end
 	elseif event == "STORE_VAS_PURCHASE_ERROR" then
 		self:OnStoreVASPurchaseError();
@@ -387,7 +387,8 @@ function CharacterCreateMixin:OnStoreVASPurchaseError()
 				break;
 			end
 		end
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+		local text2 = nil;
+		StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, text2, exitAfterError);
 	end
 end
 
@@ -399,7 +400,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterCreateFrame:Exit();
 		else
 			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+			local text2 = nil;
+			StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, text2, exitAfterError);
 		end
 	end
 end
@@ -585,9 +587,9 @@ function CreateCharacter()
 	end
 
 	if CharacterCreateFrame.paidServiceType then
-		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+		StaticPopup_Show("CONFIRM_PAID_SERVICE");
 	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	elseif C_Reincarnation.IsReincarnating() then
 		CharacterReincarnatePopUpDialog:ShowWarning();
 	else

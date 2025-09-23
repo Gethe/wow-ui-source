@@ -40,6 +40,8 @@ Classic\TaxiFrame.lua
 Classic\TaxiFrame.xml
 Classic\ItemRef.lua
 Classic\ItemRef.xml
+Classic\ItemRefHandlers.lua
+Shared\ItemRefHandlersShared.lua
 Classic\ProductChoice.lua
 Classic\ProductChoice.xml
 Classic\FriendsFrame.lua

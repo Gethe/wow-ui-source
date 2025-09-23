@@ -13,12 +13,13 @@ StaticPopupDialogs["CONFIRM_REMOVE_TALENT"] = {
 		local _, name = GetTalentInfoByID(self.data.id, talentGroup);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, name);
+			self.Text:SetFormattedText(CONFIRM_REMOVE_GLYPH_NO_COST, name);
 		elseif count >= cost then
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, GREEN_FONT_COLOR_CODE, cost, resourceName);
+			self.Text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
-			self.text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, RED_FONT_COLOR_CODE, cost, resourceName);
-			self.button1:Disable();
+			self.Text:SetFormattedText(CONFIRM_REMOVE_GLYPH, name, RED_FONT_COLOR_CODE, cost, resourceName);
+			local button = self:GetButton1();
+			button:Disable();
 		end
 	end,
 	OnCancel = function (self)
@@ -45,12 +46,13 @@ StaticPopupDialogs["CONFIRM_UNLEARN_AND_SWITCH_TALENT"] = {
 		local _, oldName = GetTalentInfoByID(self.data.oldID, talentGroup);
 		local resourceName, count, _, _, cost = GetTalentClearInfo();
 		if cost == 0 then
-			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT_NO_COST, name, oldName);
+			self.Text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT_NO_COST, name, oldName);
 		elseif count >= cost then
-			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, GREEN_FONT_COLOR_CODE, cost, resourceName);
+			self.Text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, GREEN_FONT_COLOR_CODE, cost, resourceName);
 		else
-			self.text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, RED_FONT_COLOR_CODE, cost, resourceName);
-			self.button1:Disable();
+			self.Text:SetFormattedText(CONFIRM_UNLEARN_AND_SWITCH_TALENT, name, oldName, RED_FONT_COLOR_CODE, cost, resourceName);
+			local button = self:GetButton1();
+			button:Disable();
 		end
 	end,
 	OnCancel = function (self)

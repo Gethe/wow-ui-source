@@ -5,13 +5,13 @@ StaticPopupDialogs["CALENDAR_DELETE_EVENT"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	whileDead = 1,
-	OnAccept = function (self)
+	OnAccept = function(dialog, data)
 		C_Calendar.ContextMenuEventRemove();
 	end,
-	OnShow = function (self)
-		CalendarFrame_PushModal(self);
+	OnShow = function(dialog, data)
+		CalendarFrame_PushModal(dialog);
 	end,
-	OnHide = function (self)
+	OnHide = function(dialog, data)
 		CalendarFrame_PopModal();
 	end,
 	timeout = 0,
@@ -22,11 +22,9 @@ StaticPopupDialogs["CALENDAR_ERROR"] = {
 	text = CALENDAR_ERROR,
 	button1 = OKAY,
 	whileDead = 1,
-	OnShow = function (self)
-		--CalendarFrame_PushModal(self);
+	OnShow = function(dialog, data)
 	end,
-	OnHide = function (self)
-		--CalendarFrame_PopModal();
+	OnHide = function(dialog, data)
 	end,
 	timeout = 0,
 	showAlert = 1,

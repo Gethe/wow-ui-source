@@ -74,7 +74,7 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 		exclude = AUTOCOMPLETE_FLAG_BNET,
 	},
 	KNOWN = {
-		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP, AUTOCOMPLETE_FLAG_IN_GUILD, 
+		include = bit.bor(AUTOCOMPLETE_FLAG_IN_GROUP, AUTOCOMPLETE_FLAG_IN_GUILD,
 						AUTOCOMPLETE_FLAG_FRIEND, AUTOCOMPLETE_FLAG_INTERACTED_WITH),
 		exclude = AUTOCOMPLETE_FLAG_BNET
 	},
@@ -87,7 +87,7 @@ AUTOCOMPLETE_LIST_TEMPLATES = {
 		exclude = AUTOCOMPLETE_FLAG_IN_GROUP,
 	},
 }
-		
+
 AUTOCOMPLETE_LIST = {};
 local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	AUTOCOMPLETE_LIST.ALL				= AUTOCOMPLETE_LIST_TEMPLATES.ALL;
@@ -117,7 +117,7 @@ local AUTOCOMPLETE_LIST = AUTOCOMPLETE_LIST;
 	-- AUTOCOMPLETE_LIST.WARGAME			= AUTOCOMPLETE_LIST_TEMPLATES.BNET_NOT_IN_PARTY;
 	AUTOCOMPLETE_LIST.COMMUNITY			= AUTOCOMPLETE_LIST_TEMPLATES.ALL_OTHER_CHARS;
 
-AUTOCOMPLETE_COLOR_KEYS = 
+AUTOCOMPLETE_COLOR_KEYS =
 {
 [LE_AUTOCOMPLETE_PRIORITY_OTHER]  		= {key=NORMAL_FONT_COLOR_CODE, text="" },
 [LE_AUTOCOMPLETE_PRIORITY_INTERACTED] 	= {key="WHISPER", text=AUTOCOMPLETE_LABEL_INTERACTED },
@@ -127,20 +127,36 @@ AUTOCOMPLETE_COLOR_KEYS =
 [LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER] = {key=NORMAL_FONT_COLOR_CODE, text="" },
 [LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER_SAME_REALM] = {key=NORMAL_FONT_COLOR_CODE, text=""},
 }
-	
+
 AUTOCOMPLETE_SIMPLE_REGEX = "(.+)";
 AUTOCOMPLETE_SIMPLE_FORMAT_REGEX = "%1$s";
 
 AUTOCOMPLETE_DEFAULT_Y_OFFSET = 3;
 function AutoComplete_OnLoad(self)
 	self.maxHeight = AUTOCOMPLETE_MAX_BUTTONS * AutoCompleteButton1:GetHeight();
-	
 	AutoCompleteInstructions:SetText("|cffbbbbbb"..PRESS_TAB.."|r");
-	C_Timer.After(5, function()
+	self:RegisterEvent("GUILD_ROSTER_UPDATE");
+end
+
+function AutoComplete_OnShow(self)
+	self:SetParent(GetAppropriateTopLevelParent());
+end
+
+local function CheckRequestGuildRoster(canRequestGuildRoster)
+	local guildsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.GuildsDisabled);
+	if canRequestGuildRoster and not guildsDisabled then
 		if ( IsInGuild() ) then
 			C_GuildInfo.GuildRoster();
+			self:UnRegisterEvent("GUILD_ROSTER_UPDATE");
 		end
-	end);
+	end
+end
+
+function AutoComplete_OnEvent(self, event, ...)
+	if event == "GUILD_ROSTER_UPDATE" then
+		local canRequestGuildRoster  = ...;
+		CheckRequestGuildRoster(canRequestGuildRoster );
+	end
 end
 
 function AutoComplete_Update(parent, text, cursorPosition)
@@ -160,7 +176,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 			self.parentArrows = parent:GetAltArrowKeyMode();
 		end
 		parent:SetAltArrowKeyMode(false);
-		
+
 		if ( parent:GetBottom() - self.maxHeight <= (AUTOCOMPLETE_DEFAULT_Y_OFFSET + 10) ) then	--10 is a magic number from the offset of AutoCompleteButton1.
 			attachPoint = "ABOVE";
 		else
@@ -176,7 +192,7 @@ function AutoComplete_Update(parent, text, cursorPosition)
 			end
 			self.attachPoint = attachPoint;
 		end
-		
+
 		self.parent = parent;
 		--We ask for one more result than we need so that we know whether or not results are continued
 		local allowFullMatch = true;
@@ -185,13 +201,13 @@ function AutoComplete_Update(parent, text, cursorPosition)
 		if (not possibilities) then
 			possibilities = {};
 		end
-		
+
 		-- We only want to show an exact match in the autocomplete dropdown if there are multiple results.
 		if (#possibilities == 1 and text == possibilities[1].name) then
 			possibilities[1] = nil;
 		end
-		
-		local realmStart = text:find("-", 1, true); 
+
+		local realmStart = text:find("-", 1, true);
 		if (realmStart) then
 			local realms = GetAutoCompleteRealms();
 			local realm, subStart, subEnd;
@@ -199,11 +215,11 @@ function AutoComplete_Update(parent, text, cursorPosition)
 			local index = #possibilities + 1;
 			for i=1, #realms do
 				realm = realms[i];
-				subStart, subEnd = realm:lower():find(realmStart:lower(), 1, true) 
+				subStart, subEnd = realm:lower():find(realmStart:lower(), 1, true)
 				if (subStart and subStart == 1) then
 					if (subEnd > 0) then
 						--if they started typing a known realm name, just append the rest of it
-						realm = realm:sub(subEnd + 1); 
+						realm = realm:sub(subEnd + 1);
 					end
 					local entry = text..realm;
 					if (not tContains(possibilities, entry)) then
@@ -278,7 +294,7 @@ function AutoComplete_UpdateResults(self, results, context)
 	for i = numReturns+1, AUTOCOMPLETE_MAX_BUTTONS do
 		_G["AutoCompleteButton"..i]:Hide();
 	end
-	
+
 	if ( numReturns > 0 ) then
 		maxWidth = max(maxWidth, AutoCompleteInstructions:GetStringWidth()+30);
 		self:SetHeight(numReturns*AutoCompleteButton1:GetHeight()+35);
@@ -288,13 +304,13 @@ function AutoComplete_UpdateResults(self, results, context)
 	else
 		self:Hide();
 	end
-		
+
 	if ( totalReturns > AUTOCOMPLETE_MAX_BUTTONS )  then
 		local button = _G["AutoCompleteButton"..AUTOCOMPLETE_MAX_BUTTONS];
 		button:SetText(CONTINUED);
 		button:Disable();
 		self.numResults = numReturns - 1;
-	else 
+	else
 		self.numResults = numReturns;
 	end
 end
@@ -416,7 +432,7 @@ function AutoCompleteEditBox_OnEscapePressed(self)
 		return true;
 	end
 	return false;
-end	
+end
 
 function AutoCompleteButton_OnClick(self)
 	local autoComplete = self:GetParent();
@@ -424,23 +440,23 @@ function AutoCompleteButton_OnClick(self)
 	local editBoxText = editBox:GetText();
 	local name = Ambiguate(self.nameInfo.name, "none");
 	local newText;
-	
+
 	if (editBox.command) then
 		newText = editBox.command.." "..name;
 	else
 		newText = name;
 	end
-	
+
 	if ( editBox.addSpaceToAutoComplete ) then
 		newText = newText.." ";
 	end
-	
+
 	autoComplete:Hide();
-	
-	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo) ) then
+
+	if ( editBox.customAutoCompleteFunction ~= nil and editBox.customAutoCompleteFunction(editBox, newText, self.nameInfo, name) ) then
 		return;
 	end
-	
+
 	editBox:SetText(newText);
 	--When we change the text, we move to the end, so we'll be consistent and move to the end if we don't change it as well.
 	editBox:SetCursorPosition(strlen(newText));

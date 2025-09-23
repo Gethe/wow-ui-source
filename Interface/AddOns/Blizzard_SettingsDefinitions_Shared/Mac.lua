@@ -6,7 +6,7 @@ function RegisterMacSettings()
 	
 	local function OnDisableOsShortcutsChanged(o, setting, value)
 		if value and not C_MacOptions.IsUniversalAccessEnabled() then
-			ShowAppropriateDialog("MAC_OPEN_UNIVERSAL_ACCESS");
+			StaticPopup_Show("MAC_OPEN_UNIVERSAL_ACCESS");
 			setting:SetValue(false);
 		end
 	end
@@ -23,15 +23,15 @@ function DefineGameSettingsMacOpenUniversalAccessDialog(dialogTable)
 		text = MAC_OPEN_UNIVERSAL_ACCESS,
 		button1 = YES,
 		button2 = NO,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_MacOptions.OpenUniversalAccess();
 			Settings.OpenToCategory(Settings.MAC_CATEGORY_ID);
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			Settings.OpenToCategory(Settings.MAC_CATEGORY_ID);
 		end,
-		OnShow = function(self)
-			self.text:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, C_MacOptions.GetGameBundleName());
+		OnShow = function(dialog, data)
+			dialog:SetFormattedText(MAC_OPEN_UNIVERSAL_ACCESS1090, C_MacOptions.GetGameBundleName());
 		end,
 		showAlert = 1,
 		timeout = 0,
@@ -46,14 +46,14 @@ function DefineGameSettingsMacOpenInputMonitoringDialog(dialogTable)
 		text = MAC_OPEN_UNIVERSAL_ACCESS,
 		button1 = YES,
 		button2 = NO,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_MacOptions.OpenInputMonitoring();
 		end,
-		OnShow = function(self)
+		OnShow = function(dialog, data)
 			if (C_MacOptions.HasNewStyleInputMonitoring()) then
-				self.text:SetFormattedText(MAC_INPUT_MONITORING1015, C_MacOptions.GetGameBundleName());
+				dialog:SetFormattedText(MAC_INPUT_MONITORING1015, C_MacOptions.GetGameBundleName());
 			else
-				self.text:SetFormattedText(MAC_INPUT_MONITORING1014, C_MacOptions.GetGameBundleName());
+				dialog:SetFormattedText(MAC_INPUT_MONITORING1014, C_MacOptions.GetGameBundleName());
 			end
 		end,
 		showAlert = 1,

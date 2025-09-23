@@ -35,6 +35,12 @@
 					</Slider>
 				</Frames>
 			</ScrollFrame>
+			<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="false">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

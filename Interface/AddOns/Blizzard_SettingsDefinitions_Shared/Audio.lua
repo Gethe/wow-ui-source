@@ -400,33 +400,32 @@ local function Register()
 		Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
 		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
-	
-	do
-		local minValue, maxValue, step = 0, 1, .05;
-		local function Formatter(value)
-			local roundToNearestInteger = true;
-			return FormatPercentage(value, roundToNearestInteger);
-		end
-		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
-		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, Formatter);
 
+	local volumeMinValue, volumeMaxValue, volumeStep = 0, 1, .05;
+	local volumeOptions = Settings.CreateSliderOptions(volumeMinValue, volumeMaxValue, volumeStep);
+	volumeOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+		local roundToNearestInteger = true;
+		return FormatPercentage(value, roundToNearestInteger);
+	end);
+
+	do
 		-- Master Volume
-		local masterSetting, masterInitializer = Settings.SetupCVarSlider(category, "Sound_MasterVolume", options, MASTER_VOLUME, OPTION_TOOLTIP_MASTER_VOLUME);
+		local masterSetting, masterInitializer = Settings.SetupCVarSlider(category, "Sound_MasterVolume", volumeOptions, MASTER_VOLUME, OPTION_TOOLTIP_MASTER_VOLUME);
 		
 		-- Music Volume
-		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_MusicVolume", options, MUSIC_VOLUME, OPTION_TOOLTIP_MUSIC_VOLUME);
+		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_MusicVolume", volumeOptions, MUSIC_VOLUME, OPTION_TOOLTIP_MUSIC_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Effects Volume
-		setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", options, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_SFXVolume", volumeOptions, FX_VOLUME, OPTION_TOOLTIP_FX_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 
 		-- Ambience Volume
-		setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", options, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", volumeOptions, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 		
 		-- Dialog Volume
-		setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", options, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
+		setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", volumeOptions, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 	end
 	
@@ -459,22 +458,25 @@ local function Register()
 
 		-- Pet Sounds
 		do
-		local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
-		local function IsModifiable()
-			return soundFXSetting:GetValue();
-		end
-		petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
+			local petSoundsSetting, petSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetSounds", ENABLE_PET_SOUNDS, OPTION_TOOLTIP_ENABLE_PET_SOUNDS);
+			local function IsModifiable()
+				return soundFXSetting:GetValue();
+			end
+			petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 		end
 			
 		do
 		-- Emote Sounds
-		local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
-		local function IsModifiable()
-			return soundFXSetting:GetValue();
+			local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
+			local function IsModifiable()
+				return soundFXSetting:GetValue();
+			end
+			emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 		end
-		emoteSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 	end
-	end
+
+	-- Enable Gameplay Sound Effects
+	AudioOverrides.CreateGameplaySoundEffectsSettings(category, layout, volumeOptions);
 
 	-- Dialog
 	do

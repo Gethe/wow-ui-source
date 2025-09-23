@@ -17,6 +17,15 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "CraftingItemSlotModification",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "CraftingReagentInfo",
 			Type = "Structure",
 			Fields =

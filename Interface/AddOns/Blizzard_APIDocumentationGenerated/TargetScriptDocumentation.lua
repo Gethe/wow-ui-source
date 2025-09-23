@@ -8,6 +8,7 @@ local TargetScript =
 		{
 			Name = "AssistUnit",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -35,6 +36,7 @@ local TargetScript =
 		{
 			Name = "FocusUnit",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -165,10 +167,12 @@ local TargetScript =
 		{
 			Name = "TargetToggle",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "TargetUnit",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

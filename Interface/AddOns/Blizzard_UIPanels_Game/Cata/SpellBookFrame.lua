@@ -187,7 +187,7 @@ function SpellBookFrameMixin:UpdatePages()
 	SpellBookPageText:SetFormattedText(PAGE_NUMBER, currentPage);
 end
 
-function SpellButtonMixin:OnClick(button)
+function SpellButtonMixin:OnIconClick(button)
 	local slot, slotType = SpellBook_GetSpellBookSlot(self);
 	if ( slot > MAX_SPELLS or slotType == "FUTURESPELL") then
 		return;

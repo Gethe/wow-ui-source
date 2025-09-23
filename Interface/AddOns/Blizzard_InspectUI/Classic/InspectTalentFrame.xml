@@ -121,7 +121,7 @@
 			</Layer>
 			</Layers>
 		<Frames>
-			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1">
+			<Button name="$parentTab1" inherits="TabButtonTemplate" text="OK" id="1" mixin="InspectTalentFrameTabMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -130,38 +130,23 @@
 					</Anchor>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update(self);
-						TalentFrame_Update(InspectTalentFrame);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					<OnClick method="OnClick" inherit="append"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="TabButtonTemplate" text="OK" id="2">
+			<Button name="$parentTab2" inherits="TabButtonTemplate" text="OK" id="2" mixin="InspectTalentFrameTabMixin">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update(self);
-						TalentFrame_Update(InspectTalentFrame);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					<OnClick method="OnClick" inherit="append"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab3" inherits="TabButtonTemplate" text="OK" id="3">
+			<Button name="$parentTab3" inherits="TabButtonTemplate" text="OK" id="3" mixin="InspectTalentFrameTabMixin">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentTab2" relativePoint="RIGHT"/>
 				</Anchors>
 				<Scripts>
-					<OnClick>
-						PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
-						InspectTalentFrame_Update(self);
-						TalentFrame_Update(InspectTalentFrame);
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-					</OnClick>
+					<OnClick method="OnClick" inherit="append"/>
 				</Scripts>
 			</Button>
 			<Button name="InspectTalentFrameCloseButton" inherits="UIPanelCloseButton">

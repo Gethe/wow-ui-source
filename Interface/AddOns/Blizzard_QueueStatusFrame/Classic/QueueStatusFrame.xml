@@ -63,7 +63,7 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->
 					</Anchors>
 				</FontString>
-				<FontString parentKey="ExtraText" inherits="GameFontNormalGraySmall" justifyH="LEFT">
+				<FontString parentKey="ExtraText" inherits="GameFontDisableSmall" justifyH="LEFT">
 					<Size x="250" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/> <!--Anchored in Lua-->

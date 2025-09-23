@@ -647,11 +647,11 @@ end
 
 function ActionButton_UpdateOverlayGlow(self)
 	local spellType, id, subType  = GetActionInfo(self.action);
-	if ( spellType == "spell" and IsSpellOverlayed(id) ) then
+	if ( spellType == "spell" and C_SpellActivationOverlay.IsSpellOverlayed(id) ) then
 		ActionButton_ShowOverlayGlow(self);
 	elseif ( spellType == "macro" ) then
 		local spellId = GetMacroSpell(id);
-		if ( spellId and IsSpellOverlayed(spellId) ) then
+		if ( spellId and C_SpellActivationOverlay.IsSpellOverlayed(spellId) ) then
 			ActionButton_ShowOverlayGlow(self);
 		else
 			ActionButton_HideOverlayGlow(self);

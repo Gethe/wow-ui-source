@@ -14,7 +14,7 @@ ItemButtonUtil.ItemContextEnum = {
 	ItemConversion = 11,
 	ItemRecrafting = 12,
 	JumpUpgradeTrack = 13,
-	AccountBankDepositing = 14,
+	BankDepositing = 14,
 	Enchanting = 15,
 };
 
@@ -68,8 +68,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.UpgradableItem;
 	elseif C_Spell.TargetSpellJumpsUpgradeTrack() then
 		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
-	elseif BankFrame and BankFrame:IsVisible() and BankFrame:GetActiveBankType() == Enum.BankType.Account then
-		return ItemButtonUtil.ItemContextEnum.AccountBankDepositing;
+	elseif BankPanel and BankPanel:IsVisible() then
+		return ItemButtonUtil.ItemContextEnum.BankDepositing;
 	elseif C_Spell.TargetSpellIsEnchanting() then
 		return ItemButtonUtil.ItemContextEnum.Enchanting;
 	end
@@ -154,8 +154,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack then
 			return C_Item.DoesItemMatchTrackJump(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
-		elseif itemContext == ItemButtonUtil.ItemContextEnum.AccountBankDepositing then
-			return C_Bank.IsItemAllowedInBankType(Enum.BankType.Account, itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.BankDepositing then
+			return C_Bank.IsItemAllowedInBankType(BankFrame:GetActiveBankType(), itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Enchanting then
 			return C_Item.DoesItemMatchTargetEnchantingSpell(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		else

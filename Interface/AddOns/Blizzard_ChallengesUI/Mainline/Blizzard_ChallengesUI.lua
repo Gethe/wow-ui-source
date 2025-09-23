@@ -921,7 +921,7 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(challengeCompletionInfo)
 		end
 	end
 
-	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1;
+	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true, true) <= 1;
 	if (challengeCompletionInfo.isEligibleForScore and ((challengeCompletionInfo.oldOverallDungeonScore and challengeCompletionInfo.newOverallDungeonScore) or (isOnlyRunThisSeason))) then
 		local gainedScore = challengeCompletionInfo.newOverallDungeonScore - challengeCompletionInfo.oldOverallDungeonScore;
 		local color = C_ChallengeMode.GetDungeonScoreRarityColor(challengeCompletionInfo.newOverallDungeonScore);

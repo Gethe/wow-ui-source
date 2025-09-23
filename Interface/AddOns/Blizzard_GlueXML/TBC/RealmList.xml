@@ -509,7 +509,7 @@
 									</Slider>
 								</Frames>
 							</ScrollFrame>
-							<Button name="RealmListCancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
+							<Button name="RealmListCancelButton" inherits="GlueButtonTemplate" text="CANCEL">
 								<Size>
 									<AbsDimension x="125" y="35"/>
 								</Size>
@@ -527,7 +527,7 @@
 									</OnClick>
 								</Scripts>
 							</Button>
-							<Button name="RealmListOkButton" inherits="GlueDialogButtonTemplate" text="OKAY">
+							<Button name="RealmListOkButton" inherits="GlueButtonTemplate" text="OKAY">
 								<Size>
 									<AbsDimension x="125" y="35"/>
 								</Size>

@@ -325,7 +325,7 @@ function CharacterUpgradeFlow:Finish(controller)
 		local guid = select(15, GetCharacterInfo(results.charid));
 		if (guid ~= results.playerguid) then
 			-- Bail because guid has changed!
-			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 			self:Restart(controller);
 			return false;
 		end

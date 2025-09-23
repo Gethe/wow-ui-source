@@ -611,10 +611,7 @@
 										</HitRectInsets>
 										<Scripts>
 											<OnClick>
-												local dialog = StaticPopup_Show("UNLEARN_SKILL", self.skillName);
-												if ( dialog ) then
-													dialog.data = self:GetParent().skillIndex;
-												end
+												StaticPopup_Show("UNLEARN_SKILL", self.skillName, nil, self:GetParent().skillIndex);
 											</OnClick>
 											<OnEnter>
 												GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

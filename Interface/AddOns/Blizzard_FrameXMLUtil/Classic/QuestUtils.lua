@@ -50,12 +50,6 @@ end
 
 QuestUtil = {};
 
-function QuestUtil.QuestTextContrastUseLightText()
-	--Use light text when the background is dark
-	local chosenAccessibilityBackground = tonumber(GetCVar("QuestTextContrast"));
-	return  chosenAccessibilityBackground == 4;
-end
-
 function QuestUtils_GetQuestTagTextureCoords(tagID, worldQuestType)
 	if IsQuestWorldQuest_Internal(worldQuestType) then
 		return WORLD_QUEST_TYPE_TCOORDS[worldQuestType];

@@ -52,6 +52,7 @@ local CVar =
 		{
 			Name = "GetCVarDefault",
 			Type = "Function",
+			IsValidAndPublic = true,
 
 			Arguments =
 			{
@@ -100,6 +101,9 @@ local CVar =
 		{
 			Name = "SetCVar",
 			Type = "Function",
+			IsValidAndPublic = true,
+			IsNotReadOnly = true,
+			IsNotSecure = true,
 
 			Arguments =
 			{
@@ -116,6 +120,10 @@ local CVar =
 		{
 			Name = "SetCVarBitfield",
 			Type = "Function",
+			IsValidAndPublic = true,
+			IsNotReadOnly = true,
+			IsNotSecure = true,
+			IsIndexInRange = true,
 
 			Arguments =
 			{

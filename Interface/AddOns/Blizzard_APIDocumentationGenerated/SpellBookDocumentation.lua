@@ -18,6 +18,56 @@ local SpellBook =
 				{ Name = "petNameToken", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "IsSpellInSpellBook",
+			Type = "Function",
+			Documentation = { "Returns true if a spell should be found in the spellbook. This function can also return true for spells that aren't known, such as override spells granted by an aura linked to class talents" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+				{ Name = "includeOverrides", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isInSpellBook", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellKnown",
+			Type = "Function",
+			Documentation = { "Returns true if a player knows a spell. This function can also return true for spells that aren't in the spellbook, such as temporarily-granted abilities" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+			},
+
+			Returns =
+			{
+				{ Name = "isKnown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellKnownOrInSpellBook",
+			Type = "Function",
+			Documentation = { "Returns true if a spell is considered to be known or present in the spellbook" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+				{ Name = "includeOverrides", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isKnownOrInSpellBook", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

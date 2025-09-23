@@ -18,7 +18,9 @@ function assertsafe(cond, msgStringOrFunction, ...)
 		if geterrorhandler() then
 			geterrorhandler()(error);
 		elseif ProcessExceptionClient then
-			ProcessExceptionClient(error);
+			local framesToSkip = 1;
+			ProcessExceptionClient(error, error, framesToSkip);
+
 		end
 		SetErrorCallstackHeight(nil);
 	end

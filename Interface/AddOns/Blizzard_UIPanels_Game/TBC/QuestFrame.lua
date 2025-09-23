@@ -146,7 +146,7 @@ function QuestRewardCompleteButton_OnClick()
 		if ( money and money > 0 ) then
 			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
 			if ( QuestFrame.dialog ) then
-				MoneyFrame_Update(QuestFrame.dialog:GetName().."MoneyFrame", money);
+				MoneyFrame_Update(dialog.MoneyFrame, money);
 			end
 		else
 			GetQuestReward(QuestInfoFrame.itemChoice);

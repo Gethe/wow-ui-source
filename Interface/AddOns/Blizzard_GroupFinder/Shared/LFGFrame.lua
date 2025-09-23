@@ -1576,7 +1576,7 @@ function LFGInvitePopup_Update(inviter, roleTankAvailable, roleHealerAvailable, 
 	local healerButton = LFGInvitePopupRoleButtonHealer;
 	local damagerButton = LFGInvitePopupRoleButtonDPS;
 	local availableRolesField = 0;	--Seems to be a ghetto bit-field
-	self.timeOut = STATICPOPUP_TIMEOUT;
+	self.timeOut = StaticPopupTimeoutSec;
 
 	local titleMarkup = isQuestSessionActive and CreateAtlasMarkup("QuestSharing-QuestLog-Replay", 19, 16) or "";
 	LFGInvitePopupText:SetFormattedText(titleMarkup .. INVITATION, inviter);

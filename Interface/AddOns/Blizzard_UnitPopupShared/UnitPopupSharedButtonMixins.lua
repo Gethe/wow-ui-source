@@ -281,9 +281,13 @@ end
 function UnitPopupTargetButtonMixin:CanShow(contextData)
 	if not issecure() then
 		return false;
-end
+	end
 
 	if contextData.isMobile then
+		return false;
+	end
+
+	if not contextData.unit then
 		return false;
 	end
 
@@ -499,9 +503,17 @@ function UnitPopupUninviteButtonMixin:CanShow(contextData)
 	local instanceType = select(2, IsInInstance());
 	if (instanceType == "pvp") or (instanceType == "arena") then
 		return false;
-end
+	end
 
 	return not UnitPopupSharedUtil.HasLFGRestrictions();
+end
+
+function UnitPopupUninviteButtonMixin:IsEnabled(contextData)
+	if (C_PartyInfo.ChallengeModeRestrictionsActive()) then 
+		return false;
+	end
+
+	return true;
 end
 
 function UnitPopupUninviteButtonMixin:OnClick(contextData)
@@ -523,10 +535,7 @@ function UnitPopupRemoveFriendButtonMixin:GetText(contextData)
 end
 
 function UnitPopupRemoveFriendButtonMixin:OnClick(contextData)
-	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	if not C_FriendList.RemoveFriend(fullName) then
-		UIErrorsFrame:AddExternalErrorMessage(ERR_FRIEND_NOT_FOUND);
-	end
+	StaticPopup_Show("CONFIRM_REMOVE_WOW_FRIEND", nil, nil, contextData);
 end
 
 UnitPopupSetNoteButtonMixin = CreateFromMixins(UnitPopupFriendsButtonMixin);
@@ -553,11 +562,12 @@ function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 			else
 				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			end
-			StaticPopup_Show("CONFIRM_REMOVE_FRIEND", promptText, nil, accountInfo.bnetAccountID);
+			StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, nil, accountInfo.bnetAccountID);
 		end
 	else
 		promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, contextData.battleTag);
-		GlueDialog_Show("CONFIRM_REMOVE_FRIEND", promptText, contextData.bnetIDAccount);
+		local text2 = nil;
+		StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, text2, contextData.bnetIDAccount);
 	end
 
 
@@ -835,8 +845,7 @@ end
 
 function UnitPopupGuildPromoteButtonMixin:OnClick(contextData)
 	local fullName = UnitPopupSharedUtil.GetFullPlayerName(contextData);
-	local dialog = StaticPopup_Show("CONFIRM_GUILD_PROMOTE", fullName);
-	dialog.data = fullName;
+	StaticPopup_Show("CONFIRM_GUILD_PROMOTE", fullName, nil, fullName);
 end
 
 --Shown through Communities Guild Roster right click
@@ -915,6 +924,24 @@ function UnitPopupPartyInstanceLeaveButtonMixin:OnClick(contextData)
 	ConfirmOrLeaveParty();
 end
 
+UnitPopupPartyInstanceAbandonButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupPartyInstanceAbandonButtonMixin:GetText(contextData)
+	return VOTE_TO_ABANDON;
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:CanShow(contextData)
+	return C_PartyInfo.ChallengeModeRestrictionsActive();
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:IsEnabled(contextData)
+	return C_PartyInfo.CanStartInstanceAbandonVote();
+end
+
+function UnitPopupPartyInstanceAbandonButtonMixin:OnClick(contextData)
+	C_PartyInfo.StartInstanceAbandonVote();
+end
+
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupFollowButtonMixin:GetText(contextData)
@@ -949,7 +976,7 @@ function UnitPopupPetDismissButtonMixin:GetText(contextData)
 end
 
 function UnitPopupPetDismissButtonMixin:CanShow(contextData)
-	if PetCanBeAbandoned() and not IsSpellKnown(HUNTER_DISMISS_PET) then
+	if PetCanBeAbandoned() and not C_SpellBook.IsSpellKnown(Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET) then
 		return false;
 	end
 
@@ -958,7 +985,7 @@ end
 
 function UnitPopupPetDismissButtonMixin:OnClick(contextData)
 	if PetCanBeAbandoned() then
-		CastSpellByID(HUNTER_DISMISS_PET);
+		CastSpellByID(Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET);
 	else
 		PetDismiss();
 	end

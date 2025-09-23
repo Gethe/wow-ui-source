@@ -296,6 +296,21 @@ local Container =
 			},
 		},
 		{
+			Name = "HasContainerItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "containerIndex", Type = "BagIndex", Nilable = false },
+				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasItem", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsBagSlotFlagEnabledOnOtherBankBags",
 			Type = "Function",
 
