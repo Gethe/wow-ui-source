@@ -14,6 +14,27 @@ local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
 	dialog.hideOnEscape = false;
 end
 
+StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
+	text = CONFIRM_XP_LOSS_NO_SICKNESS_NO_DURABILITY,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(dialog, data)
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
+	OnUpdate = function(dialog, elapsed)
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			dialog:Hide();
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	text = "",		-- supplied dynamically.
 	button1 = "",	-- supplied dynamically.
