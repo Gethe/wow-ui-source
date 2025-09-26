@@ -75,6 +75,15 @@ LinkUtil.RegisterLinkHandler(LinkTypes.TalentsUI, function(link, text, linkData,
 	ToggleTalentFrame(TALENTS_TAB);
 end);
 
+LinkUtil.RegisterLinkHandler(LinkTypes.Talent, function(link, text, linkData, contextData)
+	if ( IsModifiedClick("CHATLINK") and contextData.button == "LeftButton" ) then
+		ChatEdit_InsertLink(text);
+		return;
+	end
+
+	return LinkProcessorResponse.Unhandled;
+end);
+
 LinkUtil.RegisterLinkHandler(LinkTypes.PvPTalentsUI, function(link, text, linkData, contextData)
 	ToggleTalentFrame(PVP_TALENTS_TAB);
 end);

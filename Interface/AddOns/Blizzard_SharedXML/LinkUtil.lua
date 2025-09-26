@@ -56,6 +56,7 @@ LinkTypes = {
 	WarbandScene = "warbandScene",
 	WorldMapWaypoint = "worldmap",
 	WorldQuest = "worldquest",
+	Talent = "talent"
 };
 
 LinkUtil = {};
