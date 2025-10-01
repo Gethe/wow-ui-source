@@ -85,27 +85,22 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="DividerTop" atlas="shop-card-label-bg" hidden="true" useAtlasSize="true" />
-						<FontString parentKey="Price" inherits="SystemFont_Huge2" wordwrap="true" justifyH="RIGHT">
+						<FontString parentKey="Price" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="RIGHT">
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Huge2" wordwrap="true" justifyH="LEFT">
+						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="LEFT">
 							<Color color="GREEN_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Huge2" wordwrap="true" justifyH="LEFT">
+						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="LEFT">
 							<Color color="GRAY_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="Name" inherits="SystemFont_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
+						<FontString parentKey="Name" inherits="SystemFont_Shadow_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
 							<Color color="WHITE_FONT_COLOR"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>
 							</KeyValues>
 						</FontString>
-						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" alphaMode="ADD">
-							<Anchors>
-								<Anchor point="TOPRIGHT" x="-22" y="-22" />
-							</Anchors>
-						</Texture>
-						<Texture parentKey="TimeRemainingIcon" atlas="icon-clock" hidden="true" useAtlasSize="true" alphaMode="ADD">
+						<Texture parentKey="TimeRemainingIcon" atlas="icon-clock" hidden="true" useAtlasSize="true" >
 							<Anchors>
 								<Anchor point="TOPLEFT" x="20" y="-20" />
 							</Anchors>
@@ -125,6 +120,11 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY" >
+						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-22" y="-22" />
+							</Anchors>
+						</Texture>
 						<Texture parentKey="DiscountSaleTag" atlas="shop-saletag" useAtlasSize="true" hidden="true" >
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-3" y="-11" />
@@ -134,7 +134,7 @@
 							<Size x="60" y="19"/>
 							<Color color="WHITE_FONT_COLOR"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="2" y="-33" />
+								<Anchor point="TOPRIGHT" x="-4" y="-33" />
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >

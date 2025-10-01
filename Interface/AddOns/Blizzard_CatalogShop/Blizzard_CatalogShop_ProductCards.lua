@@ -270,7 +270,7 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		priceElement:ClearAllPoints();
 		priceElement:SetSize(0, 20);
 		priceElement:SetJustifyH("CENTER");
-		priceElement:SetPoint("BOTTOM", 0, 20);
+		priceElement:SetPoint("BOTTOM", 0, 17);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
 		priceElement:SetText(self.productInfo.price);

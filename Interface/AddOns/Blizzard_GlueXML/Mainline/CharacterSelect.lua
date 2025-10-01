@@ -1222,6 +1222,9 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI(contextKey)
+	if not CharacterSelectUtil.IsStoreAvailable() then
+		return;
+	end
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();

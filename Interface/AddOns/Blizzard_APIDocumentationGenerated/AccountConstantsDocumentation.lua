@@ -5,9 +5,9 @@ local AccountConstants =
 		{
 			Name = "AccountData",
 			Type = "Enumeration",
-			NumValues = 19,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 18,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "Config", Type = "AccountData", EnumValue = 0 },
@@ -29,6 +29,7 @@ local AccountConstants =
 				{ Name = "CharacterListOrder", Type = "AccountData", EnumValue = 16 },
 				{ Name = "CooldownManager", Type = "AccountData", EnumValue = 17 },
 				{ Name = "CooldownManager2", Type = "AccountData", EnumValue = 18 },
+				{ Name = "Shop2PendingOrders", Type = "AccountData", EnumValue = 19 },
 			},
 		},
 		{

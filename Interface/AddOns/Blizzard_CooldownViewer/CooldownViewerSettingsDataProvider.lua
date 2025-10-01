@@ -90,7 +90,7 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 				-- it is allowed to overwrite whatever is returned from the game at this point...
 
 				-- Store defaults so that we know what to avoid saving
-				cooldownDefaultsByID[cooldownID] = { category = cooldownCategory, };
+				cooldownDefaultsByID[cooldownID] = { category = info.category, };
 
 				cooldownInfoByID[cooldownID] = info;
 				table.insert(defaultOrderedCooldownIDs, cooldownID);
@@ -104,7 +104,7 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 	local activeLayoutMatchesCurrentSpec = (activeLayout and currentTag) and (layoutManager:GetSpecTagForLayout(activeLayout) == currentTag);
 	local persistedLayoutOrderedCooldownIDs = activeLayoutMatchesCurrentSpec and layoutManager:ReadCooldownOrderFromLayout(activeLayout);
 	local layoutOrderedCooldownIDs = persistedLayoutOrderedCooldownIDs and CopyTable(persistedLayoutOrderedCooldownIDs);
-	
+
 	if layoutOrderedCooldownIDs then
 		-- Ensure there's nothing in saved data that's not in static data (don't save things that cannot exist)
 		local invertedDefaultIDs = tInvert(defaultOrderedCooldownIDs); -- NOTE: tInvert returns a copy, it doesn't modify the original.

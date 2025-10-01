@@ -266,8 +266,8 @@ function CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm)
 		local _, raceFilename = UnitRace("player");
 		playerRaceNameTag = raceFilename;
 		playerGender = UnitSex("player");
-		playerGender = (playerGender == 2) and "male" or "female";
 	end
+	playerGender = (playerGender == 2) and "male" or "female";
 
 	if not playerRaceNameTag or not playerGender then
 		return playerRaceNameTag;

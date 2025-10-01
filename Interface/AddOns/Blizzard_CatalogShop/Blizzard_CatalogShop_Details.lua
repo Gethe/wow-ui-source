@@ -133,7 +133,7 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 	else
 		local headerData = {
 			Name = self.productInfo.name,
-			Type = self.displayInfo.productType,
+			Type = CatalogShopUtil.GetTypeText(productInfo),
 			Description = desc,
 			showLegal = true,
 		};

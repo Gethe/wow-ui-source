@@ -1572,6 +1572,20 @@ function ToggleQuickJoinPanel()
 	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
 end
 
+function ToggleIgnorePanel()
+	-- The ignore window is a child frame of the FriendsFrame so we either want to show them both or hide them both
+	local alreadyShowingFriendsFrame = FriendsFrame:IsShown();
+	if alreadyShowingFriendsFrame and not FriendsFrame.IgnoreListWindow:IsShown() then
+		-- If we're already showing the friends frame we just need to show the ignore list
+		FriendsFrame.IgnoreListWindow:Show();
+		return;
+	end
+
+	-- Otherwise show them both or hide them both
+	SetUIPanelShown(FriendsFrame, not alreadyShowingFriendsFrame);
+	FriendsFrame.IgnoreListWindow:SetShown(FriendsFrame:IsShown());
+end
+
 function WhoFrame_GetDefaultWhoCommand()
 	local level = UnitLevel("player");
 	local minLevel = level-3;

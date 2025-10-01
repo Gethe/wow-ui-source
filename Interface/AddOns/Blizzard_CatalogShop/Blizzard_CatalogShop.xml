@@ -17,7 +17,11 @@
 		</Anchors>
 		
 		<Frames>
-			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" setAllPoints="true" >
+			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1" >						
 						<Texture parentKey="Background_1" atlas="shop-bg-map-blue" setAllPoints="true" />
@@ -81,23 +85,13 @@
 					<Anchor point="TOPLEFT" x="26" y="-64"/>
 					<Anchor point="BOTTOMLEFT" x="26" y="0"/>
 				</Anchors>
-				<Frames>
-					<Frame name="RaceChoiceDialog" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="ResizeLayoutFrame, DialogPopupTemplate" mixin="CatalogShopRaceChoiceMixin" enableMouse="true">
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-							<OnShow method="OnShow"/>
-							<OnHide method="OnHide"/>
-							<OnEvent method="OnEvent"/>
-						</Scripts>
-					</Frame>
-				</Frames>
 			</Frame>
 
 			<Frame parentKey="ModelSceneContainerFrame" mixin="CatalogShopModelSceneContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOMLEFT" x="550" y="0"/>
-					<Anchor point="BOTTOMLEFT" x="550" y="0" />
-					<Anchor point="RIGHT" x="0" y="0" />
+					<Anchor point="BOTTOMLEFT" x="550" y="2" />
+					<Anchor point="RIGHT" x="-1" y="2" />
 				</Anchors>
 				<Frames>
 					<CheckButton parentKey="AlternateFormButton" inherits="RingedMaskedButtonTemplate" mixin="CatalogShopAlteredFormButtonMixin"  frameLevel="1000">
@@ -151,7 +145,11 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="ForegroundContainer" hidden="true" frameLevel="300" setAllPoints="true" >
+			<Frame parentKey="ForegroundContainer" hidden="true" frameLevel="300" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY" >						
 						<Texture parentKey="Foreground" setAllPoints="true" />
@@ -460,6 +458,13 @@
 										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 									</Anchors>
 								</FontString>
+								<FontString parentKey="PendingPurchasesText" inherits="SystemFont_Small2" wordwrap="true" text="CATALOG_SHOP_PENDING_PURCHASES" justifyH="CENTER" justifyV="MIDDLE" >
+									<Color color="RED_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.PurchaseButton" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>
@@ -493,10 +498,8 @@
 
 			<Frame parentKey="CatalogShopLoadingScreenFrame" inherits="CatalogShopLoadingScreenTemplate" hidden="true" frameLevel="399">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-23"/>
-					<Anchor point="LEFT" x="0" y="0"/>
-					<Anchor point="RIGHT" x="0" y="0"/>
-					<Anchor point="BOTTOM" x="0" y="0"/>
+					<Anchor point="TOPLEFT" x="0" y="-23"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 				</Anchors>
 			</Frame>
 

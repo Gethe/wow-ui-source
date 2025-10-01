@@ -247,12 +247,10 @@ function CatalogShopMixin:HideUnavailableScreen()
 end
 
 function CatalogShopMixin:ShowAfterCheckout()
-	self.ModelSceneContainerFrame:Show();
 	self:SetAlpha(1);
 end
 
 function CatalogShopMixin:HideForCheckout()
-	self.ModelSceneContainerFrame:Hide();
 	self:SetAlpha(0);
 end
 
@@ -378,9 +376,24 @@ function CatalogShopMixin:OnHide()
 		CatalogShopOutbound.UpdateDialogs();
 	end
 
+	local scrollBox = self.ProductContainerFrame.ProductsScrollBoxContainer.ScrollBox;
+	if scrollBox then
+		scrollBox:FlushDataProvider();
+		self.ProductContainerFrame:SetSelectedProductInfo(nil);
+	end
+
+	scrollBox = self.ProductDetailsContainerFrame.DetailsProductContainerFrame.ProductsScrollBoxContainer.ScrollBox;
+	if scrollBox then
+		scrollBox:FlushDataProvider();
+		self.ProductDetailsContainerFrame.DetailsProductContainerFrame:SetSelectedProductInfo(nil);
+	end
+	
 	C_CatalogShop.CloseCatalogShopInteraction();
 	SimpleCheckout:Hide();
+	self:HidePreviewFrames();
+	self.ProductDetailsContainerFrame:Hide();
 	self.ForegroundContainer:Hide();
+	self:SetCatalogShopLinkTag(nil);
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
@@ -434,10 +447,10 @@ function CatalogShopMixin:OnAttributeChanged(name, value)
 			self:SetAttribute("escaperesult", handled);
 		end
 	elseif ( name == "selectsubscription" ) then
-		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Subscriptions);
+		-- Subscriptions are now in the Game Upgrade Category
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.GameUpgrades);
 	elseif ( name == "selectgametime" ) then
-		-- legacy - game time is now subscriptions
-		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Subscriptions);
+		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.GameTime);
 	elseif ( name == "settokencategory" ) then
 		-- the WoW Token is in the Services Category
 		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
@@ -765,9 +778,6 @@ function CatalogShopProductDetailsFrameMixin:OnLoad()
 end
 
 function CatalogShopProductDetailsFrameMixin:SetDetailsFrameProductInfo(productInfo)
-	if productInfo == self:GetDetailsFrameProductInfo() then
-		return;
-	end
 	self.currentProductInfo = productInfo;
 	self:UpdateState();
 end
@@ -812,14 +822,18 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 
 	local isTokenOnGlues = (C_Glue.IsOnGlueScreen() and displayInfo.productType == CatalogShopConstants.ProductType.Token);
 	local isPurchasable = (not isTokenOnGlues and not selectedProductInfo.isFullyOwned);
+	local shouldShowPendingPurchasesText = isPurchasable and selectedProductInfo.hasPendingOrders;
 
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
 
-	-- Adjust for the text field explaining you need to be logged in to buy a token
+	-- Adjust for text fields
 	self.ButtonContainer.NoPriceInGlues:SetShown(isTokenOnGlues);
+	self.ButtonContainer.PendingPurchasesText:SetShown(shouldShowPendingPurchasesText);
 	if isTokenOnGlues then
 		self.ButtonContainer:SetSize(320, 80);
+	elseif shouldShowPendingPurchasesText then
+		self.ButtonContainer:SetSize(320, 60);
 	else
 		self.ButtonContainer:SetSize(320, 50);
 	end
