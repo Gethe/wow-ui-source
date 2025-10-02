@@ -1,7 +1,9 @@
 CHARACTER_FACING_INCREMENT = 2;
 NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
-PANDAREN_RACE_ID = 13;
+PANDAREN_RACE_ID = 24;
+PANDAREN_ALLIANCE_RACE_ID = 25;
+PANDAREN_HORDE_RACE_ID = 26;
 
 FACTION_BACKDROP_COLOR_TABLE = {
 	Alliance = {
@@ -61,6 +63,15 @@ function CharacterCreateEnumerateRaces()
 			if (currentFaction ~= raceData.factionInternalName and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
 				disable = false;
 			end
+
+			if raceData.raceID == PANDAREN_RACE_ID then
+				if currentFaction == "Alliance" then
+					raceData.raceID = PANDAREN_HORDE_RACE_ID;
+				elseif currentFaction == "Horde" then
+					raceData.raceID = PANDAREN_ALLIANCE_RACE_ID;
+				end
+			end
+
 		elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 			local _, currentFaction = C_PaidServices.GetCurrentFaction();
 			if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then

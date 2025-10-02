@@ -1401,7 +1401,7 @@ function GetBindingFromClick(input)
 		fullInput = fullInput..input;
 	end
 
-	return GetBindingByKey(fullInput);
+	return C_KeyBindings.GetBindingByKey(fullInput);
 end
 
 
