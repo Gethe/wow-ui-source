@@ -2306,9 +2306,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
 		local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
 		local queueTime = Enum.VasQueueStatus.UnderAnHour;
-		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+		if (VASServiceType == Enum.VasServiceType.CharacterTransfer and transfer) then
 			queueTime = transfer;
-		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
+		elseif (VASServiceType == Enum.VasServiceType.FactionChange and factionTransfer) then
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
@@ -3956,6 +3956,11 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 
 	if (not characters[SelectedCharacter]) then
+		-- This should not happen
+		return;
+	end
+
+	if (not selectedEntryID) then
 		-- This should not happen
 		return;
 	end
