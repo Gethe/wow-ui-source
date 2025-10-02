@@ -18,6 +18,7 @@ local CraftingOrderUI =
 		{
 			Name = "CalculateCraftingOrderPostingFee",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +35,7 @@ local CraftingOrderUI =
 		{
 			Name = "CanOrderSkillAbility",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +50,7 @@ local CraftingOrderUI =
 		{
 			Name = "CancelOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -57,6 +60,8 @@ local CraftingOrderUI =
 		{
 			Name = "ClaimOrder",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +80,7 @@ local CraftingOrderUI =
 		{
 			Name = "FulfillOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,6 +137,7 @@ local CraftingOrderUI =
 		{
 			Name = "GetCustomerOptions",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +188,7 @@ local CraftingOrderUI =
 		{
 			Name = "GetOrderClaimInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +221,7 @@ local CraftingOrderUI =
 		{
 			Name = "IsCustomerOptionFavorited",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,6 +236,7 @@ local CraftingOrderUI =
 		{
 			Name = "ListMyOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -244,6 +254,7 @@ local CraftingOrderUI =
 		{
 			Name = "OrderCanBeRecrafted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -262,6 +273,8 @@ local CraftingOrderUI =
 		{
 			Name = "PlaceNewOrder",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,6 +284,7 @@ local CraftingOrderUI =
 		{
 			Name = "RejectOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -282,6 +296,7 @@ local CraftingOrderUI =
 		{
 			Name = "ReleaseOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -292,6 +307,7 @@ local CraftingOrderUI =
 		{
 			Name = "RequestCrafterOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -301,6 +317,7 @@ local CraftingOrderUI =
 		{
 			Name = "RequestCustomerOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -310,6 +327,7 @@ local CraftingOrderUI =
 		{
 			Name = "SetCustomerOptionFavorited",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -329,6 +347,7 @@ local CraftingOrderUI =
 		{
 			Name = "SkillLineHasOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HouseEditorBasicDecorModeTemplate" mixin="HouseEditorBasicDecorModeMixin" inherits="BaseHouseEditorModeTemplate" enableKeyboard="true" virtual="true">
+		<Frames>
+			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
+			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+				<Frames>
+					<Frame parentKey="PlaceInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_PLACE_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_DELETEDECOR"/>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="newplayertutorial-icon-mouse-middlebutton" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
+							<KeyValue key="layoutIndex" value="6" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="SubButtonBar" inherits="HouseEditorSubmodesBarTemplate">
+				<KeyValues>
+					<KeyValue key="spacing" value="-12" type="number"/>
+					<KeyValue key="bottomPadding" value="0" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.$parent.ModeBar.BasicDecorModeButton" x="0" y="18"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="SnapButton" mixin="HouseEditorSnapButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+
+							<KeyValue key="iconDefault" type="string" value="decor-ability-snap-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-snap-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-snap-pressed"/>
+
+							<KeyValue key="enterTooltip" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_ACTIVATE" type="global"/>
+							<KeyValue key="enterTooltipKeybind" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_ACTIVATE_FMT" type="global"/>
+							<KeyValue key="exitTooltip" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_DEACTIVATE" type="global"/>
+							<KeyValue key="exitTooltipKeybind" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_DEACTIVATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORSNAPMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="snap"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="NudgeButton" mixin="HouseEditorNudgeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							
+							<KeyValue key="iconDefault" type="string" value="decor-ability-freeplacement-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-freeplacement-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-freeplacement-pressed"/>
+
+							<KeyValue key="enterTooltip" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_ACTIVATE" type="global"/>
+							<KeyValue key="enterTooltipKeybind" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_ACTIVATE_FMT" type="global"/>
+							<KeyValue key="exitTooltip" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_DEACTIVATE" type="global"/>
+							<KeyValue key="exitTooltipKeybind" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_DEACTIVATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORNUDGEMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="freeplacement"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button parentKey="DecorMoveOverlay" frameStrata="HIGH" registerForClicks="LeftButtonUp" passThroughButtons="RightButton" propagateMouseInput="Motion" setAllPoints="true" hidden="true">
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
+			<OnHide method="OnHide" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

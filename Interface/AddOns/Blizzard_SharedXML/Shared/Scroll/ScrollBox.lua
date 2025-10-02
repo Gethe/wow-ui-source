@@ -1,4 +1,3 @@
-
 -- Common event definitions as a work-around for derivation problems with CallbackRegistryMixin.
 BaseScrollBoxEvents =
 {
@@ -25,6 +24,7 @@ ScrollBoxConstants =
 	ScrollEnd = (1 - MathUtil.Epsilon),
 	StopIteration = true,
 	ContinueIteration = false,
+	FillExtent = 0,
 };
 
 -- ScrollBoxBaseMixin includes CallbackRegistryMixin but the derived mixins are responsible
@@ -96,15 +96,17 @@ function ScrollBoxBaseMixin:GetScrollTarget()
 end
 
 function ScrollBoxBaseMixin:OnScrollTargetSizeChanged(width, height)
+	-- Biaxal layouts require a full update because any size change may
+	-- require the displayed index range to be corrected.
 	local view = self:GetView();
-	if view and view:RequiresFullUpdateOnScrollTargetSizeChange() then
+	if view and view:HasBiaxalLayout() then
 		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	end
 end
 
 function ScrollBoxBaseMixin:OnSizeChanged(width, height)
 	local view = self:GetView();
-	if view and view:RequiresFullUpdateOnScrollTargetSizeChange() then
+	if view and view:HasBiaxalLayout() then
 		self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 	else
 		local forceLayout = true;
@@ -138,21 +140,40 @@ function ScrollBoxBaseMixin:IsUpdateLocked()
 end
 
 function ScrollBoxBaseMixin:FullUpdateInternal()
-	-- The OnSizeChanged script is removed during a full update. This is to address the problem where calling 
-	-- GetDerivedScrollOffset results in a call to GetSize() that triggers this script and executes a separate update.
-	-- That update will cause erroneous executions including accessing element extents that have not yet been calculated
-	-- aside from the obvious problem of running an update inside an update. The only update we expect is below after the
-	-- derived extents have been recalculated.
+	--[[
+	Multiple measurement APIs on the ScrollBox frame can cause OnSizeChanged to be dispatched, creating a circular update
+	loop when called from within FullUpdateInternal() or Update(). Update() has a lock mechanism to prevent reentrance, however
+	this function removes the OnSizeChanged script complete until all updates are complete.
+	]]--
+
 	local oldOnSizeChanged = self:GetScript("OnSizeChanged");
 	self:SetScript("OnSizeChanged", nil);
 
+	--[[
+	Obtain the current scroll offset before any adjustments are made to the total extent in the call
+	to RecalculateDerivedExtent() below. This value is used after the new extents are calculated to
+	adjust the scroll position so that the contents do not appear displaced as result of
+	additions or removals in the data provider.
+	]]--
 	local oldScrollOffset = self:GetDerivedScrollOffset();
 
-	-- Note to do some optimizations so that recalculations of element extents is only
-	-- done when either data provider size changes or an element's size changes, and to avoid
-	-- recalculating every extent if we can just recalculate a single element.
+	--[[
+	When identical element extents are not used, this will require iterating through every element
+	in the data provider and calling a calculation function to obtain the total extent. While it would
+	be more efficient to correct the extent based on the elements added or removed from the data provider,
+	it is a difficult optimization to implement because ScrollBox utilizes multiple different data
+	providers with different data structures.
+
+	An optimization to start with might be to have each data provider implement a counter that is updated
+	on any insertion, replacement, or removal. While this wouldn't provide full context about the change,
+	it would serve as an indicator that the data provider was unmodified since the last update, making an
+	extent calculation unnecessary. Note however that this would be a view dependent optimization as Biaxal
+	views can have their extents changed as a result of width changes, regardless of the data provider
+	remaining unchanged.
+	]]--
 	self:RecalculateDerivedExtent();
 
+	-- After the extent is calculated, correct the scroll position to undo the displacement.
 	local scrollRange = self:GetDerivedScrollRange();
 	if scrollRange > 0 then
 		local deltaScrollOffset = (self:GetDerivedScrollOffset() - oldScrollOffset);
@@ -175,11 +196,69 @@ end
 function ScrollBoxBaseMixin:Layout()
 	local view = self:GetView();
 	if view then
-		-- Minimum extent of 1 to preserve a valid rect so that so that children of RLF frames 
-		-- can be successfully laid out without an invalid rect error.
-		local extent = view:Layout();
-		self:SetFrameExtent(self:GetScrollTarget(), math.max(1, extent));
+		view:Layout(self);
+		
+		-- No longer bothering calculating the exact extent since there wasn't a
+		-- useful use case. All that is necessary is for the scroll extent to be non-zero
+		-- so that any children have valid rects for measurement purposes.
+		local nonZeroExtent = 1;
+		self:SetFrameExtent(self:GetScrollTarget(), nonZeroExtent);
 	end
+end
+
+function ScrollBoxBaseMixin:SetEdgeFadeLength(length)
+	-- Each length is the size of the alpha gradient to use when more data is available to be scrolled into view
+	-- Create the base vector assuming that the orientation is vertical and swap if not.
+	self.edgeFade = CreateVector2D(0, math.abs(length));
+	
+	if self:IsHorizontal() then
+		local y, x = self.edgeFade:GetXY(); -- swapped!!
+		self.edgeFade:SetXY(x, y); -- do the swap.
+	end
+end
+
+function ScrollBoxBaseMixin:HasEdgeFade()
+	return self.edgeFade ~= nil;
+end
+
+function ScrollBoxBaseMixin:ApplyEdgeFade(...)
+	if self:HasEdgeFade() then
+		for i = 1, select("#", ...) do
+			local strength = Saturate(select(i, ...));
+			self:SetAlphaGradient(i - 1, self.edgeFade:Clone():ScaleBy(strength));
+		end
+	end
+end
+
+function ScrollBoxBaseMixin:CalculateEdgeFade()
+	local firstStrength, secondStrength = 1, 1;
+	local offset = self:GetScrollPercentage();
+	if offset ~= nil then
+		if offset < 0.15 then
+			firstStrength = ClampedPercentageBetween(offset, 0, 0.15);
+		end
+
+		if offset > 0.85 then
+			secondStrength = 1 - ClampedPercentageBetween(offset, 0.85, 1);
+		end
+
+		return firstStrength, secondStrength;
+	end
+
+	return 0, 0;
+end
+
+function ScrollBoxBaseMixin:ClearEdgeFade()
+	self:ClearAlphaGradient();
+	self.edgeFade = nil;
+end
+
+function ScrollBoxBaseMixin:ShouldUseShadowsForEdgeFade()
+	return self.alwaysUseShadowsForEdgeFade or not self:HasEdgeFade();
+end
+
+function ScrollBoxBaseMixin:SetUseShadowsForEdgeFade(useShadows)
+	self.alwaysUseShadowsForEdgeFade = useShadows;
 end
 
 function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
@@ -196,11 +275,15 @@ function ScrollBoxBaseMixin:SetScrollTargetOffset(offset)
 
 		local scrollPercentage = self:GetScrollPercentage();
 		self:TriggerEvent(BaseScrollBoxEvents.OnScroll, scrollPercentage, self:GetVisibleExtentPercentage(), self:GetPanExtentPercentage());
-		
-		local hasScrollableExtent = self:HasScrollableExtent();
-		local showLower = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
-		local showUpper = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
-		self:SetShadowsShown(showUpper, showLower);
+
+		if self:ShouldUseShadowsForEdgeFade() then
+			local hasScrollableExtent = self:HasScrollableExtent();
+			local showUpper = hasScrollableExtent and (scrollPercentage > ScrollBoxConstants.ScrollBegin);
+			local showLower = hasScrollableExtent and self:HasScrollableExtent() and (scrollPercentage < ScrollBoxConstants.ScrollEnd);
+			self:SetShadowsShown(showLower, showUpper);
+		end
+
+		self:ApplyEdgeFade(self:CalculateEdgeFade());
 	end
 end
 
@@ -243,7 +326,7 @@ function ScrollBoxBaseMixin:GetVisibleExtentPercentage()
 end
 
 function ScrollBoxBaseMixin:GetPanExtent()
-	return self:GetView():GetPanExtent();
+	return self:GetView():GetPanExtent(self);
 end
 
 function ScrollBoxBaseMixin:SetPanExtent(panExtent)
@@ -255,7 +338,7 @@ function ScrollBoxBaseMixin:GetExtent()
 end
 
 function ScrollBoxBaseMixin:GetVisibleExtent()
-	return self:GetFrameExtent(self);
+	return Round(self:GetFrameExtent(self));
 end
 
 function ScrollBoxBaseMixin:GetFrames()
@@ -370,7 +453,7 @@ end
 function ScrollBoxBaseMixin:GetDerivedExtent()
 	local view = self:GetView();
 	if view then
-		return view:GetExtent(self);
+		return view:GetExtent();
 	end
 	return 0;
 end
@@ -417,6 +500,10 @@ function ScrollBoxBaseMixin:GetBottomPadding()
 		return padding:GetBottom();
 	end
 	return 0;
+end
+
+function ScrollBoxBaseMixin:GetExtentPadding()
+	return self:GetUpperPadding() + self:GetLowerPadding();
 end
 
 function ScrollBoxBaseMixin:GetUpperPadding()
@@ -477,6 +564,7 @@ ScrollBoxListMixin:GenerateCallbackEvents(
 		"OnReleasedFrame",
 		"OnDataRangeChanged",
 		"OnUpdate",
+		"OnDataProviderReassigned",
 	}
 );
 
@@ -498,6 +586,7 @@ function ScrollBoxListMixin:SetView(view)
 	ScrollBoxBaseMixin.SetView(self, view);
 
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataChanged, self.OnViewDataChanged, self);
+	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnDataProviderReassigned, self.OnViewDataProviderReassigned, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnAcquiredFrame, self.OnViewAcquiredFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnInitializedFrame, self.OnViewInitializedFrame, self);
 	view:RegisterCallback(ScrollBoxListViewMixin.Event.OnReleasedFrame, self.OnViewReleasedFrame, self);
@@ -511,7 +600,7 @@ function ScrollBoxListMixin:Flush()
 end
 
 function ScrollBoxListMixin:ForEachFrame(func)
-	self:GetView():ForEachFrame(func);
+	return self:GetView():ForEachFrame(func);
 end
 
 function ScrollBoxListMixin:ReverseForEachFrame(func)
@@ -534,7 +623,7 @@ function ScrollBoxListMixin:ReinitializeFrames()
 	self:GetView():ReinitializeFrames();
 end
 
--- Considering doing a conversion in 11.0 to rename EntireRange to become Enumerate, 
+-- Considering doing a conversion to rename EntireRange to become Enumerate, 
 -- and Enumerate to be renamed to EnumerateRange(min, max). It is a bit counter-intuitive
 -- for Enumerate to do anything other than iterate the entire range, and additionally
 -- confusing that this newly added EntireRange function does exactly that.
@@ -555,7 +644,7 @@ function ScrollBoxListMixin:ReverseEnumerateDataProvider(indexBegin, indexEnd)
 end
 
 function ScrollBoxListMixin:FindElementData(index)
-	return self:GetView():Find(index);
+	return self:GetView():FindElementData(index);
 end
 
 function ScrollBoxListMixin:FindElementDataByPredicate(predicate)
@@ -572,16 +661,6 @@ end
 
 function ScrollBoxListMixin:FindByPredicate(predicate)
 	return self:GetView():FindByPredicate(predicate);
-end
-
--- Deprecated, use FindElementData
-function ScrollBoxListMixin:Find(index)
-	return self:FindElementData(index);
-end
-
--- Deprecated, use FindElementDataIndex
-function ScrollBoxListMixin:FindIndex(elementData)
-	return self:FindElementDataIndex(elementData);
 end
 
 function ScrollBoxListMixin:FindFrameElementDataIndex(frame)
@@ -625,7 +704,8 @@ function ScrollBoxListMixin:GetElementExtent(dataIndex)
 end
 
 function ScrollBoxListMixin:GetExtentUntil(dataIndex)
-	return self:GetView():GetExtentUntil(self, dataIndex);
+	local extent = self:GetView():GetExtentUntil(self, dataIndex);
+	return extent + self:GetUpperPadding();
 end
 
 function ScrollBoxListMixin:SetDataProvider(dataProvider, retainScrollPosition)
@@ -651,6 +731,10 @@ end
 
 function ScrollBoxListMixin:OnViewDataChanged()
 	self:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+end
+
+function ScrollBoxListMixin:OnViewDataProviderReassigned()
+	self:TriggerEvent(ScrollBoxListMixin.Event.OnDataProviderReassigned);
 end
 
 function ScrollBoxListMixin:Rebuild(retainScrollPosition)
@@ -702,10 +786,12 @@ function ScrollBoxListMixin:Update(forceLayout)
 	local changed = view:ValidateDataRange(self);
 	local requiresLayout = changed or forceLayout;
 	if requiresLayout then
-		self:Layout();
+		self:Layout(self);
 	end
 
-	self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));
+	local derivedScrollOffset = self:GetDerivedScrollOffset();
+	local dataScrollOffset = view:GetDataScrollOffset(self);
+	self:SetScrollTargetOffset(derivedScrollOffset - dataScrollOffset);
 	self:SetPanExtentPercentage(self:CalculatePanExtentPercentage());
 	
 	if changed then
@@ -746,7 +832,7 @@ function ScrollBoxListMixin:ScrollToElementDataIndex(dataIndex, alignment, offse
 		return;
 	end
 
-	local elementData = self:Find(dataIndex);
+	local elementData = self:FindElementData(dataIndex);
 	if not elementData then
 		return nil;
 	end
@@ -856,7 +942,7 @@ function ScrollBoxMixin:Update(forceLayout)
 	self:SetUpdateLocked(true);
 	
 	if forceLayout then
-		self:Layout();
+		self:Layout(self);
 	end
 
 	self:SetScrollTargetOffset(self:GetDerivedScrollOffset() - view:GetDataScrollOffset(self));

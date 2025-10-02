@@ -25,7 +25,6 @@ function GuildBankFrameMixin:OnLoad()
 	self:RegisterEvent("GUILDTABARD_UPDATE");
 	self:RegisterEvent("GUILDBANK_UPDATE_TEXT");
 	self:RegisterEvent("GUILDBANK_TEXT_CHANGED");
-	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
 	-- Set the button id's
 	local index, column, button;
@@ -84,16 +83,16 @@ function GuildBankFrameMixin:OnEvent(event, ...)
 		self:UpdateTabard();
 	elseif ( event == "GUILDBANK_UPDATE_MONEY" or event == "GUILDBANK_UPDATE_WITHDRAWMONEY" ) then
 		self:UpdateWithdrawMoney();
+
+		if ( self.BuyInfo:IsShown() ) then
+			self:UpdateTabBuyingInfo();
+		end
 	elseif ( event == "GUILDBANK_UPDATE_TEXT" ) then
 		self:UpdateTabInfo(...);
 	elseif ( event == "GUILDBANK_TEXT_CHANGED" ) then
 		local arg1 = ...;
 		if ( GetCurrentGuildBankTab() == tonumber(arg1) ) then
 			QueryGuildBankText(arg1);
-		end
-	elseif ( event == "PLAYER_MONEY" ) then
-		if ( self.BuyInfo:IsShown() ) then
-			self:UpdateTabBuyingInfo();
 		end
 	elseif ( event == "INVENTORY_SEARCH_UPDATE" ) then	
 		self:UpdateFiltered();
@@ -257,7 +256,7 @@ function GuildBankFrameMixin:UpdateTabBuyingInfo()
 		-- You've bought all the tabs
 		self.BankTabs[1]:OnClick("LeftButton");
 	else
-		if ( GetMoney() >= tabCost or (GetMoney() + GetGuildBankMoney()) >= tabCost ) then
+		if GetGuildBankMoney() >= tabCost then
 			SetMoneyFrameColor("GuildBankFrameTabCostMoneyFrame", "white");
 			self.BuyInfo.PurchaseButton:Enable();
 		else
@@ -779,36 +778,43 @@ function GuildBankFrame_UpdateLog()
 end
 
 function GuildBankFrame_UpdateMoneyLog()
-	local numTransactions = GetNumGuildBankMoneyTransactions();
-	local type, name, amount, year, month, day, hour;
-	local msg;
-	local money;
 	GuildBankMessageFrame:Clear();
-	for i=1, numTransactions, 1 do
-		type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
-		if ( not name ) then
-			name = UNKNOWN;
-		end
+
+	for i = 1, GetNumGuildBankMoneyTransactions() do
+		local type, name, amount, year, month, day, hour = GetGuildBankMoneyTransaction(i);
+
+		amount = amount or 0;
+		name = name or UNKNOWN;
+
 		name = NORMAL_FONT_COLOR_CODE..name..FONT_COLOR_CODE_CLOSE;
-		money = GetDenominationsFromCopper(amount);
+		local money = GetDenominationsFromCopper(amount);
+
+		local msg;
 		if ( type == "deposit" ) then
-			msg = format(GUILDBANK_DEPOSIT_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_DEPOSIT_MONEY_FORMAT:format(name, money);
 		elseif ( type == "withdraw" ) then
-			msg = format(GUILDBANK_WITHDRAW_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_WITHDRAW_MONEY_FORMAT:format(name, money);
 		elseif ( type == "repair" ) then
-			msg = format(GUILDBANK_REPAIR_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_REPAIR_MONEY_FORMAT:format(name, money);
 		elseif ( type == "withdrawForTab" ) then
-			msg = format(GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT, name, money);
+			msg = GUILDBANK_WITHDRAWFORTAB_MONEY_FORMAT:format(name, money);
 		elseif ( type == "buyTab" ) then
 			if ( amount > 0 ) then
-				msg = format(GUILDBANK_BUYTAB_MONEY_FORMAT, name, money);
+				msg = GUILDBANK_BUYTAB_MONEY_FORMAT:format(name, money);
 			else
-				msg = format(GUILDBANK_UNLOCKTAB_FORMAT, name);
+				msg = GUILDBANK_UNLOCKTAB_FORMAT:format(name);
 			end
 		elseif ( type == "depositSummary" ) then
-			msg = format(GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT, money);
+			msg = GUILDBANK_AWARD_MONEY_SUMMARY_FORMAT:format(money);
+		elseif ( type == "buyRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_PURCHASE:format(name, money);
+		elseif ( type == "refundRename" ) then
+			msg = GUILDBANK_GUILD_RENAME_REFUND:format(name, money);
 		end
-		GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
+
+		if msg then
+			GuildBankMessageFrame:AddMessage(msg..GUILD_BANK_LOG_TIME:format(RecentTimeDate(year, month, day, hour)) );
+		end
 	end
 end
 

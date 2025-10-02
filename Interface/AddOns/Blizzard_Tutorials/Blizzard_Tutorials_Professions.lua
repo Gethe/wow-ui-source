@@ -107,7 +107,7 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 		GetInventoryItemsForSlot(slotNumber, potentialGear);
 
 		for packedLocation, itemLink in pairs(potentialGear) do
-			local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
+			local locationData = EquipmentManager_GetLocationData(packedLocation);
 			local invType = select(9, C_Item.GetItemInfo(itemLink));
 			local isTool = (invType == "INVTYPE_PROFESSION_TOOL");
 			local hasBeenShown;
@@ -116,12 +116,12 @@ function Class_ProfessionGearCheckingService:GetProfessionGear()
 			else
 				hasBeenShown = AccessoryTutorialShown();
 			end
-			if player and bags and (not hasBeenShown) then
+			if locationData.isPlayer and locationData.isBags and (not hasBeenShown) then
 				local itemLocation = ItemLocation:CreateEmpty();
-				itemLocation:SetBagAndSlot(bag, slot);
+				itemLocation:SetBagAndSlot(locationData.bag, locationData.slot);
 				local itemID = C_Item.GetItemInfoInstant(itemLink);
 				if not C_ArtifactUI.IsArtifactItem(itemLocation) and C_PlayerInfo.CanUseItem(itemID) then
-					table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, bag, slot, isTool));
+					table.insert(professionGear, self:STRUCT_ItemContainer(itemLink, slotNumber, locationData.bag, locationData.slot, isTool));
 				end
 			end
 		end

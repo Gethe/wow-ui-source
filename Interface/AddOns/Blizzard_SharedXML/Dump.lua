@@ -63,18 +63,32 @@ local string_sub = string.sub;
 local string_gsub = string.gsub;
 local string_format = string.format;
 local string_match = string.match;
+local table_insert = table.insert;
+local secureexecuterange = secureexecuterange;
 
-local function GetScrollingMessageFrame()
-	return DEFAULT_CHAT_FRAME or DeveloperConsole.MessageFrame;
+local messageHandlers = {};
+
+local function CallCallback(index, callback, msg)
+	callback(msg);
 end
 
 local function WriteMessage(msg)
-	GetScrollingMessageFrame():AddMessage(msg);
+	secureexecuterange(messageHandlers, CallCallback, msg);
+end
+
+local function DevTools_Write(self, msg)
+	WriteMessage(msg);
+end
+
+function DevTools_AddMessageHandler(callback)
+	table_insert(messageHandlers, callback);
 end
 
 local function prepSimple(val, context)
 	local valType = type(val);
-	if (valType == "nil")  then
+	if (not canaccessvalue(val)) then
+		return "(secret value)";
+	elseif (valType == "nil")  then
 		return "nil";
 	elseif (valType == "number") then
 		return val;
@@ -218,10 +232,6 @@ local function DevTools_Cache_Table(self, value, newName)
 	return name;
 end
 
-local function DevTools_Write(self, msg)
-	GetScrollingMessageFrame():AddMessage(msg);
-end
-
 local DevTools_DumpValue;
 
 local function DevTools_DumpTableContents(val, prefix, firstPrefix, context)
@@ -274,7 +284,10 @@ end
 function DevTools_DumpValue(val, prefix, firstPrefix, suffix, context)
 	local valType = type(val);
 
-	if (valType == "userdata") then
+	if (not canaccessvalue(val)) then
+		context:Write("(secret value)");
+		return;
+	elseif (valType == "userdata") then
 		local uName = context:GetUserdataName(val, 'value');
 		if (uName) then
 			context:Write(string_format(FORMATS.opaqueTypeValName,
@@ -298,6 +311,9 @@ function DevTools_DumpValue(val, prefix, firstPrefix, suffix, context)
 		context:Write(string_format(FORMATS.simpleValue,
 									firstPrefix,prepSimple(val, context),
 									suffix));
+		return;
+	elseif (not canaccesstable(val)) then
+		context:Write("(secret table)");
 		return;
 	end
 

@@ -142,6 +142,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,6 +152,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetMinMaxValues",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,6 +163,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetObeyStepOnDrag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -170,6 +173,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetOrientation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,6 +183,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetStepsPerPage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +193,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetThumbTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -197,6 +203,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetValue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,6 +214,7 @@ local SimpleSliderAPI =
 		{
 			Name = "SetValueStep",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

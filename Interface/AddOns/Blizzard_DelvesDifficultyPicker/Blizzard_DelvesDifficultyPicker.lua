@@ -22,6 +22,13 @@ local BOUNTIFUL_DELVE_WIDGET_TAG = "delveBountiful";
 -- If the last selected isn't available, we'll default to the highest unlocked tier.
 local LAST_TIER_SELECTED_CVAR = "lastSelectedDelvesTier";
 
+-- Stores the highest unlocked delve difficulty tier. Default is 1
+-- If this does not match the actual highest tier, we'll notify the player that they have new, higher tiers available
+local HIGHEST_TIER_UNLOCKED_CVAR = "highestUnlockedDelvesTier";
+
+local TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH = 110;
+local TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH = 130;
+
 local DelvesKeyState = EnumUtil.MakeEnum(
 	"None",
 	"Normal"
@@ -52,7 +59,7 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 		allowOtherPanels = 1,
 	};
 	RegisterUIPanel(self, panelAttributes);
-	self.Dropdown:SetWidth(130);
+	self.Dropdown:SetWidth(TIER_SELECT_DROPDOWN_MENU_BTN_WIDTH);
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
@@ -75,16 +82,65 @@ function DelvesDifficultyPickerFrameMixin:OnShow()
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", UIParent, "CENTER", 0, 110);
 	FrameUtil.RegisterFrameForEvents(self, DELVES_DIFFICULTY_PICKER_EVENTS);
-	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, self.TryShowHelpTip, self);
-	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, self.HideHelpTip, self);
-	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuOpen, function(dropdown)
+		self:HideHelpTip();
 
+		if dropdown.NewLabel:IsShown() then
+			dropdown.NewLabel:Hide();
+		end
+
+		if dropdown.menu.ScrollBox:HasScrollableExtent() then
+			local selectedOption = self:GetSelectedOption();
+			local index = selectedOption and selectedOption.orderIndex or 1;
+			dropdown.menu.ScrollBox:ScrollToElementDataIndex(index, ScrollBoxConstants.AlignBegin);
+		end
+	end, self.Dropdown);
+
+	self.Dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
+		self:TryShowHelpTip();
+		self.newTiers = {};
+	end);
+	
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self:SetInitialLevel();
 	self:CheckForActiveDelveAndUpdate();
 	self:TryShowHelpTip();
+	self:CheckForNewTierUnlocks();
 	self.partyTierEligibility = {};
 	if self.gossipOptions then
 		C_DelvesUI.RequestPartyEligibilityForDelveTiers(self.gossipOptions[1].gossipOptionID);
+	end
+end
+
+function DelvesDifficultyPickerFrameMixin:CheckForNewTierUnlocks()
+	-- Track new tiers, since you can unlock more than one at a time
+	-- The "NEW" label we show if *anything* new is unlocked, but inside the dropdown we want to show which tiers are new with pips
+	self.newTiers = {};
+
+	local options = self:GetOptions();
+	if options then
+		local oldHighestUnlockedTier = GetCVarNumberOrDefault(HIGHEST_TIER_UNLOCKED_CVAR);
+		local newHighestUnlockedTier = nil;
+		for tier, optionInfo in ipairs(options) do
+			local tierIsUnlocked = optionInfo.status == Enum.GossipOptionStatus.Available or optionInfo.status == Enum.GossipOptionStatus.AlreadyComplete;
+			local tierIsLocked = optionInfo.status == Enum.GossipOptionStatus.Unavailable or optionInfo.status == Enum.GossipOptionStatus.Locked;
+			-- Tier is unlocked and new, let the player know
+			if tierIsUnlocked and tier > oldHighestUnlockedTier then
+				self.newTiers[tier] = true;
+				self.Dropdown.NewLabel:Show();
+				newHighestUnlockedTier = tier;
+			-- Tier is locked, but old highest is higher somehow or doesn't exist - we should rollback or reset 
+			elseif tierIsLocked and oldHighestUnlockedTier >= tier then
+				newHighestUnlockedTier = tier -	1;
+				if newHighestUnlockedTier < 1 or not options[newHighestUnlockedTier] then 
+					newHighestUnlockedTier = 1;
+				end
+				break;
+			end
+		end
+		if newHighestUnlockedTier then
+			SetCVar(HIGHEST_TIER_UNLOCKED_CVAR, newHighestUnlockedTier);
+		end
 	end
 end
 
@@ -113,9 +169,18 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	if C_DelvesUI.HasActiveDelve() then
 		local activeDelveGossip = C_GossipInfo.GetActiveDelveGossip();
 
-		self:SetSelectedLevel(activeDelveGossip.orderIndex);
-		self:SetSelectedOption(activeDelveGossip);
-		self:UpdateWidgets(activeDelveGossip.gossipOptionID);
+		-- Prefer active delve gossip (from walk in party)
+		if activeDelveGossip and activeDelveGossip.orderIndex and activeDelveGossip.gossipOptionID then
+			self:SetSelectedLevel(activeDelveGossip.orderIndex);
+			self:SetSelectedOption(activeDelveGossip);
+			self:UpdateWidgets(activeDelveGossip.gossipOptionID);
+		elseif self.selectedOption and self.selectedOption.orderIndex and self.selectedOption.gossipOptionID then
+			-- If active delve gossip is empty, player probably entered and then left. Fall back on the last selected tier/gossip,
+			-- which should match the active delve gossip
+			self:SetSelectedLevel(self.selectedOption.orderIndex);
+			self:SetSelectedOption(self.selectedOption);
+			self:UpdateWidgets(self.selectedOption.gossipOptionID);
+		end
 		self.DelveRewardsContainerFrame:SetRewards();
 		self.Dropdown:Update();
 		self.Dropdown:SetEnabled(false);
@@ -129,6 +194,11 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 	self.Dropdown:SetupMenu(function(owner, rootDescription)
 		rootDescription:SetTag("MENU_DELVES_DIFFICULTY");
 
+		local buttonSize = 20;
+		local maxButtons = 7;
+		rootDescription:SetScrollMode(buttonSize * maxButtons);
+		rootDescription:SetMinimumWidth(TIER_SELECT_DROPDOWN_MENU_MIN_WIDTH);
+		
 		local options = DelvesDifficultyPickerFrame:GetOptions();
 		if not options then
 			return;
@@ -150,6 +220,17 @@ function DelvesDifficultyPickerFrameMixin:SetupDropdown()
 
 		local function SetupButton(option, isLocked)
 			local radio = rootDescription:CreateRadio(option.name, IsSelected, SetSelected, option);
+
+			-- Add the "new" tier pip for recently unlocked tiers
+			radio:AddInitializer(function(button, description, menu)
+				local optionUnlocked = option.status == Enum.GossipOptionStatus.Available or option.status == Enum.GossipOptionStatus.AlreadyComplete;
+				if optionUnlocked and self.newTiers and self.newTiers[option.orderIndex + 1] then
+					local texture = button:AttachTexture();
+					texture:SetSize(13, 13);
+					texture:SetPoint("LEFT", button.fontString, "RIGHT", 3, 0);
+					texture:SetAtlas("ui-hud-micromenu-communities-icon-notification");
+				end
+			end);
 
 			if isLocked then
 				radio:SetEnabled(false);
@@ -294,6 +375,11 @@ function DelvesDifficultyPickerFrameMixin:UpdateBountifulWidgetVisualization()
 			self.bountifulAnimFrame.FadeIn:Play();
 			self.bountifulAnimFrame.RaysTranslation:Play();
 		end
+
+		if self.bountifulAnimFrame then
+			self.bountifulAnimFrame:ClearAllPoints();
+			self.bountifulAnimFrame:SetPoint("CENTER", widgetFrame, "CENTER", 0, -3);
+		end
 	end
 end
 
@@ -398,6 +484,8 @@ end
 --[[ Rewards Container + Buttons ]]
 DelveRewardsContainerFrameMixin = {};
 
+local REWARDS_SCROLL_SPACING = 5;
+
 function DelveRewardsContainerFrameMixin:OnLoad()
 	local function RewardResetter(framePool, frame)
 		SetItemButtonTexture(frame, nil);
@@ -410,6 +498,31 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 	end
 
 	self.rewardPool = CreateFramePool("FRAME", self, "DelveRewardItemButtonTemplate", RewardResetter);
+
+	local function InitializeReward(button, rewardInfo)
+		SetItemButtonTexture(button, rewardInfo.texture);
+		SetItemButtonQuality(button, rewardInfo.quality);
+		button.Name:SetText(rewardInfo.name);
+
+		local colorData = ColorManager.GetColorDataForItemQuality(rewardInfo.quality);
+		if colorData then
+			button.Name:SetTextColor(colorData.color:GetRGB());
+		end
+
+		if rewardInfo.quantity and rewardInfo.quantity > 1 then
+			SetItemButtonCount(button, rewardInfo.quantity);
+		end
+
+		button.id = rewardInfo.id;
+		button.context = rewardInfo.context;
+		button:Show();
+	end
+
+	local defaultPad = 5;
+	local view = CreateScrollBoxListLinearView(defaultPad, defaultPad, defaultPad, defaultPad, REWARDS_SCROLL_SPACING);
+	view:SetElementInitializer("DelveRewardItemButtonTemplate", InitializeReward);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
 function DelveRewardsContainerFrameMixin:SetRewards()
@@ -436,10 +549,10 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 			if IsCurrencyContainer then 
 				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, quantity);
 				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true});
-			else 
+			else
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
 				table.insert(rewardInfo, {id = reward.id, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false});
-			end 
+			end
 		end
 	end
 
@@ -447,42 +560,31 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 		for  _, reward in ipairs(optionRewards) do
 			if	reward.rewardType == Enum.GossipOptionRewardType.Item then 
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, quality = quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
+				local contextQuality = reward.context and C_Item.GetDelvePreviewItemQuality(reward.id, reward.context) or nil;
+				table.insert(rewardInfo, {id = reward.id, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
 			end
 		end
 
 		if #rewardInfo > 0 then
-			local buttons = {};
+			local dataProvider = CreateDataProvider();
+
 			for i, reward in ipairs(rewardInfo) do
-				if i > MAX_NUM_REWARDS then 
-					break;
-				else
-					local button = self.rewardPool:Acquire();
-	
-					SetItemButtonTexture(button, reward.texture);
-					SetItemButtonQuality(button, reward.quality);
-					button.Name:SetText(reward.name);
-					button.Name:SetTextColor(ITEM_QUALITY_COLORS[reward.quality].color:GetRGB());
-	
-					if reward.quantity and reward.quantity > 1 then
-						SetItemButtonCount(button, reward.quantity);
-					end
-	
-					tinsert(buttons, button);
-					button.id = reward.id;
-					button.context = reward.context;
-					button:Show();
-				end
+				dataProvider:Insert(reward);
 			end
-	
-			local vertPadding = 5;
-			local buttonHeight = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate").height;
-			self:SetHeight(self.RewardText:GetHeight() + ((buttonHeight + vertPadding) * #rewardInfo));
-	
-			local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, 1, 0, vertPadding);
-			local anchor = CreateAnchor("TOP", self.RewardText, "BOTTOM", 20, -5);
-			AnchorUtil.GridLayout(buttons, anchor, layout);
-	
+
+			local buttonTemplateInfo = C_XMLUtil.GetTemplateInfo("DelveRewardItemButtonTemplate");
+			local buttonHeight = buttonTemplateInfo.height;
+			local numItems = math.min(#rewardInfo, MAX_NUM_REWARDS);
+			local newHeight = self.RewardText:GetHeight() + ((buttonHeight + REWARDS_SCROLL_SPACING) * numItems);
+			self:SetHeight(newHeight);
+			self.ScrollBox:SetHeight(newHeight - REWARDS_SCROLL_SPACING);
+
+			local scrollWidthPadding = 4;
+			self.ScrollBox:SetWidth(buttonTemplateInfo.width + scrollWidthPadding);
+
+			self.ScrollBox:SetDataProvider(dataProvider);
+			self.ScrollBar:SetShown((#rewardInfo) > MAX_NUM_REWARDS);
+
 			self:Show();
 		end
 	end);
@@ -511,7 +613,7 @@ function DelveRewardsButtonMixin:OnEnter()
 end
 
 function DelveRewardsButtonMixin:OnUpdate()
-	if TooltipUtil.ShouldDoItemComparison() then
+	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip);

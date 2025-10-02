@@ -1,7 +1,20 @@
 
+local LIST_SCROLL_BOX_DEFAULT_X_OFFSET = -32;
+local LIST_SCROLL_BOX_DEFAULT_Y_OFFSET = 83;
+
 CharacterSelectListMixin = {};
 
 function CharacterSelectListMixin:OnLoad()
+	self.AddGroupButton:SetScript("OnClick", function()
+		-- Clear helptip if not yet closed.
+		SetCVar("seenCharacterSelectAddGroupHelpTip", 1);
+		HelpTip:Hide(self.AddGroupButton, CHARACTER_SELECT_ADD_GROUP_HELPTIP);
+		PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
+
+		CharacterListEditGroupFrame:ShowNewGroupFrame();
+	end);
+	self.AddGroupButton:SetDisabledTooltip(ADD_CHARACTER_GROUP_TOOLTIP_DISABLED:format(GetMaxWarbandGroupCount()));
+
 	self.CreateCharacterButton:SetScript("OnEnter", function()
 		if self.CreateCharacterButton:IsEnabled() then
 			GlueTooltip:SetOwner(self.CreateCharacterButton, "ANCHOR_TOP");
@@ -23,7 +36,8 @@ function CharacterSelectListMixin:OnLoad()
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
 			local formattedText = string.format(StaticPopupDialogs["CREATE_CHARACTER_REALM_CONFIRMATION"].text, CharacterSelectUtil.GetFormattedCurrentRealmName());
-			GlueDialog_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, createCharacterCallback);
+			local text2 = nil;
+			StaticPopup_Show("CREATE_CHARACTER_REALM_CONFIRMATION", formattedText, text2, createCharacterCallback);
 		else
 			createCharacterCallback();
 		end
@@ -40,13 +54,37 @@ function CharacterSelectListMixin:OnLoad()
 
 	self:RegisterEvent("UPDATE_REALM_NAME_FOR_GUID");
 	self:RegisterEvent("CHARACTER_LIST_UPDATE");
+	self:RegisterEvent("CHARACTER_LIST_GROUP_CREATED");
+	self:RegisterEvent("CHARACTER_LIST_GROUP_DELETED");
+	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
+	self:RegisterEvent("CHARACTER_LIST_RESTRICTIONS_RECEIVED");
 
-	self:EvaluateIntroHelptip();
+	local function OnCollectionsHide()
+		self:EvaluateHelptips();
+	end
+	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
+
+	local function OnConfigRefreshed()
+		self:UpdateConfigElements();
+	end
+	EventRegistry:RegisterCallback("CharacterSelectUI.ConfigRefreshed", OnConfigRefreshed);
 
 	-- This event handler can only be added after the CharacterSelectUI's OnLoad has run.
 	RunNextFrame(function ()
-		self:AddDynamicEventMethod(CharacterSelect.CharacterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectListMixin.OnExpansionTrialStateUpdated);
+		self:AddDynamicEventMethod(CharacterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectListMixin.OnExpansionTrialStateUpdated);
 	end);
+end
+
+function CharacterSelectListMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+
+	self:UpdateConfigElements();
+end
+
+function CharacterSelectListMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
+
+	self:UpdateConfigElements();
 end
 
 function CharacterSelectListMixin:OnEvent(event, ...)
@@ -63,6 +101,76 @@ function CharacterSelectListMixin:OnEvent(event, ...)
 	elseif event == "CHARACTER_LIST_UPDATE" then
 		CharacterLoginUtil.EvaluateNewAlliedRaces();
 		self:EvaluateCreateCharacterNewState();
+	elseif event == "CHARACTER_LIST_GROUP_CREATED" then
+		CharacterSelectListUtil.BuildCharIndexToIDMapping();
+		self:UpdateCharacterSelection();
+
+		local includeEmptySlots = true;
+		local numChars = GetNumCharacters(includeEmptySlots);
+		CharacterSelect.createIndex = numChars + 1;
+
+		-- Reselect character in case it just got moved around.
+		local noCreate = true;
+		CharacterSelect.selectedIndex = tonumber(GetCVar("lastCharacterIndex")) + 1;
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
+
+		CharacterSelectListUtil.SaveCharacterOrder();
+	elseif event == "CHARACTER_LIST_GROUP_DELETED" then
+		CharacterSelectListUtil.BuildCharIndexToIDMapping();
+		self:UpdateCharacterSelection();
+
+		local includeEmptySlots = true;
+		local numChars = GetNumCharacters(includeEmptySlots);
+		CharacterSelect.createIndex = numChars + 1;
+
+		-- Reselect character in case it just got moved around.
+		local noCreate = true;
+		CharacterSelect.selectedIndex = tonumber(GetCVar("lastCharacterIndex")) + 1;
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
+
+		-- Update visuals just in case this character was moved from the deleted group.
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+		CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
+
+		CharacterSelectListUtil.SaveCharacterOrder();
+	elseif event == "ACCOUNT_CVARS_LOADED" then
+		self:EvaluateHelptips();
+	elseif event == "CHARACTER_LIST_RESTRICTIONS_RECEIVED" then
+		local noCreate = true;
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
+	end
+end
+
+function CharacterSelectListMixin:SetPendingGroupCreation(groupName)
+	self.pendingGroupCreation = groupName;
+end
+
+function CharacterSelectListMixin:SetPendingGroupDeletion(groupID)
+	self.pendingGroupDeletion = groupID;
+end
+
+function CharacterSelectListMixin:SetPendingGroupSceneUpdate(groupID, warbandSceneID, applyForAllGroups)
+	self.pendingGroupSceneUpdate = {
+		groupID = groupID,
+		warbandSceneID = warbandSceneID,
+		applyForAllGroups = applyForAllGroups
+	};
+end
+
+function CharacterSelectListMixin:ProcessPendingGroupActions()
+	if self.pendingGroupCreation then
+		CreateCharacterListGroup(self.pendingGroupCreation);
+		self.pendingGroupCreation = nil;
+	elseif self.pendingGroupDeletion then
+		DeleteCharacterListGroup(self.pendingGroupDeletion);
+		self.pendingGroupDeletion = nil;
+	elseif self.pendingGroupSceneUpdate then
+		if self.pendingGroupSceneUpdate.applyForAllGroups then
+			ChangeAllWarbandScenes(self.pendingGroupSceneUpdate.warbandSceneID);
+		else
+			ChangeGroupWarbandScene(self.pendingGroupSceneUpdate.groupID, self.pendingGroupSceneUpdate.warbandSceneID);
+		end
+		self.pendingGroupSceneUpdate = nil;
 	end
 end
 
@@ -122,7 +230,8 @@ function CharacterSelectListMixin:InitScrollBox()
 
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
-	local left = 82;
+	local counterPositioning = select(4, self.ScrollBox:GetPointByName("TOPLEFT"));
+	local left = math.abs(counterPositioning - 10);
 	local pad = 0;
 	local spacing = 2;
 	view:SetPadding(pad, pad, left, pad, spacing);
@@ -221,7 +330,10 @@ function CharacterSelectListMixin:InitDragBehavior()
 
 	-- Determines if this is this a valid drop case.
 	dragBehavior:SetDropPredicate(function(sourceElementData, contextData)
-		-- You cannot drop something above or below a group.
+		-- You cannot drop something directly above or below a group.
+		if contextData.elementData.isGroup and (contextData.area == DragIntersectionArea.Above or contextData.area == DragIntersectionArea.Below) then
+			return false;
+		end
 
 		-- You cannot drop something directly above or inside a divider.
 		if contextData.elementData.isDivider and (contextData.area == DragIntersectionArea.Above or contextData.area == DragIntersectionArea.Inside) then
@@ -305,7 +417,7 @@ function CharacterSelectListMixin:InitDragBehavior()
 
 		-- Ensure we update character display, as no update event will happen as we are not actually changing the selected character.
 		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-		CharacterSelect.CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
+		CharacterSelectUI:SetCharacterDisplay(selectedCharacterID);
 
 		local function AnimatePulseAnimForCharacter(frame)
 			frame:AnimatePulse();
@@ -333,9 +445,8 @@ function CharacterSelectListMixin:InitDragBehavior()
 				if groupFrame then
 					groupFrame:AnimatePulse();
 				end
-			elseif newDestinationData.elementData.isEmpty and newDestinationData.parentElementData and newSourceData.parentElementData
-				and newDestinationData.parentElementData.groupID == newSourceData.parentElementData.groupID then
-				-- We are swapping a grouped character with an empty slot within the same group.
+			elseif newDestinationData.elementData.isEmpty and newDestinationData.parentElementData and newSourceData.parentElementData then
+				-- We are swapping a grouped character with an empty slot (either within this group or to another group).
 				CharacterSelectListUtil.ForCharacterDo(newSourceData.elementData.characterID, AnimateGlowAnimForCharacter);
 
 				local originalGroupID = contextData.sourceData.parentElementData.groupID;
@@ -383,6 +494,13 @@ function CharacterSelectListMixin:InitDragBehavior()
 	self.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
+function CharacterSelectListMixin:UpdateConfigElements()
+	local isUndeleting = CharacterSelectUtil.IsUndeleting();
+	local config = CharacterSelectUtil.GetConfig();
+	self.SearchBox:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListSearch]);
+	self.AddGroupButton:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup]);
+end
+
 function CharacterSelectListMixin:UpdateUndeleteState()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
 
@@ -393,7 +511,7 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 	self.UndeleteRealmLabel:SetShown(isUndeleting);
 	self.UndeleteRealmBackdrop:SetShown(isUndeleting);
 	self.BackToActiveButton:SetShown(isUndeleting);
-	self.SearchBox:SetShown(not isUndeleting);
+	self:UpdateConfigElements();
 	self.SearchBox:SetText("");
 
 	if isUndeleting then
@@ -409,11 +527,15 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 	else
 		HelpTip:Hide(self, CHARACTER_SELECT_UNDELETE_REALM_HELPTIP);
 
-		self:EvaluateIntroHelptip();
+		self:EvaluateHelptips();
 	end
 end
 
-function CharacterSelectListMixin:SetCharacterCreateEnabled(enabled, disabledTooltip)
+function CharacterSelectListMixin:SetAddGroupButtonEnabled(enabled)
+	self.AddGroupButton:SetEnabled(enabled);
+end
+
+function CharacterSelectListMixin:SetCharacterCreateEnabled(enabled)
 	self.CreateCharacterButton:SetEnabled(enabled);
 end
 
@@ -441,6 +563,8 @@ function CharacterSelectListMixin:UpdateCharacterSelection()
 	self.ScrollBox.dragBehavior:SetDragEnabled(CharacterSelectListUtil.CanReorder());
 
 	CharacterSelect_UpdateButtonState();
+
+	EventRegistry:TriggerEvent("CharacterSelectList.OnCharacterSelectionUpdated");
 end
 
 function CharacterSelectListMixin:ClearCharacterSelection()
@@ -463,9 +587,9 @@ function CharacterSelectListMixin:SetScrollEnabled(enabled)
 	self.ScrollBox:SetScrollAllowed(enabled);
 end
 
-function CharacterSelectListMixin:EvaluateIntroHelptip()
+function CharacterSelectListMixin:EvaluateHelptips()
 	if IsCharacterSelectListModeRealmless() then
-		local helpTipInfo = {
+		local introHelpTipInfo = {
 			text = CHARACTER_SELECT_WARBAND_INTRO_HELPTIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			targetPoint = HelpTip.Point.LeftEdgeTop,
@@ -474,6 +598,22 @@ function CharacterSelectListMixin:EvaluateIntroHelptip()
 			checkCVars = true,
 			offsetY = -153
 		};
-		HelpTip:Show(self, helpTipInfo, self);
+		HelpTip:Show(self, introHelpTipInfo);
 	end
+
+	if self.AddGroupButton:IsShown() then
+		local addGroupHelpTipInfo = {
+			text = CHARACTER_SELECT_ADD_GROUP_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+			cvar = "seenCharacterSelectAddGroupHelpTip",
+			cvarValue = "1",
+			checkCVars = true,
+		};
+		HelpTip:Show(self.AddGroupButton, addGroupHelpTipInfo);
+	end
+end
+
+function CharacterSelectListMixin:ClearSearch()
+	self.SearchBox:SetText("");
 end

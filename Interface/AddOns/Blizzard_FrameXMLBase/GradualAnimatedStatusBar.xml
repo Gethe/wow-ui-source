@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<Script file="GradualAnimatedStatusBar.lua"/>
-
+	
 	<StatusBar name="GradualAnimatedStatusBarTemplate" mixin="GradualAnimatedStatusBarMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="gainAnimationDurationPerDistance" value="0.008" type="number"/>

@@ -5,9 +5,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataItemBinding",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Quest", Type = "TooltipDataItemBinding", EnumValue = 0 },
@@ -20,14 +20,15 @@ local TooltipInfoShared =
 				{ Name = "BindOnEquip", Type = "TooltipDataItemBinding", EnumValue = 7 },
 				{ Name = "BindOnUse", Type = "TooltipDataItemBinding", EnumValue = 8 },
 				{ Name = "AccountUntilEquipped", Type = "TooltipDataItemBinding", EnumValue = 9 },
+				{ Name = "BindToAccountUntilEquipped", Type = "TooltipDataItemBinding", EnumValue = 10 },
 			},
 		},
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 41,
+			NumValues = 43,
 			MinValue = 0,
-			MaxValue = 40,
+			MaxValue = 42,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -71,6 +72,8 @@ local TooltipInfoShared =
 				{ Name = "ToyDescription", Type = "TooltipDataLineType", EnumValue = 38 },
 				{ Name = "ToySource", Type = "TooltipDataLineType", EnumValue = 39 },
 				{ Name = "GemSocketEnchantment", Type = "TooltipDataLineType", EnumValue = 40 },
+				{ Name = "ItemLevel", Type = "TooltipDataLineType", EnumValue = 41 },
+				{ Name = "ItemUpgradeLevel", Type = "TooltipDataLineType", EnumValue = 42 },
 			},
 		},
 		{

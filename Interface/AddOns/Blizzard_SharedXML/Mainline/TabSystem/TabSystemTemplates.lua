@@ -67,7 +67,7 @@ TabSystemButtonMixin = {};
 
 function TabSystemButtonMixin:OnEnter()
 	if not self:IsEnabled() and self.errorReason ~= nil then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+		GameTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipAnchorX, self.tooltipAnchorY);
 		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
 		if self.tooltipText then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
@@ -75,13 +75,13 @@ function TabSystemButtonMixin:OnEnter()
 		end
 		GameTooltip:Show();
 	elseif self.tooltipText then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+		GameTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipAnchorX, self.tooltipAnchorY);
 		GameTooltip_AddNormalLine(GameTooltip, self.tooltipText);
 		GameTooltip:Show();
 	elseif self.Text:IsTruncated() then
 		local text = self.Text:GetText();
 		if text then
-			GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -12, -6);
+			GameTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipAnchorX, self.tooltipAnchorY);
 			GameTooltip_AddNormalLine(GameTooltip, text);
 			GameTooltip:Show();
 		end
@@ -188,6 +188,10 @@ end
 function TabSystemMixin:SetTabShown(tabID, isShown)
 	self.tabs[tabID]:SetShown(isShown);
 	self:MarkDirty();
+end
+
+function TabSystemMixin:IsTabShown(tabID)
+	return self.tabs[tabID]:IsShown();
 end
 
 function TabSystemMixin:SetTabEnabled(tabID, enabled, errorReason)

@@ -8,6 +8,7 @@ local Movie =
 		{
 			Name = "CancelPreloadingMovie",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -17,6 +18,7 @@ local Movie =
 		{
 			Name = "GetMovieDownloadProgress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +35,7 @@ local Movie =
 		{
 			Name = "IsMovieLocal",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +50,7 @@ local Movie =
 		{
 			Name = "IsMoviePlayable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +65,7 @@ local Movie =
 		{
 			Name = "IsMovieReadable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +80,7 @@ local Movie =
 		{
 			Name = "PreloadMovie",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

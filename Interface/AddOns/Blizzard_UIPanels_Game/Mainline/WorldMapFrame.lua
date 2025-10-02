@@ -66,7 +66,7 @@ function WorldMap_GetWorldQuestRewardType(questID)
 end
 
 function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
-	local tagInfo = C_QuestLog.GetQuestTagInfo(info.questId);
+	local tagInfo = C_QuestLog.GetQuestTagInfo(info.questID);
 
 	if ( not ignoreTypeFilters and tagInfo ) then
 		if ( tagInfo.worldQuestType == Enum.QuestTagType.Profession ) then
@@ -93,7 +93,7 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 				return false;
 			end
 		else
-			local dataLoaded, worldQuestRewardType = WorldMap_GetWorldQuestRewardType(info.questId);
+			local dataLoaded, worldQuestRewardType = WorldMap_GetWorldQuestRewardType(info.questID);
 
 			if ( not dataLoaded ) then
 				return false;
@@ -123,8 +123,8 @@ function WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeFilters)
 		end
 	else
 		-- Even if we don't care about type filters, we still want to make sure reward data is up to date
-		if not HaveQuestRewardData(info.questId) then
-			C_TaskQuest.RequestPreloadRewardData(info.questId);
+		if not HaveQuestRewardData(info.questID) then
+			C_TaskQuest.RequestPreloadRewardData(info.questID);
 		end
 	end
 
@@ -135,8 +135,7 @@ function WorldMap_GetQuestTimeForTooltip(questID)
 	local secondsRemaining = C_TaskQuest.GetQuestTimeLeftSeconds(questID);
 	if secondsRemaining then
 		local color = QuestUtils_GetQuestTimeColor(secondsRemaining);
-		local formatterOutput = WorldQuestsSecondsFormatter:Format(secondsRemaining);
-		local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+		local formattedTime = WorldQuestsSecondsFormatter:Format(secondsRemaining);
 		return formattedTime, color, secondsRemaining;
 	end
 end
@@ -148,7 +147,7 @@ function CallingPOI_OnEnter(self)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
 
-	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(self.questID);
+	local widgetSetID = C_TaskQuest.GetQuestUIWidgetSetByType(self.questID, Enum.MapIconUIWidgetSetType.Tooltip);
 	if (widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end
@@ -182,20 +181,4 @@ end
 function TaskPOI_OnLeave(self)
 	GameTooltip:Hide();
     self:OnLegendPinMouseLeave();
-end
-
-function WorldMapPing_StartPingQuest(questID)
-	QuestMapFrame_PingQuestID(questID);
-end
-
-function WorldMapPing_StartPingPOI(poiFrame)
-	-- MAPREFACTORTODO: Reimplement
-end
-
-function WorldMapPing_StopPing(frame)
-	-- MAPREFACTORTODO: Reimplement
-end
-
-function WorldMapPing_UpdatePing(frame, contextData)
-	-- MAPREFACTORTODO: Reimplement
 end

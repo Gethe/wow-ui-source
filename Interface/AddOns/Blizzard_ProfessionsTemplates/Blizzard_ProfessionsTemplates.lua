@@ -257,7 +257,8 @@ ProfessionsCrafterTableCellQualityMixin = CreateFromMixins(TableBuilderCellMixin
 function ProfessionsCrafterTableCellQualityMixin:Populate(rowData, dataIndex)
 	local order = rowData;
 	local atlasSize = 25;
-	local text = CreateAtlasMarkup(Professions.GetIconForQuality(order.quality), atlasSize, atlasSize);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.quality);
+	local text = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
 	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 
@@ -384,9 +385,22 @@ ProfessionsCrafterTableCellItemNameMixin = CreateFromMixins(TableBuilderCellMixi
 
 function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 	local order = rowData.option;
-	local item = Item:CreateFromItemID(order.itemID);
+
+	local item;
+
+	local baseItemID = order.itemID;
+	if order.reagents and #order.reagents > 0 then
+		-- Customer provided finishing reagents can alter the quality of the output item.
+		-- Calculate the exact item output based on these reagents so that quality is correct.
+		local transaction = ProfessionsUtil.CreateProfessionsRecipeTransactionFromCraftingOrder(order);
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(transaction:GetRecipeID(), transaction:CreateCraftingReagentInfoTbl());
+		item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
+	else
+		item = Item:CreateFromItemID(baseItemID);
+	end
+
 	item:ContinueOnItemLoad(function()
-		if item:GetItemID() ~= self.rowData.option.itemID then
+		if baseItemID ~= self.rowData.option.itemID then
 			-- Callback from a previous async request
 			return;
 		end
@@ -399,8 +413,9 @@ function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.minQuality);
 			local smallIcon = true;
-			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 
@@ -470,8 +485,9 @@ function ProfessionsCustomerTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.minQuality);
 			local smallIcon = true;
-			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 
@@ -504,7 +520,8 @@ function ProfessionsCustomerTableCellIlvlMixin:OnEnter()
 		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 		if item:IsItemDataCached() then
 			local atlasSize = 25;
-			local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, index);
+			local atlasMarkup = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
 			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
 		else
 			local continuableContainer = ContinuableContainer:Create();

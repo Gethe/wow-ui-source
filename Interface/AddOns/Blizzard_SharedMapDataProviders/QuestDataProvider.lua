@@ -7,8 +7,6 @@ end
 function QuestDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	mapCanvas:SetPinTemplateType(self:GetPinTemplate(), "BUTTON");
-
 	if not self.poiQuantizer then
 		self.poiQuantizer = CreateFromMixins(WorldMapPOIQuantizerMixin);
 		self.poiQuantizer.size = 75;
@@ -35,7 +33,7 @@ function QuestDataProviderMixin:RegisterEvents()
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.RefreshAllData, self);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
-	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
+	EventRegistry:RegisterCallback("MapCanvas.PingQuestID", self.OnPingQuestID, self);
 	EventRegistry:RegisterCallback("SetHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("ClearHighlightedQuestPOI", self.OnHighlightedQuestPOIChange, self);
 	EventRegistry:RegisterCallback("Supertracking.OnChanged", function() self:RefreshAllData() end, self);
@@ -50,7 +48,7 @@ function QuestDataProviderMixin:UnregisterEvents()
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetBounty", self);
-	self:GetMap():UnregisterCallback("PingQuestID", self);
+	EventRegistry:UnregisterCallback("MapCanvas.PingQuestID", self);
 	EventRegistry:UnregisterCallback("SetHighlightedQuestPOI", self);
 	EventRegistry:UnregisterCallback("ClearHighlightedQuestPOI", self);
 end
@@ -70,32 +68,8 @@ function QuestDataProviderMixin:OnPingQuestID(...)
 end
 
 function QuestDataProviderMixin:PingQuestID(questID)
-	if self.pingPin then
-		self.pingPin:Stop();
-	end
-
-	local questPin;
-	for pin in self:GetMap():EnumeratePinsByTemplate(self:GetPinTemplate()) do
-		if pin.questID == questID then
-			questPin = pin;
-			break;
-		end
-	end
-
-	if not questPin then
-		return;
-	end
-
-	if not self.pingPin then
-		self.pingPin = self:GetMap():AcquirePin("MapPinPingTemplate");
-		self.pingPin.dataProvider = self;
-		self.pingPin:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_PING");
-		self.pingPin:SetNumLoops(2);
-	end
-
-	self.pingPin:SetID(questID);
-	local x, y = questPin:GetPosition()
-	self.pingPin:PlayAt(x, y);
+	local numLoops = 2;
+	self:PingPin("questID", questID, "PIN_FRAME_LEVEL_QUEST_PING", numLoops);
 end
 
 function QuestDataProviderMixin:SetBounty(bountyQuestID, bountyFactionID, bountyFrameType)
@@ -149,23 +123,16 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local pingQuestID = self.pingPin and self.pingPin:GetID();
-	local foundQuestToPing = false;
-
 	local pinsToQuantize = { };
 
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	local questsOnMap = C_QuestLog.GetQuestsOnMap(mapID);
+	local questsOnMap = GetQuestsOnMapCached(mapID);
 	local doesMapShowTaskObjectives = C_TaskQuest.DoesMapShowTaskQuestObjectives(mapID);
 
 	local function CheckAddQuest(questID, x, y, isMapIndicatorQuest, frameLevelOffset, isWaypoint)
 		if self:ShouldShowQuest(questID, mapInfo.mapType, doesMapShowTaskObjectives, isMapIndicatorQuest) then
 			local pin = self:AddQuest(questID, x, y, frameLevelOffset, isWaypoint);
 			table.insert(pinsToQuantize, pin);
-			if questID == pingQuestID then
-				self.pingPin:SetPosition(x, y);
-				foundQuestToPing = true;
-			end
 		end
 	end
 
@@ -173,10 +140,6 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 		for i, info in ipairs(questsOnMap) do
 			CheckAddQuest(info.questID, info.x, info.y, info.isMapIndicatorQuest, i);
 		end
-	end
-
-	if pingQuestID and not foundQuestToPing then
-		self.pingPin:Stop();
 	end
 
 	local waypointQuestID = QuestMapFrame_GetFocusedQuestID() or C_SuperTrack.GetSuperTrackedQuestID();
@@ -195,6 +158,8 @@ function QuestDataProviderMixin:RefreshAllData(fromOnShow)
 	for i, pin in pairs(pinsToQuantize) do
 		pin:SetPosition(pin.quantizedX or pin.normalizedX, pin.quantizedY or pin.normalizedY);
 	end
+
+	self:UpdatePing();
 end
 
 function QuestDataProviderMixin:ShouldShowQuest(questID, mapType, doesMapShowTaskObjectives, isMapIndicatorQuest)
@@ -231,7 +196,6 @@ function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWayp
 	pin.dataProvider = self;
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();
-	local isComplete = QuestCache:Get(questID):IsComplete();
 
 	pin.isSuperTracked = isSuperTracked;
 

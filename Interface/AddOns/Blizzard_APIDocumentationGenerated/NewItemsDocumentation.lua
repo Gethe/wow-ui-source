@@ -13,6 +13,7 @@ local NewItems =
 		{
 			Name = "IsNewItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +29,7 @@ local NewItems =
 		{
 			Name = "RemoveNewItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

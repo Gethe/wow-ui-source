@@ -128,7 +128,6 @@ function PartyMemberFrameTemplateMixin:Setup(memberInfo)
 	local memberNameFrame = self.MemberNameFrame;
 	local memberNameText = StringSplitIntoTable("#", memberInfo.playerName)[1];
 	memberNameFrame.MemberName:SetText(memberNameText);
-	memberNameFrame.RenownLevel:SetText(memberInfo.renownLevel);
 
 	--Show the leader icon in front of the party member if they are the leader of the group.. 
 	memberNameFrame.LeaderIcon:SetShown(memberInfo.isPartyLeader and not C_WoWLabsMatchmaking.IsAloneInWoWLabsParty());

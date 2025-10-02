@@ -14,21 +14,17 @@ end
 
 function CharacterServicesCharacterSelectorMixin:InitializedFrameCallback(frame)
 	local function updateSingleCharacterFrame(character)
-		self:UpdateSingleCharacter(character);
+		local canShowArrow = true;
+		self:UpdateSingleCharacter(character, canShowArrow);
 	end
 	CharacterSelectListUtil.RunCallbackOnSlot(frame, updateSingleCharacterFrame);
 end
 
-function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
+function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block, canShowArrow)
 	CharacterSelectListUtil.SetScrollListInteractiveState(true);
 	CharacterSelectListUtil.SaveCharacterOrder();
 
 	self:SetBlock(block);
-
-	-- Set up the GlowBox around the show characters
-	self.GlowBox:SetPoint("TOPRIGHT", CharacterSelectCharacterFrame.ScrollBar, -21, 0);
-	self.GlowBox:SetPoint("BOTTOM", CharacterSelectCharacterFrame.ScrollBar, 0, -2);
-	self.GlowBox:SetWidth(328);
 
 	self.ButtonPools:ReleaseAll();
 
@@ -37,29 +33,27 @@ function CharacterServicesCharacterSelectorMixin:UpdateDisplay(block)
 	CharacterSelectCharacterFrame:UpdateCharacterSelection();
 
 	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
-		self:UpdateSingleCharacter(frame);
+		self:UpdateSingleCharacter(frame, canShowArrow);
 	end);
-
-	local hasAnyValidCharacter = CharacterSelectListUtil.AreAnyCharactersEligible(self:GetBlock());
-	self.GlowBox:SetShown(hasAnyValidCharacter);
 end
 
-function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(frame)
+function CharacterServicesCharacterSelectorMixin:UpdateSingleCharacter(frame, canShowArrow)
 	if not self:IsActive() then
 		return false;
 	end
 
-	frame.PaidService:Hide();
+	frame.PaidServiceButton:Hide();
 
 	local isEnabled, showBonus = self:ProcessCharacterFromBlock(frame);
 	frame.InnerContent:SetEnabledState(isEnabled);
-	self:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus);
+	local showArrow = isEnabled and canShowArrow;
+	self:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus, showArrow);
 
 	return isEnabled;
 end
 
-function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus)
-	frame:SetArrowButtonShown(isEnabled);
+function CharacterServicesCharacterSelectorMixin:SetupAttachedCharacterButtonFrames(frame, isEnabled, showBonus, showArrow)
+	frame:SetArrowButtonShown(showArrow);
 
 	if isEnabled and showBonus then
 		if not frame.SelectionBonusIcon then
@@ -87,13 +81,17 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 	end
 
 	local function CharacterServicesOnClick()
+		if not frame:CanSelect() then
+			return;
+		end
+
 		local serviceInfo = block:GetServiceInfoByCharacterID(frame.characterID);
 		if not serviceInfo.isEligible then
 			return;
 		end
 
 		if serviceInfo.requiresLogin then
-			GlueDialog_Show("MUST_LOG_IN_FIRST");
+			StaticPopup_Show("MUST_LOG_IN_FIRST");
 			CharSelectServicesFlowFrame:Hide();
 			return;
 		end
@@ -107,15 +105,18 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 			CharacterUpgradeFlow:SetTrialBoostGuid(trialBoostFlowGuid);
 		end
 
-		if not frame:CanSelect() then
-			return;
-		end
-
 		-- Fixes cases of selecting a character, backing out, then selecting them again causing visual issues.
 		CharacterSelect.selectedIndex = GetCharacterSelection();
 
 		frame:OnClick();
 		frame:SetSelectedState(true);
+
+		-- Hide arrows now that a selection has been made.
+		CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+			frame:SetArrowButtonShown(false);
+		end);
+
+		frame.Arrow.IdleAnim:ClearSyncedStart();
 
 		CharacterServicesMaster_Update();
 	end
@@ -174,13 +175,18 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(frame
 end
 
 function CharacterServicesCharacterSelectorMixin:HasAnyEligibleCharacter()
-	return self.GlowBox:IsShown();
+	return CharacterSelectListUtil.AreAnyCharactersEligible(self:GetBlock());
 end
 
 function CharacterServicesCharacterSelectorMixin:ResetState(selectedButtonIndex)
 	self:Hide();
 	self.ButtonPools:ReleaseAll();
 	CharacterSelectListUtil.SetScrollListInteractiveState(true);
+
+	-- Reset animation info, so things stay in sync if we start the flow up again.
+	CharacterSelectListUtil.ForEachCharacterDo(function(frame)
+		frame.Arrow.IdleAnim:ClearSyncedStart();
+	end);
 
 	CharacterUpgradeCharacterSelectBlock_SetFilteringByBoostable(false);
 

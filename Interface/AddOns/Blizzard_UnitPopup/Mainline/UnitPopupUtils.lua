@@ -85,7 +85,7 @@ end
 
 function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullName)
 	if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() and not UnitIsGroupLeader("player") then
-		ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 	else
 		if not UnitPopupSharedUtil.TryBNInvite(contextData) then
 			if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then
@@ -106,19 +106,20 @@ function UnitPopupSharedUtil.GetFullPlayerName(contextData)
 			local realmName = gameAccountInfo.realmName;
 			if characterName and realmName then
 				return characterName.."-"..realmName;
-	end
+			end
 		end
 	end
 
 	local name = contextData.name;
 	local server = contextData.server;
 	local unit = contextData.unit;
-	if server and (not unit and GetNormalizedRealmName() ~= server) then
-		return name.."-"..server;
-	elseif unit and (UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) then
-		return name.."-"..server;
-end		
-
+	if server then
+		if (not unit) and (GetNormalizedRealmName() ~= server) then
+			return name.."-"..server;
+		elseif unit and (UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) then
+			return name.."-"..server;
+		end		
+	end
 	return name; 
 end
 

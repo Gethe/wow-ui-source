@@ -28,6 +28,8 @@ SecondsFormatterConstants =
 	DontConvertToLower = false,
 	RoundUpLastUnit = true,
 	DontRoundUpLastUnit = false,
+	RoundUpIntervals = true,
+	DontRoundUpIntervals = false,
 }
 
 SecondsFormatter.Abbreviation = 
@@ -61,11 +63,13 @@ SecondsFormatterMixin = {}
 -- approximationSeconds: threshold for representing the seconds as an approximation (ex. "< 2 hours").
 -- roundUpLastUnit: determines if the last unit in the output format string is ceiled (floored by default).
 -- convertToLower: converts the format string to lowercase.
-function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower)
+-- roundUpIntervals: determines if units can be promoted to a higher interval after (ex. 60m -> 1h).
+function SecondsFormatterMixin:Init(approximationSeconds, defaultAbbreviation, roundUpLastUnit, convertToLower, roundUpIntervals)
 	self:SetApproximationSeconds(approximationSeconds or 0);
 	self:SetMinInterval(SecondsFormatter.Interval.Seconds);
 	self:SetDefaultAbbreviation(defaultAbbreviation or SecondsFormatter.Abbreviation.None);
-	self:SetCanRoundUpLastUnit(roundUpLastUnit or false);
+	self:SetCanRoundUpLastUnit(roundUpLastUnit or SecondsFormatterConstants.DontRoundUpLastUnit);
+	self:SetCanRoundUpIntervals(roundUpIntervals or SecondsFormatterConstants.DontRoundUpIntervals);
 	self:SetDesiredUnitCount(2);
 	self:SetStripIntervalWhitespace(false);
 	self:SetConvertToLower(convertToLower or false);
@@ -122,6 +126,14 @@ end
 
 function SecondsFormatterMixin:CanRoundUpLastUnit()
 	return self.roundUpLastUnit;
+end
+
+function SecondsFormatterMixin:SetCanRoundUpIntervals(roundUpIntervals)
+	self.roundUpIntervals = roundUpIntervals;
+end
+
+function SecondsFormatterMixin:CanRoundUpIntervals()
+	return self.roundUpIntervals;
 end
 
 function SecondsFormatterMixin:SetDesiredUnitCount(unitCount)
@@ -198,23 +210,24 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 	local desiredCount = self:GetDesiredUnitCount(seconds);
 	local convertToLower = self.convertToLower;
 
+	local intervalUnits = {};
+	for interval, value in pairs(SecondsFormatter.Interval) do
+		intervalUnits[value] = 0;
+	end
+
 	local currentInterval = maxInterval;
 	while ((appendedCount < desiredCount) and (currentInterval >= minInterval)) do
 		local intervalDescription = self:GetIntervalDescription(currentInterval);
 		local intervalSeconds = intervalDescription.seconds;
 		if (seconds >= intervalSeconds) then
 			appendedCount = appendedCount + 1;
-			if (output ~= "") then
-				output = output..TIME_UNIT_DELIMITER;
-			end
 
-			local formatString = self:GetFormatString(currentInterval, abbreviation, convertToLower);
 			local quotient = seconds / intervalSeconds;
 			if (quotient > 0) then
 				if (self:CanRoundUpLastUnit() and ((minInterval == currentInterval) or (appendedCount == desiredCount))) then
-					output = output..formatString:format(math.ceil(quotient));
+					intervalUnits[currentInterval] = math.ceil(quotient);
 				else
-					output = output..formatString:format(math.floor(quotient));
+					intervalUnits[currentInterval] = math.floor(quotient);
 				end
 			else
 				break;
@@ -224,6 +237,35 @@ function SecondsFormatterMixin:Format(seconds, abbreviation)
 		end
 
 		currentInterval = currentInterval - 1;
+	end
+
+	if self:CanRoundUpIntervals() then
+		-- Intervals are promoted to a higher interval if possible (60m -> 1h) so that a value isn't expressed
+		-- as 1h 60m as a result of individual interval round-up. This promotion can only happen within the
+		-- min interval, max interval band so that we don't promote to an interval we don't intend to display.
+		for interval, value in ipairs(intervalUnits) do
+			local intervalDescription = self:GetIntervalDescription(interval);
+			local intervalSeconds = intervalDescription.seconds;
+
+			if value == intervalSeconds then
+				local nextInterval = interval + 1;
+				if nextInterval <= maxInterval then
+					intervalUnits[nextInterval] = intervalUnits[nextInterval] + 1;
+					intervalUnits[interval] = 0;
+				end
+			end
+		end
+	end
+
+	for interval, value in ipairs_reverse(intervalUnits) do
+		if value > 0 then
+			if (output ~= "") then
+				output = output..TIME_UNIT_DELIMITER;
+			end
+
+			local formatString = self:GetFormatString(interval, abbreviation, convertToLower);
+			output = output..formatString:format(value);
+		end
 	end
 
 	-- Return the zero format if an acceptable representation couldn't be formed.
@@ -267,7 +309,7 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	local time = "";
 	local count = 0;
 	local tempTime;
-	seconds = roundUp and ceil(seconds) or floor(seconds);
+	seconds = roundUp and math.ceil(seconds) or math.floor(seconds);
 	maxCount = maxCount or 2;
 
 	-- When limited to a single term, use a higher threshold of 1.5 min/hr/day.
@@ -277,16 +319,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 	if ( seconds >= SECONDS_PER_DAY * threshold ) then
 		count = count + 1;
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_DAY);
+			tempTime = math.ceil(seconds / SECONDS_PER_DAY);
 		else
-			tempTime = floor(seconds / SECONDS_PER_DAY);
+			tempTime = math.floor(seconds / SECONDS_PER_DAY);
 		end
 		if ( notAbbreviated ) then
 			time = D_DAYS:format(tempTime);
 		else
 			time = DAYS_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_DAY);
+		seconds = seconds % SECONDS_PER_DAY;
 	end
 	if ( count < maxCount and seconds >= SECONDS_PER_HOUR * threshold ) then
 		count = count + 1;
@@ -294,16 +336,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			time = time..TIME_UNIT_DELIMITER;
 		end
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_HOUR);
+			tempTime = math.ceil(seconds / SECONDS_PER_HOUR);
 		else
-			tempTime = floor(seconds / SECONDS_PER_HOUR);
+			tempTime = math.floor(seconds / SECONDS_PER_HOUR);
 		end
 		if ( notAbbreviated ) then
 			time = time..D_HOURS:format(tempTime);
 		else
 			time = time..HOURS_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_HOUR);
+		seconds = seconds % SECONDS_PER_HOUR;
 	end
 	if ( count < maxCount and seconds >= SECONDS_PER_MIN * threshold ) then
 		count = count + 1;
@@ -311,16 +353,16 @@ function SecondsToTime(seconds, noSeconds, notAbbreviated, maxCount, roundUp)
 			time = time..TIME_UNIT_DELIMITER;
 		end
 		if ( count == maxCount and roundUp ) then
-			tempTime = ceil(seconds / SECONDS_PER_MIN);
+			tempTime = math.ceil(seconds / SECONDS_PER_MIN);
 		else
-			tempTime = floor(seconds / SECONDS_PER_MIN);
+			tempTime = math.floor(seconds / SECONDS_PER_MIN);
 		end
 		if ( notAbbreviated ) then
 			time = time..D_MINUTES:format(tempTime);
 		else
 			time = time..MINUTES_ABBR:format(tempTime);
 		end
-		seconds = mod(seconds, SECONDS_PER_MIN);
+		seconds = seconds % SECONDS_PER_MIN;
 	end
 	if ( count < maxCount and seconds > 0 and not noSeconds ) then
 		if ( time ~= "" ) then
@@ -344,13 +386,13 @@ function MinutesToTime(mins, hideDays)
 	if ( mins > 1440 and not hideDays ) then
 		tempTime = floor(mins / 1440);
 		time = TIME_UNIT_DELIMITER .. format(DAYS_ABBR, tempTime);
-		mins = mod(mins, 1440);
+		mins = mins % 1440;
 		count = count + 1;
 	end
 	if ( mins > 60  ) then
 		tempTime = floor(mins / 60);
 		time = time .. TIME_UNIT_DELIMITER .. format(HOURS_ABBR, tempTime);
-		mins = mod(mins, 60);
+		mins = mins % 60;
 		count = count + 1;
 	end
 	if ( count < 2 ) then

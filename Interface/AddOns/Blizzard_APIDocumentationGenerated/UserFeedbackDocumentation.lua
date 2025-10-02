@@ -9,6 +9,7 @@ local UserFeedback =
 		{
 			Name = "SubmitBug",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local UserFeedback =
 		{
 			Name = "SubmitSuggestion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

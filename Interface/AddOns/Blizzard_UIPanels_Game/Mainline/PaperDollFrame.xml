@@ -306,10 +306,8 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
-						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText());
-						if ( dialog ) then
-							dialog.data = self:GetParent().setID;
-						else
+						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText(), nil, self:GetParent().setID);
+						if ( not dialog ) then
 							UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 						end
 					</OnClick>

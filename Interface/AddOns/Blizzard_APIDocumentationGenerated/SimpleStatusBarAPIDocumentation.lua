@@ -21,6 +21,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetMinMaxValues",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
 
 			Arguments =
 			{
@@ -116,6 +117,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetValue",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
 
 			Arguments =
 			{
@@ -142,6 +144,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetColorFill",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +157,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetFillStyle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,6 +167,8 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetMinMaxValues",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.BarValue },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -173,6 +179,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetOrientation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +189,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetReverseFill",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,6 +199,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetRotatesTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +209,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +222,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturated",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,6 +232,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -230,15 +242,23 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "asset", Type = "TextureAsset", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "SetValue",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.BarValue },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

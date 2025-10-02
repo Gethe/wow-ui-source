@@ -6,6 +6,7 @@ POIButtonUtil.Type = {
 	Quest = 2,
 	Content = 3,
 	AreaPOI = 4,
+	Vignette = 5,
 };
 
 POIButtonUtil.Style = {
@@ -18,6 +19,7 @@ POIButtonUtil.Style = {
 	WorldQuest = 7,
 	BonusObjective = 9,
 	AreaPOI = 10,
+	Vignette = 11,
 };
 
 local styleXType = {
@@ -30,6 +32,7 @@ local styleXType = {
 	[POIButtonUtil.Style.WorldQuest] = POIButtonUtil.Type.Quest,
 	[POIButtonUtil.Style.BonusObjective] = POIButtonUtil.Type.Quest,
 	[POIButtonUtil.Style.AreaPOI] = POIButtonUtil.Type.AreaPOI,
+	[POIButtonUtil.Style.Vignette] = POIButtonUtil.Type.Vignette,
 }
 
 function POIButtonUtil.GetStyle(questID)

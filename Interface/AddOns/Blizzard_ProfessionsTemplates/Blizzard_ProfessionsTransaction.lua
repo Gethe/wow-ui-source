@@ -44,6 +44,9 @@ function AllocationsMixin:Clear()
 	self:OnChanged();
 end
 
+function AllocationsMixin:GetSize()
+	return #self.allocs;
+end
 
 function AllocationsMixin:SelectFirst()
 	return self.allocs[1];

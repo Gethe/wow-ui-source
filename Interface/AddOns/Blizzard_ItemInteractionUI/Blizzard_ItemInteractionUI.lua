@@ -11,12 +11,12 @@ StaticPopupDialogs[staticPopupNames.Confirmation] = {
 	button1 = "",
 	button2 = CANCEL,
 
-	OnShow = function(self, data)
-		self.text:SetText(data.confirmationDescription);
-		self.button1:SetText(data.confirmationText);
+	OnShow = function(dialog, data)
+		dialog:SetText(data.confirmationDescription);
+		dialog:GetButton1():SetText(data.confirmationText);
 	end,
 
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
@@ -32,15 +32,15 @@ StaticPopupDialogs[staticPopupNames.ConfirmationDelayed] = {
 	button1 = "",
 	button2 = CANCEL,
 
-	OnShow = function(self, data)
-		self.text:SetText(data.confirmationDescription);
+	OnShow = function(dialog, data)
+		dialog:SetText(data.confirmationDescription);
 	end,
 
-	OnAcceptDelayExpired = function(self, data)
-		self.button1:SetText(data.confirmationText);
+	OnAcceptDelayExpired = function(dialog, data)
+		dialog:GetButton1():SetText(data.confirmationText);
 	end,
 
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
@@ -59,18 +59,18 @@ StaticPopupDialogs[staticPopupNames.ConfirmationDelayedWithChargeInfo] = {
 	button1 = "",
 	button2 = CANCEL,
 
-	OnShow = function(self, data)
-		self.text:SetText(data.confirmationDescription);
+	OnShow = function(dialog, data)
+		dialog:SetText(data.confirmationDescription);
 		if (data.subText) then
-			self.SubText:SetText(data.subText);
+			dialog.SubText:SetText(data.subText);
 		end
 	end,
 
-	OnAcceptDelayExpired = function(self, data)
-		self.button1:SetText(data.confirmationText);
+	OnAcceptDelayExpired = function(dialog, data)
+		dialog:GetButton1():SetText(data.confirmationText);
 	end,
 
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		ItemInteractionFrame:CompleteItemInteraction();
 	end,
 
@@ -527,15 +527,7 @@ function ItemInteractionMixin:InteractWithItem()
 		local itemLocation = self:GetItemLocation();
 
 		local function ItemInteractionStaticPopupItemFrameCallback(itemFrame)
-			itemFrame:SetItemLocation(itemLocation);
-
-			local quality = C_Item.GetItemQuality(itemLocation);
-			SetItemButtonQuality(itemFrame, quality);
-			itemFrame.Text:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
-
-			local itemName = C_Item.GetItemName(itemLocation);
-			itemFrame.Text:SetText(itemName);
-			itemFrame.Count:Hide();
+			itemFrame:DisplayInfoFromStandardCallback(itemLocation);
 		end
 
 		local function ItemInteractionStaticPopupItemFrameOnEnterCallback(itemFrame)
@@ -1031,7 +1023,7 @@ function ItemInteractionItemConversionOutputSlotMixin:OnEnter()
 		if (itemInteractionFrame:GetInteractionType() == Enum.UIItemInteractionType.ItemConversion) then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:SetItemInteractionItem();
-		else 
+		else
 			GameTooltip_Hide();
 		end
 	else

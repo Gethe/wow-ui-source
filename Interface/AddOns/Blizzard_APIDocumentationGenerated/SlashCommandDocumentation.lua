@@ -17,6 +17,7 @@ local SlashCommand =
 		{
 			Name = "SetAllowDangerousScripts",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

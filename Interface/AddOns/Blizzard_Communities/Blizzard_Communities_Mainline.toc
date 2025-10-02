@@ -1,5 +1,5 @@
 ## Title: Blizzard_Communities
-## RequiredDep: Blizzard_SharedXML, Blizzard_GuildControlUI, Blizzard_TimerunningUtil
+## RequiredDep: Blizzard_SharedXML, Blizzard_GuildControlUI, Blizzard_TimerunningUtil, Blizzard_HelpPlate
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 ## AllowLoadGameType: mainline
 

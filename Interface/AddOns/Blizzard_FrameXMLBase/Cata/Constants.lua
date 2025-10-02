@@ -28,38 +28,6 @@ AREA_DESCRIPTION_FONT_COLOR = HIGHLIGHT_FONT_COLOR;
 INVASION_FONT_COLOR = CreateColor(0.78, 1, 0);
 INVASION_DESCRIPTION_FONT_COLOR = CreateColor(1, 0.973, 0.035);
 
-FACTION_BAR_COLORS = {
-	[1] = {r = 0.8, g = 0.3, b = 0.22},
-	[2] = {r = 0.8, g = 0.3, b = 0.22},
-	[3] = {r = 0.75, g = 0.27, b = 0},
-	[4] = {r = 0.9, g = 0.7, b = 0},
-	[5] = {r = 0, g = 0.6, b = 0.1},
-	[6] = {r = 0, g = 0.6, b = 0.1},
-	[7] = {r = 0, g = 0.6, b = 0.1},
-	[8] = {r = 0, g = 0.6, b = 0.1},
-};
-
-
-
-MATERIAL_TEXT_COLOR_TABLE = {
-	["Default"] = {0.18, 0.12, 0.06},
-	["Stone"] = {1.0, 1.0, 1.0},
-	["Parchment"] = {0.18, 0.12, 0.06},
-	["Marble"] = {0, 0, 0},
-	["Silver"] = {0.12, 0.12, 0.12},
-	["Bronze"] = {0.18, 0.12, 0.06},
-	["ParchmentLarge"] = {.141, 0, 0}
-};
-MATERIAL_TITLETEXT_COLOR_TABLE = {
-	["Default"] = {0, 0, 0},
-	["Stone"] = {0.93, 0.82, 0},
-	["Parchment"] = {0, 0, 0},
-	["Marble"] = {0.93, 0.82, 0},
-	["Silver"] = {0.93, 0.82, 0},
-	["Bronze"] = {0.93, 0.82, 0},
-	["ParchmentLarge"] = {.208, 0, 0}
-};
-
 FRIENDS_BNET_NAME_COLOR = CreateColor(0.510, 0.773, 1.0);
 FRIENDS_BNET_BACKGROUND_COLOR = CreateColor(0, 0.694, 0.941, 0.05);
 FRIENDS_WOW_NAME_COLOR = CreateColor(0.996, 0.882, 0.361);
@@ -154,9 +122,8 @@ PLAYER_FACTION_COLORS = { [0] = CreateColor(0.90, 0.05, 0.07), [1] = CreateColor
 -- Guild
 MAX_GUILDBANK_TABS = 8;
 MAX_BUY_GUILDBANK_TABS = 6;
-MAX_GOLD_WITHDRAW = 1000;
 MAX_GOLD_WITHDRAW_DIGITS = 9;
-
+MAX_ITEM_WITHDRAW_DIGITS = 6;
 
 -- Quest
 
@@ -170,39 +137,8 @@ WOW_PROJECT_CLASSIC = 2;
 WOW_PROJECT_BURNING_CRUSADE_CLASSIC = 5;
 WOW_PROJECT_WRATH_CLASSIC = 11;
 WOW_PROJECT_CATACLYSM_CLASSIC = 14;
+WOW_PROJECT_MISTS_CLASSIC = 19;
 WOW_PROJECT_ID = WOW_PROJECT_CATACLYSM_CLASSIC;
-
--- Transmog
-ENCHANT_EMPTY_SLOT_FILEDATAID = 134941;
-WARDROBE_TOOLTIP_CYCLE_ARROW_ICON = "|TInterface\\Transmogrify\\transmog-tooltip-arrow:12:11:-1:-1|t";
-WARDROBE_TOOLTIP_CYCLE_SPACER_ICON = "|TInterface\\Common\\spacer:12:11:-1:-1|t";
-WARDROBE_CYCLE_KEY = "TAB";
-WARDROBE_PREV_VISUAL_KEY = "LEFT";
-WARDROBE_NEXT_VISUAL_KEY = "RIGHT";
-WARDROBE_UP_VISUAL_KEY = "UP";
-WARDROBE_DOWN_VISUAL_KEY = "DOWN";
-
-TRANSMOG_INVALID_CODES = {
-	"NO_ITEM",
-	"NOT_SOULBOUND",
-	"LEGENDARY",
-	"ITEM_TYPE",
-	"DESTINATION",
-	"MISMATCH",
-	"",		-- same item
-	"",		-- invalid source
-	"",		-- invalid source quality
-	"CANNOT_USE",
-	"SLOT_FOR_RACE",
-	"",		-- no illusion
-	"SLOT_FOR_FORM",
-}
-
-TRANSMOG_SOURCE_BOSS_DROP = 1;
-FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionType.Wand;
-LAST_TRANSMOG_COLLECTION_WEAPON_TYPE = Enum.TransmogCollectionTypeMeta.NumValues - 1;
-NO_TRANSMOG_VISUAL_ID = 0;
-REMOVE_TRANSMOG_ID = 0;
 
 -- Forms.
 DRUID_CAT_FORM = 1;

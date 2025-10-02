@@ -174,13 +174,12 @@ function BattlefieldMapMixin:OnEvent(event, ...)
 				BattlefieldMapOptions = defaultOptions;
 			end
 
-			BattlefieldMapTab:ClearAllPoints();
 			if ( BattlefieldMapOptions.position ) then
+				BattlefieldMapTab:ClearAllPoints();
 				BattlefieldMapTab:SetPoint("CENTER", "UIParent", "BOTTOMLEFT", BattlefieldMapOptions.position.x, BattlefieldMapOptions.position.y);
 				BattlefieldMapTab:SetUserPlaced(true);
-			else
-				UIParent_ManageFramePositions();
 			end
+
 			self:RefreshAlpha();
 			self:UpdateUnitsVisibility();
 			self:UnregisterEvent("ADDON_LOADED");
@@ -242,6 +241,7 @@ function BattlefieldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GOSSIP");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI_EVENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DEBUG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_LINK");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);

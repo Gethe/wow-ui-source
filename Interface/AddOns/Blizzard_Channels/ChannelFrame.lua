@@ -47,6 +47,7 @@ do
 		self:RegisterEvent("CLUB_STREAM_ADDED");
 		self:RegisterEvent("CLUB_STREAM_REMOVED");
 		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+		self:RegisterEvent("CLUB_MEMBERS_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_PRESENCE_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
@@ -74,7 +75,7 @@ do
 
 		local channel = self:GetList():GetSelectedChannelButton();
 		if channel and channel:ChannelIsCommunity() then
-			C_Club.SetClubPresenceSubscription(channel.clubId);
+			self:SetFocusedClub(channel.clubId);
 		end
 
 		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
@@ -83,11 +84,26 @@ do
 	end
 
 	function ChannelFrameMixin:OnHide()
-		C_Club.ClearClubPresenceSubscription();
-
+		self:SetFocusedClub(nil);
 		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
 		StaticPopupSpecial_Hide(CreateChannelPopup);
 	end
+end
+
+function ChannelFrameMixin:SetFocusedClub(clubId)
+	if self.focusedClubId == clubId then
+		return;
+	end
+
+	if self.focusedClubId then
+		C_Club.UnfocusMembers(self.focusedClubId);
+		C_Club.ClearClubPresenceSubscription();
+	end
+	if clubId then
+		C_Club.FocusMembers(clubId);
+		C_Club.SetClubPresenceSubscription(clubId);
+	end
+	self.focusedClubId = clubId;
 end
 
 function ChannelFrameMixin:OnEvent(event, ...)
@@ -143,6 +159,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 	elseif event == "CLUB_STREAM_REMOVED" then
 		self:OnClubStreamRemoved(...);
 	elseif event == "CLUB_MEMBER_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBERS_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);
 	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);
@@ -425,7 +443,7 @@ end
 function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
 	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
 	if errorString then
-		ChatFrame_DisplayUsageError(errorString);
+		ChatFrameUtil.DisplayUsageError(errorString);
 		self.lastError = statusCode;
 	end
 
@@ -437,7 +455,7 @@ end
 
 function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
 	if self.lastError then
-		ChatFrame_DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
+		ChatFrameUtil.DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
 		self.lastError = nil;
 	end
 end
@@ -490,7 +508,7 @@ function ChannelFrameMixin:ShowChannelAnnounce(channelID)
 			local announce = Voice_FormatChannelNotification(channel, notification)
 			local communicationMode = Voice_GetCommunicationModeNotification(channel);
 			local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
-			ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
 		end
 	end
 end
@@ -504,7 +522,7 @@ function ChannelFrameMixin:ShowChannelManagementTip(channelID)
 		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
 		if bindingText and bindingText ~= "" then
 			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
-			ChatFrame_DisplaySystemMessageInPrimary(announceText);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(announceText);
 		end
 	end
 end
@@ -516,7 +534,7 @@ function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
 end
 
 function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
-	ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
 	self:SetVoiceChannelActiveState(voiceChannelID, false);
 	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
 	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
@@ -587,10 +605,10 @@ function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isAct
 		if channel and channel.isActive then
 			local memberName = C_VoiceChat.GetMemberName(memberID, channelID) or "";
 			if isActive then
-				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
 			else
-				ChatFrame_DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
 				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
 			end
 		end
@@ -619,7 +637,7 @@ function ChannelFrameMixin:OnUserSelectedChannel()
 end
 
 function ChannelFrameMixin:OnChannelLeavePrevented(channelName)
-	ChatFrame_DisplaySystemMessageInPrimary(CHAT_LEAVE_CHANNEL_PREVENTED:format(channelName));
+	ChatFrameUtil.DisplaySystemMessageInPrimary(CHAT_LEAVE_CHANNEL_PREVENTED:format(channelName));
 end
 
 function ChannelFrameMixin:OnChannelNotice(...)
@@ -641,16 +659,16 @@ function ChannelFrameMixin:OnMentorshipStatusChanged()
 end
 
 function ChannelFrameMixin:CheckNewcomerChannelJoin(channelIndex)
-	local channelSlashCommand = GetSlashCommandForChannelOpenChat(channelIndex);
+	local channelSlashCommand = ChatFrameUtil.GetSlashCommandForChannelOpenChat(channelIndex);
 
 	if IsActivePlayerNewcomer() then
-		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
-		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
-		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
 	elseif IsActivePlayerGuide() then
 		-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
 		-- then if you're not a newcomer, you must be a guide.
-		ChatFrame_DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
 	else
 		self.pendingNewcomerChannelIndex = channelIndex;
 		self:RegisterEvent("MENTORSHIP_STATUS_CHANGED");
@@ -667,8 +685,8 @@ end
 
 local channelTypeToNameLookup =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHANNEL_NAME_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHANNEL_NAME_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHANNEL_NAME_INSTANCE,
 };
 
 function ChannelFrame_GetIdealChannelName(channel)

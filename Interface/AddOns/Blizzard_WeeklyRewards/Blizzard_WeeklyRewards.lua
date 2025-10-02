@@ -9,9 +9,9 @@ StaticPopupDialogs["CONFIRM_SELECT_WEEKLY_REWARD"] = {
 	text = WEEKLY_REWARDS_CONFIRM_SELECT,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		PlaySound(SOUNDKIT.UI_WEEKLY_REWARD_CONFIRMED_REWARD);
-		C_WeeklyRewards.ClaimReward(self.data);
+		C_WeeklyRewards.ClaimReward(data);
 		HideUIPanel(WeeklyRewardsFrame);
 	end,
 	timeout = 0,
@@ -54,8 +54,7 @@ end
 function WeeklyRewardsMixin:OnLoad()
 	self:SetUpActivity(self.RaidFrame, RAIDS, "evergreen-weeklyrewards-category-raids", Enum.WeeklyRewardChestThresholdType.Raid);
 	self:SetUpActivity(self.MythicFrame, DUNGEONS, "evergreen-weeklyrewards-category-dungeons", Enum.WeeklyRewardChestThresholdType.Activities);
-
-	self:SetUpConditionalActivities();
+	self:SetUpActivity(self.WorldFrame, WORLD, "evergreen-weeklyrewards-category-world", Enum.WeeklyRewardChestThresholdType.World);
 
 	local attributes =
 	{
@@ -573,15 +572,37 @@ function WeeklyRewardsActivityMixin:OnEnter()
 
 			local formatRemainingProgress = true;
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress)
+			
+			if self.info.progress > 0 then
+				self:AddWorldRunsToTooltip();
+			end
+			GameTooltip:Show();
+		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
+			local description;
+			local showRaidCompletionInTooltip = false;
+			if self.info.progress == 0 then
+				description = GREAT_VAULT_REWARDS_RAID_INCOMPLETE;
+			else
+				description = GREAT_VAULT_REWARDS_RAID_INPROGRESS;
+				showRaidCompletionInTooltip = true;
+			end
+			local formatRemainingProgress = true;
+			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress, nil, self:GetRaidName() or RAID)
+
+			if showRaidCompletionInTooltip then
+				self:AddRaidCompletionInfoToGameTooltip();
+			end
+			GameTooltip:Show();
+
 		end
 	end
 end
 
-function WeeklyRewardsActivityMixin:ShowIncompleteTooltip(title, description, formatRemainingProgress, addProgressLineCallback)
+function WeeklyRewardsActivityMixin:ShowIncompleteTooltip(title, description, formatRemainingProgress, addProgressLineCallback, extraFormatString)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -7, -11);
 	GameTooltip_SetTitle(GameTooltip, title);
 	if formatRemainingProgress then
-		GameTooltip_AddNormalLine(GameTooltip, description:format(self.info.threshold - self.info.progress));
+		GameTooltip_AddNormalLine(GameTooltip, description:format(self.info.threshold - self.info.progress, extraFormatString));
 	else
 		GameTooltip_AddNormalLine(GameTooltip, description);
 	end
@@ -638,6 +659,55 @@ function WeeklyRewardsActivityMixin:ShowPreviewItemTooltip()
 	GameTooltip:Show();
 end
 
+local function EncountersSort(left, right)
+	if left.instanceID ~= right.instanceID then
+		return left.instanceID < right.instanceID;
+	end
+	local leftCompleted = left.bestDifficulty > 0;
+	local rightCompleted = right.bestDifficulty > 0;
+	if leftCompleted ~= rightCompleted then
+		return leftCompleted;
+	end
+	return left.uiOrder < right.uiOrder;
+end
+
+function WeeklyRewardsActivityMixin:GetRaidName()
+	local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+	if encounters then
+		table.sort(encounters, EncountersSort);
+		if encounters[1] then
+			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounters[1].encounterID);
+			local instanceName = EJ_GetInstanceInfo(instanceID);
+			return instanceName;
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:AddRaidCompletionInfoToGameTooltip()
+	local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
+	if encounters then
+		table.sort(encounters, EncountersSort);
+		local lastInstanceID = nil;
+		for index, encounter in ipairs(encounters) do
+			local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
+			if instanceID ~= lastInstanceID then
+				local instanceName = EJ_GetInstanceInfo(instanceID);
+				GameTooltip_AddBlankLineToTooltip(GameTooltip);	
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_ENCOUNTER_LIST, instanceName));
+				lastInstanceID = instanceID;
+			end
+			if name then
+				if encounter.bestDifficulty > 0 then
+					local completedDifficultyName = DifficultyUtil.GetDifficultyName(encounter.bestDifficulty);
+					GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETED_ENCOUNTER, name, completedDifficultyName), GREEN_FONT_COLOR);
+				else
+					GameTooltip_AddColoredLine(GameTooltip, string.format(DASH_WITH_TEXT, name), DISABLED_FONT_COLOR);
+				end
+			end
+		end
+	end
+end
+
 function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, upgradeItemLevel)
 	local currentDifficultyID = self.info.level;
 	local currentDifficultyName = DifficultyUtil.GetDifficultyName(currentDifficultyID);
@@ -650,38 +720,7 @@ function WeeklyRewardsActivityMixin:HandlePreviewRaidRewardTooltip(itemLevel, up
 			GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_RAID, difficultyName));
 
-			local encounters = C_WeeklyRewards.GetActivityEncounterInfo(self.info.type, self.info.index);
-			if encounters then
-				table.sort(encounters, function(left, right)
-					if left.instanceID ~= right.instanceID then
-						return left.instanceID < right.instanceID;
-					end
-					local leftCompleted = left.bestDifficulty > 0;
-					local rightCompleted = right.bestDifficulty > 0;
-					if leftCompleted ~= rightCompleted then
-						return leftCompleted;
-					end
-					return left.uiOrder < right.uiOrder;
-				end)
-				local lastInstanceID = nil;
-				for index, encounter in ipairs(encounters) do
-					local name, description, encounterID, rootSectionID, link, instanceID = EJ_GetEncounterInfo(encounter.encounterID);
-					if instanceID ~= lastInstanceID then
-						local instanceName = EJ_GetInstanceInfo(instanceID);
-						GameTooltip_AddBlankLineToTooltip(GameTooltip);	
-						GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_ENCOUNTER_LIST, instanceName));
-						lastInstanceID = instanceID;
-					end
-					if name then
-						if encounter.bestDifficulty > 0 then
-							local completedDifficultyName = DifficultyUtil.GetDifficultyName(encounter.bestDifficulty);
-							GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETED_ENCOUNTER, name, completedDifficultyName), GREEN_FONT_COLOR);
-						else
-							GameTooltip_AddColoredLine(GameTooltip, string.format(DASH_WITH_TEXT, name), DISABLED_FONT_COLOR);
-						end
-					end
-				end
-			end
+			self:AddRaidCompletionInfoToGameTooltip();
 		end
 	end
 end
@@ -717,6 +756,8 @@ function WeeklyRewardsActivityMixin:HandlePreviewWorldRewardTooltip(itemLevel, u
 		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 		GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_WORLD, nextLevel));
 	end
+	
+	self:AddWorldRunsToTooltip();
 end
 
 function WeeklyRewardsActivityMixin:AddTopRunsToTooltip()
@@ -754,6 +795,38 @@ function WeeklyRewardsActivityMixin:AddTopRunsToTooltip()
 			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_HEROIC);
 			numHeroic = numHeroic - 1;
 			missingRuns = missingRuns - 1;
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:AddWorldRunsToTooltip()
+	local desiredRuns = self.info.threshold;
+	if desiredRuns <= 0 then
+		return;
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
+	
+	-- Comes sorted in descending difficulty
+	local combineSharedDifficulty = true;
+	local activityTierProgress = C_WeeklyRewards.GetSortedProgressForActivity(Enum.WeeklyRewardChestThresholdType.World, combineSharedDifficulty);	
+
+	-- For Delves, difficulty is the tier and numPoints is the number of completions.
+	-- We loop on number of completions and print a line for each, until we hit the desiredRuns or have no remaining progress.
+	for _, tierProgress in ipairs(activityTierProgress) do
+		local numRuns = math.min(tierProgress.numPoints, desiredRuns);
+		if numRuns <= 0 then
+			return;
+		end
+		desiredRuns = desiredRuns - numRuns;
+
+		-- Difficulties above 1 are guaranteed to be Delves and get a Delve-specific string, otherwise they get a generic string.
+		-- This will need to change if the assumption of World activities capping at difficulty 1 does not hold.
+		if tierProgress.difficulty > 1 then
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_INFO, tierProgress.difficulty, numRuns));
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_AND_WORLD_INFO, tierProgress.difficulty, numRuns));
 		end
 	end
 end
@@ -807,7 +880,7 @@ function WeeklyRewardActivityItemMixin:OnLeave()
 end
 
 function WeeklyRewardActivityItemMixin:OnUpdate()
-	if TooltipUtil.ShouldDoItemComparison() then
+	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip);

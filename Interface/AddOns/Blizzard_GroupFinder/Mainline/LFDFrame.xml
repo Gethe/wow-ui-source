@@ -295,14 +295,7 @@
 								<ScrollChild>
 									<Frame name="$parentChildFrame" inherits="LFGRewardFrameTemplate">
 										<Scripts>
-											<OnLoad>
-												--Move the title to deal with an offset so scrolling doesn't look as bad with the LFD border.
-												self.title:SetPoint("TOPLEFT", 10, -8);
-												LFGRewardsFrame_OnLoad(self);
-											</OnLoad>
-											<OnShow>
-												LFDQueueFrameRandom_UpdateFrame();
-											</OnShow>
+											<OnShow function="LFDQueueFrameRandom_UpdateFrame"/>
 										</Scripts>
 									</Frame>
 								</ScrollChild>

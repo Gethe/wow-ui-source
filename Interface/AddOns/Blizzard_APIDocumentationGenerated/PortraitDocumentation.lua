@@ -8,6 +8,7 @@ local Portrait =
 		{
 			Name = "SetPortraitToTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

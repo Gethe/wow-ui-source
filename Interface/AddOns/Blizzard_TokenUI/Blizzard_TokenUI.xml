@@ -1,59 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="TokenHeaderTemplate" mixin="TokenHeaderMixin" virtual="true">
-		<Size y="26"/>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Left" atlas="Options_ListExpand_Left" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Right" atlas="Options_ListExpand_Right" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Middle" atlas="_Options_ListExpand_Middle" useAtlasSize="false">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontNormalLeft">
-					<Size y="15"/>
-					<Anchors>
-						<Anchor point="LEFT" x="10"/>
-						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="HighlightLeft" atlas="Options_ListExpand_Left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="HighlightRight" atlas="Options_ListExpand_Right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="HighlightMiddle" atlas="_Options_ListExpand_Middle" useAtlasSize="false" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Button name="TokenHeaderTemplate" inherits="ListHeaderThreeSliceTemplate" mixin="TokenHeaderMixin" virtual="true">
 		<Scripts>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad_TokenHeaderTemplate" inherit="append"/>
 		</Scripts>
 	</Button>
 
@@ -88,6 +38,10 @@
 
 	<Button name="TokenEntryTemplate" mixin="TokenEntryMixin" virtual="true">
 		<Size y="22"/>
+		<KeyValues>
+			<KeyValue key="selectedHighlightAlpha" value="0.20" type="number"/>
+			<KeyValue key="mouseOverHighlightAlpha" value="0.10" type="number"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Content" setAllPoints="true">
 				<Frames>
@@ -198,11 +152,27 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollBar" relativePoint="TOPRIGHT" x="4" y="12"/>
 				</Anchors>
 			</Button>
+
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<!-- We're anchoring the spinner to the background art, which is part of the CharacterFrame -->
+					<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+				</Anchors>
+			</Frame>
+
+			<DropdownButton parentKey="filterDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-38" y="-30"/>
+				</Anchors>
+			</DropdownButton>
+
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -212,8 +182,8 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true" mixin="TokenFramePopupMixin">
-		<Size x="205" y="100"/>
+	<Frame name="TokenFramePopup" parentKey="Popup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true" mixin="TokenFramePopupMixin">
+		<Size x="197" y="100"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="TokenFrame" relativePoint="TOPRIGHT" x="3" y="-28"/>
 		</Anchors>
@@ -231,7 +201,7 @@
 			<CheckButton parentKey="InactiveCheckbox" inherits="UICheckButtonTemplate" mixin="InactiveCurrencyCheckboxMixin">
 				<Size x="26" y="26"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="32" y="-32"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-5" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
@@ -254,7 +224,8 @@
 			</CheckButton>
 			<Button parentKey="CurrencyTransferToggleButton" inherits="CurrencyTransferToggleButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BackpackCheckbox" relativePoint="BOTTOMLEFT" y="-8"/>
+					<Anchor point="LEFT" x="23"/>
+					<Anchor point="BOTTOM" y="25"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="$parent.CloseButton" inherits="UIPanelCloseButton">
@@ -268,6 +239,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
 	<Button name="BackpackTokenTemplate" mixin="BackpackTokenMixin" hidden="true" virtual="true">
 		<Size x="50" y="12"/>
 		<Layers>
@@ -293,6 +265,7 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
+
 	<Frame name="BackpackTokenFrameTemplate" mixin="BackpackTokenFrameMixin" virtual="true">
 		<Size x="1" y="17"/>
 		<Frames>

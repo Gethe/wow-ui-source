@@ -9,6 +9,7 @@ local EditModeManager =
 		{
 			Name = "ConvertLayoutInfoToString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,8 @@ local EditModeManager =
 		{
 			Name = "ConvertStringToLayoutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +58,7 @@ local EditModeManager =
 		{
 			Name = "IsValidLayoutName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +77,7 @@ local EditModeManager =
 		{
 			Name = "OnLayoutAdded",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -84,6 +89,7 @@ local EditModeManager =
 		{
 			Name = "OnLayoutDeleted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,6 +99,7 @@ local EditModeManager =
 		{
 			Name = "SaveLayouts",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +109,7 @@ local EditModeManager =
 		{
 			Name = "SetAccountSetting",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +120,7 @@ local EditModeManager =
 		{
 			Name = "SetActiveLayout",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

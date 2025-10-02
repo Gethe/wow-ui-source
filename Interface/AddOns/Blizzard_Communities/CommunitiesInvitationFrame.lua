@@ -1,6 +1,7 @@
 
 local COMMUNITIES_INVITATION_FRAME_EVENTS = {
 	"CLUB_MEMBER_UPDATED",
+	"CLUB_MEMBERS_UPDATED",
 	"PLAYER_REPORT_SUBMITTED",
 };
 
@@ -16,8 +17,8 @@ function CommunitiesInvitationFrameMixin:OnHide()
 end
 
 function CommunitiesInvitationFrameMixin:OnEvent(event, ...)
-	if event == "CLUB_MEMBER_UPDATED" then
-		local clubId, memberId = ...;
+	if event == "CLUB_MEMBER_UPDATED" or event == "CLUB_MEMBERS_UPDATED" then
+		local clubId, _memberId = ...;
 		if clubId == self.clubId then
 			local invitationInfo = C_Club.GetInvitationInfo(self.clubId);
 			self:DisplayInvitation(invitationInfo);
@@ -101,7 +102,7 @@ end
 
 function CommunitiesInvitationFrameMixin:OnHyperlinkClick(link, text, button, ...)
 	if button == "RightButton" then
-		FriendsFrame_ShowDropdown(self.inviterInfo.name or "", 1, nil, nil, nil, nil, nil, self.clubId, nil, nil, nil, self.inviterInfo.guid)
+		FriendsFrame_ShowDropdown(self.inviterInfo.name or "", 1, nil, nil, nil, nil, self.clubId, nil, nil, nil, self.inviterInfo.guid)
 	else
 		SetItemRef(link, text, button, nil);
 	end

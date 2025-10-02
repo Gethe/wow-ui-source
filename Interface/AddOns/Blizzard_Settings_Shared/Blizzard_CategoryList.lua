@@ -83,8 +83,7 @@ local function SecureDoesCategoryHaveNewSetting(category)
 	end
 
 	for _, initializer in layout:EnumerateInitializers() do
-		local setting = initializer.data.setting;
-		if setting and IsNewSettingInCurrentVersion(setting:GetVariable()) then
+		if initializer.IsNewTagShown and initializer:IsNewTagShown() then
 			return true;
 		end
 	end
@@ -98,13 +97,7 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 	self.Label:SetText(category:GetName());
 	self.Toggle:SetShown(category:HasSubcategories());
 
-	local hasNewFeatureRegions = self.NewFeature.BGLabel and self.NewFeature.Label;
-	local showNewFeature = hasNewFeatureRegions and securecallfunction(SecureDoesCategoryHaveNewSetting, category);
-	if showNewFeature then
-		self.NewFeature.BGLabel:SetPoint("RIGHT", 0.5, -0.5);
-		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
-	end
-	self.NewFeature:SetShown(showNewFeature);
+	self:RefreshNewFeature();
 
 	self:SetExpanded(category:IsExpanded());
 	self:SetSelected(g_selectionBehavior:IsSelected(self));
@@ -125,6 +118,18 @@ function SettingsCategoryListButtonMixin:SetExpanded(expanded)
 		self.Toggle:SetNormalTexture("common-button-dropdown-closed");
 		self.Toggle:SetPushedTexture("common-button-dropdown-closedpressed");
 	end
+end
+
+function SettingsCategoryListButtonMixin:RefreshNewFeature()
+	local initializer = self:GetElementData();
+	local category = initializer.data.category;
+	local hasNewFeatureRegions = self.NewFeature.BGLabel and self.NewFeature.Label;
+	local showNewFeature = hasNewFeatureRegions and securecallfunction(SecureDoesCategoryHaveNewSetting, category);
+	if showNewFeature then
+		self.NewFeature.BGLabel:SetPoint("RIGHT", 0.5, -0.5);
+		self.NewFeature.Label:SetPoint("RIGHT", 0, 0);
+	end
+	self.NewFeature:SetShown(showNewFeature);
 end
 
 SettingsCategoryListMixin = CreateFromMixins(CallbackRegistryMixin);
@@ -305,11 +310,22 @@ function SettingsCategoryListMixin:SetCurrentCategory(category)
 	-- Ensure that our current category list set contains the category, otherwise select the required set.
 	self:SetCategorySet(category:GetCategorySet());
 
-	-- We won't find the category if it is a subcategory whose parent is not expanded. Expand the parent
-	-- if necessary, then regenerate the list.
+	-- All parent categories in the hierarchy must be expanded. If a parent category was expanded or the current category
+	-- was already expanded, require the categories to be recreated. The latter is expected if the category was expanded
+	-- explicitly via OpenToCategory().
+	local recreateCategories = false;
+
 	local parentCategory = category:GetParentCategory();
-	if parentCategory and not parentCategory:IsExpanded() then
-		parentCategory:SetExpanded(true);
+	while parentCategory ~= nil do
+		if not parentCategory:IsExpanded() then
+			parentCategory:SetExpanded(true);
+
+			recreateCategories = true;
+		end
+		parentCategory = parentCategory:GetParentCategory();
+	end
+
+	if recreateCategories or category:IsExpanded() then
 		self:CreateCategories();
 	end
 
@@ -401,4 +417,10 @@ function SettingsCategoryListMixin:CreateCategories()
 	self.elementList = self:GenerateElementList();
 	local dataProvider = CreateDataProvider(self.elementList);
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+end
+
+function SettingsCategoryListMixin:RefreshNewFeatures()
+	self.ScrollBox:ForEachFrame(function(button)
+		FunctionUtil.SafeInvokeMethod(button, "RefreshNewFeature");
+	end);
 end

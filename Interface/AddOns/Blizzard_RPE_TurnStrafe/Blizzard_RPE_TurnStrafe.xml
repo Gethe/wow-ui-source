@@ -1,0 +1,87 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="RPETurnStrafeStyleTypeTemplate" virtual="true">
+		<Size x="280" y="128"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true">
+					<Color r="0" g="0" b="1" a="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="SystemFont_Huge1" text="RPE_TURNSTRAFE_LEGACY">
+					<Anchors>
+						<Anchor point="TOP" y="-12"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal" text="RPE_TURNSTRAFE_LEGACY_DESC">
+					<Size x="220" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-12"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ActiveLabel" inherits="GameFontGreenLarge" text="RPE_TURNSTRAFE_ACTIVE">
+					<Size x="220" y="0"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="12"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ActivateButton" inherits="StaticPopupButtonTemplate" text="RPE_TURNSTRAFE_ACTIVATE">
+				<Size x="113" y="22"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ActiveLabel"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="RPETurnStrafeStyleFrameTemplate" mixin="RPETurnStrafeStyleMixin" inherits="StaticPopupBaseTemplate" parent="UIParent" hidden="true" virtual="true">
+		<Size x="666" y="260"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="SystemFont_Huge1" text="RPE_TURNSTRAFE_SELECT">
+					<Anchors>
+						<Anchor point="TOP" y="-36"/>
+					</Anchors>
+					<Color color="HIGHLIGHT_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="GameFontNormal">
+					<Size x="500" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-12"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator" atlas="professions-specializations-divider">
+					<Size x="2" y="143"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="24"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LegacyFrame" inherits="RPETurnStrafeStyleTypeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="26" y="40"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ModernFrame" inherits="RPETurnStrafeStyleTypeTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-26" y="40"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

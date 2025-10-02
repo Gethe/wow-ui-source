@@ -9,6 +9,7 @@ local UIFrameManager =
 		{
 			Name = "GetFrameVisibilityState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -18,6 +18,7 @@ local ZoneAbility =
 		{
 			Name = "GetZoneAbilityIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

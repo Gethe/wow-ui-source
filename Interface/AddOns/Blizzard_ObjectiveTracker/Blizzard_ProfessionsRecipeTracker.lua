@@ -32,10 +32,10 @@ function ProfessionsRecipeTrackerMixin:OnEvent(event, ...)
 end
 
 function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local link = C_TradeSkillUI.GetRecipeLink(GetRecipeID(block));
 		if link then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif mouseButton ~= "RightButton" then
 		if not ProfessionsFrame then
@@ -59,7 +59,9 @@ function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 			rootDescription:SetTag("MENU_PROFESSIONS_RECIPE_TRACKER");
 
 			local recipeId = GetRecipeID(block);
-			if not IsRecraftBlock(block) and IsSpellKnown(recipeId) then
+			local spellBank = Enum.SpellBookSpellBank.Player;
+			local includeOverrides = false;
+			if not IsRecraftBlock(block) and C_SpellBook.IsSpellInSpellBook(recipeId, spellBank, includeOverrides) then
 				rootDescription:CreateButton(PROFESSIONS_TRACKING_VIEW_RECIPE, function()
 			C_TradeSkillUI.OpenRecipe(recipeID);
 				end);

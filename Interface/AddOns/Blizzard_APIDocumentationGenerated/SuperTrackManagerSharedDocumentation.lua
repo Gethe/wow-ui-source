@@ -5,15 +5,16 @@ local SuperTrackManagerShared =
 		{
 			Name = "SuperTrackingMapPinType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "AreaPOI", Type = "SuperTrackingMapPinType", EnumValue = 0 },
 				{ Name = "QuestOffer", Type = "SuperTrackingMapPinType", EnumValue = 1 },
 				{ Name = "TaxiNode", Type = "SuperTrackingMapPinType", EnumValue = 2 },
 				{ Name = "DigSite", Type = "SuperTrackingMapPinType", EnumValue = 3 },
+				{ Name = "HousingPlot", Type = "SuperTrackingMapPinType", EnumValue = 4 },
 			},
 		},
 		{

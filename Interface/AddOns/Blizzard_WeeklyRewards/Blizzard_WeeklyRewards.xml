@@ -451,8 +451,8 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="evergreen-weeklyrewards-frame-back">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-8"/>
-						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -502,16 +502,16 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="evergreen-weeklyrewards-frame-back">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-8"/>
-						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="BorderShadow" atlas="evergreen-weeklyrewards-frame-back-shadow">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-8"/>
-						<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="8"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Divider1" atlas="evergreen-weeklyrewards-divider" useAtlasSize="true">
@@ -556,8 +556,8 @@
 			</Frame>
 			<Frame parentKey="Blackout" enableMouse="true" frameLevel="1000">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-8"/>
-					<Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+					<Anchor point="TOPLEFT" x="10" y="-8"/>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="8"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -607,7 +607,7 @@
 					<Anchor point="TOPLEFT" x="68" y="-470"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="WorldFrame" inherits="WeeklyRewardActivityTypeTemplate" hidden="true">
+			<Frame parentKey="WorldFrame" inherits="WeeklyRewardActivityTypeTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="68" y="-470"/>
 				</Anchors>
@@ -739,7 +739,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WeeklyRewardExpirationWarningDialog" enableMouse="true" mixin="GreatVaultRetirementWarningFrameMixin" frameLevel="500" hidden="true">
+	<Frame name="WeeklyRewardExpirationWarningDialog" enableMouse="true" mixin="GreatVaultRetirementWarningFrameMixin" frameLevel="500" hidden="true" frameStrata="HIGH">
 		<Size x="420" y="69"/>
 		<KeyValues>
 			<KeyValue key="layoutType" value="TooltipMixedLayout" type="string"/>

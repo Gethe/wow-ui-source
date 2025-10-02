@@ -1,0 +1,58 @@
+## Title: Blizzard_ActionBar
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_StoreUI, Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Colors, Blizzard_HelpPlate, Blizzard_MicroMenu
+## AllowLoad: Game
+Shared\ActionButtonUtil.lua
+Mainline\ActionButtonUtilOverrides.lua
+Shared\ActionButtonSpellAlerts.lua
+Shared\ActionButtonSpellAlerts.xml
+Mainline\AssistedCombatManager.lua
+Shared\StatusTrackingBar.lua
+Mainline\StatusTrackingBarTemplate.xml
+Shared\ExpBar.lua
+Mainline\ExpBarOverrides.lua
+Mainline\ExpBar.xml
+Shared\ReputationBar.lua
+Mainline\ReputationBarOverrides.lua
+Shared\ReputationBar.xml
+Mainline\AzeriteBar.lua
+Mainline\AzeriteBar.xml
+Mainline\ArtifactBar.lua
+Mainline\ArtifactBar.xml
+Mainline\HonorBar.lua
+Mainline\HonorBar.xml
+Mainline\HouseFavorBar.lua
+Mainline\HouseFavorBar.xml
+Shared\ActionButton.lua
+Mainline\ActionButtonOverrides.lua [AllowLoadGameType mainline]
+WoWLabs\ActionButtonOverrides.lua [AllowLoadGameType plunderstorm]
+Shared\ActionButtonComponentTemplate.xml
+Mainline\ActionButtonTemplate.xml
+Shared\ActionBar.lua
+Shared\ActionBarTemplate.xml
+Shared\MultiActionBars.lua
+Shared\MultiActionBars.xml
+Shared\MainActionBar.lua
+Mainline\MainActionBarOverrides.lua
+Mainline\MainActionBar.xml
+Shared\StatusTrackingManager.lua
+Mainline\StatusTrackingManagerOverrides.lua
+Mainline\StatusTrackingBar.xml
+Shared\StanceBar.lua
+Mainline\StanceBar.xml
+Shared\ExtraActionBar.lua
+Shared\ExtraActionBar.xml
+Shared\PossessActionBar.lua
+Mainline\PossessActionBar.xml
+WoWLabs\CustomActionBarOverlays.lua [AllowLoadGameType plunderstorm]
+WoWLabs\CustomActionBarOverlays.xml [AllowLoadGameType plunderstorm]
+Shared\PetActionBar.lua
+Mainline\PetActionBar.xml
+Shared\MultiCastActionBarFrame.lua
+Shared\MultiCastActionBarFrame.xml
+Shared\SpellFlyout.lua
+Shared\SpellFlyout.xml
+WoWLabs\KeybindReminder.lua [AllowLoadGameType plunderstorm]
+WoWLabs\KeybindReminder.xml [AllowLoadGameType plunderstorm]
+Shared\Localization.lua

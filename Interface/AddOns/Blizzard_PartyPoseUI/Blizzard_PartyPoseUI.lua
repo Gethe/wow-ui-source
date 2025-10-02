@@ -73,10 +73,12 @@ end
 
 function PartyPoseRewardsMixin:SetRewardsQuality(quality)
 	if (quality) then
-		local atlasTexture = LOOT_BORDER_BY_QUALITY[quality];
+		local atlasTexture = ColorManager.GetAtlasDataForLootBorderItemQuality(quality);
 		self.IconBorder:SetAtlas(atlasTexture, true);
-		local color = ITEM_QUALITY_COLORS[quality];
-		self.Name:SetVertexColor(color.r, color.g, color.b);
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.Name:SetVertexColor(colorData.r, colorData.g, colorData.b);
+		end
 	else
 		self.IconBorder:SetTexture([[Interface\Common\WhiteIconFrame]]);
 		self.Name:SetVertexColor(HIGHLIGHT_FONT_COLOR:GetRGB());
@@ -320,6 +322,7 @@ do
 		local maxWidgetWidth = 1;
 
 		for index, widgetFrame in ipairs(sortedWidgets) do
+			widgetFrame:ClearAllPoints();
 			if ( index == 1 ) then
 				widgetFrame:SetPoint("TOP", widgetContainerFrame, "TOP", 0, 0);
 				widgetsHeight = widgetsHeight + widgetFrame:GetWidgetHeight();
@@ -372,8 +375,12 @@ function PartyPoseMixin:GetPartyPoseData(mapID, winner)
 	local playerFactionGroup = UnitFactionGroup("player");
 	local partyPoseData = {};
 	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByMapID(mapID);
-	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
-	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
+	--winner is either a boolean or a faction numer for warfronts & islands. 
+	if type(winner) == "boolean" then
+		partyPoseData.playerWon = winner;
+	else
+		partyPoseData.playerWon = (winner == PLAYER_FACTION_GROUP[playerFactionGroup]);
+	end
 	return partyPoseData;
 end
 
@@ -381,8 +388,12 @@ function PartyPoseMixin:GetPartyPoseDataFromPartyPoseID(partyPoseID, winner)
 	local playerFactionGroup = UnitFactionGroup("player");
 	local partyPoseData = {};
 	partyPoseData.partyPoseInfo = C_PartyPose.GetPartyPoseInfoByID(partyPoseID)
-	--winner is a faction string for warfronts & islands.. Otherwise it is a boolean. 
-	partyPoseData.playerWon = (type(winner) == "string") and (PLAYER_FACTION_GROUP[winner] == playerFactionGroup) or winner;
+	--winner is either a boolean or a faction numer for warfronts & islands.  
+	if type(winner) == "boolean" then
+		partyPoseData.playerWon = winner;
+	else
+		partyPoseData.playerWon = (winner == PLAYER_FACTION_GROUP[playerFactionGroup]);
+	end
 	return partyPoseData;
 end
 
@@ -413,6 +424,30 @@ function PartyPoseMixin:OnEvent(event, ...)
 	if (event == "UI_MODEL_SCENE_INFO_UPDATED") then
 		self:ReloadPartyPose();
 	elseif ( event == "PLAYER_LEAVING_WORLD" ) then
-		HideUIPanel(self);
+		self:Dismiss();
 	end
+end
+
+function PartyPoseMixin:OnKeyDown(key)
+	if key == "ESCAPE" then
+		self:Dismiss();
+	end
+end
+
+function PartyPoseMixin:Dismiss()
+	-- Implement in your derived mixin for any logic to be performed when the
+	-- panel should be hidden by user interaction such as an 'ESC' keypress
+	-- or clicking a Leave button.
+
+	HideUIPanel(self);
+end
+
+PartyPoseUtil = {};
+
+function PartyPoseUtil.AddDismissClickHandler(button, panelFrame)
+	local function OnClick()
+		panelFrame:Dismiss();
+	end
+
+	button:SetScript("OnClick", OnClick);
 end

@@ -9,12 +9,7 @@ local l10nTable = {
 	koKR = {},
 	ptBR = {},
 	ptPT = {},
-	ruRU = {
-		localize = function()
-			--Adjust text widths for long Russian words
-			PetJournalHealPetButtonSpellName:SetWidth(90)
-		end,
-	},
+	ruRU = {},
 	zhCN = {
 		localize = function()
 			StaticPopupDialogs["BATTLE_PET_RENAME"].maxLetters = 8;

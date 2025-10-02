@@ -7,18 +7,33 @@ function SharedReportFrameMixin:OnLoad()
 	self.selectedMajorType = nil;
 	self.MinorCategoryButtonPool = CreateFramePool("CHECKBUTTON", self, "ReportingFrameMinorCategoryButtonTemplate");
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+	self:RegisterEvent("REPORT_SCREENSHOT_READY");
+
+	self.ScreenshotReportingFrame.TakeScreenshotButton:SetScript("OnClick", GenerateClosure(self.OnTakeScreenshotClicked, self));
 
 	self.ReportingMajorCategoryDropdown:SetWidth(200);
 	self.ReportingMajorCategoryDropdown:SetDefaultText(REPORTING_MAKE_SELECTION);
 end
 
 function SharedReportFrameMixin:OnHide()
-	self:Reset();
+	if not self.enteringScreenshotMode then 
+		self:Reset();
+	end
+end
+
+function SharedReportFrameMixin:OnTakeScreenshotClicked()
+	self.enteringScreenshotMode = true;
+	ReportScreenshotModeFrame:Show();
 end
 
 function SharedReportFrameMixin:OnEvent(event, ...)
 	if(event == "REPORT_PLAYER_RESULT") then
 		self:UpdateThankYouMessage(true);
+	elseif(event == "REPORT_SCREENSHOT_READY") then
+		self.hasScreenshot = true;
+		self.ScreenshotReportingFrame.ScreenshotEmptyText:Hide();
+		self.ReportButton:UpdateButtonState();
+		C_ReportSystem.SetScreenshotPreviewTexture(self.ScreenshotReportingFrame.ScreenshotPreview);
 	end
 end
 
@@ -26,6 +41,11 @@ function SharedReportFrameMixin:Reset()
 	self.MinorCategoryButtonPool:ReleaseAll();
 	self.selectedMajorType = nil;
 	self.Comment:ClearAllPoints();
+	self.ScreenshotReportingFrame.ScreenshotPreview:SetAtlas("UI-Frame-DialogBox-BackgroundTile");
+	self.ScreenshotReportingFrame.ScreenshotEmptyText:Show();
+	self.ScreenshotReportingFrame:ClearAllPoints();
+	self.ScreenshotReportingFrame:Hide();
+	self.hasScreenshot = nil;
 	self.reporPlayerLocation = nil;
 	self.reportInfo = nil;
 	self.minorCategoryFlags:ClearAll();
@@ -35,6 +55,7 @@ end
 
 function SharedReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 	self.MinorCategoryButtonPool:ReleaseAll();
+	self.ScreenshotReportingFrame:SetShown(not showThankYouMessage);
 	self.Comment:SetShown(not showThankYouMessage);
 	self.MinorReportDescription:SetShown(not showThankYouMessage);
 	self.ReportString:SetShown(not showThankYouMessage);
@@ -67,13 +88,12 @@ function SharedReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown:Show();
 end
 
-function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
+function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport)
 	self:SetAttribute("initiate_report", {
 		reportInfo = reportInfo,
 		playerName = playerName,
 		playerLocation = playerLocation,
 		isBnetReport = isBnetReport,
-		sendReportWithoutDialog = sendReportWithoutDialog,
 	});
 end
 
@@ -85,7 +105,7 @@ function SharedReportFrameMixin:UpdateHarmfulToMinorsMinorCategoryEnabled()
 	end
 end
 
-function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
+function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport)
 	if(not reportInfo) then
 		return;
 	end
@@ -97,19 +117,19 @@ function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, p
 	self:UpdateThankYouMessage(false);
 
 	self.isBnetReport = isBnetReport;
-	self:SetShown(not sendReportWithoutDialog);
-	if (sendReportWithoutDialog) then
-		self:SendReport();
-		self:Reset();
-		return;
-	end
+	self:Show();
 
 	if(playerName) then
-		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
+		if (reportInfo.reportType == Enum.ReportType.HousingDecor) then
+			self.ReportString:SetText(REPORTING_REPORT_PLAYER_HOUSE:format(playerName));
+		else
+			self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
+		end
 	end
 	self.ReportString:SetShown(playerName)
 	self.MinorCategoryButtonPool:ReleaseAll();
 	self.selectedMajorType = nil;
+	self.ScreenshotReportingFrame:Hide();
 	self.Comment:Hide();
 	self.MinorReportDescription:Hide();
 	self.ReportButton:UpdateButtonState();
@@ -134,7 +154,8 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType);
 	self.selectedMajorType = majorType;
 	self.minorCategoryFlags:ClearAll();
-	if(not minorCategories) then
+	self.requiresScreenshot = C_ReportSystem.RequiresScreenshotForReportType(reportType);
+	if(not minorCategories and not self.requiresScreenshot) then
 		return;
 	end
 	self.lastCategory = nil;
@@ -151,7 +172,19 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 			end
 		end
 	end
-	self.MinorReportDescription:Show();
+	if(self.lastCategory) then
+		self.MinorReportDescription:Show();
+	end
+	if(self.requiresScreenshot) then
+		self.ScreenshotReportingFrame:ClearAllPoints();
+		if(not self.lastCategory) then
+			self.ScreenshotReportingFrame:SetPoint("TOP", self.MinorReportDescription, "TOP", 0, -3);
+		else
+			self.ScreenshotReportingFrame:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -3);
+		end
+		self.ScreenshotReportingFrame:Show();
+		self.lastCategory = self.ScreenshotReportingFrame;
+	end
 	self.Comment:ClearAllPoints();
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
 	self.Comment:Show();
@@ -191,11 +224,37 @@ function SharedReportFrameMixin:SendReport()
 	self.reportInfo:SetReportMajorCategory(self.selectedMajorType);
 	self.reportInfo:SetMinorCategoryFlags(self.minorCategoryFlags:GetFlags());
 	self.reportInfo:SetComment(self.Comment.EditBox:GetText());
+
 	C_ReportSystem.SendReport(self.reportInfo, self.reportPlayerLocation);
 end
 
 function SharedReportFrameMixin:SetMinorCategoryFlag(flag, flagValue)
 	self.minorCategoryFlags:SetOrClear(flag, flagValue);
+end
+
+ScreenshotModeFrameMixin = {};
+
+function ScreenshotModeFrameMixin:OnShow()
+	SetAlternateTopLevelParent(self);
+	UIParent:Hide();
+end
+
+function ScreenshotModeFrameMixin:OnHide()
+	ClearAlternateTopLevelParent();
+	UIParent:Show();
+	ReportFrame.enteringScreenshotMode = false;
+end
+
+function ScreenshotModeFrameMixin:OnMouseUp(button)
+	if ( button == "LeftButton" ) then
+		PlaySound(SOUNDKIT.REPORT_SCREENSHOT_CAMERA);
+		if C_Housing.ValidateReportScreenshot(ReportFrame.reportInfo.plotIndex) then
+			C_ReportSystem.TakeReportScreenshot();
+		else
+			-- TODO: Display error
+		end
+		self:Hide();
+	end
 end
 
 ReportingFrameMinorCategoryButtonMixin = { };
@@ -271,7 +330,8 @@ end
 
 function ReportButtonMixin:UpdateButtonState()
 	local parent = self:GetParent();
-	parent:ManageButton(self, parent.selectedMajorType and parent.minorCategoryFlags:IsAnySet());
+	local buttonActive = (parent.requiresScreenshot and parent.hasScreenshot) or (parent.selectedMajorType and parent.minorCategoryFlags:IsAnySet());
+	parent:ManageButton(self, buttonActive);
 end
 
 function ReportButtonMixin:OnEnter()
@@ -348,6 +408,17 @@ function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
 	return reportInfo;
 end
 
+function ReportInfo:CreateNeighborhoodReportInfo(reportType)
+	local reportInfo = self:CreateReportInfoFromType(reportType);
+	return reportInfo;
+end
+
+function ReportInfo:CreateDecorReportInfo(reportType, plotIndex)
+	local reportInfo = self:CreateReportInfoFromType(reportType);
+	reportInfo:SetPlotIndex(plotIndex);
+	return reportInfo;
+end
+
 ReportInfoMixin = { };
 function ReportInfoMixin:Clear()
 	self.reportType = nil;
@@ -360,6 +431,8 @@ function ReportInfoMixin:Clear()
 	self.clubFinderGUID = nil;
 	self.mailIndex = nil;
 	self.petGUID = nil;
+	self.neighborhoodGUID = nil;
+	self.plotIndex = nil;
 end
 
 function ReportInfoMixin:SetMailIndex(mailIndex)
@@ -408,6 +481,10 @@ end
 
 function ReportInfoMixin:SetCraftingOrderID(craftingOrderID)
 	self.craftingOrderID = craftingOrderID;
+end
+
+function ReportInfoMixin:SetPlotIndex(plotIndex)
+	self.plotIndex = plotIndex;
 end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)
@@ -468,8 +545,7 @@ do
 			local playerName = data.playerName;
 			local playerLocation = data.playerLocation and Mixin(data.playerLocation, PlayerLocationMixin) or nil;
 			local isBnetReport = data.isBnetReport;
-			local sendReportWithoutDialog = data.sendReportWithoutDialog;
-			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog);
+			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
 		end
 	end
 end

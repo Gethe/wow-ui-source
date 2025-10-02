@@ -9,6 +9,7 @@ local TradeSkillUI =
 		{
 			Name = "CanStoreEnchantInItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,12 +22,30 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "CancelProfessionRespec",
+			Type = "Function",
+		},
+		{
+			Name = "CheckRespecNPC",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canInteract", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseTradeSkill",
+			Type = "Function",
+		},
+		{
+			Name = "ConfirmProfessionRespec",
 			Type = "Function",
 		},
 		{
 			Name = "CraftEnchant",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +59,7 @@ local TradeSkillUI =
 		{
 			Name = "CraftRecipe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +74,7 @@ local TradeSkillUI =
 		{
 			Name = "CraftSalvage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +88,7 @@ local TradeSkillUI =
 		{
 			Name = "DoesRecraftingRecipeAcceptItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +140,7 @@ local TradeSkillUI =
 		{
 			Name = "GetConcentrationCurrencyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,6 +155,7 @@ local TradeSkillUI =
 		{
 			Name = "GetCraftableCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -147,6 +171,7 @@ local TradeSkillUI =
 		{
 			Name = "GetCraftingOperationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +189,7 @@ local TradeSkillUI =
 		{
 			Name = "GetCraftingOperationInfoForOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +207,7 @@ local TradeSkillUI =
 		{
 			Name = "GetCraftingReagentBonusText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -198,6 +225,7 @@ local TradeSkillUI =
 		{
 			Name = "GetCraftingTargetItems",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +240,7 @@ local TradeSkillUI =
 		{
 			Name = "GetEnchantItems",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -226,6 +255,7 @@ local TradeSkillUI =
 		{
 			Name = "GetFactionSpecificOutputItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -240,6 +270,7 @@ local TradeSkillUI =
 		{
 			Name = "GetGatheringOperationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -254,6 +285,7 @@ local TradeSkillUI =
 		{
 			Name = "GetHideUnownedFlags",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -269,6 +301,7 @@ local TradeSkillUI =
 		{
 			Name = "GetItemCraftedQualityByItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -278,11 +311,27 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "quality", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetItemCraftedQualityInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingQualityInfo", Nilable = true },
 			},
 		},
 		{
 			Name = "GetItemReagentQualityByItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,8 +344,24 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetItemReagentQualityInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingQualityInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemSlotModifications",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -311,6 +376,7 @@ local TradeSkillUI =
 		{
 			Name = "GetItemSlotModificationsForOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -325,6 +391,7 @@ local TradeSkillUI =
 		{
 			Name = "GetOriginalCraftRecipeID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -340,6 +407,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionByInventorySlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -372,6 +440,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionInfoByRecipeID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -386,6 +455,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionInfoBySkillLineID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -409,6 +479,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionNameForSkillLineAbility",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -423,6 +494,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionSkillLineID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -437,6 +509,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionSlots",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -451,6 +524,7 @@ local TradeSkillUI =
 		{
 			Name = "GetProfessionSpells",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,6 +540,7 @@ local TradeSkillUI =
 		{
 			Name = "GetQualitiesForRecipe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -480,6 +555,7 @@ local TradeSkillUI =
 		{
 			Name = "GetReagentDifficultyText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -495,6 +571,7 @@ local TradeSkillUI =
 		{
 			Name = "GetReagentRequirementItemIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -509,6 +586,7 @@ local TradeSkillUI =
 		{
 			Name = "GetReagentSlotStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -526,6 +604,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeDescription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -542,6 +621,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeFixedReagentItemLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -557,6 +637,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -572,6 +653,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeInfoForSkillLineAbility",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -585,8 +667,25 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetRecipeItemQualityInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "quality", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingQualityInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetRecipeOutputItemData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -605,6 +704,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeQualityItemIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -619,6 +719,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeQualityReagentItemLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -635,6 +736,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeRequirements",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -649,6 +751,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipeSchematic",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -665,6 +768,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecipesTracked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -679,6 +783,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecraftItems",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -693,6 +798,7 @@ local TradeSkillUI =
 		{
 			Name = "GetRecraftRemovalWarnings",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -717,6 +823,7 @@ local TradeSkillUI =
 		{
 			Name = "GetSalvagableItemIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -749,6 +856,7 @@ local TradeSkillUI =
 		{
 			Name = "GetSkillLineForGear",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -772,6 +880,7 @@ local TradeSkillUI =
 		{
 			Name = "GetTradeSkillDisplayName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -795,6 +904,7 @@ local TradeSkillUI =
 		{
 			Name = "IsEnchantTargetValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -829,6 +939,7 @@ local TradeSkillUI =
 		{
 			Name = "IsNearProfessionSpellFocus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -843,6 +954,7 @@ local TradeSkillUI =
 		{
 			Name = "IsOriginalCraftRecipeLearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -857,6 +969,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecipeFirstCraft",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -871,6 +984,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecipeInBaseSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -885,6 +999,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecipeInSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -900,6 +1015,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecipeProfessionLearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -914,6 +1030,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecipeTracked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -929,6 +1046,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecraftItemEquipped",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -943,6 +1061,7 @@ local TradeSkillUI =
 		{
 			Name = "IsRecraftReagentValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -967,6 +1086,7 @@ local TradeSkillUI =
 		{
 			Name = "OpenRecipe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -976,6 +1096,7 @@ local TradeSkillUI =
 		{
 			Name = "OpenTradeSkill",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -990,6 +1111,7 @@ local TradeSkillUI =
 		{
 			Name = "RecraftLimitCategoryValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1004,6 +1126,7 @@ local TradeSkillUI =
 		{
 			Name = "RecraftRecipe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1021,6 +1144,7 @@ local TradeSkillUI =
 		{
 			Name = "RecraftRecipeForOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1039,6 +1163,7 @@ local TradeSkillUI =
 		{
 			Name = "SetOnlyShowAvailableForOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1048,6 +1173,7 @@ local TradeSkillUI =
 		{
 			Name = "SetProfessionChildSkillLineID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1057,6 +1183,7 @@ local TradeSkillUI =
 		{
 			Name = "SetRecipeTracked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1068,6 +1195,7 @@ local TradeSkillUI =
 		{
 			Name = "SetShowLearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1077,6 +1205,7 @@ local TradeSkillUI =
 		{
 			Name = "SetShowUnlearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1086,6 +1215,7 @@ local TradeSkillUI =
 		{
 			Name = "SetSourceTypeFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1126,6 +1256,15 @@ local TradeSkillUI =
 				{ Name = "recipeID", Type = "number", Nilable = false },
 				{ Name = "skillLineID", Type = "number", Nilable = false },
 				{ Name = "expansionSkillLineID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ProfessionRespecConfirmation",
+			Type = "Event",
+			LiteralName = "PROFESSION_RESPEC_CONFIRMATION",
+			Payload =
+			{
+				{ Name = "skillName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -1241,17 +1380,6 @@ local TradeSkillUI =
 
 	Tables =
 	{
-		{
-			Name = "CraftingReagentItemFlag",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "TooltipShowsAsStatModifications", Type = "CraftingReagentItemFlag", EnumValue = 0 },
-			},
-		},
 	},
 };
 

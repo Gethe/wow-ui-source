@@ -1,8 +1,0 @@
-## Title: Blizzard_TextStatusBar
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
-## AllowLoad: Both
-## AllowLoadGameType: mainline
-Mainline\TextStatusBar.lua
-Mainline\TextStatusBar.xml

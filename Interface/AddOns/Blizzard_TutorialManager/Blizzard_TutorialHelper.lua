@@ -197,8 +197,8 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 			if btn and btn.action then
 				local actionType, sID, subType = GetActionInfo(btn.action);
 
-				local baseSpellID  = FindBaseSpellByID(spellID) or spellID;
-				local overrideSpellID = FindSpellOverrideByID(spellID) or spellID;
+				local baseSpellID  = C_SpellBook.FindBaseSpellByID(spellID) or spellID;
+				local overrideSpellID = C_SpellBook.FindSpellOverrideByID(spellID) or spellID;
 				local isFlyout = actionType == "flyout";
 				if not isFlyout and sID and (sID == baseSpellID or sID == overrideSpellID) then
 					return btn;
@@ -283,6 +283,21 @@ function TutorialHelper:GetBagBinding()
 	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
+-- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCreatureIDFromGUID(guid)
 	return tonumber(string.match(guid, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:RegisterTutorialForEvents(tutorial, events)
+	for _i, event in ipairs(events) do
+		Dispatcher:RegisterEvent(event, tutorial);
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:UnregisterTutorialForEvents(tutorial, events)
+	for _i, event in ipairs(events) do
+		Dispatcher:UnregisterEvent(event, tutorial);
+	end
 end

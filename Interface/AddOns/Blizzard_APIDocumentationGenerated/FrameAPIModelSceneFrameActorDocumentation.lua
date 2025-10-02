@@ -8,6 +8,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "AttachToMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "CalculateMountScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +35,21 @@ local FrameAPIModelSceneFrameActor =
 			Returns =
 			{
 				{ Name = "scale", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DetachFromMount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "rider", Type = "ModelSceneFrameActor", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -46,6 +63,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "DressPlayerSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +86,8 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "GetItemTransmogInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +194,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "IsSlotAllowed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +209,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "IsSlotVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +245,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetAutoDress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -232,6 +255,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetFrontEndLobbyModelFromDefaultCharacterDisplay",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,6 +270,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetItemTransmogInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -262,6 +287,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetModelByHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,6 +302,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetObeyHideInTransmogFlag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +312,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetPaused",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -293,26 +321,9 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
-			Name = "SetPlayerModelFromGlues",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "characterIndex", Type = "number", Nilable = true },
-				{ Name = "sheatheWeapons", Type = "bool", Nilable = false, Default = false },
-				{ Name = "autoDress", Type = "bool", Nilable = false, Default = true },
-				{ Name = "hideWeapons", Type = "bool", Nilable = false, Default = false },
-				{ Name = "usePlayerNativeForm", Type = "bool", Nilable = false, Default = true },
-			},
-
-			Returns =
-			{
-				{ Name = "success", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetSheathed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,6 +334,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetUseTransmogChoices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -332,6 +344,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetUseTransmogSkin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -339,24 +352,9 @@ local FrameAPIModelSceneFrameActor =
 			},
 		},
 		{
-			Name = "TryOn",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "itemLinkOrItemModifiedAppearanceID", Type = "cstring", Nilable = false },
-				{ Name = "handSlotName", Type = "cstring", Nilable = true },
-				{ Name = "spellEnchantmentID", Type = "number", Nilable = false, Default = 0 },
-			},
-
-			Returns =
-			{
-				{ Name = "reason", Type = "ItemTryOnReason", Nilable = true },
-			},
-		},
-		{
 			Name = "Undress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -366,6 +364,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "UndressSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

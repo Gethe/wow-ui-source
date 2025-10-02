@@ -18,11 +18,40 @@ local function Register()
 			ChatConfigFrame_OnChatDisabledChanged(disabled);
 		end
 
+		local function GetDisabledChatTooltip()
+			local tooltip = OPTION_TOOLTIP_DISABLE_CHAT;
+
+			-- If the account is muted give the player extra information on how to unmute it.
+			if C_SocialRestrictions.IsMuted() == true then
+				tooltip = tooltip .. "\n\n" .. RED_FONT_COLOR:WrapTextInColorCode(OPTION_TOOLTIP_DISABLE_CHAT_ACCOUNT_MUTE);
+			end
+
+			return tooltip;
+		end
+
+		local function CanDisableChatBeChanged()
+			-- The option can't be changed if the account is muted.
+			return C_SocialRestrictions.IsMuted() == false;
+		end
+
 		local defaultValue = false;
+		
+		local function GetDisableChatDefaultValue()
+			-- The option defaults to true if the account is muted.
+			if C_SocialRestrictions.IsMuted() == true then
+				return true;
+			end
+
+			return defaultValue;
+		end
+
 		local setting = Settings.RegisterProxySetting(category, "PROXY_DISABLE_CHAT",
 			Settings.VarType.Boolean, RESTRICT_CHAT_CONFIG_DISABLE, defaultValue, C_SocialRestrictions.IsChatDisabled, SetChatDisabled);
-		local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_DISABLE_CHAT);
+		setting.GetDefaultValueDerived = GetDisableChatDefaultValue;
+
+		local initializer = Settings.CreateCheckbox(category, setting, GetDisabledChatTooltip);
 		initializer:SetSettingIntercept(InterceptDisableChatChanged);
+		initializer:AddModifyPredicate(CanDisableChatBeChanged);
 
 		EventRegistry:RegisterFrameEventAndCallback("CHAT_DISABLED_CHANGED", function()
 			setting:SetValue(C_SocialRestrictions.IsChatDisabled());
@@ -56,18 +85,13 @@ local function Register()
 			Settings.VarType.Boolean, BLOCK_GUILD_INVITES, defaultValue, GetAutoDeclineGuildInvites, SetAutoDeclineGuildInvites);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_GUILD_INVITES);
 	end
+
+	-- Block Neighborhood Invites
+	SocialOverrides.CreateBlockNeighborhoodInvitesSetting(category);
 	
 	-- Block Calendar Invites
 	Settings.SetupCVarCheckbox(category, "restrictCalendarInvites", RESTRICT_CALENDAR_INVITES, OPTION_TOOLTIP_RESTRICT_CALENDAR_INVITES);
 	
-	-- Display Only Character Achievements
-	if AreAccountAchievementsHidden and ShowAccountAchievements then
-		local defaultValue = false;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_SHOW_ACCOUNT_ACHIEVEMENTS",
-			Settings.VarType.Boolean, SHOW_ACCOUNT_ACHIEVEMENTS, defaultValue, AreAccountAchievementsHidden, ShowAccountAchievements);
-		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_SHOW_ACCOUNT_ACHIEVEMENTS);
-	end
-
 	-- Block Channel Invites
 	Settings.SetupCVarCheckbox(category, "blockChannelInvites", BLOCK_CHAT_CHANNEL_INVITE, OPTION_TOOLTIP_BLOCK_CHAT_CHANNEL_INVITE);
 
@@ -79,6 +103,33 @@ local function Register()
 
 	-- Broadcast Updates
 	Settings.SetupCVarCheckbox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
+
+	-- Location visibility
+	-- Friends and Guildmates can always see your location, so right now this only controls Recent Ally visibility
+	do
+		local function ShouldAddLocationVisibilitySetting()
+			local getterSetterExist = GetAllowRecentAlliesSeeLocation and SetAllowRecentAlliesSeeLocation;
+			return getterSetterExist;
+		end
+
+		if ShouldAddLocationVisibilitySetting() then
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(false, SOCIAL_LOCATION_VISIBILITY_FRIEND_GUILD);
+				container:Add(true, SOCIAL_LOCATION_VISIBILITY_FRIEND_GUILD_ALLIES);
+				return container:GetData();
+			end
+
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SOCIAL_LOCATION_VISIBILITY",
+				Settings.VarType.Boolean, SOCIAL_LOCATION_VISIBILITY_SETTING, defaultValue, GetAllowRecentAlliesSeeLocation, SetAllowRecentAlliesSeeLocation);
+			Settings.CreateDropdown(category, setting, GetOptions, SOCIAL_LOCATION_VISIBILITY_SETTING_TOOLTIP);
+
+			EventRegistry:RegisterFrameEventAndCallback("LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED", function()
+				setting:SetValue(GetAllowRecentAlliesSeeLocation());
+			end);
+		end
+	end
 
 	-- Real ID and BattleTag Friend Requests
 	Settings.SetupCVarCheckbox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);

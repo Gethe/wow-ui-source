@@ -72,7 +72,12 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 
 			reagent.Icon:SetTexture(texture);
 			reagent.Name:SetText(name);
-			reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+
+			local colorData = ColorManager.GetColorDataForItemQuality(quality);
+			if colorData then
+				reagent.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+			end
+
 			-- Grayout items
 			if ( quantity < needed ) then
 				reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);
@@ -119,7 +124,12 @@ function GarrisonCapacitiveDisplayFrame_Update(self, success, maxShipments, owne
 					local quality = currencyInfo.quality;
 					reagent.Icon:SetTexture(currencyInfo.iconFileID);
 					reagent.Name:SetText(currencyInfo.name);
-					reagent.Name:SetTextColor(ITEM_QUALITY_COLORS[quality].r, ITEM_QUALITY_COLORS[quality].g, ITEM_QUALITY_COLORS[quality].b);
+
+					local colorData = ColorManager.GetColorDataForItemQuality(quality);
+					if colorData then
+						reagent.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+					end
+
 					-- Grayout items
 					if ( quantity < currencyNeeded ) then
 						reagent.Icon:SetVertexColor(0.5, 0.5, 0.5);

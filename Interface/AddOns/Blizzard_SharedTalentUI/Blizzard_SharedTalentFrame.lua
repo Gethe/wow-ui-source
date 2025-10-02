@@ -121,7 +121,10 @@ TalentFrameBaseMixin:GenerateCallbackEvents(
 {
 	"TalentButtonAcquired",
 	"TalentButtonReleased",
+	"TalentButtonNodeUpdated",
 	"CommitStatusChanged",
+	"TreeCurrencyInfoUpdated",
+	"ConfigCommitted",
 });
 
 TalentFrameBaseMixin.CommitUpdateReasons = {
@@ -147,13 +150,15 @@ function TalentFrameBaseMixin:OnLoad()
 	if not self.enableZoomAndPan then
 		self:DisableZoomAndPan();
 	end
-	
+
 	self.DisabledOverlay.GrayOverlay:SetAlpha(self.disabledOverlayAlpha);
 
 	self:UpdatePadding();
 
 	self.talentButtonCollection = CreateFramePoolCollection();
-	self.talentDislayFramePool = CreateFramePoolCollection();
+	self.talentDisplayFramePool = CreateFramePoolCollection();
+	self.talentCardPool = CreateFramePoolCollection();
+	self.talentAnimationFramePoolCollection = CreateFramePoolCollection();
 	self.edgePool = CreateFramePoolCollection();
 	self.gatePool = CreateFramePool("FRAME", self.ButtonsParent, "TalentFrameGateTemplate");
 	self.nodeIDToButton = {};
@@ -171,6 +176,7 @@ function TalentFrameBaseMixin:OnLoad()
 	self.dirtySubTreeIDSet = {};
 	self.panOffsetX = 0;
 	self.panOffsetY = 0;
+	self.eventRegisteredNodes = {};
 
 	self.areBaseCommitVisualsActive = false;
 
@@ -189,6 +195,10 @@ function TalentFrameBaseMixin:RegisterOnUpdate()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
+local function CheckSetSafe(set, id)
+	return id and set[id] or false;
+end
+
 function TalentFrameBaseMixin:OnUpdate()
 	-- Clear this first so it can be re-registered if necessary.
 	self:SetScript("OnUpdate", nil);
@@ -198,6 +208,26 @@ function TalentFrameBaseMixin:OnUpdate()
 	else
 		-- A node update will cause an entry update, etc, so only do the top level update and let it propagate.
 		local buttonsToUpdateMethods = {};
+		for talentButton in self:EnumerateAllTalentButtons() do
+			-- We set the smallest update function necessary and an earlier update function includes the later ones:
+			-- UpdateNodeInfo calls UpdateEntryInfo which calls UpdateEntryContentInfo.
+			if self.dirtyNodeIDSet[talentButton:GetNodeID()] then
+				buttonsToUpdateMethods[talentButton] = talentButton.UpdateNodeInfo;
+			elseif self.dirtyEntryIDSet[talentButton:GetEntryID()] then
+				buttonsToUpdateMethods[talentButton] = talentButton.UpdateEntryInfo;
+			elseif self.definitionInfoCache[talentButton:GetDefinitionID()] or
+					CheckSetSafe(self.dirtySubTreeIDSet, talentButton:GetEntrySubTreeID()) or
+					CheckSetSafe(self.dirtySubTreeIDSet, talentButton:GetNodeSubTreeID()) then
+				buttonsToUpdateMethods[talentButton] = talentButton.UpdateEntryContentInfo;
+			end
+		end
+
+		local displaysToUpdateMethods = {};
+		for talentDisplay in self.talentDisplayFramePool:EnumerateActive() do
+			if self.dirtyEntryIDSet[talentDisplay:GetEntryID()] then
+				displaysToUpdateMethods[talentDisplay] = talentDisplay.FullUpdate;
+			end
+		end
 
 		for condID, isDirty in pairs(self.dirtyCondIDSet) do
 			self.condInfoCache[condID] = nil;
@@ -205,47 +235,18 @@ function TalentFrameBaseMixin:OnUpdate()
 
 		for subTreeID, isDirty in pairs(self.dirtySubTreeIDSet) do
 			self.subTreeInfoCache[subTreeID] = nil;
-			for talentButton in self:EnumerateAllTalentButtons() do
-				-- TODO:: This sets a dangerous precedent for a very expensive iteration.
-				-- Consider replacing this with a pattern similar to nodeIDToButton or something else entirely.
-				if subTreeID == talentButton:GetEntrySubTreeID() or subTreeID == talentButton:GetNodeSubTreeID() then
-					buttonsToUpdateMethods[talentButton] = talentButton.UpdateEntryContentInfo;
-				end
-			end
 		end
 
 		for definitionID, isDirty in pairs(self.dirtyDefinitionIDSet) do
 			self.definitionInfoCache[definitionID] = nil;
-			for talentButton in self:EnumerateAllTalentButtons() do
-				-- TODO:: This sets a dangerous precedent for a very expensive iteration.
-				-- Consider replacing this with a pattern similar to nodeIDToButton or something else entirely.
-				-- We may not need this at all. This will only happen in response to a hotfix in practice, so we
-				-- could just reload the entire tree.
-				if definitionID == talentButton:GetDefinitionID() then
-					buttonsToUpdateMethods[talentButton] = talentButton.UpdateEntryContentInfo;
-				end
-			end
 		end
 
 		for entryID, isDirty in pairs(self.dirtyEntryIDSet) do
 			self.entryInfoCache[entryID] = nil;
-			for talentButton in self:EnumerateAllTalentButtons() do
-				-- TODO:: This sets a dangerous precedent for a very expensive iteration.
-				-- Consider replacing this with a pattern similar to nodeIDToButton or something else entirely.
-				-- We may not need this at all. This will only happen in response to a hotfix in practice, so we
-				-- could just reload the entire tree.
-				if entryID == talentButton:GetEntryID() then
-					buttonsToUpdateMethods[talentButton] = talentButton.UpdateEntryInfo;
-				end
-			end
 		end
 
 		for nodeID, isDirty in pairs(self.dirtyNodeIDSet) do
 			self.nodeInfoCache[nodeID] = nil;
-			local talentButton = self.nodeIDToButton[nodeID];
-			if talentButton then
-				buttonsToUpdateMethods[talentButton] = talentButton.UpdateNodeInfo;
-			end
 		end
 
 		self.dirtySubTreeIDSet = {};
@@ -263,18 +264,24 @@ function TalentFrameBaseMixin:OnUpdate()
 			updateMethod(button);
 		end
 
+		for display, updateMethod in pairs(displaysToUpdateMethods) do
+			updateMethod(display);
+		end
+
 		for button, isDirty in pairs(self.buttonsWithDirtyEdges) do
 			if isDirty then
 				self:UpdateEdgesForButton(button);
 			end
 		end
+
+		EventRegistry:TriggerEvent("TalentFrameBase.ButtonsUpdated", self:GetTalentTreeID());
 	end
 end
 
 function TalentFrameBaseMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, TalentFrameBaseEvents);
 
-	if self:IsTreeDirty() then
+	if self.refreshOnShow or self:IsTreeDirty() then
 		self:LoadTalentTree();
 	elseif self:GetTalentTreeID() then
 		-- Currency info may have been changed since the frame was last opened.
@@ -352,6 +359,8 @@ function TalentFrameBaseMixin:OnTraitConfigUpdated(configID)
 		self:SetCommitStarted(nil, TalentFrameBaseMixin.CommitUpdateReasons.CommitSucceeded);
 		self:UpdateTreeCurrencyInfo();
 	end
+
+	EventRegistry:TriggerEvent("TalentFrameBase.ConfigUpdated");
 end
 
 function TalentFrameBaseMixin:UpdatePadding()
@@ -388,6 +397,11 @@ function TalentFrameBaseMixin:SetZoomLevel(zoomLevel)
 end
 
 function TalentFrameBaseMixin:SetZoomLevelInternal(zoomLevel)
+	local frameWidth, frameHeight = self:GetPanViewSize();
+	if (frameWidth == 0) or (frameHeight == 0) then
+		return;
+	end
+
 	local oldPanWidth, oldPanHeight = self:GetPanExtents();
 
 	self.ButtonsParent:SetScale(zoomLevel);
@@ -396,7 +410,6 @@ function TalentFrameBaseMixin:SetZoomLevelInternal(zoomLevel)
 	local panWidthDelta = newPanWidth - oldPanWidth;
 	local panHeightDelta = newPanHeight - oldPanHeight;
 
-	local frameWidth, frameHeight = self:GetPanViewSize();
 	local left, top = self:GetPanViewCornerPosition();
 	local cursorX, cursorY = GetScaledCursorPosition();
 	local relativeCursorX = (cursorX - left);
@@ -511,6 +524,12 @@ function TalentFrameBaseMixin:TalentButtonCollectionReset(framePool, talentButto
 		self.nodeIDToButton[nodeID] = nil;
 	end
 
+	local attachedCard = talentButton:GetAttachedCard();
+	if attachedCard then
+		self:ReleaseTalentCard(attachedCard);
+		talentButton:SetAttachedCard(nil);
+	end
+
 	talentButton:OnRelease();
 
 	self.buttonsWithDirtyEdges[talentButton] = nil;
@@ -526,6 +545,18 @@ function TalentFrameBaseMixin:GetTalentButtonByNodeID(nodeID)
 	return self.nodeIDToButton[nodeID];
 end
 
+function TalentFrameBaseMixin:GetRootTalentButton()
+	if not self.talentTreeInfo then
+		return nil;
+	end
+
+	if not self.talentTreeInfo.rootNodeID then
+		return nil;
+	end
+
+	return self:GetTalentButtonByNodeID(self.talentTreeInfo.rootNodeID);
+end
+
 function TalentFrameBaseMixin:InvokeTalentButtonMethodByNodeID(methodName, nodeID, ...)
 	local button = self:GetTalentButtonByNodeID(nodeID);
 	if button then
@@ -535,16 +566,20 @@ function TalentFrameBaseMixin:InvokeTalentButtonMethodByNodeID(methodName, nodeI
 	return false;
 end
 
-function TalentFrameBaseMixin:PlaySelectSoundForButton(unused_button)
+function TalentFrameBaseMixin:PlaySelectSoundForButton(_button)
 	if self.defaultSelectSound then
 		PlaySound(self.defaultSelectSound);
 	end
 end
 
-function TalentFrameBaseMixin:PlayDeselectSoundForButton(unused_button)
+function TalentFrameBaseMixin:PlayDeselectSoundForButton(_button)
 	if self.defaultDeselectSound then
 		PlaySound(self.defaultDeselectSound);
 	end
+end
+
+function TalentFrameBaseMixin:SetCardTemplateCallback(cardTemplateCallback)
+	self.getCardTemplate = cardTemplateCallback;
 end
 
 function TalentFrameBaseMixin:AcquireTalentButton(nodeInfo, talentType, offsetX, offsetY, initFunction)
@@ -580,6 +615,12 @@ function TalentFrameBaseMixin:AcquireTalentButton(nodeInfo, talentType, offsetX,
 
 	self:MarkEdgesDirty(newTalentButton);
 
+	-- Talent cards are extra display elements that are attached separately to a talent button.
+	local cardTemplate = self.getCardTemplate and self.getCardTemplate(nodeInfo, talentType) or nil;
+	if cardTemplate then
+		newTalentButton:SetAttachedCard(self:AcquireTalentCard(cardTemplate));
+	end
+
 	self:TriggerEvent(TalentFrameBaseMixin.Event.TalentButtonAcquired, newTalentButton);
 	return newTalentButton;
 end
@@ -589,14 +630,39 @@ function TalentFrameBaseMixin:AcquireTalentDisplayFrame(talentType, specializedM
 
 	local nodeInfo = nil;
 	local templateType = self.getTemplateType(nodeInfo, talentType, useLarge);
-	local resetterFunction = nil;
+
+	local function TalentDisplayResetFunction(pool, display, isNew)
+		if isNew then
+			display:Init(self);
+		else
+			display:OnRelease();
+			Pool_HideAndClearAnchors(pool, display);
+		end
+	end
+
 	local forbidden = false;
-	local pool = self.talentDislayFramePool:GetOrCreatePool("BUTTON", self, templateType, resetterFunction, forbidden, specializedMixin);
+	local pool = self.talentDisplayFramePool:GetOrCreatePool("BUTTON", self, templateType, TalentDisplayResetFunction, forbidden, specializedMixin);
 	return pool:Acquire();
 end
 
 function TalentFrameBaseMixin:ReleaseTalentDisplayFrame(displayFrame)
-	self.talentDislayFramePool:Release(displayFrame);
+	self.talentDisplayFramePool:Release(displayFrame);
+end
+
+function TalentFrameBaseMixin:AcquireTalentCard(cardTemplate)
+	local function TalentCardResetFunction(pool, card, isNew)
+		if not isNew then
+			card:OnRelease();
+			Pool_HideAndClearAnchors(pool, card);
+		end
+	end
+
+	local pool = self.talentCardPool:GetOrCreatePool("BUTTON", self, cardTemplate, TalentCardResetFunction);
+	return pool:Acquire();
+end
+
+function TalentFrameBaseMixin:ReleaseTalentCard(card)
+	self.talentCardPool:Release(card);
 end
 
 function TalentFrameBaseMixin:GetSpecializedSelectionChoiceMixin(entryInfo, talentType)
@@ -758,7 +824,7 @@ function TalentFrameBaseMixin:UpdateEdgeFrameLevel(edgeFrame)
 	self:SetElementFrameLevel(edgeFrame, self:GetFrameLevelForEdge(edgeFrame:GetStartButton(), edgeFrame:GetEndButton()));
 end
 
-function TalentFrameBaseMixin:GetFrameLevelForEdge(startButton, unused_endButton)
+function TalentFrameBaseMixin:GetFrameLevelForEdge(startButton, _endButton)
 	-- By default, layer edges under buttons. Override in your derived Mixin as desired.
 	return startButton:GetFrameLevel() - 1;
 end
@@ -789,14 +855,14 @@ function TalentFrameBaseMixin:ShouldInstantiateNode(nodeID, nodeInfo)
 	return true;
 end
 
-function TalentFrameBaseMixin:GetFrameLevelForButton(unused_nodeInfo)
+function TalentFrameBaseMixin:GetFrameLevelForButton(_nodeInfo, _visualState)
 	-- By default, draw over edges. Override in your derived Mixin as desired.
 	return 100;
 end
 
 function TalentFrameBaseMixin:UpdateButtonFrameLevel(talentButton)
 	local frameLevelOffset = talentButton.frameLevelOffset or 0;
-	local frameLevel = talentButton:GetParent():GetFrameLevel() + self:GetFrameLevelForButton(talentButton:GetNodeInfo()) + frameLevelOffset;
+	local frameLevel = talentButton:GetParent():GetFrameLevel() + self:GetFrameLevelForButton(talentButton:GetNodeInfo(), talentButton:GetVisualState()) + frameLevelOffset;
 	self:SetElementFrameLevel(talentButton, frameLevel);
 end
 
@@ -861,6 +927,7 @@ function TalentFrameBaseMixin:ReleaseAllTalentButtons()
 
 	self.edgePool:ReleaseAll();
 	self.talentButtonCollection:ReleaseAll();
+	self.talentAnimationFramePoolCollection:ReleaseAll();
 	self.buttonsWithDirtyEdges = {};
 end
 
@@ -876,6 +943,23 @@ function TalentFrameBaseMixin:GetButtonsInOrder(comparison)
 
 	table.sort(talentButtons, comparison);
 	return talentButtons;
+end
+
+function TalentFrameBaseMixin:GetSubTreeInfo()
+	-- Override in your derived mixin.
+
+	-- This is meant to be used in conjunction with TalentSubTreeHeaderTemplate.
+	-- This should return the active focused subTreeID, it's name as a string, and info/subtext as a string.
+	return nil, nil, nil;
+end
+
+function TalentFrameBaseMixin:GetItemModifiedAppearanceIDs(talentDisplay)
+	local definitionInfo = talentDisplay:GetDefinitionInfo();
+	if not definitionInfo or not definitionInfo.spellID then
+		return {};
+	end
+
+	return C_Spell.GetItemModifiedAppearancesApplied(definitionInfo.spellID);
 end
 
 -- Essentially a super basic Pairing function that converts 2 Node pos coordinate numbers into a single index number
@@ -899,23 +983,89 @@ function TalentFrameBaseMixin:GetIndexFromTalentButtonPosition(talentButton)
 	return self:GetIndexFromNodePosition(nodeInfo.posX, nodeInfo.posY);
 end
 
-function TalentFrameBaseMixin:GetButtonsInTopLeftOrder()
-	local function CompareTalentButtons(lhsButton, rhsButton)
-		local lhsIsShown = lhsButton:IsShown();
-		if lhsIsShown ~= rhsButton:IsShown() then
-			return lhsIsShown;
+function TalentFrameBaseMixin:GetComparisonFunction()
+	if not self.comparisonFunction then
+		local function CompareTalentButtons(lhsButton, rhsButton)
+			local lhsIsShown = lhsButton:IsShown();
+			if lhsIsShown ~= rhsButton:IsShown() then
+				return lhsIsShown;
+			end
+
+			local lhsPosI = self:GetIndexFromTalentButtonPosition(lhsButton);
+			local rhsPosI = self:GetIndexFromTalentButtonPosition(rhsButton);
+			if lhsPosI ~= rhsPosI then
+				return lhsPosI < rhsPosI;
+			end
+
+			return lhsButton:GetNodeID() < rhsButton:GetNodeID();
 		end
 
-		local lhsPosI = self:GetIndexFromTalentButtonPosition(lhsButton);
-		local rhsPosI = self:GetIndexFromTalentButtonPosition(rhsButton);
-		if lhsPosI ~= rhsPosI then
-			return lhsPosI < rhsPosI;
-		end
-
-		return lhsButton:GetNodeID() < rhsButton:GetNodeID();
+		self.comparisonFunction = CompareTalentButtons;
 	end
 
-	return self:GetButtonsInOrder(CompareTalentButtons);
+	return self.comparisonFunction;
+end
+
+-- With the default comparison function, this will return buttons in top-to-bottom, left-to-right order.
+function TalentFrameBaseMixin:GetButtonsInDefaultOrder()
+	return self:GetButtonsInOrder(self:GetComparisonFunction());
+end
+
+-- Start with buttons that have no incoming edges and then traverse the tree breadth-first.
+-- Standard ordering is used for tie breaking. See TalentFrameBaseMixin:GetComparisonFunction.
+function TalentFrameBaseMixin:GetButtonsInEdgeOrder()
+	-- First let's make a map of all buttons that have incoming edges. This will be used to filter
+	-- down to a list of starting buttons that have no incoming edges.
+	local incomingEdgesSet = {};
+	for talentButton in self:EnumerateAllTalentButtons() do
+		local nodeInfo = talentButton:GetNodeInfo();
+		if nodeInfo and nodeInfo.visibleEdges then
+			for _i, edgeVisualInfo in ipairs(nodeInfo.visibleEdges) do
+				local targetButton = self:GetTalentButtonByNodeID(edgeVisualInfo.targetNode);
+				if targetButton then
+					incomingEdgesSet[targetButton] = true;
+				end
+			end
+		end
+	end
+
+	-- We start with buttons that have no incoming edges.
+	local buttonsAtCurrentDepth = {};
+	for talentButton in self:EnumerateAllTalentButtons() do
+		if talentButton:IsShown() and not incomingEdgesSet[talentButton] then
+			table.insert(buttonsAtCurrentDepth, talentButton);
+		end
+	end
+
+	-- Mostly standard breadth-first search, but we want to order the buttons
+	-- at each depth to get a consistent ordering.
+	local orderedButtons = {};
+	local visitedButtons = {};
+	local buttonsAtNextDepth = {};
+	local comparisonFunction = self:GetComparisonFunction();
+	while #buttonsAtCurrentDepth > 0 do
+		table.sort(buttonsAtCurrentDepth, comparisonFunction);
+
+		for _i, talentButton in ipairs(buttonsAtCurrentDepth) do
+			table.insert(orderedButtons, talentButton);
+			visitedButtons[talentButton] = true;
+
+			local nodeInfo = talentButton:GetNodeInfo();
+			if nodeInfo and nodeInfo.visibleEdges then
+				for _j, edgeVisualInfo in ipairs(nodeInfo.visibleEdges) do
+					local targetButton = self:GetTalentButtonByNodeID(edgeVisualInfo.targetNode);
+					if targetButton and not visitedButtons[targetButton] then
+						table.insert(buttonsAtNextDepth, targetButton);
+					end
+				end
+			end
+		end
+
+		buttonsAtCurrentDepth = buttonsAtNextDepth;
+		buttonsAtNextDepth = {};
+	end
+
+	return orderedButtons;
 end
 
 function TalentFrameBaseMixin:UpdateAllButtons()
@@ -937,6 +1087,33 @@ function TalentFrameBaseMixin:OnButtonNodeIDSet(talentButton, oldNodeID, newNode
 
 	if newNodeID ~= nil then
 		self.nodeIDToButton[newNodeID] = talentButton;
+	end
+end
+
+function TalentFrameBaseMixin:RegisterNodeForUpdateInfoEvent(nodeID)
+	if not nodeID then
+		return;
+	end
+
+	self.eventRegisteredNodes[nodeID] = TalentFrameBaseMixin.Event.TalentButtonNodeUpdated;
+end
+
+function TalentFrameBaseMixin:DeregisterNodeForUpdateInfoEvent(nodeID)
+	if not nodeID then
+		return;
+	end
+
+	self.eventRegisteredNodes[nodeID] = nil;
+end
+
+function TalentFrameBaseMixin:OnButtonUpdateNodeInfo(nodeID)
+	if not nodeID or not self.eventRegisteredNodes then
+		return;
+	end
+
+	local event = self.eventRegisteredNodes[nodeID];
+	if event then
+		self:TriggerEvent(event, nodeID);
 	end
 end
 
@@ -1125,12 +1302,29 @@ function TalentFrameBaseMixin:ClearInfoCaches()
 	self.dirtySubTreeIDSet = {};
 end
 
-function TalentFrameBaseMixin:SetConfigID(configID)
-	self.configID = configID;
+function TalentFrameBaseMixin:SetConfigIDBySystemID(systemID)
+	local configID = C_Traits.GetConfigIDBySystemID(systemID);
+	self:SetConfigID(configID);
+end
+
+function TalentFrameBaseMixin:SetConfigID(configID, forceUpdate)
+	if not forceUpdate and (configID == self:GetConfigID()) then
+		return;
+	end
+
+	local configInfo = configID and C_Traits.GetConfigInfo(configID) or nil;
+	if not configInfo then
+		return;
+	end
+
+	self.configurationInfo = configInfo;
+
+	local forceTreeUpdate = true;
+	self:SetTalentTreeID(self.configurationInfo.treeIDs[1], forceTreeUpdate);
 end
 
 function TalentFrameBaseMixin:GetConfigID()
-	return self.configID;
+	return self.configurationInfo and self.configurationInfo.ID or nil;
 end
 
 function TalentFrameBaseMixin:SetTalentTreeID(talentTreeID, forceUpdate)
@@ -1172,6 +1366,8 @@ function TalentFrameBaseMixin:UpdateTreeCurrencyInfo(skipButtonUpdates)
 			self:UpdateAllButtons();
 		end
 	end
+
+	self:TriggerEvent("TreeCurrencyInfoUpdated", self.treeCurrencyInfo);
 end
 
 function TalentFrameBaseMixin:GetTreeInfo()
@@ -1244,6 +1440,11 @@ function TalentFrameBaseMixin:IsTreeDirty()
 end
 
 function TalentFrameBaseMixin:LoadTalentTree()
+	-- We need a config and a tree ID to load properly.
+	if not self:GetConfigID() or not self:GetTalentTreeID() then
+		return;
+	end
+
 	if not self:IsVisible() then
 		self:MarkTreeDirty();
 		return;
@@ -1254,14 +1455,27 @@ function TalentFrameBaseMixin:LoadTalentTree()
 	self:LoadTalentTreeInternal();
 end
 
+function TalentFrameBaseMixin:SetNodesFilter(nodesFilterCallback)
+	self.nodesFilterCallback = nodesFilterCallback;
+end
+
+function TalentFrameBaseMixin:GetTreeNodes()
+	local treeNodes = C_Traits.GetTreeNodes(self:GetTalentTreeID());
+	local nodesFilterCallback = self.nodesFilterCallback;
+	if not nodesFilterCallback then
+		return treeNodes;
+	end
+
+	return nodesFilterCallback(treeNodes);
+end
+
 function TalentFrameBaseMixin:LoadTalentTreeInternal()
 	self:ReleaseAllTalentButtons();
 	self:ClearInfoCaches();
 	self:SetZoomLevel(1);
 	self:SetPanOffset(0, 0);
 
-	local treeID = self:GetTalentTreeID();
-	local nodeIDs = C_Traits.GetTreeNodes(treeID);
+	local nodeIDs = self:GetTreeNodes();
 
 	for i, nodeID in ipairs(nodeIDs) do
 		self:InstantiateTalentButton(nodeID);
@@ -1270,8 +1484,12 @@ function TalentFrameBaseMixin:LoadTalentTreeInternal()
 	self:RefreshGates();
 
 	self:MarkTreeClean();
+
+	EventRegistry:TriggerEvent("TalentFrameBase.ButtonsUpdated", self:GetTalentTreeID());
 end
 
+-- getDisplayTextFromTreeCurrency should take traitCurrencyInfo, width, and height, and return an
+-- embedded texture string of the currency's icon with the given width and height.
 function TalentFrameBaseMixin:SetTreeCurrencyDisplayTextCallback(getDisplayTextFromTreeCurrency)
 	self.getDisplayTextFromTreeCurrency = getDisplayTextFromTreeCurrency;
 end
@@ -1449,11 +1667,22 @@ function TalentFrameBaseMixin:RollbackConfig(ignoreSound)
 		return;
 	end
 
-	if not ignoreSound then 
-		self:PlayRollbackConfigSound(); 
+	if not ignoreSound then
+		self:PlayRollbackConfigSound();
 	end
 
 	return C_Traits.RollbackConfig(self:GetConfigID());
+end
+
+function TalentFrameBaseMixin:HasAnyPurchasedRanks()
+	for button in self:EnumerateAllTalentButtons() do
+		local nodeInfo = button:GetNodeInfo();
+		if nodeInfo and (nodeInfo.ranksPurchased > 0) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function TalentFrameBaseMixin:TryPlaySound(soundKit)
@@ -1512,13 +1741,29 @@ function TalentFrameBaseMixin:ReportConfigCommitError()
 	end
 end
 
+function TalentFrameBaseMixin:SetSuppressingConfigOperationErrors(suppress)
+	local wasSuppressingConfigOperationErrors= self.suppressConfigOperationErrors;
+	self.suppressConfigOperationErrors = suppress;
+	return wasSuppressingConfigOperationErrors;
+end
+
+function TalentFrameBaseMixin:AttemptConfigOperationWithErrorsSuppressed(operation, ...)
+	local wasSuppressingConfigOperations = self:SetSuppressingConfigOperationErrors(true);
+	local operationSuccessful = self:AttemptConfigOperation(operation, ...);
+	self:SetSuppressingConfigOperationErrors(wasSuppressingConfigOperations);
+	return operationSuccessful;
+end
+
 function TalentFrameBaseMixin:AttemptConfigOperation(operation, ...)
 	if not self:CheckAndReportCommitOperation() then
 		return false;
 	end
 
 	if not operation(self:GetConfigID(), ...) then
-		UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+		if not self.suppressConfigOperationErrors then
+			UIErrorsFrame:AddExternalErrorMessage(GENERIC_TRAIT_FRAME_INTERNAL_ERROR);
+		end
+
 		return false;
 	end
 
@@ -1543,6 +1788,10 @@ end
 
 function TalentFrameBaseMixin:SetSelection(nodeID, entryID)
 	return self:AttemptConfigOperation(C_Traits.SetSelection, nodeID, entryID);
+end
+
+function TalentFrameBaseMixin:HasMassPurchase()
+	return self.TryPurchaseToNode and self.TryRefundToNode;
 end
 
 function TalentFrameBaseMixin:ClearCascadeRepurchaseHistory()
@@ -1594,7 +1843,7 @@ function TalentFrameBaseMixin:GetCostStrings(traitCurrenciesCost)
 	local costStrings = {};
 	for i, traitCurrencyCost in ipairs(traitCurrenciesCost) do
 		local treeCurrency = self.treeCurrencyInfoMap[traitCurrencyCost.ID];
-		local displayText = treeCurrency and self.getDisplayTextFromTreeCurrency(treeCurrency) or nil;
+		local displayText = treeCurrency and self.getDisplayTextFromTreeCurrency and self.getDisplayTextFromTreeCurrency(treeCurrency) or nil;
 		if treeCurrency and displayText then
 			local amount = traitCurrencyCost.amount;
 			local costEntryString = TALENT_BUTTON_TOOLTIP_COST_ENTRY_FORMAT:format(amount, displayText);
@@ -1610,6 +1859,32 @@ end
 
 function TalentFrameBaseMixin:GetTreeCurrencyInfo(traitCurrencyID)
 	return self.treeCurrencyInfoMap and self.treeCurrencyInfoMap[traitCurrencyID] or nil;
+end
+
+function TalentFrameBaseMixin:GetTreeCurrencyDisplayText(traitCurrencyID, overrideWidth, overrideHeight)
+	if not self.getDisplayTextFromTreeCurrency then
+		return nil;
+	end
+
+	local currencyInfo = self:GetTreeCurrencyInfo(traitCurrencyID);
+	if not currencyInfo then
+		return nil;
+	end
+
+	return self.getDisplayTextFromTreeCurrency(currencyInfo, overrideWidth, overrideHeight);
+end
+
+function TalentFrameBaseMixin:GetTreeCurrencyTextByIndex(currencyIndex, overrideWidth, overrideHeight)
+	if not self.getDisplayTextFromTreeCurrency then
+		return nil;
+	end
+
+	local currencyInfo = self.treeCurrencyInfo[currencyIndex];
+	if not currencyInfo then
+		return nil;
+	end
+
+	return currencyInfo.quantity .. " " .. self.getDisplayTextFromTreeCurrency(currencyInfo, overrideWidth, overrideHeight);
 end
 
 function TalentFrameBaseMixin:DisableZoomAndPan()
@@ -1740,4 +2015,73 @@ end
 function TalentFrameBaseMixin:ShouldShowConfirmation()
 	-- Override in your derived Mixin as desired.
 	return false;
+end
+
+function TalentFrameBaseMixin:AcquireAnimation(animState, template, parent)
+	local pool = self.talentAnimationFramePoolCollection:GetOrCreatePool("FRAME", nil, template, TalentButtonAnimUtil.TalentButtonAnimationReset);
+	local anim = pool:Acquire();
+	anim:Init(parent, template, animState);
+	return anim;
+end
+
+function TalentFrameBaseMixin:ReleaseAnimation(template, animation)
+	local pool = self.talentAnimationFramePoolCollection:GetPool(template);
+	pool:Release(animation);
+end
+
+function TalentFrameBaseMixin:GetButtonAnimationStates()
+	-- Override in your derived Mixin as desired
+	return nil;
+end
+
+TalentFrameFixedPositionsMixin = {};
+
+function TalentFrameFixedPositionsMixin:OnUpdate()
+	TalentFrameBaseMixin.OnUpdate(self);
+
+	if self.positionsDirty then
+		self.positionsDirty = false;
+		self:UpdateAllTalentButtonPositions();
+	end
+end
+
+function TalentFrameFixedPositionsMixin:UpdateAllTalentButtonPositions()
+	-- Overrides TalentFrameBaseMixin.
+
+	error("TalentFrameFixedPositionsMixin requires an implementation override for UpdateAllTalentButtonPositions.");
+end
+
+function TalentFrameFixedPositionsMixin:UpdateTalentButtonPosition(_talentButton)
+	-- Overrides TalentFrameBaseMixin.
+
+	self:MarkPositionsDirty();
+end
+
+function TalentFrameFixedPositionsMixin:ShouldButtonShowEdges(_button)
+	-- Overrides TalentFrameBaseMixin.
+
+	return false;
+end
+
+function TalentFrameFixedPositionsMixin:MarkPositionsDirty()
+	if not self.positionsDirty then
+		self.positionsDirty = true;
+		self:RegisterOnUpdate();
+	end
+end
+
+TalentFrameDisplayOnlyMixin = {};
+
+function TalentFrameDisplayOnlyMixin:AttemptConfigOperation(...)
+	-- Overrides TalentFrameBaseMixin.
+
+	-- This is display only so disallow any operations.
+	return false;
+end
+
+function TalentFrameDisplayOnlyMixin:IsLocked()
+	-- Overrides TalentFrameBaseMixin.
+
+	-- This is display only so always show as locked, but don't show any error.
+	return true, nil;
 end

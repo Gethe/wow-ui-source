@@ -27,6 +27,7 @@ local HeirloomInfo =
 		{
 			Name = "IsHeirloomSourceValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,6 +51,7 @@ local HeirloomInfo =
 		{
 			Name = "SetAllCollectionFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +61,7 @@ local HeirloomInfo =
 		{
 			Name = "SetAllSourceFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

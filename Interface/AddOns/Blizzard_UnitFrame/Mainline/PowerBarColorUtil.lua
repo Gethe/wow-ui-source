@@ -3,7 +3,7 @@ PowerBarColor attributes
 ======================================================
 r, g, b: [numbers 0-1]  -- Red, green, and blue values that define the type's color, typically used by UI that still uses flat colors rather than resource-specific atlases (ex: nameplate resource bars)
 atlas: [string]  -- Full name of the texture atlas to use for this power type's status bars
-atlasElement: [string]  -- Partial name of this type's texture atlas; The full atlas name is determined at runtime based on what kind of UnitFrame the bar is in (see UnitFrameManaBar_UpdateType in UnitFrame.lua)
+atlasElementName: [string]  -- Partial name of this type's texture atlas; The full atlas name is determined at runtime based on what kind of UnitFrame the bar is in (see UnitFrameManaBar_UpdateType in UnitFrame.lua)
 hasClassResourceVariant: [bool]  -- If true, the full logic for evaluating atlasElement will also check whether the power is being displayed as third "alternate" resource type and use a slightly different atlas
 predictionColor: [global color]  -- Color to use for the cost prediction bar segments used for spells that cost this power type and have a cast time
 fullPowerAnim: [bool]  -- If true, shows an animated pulse on the power bar when at or above max power
@@ -41,6 +41,10 @@ PowerBarColor["STAGGER"] = {
 	yellow = 	{ r = 1.0, g = 0.98, b = 0.72, atlas = "Unit_Monk_Stagger_Fill_Yellow" },
 	red = 		{ r = 1.0, g = 0.42, b = 0.42, atlas = "Unit_Monk_Stagger_Fill_Red" },
 	spark = 	{ atlas = "Unit_Monk_Stagger_EndCap", barHeight = 10, xOffset = 1, showAtMax = true }
+};
+PowerBarColor["SOUL_FRAGMENTS"] = {
+	voidMetamorphosisProgess = 	{ r = 0.35, g = 0.25, b = 0.73, atlas = "UF-DDH-VoidMeta-Bar", spark = { atlas = "UF-DDH-VoidMeta-Bar-Endcap", xOffset = 1, barHeight = 10 } },
+	collapsingStarProgess = 	{ r = 0.11, g = 0.34, b = 0.71, atlas = "UF-DDH-CollapsingStar-Bar", spark = { atlas = "UF-DDH-CollapsingStar-Bar-Endcap", xOffset = 1, barHeight = 10 } }
 };
 
 -- these are mostly needed for a fallback case (in case the code tries to index a power token that is missing from the table,

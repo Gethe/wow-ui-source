@@ -95,7 +95,14 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="Button" mixin="SpellBookItemButtonMixin">
+			<Button parentKey="Button" mixin="SpellBookItemButtonMixin" inherits="FlyoutButtonTemplate">
+				<KeyValues>
+					<KeyValue key="popupDirection" value="RIGHT" type="string"/>
+					<KeyValue key="popupOffset" value="-4" type="number"/>
+					<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
+					<KeyValue key="openArrowOffset" value="2" type="number"/>
+					<KeyValue key="closedArrowOffset" value="4" type="number"/>
+				</KeyValues>
 				<Size x="40" y="40"/>
 				<Anchors>
 					<Anchor point="LEFT"/>
@@ -164,6 +171,12 @@
 						<Texture parentKey="ClickBindingIconCover" setAllPoints="true" hidden="true">
 							<Color r="0" g="0" b="0" a="0.3"/>
 						</Texture>
+						<Texture parentKey="AssistedCombatIconCover" atlas="UI-HUD-RotationHelper-SpellbookGlow" hidden="true">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
 						<Texture parentKey="GlyphIcon" hidden="true" alpha="1" alphaMode="BLEND" atlas="GlyphIcon-Spellbook" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="5" y="4"/>
@@ -217,13 +230,6 @@
 								</AnimationGroup>
 							</Animations>
 						</Texture>
-						<Texture parentKey="FlyoutArrow" file="Interface\Buttons\ActionBarFlyoutButton" hidden="true" rotation="-90">
-							<Size x="23" y="11"/>
-							<Anchors>
-								<Anchor point="RIGHT" x="14" y="0"/>
-							</Anchors>
-							<TexCoords left="0.62500000" right="0.98437500" top="0.74218750" bottom="0.82812500"/>
-						</Texture>
 						<Texture parentKey="ClickBindingHighlight" atlas="ClickCast-Highlight-Spellbook" useAtlasSize="true" alphaMode="ADD" hidden="true">
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -238,7 +244,7 @@
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1.5" y="1"/>
 						</Anchors>
 					</Frame>
-					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true">
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" useParentLevel="true" hideCountdownNumbers="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>

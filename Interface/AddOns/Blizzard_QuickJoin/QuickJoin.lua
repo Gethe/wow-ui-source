@@ -1,7 +1,7 @@
 ----------------------------
 ---------Constants----------
 ----------------------------
-QUICK_JOIN_NAME_SEPARATION = -1;
+QUICK_JOIN_NAME_SEPARATION = 5;
 ROLE_SELECTION_PROMPT_DEFAULT_HEIGHT = 160;
 
 ----------------------------
@@ -25,6 +25,7 @@ do
 			button:Init(elementData);
 		end);
 
+		-- Scrollable text in the Quick Join List can be resized by the player so the extent may change during a session
 		view:SetElementExtentCalculator(function(dataIndex, elementData)
 			return elementData:CalculateHeight();
 		end);
@@ -38,6 +39,10 @@ do
 	end
 
 	function QuickJoinMixin:OnShow()
+		EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
+			self:UpdateScrollFrame();
+		end);
+
 		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
 		self.entries:UpdateAll();
 		self:SelectGroup(nil);
@@ -47,6 +52,7 @@ do
 	end
 
 	function QuickJoinMixin:OnHide()
+		EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
 		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
 	end
 end
@@ -210,6 +216,7 @@ function QuickJoinButtonMixin:GetEntry()
 end
 
 function QuickJoinButtonMixin:Init(elementData)
+	self.fontObject = elementData.fontObject;
 	self:SetEntry(elementData);
 	local selected = self:GetEntry():GetGUID() == QuickJoinFrame.selectedGUID;
 	self:SetSelected(selected);
@@ -331,6 +338,9 @@ end
 QuickJoinEntryMixin = {}
 
 function QuickJoinEntryMixin:Init(partyGUID)
+	-- All scrollable text in the Quick Join List uses font that can be resized by the player
+	self.fontObject = UserScaledFontGameNormalSmall;
+
 	self.guid = partyGUID;
 	self:UpdateAll();
 end
@@ -489,8 +499,18 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 		frame.Members[i]:Hide();
 	end
 
+	-- Queue Icon
+	local useGroupIcon = #self.displayedQueues > 0 and self.displayedQueues[1].queueData.queueType == "lfglist";
+	frame.Icon:SetAtlas(useGroupIcon and "socialqueuing-icon-group" or "socialqueuing-icon-eye");
+	-- Set the height based on the size of the member names...
+	frame.Icon:SetHeight(math.max(17, frame.MemberName:GetHeight()));
+	-- ...then set the width based on that height
+	frame.Icon:SetWidth(math.max(16, frame.Icon:GetHeight() * .95));
+
 	--Queues
 	local groupIsJoinable = self:CanJoin();
+
+	frame.QueueName:SetPoint("TOPLEFT", frame.MemberName, "TOPRIGHT", frame.Icon:GetWidth() + 4, 0);
 	for i=1, #self.displayedQueues do
 		local queue = self.displayedQueues[i];
 
@@ -546,21 +566,11 @@ function QuickJoinEntryMixin:ApplyToFrame(frame)
 	end
 
 	frame:SetHeight(self:CalculateHeight());
-
-	if ( #self.displayedQueues > 0 and self.displayedQueues[1].queueData.queueType == "lfglist" ) then
-		frame.Icon:SetAtlas("socialqueuing-icon-group");
-		frame.Icon:SetSize(17, 16);
-		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -6);
-	else
-		frame.Icon:SetAtlas("socialqueuing-icon-eye");
-		frame.Icon:SetSize(16, 17);
-		frame.Icon:SetPoint("TOPLEFT", frame, "TOPLEFT", 87, -5);
-	end
 end
 
 function QuickJoinEntryMixin:CalculateHeight()
 	local bufferHeight = 13;
-	local height = (16 + QUICK_JOIN_NAME_SEPARATION);
+	local height = (GetFontInfo(self.fontObject).height + QUICK_JOIN_NAME_SEPARATION);
 	local namesHeight = height * #self.displayedMembers;
 	local queuesHeight = height * min(#self.displayedQueues, MAX_NUM_DISPLAYED_QUEUES)
 	return bufferHeight + math.max(namesHeight, queuesHeight);

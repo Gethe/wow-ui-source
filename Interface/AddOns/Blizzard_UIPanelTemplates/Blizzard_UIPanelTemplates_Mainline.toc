@@ -6,5 +6,7 @@
 ## AllowLoadGameType: mainline
 Mainline\AutoCastTemplates.lua
 Mainline\AutoCastTemplates.xml
+Shared\UIPanelSpellButtonFrame.lua
+Shared\UIPanelSpellButtonFrame.xml
 Mainline\UIPanelTemplates.lua
 Mainline\UIPanelTemplates.xml

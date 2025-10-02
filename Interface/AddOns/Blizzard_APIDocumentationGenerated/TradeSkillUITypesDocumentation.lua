@@ -3,6 +3,17 @@ local TradeSkillUITypes =
 	Tables =
 	{
 		{
+			Name = "CraftingReagentItemFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "TooltipShowsAsStatModifications", Type = "CraftingReagentItemFlag", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "RecipeRequirementType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -181,6 +192,25 @@ local TradeSkillUITypes =
 			},
 		},
 		{
+			Name = "CraftingQualityInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "quality", Type = "number", Nilable = false },
+				{ Name = "icon", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconSmall", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconInventory", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconMixed", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconAppear", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconDissolve", Type = "textureAtlas", Nilable = false },
+				{ Name = "barFill", Type = "textureAtlas", Nilable = false },
+				{ Name = "barBackground", Type = "textureAtlas", Nilable = false },
+				{ Name = "barBackgroundCap", Type = "textureAtlas", Nilable = false },
+				{ Name = "barHighlight", Type = "textureAtlas", Nilable = false },
+				{ Name = "iconChat", Type = "textureAtlas", Nilable = false },
+			},
+		},
+		{
 			Name = "CraftingReagent",
 			Type = "Structure",
 			Fields =
@@ -223,6 +253,7 @@ local TradeSkillUITypes =
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "orderSource", Type = "CraftingOrderReagentSource", Nilable = true },
 				{ Name = "required", Type = "bool", Nilable = false },
+				{ Name = "hiddenInCraftingForm", Type = "bool", Nilable = false },
 			},
 		},
 		{

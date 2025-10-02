@@ -40,6 +40,7 @@ local IslandsQueueUI =
 		{
 			Name = "QueueForIsland",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +50,7 @@ local IslandsQueueUI =
 		{
 			Name = "RequestPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

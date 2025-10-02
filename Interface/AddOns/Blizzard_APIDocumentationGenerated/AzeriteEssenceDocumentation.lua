@@ -9,6 +9,8 @@ local AzeriteEssence =
 		{
 			Name = "ActivateEssence",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +21,7 @@ local AzeriteEssence =
 		{
 			Name = "CanActivateEssence",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +37,7 @@ local AzeriteEssence =
 		{
 			Name = "CanDeactivateEssence",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +69,7 @@ local AzeriteEssence =
 		{
 			Name = "GetEssenceHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +85,8 @@ local AzeriteEssence =
 		{
 			Name = "GetEssenceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +101,7 @@ local AzeriteEssence =
 		{
 			Name = "GetEssences",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -103,6 +111,8 @@ local AzeriteEssence =
 		{
 			Name = "GetMilestoneEssence",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,6 +127,8 @@ local AzeriteEssence =
 		{
 			Name = "GetMilestoneInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,6 +143,8 @@ local AzeriteEssence =
 		{
 			Name = "GetMilestoneSpell",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,6 +159,7 @@ local AzeriteEssence =
 		{
 			Name = "GetMilestones",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -208,6 +223,8 @@ local AzeriteEssence =
 		{
 			Name = "SetPendingActivationEssence",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,6 +234,7 @@ local AzeriteEssence =
 		{
 			Name = "UnlockMilestone",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

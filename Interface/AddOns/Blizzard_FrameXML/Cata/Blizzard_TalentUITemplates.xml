@@ -1,25 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Texture name="TalentBranchTemplate" file="Interface\TalentFrame\UI-TalentBranches" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 	</Texture>
 	<Texture name="TalentArrowTemplate" file="Interface\TalentFrame\UI-TalentArrows" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 	</Texture>
 	<Button name="TalentButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size x="30" y="30"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>

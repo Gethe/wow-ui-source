@@ -1,4 +1,5 @@
 local NotOnActionBarSearchText = SPELLBOOK_SEARCH_NOT_ON_ACTIONBAR;
+local AssistedCombatSearchText = SPELLBOOK_SEARCH_ASSISTED_COMBAT;
 
 -- The order of sections in this table is the order they will be on the frame (if multiple are shown)
 local ResultSections = {
@@ -24,6 +25,12 @@ local ResultSections = {
 			SpellSearchUtil.MatchType.NotOnActionBar,
 			SpellSearchUtil.MatchType.OnInactiveBonusBar,
 			SpellSearchUtil.MatchType.OnDisabledActionBar,
+		},
+	},
+	{
+		headerText = SPELLBOOK_SEARCH_HEADER_RESULTS,
+		matchTypes = {
+			SpellSearchUtil.MatchType.AssistedCombat,
 		},
 	},
 };
@@ -107,8 +114,8 @@ function SpellBookSearchMixin:InitializeSearch()
 	self.searchController = CreateAndInitFromMixin(SpellSearchControllerMixin, searchSources);
 
 	self.searchController:SetFilterDisabled(SpellSearchUtil.FilterType.ActionBar, false);
-	self.SearchPreviewContainer:SetDefaultResultButton(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
-
+	self.SearchPreviewContainer:AddSuggestedResult(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
+	self.SearchPreviewContainer:AddSuggestedResult(AssistedCombatSearchText, GenerateClosure(self.OnAssistedCombatButtonClicked, self));
 	self.isInSearchResultsMode = false;
 end
 
@@ -171,6 +178,8 @@ end
 function SpellBookSearchMixin:SetFullResultSearch(searchText)
 	if searchText and SpellSearchUtil.DoStringsMatch(searchText, NotOnActionBarSearchText) then
 		self:ActivateSearchFilter(SpellSearchUtil.FilterType.ActionBar);
+	elseif searchText and SpellSearchUtil.DoStringsMatch(searchText, AssistedCombatSearchText) then
+		self:ActivateSearchFilter(SpellSearchUtil.FilterType.AssistedCombat);
 	elseif searchText then
 		self:ActivateSearchFilter(SpellSearchUtil.FilterType.Text, searchText);
 	else
@@ -264,16 +273,10 @@ function SpellBookSearchMixin:EnableSearchResultsMode()
 	self.isInSearchResultsMode = true;
 	-- Clear our active tab
 	self:SetTab(nil);
-	-- Disable "Hide Passives" toggle while in search mode
-	self.HidePassivesCheckButton:SetControlEnabled(false);
-	self.HidePassivesCheckButton:SetTooltipText(SPELLBOOK_SEARCH_HIDE_PASSIVES_DISABLED);
 end
 
 function SpellBookSearchMixin:DisableSearchResultsMode(skipTabReset)
 	self.isInSearchResultsMode = false;
-	-- Re-enable "Hide Passives" toggle
-	self.HidePassivesCheckButton:SetControlEnabled(true);
-	self.HidePassivesCheckButton:SetTooltipText(nil);
 	if not skipTabReset then
 		self:ResetToFirstAvailableTab();
 	end
@@ -285,6 +288,13 @@ function SpellBookSearchMixin:OnNotOnActionBarButtonClicked()
 	self.SearchPreviewContainer:Hide();
 
 	self:ActivateSearchFilter(SpellSearchUtil.FilterType.ActionBar);
+end
+
+function SpellBookSearchMixin:OnAssistedCombatButtonClicked()
+	self.SearchBox:ClearFocus();
+	self.SearchBox:SetText(AssistedCombatSearchText);
+	self.SearchPreviewContainer:Hide();
+	self:ActivateSearchFilter(SpellSearchUtil.FilterType.AssistedCombat);
 end
 
 function SpellBookSearchMixin:GetSearchPreviewContainer()

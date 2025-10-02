@@ -8,6 +8,7 @@ local StringUtil =
 		{
 			Name = "StripHyperlinks",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

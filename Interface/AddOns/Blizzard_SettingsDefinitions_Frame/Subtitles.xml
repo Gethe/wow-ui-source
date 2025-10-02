@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Subtitles.lua"/>
+
+    <Frame parentKey="SubtitlePreview" parent="SettingsPanel" inherits="TooltipBackdropTemplate" mixin="SubtitlesPreviewMixin" hidden="true" frameStrata="TOOLTIP">
+		<Size x="200" y="60"/>
+		<Anchors>
+			<Anchor point="CENTER" relativePoint="RIGHT" x="-135" y="205"/>
+		</Anchors>
+		<Layers>
+            <Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Size x="180" y="230"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+            <FontString parentKey="PreviewFontString" inherits="MovieSubtitleFont" justifyH="LEFT" mixin="AutoScalingFontStringMixin" text="CINEMATIC_SUBTITLES_PREVIEW_LABEL">
+					<Size x="200" y="0"/>
+					<KeyValues>
+						<KeyValue key="minLineHeight" value="10" type="number"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="-20"/>
+					</Anchors>
+				</FontString>
+                <Texture parentKey="PreviewFontStringBackground">
+					<Anchors>
+                        <Anchor point="TOPLEFT" relativeKey="$parent.PreviewFontString" relativePoint="TOPLEFT" x="-5" y="5"/>
+                        <Anchor point="BOTTOMRIGHT" relativeKey="$parent.PreviewFontString" relativePoint="BOTTOMRIGHT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+            <OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

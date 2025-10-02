@@ -4,14 +4,13 @@ StaticPopupDialogs["EXTERNAL_LINK"] = {
 	button1 = OKAY,
 	button3 = BROWSER_COPY_LINK,
 	button2 = CANCEL,
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.browser:OpenExternalLink();
 	end,
-	OnAlt = function(self, data)
+	OnAlt = function(dialog, data)
 		data.browser:CopyExternalLink();
 	end,
-	OnShow = function(self)
-
+	OnShow = function(dialog, data)
 	end,
 	showAlert = 1,
 	timeout = 0,
@@ -129,15 +128,23 @@ end
 --
 
 function HelpOpenWebTicketButton_OnEnter(self, elapsed)
-	if ( self.haveTicket ) then
-		if ( self.haveResponse ) then
-			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
+	if (self.haveTicket) then
+		GameTooltip:SetOwner(self, "ANCHOR_TOP");
+		if (self.overrideTitle or self.overrideDescription) then
+			if (self.overrideTitle) then
+				GameTooltip:AddLine(self.overrideTitle, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+			end
+			if (self.overrideDescription) then
+				GameTooltip:AddLine(self.overrideDescription);
+			end
 		else
-			GameTooltip:SetOwner(self, "ANCHOR_TOP");
-			GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
-			if (self.statusText) then
-				GameTooltip:AddLine(self.statusText);
+			if ( self.haveResponse ) then
+				GameTooltip:SetText(GM_RESPONSE_ALERT, nil, nil, nil, nil, true);
+			else
+				GameTooltip:AddLine(self.titleText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+				if (self.statusText) then
+					GameTooltip:AddLine(self.statusText);
+				end
 			end
 		end
 		GameTooltip:AddLine(" ");
@@ -159,10 +166,12 @@ end
 
 function HelpOpenWebTicketButton_OnEvent(self, event, ...)
 	if ( event == "UPDATE_WEB_TICKET" ) then
-		local hasTicket, numTickets, ticketStatus, caseIndex, waitTime, waitMsg = ...;
+		local hasTicket, numTickets, ticketStatus, caseIndex, waitTime, waitMsg, title, description = ...;
 		self.titleText = nil;
 		self.statusText = nil;
 		self.caseIndex = nil;
+		self.overrideTitle = title;
+		self.overrideDescription = description;
 		if (hasTicket) then
 			self.haveTicket = true;
 			self.haveResponse = false;
@@ -211,7 +220,7 @@ end
 
 function TicketStatusFrame_OnEvent(self, event, ...)
 	if (event == "UPDATE_WEB_TICKET") then
-		local hasTicket, numTickets, ticketStatus, caseIndex = ...;
+		local hasTicket, numTickets, ticketStatus, caseIndex, waitTime, waitMsg, title, description = ...;
 		self.haveWebSurvey = false;
 		if (hasTicket and ticketStatus ~= LE_TICKET_STATUS_OPEN) then
 			self.hasWebTicket = true;

@@ -21,6 +21,10 @@ function DataProviderMixin:Init(tbl)
 	end
 end
 
+function DataProviderMixin:IsVirtual()
+	return false;
+end
+
 function DataProviderMixin:Enumerate(indexBegin, indexEnd)
 	return CreateTableEnumerator(self.collection, indexBegin, indexEnd);
 end
@@ -170,6 +174,10 @@ function DataProviderMixin:RemoveIndexRange(indexBegin, indexEnd)
 	end
 end
 
+function DataProviderMixin:ReplaceAtIndex(index, newElementData)
+	self:RemoveIndex(index);
+	self:InsertAtIndex(newElementData, index);
+end
 
 function DataProviderMixin:SetSortComparator(sortComparator, skipSort)
 	self.sortComparator = sortComparator;

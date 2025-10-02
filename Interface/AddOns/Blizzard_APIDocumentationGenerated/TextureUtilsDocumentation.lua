@@ -9,6 +9,7 @@ local TextureUtils =
 		{
 			Name = "ClearTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasElementID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,8 +32,33 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasElements",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "atlases", Type = "table", InnerType = "textureAtlas", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAtlasExists",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "atlasExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +73,8 @@ local TextureUtils =
 		{
 			Name = "GetAtlasInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +89,7 @@ local TextureUtils =
 		{
 			Name = "GetCraftingReagentQualityChatIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +104,7 @@ local TextureUtils =
 		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +119,7 @@ local TextureUtils =
 		{
 			Name = "GetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,6 +131,7 @@ local TextureUtils =
 		{
 			Name = "IsTitleIconTextureReady",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,12 +147,25 @@ local TextureUtils =
 		{
 			Name = "SetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 				{ Name = "titleID", Type = "string", Nilable = false },
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+			},
+		},
+		{
+			Name = "SetURLTexture",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "url", Type = "cstring", Nilable = false },
 			},
 		},
 	},
@@ -148,6 +194,7 @@ local TextureUtils =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "elementName", Type = "cstring", Nilable = false },
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "rawSize", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },

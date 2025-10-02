@@ -17,9 +17,6 @@ end
 function BonusObjectiveDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	mapCanvas:SetPinTemplateType("BonusObjectivePinTemplate", "Button");
-	mapCanvas:SetPinTemplateType("ThreatObjectivePinTemplate", "Button");
-
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
@@ -71,7 +68,7 @@ local questClassificationToPinTemplate = {
 };
 
 function BonusObjectiveDataProviderMixin:GetPinTemplateFromTask(taskInfo)
-	return questClassificationToPinTemplate[C_QuestInfoSystem.GetQuestClassification(taskInfo.questId)];
+	return questClassificationToPinTemplate[C_QuestInfoSystem.GetQuestClassification(taskInfo.questID)];
 end
 
 function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
@@ -82,14 +79,14 @@ function BonusObjectiveDataProviderMixin:RefreshAllData(fromOnShow)
 		return;
 	end
 
-	local taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+	local taskInfo = GetTasksOnMapCached(mapID);
 
 	if taskInfo and #taskInfo > 0 then
 		self:CancelCallbacks();
 		self.cancelCallbacks = {};
 
 		for i, info in ipairs(taskInfo) do
-			local callback = QuestEventListener:AddCancelableCallback(info.questId, function()
+			local callback = QuestEventListener:AddCancelableCallback(info.questID, function()
 				if MapUtil.ShouldShowTask(mapID, info) then
 					local pinTemplate = self:GetPinTemplateFromTask(info);
 					if pinTemplate then
@@ -119,8 +116,9 @@ function BonusObjectivePinMixin:OnLoad()
 end
 
 function BonusObjectivePinMixin:OnAcquired(taskInfo)
+	self:AddTag(MapPinTags.BonusObjective);
 	self:SetPosition(taskInfo.x, taskInfo.y);
-	self:SetQuestID(taskInfo.questId);
+	self:SetQuestID(taskInfo.questID);
 	self.numObjectives = taskInfo.numObjectives;
 	self.isQuestStart = taskInfo.isQuestStart;
 	self.isCombatAllyQuest = taskInfo.isCombatAllyQuest;
@@ -183,6 +181,11 @@ end
 
 function BonusObjectivePinMixin:OnMouseClickAction(button)
 	POIButtonMixin.OnClick(self, button);
+end
+
+function BonusObjectivePinMixin:GetDisplayName()
+	local title = C_TaskQuest.GetQuestInfoByQuestID(self:GetQuestID());
+	return title or "";
 end
 
 --[[ Threat Objective Pin ]]--

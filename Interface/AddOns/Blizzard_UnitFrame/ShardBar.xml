@@ -167,6 +167,7 @@
 	<Frame name="WarlockPowerFrame" inherits="WarlockPowerFrameTemplate">
 		<Size x="110" y="25"/>
 		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
 			<KeyValue key="showTooltip" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>

@@ -48,7 +48,11 @@ end
 
 function GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(garrFollowerID)
 	local link = C_Garrison.GetFollowerLinkByID(garrFollowerID);
-	local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
+	if not link then
+		return nil;
+	end
+
+	local _colorToken, _linkType, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
 	garrisonFollowerID = tonumber(garrisonFollowerID);
 
 	return {

@@ -6,7 +6,7 @@ function InspectPaperDollFrame_SetLevel()
 
 	local unit, level, effectiveLevel, sex = InspectFrame.unit, UnitLevel(InspectFrame.unit), UnitLevel(InspectFrame.unit), UnitSex(InspectFrame.unit);
 	local race = UnitRace(InspectFrame.unit);
-	local primaryTalentTree = GetPrimaryTalentTree(true);
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization(true);
 	
 	local classDisplayName, class = UnitClass(InspectFrame.unit); 
 	local classColor = RAID_CLASS_COLORS[class];
@@ -14,7 +14,7 @@ function InspectPaperDollFrame_SetLevel()
 	local specName, _;
 
 	if (primaryTalentTree) then
-		_, specName = GetTalentTabInfo(primaryTalentTree, true);
+		_, specName = C_SpecializationInfo.GetSpecializationInfo(primaryTalentTree, true);
 	end
 	
 	if ( level == -1 or effectiveLevel == -1 ) then

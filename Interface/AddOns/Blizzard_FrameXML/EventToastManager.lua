@@ -1,6 +1,6 @@
+
 local textureKitRegionFormatStrings = {
 	["BG1"] = "%s-TitleBG",
-	["BG2"] = "%s-TitleBG",
 };
 
 local textureKitRegionExpandFormatStrings = {
@@ -18,7 +18,6 @@ local textureKitRegionExpandSpaceOverlayFormatStrings = {
 
 local defaultAtlases = {
 	["BG1"] = "legioninvasion-title-bg",
-	["BG2"] = "legioninvasion-title-bg",
 };
 
 local eventToastTextureKitRegions = {
@@ -92,6 +91,8 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.FlightpointDiscovered] = {template = "EventToastFlightpointDiscoveredTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.SingleLineWithIcon] = {template = "EventToastManagerSingleLineWithIconTemplate", frameType = "FRAME", hideAutomatically = true,},
+	[Enum.EventToastDisplayType.Scoreboard] = {template = "EventToastScoreboardTemplate", frameType = "FRAME", hideAutomatically = false,},
+	[Enum.EventToastDisplayType.HouseUpgradeAvailable] = {template = "EventToastHouseUpgradeAvailableTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -134,9 +135,11 @@ end
 function EventToastManagerMixin:SetupBlackBGAtlas()
 end
 
-EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin);
+EventToastManagerFrameMixin = CreateFromMixins(EventToastManagerMixin, OverrideLayoutFrameOnUpdateMixin);
 function EventToastManagerFrameMixin:OnLoad()
 	EventToastManagerMixin.OnLoad(self);
+
+	EventRegistry:RegisterCallback("EventToastManager.CloseActiveToasts", self.CloseActiveToasts, self);
 
 	self:UpdateAnchor();
 	self:RegisterEvent("DISPLAY_EVENT_TOASTS");
@@ -177,9 +180,12 @@ function EventToastManagerFrameMixin:Reset()
 	self.GLine2:Hide();
 
 	self.animationsPaused = false;
-	self.hideAutomatically = true;
+	self:SetHideAutomatically(true);
+end
 
-	self:SetScript("OnUpdate", self.OnUpdate);
+function EventToastManagerFrameMixin:SetHideAutomatically(hideAutomatically)
+	self.hideAutomatically = hideAutomatically;
+	self:UpdateOnUpdateRegistration();
 end
 
 function EventToastManagerFrameMixin:EnableBlackBGAnimation(enable)
@@ -222,9 +228,10 @@ end
 
 function EventToastManagerFrameMixin:CloseActiveToasts()
 	if (self.currentDisplayingToast) then
-		self.hideAutomatically = true;
+		self:SetHideAutomatically(true);
 		self.currentDisplayingToast.hideAutomatically = true;
 		self.animationsPaused = false;
+		self.currentDisplayingToast:SetSuppressAnimOut(false);
 		self.currentDisplayingToast:SetAnimOutStartDelay(0);
 		self.currentDisplayingToast:AnimOut();
 	end
@@ -234,7 +241,11 @@ function EventToastManagerFrameMixin:IsCurrentlyToasting()
 	return self.currentDisplayingToast;
 end
 
-function EventToastManagerFrameMixin:OnUpdate()
+function EventToastManagerFrameMixin:NeedsOnUpdate()
+	return self.hideAutomatically;
+end
+
+function EventToastManagerFrameMixin:OverrideOnUpdate(_elapsed)
 	local mouseOver = RegionUtil.IsAnyDescendantOfOrSame(GetMouseFoci(), self);
 	if (mouseOver or self:ShouldPause()) then
 		self:PauseAnimations();
@@ -287,12 +298,12 @@ function EventToastManagerFrameMixin:SetupButton(uiTextureKit)
 		return;
 	end
 
-	self:SetScript("OnUpdate", nil);
-
 	local normalTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonNormalTexture, uiTextureKit);
 	local higlightTextureAtlas = GetFinalAtlasFromTextureKitIfExists(hideButtonHighlightTexture, uiTextureKit);
 	if(normalTextureAtlas) then
 		self.HideButton:SetNormalAtlas(normalTextureAtlas, true);
+	else
+		self.HideButton:Hide();
 	end
 
 	if (higlightTextureAtlas) then
@@ -328,7 +339,7 @@ function EventToastManagerFrameMixin:DisplayToast(firstToast)
 		self.shouldAnim = true;
 		self:EnableBlackBGAnimation(true);
 		self:UpdateAnchor();
-		self.hideAutomatically = toastTable.hideAutomatically;
+		self:SetHideAutomatically(toastTable.hideAutomatically);
 		toast.hideAutomatically = toastTable.hideAutomatically;
 		toast.toastInfo = toastInfo;
 		toast:ClearAllPoints();
@@ -478,7 +489,6 @@ function EventToastScenarioBaseToastMixin:Setup(toastInfo)
 
 	local usesBGTextures = toastInfo.uiTextureKit or not toastInfo.hideDefaultAtlas;
 	self.BG1:SetShown(usesBGTextures);
-	self.BG2:SetShown(usesBGTextures);
 	self.hideParentAnim = usesBGTextures;
 
 	if(toastInfo.uiTextureKit) then
@@ -719,15 +729,15 @@ end
 
 function EventToastFlightpointDiscoveredMixin:SetupGLineAtlas(useWhiteGLineAtlas)
 	local parent = self:GetParent();
-	local atlas = "UI-World-Quest-golden-line-2x";
+	local atlas = "UI-World-Quest-golden-line";
 	local glineWidth = self:GetWidth() + 35;
 
-	parent.GLine:SetAtlas(atlas, false);
-	parent.GLine:SetSize(glineWidth, 7);
+	parent.GLine:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	parent.GLine:SetWidth(glineWidth);
 	parent.GLine:SetPoint("BOTTOM", 0, -3);
 
-	parent.GLine2:SetAtlas(atlas, false);
-	parent.GLine2:SetSize(glineWidth, 7);
+	parent.GLine2:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	parent.GLine2:SetWidth(glineWidth);
 end
 
 EventToastWithIconWithRarityMixin = { };
@@ -735,13 +745,16 @@ function EventToastWithIconWithRarityMixin:Setup(toastInfo)
 	EventToastWithIconBaseMixin.Setup(self, toastInfo);
 	local quality = toastInfo.quality;
 
-	if(toastInfo.qualityString) then
+	if toastInfo.qualityString then
 		self.RarityValue:SetText(toastInfo.qualityString);
 	end
 
-	if(quality) then
-		self.IconBorder:SetVertexColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
-		self.RarityValue:SetTextColor(ITEM_QUALITY_COLORS[quality].color:GetRGB());
+	if quality then
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.IconBorder:SetVertexColor(colorData.color:GetRGB());
+			self.RarityValue:SetTextColor(colorData.color:GetRGB());
+		end
 	end
 	self.IconBorder:SetShown(quality);
 	self.RarityValue:SetShown(toastInfo.qualityString);
@@ -789,6 +802,21 @@ end
 
 EventToastManagerNormalTitleAndSubtitleMixin = CreateFromMixins(EventToastManagerNormalMixin);
 
+local function LeaveMatch()
+	PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
+	ForceLogout();
+end
+
+local function Requeue()
+	C_WoWLabsMatchmaking.SetAutoQueueOnLogout(true);
+	LeaveMatch();
+end
+
+local function StartSpectating()
+	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
+	C_SpectatingUI.StartSpectating();
+end
+
 local NormalTitleAndSubtitleTextureKitInfo = {
 	["plunderstorm-toast-levelup-background"] = {
 		useCustomBackground = true,
@@ -805,12 +833,27 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 
 	["plunderstorm-toast-finish-lose"] = {
 		useCustomBackground = true,
-		suppressAnimOut = false,
+		suppressAnimOut = true,
 		flipTitleAndSubtitle = true,
 		titleFont = "Game40Font_Shadow2",
 		subtitleFont = "SystemFont_Shadow_Large2",
 		textOffsetY = 4,
 		widgetOffsetY = -23,
+		specialActions = {
+			{
+				label = SPECTATE,
+				action = StartSpectating,
+			},
+			{
+				label = WOW_LABS_REQUEUE,
+				isLarge = true,
+				action = Requeue,
+			},
+			{
+				label = WOW_LABS_REMATCH,
+				action = LeaveMatch,
+			},
+		},
 	},
 
 	["plunderstorm-toast-finish-win"] = {
@@ -823,17 +866,18 @@ local NormalTitleAndSubtitleTextureKitInfo = {
 		widgetOffsetY = -23,
 		specialActions = {
 			{
-				label = WOW_LABS_VIEW_REWARDS,
-				action = function()
-					ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
-				end,
+				label = SPECTATE,
+				disabled = true;
+				action = StartSpectating,
+			},
+			{
+				label = WOW_LABS_REQUEUE,
+				isLarge = true,
+				action = Requeue,
 			},
 			{
 				label = WOW_LABS_REMATCH,
-				action = function()
-					PlaySound(SOUNDKIT.IG_MAINMENU_LOGOUT);
-					ForceLogout();
-				end,
+				action = LeaveMatch,
 			},
 		},
 	},
@@ -895,14 +939,17 @@ function EventToastManagerNormalTitleAndSubtitleMixin:Setup(toastInfo)
 			if not specialActionButton then
 				specialActionButton = CreateFrame("BUTTON", nil, self.specialActionContainer, "UIPanelButtonNoTooltipResizeToFitTemplate");
 				specialActionButton.layoutIndex = i;
-				specialActionButton.fixedHeight = 32;
-				specialActionButton.widthPadding = 80;
-				specialActionButton:SetNormalFontObject("GameFontNormalLarge");
-				specialActionButton:SetHighlightFontObject("GameFontHighlightLarge");
 				specialActionButton:SetPoint("LEFT");
 				self.specialActionContainer.buttons[i] = specialActionButton;
 			end
 
+			specialActionButton.fixedHeight = specialActionInfo.isLarge and 48 or 32;
+			specialActionButton.widthPadding = specialActionInfo.isLarge and 120 or 80;
+			specialActionButton:SetNormalFontObject(specialActionInfo.isLarge and "GameFontNormalHuge" or "GameFontNormalLarge" );
+			specialActionButton:SetHighlightFontObject(specialActionInfo.isLarge and "GameFontHighlightHuge" or "GameFontHighlightLarge");
+
+			specialActionButton:SetEnabled(not specialActionInfo.disabled);
+			specialActionButton:Show();
 			specialActionButton:SetText(specialActionInfo.label);
 			specialActionButton:FitToText();
 			maxButtonWidth = math.max(maxButtonWidth, specialActionButton:GetWidth());
@@ -1115,7 +1162,10 @@ function EventToastAnimationsMixin:BannerPlay()
 	end);
 
 	self.showAnim:Play();
-	self:GetParent():PlayAnim();
+
+	if not self.skipParentAnim then
+		self:GetParent():PlayAnim();
+	end
 
 	if (self.flipbook) then
 		self.flipbook:Restart();
@@ -1174,6 +1224,10 @@ function EventToastAnimationsMixin:ShouldSuppressAnimOut()
 	return not not self.suppressAnimOut;
 end
 
+function EventToastAnimationsMixin:SetSkipParentAnim(skipParentAnim)
+	self.skipParentAnim = skipParentAnim;
+end
+
 function EventToastAnimationsMixin:MouseOverTitle()
 	if(not self.toastInfo or not self.Title or (not self.toastInfo.titleTooltip and not self.toastInfo.titleTooltipUiWidgetSetID)) then
 		return;
@@ -1220,3 +1274,52 @@ EventToastWeeklyContentsMixin = {};
 function EventToastWeeklyContentsMixin:OnMouseDown(...)
 	EventToastManagerFrame:OnMouseDown(...);
 end
+
+EventToastScoreboardMixin = {};
+
+function EventToastScoreboardMixin:OnLoad()
+	EventToastAnimationsMixin.OnLoad(self);
+
+	local function HideToast(_buttonSelf)
+		self:Hide();
+	end
+
+	self.CloseButton:SetScript("OnClick", HideToast);
+end
+
+function EventToastScoreboardMixin:Setup(toastInfo)
+	self:Show();
+	self:SetSkipParentAnim(true);
+	self:PlayBanner();
+
+	-- All the contents of the scoreboard are expected to come from widgets.
+	if toastInfo.uiWidgetSetID then
+		self.WidgetContainer:RegisterForWidgetSet(toastInfo.uiWidgetSetID, DefaultWidgetLayout);
+	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function EventToastScoreboardMixin:OnEvent(event)
+	-- Scoreboard widgets can be dependent on a specific area. If the player leaves
+	-- without closing the scoreboard, hide it automatically.
+	if event == "PLAYER_ENTERING_WORLD" then
+		if not self.WidgetContainer:HasAnyWidgetsShowing() then
+			self:Hide();
+		end
+	end
+end
+
+function EventToastScoreboardMixin:OnHide()
+	self.WidgetContainer:UnregisterForWidgetSet();
+	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
+end
+
+EventToastHouseUpgradeAvailableMixin = {}
+
+function EventToastHouseUpgradeAvailableMixin:Setup(_toastInfo)
+	self:Show();
+	self:SetSkipParentAnim(true);
+	self:AnimIn();
+end
+

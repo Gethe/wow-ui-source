@@ -16,7 +16,7 @@ function BarberShopMixin:OnEvent(event, ...)
 	if event == "BARBER_SHOP_RESULT" then
 		local success = ...;
 		if success then
-			if (C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+			if (C_BarberShop.HasCustomizationFeature(Enum.ChrModelFeatureFlags.Mounts)) then
 				PlaySound(SOUNDKIT.BARBERSHOP_DRAGONRIDING_ACCEPT);
 			else
 				PlaySound(SOUNDKIT.BARBERSHOP_DEFAULT_ACCEPT);
@@ -27,12 +27,12 @@ function BarberShopMixin:OnEvent(event, ...)
 	elseif event == "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE" then
 		self:UpdateCharCustomizationFrame();
 	elseif event == "BARBER_SHOP_APPEARANCE_APPLIED" then
-		if (CollectionsJournal and C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
-			MountJournal_SetPendingDragonMountChanges(true);
+		if (CollectionsJournal and C_BarberShop.HasCustomizationFeature(Enum.ChrModelFeatureFlags.Mounts)) then
+			MountJournal_SetPendingMountChanges(true);
 		end
 		self:Cancel();
 	elseif event == "BARBER_SHOP_CAMERA_VALUES_UPDATED" then
-		self:ResetCharacterRotation();
+		self:ResetSubjectRotation();
 		CharCustomizeFrame:UpdateCameraMode();
 		self:UnregisterEvent("BARBER_SHOP_CAMERA_VALUES_UPDATED");
 	end
@@ -48,10 +48,12 @@ function BarberShopMixin:OnShow()
 
 	self:UpdateSex();
 
+	CharCustomizeFrame.GetAlteredFormsUnsafeLeftSpace = GenerateClosure(self.GetAlteredFormsUnsafeLeftSpace, self);
+
 	local reset = true;
 	self:UpdateCharCustomizationFrame(reset);
 
-	if (C_BarberShop.GetCustomizationScope() == Enum.CustomizationScope.DragonCompanion) then
+	if (C_BarberShop.HasCustomizationFeature(Enum.ChrModelFeatureFlags.Mounts)) then
 		PlaySound(SOUNDKIT.BARBERSHOP_DRAGONRIDING_OPEN);
 	else
 		PlaySound(SOUNDKIT.BARBERSHOP_DEFAULT_OPEN);
@@ -68,6 +70,7 @@ function BarberShopMixin:UpdateSex()
 		local sexes = {Enum.UnitSex.Male, Enum.UnitSex.Female};
 		for index, sexID in ipairs(sexes) do
 			local button = self.sexButtonPool:Acquire();
+			button:SetCustomizationFrame(CharCustomizeFrame);
 			button:SetBodyType(sexID, currentCharacterData.sex, index);
 			button:Show();
 		end
@@ -76,7 +79,7 @@ function BarberShopMixin:UpdateSex()
 	if C_BarberShop.GetViewingChrModel() then
 		self.BodyTypes:Hide();
 	else
-		self.BodyTypes:MarkDirty();
+		self.BodyTypes:Layout();
 		self.BodyTypes:Show();
 	end
 end
@@ -137,6 +140,15 @@ function BarberShopMixin:UpdateCharCustomizationFrame(alsoReset)
 	self:UpdateButtons();
 end
 
+function BarberShopMixin:GetAlteredFormsUnsafeLeftSpace()
+	local unsafeLeftSpaceBodyTypes = self.BodyTypes:IsShown() and self.BodyTypes:GetRight();
+	if unsafeLeftSpaceBodyTypes then
+		return unsafeLeftSpaceBodyTypes + 10;
+	end
+
+	return CharCustomizeMixin.GetAlteredFormsUnsafeLeftSpace(CharCustomizeFrame);
+end
+
 function BarberShopMixin:SetCustomizationChoice(optionID, choiceID)
 	C_BarberShop.SetCustomizationChoice(optionID, choiceID);
 
@@ -178,11 +190,11 @@ function BarberShopMixin:ZoomCamera(zoomAmount)
 	C_BarberShop.ZoomCamera(zoomAmount);
 end
 
-function BarberShopMixin:RotateCharacter(rotationAmount)
+function BarberShopMixin:RotateSubject(rotationAmount)
 	C_BarberShop.RotateCamera(rotationAmount);
 end
 
-function BarberShopMixin:ResetCharacterRotation()
+function BarberShopMixin:ResetSubjectRotation()
 	C_BarberShop.ResetCameraRotation();
 end
 

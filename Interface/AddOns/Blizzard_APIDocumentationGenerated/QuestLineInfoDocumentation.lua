@@ -9,6 +9,7 @@ local QuestLineInfo =
 		{
 			Name = "GetAvailableQuestLines",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local QuestLineInfo =
 		{
 			Name = "GetForceVisibleQuests",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local QuestLineInfo =
 		{
 			Name = "GetQuestLineInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +56,7 @@ local QuestLineInfo =
 		{
 			Name = "GetQuestLineQuests",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +71,7 @@ local QuestLineInfo =
 		{
 			Name = "IsComplete",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +86,7 @@ local QuestLineInfo =
 		{
 			Name = "QuestLineIgnoresAccountCompletedFiltering",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,6 +102,7 @@ local QuestLineInfo =
 		{
 			Name = "RequestQuestLinesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,6 +153,7 @@ local QuestLineInfo =
 				{ Name = "inProgress", Type = "bool", Nilable = false },
 				{ Name = "isQuestStart", Type = "bool", Nilable = false },
 				{ Name = "floorLocation", Type = "QuestLineFloorLocation", Nilable = false },
+				{ Name = "startMapID", Type = "number", Nilable = false },
 			},
 		},
 	},

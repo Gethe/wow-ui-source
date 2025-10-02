@@ -8,6 +8,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "ApplySpellVisualKit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "CanSetUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +29,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "FreezeAnimation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +80,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "HasAnimation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +95,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "PlayAnimKit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,6 +122,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetAnimation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -135,6 +141,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetCamDistanceScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +151,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetCreature",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +162,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +173,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetDoBlend",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +183,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,6 +195,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetItemAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +207,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetKeepModelOnHide",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,6 +217,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetPortraitZoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +227,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetRotation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +238,7 @@ local FrameAPICharacterModelBase =
 		{
 			Name = "SetUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

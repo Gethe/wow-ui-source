@@ -106,6 +106,7 @@
 	<Frame name="DruidComboPointBarFrame" inherits="DruidComboPointBarTemplate">
 		<Size x="1" y="60"/>
 		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
 			<KeyValue key="topPadding" value="7" type="number"/>
 			<KeyValue key="showTooltip" value="true" type="boolean"/>
 		</KeyValues>

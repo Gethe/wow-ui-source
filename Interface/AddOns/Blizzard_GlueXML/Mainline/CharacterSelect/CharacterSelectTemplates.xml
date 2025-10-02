@@ -36,4 +36,23 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="CharacterSelectBlockingFrameTemplate" mixin="CharacterSelectBlockingFrameMixin" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="hideOnClick" type="boolean" value="false"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
+					<Color color="BLACK_FONT_COLOR"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -8,6 +8,7 @@ local SimpleModelFFXAPI =
 		{
 			Name = "AddCharacterLight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local SimpleModelFFXAPI =
 		{
 			Name = "AddLight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +30,7 @@ local SimpleModelFFXAPI =
 		{
 			Name = "AddPetLight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

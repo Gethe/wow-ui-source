@@ -1,7 +1,0 @@
-## Title: Blizzard_FontStyles_Frame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_Fonts_Frame, Blizzard_FontStyles_Shared
-## AllowLoad: game
-## AllowLoadGameType: mainline
-Mainline\FontStyles.xml

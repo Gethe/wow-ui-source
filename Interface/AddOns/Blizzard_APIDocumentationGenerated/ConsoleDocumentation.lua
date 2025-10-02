@@ -8,6 +8,7 @@ local Console =
 		{
 			Name = "CalculateStringEditDistance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,17 +22,26 @@ local Console =
 			},
 		},
 		{
-			Name = "ConsoleAddMessage",
+			Name = "ConsoleEcho",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "message", Type = "cstring", Nilable = false },
+				{ Name = "command", Type = "cstring", Nilable = false },
+				{ Name = "addToHistory", Type = "bool", Nilable = false, Default = false },
+				{ Name = "prefix", Type = "cstring", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "ConsoleExec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +66,7 @@ local Console =
 		{
 			Name = "ConsoleGetColorFromType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +99,7 @@ local Console =
 		{
 			Name = "ConsolePrintAllMatchingCommands",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +109,7 @@ local Console =
 		{
 			Name = "ConsoleSetFontHeight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -106,6 +119,7 @@ local Console =
 		{
 			Name = "SetConsoleKey",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,15 +172,6 @@ local Console =
 			{
 				{ Name = "eventName", Type = "cstring", Nilable = false },
 				{ Name = "value", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "GlueConsoleLog",
-			Type = "Event",
-			LiteralName = "GLUE_CONSOLE_LOG",
-			Payload =
-			{
-				{ Name = "message", Type = "cstring", Nilable = false },
 			},
 		},
 		{

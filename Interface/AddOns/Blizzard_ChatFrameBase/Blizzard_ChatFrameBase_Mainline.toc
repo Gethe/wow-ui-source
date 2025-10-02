@@ -6,10 +6,32 @@
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Shared\HistoryKeeper.lua
-Mainline\ChatFrame.lua
-Mainline\ChatFrame.xml
+Shared\SlashCommandsRegistry.lua
+Shared\SlashCommands.lua
+Shared\ChatFrameConstants.lua
+Shared\ChatTypeInfoConstants.lua
+Shared\CastRandomManager.lua
+Shared\CastSequenceManager.lua
+Shared\ChatFrameUtil.lua
+Shared\ChatFrameFiltersSecure.lua [LoadIntoEnvironment secure]
+Shared\ChatFrameFilters.lua
+Shared\MessageFrameScrollButton.lua
+[Family]\ChatEmoteConstants.lua
+[Family]\ChatTypeInfoConstantsOverride.lua
+[Family]\SlashCommandsOverrides.lua
+Shared\ChatTypeInfoColors.lua
+Shared\ChatFrameEditBox.lua
+Shared\ChatFrame.lua
+[Family]\ChatFrameEditBoxOverrides.lua
+[Family]\ChatFrameUtilOverrides.lua
+[Family]\ChatFrameOverrides.lua
+[Family]\ChatFrameEditBox.xml
+[Family]\ChatFrameMenuButton.lua
+[Family]\ChatFrame.xml
 Shared\ChatAlertFrameMixin.lua
-Mainline\ChannelFrameButtonMixin.lua
+[Family]\ChannelFrameButtonMixin.lua
 Shared\FloatingChatFrame.lua
-Mainline\FloatingChatFrame.lua
-Mainline\FloatingChatFrame.xml
+[Family]\FloatingChatFrame.lua
+[Family]\FloatingChatFrame.xml
+Shared\MacroExecutionManager.lua
+Shared\ChatFrameSetup.lua

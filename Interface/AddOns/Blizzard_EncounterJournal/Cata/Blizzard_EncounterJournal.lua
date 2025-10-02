@@ -309,7 +309,6 @@ function EncounterJournal_OnLoad(self)
 
 		local scrollBox = EncounterJournal.searchResults.ScrollBox;
 		local scrollBar = EncounterJournal.searchResults.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 	end
 
@@ -392,7 +391,7 @@ function EncounterJournal_OnLoad(self)
 		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
 
-	EJ_SelectTier(EJ_START_TIER);
+	EJ_SelectTier(GetClassicExpansionLevel() + 1);
 	local instanceSelect = EncounterJournal.instanceSelect;
 	EJ_ContentTab_SetEnabled(EncounterJournal.dungeonsTab, true);
 	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
@@ -588,7 +587,7 @@ function EncounterJournal_OnShow(self)
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
 		local spec, role;
 
-		spec = GetSpecialization();
+		spec = C_SpecializationInfo.GetSpecialization();
 		if (spec) then
 			role = GetSpecializationRoleEnum(spec);
 		else
@@ -1240,9 +1239,9 @@ function EncounterJournal_UpdateButtonState(self)
 end
 
 function EncounterJournal_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -1699,7 +1698,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			local spec, role;
 
-			spec = GetSpecialization();
+			spec = C_SpecializationInfo.GetSpecialization();
 			if (spec) then
 				role = GetSpecializationRoleEnum(spec);
 			else
@@ -2291,6 +2290,14 @@ function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
 	EncounterJournal.searchBox:SetSearchPreviewSelectionToAllResults();
 end
 
+function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
+	jtype = tonumber(jtype);
+	id = tonumber(id);
+	difficultyID = tonumber(difficultyID);
+	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
+	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	ShowUIPanel(EncounterJournal);
 	if instanceID then
@@ -2344,7 +2351,6 @@ end
 function EJ_ContentTab_OnClick(self)
 	C_EncounterJournal.SetTab(self:GetID());
 	EJ_ContentTab_Select(self:GetID());
-	self:SetDisabledFontObject(GameFontHighlightLarge);
 end
 
 function EJ_ContentTab_Select(id)
@@ -2519,9 +2525,9 @@ function EncounterJournalBossButton_OnHide(self)
 end
 
 function EncounterJournalBossButton_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end

@@ -9,6 +9,7 @@ local BarberShopInternal =
 		{
 			Name = "SetQAMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

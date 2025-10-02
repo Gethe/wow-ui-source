@@ -4,7 +4,7 @@ function PlayerChoicePowerChoiceTemplateMixin:OnLoad()
 	PlayerChoiceBaseOptionTemplateMixin.OnLoad(self);
 	self.OptionText:SetUseHTML(false);
 	self.OptionText:SetJustifyH("CENTER");
-	self.OptionButtonsContainer.buttonTemplate = "PlayerChoiceSmallerOptionButtonTemplate";
+	self.OptionButtonsContainer.buttonFrameTemplate = "PlayerChoiceSmallerOptionButtonFrameTemplate";
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:Reset()
@@ -41,16 +41,23 @@ end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnEnter()
 	GameTooltip:SetOwner(self.OptionText, "ANCHOR_RIGHT");
-	if self.optionInfo.rarityColor then
-		GameTooltip_AddColoredLine(GameTooltip, self.optionInfo.header, self.optionInfo.rarityColor);
+
+	local colorData = nil;
+	if self.optionInfo.rarity then
+		local quality = self:GetItemQualityForRarity(self.optionInfo.rarity);
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
+	end
+
+	if colorData then
+		GameTooltip_AddColoredLine(GameTooltip, self.optionInfo.header, colorData.color);
+
+		local rarityStringIndex = self.optionInfo.rarity + 1;
+		local rarityText = _G["ITEM_QUALITY"..rarityStringIndex.."_DESC"];
+		GameTooltip_AddColoredLine(GameTooltip, rarityText, colorData.color);
 	else
 		GameTooltip_AddHighlightLine(GameTooltip, self.optionInfo.header);
 	end
-	if self.optionInfo.rarity and self.optionInfo.rarityColor then
-		local rarityStringIndex = self.optionInfo.rarity + 1;
-		local rarityText = _G["ITEM_QUALITY"..rarityStringIndex.."_DESC"];
-		GameTooltip_AddColoredLine(GameTooltip, rarityText, self.optionInfo.rarityColor);
-	end
+
 	GameTooltip_AddNormalLine(GameTooltip, self.optionInfo.description);
 	GameTooltip:Show();
 end
@@ -106,22 +113,22 @@ local textureKitRegions = {
 
 local NUM_BG_STYLES = 3;
 
-local rarityToCircleBorderPostfix = 
-{
-	[Enum.PlayerChoiceRarity.Common] = "-border",
-	[Enum.PlayerChoiceRarity.Uncommon] = "-QualityUncommon-border",
-	[Enum.PlayerChoiceRarity.Rare] = "-QualityRare-border",
-	[Enum.PlayerChoiceRarity.Epic] = "-QualityEpic-border",
-};
-
 -- May be overriden by inheriting frame
 function PlayerChoicePowerChoiceTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = CopyTable(textureKitRegions);
+	local atlasData = self:GetAtlasDataForRarity();
+
+	self.CircleBorder:SetVertexColor(1, 1, 1);
+	if atlasData then
+		useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..atlasData.postfixData.circleBorder;
+
+		if atlasData.overrideColor then
+			self.CircleBorder:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		end
+	end
 
 	local styleNum = mod(self.layoutIndex - 1, NUM_BG_STYLES) + 1;
 	useTextureRegions.Background = useTextureRegions.Background.."-Style"..styleNum;
-
-	useTextureRegions.CircleBorder = "UI-Frame-%s-Portrait"..(rarityToCircleBorderPostfix[self.optionInfo.rarity] or "-border");
 
 	return useTextureRegions;
 end
@@ -136,7 +143,7 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupFrame()
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:BeginEffects()
-	-- Overriden by inheriting frame, if needed
+	-- Overridden by inheriting frame, if needed
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:CancelEffects()
@@ -161,23 +168,31 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupHeader()
 	end
 end
 
-local OPTION_FONT_COLORS = {
-	title = HIGHLIGHT_FONT_COLOR,
-	description = NORMAL_FONT_COLOR,
+local OPTION_FONT_INFO = {
+	titleColor = HIGHLIGHT_FONT_COLOR,
+	descriptionColor = NORMAL_FONT_COLOR,
 };
 
-function PlayerChoicePowerChoiceTemplateMixin:GetOptionFontColors()
-	return OPTION_FONT_COLORS;
+function PlayerChoicePowerChoiceTemplateMixin:GetOptionFontInfo()
+	return OPTION_FONT_INFO;
 end
 
-function PlayerChoicePowerChoiceTemplateMixin:SetupTextColors()
-	local fontColors = self:GetOptionFontColors();
-	if self.optionInfo.rarityColor then
-		self.Header.Text:SetTextColor(self.optionInfo.rarityColor:GetRGBA());
-	else
-		self.Header.Text:SetTextColor(fontColors.title:GetRGBA());
+function PlayerChoicePowerChoiceTemplateMixin:SetupTextFonts()
+	local fontInfo = self:GetOptionFontInfo();
+
+	local colorData = nil;
+	if self.optionInfo.rarity then
+		local quality = self:GetItemQualityForRarity(self.optionInfo.rarity);
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
 	end
-	self.OptionText:SetTextColor(fontColors.description:GetRGBA());
+
+	if colorData then
+		self.Header.Text:SetTextColor(colorData.color:GetRGB());
+	else
+		self.Header.Text:SetTextColor(fontInfo.titleColor:GetRGB());
+	end
+
+	self.OptionText:SetTextColor(fontInfo.descriptionColor:GetRGB());
 end
 
 local OPTION_TEXT_WIDTH = 160;
@@ -188,6 +203,12 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupOptionText()
 	self.OptionText:SetStringHeight(OPTION_TEXT_HEIGHT);
 	self.OptionText:SetWidth(OPTION_TEXT_WIDTH);
 	self.OptionText:SetText(self:GetRarityDescriptionString()..self.optionInfo.description);
+end
+
+function PlayerChoicePowerChoiceTemplateMixin:SetupButtons()
+	-- PowerChoice Player Choices don't support showing their buttons as a list
+	local showAsListNo = false;
+	self.OptionButtonsContainer:Setup(self.optionInfo, showAsListNo);
 end
 
 local rarityToString = 

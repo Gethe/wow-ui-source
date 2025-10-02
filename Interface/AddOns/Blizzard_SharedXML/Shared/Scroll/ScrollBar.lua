@@ -129,10 +129,6 @@ function ScrollBarMixin:EnableInternalPriority()
 	self.internalPriority = true;
 end
 
-function ScrollBarMixin:EnableSnapToInterval(snapToInterval)
-	self.snapToInterval = true;
-end
-
 function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	-- While steppers, track, or thumb is held, attempts to change the scroll percentage
 	-- externally are discarded. This is to prevent scroll bars from jittering when receiving
@@ -150,19 +146,8 @@ function ScrollBarMixin:SetScrollPercentage(scrollPercentage, forceImmediate)
 	end
 end
 
+
 function ScrollBarMixin:SetScrollPercentageInternal(scrollPercentage)
-	-- Constrains the scroll percentage to intervals. This is useful for SMF where message
-	-- lines are never partially visible and it is undesirable to have the thumb position change
-	-- without actually causing any messages to scroll.
-	if self.snapToInterval then
-		local visibleExtentPercentage = self:GetVisibleExtentPercentage();
-		if visibleExtentPercentage > 0 then
-			local intervals = math.floor((1 / visibleExtentPercentage) + MathUtil.Epsilon);
-			local r = intervals - 1;
-			scrollPercentage = math.min(math.floor(scrollPercentage / visibleExtentPercentage), r) / math.max(r, 1);
-		end
-	end
-	
 	ScrollControllerMixin.SetScrollPercentage(self, scrollPercentage);
 	
 	self:Update();
@@ -226,22 +211,11 @@ function ScrollBarMixin:Update()
 		thumbExtent = self:GetFrameExtent(thumb);
 	end
 
-	-- Consider interpolation so the enabled or disabled state is not delayed as it approaches
-	-- 0 or 1.
+	local backEnabled, forwardEnabled = ScrollUtil.GetScrollableDirections(self);
+	self:GetBackStepper():SetEnabled(backEnabled);
+	self:GetForwardStepper():SetEnabled(forwardEnabled);
+
 	local scrollPercentage = self:GetScrollPercentage();
-	local targetScrollPercentage = scrollPercentage;
-	local interpolateTo = self:GetScrollInterpolator():GetInterpolateTo();
-	if interpolateTo then
-		targetScrollPercentage = interpolateTo;
-	end
-
-	-- Small exponential representations of zero (ex. E-15) don't evaluate as > 0, 
-	-- and 1.0 can be represented by .99999XXXXXX.
-	local hasScrollableExtent = self:HasScrollableExtent();
-	local scrollEnabled = hasScrollableExtent and self:IsScrollAllowed();
-	self:GetBackStepper():SetEnabled(scrollEnabled and targetScrollPercentage > MathUtil.Epsilon);
-	self:GetForwardStepper():SetEnabled(scrollEnabled and targetScrollPercentage < (1 - MathUtil.Epsilon));
-
 	local offset = (trackExtent - thumbExtent) * scrollPercentage;
 	local x, y = 0, -offset;
 	if self.isHorizontal then
@@ -252,6 +226,8 @@ function ScrollBarMixin:Update()
 	
 	-- hideTrack and hideTrackIfThumbExceedsTrack are not expected to be enabled unless
 	-- the thumb's cannot appear correctly when it's extent is clamped to the track's extent.
+	local hasScrollableExtent = self:HasScrollableExtent();
+	local scrollEnabled = hasScrollableExtent and self:IsScrollAllowed();
 	local showThumb = hasScrollableExtent and not clampedThumb;
 	thumb:SetShown(showThumb);
 	thumb:SetEnabled(scrollEnabled);

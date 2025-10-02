@@ -11,12 +11,15 @@ local function POIButton_SetTextureSize(texture, width, height)
 	end
 end
 
-local function POIButton_SetAtlas(texture, width, height, atlas)
+local function POIButton_SetAtlas(texture, width, height, atlas, scale)
 	-- Using this with shared controls that may not have all the same children
 	if texture then
 		local useAtlasSize = not width and not height;
 		texture:SetTexCoord(0, 1, 0, 1);
 		texture:SetAtlas(atlas, useAtlasSize);
+
+		scale = scale or 1;
+		texture:SetScale(scale);
 
 		if not useAtlasSize then
 			POIButton_SetTextureSize(texture, width, height);
@@ -53,8 +56,8 @@ function POIButtonDisplayLayerMixin:SetTextureSize(width, height)
 	POIButton_SetTextureSize(self.Icon, width, height);
 end
 
-function POIButtonDisplayLayerMixin:SetAtlas(width, height, atlas)
-	POIButton_SetAtlas(self.Icon, width, height, atlas);
+function POIButtonDisplayLayerMixin:SetAtlas(width, height, atlas, scale)
+	POIButton_SetAtlas(self.Icon, width, height, atlas, scale);
 end
 
 function POIButtonDisplayLayerMixin:SetIconShown(iconShown)
@@ -219,6 +222,30 @@ local function POIButton_GetAreaPOIAtlasInfoPushed(poiButton)
 	end
 end
 
+local function GetMapPinInfoButtonField(mapPin, isSelected, fieldName)
+	if isSelected then
+		return mapPin.buttonSelected[fieldName];
+	else
+		return mapPin.button[fieldName];
+	end
+end
+
+local function POIButton_GetVignetteDisplay(poiButton)
+	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "icon");
+end
+
+local function POIButton_GetVignetteAtlasInfoNormal(poiButton)
+	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "normal");
+end
+
+local function POIButton_GetVigntteAtlasInfoPushed(poiButton)
+	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "pressed");
+end
+
+local function POIButton_GetVignetteAtlasInfoHighlight(poiButton)
+	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "highlight");
+end
+
 local function POIButton_GetContentTrackingAtlas(poiButton)
 	if poiButton:IsSelected() then
 		return "waypoint-mappin-minimap-tracked";
@@ -229,7 +256,8 @@ end
 
 local function POIButton_GetQuestCompleteAtlas(poiButton)
 	local questID = poiButton:GetQuestID();
-	local isLegendaryQuest = questID and C_QuestLog.IsLegendaryQuest(questID) or false;
+	local questClassification = poiButton:GetQuestClassification();
+	local isLegendaryQuest = questID and questClassification == Enum.QuestClassification.Legendary;
 	return isLegendaryQuest and "UI-QuestPoiLegendary-QuestBangTurnIn" or "UI-QuestIcon-TurnIn-Normal";
 end
 
@@ -268,7 +296,10 @@ local function POIButton_UpdateQuestInProgressStyle(poiButton)
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	end
 
-	 poiButton:UpdateInProgress();
+	poiButton:UpdateButtonAlpha();
+	poiButton:ClearQuestTagInfo();
+	poiButton:UpdateInProgress();
+	poiButton:UpdateUnderlay();
 end
 
 local function POIButton_UpdateNormalStyle(poiButton)
@@ -289,11 +320,18 @@ local function POIButton_UpdateNormalStyle(poiButton)
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetBonusObjectiveAtlasInfoPushed(poiButton));
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	elseif style == POIButtonUtil.Style.AreaPOI then
-		poiButton.Display:SetAtlas(nil, nil, POIButton_GetAreaPOIDisplay(poiButton)); -- TODO: This could need to support textures, it just won't for now.
+		local scale = 0.72;
+		poiButton.Display:SetAtlas(nil, nil, POIButton_GetAreaPOIDisplay(poiButton), scale); -- TODO: This could need to support textures, it just won't for now.
 		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
 		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoNormal(poiButton));
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoPushed(poiButton));
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
+	elseif style == POIButtonUtil.Style.Vignette then
+		poiButton.Display:SetAtlas(nil, nil, POIButton_GetVignetteDisplay(poiButton));
+		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetVignetteAtlasInfoNormal(poiButton));
+		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetVigntteAtlasInfoPushed(poiButton));
+		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetVignetteAtlasInfoHighlight(poiButton));
 	else
 		local questClassification = poiButton:GetQuestClassification();
 
@@ -356,10 +394,7 @@ local function POIButton_UpdateNormalStyle(poiButton)
 			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
 		end
 
-		local buttonAlpha = poiButton:CalculateButtonAlpha();
-		poiButton.NormalTexture:SetAlpha(buttonAlpha);
-		poiButton.PushedTexture:SetAlpha(buttonAlpha);
-
+		poiButton:UpdateButtonAlpha();
 		poiButton:ClearQuestTagInfo();
 
 		local questID = poiButton:GetQuestID();
@@ -396,6 +431,10 @@ local function POIButton_UpdateNormalStyle(poiButton)
 end
 
 POIButtonMixin = {};
+
+function POIButtonMixin:IsPOIButton()
+    return true;
+end
 
 function POIButtonMixin:OnShow()
 	EventRegistry:RegisterCallback("Supertracking.OnChanged", self.OnSuperTrackingChanged, self);
@@ -441,13 +480,15 @@ function POIButtonMixin:OnClick(button)
 
 	local questID = self:GetQuestID();
 	if questID then
-		if ChatEdit_TryInsertQuestLinkForQuestID(questID) then
+		if ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) then
 			return;
 		end
 
 		if QuestUtils_IsQuestWatched(questID) then
 			if IsShiftKeyDown() then
-				C_QuestLog.RemoveQuestWatch(questID);
+				if QuestUtil.CanRemoveQuestWatch() then
+					C_QuestLog.RemoveQuestWatch(questID);
+				end
 				return;
 			end
 		else
@@ -456,7 +497,7 @@ function POIButtonMixin:OnClick(button)
 
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
 		if self:GetPingWorldMap() then
-			WorldMapPing_StartPingQuest(questID);
+			EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 		end
 		return;
 	end
@@ -485,15 +526,23 @@ function POIButtonMixin:OnClick(button)
 	local areaPOIID = self:GetAreaPOIID();
 	if areaPOIID then
 		C_SuperTrack.SetSuperTrackedMapPin(Enum.SuperTrackingMapPinType.AreaPOI, areaPOIID);
+		return;
+	end
+
+	local vignette = self:GetVignette();
+	if vignette then
+		C_SuperTrack.SetSuperTrackedVignette(vignette);
+		return;
 	end
 end
 
 function POIButtonMixin:OnEnter()
+	local tooltip = GetAppropriateTooltip();
 	if (self:GetStyle() == POIButtonUtil.Style.QuestComplete) and not self:IsEnabled() then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
-		GameTooltip_AddNormalLine(GameTooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
-		GameTooltip:Show();
+		tooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(tooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TITLE);
+		GameTooltip_AddNormalLine(tooltip, QUEST_SESSION_ON_HOLD_TOOLTIP_TEXT);
+		tooltip:Show();
 	else
 		local questID = self:GetQuestID();
 		if questID and self:GetParent().useHighlightManager then
@@ -501,7 +550,7 @@ function POIButtonMixin:OnEnter()
 		else
 			self.HighlightTexture:Show();
 
-			if self.UnderlayBannerAtlasHighlight then
+			if self.UnderlayBannerAtlasHighlight and self:IsUnderlayBannerEnabled() then
 				self.UnderlayBannerAtlasHighlight:Show();
 			end
 		end
@@ -509,8 +558,9 @@ function POIButtonMixin:OnEnter()
 end
 
 function POIButtonMixin:OnLeave()
-	if GameTooltip:GetOwner() == self then
-		GameTooltip:Hide();
+	local tooltip = GetAppropriateTooltip();
+	if tooltip:GetOwner() == self then
+		tooltip:Hide();
 	end
 
 	if self:GetQuestID() and self:GetParent().useHighlightManager then
@@ -563,6 +613,12 @@ function POIButtonMixin:CalculateButtonAlpha()
 	return (self:GetStyle() == POIButtonUtil.Style.QuestDisabled) and 0 or 1;
 end
 
+function POIButtonMixin:UpdateButtonAlpha()
+	local buttonAlpha = self:CalculateButtonAlpha();
+	self.NormalTexture:SetAlpha(buttonAlpha);
+	self.PushedTexture:SetAlpha(buttonAlpha);
+end
+
 function POIButtonMixin:UpdateInProgress()
 	self.Display:UpdateInProgress();
 end
@@ -599,6 +655,22 @@ end
 
 function POIButtonMixin:GetAreaPOIID()
 	return self.areaPOIID;
+end
+
+function POIButtonMixin:SetVignette(vignette)
+	self.vignette = vignette;
+end
+
+function POIButtonMixin:GetVignette()
+	return self.vignette;
+end
+
+function POIButtonMixin:SetMapPinInfo(info)
+	self.mapPinInfo = info;
+end
+
+function POIButtonMixin:GetMapPinInfo(info)
+	return self.mapPinInfo;
 end
 
 function POIButtonMixin:SetPinScale(scale)
@@ -648,6 +720,10 @@ function POIButtonMixin:IsSelected()
 	return self.selected;
 end
 
+function POIButtonMixin:IsSuperTracked()
+	return self:IsSelected();
+end
+
 function POIButtonMixin:ChangeSelected(selected)
 	if self:IsSelected() ~= selected then
 		self:SetSelected(selected);
@@ -667,6 +743,14 @@ function POIButtonMixin:GetQuestTagInfo()
 	return self.questTagInfo;
 end
 
+function POIButtonMixin:SetUnderlayBannerEnabled(enabled)
+	self.underlayBannerEnabled = enabled;
+end
+
+function POIButtonMixin:IsUnderlayBannerEnabled()
+	return self.underlayBannerEnabled;
+end
+
 do
 	local function CreateUnderlay(self)
 		local t = self:CreateTexture(nil, "BORDER");
@@ -678,6 +762,11 @@ do
 		local info = self:GetQuestTagInfo();
 		if info and info.isElite then
 			return "worldquest-questmarker-dragon", TextureKitConstants.UseAtlasSize;
+		end
+
+		local mapPinInfo = self:GetMapPinInfo();
+		if mapPinInfo and mapPinInfo.underlay then
+			return mapPinInfo.underlay, TextureKitConstants.UseAtlasSize;
 		end
 	end
 
@@ -701,18 +790,21 @@ do
 
 	local function GetUnderlayBannerAtlas(self)
 		local info = self:GetQuestTagInfo();
-		if info and (info.worldQuestType == Enum.QuestTagType.Capstone) then
+		self:SetUnderlayBannerEnabled(info and (info.worldQuestType == Enum.QuestTagType.Capstone));
+
+		if self:IsUnderlayBannerEnabled() then
 			return "worldquest-Capstone-Banner", TextureKitConstants.IgnoreAtlasSize;
 		end
 	end
 
-	local function CheckCreateExtraTexture(self, parentKey, getAtlas, factory)
-		local atlas, useAtlasSize = getAtlas(self);
-		local texture = self[parentKey];
+	local function CheckCreateExtraTexture(self, parentKey, getAtlas, factory, overrideParent)
+		local atlas, useAtlasSize = getAtlas(self); -- self must be a POIButton here
+		local parent = overrideParent or self;
+		local texture = parent[parentKey];
 		if atlas and not texture then
-			texture = factory(self);
+			texture = factory(parent);
 			texture:SetAtlas(atlas, useAtlasSize);
-			self[parentKey] = texture;
+			parent[parentKey] = texture;
 		end
 
 		if texture then
@@ -735,7 +827,7 @@ do
 		end
 	end
 
-	local function CreateSubTypeIcon(self)
+	local function CreateSubTypeIcon(self) -- NOTE: self is a POIButton.Display here.
 		local t = self:CreateTexture(nil, "ARTWORK", nil, 2);
 		t:SetSize(32, 32); -- TODO: The 2x atlases weren't made correctly, must override size...remove this when the fix propagates
 		t:SetPoint("CENTER", self, "CENTER", 0, 0); -- TODO: Would be ideal to avoid hardcoding these sizes/offsets
@@ -743,7 +835,7 @@ do
 	end
 
 	function POIButtonMixin:UpdateSubTypeIcon()
-		CheckCreateExtraTexture(self, "SubTypeIcon", GetSubTypeAtlas, CreateSubTypeIcon);
+		CheckCreateExtraTexture(self, "SubTypeIcon", GetSubTypeAtlas, CreateSubTypeIcon, self.Display);
 	end
 end
 
@@ -773,11 +865,19 @@ local function OnSuperTrackingChanged_AreaPOI(self, supertracker)
 	self:ChangeSelected(isSelected);
 end
 
+local function OnSuperTrackingChanged_Vignette(self, supertracker)
+	assertsafe(self:GetButtonType() == POIButtonUtil.Type.Vignette);
+
+	local isSelected = (QuestSuperTracking_GetSuperTrackedVignette(supertracker) == self:GetVignette());
+	self:ChangeSelected(isSelected);
+end
+
 local superTrackerChangeHandlers =
 {
 	[POIButtonUtil.Type.Quest] = OnSuperTrackingChanged_Quest,
 	[POIButtonUtil.Type.Content] = OnSuperTrackingChanged_Content,
 	[POIButtonUtil.Type.AreaPOI] = OnSuperTrackingChanged_AreaPOI,
+	[POIButtonUtil.Type.Vignette] = OnSuperTrackingChanged_Vignette,
 };
 
 function POIButtonMixin:OnSuperTrackingChanged(supertracker)
@@ -792,6 +892,10 @@ end
 
 function POIButtonMixin:UpdateSelected()
 	self:OnSuperTrackingChanged();
+end
+
+function POIButtonMixin:UpdateFogOfWar(_inFogOfWar)
+	-- FogOfWar support not required, yet...
 end
 
 function POIButtonMixin:Reset()

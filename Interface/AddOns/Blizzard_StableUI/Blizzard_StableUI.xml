@@ -205,10 +205,17 @@
 		<Size y="22"/>
 		<Layers>
 			<Layer level="ARTWORK">
+				<Texture parentKey="SpecializationIndicator">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+
 				<Texture parentKey="Icon">
 					<Size x="22" y="22"/>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.SpecializationIndicator" relativePoint="RIGHT" x="5"/>
 					</Anchors>
 				</Texture>
 
@@ -296,24 +303,6 @@
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Specialization" inherits="GameFontHighlightLarge" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="20"/>
-									</Anchors>
-									<Shadow>
-										<Offset x="1" y="-1" />
-									</Shadow>
-								</FontString>
-								<FontString parentKey="Exotic" inherits="GameFontHighlightLarge" justifyH="LEFT">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.Specialization" relativePoint="BOTTOM" y="-25"/>
-										<Anchor point="BOTTOMLEFT" x="20"/>
-									</Anchors>
-									<Shadow>
-										<Offset x="1" y="-1" />
-									</Shadow>
-								</FontString>
-
 								<FontString parentKey="Type" inherits="GameFontHighlightLarge" justifyH="RIGHT" mixin="StablePetTypeStringMixin">
 									<Anchors>
 										<Anchor point="BOTTOMRIGHT" x="-20" y="35"/>
@@ -325,6 +314,15 @@
 										<OnEnter method="OnEnter"/>
 										<OnLeave method="OnLeave"/>
 									</Scripts>
+								</FontString>
+								<FontString parentKey="Exotic" inherits="GameFontHighlightLarge" justifyH="LEFT">
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.Type" relativePoint="BOTTOM" y="-5"/>
+										<Anchor point="RIGHT" relativeKey="$parent.Type" relativePoint="RIGHT"/>
+									</Anchors>
+									<Shadow>
+										<Offset x="1" y="-1" />
+									</Shadow>
 								</FontString>
 							</Layer>
 						</Layers>
@@ -365,12 +363,19 @@
 											<Anchor point="LEFT" relativePoint="RIGHT" x="20"/>
 										</Anchors>
 										<NormalTexture parentKey="Icon" atlas="Pencil-Icon"/>
+										<HighlightTexture parentKey="HighlightTexture" atlas="Pencil-Icon" alphaMode="ADD"/>
 										<Scripts>
 											<OnClick method="OnClick"/>
 										</Scripts>
 									</Button>
 								</Frames>
 							</Frame>
+							<DropdownButton parentKey="Specialization" mixin="StablePetSpecializationMixin" inherits="WowStyle1DropdownTemplate">
+								<Anchors>
+									<Anchor point="TOP" relativeKey="$parent.NameBox" relativePoint="BOTTOM" y="-1"/>
+									<Anchor point="LEFT" relativeKey="$parent.FavoriteButton" relativePoint="LEFT"/>
+								</Anchors>
+							</DropdownButton>
 						</Frames>
 					</Frame>
 

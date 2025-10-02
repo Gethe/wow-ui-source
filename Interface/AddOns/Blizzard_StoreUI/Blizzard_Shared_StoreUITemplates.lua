@@ -103,8 +103,8 @@ function CategoryTreeScrollContainerMixin:OnLoad()
 			button.IconFrame:SetDesaturated(disabled);
 		end
 				
-		local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForTrial) == Enum.BattlepayProductGroupFlag.EnabledForTrial;
-		local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlag.EnabledForVeteran) == Enum.BattlepayProductGroupFlag.EnabledForVeteran;
+		local enabledForTrial = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForTrial) == Enum.BattlepayProductGroupFlags.EnabledForTrial;
+		local enabledForVeteran = bit.band(productGroupInfo.flags, Enum.BattlepayProductGroupFlags.EnabledForVeteran) == Enum.BattlepayProductGroupFlags.EnabledForVeteran;
 		if IsTrialAccount() and not enabledForTrial then
 			button.disabledTooltip = STORE_CATEGORY_TRIAL_DISABLED_TOOLTIP;
 		elseif IsVeteranTrialAccount() and not enabledForVeteran then
@@ -214,8 +214,10 @@ end
 
 function CategoryTreeScrollContainerMixin:ExpandSelectFirstChild(node, dataProvider)
 	node:SetCollapsed(false);
-	local parentFrame = self.ScrollBox:FindFrame(node);	
-	parentFrame.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+	local parentFrame = self.ScrollBox:FindFrame(node);
+	if parentFrame then
+		parentFrame.ParentIndicator:SetAtlas("Campaign_HeaderIcon_Open");
+	end
 
 	local firstChildNode = node.nodes[1];
 	self.selectionBehavior:SelectElementData(firstChildNode);

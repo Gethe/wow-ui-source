@@ -8,6 +8,7 @@ local Performance =
 		{
 			Name = "GetAddOnCPUUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +23,7 @@ local Performance =
 		{
 			Name = "GetAddOnMemoryUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +38,7 @@ local Performance =
 		{
 			Name = "GetFrameCPUUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

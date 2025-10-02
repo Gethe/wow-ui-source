@@ -18,6 +18,7 @@ local Video =
 		{
 			Name = "GetDefaultGameWindowSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local Video =
 		{
 			Name = "GetGameWindowSizes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +58,7 @@ local Video =
 		{
 			Name = "SetGameWindowSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -1,6 +1,8 @@
 ObjectiveTrackerFrameMixin = { };
 
 function ObjectiveTrackerFrameMixin:OnLoad()
+	ObjectiveTrackerContainerMixin.OnLoad(self);
+
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("QUEST_ACCEPTED");
@@ -23,4 +25,27 @@ function ObjectiveTrackerFrameMixin:OnEvent(event, ...)
 			end
 		end
 	end
+end
+
+function ObjectiveTrackerFrameMixin:ShouldShowHeader()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.ObjectiveTrackerDisabled) then
+		return false;
+	end
+
+	if not self:HasAnyModules() then
+		return false;
+	end
+
+	return true;
+end
+
+function ObjectiveTrackerFrameMixin:Update(dirtyUpdate)
+	if not self:ShouldShowHeader() then
+		self.Header:Hide();
+		return false;
+	end
+
+	self.Header:Show();
+
+	return ObjectiveTrackerContainerMixin.Update(self, dirtyUpdate);
 end

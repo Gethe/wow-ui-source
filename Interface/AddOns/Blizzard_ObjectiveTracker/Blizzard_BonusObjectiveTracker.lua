@@ -60,7 +60,7 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 	local isThreatQuest = C_QuestLog.IsThreatQuest(questID);
 	if self.showWorldQuests or isThreatQuest then
 		if button == "LeftButton" then
-			if ( not ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
+			if ( not ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) ) then
 				if IsShiftKeyDown() then
 					if QuestUtils_IsQuestWatched(questID) and not isThreatQuest then
 						QuestUtil.UntrackWorldQuest(questID);
@@ -69,7 +69,7 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 					local mapID = C_TaskQuest.GetQuestZoneID(questID);
 					if mapID then
 						OpenQuestLog(mapID);
-						WorldMapPing_StartPingQuest(questID);
+						EventRegistry:TriggerEvent("MapCanvas.PingQuestID", questID);
 					end
 				end
 			end
@@ -362,7 +362,8 @@ function BonusObjectiveTrackerMixin:SetUpQuestBlock(block, forceShowCompleted)
 
 	local showAsCompleted = isThreatQuest and isQuestComplete;
 	local hasAddedTimeLeft = false;
-	for objectiveIndex = 1, block.numObjectives do
+	local numObjectives = block.numObjectives or 0;
+	for objectiveIndex = 1, numObjectives do
 		local text, objectiveType, finished = GetQuestObjectiveInfo(questID, objectiveIndex, forceShowCompleted);
 		if text then
 			if finished then
@@ -671,7 +672,8 @@ function BonusObjectiveBlockMixin:TryShowRewardsTooltip()
 		GameTooltip_SetTooltipWaitingForData(GameTooltip, false);
 	end
 
-	GameTooltip:Show();
+	GameTooltip:Show();    
+	EventRegistry:TriggerEvent("BonusObjectiveBlock.QuestRewardTooltipShown", self, self.id, true);
 	self.hasRewardsTooltip = true;
 end
 
@@ -707,6 +709,7 @@ function ObjectiveTrackerTopBannerMixin:DisplayForQuest(questID, module)
 	self.questID = questID;
 	self.module = module;
 	self.questTitle = questTitle;
+	self.showWorldQuests = module.showWorldQuests;
 	TopBannerManager_Show(ObjectiveTrackerTopBannerFrame);
 	return true;
 end

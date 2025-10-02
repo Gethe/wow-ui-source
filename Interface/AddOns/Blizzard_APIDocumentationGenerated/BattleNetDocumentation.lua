@@ -7,8 +7,19 @@ local BattleNet =
 	Functions =
 	{
 		{
+			Name = "BNCheckBattleTagInviteToRecentAlly",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "recentAllyGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +34,7 @@ local BattleNet =
 		{
 			Name = "GetAccountInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +50,7 @@ local BattleNet =
 		{
 			Name = "GetFriendAccountInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +66,7 @@ local BattleNet =
 		{
 			Name = "GetFriendGameAccountInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +82,7 @@ local BattleNet =
 		{
 			Name = "GetFriendNumGameAccounts",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,6 +97,7 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,6 +112,7 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,6 +122,61 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "gameAccountInfo", Type = "BNetGameAccountInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "InstallHighResTextures",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "SendGameData",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+				{ Name = "prefix", Type = "stringView", Nilable = false },
+				{ Name = "data", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendWhisper",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCustomMessage",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -154,12 +226,12 @@ local BattleNet =
 				{ Name = "realmID", Type = "number", Nilable = true },
 				{ Name = "factionName", Type = "string", Nilable = true },
 				{ Name = "raceName", Type = "string", Nilable = true },
+				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
 				{ Name = "areaName", Type = "string", Nilable = true },
 				{ Name = "characterLevel", Type = "number", Nilable = true },
 				{ Name = "richPresence", Type = "string", Nilable = true },
 				{ Name = "playerGuid", Type = "WOWGUID", Nilable = true },
-				{ Name = "isWowMobile", Type = "bool", Nilable = false },
 				{ Name = "canSummon", Type = "bool", Nilable = false },
 				{ Name = "hasFocus", Type = "bool", Nilable = false },
 				{ Name = "regionID", Type = "number", Nilable = false },

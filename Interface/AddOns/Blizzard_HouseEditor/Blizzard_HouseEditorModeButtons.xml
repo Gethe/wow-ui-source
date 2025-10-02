@@ -1,0 +1,316 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!-- Mode buttons -->
+	<Button name="HouseEditorModeButtonTemplate" mixin="HouseEditorModeButtonMixin" inherits="BaseHousingModeButtonTemplate" parentArray="Buttons" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="true"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_TOP"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ModeSwitchFlipbookTexture" alphaMode="ADD" atlas="decor-ability-mode-fx-flipbook" hidden="true">
+					<Size x="111" y="111"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="ControlText" inherits="NumberFontNormal">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HoverIcon" alphaMode="ADD" alpha="0.5" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		
+		<Animations>
+			<AnimationGroup parentKey="ModeSwitchFlipbookAnim" setToFinalAlpha="true">
+				<FlipBook childKey="ModeSwitchFlipbookTexture" duration="1" order="1" flipBookRows="6" flipBookColumns="6" flipBookFrames="36" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+
+	<!-- TEMP OLD Submode buttons -->
+	<!-- TODO: Remove this template once all submode buttons have been updated or removed -->
+	<Button name="HouseEditorOLDSubmodeButtonTemplate" mixin="HouseEditorOLDSubmodeButtonMixin" inherits="BaseHousingModeButtonTemplate" parentArray="Buttons" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="false"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_TOP"/>
+		</KeyValues>
+		<Size x="42" y="42"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true" useAtlasSize="false" desaturated="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="ControlText" inherits="NumberFont_Shadow_Tiny">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-6"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="HoverIcon" alphaMode="ADD" alpha="0.5" hidden="true" desaturated="true"  texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<!-- Submode buttons -->
+	<Button name="HouseEditorSubmodeButtonTemplate" mixin="HouseEditorSubmodeButtonMixin" inherits="BaseHousingModeButtonTemplate" parentArray="Buttons" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="true"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_TOP"/>
+			<KeyValue key="bottomPadding" value="-12" type="number"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Icon" setAllPoints="true" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<FontString parentKey="ControlText" inherits="NumberFont_Shadow_Tiny" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-12"/>
+						<Anchor point="TOPRIGHT" x="-12" y="-12"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ActiveGlow" atlas="decor-ability-expert-fx-circlehighlight" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="HoverIcon" alphaMode="ADD" alpha="0.5" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<MaskTexture parentKey="ActiveGlowMask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="ActiveGlow"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="ActiveGlowAnim" inherits="SyncedAnimGroupTemplate" looping="REPEAT" setToFinalAlpha="true">
+				<KeyValues>
+					<KeyValue key="syncKey" value="HousingSubModeActiveAnims" type="string"/>
+				</KeyValues>
+				<Rotation childKey="ActiveGlow" duration="6" order="1" degrees="-360">
+					<Origin point="CENTER"/>
+				</Rotation>
+			</AnimationGroup>
+		</Animations>
+	</Button>
+
+	<!-- Submodes Bar -->
+	<Frame name="HouseEditorSubmodesBarTemplate" mixin="HouseEditorSubmodesBarMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="-12" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Arrow" atlas="decor-abilitybar-drawer-arrow" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="114" y="33"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Mode Bar -->
+	<Frame name="HouseEditorModesBarTemplate" mixin="HouseEditorModesBarMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="0" type="number"/>
+		</KeyValues>
+		<Layers>
+		<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="GradientBackground" atlas="Radial_Wheel_BG_Small" texelSnappingBias="0.0" snapToPixelGrid="false" alpha="0.5">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="800" y="260"/>
+					<Anchors>
+						<Anchor point="CENTER" y="-51"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Background" atlas="decor-abilitybar-bg-horz" horizTile="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="BookendLeft" atlas="decor-abilitybar-bookend-left" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+					<Size x="60" y="60"/>
+				</Texture>
+				<Texture parentKey="BookendRight" atlas="decor-abilitybar-bookend-right" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+					<Size x="60" y="60"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Divider" atlas="decor-abilitybar-divider" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="5" type="number"/>
+						<KeyValue key="align" value="bottom" type="string"/>
+						<KeyValue key="bottomPadding" value="5" type="number"/>
+					</KeyValues>
+					<Size x="10" y="46"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BasicDecorModeButton" inherits="HouseEditorModeButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.BasicDecor"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-move-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-move-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-move-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_BASIC_DECOR_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEBASICDECORMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_BASIC_DECOR_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_BASIC_DECOR_BUTTON_FMT"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="ExpertDecorModeButton" inherits="HouseEditorModeButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.ExpertDecor"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-expertmode-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-expertmode-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-expertmode-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_EXPERT_DECOR_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEEXPERTDECORMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_EXPERT_DECOR_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_EXPERT_DECOR_BUTTON_FMT"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="CustomizeModeButton" inherits="HouseEditorModeButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.Customize"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-alterations-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-alterations-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-alterations-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_CUSTOMIZE_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLECUSTOMIZEMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_CUSTOMIZE_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_CUSTOMIZE_BUTTON_FMT"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="CleanupModeButton" inherits="HouseEditorModeButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.Cleanup"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-cleanup-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-cleanup-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-cleanup-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_CLEANUP_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLECLEANUPMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_CLEANUP_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_CLEANUP_BUTTON_FMT"/>
+				</KeyValues>
+			</Button>
+			
+			<Button parentKey="LayoutModeButton" inherits="HouseEditorModeButtonTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="6" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.Layout"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-layoutmode-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-layoutmode-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-layoutmode-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_LAYOUT_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLELAYOUTMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_LAYOUT_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_LAYOUT_BUTTON_FMT"/>
+					<KeyValue key="shouldPlayActivateAnim" type="boolean" value="true"/>
+				</KeyValues>
+			</Button>
+
+			<Button parentKey="ExteriorCustomizationModeButton" inherits="HouseEditorModeButtonTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="7" type="number"/>
+					<KeyValue key="editorMode" type="global" value="Enum.HouseEditorMode.ExteriorCustomization"/>
+					<KeyValue key="iconDefault" type="string" value="decor-ability-layoutmode-default"/>
+					<KeyValue key="iconActive" type="string" value="decor-ability-layoutmode-active"/>
+					<KeyValue key="iconPressed" type="string" value="decor-ability-layoutmode-pressed"/>
+					<KeyValue key="modeName" type="global" value="HOUSE_EDITOR_MODE_EXTERIOR_CUSTOMIZATION_NAME"/>
+					<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEEXTERIORCUSTOMIZEMODE"/>
+					<KeyValue key="enabledTooltip" type="global" value="HOUSE_EDITOR_MODE_EXTERIOR_CUSTOMIZATION_BUTTON"/>
+					<KeyValue key="enabledTooltipKeybind" type="global" value="HOUSE_EDITOR_MODE_EXTERIOR_CUSTOMIZATION_BUTTON_FMT"/>
+					<KeyValue key="shouldPlayActivateAnim" type="boolean" value="true"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

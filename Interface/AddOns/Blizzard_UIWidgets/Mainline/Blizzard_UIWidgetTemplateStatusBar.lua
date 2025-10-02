@@ -9,22 +9,49 @@ UIWidgetManager:RegisterWidgetVisTypeTemplate(Enum.UIWidgetVisualizationType.Sta
 
 UIWidgetTemplateStatusBarMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
-local textureKitRegionFormatStrings = {
-	["BorderLeft"] = "%s-BorderLeft",
-	["BorderRight"] = "%s-BorderRight",
-	["BorderCenter"] = "%s-BorderCenter",
-	["BGLeft"] = "%s-BGLeft",
-	["BGRight"] = "%s-BGRight",
-	["BGCenter"] = "%s-BGCenter",
-	["Spark"] = "%s-Spark",
+local singleTexKitStrings = {
+	["BorderLeft"] = "%s-borderleft",
+	["BorderRight"] = "%s-borderright",
+	["BorderCenter"] = "%s-bordercenter",
 	["SparkMask"] = "%s-spark-mask",
-	["BackgroundGlow"] = "%s-BackgroundGlow",
-	["GlowLeft"] = "%s-GlowLeft",
-	["GlowRight"] = "%s-GlowRight",
-	["GlowCenter"] = "%s-GlowCenter",
-}
+	["GlowLeft"] = "%s-glowleft",
+	["GlowRight"] = "%s-glowright",
+	["GlowCenter"] = "%s-glowcenter",
+};
 
-local backgroundGlowTextureKitString = "%s-BackgroundGlow";
+local doubleTexKitStrings = {
+	["BGLeft"] = "%s-bgleft-%s",
+	["BGRight"] = "%s-bgright-%s",
+	["BGCenter"] = "%s-bgcenter-%s",
+	["Spark"] = "%s-spark-%s",
+	["BackgroundGlow"] = "%s-backgroundglow-%s",
+};
+
+local labelTexKitStrings = {
+	["LabelBG"] = "%s-labelbg",
+	["LabelBGDivider"] = "%s-labeldivider",
+};
+
+function UIWidgetTemplateStatusBarMixin:SetupTextures()
+	-- First set textures that only require frameTextureKit
+	SetupTextureKitOnRegions(self.frameTextureKit, self.Bar, singleTexKitStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+
+	-- Then attempt to set textures that have textureKit-specific variants: (frameTextureKit)-x-(textureKit)
+	SetupTextureKitOnRegions({self.frameTextureKit, self.textureKit}, self.Bar, doubleTexKitStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+
+	-- Loop through each of these and check if the texture was actually found
+	for parentKey, fmt in pairs(doubleTexKitStrings) do
+		local childFrame = self.Bar[parentKey];
+		if not childFrame:IsShown() then
+			-- The (frameTextureKit)-x-(textureKit) texture was not found, fall back to (frameTextureKit)-x
+			local singleParamFmt = string.sub(fmt, 1, -4);
+			SetupTextureKitOnFrame(self.frameTextureKit, childFrame, singleParamFmt, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize)
+		end
+	end
+
+	-- Then set up the texture kits relative to the label of the status bar as a whole
+	SetupTextureKitOnRegions(self.frameTextureKit, self, labelTexKitStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+end
 
 local barColorFromTintValue = {
 	[Enum.StatusBarColorTintValue.Black] = BLACK_FONT_COLOR,
@@ -37,20 +64,27 @@ local barColorFromTintValue = {
 	[Enum.StatusBarColorTintValue.Blue] = RARE_BLUE_COLOR,
 }
 
-local fillTextureKitFormatString = "%s-Fill-%s";
 local DEFAULT_BAR_WIDTH = 215;
 
-local function IsJailersTowerTextureKit(textureKit)
-	return string.sub(textureKit, 1, 21) == "jailerstower-scorebar";
-end
+local textureKitOptions =
+{
+	["jailerstower-scorebar"] = { borderXOffset = 25 },
+	["plunderstorm-stormbar"] = { borderXOffset = 2 },
+	["junkyard-scorebar"] = { borderXOffset = 14 },
+	["thewarwithin-scenario-barframe"] = { borderXOffset = 10, backgroundXOffset = 10 },
+}
 
-local function IsPlunderstormStormBarTextureKit(textureKit)
-	return string.sub(textureKit, 1, 21) == "plunderstorm-stormbar";
+local defaultTextureKitOptions = { borderXOffset = 8, backgroundXOffset = 2 };
+
+local function GetStatusBarTextureKitOptions(textureKit)
+	local textureKitOptions = textureKitOptions[textureKit] or {};
+	return setmetatable(textureKitOptions, {__index = defaultTextureKitOptions});
 end
 
 function UIWidgetTemplateStatusBarMixin:SanitizeTextureKits(widgetInfo)
 	widgetInfo.frameTextureKit = widgetInfo.frameTextureKit or "widgetstatusbar";
-	widgetInfo.fillTextureKit = widgetInfo.textureKit or "white";
+	self.frameTextureKit = widgetInfo.frameTextureKit;
+	self.textureKit = widgetInfo.textureKit or "white";
 end
 
 function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
@@ -58,18 +92,6 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 
 	self:SanitizeTextureKits(widgetInfo);
 
-	local fillAtlas = fillTextureKitFormatString:format(widgetInfo.frameTextureKit, widgetInfo.fillTextureKit);
-	local fillAtlasInfo = C_Texture.GetAtlasInfo(fillAtlas);
-	if fillAtlasInfo and fillAtlas ~= self.lastFillAtlas then
-		self.Bar:SetStatusBarTexture(fillAtlas);
-		self.Bar:SetHeight(fillAtlasInfo.height);
-		self.Bar:GetStatusBarTexture():SetHorizTile(fillAtlasInfo.tilesHorizontally);
-		self.lastFillAtlas = fillAtlas;
-	end
-
-	self.isJailersTowerBar = IsJailersTowerTextureKit(widgetInfo.frameTextureKit);
-
-	local overrideHeight = nil;
 	local barColor = barColorFromTintValue[widgetInfo.colorTint];
 	if barColor then 
 		self.Bar:SetStatusBarColor(barColor:GetRGB());
@@ -79,18 +101,16 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Bar.Spark:SetVertexColor(WHITE_FONT_COLOR:GetRGB());
 	end 
 
-	SetupTextureKitOnRegions(widgetInfo.frameTextureKit, self.Bar, textureKitRegionFormatStrings, TextureKitConstants.SetVisibility, TextureKitConstants.UseAtlasSize);
+	self:SetupTextures(widgetInfo);
 
-	local borderXOffset = 8;
-	if self.isJailersTowerBar then
-		borderXOffset = 13;
-	elseif IsPlunderstormStormBarTextureKit(widgetInfo.frameTextureKit) then
-		borderXOffset = 2;
-	end
+	local texKitOptions = GetStatusBarTextureKitOptions(self.frameTextureKit);
 
-	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar,  -borderXOffset, 0);
-	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, borderXOffset , 0);
+	self.Bar.BorderLeft:SetPoint("LEFT", self.Bar, -texKitOptions.borderXOffset, 0);
+	self.Bar.BorderRight:SetPoint("RIGHT", self.Bar, texKitOptions.borderXOffset , 0);
 	self.Bar.Spark:SetPoint("CENTER", self.Bar:GetStatusBarTexture(), "RIGHT", 0, 0);
+
+	self.Bar.BGLeft:SetPoint("LEFT", self.Bar, -texKitOptions.backgroundXOffset, 0);
+	self.Bar.BGRight:SetPoint("RIGHT", self.Bar, texKitOptions.backgroundXOffset, 0);
 
 	local barWidth = (widgetInfo.widgetSizeSetting > 0) and widgetInfo.widgetSizeSetting or DEFAULT_BAR_WIDTH;
 	self.Bar:SetWidth(barWidth);
@@ -110,9 +130,23 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 		self.Bar:SetPoint("TOP", self, "TOP", 0, -8);
 	end
 
-	local backgroundGlowAtlas = backgroundGlowTextureKitString:format(widgetInfo.frameTextureKit);
-	local backgroundGlowAtlasInfo = C_Texture.GetAtlasInfo(backgroundGlowAtlas);
-	self.Bar.BackgroundGlow:SetShown(backgroundGlowAtlasInfo);
+	local labelBGPadding = 0;
+	-- Visibility is handled by the SetupTextureKitOnRegions call
+	if self.LabelBG:IsShown() then
+		labelBGPadding = self.LabelBG:GetHeight();
+		-- BG is center aligned, so we only want to add half the height minus the height of the Label
+		labelBGPadding = (labelBGPadding / 2) - (labelHeight / 2);
+	end
+
+	if self.LabelBGDivider:IsShown() then
+		-- BG Divider is TOP aligned, so we only want to add half the height
+		labelBGPadding = labelBGPadding + self.LabelBGDivider:GetHeight() / 2;
+	end
+
+	-- If we have a label, we want to adjust anchoring based on if a label BG exists
+	if widgetInfo.text ~= "" then
+		self.Label:SetPoint("TOP", self, "TOP", 0, labelBGPadding ~= 0 and -labelBGPadding or -3);
+	end
 
 	local hasGlows = self.Bar.GlowLeft:IsShown() and self.Bar.GlowRight:IsShown() and self.Bar.GlowCenter:IsShown();
 	if hasGlows and (widgetInfo.showGlowState == Enum.WidgetShowGlowState.ShowGlow) then
@@ -141,16 +175,16 @@ function UIWidgetTemplateStatusBarMixin:Setup(widgetInfo, widgetContainer)
 	local totalWidth = math.max(self.Bar:GetWidth() + 16, labelWidth);
 	self:SetWidth(totalWidth);
 
-	local barHeight = overrideHeight ~= nil and overrideHeight or (self.Bar:GetHeight() + 16);
+	local barHeight = self.Bar:GetHeight() + 16;
 
-	local totalHeight = barHeight + labelHeight;
+	local totalHeight = barHeight + labelHeight + labelBGPadding;
 	self:SetHeight(totalHeight);
 
 	self:EvaluateTutorials();
 end
 
 function UIWidgetTemplateStatusBarMixin:EvaluateTutorials()
-	if self.isJailersTowerBar then
+	if self.frameTextureKit == "jailerstower-scorebar" then
 		local evaluateTutorialsClosure = GenerateClosure(self.EvaluateTutorials, self);
 
 		local barHelpTipInfo = {

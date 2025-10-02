@@ -11,6 +11,26 @@ local SocialRestrictions =
 			Type = "Function",
 		},
 		{
+			Name = "CanReceiveChat",
+			Type = "Function",
+			Documentation = { "Returns true if the player meets all conditions that allow them to receive chat messages." },
+
+			Returns =
+			{
+				{ Name = "canReceiveChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanSendChat",
+			Type = "Function",
+			Documentation = { "Returns true if the player meets all conditions that allow them to send chat messages." },
+
+			Returns =
+			{
+				{ Name = "canSendChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsChatDisabled",
 			Type = "Function",
 
@@ -49,6 +69,7 @@ local SocialRestrictions =
 		{
 			Name = "SetChatDisabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

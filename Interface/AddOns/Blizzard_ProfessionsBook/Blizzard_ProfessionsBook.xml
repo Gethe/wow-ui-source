@@ -1,6 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate" mixin="ProfessionSpellButtonMixin" virtual="true">
+	<CheckButton name="ProfessionButtonTemplate" inherits="SecureFrameTemplate, FlyoutButtonTemplate" mixin="ProfessionSpellButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="popupDirection" value="RIGHT" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
+			<KeyValue key="openArrowOffset" value="2" type="number"/>
+			<KeyValue key="closedArrowOffset" value="4" type="number"/>
+		</KeyValues>
 		<Size x="40" y="40"/>
 		<Layers>
 			<Layer level="BORDER">

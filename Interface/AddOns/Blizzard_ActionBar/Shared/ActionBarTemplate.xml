@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ActionBarButtonContainerTemplate" virtual="true">
+		<Size x="45" y="45"/>
+	</Frame>
+
+	<Frame name="ActionBarTemplate" inherits="ResizeLayoutFrame" virtual="true" mixin="ActionBarMixin">
+		<!--
+			Key Values:
+
+			- This is the name of the button template we want to use for the buttons in this action bar.
+			<KeyValue key="buttonTemplate" value="ActionBarButtonTemplate" type="string"/>
+
+			- This is prepended to the command name. It will be followed by "BUTTON" and the button number.
+			<KeyValue key="commandNamePrefix" value="ACTION" type="string"/>
+
+			- This is whether the bar is initially horizontal. If it is not horizontal then it will be vertical. This may be overriden by edit mode.
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+
+			- This is the numRows. If this bar is vertical this will be the number of columns.
+			<KeyValue key="numRows" value="1" type="number"/>
+
+			- Max number of buttons this bar can show
+			<KeyValue key="numButtons" value="12" type="number"/>
+
+			- This is the direction the bar grows as it adds buttons horizontally. If true, new buttons will be added to the right. If false, new buttons will be added to the left.
+			<KeyValue key="addButtonsToRight" value="true" type="boolean"/>
+
+			- This is the direction the bar grows as it adds buttons vertically. If true, new buttons will be added to the top. If false, new buttons will be added to the bottom.
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+
+			- This is the name of the event which is used to show the action bar grid. Can be nil if this isn't needed
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+
+			- This is the name of the event which is used to hide the action bar grid. Can be nil if this isn't needed
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+
+			- This is used to determine if spacers should be used when hiding buttons. Spacers help keep the bar a static size when buttons are hidden. If this is true then spacers won't be used.
+			<KeyValue key="noSpacers" value="false" type="boolean"/>
+			
+			- If this bar displays an actionbarpage of index NORMAL_BAR_1 through NORMAL_BAR_6 or EXTRA_BAR_1 through EXTRA_BAR_3 (not EXTRA_BAR though)
+			<KeyValue key="isNormalBar" value="false" type="boolean"/>
+		-->
+
+		<Scripts>
+			<OnLoad method="ActionBar_OnLoad" inherit="prepend"/>
+			<OnEvent method="ActionBar_OnEvent" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EditModeActionBarTemplate" inherits="ActionBarTemplate, EditModeActionBarSystemTemplate" virtual="true" mixin="EditModeActionBarMixin">
+		<Scripts>
+			<OnLoad method="EditModeActionBar_OnLoad"/>
+			<OnEvent method="EditModeActionBar_OnEvent" inherit="append"/>
+		</Scripts>
+	</Frame>
+</Ui>

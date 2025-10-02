@@ -9,6 +9,7 @@ local ItemUpgrade =
 		{
 			Name = "CanUpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,6 +32,8 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkForItem",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +49,8 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +66,8 @@ local ItemUpgrade =
 		{
 			Name = "GetHighWatermarkSlotForItem",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +82,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemHyperlink",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -84,6 +92,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeCurrentLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -94,6 +103,8 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeEffect",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,6 +121,7 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradeItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -119,6 +131,8 @@ local ItemUpgrade =
 		{
 			Name = "GetItemUpgradePvpItemLevelDeltaValues",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +170,7 @@ local ItemUpgrade =
 		{
 			Name = "SetItemUpgradeFromLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -165,6 +180,7 @@ local ItemUpgrade =
 		{
 			Name = "UpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,6 +200,11 @@ local ItemUpgrade =
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
+		},
+		{
+			Name = "ItemUpgradeMasterUpdate",
+			Type = "Event",
+			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
 		},
 	},
 

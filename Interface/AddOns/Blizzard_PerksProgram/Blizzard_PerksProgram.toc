@@ -2,7 +2,7 @@
 ## Version: 1.0
 ## ShowInAddOnList: 0
 ## LoadOnDemand: 1
-
+## Dependencies: Blizzard_Colors
 Blizzard_PerksProgramElements.lua
 Blizzard_PerksProgramProducts.lua
 Blizzard_PerksProgramModel.lua

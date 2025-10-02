@@ -8,7 +8,6 @@ local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
 	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
-	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true },
 }
 
 function LFGListPVPStub_OnShow(self)
@@ -23,7 +22,7 @@ function LFGListPVEStub_OnShow(self)
 	LFGListFrame:SetFrameLevel(self:GetFrameLevel());
 
 	local filters = Enum.LFGListFilter.PvE;
-	if PVEFrame:TimerunningEnabled() then
+	if TimerunningUtil.TimerunningEnabledForPlayer() then
 		filters = bit.band(filters, Enum.LFGListFilter.Timerunning);
 	end
 	LFGListFrame_SetBaseFilters(LFGListFrame, filters);
@@ -245,7 +244,7 @@ end
 
 function GroupFinderFrame_EvaluateButtonVisibility(self)
 	GroupFinderFrame_SetupLFG(self, self.groupButton1);
-	
+
 	if PVEFrame:ScenariosEnabled() then
 		GroupFinderFrame_SetupScenario(self, self.groupButton2);
 		GroupFinderFrame_SetupLFR(self, self.groupButton3);
@@ -262,7 +261,12 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrame_UpdateButtonAnchors(self);
 	else
 		GroupFinderFrame_SetupLFR(self, self.groupButton2);
-		GroupFinderFrame_SetupPremadeGroup(self, self.groupButton3);		
+		GroupFinderFrame_SetupPremadeGroup(self, self.groupButton3);
+
+		local spacing = -30;
+		self.groupButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, -101);
+		self.groupButton2:SetPoint("TOP", self.groupButton1, "BOTTOM", 0, spacing);
+		self.groupButton3:SetPoint("TOP", self.groupButton2, "BOTTOM", 0, spacing);
 	end
 end
 
@@ -300,16 +304,16 @@ function GroupFinderFrame_Update(self, frame)
 end
 
 function GroupFinderFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and C_LFGInfo.CanPlayerUsePremadeGroup() then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.LFGList) and C_LFGInfo.CanPlayerUsePremadeGroup() then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
+			bitfieldFlag = Enum.FrameTutorialAccount.LFGList,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};
-		if PVEFrame:TimerunningEnabled() then
+		if TimerunningUtil.TimerunningEnabledForPlayer() then
 			HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton4);
 		else
 			HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton3);
@@ -319,8 +323,8 @@ end
 
 function GroupFinderFrame_OnShow(self)
 	GroupFinderFrame_InitLFG(self, self.groupButton1);
-	
-	if (PVEFrame:ScenariosEnabled()) then		
+
+	if (PVEFrame:ScenariosEnabled()) then
 		groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListPVEStub" };
 
 		GroupFinderFrame_InitScenarios(self, self.groupButton2);
@@ -390,24 +394,20 @@ function PVEFrameMixin:OnLoad()
 	PanelTemplates_SetNumTabs(self, #panels);
 
 	self:RegisterEvent("AJ_PVP_ACTION");
+	self:RegisterEvent("AJ_PVP_SPECIAL_BG_ACTION");
 	self:RegisterEvent("AJ_PVP_SKIRMISH_ACTION");
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
-	self:RegisterEvent("SHOW_DELVES_DISPLAY_UI");
 
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
 
-function PVEFrameMixin:TimerunningEnabled()
-	return PlayerGetTimerunningSeasonID();
-end
-
 function PVEFrameMixin:ScenariosEnabled()
 	-- scenarios are currently only enabled in Timerunning
-	-- Keeping this seperate from the Timerunning check to leave 
+	-- Keeping this seperate from the Timerunning check to leave
 	-- room for Design to add other conditions
-	return self:TimerunningEnabled();
+	return GameRulesUtil.ScenariosEnabled();
 end
 
 function PVEFrameMixin:OnShow()
@@ -422,19 +422,24 @@ function PVEFrameMixin:OnShow()
 				PanelTemplates_EnableTab(self, index);
 			end
 		end
-	end	
+	end
 
-	-- hide the PVP and Mythic+ tabs if timerunning is enabled
-	self.tab2:SetShown(not self:TimerunningEnabled());
-	self.tab3:SetShown(not self:TimerunningEnabled());
+	-- If timerunning enabled, hide PVP, M+ tabs
+	if TimerunningUtil.TimerunningEnabledForPlayer() then
+		self.tab1:Hide();
+		self.tab2:Hide();
+		self.tab3:Hide();
+	end
 
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVEFrameMixin:OnHide()
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+	EventRegistry:TriggerEvent("PlunderstormQueueTutorial.Update");
 end
 
 function PVEFrameMixin:OnEvent(event, ...)
@@ -443,6 +448,14 @@ function PVEFrameMixin:OnEvent(event, ...)
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrameSpecificList_FindAndSelectBattleground(id);
 		HonorFrame_SetType("specific");
+	elseif ( event == "AJ_PVP_SPECIAL_BG_ACTION" ) then
+		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
+		HonorFrame_SetType("bonus");
+
+		if (HonorFrame.BonusFrame.BrawlButton2) then
+			HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.BrawlButton2);
+		end
+
 	elseif ( event == "AJ_PVP_SKIRMISH_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
@@ -457,7 +470,82 @@ function PVEFrameMixin:OnEvent(event, ...)
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
-	elseif ( event == "SHOW_DELVES_DISPLAY_UI" ) then
-		PVEFrame_ShowFrame("DelvesDashboardFrame");
 	end
+end
+
+PlunderstormQueueTutorialMixin = {}
+
+local PlunderstormTutorialStates = {
+	NoneAcknowledged = 0,
+	MicroButtonAcknowledged = 1,
+	PvpTabAcknowledged = 2,
+	PlunderstormCategoryAcknowledged = 3,
+};
+
+PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE or PlunderstormTutorialStates.NoneAcknowledged;
+
+local function IsPlunderstormAvailable()
+	return C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and
+		C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled() and
+		not (IsTrialAccount() or IsVeteranTrialAccount()) and
+		not C_PlayerInfo.IsPlayerNPERestricted();
+end
+
+function PlunderstormQueueTutorialMixin:OnLoad()
+	EventRegistry:RegisterCallback("PlunderstormQueueTutorial.Update", self.UpdateTutorialState, self);
+end
+
+function PlunderstormQueueTutorialMixin:OnShow()
+	if not IsPlunderstormAvailable() or PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE >= PlunderstormTutorialStates.PlunderstormCategoryAcknowledged then
+		self:Hide();
+		return;
+	end
+end
+
+function PlunderstormQueueTutorialMixin:UpdateTutorialState()
+	local plunderstormAvailable = IsPlunderstormAvailable();
+
+	if not plunderstormAvailable or PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE >= PlunderstormTutorialStates.PlunderstormCategoryAcknowledged then
+		self:Hide();
+		return;
+	end
+
+	self:ClearAllPoints();
+
+	if PlunderstormFrame and PlunderstormFrame:IsShown() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PlunderstormCategoryAcknowledged;
+
+		self:Hide();
+		self:SetParent(nil);
+		return;
+	end
+
+	if PVPUIFrame and PVPUIFrame:IsVisible() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PvpTabAcknowledged;
+
+		self:SetParent(PVPQueueFrameCategoryButton4);
+		self:SetPoint("RIGHT", PVPQueueFrameCategoryButton4, "TOPRIGHT", -4, 0);
+
+		self:Show();
+		self.BadgeTexture:Hide();
+		self.NewText:Show();
+		return;
+	end
+
+	self.BadgeTexture:Show();
+	self.NewText:Hide();
+
+	if PVEFrame:IsShown() then
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.MicroButtonAcknowledged;
+
+		self:SetParent(PVEFrameTab2);
+		self:SetPoint("CENTER", PVEFrameTab2, "BOTTOM", 0, 4);
+	else
+		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.NoneAcknowledged;
+
+		self:SetParent(LFDMicroButton);
+		self:SetPoint("CENTER", LFDMicroButton, "TOP", 0, -5);
+	end
+
+	self:Show();
 end

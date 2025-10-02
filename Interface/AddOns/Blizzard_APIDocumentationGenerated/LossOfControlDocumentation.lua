@@ -9,6 +9,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataByUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataCountByUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,7 +71,7 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_ADDED",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
@@ -97,7 +100,7 @@ local LossOfControl =
 			LiteralName = "LOSS_OF_CONTROL_UPDATE",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{

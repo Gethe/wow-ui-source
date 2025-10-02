@@ -7,7 +7,7 @@ local CreateProxyDirectory = ProxyUtil.CreateProxyDirectory;
 local CreateProxyMixin = ProxyUtil.CreateProxyMixin;
 local SetPrivateReference = ProxyUtil.SetPrivateReference;
 local ReleasePrivateReference = ProxyUtil.ReleasePrivateReference;
-local ProxyConvertablePrivateMixin = Mixin(ProxyConvertableMixin);
+local ProxyConvertablePrivateMixin = CreateFromMixins(ProxyConvertableMixin);
 local CreateFromMixinsPrivate = CreateFromMixins;
 
 local enableProxyReporting = false; -- For debugging purposes only.
@@ -457,6 +457,11 @@ function Pool_HideAndClearAnchors(pool, region)
 	region:ClearAllPoints();
 end
 
+function Pool_HideAndSetToDefaults(pool, region)
+	region:SetToDefaults();
+	region:Hide();
+end
+
 local function CreateSecureObjectPoolInstance(createFunc, resetFunc, capacity)
 	local pool = CreateFromMixinsPrivate(SecureObjectPoolMixin);
 	local proxy = CreateProxy(pool, ObjectPoolProxyMixin);
@@ -474,14 +479,14 @@ local function CreateSecureRegionPoolInstance(template, createFunc, resetFunc, c
 	return pool;
 end
 
-local function CreateSecureFramePoolInstance(frameType, parent, template, resetFunc, forbidden, frameInitializer, capacity)
+local function CreateSecureFramePoolInstance(frameType, parent, template, resetFunc, forbidden, postCreate, capacity)
 	local function Create()
 		local createFrame = forbidden and CreateForbiddenFrame or CreateFrame;
 		local name = nil;
 		local frame = createFrame(frameType, name, parent, template);
 		
-		if frameInitializer then
-			frameInitializer(frame);
+		if postCreate then
+			postCreate(frame);
 		end
 
 		return frame;
@@ -519,12 +524,20 @@ local function CreateSecureFontStringPoolInstance(parent, layer, subLayer, templ
 	return CreateSecureRegionPoolInstance(template, Create, resetFunc, capacity);
 end
 
+local function CreateSecureMaskTexturePoolInstance(parent, layer, subLayer, template, resetFunc, capacity)
+	local function Create()
+		local name = nil;
+		return parent:CreateMaskTexture(name, layer, template, subLayer);
+	end
+	return CreateSecureRegionPoolInstance(template, Create, resetFunc, capacity);
+end
+
 --[[
 In addition to a specialization being used to create separate pools for the same template, it can
-be used as an initializer for a frame the first time it is acquired. See FrameUtil.SpecializeFrameWithMixins
+be used to modify a frame after being created. See FrameUtil.SpecializeFrameWithMixins
 for the behavior when providing tables with conventionally named script handlers included.
 ]]--
-local function ConvertSpecializationToInitializer(specialization)
+local function ConvertSpecializationToPostCreate(specialization)
 	local specializationType = type(specialization);
 	if specializationType == "function" then
 		return specialization;
@@ -590,14 +603,14 @@ function CreateUnsecuredRegionPoolInstance(template, createFunc, resetFunc, capa
 end
 
 do
-	local function CreateFramePoolInstance(frameType, parent, template, resetFunc, forbidden, frameInitializer, capacity)
+	local function CreateFramePoolInstance(frameType, parent, template, resetFunc, forbidden, postCreate, capacity)
 		local function Create()
 			local createFrame = forbidden and CreateForbiddenFrame or CreateFrame;
 			local name = nil;
 			local frame = createFrame(frameType, name, parent, template);
 			
-			if frameInitializer then
-				frameInitializer(frame);
+			if postCreate then
+				postCreate(frame);
 			end
 	
 			return frame;
@@ -607,16 +620,16 @@ do
 	end
 
 	function FramePoolCollectionMixin:CreatePoolInternal(args)
-		local frameInitializer = ConvertSpecializationToInitializer(args.specialization);
-		return CreateFramePoolInstance(args.frameType, args.parent, args.template, args.resetFunc, args.forbidden, frameInitializer, args.capacity);
+		local postCreate = ConvertSpecializationToPostCreate(args.specialization);
+		return CreateFramePoolInstance(args.frameType, args.parent, args.template, args.resetFunc, args.forbidden, postCreate, args.capacity);
 	end
 end
 
 local SecureFramePoolCollectionMixin = CreateFromMixinsPrivate(SecurePoolCollectionMixin, FramePoolCollectionConverterMixin);
 
 function SecureFramePoolCollectionMixin:CreatePoolInternal(args)
-	local frameInitializer = ConvertSpecializationToInitializer(args.specialization);
-	return CreateSecureFramePoolInstance(args.frameType, args.parent, args.template, args.resetFunc, args.forbidden, frameInitializer, args.capacity);
+	local postCreate = ConvertSpecializationToPostCreate(args.specialization);
+	return CreateSecureFramePoolInstance(args.frameType, args.parent, args.template, args.resetFunc, args.forbidden, postCreate, args.capacity);
 end
 
 local SecureFontStringPoolCollectionMixin = CreateFromMixinsPrivate(SecurePoolCollectionMixin);
@@ -656,8 +669,8 @@ function CreateSecureObjectPool(createFunc, resetFunc, capacity)
 	return CreateSecureObjectPoolInstance(createFunc, resetFunc, capacity):ToProxy();
 end
 
-function CreateSecureFramePool(frameType, parent, template, resetFunc, forbidden, frameInitializer, capacity)
-	return CreateSecureFramePoolInstance(frameType, parent, template, resetFunc, forbidden, frameInitializer, capacity):ToProxy();
+function CreateSecureFramePool(frameType, parent, template, resetFunc, forbidden, postCreate, capacity)
+	return CreateSecureFramePoolInstance(frameType, parent, template, resetFunc, forbidden, postCreate, capacity):ToProxy();
 end
 
 function CreateSecureTexturePool(parent, layer, subLayer, template, resetFunc, capacity)
@@ -670,6 +683,10 @@ end
 
 function CreateSecureActorPool(parent, template, resetFunc, capacity)
 	return CreateSecureActorPoolInstance(parent, template, resetFunc, capacity):ToProxy();
+end
+
+function CreateSecureMaskTexturePool(parent, layer, subLayer, template, resetFunc, capacity)
+	return CreateSecureMaskTexturePoolInstance(parent, layer, subLayer, template, resetFunc, capacity):ToProxy();
 end
 
 do
@@ -690,7 +707,12 @@ do
 
 	function PoolCollectionProxyMixin:GetPool(...)
 		local poolCollection = Proxies:ToPrivate(self);
-		return poolCollection:GetPool(...):ToProxy();
+		local pool = poolCollection:GetPool(...);
+		if not pool then
+			return nil;
+		end
+
+		return pool:ToProxy();
 	end
 
 	function PoolCollectionProxyMixin:CreatePool(...)
@@ -755,6 +777,14 @@ function CreateUnsecuredFramePoolCollection()
 	return poolCollection;
 end
 
+function CreateUnsecuredMaskTexturePool(parent, layer, subLayer, template, resetFunc, capacity)
+	local function Create()
+		local name = nil;
+		return parent:CreateMaskTexture(name, layer, template, subLayer);
+	end
+	return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
+end
+
 -- Aliases until we determine if we want to change any code to explicitly create
 -- the secure or unsecured variant of pools and pool collections.
 CreateObjectPool = CreateSecureObjectPool;
@@ -764,3 +794,4 @@ CreateFontStringPool = CreateSecureFontStringPool;
 CreateActorPool = CreateSecureActorPool;
 CreateFramePoolCollection = CreateSecureFramePoolCollection;
 CreateFontStringPoolCollection = CreateSecureFontStringPoolCollection;
+CreateMaskTexturePool = CreateSecureMaskTexturePool;

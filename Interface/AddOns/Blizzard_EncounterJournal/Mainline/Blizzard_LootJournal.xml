@@ -52,7 +52,6 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="Name" inherits="GameFontNormalMed2" maxLines="2" justifyH="LEFT">
 					<Size x="250" y="0"/>
-					<Color color="LEGENDARY_ORANGE_COLOR"/>
 				</FontString>
 
 				<FontString parentKey="SpecName" inherits="GameFontNormal" maxLines="1" justifyH="LEFT">

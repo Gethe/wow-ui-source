@@ -1,16 +1,12 @@
 -- luacheck: ignore 111 (setting non-standard global variable)
 
 local function LocalizeFriendsFrame_zh()
-	ADDFRIENDFRAME_WOWHEIGHT = 232;
-	ADDFRIENDFRAME_BNETHEIGHT = 310;
 	AddFriendNameEditBox:SetPoint("TOP", 0, -144);
 
 	for i=1, (FriendsFrame.numTabs or 0) do
 		tabName = "FriendsFrameTab"..i;
 		_G[tabName].Text:SetPoint("CENTER", tabName, "CENTER", 0, 5);
 	end
-
-	WhoFrameDropdown:SetPoint("TOPLEFT", WhoFrameColumnHeader2, "TOPLEFT", -15, 1);
 end
 
 local function AdjustFriendsFrameDropdown_132()

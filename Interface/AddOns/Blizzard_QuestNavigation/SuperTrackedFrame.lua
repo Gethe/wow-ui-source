@@ -10,6 +10,7 @@ function SuperTrackedFrameMixin:OnLoad()
 
 	self:RegisterEvent("NAVIGATION_FRAME_CREATED");
 	self:RegisterEvent("NAVIGATION_FRAME_DESTROYED");
+	self:RegisterEvent("NAVIGATION_DESTINATION_REACHED");
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 end
 
@@ -20,6 +21,10 @@ function SuperTrackedFrameMixin:OnEvent(event, ...)
 		self:ShutdownNavigationFrame();
 	elseif event == "SUPER_TRACKING_CHANGED" then
 		self:UpdateIcon();
+		self:ForceTransparentUntil(GetTime() + 0.2);
+	elseif event == "NAVIGATION_DESTINATION_REACHED" then
+		local isWaypoint = ...;
+		self:OnDestinationReached(isWaypoint);
 	end
 end
 
@@ -74,12 +79,6 @@ do
 
 	function SuperTrackedFrameMixin:GetTargetAlphaBaseValue()
 		local state = C_Navigation.GetTargetState();
-
-		local superTrackingType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
-		if (superTrackingType == Enum.SuperTrackingType.PartyMember) and not self.isClamped and (state ~= Enum.NavigationState.Occluded) then
-			return 0;
-		end
-
 		local alpha = navStateToTargetAlpha[state];
 		if alpha and alpha > 0 then
 			if self.isClamped then
@@ -94,6 +93,12 @@ do
 		if not C_Navigation.HasValidScreenPosition() then
 			return 0;
 		end
+
+		if self.transparentUntil and self.transparentUntil > GetTime() then
+			return 0;
+		end
+
+		self.transparentUntil = nil;
 
 		local additionalFade = 1.0;
 
@@ -117,6 +122,11 @@ do
 
 	function SuperTrackedFrameMixin:UpdateAlpha()
 		self:SetAlpha(self:GetTargetAlpha());
+	end
+
+	function SuperTrackedFrameMixin:ForceTransparentUntil(time)
+		self:SetAlpha(0);
+		self.transparentUntil = time;
 	end
 end
 
@@ -148,16 +158,6 @@ do
 		self.Arrow:SetShown(self.isClamped);
 	end
 
-	function SuperTrackedFrameMixin:ClampCircular()
-		local centerX, centerY = GetCenterScreenPoint();
-		local navX, navY = self.navFrame:GetCenter();
-		local v = self.circularVec;
-		v:SetXY(navX - centerX, navY - centerY);
-		v:Normalize();
-		v:ScaleBy(self.clampRadius);
-		self:SetPoint("CENTER", WorldFrame, "CENTER", v.x, v.y);
-	end
-
 	function SuperTrackedFrameMixin:ClampElliptical()
 		local centerX, centerY = GetCenterScreenPoint();
 		local navX, navY = self.navFrame:GetCenter();
@@ -181,11 +181,7 @@ do
 			self:ClearAllPoints();
 
 			if self.isClamped then
-				if self.clampMode == 0 then
-					self:ClampCircular();
-				else
-					self:ClampElliptical();
-				end
+				self:ClampElliptical();
 			else
 				self:SetPoint("CENTER", self.navFrame, "CENTER");
 			end
@@ -251,6 +247,45 @@ function SuperTrackedFrameMixin:UpdateIcon()
 	self:UpdateIconSize();
 end
 
+local superTrackMapPinTypesThatClearWhenDestinationReached =
+{
+	[Enum.SuperTrackingMapPinType.AreaPOI] = true,
+	[Enum.SuperTrackingMapPinType.TaxiNode] = true,
+	[Enum.SuperTrackingMapPinType.DigSite] = true,
+};
+
+local superTrackTypesThatClearWhenDestinationReached =
+{
+	[Enum.SuperTrackingType.UserWaypoint] = true,
+	[Enum.SuperTrackingType.PartyMember] = false,
+	[Enum.SuperTrackingType.Vignette] = true,
+	[Enum.SuperTrackingType.MapPin] = function()
+		local pinType, typeID = C_SuperTrack.GetSuperTrackedMapPin();
+		if pinType then
+			return superTrackMapPinTypesThatClearWhenDestinationReached[pinType];
+		end
+
+		return false;
+	end,
+};
+
+function SuperTrackedFrameMixin:ShouldClearSuperTrackWhenDestinationReached(isWaypoint)
+	if isWaypoint then
+		return false;
+	end
+
+	local superTrackType = C_SuperTrack.GetHighestPrioritySuperTrackingType();
+	return GetValueOrCallFunction(superTrackTypesThatClearWhenDestinationReached, superTrackType);
+end
+
+function SuperTrackedFrameMixin:OnDestinationReached(isWaypoint)
+	-- NOTE: Anything that clears also displays a message.
+	if self:ShouldClearSuperTrackWhenDestinationReached(isWaypoint) then
+		UIErrorsFrame:AddExternalWarningMessage(NAVIGATION_DESTINATION_REACHED_MESSAGE);
+		C_SuperTrack.ClearAllSuperTracked();
+	end
+end
+
 function SuperTrackedFrameMixin:InitializeNavigationFrame()
 	assert(self.navFrame == nil);
 	self.navFrame = C_Navigation.GetFrame();
@@ -259,14 +294,6 @@ function SuperTrackedFrameMixin:InitializeNavigationFrame()
 	if self.navFrame then
 		self:SetPoint("CENTER", self.navFrame);
 		self:UpdateIcon();
-
-		-- Experimental clamping modes, pick one and erase the other
-		self.clampMode = 1;
-
-		-- Circular
-		self.clampRadius = 350;
-
-		-- Elliptical
 		self:SetEllipticalRadii(500, 200);
 	end
 end

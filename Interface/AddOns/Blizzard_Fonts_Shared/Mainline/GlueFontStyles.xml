@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Font name="GlueFontNormalHuge" inherits="SystemFont22_Shadow_Outline" virtual="true">
+		<Color r="1.0" g="0.78" b="0"/>
+	</Font>
+	<Font name="GlueNumberFontNormal" inherits="NumberFont_OutlineThick_Med2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+</Ui>

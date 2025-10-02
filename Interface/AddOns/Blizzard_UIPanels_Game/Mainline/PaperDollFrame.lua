@@ -442,13 +442,13 @@ function PaperDollFrame_OnEvent(self, event, ...)
 end
 
 function PaperDollFrame_SetLevel()
-	local primaryTalentTree = GetSpecialization();
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
 	local classDisplayName, class = UnitClass("player");
 	local classColorString = RAID_CLASS_COLORS[class].colorStr;
 	local specName, _;
 
 	if (primaryTalentTree) then
-		_, specName = GetSpecializationInfo(primaryTalentTree, nil, nil, nil, UnitSex("player"));
+		_, specName = C_SpecializationInfo.GetSpecializationInfo(primaryTalentTree, false, false, nil, UnitSex("player"));
 	end
 
 	local level = UnitLevel("player");
@@ -582,7 +582,7 @@ function PaperDollFrame_SetAlternateMana(statFrame, unit)
 		unit = "player";
 	end
 	local _, class = UnitClass(unit);
-	if (class ~= "DRUID" and (class ~= "MONK" or GetSpecialization() ~= SPEC_MONK_MISTWEAVER)) then
+	if (class ~= "DRUID" and (class ~= "MONK" or C_SpecializationInfo.GetSpecialization() ~= SPEC_MONK_MISTWEAVER)) then
 		statFrame:Hide();
 		return;
 	end
@@ -649,10 +649,10 @@ function PaperDollFrame_SetStat(statFrame, unit, statIndex)
 		unitClass = strupper(unitClass);
 
 		local primaryStat, spec, role;
-		spec = GetSpecialization();
+		spec = C_SpecializationInfo.GetSpecialization();
 		if (spec) then
 			role = GetSpecializationRole(spec);
-			primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
+			primaryStat = select(6, C_SpecializationInfo.GetSpecializationInfo(spec, false, false, nil, UnitSex("player")));
 		end
 		-- Strength
 		if ( statIndex == LE_UNIT_STAT_STRENGTH ) then
@@ -941,7 +941,7 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 	local damageBonus =  BreakUpLargeNumbers(max((base+posBuff+negBuff), 0)/ATTACK_POWER_MAGIC_NUMBER);
 	local spellPower = 0;
 	local value, valueText, tooltipText;
-	if (GetOverrideAPBySpellPower() ~= nil) then
+	if (GetOverrideAPBySpellPower() > 0) then
 		local holySchool = 2;
 		-- Start at 2 to skip physical damage
 		spellPower = GetSpellBonusDamage(holySchool);
@@ -961,7 +961,7 @@ function PaperDollFrame_SetAttackPower(statFrame, unit)
 	statFrame.tooltip = tooltipText;
 
 	local effectiveAP = max(0,base + posBuff + negBuff);
-	if (GetOverrideSpellPowerByAP() ~= nil) then
+	if (GetOverrideSpellPowerByAP() > 0) then
 		statFrame.tooltip2 = format(MELEE_ATTACK_POWER_SPELL_POWER_TOOLTIP, damageBonus, BreakUpLargeNumbers(effectiveAP * GetOverrideSpellPowerByAP() + 0.5));
 	else
 		statFrame.tooltip2 = format(tooltip, damageBonus);
@@ -1003,6 +1003,20 @@ function PaperDollFrame_SetSpellPower(statFrame, unit)
 	statFrame:Show();
 end
 
+local function GetSecondaryBonus(rating, base, bonusCoeff)	
+	-- For Legion Remix Timerunners, secondary stat bonuses all come from auras not actual stats
+	-- BonusCoeff is only from mastery, all other call sights should be 1
+	-- default bonus coeff call sights where we don't use this
+	if PlayerIsTimerunning() then
+		return base;
+	end
+
+	if not bonusCoeff then
+		bonusCoeff = 1;
+	end
+	return (GetCombatRatingBonus(rating) * bonusCoeff);
+end
+
 function PaperDollFrame_SetCritChance(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -1041,7 +1055,7 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, critChance, true, critChance);
 
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE)..FONT_COLOR_CODE_CLOSE;
-	local extraCritChance = GetCombatRatingBonus(rating);
+	local extraCritChance = GetSecondaryBonus(rating, critChance);
 	local extraCritRating = GetCombatRating(rating);
 	if (GetCritChanceProvidesParryEffect()) then
 		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(extraCritRating), extraCritChance, GetCombatRatingBonusForCombatRatingValue(CR_PARRY, extraCritRating));
@@ -1136,7 +1150,9 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	if (not statFrame.tooltip2) then
 		statFrame.tooltip2 = STAT_HASTE_TOOLTIP;
 	end
-	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
+	local hasteRating = GetCombatRating(rating);
+	local hasteBonus = GetSecondaryBonus(rating, haste);
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(hasteRating), hasteBonus);
 
 	statFrame:Show();
 end
@@ -1172,16 +1188,19 @@ function Mastery_OnEnter(statFrame)
 
 	local _, class = UnitClass("player");
 	local mastery, bonusCoeff = GetMasteryEffect();
-	local masteryBonus = GetCombatRatingBonus(CR_MASTERY) * bonusCoeff;
+	local masteryBonus = GetSecondaryBonus(CR_MASTERY, mastery, bonusCoeff);
 
-	local primaryTalentTree = GetSpecialization();
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();	
 	if (primaryTalentTree) then
-		local masterySpell, masterySpell2 = GetSpecializationMasterySpells(primaryTalentTree);
-		if (masterySpell) then
-			GameTooltip:AppendInfo("GetSpellByID", masterySpell);
-		end
-		if (masterySpell2) then
-			GameTooltip:AppendInfoWithSpacer("GetSpellByID", masterySpell2);
+		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(primaryTalentTree)
+		local hasAddedAnyMasterySpell = false;
+		for i, masterySpell in ipairs(masterySpells) do
+			if hasAddedAnyMasterySpell then
+				GameTooltip:AppendInfoWithSpacer("GetSpellByID", masterySpell);
+			else
+				GameTooltip:AppendInfo("GetSpellByID", masterySpell);
+				hasAddedAnyMasterySpell = true;
+			end
 		end
 		GameTooltip:AddLine(" ");
 		GameTooltip:AddLine(format(STAT_MASTERY_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_MASTERY)), masteryBonus), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
@@ -1403,45 +1422,7 @@ end
 
 local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
 function PaperDollFrame_SetPlayer()
-	CharacterModelScene:ReleaseAllActors();
-	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
-
-	local form = GetShapeshiftFormID();
-	local creatureDisplayID = C_PlayerInfo.GetDisplayID();
-	local nativeDisplayID = C_PlayerInfo.GetNativeDisplayID();
-	if form and creatureDisplayID ~= 0 and not UnitOnTaxi("player") then
-		local actorTag = ANIMAL_FORMS[form] and ANIMAL_FORMS[form].actorTag or nil;
-		if actorTag then
-			local actor = CharacterModelScene:GetPlayerActor(actorTag);
-			if actor then
-				-- We need to SetModelByCreatureDisplayID() for Shapeshift forms if:
-				-- 1. We have a form active (already checked above)
-				-- 2. The display granted by that form is *not* our native Player display (e.g. anything *but* Glyph of Stars)
-				-- 3. The Player is *not* mirror imaged
-				-- 4. The Player *is* currently their native race (e.g. *not* using a transform Toy of some kind)
-				local displayIDIsNative = (creatureDisplayID == nativeDisplayID);
-				local displayRaceIsNative = C_PlayerInfo.IsDisplayRaceNative();
-				local isMirrorImage = C_PlayerInfo.IsMirrorImage();
-				local useShapeshiftDisplayID = (not displayIDIsNative and not isMirrorImage and displayRaceIsNative);
-				if useShapeshiftDisplayID then
-					actor:SetModelByCreatureDisplayID(creatureDisplayID, true);
-					actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-					return;
-				end
-			end
-		end
-	end
-
-	local actor = CharacterModelScene:GetPlayerActor();
-	if actor then
-		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-		local sheatheWeapon = GetSheathState() == 1;
-		local autodress = true;
-		local hideWeapon = false;
-		local useNativeForm = not inAlternateForm;
-		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
-		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-	end
+	ModelSceneUtil.SetUpCharacterSheetScene(CharacterModelScene);
 end
 
 function PaperDollFrame_OnShow(self)
@@ -1459,6 +1440,9 @@ function PaperDollFrame_OnShow(self)
 
 	PaperDollFrame_SetPlayer();
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
+
+	local shown = true;
+	EventRegistry:TriggerEvent("PaperDollFrame.VisibilityUpdated", shown);
 end
 
 function PaperDollFrame_OnHide(self)
@@ -1467,6 +1451,9 @@ function PaperDollFrame_OnHide(self)
 	PaperDollSidebarTabs:Hide();
 	PaperDollFrame_HideInventoryFixupComplete(self);
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
+
+	local shown = false;
+	EventRegistry:TriggerEvent("PaperDollFrame.VisibilityUpdated", shown);
 end
 
 function PaperDollFrame_ClearIgnoredSlots()
@@ -1778,6 +1765,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 
+	GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
 	if ( not hasItem ) then
 		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
@@ -1943,7 +1931,7 @@ function PaperDollFrame_UpdateStats()
 	end
 
 	local spec, role;
-	spec = GetSpecialization();
+	spec = C_SpecializationInfo.GetSpecialization();
 	if spec then
 		role = GetSpecializationRoleEnum(spec);
 	end
@@ -1962,7 +1950,7 @@ function PaperDollFrame_UpdateStats()
 			local stat = PAPERDOLL_STATCATEGORIES[catIndex].stats[statIndex];
 			local showStat = true;
 			if ( showStat and stat.primary and spec ) then
-				local primaryStat = select(6, GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player")));
+				local primaryStat = select(6, C_SpecializationInfo.GetSpecializationInfo(spec, false, false, nil, UnitSex("player")));
 				if ( stat.primary ~= primaryStat ) then
 					showStat = false;
 				end
@@ -2128,7 +2116,7 @@ function GearSetEditButton_OnMouseDown(self, button)
 		rootDescription:CreateTitle(EQUIPMENT_SET_ASSIGN_TO_SPEC);
 
 		for i = 1, GetNumSpecializations() do
-			local specID = GetSpecializationInfo(i);
+			local specID = C_SpecializationInfo.GetSpecializationInfo(i);
 			local text = select(2, GetSpecializationInfoByID(specID));
 			rootDescription:CreateRadio(text, IsSelected, SetSelected, i);
 		end
@@ -2162,7 +2150,7 @@ function GearSetButton_UpdateSpecInfo(self)
 		return;
 	end
 
-	local specID = GetSpecializationInfo(specIndex);
+	local specID = C_SpecializationInfo.GetSpecializationInfo(specIndex);
 	GearSetButton_SetSpecInfo(self, specID);
 end
 
@@ -2275,9 +2263,8 @@ function GearManagerPopupFrameMixin:OkayButton_OnClick()
 			UIErrorsFrame:AddMessage(EQUIPMENT_SETS_CANT_RENAME, 1.0, 0.1, 0.1, 1.0);
 			return;
 		elseif ( self.mode == IconSelectorPopupFrameModes.New ) then
-			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", text);
+			local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", text, nil, setID);
 			if ( dialog ) then
-				dialog.data = setID;
 				dialog.selectedIcon = iconTexture;
 			else
 				UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
@@ -2520,10 +2507,8 @@ function PaperDollEquipmentManagerPaneSaveSet_OnClick(self)
 	local selectedSetID = PaperDollFrame.EquipmentManagerPane.selectedSetID
 	if (selectedSetID) then
 		local selectedSetName = C_EquipmentSet.GetEquipmentSetInfo(selectedSetID);
-		local dialog = StaticPopup_Show("CONFIRM_SAVE_EQUIPMENT_SET", selectedSetName);
-		if ( dialog ) then
-			dialog.data = selectedSetID;
-		else
+		local dialog = StaticPopup_Show("CONFIRM_SAVE_EQUIPMENT_SET", selectedSetName, nil, selectedSetID);
+		if ( not dialog ) then
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		end
 	end
@@ -2785,7 +2770,7 @@ PaperDollItemSocketDisplayMixin = {};
 
 function PaperDollItemSocketDisplayMixin:SetItem(item)
 	-- Currently only showing socket display for timerunning characters
-	local showSocketDisplay = item ~= nil and PlayerGetTimerunningSeasonID() ~= nil;
+	local showSocketDisplay = item ~= nil and PlayerIsTimerunning();
 	self:SetShown(showSocketDisplay);
 
 	if not showSocketDisplay then

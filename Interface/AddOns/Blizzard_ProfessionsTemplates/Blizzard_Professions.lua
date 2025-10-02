@@ -70,16 +70,17 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 		GameTooltip_AddHighlightLine(tooltip, str);
 	end
 
-	local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(item:GetItemID());
-	if quality then
+	local itemID = item:GetItemID();
+	local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemID);
+	if qualityInfo then
 		GameTooltip_AddBlankLineToTooltip(tooltip);
 		local atlasSize = 26;
-		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
+		local atlasMarkup = CreateAtlasMarkup(qualityInfo.iconSmall, atlasSize, atlasSize);
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 	end
-
+	
 	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
-	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
+	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(itemID);
 	for index, requiredItemID in ipairs(requirements) do
 		local requiredItem = Item:CreateFromItemID(requiredItemID);
 		local itemName = requiredItem:GetItemName();
@@ -91,7 +92,7 @@ function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recra
 	end
 
 	local recraftAllocation = transaction:GetRecraftAllocation();
-	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, itemID) then
 		GameTooltip_AddErrorLine(tooltip, PROFESSIONS_DISALLOW_DOWNGRADE);
 	end
 end
@@ -104,15 +105,12 @@ local CraftingAccessibleBags =
 	Enum.BagIndex.Bag_3,
 	Enum.BagIndex.Bag_4,
 	Enum.BagIndex.ReagentBag,
-	Enum.BagIndex.Bank,
-	Enum.BagIndex.BankBag_1,
-	Enum.BagIndex.BankBag_2,
-	Enum.BagIndex.BankBag_3,
-	Enum.BagIndex.BankBag_4,
-	Enum.BagIndex.BankBag_5,
-	Enum.BagIndex.BankBag_6,
-	Enum.BagIndex.BankBag_7,
-	Enum.BagIndex.Reagentbank,
+	Enum.BagIndex.CharacterBankTab_1,
+	Enum.BagIndex.CharacterBankTab_2,
+	Enum.BagIndex.CharacterBankTab_3,
+	Enum.BagIndex.CharacterBankTab_4,
+	Enum.BagIndex.CharacterBankTab_5,
+	Enum.BagIndex.CharacterBankTab_6,
 	Enum.BagIndex.AccountBankTab_1,
 	Enum.BagIndex.AccountBankTab_2,
 	Enum.BagIndex.AccountBankTab_3,
@@ -415,7 +413,8 @@ function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction
 		};
 		GameTooltip:ProcessInfo(tooltipInfo);
 
-		local quantities = Professions.GetQuantitiesAllocated(transaction, slot:GetReagentSlotSchematic());
+		local reagentSlotSchematic = slot:GetReagentSlotSchematic();
+		local quantities = Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic);
 		local slotsAllocated = AccumulateOp(quantities, function(quantity)
 			return math.min(quantity, 1);
 		end);
@@ -424,10 +423,27 @@ function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction
 		if slotsAllocated > 1 then
 			GameTooltip_AddBlankLineToTooltip(GameTooltip);
 			blankLineAdded = true;
-			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
-			quantities[1], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier1-Small"), 
-			quantities[2], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier2-Small"),  
-			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
+
+			local qualityInfos = {};
+			for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+				local allocReagent = allocation.reagent;
+				local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
+					return Professions.CraftingReagentMatches(reagent, allocReagent);
+				end);
+				qualityInfos[index] = C_TradeSkillUI.GetItemReagentQualityInfo(allocReagent.itemID);
+			end
+
+			local allocations = transaction:GetAllocations(reagentSlotSchematic.slotIndex);
+			if allocations:GetSize() == 2 then
+				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP_2:format(
+					quantities[1], CreateAtlasMarkupWithAtlasSize(qualityInfos[1].iconSmall), 
+					quantities[2], CreateAtlasMarkupWithAtlasSize(qualityInfos[2].iconSmall)));
+			else
+				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
+					quantities[1], CreateAtlasMarkupWithAtlasSize(qualityInfos[1].iconSmall),
+					quantities[2], CreateAtlasMarkupWithAtlasSize(qualityInfos[2].iconSmall),
+					quantities[3], CreateAtlasMarkupWithAtlasSize(qualityInfos[3].iconSmall)));
+			end
 		end
 
 		if not slot:IsUnallocatable() and not noInstruction then
@@ -594,11 +610,7 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 			return Professions.ReagentInputMode.Fixed;
 		end
 
-		if count == 3 then
-			return Professions.ReagentInputMode.Quality;
-		end
-
-		assert(false, "Reagent slot schematic does not have an expected reagent setup.");
+		return Professions.ReagentInputMode.Quality;
 	end
 
 	return Professions.ReagentInputMode.Any;
@@ -883,15 +895,8 @@ function Professions.GetDefaultOrderRecipient()
 	return recipient;
 end
 
-function Professions.GetIconForQuality(quality, small)
-	if small then
-		return ("Professions-Icon-Quality-Tier%d-Small"):format(quality);
-	end
-	return ("Professions-Icon-Quality-Tier%d"):format(quality);
-end
-
-function Professions.GetChatIconMarkupForQuality(quality, small, overrideOffsetY)
-	local atlas = ("professions-chaticon-quality-tier%d"):format(quality);
+function Professions.GetChatIconMarkupForQuality(qualityInfo, small, overrideOffsetY)
+	local atlas = qualityInfo.iconChat;
 	local offsetX = nil;
 	local offsetY = overrideOffsetY or (small and 0 or 1);
 	local rVertexColor = nil;

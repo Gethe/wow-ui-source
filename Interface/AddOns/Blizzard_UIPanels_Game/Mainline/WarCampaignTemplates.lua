@@ -148,7 +148,7 @@ end
 function CampaignHeaderDisplayMixin:UpdateTitle(isComplete)
 	local useHighlight = not isComplete;
 	self.Text:SetWidth(CAMPAIGN_TITLE_MAX_WIDTH);
-	SetFieldText(self.Text, self:GetCampaign().name, QuestLogHeaderCodeMixin.GetTitleColor(self, useHighlight));
+	SetFieldText(self.Text, self:GetCampaign().name, ListHeaderVisualMixin.GetTitleColor(self, useHighlight));
 	local stringWidth = self.Text:GetStringWidth();
 	-- add 1 so any rounding in the wrong direction doesn't cause "..." to appear
 	self.Text:SetWidth(stringWidth + 1);
@@ -207,17 +207,13 @@ end
 CampaignHeaderCollapsibleMixin = {};
 
 function CampaignHeaderCollapsibleMixin:OnClick(button)
+	-- TODO: This doesn't behave like other quest header OnClick handlers, maybe it should.
 	local campaign = self:GetCampaign();
 	if campaign:IsContainerCampaign() then
 		return;
 	end
 
 	if button == "LeftButton" then
-		if self:IsCollapsed() then
-			self.minimumHeight = self.minimumExpandedHeight;
-		else
-			self.minimumHeight = self.minimumCollapsedHeight;
-		end
 		local isCollapsed = self:ToggleCollapsed();
 
 		if isCollapsed then
@@ -363,7 +359,7 @@ end
 
 function CampaignHeaderMinimalMixin:UpdateTitle(isComplete)
 	local useHighlight = false;
-	SetFieldText(self.Text, self:GetCampaign().name, QuestLogHeaderCodeMixin.GetTitleColor(self, useHighlight));
+	SetFieldText(self.Text, self:GetCampaign().name, ListHeaderVisualMixin.GetTitleColor(self, useHighlight));
 end
 
 function CampaignHeaderMinimalMixin:UpdateTextureKit()

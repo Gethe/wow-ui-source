@@ -1,3 +1,8 @@
+
+local function ShouldWoWLabsAreaBeActive()
+	return WoWLabsAreaDataProviderMixin and C_GameRules.IsGameRuleActive(Enum.GameRule.PlunderstormAreaSelection);
+end
+
 WorldMapMixin = {};
 
 local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
@@ -110,11 +115,17 @@ function WorldMapMixin:SetupMinimizeMaximizeButton()
 end
 
 function WorldMapMixin:IsMaximized()
-	return self.isMaximized;
+	return self.isMaximized == true;
+end
+
+function WorldMapMixin:IsMinimized()
+	return self.isMaximized == false;
 end
 
 function WorldMapMixin:OnLoad()
-	UIPanelWindows[self:GetName()] = { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "TOP" };
+	RegisterUIPanel(self, { area = "left", pushable = 0, xoffset = 0, yoffset = 0, whileDead = 1, minYOffset = 0, maximizePoint = "TOP", allowOtherPanels = 1 });
+
+	self.needUpdateDisplayState = true;
 
 	MapCanvasMixin.OnLoad(self);
 
@@ -128,6 +139,10 @@ function WorldMapMixin:OnLoad()
 
 	self:AddStandardDataProviders();
 	self:AddOverlayFrames();
+
+	if ShouldWoWLabsAreaBeActive() then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	end
 
 	self:RegisterEvent("VARIABLES_LOADED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
@@ -147,12 +162,12 @@ end
 function WorldMapMixin:OnEvent(event, ...)
 	MapCanvasMixin.OnEvent(self, event, ...);
 
-	if event == "VARIABLES_LOADED" then
-		if self:ShouldBeMinimized() then
-			self:Minimize();
-		else
-			self:Maximize();
-		end
+	if event == "PLAYER_ENTERING_WORLD" then
+		-- Query data for WoWLabsAreaDataProviderMixin.
+		C_WowLabsDataManager.QuerySelectedWoWLabsArea();
+		C_WowLabsDataManager.QueryWoWLabsAreaInfo();
+	elseif event == "VARIABLES_LOADED" then
+		self.needUpdateDisplayState = true;
 	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
 		if self:IsMaximized() then
 			self:UpdateMaximizedSize();
@@ -193,13 +208,19 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(SelectableGraveyardDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(AreaPOIEventDataProviderMixin));
-	self:AddDataProvider(CreateFromMixins(MapIndicatorQuestDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(QuestSessionDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DragonridingRaceDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(SuperTrackWaypointDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(NeighborhoodMapDataProviderMixin));
 
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
+	end
+
+	-- WoWLabs areas only appear when in WoWLabs since these feature(s) aren't fully data-driven yet.
+	if ShouldWoWLabsAreaBeActive() then
+		self:AddDataProvider(CreateFromMixins(WoWLabsAreaDataProviderMixin));
 	end
 
 	if IsGMClient() then
@@ -220,6 +241,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(worldQuestDataProvider);
 
 	local pinFrameLevelsManager = self:GetPinFrameLevelsManager();
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WOW_LABS_AREA");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_MAP_EXPLORATION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PLUNDERSTORM_CIRCLE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_EVENT_OVERLAY");
@@ -233,6 +255,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_NEIGHBORHOOD_MAP_OBJECTS");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
@@ -246,14 +269,16 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VIGNETTE", 200);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_OFFER", QuestOfferDataProviderMixin.PIN_LEVEL_RANGE);
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SCENARIO");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WORLD_QUEST", 500);
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_AREA_POI_EVENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_QUEST_PING");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_ACTIVE_QUEST", C_QuestLog.GetMaxNumQuests());
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_CONTENT");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SUPER_TRACKED_QUEST");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_VEHICLE_BELOW_GROUP_MEMBER");
-	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BONUS_OBJECTIVE");
+
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_BATTLEFIELD_FLAG");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_WAYPOINT_LOCATION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_GROUP_MEMBER");
@@ -266,21 +291,19 @@ function WorldMapMixin:AddOverlayFrames()
 	local floorDropdown = self:AddOverlayFrame("WorldMapFloorNavigationFrameTemplate", "DROPDOWNBUTTON", "TOPLEFT", self:GetCanvasContainer(), "TOPLEFT", 2, 0);
 	floorDropdown:SetWidth(160);
 
-	local topRightButtonPoolXOffset = -4;
-	local topRightButtonPoolXOffsetAmount = -32;
+	local topRightButtonPoolYOffset = -2;
+	local topRightButtonPoolYOffsetAmount = -32;
 	local worldTrackingOptionsDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingOptionsDisabled);
 	if not worldTrackingOptionsDisabled then
-		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
-		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
+		self:AddOverlayFrame("WorldMapTrackingOptionsButtonTemplate", "DROPDOWNBUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, topRightButtonPoolYOffset);
+		topRightButtonPoolYOffset = topRightButtonPoolYOffset + topRightButtonPoolYOffsetAmount;
 	end
 
 	local worldMapTrackingPinDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapTrackingPinDisabled);
 	if not worldMapTrackingPinDisabled then
-		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
-		topRightButtonPoolXOffset = topRightButtonPoolXOffset + topRightButtonPoolXOffsetAmount;
+		self:AddOverlayFrame("WorldMapTrackingPinButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", -4, topRightButtonPoolYOffset);
+		topRightButtonPoolYOffset = topRightButtonPoolYOffset + topRightButtonPoolYOffsetAmount;
 	end
-
-	self:AddOverlayFrame("WorldMapShowLegendButtonTemplate", "BUTTON", "TOPRIGHT", self:GetCanvasContainer(), "TOPRIGHT", topRightButtonPoolXOffset, -2);
 
 	self:AddOverlayFrame("WorldMapBountyBoardTemplate", "FRAME", nil, self:GetCanvasContainer());
 	self:AddOverlayFrame("WorldMapActionButtonTemplate", "FRAME", nil, self:GetCanvasContainer());
@@ -310,12 +333,23 @@ function WorldMapMixin:OnMapChanged()
 end
 
 function WorldMapMixin:OnShow()
+	if self.needUpdateDisplayState then
+		local displayState = self:GetOpenDisplayState();
+		self:SetDisplayState(displayState);
+		self.needUpdateDisplayState = nil;
+	end
+
+	local frameStrata = C_GameRules.GetGameRuleAsFrameStrata(Enum.GameRule.WorldMapFrameStrata);
+	if frameStrata and frameStrata ~= "UNKNOWN" then
+		self:SetFrameStrata(frameStrata);
+	end
+
 	local mapID = MapUtil.GetDisplayableMapForPlayer();
 	self:SetMapID(mapID);
 	MapCanvasMixin.OnShow(self);
 	self:ResetZoom();
 
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
@@ -337,24 +371,26 @@ end
 function WorldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 
 	PlayerMovementFrameFader.RemoveFrame(self);
 	self:CheckAndHideTutorialHelpInfo();
 
 	self:OnUIClose();
-	self:TriggerEvent("WorldMapOnHide");
+	EventRegistry:TriggerEvent("WorldMapOnHide");
 	C_Map.CloseWorldMapInteraction();
 
 	UpdateMicroButtons();
 end
 
+local function SecureRefreshOverlayFrame(_, frame)
+	frame:Refresh();
+end
+
 function WorldMapMixin:RefreshOverlayFrames()
 	if self.overlayFrames then
-		for i, frame in ipairs(self.overlayFrames) do
-			frame:Refresh();
-		end
+		secureexecuterange(self.overlayFrames, SecureRefreshOverlayFrame);
 	end
 end
 
@@ -421,10 +457,10 @@ WorldMapTutorialMixin = { }
 
 function WorldMapTutorialMixin:OnLoad()
 	self.helpInfo = {
-		FramePos = { x = 4,	y = -40 },
-		FrameSize = { width = 985, height = 500	},
-		[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -30, width = 695, height = 464 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL1 },
-		[2] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 16, width = 645, height = 44 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL4 },
+		FramePos = { x = 4,	y = -26 },
+		FrameSize = { width = 1028, height = 500	},
+		[1] = { ButtonPos = { x = 350,	y = -180 }, HighLightBox = { x = 0, y = -44, width = 695, height = 464 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL1 },
+		[2] = { ButtonPos = { x = 350,	y = 16 }, HighLightBox = { x = 50, y = 2, width = 645, height = 44 }, ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL4 },
 	};
 end
 
@@ -434,37 +470,55 @@ end
 
 function WorldMapTutorialMixin:CheckAndShowTooltip()
 	if (not NewPlayerExperience or not NewPlayerExperience.IsActive) and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME) then
-		if not HelpPlate_IsShowing(self.helpInfo) then
-			HelpPlate_ShowTutorialPrompt(self.helpInfo, self);
+		if not HelpPlate.IsShowingHelpInfo(self.helpInfo) then
+			HelpPlate.ShowTutorialTooltip(self.helpInfo, self);
 			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
 		end
 	end
 end
 
 function WorldMapTutorialMixin:CheckAndHideHelpInfo()
-	if HelpPlate_IsShowing(self.helpInfo) then
-		HelpPlate_Hide();
+	if HelpPlate.IsShowingHelpInfo(self.helpInfo) then
+		HelpPlate.Hide();
 	end
 
-	if HelpPlateTooltip_IsShowing(self.helpInfo) then
-		HelpPlate_TooltipHide();
+	if HelpPlate.IsShowingTutorialTooltip(self.helpInfo) then
+		HelpPlate.HideTooltip();
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, false);
 	end
 end
 
 function WorldMapTutorialMixin:ToggleHelpInfo()
 	local mapFrame = self:GetParent():GetParent();
-	if ( mapFrame.QuestLog:IsShown() ) then
-		self.helpInfo[3] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = 16, width = 285, height = 510 },	ToolTipDir = "DOWN", ToolTipText = WORLD_MAP_TUTORIAL2 };
+	if ( not HelpPlate.IsShowingHelpInfo(self.helpInfo) and mapFrame:IsShown()) then
+		self:SetHelpInfo3();
+		HelpPlate.Show(self.helpInfo, mapFrame, self);
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
+		EventRegistry:RegisterCallback("QuestLog.SetDisplayMode", self.UpdateHelpInfo, self);
 	else
-		self.helpInfo[3] = nil;
+		HelpPlate.Hide(true);
+		EventRegistry:UnregisterCallback("QuestLog.SetDisplayMode", self);
+	end
+end
+
+function WorldMapTutorialMixin:UpdateHelpInfo()
+	if not HelpPlate.IsShowingHelpInfo(self.helpInfo) then
+		return;
 	end
 
-	if ( not HelpPlate_IsShowing(self.helpInfo) and mapFrame:IsShown()) then
-		HelpPlate_Show(self.helpInfo, mapFrame, self, true);
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true);
+	self:SetHelpInfo3();
+	local mapFrame = self:GetParent():GetParent();
+		HelpPlate.Show(self.helpInfo, mapFrame, self);
+end
+
+function WorldMapTutorialMixin:SetHelpInfo3()
+	local mapFrame = self:GetParent():GetParent();
+	local shownQuestLog = mapFrame.QuestLog and mapFrame.QuestLog:IsShown();
+	local questLogHelpText = shownQuestLog and mapFrame.QuestLog.GetHelpInfoText and mapFrame.QuestLog:GetHelpInfoText();
+	if questLogHelpText then
+		self.helpInfo[3] = { ButtonPos = { x = 810,	y = -180 }, HighLightBox = { x = 700, y = 2, width = 328, height = 510 },	ToolTipDir = "DOWN", ToolTipText = questLogHelpText };
 	else
-		HelpPlate_Hide(true);
+		self.helpInfo[3] = nil;
 	end
 end
 
@@ -496,25 +550,47 @@ function WorldMapMixin:ClearFocusedQuestID()
 	self:TriggerEvent("ClearFocusedQuestID");
 end
 
-function WorldMapMixin:PingQuestID(questID)
-	if self:IsVisible() then
-		self:TriggerEvent("PingQuestID", questID);
-	end
-end
-
 -- ============================================ GLOBAL API ===============================================================================
 function ToggleQuestLog()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionToggleQuestLog();
 end
 
 function ToggleWorldMap()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionToggleSelf();
 end
 
 function OpenWorldMap(mapID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionOpenSelf(mapID);
 end
 
 function OpenQuestLog(mapID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionOpenQuestLog(mapID);
+end
+
+function OpenMapToEventPoi(areaPoiID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
+	local mapID = C_EventScheduler.GetEventUiMapID(areaPoiID);
+	if mapID then
+		OpenWorldMap(mapID);
+		EventRegistry:TriggerEvent("PingAreaPOIEvent", areaPoiID);
+	end
 end

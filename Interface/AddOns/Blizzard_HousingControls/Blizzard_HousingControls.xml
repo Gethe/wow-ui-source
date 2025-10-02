@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingControlsFrame" mixin="HousingControlsMixin" parent="UIParent">
+		<Size x="150" y="50"/>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-30"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="controls-frame">
+					<Size x="310" y="39"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="HouseEditorButton" inherits="HouseEditorButtonTemplate">
+				<Size x="68" y="68"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-12"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="SettingsButton" inherits="HouseSettingsButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HouseEditorButton" relativePoint="RIGHT" x="10" y="3"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="ExitButton" inherits="HousingExitButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SettingsButton" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="HouseInfoButton" inherits="HouseInfoButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HouseEditorButton" relativePoint="LEFT" x="-10" y="3"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="InspectorButton" inherits="HouseInspectorButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HouseInfoButton" relativePoint="LEFT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

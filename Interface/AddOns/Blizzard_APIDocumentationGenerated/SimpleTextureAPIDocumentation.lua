@@ -8,6 +8,7 @@ local SimpleTextureAPI =
 		{
 			Name = "AddMaskTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -17,6 +18,8 @@ local SimpleTextureAPI =
 		{
 			Name = "GetMaskTexture",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +47,7 @@ local SimpleTextureAPI =
 		{
 			Name = "RemoveMaskTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -5,9 +5,9 @@ local TraitConstants =
 		{
 			Name = "NodeOpFailureReason",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "None", Type = "NodeOpFailureReason", EnumValue = 0 },
@@ -36,6 +36,7 @@ local TraitConstants =
 				{ Name = "TreeFlaggedNoRefund", Type = "NodeOpFailureReason", EnumValue = 23 },
 				{ Name = "NodeNeverPurchasable", Type = "NodeOpFailureReason", EnumValue = 24 },
 				{ Name = "AccountDataNoMatch", Type = "NodeOpFailureReason", EnumValue = 25 },
+				{ Name = "NotEnoughRanksInEntry", Type = "NodeOpFailureReason", EnumValue = 26 },
 			},
 		},
 		{
@@ -78,9 +79,9 @@ local TraitConstants =
 		{
 			Name = "TraitConditionType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Available", Type = "TraitConditionType", EnumValue = 0 },
@@ -88,6 +89,7 @@ local TraitConstants =
 				{ Name = "Granted", Type = "TraitConditionType", EnumValue = 2 },
 				{ Name = "Increased", Type = "TraitConditionType", EnumValue = 3 },
 				{ Name = "DisplayError", Type = "TraitConditionType", EnumValue = 4 },
+				{ Name = "RanksAllowed", Type = "TraitConditionType", EnumValue = 5 },
 			},
 		},
 		{
@@ -135,14 +137,15 @@ local TraitConstants =
 		{
 			Name = "TraitCurrencyType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Gold", Type = "TraitCurrencyType", EnumValue = 0 },
 				{ Name = "CurrencyTypesBased", Type = "TraitCurrencyType", EnumValue = 1 },
 				{ Name = "TraitSourced", Type = "TraitCurrencyType", EnumValue = 2 },
+				{ Name = "TraitSourcedPlayerDataElement", Type = "TraitCurrencyType", EnumValue = 3 },
 			},
 		},
 		{
@@ -191,9 +194,9 @@ local TraitConstants =
 		{
 			Name = "TraitNodeEntryType",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 12,
 			Fields =
 			{
 				{ Name = "SpendHex", Type = "TraitNodeEntryType", EnumValue = 0 },
@@ -206,20 +209,27 @@ local TraitConstants =
 				{ Name = "ProfPath", Type = "TraitNodeEntryType", EnumValue = 7 },
 				{ Name = "ProfPerk", Type = "TraitNodeEntryType", EnumValue = 8 },
 				{ Name = "ProfPathUnlock", Type = "TraitNodeEntryType", EnumValue = 9 },
+				{ Name = "RedButton", Type = "TraitNodeEntryType", EnumValue = 10 },
+				{ Name = "ArmorSet", Type = "TraitNodeEntryType", EnumValue = 11 },
+				{ Name = "SpendInfinite", Type = "TraitNodeEntryType", EnumValue = 12 },
 			},
 		},
 		{
 			Name = "TraitNodeFlag",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 8,
 			MinValue = 1,
-			MaxValue = 8,
+			MaxValue = 128,
 			Fields =
 			{
 				{ Name = "ShowMultipleIcons", Type = "TraitNodeFlag", EnumValue = 1 },
 				{ Name = "NeverPurchasable", Type = "TraitNodeFlag", EnumValue = 2 },
 				{ Name = "TestPositionLocked", Type = "TraitNodeFlag", EnumValue = 4 },
 				{ Name = "TestGridPositioned", Type = "TraitNodeFlag", EnumValue = 8 },
+				{ Name = "ActiveAtFirstRank", Type = "TraitNodeFlag", EnumValue = 16 },
+				{ Name = "ShowExpandedSelection", Type = "TraitNodeFlag", EnumValue = 32 },
+				{ Name = "HideMaxRank", Type = "TraitNodeFlag", EnumValue = 64 },
+				{ Name = "HighestChosenRank", Type = "TraitNodeFlag", EnumValue = 128 },
 			},
 		},
 		{
@@ -263,13 +273,27 @@ local TraitConstants =
 		{
 			Name = "TraitSystemFlag",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "AllowMultipleLoadoutsPerTree", Type = "TraitSystemFlag", EnumValue = 1 },
 				{ Name = "ShowSpendConfirmation", Type = "TraitSystemFlag", EnumValue = 2 },
+				{ Name = "AllowEditInCombat", Type = "TraitSystemFlag", EnumValue = 4 },
+				{ Name = "AllowEditInChallengeMode", Type = "TraitSystemFlag", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "TraitSystemVariationType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "TraitSystemVariationType", EnumValue = 0 },
+				{ Name = "Spec", Type = "TraitSystemVariationType", EnumValue = 1 },
 			},
 		},
 		{

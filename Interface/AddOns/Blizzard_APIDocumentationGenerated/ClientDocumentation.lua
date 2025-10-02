@@ -8,6 +8,12 @@ local Client =
 		{
 			Name = "FlashClientIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "briefly", Type = "bool", Nilable = false, Default = false },
+			},
 		},
 		{
 			Name = "GetBillingTimeRested",
@@ -21,6 +27,7 @@ local Client =
 		{
 			Name = "GetFileIDFromPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,8 +49,18 @@ local Client =
 			},
 		},
 		{
+			Name = "IsCpuBound",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCpuBound", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "ReportBug",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +70,7 @@ local Client =
 		{
 			Name = "ReportSuggestion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

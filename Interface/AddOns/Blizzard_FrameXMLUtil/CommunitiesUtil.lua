@@ -70,6 +70,8 @@ local function CompareMembers(lhsMemberInfo, rhsMemberInfo)
 		return lhsMemberInfo.role < rhsMemberInfo.role;
 	elseif lhsMemberInfo.name and rhsMemberInfo.name then
 		return lhsMemberInfo.name < rhsMemberInfo.name;
+	elseif lhsMemberInfo.name or rhsMemberInfo.name then
+		return lhsMemberInfo.name ~= nil;
 	else
 		return lhsMemberInfo.memberId < rhsMemberInfo.memberId;
 	end
@@ -201,7 +203,6 @@ end
 function CommunitiesUtil.DoesCommunityHaveOtherUnreadMessages(clubId, ignoreStreamId)	
 	local streamToNotificationSetting = CommunitiesUtil.GetStreamNotificationSettingsLookup(clubId);
 	for i, stream in ipairs(C_Club.GetStreams(clubId)) do
-		-- TODO:: Support mention-based notifications once we have support for mentions.
 		if stream.streamId ~= ignoreStreamId and streamToNotificationSetting[stream.streamId] == Enum.ClubStreamNotificationFilter.All then
 			if CommunitiesUtil.DoesCommunityStreamHaveUnreadMessages(clubId, stream.streamId) then
 				return true;

@@ -1,3 +1,4 @@
+
 GradualAnimatedStatusBarMixin = {};
 
 function GradualAnimatedStatusBarMixin:OnLoad()

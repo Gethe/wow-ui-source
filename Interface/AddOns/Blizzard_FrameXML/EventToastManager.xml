@@ -214,7 +214,6 @@
 
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
-				<Scale childKey="BG2" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="Title" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
 				<Alpha childKey="SubTitle" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
@@ -248,16 +247,6 @@
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="BG1" hidden="true" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="BG2" hidden="true" alphaMode="ADD" atlas="legioninvasion-title-bg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -1354,13 +1343,6 @@
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="FiligreeGlow" atlas="UI-World-Quest-filigree-glow" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="TopIcon" atlas="UI-Flightpoint-Discovery-Toast-Frame" useAtlasSize="true">
 					<Anchors>
@@ -1382,10 +1364,117 @@
 				</FontString>
 				<Texture parentKey="Filigree" atlas="UI-World-Quest-filigree" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-6"/>
+						<Anchor point="CENTER" relativeKey="$parent.$parent.GLine" relativePoint="CENTER" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="FiligreeGlow" atlas="UI-World-Quest-filigree-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Filigree"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Frame name="EventToastScoreboardTemplate" mixin="EventToastScoreboardMixin" inherits="ResizeLayoutFrame, EventToastAnimationsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+			<KeyValue key="widthPadding" value="50" type="number"/>
+			<KeyValue key="heightPadding" value="80" type="number"/>
+			<KeyValue key="minimumWidth" value="300" type="number"/>
+			<KeyValue key="minimumHeight" value="200" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopLine" atlas="UI-Frame-DastardlyDuos-Line-Top" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomLine" atlas="UI-Frame-DastardlyDuos-Line-bottom" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Background" atlas="UI-Frame-DastardlyDuos-BG-Black" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TopLine" relativePoint="BOTTOM" x="0" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BottomLine" relativePoint="TOP" x="0" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-22"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="CloseButton" inherits="SharedButtonSmallTemplate" text="CLOSE">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="20" />
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	
+	<Frame name="EventToastHouseUpgradeAvailableTemplate" mixin="EventToastHouseUpgradeAvailableMixin" inherits="EventToastAnimationsTemplate" virtual="true" alpha="0">
+		<Size x="845" y="495"/>
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="housing-celebrationtoast-back" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterGlow" atlas="housing-celebrationtoast-outerglowrays" alpha="0" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="housing-celebrationtoast-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" text="HOUSE_UPGRADE_AVAILABLE_TOAST">
+					<Anchors>
+						<Anchor point="CENTER" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate"/>
+			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate"/>
+		</Animations>
+	</Frame>
+
 </Ui>

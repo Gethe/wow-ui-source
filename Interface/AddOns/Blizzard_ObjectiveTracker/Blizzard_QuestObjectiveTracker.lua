@@ -1,6 +1,6 @@
 local settings = {
 	headerText = TRACKER_HEADER_QUESTS,
-	events = { "QUEST_LOG_UPDATE", "QUEST_WATCH_LIST_CHANGED", "QUEST_AUTOCOMPLETE", "SUPER_TRACKING_CHANGED", "QUEST_TURNED_IN" },
+	events = { "QUEST_LOG_UPDATE", "QUEST_WATCH_LIST_CHANGED", "QUEST_AUTOCOMPLETE", "SUPER_TRACKING_CHANGED", "QUEST_TURNED_IN", "QUEST_POI_UPDATE" },
 	lineTemplate = "QuestObjectiveLineTemplate",
 	blockTemplate = "ObjectiveTrackerQuestPOIBlockTemplate",
 	rightEdgeFrameSpacing = 2,
@@ -20,6 +20,7 @@ local settings = {
 QuestObjectiveTrackerMixin = CreateFromMixins(ObjectiveTrackerModuleMixin, settings, AutoQuestPopupTrackerMixin);
 
 function QuestObjectiveTrackerMixin:InitModule()
+	self:AddTag("quest");
 	self:WatchMoney(false);
 end
 
@@ -48,14 +49,16 @@ function QuestObjectiveTrackerMixin:OnEvent(event, ...)
 end
 
 function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
-	if ChatEdit_TryInsertQuestLinkForQuestID(block.id) then
+	if ChatFrameUtil.TryInsertQuestLinkForQuestID(block.id) then
 		return;
 	end
 
 	if mouseButton ~= "RightButton" then
 		local questID = block.id;
 		if IsModifiedClick("QUESTWATCHTOGGLE") then
-			C_QuestLog.RemoveQuestWatch(questID);
+			if QuestUtil.CanRemoveQuestWatch() then
+				C_QuestLog.RemoveQuestWatch(questID);
+			end
 		else
 			local quest = QuestCache:Get(questID);
 			if quest.isAutoComplete and quest:IsComplete() then
@@ -92,9 +95,11 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 				QuestMapFrame_OpenToQuestDetails(questID);
 			end);
 
-			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
-				C_QuestLog.RemoveQuestWatch(questID);
-			end);
+			if QuestUtil.CanRemoveQuestWatch() then
+				rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
+					C_QuestLog.RemoveQuestWatch(questID);
+				end);
+			end
 
 			if C_QuestLog.IsPushableQuest(questID) and IsInGroup() then
 				rootDescription:CreateButton(SHARE_QUEST, function()

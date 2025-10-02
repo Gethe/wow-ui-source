@@ -133,7 +133,7 @@ end
 
 function WaypointLocationPinMixin:OnMouseClickAction(mouseButton)
 	if IsModifiedClick("CHATLINK") then
-		ChatEdit_InsertLink(C_Map.GetUserWaypointHyperlink());
+		ChatFrameUtil.InsertLink(C_Map.GetUserWaypointHyperlink());
 		PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
 	elseif mouseButton == "LeftButton" then
 		local shouldSuperTrack = not C_SuperTrack.IsSuperTrackingUserWaypoint();

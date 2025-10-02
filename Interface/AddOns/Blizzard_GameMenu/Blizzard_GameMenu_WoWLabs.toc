@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip
-## AllowLoadGameType: wowlabs
+## AllowLoadGameType: plunderstorm
 WoWLabs\GameMenuFrame.lua
 WoWLabs\GameMenuFrame.xml
 Shared\Localization.lua

@@ -34,11 +34,11 @@ function MapUtil.ShouldShowTask(mapID, info)
 	if (info.isQuestStart and info.inProgress) then
 		return false
 	end
-	if not HaveQuestData(info.questId) then
+	if not HaveQuestData(info.questID) then
 		return false;
 	end
 	-- callings are allowed on other maps if they are zone maps 
-	if C_QuestLog.IsQuestCalling(info.questId) and MapUtil.IsMapTypeZone(mapID) then
+	if C_QuestLog.IsQuestCalling(info.questID) and MapUtil.IsMapTypeZone(mapID) then
 		return true;
 	end
 	return mapID == info.mapID;
@@ -120,6 +120,20 @@ function MapUtil.IsChildMap(mapID, ancestorMapID)
 	end
 
 	return false;
+end
+
+local g_childMapCache = { };
+
+function MapUtil.IsChildMapCached(mapID, ancestorMapID)
+	local key = mapID * 100000 + ancestorMapID;
+	local result = g_childMapCache[key];
+	if result ~= nil then
+		return result;
+	end
+
+	result = MapUtil.IsChildMap(mapID, ancestorMapID);
+	g_childMapCache[key] = result;
+	return result;
 end
 
 function MapUtil.IsOribosMap(mapID)

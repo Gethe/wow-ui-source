@@ -9,6 +9,7 @@ local Soulbinds =
 		{
 			Name = "ActivateSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local Soulbinds =
 		{
 			Name = "CanActivateSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +44,7 @@ local Soulbinds =
 		{
 			Name = "CanResetConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +73,7 @@ local Soulbinds =
 		{
 			Name = "CommitPendingConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,6 +83,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDActuallyInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +99,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDAppearingInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +115,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDPendingInstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,6 +131,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDPendingUninstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,6 +156,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +180,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollectionData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,6 +204,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollectionDataByVirtualID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,6 +219,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitDisplayed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -222,6 +234,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -237,6 +250,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitIDPendingInstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,6 +265,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,6 +281,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +296,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitSpellID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,6 +312,7 @@ local Soulbinds =
 		{
 			Name = "GetInstalledConduitID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -309,6 +327,7 @@ local Soulbinds =
 		{
 			Name = "GetNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,6 +342,7 @@ local Soulbinds =
 		{
 			Name = "GetSoulbindData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -337,6 +357,7 @@ local Soulbinds =
 		{
 			Name = "GetSpecsAssignedToSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -351,6 +372,7 @@ local Soulbinds =
 		{
 			Name = "GetTree",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,6 +387,7 @@ local Soulbinds =
 		{
 			Name = "HasAnyInstalledConduitInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -388,6 +411,7 @@ local Soulbinds =
 		{
 			Name = "HasPendingConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -402,6 +426,7 @@ local Soulbinds =
 		{
 			Name = "IsConduitInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -416,6 +441,7 @@ local Soulbinds =
 		{
 			Name = "IsConduitInstalledInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -431,6 +457,7 @@ local Soulbinds =
 		{
 			Name = "IsItemConduitByItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -445,6 +472,7 @@ local Soulbinds =
 		{
 			Name = "IsNodePendingModify",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -459,6 +487,7 @@ local Soulbinds =
 		{
 			Name = "IsUnselectedConduitPendingInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -473,6 +502,7 @@ local Soulbinds =
 		{
 			Name = "ModifyNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -484,6 +514,7 @@ local Soulbinds =
 		{
 			Name = "SelectNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -493,6 +524,7 @@ local Soulbinds =
 		{
 			Name = "UnmodifyNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

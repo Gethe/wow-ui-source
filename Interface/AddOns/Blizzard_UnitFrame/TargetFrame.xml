@@ -474,7 +474,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
-			<OnHide method="OnHide" inherit="append"/>
+			<OnHide method="BossTarget_OnHide" inherit="append"/>
 		</Scripts>
 	</Button>
 	<Button name="TargetofTargetFrameTemplate" movable="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" mixin="TargetOfTargetMixin" virtual="true" hidden="true">
@@ -715,6 +715,8 @@
 			<KeyValue key="respectChildScale" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>

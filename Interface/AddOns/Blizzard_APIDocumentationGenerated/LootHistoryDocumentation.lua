@@ -18,6 +18,7 @@ local LootHistory =
 		{
 			Name = "GetInfoForEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +42,7 @@ local LootHistory =
 		{
 			Name = "GetSortedDropsForEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +57,7 @@ local LootHistory =
 		{
 			Name = "GetSortedInfoForDrop",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

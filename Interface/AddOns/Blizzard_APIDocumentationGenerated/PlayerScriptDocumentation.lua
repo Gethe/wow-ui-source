@@ -20,6 +20,7 @@ local PlayerScript =
 		{
 			Name = "Ambiguate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,15 +31,6 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "AreAccountAchievementsHidden",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -61,6 +53,7 @@ local PlayerScript =
 		{
 			Name = "CanInspect",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +68,8 @@ local PlayerScript =
 		{
 			Name = "CanLootUnit",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +89,7 @@ local PlayerScript =
 		{
 			Name = "CancelPendingEquip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,6 +103,7 @@ local PlayerScript =
 		{
 			Name = "CheckInteractDistance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -155,6 +152,7 @@ local PlayerScript =
 		{
 			Name = "EquipPendingItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +162,7 @@ local PlayerScript =
 		{
 			Name = "FollowUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +180,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetAllowRecentAlliesSeeLocation",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowRecentAlliesSeeLocation", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAreaSpiritHealerTime",
 			Type = "Function",
 
@@ -192,6 +200,7 @@ local PlayerScript =
 		{
 			Name = "GetAttackPowerForStat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -206,6 +215,15 @@ local PlayerScript =
 		},
 		{
 			Name = "GetAutoDeclineGuildInvites",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAutoDeclineNeighborhoodInvites",
 			Type = "Function",
 
 			Returns =
@@ -250,8 +268,18 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetCollapsingStarCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCombatRating",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,6 +294,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRatingBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +309,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRatingBonusForCombatRatingValue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -367,6 +397,17 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetExpertisePercent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "offhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "rangedExpertisePercent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHaste",
 			Type = "Function",
 
@@ -443,6 +484,7 @@ local PlayerScript =
 		{
 			Name = "GetMaxCombatRatingBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -542,7 +584,7 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "lifetimeHonorableKills", Type = "number", Nilable = false },
-				{ Name = "lifetimeMaxPVPRank", Type = "number", Nilable = false },
+				{ Name = "lifetimeMaxPVPRank", Type = "PvPRanks", Nilable = false },
 			},
 		},
 		{
@@ -622,6 +664,8 @@ local PlayerScript =
 		{
 			Name = "GetPlayerInfoByGUID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -652,6 +696,7 @@ local PlayerScript =
 		{
 			Name = "GetPowerRegenForPowerType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -721,6 +766,7 @@ local PlayerScript =
 		{
 			Name = "GetRestState",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -743,6 +789,8 @@ local PlayerScript =
 		{
 			Name = "GetRuneCooldown",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -759,6 +807,8 @@ local PlayerScript =
 		{
 			Name = "GetRuneCount",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -800,6 +850,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellBonusDamage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -868,6 +919,7 @@ local PlayerScript =
 		{
 			Name = "GetVersatilityBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -956,6 +1008,7 @@ local PlayerScript =
 		{
 			Name = "InitiateTrade",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -996,6 +1049,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "newlyBoosted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsDrivableArea",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1064,6 +1126,7 @@ local PlayerScript =
 		{
 			Name = "IsItemPreferredArmorType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1078,6 +1141,7 @@ local PlayerScript =
 		{
 			Name = "IsJailersTowerLayerTimeLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1218,6 +1282,7 @@ local PlayerScript =
 		{
 			Name = "NotifyInspect",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1245,12 +1310,15 @@ local PlayerScript =
 		{
 			Name = "PlayerEffectiveAttackPower",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
 				{ Name = "mainHandAttackPower", Type = "number", Nilable = false },
 				{ Name = "offHandAttackPower", Type = "number", Nilable = false },
 				{ Name = "rangedAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1263,12 +1331,31 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PlayerIsInCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsInCombat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerIsTimerunning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PortGraveyard",
 			Type = "Function",
 		},
 		{
 			Name = "RandomRoll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1287,6 +1374,7 @@ local PlayerScript =
 		{
 			Name = "RespondInstanceLock",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1327,6 +1415,7 @@ local PlayerScript =
 		{
 			Name = "SetAllowLowLevelRaid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1334,8 +1423,29 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "SetAllowRecentAlliesSeeLocation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "allowRecentAlliesSeeLocation", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAutoDeclineGuildInvites",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "allow", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetAutoDeclineNeighborhoodInvites",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1345,6 +1455,7 @@ local PlayerScript =
 		{
 			Name = "SetCemeteryPreference",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1354,6 +1465,7 @@ local PlayerScript =
 		{
 			Name = "SetLootSpecialization",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1363,6 +1475,7 @@ local PlayerScript =
 		{
 			Name = "SetTaxiBenchmarkMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1388,17 +1501,9 @@ local PlayerScript =
 			},
 		},
 		{
-			Name = "ShowAccountAchievements",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "hide", Type = "bool", Nilable = false, Default = false },
-			},
-		},
-		{
 			Name = "ShowCloak",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1408,6 +1513,7 @@ local PlayerScript =
 		{
 			Name = "ShowHelm",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1435,6 +1541,7 @@ local PlayerScript =
 		{
 			Name = "SitStandOrDescendStart",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SplashFrameCanBeShown",
@@ -1448,6 +1555,7 @@ local PlayerScript =
 		{
 			Name = "StartAttack",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1484,10 +1592,31 @@ local PlayerScript =
 
 	Events =
 	{
+		{
+			Name = "PlayerInCombatChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			Payload =
+			{
+				{ Name = "inCombat", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "PlayerAttackPowerInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "mainHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "offHandAttackPower", Type = "number", Nilable = false },
+				{ Name = "rangedAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseAttackPower", Type = "number", Nilable = false },
+				{ Name = "baseRangedAttackPower", Type = "number", Nilable = false },
+			},
+		},
 	},
 };
 

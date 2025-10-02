@@ -64,11 +64,11 @@ function MailFrame_Show()
 	SendMailFrame_Update();
 	MailFrameTab_OnClick(nil, 1);
 	MailFrame_RefreshInbox(MailFrame);
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 end
 
 function MailFrame_Hide()
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	HideUIPanel(MailFrame);
 	CloseAllBags(self);
 	SendMailFrameLockSendMail:Hide();

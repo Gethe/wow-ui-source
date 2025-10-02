@@ -2,17 +2,35 @@
 CharacterSelectListUtil = {
 	GroupHeightExpanded = 454,
 	GroupHeightCollapsed = 34,
-	DividerHeight = 54,
-	CharacterHeight = 95,
-	CharacterGroupSlotCount = 4
+	DividerHeight = 38,
+	CharacterHeight = 95
 };
 
 -- for character reordering: key = button index, value = character ID
 local s_characterReorderTranslation = {};
 
 function CharacterSelectListUtil.CanReorder()
-	return (CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() == "") and
-	not CharacterSelectUtil.IsUndeleting() and CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		return false;
+	end
+
+	if CharacterSelectUtil.IsFilteringCharacterList() then
+		return false;
+	end
+
+	if CharacterSelectUtil.IsUndeleting() then
+		return false;
+	end
+
+	return CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
+end
+
+local function LastActiveTimeComparator(lhs, rhs)
+	if lhs.lastActiveTime ~= rhs.lastActiveTime then
+		return lhs.lastActiveTime > rhs.lastActiveTime;
+	end
+	return lhs.characterID < rhs.characterID;
 end
 
 function CharacterSelectListUtil.CreateCompleteDataProvider()
@@ -21,44 +39,67 @@ function CharacterSelectListUtil.CreateCompleteDataProvider()
 	-- The starting index for ungrouped characters.
 	local ungroupedCharacterIndex = 1;
 
-	if not CharacterSelect.undeleting then
-		local groupID = 1;
-		local collapsedState = GetWarbandGroupCollapsedState(groupID);
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		dataProvider:SetSortComparator(LastActiveTimeComparator);
+	end
 
-		-- Group info
-		local groupData = {
-			isGroup = true,
-			name = CHARACTER_SELECT_LIST_GROUP_HEADER,
-			groupID = groupID,
-			collapsed = collapsedState,
-			heightExpanded = CharacterSelectListUtil.GroupHeightExpanded,
-			heightCollapsed = CharacterSelectListUtil.GroupHeightCollapsed,
-			characterSlots = CharacterSelectListUtil.CharacterGroupSlotCount,
-			characterData = {}
-		};
+	-- if we decide to show groups while sorting by last active, update LastActiveTimeComparator to account for them
+	if not CharacterSelect.undeleting and not sortByLastActive then
+		local groupsInfo = GetCharacterListGroupsInfo();
+		if groupsInfo then
+			for _, groupInfo in ipairs(groupsInfo) do
+				local groupID = groupInfo.groupID;
+				local name = groupInfo.name;
+				local warbandSceneID = groupInfo.warbandSceneID;
+				local randomWarbandSceneID = groupInfo.randomWarbandSceneID;
+				local numCharSlots = groupInfo.numCharSlots;
+				local charStartIndex = groupInfo.charStartIndex;
+				local collapsedState = groupInfo.isCollapsed;
 
-		for index = 1, groupData.characterSlots do
-			local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
-			local isEmpty = characterID == 0;
+				-- Group info
+				local groupData = {
+					isGroup = true,
+					name = name,
+					groupID = groupID,
+					warbandSceneID = warbandSceneID,
+					collapsed = collapsedState,
+					heightExpanded = CharacterSelectListUtil.GroupHeightExpanded,
+					heightCollapsed = CharacterSelectListUtil.GroupHeightCollapsed,
+					characterSlots = numCharSlots,
+					charStartIndex = charStartIndex,
+					randomWarbandSceneID = randomWarbandSceneID,
+					characterData = {}
+				};
 
-			local characterData = {
-				characterID = characterID,
-				isEmpty = isEmpty,
-				height = CharacterSelectListUtil.CharacterHeight
-			}
+				local lastGroupSlotIndex = groupData.characterSlots + groupData.charStartIndex - 1;
+				for index = groupData.charStartIndex, lastGroupSlotIndex do
+					local characterID = CharacterSelectListUtil.GetCharIDFromIndex(index);
+					local isEmpty = characterID == 0;
 
-			table.insert(groupData.characterData, characterData);
+					local characterData = {
+						characterID = characterID,
+						isEmpty = isEmpty,
+						height = CharacterSelectListUtil.CharacterHeight
+					}
+
+					table.insert(groupData.characterData, characterData);
+				end
+				ungroupedCharacterIndex = ungroupedCharacterIndex + groupData.characterSlots;
+
+				dataProvider:Insert(groupData);
+			end
 		end
-		ungroupedCharacterIndex = ungroupedCharacterIndex + groupData.characterSlots;
 
-		dataProvider:Insert(groupData);
-
-		-- Divider info
-		local dividerData = {
-			isDivider = true,
-			height = CharacterSelectListUtil.DividerHeight
-		};
-		dataProvider:Insert(dividerData);
+		local config = CharacterSelectUtil.GetConfig();
+		if config[CharacterSelectUtil.ConfigParam.CharacterListUngroupedSection] then
+			-- Divider info
+			local dividerData = {
+				isDivider = true,
+				height = CharacterSelectListUtil.DividerHeight
+			};
+			dataProvider:Insert(dividerData);
+		end
 	end
 
 	-- Non-group character info
@@ -71,7 +112,16 @@ function CharacterSelectListUtil.CreateCompleteDataProvider()
 			isEmpty = false,
 			height = CharacterSelectListUtil.CharacterHeight
 		}
-		dataProvider:Insert(characterData);
+		if sortByLastActive then
+			local characterGuid = GetCharacterGUID(characterID);
+			if characterGuid then
+				local basicInfo = GetBasicCharacterInfo(characterGuid);
+				characterData.lastActiveTime = basicInfo.lastActiveTime;
+				dataProvider:Insert(characterData);
+			end
+		else
+			dataProvider:Insert(characterData);
+		end
 	end
 
 	return dataProvider;
@@ -81,7 +131,7 @@ function CharacterSelectListUtil.GenerateCharactersDataProvider()
 	local completeDataProvider = CharacterSelectListUtil.CreateCompleteDataProvider();
 
 	-- If we are searching, that takes priority over all other setups.
-	if CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() ~= "" then
+	if CharacterSelectUtil.IsFilteringCharacterList() then
 		return CharacterSelectCharacterFrame.SearchBox:GenerateFilteredCharacters(completeDataProvider);
 	end
 
@@ -99,6 +149,17 @@ function CharacterSelectListUtil.GetIndexFromCharID(charID)
 		end
 	end
 	return charID;
+end
+
+function CharacterSelectListUtil.GetEmptySlotIndices()
+	local indices = {};
+	for index = 1, #s_characterReorderTranslation do
+		if s_characterReorderTranslation[index] == 0 then
+			table.insert(indices, index);
+		end
+	end
+
+	return indices;
 end
 
 function CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize)
@@ -131,6 +192,12 @@ function CharacterSelectListUtil.SaveCharacterOrder()
 end
 
 function CharacterSelectListUtil.UpdateCharacterOrderFromDataProvider(dataProvider)
+	-- This function shouldn't be called while sorted, but just in case
+	local sortByLastActive = GetCVarBool("sortCharListByLastActive");
+	if sortByLastActive then
+		return;
+	end
+
 	s_characterReorderTranslation = {};
 	for _, elementData in dataProvider:EnumerateEntireRange() do
 		if elementData.isGroup then
@@ -159,7 +226,7 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 
 	-- If we are swapping a grouped character with an empty slot within the same group,
 	-- we treat that differently for animations from a normal swap.
-	local sameGroupEmptyCharacterSwap = false;
+	local groupEmptyCharacterSwap = false;
 
 	local originCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(originIndex);
 	local originElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
@@ -186,10 +253,10 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 			end
 		elseif originElementData.isGroup and not targetElementData.isGroup then
 			insertEmptyCharacter = true;
-		elseif originElementData.isGroup and targetElementData.isGroup and originElementData.groupID == targetElementData.groupID then
+		elseif originElementData.isGroup and targetElementData.isGroup then
 			local targetGuid = GetCharacterGUID(targetCharacterID);
 			if not targetGuid then
-				sameGroupEmptyCharacterSwap = true;
+				groupEmptyCharacterSwap = true;
 			end
 		end
 	end
@@ -234,7 +301,7 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 	CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
 
 	-- Ensure we update character display, as no update event will happen as we are not actually changing the selected character.
-	CharacterSelect.CharacterSelectUI:SetCharacterDisplay(originCharacterID);
+	CharacterSelectUI:SetCharacterDisplay(originCharacterID);
 
 	-- Do any visual updates needed once things have updated (scroll to a character, play animations, etc.)
 	local function AnimatePulseAnimForCharacter(frame)
@@ -272,7 +339,7 @@ function CharacterSelectListUtil.ChangeCharacterOrder(originIndex, targetIndex)
 		if groupFrame then
 			groupFrame.groupButtons[originElementDataIndex]:AnimateGlowFade();
 		end
-	elseif sameGroupEmptyCharacterSwap then
+	elseif groupEmptyCharacterSwap then
 		CharacterSelectListUtil.ForCharacterDo(originCharacterID, AnimateGlowAnimForCharacter);
 		originFrame.groupButtons[originElementDataIndex]:AnimateGlowFade();
 	else
@@ -453,15 +520,23 @@ end
 
 function CharacterSelectListUtil.GetNextCharacterIndex(direction)
 	local targetIndex = CharacterSelect.selectedIndex + direction;
+	local emptySlotIndices = CharacterSelectListUtil.GetEmptySlotIndices();
 
 	local function EvaluateElementData(elementData, iter)
 		if elementData.isGroup then
 			for _, data in iter(elementData.characterData) do
-				local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(data.characterID);
-				if characterIndex == targetIndex then
-					if data.isEmpty then
-						targetIndex = targetIndex + direction;
-					else
+				if data.isEmpty then
+					-- Iterate through all empty slot indices, as GetIndexFromCharID would not be reliable
+					-- for empty slots if there are multiple, as all empty slots share a characterID of 0.
+					for index = 1, #emptySlotIndices do
+						if emptySlotIndices[index] == targetIndex then
+							targetIndex = targetIndex + direction;
+							break;
+						end
+					end
+				else
+					local characterIndex = CharacterSelectListUtil.GetIndexFromCharID(data.characterID);
+					if characterIndex == targetIndex then
 						return true;
 					end
 				end
@@ -524,6 +599,11 @@ end
 
 -- Click the actual character button in the scroll list, in case it may be otherwise disabled.
 function CharacterSelectListUtil.ClickCharacterFrameByGUID(guid, isDoubleClick)
+	-- If UI is hidden or collections are showing, double clicks are disabled.
+	if (not CharacterSelectUI:GetVisibilityState()) or CharacterSelectUI:IsCollectionsActive() then
+		isDoubleClick = false;
+	end
+
 	-- First scroll to the character to have the frame present.
 	local characterElementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
 		return CharacterSelectListUtil.GetCharacterPositionData(guid, elementData) ~= nil;
@@ -601,4 +681,40 @@ function CharacterSelectListUtil.SetScrollListInteractiveState(state)
 			frame.Header:OnButtonStateChanged();
 		end
 	end);
+end
+
+function CharacterSelectListUtil.GetGroupWarbandSceneInfo()
+	local groupWarbandSceneInfo = {};
+
+	local groupsInfo = GetCharacterListGroupsInfo();
+	if groupsInfo then
+		for _, groupInfo in ipairs(groupsInfo) do
+			local info = {
+				groupID = groupInfo.groupID,
+				name = groupInfo.name,
+				warbandSceneID = groupInfo.warbandSceneID
+			};
+			table.insert(groupWarbandSceneInfo, info);
+		end
+	end
+
+	return groupWarbandSceneInfo;
+end
+
+function CharacterSelectListUtil.GetTotalGroupCount()
+	local groupsInfo = GetCharacterListGroupsInfo();
+	return groupsInfo and #groupsInfo or 0;
+end
+
+function CharacterSelectListUtil.GetTotalGroupSlotCount()
+	local groupSlotCount = 0;
+
+	local groupsInfo = GetCharacterListGroupsInfo();
+	if groupsInfo then
+		for _, groupInfo in ipairs(groupsInfo) do
+			groupSlotCount = groupSlotCount + groupInfo.numCharSlots;
+		end
+	end
+
+	return groupSlotCount;
 end

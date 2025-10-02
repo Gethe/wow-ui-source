@@ -280,14 +280,8 @@
 								<Anchor point="TOPLEFT" x="20" y="-21"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Description" inherits="ReputationDetailFont" justifyH="LEFT">
-							<Size x="170" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-							</Anchors>
-						</FontString>
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Reputation-DetailBackground">
-							<Size x="256" y="128"/>
+							<Size x="260" y="128"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="11" y="-11"/>
 							</Anchors>
@@ -304,6 +298,24 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+					<Frame parentKey="ScrollingDescription" inherits="ScrollingFontTemplate" frameStrata="HIGH">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Divider" relativePoint="TOPRIGHT" x="-85" y="2"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="fontName" value="ReputationDetailFont" type="string"/>
+						</KeyValues>
+					</Frame>
+					<EventFrame parentKey="ScrollingDescriptionScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+						<KeyValues>
+							<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollingDescription" relativePoint="TOPRIGHT" x="5" y="-1"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollingDescription" relativePoint="BOTTOMRIGHT" x="5" y="1"/>
+						</Anchors>
+					</EventFrame>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
 							<Anchor point="TOPRIGHT" x="-2" y="-2"/>

@@ -104,19 +104,6 @@ function CharacterFrameMixin:OnLoad()
 	PanelTemplates_SetTab(self, 1);
 end
 
-function CharacterFrameMixin:SetPortraitToSpecIcon()
-	local specialization = GetSpecialization();
-	local icon = specialization ~= nil and select(4, GetSpecializationInfo(specialization));
-	if not icon then
-		local name, fileName, classID = UnitClass("player");
-		self:SetPortraitToClassIcon(fileName);
-		return;
-	end
-
-	self:SetPortraitTexCoord(0, 1, 0, 1);
-	self:SetPortraitToAsset(icon);
-end
-
 function CharacterFrameMixin:UpdatePortrait()
 	local useSpecIcon = self.activeSubframe == "PaperDollFrame";
 	if useSpecIcon then
@@ -193,7 +180,7 @@ local function ShouldShowExaltedPlusHelpTip()
 	local numFactions = C_Reputation.GetNumFactions();
 	for i=1, numFactions do
 		local factionData = C_Reputation.GetFactionDataByIndex(i);
-		if (factionData and C_Reputation.IsFactionParagon(factionData.factionID) ) then
+		if (factionData and C_Reputation.IsFactionParagonForCurrentPlayer(factionData.factionID) ) then
 			return true;
 		end
 	end
@@ -302,6 +289,7 @@ function CharacterFrameMixin:Collapse()
 	end
 	self.InsetRight:Hide();
 	PaperDollFrame_SetLevel();
+	self:RefreshDisplay();
 end
 
 function CharacterFrameMixin:Expand()
@@ -315,6 +303,7 @@ function CharacterFrameMixin:Expand()
 	PaperDollFrame_UpdateSidebarTabs();
 	self.InsetRight:Show();
 	PaperDollFrame_SetLevel();
+	self:RefreshDisplay();
 end
 
 function CharacterFrameCorruption_OnLoad(self)
@@ -404,7 +393,7 @@ CharacterFrameTabButtonMixin = {};
 
 function CharacterFrameTabButtonMixin:OnClick(button)
 	PanelTemplates_Tab_OnClick(self, CharacterFrame);
-	
+
 	local name = self:GetName();
 	if ( name == "CharacterFrameTab1" ) then
 		ToggleCharacter("PaperDollFrame");

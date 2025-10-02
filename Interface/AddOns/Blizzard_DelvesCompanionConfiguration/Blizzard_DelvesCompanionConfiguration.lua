@@ -2,6 +2,7 @@
 -- NOTE: This creature is used to open the companion config panel, but may be changed to a gameobject in the near future
 local DELVES_SUPPLIES_CREATURE_ID = 207283;
 local DELVES_SUPPLIES_MAX_DISTANCE = 10;
+local DELVES_NEW_SEASON_CVAR = "newDelvesSeason";
 
 local SET_SEEN_CURIOS_DELAY = 0.5; -- 500ms
 
@@ -12,10 +13,11 @@ local COMPANION_CONFIG_ON_SHOW_EVENTS = {
     "TRAIT_CONFIG_UPDATED",
 };
 
-local borderColorForRarity = {
-    [Enum.CurioRarity.Uncommon] = UNCOMMON_GREEN_COLOR,
-    [Enum.CurioRarity.Rare] = RARE_BLUE_COLOR,
-    [Enum.CurioRarity.Epic] = EPIC_PURPLE_COLOR,
+local curioRarityToItemQuality = {
+	[Enum.CurioRarity.Common] = Enum.ItemQuality.Common,
+    [Enum.CurioRarity.Uncommon] = Enum.ItemQuality.Uncommon,
+    [Enum.CurioRarity.Rare] = Enum.ItemQuality.Rare,
+    [Enum.CurioRarity.Epic] = Enum.ItemQuality.Epic
 };
 
 local function GetCompanionCurrentLevel()
@@ -38,8 +40,7 @@ local function ShowConfigTooltip(frame, data, offsetX, offsetY)
     GameTooltip:SetOwner(frame, "ANCHOR_RIGHT", offsetX, offsetY);
     if data.spellID then
         local isPet = false;
-        local showSubtext = true;
-        GameTooltip:SetSpellByID(data.spellID, isPet, showSubtext);
+        GameTooltip:SetSpellByID(data.spellID, isPet);
     elseif data.name and data.description then
         GameTooltip_SetTitle(GameTooltip, data.name);
         GameTooltip_AddNormalLine(GameTooltip, data.description);
@@ -64,6 +65,18 @@ local function UnseenCuriosAcknowledged()
     return DelvesCompanionConfigurationFrame.unseenCuriosAcknowledged;
 end
 
+local function ConfigChangeAllowed()
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local delveInProgress = C_PartyInfo.IsDelveInProgress();
+    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+
+    return not UnitAffectingCombat("player") and not playerMustInteractWithSupplies;
+end
+
+local function GetPlayerCompanionID()
+	return DelvesCompanionConfigurationFrame.playerCompanionID or nil;
+end
+
 --[[ Config Frame ]]
 DelvesCompanionConfigurationFrameMixin = {};
 
@@ -78,13 +91,33 @@ function DelvesCompanionConfigurationFrameMixin:OnLoad()
     self:RegisterEvent("SHOW_DELVES_COMPANION_CONFIGURATION_UI");
     self:RegisterEvent("DELVES_ACCOUNT_DATA_ELEMENT_CHANGED");
     self.unseenCuriosAcknowledged = false;
+	self.playerCompanionID = nil;
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnShow()
-    AcknowledgeUnseenCurios();
     self:Refresh();
+    self:TryShowSeasonHelptip();
     FrameUtil.RegisterFrameForEvents(self, COMPANION_CONFIG_ON_SHOW_EVENTS);
     PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function DelvesCompanionConfigurationFrameMixin:TryShowSeasonHelptip()
+    local lastSeasonNumber = GetCVarNumberOrDefault(DELVES_NEW_SEASON_CVAR);
+	local currentSeasonNumber = C_DelvesUI.GetCurrentDelvesSeasonNumber(GetPlayerCompanionID());
+
+    if currentSeasonNumber > lastSeasonNumber then
+        local helpTipInfo = {
+            text = DELVES_NEW_SEASON_HELPTIP,
+            buttonStyle = HelpTip.ButtonStyle.Close,
+            targetPoint = HelpTip.Point.RightEdgeCenter,
+            system = "DelvesCompanionConfiguration",
+            onHideCallback = function()
+                SetCVar(DELVES_NEW_SEASON_CVAR, currentSeasonNumber);
+            end,
+            offsetX = 10,
+        };
+		HelpTip:Show(self, helpTipInfo, self.CompanionPortraitFrame);
+    end
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
@@ -97,9 +130,6 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
             UnacknowledgeUnseenCurios();
             self.CompanionCombatTrinketSlot:Refresh();
             self.CompanionUtilityTrinketSlot:Refresh();
-            AcknowledgeUnseenCurios();
-            self.CompanionCombatTrinketSlot:SetSeenCurios();
-            self.CompanionUtilityTrinketSlot:SetSeenCurios();
         end
     else
         if event == "SHOW_DELVES_COMPANION_CONFIGURATION_UI" then
@@ -109,8 +139,7 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
 end
 
 function DelvesCompanionConfigurationFrameMixin:Refresh()
-	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-    local companionFactionID = C_DelvesUI.GetFactionForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+    local companionFactionID = C_DelvesUI.GetFactionForCompanion(GetPlayerCompanionID());
 
     local companionRankInfo = C_GossipInfo.GetFriendshipReputationRanks(companionFactionID);
     DelvesCompanionConfigurationFrame.companionLevel = companionRankInfo and companionRankInfo.currentLevel or 0;
@@ -156,8 +185,7 @@ end
 CompanionPortraitFrameMixin = {};
 
 function CompanionPortraitFrameMixin:Refresh()
-    --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-    SetPortraitTextureFromCreatureDisplayID(self.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
+    SetPortraitTextureFromCreatureDisplayID(self.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(GetPlayerCompanionID()));
 end
 
 function CompanionPortraitFrameMixin:OnEnter()
@@ -178,13 +206,16 @@ function CompanionExperienceRingFrameMixin:Refresh()
     if experienceInfo and experienceInfo.nextLevelAt and experienceInfo.nextLevelAt ~= 0 then
         CooldownFrame_SetDisplayAsPercentage(self, experienceInfo.currentExperience / experienceInfo.nextLevelAt);
 	end
+    self:SetSwipeTexture("Interface\\Delves\\delves-companion-progress-fill");
 end
 
 --[[ Companion Level ]]
 CompanionLevelFrameMixin = {};
 
 function CompanionLevelFrameMixin:Refresh()
-    self.CompanionLevel:SetText(GetCompanionCurrentLevel());
+    local companionLevel = GetCompanionCurrentLevel();
+    self.CompanionLevel:SetText(companionLevel);
+    self.CompanionLevel:SetTextColor(WHITE_FONT_COLOR:GetRGB());
 end
 
 --[[ Companion Info ]]
@@ -194,6 +225,20 @@ function CompanionInfoFrameMixin:Refresh()
     local companionInfo = GetCompanionInfo();
     self.CompanionName:SetText(companionInfo.name);
     self.CompanionDescription:SetText(companionInfo.description);
+
+    if self.CompanionName:IsTruncated() then
+		self:SetScript("OnEnter", function()
+            GameTooltip:SetOwner(self.CompanionName, "ANCHOR_RIGHT", -100);
+	        GameTooltip_AddNormalLine(GameTooltip, companionInfo.name);
+	        GameTooltip:Show();
+        end);
+        self:SetScript("OnLeave", function()
+            GameTooltip:Hide();
+        end);
+    else
+        self:SetScript("OnEnter", nil);
+        self:SetScript("OnLeave", nil);
+    end
 end
 
 --[[ Role and Trinket Slots , Options List ]]
@@ -214,7 +259,7 @@ end
 
 function CompanionConfigSlotTemplateMixin:OnLoad()
     local view = CreateScrollBoxListLinearView(1, 0, 0, 0, 0, 1);
-    view:SetElementFactory(function(factory, node) 
+	view:SetElementFactory(function(factory, node)
         local function Initializer(button)
             button.data = {
                 configID = self.configID,
@@ -255,11 +300,10 @@ end
 
 function CompanionConfigSlotTemplateMixin:SetSeenCurios()
     C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
-        --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-	    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+	    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
         self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
-        
+
         if not self.configID or not self.type then
             return;
         end
@@ -277,11 +321,10 @@ function CompanionConfigSlotTemplateMixin:SetSeenCurios()
 end
 
 function CompanionConfigSlotTemplateMixin:OnShow()
-    --! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
     self:RegisterEvent("GLOBAL_MOUSE_DOWN");
-    self.configID = self.configID or C_Traits.GetConfigIDByTreeID(traitTreeID);
+    self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
     self.NewLabel:Hide();
     self.NewGlowHighlight:Hide();
     self:Refresh();
@@ -293,16 +336,20 @@ function CompanionConfigSlotTemplateMixin:OnHide()
 end
 
 function CompanionConfigSlotTemplateMixin:HasActiveEntry()
-    return self.selectionNodeInfo.activeEntry and self.selectionNodeInfo.activeEntry.entryID;
+    if not self.selectionNodeInfo then
+        return false;
+    else
+        return self.selectionNodeInfo.activeEntry and self.selectionNodeInfo.activeEntry.entryID;
+    end
 end
 
 function CompanionConfigSlotTemplateMixin:HasSelectionAndInfo()
-    return self:HasActiveEntry() and self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
+    return self:HasActiveEntry() and self.selectionNodeOptions and self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
 end
 
 function CompanionConfigSlotTemplateMixin:OnEnter()
     self:CheckToggleAllowed();
-    if self:HasSelectionAndInfo() then
+    if not self.toggleNotAllowed and self:HasSelectionAndInfo() then
         local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
 
         ShowConfigTooltip(self, {
@@ -333,14 +380,19 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
         return;
     end
 
-    -- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
-    --       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
     if IsModifiedClick("CHATLINK") and self:HasSelectionAndInfo() then
         local selection = self.selectionNodeOptions[self.selectionNodeInfo.activeEntry.entryID];
         if selection.spellID then
-            local curioSpellLink = C_Spell.GetSpellLink(selection.spellID);
-            ChatEdit_InsertLink(curioSpellLink);
-            return;
+            local entryInfo = C_Traits.GetEntryInfo(self.configID, self.selectionNodeInfo.activeEntry.entryID);
+            if entryInfo then
+                local conditionInfo = C_Traits.GetConditionInfo(self.configID, entryInfo.conditionIDs[1]);
+                if conditionInfo then
+                    local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                    local curioLink = C_DelvesUI.GetCurioLink(selection.spellID, rarity);
+                    ChatFrameUtil.InsertLink(curioLink);
+                    return;
+                end
+            end
         end
     end
 
@@ -350,7 +402,7 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
     if not self.toggleNotAllowed then
         if self.OptionsList:IsShown() then
             self.OptionsList:Hide();
-            
+
             if self.NewLabel:IsShown() then
                 self.NewLabel:Hide();
                 self.NewGlowHighlight:Hide();
@@ -358,14 +410,25 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
         else
             EventRegistry:TriggerEvent("CompanionConfiguration.ListShown");
             self.OptionsList:Show();
+            AcknowledgeUnseenCurios();
+            self:SetSeenCurios();
         end
     end
 end
 
 function CompanionConfigSlotTemplateMixin:CheckToggleAllowed()
-    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+    local playerMustInteractWithSupplies = false;
     local delveInProgress = C_PartyInfo.IsDelveInProgress();
-    local playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+    local _, _, distance = ClosestUnitPosition(DELVES_SUPPLIES_CREATURE_ID);
+
+    -- If we're able to determine the closest delves supplies unit distance, check to see if we're in range and the delve is in progress
+    -- otherwise, assume we're out of range if the delve is in progress.
+    if distance then
+        playerMustInteractWithSupplies = delveInProgress and distance > DELVES_SUPPLIES_MAX_DISTANCE;
+    else
+        playerMustInteractWithSupplies = delveInProgress;
+    end
+
     self.tooltipError = nil;
     self.toggleNotAllowed = false;
 
@@ -378,12 +441,9 @@ function CompanionConfigSlotTemplateMixin:CheckToggleAllowed()
     end
 end
 
-function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
-    if not keepOptionsListOpen then
-        self.OptionsList:Hide();
-    end
-
+function CompanionConfigSlotTemplateMixin:Refresh()
     self:SetEnabled(true);
+    self.selectionNodeID = self:GetSelectionNodeID();
     self.selectionNodeInfo = C_Traits.GetNodeInfo(self.configID, self.selectionNodeID);
     self.Label:SetText(self:GetSlotLabelText());
 
@@ -393,7 +453,6 @@ function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
 
     if self.selectionNodeInfo then
         if not self.selectionNodeInfo.isVisible then
-
             local lockedText = DELVES_CURIO_LOCKED;
             for _, conditionID in ipairs(self.selectionNodeInfo.conditionIDs) do
                 local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
@@ -460,48 +519,59 @@ function CompanionConfigSlotTemplateMixin:Refresh(keepOptionsListOpen)
 end
 
 function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
-    local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
-    local dataProvider = CreateDataProvider();
-    local buttonCount = 0;
+    C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
+        local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
+        local dataProvider = CreateDataProvider();
+        local buttonCount = 0;
 
-    for id, entryInfo in pairs(self.selectionNodeOptions) do
-        local isUnseen = false;
-        for _, unseenID in ipairs(self.unseenCurios) do
-            if id == unseenID then
-                isUnseen = true;
-                break;
-            end
-        end
-
-        local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
-        local selectedEntryRarity = Enum.CurioRarity.Common;
-
-        if additionalEntryInfo then
-            for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
-                local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
-                if conditionInfo and conditionInfo.traitCondAccountElementID then
-                    selectedEntryRarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+        for id, entryInfo in pairs(self.selectionNodeOptions) do
+            local isUnseen = false;
+            for _, unseenID in ipairs(self.unseenCurios) do
+                if id == unseenID then
+                    isUnseen = true;
+                    break;
                 end
             end
+
+            local additionalEntryInfo = C_Traits.GetEntryInfo(self.configID, id);
+            local selectedEntryRarity = Enum.CurioRarity.Common;
+
+            if additionalEntryInfo then
+                for _, conditionID in ipairs(additionalEntryInfo.conditionIDs) do
+                    local conditionInfo = C_Traits.GetConditionInfo(self.configID, conditionID, true);
+                    if conditionInfo and conditionInfo.traitCondAccountElementID then
+                        selectedEntryRarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                    end
+                end
+            end
+
+			local quality = curioRarityToItemQuality[selectedEntryRarity];
+			local colorData = ColorManager.GetColorDataForItemQuality(quality);
+
+            dataProvider:Insert({
+                entryID = id,
+                name = entryInfo.name,
+                atlas = entryInfo.atlas,
+                textureID = entryInfo.textureID,
+                selected = activeEntryID == id,
+                spellID = entryInfo.spellID,
+                description = entryInfo.description,
+                isUnseen = isUnseen,
+                borderColor = colorData and colorData.color,
+            });
+            buttonCount = buttonCount + 1;
         end
 
-        dataProvider:Insert({
-            entryID = id,
-            name = entryInfo.name,
-            atlas = entryInfo.atlas,
-            textureID = entryInfo.textureID,
-            selected = activeEntryID == id,
-            spellID = entryInfo.spellID,
-            description = entryInfo.description,
-            isUnseen = isUnseen,
-            borderColor = borderColorForRarity[selectedEntryRarity],
-        });
-        buttonCount = buttonCount + 1;
-    end
-    self.OptionsList.ScrollBox:SetDataProvider(dataProvider);
+        local function SlotDataNameSort(a, b)
+            return strcmputf8i(a.name, b.name) < 0;
+        end
+        dataProvider:SetSortComparator(SlotDataNameSort);
 
-    local buttonHeight = C_XMLUtil.GetTemplateInfo("CompanionConfigListButtonTemplate").height;
-    self.OptionsList:SetHeight(buttonCount * buttonHeight);
+        self.OptionsList.ScrollBox:SetDataProvider(dataProvider);
+
+        local buttonHeight = C_XMLUtil.GetTemplateInfo("CompanionConfigListButtonTemplate").height;
+        self.OptionsList:SetHeight(buttonCount * buttonHeight);
+    end);
 end
 
 function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
@@ -516,14 +586,13 @@ function CompanionConfigSlotTemplateMixin:GetSlotLabelText()
     end
 end
 
---! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 function CompanionConfigSlotTemplateMixin:GetSelectionNodeID()
     if Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Role then
-        return C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+        return C_DelvesUI.GetRoleNodeForCompanion(GetPlayerCompanionID());
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Utility then
-        return C_DelvesUI.GetCurioNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CurioType.Utility);
+        return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Utility, GetPlayerCompanionID());
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
-        return C_DelvesUI.GetCurioNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CurioType.Combat);
+		return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Combat, GetPlayerCompanionID());
     else
         return nil;
     end
@@ -535,7 +604,7 @@ function CompanionConfigSlotTemplateMixin:BuildSelectionNodeOptions()
     if self.selectionNodeInfo and #self.selectionNodeInfo.entryIDs > 0 then
         for _, entryID in ipairs(self.selectionNodeInfo.entryIDs) do
             local entryInfo = C_Traits.GetEntryInfo(self.configID, entryID);
-            
+
             if self.selectionNodeInfo.type == Enum.TraitNodeType.SubTreeSelection then
                 local subTreeInfo = C_Traits.GetSubTreeInfo(self.configID, entryInfo.subTreeID);
 
@@ -578,13 +647,25 @@ end
 --[[ Config List Button ]]
 CompanionConfigListButtonMixin = {};
 
--- TODO: Not supported currently, but being able to show spell subtext in chatlinks would be nice for showing curio ranks...
---       ...or being able to pass in a rarity color or something. Since we're stuck with the spellID and not the itemID
 function CompanionConfigListButtonMixin:OnClick()
-    if IsModifiedClick("CHATLINK") and self.data and self.data.spellID then
-        local curioSpellLink = C_Spell.GetSpellLink(self.data.spellID);
-        ChatEdit_InsertLink(curioSpellLink);
+    local optionsList = self:GetParent():GetParent():GetParent();
+
+    if not ConfigChangeAllowed() then
+        optionsList:Hide();
         return;
+    end
+
+    if IsModifiedClick("CHATLINK") and self.data and self.data.spellID and self.data.entryID and self.data.configID then
+        local entryInfo = C_Traits.GetEntryInfo(self.data.configID, self.data.entryID);
+        if entryInfo then
+            local conditionInfo = C_Traits.GetConditionInfo(self.data.configID, entryInfo.conditionIDs[1]);
+            if conditionInfo then
+                local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
+                local curioLink = C_DelvesUI.GetCurioLink(self.data.spellID, rarity);
+                ChatFrameUtil.InsertLink(curioLink);
+                return;
+            end
+        end
     end
 
     if TrySelectTrait(self.data.configID, self.data.selectionNodeID, self.data.entryID) then
@@ -592,7 +673,6 @@ function CompanionConfigListButtonMixin:OnClick()
         EventRegistry:TriggerEvent("CompanionConfigListButton.Commit");
     end
 
-    local optionsList = self:GetParent():GetParent():GetParent();
     optionsList:Hide();
 end
 
@@ -628,17 +708,17 @@ function CompanionConfigListButtonMixin:OnShow()
     if self.data and self.data.isUnseen then
         self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
         self.Name:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
-        
+
         local halfStringWidth = self.Name:GetStringWidth() / 2;
         local doubleStringWidth = self.Name:GetStringWidth() * 2;
-        
+
         self.NewGlow:SetWidth(doubleStringWidth);
         self.NewGlow:SetPoint("CENTER", self.Name, "LEFT", math.ceil(halfStringWidth + 1), -1);
 
         self.NewGlow:Show();
     else
         self.Name:SetShadowColor(0, 0, 0, 0);
-                
+
         if self.selected then
             self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
         else
@@ -654,6 +734,7 @@ CompanionConfigShowAbilitiesButtonMixin = {};
 
 function CompanionConfigShowAbilitiesButtonMixin:OnClick()
     if not DelvesCompanionAbilityListFrame:IsShown() then
+		DelvesCompanionAbilityListFrame.playerCompanionID = GetPlayerCompanionID();
         ShowUIPanel(DelvesCompanionAbilityListFrame);
     else
         HideUIPanel(DelvesCompanionAbilityListFrame);

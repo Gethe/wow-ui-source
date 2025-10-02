@@ -1,15 +1,14 @@
 ## Title: Blizzard_Settings_Shared
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
-## OptionalDep: Blizzard_StaticPopup, Blizzard_GlueDialogs, Blizzard_UIParent
+## Dependencies: Blizzard_SharedXML, Blizzard_HelpPlate
+## OptionalDep: Blizzard_StaticPopup_Glue, Blizzard_StaticPopup_Game, Blizzard_UIParent
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
 NewDefinitionsFramework.lua
 Mainline\NewDefinitions.lua
 Blizzard_SettingsRegistrar.lua
 Blizzard_Settings.lua
-Mainline\Blizzard_Settings.lua
 Blizzard_Category.lua
 Blizzard_CategoryList.xml
 Blizzard_SettingsList.xml

@@ -48,6 +48,7 @@ local SimpleBrowserAPI =
 		{
 			Name = "NavigateHome",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,16 +72,6 @@ local SimpleBrowserAPI =
 			},
 		},
 		{
-			Name = "NavigateTo",
-			Type = "Function",
-			Documentation = { "Not functional in public builds" },
-
-			Arguments =
-			{
-				{ Name = "url", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "OpenExternalLink",
 			Type = "Function",
 
@@ -91,6 +82,7 @@ local SimpleBrowserAPI =
 		{
 			Name = "OpenTicket",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,6 +100,7 @@ local SimpleBrowserAPI =
 		{
 			Name = "SetZoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

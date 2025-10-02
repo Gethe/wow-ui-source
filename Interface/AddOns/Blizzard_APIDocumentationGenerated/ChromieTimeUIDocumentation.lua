@@ -13,6 +13,7 @@ local ChromieTimeUI =
 		{
 			Name = "GetChromieTimeExpansionOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +37,7 @@ local ChromieTimeUI =
 		{
 			Name = "SelectChromieTimeOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

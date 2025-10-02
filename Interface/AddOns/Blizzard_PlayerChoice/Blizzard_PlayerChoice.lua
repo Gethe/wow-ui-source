@@ -11,6 +11,7 @@ end
 
 -- IMPORTANT: useOldNineSlice preserves old functionality and should not be used in the future
 local customTextureKitInfo = {
+	-- Normal texture kit options (using PlayerChoiceNormalOptionTemplate, inherited from defaultTextureKitInfo)
 	neutral = {
 		useOldNineSlice = true,
 	},
@@ -37,39 +38,6 @@ local customTextureKitInfo = {
 	mechagon = {
 		closeButtonX = 3,
 		closeButtonY = 3,
-		useOldNineSlice = true,
-	},
-
-	jailerstower = {
-		optionFrameTemplate = "PlayerChoiceTorghastOptionTemplate",
-		optionsTopPadding = 30,
-		optionsBottomPadding = 55,
-		showOptionsOnly = true,
-		frameYOffset = 95,
-		useOldNineSlice = true,
-	},
-
-	cypherchoice = {
-		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
-		optionsTopPadding = 120,
-		optionsBottomPadding = 55,
-		showOptionsOnly = true,
-		frameYOffset = 95,
-		toggleXOffset = 0,
-		toggleYOffset = -20,
-		timerXOffset = 0,
-		timerYOffset = -5,
-		useOldNineSlice = true,
-	},
-
-	Oribos = {
-		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
-		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
-		optionsTopPadding = 124,
-		optionsBottomPadding = 36,
-		optionsSidePadding = 59,
-		optionsSpacing = 6,
-		uniqueCorners = true,
 		useOldNineSlice = true,
 	},
 
@@ -102,6 +70,31 @@ local customTextureKitInfo = {
 		useOldNineSlice = true,
 	},
 
+	thewarwithin = {
+		closeButtonX = -9,
+		closeButtonY = -9,
+	},
+
+	midnight = {
+		closeButtonX = -11,
+		closeButtonY = -11,
+	},
+
+	-- Texture Kits below here use custom templates 
+
+	-- Oribos is a special texture kit type, used for the covenant choice UI in Shadowlands
+	Oribos = {
+		optionFrameTemplate = "PlayerChoiceCovenantChoiceOptionTemplate",
+		exitButtonSoundKit = SOUNDKIT.UI_COVENANT_CHOICE_CLOSE,
+		optionsTopPadding = 124,
+		optionsBottomPadding = 36,
+		optionsSidePadding = 59,
+		optionsSpacing = 6,
+		uniqueCorners = true,
+		useOldNineSlice = true,
+	},
+
+	-- The remaining textures kits are variants of the Torghast-style power choice (genericplayerchoice is the evergreen version)
 	genericplayerchoice = {
 		optionFrameTemplate = "PlayerChoiceGenericPowerChoiceOptionTemplate",
 		optionsTopPadding = 120,
@@ -113,9 +106,26 @@ local customTextureKitInfo = {
 		useOldNineSlice = true,
 	},
 
-	thewarwithin = {
-		closeButtonX = -9,
-		closeButtonY = -9,
+	jailerstower = {
+		optionFrameTemplate = "PlayerChoiceTorghastOptionTemplate",
+		optionsTopPadding = 30,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		useOldNineSlice = true,
+	},
+
+	cypherchoice = {
+		optionFrameTemplate = "PlayerChoiceCypherOptionTemplate",
+		optionsTopPadding = 120,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		toggleXOffset = 0,
+		toggleYOffset = -20,
+		timerXOffset = 0,
+		timerYOffset = -5,
+		useOldNineSlice = true,
 	},
 };
 
@@ -171,11 +181,9 @@ function PlayerChoiceFrameMixin:TryShow()
 	self.textureKitInfo = self:GetTextureKitInfo();
 
 	self:SetupFrame();
-	self:SetupOptions();
-
 	self.Title.Text:SetText(choiceInfo.questionText);
 
-	self:Layout();
+	self:SetupOptions();
 
 	ShowUIPanel(self);
 end
@@ -259,6 +267,10 @@ function PlayerChoiceFrameMixin:OnSelectionMade()
 end
 
 function PlayerChoiceFrameMixin:OnCloseUIFromExitButton()
+	if self.choiceInfo.requiresSelection then
+		return;
+	end
+
 	if self.textureKitInfo.exitButtonSoundKit then
 		PlaySound(self.textureKitInfo.exitButtonSoundKit);
 	end
@@ -284,7 +296,7 @@ local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
 
 function PlayerChoiceFrameMixin:SetupFrame()
 	local showExtraFrames = not self.textureKitInfo.showOptionsOnly;
-	self.CloseButton:SetShown(showExtraFrames);
+	self.CloseButton:SetShown(showExtraFrames and not self.choiceInfo.requiresSelection);
 	self.Header:SetShown(showExtraFrames);
 	self.Title:SetShown(showExtraFrames);
 	self.Background:SetShown(showExtraFrames);
@@ -323,6 +335,7 @@ function PlayerChoiceFrameMixin:SetupFrame()
 		else
 			self:SetupTextureKits(self.Header, borderFrameTextureKitRegions);
 			self.Header:SetPoint("BOTTOM", self, "TOP", 0, self.textureKitInfo.headerYoffset);
+			self.Header:Layout();
 			self.Header:Show();
 		end
 
@@ -364,14 +377,15 @@ function PlayerChoiceFrameMixin:SetupOptions()
 	self.optionFrameTemplate = self.textureKitInfo.optionFrameTemplate;
 	self.optionPools:GetOrCreatePool("FRAME", self, self.optionFrameTemplate, HideAndAnchorTopLeft);
 
-	local soloOption = (#self.choiceInfo.options == 1);
+	local showAsList = self.choiceInfo.showChoicesAsList;
+	local soloOption = showAsList or (#self.choiceInfo.options == 1);
 
 	-- First create and call Setup on all the options.
-	-- This needs to be done in a separate loop from the Finalize call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then Finalize adjusts the heights
+	-- This needs to be done in a separate loop from the AlignSections call (in AlignOptionHeights), because Setup collects the max heights of all the aligned sections, and then AlignSections adjusts the heights
 	for optionIndex, optionInfo in ipairs(self.choiceInfo.options) do
 		local optionFrame = self.optionPools:Acquire(self.optionFrameTemplate);
 		optionFrame.layoutIndex = optionIndex;
-		optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption);
+		optionFrame:Setup(optionInfo, self.uiTextureKit, soloOption, showAsList);
 	end
 
 	self:AlignOptionHeights(soloOption);
@@ -397,6 +411,9 @@ function PlayerChoiceFrameMixin:AlignOptionHeights(skipAlignSections)
 	end
 
 	self.optionsAligned = true;
+
+	-- Now that all the options have been had their heights aligned, call Layout on ourselves to adjust our own height accordingly
+	self:Layout();
 end
 
 function PlayerChoiceFrameMixin:AreOptionsAligned()

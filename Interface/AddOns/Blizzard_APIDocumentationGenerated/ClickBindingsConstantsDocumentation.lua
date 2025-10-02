@@ -35,7 +35,7 @@ local ClickBindingsConstants =
 			Fields =
 			{
 				{ Name = "type", Type = "ClickBindingType", Nilable = false },
-				{ Name = "actionID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "number", Nilable = false, Documentation = { "Base spellID for spell, macro index for macro, ClickBindingInteraction for interaction, spellID for PetAction" } },
 				{ Name = "button", Type = "cstring", Nilable = false },
 				{ Name = "modifiers", Type = "number", Nilable = false },
 			},

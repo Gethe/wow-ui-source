@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_TimerunningUtil
-## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar
+## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar, Blizzard_RecentAllies
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Mainline\FriendsFrame.lua

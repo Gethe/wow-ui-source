@@ -9,6 +9,7 @@ local DateAndTime =
 		{
 			Name = "AdjustTimeByDays",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local DateAndTime =
 		{
 			Name = "AdjustTimeByMinutes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +41,7 @@ local DateAndTime =
 		{
 			Name = "AdjustTimeByMonths",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local DateAndTime =
 		{
 			Name = "CompareCalendarTime",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,12 +67,13 @@ local DateAndTime =
 
 			Returns =
 			{
-				{ Name = "comparison", Type = "number", Nilable = false },
+				{ Name = "comparison", Type = "number", Nilable = false, Documentation = { "-1 if rhsCalendarTime < lhsCalendarTime, 0 if rhsCalendarTime == lhsCalendarTime, 1 if rhsCalendarTime > lhsCalendarTime" } },
 			},
 		},
 		{
 			Name = "GetCalendarTimeFromEpoch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

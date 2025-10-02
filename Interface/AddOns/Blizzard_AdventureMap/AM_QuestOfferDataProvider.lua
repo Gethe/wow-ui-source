@@ -53,8 +53,9 @@ function AdventureMap_QuestOfferDataProviderMixin:RefreshAllData(fromOnShow)
 	self.playRevealAnims = false;
 end
 
-local function DetermineAtlas(isTrivial, frequency, isLegendary)
-	if QuestUtil.IsFrequencyRecurring(frequency) then
+local function DetermineAtlas(questID)
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	if classification == Enum.QuestClassification.Recurring then
 		return "AdventureMapIcon-DailyQuest";
 	end
 
@@ -69,7 +70,7 @@ function AdventureMap_QuestOfferDataProviderMixin:AddQuest(questID, isTrivial, f
 	pin.title = title;
 	pin.description = description;
 
-	local iconAtlas = DetermineAtlas(isTrivial, frequency, isLegendary);
+	local iconAtlas = DetermineAtlas(questID);
 	pin.Icon:SetAtlas(iconAtlas, true);
 	pin.IconHighlight:SetAtlas(iconAtlas, true);
 
@@ -101,7 +102,12 @@ function AdventureMap_QuestOfferDataProviderMixin:OnQuestOfferPinClicked(pin)
 	end
 
 	AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, pin.questID, OnClosedCallback, 0);
-	AdventureMapQuestChoiceDialog:SetPortraitAtlas("FXAM-QuestBang", nil, nil, 0, 7);
+	local textureKit = C_AdventureMap.GetAdventureMapTextureKit();
+	if textureKit == "midnight" then
+		AdventureMapQuestChoiceDialog:SetPortraitAtlas("ui-prey-scoutingmap", nil, nil, 0, 23);
+	else
+		AdventureMapQuestChoiceDialog:SetPortraitAtlas("FXAM-QuestBang", nil, nil, 0, 7);
+	end
 
 	if not self.offerAreaTrigger then
 		self.offerAreaTrigger = self:GetMap():AcquireAreaTrigger("AdventureMap_QuestOffer");
@@ -130,7 +136,6 @@ end
 AdventureMap_QuestOfferPinMixin = CreateFromMixins(MapCanvasPinMixin);
 
 function AdventureMap_QuestOfferPinMixin:OnLoad()
-	self:SetAlphaStyle(AM_PIN_ALPHA_STYLE_VISIBLE_WHEN_ZOOMED_IN);
 	self:SetScalingLimits(1.25, 0.825, 1.275);
 end
 

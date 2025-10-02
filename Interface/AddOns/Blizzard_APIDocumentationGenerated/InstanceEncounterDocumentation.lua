@@ -6,10 +6,56 @@ local InstanceEncounter =
 
 	Functions =
 	{
+		{
+			Name = "IsEncounterInProgress",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInProgress", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEncounterLimitingResurrections",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isLimitingResurrections", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEncounterSuppressingRelease",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSuppressingRelease", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowTimelineForEncounter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "EncounterStateChanged",
+			Type = "Event",
+			LiteralName = "ENCOUNTER_STATE_CHANGED",
+			Documentation = { "Signaled when the in-progress state of an encounter changes." },
+			Payload =
+			{
+				{ Name = "isInProgress", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "InstanceEncounterAddTimer",
 			Type = "Event",

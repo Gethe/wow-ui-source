@@ -117,10 +117,6 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 end
 
-local function ShouldShowTargetFrame(targetFrame)
-	return UnitExists(targetFrame.unit) or ShowBossFrameWhenUninteractable(targetFrame.unit);
-end
-
 function TargetFrameMixin:Update()
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
@@ -184,7 +180,7 @@ function TargetFrameMixin:OnEvent(event, ...)
 			bossTargetFrame:UpdateRaidTargetIcon(bossTargetFrame);
 		end
 		UIParent_ManageFramePositions();
-		BossTargetFrameContainer:Show();
+		BossTargetFrameContainer:UpdateShownState();
 	elseif (event == "UNIT_TARGETABLE_CHANGED" and arg1 == self.unit) then
 		self:Update();
 		self:UpdateRaidTargetIcon(self);
@@ -954,10 +950,6 @@ function TargetFrame_OpenMenu(self)
 end
 
 -- Raid target icon function
-RAID_TARGET_ICON_DIMENSION = 64;
-RAID_TARGET_TEXTURE_DIMENSION = 256;
-RAID_TARGET_TEXTURE_COLUMNS = 4;
-RAID_TARGET_TEXTURE_ROWS = 4;
 function TargetFrameMixin:UpdateRaidTargetIcon()
 	local index = GetRaidTargetIndex(self.unit);
 	if (index) then
@@ -968,15 +960,10 @@ function TargetFrameMixin:UpdateRaidTargetIcon()
 	end
 end
 
+RAID_TARGET_TEXTURE_COLUMNS = 4;
+RAID_TARGET_TEXTURE_ROWS = 4;
 function SetRaidTargetIconTexture(texture, raidTargetIconIndex)
-	raidTargetIconIndex = raidTargetIconIndex - 1;
-	local left, right, top, bottom;
-	local coordIncrement = RAID_TARGET_ICON_DIMENSION / RAID_TARGET_TEXTURE_DIMENSION;
-	left = mod(raidTargetIconIndex , RAID_TARGET_TEXTURE_COLUMNS) * coordIncrement;
-	right = left + coordIncrement;
-	top = floor(raidTargetIconIndex / RAID_TARGET_TEXTURE_ROWS) * coordIncrement;
-	bottom = top + coordIncrement;
-	texture:SetTexCoord(left, right, top, bottom);
+	texture:SetSpriteSheetCell(raidTargetIconIndex - 1, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
 end
 
 function SetRaidTargetIcon(unit, index)
@@ -1009,7 +996,7 @@ function TargetFrameMixin:CreateSpellbar(event, boss)
 	end
 
 	-- check to see if the castbar should be shown
-	if (GetCVar("showTargetCastbar") == "0") then
+	if (not GameRulesUtil.ShouldShowTargetCastBar()) then
 		spellbar.showCastbar = false;
 	end
 end
@@ -1079,11 +1066,7 @@ function TargetSpellBarMixin:OnEvent(event, ...)
 
 	--	Check for target specific events
 	if ((event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "showTargetCastbar"))) then
-		if (GetCVar("showTargetCastbar") == "0") then
-			self.showCastbar = false;
-		else
-			self.showCastbar = true;
-		end
+		self.showCastbar = GameRulesUtil.ShouldShowTargetCastBar();
 
 		if (not self.showCastbar) then
 			self:Hide();
@@ -1179,7 +1162,7 @@ function TargetOfTargetMixin:Update()
 		UnitFrame_Update(self);
 		self:CheckDead();
 		self:HealthCheck();
-		RefreshDebuffs(self, self.unit, nil, nil, true);
+		AuraUtil.RefreshAuras(self, self.unit, nil, nil, true, false);
 	else
 		if (self:IsShown()) then
 			self:Hide();
@@ -1296,12 +1279,16 @@ function BossTargetFrameMixin:OnShow()
 	BossTargetFrameContainer:UpdateSize();
 end
 
-function BossTargetFrameMixin:OnHide()
+function BossTargetFrameMixin:BossTarget_OnHide()
 	BossTargetFrameContainer:UpdateSize();
 end
 
+function BossTargetFrameMixin:ShouldShow()
+	return BossTargetFrameContainer.isInEditMode or ShouldShowTargetFrame(self);
+end
+
 function BossTargetFrameMixin:UpdateShownState()
-	self:SetShown(BossTargetFrameContainer.isInEditMode or ShouldShowTargetFrame(self));
+	self:SetShown(self:ShouldShow());
 	self.spellbar:SetShown(BossTargetFrameContainer.isInEditMode or self.spellbar.casting);
 end
 
@@ -1323,6 +1310,15 @@ function BossTargetFrame_OpenMenu(self)
 end
 
 BossTargetFrameContainerMixin = { };
+
+function BossTargetFrameContainerMixin:OnLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function BossTargetFrameContainerMixin:OnEvent(event, ...)
+	self:UpdateShownState();
+end
 
 function BossTargetFrameContainerMixin:UpdateSize()
 	local lastShowingBossFrame;

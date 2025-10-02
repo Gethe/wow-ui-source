@@ -29,13 +29,7 @@ function WorldQuestDataProviderMixin:EvaluateSpellEffectPin()
 		return;
 	end
 
-	if self:IsUsingSpellEffect() then
-		if not self.spellEffectPin then
-			-- a single permanent pin because we don't know the lifetime of the visual
-			self.spellEffectPin = self:GetMap():AcquirePin("WorldQuestSpellEffectPinTemplate");
-			self.spellEffectPin.dataProvider = self;
-		end
-	else
+	if not self:IsUsingSpellEffect() then
 		if self.spellEffectPin then
 			self:GetMap():RemoveAllPinsByTemplate("WorldQuestSpellEffectPinTemplate");
 			self.spellEffectPin = nil;
@@ -44,7 +38,16 @@ function WorldQuestDataProviderMixin:EvaluateSpellEffectPin()
 end
 
 function WorldQuestDataProviderMixin:HandleClick(pin)
-	return self.spellEffectPin and self.spellEffectPin:TryCastSpell(pin.questID);
+	if self:IsUsingSpellEffect() then
+		if not self.spellEffectPin then
+			-- a single permanent pin because we don't know the lifetime of the visual
+			-- but defer creation until first used for perf reasons
+			self.spellEffectPin = self:GetMap():AcquirePin("WorldQuestSpellEffectPinTemplate");
+			self.spellEffectPin.dataProvider = self;
+		end
+
+		return self.spellEffectPin:TryCastSpell(pin.questID);
+	end
 end
 
 function WorldQuestDataProviderMixin:SetCheckBounties(checkBounties)
@@ -100,15 +103,12 @@ function WorldQuestDataProviderMixin:OnAdded(mapCanvas)
 	self.suppressedQuests = {};
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
 
-	self:GetMap():SetPinTemplateType(self:GetPinTemplate(), "Button");
-	self:GetMap():SetPinTemplateType("WorldQuestSpellEffectPinTemplate", "CinematicModel");
-
 	self:RegisterEvent("SUPER_TRACKING_CHANGED");
 
 	self:GetMap():RegisterCallback("SetFocusedQuestID", self.OnSetFocusedQuestID, self);
 	self:GetMap():RegisterCallback("ClearFocusedQuestID", self.OnClearFocusedQuestID, self);
 	self:GetMap():RegisterCallback("SetBounty", self.SetBounty, self);
-	self:GetMap():RegisterCallback("PingQuestID", self.OnPingQuestID, self);
+	EventRegistry:RegisterCallback("MapCanvas.PingQuestID", self.OnPingQuestID, self);
 	self:GetMap():RegisterCallback("HighlightMapPins.WorldQuests", self.ForceHighlightWorldQuestPins, self);
 
 	self:EvaluateSpellEffectPin();
@@ -119,7 +119,7 @@ function WorldQuestDataProviderMixin:OnRemoved(mapCanvas)
 	self:GetMap():UnregisterCallback("SetFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("ClearFocusedQuestID", self);
 	self:GetMap():UnregisterCallback("SetBounty", self);
-	self:GetMap():UnregisterCallback("PingQuestID", self);
+	EventRegistry:UnregisterCallback("MapCanvas.PingQuestID", self);
 	self:GetMap():UnregisterCallback("HighlightMapPins.WorldQuests", self);
 
 	MapCanvasDataProviderMixin.OnRemoved(self, mapCanvas);
@@ -159,20 +159,7 @@ function WorldQuestDataProviderMixin:GetBountyInfo()
 end
 
 function WorldQuestDataProviderMixin:PingQuestID(questID)
-	if self.pingPin then
-		self.pingPin:Stop();
-	end
-
-	if not self.pingPin then
-		self.pingPin = self:GetMap():AcquirePin("MapPinPingTemplate");
-		self.pingPin.dataProvider = self;
-		self.pingPin:UseFrameLevelType("PIN_FRAME_LEVEL_QUEST_PING");
-	end
-
-	self.pingPin:SetID(questID);
-	local mapID = self:GetMap():GetMapID();
-	local x, y = C_TaskQuest.GetQuestLocation(questID, mapID);
-	self.pingPin:PlayAt(x, y);
+	self:PingPin("questID", questID, "PIN_FRAME_LEVEL_QUEST_PING");
 end
 
 function WorldQuestDataProviderMixin:OnEvent(event, ...)
@@ -205,18 +192,22 @@ function WorldQuestDataProviderMixin:DoesWorldQuestInfoPassFilters(info)
 	return WorldMap_DoesWorldQuestInfoPassFilters(info, ignoreTypeRequirements);
 end
 
-function WorldQuestDataProviderMixin:ShouldOverrideShowQuest(mapID, questId)
+function WorldQuestDataProviderMixin:ShouldMapShowQuest(mapID, questInfo)
+	-- the check for valid position happens in QuestPOIBlobWrapper::UpdateMapPositionFromBlob
 	local mapInfo = C_Map.GetMapInfo(mapID);
-	if questId == C_SuperTrack.GetSuperTrackedQuestID() and mapInfo.mapType == Enum.UIMapType.Continent then
+	if questInfo.childDepth and mapInfo.mapType == Enum.UIMapType.Zone then -- only show poi on other maps if they are child maps
+		return true;
+	elseif questInfo.questID == C_SuperTrack.GetSuperTrackedQuestID() and mapInfo.mapType == Enum.UIMapType.Continent then
 		return true;
 	end
+
 	return false;
 end
 
 function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 	local pinsToRemove = {};
-	for questId in pairs(self.activePins) do
-		pinsToRemove[questId] = true;
+	for questID in pairs(self.activePins) do
+		pinsToRemove[questID] = true;
 	end
 
 	local taskInfo;
@@ -224,28 +215,24 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 
 	local mapID = mapCanvas:GetMapID();
 	if (mapID) then
-		taskInfo = GetQuestsForPlayerByMapIDCached(mapID);
+		taskInfo = GetTasksOnMapCached(mapID);
 		self.matchWorldMapFilters = MapUtil.MapShouldShowWorldQuestFilters(mapID);
 	end
 
 	if taskInfo and GetCVarBool("questPOIWQ") then
 		for i, info in ipairs(taskInfo) do
-			if self:ShouldOverrideShowQuest(mapID, info.questId) or self:ShouldShowQuest(info) and HaveQuestData(info.questId) then
-				if QuestUtils_IsQuestWorldQuest(info.questId) then
+			if self:ShouldMapShowQuest(mapID, info) or self:ShouldShowQuest(info) and HaveQuestData(info.questID) then
+				if QuestUtils_IsQuestWorldQuest(info.questID) or info.isMapIndicatorQuest then
 					if self:DoesWorldQuestInfoPassFilters(info) then
-						pinsToRemove[info.questId] = nil;
-						local pin = self.activePins[info.questId];
+						pinsToRemove[info.questID] = nil;
+						local pin = self.activePins[info.questID];
 						if pin then
 							pin:RefreshVisuals();
 							pin.numObjectives = info.numObjectives;	-- Fix for quests with sequenced objectives
 							pin:SetPosition(info.x, info.y); -- Fix for WOW8-48605 - WQ starting location may move based on player location and viewed map
 							pin:AddIconWidgets();
-
-							if self.pingPin and self.pingPin:GetID() == info.questId then
-								self.pingPin:SetPosition(info.x, info.y);
-							end
 						else
-							self.activePins[info.questId] = self:AddWorldQuest(info);
+							self.activePins[info.questID] = self:AddWorldQuest(info);
 						end
 					end
 				end
@@ -253,14 +240,12 @@ function WorldQuestDataProviderMixin:RefreshAllData(fromOnShow)
 		end
 	end
 
-	for questId in pairs(pinsToRemove) do
-		if self.pingPin and self.pingPin:GetID() == questId then
-			self.pingPin:Stop();
-		end
-
-		mapCanvas:RemovePin(self.activePins[questId]);
-		self.activePins[questId] = nil;
+	for questID in pairs(pinsToRemove) do
+		mapCanvas:RemovePin(self.activePins[questID]);
+		self.activePins[questID] = nil;
 	end
+
+	self:UpdatePing();
 
 	mapCanvas:TriggerEvent("WorldQuestsUpdate", mapCanvas:GetNumActivePinsByTemplate(self:GetPinTemplate()));
 end
@@ -273,12 +258,12 @@ function WorldQuestDataProviderMixin:OnSuperTrackingChanged()
 end
 
 function WorldQuestDataProviderMixin:ShouldShowQuest(info)
-	if self:IsQuestSuppressed(info.questId) then
+	if self:IsQuestSuppressed(info.questID) then
 		return false;
 	end
 
 	if self.focusedQuestID then
-		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldSupertrackHighlightInfo(info.questId);
+		return C_QuestLog.IsQuestCalling(self.focusedQuestID) and self:ShouldSupertrackHighlightInfo(info.questID);
 	end
 
 	return true;
@@ -322,8 +307,9 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	local pinTemplate = self:GetPinTemplate();
 	local pin = self:GetMap():AcquirePin(pinTemplate);
 	pin:UseFrameLevelType("PIN_FRAME_LEVEL_WORLD_QUEST", self:GetMap():GetNumActivePinsByTemplate(pinTemplate));
+	pin:AddTag(MapPinTags.WorldQuest);
 
-	local questID = info.questId;
+	local questID = info.questID;
 	local tagInfo = C_QuestLog.GetQuestTagInfo(questID);
 
 	pin.info = info;
@@ -334,14 +320,18 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin.tagInfo = tagInfo;
 	pin.worldQuestType = tagInfo.worldQuestType;
 
+	if info.isMapIndicatorQuest then
+		pin.shouldShowObjectivesAsStatusBar = true;
+	end
+
 	pin:InitializeVisuals();
 	pin:SetPosition(info.x, info.y);
 
-	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(pin.questID);
+	pin.iconWidgetSet = C_TaskQuest.GetQuestUIWidgetSetByType(questID, Enum.MapIconUIWidgetSetType.BehindIcon);
 	pin:AddIconWidgets();
 
-	if not HaveQuestRewardData(info.questId) then
-		C_TaskQuest.RequestPreloadRewardData(info.questId);
+	if not HaveQuestRewardData(questID) then
+		C_TaskQuest.RequestPreloadRewardData(questID);
 	end
 
 	return pin;
@@ -441,7 +431,7 @@ end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)
 	if not self.dataProvider:HandleClick(self) then
-		if not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
+		if not ChatFrameUtil.TryInsertQuestLinkForQuestID(self.questID) then
 			local watchType = C_QuestLog.GetQuestWatchType(self.questID);
 			local isSuperTracked = C_SuperTrack.GetSuperTrackedQuestID() == self.questID;
 
@@ -481,6 +471,11 @@ end
 
 function WorldQuestPinMixin:GetDebugReportInfo()
 	return { debugType = "WorldQuestPin", questID = self.questID, };
+end
+
+function WorldQuestPinMixin:GetDisplayName()
+	local title = C_TaskQuest.GetQuestInfoByQuestID(self.questID);
+	return title or "";
 end
 
 --[[ World Quest Spell Effect Pin ]]--

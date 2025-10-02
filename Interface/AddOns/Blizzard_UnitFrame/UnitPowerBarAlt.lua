@@ -42,13 +42,21 @@ function UnitPowerBarAlt_Initialize(self, unit, scale, updateAllEvent)
 	self.pillFrames = {};
 end
 
+function UnitPowerBarAlt_SetTooltipAnchor(self)
+	if self.barInfo.attachTooltipToBar and self.barTooltipAnchor then
+		GameTooltip:SetOwner(self, self.barTooltipAnchor);
+	else
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	end
+end
+
 function UnitPowerBarAlt_OnEnter(self)
 	local statusFrame = self.statusFrame;
 	if ( statusFrame.enabled ) then
 		statusFrame:Show();
 		UnitPowerBarAltStatus_UpdateText(statusFrame);
 	end
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
+	UnitPowerBarAlt_SetTooltipAnchor(self);
 	local name, tooltip, cost = GetUnitPowerBarStrings(self.unit);
 	GameTooltip_SetTitle(GameTooltip, name);
 	GameTooltip_AddNormalLine(GameTooltip, tooltip);
@@ -517,9 +525,17 @@ function PlayerPowerBarAltMixin:OnLoad()
 	UnitPowerBarAlt_Initialize(self, "player", 1);
 end
 
+function PlayerPowerBarAltMixin:Setup()
+	self.barInfo = GetUnitPowerBarInfo(self.unit);
+	self:SetupPlayerPowerBarPosition();
+	self:EvaluateTutorials();
+end
+
 function PlayerPowerBarAltMixin:SetupPlayerPowerBarPosition()
-	local barInfo = GetUnitPowerBarInfo(PlayerPowerBarAlt.unit);
-	if(barInfo and barInfo.anchorTop) then
+	self.barTooltipAnchor = nil;
+
+	if self.barInfo and self.barInfo.anchorTop then
+		self.barTooltipAnchor = "ANCHOR_BOTTOMRIGHT";
 		self:SetParent(UIParent);
 		self:ClearAllPoints();
 		self:SetPoint("TOP", 0, -30);
@@ -529,17 +545,42 @@ function PlayerPowerBarAltMixin:SetupPlayerPowerBarPosition()
 	self:SetParent(EncounterBar);
 	EncounterBar:Layout();
 	if EncounterBar:IsInDefaultPosition() then
+		self.barTooltipAnchor = "ANCHOR_RIGHT";
 		UIParent_ManageFramePositions();
 	end
 end
 
 function PlayerPowerBarAltMixin:OnShow()
-	self:SetupPlayerPowerBarPosition();
+	self:Setup();
 end
 
 function PlayerPowerBarAltMixin:OnHide()
-	self:SetupPlayerPowerBarPosition();
+	self:Setup();
 end
+
+local TURBO_METER_BAR_ID = 720;
+local BOOST_BUTTON_ACTION = 205;
+
+function PlayerPowerBarAltMixin:EvaluateTutorials()
+	local showedTutorial = false;
+	if self.barInfo and self.barInfo.ID == TURBO_METER_BAR_ID and IsUsableAction(BOOST_BUTTON_ACTION) then
+		local barHelpTipInfo = {
+			text = DRIVE_TURBO_METER_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRIVE_TURBO_METER,
+			checkCVars = true,
+			autoEdgeFlipping = true;
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+		};
+
+		showedTutorial = HelpTip:Show(self, barHelpTipInfo);
+	end
+
+	if not showedTutorial then
+		HelpTip:HideAll(self);
+	end
+end 
 
 ---------------------------------
 ------- Counter Bar Code --------

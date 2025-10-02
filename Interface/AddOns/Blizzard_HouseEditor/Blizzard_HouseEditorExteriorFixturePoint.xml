@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier forbidden="true">
+		<Button name="HousingExteriorFixturePointTemplate" mixin="HousingExteriorFixturePointMixin" motionScriptsWhileDisabled="true" virtual="true">
+			<Size x="50" y="50"/>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon" atlas="Customization_Fixture_Node_Default" texelSnappingBias="0.0" snapToPixelGrid="false" setAllPoints="true" alpha="1" />
+					<Texture parentKey="HoveredIcon" atlas="Customization_Fixture_Node_Hover" texelSnappingBias="0.0" snapToPixelGrid="false" setAllPoints="true" hidden="true"/>
+					<Texture parentKey="SelectedIcon" atlas="Customization_Fixture_Node_Selected" texelSnappingBias="0.0" snapToPixelGrid="false" setAllPoints="true" hidden="true"/>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+	</ScopedModifier>
+</Ui>

@@ -9,6 +9,7 @@ local PerksActivities =
 		{
 			Name = "AddTrackedPerksActivity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +50,7 @@ local PerksActivities =
 		{
 			Name = "GetPerksActivityChatLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +65,7 @@ local PerksActivities =
 		{
 			Name = "GetPerksActivityInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +98,7 @@ local PerksActivities =
 		{
 			Name = "RemoveTrackedPerksActivity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -177,15 +181,6 @@ local PerksActivities =
 			},
 		},
 		{
-			Name = "PerksActivityCriteria",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "criteriaID", Type = "number", Nilable = false },
-				{ Name = "requiredValue", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "PerksActivityInfo",
 			Type = "Structure",
 			Fields =
@@ -204,18 +199,9 @@ local PerksActivities =
 				{ Name = "eventName", Type = "cstring", Nilable = true },
 				{ Name = "eventStartTime", Type = "time_t", Nilable = true },
 				{ Name = "eventEndTime", Type = "time_t", Nilable = true },
-				{ Name = "requirementsList", Type = "table", InnerType = "PerksActivityRequirement", Nilable = false },
-				{ Name = "criteriaList", Type = "table", InnerType = "PerksActivityCriteria", Nilable = false },
+				{ Name = "requirementsList", Type = "table", InnerType = "CriteriaRequirement", Nilable = false },
+				{ Name = "criteriaList", Type = "table", InnerType = "CriteriaRequiredValue", Nilable = false },
 				{ Name = "tagNames", Type = "table", InnerType = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "PerksActivityRequirement",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "completed", Type = "bool", Nilable = false },
-				{ Name = "requirementText", Type = "string", Nilable = false },
 			},
 		},
 		{

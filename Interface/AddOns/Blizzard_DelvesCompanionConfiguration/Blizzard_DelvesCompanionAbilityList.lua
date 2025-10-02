@@ -8,11 +8,15 @@ local COMPANION_ABILITY_LIST_ON_SHOW_EVENTS = {
 	"QUEST_LOG_UPDATE",
 };
 
+
+local function GetPlayerCompanionID()
+	return DelvesCompanionAbilityListFrame.playerCompanionID or nil;
+end
+
 -- Update the cvar list of locked abilities, so we know when to show the "new" ability glow
 local function UpdateLastLockedAbilities()
 	C_Timer.After(UPDATE_LAST_LOCKED_ABILITIES_DELAY, function()
-		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
 		local lastLockedAbilities = "";
 		local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
@@ -48,8 +52,6 @@ function DelvesCompanionAbilityListFrameMixin:OnLoad()
 	self.DelvesCompanionAbilityListPagingControls:Init();
 	self:ClearButtons();
 
-	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), C_DelvesUI.GetCreatureDisplayInfoForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
 	self:SetTitle(DELVES_COMPANION_ABILITY_LIST_TITLE);
 	UpdateLastLockedAbilities();
 end
@@ -59,8 +61,7 @@ function DelvesCompanionAbilityListFrameMixin:ClearButtons()
 end
 
 function DelvesCompanionAbilityListFrameMixin:OnShow()
-	--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID);
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
 	FrameUtil.RegisterFrameForEvents(self, COMPANION_ABILITY_LIST_ON_SHOW_EVENTS);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -68,23 +69,27 @@ function DelvesCompanionAbilityListFrameMixin:OnShow()
 	self:SetTalentTreeID(traitTreeID);
 	TalentFrameBaseMixin.OnShow(self);
 	self.DelvesCompanionAbilityListPagingControls:SetCurrentPage(1);
+	SetPortraitTextureFromCreatureDisplayID(self:GetPortrait(), C_DelvesUI.GetCreatureDisplayInfoForCompanion(GetPlayerCompanionID()));
 	self:Refresh();
 end
 
 function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoadTree)
 	if not ignoreLoadTree then
+		local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
+		self:SetConfigID(C_Traits.GetConfigIDByTreeID(traitTreeID));
+		self:SetTalentTreeID(traitTreeID);
 		self:ClearButtons();
 		self:LoadTalentTree();
 	else
-		-- If we're not (re)loading the talent tree, hide all the buttons, since we're going to 
+		-- If we're not (re)loading the talent tree, hide all the buttons, since we're going to
 		-- update the display soon
-		for _, button in ipairs(self.buttons) do 
+		for _, button in ipairs(self.buttons) do
 			button:Hide();
 		end
 	end
 
 	if self.buttons then
-		table.sort(self.buttons, function(a, b) 
+		table.sort(self.buttons, function(a, b)
 			return a.index < b.index;
 		end);
 
@@ -107,7 +112,7 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 		self.ButtonsParent:ClearAllPoints();
 		self.ButtonsParent:SetPoint("TOPLEFT", self.CompanionAbilityListBackground, "TOPLEFT", 0, -25);
 		self.ButtonsParent:SetPoint("BOTTOMRIGHT", self.CompanionAbilityListBackground, "BOTTOMRIGHT");
-	
+
 		self:UpdatePaginatedButtonDisplay();
 	end
 
@@ -117,12 +122,11 @@ function DelvesCompanionAbilityListFrameMixin:Refresh(ignoreDropdown, ignoreLoad
 	if not ignoreDropdown then
 		self.DelvesCompanionRoleDropdown:Refresh();
 	end
-	
+
 	-- If the ability list is opened and a player has not selected Brann's role yet, refresh with the first option selected instead
 	-- so that we show *something*
 	if #self.buttons == 0 and #self.DelvesCompanionRoleDropdown.options > 0 then
-		--! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
-		self:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), self.DelvesCompanionRoleDropdown.options[1].entryID);
+		self:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(GetPlayerCompanionID()), self.DelvesCompanionRoleDropdown.options[1].entryID);
 		self:Refresh();
 		self:RollbackConfig(self, true);
 	end
@@ -142,7 +146,7 @@ function DelvesCompanionAbilityListFrameMixin:UpdatePaginatedButtonDisplay()
 
 		if button and numShownButtons < MAX_DISPLAYED_BUTTONS then
 			button:ClearAllPoints();
-			
+
 			-- NOTE: Only supporting 2 columns of buttons, if that ever incrases this logic would need to change
 			-- to anchor buttons 3..MAX to the prevButton - not using a constant here so that this note is seen.
 			if (col % 2) ~= 0 then
@@ -155,7 +159,7 @@ function DelvesCompanionAbilityListFrameMixin:UpdatePaginatedButtonDisplay()
 					row = row + 1;
 				end
 			end
-			
+
 			button:Show();
 			numShownButtons = numShownButtons + 1;
 			prevButton = button;
@@ -194,6 +198,20 @@ function DelvesCompanionAbilityListFrameMixin:OnUpdate(...)
 end
 
 --[[ Ability List Frame: SharedTalentFrame overrides and utilities ]]
+function DelvesCompanionAbilityListFrameMixin:SetConfigID(configID)
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	self.configID = configID;
+end
+
+function DelvesCompanionAbilityListFrameMixin:GetConfigID()
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	return self.configID;
+end
+
 function DelvesCompanionAbilityListFrameMixin:GetTemplateForTalentType(...)
 	return "DelvesCompanionAbilityTemplate";
 end
@@ -208,7 +226,7 @@ function DelvesCompanionAbilityListFrameMixin:InstantiateTalentButton(nodeID, no
 	-- TODO / NOTE -> Companion paragon trait uses the tiered type, and it is not yet fully implemented. Some changes may be required here when it is ready
 	if nodeInfo.type == Enum.TraitNodeType.Single or nodeInfo.type == Enum.TraitNodeType.Tiered then
 		local button = TalentFrameBaseMixin.InstantiateTalentButton(self, nodeID, nodeInfo);
-		
+
 		if not button then
 			return;
 		end
@@ -315,35 +333,33 @@ DelvesCompanionRoleDropdownMixin = {};
 
 function DelvesCompanionRoleDropdownMixin:OnLoad()
 	WowStyle1DropdownMixin.OnLoad(self);
-
 	self:SetWidth(150);
-	
 	self.selectedEntryID = nil;
-	end
+end
 
 local function GetRoleOptionText(option)
 	if option.iconAtlas then
-			local iconSize = 16;
+		local iconSize = 12;
 		local fmt = CreateAtlasMarkup(option.iconAtlas, iconSize, iconSize);
 		return DELVES_ABILITY_LIST_DROPDOWN_OPTION_LABEL:format(fmt, option.name);
-			end
+	end
 	return option.name;
-				end
+end
 
---! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 local function GetRoleIconAtlas(entryInfo)
-	if entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Dps) then
+	if entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Dps, GetPlayerCompanionID()) then
 		return "ui-lfg-roleicon-dps-micro-raid";
-	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID, Enum.CompanionRoleType.Heal) then
+	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Heal, GetPlayerCompanionID()) then
 		return "ui-lfg-roleicon-healer-micro-raid";
+	elseif entryInfo.subTreeID == C_DelvesUI.GetRoleSubtreeForCompanion(Enum.CompanionRoleType.Tank, GetPlayerCompanionID()) then
+		return "ui-lfg-roleicon-tank-micro-raid";
 	end
 	return nil;
 end
 
---! TODO BRANN_COMPANION_INFO_ID to be replaced with other data source in the future, keeping it explicit for now
 function DelvesCompanionRoleDropdownMixin:Refresh()
 	local abilityListFrame = self:GetParent();
-	local roleNode = abilityListFrame:GetAndCacheNodeInfo(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID));
+	local roleNode = abilityListFrame:GetAndCacheNodeInfo(C_DelvesUI.GetRoleNodeForCompanion(GetPlayerCompanionID()));
 
 	self.options = {};
 	for idx, entryID in ipairs(roleNode.entryIDs) do
@@ -362,16 +378,21 @@ function DelvesCompanionRoleDropdownMixin:Refresh()
 		});
 	end
 
+	local function OptionNameSort(opt1, opt2)
+		return strcmputf8i(opt1.name, opt2.name) < 0;
+	end
+	table.sort(self.options, OptionNameSort);
+
 	local function IsSelected(option)
 		return self.selectedEntryID == option.entryID;
 	end
 
 	local function SetSelected(option)
-		if self.selectedEntryID ~= option.entryID then 
+		if self.selectedEntryID ~= option.entryID then
 			self.selectedEntryID = option.entryID;
 
 			if not option.isActive then
-				abilityListFrame:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(Constants.DelvesConsts.BRANN_COMPANION_INFO_ID), option.entryID);
+				abilityListFrame:SetSelection(C_DelvesUI.GetRoleNodeForCompanion(GetPlayerCompanionID()), option.entryID);
 			end
 
 			abilityListFrame:Refresh(true);

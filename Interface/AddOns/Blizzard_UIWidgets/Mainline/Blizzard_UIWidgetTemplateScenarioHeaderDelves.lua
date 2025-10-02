@@ -55,13 +55,11 @@ function UIWidgetTemplateScenarioHeaderDelvesMixin:Setup(widgetInfo, widgetConta
 	local spellRingTextureKit = spellRingTextureKitString:format(widgetInfo.frameTextureKit);
 
 	for index, spellInfo in ipairs(widgetInfo.spells) do
-		if spellInfo.shownState ~= Enum.WidgetShownState.Hidden then
-			local spellFrame = self.spellPool:Acquire();
-			spellFrame:Setup(widgetContainer, spellInfo, 0, spellRingTextureKit);
-			self:UpdateSpellFrameEffects(widgetInfo, spellInfo, spellFrame);
-			spellFrame.layoutIndex = index;
-			spellFrame:Show();
-		end
+		local spellFrame = self.spellPool:Acquire();
+		spellFrame:Setup(widgetContainer, spellInfo, 0, spellRingTextureKit);
+		self:UpdateSpellFrameEffects(widgetInfo, spellInfo, spellFrame);
+		spellFrame.layoutIndex = index;
+		spellFrame:Show();
 	end
 
 	self.SpellContainer:Layout();

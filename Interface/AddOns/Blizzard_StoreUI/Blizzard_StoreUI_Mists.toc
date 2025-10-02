@@ -1,0 +1,16 @@
+## Title: Blizzard Store UI
+## AllowLoad: Both
+## AllowLoadGameType: mists
+## LoadFirst: 1
+## RequiredDep: Blizzard_SharedXML
+## OptionalDep: Blizzard_GlueParent, Blizzard_SimpleCheckout, Blizzard_FrameXMLBase
+## UseSecureEnvironment: 1
+
+Classic\StoreConstants.lua
+Classic\Blizzard_StoreUIPatchwerk.xml
+Classic\Blizzard_StoreUIInbound.lua
+Classic\Blizzard_StoreUIOutbound.lua
+TBC\Blizzard_StoreUISecure.lua
+TBC\Blizzard_StoreUI.xml
+Classic\Blizzard_StoreUIInsecure.lua
+Classic\Localization.lua

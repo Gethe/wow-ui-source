@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="UnoccupiedPlotPinTemplate" inherits="SuperTrackableMapPinTemplate" hidden="true" enableMouse="true" mixin="UnoccupiedPlotPinMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture atlas="housing-map-plot-unoccupied"/>
+		<HighlightTexture atlas="housing-map-plot-unoccupied" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="OccupiedPlotPinTemplate" inherits="SuperTrackableMapPinTemplate" hidden="true" enableMouse="true" mixin="OccupiedPlotPinMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture atlas="housing-map-plot-occupied"/>
+		<HighlightTexture atlas="housing-map-plot-occupied" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="FriendsPlotPinTemplate" inherits="SuperTrackableMapPinTemplate" hidden="true" enableMouse="true" mixin="FriendsPlotPinMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture atlas="housing-map-plot-occupied-friend"/>
+		<HighlightTexture atlas="housing-map-plot-occupied-friend" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="PlayersPlotPinTemplate" inherits="SuperTrackableMapPinTemplate" hidden="true" enableMouse="true" mixin="PlayersPlotPinMixin" virtual="true">
+		<Size x="16" y="16"/>
+		<NormalTexture atlas="housing-map-plot-player-house"/>
+		<HighlightTexture atlas="housing-map-plot-player-house" alphaMode="ADD"/>
+	</Button>
+</Ui>

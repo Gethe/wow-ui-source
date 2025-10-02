@@ -10,7 +10,7 @@ local HIDE_MOST = {
 	TargetFrame			= "hidden",
 	ObjectiveTrackerFrame = "hidden",
 	RuneFrame			= "hidden",
-	MainMenuBar			= "hidden",
+	MainActionBar		= "hidden",
 	StanceBar 			= "hidden",
 	StatusTrackingBarManager = "hidden",
 	DurabilityFrame 	= "hidden",
@@ -32,15 +32,22 @@ local HIDE_MOST = {
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
 	ExtraAbilityContainer	= "hidden",
-	OrderHallCommandBar	= "hidden",
 	PlayerSpellsMicroButtonAlert	="hidden",
 	PVPMatchScoreboard = "hidden",
 	PVPMatchResults = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 	PetActionBar = "hidden",
-}
+	EssentialCooldownViewer = "hidden",
+	UtilityCooldownViewer = "hidden",
+	BuffIconCooldownViewer = "hidden",
+	BuffBarCooldownViewer = "hidden",
+	EncounterTimeline = "hidden",
+	CriticalEncounterWarnings = "hidden",
+	MediumEncounterWarnings = "hidden",
+	NormalEncounterWarnings = "hidden",
+};
 
-local SPECTATING_DISPLAY = { 
+local SPECTATING_DISPLAY = {
 	PlayerFrame			= "hidden",
 	ObjectiveTrackerFrame = "hidden",
 	RuneFrame			= "hidden",
@@ -53,14 +60,21 @@ local SPECTATING_DISPLAY = {
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
 	ExtraAbilityContainer	= "hidden",
-	OrderHallCommandBar	= "hidden",
 	TalentMicroButtonAlert	="hidden",
 	PVPMatchScoreboard = "hidden",
 	PVPMatchResults = "hidden",
 	StatusTrackingBarManager = "hidden",
 	ContainerFrameCombinedBags = "hidden",
-	TargetFrameToT = "hidden"
-}
+	TargetFrameToT = "hidden",
+	EssentialCooldownViewer = "hidden",
+	UtilityCooldownViewer = "hidden",
+	BuffIconCooldownViewer = "hidden",
+	BuffBarCooldownViewer = "hidden",
+	EncounterTimeline = "hidden",
+	CriticalEncounterWarnings = "hidden",
+	MediumEncounterWarnings = "hidden",
+	NormalEncounterWarnings = "hidden",
+};
 
 --------Data on what locks exist and what frames are ruled by them--------
 FRAMELOCK_STATES = {
@@ -84,7 +98,7 @@ FRAMELOCK_STATES = {
 FRAMELOCK_STATE_PRIORITIES = {
 	"COMMENTATOR_SPECTATING_MODE",
 	"PETBATTLES",
-	"SPECTATING"
+	"SPECTATING",
 };
 
 ----------Curent states--------------------------
@@ -204,4 +218,13 @@ end
 
 function UpdateFrameLock(frame)
 	updateFrameByState(frame);
+end
+
+function RegisterNewFrameLock(tag, customFrameLock, includeHideMost)
+	if includeHideMost then
+		Mixin(customFrameLock, HIDE_MOST);
+	end
+	
+	FRAMELOCK_STATES[tag] = customFrameLock;
+	FRAMELOCK_STATE_PRIORITIES[#FRAMELOCK_STATE_PRIORITIES + 1] = tag;
 end

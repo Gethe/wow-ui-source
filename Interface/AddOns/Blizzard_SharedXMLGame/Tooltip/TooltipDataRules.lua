@@ -167,7 +167,7 @@ function TooltipDataRules.FinalizeItemTooltip(tooltip, tooltipData)
 	
 	if tooltip.supportsItemComparison then
 		local tooltipInfo = tooltip:GetProcessingTooltipInfo();
-		if tooltipInfo.compareItem or TooltipUtil.ShouldDoItemComparison() then
+		if tooltipInfo.compareItem or TooltipUtil.ShouldDoItemComparison(tooltip) then
 			GameTooltip_ShowCompareItem(tooltip);
 		else
 			TooltipComparisonManager:Clear(tooltip);
@@ -200,3 +200,13 @@ function TooltipDataRules.Separator(tooltip, lineData)
 	tooltip:AddTexture(asset, textureSettings);
 end
 TooltipDataProcessor.AddLinePostCall(LineTypeEnums.Separator, TooltipDataRules.Separator);
+
+function TooltipDataRules.WorldLootObjectPickUpIndicator(tooltip, tooltipData)
+	local inventoryType = tooltipData.worldLootObjectInventoryType;
+	if not inventoryType then
+		return;
+	end
+
+	EventRegistry:TriggerEvent("WorldLootObjectTooltip.Shown", inventoryType, tooltip, tooltipData.id, tooltipData.worldLootObjectGUID); 
+end
+TooltipDataProcessor.AddTooltipPostCall(TooltipTypeEnums.Spell, TooltipDataRules.WorldLootObjectPickUpIndicator);

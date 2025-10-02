@@ -9,6 +9,7 @@ local LoreText =
 		{
 			Name = "RequestLoreTextForCampaignID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

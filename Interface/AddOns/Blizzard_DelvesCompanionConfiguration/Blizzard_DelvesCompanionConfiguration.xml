@@ -270,7 +270,7 @@
                 <Layers>
                     <Layer level="ARTWORK">
                         <FontString parentKey="CompanionLevel" justifyH="CENTER" inherits="SystemFont_Large2">
-                            <Size x="30" y="25"/>
+                            <Size x="40" y="25"/>
                             <Anchors>
                                 <Anchor point="CENTER" x="-1" y="-1"/> 
                             </Anchors>

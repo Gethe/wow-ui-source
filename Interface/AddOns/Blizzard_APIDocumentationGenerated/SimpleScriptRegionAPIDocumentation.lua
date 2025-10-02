@@ -19,6 +19,41 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "CanPropagateMouseClicks",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CanPropagateMouseMotion",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "canPropagate", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearScripts",
+			Type = "Function",
+			Documentation = { "Remove all script handlers set through Scripts in XML or SetScript in Lua" },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CollapsesLayout",
 			Type = "Function",
 
@@ -34,6 +69,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouse",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -43,6 +80,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -52,6 +91,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "EnableMouseWheel",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -61,6 +102,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetBottom",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -74,6 +116,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetCenter",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -88,6 +131,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetHeight",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +147,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetLeft",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -115,6 +161,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -131,6 +178,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetRight",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -144,6 +192,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScaledRect",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -160,6 +209,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetScript",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -175,6 +226,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetSize",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,6 +256,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetTop",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -216,6 +270,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetWidth",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -230,6 +286,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "HasScript",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -252,12 +309,28 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "HookScript",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "scriptTypeName", Type = "cstring", Nilable = false },
 				{ Name = "script", Type = "luaFunction", Nilable = false },
 				{ Name = "bindingType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "Intersects",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "intersects", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -271,6 +344,19 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAnchoringSecret",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isSecret", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -354,6 +440,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsMouseOver",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -411,6 +499,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsShown",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Shown },
 
 			Arguments =
 			{
@@ -424,6 +513,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsVisible",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Shown },
 
 			Arguments =
 			{
@@ -437,6 +527,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetCollapsesLayout",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -446,6 +538,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseClickEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -455,6 +549,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetMouseMotionEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -464,6 +560,8 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -473,15 +571,21 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPassThroughButtons",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "MouseButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
 			Name = "SetPropagateMouseClicks",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -491,6 +595,9 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetPropagateMouseMotion",
 			Type = "Function",
+			IsProtectedFunction = true,
+			HasRestrictions = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -500,6 +607,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetScript",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -510,10 +618,27 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "SetShown",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Shown },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "show", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "ShouldButtonPassThrough",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "button", Type = "MouseButton", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldPassThrough", Type = "bool", Nilable = false },
 			},
 		},
 		{

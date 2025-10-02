@@ -107,11 +107,11 @@ function BNToastMixin:OnClick()
 			FriendsListFrame_ToggleInvites();
 		end
 
-		FriendsTabHeaderTab1:Click();
+		FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
 	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
 		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
 		if accountInfo then --This player may have been removed from our friends list, so we may not have a name.
-			ChatFrame_SendBNetTell(accountInfo.accountName);
+			ChatFrameUtil.SendBNetTell(accountInfo.accountName);
 		end
 	elseif toastType == BN_TOAST_TYPE_CLUB_INVITATION then
 		ShowUIPanel(CommunitiesFrame);
@@ -138,7 +138,7 @@ function BNToastMixin:OnCustomMessageChanged(toastData)
 end
 
 function BNToastMixin:OnVariablesLoaded()
-	self:SetToastDuration(GetCVar("toastDuration"));
+	AlertFrame_SetDuration(self, GetCVar("toastDuration"));
 	self:SetToastsEnabled(GetCVarBool("showToastWindow"));
 end
 
@@ -184,10 +184,6 @@ function BNToastMixin:SetToastsEnabled(enabled)
 	else
 		self:DisableToasts();
 	end
-end
-
-function BNToastMixin:SetToastDuration(duration)
-	self.duration = duration;
 end
 
 function BNToastMixin:ShowToast()

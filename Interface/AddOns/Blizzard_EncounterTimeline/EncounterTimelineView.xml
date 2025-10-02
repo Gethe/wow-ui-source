@@ -1,0 +1,58 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="EncounterTimelineViewTemplate" mixin="EncounterTimelineViewMixin" secureMixin="EncounterTimelineViewSecureMixin" flattenRenderLayers="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" alpha="0">
+					<Color a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LineEnd" atlas="combattimeline-line-right" useAtlasSize="true"/>
+				<Texture parentKey="LineStart" atlas="combattimeline-line-left" useAtlasSize="true"/>
+				<Texture parentKey="Divider" atlas="combattimeline-cooldown-divider" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="1" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="3" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="5" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="7" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="9" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
+					<KeyValues>
+						<KeyValue key="seconds" value="11" type="number"/>
+					</KeyValues>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="PipText" font="SystemFont_Shadow_Large"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="Pip" atlas="combattimeline-pip" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

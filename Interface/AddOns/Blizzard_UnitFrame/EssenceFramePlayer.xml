@@ -294,6 +294,7 @@
 	<Frame name="EssencePlayerFrame" inherits="EssencePlayerFrameTemplate">
 		<Size x="126" y="24"/>
 		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
 			<KeyValue key="topPadding" value="5" type="number"/>
 			<KeyValue key="showTooltip" value="true" type="boolean"/>
 		</KeyValues>

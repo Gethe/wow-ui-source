@@ -129,12 +129,6 @@ function EventTracePanelMixin:OnShow()
 	end
 end
 
-function EventTracePanelMixin:OnCloseClick()
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-	self:Hide();
-	self.window:Close();
-end
-
 function EventTracePanelMixin:OnHide()
 	if not self:IsLoggingEventsWhenHidden() then
 		self:LogMessage(EVENTTRACE_LOG_PAUSE_WHILE_HIDDEN);

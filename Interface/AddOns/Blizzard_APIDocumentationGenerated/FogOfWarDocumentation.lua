@@ -9,6 +9,7 @@ local FogOfWar =
 		{
 			Name = "GetFogOfWarForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local FogOfWar =
 		{
 			Name = "GetFogOfWarInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

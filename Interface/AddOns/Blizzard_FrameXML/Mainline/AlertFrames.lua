@@ -1,6 +1,6 @@
 ALERT_FRAME_COALESCE_CONTINUE = 1; -- Return to continue trying to find an alert to coalesce on to, coalescing failed
 ALERT_FRAME_COALESCE_SUCCESS = 2; -- Return to signal coalescing was a success and that there's no longer a need to continue trying to coalesce onto other frames
-
+DEFAULT_FULLSCREEN_STRATA = "FULLSCREEN_DIALOG";
 -- [[ ContainedAlertSystem ]] --
 
 ContainedAlertSubSystemMixin = {};
@@ -260,8 +260,8 @@ function AlertContainerMixin:OnLoad()
 	self.alertFrameSubSystems = {};
 	self.reasonsToBlockLeftClickingAlerts = {};
 
-	self.FullscreenFrame = UIParent;
-	self.FullscreenStrata = "DIALOG";
+	self.fullscreenFrame = UIParent;
+	self.fullscreenStrata = DEFAULT_FULLSCREEN_STRATA;
 	self.baseAnchorFrame = self;
 
 	-- True must always mean that a system is enabled, a single false will cause the system to queue alerts.
@@ -384,15 +384,15 @@ end
 
 function AlertContainerMixin:SetFullScreenFrame(frame, strata)
 	if frame then
-		self.FullscreenFrame = frame;
-		self.FullscreenStrata = strata;
+		self.fullscreenFrame = frame;
+		self.fullscreenStrata = strata or DEFAULT_FULLSCREEN_STRATA;
 		self:ReparentAlerts();
 	end
 end
 
 function AlertContainerMixin:ClearFullScreenFrame()
-	self.FullscreenFrame = UIParent;
-	self.FullscreenStrata = "DIALOG";
+	self.fullscreenFrame = UIParent;
+	self.fullscreenStrata = DEFAULT_FULLSCREEN_STRATA;
 	self:ReparentAlerts();
 end
 
@@ -400,8 +400,8 @@ function AlertContainerMixin:ReparentAlerts()
 	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
 		if alertFrameSubSystem.alertFramePool then
 			for alertFrame in alertFrameSubSystem.alertFramePool:EnumerateActive() do				
-				alertFrame:SetParent(self.FullscreenFrame);
-				alertFrame:SetFrameStrata(self.FullscreenStrata);
+				alertFrame:SetParent(self.fullscreenFrame);
+				alertFrame:SetFrameStrata(self.fullscreenStrata);
 			end
 		end
 	end
@@ -454,8 +454,8 @@ end
 function AlertContainerMixin:AddAlertFrame(frame)
 	self:UpdateAnchors();
 
-	frame:SetParent(self.FullscreenFrame);
-	frame:SetFrameStrata(self.FullscreenStrata);
+	frame:SetParent(self.fullscreenFrame);
+	frame:SetFrameStrata(self.fullscreenStrata);
 
 	AlertFrame_ShowNewAlert(frame);
 end
@@ -491,12 +491,14 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("NEW_PET_ADDED");
 	self:RegisterEvent("NEW_MOUNT_ADDED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("NEW_WARBAND_SCENE_ADDED");
 	self:RegisterEvent("NEW_RUNEFORGE_POWER_ADDED");
 	self:RegisterEvent("TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED");
 	self:RegisterEvent("TRANSMOG_COLLECTION_SOURCE_ADDED");
 	self:RegisterEvent("SKILL_LINE_SPECS_UNLOCKED");
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_AWARDED");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
+	self:RegisterEvent("REQUESTED_GUILD_RENAME_RESULT");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -516,9 +518,8 @@ local function ShouldToastAchievement(achievementID, alreadyEarnedOnAccount)
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuildAchievement, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
 	local isAccountAchievement = FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_ACCOUNT);
 
-	-- By default we don't toast a character achievement if you already earned it on another character
-	local isCharacterAchievement = not isAccountAchievement and not isGuildAchievement;
-	if isCharacterAchievement and alreadyEarnedOnAccount then
+	-- By default we don't toast an achievement if you already earned it on another character
+	if not isGuildAchievement and alreadyEarnedOnAccount then
 		return FlagsUtil.IsSet(flags, ACHIEVEMENT_FLAGS_TOAST_ON_REPEAT_COMPLETION);
 	end
 
@@ -537,7 +538,7 @@ function AlertFrameMixin:OnEvent(event, ...)
 
 		local achievementID, alreadyEarnedOnAccount = ...;
 		if ShouldToastAchievement(achievementID, alreadyEarnedOnAccount) then
-			AchievementAlertSystem:AddAlert(...);
+			AchievementAlertSystem:AddAlert(achievementID, alreadyEarnedOnAccount);
 		end
 	elseif ( event == "CRITERIA_EARNED" ) then
 		if (Kiosk.IsEnabled()) then
@@ -548,7 +549,11 @@ function AlertFrameMixin:OnEvent(event, ...)
 			AchievementFrame_LoadUI();
 		end
 
-		CriteriaAlertSystem:AddAlert(...);
+		-- Only toast progress towards an achievement if we would (eventually) toast the achievement itself
+		local achievementID, description, achievementAlreadyEarnedOnAccount = ...;
+		if ShouldToastAchievement(achievementID, achievementAlreadyEarnedOnAccount) then
+			CriteriaAlertSystem:AddAlert(achievementID, description);
+		end
 	elseif ( event == "LFG_COMPLETION_REWARD" ) then
 		if ( C_Scenario.IsInScenario() and not C_Scenario.TreatScenarioAsDungeon() ) then
 			local scenarioType = select(10, C_Scenario.GetInfo());
@@ -713,6 +718,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "NEW_TOY_ADDED") then
 		local toyID = ...;
 		NewToyAlertSystem:AddAlert(toyID);
+	elseif ( event == "NEW_WARBAND_SCENE_ADDED" ) then
+		local warbandSceneID = ...;
+		NewWarbandSceneAlertSystem:AddAlert(warbandSceneID);
 	elseif ( event == "NEW_RUNEFORGE_POWER_ADDED") then
 		local powerID = ...;
 		NewRuneforgePowerAlertSystem:AddAlert(powerID);
@@ -725,6 +733,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "PERKS_ACTIVITY_COMPLETED" ) then
 		local perksActivityID = ...;
 		MonthlyActivityAlertSystem:AddAlert(perksActivityID);
+	elseif ( event == "REQUESTED_GUILD_RENAME_RESULT" ) then
+		local guildName, status = ...;
+		GuildRenameAlertSystem:CheckAddAlert(guildName, status);
 	end
 end
 
@@ -859,6 +870,10 @@ function AlertFrame_PlayAnimations(frame)
 	if frame:ManagesOwnOutroAnimation() then
 		AlertFrame_PlayOutroAnimation(frame);
 	end
+end
+
+function AlertFrame_SetDuration(frame, duration)
+	frame.duration = duration;
 end
 
 function AlertFrame_ShowNewAlert(frame)

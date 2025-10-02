@@ -9,6 +9,7 @@ local VoiceChat =
 		{
 			Name = "ActivateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local VoiceChat =
 		{
 			Name = "ActivateChannelTranscription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +29,7 @@ local VoiceChat =
 		{
 			Name = "BeginLocalCapture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local VoiceChat =
 		{
 			Name = "CreateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +72,7 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +82,7 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannelTranscription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,6 +132,7 @@ local VoiceChat =
 		{
 			Name = "GetChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,6 +147,7 @@ local VoiceChat =
 		{
 			Name = "GetChannelForChannelType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +162,7 @@ local VoiceChat =
 		{
 			Name = "GetChannelForCommunityStream",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +205,7 @@ local VoiceChat =
 		{
 			Name = "GetJoinClubVoiceChannelError",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +229,7 @@ local VoiceChat =
 		{
 			Name = "GetLocalPlayerMemberID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -242,6 +253,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +269,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -272,6 +285,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,6 +301,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -302,6 +317,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -334,6 +350,7 @@ local VoiceChat =
 		{
 			Name = "GetProcesses",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -379,6 +396,7 @@ local VoiceChat =
 		{
 			Name = "IsChannelJoinPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -422,6 +440,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberLocalPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -437,6 +456,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -451,6 +471,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberMutedForAll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,6 +487,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberSilenced",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -508,6 +530,7 @@ local VoiceChat =
 		{
 			Name = "IsPlayerUsingVoice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -576,6 +599,7 @@ local VoiceChat =
 		{
 			Name = "LeaveChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -608,6 +632,7 @@ local VoiceChat =
 		{
 			Name = "RequestJoinAndActivateCommunityStreamChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -618,6 +643,7 @@ local VoiceChat =
 		{
 			Name = "RequestJoinChannelByChannelType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -628,6 +654,7 @@ local VoiceChat =
 		{
 			Name = "SetCommunicationMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -637,6 +664,7 @@ local VoiceChat =
 		{
 			Name = "SetDeafened",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -646,6 +674,7 @@ local VoiceChat =
 		{
 			Name = "SetInputDevice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -655,6 +684,7 @@ local VoiceChat =
 		{
 			Name = "SetInputVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -664,6 +694,7 @@ local VoiceChat =
 		{
 			Name = "SetMasterVolumeScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -673,6 +704,7 @@ local VoiceChat =
 		{
 			Name = "SetMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -683,6 +715,7 @@ local VoiceChat =
 		{
 			Name = "SetMemberVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adjusts member volume across all channels" },
 
 			Arguments =
@@ -694,6 +727,7 @@ local VoiceChat =
 		{
 			Name = "SetMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -703,6 +737,7 @@ local VoiceChat =
 		{
 			Name = "SetOutputDevice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -712,6 +747,7 @@ local VoiceChat =
 		{
 			Name = "SetOutputVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -721,6 +757,7 @@ local VoiceChat =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -732,6 +769,7 @@ local VoiceChat =
 		{
 			Name = "SetPushToTalkBinding",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -741,6 +779,7 @@ local VoiceChat =
 		{
 			Name = "SetVADSensitivity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -760,6 +799,7 @@ local VoiceChat =
 		{
 			Name = "SpeakRemoteTextSample",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -769,6 +809,7 @@ local VoiceChat =
 		{
 			Name = "SpeakText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -790,6 +831,7 @@ local VoiceChat =
 		{
 			Name = "ToggleMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

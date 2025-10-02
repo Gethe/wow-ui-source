@@ -1,4 +1,8 @@
 
+local function NoEasing(progress)
+	return progress;
+end
+
 ScriptAnimationUtil = {};
 
 function ScriptAnimationUtil.GetScriptAnimationLock(region)
@@ -16,6 +20,23 @@ end
 
 function ScriptAnimationUtil.IsScriptAnimationLockActive(region)
 	return region.scriptedAnimatedAnchorLock ~= nil;
+end
+
+-- Returns a callback to cancel the animation.
+function ScriptAnimationUtil.StartFadeAnimation(region, duration, onFinish, easingFunction)
+	easingFunction = easingFunction or NoEasing;
+
+	local distanceX = 0;
+	local distanceY = 0;
+	local alphaVariation = -region:GetAlpha();
+	local scaleVariation = 0;
+	local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY, alphaVariation, scaleVariation);
+	return ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, duration, function()
+		region:SetAlpha(0);
+		if onFinish then
+			onFinish();
+		end
+	end);
 end
 
 function ScriptAnimationUtil.ShakeFrameRandom(region, magnitude, duration, frequency)
@@ -67,10 +88,6 @@ function ScriptAnimationUtil.ShakeFrame(region, shake, maximumDuration, frequenc
 	end);
 
 	return CancelShake;
-end
-
-local function NoEasing(progress)
-	return progress;
 end
 
 function ScriptAnimationUtil.GenerateEasedVariationCallback(easingFunction, distanceX, distanceY, alpha, scale)
@@ -136,6 +153,45 @@ function ScriptAnimationUtil.StartScriptAnimation(region, variationCallback, dur
 	end
 
 	region.translationTicker = C_Timer.NewTicker(0.01, TranslationTickerFunction);
+
+	return CancelScriptAnimation;
+end
+
+function ScriptAnimationUtil.StartScriptAnimationGeneric(region, variationCallback, duration, frequency, onFinish)
+	if not ScriptAnimationUtil.GetScriptAnimationLock(region) then
+		if onFinish then
+			onFinish();
+		end
+		return nop;
+	end
+
+	local function CancelScriptAnimation()
+		if region.scriptAnimationTicker then
+			variationCallback(region, duration, duration);
+			region.scriptAnimationTicker:Cancel();
+			region.scriptAnimationTicker = nil;
+			ScriptAnimationUtil.ReleaseScriptAnimationLock(region);
+			if onFinish then
+				onFinish();
+			end
+		end
+	end
+
+	local startTime = GetTime();
+	local endTime = startTime + duration;
+
+	local function TranslationTickerFunction()
+		local currentTime = GetTime();
+		local finished = currentTime >= endTime;
+		if finished then
+			CancelScriptAnimation();
+		else
+			local elapsedTime = currentTime - startTime;
+			variationCallback(region, elapsedTime, duration);
+		end
+	end
+
+	region.scriptAnimationTicker = C_Timer.NewTicker(frequency or 0.01, TranslationTickerFunction);
 
 	return CancelScriptAnimation;
 end

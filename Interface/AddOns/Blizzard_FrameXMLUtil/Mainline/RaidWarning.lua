@@ -3,7 +3,6 @@ RAID_NOTICE_DEFAULT_HOLD_TIME = 10.0;
 RAID_NOTICE_FADE_IN_TIME = 0.2;
 RAID_NOTICE_FADE_OUT_TIME = 3.0;
 
-
 function RaidNotice_FadeInit( slotFrame )
 	FadingFrame_OnLoad(slotFrame);
 	FadingFrame_SetFadeInTime(slotFrame, RAID_NOTICE_FADE_IN_TIME);
@@ -182,4 +181,39 @@ function PrivateRaidBossEmoteFrameAnchorMixin:OnLoad()
 		offsetY = 0,
 	};
 	C_UnitAuras.SetPrivateWarningTextAnchor(self, anchor);
+end
+
+-----------  ENCOUNTER EVENTS
+function EncounterEventFrame_OnLoad(self)
+	RaidNotice_FadeInit(self.slot1);
+	RaidNotice_FadeInit(self.slot2);
+	self.timings = { };
+	self.timings["RAID_NOTICE_MIN_HEIGHT"] = 20.0;
+	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 30.0;
+	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
+	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
+	
+	self:RegisterEvent("ENCOUNTER_EVENT");
+end
+
+function EncounterEventFrame_OnEvent(self, event, ...)
+	if (event == "ENCOUNTER_EVENT") then
+		local text, playerName, displayTime, playSound, severity = ...;
+		local body = format(text, playerName, playerName);
+		local info = ChatTypeInfo[event];
+		RaidNotice_AddMessage( self, body, info, displayTime );
+		ChatFrameUtil.DisplaySystemMessageInPrimary(body);
+		if ( playSound ) then
+			-- Temporary Soundkits: For Testing.
+			if (severity == Enum.EncounterEventSeverity.Low) then
+				PlaySound(SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_LOW);
+			elseif (severity == Enum.EncounterEventSeverity.Medium) then
+				PlaySound(SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_MEDIUM);
+			elseif (severity == Enum.EncounterEventSeverity.High) then
+				PlaySound(SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_HIGH);
+			end
+		end
+	elseif ( event == "CLEAR_BOSS_EMOTES" ) then
+		RaidNotice_Clear(self);
+	end
 end

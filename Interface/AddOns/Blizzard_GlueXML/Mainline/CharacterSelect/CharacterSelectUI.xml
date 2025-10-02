@@ -21,15 +21,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Level" inherits="GlueFontHighlight">
+				<FontString parentKey="CharacterContext" inherits="GlueFontHighlight">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="12"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Name" inherits="GlueFontNormalLarge">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Level" relativePoint="TOP" x="0" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.CharacterContext" relativePoint="TOP" x="0" y="5"/>
 					</Anchors>
+				</FontString>
+				<FontString parentKey="RPEAvailable" inherits="GlueFontNormal" text="RPE_CATCH_UP_AVAILABLE">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Name" relativePoint="TOP" x="0" y="5"/>
+					</Anchors>
+					<Color color="RPE_FONT_COLOR"/>
 				</FontString>
 				<Texture parentKey="TimerunningIcon" atlas="timerunning-glues-icon" hidden="true">
 					<Size x="24" y="24"/>
@@ -46,7 +52,7 @@
 			<OnDoubleClick method="OnDoubleClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="CharacterFooterFrameTemplate" virtual="true">
 		<Size x="100" y="50"/>
 		<Frames>
@@ -69,5 +75,61 @@
 				</Anchors>
 			</Button>
 		</Frames>
+	</Frame>
+
+	<Frame name="CharacterListEditGroupFrame" mixin="CharacterListEditGroupFrameMixin" parent="GlueParent" toplevel="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
+		<Size x="320" y="174"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="ENTER_CHARACTER_GROUP_NAME">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-20"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Separator">
+					<Size x="276" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-127"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.14"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<EditBox parentKey="EditBox" inherits="InputBoxTemplate" letters="18">
+				<Size x="260" y="32"/>
+				<FontString inherits="ChatFontNormal"/>
+				<Anchors>
+					<Anchor point="TOP" x="3" y="-40"/>
+				</Anchors>
+			</EditBox>
+			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="33" y="-80"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-33" y="-80"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="DeleteButton" inherits="UIPanelButtonTemplate" text="DELETE">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="17"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
 </Ui>

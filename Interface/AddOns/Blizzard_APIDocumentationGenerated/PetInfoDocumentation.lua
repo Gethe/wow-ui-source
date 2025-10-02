@@ -7,8 +7,19 @@ local PetInfo =
 	Functions =
 	{
 		{
+			Name = "GetPetTalentTree",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "talentTreeName", Type = "stringView", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetTamersForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +34,7 @@ local PetInfo =
 		{
 			Name = "GetSpellForPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +49,7 @@ local PetInfo =
 		{
 			Name = "IsPetActionPassive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +64,7 @@ local PetInfo =
 		{
 			Name = "PetAbandon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,8 +72,13 @@ local PetInfo =
 			},
 		},
 		{
+			Name = "PetAssistMode",
+			Type = "Function",
+		},
+		{
 			Name = "PetRename",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

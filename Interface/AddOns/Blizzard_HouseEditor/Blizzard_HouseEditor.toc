@@ -1,0 +1,43 @@
+## Title: Blizzard House Editor
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates, Blizzard_CustomizationUI
+## AllowLoadGameType: standard
+
+
+Blizzard_HouseEditorTemplates.lua
+Blizzard_HouseEditorTemplates.xml
+
+Blizzard_HouseEditorBasicDecorMode.lua
+Blizzard_HouseEditorBasicDecorMode.xml
+
+Blizzard_HouseEditorCustomizationTemplates.lua
+Blizzard_HouseEditorCustomizationTemplates.xml
+Blizzard_HouseEditorCustomizeMode.lua
+Blizzard_HouseEditorCustomizeMode.xml
+
+Blizzard_HouseEditorCleanupMode.lua
+Blizzard_HouseEditorCleanupMode.xml
+
+Blizzard_HouseEditorLayoutModePin.lua
+Blizzard_HouseEditorLayoutModePin.xml
+Blizzard_HouseEditorLayoutMode.lua
+Blizzard_HouseEditorLayoutMode.xml
+
+Blizzard_HouseEditorExpertDecorMode.lua
+Blizzard_HouseEditorExpertDecorMode.xml
+
+Blizzard_HouseEditorExteriorOptionTemplates.lua
+Blizzard_HouseEditorExteriorOptionTemplates.xml
+Blizzard_HouseEditorExteriorFixturePoint.lua
+Blizzard_HouseEditorExteriorFixturePoint.xml
+Blizzard_HouseEditorExteriorCustomizationMode.lua
+Blizzard_HouseEditorExteriorCustomizationMode.xml
+
+Blizzard_HouseEditorModeButtons.lua
+Blizzard_HouseEditorModeButtons.xml
+Blizzard_HouseEditorStorageFrame.lua
+Blizzard_HouseEditorStorageFrame.xml
+Blizzard_HouseEditor.lua
+Blizzard_HouseEditor.xml
+Blizzard_HouseEditorRegistration.lua

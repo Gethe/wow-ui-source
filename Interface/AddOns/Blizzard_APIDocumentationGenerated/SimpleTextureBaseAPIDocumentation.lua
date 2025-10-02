@@ -15,6 +15,14 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "ClearVertexOffsets",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetAtlas",
 			Type = "Function",
 
@@ -43,6 +51,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetDesaturation",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =
 			{
@@ -83,6 +92,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetTexCoord",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.TexCoords },
 
 			Arguments =
 			{
@@ -90,8 +100,14 @@ local SimpleTextureBaseAPI =
 
 			Returns =
 			{
-				{ Name = "x", Type = "number", Nilable = false, StrideIndex = 1 },
-				{ Name = "y", Type = "number", Nilable = false, StrideIndex = 2 },
+				{ Name = "ulX", Type = "number", Nilable = false },
+				{ Name = "ulY", Type = "number", Nilable = false },
+				{ Name = "llX", Type = "number", Nilable = false },
+				{ Name = "llY", Type = "number", Nilable = false },
+				{ Name = "urX", Type = "number", Nilable = false },
+				{ Name = "urY", Type = "number", Nilable = false },
+				{ Name = "lrX", Type = "number", Nilable = false },
+				{ Name = "lrY", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -149,6 +165,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetTextureSliceMargins",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -165,6 +182,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetTextureSliceMode",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Arguments =
 			{
@@ -191,6 +209,8 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetVertexOffset",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +239,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "IsDesaturated",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Desaturation },
 
 			Arguments =
 			{
@@ -245,6 +266,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +279,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetBlendMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,6 +289,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetBlockingLoadsRequested",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -275,6 +299,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetColorTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -287,6 +312,8 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetDesaturated",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Desaturation },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -296,6 +323,8 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetDesaturation",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Desaturation },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -305,6 +334,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetGradient",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -316,6 +346,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetHorizTile",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -325,6 +356,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetMask",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -334,6 +366,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetRotation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -344,6 +377,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetSnapToPixelGrid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -351,8 +385,25 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "SetSpriteSheetCell",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.TexCoords },
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "cell", Type = "number", Nilable = false },
+				{ Name = "numRows", Type = "number", Nilable = false },
+				{ Name = "numColumns", Type = "number", Nilable = false },
+				{ Name = "cellWidth", Type = "number", Nilable = true },
+				{ Name = "cellHeight", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "SetTexCoord",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.TexCoords },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,6 +416,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetTexelSnappingBias",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -374,6 +426,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -391,6 +444,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetTextureSliceMargins",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Enables nineslice texture rendering using the specified pixel margins. Preferred over legacy nineslice approach that uses 9 separate textures." },
 
 			Arguments =
@@ -404,6 +458,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetTextureSliceMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Controls whether the center and sides are Stretched or Tiled when using nineslice texture rendering. Defaults to Stretched." },
 
 			Arguments =
@@ -414,6 +469,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetVertTile",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -423,6 +479,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetVertexOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

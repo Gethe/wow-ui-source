@@ -362,9 +362,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlepetDeletedReason",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "Unknown", Type = "BattlepetDeletedReason", EnumValue = 0 },
@@ -374,6 +374,7 @@ local BattlePetConstants =
 				{ Name = "CageError", Type = "BattlepetDeletedReason", EnumValue = 4 },
 				{ Name = "DelJournal", Type = "BattlepetDeletedReason", EnumValue = 5 },
 				{ Name = "TradingPost", Type = "BattlepetDeletedReason", EnumValue = 6 },
+				{ Name = "AccountStore", Type = "BattlepetDeletedReason", EnumValue = 7 },
 			},
 		},
 		{

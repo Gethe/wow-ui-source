@@ -6,6 +6,8 @@
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="100" type="number"/>
 			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="skipChildLayout" value="true" type="boolean"/>
+			<KeyValue key="skipLayoutOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -91,7 +93,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+						<FontString parentKey="Text" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
 							</Anchors>

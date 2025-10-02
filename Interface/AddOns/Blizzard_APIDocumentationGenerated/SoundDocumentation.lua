@@ -9,6 +9,7 @@ local Sound =
 		{
 			Name = "GetSoundScaledVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local Sound =
 		{
 			Name = "IsPlaying",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local Sound =
 		{
 			Name = "PlayItemSound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,8 +48,30 @@ local Sound =
 			},
 		},
 		{
+			Name = "PlaySound",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "soundKitID", Type = "number", Nilable = false },
+				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "SI3UISoundSubType_Default" },
+				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
+				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
+				{ Name = "overridePriority", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "soundHandle", Type = "SoundHandle", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayVocalErrorSound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +100,27 @@ local Sound =
 
 	Tables =
 	{
+		{
+			Name = "PlaySoundParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "soundKitID", Type = "number", Nilable = false },
+				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "SI3UISoundSubType_Default" },
+				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
+				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
+				{ Name = "overridePriority", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PlaySoundResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+				{ Name = "soundHandle", Type = "SoundHandle", Nilable = false },
+			},
+		},
 	},
 };
 

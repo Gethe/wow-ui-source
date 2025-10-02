@@ -73,7 +73,7 @@ function ContentTrackingUtil.UnregisterTrackableElement(element, trackableType, 
 end
 
 function ContentTrackingUtil.ProcessChatLink(unused_trackableType, unused_trackableID)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		-- Until we can link trackables, display an error instead.
 		UIErrorsFrame:AddExternalErrorMessage(CONTENT_TRACKING_CHAT_LINK_ERROR_TEXT);
 		return true;

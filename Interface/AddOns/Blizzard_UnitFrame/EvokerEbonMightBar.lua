@@ -1,3 +1,5 @@
+-- NOTE: If you make changes here, you likely need to make changes to EvokerAlternatePower.lua
+
 EvokerEbonMightBarMixin = {}
 
 -- Ebon Might Spell that applies Aura on Self
@@ -74,13 +76,13 @@ function EvokerEbonMightBarMixin:EvaluateUnit()
 	local meetsRequirements = false;
 
 	local _, class = UnitClass(self:GetUnit());
-	meetsRequirements = class == self.requiredClass and GetSpecialization() == self.requiredSpec;
+	meetsRequirements = class == self.requiredClass and C_SpecializationInfo.GetSpecialization() == self.requiredSpec;
 
 	self:SetBarEnabled(meetsRequirements);
 end
 
 function EvokerEbonMightBarMixin:OnBarEnabled()
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 
 	self:UpdateArt();
 	self:UpdateMinMaxPower();

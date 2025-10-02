@@ -126,7 +126,7 @@ function CommunitiesChatMixin:SendMessage(text)
 		
 		if streamInfo.streamType == Enum.ClubStreamType.Guild and not C_GuildInfo.CanSpeakInGuildChat() then
 			self.MessageFrame:AddMessage(ERR_GUILD_PERMISSIONS, YELLOW_FONT_COLOR:GetRGB());
-			ChatFrame_DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GUILD_PERMISSIONS);
 			return;
 		end
 		
@@ -241,7 +241,6 @@ function CommunitiesChatMixin:DisplayChat()
 	local streamViewMarker = C_Club.GetStreamViewMarker(clubId, streamId);
 	for index, message in ipairs(messages) do
 		if streamViewMarker and message.messageId.epoch > streamViewMarker then
-			-- TODO:: We also need to add this while backfilling messages.
 			self:AddUnreadNotification();
 			streamViewMarker = nil;
 		end
@@ -286,7 +285,7 @@ function CommunitiesChatMixin:GetChatColor()
 		return nil;
 	end
 	
-	return Chat_GetCommunitiesChannelColor(clubId, streamId);
+	return ChatFrameUtil.GetCommunitiesChannelColor(clubId, streamId);
 end
 
 function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
@@ -321,7 +320,7 @@ function CommunitiesChatMixin:FormatMessage(clubId, streamId, message)
 		content = message.content;
 	end
 	
-	local format = GetChatTimestampFormat();
+	local format = ChatFrameUtil.GetTimestampFormat();
 	if format then
 		return BetterDate(format, message.messageId.epoch / 1000000)..COMMUNITIES_CHAT_MESSAGE_FORMAT:format(link or name, content);
 	else
@@ -469,7 +468,7 @@ end
 
 function CommunitiesChatEditBox_OnFocusGained(self)
 	EditBox_HighlightText(self);
-	ChatFrame_SetChatFocusOverride(self);
+	ChatFrameUtil.SetChatFocusOverride(self);
 end
 
 function CommunitiesChatEditBox_OnEnterPressed(self)
@@ -483,8 +482,8 @@ function CommunitiesChatEditBox_OnEnterPressed(self)
 end
 
 function CommunitiesChatEditBox_OnHide(self)
-	if ChatFrame_GetChatFocusOverride() == self then
-		ChatFrame_ClearChatFocusOverride();
+	if ChatFrameUtil.GetChatFocusOverride() == self then
+		ChatFrameUtil.ClearChatFocusOverride();
 	end
 end
 

@@ -9,6 +9,7 @@ local AddOns =
 		{
 			Name = "DisableAddOn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +20,7 @@ local AddOns =
 		{
 			Name = "DisableAllAddOns",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +30,7 @@ local AddOns =
 		{
 			Name = "DoesAddOnExist",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,8 +43,24 @@ local AddOns =
 			},
 		},
 		{
+			Name = "DoesAddOnHaveLoadError",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hadError", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "EnableAddOn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,6 +71,7 @@ local AddOns =
 		{
 			Name = "EnableAllAddOns",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +81,7 @@ local AddOns =
 		{
 			Name = "GetAddOnDependencies",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,12 +90,13 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
 			Name = "GetAddOnEnableState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +112,7 @@ local AddOns =
 		{
 			Name = "GetAddOnInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,12 +127,43 @@ local AddOns =
 				{ Name = "loadable", Type = "bool", Nilable = false },
 				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
-				{ Name = "updateAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnInterfaceVersion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "interfaceVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnLocalTable",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the addon table (passed as the second argument of ... to files) for any addon that opts in through setting AllowAddOnTableAccess: 1 in the toc file. Insecure code cannot query addon tables from Blizzard addons." },
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "table", Type = "LuaValueVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "GetAddOnMetadata",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,8 +177,24 @@ local AddOns =
 			},
 		},
 		{
-			Name = "GetAddOnOptionalDependencies",
+			Name = "GetAddOnName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnNotes",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,7 +203,52 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "notes", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnOptionalDependencies",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "GetAddOnSecurity",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "security", Type = "AddOnSecurityStatus", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnTitle",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -155,8 +270,24 @@ local AddOns =
 			},
 		},
 		{
+			Name = "IsAddOnDefaultEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "defaultEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAddOnLoadOnDemand",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +302,7 @@ local AddOns =
 		{
 			Name = "IsAddOnLoadable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +320,7 @@ local AddOns =
 		{
 			Name = "IsAddOnLoaded",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +345,7 @@ local AddOns =
 		{
 			Name = "LoadAddOn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -239,6 +373,7 @@ local AddOns =
 		{
 			Name = "SetAddonVersionCheck",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,6 +430,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "AddOnSecurityStatus",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Secure", Type = "AddOnSecurityStatus", EnumValue = 0 },
+				{ Name = "Insecure", Type = "AddOnSecurityStatus", EnumValue = 1 },
+				{ Name = "Banned", Type = "AddOnSecurityStatus", EnumValue = 2 },
+				{ Name = "NotAvailable", Type = "AddOnSecurityStatus", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "AddOnInfo",
 			Type = "Structure",
 			Fields =
@@ -305,7 +454,6 @@ local AddOns =
 				{ Name = "loadable", Type = "bool", Nilable = false },
 				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
-				{ Name = "updateAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

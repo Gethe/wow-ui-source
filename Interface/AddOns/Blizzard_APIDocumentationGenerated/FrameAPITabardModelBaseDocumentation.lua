@@ -21,6 +21,7 @@ local FrameAPITabardModelBase =
 		{
 			Name = "CycleVariation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,6 +32,7 @@ local FrameAPITabardModelBase =
 		{
 			Name = "GetLowerEmblemTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +42,7 @@ local FrameAPITabardModelBase =
 		{
 			Name = "GetUpperEmblemTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

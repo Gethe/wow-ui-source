@@ -67,6 +67,8 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputation",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +83,7 @@ local GossipInfo =
 		{
 			Name = "GetFriendshipReputationRanks",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +125,7 @@ local GossipInfo =
 		{
 			Name = "GetOptionUIWidgetSetsAndTypesByOptionID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,6 +149,7 @@ local GossipInfo =
 		{
 			Name = "GetPoiForUiMapID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +164,7 @@ local GossipInfo =
 		{
 			Name = "GetPoiInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,6 +193,8 @@ local GossipInfo =
 		{
 			Name = "SelectActiveQuest",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +204,8 @@ local GossipInfo =
 		{
 			Name = "SelectAvailableQuest",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -205,6 +215,8 @@ local GossipInfo =
 		{
 			Name = "SelectOption",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,6 +228,8 @@ local GossipInfo =
 		{
 			Name = "SelectOptionByIndex",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -250,7 +264,7 @@ local GossipInfo =
 			{
 				{ Name = "gossipID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
-				{ Name = "cost", Type = "number", Nilable = false },
+				{ Name = "cost", Type = "WOWMONEY", Nilable = false },
 			},
 		},
 		{
@@ -415,6 +429,7 @@ local GossipInfo =
 				{ Name = "questID", Type = "number", Nilable = false },
 				{ Name = "isImportant", Type = "bool", Nilable = false },
 				{ Name = "isMeta", Type = "bool", Nilable = false },
+				{ Name = "questInfoID", Type = "number", Nilable = false },
 			},
 		},
 	},

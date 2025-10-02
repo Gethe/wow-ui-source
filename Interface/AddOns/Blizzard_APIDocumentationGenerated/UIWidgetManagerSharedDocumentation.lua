@@ -5,13 +5,44 @@ local UIWidgetManagerShared =
 		{
 			Name = "MapIconUIWidgetSetType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Tooltip", Type = "MapIconUIWidgetSetType", EnumValue = 0 },
 				{ Name = "BehindIcon", Type = "MapIconUIWidgetSetType", EnumValue = 1 },
+				{ Name = "AdventureMapDetails", Type = "MapIconUIWidgetSetType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "SpellDisplayBorderColor",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 0,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "None", Type = "SpellDisplayBorderColor", EnumValue = 0 },
+				{ Name = "Black", Type = "SpellDisplayBorderColor", EnumValue = 1 },
+				{ Name = "White", Type = "SpellDisplayBorderColor", EnumValue = 2 },
+				{ Name = "Red", Type = "SpellDisplayBorderColor", EnumValue = 3 },
+				{ Name = "Yellow", Type = "SpellDisplayBorderColor", EnumValue = 4 },
+				{ Name = "Orange", Type = "SpellDisplayBorderColor", EnumValue = 5 },
+				{ Name = "Purple", Type = "SpellDisplayBorderColor", EnumValue = 6 },
+				{ Name = "Green", Type = "SpellDisplayBorderColor", EnumValue = 7 },
+				{ Name = "Blue", Type = "SpellDisplayBorderColor", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "UIWidgetFlag",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UniversalWidget", Type = "UIWidgetFlag", EnumValue = 1 },
 			},
 		},
 		{
@@ -39,6 +70,19 @@ local UIWidgetManagerShared =
 				{ Name = "Horizontal", Type = "UIWidgetLayoutDirection", EnumValue = 2 },
 				{ Name = "Overlap", Type = "UIWidgetLayoutDirection", EnumValue = 3 },
 				{ Name = "HorizontalForceNewRow", Type = "UIWidgetLayoutDirection", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "UIWidgetModelSceneLayer",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "UIWidgetModelSceneLayer", EnumValue = 0 },
+				{ Name = "Front", Type = "UIWidgetModelSceneLayer", EnumValue = 1 },
+				{ Name = "Back", Type = "UIWidgetModelSceneLayer", EnumValue = 2 },
 			},
 		},
 		{
@@ -83,9 +127,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 30,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 29,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -118,6 +162,7 @@ local UIWidgetManagerShared =
 				{ Name = "ItemDisplay", Type = "UIWidgetVisualizationType", EnumValue = 27 },
 				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
 				{ Name = "ScenarioHeaderDelves", Type = "UIWidgetVisualizationType", EnumValue = 29 },
+				{ Name = "ButtonHeader", Type = "UIWidgetVisualizationType", EnumValue = 30 },
 			},
 		},
 	},

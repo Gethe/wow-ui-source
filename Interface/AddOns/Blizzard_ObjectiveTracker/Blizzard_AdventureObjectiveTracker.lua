@@ -7,7 +7,7 @@ local NavigableContentTrackingTargets = {
 
 local settings = {
 	headerText = ADVENTURE_TRACKING_MODULE_HEADER_TEXT,
-	events = { "CONTENT_TRACKING_UPDATE", "TRANSMOG_COLLECTION_SOURCE_ADDED", "SUPER_TRACKING_CHANGED", "TRACKING_TARGET_INFO_UPDATE" },
+	events = { "CONTENT_TRACKING_UPDATE", "TRANSMOG_COLLECTION_SOURCE_ADDED", "SUPER_TRACKING_CHANGED", "TRACKING_TARGET_INFO_UPDATE", "TRACKABLE_INFO_UPDATE" },
 	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
 	blockTemplate = "ObjectiveTrackerAnimBlockTemplate",
 };
@@ -39,7 +39,7 @@ function AdventureObjectiveTrackerMixin:OnEvent(event, ...)
 			end
 			self:MarkDirty();
 		end
-	elseif event == "TRACKING_TARGET_INFO_UPDATE" then
+	elseif event == "TRACKING_TARGET_INFO_UPDATE" or event == "TRACKABLE_INFO_UPDATE" then
 		self:MarkDirty();
 	end
 end

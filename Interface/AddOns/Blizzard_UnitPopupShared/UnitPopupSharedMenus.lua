@@ -22,14 +22,20 @@ function UnitPopupTopLevelMenuMixin:IsInlineMenu()
 end 
 
 function UnitPopupTopLevelMenuMixin:AssembleMenuEntries(contextData)
-	local entries = {}; 
-	for index, buttonMixin in ipairs(self:GetEntries()) do 
-		if buttonMixin:IsInlineMenu() then 
-			tAppendAll(entries, buttonMixin:GetEntries());
-		else 
-			table.insert(entries, buttonMixin);
+	local entries = {};
+	local topLevelEntries = self:GetEntries();
+	if topLevelEntries then
+		for index, buttonMixin in ipairs(self:GetEntries()) do 
+			if buttonMixin:IsInlineMenu() then 
+				local mixinEntries = buttonMixin:GetEntries();
+				if mixinEntries then
+					tAppendAll(entries, buttonMixin:GetEntries());
+				end
+			else 
+				table.insert(entries, buttonMixin);
+			end
+		end
 	end
-end		
 	return entries;
 end
 
@@ -84,8 +90,6 @@ function UnitPopupMenuPet:GetEntries()
 		UnitPopupPetDismissButtonMixin,
 		UnitPopupPetAbandonButtonMixin,
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}
 end
@@ -97,8 +101,6 @@ function UnitPopupMenuOtherPet:GetEntries()
 		UnitPopupRaidTargetButtonMixin,
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportPetButtonMixin,
 	}
@@ -111,8 +113,6 @@ function UnitPopupMenuBattlePet:GetEntries()
 		UnitPopupPetShowInJournalButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}
 end 
@@ -124,8 +124,6 @@ function UnitPopupMenuOtherBattlePet:GetEntries()
 		UnitPopupPetShowInJournalButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportBattlePetButtonMixin,
 	}
@@ -148,8 +146,6 @@ function UnitPopupMenuPlayer:GetEntries()
 		UnitPopupMenuFriendlyPlayerInteract, -- Submenu
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportInWorldButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
@@ -182,8 +178,6 @@ function UnitPopupMenuRaid:GetEntries()
 		UnitPopupLootPromoteButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin, 
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 		UnitPopupReportGroupMemberButtonMixin,
 		UnitPopupCopyCharacterNameButtonMixin,
@@ -230,13 +224,13 @@ end
 UnitPopupMenuBnFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND", UnitPopupMenuBnFriend);
 function UnitPopupMenuBnFriend:GetEntries()
-	error(PROJECT_IMPL_REQUIRED);
+	return nil;
 end 
 
 UnitPopupMenuBnFriendOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
 UnitPopupManager:RegisterMenu("BN_FRIEND_OFFLINE", UnitPopupMenuBnFriendOffline);
 function UnitPopupMenuBnFriendOffline:GetEntries()
-	error(PROJECT_IMPL_REQUIRED);
+	return nil;
 end
 
 UnitPopupMenuGlueFriend = CreateFromMixins(UnitPopupTopLevelMenuMixin)
@@ -322,8 +316,6 @@ function UnitPopupMenuVehicle:GetEntries()
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupOtherSubsectionTitle, 
 		UnitPopupVehicleLeaveButtonMixin,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}
 end
@@ -338,8 +330,6 @@ function UnitPopupMenuTarget:GetEntries()
 		UnitPopupAddFriendMenuButtonMixin,
 		UnitPopupOtherSubsectionTitle, 
 		UnitPopupVoiceChatButtonMixin,
-		UnitPopupMovePlayerFrameButtonMixin,
-		UnitPopupMoveTargetFrameButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}
 end
@@ -361,8 +351,6 @@ function UnitPopupMenuFocus:GetEntries()
 		UnitPopupClearFocusButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin,
-		UnitPopupLargeFocusButtonMixin,
-		UnitPopupMoveFocusButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}
 end
@@ -468,3 +456,51 @@ function UnitPopupMenuGluePartyMember:GetEntries()
 		UnitPopupGlueRemovePartyButton, 
 	}
 end
+
+UnitPopupMenuNeighborhoodRoster = CreateFromMixins(UnitPopupTopLevelMenuMixin);
+UnitPopupManager:RegisterMenu("NEIGHBORHOOD_ROSTER", UnitPopupMenuNeighborhoodRoster);
+function UnitPopupMenuNeighborhoodRoster:GetEntries()
+	return {
+		--To use other context data options, we need server in context data
+		--UnitPopupTargetButtonMixin,
+		--UnitPopupAddFriendButtonMixin,
+		UnitPopupInteractSubsectionTitle,
+		--UnitPopupIgnoreButtonMixin,
+		UnitPopupPromoteDemoteNeighborhoodManagerButtonMixin,
+		UnitPopupTransferNeighborhoodOwnerButtonMixin,
+		UnitPopupOtherSubsectionTitle,
+		--UnitPopupCopyCharacterNameButtonMixin,
+		UnitPopupNeighborhoodEvictButtonMixin,
+	}
+end
+
+
+UnitPopupMenuRecentAlly = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("RECENT_ALLY", UnitPopupMenuRecentAlly);
+function UnitPopupMenuRecentAlly:GetEntries()
+	return {
+		UnitPopupAddRecentAllyBattleTagFriendButtonMixin,
+		UnitPopupTargetButtonMixin,
+		UnitPopupRecentAllyNoteButtonMixin,
+		UnitPopupInteractSubsectionTitle,
+		UnitPopupWhisperButtonMixin,
+		UnitPopupInviteButtonMixin,
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupRecentAllyPinButtonMixin,
+		UnitPopupIgnoreButtonMixin,
+		UnitPopupReportRecentAllyButtonMixin,
+		UnitPopupCopyCharacterNameButtonMixin,
+	}
+end
+
+UnitPopupMenuRecentAllyOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("RECENT_ALLY_OFFLINE", UnitPopupMenuRecentAllyOffline);
+function UnitPopupMenuRecentAllyOffline:GetEntries()
+	return { 
+		UnitPopupRecentAllyNoteButtonMixin, 
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupRecentAllyPinButtonMixin,
+		UnitPopupIgnoreButtonMixin,
+		UnitPopupCopyCharacterNameButtonMixin,
+	}
+end  

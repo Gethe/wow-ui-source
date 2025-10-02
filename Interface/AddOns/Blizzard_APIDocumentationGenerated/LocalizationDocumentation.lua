@@ -8,6 +8,7 @@ local Localization =
 		{
 			Name = "BreakUpLargeNumbers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local Localization =
 		{
 			Name = "CaseAccentInsensitiveParse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,11 +39,12 @@ local Localization =
 		{
 			Name = "DeclineName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 				{ Name = "declensionSet", Type = "luaIndex", Nilable = false },
 			},
 
@@ -53,11 +56,12 @@ local Localization =
 		{
 			Name = "GetNumDeclensionSets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "gender", Type = "number", Nilable = true },
+				{ Name = "gender", Type = "UnitSex", Nilable = true },
 			},
 
 			Returns =
@@ -77,6 +81,7 @@ local Localization =
 		{
 			Name = "LocalizedClassList",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +96,7 @@ local Localization =
 		{
 			Name = "SetEuropeanNumbers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

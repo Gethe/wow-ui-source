@@ -145,6 +145,16 @@ function tInvert(tbl)
 	return inverted;
 end
 
+function tInvertToArray(tbl)
+	local index = 1;
+	local copy = {};
+	for k in pairs(tbl) do
+		copy[k] = index;
+		index = index + 1;
+	end
+	return tInvert(copy);
+end
+
 function TableUtil.TrySet(tbl, key)
 	if not tbl[key] then
 		tbl[key] = true;
@@ -227,6 +237,14 @@ function CopyTable(settings, shallow)
 	return copy;
 end
 
+function CopyTableSafe(settings, shallow)
+	if not settings then
+		return nil;
+	end
+
+	return CopyTable(settings, shallow);
+end
+
 function MergeTable(destination, source)
 	for k, v in pairs(source) do
 		destination[k] = v;
@@ -285,6 +303,36 @@ function TableUtil.Transform(tbl, op)
 	local result = {};
 	for k, v in pairs(tbl) do
 		table.insert(result, op(v));
+	end
+	return result;
+end
+
+-- Returns the value in a table deemed smallest by evaluating each value returned by the op function parameter.
+-- The return of the op function must return a number.
+function TableUtil.FindMin(tbl, op)
+	local result = nil;
+	local min = math.huge;
+	for k, v in pairs(tbl) do
+		local value = op(v);
+		if value < min then
+			min = value;
+			result = v;
+		end
+	end
+	return result;
+end
+
+-- Returns the value in a table deemed largest by evaluating each value returned by the op function parameter.
+-- The return of the op function must return a number.
+function TableUtil.FindMax(tbl, op)
+	local result = nil;
+	local max = -math.huge;
+	for k, v in pairs(tbl) do
+		local value = op(v);
+		if value > max then
+			max = value;
+			result = v;
+		end
 	end
 	return result;
 end
@@ -382,14 +430,34 @@ function CopyTransformedValuesAsKeys(tbl, transformOp)
 	return output;
 end
 
+-- Addresses the problem where nil values within a varargs list are not preserved when constructing
+-- a table, resulting a table with a smaller size than expected. Should be paired with a call to
+-- SafeUnpack when unpacking the table.
 function SafePack(...)
 	local tbl = { ... };
 	tbl.n = select("#", ...);
 	return tbl;
 end
 
+-- Upacks a table that was constructed using SafePack.
 function SafeUnpack(tbl, startIndex)
 	return unpack(tbl, startIndex or 1, tbl.n);
+end
+
+-- Returns the length of a table, accounting for the possibility of a table constructed using SafePack.
+function SafeLength(tbl)
+	if not tbl then
+		return 0;
+	end
+
+	local operatorCount = #tbl;
+	local safePackCount = tbl.n;
+
+	if safePackCount and operatorCount ~= safePackCount then
+		return safePackCount;
+	end
+
+	return operatorCount;
 end
 
 function GetOrCreateTableEntry(table, key, defaultValue)
@@ -412,6 +480,17 @@ function GetOrCreateTableEntryByCallback(table, key, callback)
 	local isNewValue = (currentValue == nil);
 	if isNewValue then
 		currentValue = callback(key);
+		table[key] = currentValue;
+	end
+
+	return currentValue, isNewValue;
+end
+
+function GetOrCreateTableEntryByMethod(table, key, method, owner)
+	local currentValue = table[key];
+	local isNewValue = (currentValue == nil);
+	if isNewValue then
+		currentValue = method(owner, key);
 		table[key] = currentValue;
 	end
 
@@ -471,10 +550,10 @@ end
 function GetKeysArraySortedByValue(tbl)
 	local keysArray = GetKeysArray(tbl);
 
-	table.sort(keysArray, function(a, b) 
+	table.sort(keysArray, function(a, b)
 		return tbl[a] < tbl[b];
 	end);
-	
+
 	return keysArray;
 end
 
@@ -566,9 +645,16 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 
 	local t = {};
 
+	local function GetKey(k)
+		if isAssociative then
+			return keyToPosMap[k];
+		end
+		return k;
+	end
+
 	function t:Get(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		return sortedArray[key];
+		local key = GetKey(k);
+		return key and sortedArray[key] or nil;
 	end
 
 	if not isAssociative then
@@ -578,12 +664,14 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 	end
 
 	function t:Remove(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		tRemove(sortedArray, key);
-		if isAssociative then
-			keyToPosMap[k] = nil;
-			local shiftUp = false;
-			ShiftPositionMap(key, shiftUp);
+		local key = GetKey(k);
+		if key then
+			tRemove(sortedArray, key);
+			if isAssociative then
+				keyToPosMap[k] = nil;
+				local shiftUp = false;
+				ShiftPositionMap(key, shiftUp);
+			end
 		end
 	end
 

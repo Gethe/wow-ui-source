@@ -399,7 +399,7 @@
 				<OnShow>
 					self:SetFrameLevel(self:GetParent():GetFrameLevel()+7);
 				</OnShow>
-				<OnKeyDown inherit="append">
+				<OnKeyDown>
 					if (key == "DOWN") then
 						StoreAutoCompleteIncrementSelection(self);
 					elseif (key == "UP") then
@@ -641,10 +641,10 @@
 					<Texture parentKey="Category" inherits="store-category" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK">
-					<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="true" justifyH="LEFT">
-						<Size x="120" y="38" />
+					<FontString parentKey="Text" inherits="GameFontNormal" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="LEFT">
+						<Size x="120" y="28" />
 						<Anchors>
-							<Anchor point="LEFT" x="36" y="4" />
+							<Anchor point="LEFT" x="36" y="2" />
 						</Anchors>
 					</FontString>
 				</Layer>
@@ -710,8 +710,8 @@
 					<Texture parentKey="Category" inherits="store-category" setAllPoints="true"/>
 				</Layer>
 				<Layer level="ARTWORK">
-					<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="true" justifyH="LEFT">
-						<Size x="120" y="28" />
+					<FontString parentKey="Text" inherits="GameFontNormal" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="LEFT">
+						<Size x="134" y="22" />
 						<Anchors>
 							<Anchor point="LEFT" x="12" y="2" />
 						</Anchors>

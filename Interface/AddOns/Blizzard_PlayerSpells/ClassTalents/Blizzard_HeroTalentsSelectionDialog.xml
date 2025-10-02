@@ -250,11 +250,15 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="ActivateButton" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" propagateMouseInput="Motion">
+			<Button parentKey="ActivateButton" mixin="HeroTalentActivateButtonMixin" inherits="MagicButtonTemplate" text="TALENT_SPEC_ACTIVATE" propagateMouseInput="Motion" motionScriptsWhileDisabled="true">
 				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="48"/>
 				</Anchors>
+				<Scripts>
+					<OnEnter method="OnMouseEnter" />
+					<OnLeave method="OnMouseLeave" />
+				</Scripts>
 			</Button>
 			<Button parentKey="ApplyChangesButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" text="TALENT_FRAME_APPLY_BUTTON_TEXT" hidden="true">
 				<Size x="160" y="22"/>

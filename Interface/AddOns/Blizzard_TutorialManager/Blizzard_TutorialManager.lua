@@ -57,6 +57,10 @@ function TutorialManager:OnSettingsLoaded(cvar, value)
 	end
 end
 
+function TutorialManager:ResetTutorials()
+	EventRegistry:TriggerEvent("TutorialManager.TutorialsReset");
+end
+
 function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
 		local isActive = (value == "1");
@@ -120,6 +124,8 @@ function TutorialManager:Finished(tutorialKey)
 	self:DebugLog("    FINISHED: "..tutorialKey);
 	local tutorial = self:GetTutorial(tutorialKey);
 	if tutorial then
+		tutorial:Complete();
+		
 		TutorialQueue:NotifyDone(tutorial);
 	end
 end
@@ -193,6 +199,13 @@ end
 function TutorialManager:CheckHasCompletedFrameTutorial(tutorial, callback)
 	EventUtil.ContinueOnVariablesLoaded(function()
 		local hasCompleted = GetCVarBitfield("closedInfoFrames", tutorial);
+		callback(hasCompleted);
+	end);
+end
+
+function TutorialManager:CheckHasCompletedTutorial(tutorialBitfield, tutorial, callback)
+	EventUtil.ContinueOnVariablesLoaded(function()
+		local hasCompleted = GetCVarBitfield(tutorialBitfield, tutorial);
 		callback(hasCompleted);
 	end);
 end

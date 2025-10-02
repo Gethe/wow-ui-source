@@ -6,11 +6,6 @@ DISTANCE_THRESHOLD_SQUARED = 250*250;
 CUF_NAME_SECTION_SIZE = 15;
 CUF_AURA_BOTTOM_OFFSET = 2;
 
---Used by CompactUnitFrame_SetHideHealth
-HEALTH_BAR_HIDE_REASON_SETUP = 1;
-HEALTH_BAR_HIDE_REASON_UNIT_DEAD = 2;
-HEALTH_BAR_HIDE_REASON_WIDGET_ONLY = 4;
-
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
 	-- Name.."HealthBar" for examples. This is ignored by nameplates.
@@ -65,7 +60,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_SOFT_ENEMY_CHANGED" or event == "PLAYER_SOFT_FRIEND_CHANGED" ) then
 		CompactUnitFrame_UpdateSelectionHighlight(self);
 		CompactUnitFrame_UpdateName(self);
-		CompactUnitFrame_UpdateWidgetsOnlyMode(self);
 		CompactUnitFrame_UpdateHealthBorder(self);
 		CompactUnitFrame_UpdateWidgetSet(self);
 	elseif ( event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" ) then
@@ -82,6 +76,9 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 		CompactUnitFrame_UpdateMaxPower(self);
 		CompactUnitFrame_UpdatePower(self);
 		CompactUnitFrame_UpdatePowerColor(self);
+	elseif (event == "GROUP_JOINED" or event =="GROUP_LEFT") then
+		CompactUnitFrame_UpdateAggroHighlight(self);
+		CompactUnitFrame_UpdateHealthBorder(self);
 	else
 		local unitMatches = arg1 == self.unit or arg1 == self.displayedUnit;
 		if ( unitMatches ) then
@@ -117,6 +114,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 					CompactUnitFrame_UpdateHealthColor(self);
 					CompactUnitFrame_UpdateName(self);
 				end
+				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
 				CompactUnitFrame_UpdateHealthBorder(self);
 			elseif ( event == "UNIT_CONNECTION" ) then
@@ -142,13 +140,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateStatusText(self);
 			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
-			elseif ( event == "GROUP_JOINED" ) then
-				CompactUnitFrame_UpdateAggroFlash(self);
-				CompactUnitFrame_UpdateHealthBorder(self);
-			elseif ( event == "GROUP_LEFT" ) then
-				CompactUnitFrame_UpdateHealthBorder(self);
-			elseif ( event == "UNIT_CLASSIFICATION_CHANGED" ) then
-				CompactUnitFrame_UpdateClassificationIndicator(self);
 			elseif ( event == "UNIT_LEVEL" ) then
 				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
@@ -222,14 +213,15 @@ end
 
 --Externally accessed functions
 function CompactUnitFrame_SetUnit(frame, unit)
-	if ( unit ~= frame.unit or frame.hideCastbar ~= frame.optionTable.hideCastbar ) then
+	local hideCastBar = not GameRulesUtil.ShouldShowNamePlateCastBar();
+	if ( unit ~= frame.unit or frame.hideCastbar ~= hideCastBar ) then
 		frame.unit = unit;
 		frame.displayedUnit = unit;	--May differ from unit if unit is in a vehicle.
 		frame.inVehicle = false;
 		frame.readyCheckStatus = nil
 		frame.readyCheckDecay = nil;
 		frame.isTanking = nil;
-		frame.hideCastbar = frame.optionTable.hideCastbar;
+		frame.hideCastbar = hideCastBar;
 		frame.healthBar.healthBackground = nil;
 
 		frame.aurasDirty = nil;
@@ -243,12 +235,14 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		else
 			CompactUnitFrame_UnregisterEvents(frame);
 		end
-		if ( unit and not frame.optionTable.hideCastbar ) then
+		if ( unit and not hideCastBar ) then
 			if ( frame.castBar ) then
+				frame.castBar:SetAndUpdateShowCastbar(true);
 				frame.castBar:SetUnit(unit, false, true);
 			end
 		else
 			if ( frame.castBar ) then
+				frame.castBar:SetAndUpdateShowCastbar(false);
 				frame.castBar:SetUnit(nil, nil, nil);
 			end
 		end
@@ -322,7 +316,6 @@ function CompactUnitFrame_UpdateUnitEvents(frame)
 	frame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_HEAL_PREDICTION", unit, displayedUnit);
 	frame:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", unit, displayedUnit);
-	frame:RegisterUnitEvent("UNIT_CLASSIFICATION_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_LEVEL", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_OTHER_PARTY_CHANGED", unit, displayedUnit);
 	frame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", unit, displayedUnit);
@@ -418,7 +411,6 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateMaxPower(frame);
 		CompactUnitFrame_UpdatePower(frame);
 		CompactUnitFrame_UpdatePowerColor(frame);
-		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateSelectionHighlight(frame);
 		CompactUnitFrame_UpdateAggroHighlight(frame);
 		CompactUnitFrame_UpdateAggroFlash(frame);
@@ -431,18 +423,16 @@ function CompactUnitFrame_UpdateAll(frame)
 		CompactUnitFrame_UpdateReadyCheck(frame);
 		CompactUnitFrame_UpdateAuras(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
-		CompactUnitFrame_UpdateClassificationIndicator(frame);
 		CompactUnitFrame_UpdatePlayerLevelDiff(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
 	elseif (UnitIsGameObject(frame.displayedUnit)) then -- Interactable GameObject
-		CompactUnitFrame_SetHideHealth(frame, true, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
 		CompactUnitFrame_UpdateName(frame);
-		CompactUnitFrame_UpdateWidgetsOnlyMode(frame);
 		CompactUnitFrame_UpdateInRange(frame);
 		CompactUnitFrame_UpdateDistance(frame);
 		CompactUnitFrame_UpdateStatusText(frame);
 		CompactUnitFrame_UpdateCenterStatusIcon(frame);
 		CompactUnitFrame_UpdateWidgetSet(frame);
+		CompactUnitFrame_UpdateAggroHighlight(frame);
 	end
 end
 
@@ -543,7 +533,7 @@ is undesirable in the case of the lobby.
 This is a hacky fix, but comes in the interest of not creating further bugs. 
 ]]
 local function GetPlunderstormPlayerExtendedColorOverride(unit, displayedUnit)
-	return C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm 
+	return C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm
 		and UnitIsPlayer(unit) 
 		and not UnitInParty(unit) 
 		and not UnitCanAttack("player", unit)
@@ -583,7 +573,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) and not UnitIsFriend("player", frame.unit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
-				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameModeManager.GetCurrentGameMode() ~= Enum.GameMode.Plunderstorm ) then
+				elseif ( UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm ) then
 					-- We don't want to use the selection color for friendly player nameplates because
 					-- it doesn't show player health clearly enough.
 					r, g, b = 0.667, 0.667, 1.0;
@@ -610,28 +600,10 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 		end
 	end
 
-	-- Update whether healthbar is hidden due to being dead - only applies to non-player nameplates
-	local hideHealthBecauseDead = unitIsDead and not unitIsPlayer;
-	CompactUnitFrame_SetHideHealth(frame, hideHealthBecauseDead, HEALTH_BAR_HIDE_REASON_UNIT_DEAD);
-end
-
-function CompactUnitFrame_SetHideHealth(frame, hideHealth, reason)
-	assert(reason);
-	
-	if ( hideHealth ) then
-		frame.hideHealthBarMask = bit.bor(frame.hideHealthBarMask or 0, reason);
-	else
-		frame.hideHealthBarMask = bit.band(frame.hideHealthBarMask or 0, bit.bnot(reason));
+	-- Needed until Nameplates can be fully decoupled from CompactUnitFrame.
+	if frame.UpdateIsDead then
+		frame:UpdateIsDead();
 	end
-
-	frame.healthBar:SetShown(not CompactUnitFrame_GetHideHealth(frame));
-	if (frame.HealthBarsContainer) then
-		frame.HealthBarsContainer:SetShown(not CompactUnitFrame_GetHideHealth(frame));
-	end
-end
-
-function CompactUnitFrame_GetHideHealth(frame)
-	return frame.hideHealthBarMask and frame.hideHealthBarMask > 0 or false;
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -655,7 +627,7 @@ function CompactUnitFrame_UpdateHealth(frame)
 			frame.healthBar:SetSmoothedValue(health);
 		end
 	else
-		PixelUtil.SetStatusBarValue(frame.healthBar, health);
+		frame.healthBar:SetValue(health);
 	end
 	CompactUnitFrame_UpdateName(frame);
 	CompactUnitFrame_UpdateHealthColor(frame);
@@ -678,7 +650,7 @@ end
 
 function CompactUnitFrame_UpdatePower(frame)
 	if frame.powerBar then
-		PixelUtil.SetStatusBarValue(frame.powerBar, UnitPower(frame.displayedUnit, CompactUnitFrame_GetDisplayedPowerID(frame)));
+		frame.powerBar:SetValue(UnitPower(frame.displayedUnit, CompactUnitFrame_GetDisplayedPowerID(frame)));
 	end
 end
 
@@ -717,22 +689,24 @@ function CompactUnitFrame_UpdatePowerColor(frame)
 end
 
 function ShouldShowName(frame)
-	if frame.WidgetContainer and UnitNameplateShowsWidgetsOnly(frame.unit) then
-		return false;
-	end
-	if ( frame.optionTable.displayName ) then
+	if frame.optionTable.displayName then
 		local failedRequirement = false;
-		if ( frame.optionTable.displayNameByPlayerNameRules ) then
-			if ( UnitShouldDisplayName(frame.unit) ) then
+
+		if frame.optionTable.displayNameByPlayerNameRules then
+			if frame.IsSimplified and frame:IsSimplified() and (not frame.IsTarget or not frame:IsTarget()) then
+				failedRequirement = true;
+			elseif UnitShouldDisplayName(frame.unit) then
 				return true;
 			end
+
 			failedRequirement = true;
 		end
 
-		if ( frame.optionTable.displayNameWhenSelected ) then
-			if ( UnitIsUnit(frame.unit, "target") ) then
+		if C_CVar.GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected then
+			if UnitIsUnit(frame.unit, "target") then
 				return true;
 			end
+
 			failedRequirement = true;
 		end
 
@@ -742,52 +716,21 @@ function ShouldShowName(frame)
 	return false;
 end
 
-function CompactUnitFrame_UpdateWidgetsOnlyMode(frame)
-	if not frame.WidgetContainer then
-		return;
-	end
-
-	local inWidgetsOnlyMode = UnitNameplateShowsWidgetsOnly(frame.unit);
-
-	CompactUnitFrame_SetHideHealth(frame, inWidgetsOnlyMode, HEALTH_BAR_HIDE_REASON_WIDGET_ONLY);
-
-	if frame.castBar and not frame.optionTable.hideCastbar then
-		if inWidgetsOnlyMode then
-			frame.castBar:SetUnit(nil, nil, nil);
-			frame.hideCastbar = true;
-		else
-			frame.castBar:SetUnit(frame.unit, false, true);
-		end
-	end
-
-	if frame.BuffFrame then
-		frame.BuffFrame:SetShown(not inWidgetsOnlyMode);
-	end
-
-	if frame.ClassificationFrame then
-		frame.ClassificationFrame:SetShown(not inWidgetsOnlyMode);
-	end
-
-	if frame.RaidTargetFrame then
-		frame.RaidTargetFrame:SetShown(not inWidgetsOnlyMode);
-	end
-
-	if frame.WidgetContainer then
-		frame.WidgetContainer:ClearAllPoints();
-		if inWidgetsOnlyMode then
-			PixelUtil.SetPoint(frame.WidgetContainer, "BOTTOM", frame, "BOTTOM", 0, 0);
-		else
-			PixelUtil.SetPoint(frame.WidgetContainer, "TOP", frame.castBar, "BOTTOM", 0, 0);
-		end
-	end
-end
-
 function CompactUnitFrame_UpdateName(frame)
 	if frame.UpdateNameOverride and frame:UpdateNameOverride() then
 		return;
 	end
 
-	if ( not ShouldShowName(frame) ) then
+	local shouldShowName;
+	if frame.ShouldShowName then
+		-- Use nameplate-specific logic
+		shouldShowName = frame:ShouldShowName();
+	else
+		-- Use standard compact frame logic
+		shouldShowName = ShouldShowName(frame);
+	end
+
+	if ( not shouldShowName ) then
 		frame.name:Hide();
 	else
 		local name = GetUnitName(frame.unit, true);
@@ -835,44 +778,87 @@ function CompactUnitFrame_UpdateSelectionHighlight(frame)
 	end
 end
 
-function CompactUnitFrame_UpdateAggroHighlight(frame)
-	if ( not frame.optionTable.displayAggroHighlight ) then
-		if ( not frame.optionTable.playLoseAggroHighlight ) then
-			frame.aggroHighlight:Hide();
-		end
-		return;
-	end
-
-	local status = UnitThreatSituation(frame.displayedUnit);
-	if ( status and status > 0 ) then
-		frame.aggroHighlight:SetVertexColor(GetThreatStatusColor(status));
-		frame.aggroHighlight:Show();
-	else
-		frame.aggroHighlight:Hide();
-	end
-end
-
 local function IsPlayerEffectivelyTank()
 	local assignedRole = UnitGroupRolesAssigned("player");
 	if ( assignedRole == "NONE" ) then
-		local spec = GetSpecialization();
+		local spec = C_SpecializationInfo.GetSpecialization();
 		return spec and GetSpecializationRole(spec) == "TANK";
 	end
 
 	return assignedRole == "TANK";
 end
 
+local function GetAggroHighlightThreatSituation(frame)
+	-- Frames displaying enemies (e.g. enemy nameplates) should be set up to get the player's threat
+	-- for the displayed unit.
+	if frame.optionTable.usePlayerForAggroHighlightThreat then
+		-- Show DPS how close they are to pulling threat.
+		if not IsPlayerEffectivelyTank() then
+			return UnitThreatSituation("player", frame.displayedUnit);
+		end
+
+		-- Show Tanks how close they are to losing threat to the second highest threat or red if they're
+		-- not the highest threat.
+		return UnitThreatLeadSituation("player", frame.displayedUnit);
+	end
+
+	-- Frames displaying raid or party members should be set up to get the max threat of the displayed
+	-- unit on all units they're attacking.
+	return UnitThreatSituation(frame.displayedUnit);
+end
+
+local function ShouldShowAggroHighlight(frame)
+	if not frame.optionTable.displayAggroHighlight and not frame.displayAggroHighlight then
+		return false, nil;
+	end
+
+	-- explicitThreatSituation can be used by places like the nameplate preview in the options menu
+	-- to display the highlight regardless of current threat state.
+	if frame.explicitThreatSituation then
+		return true, frame.explicitThreatSituation;
+	end
+
+	if UnitInParty("player") == false then
+		return false, nil;
+	end
+
+	local threatSituation = GetAggroHighlightThreatSituation(frame);
+	if not threatSituation then
+		return false, nil;
+	end
+
+	return threatSituation > 0, threatSituation;
+end
+
+function CompactUnitFrame_UpdateAggroHighlight(frame)
+	local shouldShow, status = ShouldShowAggroHighlight(frame);
+	frame.aggroHighlight:SetShown(shouldShow);
+
+	if shouldShow then
+		local r, g, b = GetThreatStatusColor(status);
+		frame.aggroHighlight:SetVertexColor(r, g, b);
+	end
+
+	if frame.UpdateAggroHighlight then
+		frame:UpdateAggroHighlight();
+	end
+end
+
 local function SetBorderColor(frame, r, g, b, a)
-	frame.HealthBarsContainer.border:SetVertexColor(r, g, b, a);
-	if frame.castBar and frame.castBar.border then
-		frame.castBar.border:SetVertexColor(r, g, b, a);
+	if frame.HealthBarsContainer.border then
+		frame.HealthBarsContainer.border:SetVertexColor(r, g, b, a);
+		if frame.castBar and frame.castBar.border then
+			frame.castBar.border:SetVertexColor(r, g, b, a);
+		end
 	end
 end
 
 local function SetBorderUnderline(frame, r, g, b, a)
-	frame.HealthBarsContainer.border:SetUnderlineColor(r, g, b, a);
-	if frame.castBar and frame.castBar.border then
-		frame.castBar.border:SetVertexColor(r, g, b, a);
+	if frame.HealthBarsContainer.border then
+		frame.HealthBarsContainer.border:SetUnderlineColor(r, g, b, a);
+		if frame.castBar and frame.castBar.border then
+			frame.castBar.border:SetVertexColor(r, g, b, a);
+		end
 	end
 end
 
@@ -917,25 +903,53 @@ function CompactUnitFrame_UpdateHealthBorder(frame)
 	end
 end
 
-function CompactUnitFrame_UpdateAggroFlash(frame)
-	if ( frame.optionTable.displayAggroHighlight or not frame.optionTable.playLoseAggroHighlight ) then
-		return;
+local function ShouldShowAggroFlash(frame)
+	if not frame.displayAggroFlash then
+		return false;
 	end
 
-	if ( not IsPlayerEffectivelyTank() ) then
-		return;
+	-- forceAggroFlash can be used by places like the nameplate preview in the options menu to
+	-- display the flash regardless of spec or threat status.
+	if frame.forceAggroFlash then
+		return true;
 	end
 
-	local isTanking = UnitDetailedThreatSituation("player", frame.displayedUnit);
-	if ( frame.isTanking ~= isTanking ) then
-		if ( frame.isTanking and not isTanking ) then
-			frame.aggroHighlight:Show();
-			frame.LoseAggroAnim:Play();
-		end
+	-- Keep the aggro flash displaying for the duration of the animation to prevent it from
+	-- abruptly hiding if threat returns to the tank.
+	if frame.LoseAggroAnim:IsPlaying() then
+		return true;
+	end
+
+	local isTanking, _status, _scaledPercentage, _rawPercentage, _rawThreat = UnitDetailedThreatSituation("player", frame.displayedUnit);
+	if frame.isTanking ~= isTanking then
+		local wasTanking = frame.isTanking;
+
 		frame.isTanking = isTanking;
+
+		-- Don't flash if this is the first time isTanking is given a valid value. Otherwise bars would flash for
+		-- solo DPS players the moment they engage an enemy.
+		if wasTanking == nil then
+			return false;
+		end
+
+		-- Flash if threat is transitioning to the state it shouldn't be in for the current role (e.g. DPS is now tanking).
+		local shouldBeTanking = IsPlayerEffectivelyTank();
+		return frame.isTanking ~= shouldBeTanking;
 	end
-	if ( not frame.LoseAggroAnim:IsPlaying() ) then
-		frame.aggroHighlight:Hide();
+
+	return false;
+end
+
+function CompactUnitFrame_UpdateAggroFlash(frame)
+	if not frame.aggroFlash then
+		return;
+	end
+
+	local shouldShow = ShouldShowAggroFlash(frame);
+	frame.aggroFlash:SetShown(shouldShow);
+
+	if shouldShow and not frame.LoseAggroAnim:IsPlaying() then
+		frame.LoseAggroAnim:Play();
 	end
 end
 
@@ -1018,7 +1032,7 @@ local fakeSetup = {
 	}
 };
 
---WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua.
+--WARNING: This function is very similar to the function UnitFrameHealPredictionBars_Update in UnitFrame.lua and UpdateHealthPrediction in Blizzard_PersonalResourceDisplay.lua.
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.05;
 function CompactUnitFrame_UpdateHealPrediction(frame)
@@ -1034,7 +1048,7 @@ function CompactUnitFrame_UpdateHealPrediction(frame)
 	local _, maxHealth = frame.healthBar:GetMinMaxValues();
 	local health = frame.healthBar:GetValue();
 	--health = maxHealth * fake.healthMult;
-	--PixelUtil.SetStatusBarValue(frame.healthBar, health);
+	--frame.healthBar:SetValue(health);
 
 	if ( maxHealth <= 0 ) then
 		return;
@@ -1325,30 +1339,6 @@ function CompactUnitFrame_UpdateCenterStatusIcon(frame)
 	end
 end
 
-function CompactUnitFrame_UpdateClassificationIndicator(frame)
-	if (frame.classificationIndicator) then
-		if (frame.optionTable.showPvPClassificationIndicator and CompactUnitFrame_UpdatePvPClassificationIndicator(frame)) then
-			return;
-		elseif (frame.optionTable.showClassificationIndicator) then
-			local classification = UnitClassification(frame.unit);
-			if (classification == "elite" or classification == "worldboss") then
-				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-gold");
-				frame.classificationIndicator:Show();
-			elseif (classification == "rare") then
-				frame.classificationIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star");
-				frame.classificationIndicator:Show();
-			elseif (classification == "rareelite") then
-				frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
-				frame.classificationIndicator:Show();
-			else
-				frame.classificationIndicator:Hide();
-			end
-		else
-			frame.classificationIndicator:Hide();
-		end
-	end
-end
-
 function CompactUnitFrame_UpdatePlayerLevelDiff(frame)
 	if (frame.PlayerLevelDiffFrame) then
 		local levelDiffIcon = frame.PlayerLevelDiffFrame.playerLevelDiffIcon;
@@ -1403,7 +1393,7 @@ function CompactUnitFrame_UpdateLootFrame(frame)
 
 	frame.classificationIndicator:Hide();
 	frame.PlayerLevelDiffFrame:Hide();
-	frame.healthBar:Hide();
+	frame.HealthBarsContainer:Hide();
 	frame.name:Hide();
 	frame:SetScale(0.75);
 
@@ -1461,6 +1451,7 @@ do
 				frame.buffs[aura.auraInstanceID] = aura;
 			elseif type == AuraUtil.AuraUpdateChangedType.Dispel then
 				frame.debuffs[aura.auraInstanceID] = aura;
+				frame.dispels[aura.dispelName][aura.auraInstanceID] = aura;
 			end
 		end
 		AuraUtil.ForEachAura(frame.displayedUnit, AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Harmful), batchCount, HandleAura, usePackedAura);
@@ -1518,9 +1509,10 @@ do
 						frame.debuffs[auraInstanceID] = newAura;
 						debuffsChanged = true;
 
-						for _, tbl in pairs(frame.dispels) do
+						for dispelName, tbl in pairs(frame.dispels) do
 							if tbl[auraInstanceID] ~= nil then
-								tbl[auraInstanceID] = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+								assertsafe(not newAura or newAura.dispelType == dispelType, "Dispell name mismatch for type %s with spell %d.", dispelName, newAura and newAura.spellId or 0);
+								tbl[auraInstanceID] = newAura;
 								dispelsChanged = true;
 								break;
 							end
@@ -1606,14 +1598,18 @@ do
 		if dispelsChanged then
 			local frameNum = 1;
 			local maxDispelDebuffs = frame.maxDispelDebuffs;
-			for _, auraTbl in pairs(frame.dispels) do
+			for dispelName, auraTbl in pairs(frame.dispels) do
 				if frameNum > maxDispelDebuffs then
 					break;
 				end
 				if auraTbl:Size() ~= 0 then
 					local dispellDebuffFrame = frame.dispelDebuffFrames[frameNum];
-					CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, auraTbl:GetTop());
-					frameNum = frameNum + 1;
+					local aura = auraTbl:GetTop();
+					assertsafe(dispelName == aura.dispelName, "Dispell name mismatch for type %s with spell %d.", dispelName, aura.spellId);
+					if aura.dispelName then
+						CompactUnitFrame_UtilSetDispelDebuff(dispellDebuffFrame, aura);
+						frameNum = frameNum + 1;
+					end
 				end
 			end
 
@@ -1627,33 +1623,7 @@ do
 		end
 		
 		CompactUnitFrame_UpdateAurasInternal(frame, unitAuraUpdateInfo);
-		CompactUnitFrame_UpdateClassificationIndicator(frame);
 	end
-end
-
-local PvPClassificationIcons = {
-	[Enum.PvPUnitClassification.FlagCarrierHorde] = "nameplates-icon-flag-horde",
-	[Enum.PvPUnitClassification.FlagCarrierAlliance] = "nameplates-icon-flag-alliance",
-	[Enum.PvPUnitClassification.FlagCarrierNeutral] = "nameplates-icon-flag-neutral",
-	[Enum.PvPUnitClassification.CartRunnerHorde] = "nameplates-icon-cart-horde",
-	[Enum.PvPUnitClassification.CartRunnerAlliance] = "nameplates-icon-cart-alliance",
-	[Enum.PvPUnitClassification.AssassinHorde] = "nameplates-icon-bounty-horde",
-	[Enum.PvPUnitClassification.AssassinAlliance] = "nameplates-icon-bounty-alliance",
-	[Enum.PvPUnitClassification.OrbCarrierBlue] = "nameplates-icon-orb-blue",
-	[Enum.PvPUnitClassification.OrbCarrierGreen] = "nameplates-icon-orb-green",
-	[Enum.PvPUnitClassification.OrbCarrierOrange] = "nameplates-icon-orb-orange",
-	[Enum.PvPUnitClassification.OrbCarrierPurple] = "nameplates-icon-orb-purple",
-}
-
-function CompactUnitFrame_UpdatePvPClassificationIndicator(frame)
-	local classificationIcon = PvPClassificationIcons[UnitPvpClassification(frame.unit)];
-
-	if classificationIcon then
-		frame.classificationIndicator:SetAtlas(classificationIcon);
-		frame.classificationIndicator:Show();
-	end
-
-	return classificationIcon ~= nil;
 end
 
 --Utility Functions
@@ -1793,7 +1763,8 @@ end
 
 function CompactUnitFrame_GetOptionUseClassColors(frame, options)
 	-- There are no classes in Plunderstorm
-	if C_GameModeManager.GetCurrentGameMode() == Enum.GameMode.Plunderstorm then
+	-- GAME RULES TODO:: This should probably be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 		return false;
 	end
 
@@ -2291,286 +2262,6 @@ function DefaultCompactMiniFrameSetup(frame)
 	end
 
 	CompactUnitFrame_SetOptionTable(frame, DefaultCompactMiniFrameOptions)
-end
-
-DefaultCompactNamePlateFriendlyFrameOptions = {
-	useClassColors = true,
-	displaySelectionHighlight = true,
-	displayAggroHighlight = false,
-	displayName = true,
-	fadeOutOfRange = false,
-	--displayStatusText = true,
-	displayHealPrediction = true,
-	--displayDispelDebuffs = true,
-	colorNameBySelection = true,
-	colorNameWithExtendedColors = true,
-	colorHealthWithExtendedColors = true,
-	colorHealthBySelection = true,
-	considerSelectionInCombatAsHostile = true,
-	smoothHealthUpdates = false,
-	displayNameWhenSelected = true,
-	displayNameByPlayerNameRules = true,
-	showPvPClassificationIndicator = true,
-
-	selectedBorderColor = CreateColor(1, 1, 1, .35),
-	softTargetBorderColor = CreateColor(.9, 1, .9, .25),
-	tankBorderColor = CreateColor(1, 1, 0, .6),
-	defaultBorderColor = CreateColor(0, 0, 0, .8),
-}
-
-DefaultCompactNamePlateEnemyFrameOptions = {
-	displaySelectionHighlight = true,
-	displayAggroHighlight = false,
-	playLoseAggroHighlight = true,
-	displayName = true,
-	fadeOutOfRange = false,
-	displayHealPrediction = true,
-	colorNameBySelection = true,
-	colorHealthBySelection = true,
-	considerSelectionInCombatAsHostile = true,
-	smoothHealthUpdates = false,
-	displayNameWhenSelected = true,
-	displayNameByPlayerNameRules = true,
-	greyOutWhenTapDenied = true,
-	showClassificationIndicator = true,
-	showPvPClassificationIndicator = true,
-
-	selectedBorderColor = CreateColor(1, 1, 1, .9),
-	softTargetBorderColor = CreateColor(1, 1, 1, .4),
-	tankBorderColor = CreateColor(1, 1, 0, .6),
-	defaultBorderColor = CreateColor(0, 0, 0, 1),
-}
-
-DefaultCompactNamePlatePlayerFrameOptions = {
-	displaySelectionHighlight = false,
-	displayAggroHighlight = false,
-	displayName = false,
-	fadeOutOfRange = false,
-	displayHealPrediction = true,
-	colorNameBySelection = true,
-	smoothHealthUpdates = false,
-	displayNameWhenSelected = false,
-	hideCastbar = true,
-	healthBarColorOverride = CreateColor(0, 1, 0),
-
-	defaultBorderColor = CreateColor(0, 0, 0, 1),
-}
-
-DefaultCompactNamePlateFrameSetUpOptions = {
-	healthBarHeight = 4,
-	healthBarAlpha = 0.75,
-	castBarHeight = 8,
-	castBarFontHeight = 10,
-	useLargeNameFont = false,
-
-	castBarShieldWidth = 10,
-	castBarShieldHeight = 12,
-
-	castIconWidth = 10,
-	castIconHeight = 10,
-}
-
-DefaultCompactNamePlatePlayerFrameSetUpOptions = {
-	healthBarHeight = 4,
-	healthBarAlpha = 1,
-	castBarHeight = 8,
-	castBarFontHeight = 10,
-	useLargeNameFont = false,
-
-	castBarShieldWidth = 10,
-	castBarShieldHeight = 12,
-
-	castIconWidth = 10,
-	castIconHeight = 10,
-}
-
-function DefaultCompactNamePlateFrameSetup(frame, options)
-	if ( not options or type(options) ~= "table" ) then
-		error("Cannot setup target nameplate. Missing options table.")
-	end
-
-	frame.castBar.Text:SetAllPoints(frame.castBar);
-	frame.castBar.Text:SetFontObject(SystemFont_NamePlateCastBar);
-
-	frame.castBar:SetStatusBarTexture("Interface/TargetingFrame/UI-TargetingFrame-BarFill");
-
-	frame.castBar:AddWidgetForFade(frame.castBar.Icon);
-	frame.castBar:AddWidgetForFade(frame.castBar.BorderShield);
-
-	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlateFrameSetUpOptions, options);
-	DefaultCompactNamePlateFrameAnchors(frame);
-end
-
-function DefaultCompactNamePlateFrameAnchors(frame)
-	if not frame.customOptions or not frame.customOptions.ignoreBarPoints then
-	frame.castBar:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar, "BOTTOMLEFT", frame, "BOTTOMLEFT", 12, 6);
-	PixelUtil.SetPoint(frame.castBar, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -12, 6);
-
-	frame.HealthBarsContainer:ClearAllPoints();
-	PixelUtil.SetPoint(frame.HealthBarsContainer, "BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 2);
-	PixelUtil.SetPoint(frame.HealthBarsContainer, "BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 2);
-	end
-
-	DefaultCompactNamePlateFrameAnchorInternal(frame, DefaultCompactNamePlateFrameSetUpOptions);
-end
-
-function DefaultCompactNamePlateFriendlyFrameSetup(frame)
-	DefaultCompactNamePlateFrameSetup(frame, DefaultCompactNamePlateFriendlyFrameOptions);
-end
-
-function DefaultCompactNamePlateEnemyFrameSetup(frame)
-	DefaultCompactNamePlateFrameSetup(frame, DefaultCompactNamePlateEnemyFrameOptions);
-end
-
-function DefaultCompactNamePlatePlayerFrameAnchor(frame)
-	frame.HealthBarsContainer:ClearAllPoints();
-	PixelUtil.SetPoint(frame.HealthBarsContainer, "LEFT", frame, "LEFT", 12, 5);
-	PixelUtil.SetPoint(frame.HealthBarsContainer, "RIGHT", frame, "RIGHT", -12, 5);
-
-	DefaultCompactNamePlateFrameAnchorInternal(frame, DefaultCompactNamePlatePlayerFrameSetUpOptions);
-end
-
-function DefaultCompactNamePlatePlayerFrameSetup(frame)
-	DefaultCompactNamePlateFrameSetupInternal(frame, DefaultCompactNamePlatePlayerFrameSetUpOptions, DefaultCompactNamePlatePlayerFrameOptions);
-	DefaultCompactNamePlatePlayerFrameAnchor(frame);
-end
-
-function DefaultCompactNamePlateFrameSetupInternal(frame, setupOptions, frameOptions)
-	frame:SetAllPoints(frame:GetParent());
-
-	local customOptions = frame.customOptions;
-	frame.castBar:SetHeight(customOptions and customOptions.castBarHeight or setupOptions.castBarHeight);
-
-	local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
-	frame.castBar.Text:SetFont(fontName, customOptions and customOptions.castBarFontHeight or setupOptions.castBarFontHeight, fontFlags);
-
-	if customOptions and customOptions.nameFont then
-		frame.name:SetFontObject(customOptions.nameFont);
-	else
-	if setupOptions.useFixedSizeFont then
-		frame.name:SetIgnoreParentScale(false);
-		if setupOptions.useLargeNameFont then
-			frame.name:SetFontObject(SystemFont_LargeNamePlateFixed);
-		else
-			frame.name:SetFontObject(SystemFont_NamePlateFixed);
-		end
-	else
-		frame.name:SetIgnoreParentScale(true);
-		if setupOptions.useLargeNameFont then
-			frame.name:SetFontObject(SystemFont_LargeNamePlate);
-		else
-			frame.name:SetFontObject(SystemFont_NamePlate);
-		end
-	end
-	end
-
-	if ( not frame.healthBar and frame.HealthBarsContainer.healthBar) then
-		frame.healthBar = frame.HealthBarsContainer.healthBar;
-	end
-
-	if ( frame.HealthBarsContainer.TempMaxHealthLoss ) then
-		frame.HealthBarsContainer.TempMaxHealthLoss:InitalizeMaxHealthLossBar(frame.HealthBarsContainer, frame.HealthBarsContainer.healthBar);
-		frame.HealthBarsContainer.TempMaxHealthLoss:SetShouldAdjustHealthBarAnchor(0, 0);
-	end
-
-	frame.hideHealthBarMask = 0; -- Clear out mask of any old values
-	CompactUnitFrame_SetHideHealth(frame, setupOptions.hideHealthbar, HEALTH_BAR_HIDE_REASON_SETUP); -- Populate with setup option
-
-	frame.selectionHighlight:SetParent(frame.HealthBarsContainer);
-	frame.aggroHighlight:SetParent(frame.HealthBarsContainer);
-
-	local myHealthBar = frame.HealthBarsContainer.healthBar;
-	frame.myHealPrediction = myHealthBar.myHealPrediction;
-	frame.otherHealPrediction = myHealthBar.otherHealPrediction;
-	frame.totalAbsorb = myHealthBar.totalAbsorb;
-	frame.totalAbsorbOverlay = myHealthBar.totalAbsorbOverlay;
-	frame.overAbsorbGlow = myHealthBar.overAbsorbGlow;
-	frame.myHealAbsorb = myHealthBar.myHealAbsorb;
-	frame.myHealAbsorbLeftShadow = myHealthBar.myHealAbsorbLeftShadow;
-	frame.myHealAbsorbRightShadow = myHealthBar.myHealAbsorbRightShadow;
-	frame.overHealAbsorbGlow = myHealthBar.overHealAbsorbGlow;
-
-	frame.myHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
-
-	frame.myHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Fill", true, true);
-
-	frame.otherHealPrediction:SetVertexColor(0.0, 0.659, 0.608);
-
-	frame.totalAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Fill");
-	frame.totalAbsorb.overlay = frame.totalAbsorbOverlay;
-
-	frame.totalAbsorbOverlay:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true);	--Tile both vertically and horizontally
-	frame.totalAbsorbOverlay.tileSize = 20;
-
-	frame.overAbsorbGlow:SetTexture("Interface\\RaidFrame\\Shield-Overshield");
-	frame.overAbsorbGlow:SetBlendMode("ADD");
-
-	frame.overHealAbsorbGlow:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb");
-	frame.overHealAbsorbGlow:SetBlendMode("ADD");
-
-	frame.myHealPrediction:ClearAllPoints();
-
-	frame.myHealAbsorb:ClearAllPoints();
-
-	frame.myHealAbsorbLeftShadow:ClearAllPoints();
-	frame.myHealAbsorbRightShadow:ClearAllPoints();
-
-	frame.otherHealPrediction:ClearAllPoints();
-
-	frame.totalAbsorb:ClearAllPoints();
-
-	frame.totalAbsorbOverlay:SetAllPoints(frame.totalAbsorb);
-
-	frame.classificationIndicator = frame.ClassificationFrame.classificationIndicator;
-	frame.ClassificationFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
-	frame.ClassificationFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
-
-	frame.PlayerLevelDiffFrame.maxScale = setupOptions.maxClassificationScale or frameOptions.maxClassificationScale;
-	frame.PlayerLevelDiffFrame:SetScale(setupOptions.classificationScale or frameOptions.classificationScale or 1.0);
-
-	frame.LoseAggroAnim:Stop();
-
-	CompactUnitFrame_SetOptionTable(frame, frameOptions);
-end
-
-function DefaultCompactNamePlateFrameAnchorInternal(frame, setupOptions)
-	PixelUtil.SetSize(frame.castBar.BorderShield, setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
-	frame.castBar.BorderShield:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar.BorderShield, "CENTER", frame.castBar, "LEFT", 0, 0);
-
-	local customOptions = frame.customOptions;
-	if not customOptions or not customOptions.ignoreIconSize then
-	PixelUtil.SetSize(frame.castBar.Icon, setupOptions.castIconWidth, setupOptions.castIconHeight);
-	end
-
-	if not customOptions or not customOptions.ignoreIconPoint then
-	frame.castBar.Icon:ClearAllPoints();
-	PixelUtil.SetPoint(frame.castBar.Icon, "CENTER", frame.castBar, "LEFT", 0, 0);
-	end
-
-	if not customOptions or not customOptions.ignoreBarSize then
-	PixelUtil.SetHeight(frame.HealthBarsContainer, setupOptions.healthBarHeight);
-	end
-
-	PixelUtil.SetPoint(frame.name, "BOTTOM", frame.HealthBarsContainer, "TOP", 0, 4);
-	PixelUtil.SetHeight(frame.name, frame.name:GetLineHeight());
-
-	if not customOptions or not customOptions.ignoreOverAbsorbGlow then
-	frame.overAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(frame.overAbsorbGlow, "BOTTOMLEFT", frame.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
-	PixelUtil.SetPoint(frame.overAbsorbGlow, "TOPLEFT", frame.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
-	PixelUtil.SetHeight(frame.overAbsorbGlow, 8);
-	end
-
-	if not customOptions or not customOptions.ignoreOverHealAbsorbGlow then
-	frame.overHealAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "BOTTOMRIGHT", frame.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
-	PixelUtil.SetPoint(frame.overHealAbsorbGlow, "TOPRIGHT", frame.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
-	PixelUtil.SetWidth(frame.overHealAbsorbGlow, 8);
-	end
-
-	frame.HealthBarsContainer.border:UpdateSizes();
 end
 
 CompactUnitPrivateAuraAnchorMixin = {};

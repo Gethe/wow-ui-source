@@ -9,6 +9,7 @@ local LevelSquish =
 		{
 			Name = "ConvertFollowerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local LevelSquish =
 		{
 			Name = "ConvertPlayerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

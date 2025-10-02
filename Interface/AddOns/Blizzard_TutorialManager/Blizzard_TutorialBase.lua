@@ -84,9 +84,9 @@ end
 -- Screen Tutorials
 -- Center top screen box that can't be moved
 -- Frame is automatically closed when tutorial is shutdown
-function Class_TutorialBase:ShowScreenTutorial(content, druation, position, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:ShowScreenTutorial(content, duration, position, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowScreenTutorial");
-	self._screenTutorial = TutorialMainFrame_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialMainFrame_Frame:ShowTutorial(content, duration, position, showMovieName, loopMovie, resolution);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -108,14 +108,24 @@ function Class_TutorialBase:HideMouseKeyboardTutorial()
 	self._screenTutorial = TutorialKeyboardMouseFrame_Frame:HideTutorial();
 end
 
-function Class_TutorialBase:ShowSingleKeyTutorial(content, druation, position, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:ShowSingleKeyTutorial(content, duration, position, showMovieName, loopMovie, resolution)
 	self:DebugLog("ShowSingleKeyTutorial");
-	self._screenTutorial = TutorialSingleKey_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialSingleKey_Frame:ShowTutorial(content, duration, position, showMovieName, loopMovie, resolution);
 end
 
 function Class_TutorialBase:HideSingleKeyTutorial()
 	self:DebugLog("HideSingleKeyTutorial");
 	self._screenTutorial = TutorialSingleKey_Frame:HideTutorial();
+end
+
+function Class_TutorialBase:ShowDoubleKeyTutorial(content, duration, position, showMovieName, loopMovie, resolution)
+	self:DebugLog("ShowDoubleKeyTutorial");
+	self._screenTutorial = TutorialDoubleKey_Frame:ShowTutorial(content, duration, position, showMovieName, loopMovie, resolution);
+end
+
+function Class_TutorialBase:HideDoubleKeyTutorial()
+	self:DebugLog("HideDoubleKeyTutorial");
+	self._screenTutorial = TutorialDoubleKey_Frame:HideTutorial();
 end
 
 function Class_TutorialBase:ShowWalkTutorial()
@@ -285,6 +295,11 @@ function Class_TutorialBase:_Shutdown()
 
 	-- Unregister all Events, Functions and Scripts
 	Dispatcher:UnregisterAll(self);
+
+	-- Unregister all CBR
+	-- Missing implementation here. Recommend having all of the tutorials
+	-- register events using CBR handle container and then unregister all
+	-- callbacks here.
 
 	if (self.OnShutdown) then
 		self:OnShutdown()

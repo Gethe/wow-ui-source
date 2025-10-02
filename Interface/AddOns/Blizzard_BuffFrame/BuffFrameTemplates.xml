@@ -1,0 +1,146 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="AuraButtonArtTemplate" virtual="true">
+		<Size x="30" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Count" inherits="NumberFontNormal">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Duration" inherits="GameFontNormalSmall" hidden="true" >
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DebuffBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Size x="33" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+				<Texture parentKey="TempEnchantBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Symbol" inherits="TextStatusBarText">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="AuraButtonCodeTemplate" inherits="AuraButtonArtTemplate" mixin="AuraButtonMixin" virtual="true">
+		<!-- <KeyValues>
+			<KeyValue key="isExample" value="false" type="boolean"/>
+		</KeyValues> -->
+	</Button>
+
+	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->
+	<Button name="AuraButtonTemplate" inherits="AuraButtonCodeTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Button>
+
+	<AnimationGroup name="AuraContainerWarningFaderTemplate" mixin="AuraContainerWarningFaderMixin" looping="BOUNCE" virtual="true">
+		<Animation parentKey="Animation"/>
+	</AnimationGroup>
+
+	<Frame name="AuraContainerTemplate" mixin="AuraContainerMixin" virtual="true">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="iconStride" value="8" type="number"/>
+			<KeyValue key="iconPadding" value="5" type="number"/>
+			<KeyValue key="iconScale" value="1" type="number"/>
+			<KeyValue key="addIconsToRight" value="false" type="boolean"/>
+			<KeyValue key="addIconsToTop" value="false" type="boolean"/>
+			<KeyValue key="auraWarningFlashPeriod" value="1.5" type="number"/>
+			<KeyValue key="auraWarningMaxAlpha" value="1.0" type="number"/>
+			<KeyValue key="auraWarningMinAlpha" value="0.3" type="number"/>
+		</KeyValues>
+		<Animations>
+			<AnimationGroup parentKey="WarningFader" inherits="AuraContainerWarningFaderTemplate"/>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Used for automatic anchoring of private auras -->
+	<Frame name="BuffFramePrivateAuraAnchorTemplate" mixin="BuffFramePrivateAuraAnchorMixin" parentArray="PrivateAuraAnchors" virtual="true">
+		<Size x="30" y="40"/>
+		<KeyValues>
+			<KeyValue key="isAuraAnchor" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Icon">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Duration">
+				<!-- This size is an estimate; we don't know how large the text will actually be since it is set in private aura secure code -->
+				<Size x="29" y="11"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" />
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AuraFrameTemplate" mixin="AuraFrameMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<Frame parentKey="AuraContainer" inherits="AuraContainerTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="AuraFrame_OnLoad" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuraFrameEventListenerTemplate" inherits="AuraFrameTemplate" mixin="AuraFrameEventListenerMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="AuraFrameEventListener_OnLoad" inherit="append"/>
+			<OnEvent method="AuraFrameEventListener_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuraFrameEditModeTemplate" inherits="EditModeAuraFrameSystemTemplate, AuraFrameEventListenerTemplate" mixin="AuraFrameEditModeMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
+		</KeyValues>
+		-->
+	</Frame>
+
+</Ui>

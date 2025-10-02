@@ -8,6 +8,7 @@ local ExpansionInfo =
 		{
 			Name = "ClassicExpansionAtLeast",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -17,6 +18,21 @@ local ExpansionInfo =
 			Returns =
 			{
 				{ Name = "isAtLeast", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClassicExpansionAtMost",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "expansionLevel", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAtMost", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -145,8 +145,16 @@ function ProfessionsQualityDialogMixin:ReinitAllocations(allocations)
 end
 
 function ProfessionsQualityDialogMixin:Setup()
+	for index, container in ipairs(self.containers) do
+		container:Hide();
+	end
+
+	local totalWidth = 0;
+
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];
+		container:Show();
+
 		local itemID = reagent.itemID;
 		local button = container.Button;
 		button:SetItem(itemID);
@@ -164,7 +172,13 @@ function ProfessionsQualityDialogMixin:Setup()
 		local enabled = count > 0;
 		button:DesaturateHierarchy(enabled and 0 or 1);
 		editBox:SetEnabled(enabled);
+
+		totalWidth = totalWidth + container:GetWidth();
 	end
+
+	local firstContainer = self.containers[1];
+	local x = -(totalWidth / 2) + (firstContainer:GetWidth() / 2) + 5;
+	firstContainer:SetPoint("CENTER", self, "CENTER", x, 0);
 
 	self:EvaluateAllocations();
 end

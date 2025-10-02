@@ -59,7 +59,7 @@ function QuestSessionDialogBodyMixin:SetWarningText(text)
 	local body = self.Text;
 	local icon = self.Icon;
 	icon:Show();
-	icon:SetTexture(STATICPOPUP_TEXTURE_ALERT);
+	icon:SetTexture(GameDialogAlertTextureName);
 	icon:SetSize(warningSize, warningSize);
 	icon:ClearAllPoints();
 	icon:SetPoint("TOPLEFT");
@@ -648,7 +648,7 @@ function ConfirmInviteToGroupReceivedDialogMixin:OnUpdate()
 end
 
 function ConfirmInviteToGroupReceivedDialogMixin:Setup(name, text)
-	self.timeout = GetTime() + STATICPOPUP_TIMEOUT;
+	self.timeout = GetTime() + StaticPopupTimeoutSec;
 	self.Title:SetText("QuestSharing-DialogIcon", QUEST_SESSION_INVITE_RECEIVED_TITLE);
 	self.Body:SetText(text);
 	self.Divider:Show();
@@ -759,7 +759,7 @@ end
 local function CheckDisplayMessageForNotification(resultCode, guid)
 	local message, sound = GetNotification(resultCode, guid);
 	if message then
-		ChatFrame_DisplaySystemMessageInPrimary(message);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(message);
 	end
 
 	if sound then
@@ -844,7 +844,10 @@ function QuestSessionManagerMixin:OnEvent(event, ...)
 	elseif event == "QUEST_SESSION_ENABLED_STATE_CHANGED" then
 		self:OnEnabledStateChanged(...);
 	elseif event == "LEAVE_PARTY_CONFIRMATION" then
-		self:ShowCheckDialog(self.CheckLeavePartyDialog);
+		local reason = ...;
+		if reason == Enum.LeavePartyConfirmReason.QuestSync then
+			self:ShowCheckDialog(self.CheckLeavePartyDialog);
+		end
 	elseif event == "CONVERT_TO_RAID_CONFIRMATION" then
 		self:ShowCheckDialog(self.CheckConvertToRaidDialog);
 	elseif event == "QUEST_REMOVED" then
@@ -865,7 +868,7 @@ end
 function QuestSessionManagerMixin:OnQuestRemoved(questID, wasReplayQuest)
 	if wasReplayQuest then
 		QuestEventListener:AddCallback(questID, function()
-			ChatFrame_DisplaySystemMessageInPrimary(QUEST_SESSION_REPLAY_QUEST_REMOVED:format(QuestUtils_GetQuestName(questID)));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(QUEST_SESSION_REPLAY_QUEST_REMOVED:format(QuestUtils_GetQuestName(questID)));
 		end);
 	end
 end

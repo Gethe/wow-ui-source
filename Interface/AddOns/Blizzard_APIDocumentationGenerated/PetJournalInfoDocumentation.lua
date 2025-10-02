@@ -11,8 +11,23 @@ local PetJournalInfo =
 			Type = "Function",
 		},
 		{
+			Name = "ClearSearchFilter",
+			Type = "Function",
+		},
+		{
+			Name = "DismissSummonedPet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDisplayIDByIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +43,7 @@ local PetJournalInfo =
 		{
 			Name = "GetDisplayProbabilityByIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,8 +57,24 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetNonBattlePetLinkByIndex",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumDisplays",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -57,6 +89,7 @@ local PetJournalInfo =
 		{
 			Name = "GetNumPetsInJournal",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,8 +103,19 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetOwnedPetIDs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ownedPetIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetAbilityInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +132,8 @@ local PetJournalInfo =
 		{
 			Name = "GetPetAbilityListTable",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +148,8 @@ local PetJournalInfo =
 		{
 			Name = "GetPetInfoTableByPetID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +164,8 @@ local PetJournalInfo =
 		{
 			Name = "GetPetLoadOutInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,6 +184,7 @@ local PetJournalInfo =
 		{
 			Name = "GetPetSummonInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,12 +199,36 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetSearchFilter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFavoritePets",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "hasFavorites", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrentlySummoned",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "petID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSummoned", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -168,6 +243,7 @@ local PetJournalInfo =
 		{
 			Name = "PetIsSummonable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +258,7 @@ local PetJournalInfo =
 		{
 			Name = "PetUsesRandomDisplay",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +277,7 @@ local PetJournalInfo =
 		{
 			Name = "SetHoveredBattlePet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,8 +285,19 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "SetSearchFilter",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "filterText", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "SpellTargetBattlePet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

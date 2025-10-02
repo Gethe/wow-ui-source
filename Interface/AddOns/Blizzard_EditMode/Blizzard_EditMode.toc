@@ -1,0 +1,18 @@
+## Title: Blizzard_EditMode
+## Dependencies: Blizzard_UIParent, Blizzard_UIPanelTemplates, Blizzard_HelpPlate
+Shared\EditModeLayoutManagerUtil.lua
+Shared\EditModePresetLayoutSystemUtils.lua
+[Game]\EditModePresetLayouts.lua [AllowLoadGameType standard, wowhack, plunderstorm]
+Shared\EditModePresetLayoutsManager.lua
+Shared\EditModeSettingDisplayInfo.lua
+Shared\EditModeUtil.lua
+Shared\EditModeTemplates.lua
+Shared\EditModeTemplates.xml
+Shared\EditModeSystemTemplates.lua
+Shared\EditModeSystemTemplates.xml
+Shared\EditModeDialogs.lua
+Shared\EditModeDialogs.xml
+Shared\EditModeManager.lua
+Shared\EditModeManagerOverrides.lua
+[Family]\EditModeManagerOverrides.lua
+Shared\EditModeManager.xml

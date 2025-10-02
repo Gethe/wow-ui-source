@@ -154,7 +154,7 @@ function PvPTalentSlotButtonMixin:OnEnter()
 	local selectedTalentID = self:GetSelectedTalent();
 	local isInspecting = self:IsInspecting();
 	if (selectedTalentID) then
-		GameTooltip:SetPvpTalent(selectedTalentID, isInspecting, GetActiveSpecGroup(true), self.slotIndex);
+		GameTooltip:SetPvpTalent(selectedTalentID, isInspecting, C_SpecializationInfo.GetActiveSpecGroup(true), self.slotIndex);
 
 		if (not isInspecting) then
 			local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
@@ -181,7 +181,7 @@ function PvPTalentSlotButtonMixin:OnClick()
 	local selectedTalentID = self:GetSelectedTalent();
 	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
 		local link = GetPvpTalentLink(selectedTalentID);
-		ChatEdit_InsertLink(link);
+		ChatFrameUtil.InsertLink(link);
 		return;
 	end
 

@@ -536,7 +536,7 @@ function AzeriteEmpoweredItemPowerMixin:OnEnter()
 
 		GameTooltip:Show();
 		self.UpdateTooltip = self.OnEnter;
-		if TooltipUtil.ShouldDoItemComparison() then
+		if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 			TooltipComparisonManager:CompareAzeritePower(self:GetAzeritePowerID(), itemLink, GameTooltip);
 		else
 			TooltipComparisonManager:Clear(GameTooltip);
@@ -553,7 +553,7 @@ end
 function AzeriteEmpoweredItemPowerMixin:OnClick()
 	if IsModifiedClick("CHATLINK") then
 		local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
-		ChatEdit_InsertLink(spellLink);
+		ChatFrameUtil.InsertLink(spellLink);
 		return;
 	end
 

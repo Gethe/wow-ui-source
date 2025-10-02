@@ -9,6 +9,7 @@ local PetBattles =
 		{
 			Name = "GetBreedQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,8 @@ local PetBattles =
 		{
 			Name = "GetIcon",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +42,8 @@ local PetBattles =
 		{
 			Name = "GetName",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

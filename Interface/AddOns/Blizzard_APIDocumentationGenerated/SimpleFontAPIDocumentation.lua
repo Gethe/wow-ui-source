@@ -8,6 +8,7 @@ local SimpleFontAPI =
 		{
 			Name = "CopyFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,11 +44,41 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "GetFontHeight",
+			Type = "Function",
+			Documentation = { "Return is either in uiUnits or internal height due to fixedHeight." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFontObject",
 			Type = "Function",
 
 			Arguments =
 			{
+			},
+
+			Returns =
+			{
+				{ Name = "font", Type = "SimpleFont", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFontObjectForAlphabet",
+			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "alphabet", Type = "FontAlphabet", Nilable = false },
 			},
 
 			Returns =
@@ -156,6 +187,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -165,6 +197,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,8 +207,20 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "SetFontHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Preserves all flags, does correct height conversion due to fixedHeight." },
+
+			Arguments =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,6 +230,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetIndentedWordWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,6 +240,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetJustifyH",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,6 +250,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetJustifyV",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +260,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetShadowColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -224,6 +273,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetShadowOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -234,6 +284,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetSpacing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,6 +294,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetTextColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

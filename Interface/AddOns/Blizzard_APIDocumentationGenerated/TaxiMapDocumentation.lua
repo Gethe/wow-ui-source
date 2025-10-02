@@ -9,6 +9,7 @@ local TaxiMap =
 		{
 			Name = "GetAllTaxiNodes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes at the current flight master." },
 
 			Arguments =
@@ -24,6 +25,7 @@ local TaxiMap =
 		{
 			Name = "GetTaxiNodesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes for a given map, without considering the current flight master." },
 
 			Arguments =
@@ -39,6 +41,7 @@ local TaxiMap =
 		{
 			Name = "ShouldMapShowTaxiNodes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

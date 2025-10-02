@@ -1,0 +1,10 @@
+## Title: Blizzard Remix Artifact UI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## LoadOnDemand: 1
+## AllowLoadGameType: standard
+## AllowLoad: Game
+## Dependencies: Blizzard_ArtifactUI, Blizzard_SharedTalentUI
+
+Blizzard_RemixArtifactUI.lua
+Blizzard_RemixArtifactUI.xml

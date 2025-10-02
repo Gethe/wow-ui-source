@@ -7,6 +7,10 @@ local settings = {
 
 WorldQuestObjectiveTrackerMixin = CreateFromMixins(BonusObjectiveTrackerMixin, settings);
 
+function WorldQuestObjectiveTrackerMixin:InitModule()
+	self.entryCount = 0;
+end
+
 function WorldQuestObjectiveTrackerMixin:OnEvent(event, ...)
 	if event == "QUEST_TURNED_IN" then
 		self:OnQuestTurnedIn(...);
@@ -83,6 +87,10 @@ function WorldQuestObjectiveTrackerMixin:LayoutContents()
 	end
 	self.tickerSeconds = 0;
 
+	self.entryCount = self.entryCount + 1;
+	self.oldContentList = self.currentContentList;
+	self.currentContentList = { };
+
 	-- local area WQs first
 	local tasksTable = GetTasksTable();
 	for i = 1, #tasksTable do
@@ -91,6 +99,7 @@ function WorldQuestObjectiveTrackerMixin:LayoutContents()
 			if not self:AddQuest(questID) then
 				break;
 			end
+			table.insert(self.currentContentList, questID);
 		end
 	end
 
@@ -101,6 +110,7 @@ function WorldQuestObjectiveTrackerMixin:LayoutContents()
 		if not self:AddQuest(questID, isTrackedWorldQuest) then
 			break;
 		end
+		table.insert(self.currentContentList, questID);
 	end
 
 	if self.tickerSeconds > 0 then
@@ -108,4 +118,6 @@ function WorldQuestObjectiveTrackerMixin:LayoutContents()
 			self:MarkDirty();
 		end);
 	end
+
+	self.entryCount = self.entryCount - 1;
 end

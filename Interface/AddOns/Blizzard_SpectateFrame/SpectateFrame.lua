@@ -19,6 +19,8 @@ end
 function SpectateFrameMixin:OnShow()
 	self:UpdateArrowText(self.ArrowLeft, "STRAFELEFT", "TURNLEFT", PreferSpectatePreviousKey);
 	self:UpdateArrowText(self.ArrowRight, "STRAFERIGHT", "TURNRIGHT", PreferSpectateNextKey);
+
+	self.MatchDetailsButton:SetShown(EndOfMatchFrame:HasMatchDetails());
 end
 
 function SpectateFrameMixin:OnUpdate(dt)
@@ -73,8 +75,8 @@ function SpectateFrameMixin:UpdateArrowText(arrow, strafeCommand, turnCommand, p
 	arrow:SetArrowText(strafeKey or turnKey or "");
 end
 
-function SpectateFrameMixin:ShouldBeInSpecateMode()
-	if (not C_SpectatingUI.IsSpectating()) then 
+function SpectateFrameMixin:ShouldBeInSpectateMode()
+	if (not C_SpectatingUI.IsSpectating() or EndOfMatchFrame:IsShown()) then 
 		self:LeaveSpectatingMode(); 
 		return false; 
 	end 
@@ -99,15 +101,14 @@ function SpectateFrameMixin:IsZoomingFOV(command)
 end
 
 function SpectateFrameMixin:InitializeSpectateMode()
-	if(not self:ShouldBeInSpecateMode()) then 
-		return; 
-	end	
+	if not self:ShouldBeInSpectateMode() then
+		return;
+	end
 
 	SetFrameLock("SPECTATING", true);
-	EditModeManagerFrame:SetOverrideLayout(1); 
+	EditModeManagerFrame:SetOverrideLayout(1);
 	self:Show();
 	self:UpdatePlayerName();
-	C_ArrowCalloutManager.HideWorldLootObjectCallout();
 end
 
 function SpectateFrameMixin:UpdatePlayerName()
@@ -160,7 +161,7 @@ end
 StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WHILE_RESSURECTABLE"] = {	text = WOW_LABS_CONFIRM_LEAVE_MATCH,
 	button1 = WOW_LABS_REMATCH,
 	button2 = WOW_LABS_STAY,
-	OnAccept = function()
+	OnAccept = function(dialog, data)
 		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(PLUNDER_CURRENCY_ID);
 		if currencyInfo.quantity <= 0 then
 			LeaveMatch();	
@@ -168,7 +169,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WHILE_RESSURECTABLE"] = {	text = WOW_LAB
 			StaticPopup_Show(GetNumGroupMembers() > 1 and "CONFIRM_LEAVE_MATCH_WITH_PLUNDER" or "CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO");
 		end
 	end,
-	OnCancel = function() end,
+	OnCancel = function(dialog, data) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -193,7 +194,7 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO"] = {
 	button1 = WOW_LABS_REMATCH,
 	button2 = WOW_LABS_STAY,
 	OnAccept = LeaveMatch,
-	OnCancel = function() end,
+	OnCancel = function(dialog, data) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
@@ -201,14 +202,18 @@ StaticPopupDialogs["CONFIRM_LEAVE_MATCH_WITH_PLUNDER_SOLO"] = {
 	showAlert = true,
 }
 
-SpectateViewRewardsButtonMixin = {};
-function SpectateViewRewardsButtonMixin:OnClick()
-	ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
-end
-
 SpectateLeaveMatchButtonMixin = {};
 function SpectateLeaveMatchButtonMixin:OnClick()
 	LeaveMatchUtil_LeaveMatchPopup();
+end
+
+MatchDetailsButtonMixin = {};
+function MatchDetailsButtonMixin:OnClick()
+	local spectateFrame = self:GetParent();	
+	spectateFrame:LeaveSpectatingMode();
+
+	local checkSpectating = false;
+	EventRegistry:TriggerEvent("EndOfMatchUI.TryShow", checkSpectating);
 end
 
 SpectateCycleModeMixin = { };

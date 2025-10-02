@@ -37,8 +37,12 @@ function LootHistoryElementMixin:SetTooltip()
 
 	local item = Item:CreateFromItemLink(self.dropInfo.itemHyperlink);
 	local itemQuality = item:GetItemQuality();
-	local qualityColor = ITEM_QUALITY_COLORS[itemQuality].color;
-	GameTooltip_SetTitle(GameTooltip, qualityColor:WrapTextInColorCode(item:GetItemName()));
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		GameTooltip_SetTitle(GameTooltip, colorData.color:WrapTextInColorCode(item:GetItemName()));
+	else
+		GameTooltip_SetTitle(GameTooltip, item:GetItemName());
+	end
 
 	if self.dropInfo.allPassed then
 		local allPassedFrame = tooltipLinePool:Acquire();
@@ -101,11 +105,15 @@ function LootHistoryElementMixin:Init(dropInfo)
 	self.dropInfo = dropInfo;
 
 	local item = Item:CreateFromItemLink(dropInfo.itemHyperlink);
-	local itemQuality = item:GetItemQuality();
-	local qualityColor = ITEM_QUALITY_COLORS[itemQuality].color;
 
 	self.ItemName:SetText(item:GetItemName());
-	self.ItemName:SetVertexColor(qualityColor:GetRGB());
+
+	local itemQuality = item:GetItemQuality();
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		self.ItemName:SetVertexColor(colorData.color:GetRGB());
+	end
+
 	SetItemButtonQuality(self.Item, itemQuality, dropInfo.itemHyperlink);
 	self.Item.icon:SetTexture(item:GetItemIcon());
 
@@ -327,6 +335,7 @@ function LootHistoryFrameMixin:OnHide()
 
 	self.ScrollBox:RemoveDataProvider();
 	self.selectedEncounterID = nil;
+	self.PerfectAnimFrame:StopPerfectRollAnim();
 end
 
 function LootHistoryFrameMixin:OnEvent(event, ...)
@@ -344,6 +353,7 @@ function LootHistoryFrameMixin:OnEvent(event, ...)
 		self:SetScript("OnUpdate", nil);
 		self.selectedEncounterID = nil;
 		self.encounterInfo = nil;
+		self.PerfectAnimFrame:StopPerfectRollAnim();
 	elseif event == "LOOT_HISTORY_ONE_HUNDRED_ROLL" then
 		local encounterID, lootListID = ...;
 

@@ -95,7 +95,7 @@ local function IsLegacyRepSelected()
 end
 
 local function SetLegacyRepSelected()
-	C_Reputation.SetLegacyReputationsShown(not IsLegacyRepSelected()); 
+	C_Reputation.SetLegacyReputationsShown(not IsLegacyRepSelected());
 end
 
 function ReputationFrameMixin:OnShow()
@@ -152,7 +152,7 @@ end
 function ReputationFrameMixin:RefreshAccountWideReputationTutorial()
 	HelpTip:Hide(self, ACCOUNT_WIDE_REPUTATION_TUTORIAL);
 
-	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION);
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AccountWideReputation);
 	if tutorialAcknowledged then
 		return;
 	end
@@ -166,7 +166,7 @@ function ReputationFrameMixin:RefreshAccountWideReputationTutorial()
 		text = ACCOUNT_WIDE_REPUTATION_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION,
+		bitfieldFlag = Enum.FrameTutorialAccount.AccountWideReputation,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 40,
 		alignment = HelpTip.Alignment.Center,
@@ -269,7 +269,7 @@ end
 function ReputationEntryMixin:TryInitParagonDisplay()
 	local factionID = self.factionID;
 	local paragonIcon = self.Content.ParagonIcon;
-	if not C_Reputation.IsFactionParagon(factionID) then
+	if not C_Reputation.IsFactionParagonForCurrentPlayer(factionID) then
 		paragonIcon:Hide();
 		return;
 	end
@@ -288,7 +288,7 @@ function ReputationEntryMixin:OnClick()
 	-- Hide this faction's tooltip when it is selected (since we're showing the options for this reputation)
 	if self:IsSelected() then
 		self:HideTooltip();
-	-- If we just deselected the faction, then we're clear to show the tooltip again 
+	-- If we just deselected the faction, then we're clear to show the tooltip again
 	elseif self:IsMouseOver() then
 		self:ShowTooltipForReputationType();
 	end
@@ -308,14 +308,14 @@ function ReputationEntryMixin:OnEnter()
 	self.Content.ReputationBar:TryShowBarProgressText();
 
 	self:RefreshHighlightVisuals();
-	
+
 	if not self:IsSelected() then
 		self:ShowTooltipForReputationType();
 	end
 end
 
 function ReputationEntryMixin:ShowTooltipForReputationType()
-	if C_Reputation.IsFactionParagon(self.elementData.factionID) then
+	if C_Reputation.IsFactionParagonForCurrentPlayer(self.elementData.factionID) then
 		self:ShowParagonRewardsTooltip();
 	elseif self.reputationType == ReputationType.Friendship then
 		local canClickForOptions = true;
@@ -326,16 +326,6 @@ function ReputationEntryMixin:ShowTooltipForReputationType()
 		self:ShowStandardTooltip();
 	end
 end
-
-local function TryAppendAccountReputationLineToTooltip(tooltip, factionID)
-	if not tooltip or not factionID or not C_Reputation.IsAccountWideReputation(factionID) then
-		return;
-	end
-
-	local wrapText = false;
-	GameTooltip_AddColoredLine(tooltip, REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL, ACCOUNT_WIDE_FONT_COLOR, wrapText);
-end
-
 
 function ReputationEntryMixin:ShowParagonRewardsTooltip()
 	EmbeddedItemTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -358,7 +348,7 @@ function ReputationEntryMixin:ShowFriendshipReputationTooltip(factionID, anchor,
 		GameTooltip_SetTitle(GameTooltip, friendshipData.name, HIGHLIGHT_FONT_COLOR);
 	end
 
-	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
+	ReputationUtil.TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
 
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip:AddLine(friendshipData.text, nil, nil, nil, true);
@@ -382,53 +372,19 @@ function ReputationEntryMixin:ShowFriendshipReputationTooltip(factionID, anchor,
 end
 
 function ReputationEntryMixin:ShowMajorFactionRenownTooltip()
-	local function AddRenownRewardsToTooltip(renownRewards)
-		GameTooltip_AddHighlightLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_NEXT_REWARDS);
-	
-		for i, rewardInfo in ipairs(renownRewards) do
-			local renownRewardString;
-			local icon, name, description = RenownRewardUtil.GetRenownRewardInfo(rewardInfo, GenerateClosure(self.ShowMajorFactionRenownTooltip, self));
-			if icon then
-				local file, width, height = icon, 16, 16;
-				local rewardTexture = CreateSimpleTextureMarkup(file, width, height);
-				renownRewardString = rewardTexture .. " " .. name;
-			end
-			local wrapText = false;
-			GameTooltip_AddNormalLine(GameTooltip, renownRewardString, wrapText);
-		end
-	end
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-
 	local factionID = self.elementData.factionID;
-	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
-
-	local tooltipTitle = majorFactionData.name;
-	GameTooltip_SetTitle(GameTooltip, tooltipTitle, HIGHLIGHT_FONT_COLOR);
-	TryAppendAccountReputationLineToTooltip(GameTooltip, factionID);
-	GameTooltip_AddHighlightLine(GameTooltip, RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel);
-
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
-
-	GameTooltip_AddNormalLine(GameTooltip, MAJOR_FACTION_RENOWN_TOOLTIP_PROGRESS:format(majorFactionData.name));
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-
-	local nextRenownRewards = C_MajorFactions.GetRenownRewardsForLevel(factionID, C_MajorFactions.GetCurrentRenownLevel(factionID) + 1);
-	if #nextRenownRewards > 0 then
-		AddRenownRewardsToTooltip(nextRenownRewards);
-	end
-
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, factionID, GenerateClosure(self.ShowMajorFactionRenownTooltip, self));
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddInstructionLine(GameTooltip, REPUTATION_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
-
+	EventRegistry:TriggerEvent("ShowMajorFactionRenown.Tooltip.OnEnter", self, GameTooltip, factionID);
 	GameTooltip:Show();
 end
 
 function ReputationEntryMixin:ShowStandardTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, self.elementData.name);
-	TryAppendAccountReputationLineToTooltip(GameTooltip, self.elementData.factionID);
+	ReputationUtil.TryAppendAccountReputationLineToTooltip(GameTooltip, self.elementData.factionID);
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddInstructionLine(GameTooltip, REPUTATION_BUTTON_TOOLTIP_CLICK_INSTRUCTION);
 	GameTooltip:Show();
@@ -534,8 +490,8 @@ local function InitializeBarForStandardReputation(factionData, reputationBar)
 	end
 	minValue, maxValue, currentValue = NormalizeBarValues(minValue, maxValue, currentValue);
 	reputationBar:UpdateBarValues(minValue, maxValue, currentValue);
-	
-	local progressText = not isCapped and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil; 
+
+	local progressText = not isCapped and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil;
 	reputationBar:UpdateBarProgressText(progressText);
 	local gender = UnitSex("player");
 	local reputationStandingtext = GetText("FACTION_STANDING_LABEL" .. factionData.reaction, gender);
@@ -565,7 +521,7 @@ local function InitializeBarForFriendship(factionData, reputationBar)
 	reputationBar:TryShowReputationStandingText();
 
 	local friendshipColorIndex = 5; -- Always color friendships green
-	reputationBar:UpdateBarColor(FACTION_BAR_COLORS[friendshipColorIndex]);	
+	reputationBar:UpdateBarColor(FACTION_BAR_COLORS[friendshipColorIndex]);
 end
 
 local function InitializeBarForMajorFaction(factionData, reputationBar)
@@ -575,15 +531,17 @@ local function InitializeBarForMajorFaction(factionData, reputationBar)
 	if isMaxRenown then
 		-- Max renown, make it look like a full bar
 		minValue, maxValue, currentValue = 0, 1, 1;
-	else
+	elseif majorFactionData then
 		minValue, maxValue, currentValue = 0, majorFactionData.renownLevelThreshold, majorFactionData.renownReputationEarned;
+	else
+		minValue, maxValue, currentValue = 0, 0, 0;
 	end
 	minValue, maxValue, currentValue = NormalizeBarValues(minValue, maxValue, currentValue);
 	reputationBar:UpdateBarValues(minValue, maxValue, currentValue);
 
 	local progressText = not isMaxRenown and HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(REPUTATION_PROGRESS_FORMAT:format(BreakUpLargeNumbers(currentValue), BreakUpLargeNumbers(maxValue))) or nil;
 	reputationBar:UpdateBarProgressText(progressText);
-	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel);
+	reputationBar:UpdateReputationStandingText(RENOWN_LEVEL_LABEL:format(majorFactionData and majorFactionData.renownLevel or 0));
 	reputationBar:TryShowReputationStandingText();
 
 	reputationBar:UpdateBarColor(BLUE_FONT_COLOR);
@@ -706,7 +664,7 @@ function ReputationBarParagonIconMixin:OnUpdate()
 	if not self.Glow:IsShown() then
 		return;
 	end
-		
+
 	local alpha;
 	local time = GetTime();
 	local value = time - floor(time);
@@ -722,51 +680,11 @@ end
 function ReputationParagonFrame_SetupParagonTooltip(frame)
 	local factionID = frame.factionID;
 	EmbeddedItemTooltip.factionID = frame.factionID;
-
-	local factionStandingtext;
-	local factionData = C_Reputation.GetFactionDataByID(factionID);
-	local reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID);
-	if reputationInfo and reputationInfo.friendshipFactionID > 0 then
-		factionStandingtext = reputationInfo.reaction;
-	elseif C_Reputation.IsMajorFaction(factionID) then
-		factionStandingtext = MAJOR_FACTION_MAX_RENOWN_REACHED;
-	else
-		local gender = UnitSex("player");
-		factionStandingtext = GetText("FACTION_STANDING_LABEL"..factionData.reaction, gender);
-	end
-	local currentValue, threshold, rewardQuestID, hasRewardPending, tooLowLevelForParagon = C_Reputation.GetFactionParagonInfo(factionID);
-
-	if ( tooLowLevelForParagon ) then
-		GameTooltip_SetTitle(EmbeddedItemTooltip, PARAGON_REPUTATION_TOOLTIP_TEXT_LOW_LEVEL, NORMAL_FONT_COLOR);
-	else
-		GameTooltip_SetTitle(EmbeddedItemTooltip, factionStandingtext, HIGHLIGHT_FONT_COLOR);
-
-		TryAppendAccountReputationLineToTooltip(EmbeddedItemTooltip, factionID);
-		GameTooltip_AddBlankLineToTooltip(EmbeddedItemTooltip);
-
-		local description = PARAGON_REPUTATION_TOOLTIP_TEXT:format(factionData.name);
-		if ( hasRewardPending ) then
-			local questIndex = C_QuestLog.GetLogIndexForQuestID(rewardQuestID);
-			local text = GetQuestLogCompletionText(questIndex);
-			if ( text and text ~= "" ) then
-				description = text;
-			end
-		end
-		GameTooltip_AddNormalLine(EmbeddedItemTooltip, description);
-		if ( not hasRewardPending ) then
-			local value = mod(currentValue, threshold);
-			-- show overflow if reward is pending
-			if ( hasRewardPending ) then
-				value = value + threshold;
-			end
-			GameTooltip_ShowProgressBar(EmbeddedItemTooltip, 0, threshold, value, REPUTATION_PROGRESS_FORMAT:format(value, threshold));
-		end
-		GameTooltip_AddQuestRewardsToTooltip(EmbeddedItemTooltip, rewardQuestID);
-	end
+	ReputationUtil.AddParagonRewardsToTooltip(EmbeddedItemTooltip, factionID);
 end
 
 function ReputationParagonWatchBar_OnEnter(self)
-	if not C_Reputation.IsFactionParagon(self.factionID) then
+	if not C_Reputation.IsFactionParagonForCurrentPlayer(self.factionID) then
 		return;
 	end
 
@@ -786,6 +704,8 @@ ReputationDetailFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 function ReputationDetailFrameMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 	self:AddStaticEventMethod(EventRegistry, "ReputationFrame.NewFactionSelected", self.Refresh);
+
+	ScrollUtil.RegisterScrollBoxWithScrollBar(self.ScrollingDescription:GetScrollBox(), self.ScrollingDescriptionScrollBar);
 end
 
 function ReputationDetailFrameMixin:OnShow()
@@ -806,20 +726,20 @@ function ReputationDetailFrameMixin:Refresh()
 	end
 
 	self.Title:SetText(factionData.name);
-	self.Description:SetText(factionData.description);
+	self.ScrollingDescription:SetText(factionData.description);
 
 	self.AtWarCheckbox:SetEnabled(factionData.canToggleAtWar and not factionData.isHeader);
 	self.AtWarCheckbox:SetChecked(factionData.atWarWith);
 	local atWarTextColor = factionData.canToggleAtWar and not factionData.isHeader and RED_FONT_COLOR or GRAY_FONT_COLOR;
 	self.AtWarCheckbox.Label:SetTextColor(atWarTextColor:GetRGB());
 
-	self.MakeInactiveCheckbox:SetEnabled(factionData.canSetInactive);		
+	self.MakeInactiveCheckbox:SetEnabled(factionData.canSetInactive);
 	self.MakeInactiveCheckbox:SetChecked(not C_Reputation.IsFactionActive(selectedFactionIndex));
 	local inactiveTextColor = factionData.canSetInactive and NORMAL_FONT_COLOR or GRAY_FONT_COLOR;
 	self.MakeInactiveCheckbox.Label:SetTextColor(inactiveTextColor:GetRGB());
 
 	self.WatchFactionCheckbox:SetChecked(factionData.isWatched);
-	
+
 	local isMajorFaction = C_Reputation.IsMajorFaction(factionData.factionID);
 	self:SetHeight(isMajorFaction and 228 or 203);
 	self.ViewRenownButton:Refresh();
@@ -845,31 +765,32 @@ function ReputationDetailViewRenownButtonMixin:Refresh()
 
 	local majorFactionData = C_MajorFactions.GetMajorFactionData(self.factionID);
 
-	self.disabledTooltip = majorFactionData.unlockDescription;
-	self:SetEnabled(majorFactionData.isUnlocked);
+	self.disabledTooltip = majorFactionData and majorFactionData.unlockDescription or "";
+	self:SetEnabled(majorFactionData and majorFactionData.isUnlocked or false);
 	self:Show();
 end
 
 function ReputationDetailViewRenownButtonMixin:OnClick()
-	MajorFactions_LoadUI();
-
-	if MajorFactionRenownFrame:IsShown() and MajorFactionRenownFrame:GetCurrentFactionID() == self.factionID then
-		ToggleMajorFactionRenown();
-	else
-		HideUIPanel(MajorFactionRenownFrame);
-		EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", self.factionID);
-		ShowUIPanel(MajorFactionRenownFrame);
+	if not EncounterJournal then
+		EncounterJournal_LoadUI();
 	end
+
+	if not EncounterJournal:IsShown() then
+		ShowUIPanel(EncounterJournal);
+	end
+
+	EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
+	EncounterJournalJourneysFrame:ResetView(nil, self.factionID);
 end
 
 ReputationDetailAtWarCheckboxMixin = {};
 
 function ReputationDetailAtWarCheckboxMixin:OnClick()
 	C_Reputation.ToggleFactionAtWar(C_Reputation.GetSelectedFaction());
-	
+
 	local clickSound = self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
 	PlaySound(clickSound);
-	
+
 	ReputationFrame:Update();
 end
 

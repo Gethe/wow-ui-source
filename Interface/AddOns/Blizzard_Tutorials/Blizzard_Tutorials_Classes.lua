@@ -3,10 +3,19 @@ local function IsTalentTutorialEnabled()
 	if GetCVarBool("hideTalentTutorials") then
 		return false;
 	end
+
+	if Kiosk.IsEnabled() then
+		return false;
+	end
+
 	return true;
 end
 
 function AddSpecAndTalentTutorials()
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
 	end
@@ -139,8 +148,8 @@ Class_ChangeSpec_NPE = class("ChangeSpec_NPE", Class_ChangeSpec);
 function Class_ChangeSpec_NPE:OnAdded(args)
 	self.specQuestID = args;
 	if C_QuestLog.GetLogIndexForQuestID(self.specQuestID) ~= nil then
-		self.readyForTurnIn = C_QuestLog.ReadyForTurnIn(self.specQuestID);
-		if self.readyForTurnIn then
+		local readyForTurnIn = C_QuestLog.ReadyForTurnIn(self.specQuestID);
+		if readyForTurnIn then
 			TutorialManager:Finished(self:Name());
 		else
 			TutorialManager:Queue(self:Name());
@@ -166,21 +175,16 @@ function Class_ChangeSpec_NPE:OnBegin()
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.OpenFrame", self.EvaluateTalentFrame, self);
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.CloseFrame", self.EvaluateTalentFrame, self);
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpecFrame.ActivateSpec", self.EnableHelp, self);
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
 	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
-	local spokeToTrainer = questObjectives[1].finished;
-	if spokeToTrainer then
-		local newSpecActivated = questObjectives[2].finished;
-		if newSpecActivated then
-			self:Complete();
-			return;
-		else
-			C_Timer.After(0.1, function()
-				self:ShowSpecButtonPointer();
-			end);			
-		end
+	local newSpecActivated = questObjectives[1].finished;
+	if newSpecActivated then
+		self:Complete();
+		return;
 	else
-		Dispatcher:RegisterEvent("QUEST_REMOVED", self);
-		Dispatcher:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self);		
+		C_Timer.After(0.1, function()
+			self:ShowSpecButtonPointer();
+		end);			
 	end
 end
 
@@ -190,28 +194,8 @@ function Class_ChangeSpec_NPE:QUEST_REMOVED(questIDRemoved)
 	end
 end
 
-function Class_ChangeSpec_NPE:UNIT_QUEST_LOG_CHANGED()
-	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
-	local spokeToTrainer = questObjectives[1].finished;
-	if spokeToTrainer then
-		Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
-		Dispatcher:RegisterEvent("GOSSIP_CLOSED", self);
-	end
-end
-
-function Class_ChangeSpec_NPE:GOSSIP_CLOSED()
-	local questObjectives = C_QuestLog.GetQuestObjectives(self.specQuestID);
-	local spokeToTrainer = questObjectives[1].finished;
-	if spokeToTrainer then
-		Dispatcher:UnregisterEvent("GOSSIP_CLOSED", self);
-		self:ShowSpecButtonPointer();
-	end
-end
-
 function Class_ChangeSpec_NPE:CleanUpCallbacks()
-	Dispatcher:UnregisterEvent("GOSSIP_CLOSED", self);
 	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
-	Dispatcher:UnregisterEvent("UNIT_QUEST_LOG_CHANGED", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.OpenFrame", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.CloseFrame", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpecFrame.ActivateSpec", self);

@@ -9,6 +9,7 @@ local MapExploration =
 		{
 			Name = "GetExploredAreaIDsAtPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,8 @@ local MapExploration =
 		{
 			Name = "GetExploredMapTextures",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

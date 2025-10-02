@@ -51,15 +51,13 @@ function CustomGossipManagerMixin:OnEvent(event, ...)
 end
 
 function CustomGossipManagerMixin:HandleOpenEvent(textureKit)
-	if(not textureKit) then
-		GossipFrame:HandleShow();
+	local handler = self:GetHandler(textureKit);
+	if handler then
+		self.customFrame = handler(textureKit);
+	elseif self.baseHandler then
+		self.customFrame = self.baseHandler(textureKit);
 	else
-		local handler = self:GetHandler(textureKit);
-		if handler then
-			self.customFrame = handler(textureKit);
-		else 
-			GossipFrame:HandleShow(textureKit);
-		end
+		GossipFrame:HandleShow(textureKit);
 	end
 end
 
@@ -81,7 +79,11 @@ function CustomGossipManagerMixin:RegisterHandler(textureKit, handlerFn)
 end
 
 function CustomGossipManagerMixin:GetHandler(textureKit)
-	return self.handlers and self.handlers[textureKit];
+	return (textureKit and self.handlers) and self.handlers[textureKit];
+end
+
+function CustomGossipManagerMixin:SetBaseHandler(baseHandler)
+	self.baseHandler = baseHandler;
 end
 
 CustomGossipFrameBaseMixin = {};

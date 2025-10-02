@@ -51,9 +51,9 @@ function QuestData:GetTurnInMapID()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-TutorialQuestManager = {};
+TutorialQuestManagerMixin = {};
 
-TutorialQuestManager.Events =
+TutorialQuestManagerMixin.Events =
 {
 	Quest_Accepted				= "Quest_Accepted",
 	Quest_ObjectivesComplete	= "Quest_ObjectivesComplete",
@@ -63,7 +63,7 @@ TutorialQuestManager.Events =
 }
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:Initialize()
+function TutorialQuestManagerMixin:Initialize()
 	self.Data = {};
 	self.Callbacks = {};
 	self.IsReinitializing = false;
@@ -75,18 +75,21 @@ function TutorialQuestManager:Initialize()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:Shutdown()
+function TutorialQuestManagerMixin:Shutdown()
 	Dispatcher:UnregisterAll(self);
 	self.Data = {};
 	self.Callbacks = {};
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:ReinitializeExistingQuests()
+function TutorialQuestManagerMixin:ReinitializeExistingQuests()
 	self.IsReinitializing = true;
 
 	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		self:QUEST_ACCEPTED(i);
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		if questID then
+			self:QUEST_ACCEPTED(questID);
+		end
 	end
 
 	self:QUEST_LOG_UPDATE();
@@ -95,7 +98,7 @@ function TutorialQuestManager:ReinitializeExistingQuests()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:AreQuestsPending()
+function TutorialQuestManagerMixin:AreQuestsPending()
 	for questID, questData in pairs(self.Data) do
 		if (not questData.Time_ObjectivesComplete) then
 			return true;
@@ -106,7 +109,7 @@ function TutorialQuestManager:AreQuestsPending()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:QUEST_ACCEPTED(questID)
+function TutorialQuestManagerMixin:QUEST_ACCEPTED(questID)
 	local title = C_QuestLog.GetTitleForQuestID(questID);
 	if title then
 		local data = QuestData:new(questID, title);
@@ -116,7 +119,7 @@ function TutorialQuestManager:QUEST_ACCEPTED(questID)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:QUEST_LOG_UPDATE()
+function TutorialQuestManagerMixin:QUEST_LOG_UPDATE()
 	for questID, questData in pairs(self.Data) do
 		if (not questData.IsComplete) then
 			if (not questData.Time_ObjectivesComplete) then
@@ -144,7 +147,7 @@ function TutorialQuestManager:QUEST_LOG_UPDATE()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:SimulateEvents(callbackTargetFilter)
+function TutorialQuestManagerMixin:SimulateEvents(callbackTargetFilter)
 	for questID, questData in pairs(self.Data) do
 		if (not questData.IsComplete) then
 			if (not questData.Time_ObjectivesComplete) then
@@ -157,7 +160,7 @@ function TutorialQuestManager:SimulateEvents(callbackTargetFilter)
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:_DoCallback(event, questData, callbackTargetFilter)
+function TutorialQuestManagerMixin:_DoCallback(event, questData, callbackTargetFilter)
 	for obj, v in pairs(self.Callbacks) do
 		if ((not callbackTargetFilter) or (callbackTargetFilter == obj)) then
 			if (obj and (type(obj[event]) == "function")) then
@@ -168,12 +171,14 @@ function TutorialQuestManager:_DoCallback(event, questData, callbackTargetFilter
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:RegisterForCallbacks(obj)
+function TutorialQuestManagerMixin:RegisterForCallbacks(obj)
 	self.Callbacks[obj] = true;
 	self:SimulateEvents(obj);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
-function TutorialQuestManager:UnregisterForCallbacks(obj)
+function TutorialQuestManagerMixin:UnregisterForCallbacks(obj)
 	self.Callbacks[obj] = nil;
 end
+
+TutorialQuestManager = CreateFromMixins(TutorialQuestManagerMixin);

@@ -9,6 +9,7 @@ local PlayerChoice =
 		{
 			Name = "GetCurrentPlayerChoiceInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -53,6 +54,7 @@ local PlayerChoice =
 		{
 			Name = "SendPlayerChoiceResponse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +105,8 @@ local PlayerChoice =
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = false },
 				{ Name = "hideWarboardHeader", Type = "bool", Nilable = false },
 				{ Name = "keepOpenAfterChoice", Type = "bool", Nilable = false },
+				{ Name = "showChoicesAsList", Type = "bool", Nilable = false },
+				{ Name = "requiresSelection", Type = "bool", Nilable = false },
 				{ Name = "options", Type = "table", InnerType = "PlayerChoiceOptionInfo", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
 				{ Name = "closeUISoundKitID", Type = "number", Nilable = true },
@@ -116,10 +120,14 @@ local PlayerChoice =
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "text", Type = "string", Nilable = false },
 				{ Name = "disabled", Type = "bool", Nilable = false },
+				{ Name = "showCheckmark", Type = "bool", Nilable = false },
+				{ Name = "hideButtonShowText", Type = "bool", Nilable = false },
+				{ Name = "selected", Type = "bool", Nilable = false },
 				{ Name = "confirmation", Type = "string", Nilable = true },
 				{ Name = "tooltip", Type = "string", Nilable = true },
 				{ Name = "rewardQuestID", Type = "number", Nilable = true },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
+				{ Name = "listText", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -141,7 +149,6 @@ local PlayerChoice =
 				{ Name = "widgetSetID", Type = "number", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = true },
 				{ Name = "rarity", Type = "PlayerChoiceRarity", Nilable = true },
-				{ Name = "rarityColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = true },
 				{ Name = "typeArtID", Type = "number", Nilable = true },
 				{ Name = "headerIconAtlasElement", Type = "string", Nilable = true },
 				{ Name = "subHeader", Type = "string", Nilable = true },

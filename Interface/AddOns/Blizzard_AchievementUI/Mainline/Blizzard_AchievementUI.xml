@@ -713,7 +713,8 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="AchievementCriteriaFont" text="Capture the Bone Wastes">
+				<FontString parentKey="Name" inherits="AchievementCriteriaFont, TruncatedTooltipFontStringTemplate" text="Capture the Bone Wastes">
+					<Size x="0" y="15"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Check" relativePoint="RIGHT" x="5" y="2"/>
 					</Anchors>
@@ -1512,7 +1513,9 @@
 		<Layers>
 			<!--Dummies for achievement ScrollBox extents calculation-->
 			<Layer level="OVERLAY">
-				<FontString parentKey="PlaceholderName" inherits="AchievementCriteriaFont" hidden="true"/>
+				<FontString parentKey="PlaceholderName" inherits="AchievementCriteriaFont" hidden="true">
+					<Size x="0" y="15"/>
+				</FontString>
 				<FontString parentKey="PlaceholderHiddenDescription" inherits="AchievementDescriptionFont" hidden="true"/>
 			</Layer>
 
@@ -2315,7 +2318,7 @@
 					</OnShow>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
+			<Button name="$parentTab1" parentKey="Tab1" inherits="AchievementFrameTabButtonTemplate" id="1" text="ACHIEVEMENTS">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="17" y="3"/>
 				</Anchors>
@@ -2326,7 +2329,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="ACHIEVEMENTS_GUILD_TAB">
+			<Button name="$parentTab2" parentKey="Tab2" inherits="AchievementFrameTabButtonTemplate" id="2" text="ACHIEVEMENTS_GUILD_TAB">
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
@@ -2334,7 +2337,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentTab3" inherits="AchievementFrameTabButtonTemplate" id="3" text="STATISTICS">
+			<Button name="$parentTab3" parentKey="Tab3" inherits="AchievementFrameTabButtonTemplate" id="3" text="STATISTICS">
 				<Scripts>
 					<OnClick>
 						AchievementFrameTab_OnClick(self:GetID());
@@ -2342,7 +2345,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<DropdownButton name="AchievementFrameFilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
+			<DropdownButton name="AchievementFrameFilterDropdown" parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="resizeToText" type="boolean" value="false"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="144" y="8"/>
 				</Anchors>

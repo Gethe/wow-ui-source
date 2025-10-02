@@ -18,11 +18,13 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Texture"/>
 						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Texture"/>
 					</Anchors>
-					<Color r="1.0" g="1.0" b="1.0" a="0.4"/>
+					<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
 				</Texture>
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<Button name="VignettePinPOIButtonTemplate" enableMouseMotion="true" inherits="LegendHighlightableMapPoiPinTemplate, POIButtonTemplate" mixin="VignettePinPOIButtonMixin" virtual="true"/>
 
 	<Frame name="FyrakkFlightVignettePinTemplate" enableMouseMotion="true" inherits="SuperTrackableMapPinTemplate" mixin="FyrakkFlightVignettePinMixin" virtual="true">
 		<Size x="40" y="40"/>

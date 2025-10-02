@@ -13,6 +13,8 @@ TutorialMainFrameMixin.FramePositions =
 	Low		= -140,
 }
 
+local KEY_BIND_PADDING = 31;
+
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialMainFrameMixin:OnLoad()
 	NineSliceUtil.ApplyUniqueCornersLayout(self, "NewPlayerTutorial");
@@ -100,7 +102,12 @@ function TutorialMainFrameMixin:_SetContent(content)
 	end
 
 	if content.icon then
-		icon:SetAtlas(content.icon, true);
+		if content.iconWidth and content.iconHeight then
+			icon:SetAtlas(content.icon, false);
+			icon:SetSize(content.iconWidth, content.iconHeight)
+		else
+			icon:SetAtlas(content.icon, true);
+		end
 		icon:Show();
 	else
 		icon:SetAtlas(nil);
@@ -210,6 +217,7 @@ function TutorialSingleKeyMixin:SetKeyText(keyText)
 		local fontString = container.KeyBind;
 		if (keyText and (keyText ~= "")) then
 			fontString:SetText(keyText);
+			container:SetWidth(fontString:GetStringWidth() + KEY_BIND_PADDING);
 		end
 	end
 end
@@ -234,6 +242,52 @@ function TutorialSingleKeyMixin:_SetContent(content)
 end
 
 function TutorialSingleKeyMixin:HideTutorial(id)
+	self:_AnimateOut();
+	if (self.Timer) then
+		self.Timer:Cancel();
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+TutorialDoubleKeyMixin = CreateFromMixins(TutorialMainFrameMixin);
+function TutorialDoubleKeyMixin:OnLoad()
+	TutorialMainFrameMixin.OnLoad(self);
+
+	self:MarkDirty();
+end
+
+function TutorialDoubleKeyMixin:SetKeyText(container, keyText)
+	if container then
+		local fontString = container.KeyBind;
+		if (keyText and (keyText ~= "")) then
+			fontString:SetText(keyText);
+			container:SetWidth(fontString:GetStringWidth() + KEY_BIND_PADDING);
+		end
+	end
+end
+
+function TutorialDoubleKeyMixin:_SetContent(content)
+	content = content or self.DesiredContent;
+	self.DesiredContent = nil;
+	self:SetKeyText(self.ContainerFrame.KeyBind1, content.keyText1);
+	self:SetKeyText(self.ContainerFrame.KeyBind2, content.keyText2);
+	self.ContainerFrame.Separator:SetText(content.separator);
+
+	local text = self.ContainerFrame.Text;
+	if content.text then
+		text:SetSize(0, 0);
+		text:SetText(content.text);
+		text:SetWidth(text:GetStringWidth());
+		text:SetHeight(text:GetStringHeight());
+		text:ClearAllPoints();
+		text:SetPoint("LEFT", self.ContainerFrame.KeyBind2, "RIGHT", 20, 0);
+	end
+
+	self.ContainerFrame:MarkDirty();
+	self:_AnimateIn();
+end
+
+function TutorialDoubleKeyMixin:HideTutorial(id)
 	self:_AnimateOut();
 	if (self.Timer) then
 		self.Timer:Cancel();

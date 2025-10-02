@@ -318,18 +318,18 @@ function MiniMapTracking_Update()
 	for id = 1, count do
 		local trackingInfo = C_Minimap.GetTrackingInfo(id);
 		if trackingInfo and trackingInfo.active then
-				if (trackingInfo.type == "spell") then 
-					if (currentTexture == trackingInfo.texture) then
-						return;
-					end
-					MiniMapTrackingIcon:SetTexture(trackingInfo.texture);
-					MiniMapTrackingShineFadeIn();
+			if (trackingInfo.type == "spell") then 
+				if (currentTexture == trackingInfo.texture) then
 					return;
-				else
-					bestTexture = trackingInfo.texture;
 				end
+				MiniMapTrackingIcon:SetTexture(trackingInfo.texture);
+				MiniMapTrackingShineFadeIn();
+				return;
+			else
+				bestTexture = trackingInfo.texture;
 			end
 		end
+	end
 	MiniMapTrackingIcon:SetTexture(bestTexture);
 	MiniMapTrackingShineFadeIn();
 end
@@ -364,10 +364,11 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	
 		for index = 1, C_Minimap.GetNumTrackingTypes() do
 			local trackingInfo = C_Minimap.GetTrackingInfo(index);
-			trackingInfo.index = index;
-
-			local tbl = (trackingInfo.subType == HUNTER_TRACKING) and hunterInfo or regularInfo;
-			table.insert(tbl, trackingInfo);
+			if trackingInfo then
+				trackingInfo.index = index;
+				local tbl = (trackingInfo.subType == HUNTER_TRACKING) and hunterInfo or regularInfo;
+				table.insert(tbl, trackingInfo);
+			end
 		end
 
 		local function CreateCheckboxWithIcon(parentDescription, trackingInfo)
@@ -562,21 +563,18 @@ function GuildInstanceDifficulty_OnEnter(self)
 end
 
 -- ============================================ BATTLEFIELDS ===============================================================================
-function MiniMapBattlefieldFrame_OnClick(self)
+function MiniMapBattlefieldFrame_OnClick(self, button)
 	-- Hide tooltip
-	if ( self.status == "active") then
-		GameTooltip:Hide();
-		if ( button == "RightButton" ) then
-			MiniMapBattlefieldFrame_ShowContextMenu(self);
-		elseif ( IsShiftKeyDown() ) then
+	GameTooltip:Hide();
+	if ( button == "RightButton" ) then
+		MiniMapBattlefieldFrame_ShowContextMenu(self);
+	elseif ( self.status == "active") then
+		if ( IsShiftKeyDown() ) then
 			ToggleBattlefieldMap();
 		else
 			ToggleWorldStateScoreFrame();
 		end
-	elseif ( button == "RightButton" ) then
-		GameTooltip:Hide();
-		MiniMapBattlefieldFrame_ShowContextMenu(self);
-	end
+    end
 end
 
 function MiniMapBattlefieldFrame_ShowContextMenu(owner)
@@ -799,32 +797,5 @@ function MiniMapBattlefieldFrame_isArena()
 		MiniMapBattlefieldIcon:SetWidth(32);
 		MiniMapBattlefieldIcon:SetHeight(32);
 		MiniMapBattlefieldIcon:SetPoint("CENTER", "MiniMapBattlefieldFrame", "CENTER", -1, 0);
-	end
-end
-
--- ============================================ LookingForGroup ===============================================================================
-function MiniMapLFGFrame_OnClick(self, button)
-	if ( button == "RightButton" ) then
-		if (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-			MenuUtil.CreateContextMenu(MiniMapLFGFrame, function(dropdown, rootDescription)
-				rootDescription:SetTag("MENU_MINIMAP_LFG");
-
-				local editListButton = rootDescription:CreateButton(LFG_LIST_EDIT, function()
-					PVEFrame_ShowFrame();
-				end);
-				if not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-					editListButton:SetEnabled(false);
-				end
-
-				local unlistButton = rootDescription:CreateButton(LFG_LIST_UNLIST, function()
-					C_LFGList.RemoveListing();
-				end);
-				if not (C_LFGList.HasActiveEntryInfo() and LFGListingUtil_CanEditListing()) then
-					unlistButton:SetEnabled(false);
-				end
-			end);
-		end
-	else
-		PVEFrame_ToggleFrame();
 	end
 end

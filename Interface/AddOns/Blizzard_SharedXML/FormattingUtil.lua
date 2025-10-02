@@ -55,7 +55,21 @@ COPPER_PER_SILVER = 100;
 SILVER_PER_GOLD = 100;
 COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 
-function GetMoneyString(money, separateThousands, checkGoldThreshold)
+local COPPER_PER_SILVER = COPPER_PER_SILVER;
+local SILVER_PER_GOLD = SILVER_PER_GOLD;
+local COPPER_PER_GOLD = COPPER_PER_GOLD;
+
+MoneyStringConstants =
+{
+	SeparateThousands = true,
+	DontSeparateThousands = false,
+	CheckGoldThreshold = true,
+	DontCheckGoldThreshold = false,
+	ShowZeroAsGold = true,
+	ShowZeroAsLowerDenomination = false,
+};
+
+function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAsGold)
 	local goldString, silverString, copperString;
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
@@ -77,6 +91,10 @@ function GetMoneyString(money, separateThousands, checkGoldThreshold)
 		end
 		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
 		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
+	end
+
+	if showZeroAsGold and ( money == 0 ) then
+		return goldString;
 	end
 
 	copper = FormatDisplayCopper(checkGoldThreshold, gold, silver, copper);
@@ -110,6 +128,11 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	end
 
 	return PERCENTAGE_STRING:format(percentage);
+end
+
+function FormatPercentageRounded(value)
+	local roundToNearestInteger = true;
+	return FormatPercentage(value, roundToNearestInteger);
 end
 
 function FormatFraction(numerator, denominator)
@@ -185,6 +208,26 @@ function FormattingUtil.GetItemCostString(itemID, quantity, colorCode, abbreviat
 	end
 
 	return "";
+end
+
+function FormattingUtil.AddLeadingZeroes(digits, numZeroes, zeroesColor)
+	numZeroes = numZeroes or 7;
+	zeroesColor = zeroesColor or GRAY_FONT_COLOR;
+
+	local digitsString = tostring(digits);
+	local numDigits = #digitsString;
+	if numDigits < numZeroes then
+		local leadingZeroes = "";
+		for i = 1, (numZeroes - numDigits) do
+			leadingZeroes = leadingZeroes.."0";
+		end
+
+		leadingZeroes = zeroesColor:WrapTextInColorCode(leadingZeroes);
+
+		return leadingZeroes .. digits;
+	end
+
+	return digits;
 end
 
 function GetCurrencyString(currencyID, overrideAmount, colorCode, abbreviate)

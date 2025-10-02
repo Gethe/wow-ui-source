@@ -968,7 +968,7 @@ function Class_ActionBarCallout:HighlightPointer(spellID, textID)
 		local finalString = string.format(prompt, binding, spellInfo.name, spellInfo.iconID);
 
 		self:ShowPointerTutorial(finalString, "DOWN", btn);
-		ActionButton_ShowOverlayGlow(btn);
+		ActionButtonSpellAlertManager:ShowAlert(btn);
 
 		return spellID;
 	end
@@ -992,7 +992,7 @@ function Class_ActionBarCallout:DisableActionButtonGlow()
 	for i = 1, 12 do
 		local btn = _G["ActionButton" .. i];
 		if (btn) then
-			ActionButton_HideOverlayGlow(btn);
+			ActionButtonSpellAlertManager:HideAlert(btn);
 		end
 	end
 end
@@ -1196,14 +1196,14 @@ function Class_EquipFirstItemWatcher:GetPotentialItemUpgrades()
 					end
 
 					if (match) then
-						local player, bank, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(packedLocation);
+						local locationData = EquipmentManager_GetLocationData(packedLocation);
 
-						if ((player == true) and (bags == true)) then
+						if ((locationData.isPlayer == true) and (locationData.isBags == true)) then
 							if (potentialUpgrades[i] == nil) then
 								potentialUpgrades[i] = {};
 							end
 
-							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemID, i, bag, slot));
+							table.insert(potentialUpgrades[i], self:STRUCT_ItemContainer(itemID, i, locationData.bag, locationData.slot));
 						end
 					end
 				end
@@ -1458,6 +1458,7 @@ end
 function Class_LootCorpseWatcher:OnBegin()
 	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:RegisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:WatchQuestMob(unitID)
@@ -1495,34 +1496,21 @@ end
 -- Entering Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_DISABLED(...)
 	self:SuppressChildren();
-	Dispatcher:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
 -- Leaving Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_ENABLED(...)
 	self:UnsuppressChildren();
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
--- Watch for units dying while in combat.  if that happened, check the unit to see if the
--- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
-	local eventData = {CombatLogGetCurrentEventInfo()};
-	local logEvent = eventData[2];
-	local unitGUID = eventData[8];
-	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
-		-- Wait for mirror data
-		C_Timer.After(1, function()
-				if CanLootUnit(unitGUID) then
-					self:UnitLootable(unitGUID);
-				end
-			end);
+function Class_LootCorpseWatcher:UNIT_LOOT(unitGUID, hasLoot)
+	if CanLootUnit(unitGUID) then
+		self:UnitLootable(unitGUID);
 	end
 end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
-
-	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if ((unitID == id) and (not hasKilled)) then
 			Tutorials.LootCorpse:ForceBegin(unitID);
@@ -1983,7 +1971,9 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 
 	if (GetNumQuestChoices() > 1) then
 		-- Wait one frame to make sure the reward buttons have been positioned
-		C_Timer.After(0.01, function() Tutorials.QuestRewardChoice:Begin(areAllItemsUsable); end);
+		RunNextFrame(function()
+			Tutorials.QuestRewardChoice:Begin(areAllItemsUsable);
+		end);
 	end
 end
 
@@ -2590,7 +2580,7 @@ function Class_ChatFrame:OnBegin(editBox)
 
 		self.Elapsed = 0;
 		Dispatcher:RegisterEvent("OnUpdate", self);
-		Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", function() self:Complete() end, true);
+		Dispatcher:RegisterFunction(ChatFrameUtil, "DeactivateChat", function() self:Complete() end, true);
 	end
 end
 
@@ -2599,7 +2589,7 @@ function Class_ChatFrame:OnUpdate(elapsed)
 
 	if (self.Elapsed > 30) then
 		if (self.EditBox) then
-			ChatEdit_DeactivateChat(self.EditBox);
+			ChatFrameUtil.DeactivateChat(self.EditBox);
 		end
 		self:Interrupt(self);
 	end
@@ -2788,7 +2778,7 @@ function Tutorials:Begin()
 	-- Chat frame
 	-- We don't want this active right off the bat.
 	C_Timer.After(5, function()
-			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
+			Dispatcher:RegisterFunction(ChatFrameUtil, "ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 		end);
 
 	-- Level 3 ability

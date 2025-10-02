@@ -1,0 +1,13 @@
+## Title: Blizzard_PersonalResourceDisplay
+## AllowLoadGameType: mainline
+## DefaultState: enabled
+## Dependencies: Blizzard_EditMode
+
+# Alternate Power Bars (must be loaded before Base)
+AlternatePowerBars/DemonHunterAlternatePower.lua
+AlternatePowerBars/EvokerAlternatePower.lua
+AlternatePowerBars/MonkAlternatePower.lua
+
+# Base
+Blizzard_PersonalResourceDisplay.lua
+Blizzard_PersonalResourceDisplay.xml

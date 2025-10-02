@@ -20,8 +20,13 @@ local Minimap =
 			Type = "Function",
 		},
 		{
+			Name = "ClearMinimapInsetInfo",
+			Type = "Function",
+		},
+		{
 			Name = "GetDefaultTrackingValue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +68,7 @@ local Minimap =
 		{
 			Name = "GetObjectIconTextureCoords",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +86,7 @@ local Minimap =
 		{
 			Name = "GetPOITextureCoords",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +104,7 @@ local Minimap =
 		{
 			Name = "GetTrackingFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,6 +119,7 @@ local Minimap =
 		{
 			Name = "GetTrackingInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,6 +152,7 @@ local Minimap =
 		{
 			Name = "IsFilteredOut",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,6 +162,21 @@ local Minimap =
 			Returns =
 			{
 				{ Name = "isFiltered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInsideQuestBlob",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInside", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -193,6 +218,7 @@ local Minimap =
 		{
 			Name = "SetDrawGroundTextures",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,6 +228,7 @@ local Minimap =
 		{
 			Name = "SetIgnoreRotateMinimap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -209,8 +236,21 @@ local Minimap =
 			},
 		},
 		{
+			Name = "SetMinimapInsetInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "minAngle", Type = "number", Nilable = false },
+				{ Name = "maxAngle", Type = "number", Nilable = false },
+				{ Name = "scalar", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -237,7 +277,7 @@ local Minimap =
 			LiteralName = "MINIMAP_PING",
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "y", Type = "number", Nilable = false },
 				{ Name = "x", Type = "number", Nilable = false },
 			},
@@ -251,6 +291,16 @@ local Minimap =
 			Name = "MinimapUpdateZoom",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
+		},
+		{
+			Name = "PlayerInsideQuestBlobStateChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

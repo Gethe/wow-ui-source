@@ -50,7 +50,7 @@ function OverrideActionBarMixin:OnLoad()
 
 	--Setup the XP bar
 	local divWidth = self.xpBar.XpMid:GetWidth()/19;
-	local xpos = 6;	
+	local xpos = 6;
 	for i=1,19 do
 		local texture = self.xpBar:CreateTexture("OverrideActionBarXpDiv"..i, "ARTWORK", nil, 2);
 		texture:SetSize(7, 14);
@@ -114,6 +114,11 @@ function OverrideActionBarMixin:OnShow()
 
 	EditModeManagerFrame:BlockEnteringEditMode(self);
 	EditModeManagerFrame:UpdateBottomActionBarPositions();
+
+	if not PlayerCastingBarFrame:IsAttachedToPlayerFrame() and PlayerCastingBarFrame:IsInDefaultPosition() then
+		self.playerBarReplaced = true;
+		OverlayPlayerCastingBarFrame:StartReplacingPlayerBarAt(self, { overrideAnchor = CreateAnchor("BOTTOM", self, "TOP" , 0, 30) });
+	end
 end
 
 function OverrideActionBarMixin:OnHide()
@@ -123,12 +128,17 @@ function OverrideActionBarMixin:OnHide()
 	UIParent_ManageFramePositions();
 
 	EditModeManagerFrame:UnblockEnteringEditMode(self);
+
+	if self.playerBarReplaced then
+		OverlayPlayerCastingBarFrame:EndReplacingPlayerBar();
+		self.playerBarReplaced = false;
+	end
 end
 
 function OverrideActionBarMixin:UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
 		local anchorX, anchorY = self:GetMicroButtonAnchor();
-		OverrideMicroMenuPosition(self, "BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
+		MicroMenu:OverrideMicroMenuPosition(self, "BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
 	end
 end
 
@@ -275,7 +285,7 @@ function OverrideActionBarMixin:Setup(skin, barIndex)
 		OverrideActionBarPowerBar:Hide();
 	end
 
-	self:RegisterEvent("PLAYER_LEVEL_UP");	
+	self:RegisterEvent("PLAYER_LEVEL_UP");
 	self:RegisterEvent("PLAYER_XP_UPDATE");
 
 	self:UpdateXpBar();
@@ -296,4 +306,30 @@ end
 
 function OverrideActionBarMixin:IsShownOverride()
 	return self:IsShownBase() and (not self.slideOut:IsPlaying() or self.slideOut:IsReverse());
+end
+
+OverrideActionBarButtonMixin = {};
+
+local START_JOB_SPELL_ID = 455055;
+
+function OverrideActionBarButtonMixin:EvaluateTutorials(spellType, id)
+	local showedTutorial = false;
+	local spellID = (spellType == "spell") and id;
+	if ActionButtonSpellAlertManager:HasAlert(self) and spellID == START_JOB_SPELL_ID then
+		local startJobHelpTipInfo = {
+			text = DRIVE_START_JOB_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_DRIVE_START_JOB,
+			checkCVars = true,
+			autoEdgeFlipping = true;
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+		};
+
+		showedTutorial = HelpTip:Show(self, startJobHelpTipInfo);
+	end
+
+	if not showedTutorial then
+		HelpTip:HideAll(self);
+	end
 end

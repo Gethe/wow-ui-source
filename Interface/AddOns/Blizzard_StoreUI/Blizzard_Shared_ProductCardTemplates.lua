@@ -98,7 +98,7 @@ function StoreCardMixin:OnMouseUp(...)
 end
 
 function StoreCardMixin:IsRestrictedVASProduct(entryInfo)
-	return entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not IsOnGlueScreen();
+	return entryInfo.sharedData.productDecorator == Enum.BattlepayProductDecorator.VasService and not C_Glue.IsOnGlueScreen();
 end
 
 function StoreCardMixin:CanBuyHere(entryInfo)
@@ -308,7 +308,7 @@ function StoreCardMixin:UpdatePricing(currencyInfo, entryInfo, currencyFormat)
 	self.CurrentPrice:SetText(StoreFrame_GetProductPriceText(entryInfo, currencyFormat));
 	self.NormalPrice:SetText(currencyFormat(entryInfo.sharedData.normalDollars, entryInfo.sharedData.normalCents));
 
-	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.HiddenPrice) == Enum.BattlepayDisplayFlag.HiddenPrice then
+	if bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.HiddenPrice) == Enum.BattlepayDisplayFlags.HiddenPrice then
 		self.NormalPrice:Hide();
 		self.SalePrice:Hide();
 		self.Strikethrough:Hide();
@@ -387,14 +387,14 @@ end
 
 function StoreCardMixin:ShouldShowIcon(entryInfo)
 	local showAnyModel = self:ShouldShowModel(entryInfo);
-	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlag.CardAlwaysShowsTexture;
+	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture;
 
 	return tryToShowTexture;
 end
 
 function StoreCardMixin:ShouldShowModel(entryInfo)
 	local hasAnyCard = #entryInfo.sharedData.cards > 0;
-	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlag.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlag.CardDoesNotShowModel;
+	local allowShowingModel = bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardDoesNotShowModel) ~= Enum.BattlepayDisplayFlags.CardDoesNotShowModel;
 	local showAnyModel = allowShowingModel and hasAnyCard;
 
 	return showAnyModel;
@@ -407,7 +407,8 @@ end
 function StoreCardMixin:ShowIcon(displayData)
 	local icon = displayData.texture or self:GetDefaultIconName();
 	local overrideTexture = displayData.overrideTexture;
-	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlag.UseSquareIconBorder) == Enum.BattlepayDisplayFlag.UseSquareIconBorder;
+	local useSquareBorder = bit.band(displayData.flags, Enum.BattlepayDisplayFlags.UseSquareIconBorder) == Enum.BattlepayDisplayFlags.UseSquareIconBorder;
+	local useIconBorderWithOverrideTexture = bit.band(displayData.flags, Enum.BattlepayDisplayFlags.UseIconBorderWithOverrideTexture) == Enum.BattlepayDisplayFlags.UseIconBorderWithOverrideTexture;
 	local iconItemQuantity = displayData.itemQuantity;
 
 	self.IconBorder:Show();
@@ -416,16 +417,22 @@ function StoreCardMixin:ShowIcon(displayData)
 	self.ItemQuantityCircle:Hide();
 
 	self.Icon:ClearAllPoints();
-	self.Icon:SetPoint("CENTER", self, "TOP", 0, -69);
+	self.Icon:SetPoint("CENTER", self, "TOP", 0, -68);
 
 	if overrideTexture then
-		self.IconBorder:Hide();
 		self.Icon:SetAtlas(overrideTexture, true);
 	else
-		self.Icon:SetSize(64, 64);
+		self.Icon:SetSize(62, 62);
 
-		if useSquareBorder then -- square icon borders use atlases
+		if useSquareBorder then
 			self.Icon:SetTexture(icon);
+		else
+			SetPortraitToTexture(self.Icon, icon);
+		end
+	end
+
+	if (not overrideTexture) or useIconBorderWithOverrideTexture then
+		if useSquareBorder then -- square icon borders use atlases
 			self.IconBorder:SetAtlas("collections-itemborder-collected");
 			self.IconBorder:SetTexCoord(0, 1, 0, 1);
 			self.IconBorder:SetSize(80, 81);
@@ -435,26 +442,25 @@ function StoreCardMixin:ShowIcon(displayData)
 			if iconItemQuantity and iconItemQuantity ~= 0 then
 				self.ItemQuantityCircle:Show();
 				self.ItemQuantityCircle:ClearAllPoints();
-				self.ItemQuantityCircle:SetPoint("CENTER", self.Icon, "CENTER", 29, -29);
+				self.ItemQuantityCircle:SetPoint("CENTER", self.Icon, "CENTER", 29, -25);
 
 				self.ItemQuantity:Show();
 				self.ItemQuantity:ClearAllPoints();
 				self.ItemQuantity:SetText(iconItemQuantity);
 				if iconItemQuantity == 1 then
-					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", -1, 2);
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", -1, 0);
 				else
-					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", 0, 2);
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", 0, 0);
 				end
 			end
 
-			SetPortraitToTexture(self.Icon, icon);
 			self.IconBorder:ClearAllPoints();
-			self.IconBorder:SetTexture("Interface\\Store\\Store-Main");
-			self.IconBorder:SetTexCoord(0.84375000, 0.92187500, 0.37207031, 0.45117188);
-			self.IconBorder:SetSize(80, 81);
-			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -4);
+			self.IconBorder:SetAtlas("tokens-frame-regular", true);
+			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, 0);
 		end
 		self.IconBorder:Show();
+	else
+		self.IconBorder:Hide();
 	end
 
 	if self.GlowSpin and not overrideTexture then
@@ -588,7 +594,7 @@ function StoreProductCardItem_OnEnter(self)
 	local entryInfo = card:GetEntryInfo()
 	local x, y, point, rpoint = card:GetTooltipOffsets();
 
-	if entryInfo.sharedData.itemID and not IsOnGlueScreen() then
+	if entryInfo.sharedData.itemID and not C_Glue.IsOnGlueScreen() then
 		self.hasItemTooltip = true;
 		StoreTooltip:Hide();
 		StoreOutbound.SetItemTooltip(entryInfo.sharedData.itemID, x, y, rpoint);

@@ -1,0 +1,9 @@
+## Title: Blizzard_CombatLogProcessor
+## LoadFirst: 1
+## UseSecureEnvironment: 1
+## AllowLoadGameType: mainline
+## Dependencies: Blizzard_CombatLogBase
+
+Blizzard_CombatLogProcessor.lua
+Blizzard_CombatLogProcessorInbound.lua
+Blizzard_CombatLogProcessorOutbound.lua

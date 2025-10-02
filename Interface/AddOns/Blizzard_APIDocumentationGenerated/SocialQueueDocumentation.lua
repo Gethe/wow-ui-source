@@ -9,6 +9,7 @@ local SocialQueue =
 		{
 			Name = "GetAllGroups",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local SocialQueue =
 		{
 			Name = "GetConfig",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -33,6 +35,8 @@ local SocialQueue =
 		{
 			Name = "GetGroupForPlayer",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +52,8 @@ local SocialQueue =
 		{
 			Name = "GetGroupInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +75,8 @@ local SocialQueue =
 		{
 			Name = "GetGroupMembers",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +91,8 @@ local SocialQueue =
 		{
 			Name = "GetGroupQueues",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +107,7 @@ local SocialQueue =
 		{
 			Name = "RequestToJoin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,6 +125,7 @@ local SocialQueue =
 		{
 			Name = "SignalToastDisplayed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

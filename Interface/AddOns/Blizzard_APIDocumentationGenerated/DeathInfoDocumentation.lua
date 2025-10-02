@@ -9,6 +9,7 @@ local DeathInfo =
 		{
 			Name = "GetCorpseMapPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local DeathInfo =
 		{
 			Name = "GetDeathReleasePosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local DeathInfo =
 		{
 			Name = "GetGraveyardsForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +54,7 @@ local DeathInfo =
 		{
 			Name = "GetSelfResurrectOptions",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -60,6 +64,7 @@ local DeathInfo =
 		{
 			Name = "UseSelfResurrectOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

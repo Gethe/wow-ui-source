@@ -72,6 +72,7 @@ local CovenantSanctum =
 		{
 			Name = "GetRenownLevels",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +87,7 @@ local CovenantSanctum =
 		{
 			Name = "GetRenownRewardsForLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

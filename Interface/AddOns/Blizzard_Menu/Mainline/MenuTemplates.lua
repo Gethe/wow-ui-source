@@ -1,4 +1,4 @@
--- Requires the button to be configured by ButtonStateBehaviorMixin
+-- Requires the button to inherit ButtonStateBehaviorMixin
 function GetWowStyle1ArrowButtonState(button)
 	if button:IsEnabled() then
 		if button:IsDownOver() then
@@ -16,25 +16,36 @@ function GetWowStyle1ArrowButtonState(button)
 	return "common-dropdown-a-button-disabled";
 end
 
+-- Requires the button to inherit ButtonStateBehaviorMixin
+function GetWowStyle1ArrowButtonShadowlessState(button)
+	if button:IsEnabled() then
+		if button:IsDownOver() then
+			return "common-dropdown-a-button-shadowless-pressedhover";
+		elseif button:IsOver() then
+			return "common-dropdown-a-button-shadowless-hover";
+		elseif button:IsDown() then
+			return "common-dropdown-a-button-shadowless-pressed";
+		elseif button:IsMenuOpen() then
+			return "common-dropdown-a-button-shadowless-open";
+		else
+			return "common-dropdown-a-button-shadowless";
+		end
+	end
+	return "common-dropdown-a-button-shadowless-disabled";
+end
+
 function WowStyle1DropdownMixin:GetArrowAtlas()
 	return GetWowStyle1ArrowButtonState(self);
 end
 
-function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
-	if self:IsEnabled() then
-		if self:IsDownOver() then
-			return "common-dropdown-b-button-pressedhover";
-		elseif self:IsOver() then
-			return "common-dropdown-b-button-hover";
-		elseif self:IsDown() then
-			return "common-dropdown-b-button-pressed";
-		elseif self:IsMenuOpen() then	
-			return "common-dropdown-b-button-open";
-		else
-			return "common-dropdown-b-button";
-		end
+function WowStyle1ArrowDropdownMixin:OnButtonStateChanged()
+	local atlas = nil;
+	if self.hasShadow then
+		atlas = GetWowStyle1ArrowButtonState(self);
+	else
+		atlas = GetWowStyle1ArrowButtonShadowlessState(self);
 	end
-	return "common-dropdown-b-button-disabled";
+	self.Arrow:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
 MenuStyle1Mixin = CreateFromMixins(MenuStyleMixin);

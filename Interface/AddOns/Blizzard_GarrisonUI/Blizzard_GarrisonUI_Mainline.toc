@@ -1,7 +1,7 @@
 ## Title: Blizzard Garrison UI
 ## Author: Blizzard Entertainment
 ## Version: 1.0
-## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_AdventureMap
+## RequiredDep: Blizzard_GarrisonTemplates, Blizzard_AdventureMap, Blizzard_Colors, Blizzard_HelpPlate
 ## LoadOnDemand: 1
 ## AllowLoad: game
 ## AllowLoadGameType: mainline

@@ -13,6 +13,7 @@ local TransmogSets =
 		{
 			Name = "ClearNewSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +23,7 @@ local TransmogSets =
 		{
 			Name = "ClearSetNewSourcesForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +43,8 @@ local TransmogSets =
 		{
 			Name = "GetAllSourceIDs",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +59,8 @@ local TransmogSets =
 		{
 			Name = "GetBaseSetID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,6 +84,8 @@ local TransmogSets =
 		{
 			Name = "GetBaseSetsFilter",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +130,8 @@ local TransmogSets =
 		{
 			Name = "GetIsFavorite",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,6 +156,8 @@ local TransmogSets =
 		{
 			Name = "GetSetInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,6 +172,8 @@ local TransmogSets =
 		{
 			Name = "GetSetNewSources",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +188,8 @@ local TransmogSets =
 		{
 			Name = "GetSetPrimaryAppearances",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +204,8 @@ local TransmogSets =
 		{
 			Name = "GetSetsContainingSourceID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,6 +220,8 @@ local TransmogSets =
 		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,6 +237,8 @@ local TransmogSets =
 		{
 			Name = "GetSourcesForSlot",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,8 +280,25 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetValidClassForSet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "transmogSetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetVariantSets",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -283,6 +322,7 @@ local TransmogSets =
 		{
 			Name = "IsBaseSetCollected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -297,6 +337,7 @@ local TransmogSets =
 		{
 			Name = "IsNewSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -311,6 +352,7 @@ local TransmogSets =
 		{
 			Name = "IsSetVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -334,6 +376,7 @@ local TransmogSets =
 		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -348,6 +391,7 @@ local TransmogSets =
 		{
 			Name = "SetHasNewSources",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -362,6 +406,7 @@ local TransmogSets =
 		{
 			Name = "SetHasNewSourcesForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -377,6 +422,7 @@ local TransmogSets =
 		{
 			Name = "SetIsFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -387,6 +433,7 @@ local TransmogSets =
 		{
 			Name = "SetTransmogSetsClassFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

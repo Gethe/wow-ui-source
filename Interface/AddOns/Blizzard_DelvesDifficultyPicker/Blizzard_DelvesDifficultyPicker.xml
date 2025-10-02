@@ -108,6 +108,19 @@
 					<Anchor point="CENTER"/>
 					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="NewLabel" inherits="NewFeatureLabelTemplate" hidden="true" useParentLevel="true">
+						<KeyValues>
+							<KeyValue key="animateGlow" value="true" type="boolean"/>
+							<KeyValue key="label" value="DELVES_NEW_CURIO" type="global"/>
+							<KeyValue key="justifyH" value="CENTER" type="string"/>
+						</KeyValues>
+						<Size x="50" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="-16" y="10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
@@ -155,13 +168,27 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="RewardText" inherits="GameFontNormal" text="REWARD_ITEMS_ONLY">
+						<FontString parentKey="RewardText" inherits="GameFontNormal" text="DROP_CHANCE_ITEMS_ONLY">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="15"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.RewardText" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="2"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>

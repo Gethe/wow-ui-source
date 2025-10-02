@@ -172,7 +172,7 @@ end
 
 PetCastingBarMixin = CreateFromMixins(CastingBarMixin);
 
-function PetCastingBarMixin:PetCastingBar_OnLoad()
+function PetCastingBarMixin:OnLoad()
 	CastingBarMixin.OnLoad(self, "pet", false, false);
 
 	self:RegisterEvent("UNIT_PET");
@@ -180,7 +180,7 @@ function PetCastingBarMixin:PetCastingBar_OnLoad()
 	self.showCastbar = UnitIsPossessed("pet");
 end
 
-function PetCastingBarMixin:PetCastingBar_OnEvent(event, ...)
+function PetCastingBarMixin:OnEvent(event, ...)
 	local arg1 = ...;
 	if ( event == "UNIT_PET" ) then
 		if ( arg1 == "player" ) then

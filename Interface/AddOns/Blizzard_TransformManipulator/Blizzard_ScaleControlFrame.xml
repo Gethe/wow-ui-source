@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Slider name="ScaleControlFrameTemplate" mixin="ScaleControlFrameMixin" inherits="MinimalSliderTemplate" ignoreParentScale="true" virtual="true">
+		<Size x="200" y="19"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="SystemFont16_Shadow_ThickOutline">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnValueChanged method="OnValueChanged"/>
+		</Scripts>
+	</Slider>
+</Ui>

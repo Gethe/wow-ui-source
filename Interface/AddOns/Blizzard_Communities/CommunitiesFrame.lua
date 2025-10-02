@@ -317,9 +317,9 @@ function CommunitiesFrameMixin:OnEvent(event, ...)
 		if clubId == self:GetSelectedClubId() and streamId == self:GetSelectedStreamId() then
 			self.Chat:RequestInitialMessages(clubId, streamId);
 		end
-	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then 
-		local applicantGUID = ...; 
-		ChatFrame_SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
+	elseif event == "CLUB_FINDER_CAN_WHISPER_APPLICANT" then
+		local applicantGUID = ...;
+		ChatFrameUtil.SendTell(ConcatinateServerNameToPlayerName(applicantGUID));
 	end
 end
 
@@ -351,7 +351,7 @@ end
 
 function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 	-- When you add a new club we want to add the general stream to your chat window.
-	if not ChatFrame_CanAddChannel() then
+	if not ChatFrameUtil.CanAddChannel() then
 		return;
 	end
 
@@ -362,7 +362,7 @@ function CommunitiesFrameMixin:StreamsLoadedForClub(clubId)
 				for i, stream in ipairs(streams) do
 					if stream.streamType == Enum.ClubStreamType.General then
 						local DEFAULT_CHAT_FRAME_INDEX = 1;
-						ChatFrame_AddNewCommunitiesChannel(DEFAULT_CHAT_FRAME_INDEX, clubId, stream.streamId);
+						ChatFrameUtil.AddNewCommunitiesChannel(DEFAULT_CHAT_FRAME_INDEX, clubId, stream.streamId);
 						table.remove(self.newClubIds, i);
 						break;
 					end
@@ -1276,8 +1276,6 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 	if clubSelected then
 		SetCVar("lastSelectedClubId", clubId)
 
-		C_Club.SetClubPresenceSubscription(clubId);
-
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		if clubInfo then
 			local selectedStream = self:GetSelectedStreamForClub(clubId);
@@ -1353,11 +1351,11 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 	self:TriggerEvent(CommunitiesFrameMixin.Event.ClubSelected, clubId);
 
 	if clubSelected then
-		self:UpdateStreamDropdown(); -- TODO:: Convert this to use the registry system of callbacks.
+		self:UpdateStreamDropdown();
 	end
 
 	if self.CommunitiesList:IsShown() then
-		self.CommunitiesList:OnClubSelected(clubId); -- TODO:: Convert this to use the registry system of callbacks.
+		self.CommunitiesList:OnClubSelected(clubId);
 	end
 
 	self:CheckForTutorials();

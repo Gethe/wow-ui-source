@@ -16,6 +16,14 @@ function ScrollBoxViewMixin:SetFrameLevelPolicy(frameLevelPolicy)
 	self.frameLevelPolicy = frameLevelPolicy;
 end
 
+function ScrollBoxViewMixin:IsElementStretchDisabled()
+	return self.elementStretchDisabled;
+end
+
+function ScrollBoxViewMixin:SetElementStretchDisabled(elementStretchDisabled)
+	self.elementStretchDisabled = elementStretchDisabled;
+end
+
 function ScrollBoxViewMixin:Init()
 	self.initialized = true;
 	self.frames = {};
@@ -33,8 +41,16 @@ function ScrollBoxViewMixin:GetPadding()
 	return self.padding;
 end
 
+function ScrollBoxViewMixin:HasBiaxalLayout()
+	error("HasBiaxalLayout implementation required.")
+end
+
 function ScrollBoxViewMixin:SetPanExtent(panExtent)
 	self.panExtent = panExtent;
+end
+
+function ScrollBoxViewMixin:SetMaxPanExtent(maxPanExtent)
+	self.maxPanExtent = maxPanExtent;
 end
 
 function ScrollBoxViewMixin:SetScrollBox(scrollBox)
@@ -61,15 +77,12 @@ function ScrollBoxViewMixin:SetExtent(extent)
 	self.extent = extent;
 end
 
-function ScrollBoxViewMixin:GetScrollTarget()
-	return self:GetScrollBox():GetScrollTarget();
+function ScrollBoxViewMixin:GetExtent()
+	return self.extent or 0;
 end
 
--- Some views cannot correctly layout or calculate extents until after the scroll target has changed size
--- because they depend on valid scroll target dimensions (grid view). It's also possible for the scroll target rect
--- to be invalidated if the scroll box anchors are changed.
-function ScrollBoxViewMixin:RequiresFullUpdateOnScrollTargetSizeChange()
-	return false;
+function ScrollBoxViewMixin:GetScrollTarget()
+	return self:GetScrollBox():GetScrollTarget();
 end
 
 function ScrollBoxViewMixin:GetFrames()

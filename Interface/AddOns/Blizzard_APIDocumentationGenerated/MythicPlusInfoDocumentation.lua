@@ -9,6 +9,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetCurrentAffixes",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -47,6 +48,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetEndOfRunGearSequenceLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +63,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetLastWeeklyBestInformation",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -71,6 +74,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetOwnedKeystoneChallengeMapID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -80,6 +84,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetOwnedKeystoneLevel",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -89,6 +94,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetOwnedKeystoneMapID",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -98,6 +104,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelForDifficultyLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,6 +120,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelFromKeystoneLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,11 +135,13 @@ local MythicPlusInfo =
 		{
 			Name = "GetRunHistory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "includePreviousWeeks", Type = "bool", Nilable = false, Default = false },
 				{ Name = "includeIncompleteRuns", Type = "bool", Nilable = false, Default = false },
+				{ Name = "currentSeasonOnly", Type = "bool", Nilable = false, Default = false },
 			},
 
 			Returns =
@@ -142,6 +152,8 @@ local MythicPlusInfo =
 		{
 			Name = "GetSeasonBestAffixScoreInfoForMap",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets the active players best runs by the seasonal tracked affixes as well as their overall score for the current season." },
 
 			Arguments =
@@ -158,6 +170,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +186,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetSeasonBestMythicRatingFromThisExpansion",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -183,6 +197,8 @@ local MythicPlusInfo =
 		{
 			Name = "GetWeeklyBestForMap",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -218,15 +234,6 @@ local MythicPlusInfo =
 			Returns =
 			{
 				{ Name = "isMythicPlusActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsWeeklyRewardAvailable",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "weeklyRewardAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -288,6 +295,7 @@ local MythicPlusInfo =
 				{ Name = "day", Type = "number", Nilable = false },
 				{ Name = "hour", Type = "number", Nilable = false },
 				{ Name = "minute", Type = "number", Nilable = false },
+				{ Name = "weekday", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -319,6 +327,19 @@ local MythicPlusInfo =
 				{ Name = "thisWeek", Type = "bool", Nilable = false },
 				{ Name = "completed", Type = "bool", Nilable = false },
 				{ Name = "runScore", Type = "number", Nilable = false },
+				{ Name = "durationSec", Type = "number", Nilable = false },
+				{ Name = "completionDate", Type = "MythicPlusDate", Nilable = false },
+				{ Name = "season", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SeasonTimeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "bestTime", Type = "number", Nilable = false },
+				{ Name = "lastTime", Type = "number", Nilable = false },
+				{ Name = "medal", Type = "number", Nilable = false },
 			},
 		},
 	},

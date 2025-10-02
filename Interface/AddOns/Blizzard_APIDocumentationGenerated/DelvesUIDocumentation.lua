@@ -7,8 +7,18 @@ local DelvesUI =
 	Functions =
 	{
 		{
+			Name = "GetCompanionInfoForActivePlayer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerCompanionInfoID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCreatureDisplayInfoForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,13 +31,31 @@ local DelvesUI =
 			},
 		},
 		{
-			Name = "GetCurioNodeForCompanion",
+			Name = "GetCurioLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Given the spell ID for an owned curio and its rarity, return a spell link style hyperlink for the curio spell, since they aren't items when learned" },
 
 			Arguments =
 			{
-				{ Name = "companionID", Type = "number", Nilable = true },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "rarity", Type = "CurioRarity", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "curioLink", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurioNodeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
 				{ Name = "curioType", Type = "CurioType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -38,6 +66,7 @@ local DelvesUI =
 		{
 			Name = "GetCurioRarityByTraitCondAccountElementID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +118,7 @@ local DelvesUI =
 		{
 			Name = "GetFactionForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +133,7 @@ local DelvesUI =
 		{
 			Name = "GetModelSceneForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,6 +148,7 @@ local DelvesUI =
 		{
 			Name = "GetRoleNodeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,11 +163,12 @@ local DelvesUI =
 		{
 			Name = "GetRoleSubtreeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "companionID", Type = "number", Nilable = true },
 				{ Name = "roleType", Type = "CompanionRoleType", Nilable = false },
+				{ Name = "companionID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -146,6 +179,7 @@ local DelvesUI =
 		{
 			Name = "GetTraitTreeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,6 +194,7 @@ local DelvesUI =
 		{
 			Name = "GetUnseenCuriosBySlotType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -175,6 +210,7 @@ local DelvesUI =
 		{
 			Name = "HasActiveDelve",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,6 +225,7 @@ local DelvesUI =
 		{
 			Name = "IsEligibleForActiveDelveRewards",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,6 +240,7 @@ local DelvesUI =
 		{
 			Name = "RequestPartyEligibilityForDelveTiers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries private party members to see what level they have unlocked for the Delve. Ineligible members are added to the tooltip of dropdown entries." },
 
 			Arguments =
@@ -213,6 +251,7 @@ local DelvesUI =
 		{
 			Name = "SaveSeenCuriosBySlotType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -229,6 +268,16 @@ local DelvesUI =
 			Type = "Event",
 			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
 			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
+		},
+		{
+			Name = "DelveAssistAction",
+			Type = "Event",
+			LiteralName = "DELVE_ASSIST_ACTION",
+			Documentation = { "Signaled when an assist action occurs in a delve." },
+			Payload =
+			{
+				{ Name = "data", Type = "DelveAssistActionData", Nilable = false },
+			},
 		},
 		{
 			Name = "DelvesAccountDataElementChanged",
@@ -272,13 +321,14 @@ local DelvesUI =
 		{
 			Name = "CompanionRoleType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Dps", Type = "CompanionRoleType", EnumValue = 0 },
 				{ Name = "Heal", Type = "CompanionRoleType", EnumValue = 1 },
+				{ Name = "Tank", Type = "CompanionRoleType", EnumValue = 2 },
 			},
 		},
 		{

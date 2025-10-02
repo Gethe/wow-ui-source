@@ -95,9 +95,9 @@ end
 function TutorialWalkMixin:SetKeybindings()
 	local binds = {
 		"MOVEFORWARD",
-		"TURNLEFT",
+		"STRAFELEFT",
 		"MOVEBACKWARD",
-		"TURNRIGHT",
+		"STRAFERIGHT",
 	}
 
 	for i, v in pairs(binds) do

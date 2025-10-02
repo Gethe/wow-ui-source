@@ -8,6 +8,7 @@ local Totem =
 		{
 			Name = "DestroyTotem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -17,6 +18,7 @@ local Totem =
 		{
 			Name = "GetTotemCannotDismiss",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,6 +33,9 @@ local Totem =
 		{
 			Name = "GetTotemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,11 +49,15 @@ local Totem =
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{
 			Name = "GetTotemTimeLeft",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +72,7 @@ local Totem =
 		{
 			Name = "TargetTotem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +97,8 @@ local Totem =
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 	},

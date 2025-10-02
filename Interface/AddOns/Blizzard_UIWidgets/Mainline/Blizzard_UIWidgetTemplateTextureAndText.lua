@@ -15,5 +15,5 @@ function UIWidgetTemplateTextureAndTextMixin:OnLoad()
 end 
 function UIWidgetTemplateTextureAndTextMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	UIWidgetBaseTextureAndTextTemplateMixin.Setup(self, widgetContainer, widgetInfo.text, widgetInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, nil, widgetInfo.tooltipLoc);
+	UIWidgetBaseTextureAndTextTemplateMixin.Setup(self, widgetContainer, widgetInfo.text, widgetInfo.tooltip, widgetInfo.frameTextureKit, widgetInfo.textureKit, widgetInfo.textSizeType, nil, widgetInfo.tooltipLoc, widgetInfo.textFormatType, widgetInfo.updateAnimType);
 end

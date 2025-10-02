@@ -8,16 +8,19 @@ end
 
 CurrencyTransferToggleButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin);
 
-local CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS = {
+local CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURRENCY_TRANSFER_FAILED",
 	"ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+	"CURRENCY_TRANSFER_INITIATED",
 };
 
 local DISABLED_ERROR_MESSAGE = {
 	[Enum.AccountCurrencyTransferResult.MaxQuantity] = CURRENCY_TRANSFER_DISABLED_MAX_QUANTITY,
 	[Enum.AccountCurrencyTransferResult.NoValidSourceCharacter] = CURRENCY_TRANSFER_DISABLED_NO_VALID_SOURCES,
 	[Enum.AccountCurrencyTransferResult.CannotUseCurrency] = CURRENCY_TRANSFER_DISABLED_UNMET_REQUIREMENTS,
+	[Enum.AccountCurrencyTransferResult.TransactionInProgress] = CURRENCY_TRANSFER_IN_PROGRESS,
+	[Enum.AccountCurrencyTransferResult.CurrencyTransferDisabled] = ERR_CURRENCY_TRANSFER_DISABLED,
 };
 
 function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(dataReady, failureReason)
@@ -29,16 +32,16 @@ function CurrencyTransferToggleButtonMixin:GetDisabledErrorMessage(dataReady, fa
 end
 
 function CurrencyTransferToggleButtonMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS);
+	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS);
 	C_CurrencyInfo.RequestCurrencyDataForAccountCharacters();
 end
 
 function CurrencyTransferToggleButtonMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_EVENTS);
+	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS);
 end
 
 function CurrencyTransferToggleButtonMixin:OnEvent(event, ...)
-	if event == "CURRENCY_DISPLAY_UPDATE" or event == "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED" or event == "CURRENCY_TRANSFER_FAILED" then
+	if tContains(CURRENCY_TRANSFER_TOGGLE_BUTTON_REFRESH_EVENTS, event) then
 		self:UpdateEnabledState();
 	end
 end
@@ -81,7 +84,8 @@ function CurrencyTransferToggleButtonMixin:UpdateEnabledState()
 	end
 
 	local dataReady = C_CurrencyInfo.IsAccountCharacterCurrencyDataReady();
-	self:SetLoadingSpinnerShown(not dataReady);
+	local transferInProgress = C_CurrencyInfo.IsCurrencyTransferInProgress();
+	self:SetLoadingSpinnerShown(not dataReady or transferInProgress);
 
 	local canTransfer, failureReason = C_CurrencyInfo.CanTransferCurrency(self.currencyID);
 	self:SetEnabled(dataReady and canTransfer);
@@ -97,6 +101,8 @@ CurrencyTransferMenuMixin = CreateFromMixins(CallbackRegistryMixin);
 local CURRENCY_TRANSFER_MENU_EVENTS = {
 	"CURRENCY_DISPLAY_UPDATE",
 	"CURRENCY_TRANSFER_FAILED",
+	"CURRENCY_TRANSFER_INITIATED",
+	"CURRENCY_TRANSFER_SUCCESS"
 };
 
 CurrencyTransferMenuMixin:GenerateCallbackEvents({
@@ -122,6 +128,11 @@ function CurrencyTransferMenuMixin:OnEvent(event, ...)
 		end
 	elseif event == "CURRENCY_TRANSFER_FAILED" then
 		HideUIPanel(self);
+	elseif event == "CURRENCY_TRANSFER_INITIATED" then
+		self:FullRefresh();
+	elseif event == "CURRENCY_TRANSFER_SUCCESS" then
+		self:ResetCurrencyAmountSelector();
+		self:PlayTransferCelebration();
 	end
 end
 
@@ -133,9 +144,26 @@ function CurrencyTransferMenuMixin:InitializeFrameVisuals()
 	self.Inset:ClearAllPoints();
 	self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", 11, -28);
 	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 35);
-	self.SourceSelector:ClearAllPoints();
-	self.SourceSelector:SetPoint("TOPLEFT", self.Inset, "TOPLEFT", 20, -30);
-	self.SourceSelector:SetPoint("TOPRIGHT", self.Inset, "TOPRIGHT", -20, -30);
+	self.Content.SourceSelector:ClearAllPoints();
+	self.Content.SourceSelector:SetPoint("TOPLEFT", self.Inset, "TOPLEFT", 20, -30);
+	self.Content.SourceSelector:SetPoint("TOPRIGHT", self.Inset, "TOPRIGHT", -20, -30);
+end
+
+function CurrencyTransferMenuMixin:QueueTransferringSpinner()
+	-- Try to avoid showing the transferring spinner in cases where the transfer completes immediately
+	C_Timer.After(0.3, function()
+		self:CheckPlayTransferringSpinner();
+	end);
+end
+
+function CurrencyTransferMenuMixin:CheckPlayTransferringSpinner()
+	self:SetTransferringSpinnerShown(self:IsShown() and C_CurrencyInfo.IsCurrencyTransferInProgress());
+end
+
+function CurrencyTransferMenuMixin:SetTransferringSpinnerShown(shown)
+	-- We shouldn't show the spinner and the content of the transfer menu at the same time
+	self.TransferringSpinner:SetShown(shown);
+	self.Content:SetShown(not shown);
 end
 
 function CurrencyTransferMenuMixin:OnCurrencyTransferRequested(requestedCurrencyID)
@@ -164,9 +192,9 @@ function CurrencyTransferMenuMixin:OnCurrencyTransferSourceSelected(sourceCharac
 		return;
 	end
 
-	self.SourceSelector:RefreshSelectedSource();
-	self.AmountSelector:ValidateAndSetValue();
-	self.SourceBalancePreview:SetCharacterAndCurrencyBalance(sourceCharacterData.characterName, self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
+	self.Content.SourceSelector:RefreshSelectedSource();
+	self.Content.AmountSelector:ValidateAndSetValue();
+	self.Content.SourceBalancePreview:SetCharacterAndCurrencyBalance(sourceCharacterData.characterName, self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
 end
 
 function CurrencyTransferMenuMixin:OnCurrencyTransferAmountUpdated(amount)
@@ -174,7 +202,7 @@ function CurrencyTransferMenuMixin:OnCurrencyTransferAmountUpdated(amount)
 		return;
 	end
 
-	self.ConfirmButton:SetEnabled(amount > 0);
+	self.Content.ConfirmButton:SetEnabled(amount > 0);
 	self:RefreshSourceCharacterBalancePreview();
 	self:RefreshPlayerBalancePreview();
 end
@@ -189,11 +217,16 @@ function CurrencyTransferMenuMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, CURRENCY_TRANSFER_MENU_EVENTS);
 	self:ClearTransferData();
+	self:StopTransferCelebration();
 end
 
 function CurrencyTransferMenuMixin:ClearTransferData()
 	self.currencyInfo = nil;
 	self.sourceCharacterData = nil;
+end
+
+function CurrencyTransferMenuMixin:ResetCurrencyAmountSelector()
+	self.Content.AmountSelector:Reset();
 end
 
 function CurrencyTransferMenuMixin:SetCurrency(currencyID)
@@ -222,27 +255,35 @@ end
 
 function CurrencyTransferMenuMixin:CalculateEarnableCurrencyLimit()
 	if not self.currencyInfo then
-		return nil;
+		return 0;
 	end
 
-	local hasWeeklyCurrencyCap = self.currencyInfo.maxWeeklyQuantity > 0;
-	local hasGeneralCurrencyCap = self.currencyInfo.maxQuantity > 0;
-	local noCurrencyCap = not hasWeeklyCurrencyCap and not hasGeneralCurrencyCap; 
-	if noCurrencyCap then
-		return nil;
+	-- There are 3 currency limits that we care about:
+	-- A currency can have a weekly limit set
+	local hasWeeklyCurrencyLimit = self.currencyInfo.maxWeeklyQuantity > 0;
+	-- A currency can have a general/overall limit set
+	local hasGeneralCurrencyLimit = self.currencyInfo.maxQuantity > 0;
+	-- And then ALL currencies have a hard limit of MAX_CURRENCY_QUANTITY, even if they don't have a manually set limit
+	local remainingHardLimitEarnableQuantity = Constants.CurrencyConsts.MAX_CURRENCY_QUANTITY - self.currencyInfo.quantity;
+
+	local noCurrencyLimitSet = not hasWeeklyCurrencyLimit and not hasGeneralCurrencyLimit;
+	if noCurrencyLimitSet then
+		return remainingHardLimitEarnableQuantity;
 	end
 
-	if hasWeeklyCap and hasGeneralCurrencyCap then
+	if hasWeeklyCurrencyLimit and hasGeneralCurrencyLimit then
 		local remainingWeeklyEarnableQuantity = self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
 		local remainingGeneralEarnableQuantity = self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
-		return math.min(remainingWeeklyEarnableQuantity, remainingGeneralEarnableQuantity);
-	elseif hasWeeklyCap then
-		return self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
-	elseif hasGeneralCurrencyCap then
-		return self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
+		return math.min(remainingWeeklyEarnableQuantity, remainingGeneralEarnableQuantity, remainingHardLimitEarnableQuantity);
+	elseif hasWeeklyCurrencyLimit then
+		local remainingWeeklyEarnableQuantity = self.currencyInfo.maxWeeklyQuantity - self.currencyInfo.quantityEarnedThisWeek;
+		return math.min(remainingWeeklyEarnableQuantity, remainingHardLimitEarnableQuantity);
+	elseif hasGeneralCurrencyLimit then
+		local remainingGeneralEarnableQuantity = self.currencyInfo.maxQuantity - self.currencyInfo.quantity;
+		return math.min(remainingGeneralEarnableQuantity, remainingHardLimitEarnableQuantity);
 	end
 
-	return nil;
+	return remainingHardLimitEarnableQuantity;
 end
 
 function CurrencyTransferMenuMixin:GetCurrencyID()
@@ -270,36 +311,57 @@ function CurrencyTransferMenuMixin:GetSourceCharacterName()
 end
 
 function CurrencyTransferMenuMixin:GetRequestedCurrencyTransferAmount()
-	return self.AmountSelector:GetRequestedCurrencyTransferAmount();
+	return self.Content.AmountSelector:GetRequestedCurrencyTransferAmount();
 end
 
 function CurrencyTransferMenuMixin:GetTotalCurrencyTransferCost()
-	return self.AmountSelector:CalculateTotalCurrencyTransferCost(self.currencyInfo.currencyID);
+	return self.Content.AmountSelector:CalculateTotalCurrencyTransferCost(self.currencyInfo.currencyID);
 end
 
 function CurrencyTransferMenuMixin:GetCurrencyTransferLoss()
-	return self.AmountSelector:CalculateCurrencyTransferLoss(self.currencyInfo.currencyID);
+	return self.Content.AmountSelector:CalculateCurrencyTransferLoss(self.currencyInfo.currencyID);
 end
 
 function CurrencyTransferMenuMixin:RefreshSourceCharacterBalancePreview()
-	self.SourceBalancePreview:SetCurrencyBalance(self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
+	self.Content.SourceBalancePreview:SetCurrencyBalance(self:GetSourceCharacterCurrencyQuantity() - self:GetTotalCurrencyTransferCost());
 end
 
 function CurrencyTransferMenuMixin:RefreshPlayerBalancePreview()
 	local transferAmount = self:GetRequestedCurrencyTransferAmount();
-	self.PlayerBalancePreview:SetCharacterAndCurrencyBalance(UnitName("player"), self:GetPlayerCurrencyQuantity() + transferAmount);
+	self.Content.PlayerBalancePreview:SetCharacterAndCurrencyBalance(UnitName("player"), self:GetPlayerCurrencyQuantity() + transferAmount);
 end
 
 function CurrencyTransferMenuMixin:FullRefresh()
-	if not self.currencyInfo then 
+	if not self.currencyInfo then
+		HideUIPanel(self);
 		return;
+	end
+
+	local canTransfer, failureReason = C_CurrencyInfo.CanTransferCurrency(self.currencyInfo.currencyID);
+	if not canTransfer and failureReason ~= Enum.AccountCurrencyTransferResult.TransactionInProgress then
+		HideUIPanel(self);
+		return;
+	end
+
+	if C_CurrencyInfo.IsCurrencyTransferInProgress() then
+		self:QueueTransferringSpinner();
+	else
+		self:SetTransferringSpinnerShown(false);
 	end
 
 	self:RefreshCurrencyInfo();
 	self:RefreshMenuTitle();
 	self:RefreshPlayerBalancePreview();
-	self.SourceSelector:RefreshRosterCurrencyData();
-	self.SourceSelector:AutoSelectHighestQuantitySource();
+	self.Content.SourceSelector:RefreshRosterCurrencyData();
+	self.Content.SourceSelector:AutoSelectHighestQuantitySource();
+end
+
+function CurrencyTransferMenuMixin:PlayTransferCelebration()
+	self.AnimationHolder.TransferCelebration:Restart();
+end
+
+function CurrencyTransferMenuMixin:StopTransferCelebration()
+	self.AnimationHolder.TransferCelebration:Stop();
 end
 
 CurrencyTransferBalancePreviewMixin = CreateFromMixins(CurrencyTransferSystemMixin);
@@ -320,6 +382,16 @@ end
 
 function CurrencyTransferBalancePreviewMixin:SetCurrencyBalance(amount)
 	self.BalanceInfo.Amount:SetText(amount and BreakUpLargeNumbers(amount) or 0);
+	self:RefreshTransferCostDisplay();
+end
+
+function CurrencyTransferBalancePreviewMixin:RefreshTransferCostDisplay()
+	if self.showTransferCost then
+		-- Reanchor the transfer cost display so it always stays next to the amount, regardless of how many digits it has
+		self.BalanceInfo.TransferCostDisplay:ClearAllPoints();
+		local padding = 2;
+		self.BalanceInfo.TransferCostDisplay:SetPoint("RIGHT", self.BalanceInfo.Amount, "RIGHT", -(self.BalanceInfo.Amount:GetStringWidth() + padding), 0);
+	end
 	self.BalanceInfo.TransferCostDisplay:SetShown(self.showTransferCost and self:GetCurrencyTransferMenu():GetCurrencyTransferLoss() ~= 0);
 end
 
@@ -329,7 +401,6 @@ function CurrencyTransferConfirmButtonMixin:OnClick()
 	local CurrencyTransferMenu = self:GetCurrencyTransferMenu();
 	local sourceCharacterData = CurrencyTransferMenu:GetSourceCharacterData();
 	C_CurrencyInfo.RequestCurrencyFromAccountCharacter(sourceCharacterData.characterGUID, CurrencyTransferMenu:GetCurrencyID(), CurrencyTransferMenu:GetRequestedCurrencyTransferAmount());
-	HideUIPanel(CurrencyTransferMenu);
 end
 
 CurrencyTransferCancelButtonMixin = CreateFromMixins(CurrencyTransferSystemMixin);
@@ -338,10 +409,30 @@ function CurrencyTransferCancelButtonMixin:OnClick()
 	HideUIPanel(CurrencyTransferMenu);
 end
 
-CurrencyTransferAmountSelectorMixin = {};
+CurrencyTransferAmountSelectorMixin = CreateFromMixins(CallbackRegistryMixin);
+
+CurrencyTransferAmountSelectorMixin:GenerateCallbackEvents({
+	"RequestSetSourceCharacterMaxQuantity",
+});
+
+function CurrencyTransferAmountSelectorMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+	self:AddDynamicEventMethod(self, CurrencyTransferAmountSelectorMixin.Event.RequestSetSourceCharacterMaxQuantity, self.OnRequestSetSourceCharacterMaxQuantity);
+
+	self.MaxQuantityButton:SetScript("OnClick", function() 
+		self:TriggerEvent(CurrencyTransferAmountSelectorMixin.Event.RequestSetSourceCharacterMaxQuantity);
+	end);
+
+	self:Reset();
+end
 
 function CurrencyTransferAmountSelectorMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
 	self:Reset();
+end
+
+function CurrencyTransferAmountSelectorMixin:OnRequestSetSourceCharacterMaxQuantity()
+	self.InputBox:TrySetFullSourceCharacterCurrencyQuantity();
 end
 
 function CurrencyTransferAmountSelectorMixin:GetRequestedCurrencyTransferAmount()
@@ -368,18 +459,27 @@ end
 
 CurrencyTransferAmountInputBoxMixin = CreateFromMixins(CurrencyTransferSystemMixin);
 
-function CurrencyTransferAmountInputBoxMixin:OnShow()
-	self:SetNumber(0);
-end
-
 function CurrencyTransferAmountInputBoxMixin:OnEditFocusLost()
 	EditBox_ClearHighlight(self);
 	self:ValidateAndSetValue();
 end
 
 function CurrencyTransferAmountInputBoxMixin:ValidateAndSetValue()
-	self:SetNumber(self:GetClampedInputAmount(self:GetNumber()));
-	self:GetCurrencyTransferMenu():TriggerEvent(CurrencyTransferMenuMixin.Event.CurrencyTransferAmountUpdated, self:GetNumber());
+	local inputValue = self:GetNumber();
+	local clampedInputValue = self:GetClampedInputAmount(inputValue);
+	self:SetNumber(clampedInputValue);
+
+	-- We only need to update the transfer amount in the menu if it is going to change after being clamped
+	if self.currentValue ~= clampedInputValue then
+		self.currentValue = clampedInputValue;
+		self:GetCurrencyTransferMenu():TriggerEvent(CurrencyTransferMenuMixin.Event.CurrencyTransferAmountUpdated, self.currentValue);
+	end
+end
+
+function CurrencyTransferAmountInputBoxMixin:TrySetFullSourceCharacterCurrencyQuantity()
+	local sourceCharacterCurrencyQuantity = self:GetCurrencyTransferMenu():GetSourceCharacterCurrencyQuantity() or 0;
+	local maxInputValue = math.min(sourceCharacterCurrencyQuantity, self:GetMaxTransferAmountPerTransaction());
+	self:SetNumber(maxInputValue);
 end
 
 function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
@@ -387,24 +487,26 @@ function CurrencyTransferAmountInputBoxMixin:GetClampedInputAmount(inputAmount)
 	local remainingEarnableQuantity = CurrencyTransferMenu:CalculateEarnableCurrencyLimit();
 	local sourceCharacterMaxTransferQuantity = C_CurrencyInfo.GetMaxTransferableAmountFromQuantity(CurrencyTransferMenu:GetCurrencyID(), CurrencyTransferMenu:GetSourceCharacterCurrencyQuantity()) or 0;
 
-	local maxTransferAmount = nil;
-	if sourceCharacterMaxTransferQuantity and remainingEarnableQuantity then
-		maxTransferAmount = math.min(sourceCharacterMaxTransferQuantity, remainingEarnableQuantity);
-	elseif sourceCharacterMaxTransferQuantity then
-		maxTransferAmount = sourceCharacterMaxTransferQuantity;
-	elseif remainingEarnableQuantity then
-		maxTransferAmount = remainingEarnableQuantity;
+	local maxTransferAmount = self:GetMaxTransferAmountPerTransaction();
+	if sourceCharacterMaxTransferQuantity then
+		maxTransferAmount = math.min(sourceCharacterMaxTransferQuantity, remainingEarnableQuantity, maxTransferAmount);
+	else
+		maxTransferAmount = math.min(remainingEarnableQuantity, maxTransferAmount);
 	end
 
-	if maxTransferAmount then
-		return Clamp(inputAmount, 0, maxTransferAmount);
-	else
-		return (inputAmount >= 0) and inputAmount or 0;
-	end
+	return Clamp(inputAmount, 0, maxTransferAmount);
 end
 
 function CurrencyTransferAmountInputBoxMixin:Reset()
-	self:SetText("");
+	self:SetNumber(0);
+end
+
+function CurrencyTransferAmountInputBoxMixin:OnTextChanged()
+	self:ValidateAndSetValue();
+end
+
+function CurrencyTransferAmountInputBoxMixin:GetMaxTransferAmountPerTransaction()
+	return 10^(self:GetMaxLetters()) - 1;
 end
 
 CurrencyTransferCostDisplayMixin = CreateFromMixins(CurrencyTransferSystemMixin);

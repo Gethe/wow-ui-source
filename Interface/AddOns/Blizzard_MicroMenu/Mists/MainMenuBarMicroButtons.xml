@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="StoreMicroButton" inherits="MainMenuBarMicroButton" parent="UIParent" mixin="StoreMicroButtonMixin">
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="EJMicroButton" relativePoint="BOTTOMRIGHT">
+				<Offset>
+					<AbsDimension x="-3" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow function="MicroButton_KioskModeDisable" inherit="append"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick function="ToggleStoreUI"/>
+		</Scripts>
+	</Button>
+</Ui>

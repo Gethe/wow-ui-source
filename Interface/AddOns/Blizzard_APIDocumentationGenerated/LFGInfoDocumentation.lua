@@ -7,6 +7,21 @@ local LFGInfo =
 	Functions =
 	{
 		{
+			Name = "AreCrossFactionGroupQueuesAllowed",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "areCrossFactionGroupQueuesAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanPlayerUseGroupFinder",
 			Type = "Function",
 
@@ -71,8 +86,39 @@ local LFGInfo =
 			Type = "Function",
 		},
 		{
+			Name = "DoesActivePartyMeetPremadeLaunchCount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesActivePartyMeetPremadeLaunchCount", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "DoesCrossFactionQueueRequireFullPremade",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "lfgDungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "doesCrossFactionQueueRequireFullPremade", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +133,8 @@ local LFGInfo =
 		{
 			Name = "GetDungeonInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,6 +156,22 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetLevelUpInstances",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "currPlayerLevel", Type = "number", Nilable = false },
+				{ Name = "isRaid", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "instances", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoleCheckDifficultyDetails",
 			Type = "Function",
 
@@ -120,6 +184,7 @@ local LFGInfo =
 		{
 			Name = "HideNameFromUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,6 +226,7 @@ local LFGInfo =
 		{
 			Name = "IsLFGFollowerDungeon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,15 +240,6 @@ local LFGInfo =
 		},
 		{
 			Name = "IsLFREnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "enabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsPremadeGroupEnabled",
 			Type = "Function",
 
 			Returns =
@@ -213,6 +270,11 @@ local LFGInfo =
 			Name = "LfgCompletionReward",
 			Type = "Event",
 			LiteralName = "LFG_COMPLETION_REWARD",
+		},
+		{
+			Name = "LfgCooldownsUpdated",
+			Type = "Event",
+			LiteralName = "LFG_COOLDOWNS_UPDATED",
 		},
 		{
 			Name = "LfgEnabledStateChanged",

@@ -133,16 +133,23 @@ function ProfessionsRecraftInputSlotMixin:Init(item)
 	end
 end
 
-function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
+function ProfessionsRecraftInputSlotMixin:CheckDropCursorItemOnSlot()
+	local successfulDrop = false;
 	local cursorItemLocation = C_Cursor.GetCursorItem();
-	if not cursorItemLocation then
-		return;
+	if cursorItemLocation then
+		local cursorItemGUID = C_Item.GetItemGUID(cursorItemLocation);
+		local learned = C_TradeSkillUI.IsOriginalCraftRecipeLearned(cursorItemGUID);
+		if learned and self.cursorItemPredicate(cursorItemGUID) then
+			self.cursorItemTransition(cursorItemGUID);
+			successfulDrop = true;
+		end
+
+		ClearCursor();
 	end
 
-	local cursorItemGUID = C_Item.GetItemGUID(cursorItemLocation);
-	local learned = C_TradeSkillUI.IsOriginalCraftRecipeLearned(cursorItemGUID);
-	if learned and self.cursorItemPredicate(cursorItemGUID) then
-		self.cursorItemTransition(cursorItemGUID);
-	end
-	ClearCursor();
+	return successfulDrop;
+end
+
+function ProfessionsRecraftInputSlotMixin:OnReceiveDrag()
+	self:CheckDropCursorItemOnSlot();
 end

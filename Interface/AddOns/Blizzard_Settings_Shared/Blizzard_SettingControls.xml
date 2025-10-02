@@ -63,7 +63,7 @@
 			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
 				<Size x="1" y="1"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-37" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Text" relativePoint="LEFT"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -100,19 +100,6 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
-	<Button name="SettingsDropdownButtonTemplate" inherits="DarkMenuElementTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" font="GameFontNormal" justifyH="LEFT" maxLines="1">
-					<Size x="200" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="14"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Button>
 	
 	<Frame name="SettingsDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>

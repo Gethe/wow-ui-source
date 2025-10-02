@@ -1,25 +1,25 @@
 local partyChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local raidChannelTypeToActivatePrompt =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_PROMPT_CHANNEL_ACTIVATE_INSTANCE,
 };
 
 local partyChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 local raidChannelTypeToActivatedNotification =
 {
-	[Enum.ChatChannelType.Private_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
-	[Enum.ChatChannelType.Public_Party] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_RAID,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_INSTANCE,
 };
 
 function Voice_GetChannelActivatePrompt(channel)
@@ -29,7 +29,7 @@ end
 
 function Voice_GetChannelActivatedNotification(channel)
 	if channel.channelType == Enum.ChatChannelType.Communities then
-		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrame_GetCommunityAndStreamName(channel.clubId, channel.streamId));
+		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrameUtil.GetCommunityAndStreamName(channel.clubId, channel.streamId));
 	else
 		local isRaid = IsChatChannelRaid(channel.channelType);
 		return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];

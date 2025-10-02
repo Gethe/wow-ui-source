@@ -1,0 +1,111 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="EncounterTimelineViewElementTemplate" mixin="EncounterTimelineViewElementMixin" enableMouseClicks="false" enableMouseMotion="true" virtual="true">
+		<Size x="44" y="44"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Trail" atlas="combattimeline-line-icontrail" useAtlasSize="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="10"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="SpellName" inherits="SystemFont_Shadow_Med3" hidden="true" wordwrap="false" nonspacewrap="false" justifyH="RIGHT">
+					<Size x="200"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="IconContainer" parentArray="crossAxisTranslatableRegions">
+				<Size x="44" y="44"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="SpellIcon" snapToPixelGrid="false" texelSnappingBias="0.0" setAllPoints="true"/>
+						<MaskTexture parentKey="SpellIconMask" atlas="UI-HUD-CoolDownManager-Mask" snapToPixelGrid="false" texelSnappingBias="0.0" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="SpellIcon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="SpellIconOverlay" atlas="UI-HUD-CoolDownManager-IconOverlay" snapToPixelGrid="false" texelSnappingBias="0.0">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-9" y="9"/>
+								<Anchor point="BOTTOMRIGHT" x="9" y="-9"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="HighlightGlow" atlas="combattimeline-fx-highlight" useAtlasSize="true" snapToPixelGrid="false" texelSnappingBias="0.0" alpha="0">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-9" y="9"/>
+								<Anchor point="BOTTOMRIGHT" x="9" y="-9"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="HighlightSwirl" useAtlasSize="true" alphaMode="ADD" atlas="combattimeline-fx-highlight-fx" snapToPixelGrid="false" texelSnappingBias="0.0" alpha="0">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="HighlightMask" atlas="combattimeline-fx-highlight-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="HighlightSwirl"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="HighlightAnimation" setToFinalAlpha="true">
+						<Rotation childKey="HighlightSwirl" duration="0.6" order="1" smoothing="OUT" degrees="-180">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<Alpha childKey="HighlightSwirl" duration="0.2" order="1" startDelay="0.4" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="HighlightGlow" duration="0.2" order="1" startDelay="0" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="HighlightGlow" duration="0.2" order="2" smoothing="OUT" fromAlpha="0.7" toAlpha="0"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="HighlightPulse" looping="REPEAT">
+						<Scale smoothing="IN" fromScaleX="1.0" toScaleX="1.1" fromScaleY="1.0" toScaleY="1.1" duration="0.2" order="1"/>
+						<Scale smoothing="OUT" fromScaleX="1" toScaleX="0.9" fromScaleY="1" toScaleY="0.9" duration="0.2" endDelay="0.6" order="2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Cooldown parentKey="Cooldown" parentArray="crossAxisTranslatableRegions" drawBling="false" drawEdge="false" drawSwipe="false" hideCountdownNumbers="false" minimumCountdownDuration="0">
+				<Size x="44" y="44"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="FinishAnimation" inherits="TargetsHiddenOnFinishedAnimGroupTemplate">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2"/>
+				<Scale childKey="IconContainer" smoothing="OUT" fromScaleX="1" toScaleX="1.35" fromScaleY="1" toScaleY="1.35" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="CancelAnimation" inherits="TargetsHiddenOnFinishedAnimGroupTemplate">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="IntroAnimation" setToFinalAlpha="true">
+				<Alpha parentKey="Fade" fromAlpha="0" toAlpha="1" duration="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="TrailAnimation" setToFinalAlpha="true">
+				<Alpha childKey="Trail" fromAlpha="0" toAlpha="1" duration="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

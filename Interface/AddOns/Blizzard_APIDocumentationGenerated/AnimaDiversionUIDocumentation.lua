@@ -13,6 +13,7 @@ local AnimaDiversionUI =
 		{
 			Name = "GetAnimaDiversionNodes",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -53,6 +54,8 @@ local AnimaDiversionUI =
 		{
 			Name = "SelectAnimaNode",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

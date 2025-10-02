@@ -13,6 +13,8 @@ local replacePortraitCvarNames = {
 	"ReplaceOtherPlayerPortraits",
 };
 
+CVarCallbackRegistry:SetCVarCachable("threatShowNumeric");
+
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
 	This "Initialize" function registers the events to handle.
@@ -121,7 +123,7 @@ function UnitFrame_SetUnit (self, unit, healthbar, manabar)
 			UnitFrameManaBar_RegisterDefaultEvents(manabar);
 		end
 		healthbar:RegisterUnitEvent("UNIT_MAXHEALTH", unit);
-		
+
 		if ( self.PlayerFrameHealthBarAnimatedLoss ) then
 			self.PlayerFrameHealthBarAnimatedLoss:SetUnitHealthBar(unit, healthbar);
 		end
@@ -168,7 +170,6 @@ function UnitFrame_Update (self, isParty)
 	UnitFrameHealPredictionBars_UpdateMax(self);
 	UnitFrameHealPredictionBars_Update(self);
 	UnitFrameManaCostPredictionBars_Update(self);
-	
 end
 
 function UnitFramePortrait_Update (self)
@@ -229,7 +230,7 @@ function UnitFrameHealPredictionBars_UpdateSize(self)
 	UnitFrameHealPredictionBars_Update(self);
 end
 
---WARNING: This function is very similar to the function CompactUnitFrame_UpdateHealPrediction in CompactUnitFrame.lua.
+--WARNING: This function is very similar to the function CompactUnitFrame_UpdateHealPrediction in CompactUnitFrame.lua and UpdateHealthPrediction in Blizzard_PersonalResourceDisplay.lua.
 --If you are making changes here, it is possible you may want to make changes there as well.
 local MAX_INCOMING_HEAL_OVERFLOW = 1.0;
 function UnitFrameHealPredictionBars_Update(frame)
@@ -388,6 +389,11 @@ end
 function UnitFrame_UpdateTooltip (self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
 	if ( GameTooltip:SetUnit(self.unit, self.hideStatusOnTooltip) ) then
+		-- Should be moved to line data in a future revision.
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddInstructionLine(GameTooltip, UNIT_POPUP_RIGHT_CLICK);
+		GameTooltip:Show();
+
 		self.UpdateTooltip = UnitFrame_UpdateTooltip;
 	else
 		self.UpdateTooltip = nil;
@@ -395,10 +401,10 @@ function UnitFrame_UpdateTooltip (self)
 end
 
 --[[
-	Previous way to set the mana bar type was by coloring the mana bar (or using an atlas texture for
-	certain cases).  Current way uses atlas textures exclusively, with a mask (done in each frame)
-	making the older existing atlas textures fit to the frame shape.  Once all unit frames have been
-	converted to the new flow, this method and any associated data pieces can be removed safely.
+	Previous way to set the mana bar type (prior to 10.0.0) was by coloring the mana bar (or using an atlas texture for certain cases).
+	Certain older unit frames still use this flow, such as vechicles (if they have a power bar) and arena frames.
+
+	Current way (10.0.0 onwards) for most unit frames uses atlas textures exclusively, with a mask (done in each frame) making the older existing atlas textures fit to the frame shape.
 ]]--
 function UnitFrameManaBar_UpdateTypeOld(manaBar)
 	if ( not manaBar ) then
@@ -494,6 +500,12 @@ function UnitFrameManaBar_UpdateType(manaBar)
 	local powerType, powerToken, altR, altG, altB = UnitPowerType(manaBar.unit);
 	local info = PowerBarColor[powerToken];
 
+	-- Check for override power info, use that if any exist (used for cases where units want to use the same power type as other cases, but with slightly different visuals).
+	local overrideInfo = manaBar.overrideInfo;
+	if overrideInfo then
+		info = overrideInfo;
+	end
+
 	local portraitType = manaBar.unitFrame.portrait and "PortraitOn" or "PortraitOff";
 
 	-- Some mana bar art is different for a frame depending on if they are in a vehicle or not.
@@ -506,7 +518,6 @@ function UnitFrameManaBar_UpdateType(manaBar)
 	if (info) then
 		local manaBarAtlas;
 		if (manaBar.unitFrame.frameType and info.atlasElementName) then
-			
 			-- Some player spec/classes use a third "alternate" bar, requiring their primary bar to use slightly different bar art
 			-- Very few bars have this ClassResource variant so far, hence the hasClassResourceVariant check which for now is much cheaper than constant GetAtlasInfo nil checks
 			local classResourceText = "";
@@ -618,7 +629,7 @@ function UnitFrameHealthBar_Initialize (unit, statusbar, statustext, frequentUpd
 end
 
 function UnitFrameHealthBar_RefreshUpdateEvent(self)
-	if ( GetCVarBool("predictedHealth") and self.frequentUpdates ) then
+	if ( self.frequentUpdates ) then
 		self:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 		self:UnregisterEvent("UNIT_HEALTH");
 	else
@@ -1007,6 +1018,11 @@ function UnitFrameManaBar_Update(statusbar, unit)
 	statusbar:UpdateTextString();
 end
 
+function UnitFrameManaBar_SetOverrideInfo(statusbar, overrideInfo)
+	statusbar.overrideInfo = overrideInfo;
+	UnitFrameManaBar_UpdateType(statusbar);
+end
+
 function UnitFrameThreatIndicator_Initialize(unit, unitFrame, feedbackUnit)
 	local indicator = unitFrame.threatIndicator;
 	if ( not indicator ) then
@@ -1129,7 +1145,7 @@ function GetUnitName(unit, showServerName)
 end
 
 function ShowNumericThreat()
-	if ( GetCVar("threatShowNumeric") == "1" ) then
+	if (CVarCallbackRegistry:GetCVarValueBool("threatShowNumeric")) then
 		return true;
 	else
 		return false;

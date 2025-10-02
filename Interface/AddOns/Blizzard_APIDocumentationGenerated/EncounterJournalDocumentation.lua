@@ -9,6 +9,7 @@ local EncounterJournal =
 		{
 			Name = "GetDungeonEntrancesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local EncounterJournal =
 		{
 			Name = "GetEncounterJournalLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +42,7 @@ local EncounterJournal =
 		{
 			Name = "GetEncountersOnMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local EncounterJournal =
 		{
 			Name = "GetInstanceForGameMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "GameMap as opposed to UIMap since we use a mapID not a uiMapID." },
 
 			Arguments =
@@ -69,6 +73,7 @@ local EncounterJournal =
 		{
 			Name = "GetLootInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +88,8 @@ local EncounterJournal =
 		{
 			Name = "GetLootInfoByIndex",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,6 +105,7 @@ local EncounterJournal =
 		{
 			Name = "GetSectionIconFlags",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Represents the icon indices for this EJ section.  An icon index can be used to arrive at texture coordinates for specific encounter types, e.g.: EncounterJournal_SetFlagIcon" },
 
 			Arguments =
@@ -113,6 +121,8 @@ local EncounterJournal =
 		{
 			Name = "GetSectionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,6 +150,7 @@ local EncounterJournal =
 		{
 			Name = "InstanceHasLoot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +165,7 @@ local EncounterJournal =
 		{
 			Name = "IsEncounterComplete",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,10 +180,12 @@ local EncounterJournal =
 		{
 			Name = "OnClose",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "OnOpen",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "ResetSlotFilter",
@@ -180,6 +194,7 @@ local EncounterJournal =
 		{
 			Name = "SetPreviewMythicPlusLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,6 +204,7 @@ local EncounterJournal =
 		{
 			Name = "SetPreviewPvpTier",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -198,6 +214,7 @@ local EncounterJournal =
 		{
 			Name = "SetSlotFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,11 +224,17 @@ local EncounterJournal =
 		{
 			Name = "SetTab",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "tabIdx", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "StartArathiRPE",
+			Type = "Function",
 		},
 	},
 

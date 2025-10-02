@@ -95,23 +95,25 @@ end
 
 local EJ_TIER_DATA =
 {
-	[1] = { backgroundAtlas = "UI-EJ-Classic"},
-	[2] = { backgroundAtlas = "UI-EJ-BurningCrusade"},
-	[3] = { backgroundAtlas = "UI-EJ-WrathoftheLichKing"},
-	[4] = { backgroundAtlas = "UI-EJ-Cataclysm"},
-	[5] = { backgroundAtlas = "UI-EJ-MistsofPandaria"},
-	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor"},
-	[7] = { backgroundAtlas = "UI-EJ-Legion"},
-	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth"},
-	[9] = { backgroundAtlas = "UI-EJ-Shadowlands"},
-	[10] = { backgroundAtlas = "UI-EJ-Dragonflight"},
-	[11] = { backgroundAtlas = "UI-EJ-TheWarWithin"},
+	[1] = { backgroundAtlas = "UI-EJ-Classic", expansionLevel = LE_EXPANSION_CLASSIC},
+	[2] = { backgroundAtlas = "UI-EJ-BurningCrusade", expansionLevel = LE_EXPANSION_BURNING_CRUSADE},
+	[3] = { backgroundAtlas = "UI-EJ-WrathoftheLichKing", expansionLevel = LE_EXPANSION_WRATH_OF_THE_LICH_KING},
+	[4] = { backgroundAtlas = "UI-EJ-Cataclysm", expansionLevel = LE_EXPANSION_CATACLYSM},
+	[5] = { backgroundAtlas = "UI-EJ-MistsofPandaria", expansionLevel = LE_EXPANSION_MISTS_OF_PANDARIA},
+	[6] = { backgroundAtlas = "UI-EJ-WarlordsofDraenor", expansionLevel = LE_EXPANSION_WARLORDS_OF_DRAENOR},
+	[7] = { backgroundAtlas = "UI-EJ-Legion", expansionLevel = LE_EXPANSION_LEGION},
+	[8] = { backgroundAtlas = "UI-EJ-BattleforAzeroth", expansionLevel = LE_EXPANSION_BATTLE_FOR_AZEROTH},
+	[9] = { backgroundAtlas = "UI-EJ-Shadowlands", expansionLevel = LE_EXPANSION_SHADOWLANDS},
+	[10] = { backgroundAtlas = "UI-EJ-Dragonflight", expansionLevel = LE_EXPANSION_DRAGONFLIGHT},
+	[11] = { backgroundAtlas = "UI-EJ-TheWarWithin", expansionLevel = LE_EXPANSION_WAR_WITHIN},
+	[12] = { backgroundAtlas = "UI-EJ-Midnight", expansionLevel = LE_EXPANSION_MIDNIGHT},
 }
 
 function GetEJTierData(tier)
 	if tier > #EJ_TIER_DATA then
-		local serverExpansionLevel = GetServerExpansionLevel();
-		return EJ_TIER_DATA[serverExpansionLevel]
+		-- GetServerExpansionLevel returns a 0 based expansion level. Adjust it to map to EJ_TIER_DATA.
+		local serverExpansionLevel = GetServerExpansionLevel() + 1;
+		return EJ_TIER_DATA[serverExpansionLevel] or EJ_TIER_DATA[1];
 	end
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
@@ -128,6 +130,7 @@ ExpansionEnumToEJTierDataTableId = {
 	[LE_EXPANSION_SHADOWLANDS] = 9,
 	[LE_EXPANSION_DRAGONFLIGHT] = 10,
 	[LE_EXPANSION_WAR_WITHIN] = 11,
+	[LE_EXPANSION_MIDNIGHT] = 12,
 }
 
 function GetEJTierDataTableID(expansion)
@@ -138,6 +141,8 @@ function GetEJTierDataTableID(expansion)
 
 	return ExpansionEnumToEJTierDataTableId[LE_EXPANSION_CLASSIC];
 end
+
+local EJ_JOURNEYS_MIN_TIER = GetEJTierDataTableID(LE_EXPANSION_DRAGONFLIGHT);
 
 local SlotFilterToSlotName = {
 	[Enum.ItemSlotFilterType.Head] = INVTYPE_HEAD,
@@ -352,7 +357,6 @@ function EncounterJournal_OnLoad(self)
 
 		local scrollBox = EncounterJournal.searchResults.ScrollBox;
 		local scrollBar = EncounterJournal.searchResults.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 	end
 
@@ -408,7 +412,7 @@ function EncounterJournal_OnLoad(self)
 		EncounterJournal.searchBox:SetScript("OnTextChanged", EncounterJournalSearchBox_OnTextChanged);
 		EncounterJournal.searchBox:SetScript("OnEditFocusGained", EncounterJournalSearchBox_OnEditFocusGained);
 		EncounterJournal.searchBox:SetScript("OnHide", EncounterJournalSearchBox_OnHide);
-		EncounterJournal.searchBox.searchProgress.bar:SetScript("OnUpdate", 
+		EncounterJournal.searchBox.searchProgress.bar:SetScript("OnUpdate",
 			EncounterJournalSearchBoxSearchProgressBar_OnUpdate);
 	end
 
@@ -418,7 +422,9 @@ function EncounterJournal_OnLoad(self)
 			if self.selectedTab then
 				EJ_ContentTab_Select(self.selectedTab);
 			else
-				MonthlyActivitiesFrame_OpenFrame();
+				EJ_ContentTab_Select(self.JourneysTab:GetID());
+				EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+				EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
 			end
 		end,
 	}
@@ -426,7 +432,7 @@ function EncounterJournal_OnLoad(self)
 
 	-- initialize tabs
 	local instanceSelect = self.instanceSelect;
-	PanelTemplates_SetNumTabs(self, 5);
+	PanelTemplates_SetNumTabs(self, #self.Tabs);
 	EJ_ContentTab_OnClick(self.MonthlyActivitiesTab);
 	self.maxTabWidth = self:GetWidth() / #self.Tabs;
 
@@ -449,12 +455,21 @@ function EncounterJournal_OnLoad(self)
 	if( not raidInstanceID ) then
 		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
-	-- set the monthly activities frame to open by default if available, or default to Suggested Content
-	if C_PlayerInfo.IsTravelersLogAvailable() then
-		MonthlyActivitiesFrame_OpenFrame();
-	else
-		EJSuggestFrame_OpenFrame();
-	end
+
+	EventUtil.ContinueOnPlayerLogin(function()
+		-- Set Journeys to open by default if available, or default to Suggested Content, unless we need to show the Tutorials frame
+		-- Defer this until after PLAYER_LOGIN as expansion selection won't work if the
+		-- addon is loaded too early (eg. via dependency).
+		local showTutorialsFrame = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen);
+		if showTutorialsFrame then
+			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen, true);
+			EJTutorialsFrame_OpenFrame();
+		else
+			EJ_ContentTab_Select(self.JourneysTab:GetID());
+			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+			EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+		end
+	end);
 
 	-- add lock icon to tab if necessary
 	if AreMonthlyActivitiesRestricted() then
@@ -467,12 +482,12 @@ do
 		local filterClassID, filterSpecID = EJ_GetLootFilter();
 		return filterClassID;
 	end
-	
+
 	local function GetSpecFilter()
 		local filterClassID, filterSpecID = EJ_GetLootFilter();
 		return filterSpecID;
 	end
-	
+
 	local function SetClassAndSpecFilter(classID, specID)
 		EJ_SetLootFilter(classID, specID);
 		EncounterJournal_OnFilterChanged(EncounterJournal);
@@ -594,9 +609,22 @@ local function ExpansionDropdown_SelectInternal(self, tier)
 		-- Only Shadowlands uses the 'Powers' tab, if switching off of that make sure to go back to Item Sets.
 		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(self);
 	end
+
+	if self.JourneysFrame then
+		-- If tier is greater than EJ_TIER_DATA, either we have "current season" selected, or an expansion is missing. Fall back on the current expansion.
+		if tier > #EJ_TIER_DATA then
+			self.JourneysFrame.expansionFilter = LE_EXPANSION_LEVEL_CURRENT;
+		else
+			self.JourneysFrame.expansionFilter = tierData.expansionLevel;
+		end
+
+		if self.JourneysFrame:IsShown() then
+			self.JourneysFrame:Refresh();
+		end
+	end
 end
 
-function EncounterJournal_SetupExpansionDropdown(self)
+function EncounterJournal_SetupExpansionDropdown(self, minTier)
 	local function IsSelected(tier)
 		return tier == EJ_GetCurrentTier();
 	end
@@ -608,7 +636,7 @@ function EncounterJournal_SetupExpansionDropdown(self)
 	self.instanceSelect.ExpansionDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_EJ_EXPANSION");
 
-		for tier = 1, EJ_GetNumTiers() do
+		for tier = minTier or 1, EJ_GetNumTiers() do
 			local text = EJ_GetTierInfo(tier);
 			rootDescription:CreateRadio(text, IsSelected, SetSelected, tier);
 		end
@@ -643,8 +671,18 @@ function EncounterJournal_GetLootJournalPanels(view)
 	end
 end
 
-function EncounterJournal_EnableExpansionDropdown()
+function EncounterJournal_EnableExpansionDropdown(xOffset, yOffset, relativeKey)
+	EncounterJournal.instanceSelect.ExpansionDropdown:ClearAllPoints();
+	EncounterJournal.instanceSelect.ExpansionDropdown:SetPoint("TOPRIGHT", relativeKey or EncounterJournal.instanceSelect, "TOPRIGHT", xOffset or -24, yOffset or -10);
 	EncounterJournal.instanceSelect.ExpansionDropdown:Enable();
+end
+
+function EncounterJournal_ShowGreatVaultButton()
+	EncounterJournal.instanceSelect.GreatVaultButton:Show();
+end
+
+function EncounterJournal_HideGreatVaultButton()
+	EncounterJournal.instanceSelect.GreatVaultButton:Hide();
 end
 
 function EncounterJournal_DisableExpansionDropdown()
@@ -666,7 +704,9 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 	if ( instanceType == "none" ) then
 		EncounterJournal.lastInstance = nil;
 		EncounterJournal.lastDifficulty = nil;
-		MonthlyActivitiesFrame_OpenFrame();
+		EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
+		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+		EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
 	else
 		EJ_ContentTab_SelectAppropriateInstanceTab(instanceID);
 
@@ -681,21 +721,16 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 end
 
 function EncounterJournal_OnShow(self)
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.EncounterJournalDisabled) then
+	if GameRulesUtil.EJIsDisabled() then
 		return;
 	end
 
-	if PlayerGetTimerunningSeasonID() then
+	if PlayerIsTimerunning() then
 		C_EncounterJournal.InitalizeSelectedTier();
 	end
 	C_EncounterJournal.OnOpen();
 
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
-	if ( tonumber(GetCVar("advJournalLastOpened")) == 0 ) then
-		SetCVar("advJournalLastOpened", GetServerTime() );
-	end
-	MainMenuMicroButton_HideAlert(EJMicroButton);
-	MicroButtonPulseStop(EJMicroButton);
 
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -716,7 +751,7 @@ function EncounterJournal_OnShow(self)
 	elseif ( self.encounter.overviewFrame:IsShown() and EncounterJournal.overviewDefaultRole and not EncounterJournal.encounter.overviewFrame.linkSection ) then
 		local spec, role;
 
-		spec = GetSpecialization();
+		spec = C_SpecializationInfo.GetSpecialization();
 		if (spec) then
 			role = GetSpecializationRoleEnum(spec);
 		else
@@ -749,14 +784,42 @@ function EncounterJournal_OnShow(self)
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
-	EncounterJournal_CheckAndDisplayTradingPostTab();
+	local tabInfo = {
+		{ self.JourneysTab, GameRulesUtil.EJShouldShowJourneys },
+		{ self.MonthlyActivitiesTab, GameRulesUtil.EJShouldShowTravelersLog },
+		{ self.suggestTab, GameRulesUtil.EJShouldShowSuggestedContent },
+		{ self.dungeonsTab, GameRulesUtil.EJShouldShowDungeons },
+		{ self.raidsTab, GameRulesUtil.EJShouldShowRaids },
+		{ self.LootJournalTab, GameRulesUtil.EJShouldShowItemSets },
+	};
+
+	local previousTab = nil;
+	for _i, tabData in ipairs(tabInfo) do
+		local tab, shouldShow = unpack(tabData);
+		if shouldShow() then
+			PanelTemplates_ShowTab(self, tab:GetID());
+
+			tab:ClearAllPoints();
+			if previousTab then
+				tab:SetPoint("LEFT", previousTab, "RIGHT", 3, 0);
+			else
+				tab:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 11, 2);
+			end
+
+			previousTab = tab;
+		else
+			PanelTemplates_HideTab(self, tab:GetID());
+		end
+	end
+
+	PanelTemplates_SetTabEnabled(self, self.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
 	EncounterJournal_CheckAndDisplaySuggestedContentTab();
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
 	RequestRaidInfo();
 
 	EncounterJournal_SetupLootJournalViewDropdown(self);
-	EncounterJournal_SetupExpansionDropdown(self);
+	EncounterJournal_SetupExpansionDropdown(self, EJ_JOURNEYS_MIN_TIER);
 	EncounterJournal_SetupLootFilterDropdown(self);
 	EncounterJournal_SetupLootSlotFilterDropdown(self);
 	EncounterJournal_SetupDifficultyDropdown(self);
@@ -764,12 +827,12 @@ end
 
 function EncounterJournal_CheckAndDisplaySuggestedContentTab()
 	EncounterJournal.dungeonsTab:ClearAllPoints();
-	if PlayerGetTimerunningSeasonID() then
-		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
-		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT");
-	else
+	if GameRulesUtil.EJShouldShowSuggestedContent() then
 		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
 		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.suggestTab, "RIGHT", 3, 0);
+	else
+		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
+		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT");
 	end
 end
 
@@ -777,7 +840,6 @@ function EncounterJournal_CheckAndDisplayTradingPostTab()
 	EncounterJournal.suggestTab:ClearAllPoints();
 	if C_PlayerInfo.IsTradingPostAvailable() then
 		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
-		PanelTemplates_SetTabEnabled(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
 		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT", 3, 0);
 	else
 		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
@@ -809,6 +871,10 @@ end
 
 function EncounterJournal_IsLootTabSelected(self)
 	return self.selectedTab == self.LootJournalTab:GetID();
+end
+
+function EncounterJournal_IsJourneysTabSelected(self)
+	return self.selectedTab == self.JourneysTab:GetID();
 end
 
 local function EncounterJournal_IsHeaderTypeOverview(headerType)
@@ -1099,6 +1165,30 @@ local function PopulateBossDataProvider()
 	return dataProvider;
 end
 
+local function ShowRenownRewardsTooltip(frame, factionID)
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	RenownRewardUtil.AddMajorFactionToTooltip(GameTooltip, factionID, GenerateClosure(ShowRenownRewardsTooltip, frame, factionID));
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddInstructionLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN);
+	EventRegistry:TriggerEvent("ShowMajorFactionRenown.Tooltip.OnEnter", frame, GameTooltip, factionID);
+	GameTooltip:Show();
+end
+
+local function ShowParagonRewardsTooltip(frame, factionID)
+	EmbeddedItemTooltip:SetOwner(frame, "ANCHOR_RIGHT");
+	ReputationUtil.AddParagonRewardsToTooltip(EmbeddedItemTooltip, factionID);
+	GameTooltip_SetBottomText(EmbeddedItemTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
+	EmbeddedItemTooltip:Show();
+end
+
+local function RefreshMajorFactionTooltip(frame, factionID)
+	if C_Reputation.IsFactionParagonForCurrentPlayer(factionID) then
+		ShowParagonRewardsTooltip(frame, factionID);
+	else
+		ShowRenownRewardsTooltip(frame, factionID);
+	end
+end
+
 function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EJ_HideNonInstancePanels();
 
@@ -1115,7 +1205,7 @@ function EncounterJournal_DisplayInstance(instanceID, noButton)
 	EncounterJournal_LootUpdate();
 	EncounterJournal_ClearDetails();
 
-	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID = EJ_GetInstanceInfo();
+	local instanceName, description, bgImage, _, loreImage, buttonImage, dungeonAreaMapID, _, _, _, covenantID = EJ_GetInstanceInfo();
 
 	self.instance.title:SetText(instanceName);
 	self.instance.titleBG:SetWidth(self.instance.title:GetStringWidth() + 80);
@@ -1417,9 +1507,9 @@ function EncounterJournal_UpdateButtonState(self)
 end
 
 function EncounterJournal_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -1876,7 +1966,7 @@ function EncounterJournal_ToggleHeaders(self, doNotShift)
 
 			local spec, role;
 
-			spec = GetSpecialization();
+			spec = C_SpecializationInfo.GetSpecialization();
 			if (spec) then
 				role = GetSpecializationRoleEnum(spec);
 			else
@@ -2174,7 +2264,7 @@ function EncounterJournal_LootUpdate()
 		seasonalHeaderTitle = EXPANSION_SEASON_NAME:format(GetExpansionName(currentSeasonExpansion), uiSeason);
 	end
 
-	local lootCategories = { 
+	local lootCategories = {
 		{ loot=veryRareLoot,		headerTitle=EJ_ITEM_CATEGORY_VERY_RARE },
 		{ loot=extremelyRareLoot,	headerTitle=EJ_ITEM_CATEGORY_EXTREMELY_RARE },
 		{ loot=perPlayerLoot,		headerTitle=BONUS_LOOT_TOOLTIP_TITLE,			helpText=BONUS_LOOT_TOOLTIP_BODY },
@@ -2214,14 +2304,14 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 	if not link then
 		return;
 	end
-	
+
 	local classID, specID;
 	if useSpec then
 		classID, specID = EJ_GetLootFilter();
 		if specID == 0 then
-			local spec = GetSpecialization();
+			local spec = C_SpecializationInfo.GetSpecialization();
 			if spec and classID == select(3, UnitClass("player")) then
-				specID = GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
+				specID = C_SpecializationInfo.GetSpecializationInfo(spec, nil, nil, nil, UnitSex("player"));
 			else
 				specID = -1;
 			end
@@ -2594,23 +2684,41 @@ function EJ_ContentTab_Select(id)
 	local showRaid = id == EncounterJournal.raidsTab:GetID();
 	local showDungeons = id == EncounterJournal.dungeonsTab:GetID();
 	local showLoot = id == EncounterJournal.LootJournalTab:GetID();
+	local showJourneys = id == EncounterJournal.JourneysTab:GetID();
+	local showTutorials = id == EncounterJournal.TutorialsTab:GetID();
 
 	if showMonthlyActivities then
 		EJ_HideSuggestPanel();
 		EJ_HideLootJournalPanel();
+		EJ_HideTutorialsPanel();
+		EncounterJournal_HideGreatVaultButton();
 	elseif showSuggestedContent then
 		EJ_HideLootJournalPanel();
+		EJ_HideTutorialsPanel();
 		EncounterJournal.suggestFrame:Show();
 		EncounterJournal_DisableExpansionDropdown();
+		EncounterJournal_HideGreatVaultButton();
 	elseif showLoot then
 		EJ_HideSuggestPanel();
+		EJ_HideTutorialsPanel();
 		EncounterJournal_CheckAndDisplayLootJournalViewDropdown(EncounterJournal);
 		EJ_ShowLootJournalPanel();
 		EncounterJournal_EnableExpansionDropdown();
+		EncounterJournal_HideGreatVaultButton();
 	elseif showDungeons or showRaid then
 		EJ_HideNonInstancePanels();
 		EncounterJournal_ListInstances();
 		EncounterJournal_EnableExpansionDropdown();
+		EncounterJournal_HideGreatVaultButton();
+	elseif showJourneys then
+		EJ_HideNonInstancePanels();
+		EncounterJournal_EnableExpansionDropdown(-40, -30, EncounterJournal);
+		EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+		EncounterJournal_ShowGreatVaultButton();
+	elseif showTutorials then
+		EJ_HideNonInstancePanels();
+		EncounterJournal_HideGreatVaultButton();
+		EJ_ShowTutorialPanel();
 	end
 
 	-- Update title bar with the current tab name
@@ -2618,19 +2726,26 @@ function EJ_ContentTab_Select(id)
 
 	NavBar_Reset(EncounterJournal.navBar);
 
-	local showNavBar = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
+	local showNavBar = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() or id == EncounterJournal.JourneysTab:GetID());
 	EncounterJournal.navBar:SetShown(showNavBar);
 
 	local showSearchBox = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID() or id == EncounterJournal.LootJournalTab:GetID());
 	EncounterJournal.searchBox:SetShown(showSearchBox);
 
-	instanceSelect.ExpansionDropdown:SetShown(showDungeons or showRaid or showLoot);
-	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid);
+	instanceSelect.ExpansionDropdown:SetShown(showDungeons or showRaid or showLoot or showJourneys);
+	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid or showTutorials);
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
 	instanceSelect.ScrollBox:SetShown(showInstanceSelect);
 	instanceSelect.ScrollBar:SetShown(showInstanceSelect);
+
+	EncounterJournal.JourneysFrame:SetShown(showJourneys);
+
+	-- We should call ResetView even if JourneysFrame is already shown, to cover any edge cases in navigation.
+	if EncounterJournal.JourneysFrame:IsShown() then
+		EncounterJournal.JourneysFrame:ResetView();
+	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
@@ -2638,7 +2753,7 @@ function EJ_ContentTab_Select(id)
 end
 
 function EJ_ContentTab_SelectAppropriateInstanceTab(instanceID)
-	local isRaid = select(11, EJ_GetInstanceInfo(instanceID));
+	local isRaid = select(12, EJ_GetInstanceInfo(instanceID));
 	local desiredTabID = isRaid and EncounterJournal.raidsTab:GetID() or EncounterJournal.dungeonsTab:GetID();
 	EJ_ContentTab_Select(desiredTabID);
 end
@@ -2687,6 +2802,7 @@ end
 function EJ_HideNonInstancePanels()
 	EJ_HideSuggestPanel();
 	EJ_HideLootJournalPanel();
+	EJ_HideTutorialsPanel();
 	EncounterJournal.MonthlyActivitiesFrame:Hide();
 end
 
@@ -2892,9 +3008,19 @@ local AdventureJournal_RightDescriptionFonts = {
 	-- "SystemFont_Small", -- 10pt font
 };
 
+function EJSuggestFrame_GetDisplayFrame(suggestionIndex)
+	assert(suggestionIndex <= AJ_MAX_NUM_SUGGESTIONS);
+	if suggestionIndex == 1 then
+		return EncounterJournal.suggestFrame.Suggestion3;
+	elseif suggestionIndex == 2 then
+		return EncounterJournal.suggestFrame.Suggestion2;
+	elseif suggestionIndex == 3 then
+		return EncounterJournal.suggestFrame.Suggestion1;
+	end
+end
+
 function EJSuggestFrame_RefreshDisplay()
 	local instanceSelect = EncounterJournal.instanceSelect;
-	local tab = EncounterJournal.suggestTab;
 	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
@@ -2916,10 +3042,10 @@ function EJSuggestFrame_RefreshDisplay()
 		suggestion.iconRing:Hide();
 	end
 
-	-- setup the primary suggestion display
-	if ( #self.suggestions > 0 ) then
-		local suggestion = self.Suggestion1;
-		local data = self.suggestions[1];
+	-- setup the big suggestion display with the last one
+	local data = self.suggestions[AJ_MAX_NUM_SUGGESTIONS];
+	if ( data ) then
+		local suggestion = EJSuggestFrame_GetDisplayFrame(AJ_MAX_NUM_SUGGESTIONS);
 
 		local centerDisplay = suggestion.centerDisplay;
 		local titleText = centerDisplay.title.text;
@@ -2990,21 +3116,20 @@ function EJSuggestFrame_RefreshDisplay()
 	end
 
 	-- setup secondary suggestions display
-	if ( #self.suggestions > 1 ) then
+	if ( #self.suggestions > 0 ) then
 		local minTitleIndex = 1;
 		local minDescIndex = 1;
 
-		for i = 2, #self.suggestions do
-			local suggestion = self["Suggestion"..i];
-			if ( not suggestion ) then
+		for i = 1, AJ_MAX_NUM_SUGGESTIONS - 1 do
+			local suggestionData = self.suggestions[i];
+			local suggestion = EJSuggestFrame_GetDisplayFrame(i);
+			if ( not suggestionData or not suggestion ) then
 				break;
 			end
 
 			suggestion.centerDisplay:Show();
-
-			local data = self.suggestions[i];
-			suggestion.centerDisplay.title.text:SetText(data.title);
-			suggestion.centerDisplay.description.text:SetText(data.description ~= "" and data.description or " ");
+			suggestion.centerDisplay.title.text:SetText(suggestionData.title);
+			suggestion.centerDisplay.description.text:SetText(suggestionData.description ~= "" and suggestionData.description or " ");
 
 			-- find largest font that will not truncate the title
 			for fontIndex = minTitleIndex, #AdventureJournal_RightTitleFonts do
@@ -3025,8 +3150,8 @@ function EJSuggestFrame_RefreshDisplay()
 				end
 			end
 
-			if ( data.buttonText and #data.buttonText > 0 ) then
-				suggestion.centerDisplay.button:SetText( data.buttonText );
+			if ( suggestionData.buttonText and #suggestionData.buttonText > 0 ) then
+				suggestion.centerDisplay.button:SetText( suggestionData.buttonText );
 
 				local btnWidth = max(suggestion.centerDisplay.button:GetTextWidth()+42, 116);
 				btnWidth = min( btnWidth, suggestion.centerDisplay:GetWidth() );
@@ -3036,9 +3161,9 @@ function EJSuggestFrame_RefreshDisplay()
 
 			suggestion.icon:Show();
 			suggestion.iconRing:Show();
-			if ( data.iconPath ) then
+			if ( suggestionData.iconPath ) then
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
-				suggestion.icon:SetTexture(data.iconPath);
+				suggestion.icon:SetTexture(suggestionData.iconPath);
 			else
 				suggestion.icon:SetMask("Interface\\CharacterFrame\\TempPortraitAlphaMask");
 				suggestion.icon:SetTexture(QUESTION_MARK_ICON);
@@ -3160,8 +3285,9 @@ function AdventureJournal_Reward_OnEnter(self)
 
 			SetItemButtonQuality(frame.Item1, quality, rewardData.itemLink);
 
-			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-				frame.Item1.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+			local item1Color = ColorManager.GetColorDataForBagItemQuality(quality);
+			if (quality > Enum.ItemQuality.Common and item1Color) then
+				frame.Item1.text:SetTextColor(item1Color.r, item1Color.g, item1Color.b);
 			end
 
 			local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(rewardData.currencyType);
@@ -3171,8 +3297,10 @@ function AdventureJournal_Reward_OnEnter(self)
 			frame.Item2:Show();
 
 			SetItemButtonQuality(frame.Item2, quality);
-			if (quality > Enum.ItemQuality.Common and BAG_ITEM_QUALITY_COLORS[quality]) then
-				frame.Item2.text:SetTextColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b);
+
+			local item2Color = ColorManager.GetColorDataForBagItemQuality(quality);
+			if (quality > Enum.ItemQuality.Common and item2Color) then
+				frame.Item2.text:SetTextColor(item2Color.r, item2Color.g, item2Color.b);
 			end
 
 			if ( rewardData.currencyQuantity and rewardData.currencyQuantity > 1 ) then
@@ -3338,9 +3466,9 @@ function EncounterJournalBossButton_OnEvent(self, event)
 end
 
 function EncounterJournalBossButton_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -3387,6 +3515,8 @@ end
 function EJInstanceSelect_UpdateTitle(tabId)
 	local showTitle = true;
 	local instanceSelect = EncounterJournal.instanceSelect;
+	EncounterJournal:SetTitle(ADVENTURE_JOURNAL);
+
 	if ( tabId == EncounterJournal.suggestTab:GetID()) then
 		instanceSelect.Title:SetText(AJ_SUGGESTED_CONTENT_TAB);
 	elseif ( tabId == EncounterJournal.raidsTab:GetID()) then
@@ -3397,7 +3527,71 @@ function EJInstanceSelect_UpdateTitle(tabId)
 		showTitle = false; -- MonthlyActivities frame has a unique header bar so we hide this title
 	elseif (tabId == EncounterJournal.LootJournalTab:GetID()) then
 		instanceSelect.Title:SetText(LOOT_JOURNAL_ITEM_SETS);
+	elseif (tabId == EncounterJournal.JourneysTab:GetID()) then
+		showTitle = false; -- Journeys frame has some unique UI, so we should hide this title
+		EncounterJournal:SetTitle(JOURNEYS_LABEL); -- Journeys should update the EJ frame title
+	elseif (tabId == EncounterJournal.TutorialsTab:GetID()) then
+		instanceSelect.Title:SetText(EJ_TUTORIALS);
 	end
 
 	instanceSelect.Title:SetShown(showTitle);
+end
+
+-- Mixin for Great Vault button, currently only used in Journeys tab
+GreatVaultButtonMixin = {};
+
+function GreatVaultButtonMixin:OnShow()
+	local currentDisplaySeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
+	self.hasActiveSeason = currentDisplaySeason and currentDisplaySeason > 0;
+	self.GVButtonBG:SetDesaturated(not self.hasActiveSeason);
+	self.GVButtonBGHighlight:SetDesaturated(not self.hasActiveSeason);
+end
+
+function GreatVaultButtonMixin:OnClick()
+	if self.hasActiveSeason then
+		WeeklyRewards_ShowUI();
+	end
+end
+
+function GreatVaultButtonMixin:OnEnter()
+	if not self.hasActiveSeason then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
+		GameTooltip_AddDisabledLine(GameTooltip, UNAVAILABLE);
+		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REQUIRES_ACTIVE_SEASON);
+		GameTooltip:Show();
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, GREAT_VAULT_REWARDS);
+	GameTooltip_AddNormalLine(GameTooltip, JOURNEYS_GREAT_VAULT_TOOLTIP);
+
+	GameTooltip_AddInstructionLine(GameTooltip, WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS);
+	GameTooltip:Show();
+end
+
+function GreatVaultButtonMixin:OnLeave()
+	if GameTooltip:GetOwner () == self then
+		GameTooltip:Hide();
+	end
+end
+
+EncounterJournalRPEStartButtonMixin = { };
+
+function EncounterJournalRPEStartButtonMixin:OnClick()
+	C_EncounterJournal.StartArathiRPE();
+end
+
+function EJTutorialsFrame_OpenFrame()
+	EJ_ContentTab_Select(EncounterJournal.TutorialsTab:GetID());
+end
+
+function EJ_ShowTutorialPanel()
+	EncounterJournal_DisableExpansionDropdown();
+	EncounterJournal.TutorialsFrame:Show();
+end
+
+function EJ_HideTutorialsPanel()
+	EncounterJournal.TutorialsFrame:Hide();
 end

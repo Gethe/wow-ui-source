@@ -18,6 +18,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestOfferMajorFactionReputationRewards",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -27,6 +28,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestRequiredCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +43,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestRewardCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

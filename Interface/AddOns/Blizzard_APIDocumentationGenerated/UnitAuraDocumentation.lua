@@ -9,6 +9,7 @@ local UnitAura =
 		{
 			Name = "AddPrivateAuraAnchor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local UnitAura =
 		{
 			Name = "AddPrivateAuraAppliedSound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local UnitAura =
 		{
 			Name = "AuraIsPrivate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -51,10 +54,12 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
@@ -66,12 +71,14 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByIndex",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -82,10 +89,12 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -97,12 +106,14 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySpellName",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "spellName", Type = "cstring", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -113,11 +124,12 @@ local UnitAura =
 		{
 			Name = "GetAuraSlots",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 				{ Name = "maxSlots", Type = "number", Nilable = true },
 				{ Name = "continuationToken", Type = "number", Nilable = true },
 			},
@@ -131,12 +143,14 @@ local UnitAura =
 		{
 			Name = "GetBuffDataByIndex",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -147,6 +161,7 @@ local UnitAura =
 		{
 			Name = "GetCooldownAuraBySpellID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -161,12 +176,14 @@ local UnitAura =
 		{
 			Name = "GetDebuffDataByIndex",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -177,6 +194,8 @@ local UnitAura =
 		{
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -189,14 +208,52 @@ local UnitAura =
 			},
 		},
 		{
-			Name = "IsAuraFilteredOutByInstanceID",
+			Name = "GetUnitAuraBySpellID",
 			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetUnitAuras",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = false },
+				{ Name = "maxCount", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAuraFilteredOutByInstanceID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filterFlags", Type = "cstring", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 			},
 
 			Returns =
@@ -207,6 +264,7 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAnchor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,6 +274,7 @@ local UnitAura =
 		{
 			Name = "RemovePrivateAuraAppliedSound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +284,7 @@ local UnitAura =
 		{
 			Name = "SetPrivateWarningTextAnchor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,10 +295,11 @@ local UnitAura =
 		{
 			Name = "WantsAlteredForm",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -254,9 +315,10 @@ local UnitAura =
 			Name = "UnitAura",
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
+			SecretWhenInCombat = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "updateInfo", Type = "UnitAuraUpdateInfo", Nilable = false },
 			},
 		},

@@ -250,13 +250,13 @@ function SoulbindViewerMixin:UpdateActivateSoulbindButton()
 	self.ActivateSoulbindButton:SetEnabled(enabled);
 
 	local showTutorial = enabled and not GetCVarBitfield("soulbindsActivatedTutorial", self.soulbindData.cvarIndex) and self.Tree:HasSelectedNodes();
-	GlowEmitterFactory:SetShown(self.ActivateSoulbindButton, showTutorial, GlowEmitterMixin.Anims.FadeAnim);
+	GlowEmitterFactory:SetShown(showTutorial, self.ActivateSoulbindButton, GlowEmitterMixin.Anims.FadeAnim);
 end
 
 function SoulbindViewerMixin:UpdateCommitConduitsButton()
 	local pending = C_Soulbinds.HasPendingConduitsInSoulbind(self:GetOpenSoulbindID());
 	self.CommitConduitsButton:SetShown(pending);
-	GlowEmitterFactory:SetShown(self.CommitConduitsButton, pending, GlowEmitterMixin.Anims.FaintFadeAnim);
+	GlowEmitterFactory:SetShown(pending, self.CommitConduitsButton, GlowEmitterMixin.Anims.FaintFadeAnim);
 end
 
 function SoulbindViewerMixin:HandleEscape()
@@ -537,7 +537,7 @@ StaticPopupDialogs["SOULBIND_CONDUIT_NO_CHANGES_CONFIRMATION"] = {
 	hideOnEscape = 1,
 	showAlert = 1,
 
-	OnButton1 = function(self, callback)
+	OnButton1 = function(dialog, callback)
 		callback();
 	end,
 };

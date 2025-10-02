@@ -2,5 +2,7 @@
 ## Author: Blizzard Entertainment
 ## AllowLoad: Both
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_CustomizationUI
+
 Blizzard_CharacterCustomize.lua
 Blizzard_CharacterCustomize.xml

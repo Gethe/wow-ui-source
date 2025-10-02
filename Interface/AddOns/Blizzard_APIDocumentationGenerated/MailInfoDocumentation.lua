@@ -19,6 +19,7 @@ local MailInfo =
 		{
 			Name = "GetCraftingOrderMailInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +34,7 @@ local MailInfo =
 		{
 			Name = "HasInboxMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +58,7 @@ local MailInfo =
 		{
 			Name = "SetOpeningAll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

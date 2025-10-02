@@ -87,7 +87,10 @@ local function SetupPieceVisuals(piece, setupInfo, pieceLayout, textureKit, user
 	local info = C_Texture.GetAtlasInfo(atlasName);
 	piece:SetHorizTile(info and info.tilesHorizontally or false);
 	piece:SetVertTile(info and info.tilesVertically or false);
-	piece:SetAtlas(atlasName, true);
+
+	if info then
+		piece:SetAtlas(atlasName, true);
+	end
 end
 
 local function SetupCorner(container, piece, setupInfo, pieceLayout)
@@ -100,8 +103,8 @@ local function SetupEdge(container, piece, setupInfo, pieceLayout)
 
 	local userLayout = NineSliceUtil.GetLayout(container.layoutType);
 	if userLayout and (userLayout.threeSliceVertical or userLayout.threeSliceHorizontal) then
-		piece:SetPoint(setupInfo.point, container, setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
-		piece:SetPoint(setupInfo.relativePoint, container, setupInfo.point, pieceLayout.x1, pieceLayout.y1);
+		piece:SetPoint(setupInfo.point, container, setupInfo.point, pieceLayout.x, pieceLayout.y);
+		piece:SetPoint(setupInfo.relativePoint, container, setupInfo.relativePoint, pieceLayout.x1, pieceLayout.y1);
 	else
 		piece:SetPoint(setupInfo.point, GetNineSlicePiece(container, setupInfo.relativePieces[1]), setupInfo.relativePoint, pieceLayout.x, pieceLayout.y);
 		piece:SetPoint(setupInfo.relativePoint, GetNineSlicePiece(container, setupInfo.relativePieces[2]), setupInfo.point, pieceLayout.x1, pieceLayout.y1);
@@ -182,7 +185,7 @@ function NineSliceUtil.ApplyLayout(container, userLayout, textureKit)
 	end
 end
 
-do 
+do
 	local function ForEachPiece(fn)
 		return function(container)
 			for pieceIndex, setup in ipairs(nineSliceSetup) do
@@ -294,13 +297,17 @@ function NineSlicePanelMixin:SetVertexColor(r, g, b, a)
 	self:SetBorderColor(r, g, b, a);
 end
 
-function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+function NineSlicePanelMixin:SetBlendMode(blendMode, excludedPieces)
 	for _, section in ipairs(nineSliceSetup) do
-		if section.pieceName ~= "Center" then
+		if not excludedPieces or not excludedPieces[section.pieceName] then
 			local piece = self[section.pieceName];
 			if piece then
 				piece:SetBlendMode(blendMode);
 			end
 		end
 	end
+end
+
+function NineSlicePanelMixin:SetBorderBlendMode(blendMode)
+	self:SetBlendMode(blendMode, { Center = true });
 end

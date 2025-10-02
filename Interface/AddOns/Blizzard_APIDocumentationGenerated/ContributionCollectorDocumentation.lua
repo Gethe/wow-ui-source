@@ -13,6 +13,7 @@ local ContributionCollector =
 		{
 			Name = "Contribute",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,6 +32,7 @@ local ContributionCollector =
 		{
 			Name = "GetAtlases",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,6 +47,7 @@ local ContributionCollector =
 		{
 			Name = "GetBuffs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +62,7 @@ local ContributionCollector =
 		{
 			Name = "GetContributionAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +78,7 @@ local ContributionCollector =
 		{
 			Name = "GetContributionCollectorsForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +93,7 @@ local ContributionCollector =
 		{
 			Name = "GetContributionResult",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +108,7 @@ local ContributionCollector =
 		{
 			Name = "GetDescription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +123,7 @@ local ContributionCollector =
 		{
 			Name = "GetManagedContributionsForCreatureID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +138,7 @@ local ContributionCollector =
 		{
 			Name = "GetName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +153,7 @@ local ContributionCollector =
 		{
 			Name = "GetOrderIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +168,8 @@ local ContributionCollector =
 		{
 			Name = "GetRequiredContributionCurrency",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +185,8 @@ local ContributionCollector =
 		{
 			Name = "GetRequiredContributionItem",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +202,7 @@ local ContributionCollector =
 		{
 			Name = "GetRewardQuestID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,6 +217,7 @@ local ContributionCollector =
 		{
 			Name = "GetState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +235,7 @@ local ContributionCollector =
 		{
 			Name = "HasPendingContribution",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -233,6 +250,7 @@ local ContributionCollector =
 		{
 			Name = "IsAwaitingRewardQuestData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -289,17 +307,6 @@ local ContributionCollector =
 
 	Tables =
 	{
-		{
-			Name = "ContributionAppearanceFlags",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 0,
-			MaxValue = 0,
-			Fields =
-			{
-				{ Name = "TooltipUseTimeRemaining", Type = "ContributionAppearanceFlags", EnumValue = 0 },
-			},
-		},
 		{
 			Name = "ContributionResult",
 			Type = "Enumeration",

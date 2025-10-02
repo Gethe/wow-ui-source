@@ -594,7 +594,7 @@ StaticPopupDialogs["SOULBIND_DIALOG_INSTALL_CONDUIT_UNUSABLE"] = {
 	hideOnEscape = 1,
 	showAlert = 1,
 
-	OnButton1 = function(self, callback)
+	OnButton1 = function(dialog, callback)
 		callback();
 	end,
 };

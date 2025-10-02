@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-  	<Script file="Blizzard_ClassNameplateBar_Monk.lua"/>
-  
+
 	<Frame name="ClassNameplateBarWindwalkerMonkFrame" inherits="MonkHarmonyBarFrameTemplate, ClassNameplateBarFrame" mixin="ClassNameplateBar, ClassNameplateBarWindwalkerMonk" ignoreParentScale="true">
 		<Size x="75" y="14"/>
 		<KeyValues>
@@ -17,5 +16,4 @@
 			<KeyValue key="unit" value="player" type="string"/>
 		</KeyValues>
 	</StatusBar>
-
 </Ui>

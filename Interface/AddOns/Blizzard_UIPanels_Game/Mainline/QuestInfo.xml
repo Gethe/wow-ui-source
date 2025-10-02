@@ -121,13 +121,15 @@
 				GarrisonFollowerTooltip:ClearAllPoints();
 				GarrisonFollowerTooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
 				local data = GarrisonFollowerTooltipTemplate_BuildDefaultDataForID(self.ID);
-				GarrisonFollowerTooltip_ShowWithData(data);
+				if data then
+					GarrisonFollowerTooltip_ShowWithData(data);
+				end
 			</OnEnter>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
 					local followerLink = C_Garrison.GetFollowerLinkByID(self.ID);
 					if ( followerLink ) then
-						ChatEdit_InsertLink(followerLink);
+						ChatFrameUtil.InsertLink(followerLink);
 					end
 				end
 			</OnClick>
@@ -743,10 +745,6 @@
 				</FontString>
 				<FontString name="QuestInfoDescriptionText" inherits="QuestFont" justifyH="LEFT">
 					<Size x="285" y="0"/>
-				</FontString>
-				<FontString name="QuestInfoAccountCompletedNotice" inherits="SystemFont_Small2" text="ACCOUNT_COMPLETED_QUEST_NOTICE"  justifyH="LEFT">
-					<Size x="290"/>
-					<Color color="QUEST_ACCOUNT_COMPLETED_NOTICE_FONT_COLOR"/>
 				</FontString>
 			</Layer>
 		</Layers>

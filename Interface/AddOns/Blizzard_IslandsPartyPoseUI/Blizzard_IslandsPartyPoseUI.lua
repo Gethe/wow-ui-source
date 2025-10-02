@@ -105,11 +105,17 @@ end
 function IslandsPartyPoseMixin:OnLoad()
 	self:RegisterEvent("LFG_COMPLETION_REWARD");
 	PartyPoseMixin.OnLoad(self);
+	PartyPoseUtil.AddDismissClickHandler(self.LeaveButton, self);
 end
 
 function IslandsPartyPoseMixin:OnEvent(event, ...)
 	if ( event == "LFG_COMPLETION_REWARD" ) then
 		self:SetRewards();
 	end
-	PartyPoseMixin.OnEvent(self, event);
+	PartyPoseMixin.OnEvent(self, event, ...);
+end
+
+function IslandsPartyPoseMixin:Dismiss()
+	ConfirmOrLeaveLFGParty();
+	PartyPoseMixin.Dismiss(self);
 end

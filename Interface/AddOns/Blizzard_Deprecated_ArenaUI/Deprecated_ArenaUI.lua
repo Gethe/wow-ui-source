@@ -264,7 +264,7 @@ function ArenaEnemyMatchFrameMixin:OnEvent(event, unit, ...)
 				UnlockUnitFrame(self);
 				self:UpdatePlayer();
 
-				if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
+				if ( self.healthbar.frequentUpdates ) then
 					self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 					self.healthbar:UnregisterEvent("UNIT_HEALTH");
 				end
@@ -404,7 +404,7 @@ function ArenaEnemyPetFrameMixin:OnEvent(event, ...)
 				ownerFrame:SetMysteryPlayer();
 				ownerFrame:Show();
 			end
-			if ( self.healthbar.frequentUpdates and GetCVarBool("predictedHealth") ) then
+			if ( self.healthbar.frequentUpdates ) then
 				self.healthbar:SetScript("OnUpdate", UnitFrameHealthBar_OnUpdate);
 				self.healthbar:UnregisterEvent("UNIT_HEALTH");
 			end

@@ -19,8 +19,10 @@ function AlertFrameSystems_Register()
 	NewPetAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewPetAlertFrameTemplate", NewPetAlertFrame_SetUp);
 	NewMountAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewMountAlertFrameTemplate", NewMountAlertFrame_SetUp);
 	NewToyAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewToyAlertFrameTemplate", NewToyAlertFrame_SetUp);
+	NewWarbandSceneAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewWarbandSceneAlertFrameTemplate", NewWarbandSceneAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
+	HousingItemEarnedAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HousingItemEarnedAlertFrameTemplate", HousingItemEarnedAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -30,17 +32,21 @@ function GuildChallengeAlertFrame_SetUp(frame, challengeType, count, max)
 	SetLargeGuildTabardTextures("player", frame.EmblemIcon, frame.EmblemBackground, frame.EmblemBorder);
 end
 
-function GuildChallengeAlertFrame_OnClick(self, button, down)
+local function GuildFrameAlertClick(self, button, down)
 	if( AlertFrame_OnClick(self, button, down) ) then
 		return;
 	end
+
 	if ( not GuildFrame or not GuildFrame:IsShown() ) then
 		ToggleGuildFrame();
 	end
-	-- select the Info tab
-	GuildFrame_TabClicked(GuildFrameTab5);
+
+	CommunitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO);
 end
 
+function GuildChallengeAlertFrame_OnClick(self, button, down)
+	GuildFrameAlertClick(self, button, down);
+end
 
 -- [[ DungeonCompletionAlertFrame ]] --
 function DungeonCompletionAlertFrame_OnLoad(self)
@@ -442,14 +448,6 @@ function LootAlertFrame_OnEnter(self)
 	end
 end
 
--- [[ LootUpgradeFrameTemplate ]] --
-LOOTUPGRADEFRAME_QUALITY_TEXTURES = {
-	[Enum.ItemQuality.Uncommon]	= {border = "loottoast-itemborder-green",	arrow = "loottoast-arrow-green"},
-	[Enum.ItemQuality.Rare]		= {border = "loottoast-itemborder-blue",	arrow = "loottoast-arrow-blue"},
-	[Enum.ItemQuality.Epic]		= {border = "loottoast-itemborder-purple",	arrow = "loottoast-arrow-purple"},
-	[Enum.ItemQuality.Legendary]	= {border = "loottoast-itemborder-orange",	arrow = "loottoast-arrow-orange"},
-}
-
 -- [[ LootWonAlertFrameTemplate ]] --
 LOOTWONALERTFRAME_VALUES={
 	WonRoll = { bgOffsetX=0, bgOffsetY=0, labelOffsetX=7, labelOffsetY=5, labelText=YOU_WON_LABEL, glowAtlas="loottoast-glow"},
@@ -533,8 +531,11 @@ function LootWonAlertFrame_SetUp(self, originalLink, originalQuantity, rollType,
 	self.Label:SetPoint("TOPLEFT", self.lootItem.Icon, "TOPRIGHT", windowInfo.labelOffsetX, windowInfo.labelOffsetY);
 
 	self.ItemName:SetText(itemName);
-	local color = ITEM_QUALITY_COLORS[itemRarity];
-	self.ItemName:SetVertexColor(color.r, color.g, color.b);
+
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		self.ItemName:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
 
 	local isIconBorderShown = not windowInfo.noIconBorder;
 	local isIconBorderDropShadowShown = false;
@@ -580,21 +581,27 @@ LootAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("LootWonAlertFrameTemp
 -- [[ LootUpgradeFrame ]] --
 function LootUpgradeFrame_SetUp(self, itemLink, quantity, specID, baseQuality)
 	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
-	local baseQualityColor = ITEM_QUALITY_COLORS[baseQuality];
-	local upgradeQualityColor = ITEM_QUALITY_COLORS[itemRarity];
+
+	local colorDataBase = ColorManager.GetColorDataForItemQuality(baseQuality);
+	if colorDataBase then
+		self.BaseQualityItemName:SetTextColor(colorDataBase.r, colorDataBase.g, colorDataBase.b);
+	end
+
+	local colorDataUpgrade = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorDataUpgrade then
+		self.UpgradeQualityItemName:SetTextColor(colorDataUpgrade.r, colorDataUpgrade.g, colorDataUpgrade.b);
+		self.TitleText:SetTextColor(colorDataUpgrade.r, colorDataUpgrade.g, colorDataUpgrade.b);
+	end
 
 	self.Icon:SetTexture(itemTexture);
 	self.BaseQualityItemName:SetText(itemName);
-	self.BaseQualityItemName:SetTextColor(baseQualityColor.r, baseQualityColor.g, baseQualityColor.b);
 	self.UpgradeQualityItemName:SetText(itemName);
-	self.UpgradeQualityItemName:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
 	self.WhiteText:SetText(itemName);
 	self.WhiteText2:SetText(itemName);
 	self.TitleText:SetText(format(LOOTUPGRADEFRAME_TITLE, _G["ITEM_QUALITY"..itemRarity.."_DESC"]));
-	self.TitleText:SetTextColor(upgradeQualityColor.r, upgradeQualityColor.g, upgradeQualityColor.b);
 
-	local baseTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[baseQuality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
-	local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[itemRarity] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
+	local baseTexture = ColorManager.GetAtlasDataForLootUpgradeQuality(baseQuality) or ColorManager.GetAtlasDataForLootUpgradeQuality(Enum.ItemQuality.Uncommon);
+	local upgradeTexture = ColorManager.GetAtlasDataForLootUpgradeQuality(itemRarity) or ColorManager.GetAtlasDataForLootUpgradeQuality(Enum.ItemQuality.Uncommon);
 	self.BaseQualityBorder:SetAtlas(baseTexture.border, true);
 	self.UpgradeQualityBorder:SetAtlas(upgradeTexture.border, true);
 
@@ -807,16 +814,10 @@ function GarrisonRandomMissionAlertFrame_SetUp(frame, missionInfo)
 end
 
 -- [[ GarrisonFollowerAlertFrame ]] --
-GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES = {
-	[Enum.ItemQuality.Uncommon] = "Uncommon",
-	[Enum.ItemQuality.Epic] = "Epic",
-	[Enum.ItemQuality.Rare] = "Rare",
-}
-
 function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality, isUpgraded)
 	frame.followerID = followerID;
 	frame.Name:SetText(name);
-	local texSuffix = GARRISON_FOLLOWER_QUALITY_TEXTURE_SUFFIXES[quality]
+	local texSuffix = ColorManager.GetAtlasDataForGarrisonFollowerQuality(quality);
 	if (texSuffix) then
 		frame.FollowerBG:SetAtlas("Garr_FollowerToast-"..texSuffix, true);
 		frame.FollowerBG:Show();
@@ -826,7 +827,7 @@ function GarrisonCommonFollowerAlertFrame_SetUp(frame, followerID, name, quality
 
 	frame.Arrows.ArrowsAnim:Stop();
 	if ( isUpgraded ) then
-		local upgradeTexture = LOOTUPGRADEFRAME_QUALITY_TEXTURES[quality] or LOOTUPGRADEFRAME_QUALITY_TEXTURES[Enum.ItemQuality.Uncommon];
+		local upgradeTexture = ColorManager.GetAtlasDataForLootUpgradeQuality(quality) or ColorManager.GetAtlasDataForLootUpgradeQuality(Enum.ItemQuality.Uncommon);
 		for i = 1, frame.Arrows.numArrows do
 			frame.Arrows["Arrow"..i]:SetAtlas(upgradeTexture.arrow, true);
 		end
@@ -871,9 +872,12 @@ function GarrisonShipFollowerAlertFrame_SetUp(frame, followerID, name, class, te
 		frame.Portrait:SetAtlas(nil);
 	end
 
-	local color = ITEM_QUALITY_COLORS[quality];
-	frame.Name:SetTextColor(color.r, color.g, color.b);
-	if ( isUpgraded ) then
+	local colorData = ColorManager.GetColorDataForItemQuality(quality);
+	if colorData then
+		frame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+	end
+
+	if isUpgraded then
 		frame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_UPGRADED_TOAST);
 	else
 		frame.Title:SetText(GARRISON_SHIPYARD_FOLLOWER_ADDED_TOAST);
@@ -889,7 +893,7 @@ function GarrisonFollowerAlertFrame_OnEnter(self)
 	if ( link ) then
 		GarrisonFollowerTooltip:ClearAllPoints();
 		GarrisonFollowerTooltip:SetPoint("BOTTOM", self, "TOP");
-		local _, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
+		local _colorToken, _linkType, garrisonFollowerID, quality, level, itemLevel, ability1, ability2, ability3, ability4, trait1, trait2, trait3, trait4, spec1 = strsplit(":", link);
 		GarrisonFollowerTooltip_Show(tonumber(garrisonFollowerID), false, tonumber(quality), tonumber(level), 0, 0, tonumber(itemLevel), tonumber(spec1), tonumber(ability1), tonumber(ability2), tonumber(ability3), tonumber(ability4), tonumber(trait1), tonumber(trait2), tonumber(trait3), tonumber(trait4));
 	end
 end
@@ -909,9 +913,9 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 		Garrison_LoadUI();
 	end
 	local garrisonType = GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType;
-	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then 
+	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then
 		ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
-	end 
+	end
 end
 
 -- Trees that override behaviors associated with their tree type
@@ -935,9 +939,9 @@ function GarrisonAlertFrame_OnClick(self, button, down)
 			Garrison_LoadUI();
 		end
 
-		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then 
+		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then
 			ShowGarrisonLandingPage(self.garrisonType);
-		end 
+		end
 	end
 end
 
@@ -1119,8 +1123,10 @@ function LegendaryItemAlertFrame_SetUp(frame, itemLink)
 	local itemName, itemHyperLink, itemRarity, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemLink);
 	frame.Icon:SetTexture(itemTexture);
 	frame.ItemName:SetText(itemName);
-	local color = ITEM_QUALITY_COLORS[itemRarity];
-	frame.ItemName:SetVertexColor(color.r, color.g, color.b);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemRarity);
+	if colorData then
+		frame.ItemName:SetVertexColor(colorData.r, colorData.g, colorData.b);
+	end
 	frame.hyperlink = itemHyperLink;
 	frame.Background2.animIn:Play();
 	frame.Background3.animIn:Play();
@@ -1157,8 +1163,15 @@ ItemAlertFrameMixin = {};
 
 function ItemAlertFrameMixin:SetUpDisplay(icon, itemQuality, name, label, overlayAtlas)
 	self.Icon:SetTexture(icon);
-	self.IconBorder:SetAtlas(LOOT_BORDER_BY_QUALITY[itemQuality] or LOOT_BORDER_BY_QUALITY[Enum.ItemQuality.Uncommon]);
-	self.Name:SetText(ITEM_QUALITY_COLORS[itemQuality].hex..name.."|r");
+	self.IconBorder:SetAtlas(ColorManager.GetAtlasDataForLootBorderItemQuality(itemQuality) or ColorManager.GetAtlasDataForLootBorderItemQuality(Enum.ItemQuality.Uncommon));
+
+	local nameText = name;
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		nameText = colorData.hex..name.."|r";
+	end
+
+	self.Name:SetText(nameText);
 	self.Label:SetText(label);
 	if overlayAtlas then
 		self.IconOverlay:SetAtlas(overlayAtlas);
@@ -1192,12 +1205,10 @@ function NewPetAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
-	PetJournal_SelectPet(PetJournal, self.petID);
+	if CollectionsJournal then
+		PetJournal_SelectPet(PetJournal, self.petID);
+	end
 end
 
 -- [[ NewMountAlertFrame ]] --
@@ -1221,13 +1232,8 @@ function NewMountAlertFrameMixin:OnClick(button, down)
 		return;
 	end
 
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
-		return;
-	end
-
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
-
-	if CollectionsJournal:IsShown() then
+	if CollectionsJournal and CollectionsJournal:IsShown() then
 		MountJournal_SelectByMountID(self.mountID);
 	end
 end
@@ -1253,6 +1259,35 @@ function NewToyAlertFrameMixin:OnClick(button, down)
 	end
 
 	ToggleToyCollection(self.toyID);
+end
+
+-- [[ NewWarbandSceneAlertFrame ]] --
+
+function NewWarbandSceneAlertFrame_SetUp(frame, warbandSceneID)
+	frame:SetUp(warbandSceneID);
+end
+
+NewWarbandSceneAlertFrameMixin = CreateFromMixins(ItemAlertFrameMixin);
+
+function NewWarbandSceneAlertFrameMixin:SetUp(warbandSceneID)
+	self.warbandSceneID = warbandSceneID;
+
+	local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(warbandSceneID);
+	local icon = "Interface\\ICONS\\UI_CampCollection";
+	self:SetUpDisplay(icon, warbandSceneInfo.quality, warbandSceneInfo.name, YOU_COLLECTED_LABEL);
+end
+
+function NewWarbandSceneAlertFrameMixin:OnClick(button, down)
+	if AlertFrame_OnClick(self, button, down) then
+		return;
+	end
+
+	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_WARBAND_SCENES);
+	if CollectionsJournal:IsShown() then
+		WarbandSceneJournal.IconsFrame.Icons:GoToElementByPredicate(function(elementData)
+			return elementData.warbandSceneID == self.warbandSceneID;
+		end);
+	end
 end
 
 -- [[ NewRuneforgePowerAlertSystem ]] --
@@ -1316,7 +1351,7 @@ function NewCosmeticAlertFrameMixin:SetUp(itemModifiedAppearanceID)
 	self:SetUpDisplay(icon, quality, name, YOU_COLLECTED_LABEL, "CosmeticIconFrame");
 
 	local item = Item:CreateFromItemID(info.itemID);
-	item:ContinueOnItemLoad(function()	
+	item:ContinueOnItemLoad(function()
 		if self.itemModifiedAppearanceID == itemModifiedAppearanceID then
 			self:SetUpDisplay(icon, item:GetItemQuality(), item:GetItemName(), YOU_COLLECTED_LABEL, "CosmeticIconFrame");
 		end
@@ -1347,7 +1382,7 @@ function NewCosmeticAlertFrameMixin:OnClick(button, down)
 
 	TransmogUtil.OpenCollectionToItem(self.itemModifiedAppearanceID);
 end
- 
+
 function NewCosmeticAlertFrameMixin:OnRelease()
 	self.LeftModelScene:ClearEffects();
 	self.RightModelScene:ClearEffects();
@@ -1356,7 +1391,7 @@ function NewCosmeticAlertFrameMixin:OnRelease()
 	end
 	self.timers = { };
  end
- 
+
 -- [[ MonthlyActivityAlertFrame ]] --
 function MonthlyActivityAlertFrame_SetUp(frame, perksActivityID)
 	local info = C_PerksActivities.GetPerksActivityInfo(perksActivityID);
@@ -1385,3 +1420,34 @@ function MonthlyActivityAlertFrame_OnClick (self, button, down)
 end
 
 MonthlyActivityAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("MonthlyActivityFrameTemplate", MonthlyActivityAlertFrame_SetUp, 2, 6);
+
+function GuildRenameAlertFrame_SetUp(frame, guildName)
+	frame.GuildName:SetText(guildName);
+	SetLargeGuildTabardTextures("player", frame.GuildTabardEmblem, frame.GuildTabardBackground, frame.GuildTabardBorder);
+end
+
+GuildRenamedAlertMixin = {};
+
+function GuildRenamedAlertMixin:OnClick(button, down)
+	GuildFrameAlertClick(self, button, down);
+end
+
+GuildRenameAlertSystem = AlertFrame:AddSimpleAlertFrameSubSystem("GuildRenamedAlertFrameTemplate", GuildRenameAlertFrame_SetUp);
+
+function GuildRenameAlertSystem:CheckAddAlert(guildName, status)
+	if status == Enum.GuildErrorType.Success then
+		self:AddAlert(guildName);
+	end
+end
+
+-- [[ HousingItemEarnedAlertFrameSystem ]] --
+
+--! TODO Need to know what _rewardData looks like so we can set DecorType, DecorName, Icon, and maybe IconBorder's color
+--! TODO Need to know when to fire this toast. If on event, add to AlertSystems.lua OnEvent
+function HousingItemEarnedAlertFrameSystem_SetUp(frame, _rewardData)
+	frame.LightRays:SetAlpha(0);
+	frame.LightRays2:SetAlpha(0);
+	frame.glowAnimIn:Play();
+	frame.sparklesAnimIn:Play();
+	frame.lightRaysAnimIn:Play();
+end

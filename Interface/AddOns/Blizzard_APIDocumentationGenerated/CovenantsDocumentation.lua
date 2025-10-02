@@ -18,6 +18,7 @@ local Covenants =
 		{
 			Name = "GetCovenantData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +73,7 @@ local Covenants =
 				{ Name = "reservoirFullSoundKitID", Type = "number", Nilable = false },
 				{ Name = "beginResearchSoundKitID", Type = "number", Nilable = false },
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
+				{ Name = "factionID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "soulbindIDs", Type = "table", InnerType = "number", Nilable = false },
 			},

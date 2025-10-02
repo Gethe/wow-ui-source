@@ -9,6 +9,7 @@ local PlayerLocation =
 		{
 			Name = "GUIDIsPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local PlayerLocation =
 		{
 			Name = "GetClass",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +41,7 @@ local PlayerLocation =
 		{
 			Name = "GetName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +56,7 @@ local PlayerLocation =
 		{
 			Name = "GetRace",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +71,7 @@ local PlayerLocation =
 		{
 			Name = "GetSex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,12 +80,13 @@ local PlayerLocation =
 
 			Returns =
 			{
-				{ Name = "sex", Type = "number", Nilable = true },
+				{ Name = "sex", Type = "UnitSex", Nilable = true },
 			},
 		},
 		{
 			Name = "IsConnected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +101,7 @@ local PlayerLocation =
 		{
 			Name = "UnitIsSameServer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

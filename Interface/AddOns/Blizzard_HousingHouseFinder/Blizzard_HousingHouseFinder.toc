@@ -1,0 +1,11 @@
+## Title: Blizzard Housing House Finder
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates, Blizzard_MapCanvas
+## AllowLoadGameType: standard
+
+HouseFinderMapDataProvider.xml
+HouseFinderMapDataProvider.lua
+Blizzard_HousingHouseFinder.lua
+Blizzard_HousingHouseFinder.xml
+Blizzard_HousingHouseFinderRegistration.lua

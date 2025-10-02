@@ -45,7 +45,7 @@ function CharSelectSearchMixin:OnTextChanged()
 end
 
 local function StringMatch(baseString, word)
-	if baseString and string.find(string.lower(baseString), word, 1, true) then
+	if baseString and baseString ~= "" and string.find(string.lower(baseString), word, 1, true) then
 		return true;
 	end
 	return false;
@@ -66,6 +66,9 @@ end
 local function CheckCharacterDataForMatch(data, words)
 	local matched = false;
 
+	local specID = data.specID;
+	local _, specName = GetSpecializationInfoForSpecID(specID);
+
 	for _, word in ipairs(words) do
 		if word ~= "" then
 			local number = tonumber(word);
@@ -84,7 +87,13 @@ local function CheckCharacterDataForMatch(data, words)
 				elseif StringMatch(data.className, word) then
 					matched = true;
 					break;
+				elseif StringMatch(specName, word) then
+					matched = true;
+					break;
 				elseif StringMatch(data.areaName, word) then
+					matched = true;
+					break;
+				elseif StringMatch(data.realmName, word) then
 					matched = true;
 					break;
 				elseif data.faction ~= "Neutral" and StringMatch(data.faction, word) then

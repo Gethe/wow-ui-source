@@ -35,6 +35,7 @@ local PerksProgram =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +68,7 @@ local PerksProgram =
 		{
 			Name = "GetFrozenPerksVendorItemInfo",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -85,6 +87,7 @@ local PerksProgram =
 		{
 			Name = "GetPerksProgramItemDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,6 +102,7 @@ local PerksProgram =
 		{
 			Name = "GetTimeRemaining",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,6 +117,7 @@ local PerksProgram =
 		{
 			Name = "GetVendorItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,6 +132,7 @@ local PerksProgram =
 		{
 			Name = "GetVendorItemInfoRefundTimeLeft",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -150,6 +156,7 @@ local PerksProgram =
 		{
 			Name = "IsFrozenPerksVendorItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +180,7 @@ local PerksProgram =
 		{
 			Name = "ItemSelectedTelemetry",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,10 +190,21 @@ local PerksProgram =
 		{
 			Name = "PickupPerksVendorItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "RequestCartCheckout",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "perksVendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -195,6 +214,7 @@ local PerksProgram =
 		{
 			Name = "RequestPurchase",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,6 +224,7 @@ local PerksProgram =
 		{
 			Name = "RequestRefund",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +306,15 @@ local PerksProgram =
 			LiteralName = "PERKS_PROGRAM_OPEN",
 		},
 		{
+			Name = "PerksProgramPurchaseCartSuccess",
+			Type = "Event",
+			LiteralName = "PERKS_PROGRAM_PURCHASE_CART_SUCCESS",
+			Payload =
+			{
+				{ Name = "vendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "PerksProgramPurchaseSuccess",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_PURCHASE_SUCCESS",
@@ -329,40 +359,6 @@ local PerksProgram =
 
 	Tables =
 	{
-		{
-			Name = "ModelSceneActorData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "actorID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "posX", Type = "number", Nilable = true },
-				{ Name = "posY", Type = "number", Nilable = true },
-				{ Name = "posZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "normalizedScale", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "ModelSceneCameraData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "cameraID", Type = "number", Nilable = true },
-				{ Name = "scriptTag", Type = "string", Nilable = true },
-				{ Name = "targetX", Type = "number", Nilable = true },
-				{ Name = "targetY", Type = "number", Nilable = true },
-				{ Name = "targetZ", Type = "number", Nilable = true },
-				{ Name = "yaw", Type = "number", Nilable = true },
-				{ Name = "pitch", Type = "number", Nilable = true },
-				{ Name = "roll", Type = "number", Nilable = true },
-				{ Name = "defaultZoom", Type = "number", Nilable = true },
-				{ Name = "zoomMin", Type = "number", Nilable = true },
-				{ Name = "zoomMax", Type = "number", Nilable = true },
-			},
-		},
 		{
 			Name = "PerksProgramItemDisplayInfo",
 			Type = "Structure",
@@ -412,6 +408,8 @@ local PerksProgram =
 				{ Name = "isPurchasePending", Type = "bool", Nilable = false },
 				{ Name = "doesNotExpire", Type = "bool", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
+				{ Name = "showSaleBanner", Type = "bool", Nilable = false },
 				{ Name = "perksVendorItemID", Type = "number", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "iconTexture", Type = "string", Nilable = false },
@@ -422,6 +420,8 @@ local PerksProgram =
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "subItems", Type = "table", InnerType = "PerksVendorSubItemInfo", Nilable = false },
 				{ Name = "uiGroupInfo", Type = "PerksVendorItemUIGroupInfo", Nilable = true },
+				{ Name = "invType", Type = "string", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},
 		},
 		{
@@ -441,7 +441,7 @@ local PerksProgram =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "itemID", Type = "number", Nilable = false },
-				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
+				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
 				{ Name = "invType", Type = "string", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = false },
 			},

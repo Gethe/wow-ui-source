@@ -199,6 +199,18 @@ function HeroTalentsSelectionMixin:UpdateApplyButtons(anyChangesPending, canAppl
 	return anyApplyButtonsShowing;
 end
 
+function HeroTalentsSelectionMixin:UpdateActivateButtons()
+	if not self:IsActive() then
+		return false;
+	end
+
+	local isLocked, errorMessage = self:GetTalentFrame():IsLocked();
+
+	for subTreeID, specFrame in pairs(self.specFramesBySubTreeID) do
+		specFrame:UpdateActivateButtonState(isLocked, errorMessage);
+	end
+end
+
 function HeroTalentsSelectionMixin:SetCommitVisualsActive(active)
 	if not self:IsActive() then
 		return;
@@ -282,11 +294,9 @@ function HeroTalentsSelectionMixin:OnKeyDown(key)
 	-- Only intercept the keybind to close the window (so that the Talent frame doesn't get it and close itself instead)
 	if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
 		self:Hide();
-		self:SetPropagateKeyboardInput(false);
-	-- Otherwise let whatever the key was propagate to other listeners
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 function HeroTalentsSelectionMixin:OnCoverFrameClicked()
@@ -453,6 +463,10 @@ function HeroTalentSpecContentMixin:UpdateApplyButton(anyApplyableHeroTalentChan
 	return shouldShowApplyButton;
 end
 
+function HeroTalentSpecContentMixin:UpdateActivateButtonState(isLocked, errorMessage)
+	self.ActivateButton:UpdateState(isLocked, errorMessage);
+end
+
 function HeroTalentSpecContentMixin:SetIsActive(isActiveSpec)
 	if self.isActiveSpec == isActiveSpec then
 		return;
@@ -553,4 +567,26 @@ end
 
 function HeroTalentSpecContentMixin:CheckTutorials()
 	self:GetTalentFrame():CheckHeroTalentTutorial(self.subTreeInfo, self.helpTipOffsetX, self.helpTipOffsetY, self, self.NodesContainer);
+end
+
+HeroTalentActivateButtonMixin = {};
+
+function HeroTalentActivateButtonMixin:UpdateState(isLocked, errorMessage)
+	self:SetEnabled(not isLocked);
+	self.errorMessage = errorMessage;
+end
+
+function HeroTalentActivateButtonMixin:OnMouseEnter()
+	local tooltip = GetAppropriateTooltip();
+
+	if not self:IsEnabled() and self.errorMessage then
+		GameTooltip_ShowDisabledTooltip(tooltip, self, self.errorMessage, "ANCHOR_RIGHT");
+	else
+		tooltip:Hide();
+	end
+end
+
+function HeroTalentActivateButtonMixin:OnMouseLeave()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:Hide();
 end

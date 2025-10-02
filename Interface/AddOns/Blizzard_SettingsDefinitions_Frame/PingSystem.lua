@@ -48,6 +48,7 @@ local function Register()
             ChatConfigFrameChatTabManager:UpdateSelection(DEFAULT_CHAT_FRAME:GetID());
 		end;
 		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, PING_CHAT_SETTINGS, OnButtonClick, true, OPTION_TOOLTIP_SHOW_PINGS_IN_CHAT);
+		initializer:SetKioskProtected();
 		layout:AddInitializer(initializer);
     end
 

@@ -21,6 +21,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetFont",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetFontObject",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,6 +68,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetIndentedWordWrap",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,6 +84,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetJustifyH",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,6 +100,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetJustifyV",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -106,6 +116,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetShadowColor",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,6 +135,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetShadowOffset",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +152,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetSpacing",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,6 +168,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetTextColor",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -169,6 +187,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "GetTextData",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -182,6 +201,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,6 +214,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,6 +225,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetHyperlinkFormat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +235,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetIndentedWordWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +246,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetJustifyH",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -233,6 +257,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetJustifyV",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,6 +268,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetShadowColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -256,6 +282,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetShadowOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,6 +294,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetSpacing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -277,6 +305,8 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetText",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,6 +317,7 @@ local SimpleHTMLAPI =
 		{
 			Name = "SetTextColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

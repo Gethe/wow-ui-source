@@ -48,6 +48,25 @@ function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
 	end
 end
 
+function FrameUtil.RegisterFrameForEventCallbacks(frame, events)
+	for event, callback in pairs(events) do
+		frame:RegisterEventCallback(event, callback);
+	end
+end
+
+function FrameUtil.UnregisterFrameForEventCallbacks(frame, events)
+	for event, _callback in pairs(events) do
+		frame:UnregisterEventCallback(event);
+	end
+end
+
+function FrameUtil.RegisterFrameForEventCallbackFields(frame, events)
+	for event, callbackName in pairs(events) do
+		local callback = frame[callbackName];
+		frame:RegisterEventCallback(event, callback);
+	end
+end
+
 function FrameUtil.DialogStyleGlobalMouseDown(frame, buttonName, ...)
 	local mouseFoci = GetMouseFoci();
 	if DoesAncestryIncludeAny(frame, mouseFoci) then
@@ -439,6 +458,10 @@ function UIFrameFlash(frame, fadeInTime, fadeOutTime, flashDuration, showWhenDon
 	end
 end
 
+local function UIFrameFlashUpdateTimers(syncId, timer, elapsed)
+	UIFrameFlashTimers[syncId] = timer + elapsed;
+end
+
 -- Called every frame to update flashing frames
 function UIFrameFlash_OnUpdate(self, elapsed)
 	local frame;
@@ -446,9 +469,6 @@ function UIFrameFlash_OnUpdate(self, elapsed)
 
 	-- Update timers for all synced frames
 	-- secure so we don't spread taint to other frames
-	local function UIFrameFlashUpdateTimers(syncId, timer, elapsed)
-		UIFrameFlashTimers[syncId] = timer + elapsed;
-	end
 	secureexecuterange(UIFrameFlashTimers, UIFrameFlashUpdateTimers, elapsed);
 
 	while FLASHFRAMES[index] do

@@ -8,6 +8,7 @@ local Threat =
 		{
 			Name = "GetThreatStatusColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

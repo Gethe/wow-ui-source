@@ -24,12 +24,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						LeaveInstanceParty();
-						HideUIPanel(self:GetParent());
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

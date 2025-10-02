@@ -33,6 +33,8 @@ PTR_IssueReporter.ReportEventTypes = {
     AIBotsLeftParty = "AIBotsLeftParty",
     RadiantChordStarted = "RadiantChordStarted",
     RadiantChordEnded = "RadiantChordEnded",
+	HouseEditModeEntered = "HouseEditModeEntered",
+	HouseEditModeExited = "HouseEditModeExited",
 }
 
 local groupHasAIBots = false
@@ -101,27 +103,14 @@ local function QuestFinishedHandler()
 end
 ----------------------------------------------------------------------------------------------------
 local function PlayerDeathHandler()
-    local deathEvents = DeathRecap_GetEvents()
-    
+    local deathEvents = C_DeathRecap.GetRecapEvents()
+
     if (deathEvents[1]) and (deathEvents[1].sourceGUID) then
-        local creatureID = GetCreatureIDFromGuid(deathEvents[1].sourceGUID)
+        local creatureID = C_GUIDUtil.GetCreatureID(deathEvents[1].sourceGUID)
         
         if (creatureID) then
             PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.PlayerDeath, creatureID)
         end
-    end
-end
-----------------------------------------------------------------------------------------------------
-local function GetCreatureIDFromGuid(guid)
-    local parts = {}
-    for s in guid:gmatch("[^-]+") do -- Split string by '-', The 6th option is creatureID
-        table.insert(parts, s)
-    end
-    
-    if (parts[6]) then
-        return parts[6]
-    else
-        return 0
     end
 end
 ----------------------------------------------------------------------------------------------------
@@ -290,6 +279,19 @@ end, "PTR_IssueReporter")
 EventRegistry:RegisterCallback("EditMode.Exit", function()
     PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.EditModeExit)
 end, "PTR_IssueReporter")
+----------------------------------------------------------------------------------------------------
+local function OnEditorModeChanged()
+	if C_HouseEditor.IsHouseEditorActive() then
+		PTR_IssueReporter:SetParent(HouseEditorFrame)
+		PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseEditModeEntered)
+	else
+		PTR_IssueReporter:SetParent(UIParent)
+		PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseEditModeExited)
+	end
+end
+
+EventRegistry:RegisterCallback("HouseEditor.StateUpdated", OnEditorModeChanged, "PTR_IssueReporter");
+
 ----------------------------------------------------------------------------------------------------
 local function PTR_Event_Frame_OnEvent(self, event, ...)
     if (PTR_IssueReporter.Data.IsLoaded) or (event == "PLAYER_ENTERING_WORLD") then

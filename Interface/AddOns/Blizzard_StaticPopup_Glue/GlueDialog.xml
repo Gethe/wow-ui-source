@@ -1,0 +1,143 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier addToSecureEnv="true">
+		<Button name="GlueDialogButtonTemplate" inherits="GlueButtonTemplate, UserScaledFrameTemplate" mixin="GlueDialogButtonMixin, StaticPopupElementMixin" registerForClicks="LeftButtonUp" virtual="true">
+			<KeyValues>
+				<KeyValue key="baseWidth" value="200" type="number"/>
+				<KeyValue key="baseHeight" value="30" type="number"/>
+				<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+			</KeyValues>
+			<NormalFont style="UserScaledFontGlueNormal"/>
+			<HighlightFont style="UserScaledFontGlueHighlight"/>
+			<DisabledFont style="UserScaledFontGlueDisable"/>
+		</Button>
+
+		<Frame name="GlueDialog" mixin="GlueDialogMixin" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
+			<Frames>
+				<Frame parentKey="Container" inherits="UserScaledFrameTemplate">
+					<KeyValues>
+						<KeyValue key="baseWidth" value="512" type="number"/>
+						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Text" inherits="UserScaledFontGlueNormalLarge, UserScaledFontStringTemplate">
+								<KeyValues>
+									<KeyValue key="baseWidth" value="450" type="number"/>
+									<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+									<KeyValue key="scaleWeight" value="0.8" type="number"/>
+								</KeyValues>
+								<Size x="450" y="0"/>
+							</FontString>
+							<Texture parentKey="AlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" hidden="true">
+								<Size x="48" y="48"/>
+								<Anchors>
+									<Anchor point="LEFT" x="24" y="0"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<Frame parentKey="BG" useParentLevel="true" setAllPoints="true">
+							<Layers>
+								<Layer level="BACKGROUND" textureSubLevel="-5">
+									<Texture parentKey="Bottom"/>
+								</Layer>
+								<Layer level="BACKGROUND" textureSubLevel="-4">
+									<Texture parentKey="Top"/>
+								</Layer>
+							</Layers>
+						</Frame>
+						<SimpleHTML parentKey="HtmlText" inherits="UserScaledFrameTemplate" hyperlinkFormat="|cff06ff07|H%s|h[%s]|h|r" hidden="true">
+							<KeyValues>
+								<KeyValue key="baseWidth" value="450" type="number"/>
+								<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+								<KeyValue key="scaleWeight" value="0.8" type="number"/>
+							</KeyValues>
+							<Size x="450" y="30"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-16"/>
+							</Anchors>
+							<Scripts>
+								<OnHyperlinkClick>
+									LaunchURL(link);
+								</OnHyperlinkClick>
+							</Scripts>
+							<FontString inherits="UserScaledFontGlueNormalLarge" spacing="2"/>
+							<FontStringHeader1 inherits="UserScaledFontGlueNormalLarge" spacing="4"/>
+							<FontStringHeader2 inherits="UserScaledFontGlueHighlight" spacing="4"/>
+						</SimpleHTML>
+						<Button inherits="GlueDialogButtonTemplate" id="1" parentKey="Button1"/>
+						<Button inherits="GlueDialogButtonTemplate" id="2" parentKey="Button2"/>
+						<Button inherits="GlueDialogButtonTemplate" id="3" parentKey="Button3"/>
+
+						<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="23" />
+							</Anchors>
+						</Frame>
+					</Frames>
+				</Frame>
+				<EditBox parentKey="EditBox" historyLines="1" hidden="true" inherits="AutoCompleteEditBoxTemplate, TooltipBackdropTemplate, UserScaledFrameTemplate" mixin="StaticPopupEditBoxMixin">
+					<KeyValues>
+						<KeyValue key="baseWidth" value="150" type="number"/>
+						<KeyValue key="baseHeight" value="32" type="number"/>
+					</KeyValues>
+					<Size x="150" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<FontString parentKey="Instructions" justifyH="LEFT" justifyV="MIDDLE" inherits="UserScaledFontGlueNormalExtraSmall" setAllPoints="true">
+								<Anchors>
+									<Anchor point="BOTTOM" relativeTo="$parent" relativePoint ="TOP" x="0" y="3" />
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnEnterPressed method="OnEnterPressed"/>
+						<OnEscapePressed method="OnEscapePressed"/>
+						<OnTextChanged method="OnTextChanged"/>
+					</Scripts>
+					<FontString inherits="UserScaledFontGlueHighlight"/>
+					<TextInsets left="12" right="5" bottom="5"/>
+				</EditBox>
+				<Frame parentKey="Cover" setAllPoints="true" enableMouse="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0" />
+						<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Texture" setAllPoints="true">
+								<Color r="0" g="0" b="0" a="0.7" />
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnShow>
+							self:SetFrameLevel(self:GetParent():GetFrameLevel()-1);
+						</OnShow>
+					</Scripts>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnUpdate method="OnUpdate"/>
+				<OnShow method="OnShow"/>
+				<OnHide method="OnHide"/>
+				<OnHyperlinkClick method="OnHyperlinkClick"/>
+				<OnHyperlinkEnter method="OnHyperlinkEnter"/>
+				<OnHyperlinkLeave method="OnHyperlinkLeave"/>
+				<OnMouseWheel function="nop"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+</Ui>

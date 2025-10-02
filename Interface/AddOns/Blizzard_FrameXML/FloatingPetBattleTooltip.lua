@@ -105,7 +105,10 @@ function BattlePetTooltipTemplate_SetBattlePet(tooltipFrame, data)
 	tooltipFrame.speciesID = data.speciesID; -- For the button
 	tooltipFrame.Name:SetText(data.name);
 	if (data.breedQuality ~= -1) then
-		tooltipFrame.Name:SetTextColor(ITEM_QUALITY_COLORS[data.breedQuality].r, ITEM_QUALITY_COLORS[data.breedQuality].g, ITEM_QUALITY_COLORS[data.breedQuality].b);
+		local colorData = ColorManager.GetColorDataForItemQuality(data.breedQuality);
+		if colorData then
+			tooltipFrame.Name:SetTextColor(colorData.r, colorData.g, colorData.b);
+		end
 	else
 		tooltipFrame.Name:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 	end
@@ -156,14 +159,16 @@ end
 
 function BattlePetTooltipJournalClick_OnClick(self)
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
-	local battlePetID = self:GetParent().battlePetID;
-	if ( battlePetID ) then
-		local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
-		if ( speciesID and speciesID == self:GetParent().speciesID ) then
-			PetJournal_SelectPet(PetJournal, battlePetID);
-			return;
+	if CollectionsJournal then
+		local battlePetID = self:GetParent().battlePetID;
+		if ( battlePetID ) then
+			local speciesID = C_PetJournal.GetPetInfoByPetID(battlePetID);
+			if ( speciesID and speciesID == self:GetParent().speciesID ) then
+				PetJournal_SelectPet(PetJournal, battlePetID);
+				return;
+			end
 		end
+		PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
 	end
-	PetJournal_SelectSpecies(PetJournal, self:GetParent().speciesID);
 end
 

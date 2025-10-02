@@ -1,0 +1,126 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="BaseHouseExteriorFixtureOptionTemplate" mixin="BaseHouseExteriorFixtureOptionMixin" virtual="true">
+		<Size y="20" />
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="widthPadding" value="14" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HighlightBGTex" atlas="common-dropdown-customize-mouseover" alpha="0" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="HouseExteriorFixtureOptionTemplate" mixin="HouseExteriorFixtureOptionMixin" inherits="BaseHouseExteriorFixtureOptionTemplate" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HouseEditorExteriorCustomizationModeTemplate" mixin="HouseEditorExteriorCustomizationModeMixin" inherits="BaseHouseEditorModeTemplate" enableKeyboard="true" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LeftBackgroundOverlay" atlas="charactercreate-vignette-sides" alpha="0.9">
+					<Size x="703" />
+					<Anchors>
+						<Anchor point="TOPLEFT" y="3"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightBackgroundOverlay" atlas="charactercreate-vignette-sides" alpha="0.9">
+					<Size x="703" />
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" y="3"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CoreOptionsPanel" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="125" type="number"/>
+					<KeyValue key="spacing" value="25" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" x="-75" y="50"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="RecipeList-Divider" useAtlasSize="false">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean"/>
+								<KeyValue key="leftPadding" value="-50" type="number"/>
+								<KeyValue key="rightPadding" value="-50" type="number"/>
+							</KeyValues>
+							<Size y="6"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="HouseTypeOption" inherits="HouseExteriorPlaceholderDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_HOUSE_TYPE_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="HouseSizeOption" inherits="HouseExteriorPlaceholderDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_HOUSE_SIZE_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="BaseStyleOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_BASE_TYPE_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="BaseVariantOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_BASE_VARIANT_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RoofStyleOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="6" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_ROOF_TYPE_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RoofVariantOption" inherits="HouseExteriorCoreFixtureDropdownTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_ROOF_VARIANT_LABEL" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			
+			<Frame parentKey="FixtureOptionList" inherits="HouseExteriorFixtureOptionListTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="LEFT" x="80" y="200"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
+			<OnHide method="OnHide" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

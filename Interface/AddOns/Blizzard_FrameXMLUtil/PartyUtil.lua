@@ -73,11 +73,36 @@ function PartyUtil.GetPhasedReasonString(phaseReason, unitToken)
 		end
 	elseif phaseReason == Enum.PhaseReason.ChromieTime then
 		return GetChromieTimeString(unitToken);
+	elseif phaseReason == Enum.PhaseReason.TimerunningHwt then
+		return PARTY_PLAYER_DIFFERENT_WORLD_TIER;
 	elseif phaseReason == Enum.PhaseReason.Phasing then
 		return PARTY_PHASED_MESSAGE;
 	elseif phaseReason == Enum.PhaseReason.Sharding then
 		return GetShardedString(unitToken);
 	end
+end
+
+function PartyUtil.CanLeaveInstance()
+	if not IsInGroup() then
+		return false;
+	end
+
+	if not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return false;
+	end
+	
+	if IsPartyWorldPVP() then
+		return false;
+	end
+
+	local instanceType = select(2, IsInInstance());
+	if instanceType == "pvp" or instanceType == "arena" then
+		return false;
+	end
+	
+	local partyLFGSlot = GetPartyLFGID();
+	local partyLFGCategory = partyLFGSlot and GetLFGCategoryForID(partyLFGSlot);
+	return partyLFGCategory ~= LE_LFG_CATEGORY_WORLDPVP;
 end
 
 function GetGroupMemberCountsForDisplay()

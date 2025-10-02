@@ -9,6 +9,7 @@ local VignetteInfo =
 		{
 			Name = "FindBestUniqueVignette",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,8 +22,41 @@ local VignetteInfo =
 			},
 		},
 		{
+			Name = "GetHealthPercent",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "healthPct", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRecommendedGroupSize",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "minGroupSize", Type = "number", Nilable = false },
+				{ Name = "maxGroupSize", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVignetteInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +71,8 @@ local VignetteInfo =
 		{
 			Name = "GetVignettePosition",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +140,8 @@ local VignetteInfo =
 				{ Name = "tooltipWidgetSet", Type = "number", Nilable = true },
 				{ Name = "iconWidgetSet", Type = "number", Nilable = true },
 				{ Name = "addPaddingAboveTooltipWidgets", Type = "bool", Nilable = true },
+				{ Name = "mapPin", Type = "UIMapPinInfo", Nilable = true },
+				{ Name = "objectiveType", Type = "VignetteObjectiveType", Nilable = true },
 			},
 		},
 	},

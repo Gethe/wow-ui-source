@@ -2,7 +2,7 @@ GroupMembersDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function GroupMembersDataProviderMixin:OnAdded(mapCanvas)
 	MapCanvasDataProviderMixin.OnAdded(self, mapCanvas);
-	self:GetMap():SetPinTemplateType("GroupMembersPinTemplate", "UnitPositionFrame");
+
 	-- a single permanent pin
 	local pin = self:GetMap():AcquirePin("GroupMembersPinTemplate", self);
 	pin:SetPosition(0.5, 0.5);
@@ -73,7 +73,7 @@ function GroupMembersPinMixin:OnLoad()
 	self:SetPlayerPingTexture(Enum.PingTextureType.Rotation, "Interface\\minimap\\UI-Minimap-Ping-Rotate", 70, 70);
 
 	self:SetMouseOverUnitExcluded("player", true);
-	self:SetPinTexture("player", "Interface\\WorldMap\\WorldMapArrow");
+	self:SetPinTexture("player", "UI-WorldMapArrow");
 end
 
 function GroupMembersPinMixin:OnAcquired(dataProvider)

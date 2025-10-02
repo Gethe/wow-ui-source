@@ -8,6 +8,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "CalculateScreenAreaFromCharacterSpan",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,8 +48,18 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +71,20 @@ local SimpleFontStringAPI =
 			{
 				{ Name = "characterIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "inside", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "start", Type = "number", Nilable = false },
+				{ Name = "length", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -88,6 +113,21 @@ local SimpleFontStringAPI =
 				{ Name = "fontFile", Type = "cstring", Nilable = true },
 				{ Name = "fontHeight", Type = "uiUnit", Nilable = false },
 				{ Name = "flags", Type = "TBFFlags", Nilable = false },
+			},
+		},
+		{
+			Name = "GetFontHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "calculated", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{
@@ -266,6 +306,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetText",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -279,6 +320,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetTextColor",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -345,8 +388,17 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "OnColorsUpdated",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAlphaGradient",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -362,6 +414,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFixedColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -371,6 +424,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -380,8 +434,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "SetFontHeight",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "height", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
 			Name = "SetFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -391,6 +456,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetFormattedText",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -400,6 +467,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetIndentedWordWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -409,6 +477,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetJustifyH",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -418,6 +487,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetJustifyV",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -427,6 +497,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetMaxLines",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -436,6 +507,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetNonSpaceWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -445,6 +517,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetRotation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -454,6 +527,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetShadowColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -466,6 +540,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetShadowOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -476,6 +551,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetSpacing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -485,6 +561,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetText",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -494,6 +572,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetTextColor",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -506,6 +586,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetTextHeight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -515,6 +596,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetTextScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -524,6 +606,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetTextToFit",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -533,6 +617,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "SetWordWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

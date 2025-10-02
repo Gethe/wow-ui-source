@@ -5,8 +5,9 @@ local SpecializationVisuals = {
 	[252] = { background = "talents-background-deathknight-unholy", heroContainerOffset = -15, },
 
 	-- DH
-	[577] = { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },
-	[581] = { background = "talents-background-demonhunter-vengeance", heroContainerOffset = -45, },
+	[577] =  { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },
+	[581] =  { background = "talents-background-demonhunter-vengeance", heroContainerOffset = -45, },
+	[1480] = { background = "talents-background-demonhunter-devourer", heroContainerOffset = 0 },
 
 	-- Druid
 	[102] = { background = "talents-background-druid-balance", heroContainerOffset = 15, },
@@ -65,7 +66,7 @@ local SpecializationVisuals = {
 	[73] = { background = "talents-background-warrior-protection", heroContainerOffset = -15, },
 };
 
--- TODO:: Replace panOffset fixups.
+-- panOffsets are required to account for minor differences in the positioning between different classes.
 local ClassVisuals = {
 	[1]	 --[[Warrior--]]	 = { activationFX = "talents-animations-class-warrior", panOffset = { x = 60, y = 31 }, },
 	[2]  --[[Paladin--]] 	 = { activationFX = "talents-animations-class-paladin", panOffset = { x = -60, y = -29 }, },

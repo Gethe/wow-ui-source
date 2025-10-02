@@ -9,6 +9,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,10 +24,12 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOIInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "uiMapID", Type = "number", Nilable = false },
+				{ Name = "uiMapID", Type = "number", Nilable = true },
 				{ Name = "areaPoiID", Type = "number", Nilable = false },
 			},
 
@@ -38,6 +41,8 @@ local AreaPoiInfo =
 		{
 			Name = "GetAreaPOISecondsLeft",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the number of seconds until the POI expires." },
 
 			Arguments =
@@ -53,6 +58,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetDelvesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns all area POIInfos flagged as delves for the given map." },
 
 			Arguments =
@@ -68,6 +74,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetDragonridingRacesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns all area POIInfos flagged as dragonriding races for the given map." },
 
 			Arguments =
@@ -83,6 +90,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetEventsForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns all area POIInfos flagged as events for the given map." },
 
 			Arguments =
@@ -98,6 +106,7 @@ local AreaPoiInfo =
 		{
 			Name = "GetQuestHubsForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns all area POIInfos flagged as quest hubs for the given map." },
 
 			Arguments =
@@ -113,6 +122,7 @@ local AreaPoiInfo =
 		{
 			Name = "IsAreaPOITimed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "This statically determines if the POI is timed, GetAreaPOITimeLeft retrieves the value from the server and may return nothing for long intervals" },
 
 			Arguments =

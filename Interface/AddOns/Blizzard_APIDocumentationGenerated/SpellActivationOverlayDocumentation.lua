@@ -6,6 +6,21 @@ local SpellActivationOverlay =
 
 	Functions =
 	{
+		{
+			Name = "IsSpellOverlayed",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isSpellOverlayed", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -45,7 +60,7 @@ local SpellActivationOverlay =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "overlayFileDataID", Type = "number", Nilable = false },
-				{ Name = "locationName", Type = "cstring", Nilable = false },
+				{ Name = "locationType", Type = "ScreenLocationType", Nilable = false },
 				{ Name = "scale", Type = "number", Nilable = false },
 				{ Name = "r", Type = "number", Nilable = false },
 				{ Name = "g", Type = "number", Nilable = false },

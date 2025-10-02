@@ -1,0 +1,14 @@
+## Title: Blizzard Housing Dashboard
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+## Temporary test data file for prototyping. To be removed once data APIs provided.
+Blizzard_HousingDashboard_TestData.lua
+
+Blizzard_HousingDashboardHouseUpgrade.lua
+Blizzard_HousingDashboardHouseUpgrade.xml
+Blizzard_HousingDashboard.lua
+Blizzard_HousingDashboard.xml
+Blizzard_HousingDashboardRegistration.lua

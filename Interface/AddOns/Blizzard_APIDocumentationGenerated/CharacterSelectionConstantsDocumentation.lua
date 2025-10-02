@@ -33,11 +33,24 @@ local CharacterSelectionConstants =
 			},
 		},
 		{
+			Name = "WarbandPlacementDisplayInfoType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Model", Type = "WarbandPlacementDisplayInfoType", EnumValue = 0 },
+				{ Name = "Creature", Type = "WarbandPlacementDisplayInfoType", EnumValue = 1 },
+				{ Name = "Item", Type = "WarbandPlacementDisplayInfoType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "WarbandSceneAnimationEvent",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 8,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "StartingPose", Type = "WarbandSceneAnimationEvent", EnumValue = 0 },
@@ -49,6 +62,7 @@ local CharacterSelectionConstants =
 				{ Name = "EnterWorld", Type = "WarbandSceneAnimationEvent", EnumValue = 6 },
 				{ Name = "Spin", Type = "WarbandSceneAnimationEvent", EnumValue = 7 },
 				{ Name = "Poke", Type = "WarbandSceneAnimationEvent", EnumValue = 8 },
+				{ Name = "Ffx", Type = "WarbandSceneAnimationEvent", EnumValue = 9 },
 			},
 		},
 		{
@@ -67,9 +81,9 @@ local CharacterSelectionConstants =
 		{
 			Name = "WarbandSceneAnimationStandState",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Maintain", Type = "WarbandSceneAnimationStandState", EnumValue = 0 },
@@ -77,19 +91,42 @@ local CharacterSelectionConstants =
 				{ Name = "SitOnGround", Type = "WarbandSceneAnimationStandState", EnumValue = 2 },
 				{ Name = "Kneel", Type = "WarbandSceneAnimationStandState", EnumValue = 3 },
 				{ Name = "ReadyStance", Type = "WarbandSceneAnimationStandState", EnumValue = 4 },
-				{ Name = "Sleep", Type = "WarbandSceneAnimationStandState", EnumValue = 5 },
+				{ Name = "SitOnChairLow", Type = "WarbandSceneAnimationStandState", EnumValue = 5 },
+				{ Name = "SitOnChairMedium", Type = "WarbandSceneAnimationStandState", EnumValue = 6 },
+				{ Name = "SitOnChairHigh", Type = "WarbandSceneAnimationStandState", EnumValue = 7 },
+				{ Name = "Sleep", Type = "WarbandSceneAnimationStandState", EnumValue = 8 },
 			},
 		},
 		{
-			Name = "WarbandSceneSlotType",
+			Name = "WarbandSceneAnimationStandStateFlags",
 			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
+			NumValues = 9,
+			MinValue = 1,
+			MaxValue = 256,
 			Fields =
 			{
-				{ Name = "Character", Type = "WarbandSceneSlotType", EnumValue = 0 },
-				{ Name = "Pet", Type = "WarbandSceneSlotType", EnumValue = 1 },
+				{ Name = "Maintain", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 1 },
+				{ Name = "Stand", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 2 },
+				{ Name = "SitOnGround", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 4 },
+				{ Name = "Kneel", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 8 },
+				{ Name = "ReadyStance", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 16 },
+				{ Name = "SitOnChairLow", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 32 },
+				{ Name = "SitOnChairMedium", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 64 },
+				{ Name = "SitOnChairHigh", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 128 },
+				{ Name = "Sleep", Type = "WarbandSceneAnimationStandStateFlags", EnumValue = 256 },
+			},
+		},
+		{
+			Name = "WarbandScenePlacementType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Character", Type = "WarbandScenePlacementType", EnumValue = 0 },
+				{ Name = "Pet", Type = "WarbandScenePlacementType", EnumValue = 1 },
+				{ Name = "Chair", Type = "WarbandScenePlacementType", EnumValue = 2 },
 			},
 		},
 	},

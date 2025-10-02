@@ -18,8 +18,7 @@ end
 MapLinkPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_MAP_LINK");
 
 function MapLinkPinMixin:OnAcquired(mapLink) -- override
-	BaseMapPoiPinMixin.OnAcquired(self, mapLink);
-
+	SuperTrackablePoiPinMixin.OnAcquired(self, mapLink);
 	self.linkedUiMapID = mapLink.linkedUiMapID;
 end
 

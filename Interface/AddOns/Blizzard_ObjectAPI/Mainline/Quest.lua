@@ -13,7 +13,7 @@ function QuestMixin:Init(questID)
 		self.title = QuestUtils_GetQuestName(questID);
 		self.requiredMoney = C_QuestLog.GetRequiredMoney(questID);
 		self.isRepeatable = C_QuestLog.IsRepeatableQuest(questID);
-		self.isLegendary = C_QuestLog.IsLegendaryQuest(questID);
+		self.isLegendary = C_QuestInfoSystem.GetQuestClassification(questID) == Enum.QuestClassification.Legendary;
 	end);
 end
 

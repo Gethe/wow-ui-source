@@ -5,9 +5,9 @@ local PlayerInteractionManagerConstants =
 		{
 			Name = "PlayerInteractionType",
 			Type = "Enumeration",
-			NumValues = 69,
+			NumValues = 79,
 			MinValue = 0,
-			MaxValue = 68,
+			MaxValue = 78,
 			Fields =
 			{
 				{ Name = "None", Type = "PlayerInteractionType", EnumValue = 0 },
@@ -79,6 +79,16 @@ local PlayerInteractionManagerConstants =
 				{ Name = "ForgeMaster", Type = "PlayerInteractionType", EnumValue = 66 },
 				{ Name = "CharacterBanker", Type = "PlayerInteractionType", EnumValue = 67 },
 				{ Name = "AccountBanker", Type = "PlayerInteractionType", EnumValue = 68 },
+				{ Name = "ProfessionRespec", Type = "PlayerInteractionType", EnumValue = 69 },
+				{ Name = "CornerstoneInteraction", Type = "PlayerInteractionType", EnumValue = 70 },
+				{ Name = "Unused", Type = "PlayerInteractionType", EnumValue = 71 },
+				{ Name = "HousingBulletinBoard", Type = "PlayerInteractionType", EnumValue = 72 },
+				{ Name = "HousingPedestal", Type = "PlayerInteractionType", EnumValue = 73 },
+				{ Name = "CreateGuildNeighborhood", Type = "PlayerInteractionType", EnumValue = 74 },
+				{ Name = "NeighborhoodCharter", Type = "PlayerInteractionType", EnumValue = 75 },
+				{ Name = "GuildRename", Type = "PlayerInteractionType", EnumValue = 76 },
+				{ Name = "OpenNeighborhoodCharterConfirmation", Type = "PlayerInteractionType", EnumValue = 77 },
+				{ Name = "OpenHouseFinder", Type = "PlayerInteractionType", EnumValue = 78 },
 			},
 		},
 	},

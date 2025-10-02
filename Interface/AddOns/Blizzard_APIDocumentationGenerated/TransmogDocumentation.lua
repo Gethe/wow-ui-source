@@ -9,6 +9,7 @@ local Transmog =
 		{
 			Name = "ApplyAllPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local Transmog =
 		{
 			Name = "CanHaveSecondaryAppearanceForSlotID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local Transmog =
 		{
 			Name = "CanTransmogItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local Transmog =
 		{
 			Name = "CanTransmogItemWithItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +78,7 @@ local Transmog =
 		{
 			Name = "ClearPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +92,7 @@ local Transmog =
 		{
 			Name = "ExtractTransmogIDList",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +107,7 @@ local Transmog =
 		{
 			Name = "GetAllSetAppearancesByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,6 +140,8 @@ local Transmog =
 		{
 			Name = "GetBaseCategory",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -147,6 +156,7 @@ local Transmog =
 		{
 			Name = "GetCreatureDisplayIDForSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -161,6 +171,7 @@ local Transmog =
 		{
 			Name = "GetItemIDForSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -175,6 +186,8 @@ local Transmog =
 		{
 			Name = "GetPending",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,6 +202,7 @@ local Transmog =
 		{
 			Name = "GetSlotEffectiveCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,6 +217,8 @@ local Transmog =
 		{
 			Name = "GetSlotForInventoryType",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,6 +233,8 @@ local Transmog =
 		{
 			Name = "GetSlotInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +256,8 @@ local Transmog =
 		{
 			Name = "GetSlotUseError",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -253,6 +273,8 @@ local Transmog =
 		{
 			Name = "GetSlotVisualInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -284,6 +306,7 @@ local Transmog =
 		{
 			Name = "IsSlotBeingCollapsed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the only pending for the location's slot is a ToggleOff for the secondary appearance." },
 
 			Arguments =
@@ -297,8 +320,18 @@ local Transmog =
 			},
 		},
 		{
+			Name = "IsTransmogEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isTransmogEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LoadOutfit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,6 +341,7 @@ local Transmog =
 		{
 			Name = "SetPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -39,19 +39,25 @@ local ANIMA_DIVERSION_FRAME_EVENTS = {
 
 StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_CHANNEL"] = {
 	text = ANIMA_DIVERSION_CONFIRM_CHANNEL,
+	GetExpirationText = function(dialog, data, timeleft)
+		local dialogInfo = dialog.dialogInfo;
+		local formatterOutput = WorldQuestsSecondsFormatter:Format(timeleft);
+		local formattedTime = BONUS_OBJECTIVE_TIME_LEFT:format(formatterOutput);
+		return string.format(dialogInfo.text, dialog:GetTextFontString().text_arg1, formattedTime);
+	end,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept =	function(self, selectedNode)
-					PlaySound(textureKitToConfirmSound[selectedNode.textureKit]);
-					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
-					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
-					HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
-				end,
-	OnShow = function(self, selectedNode)
-		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
-		self.timeleft = C_DateAndTime.GetSecondsUntilDailyReset();
+	OnAccept =	function(dialog, selectedNode)
+		PlaySound(textureKitToConfirmSound[selectedNode.textureKit]);
+		C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, true);
+		HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION);
+		HelpTip:Acknowledge(AnimaDiversionFrame.ReinforceProgressFrame, ANIMA_DIVERSION_TUTORIAL_FILL_BAR);
 	end,
-	OnHide = function(self, selectedNode)
+	OnShow = function(dialog, selectedNode)
+		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
+		dialog.timeleft = C_DateAndTime.GetSecondsUntilDailyReset();
+	end,
+	OnHide = function(dialog, selectedNode)
 		AnimaDiversionFrame:ClearExclusiveSelectionNode();
 	end,
 	hideOnEscape = 1,
@@ -61,15 +67,15 @@ StaticPopupDialogs["ANIMA_DIVERSION_CONFIRM_REINFORCE"] = {
 	text = ANIMA_DIVERSION_CONFIRM_REINFORCE,
 	button1 = YES,
 	button2 = CANCEL,
-	OnAccept =	function(self, selectedNode)
-					PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_REINFORCE);
-					C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, false);
-					HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT);
-				end,
-	OnShow = function(self, selectedNode)
+	OnAccept =	function(dialog, selectedNode)
+		PlaySound(SOUNDKIT.UI_COVENANT_ANIMA_DIVERSION_CONFIRM_REINFORCE);
+		C_AnimaDiversion.SelectAnimaNode(selectedNode.nodeData.talentID, false);
+		HelpTip:Acknowledge(AnimaDiversionFrame, ANIMA_DIVERSION_TUTORIAL_SELECT_LOCATION_PERMANENT);
+	end,
+	OnShow = function(dialog, selectedNode)
 		AnimaDiversionFrame:SetExclusiveSelectionNode(selectedNode);
 	end,
-	OnHide = function(self, selectedNode)
+	OnHide = function(dialog, selectedNode)
 		AnimaDiversionFrame.ReinforceInfoFrame:ClearSelectedNode();
 		AnimaDiversionFrame:ClearExclusiveSelectionNode();
 	end,

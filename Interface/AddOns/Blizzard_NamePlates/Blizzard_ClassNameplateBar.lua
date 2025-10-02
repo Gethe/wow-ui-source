@@ -50,7 +50,7 @@ function ClassNameplateBar:MatchesSpec()
 	if ( not self.spec ) then
 		return true;
 	end
-	local myspec = GetSpecialization();
+	local myspec = C_SpecializationInfo.GetSpecialization();
 	return myspec == self.spec;
 end
 
@@ -276,7 +276,7 @@ function ClassNameplateManaBar:OnOptionsUpdated()
 end
 
 function ClassNameplateManaBar:OnSizeChanged() -- override
-	PixelUtil.SetHeight(self, DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
+	PixelUtil.SetHeight(self, NamePlateSetupOptions.healthBarHeight);
 	self.Border:UpdateSizes();
 end
 

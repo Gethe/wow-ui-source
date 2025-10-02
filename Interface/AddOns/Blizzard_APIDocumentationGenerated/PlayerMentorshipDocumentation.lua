@@ -29,6 +29,7 @@ local PlayerMentorship =
 		{
 			Name = "GetMentorshipStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

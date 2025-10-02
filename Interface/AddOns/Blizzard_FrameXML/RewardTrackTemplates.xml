@@ -52,6 +52,42 @@
 		</Scripts>
 	</Frame>
 
+	<!--! TODO lots of temp art or missing art needs to be placed here -->
+	<Frame name="RenownLevelCardTemplate" mixin="RenownLevelMixin" virtual="true">
+		<Size x="135" y="130"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="RewardCardBG" atlas="shop-card-wide-map" useAtlasSize="false" setAllPoints="true"/> <!--! TODO final art -->
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" parentArray="Textures">
+					<Size x="40" y="39"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Level" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="TOP" y="3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RewardName" inherits="GameFontHighlight" justifyV="TOP">
+					<Size x="120" y="85"/>
+					<Anchors>
+						<Anchor point="CENTER" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
 	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" scale="0.89" virtual="true">
 		<Size x="22" y="39"/>
 		<NormalTexture atlas="CovenantSanctum-Renown-Arrow" useAtlasSize="true">
@@ -63,7 +99,7 @@
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
 			</Anchors>
-		</PushedTexture>	
+		</PushedTexture>
 		<DisabledTexture atlas="CovenantSanctum-Renown-Arrow-Disabled" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
@@ -93,7 +129,7 @@
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
 			</Anchors>
-		</PushedTexture>	
+		</PushedTexture>
 		<DisabledTexture atlas="CovenantSanctum-Renown-DoubleArrow-Disabled" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER" y="1"/>
@@ -133,6 +169,167 @@
 						</MaskTexture>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="ParagonLevelFrame" hidden="true">
+						<Size x="200" y="50"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Divider" atlas="recipelist-divider" useAtlasSize="false" rotation="180"> <!--! TODO final art needed, will need to adjust this once we have art -->
+									<Size x="5" y="120"/>
+									<Anchors>
+										<Anchor point="LEFT" y="10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon">
+									<Size x="40" y="39"/>
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LabelBackground" atlas="shop-card-wide-map">
+									<Size x="130" y="43"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="LEFT" text="JOURNEYS_MAX_RENOWN_LABEL">
+									<Size x="105" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.LabelBackground"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="IconBorder" atlas="CovenantSanctum-Renown-Icon-Border-Standard" useAtlasSize="true">
+									<Size x="55" y="55"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Level" inherits="GameFontNormal">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent.IconBorder" y="3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="HIGHLIGHT">
+								<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Icon-Hover" useAtlasSize="true" alphaMode="ADD">
+									<Size x="55" y="55"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button parentKey="LeftButton" inherits="RewardTrackButtonTemplate">
+				<KeyValues>
+					<KeyValue key="direction" value="-1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="-4"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="JumpLeftButton" inherits="RewardTrackJumpButtonTemplate">
+				<KeyValues>
+					<KeyValue key="direction" value="-1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.LeftButton" relativePoint="LEFT" x="-17"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="RightButton" inherits="RewardTrackButtonTemplate">
+				<KeyValues>
+					<KeyValue key="direction" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="4"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="JumpRightButton" inherits="RewardTrackJumpButtonTemplate">
+				<KeyValues>
+					<KeyValue key="direction" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RightButton" relativePoint="RIGHT" x="17"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="RewardProgressFrameTemplate" mixin="RewardTrackFrameMixin" virtual="true">
+		<Size x="570" y="185"/>
+		<Frames>
+			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="ParagonLevelFrame" hidden="true">
+						<Size x="200" y="50"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Divider" atlas="recipelist-divider" useAtlasSize="false" rotation="180"> <!--! TODO final art needed, will need to adjust this once we have art -->
+									<Size x="5" y="120"/>
+									<Anchors>
+										<Anchor point="LEFT" y="10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Icon">
+									<Size x="40" y="39"/>
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LabelBackground" atlas="shop-card-wide-map">
+									<Size x="130" y="43"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="LEFT" text="JOURNEYS_MAX_RENOWN_LABEL">
+									<Size x="105" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.LabelBackground"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BORDER">
+								<Texture parentKey="IconBorder" atlas="CovenantSanctum-Renown-Icon-Border-Standard" useAtlasSize="true">
+									<Size x="55" y="55"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<FontString parentKey="Level" inherits="GameFontNormal">
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent.IconBorder" y="3"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="HIGHLIGHT">
+								<Texture parentKey="HighlightTexture" atlas="CovenantSanctum-Renown-Icon-Hover" useAtlasSize="true" alphaMode="ADD">
+									<Size x="55" y="55"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
 			</Frame>
 			<Button parentKey="LeftButton" inherits="RewardTrackButtonTemplate">
 				<KeyValues>

@@ -51,8 +51,8 @@ StaticPopupDialogs["GARRISON_CANCEL_UPGRADE_BUILDING"] = {
 	text = GARRISON_CANCEL_UPGRADE_BUILDING,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		GarrisonBuildingFrameTimerCancel_OnConfirm(self.data);
+	OnAccept = function(dialog, data)
+		GarrisonBuildingFrameTimerCancel_OnConfirm(data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -65,8 +65,8 @@ StaticPopupDialogs["GARRISON_CANCEL_BUILD_BUILDING"] = {
 	text = GARRISON_CANCEL_BUILD_BUILDING,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self)
-		GarrisonBuildingFrameTimerCancel_OnConfirm(self.data);
+	OnAccept = function(dialog, data)
+		GarrisonBuildingFrameTimerCancel_OnConfirm(data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -165,8 +165,8 @@ function GarrisonBuildingFrame_OnShow(self)
 	-- check to show the help plate
 	if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING) ) then
 		local helpPlate = GarrisonBuilding_HelpPlate;
-		if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-			HelpPlate_ShowTutorialPrompt( helpPlate, GarrisonBuildingFrame.MainHelpButton );
+		if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+			HelpPlate.ShowTutorialTooltip( helpPlate, GarrisonBuildingFrame.MainHelpButton );
 			SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
 		end
 		GarrisonBuildingList_SelectBuilding(BARRACKS_BUILDING_ID);
@@ -178,7 +178,7 @@ end
 
 function GarrisonBuildingFrame_OnHide(self)
 	C_Garrison.CloseArchitect();
-	HelpPlate_Hide();
+	HelpPlate.Hide();
 	GarrisonBuildingPlacer_Clear();
 	PlaySound(SOUNDKIT.UI_GARRISON_ARCHITECT_TABLE_CLOSE);
 end
@@ -908,8 +908,7 @@ function GarrisonBuildingFrameTimerCancel_OnClick(self, button)
 	if (rank > 1) then
 		popupText = "GARRISON_CANCEL_UPGRADE_BUILDING";
 	end
-	local dialog = StaticPopup_Show(popupText);
-	dialog.data = GarrisonBuildingFrame.selectedBuilding;
+	StaticPopup_Show(popupText, nil, nil, GarrisonBuildingFrame.selectedBuilding);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
@@ -1851,11 +1850,11 @@ GarrisonBuilding_HelpPlate = {
 
 function GarrisonBuilding_ToggleTutorial()
 	local helpPlate = GarrisonBuilding_HelpPlate;
-	if ( helpPlate and not HelpPlate_IsShowing(helpPlate) ) then
-		HelpPlate_Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
+	if ( helpPlate and not HelpPlate.IsShowingHelpInfo(helpPlate) ) then
+		HelpPlate.Show( helpPlate, GarrisonBuildingFrame, GarrisonBuildingFrame.MainHelpButton );
 		SetCVarBitfield( "closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true );
 	else
-		HelpPlate_Hide(true);
+		HelpPlate.Hide(true);
 	end
 end
 

@@ -1161,8 +1161,8 @@ function RecruitAFriendRewardButtonMixin:OnClick()
 		local itemID = self.rewardInfo.itemID;
 		if itemID then
 			local name, link = C_Item.GetItemInfo(itemID);
-			if not ChatEdit_InsertLink(link) then
-				ChatFrame_OpenChat(link);
+			if not ChatFrameUtil.InsertLink(link) then
+				ChatFrameUtil.OpenChat(link);
 			end
 		end
 	end

@@ -106,37 +106,28 @@
 		</Frames>
 	</Frame>
 
-	<GameTooltip name="ShoppingTooltipTemplate" mixin="TooltipDataHandlerMixin" inherits="SharedTooltipTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="textLeft1Font" value="GameFontNormalSmall" type="string"/>
-			<KeyValue key="textRight1Font" value="GameFontNormal" type="string"/>
-			<KeyValue key="textLeft2Font" value="GameFontNormal" type="string"/>
-			<KeyValue key="textRight2Font" value="GameFontHighlightSmall" type="string"/>
-		</KeyValues>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTextLeft3" inherits="GameFontHighlightSmall" justifyH="LEFT" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft2" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTextRight3" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft3" relativePoint="LEFT" x="40" y="0"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTextLeft4" inherits="GameTooltipTextSmall" justifyH="LEFT" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentTextLeft3" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentTextRight4" inherits="GameFontHighlightSmall" justifyH="RIGHT" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT" relativeTo="$parentTextLeft4" relativePoint="LEFT" x="40" y="0"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<GameTooltip name="ShoppingTooltipTemplate" mixin="TooltipDataHandlerMixin" inherits="SharedTooltipTemplate" virtual="true" frameLevel="2">
+		<Frames>
+			<Frame parentKey="CompareHeader" frameLevel="1">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture setAllPoints="true" atlas="tooltip-compare-label"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameTooltipText">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				GameTooltip_OnLoad(self);
@@ -146,6 +137,7 @@
 				SharedTooltip_ClearInsertedFrames(self);
 				GameTooltip_ClearStyle(self);
 				self:ClearHandlerInfo();
+				self.CompareHeader:Hide();
 			</OnTooltipCleared>
 		</Scripts>
 	</GameTooltip>

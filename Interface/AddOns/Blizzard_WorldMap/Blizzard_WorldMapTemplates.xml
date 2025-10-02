@@ -7,12 +7,19 @@
 	<DropdownButton name="WorldMapTrackingOptionsButtonTemplate" frameStrata="HIGH" mixin="WorldMapTrackingOptionsButtonMixin" virtual="true">
 		<Size x="32" y="32"/>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Layer level="BACKGROUND" textureSubLevel="-2">
 				<Texture atlas="MapCornerShadow-Right" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="4" y="1"/>
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="FilterCounterBanner" atlas="map-filter-banner" useAtlasSize="true" scale="0.85">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="CENTER" y="-2"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">
@@ -47,6 +54,26 @@
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-5" y="-7"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="FilterCounter" mixin="WorldMapTrackingOptionsFilterCounterMixin">
+				<Size x="24" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="2" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="24" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
@@ -122,84 +149,6 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
 			<OnHide method="OnHide"/>
-		</Scripts>
-	</Button>
-
-	<Button name="WorldMapShowLegendButtonTemplate" frameStrata="HIGH" mixin="WorldMapShowLegendButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="32" y="32"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture atlas="MapCornerShadow-Right" useAtlasSize="true" hidden="true">
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="4" y="1"/>
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0"/>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" file="Interface\Minimap\UI-Minimap-Background">
-					<Size x="25" y="25"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-4"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" atlas="QuestNormal">
-					<Size x="20" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-6"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="IconOverlay" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-					<Color r="0.0" g="0.0" b="0.0" a="0.3"/>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Border" file="Interface\Minimap\MiniMap-TrackingBorder">
-					<Size x="54" y="54"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="ActiveTexture" file="Interface\Minimap\UI-Minimap-ZoomButton-Toggle" alphaMode="ADD" hidden="true">
-					<Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
-					</Anchors>					
-				</Texture>
-                <Texture parentKey="Glow" file="Interface\Minimap\UI-Minimap-ZoomButton-Toggle" alphaMode="ADD">
-                    <Size x="37" y="37"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
-					</Anchors>
-				</Texture>
-			</Layer>			
-		</Layers>
-        <Animations>
-			<AnimationGroup parentKey="Fade" looping="REPEAT">
-				<Alpha childKey="Glow" duration="1.0" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Glow" duration="1.0" order="2" fromAlpha="0" toAlpha="1"/>
-			</AnimationGroup>
-		</Animations>
-		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-            <OnShow method="OnShow"/>
-            <OnHide method="OnHide"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnClick method="OnClick"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
 

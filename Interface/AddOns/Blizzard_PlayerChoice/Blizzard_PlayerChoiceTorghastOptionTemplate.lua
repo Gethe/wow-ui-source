@@ -1,13 +1,5 @@
 PlayerChoiceTorghastOptionTemplateMixin = {};
 
-local rarityToSwirlPostfix =
-{
-	[Enum.PlayerChoiceRarity.Common] = "",
-	[Enum.PlayerChoiceRarity.Uncommon] = "-QualityUncommon",
-	[Enum.PlayerChoiceRarity.Rare] = "-QualityRare",
-	[Enum.PlayerChoiceRarity.Epic] = "-QualityEpic",
-};
-
 function PlayerChoiceTorghastOptionTemplateMixin:OnLoad()
 	PlayerChoicePowerChoiceTemplateMixin.OnLoad(self);
 	self.selectedEffects = { {id = 97} };
@@ -15,9 +7,19 @@ end
 
 function PlayerChoiceTorghastOptionTemplateMixin:GetTextureKitRegionTable()
 	local useTextureRegions = PlayerChoicePowerChoiceTemplateMixin.GetTextureKitRegionTable(self);
+	local atlasData = self:GetAtlasDataForRarity();
 
-	useTextureRegions.SwirlBG = "UI-Frame-%s-Portrait"..rarityToSwirlPostfix[self.optionInfo.rarity];
-	useTextureRegions.GlowBG = useTextureRegions.SwirlBG;
+	self.SwirlBG:SetVertexColor(1, 1, 1);
+	self.GlowBG:SetVertexColor(1, 1, 1);
+	if atlasData then
+		useTextureRegions.SwirlBG = "UI-Frame-%s-Portrait"..atlasData.postfixData.portraitBackgroundTorghast;
+		useTextureRegions.GlowBG = useTextureRegions.SwirlBG;
+
+		if atlasData.overrideColor then
+			self.SwirlBG:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+			self.GlowBG:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
+		end
+	end
 
 	return useTextureRegions;
 end

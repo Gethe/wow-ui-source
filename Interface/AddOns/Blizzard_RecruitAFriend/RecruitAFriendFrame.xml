@@ -466,7 +466,7 @@
 	<Frame name="RecruitAFriendFrame" parent="FriendsFrame" hidden="true" setAllPoints="true" mixin="RecruitAFriendFrameMixin" inherits="CallbackRegistrantTemplate">
 		<Frames>
 			<Frame parentKey="RewardClaiming" useParentLevel="true">
-				<Size y="100"/>
+				<Size x="330" y="100"/>
 				<KeyValues>
 					<KeyValue key="legacyBackgroundAtlas" value="RecruitAFriend_ClaimPane_Parchment" type="string"/>
 					<KeyValue key="backgroundAtlas" value="recruitafriend_claimpane_parchment_generic" type="string"/>
@@ -477,9 +477,10 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="true">
+						<Texture parentKey="Background" atlas="RecruitAFriend_ClaimPane_Parchment" useAtlasSize="false">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="TOPLEFT" y="-3"/>
+								<Anchor point="BOTTOMRIGHT" y="3"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -506,7 +507,7 @@
 						</Texture>
 						<Texture parentKey="Watermark" atlas="recruitafriend_v3_watermark_medium" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="RIGHT" x="-7" y="-7"/>
+								<Anchor point="RIGHT" relativeKey="$parent.Background" x="-7" y="-7"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -514,7 +515,7 @@
 						<FontString parentKey="EarnInfo" inherits="FriendsFont_Normal" justifyH="LEFT">
 							<Size x="230" y="12"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="90" y="-33"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-33"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -522,7 +523,7 @@
 				<Frames>
 					<Frame parentKey="MonthCount" inherits="TruncatedTooltipFontStringWrapperTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="90" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-15"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -538,7 +539,7 @@
 					</Frame>
 					<Frame parentKey="NextRewardName" inherits="TruncatedTooltipFontStringWrapperTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="90" y="-48"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="90" y="-48"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -553,7 +554,7 @@
 					</Frame>
 					<Button parentKey="NextRewardInfoButton" inherits="RAFInfoButtonTemplate" mixin="RecruitAFriendNextRewardInfoButtonMixin">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" x="-2" y="2"/>
 						</Anchors>
 						<Scripts>
 							<OnEnter method="OnEnter"/>
@@ -563,7 +564,7 @@
 					<Button parentKey="NextRewardButton" inherits="RecruitAFriendRewardButtonTemplate" mixin="RecruitAFriendRewardButtonWithFanfareMixin">
 						<Size x="49" y="49"/>
 						<Anchors>
-							<Anchor point="CENTER" relativePoint="LEFT" x="46" />
+							<Anchor point="CENTER" relativeKey="$parent.Background" relativePoint="LEFT" x="46" />
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -667,16 +668,18 @@
 						<FontString inherits="FriendsFont_Large" justifyH="CENTER" />
 					</SimpleHTML>
 					<Frame parentKey="Header">
-						<Size x="320" y="20"/>
+						<Size y="20"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="3"/>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="TOPRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Background" atlas="RecruitAFriend_Frame_StoneDivider">
-									<Size x="338" y="20"/>
+									<Size y="20"/>
 									<Anchors>
-										<Anchor point="TOP"/>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -702,9 +705,10 @@
 						</Anchors>
 					</Frame>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
-						<Size x="303" y="188"/>
+						<Size y="188"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="-22" y="3"/>
 						</Anchors>
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

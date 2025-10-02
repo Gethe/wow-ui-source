@@ -1,8 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="LossOfControlFrame.lua"/>
 
-	<Frame name="LossOfControlFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true">
+	<Frame name="LossOfControlFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" mixin="LossOfControlMixin">
 		<Size x="256" y="58"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
@@ -107,10 +106,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="LossOfControlFrame_OnLoad"/>
-			<OnEvent function="LossOfControlFrame_OnEvent"/>
-			<OnUpdate function="LossOfControlFrame_OnUpdate"/>
-			<OnHide function="LossOfControlFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

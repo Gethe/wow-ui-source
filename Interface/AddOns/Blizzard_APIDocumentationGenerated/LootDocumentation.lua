@@ -9,6 +9,7 @@ local Loot =
 		{
 			Name = "GetLootRollDuration",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

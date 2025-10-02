@@ -24,6 +24,8 @@
 		handlesGlobalMouseEventCallback	= nil,	-- if a helptip is tied to a drop down set a global mouse callback on the helptip info
 		appendFrame = nil,						-- if a helptip needs a custom display you can append your own frame to the text
 		appendFrameYOffset = nil,				-- the offset for the vertical anchor for appendFrame
+		autoHideWhenTargetHides = false,		-- if the target frame hides, the helptip will hide if this is set and call the onHideCallback with an apprpropriate reason
+		ignoreInParentLayout = true,			-- off: if the parent is a layoutFrame helptip will no longer be ignored in the layout process
 	}
 ]]--
 
@@ -61,7 +63,14 @@ HelpTip.ButtonStyle = {
 	Okay = 3,
 	GotIt = 4,
 	Next = 5,
+	Exit = 6,
 };
+
+HelpTip.HideReason = {
+	Closed = 1,
+	Acknowledged = 2,
+	TargetHidden = 3,
+}
 
 -- internal use enums
 
@@ -119,6 +128,7 @@ HelpTip.Buttons = {
 	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = OKAY },
 	[HelpTip.ButtonStyle.GotIt]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_BUTTON_GOT_IT },
 	[HelpTip.ButtonStyle.Next]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = NEXT },
+	[HelpTip.ButtonStyle.Exit]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_EXIT },
 };
 
 HelpTip.verticalPadding	 = 31;
@@ -361,30 +371,50 @@ function HelpTipTemplateMixin:OnShow()
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 end
 
+local function AssertMissingInfo(infoText)
+	return string.format("Missing info table for helptip: %s", infoText);
+end
+
 function HelpTipTemplateMixin:OnHide()
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-
+	
 	local info = self.info;
-	if not self.acknowledged and info.acknowledgeOnHide then
-		self:HandleAcknowledge();
+	assertsafe(info, AssertMissingInfo, self.lastInfoText);
+
+	local relativeRegion = self.relativeRegion;
+	if relativeRegion then
+		FrameWatcher:StopWatchingFrame(relativeRegion);
 	end
+
+	if info then
+		if not self.acknowledged and info.acknowledgeOnHide then
+			self:HandleAcknowledge();
+		end
+	end
+
+	local hideReason = self:GetHideReason();
+	self:SetHideReason(nil);
+
 	-- Have to release before doing callbacks or reentry could happen because of deferred OnShow/OnHide
 	local acknowledged = self.acknowledged;
 	HelpTip:Release(self);
 
-	local appendFrame = info.appendFrame;
-	if appendFrame then
-		appendFrame:Hide();
-		appendFrame:ClearAllPoints();
-		appendFrame:SetParent(UIParent);
-	end
+	if info then
+		local appendFrame = info.appendFrame;
+		if appendFrame then
+			appendFrame:Hide();
+			appendFrame:ClearAllPoints();
+			appendFrame:SetParent(UIParent);
+		end
 
-	if info.onHideCallback then
-		info.onHideCallback(acknowledged, info.callbackArg);
-	end
-	if acknowledged and info.onAcknowledgeCallback then
-		info.onAcknowledgeCallback(info.callbackArg);
+		if info.onHideCallback then
+			info.onHideCallback(acknowledged, info.callbackArg, hideReason);
+		end
+
+		if acknowledged and info.onAcknowledgeCallback then
+			info.onAcknowledgeCallback(info.callbackArg);
+		end
 	end
 end
 
@@ -460,7 +490,9 @@ function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 		self:SetFrameStrata("DIALOG");
 	end
 	self.info = info;
+	self.lastInfoText = info.text;
 	self.relativeRegion = relativeRegion;
+	self.ignoreInLayout = (info.ignoreInParentLayout ~= false);
 
 	if info.autoEdgeFlipping then
 		local targetPoint = self:GetTargetPoint();
@@ -474,6 +506,7 @@ function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 
 	self:AnchorAndRotate();
 	self:Layout();
+	self:CheckWatchRelativeRegion();
 end
 
 function HelpTipTemplateMixin:GetTargetPoint()
@@ -636,6 +669,7 @@ function HelpTipTemplateMixin:HandleAcknowledge()
 		SetCVarBitfield(info.cvarBitfield, info.bitfieldFlag, true);
 	end
 	self.acknowledged = true;
+	self:SetHideReason(HelpTip.HideReason.Acknowledged);
 end
 
 function HelpTipTemplateMixin:Reset()
@@ -666,4 +700,22 @@ function HelpTipTemplateMixin:MatchesSystem(system, text)
 	end
 	local textMatched = not text or self.info.text == text;
 	return textMatched and self.info.system == system;
+end
+
+function HelpTipTemplateMixin:CheckWatchRelativeRegion()
+	local relativeRegion = self.relativeRegion;
+	if self.info.autoHideWhenTargetHides and relativeRegion then
+		FrameWatcher:WatchFrame(relativeRegion, nil, function()
+			self:SetHideReason(HelpTip.HideReason.TargetHidden);
+			self:Close();
+		end);
+	end
+end
+
+function HelpTipTemplateMixin:GetHideReason()
+	return self.hideReason or HelpTip.HideReason.Closed;
+end
+
+function HelpTipTemplateMixin:SetHideReason(reason)
+	self.hideReason = reason;
 end

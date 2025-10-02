@@ -272,7 +272,7 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		local canWhisper = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild;
 		if canWhisper then
 			rootDescription:CreateButton(WHISPER_MESSAGE, function()
-				ChatFrame_SendTell(self.order.crafterName);
+				ChatFrameUtil.SendTell(self.order.crafterName);
 			end);
 		else
 			local button = rootDescription:CreateButton(WHISPER_MESSAGE, nop);
@@ -486,8 +486,6 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
-				elseif result == Enum.CraftingOrderResult.NoAccountItems then
-					errorText = CRAFTING_ORDER_FAILED_ACCOUNT_ITEMS;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -544,7 +542,8 @@ function ProfessionsCustomerOrderFormMixin:SetupQualityDropdown()
 		local smallIcon = true;
 		local overrideOffsetY = 0;
 		for index in ipairs(self.minQualityIDs) do
-			local text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(index, smallIcon, overrideOffsetY);
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.order.spellID, index);
+			local text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon, overrideOffsetY);
 			CreateRadio(rootDescription, text, index);
 		end
 	end);
@@ -662,10 +661,11 @@ function ProfessionsCustomerOrderFormMixin:SetOrderRecipient(index)
 	self:UpdateListOrderButton();
 end
 
-function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(index)
-	self.order.minQuality = index;
+function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(quality)
+	self.order.minQuality = quality;
 
-	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, index);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.order.spellID, quality);
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, qualityInfo);
 end
 
 local helptipSystemName = "Professions Customer Orders";
@@ -838,7 +838,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 								
 								local allocationsCopy = transaction:GetAllocationsCopy(slotIndex);
 								local disallowZeroAllocations = false;
-								local characterInventoryOnly = true;
+								local characterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
 								self.QualityDialog:Open(recipeID, reagentSlotSchematic, allocationsCopy, slotIndex, disallowZeroAllocations, characterInventoryOnly);
 							end
 						end
@@ -1094,7 +1094,6 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 
 	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
-	self.transaction:SetUseCharacterInventoryOnly(true);
 
 	if self.order.isRecraft then
 		if self.recraftGUID then
@@ -1116,8 +1115,9 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		end
 	end
 
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality or 1);
 	self.RecraftSlot:Init(self.transaction, AnyRecraftablePredicate, function(itemGUID) self:SetRecraftItemGUID(itemGUID); end, self.order.recraftItemHyperlink);
-	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, self.order.minQuality or 1);
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, qualityInfo);
 
 	self.minQualityIDs = recipeID and C_TradeSkillUI.GetQualitiesForRecipe(recipeID);
 
@@ -1159,9 +1159,10 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			if outputItemInfo.hyperlink then
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				local itemName = item:GetItemName();
-				local hasMinQuality = (self.order.minQuality ~= nil and self.order.minQuality > 1) and self.committed;
-				if hasMinQuality then
-					itemName = itemName.." "..CreateAtlasMarkup(string.format("Professions-Icon-Quality-Tier%d-Small", self.order.minQuality));
+				local quality = self.order.minQuality or 1;
+				if self.committed and quality > 1 then
+					local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality);
+					itemName = itemName.." "..CreateAtlasMarkup(qualityInfo.iconSmall);
 				end
 				self.RecraftRecipeName:SetText(PROFESSIONS_ORDER_RECRAFT_TITLE_FMT:format(item:GetItemQualityColor().color:WrapTextInColorCode(itemName)));
 			else
@@ -1175,9 +1176,10 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			if outputItemInfo.hyperlink then
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				local itemName = item:GetItemName();
-				local hasMinQuality = (self.order.minQuality ~= nil and self.order.minQuality > 1) and self.committed;
-				if hasMinQuality then
-					itemName = itemName.." "..CreateAtlasMarkup(string.format("Professions-Icon-Quality-Tier%d-Small", self.order.minQuality));
+				local quality = self.order.minQuality or 1;
+				if self.committed and quality > 1 then
+					local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality);
+					itemName = itemName.." "..CreateAtlasMarkup(qualityInfo.iconSmall);
 				end
 				self.RecipeName:SetText(itemName);
 				self.RecipeName:SetTextColor(item:GetItemQualityColorRGB());

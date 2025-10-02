@@ -1,0 +1,120 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="WarbandSceneGlueTemplate" mixin="WarbandSceneGlueEntryMixin" inherits="WarbandSceneTemplate" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<CheckedTexture parentKey="CheckedTexture" atlas="campcollection-frame-selected">
+			<Size x="224" y="183"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-4" y="5"/>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+
+	<Frame name="GlueWarbandSceneJournalTemplate" mixin="GlueWarbandSceneJounalMixin" setAllPoints="true" virtual="true">
+		<Frames>
+			<DropdownButton parentKey="GroupDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-24" y="-32"/>
+				</Anchors>
+			</DropdownButton>
+			<Frame parentKey="IconsFrame" inherits="CollectionsBackgroundTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" y="-60" x="4"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-6" y="53"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Icons" inherits="PagedNaturalSizeGridContentFrameTemplate">
+						<KeyValues>
+							<KeyValue key="viewsPerPage" value="1" type="number"/>
+							<KeyValue key="xPadding" value="11" type="number"/>
+							<KeyValue key="yPadding" value="34" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="13" y="-38"/>
+							<Anchor point="BOTTOMRIGHT" x="-12" y="25"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="View" parentArray="ViewFrames" setAllPoints="true"/>
+							<Frame parentKey="Controls" inherits="HorizontalLayoutFrame">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="21"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="spacing" value="25" type="number"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="ShowOwned">
+										<Size x="20" y="20"/>
+										<KeyValues>
+											<KeyValue key="layoutIndex" value="1" type="number"/>
+											<KeyValue key="align" value="center" type="string"/>
+										</KeyValues>
+										<Frames>
+											<CheckButton parentKey="Checkbox">
+												<Size x="18" y="18"/>
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+												</Anchors>
+												<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+												<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+												<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+												<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+											</CheckButton>
+										</Frames>
+										<Layers>
+											<Layer level="ARTWORK">
+												<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="WARBAND_SCENE_COLLECTION_FILTER_OWNED">
+													<KeyValues>
+														<KeyValue key="anchorSpacing" value="4" type="number"/>
+													</KeyValues>
+													<Anchors>
+														<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="4"/>
+													</Anchors>
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame parentKey="PagingControls" inherits="PagingControlsHorizontalTemplate">
+										<KeyValues>
+											<KeyValue key="layoutIndex" value="2" type="number"/>
+											<KeyValue key="bottomPadding" value="3" type="number"/>
+										</KeyValues>
+									</Frame>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button parentKey="ApplyButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" text="WARBAND_SCENE_COLLECTION_APPLY">
+				<Size x="110" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="17"/>
+				</Anchors>
+			</Button>
+			<CheckButton parentKey="ApplyForAllCheckbox" inherits="UICheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="LEFT" x="-200" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormal" maxLines="1" justifyH="LEFT" text="WARBAND_SCENE_COLLECTION_APPLY_ALL">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="1" y="1"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

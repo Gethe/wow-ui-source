@@ -9,16 +9,31 @@ local ActionBarFrame =
 		{
 			Name = "EnableActionRangeCheck",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Used in conjunction with ActionRangeCheckUpdate to inform the UI when an action goes in or out of range with its current target." },
 
 			Arguments =
 			{
 				{ Name = "actionID", Type = "luaIndex", Nilable = false },
-				{ Name = "enable", Type = "bool", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the action should dispatch ActionRangeCheckUpdate. False if the action no longer needs the event." } },
+			},
+		},
+		{
+			Name = "FindAssistedCombatActionButtons",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the list of action bar slots that contain the Assisted Combat action spell." },
+
+			Returns =
+			{
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
 			},
 		},
 		{
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +48,8 @@ local ActionBarFrame =
 		{
 			Name = "FindPetActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,10 +64,13 @@ local ActionBarFrame =
 		{
 			Name = "FindSpellActionButtons",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
 			},
 
 			Returns =
@@ -59,8 +79,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "ForceUpdateAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Force updates some internals for an action button slot." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBonusBarIndexForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +107,7 @@ local ActionBarFrame =
 		{
 			Name = "GetItemActionOnEquipSpellID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +122,8 @@ local ActionBarFrame =
 		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +138,7 @@ local ActionBarFrame =
 		{
 			Name = "GetProfessionQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,8 +151,24 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetProfessionQualityInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingQualityInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,8 +181,18 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasAssistedCombatActionButtons",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasButtons", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFlyoutActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,6 +207,7 @@ local ActionBarFrame =
 		{
 			Name = "HasPetActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +222,7 @@ local ActionBarFrame =
 		{
 			Name = "HasPetActionPetBarIndices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +237,7 @@ local ActionBarFrame =
 		{
 			Name = "HasSpellActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -185,8 +250,25 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsAssistedCombatAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the given action button contains the Assisted Combat action spell." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistedCombatAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,6 +283,7 @@ local ActionBarFrame =
 		{
 			Name = "IsEnabledAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -215,6 +298,7 @@ local ActionBarFrame =
 		{
 			Name = "IsHarmfulAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -230,6 +314,7 @@ local ActionBarFrame =
 		{
 			Name = "IsHelpfulAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -245,6 +330,7 @@ local ActionBarFrame =
 		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -259,6 +345,7 @@ local ActionBarFrame =
 		{
 			Name = "PutActionInSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -286,6 +373,7 @@ local ActionBarFrame =
 		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -300,11 +388,12 @@ local ActionBarFrame =
 			Name = "ActionRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			Documentation = { "Used in conjunction with EnableActionRangeCheck to inform the UI when an action goes in or out of range with its current target." },
 			Payload =
 			{
 				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "isInRange", Type = "bool", Nilable = false },
-				{ Name = "checksRange", Type = "bool", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the action. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
 			},
 		},
 		{

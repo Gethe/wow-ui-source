@@ -1,16 +1,20 @@
 AddOnUtil = {};
 
-local function GetAddOnDependenciesRecursive(addonName, dependencyTable)
+local function GetAddOnDependenciesRecursive(addonName, dependencyArray, dependencyTable)
+	-- dependencyArray keeps dependencies in a correct sorted order, dependencyTable keeps track of which were already added
+	dependencyArray = dependencyArray or {};
 	dependencyTable = dependencyTable or {};
+
 	local dependencies = { C_AddOns.GetAddOnDependencies(addonName) };
-	for _, depAddonName in pairs(dependencies) do
+	for _, depAddonName in ipairs(dependencies) do
 		if not dependencyTable[depAddonName] then
+			GetAddOnDependenciesRecursive(depAddonName, dependencyArray, dependencyTable);
+			table.insert(dependencyArray, depAddonName);
 			dependencyTable[depAddonName] = true;
-			GetAddOnDependenciesRecursive(depAddonName, dependencyTable);
 		end
 	end
 
-	return dependencyTable;
+	return dependencyArray, dependencyTable;
 end
 
 local function SetAddOnEnabled(addonName, enabled)
@@ -35,12 +39,29 @@ end
 
 function AddOnUtil.LoadAddOn(addonName, restoreEnabledState)
 	if not C_AddOns.IsAddOnLoaded(addonName) then
-		local dependencyTable = GetAddOnDependenciesRecursive(addonName);
-		for depAddonName in pairs(dependencyTable) do
-			EnableAndLoadAddOnHelper(depAddonName, restoreEnabledState);
+		local dependencyArray = GetAddOnDependenciesRecursive(addonName);
+		for _, depAddonName in ipairs(dependencyArray) do
+			if not C_AddOns.IsAddOnLoaded(depAddonName) then
+				EnableAndLoadAddOnHelper(depAddonName, restoreEnabledState);
+			end
 		end
 		return EnableAndLoadAddOnHelper(addonName, restoreEnabledState);
 	end
 
 	return true; -- It was already loaded, no status message for addons that are already loaded.
+end
+
+function AddOnUtil.SetEnableStateForAddOnAndDependencies(addonName, character, enabled)
+	local setter = enabled and C_AddOns.EnableAddOn or C_AddOns.DisableAddOn;
+
+	local dependencyArray = GetAddOnDependenciesRecursive(addonName);
+	for _, depAddonName in ipairs(dependencyArray) do
+		setter(depAddonName, character);
+	end
+	setter(addonName, character);
+end
+
+function AddOnUtil.IsAddOnEnabledForCurrentCharacter(addonName)
+	local character = UnitGUID("player");
+	return C_AddOns.GetAddOnEnableState(addonName, character) == Enum.AddOnEnableState.All;
 end

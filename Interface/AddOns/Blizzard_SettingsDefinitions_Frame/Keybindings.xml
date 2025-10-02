@@ -6,6 +6,20 @@
 		<Size y="25"/>
 	</Frame>
 
+	<Frame name="SettingsKeybindingPrefaceTemplate" mixin="SettingsKeybindingPrefaceMixin" virtual="true">
+		<Size x="580" y="25"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="text" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="580" y="25"/>
+					<Anchors>
+						<Anchor point="LEFT" x="37"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<EventFrame name="SettingsKeybindingSectionTemplate" inherits="SettingsExpandableSectionTemplate" mixin="SettingsKeybindingSectionMixin" virtual="true">
 		<Size y="25"/>
 		<Scripts>

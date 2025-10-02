@@ -21,6 +21,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "GetObjectType",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
 
 			Arguments =
 			{
@@ -29,6 +30,48 @@ local SimpleFrameScriptObjectAPI =
 			Returns =
 			{
 				{ Name = "objectType", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAnySecretAspect",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretAspect",
+			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "aspect", Type = "SecretAspect", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretValues",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretValues", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -47,6 +90,9 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "IsObjectType",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,8 +105,42 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "IsPreventingSecretValues",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isPreventingSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetForbidden",
 			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "SetPreventSecretValues",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preventSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetToDefaults",
+			Type = "Function",
+			IsProtectedFunction = true,
+			Documentation = { "Reset all script accessible values to their default values. If possible, clears secret states." },
 
 			Arguments =
 			{

@@ -7,12 +7,28 @@ local EventUtils =
 	Functions =
 	{
 		{
-			Name = "IsEventValid",
+			Name = "IsCallbackEvent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "eventName", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCallbackEvent", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEventValid",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "stringView", Nilable = false },
 			},
 
 			Returns =

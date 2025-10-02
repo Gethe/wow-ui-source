@@ -41,7 +41,7 @@ function InspectPvpTalentSlotMixin:OnClick()
 	if (IsModifiedClick("CHATLINK") and self.talentID) then
 		local link = GetPvpTalentLink(self.talentID);
 		if (link) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	end
 end
@@ -87,9 +87,9 @@ function InspectPVPFrame_Update()
 		InspectPVPFrame.SmallWreath:SetShown(false);
 		InspectPVPFrame.HonorLevel:SetFormattedText(HONOR_LEVEL_LABEL, honorLevel);
 		InspectPVPFrame.HonorLevel:Show();
-		local rating, played, won = GetInspectRatedBGData();
-		InspectPVPFrame.RatedBG.Rating:SetText(rating);
-		InspectPVPFrame.RatedBG.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, won, (played - won));
+		local ratedBGData = C_PaperDollInfo.GetInspectRatedBGData();
+		InspectPVPFrame.RatedBG.Rating:SetText(ratedBGData.rating);
+		InspectPVPFrame.RatedBG.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedBGData.won, (ratedBGData.played - ratedBGData.won));
 		InspectPVPFrame.RatedBG:Show();
 		for i=1, MAX_ARENA_TEAMS do
 			local arenarating, seasonPlayed, seasonWon, weeklyPlayed, weeklyWon = GetInspectArenaData(i);
@@ -109,7 +109,7 @@ function InspectPVPFrame_Update()
 		InspectPVPFrame.RatedBGBlitz.Record:SetFormattedText(PVP_RECORD_DESCRIPTION, ratedBGBlitzStats.gamesWon, (ratedBGBlitzStats.gamesPlayed - ratedBGBlitzStats.gamesWon));
 		InspectPVPFrame.RatedBGBlitz:Show();
 		
-		InspectPVPFrame.talentGroup = GetActiveSpecGroup(true);
+		InspectPVPFrame.talentGroup = C_SpecializationInfo.GetActiveSpecGroup(true);
 		for i, slot in ipairs(InspectPVPFrame.Slots) do
 			slot:Update();
 		end
@@ -124,6 +124,6 @@ end
 
 function InspectPvPTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(GetPvpTalentLink(self.pvpTalentID));
+		ChatFrameUtil.InsertLink(GetPvpTalentLink(self.pvpTalentID));
 	end
 end

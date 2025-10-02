@@ -9,10 +9,11 @@ local ClickBindings =
 		{
 			Name = "CanSpellBeClickBound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Base spellID for spell, spellID for PetAction" } },
 			},
 
 			Returns =
@@ -23,6 +24,8 @@ local ClickBindings =
 		{
 			Name = "ExecuteBinding",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +37,7 @@ local ClickBindings =
 		{
 			Name = "GetBindingType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +53,7 @@ local ClickBindings =
 		{
 			Name = "GetEffectiveInteractionButton",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +78,7 @@ local ClickBindings =
 		{
 			Name = "GetStringFromModifiers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,10 +111,13 @@ local ClickBindings =
 		{
 			Name = "ResetCurrentProfile",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SetProfileByInfo",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

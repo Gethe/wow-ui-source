@@ -53,6 +53,7 @@ local Expansion =
 		{
 			Name = "GetExpansionDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +68,8 @@ local Expansion =
 		{
 			Name = "GetExpansionForLevel",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,6 +103,7 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =
@@ -205,6 +209,8 @@ local Expansion =
 		{
 			Name = "SendSubscriptionInterstitialResponse",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,6 +280,7 @@ local Expansion =
 				{ Name = "features", Type = "table", InnerType = "ExpansionDisplayInfoFeature", Nilable = false },
 				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 			},
 		},
 		{

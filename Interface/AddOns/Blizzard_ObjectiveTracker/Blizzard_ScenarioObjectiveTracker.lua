@@ -43,7 +43,7 @@ end
 local settings = {
 	hasDisplayPriority = true,
 	headerText = TRACKER_HEADER_SCENARIO,
-	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "PLAYER_ENTERING_WORLD", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN" },
+	events = { "SCENARIO_UPDATE", "SCENARIO_CRITERIA_UPDATE", "SCENARIO_SPELL_UPDATE", "SCENARIO_COMPLETED", "SCENARIO_CRITERIA_SHOW_STATE_UPDATE", "UNIT_AURA", "SPELL_UPDATE_COOLDOWN" },
 	fromHeaderOffsetY = 0,
 	blockOffsetX = 20,
 	lineSpacing = 12,
@@ -69,8 +69,7 @@ function ScenarioObjectiveTrackerMixin:InitModule()
 	
 	self.spellFramePool = CreateFramePool("FRAME", self.ObjectivesBlock, "ScenarioSpellFrameTemplate");
 	
-	self.TopWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
-	self.BottomWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
+	self:SetupWidgetContainers();
 
 	self.shouldShowCriteria = C_Scenario.ShouldShowCriteria();
 
@@ -95,6 +94,14 @@ local function WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, cont
 	ScenarioObjectiveTracker:MarkDirty();
 end
 
+function ScenarioObjectiveTrackerMixin:SetupWidgetContainers()
+	self.BottomWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
+	self.TopWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
+
+	self.BottomWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayoutWithOffset);
+	self.TopWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayoutWithOffset);	
+end
+
 function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
 	if event == "UNIT_AURA" then
 		local isShowingMawBuffs = self:IsShown() and self.MawBuffsBlock:IsShown();
@@ -117,9 +124,6 @@ function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
 		if (xp and xp > 0 and not IsPlayerAtEffectiveMaxLevel()) or (money and money > 0) then
 			ScenarioRewardsFrame:DisplayRewards(xp, money);
 		end		
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		self.BottomWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayoutWithOffset);
-		self.TopWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayoutWithOffset);	
 	end
 end
 
@@ -180,6 +184,7 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		self.currentStage = nil;
 		self.scenarioID = nil;
 		self.slidOutStage = nil;
+		self.StageBlock:ClearWidgetSet();
 		AcknowledgeEmberCourtHelpTip();
 		return;
 	end
@@ -195,15 +200,18 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 	local dungeonDisplay = (scenarioType == LE_SCENARIO_TYPE_USE_DUNGEON_DISPLAY);
 	local inWarfront = (scenarioType == LE_SCENARIO_TYPE_WARFRONT);
 	local scenarioCompleted = currentStage > numStages;
+	local isCollapsed = self:IsCollapsed() or (self.parentContainer and self.parentContainer:IsCollapsed());
 
 	-- determine sliding state
 	local slidingState = ObjectiveTrackerSlidingState.None;
 	if hasNewStage and not inChallengeMode then
-		if currentStage == 1 or currentStage == self.slidOutStage then
-			slidingState = ObjectiveTrackerSlidingState.SlideIn;
-		else
-			if not scenarioCompleted then
-				slidingState = ObjectiveTrackerSlidingState.SlideOut;
+		if not isCollapsed then
+			if currentStage == 1 or currentStage == self.slidOutStage then
+				slidingState = ObjectiveTrackerSlidingState.SlideIn;
+			else
+				if not scenarioCompleted then
+					slidingState = ObjectiveTrackerSlidingState.SlideOut;
+				end
 			end
 		end
 		-- play sound if not the first stage
@@ -331,6 +339,9 @@ function ScenarioObjectiveTrackerMixin:SlideOutContents()
 end
 
 function ScenarioObjectiveTrackerMixin:OnEndSlide(slideOut, finished)
+	-- this label should only ever be visible during a slide, specifically the slide out
+	self.StageBlock.CompleteLabel:Hide();
+
 	if not finished then
 		return;
 	end
@@ -468,9 +479,9 @@ function ScenarioObjectiveTrackerStageMixin:OnEnter()
 end
 
 local textureKitOffsets = {
-	["evergreen-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
-	["thewarwithin-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
-	["delves-scenario"] = {normalBGX = -7, normalBGY = 3, finalBGX = -7, finalBGY = 3},
+	["evergreen-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = -4, finalBGY = 2},
+	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
+	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};
@@ -498,9 +509,10 @@ end
 function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenarioType, widgetSetID, textureKit, flags, currentStage, stageName, numStages)
 	local normalBGAtlas, finalBGAtlas = self:GetBGAtlases(scenarioType, textureKit);
 
+	local stageTextWidth = textureKit == "evergreen-scenario" and 210 or 172;
 	if bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT then
 		self.Stage:SetText(stageName);
-		self.Stage:SetSize(172, 36);
+		self.Stage:SetSize(stageTextWidth, 36);
 		self.Stage:SetPoint("TOPLEFT", 15, -18);
 		self.FinalBG:Hide();
 		self.Name:SetText("");
@@ -512,7 +524,7 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 			self.Stage:SetFormattedText(SCENARIO_STAGE, currentStage);
 			self.FinalBG:Hide();
 		end
-		self.Stage:SetSize(172, 18);
+		self.Stage:SetSize(stageTextWidth, 18);
 		self.Name:SetText(stageName);
 		if self.Name:GetStringWidth() > self.Name:GetWrappedWidth() then
 			self.Stage:SetPoint("TOPLEFT", 15, -10);
@@ -563,6 +575,11 @@ function ScenarioObjectiveTrackerStageMixin:UpdateFindGroupButton(scenarioID)
 			self.findGroupButton:Hide();
 		end
 	end
+end
+
+function ScenarioObjectiveTrackerStageMixin:ClearWidgetSet()
+	self.widgetSetID = nil;
+	self:UpdateWidgetRegistration();
 end
 
 function ScenarioObjectiveTrackerStageMixin:UpdateWidgetRegistration()
@@ -662,14 +679,14 @@ function ScenarioTimerMixin:CheckTimers(...)
 	for i = 1, select("#", ...) do
 		local timerID = select(i, ...);
 		local _, elapsedTime, type = GetWorldElapsedTime(timerID);
-		if type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE then
+		if type == Enum.WorldElapsedTimerTypes.ChallengeMode then
 			local mapID = C_ChallengeMode.GetActiveChallengeMapID();
 			if mapID then
 				local _, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID);
 				ScenarioObjectiveTracker.ChallengeModeBlock:Activate(timerID, elapsedTime, timeLimit);
 				return;
 			end
-		elseif type == LE_WORLD_ELAPSED_TIMER_TYPE_PROVING_GROUND then
+		elseif type == Enum.WorldElapsedTimerTypes.ProvingGround then
 			local diffID, currWave, maxWave, duration = C_Scenario.GetProvingGroundsInfo()
 			if duration > 0 then
 				ScenarioObjectiveTracker.ProvingGroundsBlock:Activate(timerID, elapsedTime, duration, diffID, currWave, maxWave);
@@ -841,7 +858,7 @@ function ScenarioObjectiveTrackerProvingGroundsMixin:OnLoad()
 	self.CountdownAnimFrame.Anim:SetScript("OnFinished", GenerateClosure(self.OnAnimFinished, self));
 end
 
-function ScenarioObjectiveTrackerProvingGroundsMixin:OnEvent(...)
+function ScenarioObjectiveTrackerProvingGroundsMixin:OnEvent(event, ...)
 	local score = ...
 	self.Score:SetText(score);
 end

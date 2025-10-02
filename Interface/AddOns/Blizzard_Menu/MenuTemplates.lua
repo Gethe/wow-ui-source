@@ -72,7 +72,7 @@ local function OnButtonClick(button, buttonName)
 	end
 
 	description:Pick(MenuInputContext.MouseButton, buttonName);
-	
+
 	--securecallfunction(DebugPrintSecure);
 end
 
@@ -94,7 +94,7 @@ local function ButtonInitializer(button, description, menu)
 		MenuVariants.CreateSubmenuArrow(button);
 	end
 
-	local highlight = MenuVariants.CreateHighlight(button);
+	MenuVariants.CreateHighlight(button);
 
 	--[[
 	Visibility cannot be automatically toggled on the HIGHLIGHT layer
@@ -102,15 +102,13 @@ local function ButtonInitializer(button, description, menu)
 	]]--
 	button.OnEnter = OnButtonEnter;
 	button.OnLeave = OnButtonLeave;
-	
+
 	--[[
 	The button will not re-highlight if it is reinitialized while the cursor
 	is already over the button.
 	]]--
-	for index, focus in ipairs(GetMouseFoci()) do
-		if focus == button then
-			ShowHighlight(button, description);
-		end
+	if button:IsMouseMotionFocus() then
+		ShowHighlight(button, description);
 	end
 
 	if description:ShouldPollEnabled() then
@@ -147,13 +145,13 @@ function MenuTemplates.RecurseSetupFontString(frame)
 	local function TrySetupFontString(region)
 		if region:IsObjectType("FontString") then
 			local fontString = region;
-			local autoEnableTextColors = 
+			local autoEnableTextColors =
 			{
 				[true] = CreateColor(fontString:GetTextColor()),
 				[false] = DISABLED_FONT_COLOR,
 			};
-				
-			-- Compositor replaces __index with a function. Also note that 
+
+			-- Compositor replaces __index with a function. Also note that
 			-- you cannot acquire the original function again once SetTextColor
 			-- is assigned because the mt will return the assigned function instead.
 			local originalSetTextColor;
@@ -163,10 +161,15 @@ function MenuTemplates.RecurseSetupFontString(frame)
 			elseif not fontString.autoEnableTextColors then
 				originalSetTextColor = fontString.SetTextColor;
 			end
-			
+
 			if originalSetTextColor then
 				fontString.SetTextColor = function(self, r, g, b, a)
-					autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					-- The intention here is to update the cached color for 'enabled/true' so that it can be
+					-- restored as the frame changes enabled state. This treats any color other than
+					-- DISABLED_FONT_COLOR as an enabled color.
+					if not IsRGBAEqualToColor(r, g, b, a, autoEnableTextColors[false]) then
+						autoEnableTextColors[true] = CreateColor(r, g, b, a);
+					end
 					originalSetTextColor(self, r, g, b, a);
 				end;
 				fontString.autoEnableTextColors = autoEnableTextColors;
@@ -253,7 +256,7 @@ function MenuTemplates.CreateSelectionTextures(frame, isSelected, data, unselect
 		leftTexture2:SetDrawLayer(layer, drawLevel + 1);
 		leftTexture2:SetAtlas(selectedAtlas, TextureKitConstants.UseAtlasSize);
 	end
-	
+
 	frame.leftTexture2 = leftTexture2;
 	return leftTexture1, leftTexture2;
 end
@@ -276,7 +279,7 @@ function MenuTemplates.CreateRadio(text, isSelected, onSelect, data)
 	local function Initializer(button, description, menu)
 		MenuVariants.CreateRadio(text, button, isSelected, data);
 	end
-	
+
 	local elementDescription = CreateButtonDescription(data);
 	elementDescription:SetSoundKit(GetButtonSoundKit);
 	elementDescription:AddInitializer(Initializer);
@@ -284,6 +287,79 @@ function MenuTemplates.CreateRadio(text, isSelected, onSelect, data)
 	elementDescription:SetIsSelected(isSelected);
 	elementDescription:SetResponder(onSelect);
 	return elementDescription;
+end
+
+function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, onEnter)
+	local optionDescription = CreateMenuElementDescription("WowMenuDropdownHighlightRadioTemplate");
+
+	local truncated = false;
+
+	local function OnEnter(button)
+		button.HighlightBGTex:SetAlpha(0.15);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
+
+		if truncated then
+			MenuUtil.ShowTooltip(button, function(tooltip)
+				GameTooltip_SetTitle(tooltip, text);
+			end);
+		end
+
+		if onEnter then
+			onEnter(data);
+		end
+	end
+
+	local function OnLeave(button)
+		button.HighlightBGTex:SetAlpha(0);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		end
+
+		MenuUtil.HideTooltip(button);
+	end
+
+	optionDescription:AddInitializer(function(button, description, menu)
+		button:SetScript("OnClick", function(button, buttonName)
+			description:Pick(MenuInputContext.MouseButton, buttonName);
+		end);
+
+		-- This button template is modified in Languages.lua to hide the text and display
+		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
+		-- about that texture here because it is managed by the compositor.
+		button.Text:Show();
+		button.Text:SetTextToFit(text);
+		button.Text:SetWidth(button.Text:GetWidth() + 10);
+
+		button.HighlightBGTex:SetAlpha(0);
+
+		local fontColor = nil;
+		if description:IsSelected() then
+			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
+		elseif description:IsEnabled() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		else
+			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
+
+		truncated = button.Text:IsTruncated();
+
+		button:Layout();
+	end);
+
+	optionDescription:SetIsSelected(isSelected);
+	optionDescription:SetResponder(onSelect);
+	optionDescription:SetOnEnter(OnEnter); 
+	optionDescription:SetOnLeave(OnLeave);
+	optionDescription:SetRadio(true);
+	optionDescription:SetData(data);
+
+	return optionDescription;
 end
 
 function MenuTemplates.CreateSpacer(extent)
@@ -314,7 +390,7 @@ function MenuTemplates.CreateColorSwatch(text, callback, colorInfo)
 		colorSwatch:SetSize(16, 16);
 		colorSwatch:SetColorRGB(colorInfo.r, colorInfo.g, colorInfo.b);
 	end
-	
+
 	local elementDescription = CreateButtonDescription(colorInfo);
 	elementDescription:SetSoundKit(GetButtonSoundKit);
 	elementDescription:AddInitializer(Initializer);
@@ -330,18 +406,21 @@ do
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
 		local button = parent:AttachTemplate("WowMenuAutoHideButtonTemplate");
 		button:Hide();
+
+		-- SetToDefaults wipes propagateMouseInput on pooled frames even though it was set by the template, so it needs to be set here every time.
+		button:SetPropagateMouseMotion(true);
 	
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
-	
+
 		local texture = button.Texture;
 		texture:SetTexture(textureName);
-	
+
 		local onEnter = parent.OnEnter or nop;
 		parent.OnEnter = function(...)
 			onEnter(parent, ...);
 			button:Show();
 		end
-	
+
 		local onLeave = parent.OnLeave or nop;
 		parent.OnLeave = function(...)
 			onLeave(parent, ...);
@@ -351,21 +430,42 @@ do
 	end
 end
 
-function MenuTemplates.AttachAutoHideGearButton(parent)
-	local button = MenuTemplates.AttachAutoHideButton(parent, MenuVariants.GearButtonTexture);
-	button:SetSize(16, 16);
+function MenuTemplates.AttachUtilityButton(parent, textureAsset, width, height)
+	local button = MenuTemplates.AttachAutoHideButton(parent, textureAsset);
+	button:SetSize(width or 16, height or 16);
 	return button;
 end
 
+function MenuTemplates.SetUtilityButtonClickHandler(button, handler)
+	button:SetScript("OnClick", function(_b, mouseButton, _isDown)
+		if mouseButton == "LeftButton" then
+			handler();
+		end
+	end);
+end
+
+function MenuTemplates.SetUtilityButtonTooltipText(button, tooltipText)
+	MenuUtil.HookTooltipScripts(button, function(tooltip)
+		GameTooltip_SetTitle(tooltip, tooltipText);
+	end);
+end
+
+function MenuTemplates.SetUtilityButtonAnchor(button, anchor, relativeTo)
+	local point, _, relativePoint, x, y = anchor:Get();
+	button:SetPoint(point, relativeTo, relativePoint, x, y);
+end
+
+function MenuTemplates.AttachAutoHideGearButton(parent)
+	return MenuTemplates.AttachUtilityButton(parent, MenuVariants.GearButtonTexture);
+end
+
 function MenuTemplates.AttachAutoHideCancelButton(parent)
-	local button = MenuTemplates.AttachAutoHideButton(parent, MenuVariants.CancelButtonTexture);
-	button:SetSize(16, 16);
-	return button;
+	return MenuTemplates.AttachUtilityButton(parent, MenuVariants.CancelButtonTexture);
 end
 
 function MenuTemplates.AttachNewFeatureFrame(parent)
 	local newFeatureFrame = parent:AttachTemplate("NewFeatureLabelTemplate");
-	
+
 	newFeatureFrame.noRecurseHierarchy = true;
 	return newFeatureFrame;
 end
@@ -418,7 +518,7 @@ function DropdownTextMixin:UpdateText()
 		if self.resizeToTextMaxWidth then
 			newWidth = math.min(self.resizeToTextMaxWidth, newWidth);
 		end
-		
+
 		if self.resizeToTextMinWidth then
 			newWidth = math.max(self.resizeToTextMinWidth, newWidth);
 		end
@@ -432,8 +532,8 @@ function DropdownTextMixin:UpdateToMenuSelections(menuDescription, currentSelect
 end
 
 --[[
-An initializer wrapping DropdownButtonMixin.SetupMenu is not provided because in the vast majority of cases 
-the displayed text will reflect at least 1 selected option. SetDefaultText() should be used to provide text 
+An initializer wrapping DropdownButtonMixin.SetupMenu is not provided because in the vast majority of cases
+the displayed text will reflect at least 1 selected option. SetDefaultText() should be used to provide text
 in the cases where no selection is possible.
 ]]--
 DropdownSelectionTextMixin = CreateFromMixins(DropdownTextMixin);
@@ -488,21 +588,27 @@ function DropdownSelectionTextMixin:UpdateToMenuSelections(menuDescription, curr
 	end
 
 	local text = nil;
-	
+
 	if self.selectionFunc then
 		text = self.selectionFunc(currentSelections);
-	elseif currentSelections then
+	end
+
+	if text == nil and currentSelections then
 		local texts = {};
-	
+
 		for index, selection in ipairs(currentSelections) do
 			if not selection:IsSelectionIgnored() then
 				local translatedText = self.selectionTranslator(selection);
 				table.insert(texts, translatedText);
 			end
 		end
-		
+
 		if #texts > 0 then
-			text = table.concat(texts, LIST_DELIMITER);
+			if self.dontConcatenateText then
+				text = texts[1];
+			else
+				text = table.concat(texts, LIST_DELIMITER);
+			end
 		end
 	end
 
@@ -575,7 +681,7 @@ function WowDropdownFilterBehaviorMixin:SetIsDefaultCallback(callback)
 	self.isDefaultCallback = callback;
 end
 
--- Called in response to any menu option change. 
+-- Called in response to any menu option change.
 function WowDropdownFilterBehaviorMixin:SetUpdateCallback(callback)
 	self.notifyUpdateCallback = callback;
 end
@@ -654,6 +760,23 @@ function WowStyle1FilterDropdownMixin:OnLoad()
 	self:SetDisplacedRegions(x, y, self.Text);
 end
 
+function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
+	if self:IsEnabled() then
+		if self:IsDownOver() then
+			return WowStyle1FilterDropdownStateDownOver;
+		elseif self:IsOver() then
+			return WowStyle1FilterDropdownStateOver;
+		elseif self:IsDown() then
+			return WowStyle1FilterDropdownStateDown;
+		elseif self:IsMenuOpen() then
+			return WowStyle1FilterDropdownStateOpen;
+		else
+			return WowStyle1FilterDropdownStateEnabled;
+		end
+	end
+	return WowStyle1FilterDropdownStateDisabled;
+end
+
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
 	self.Background:SetAtlas(self:GetBackgroundAtlas(), TextureKitConstants.UseAtlasSize);
 end
@@ -723,6 +846,14 @@ function WowStyle2DropdownMixin:OnMenuClosed(menu)
 	self:OnButtonStateChanged();
 end
 
+WowStyle1ArrowDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function WowStyle1ArrowDropdownMixin:OnLoad()
+	ValidateIsDropdownButtonIntrinsic(self);
+	ButtonStateBehaviorMixin.OnLoad(self);
+	DropdownButtonMixin.OnLoad(self);
+end
+
 MenuStyleMixin = {};
 
 function MenuStyleMixin:Generate()
@@ -734,10 +865,10 @@ function MenuStyleMixin:Generate()
 end
 
 do
-	local inset = 
+	local inset =
 	{
-		left = 0, 
-		top = 0, 
+		left = 0,
+		top = 0,
 		right = 0,
 		bottom = 0,
 	};
@@ -748,10 +879,10 @@ do
 end
 
 do
-	local padding = 
+	local padding =
 	{
-		width = 0, 
-		height = 0, 
+		width = 0,
+		height = 0,
 	};
 
 	function MenuStyleMixin:GetChildExtentPadding()
@@ -790,10 +921,10 @@ function MenuStyle2Mixin:Generate()
 end
 
 do
-	local inset = 
+	local inset =
 	{
-		left = 3, 
-		top = 6, 
+		left = 3,
+		top = 6,
 		right = 3,
 		bottom = 7,
 	};

@@ -1,0 +1,8 @@
+## Title: Blizzard CombatLog
+## LoadOnDemand: 1
+## Dependencies: Blizzard_CombatLogBase
+## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
+## AllowLoad: game
+## AllowLoadGameType: mists
+Wrath\Blizzard_CombatLog.lua
+Wrath\Blizzard_CombatLog.xml

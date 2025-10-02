@@ -41,12 +41,6 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ModelScene" x="-20" y="-45"/>
 				</Anchors>
-				<Scripts>
-					<OnClick>
-						ConfirmOrLeaveLFGParty();
-						HideUIPanel(self:GetParent());
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

@@ -7,7 +7,7 @@ function ConfirmationEditBoxMatches(editBox, expectedText)
 end
 
 function UserInputNonEmpty(userInput)
-	return strtrim(userInput) ~= "";
+	return userInput and strtrim(userInput) ~= "";
 end
 
 function UserEditBoxNonEmpty(editBox)
@@ -16,4 +16,4 @@ end
 
 function StringSplitIntoTable(sep, string)
 	return { strsplit(sep, string) };
-end		
+end

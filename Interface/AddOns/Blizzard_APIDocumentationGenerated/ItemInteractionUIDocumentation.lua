@@ -26,6 +26,7 @@ local ItemInteractionUI =
 		{
 			Name = "GetItemConversionCurrencyCost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +63,7 @@ local ItemInteractionUI =
 		{
 			Name = "PerformItemInteraction",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "Reset",
@@ -70,6 +72,7 @@ local ItemInteractionUI =
 		{
 			Name = "SetPendingItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,7 +137,7 @@ local ItemInteractionUI =
 				{ Name = "tutorialText", Type = "string", Nilable = false },
 				{ Name = "buttonText", Type = "string", Nilable = false },
 				{ Name = "interactionType", Type = "UIItemInteractionType", Nilable = false },
-				{ Name = "flags", Type = "number", Nilable = false },
+				{ Name = "flags", Type = "UIItemInteractionFlags", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "buttonTooltip", Type = "string", Nilable = true },
 				{ Name = "confirmationDescription", Type = "string", Nilable = true },

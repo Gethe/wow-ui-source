@@ -42,8 +42,8 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 
 		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
 			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
-			if not ChatEdit_InsertLink(hyperlink) then
-				ChatFrame_OpenChat(hyperlink);
+			if not ChatFrameUtil.InsertLink(hyperlink) then
+				ChatFrameUtil.OpenChat(hyperlink);
 			end
 		end);
 
@@ -54,11 +54,11 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 		end);
 	end);
 
-	ChatEdit_RegisterForStickyFocus(self);
+	ChatFrameUtil.RegisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnHide()
-	ChatEdit_UnregisterForStickyFocus(self);
+	ChatFrameUtil.UnregisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnClick()
@@ -460,7 +460,14 @@ function DressUpFrameTransmogSetMixin:SetData(setID, setLink, setItems)
 	self.continuableContainer:ContinueOnLoad(function()
 		local name = C_Item.GetItemNameByID(setLink);
 		local quality = C_Item.GetItemQualityByID(setLink);
-		self.fullColoredSetName = ITEM_QUALITY_COLORS[quality].color:WrapTextInColorCode(name);
+
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		if colorData then
+			self.fullColoredSetName = colorData.color:WrapTextInColorCode(name);
+		else
+			self.fullColoredSetName = name;
+		end
+
 		self.SetName:SetText(self.fullColoredSetName);
 
 		self:Init();
@@ -705,14 +712,19 @@ function DressUpFrameTransmogSetButtonMixin:InitItem(elementData)
 	self.ItemSlot:SetWidth(math.min(textWidth, slotWidthCap));
 
 	self.Icon:SetTexture(elementData.itemIcon);
-	local borderColor = elementData.itemUsable and DressUpOutfitDetailsSlot_GetQualityColorName(elementData.itemQuality) or "error";
+	local borderColor = elementData.itemUsable and ColorManager.GetColorDataForDressUpFrameQuality(elementData.itemQuality) or "error";
 	self.IconBorder:SetAtlas("dressingroom-itemborder-"..borderColor);
 end
 
 function DressUpFrameTransmogSetButtonMixin:Refresh()
 	self.SelectedTexture:SetShown(self.elementData.selected);
 
-	local textColor = ITEM_QUALITY_COLORS[self.elementData.itemQuality].color;
+	local textColor = WHITE_FONT_COLOR;
+	local colorData = ColorManager.GetColorDataForItemQuality(self.elementData.itemQuality);
+	if colorData then
+		textColor = colorData.color;
+	end
+
 	if not self.elementData.itemUsable then
 		textColor = RED_FONT_COLOR;
 	end

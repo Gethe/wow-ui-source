@@ -9,6 +9,7 @@ local CVar =
 		{
 			Name = "GetCVar",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local CVar =
 		{
 			Name = "GetCVarBitfield",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -38,6 +40,7 @@ local CVar =
 		{
 			Name = "GetCVarBool",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -52,6 +55,8 @@ local CVar =
 		{
 			Name = "GetCVarDefault",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -66,6 +71,7 @@ local CVar =
 		{
 			Name = "GetCVarInfo",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -86,6 +92,7 @@ local CVar =
 		{
 			Name = "RegisterCVar",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -100,6 +107,10 @@ local CVar =
 		{
 			Name = "SetCVar",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -115,6 +126,11 @@ local CVar =
 		{
 			Name = "SetCVarBitfield",
 			Type = "Function",
+			RequiresValidAndPublicCVar = true,
+			RequiresNonReadOnlyCVar = true,
+			RequiresNonSecureCVar = true,
+			RequiresIndexInRange = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{

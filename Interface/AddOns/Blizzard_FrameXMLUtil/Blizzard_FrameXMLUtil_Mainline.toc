@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXMLUtil
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXMLGame
+## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
 Mainline\ArenaUtil.lua
@@ -11,6 +11,7 @@ AchievementUtil.lua
 Mainline\MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
+AuraUtil.lua
 Mainline\AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
@@ -39,3 +40,6 @@ Mainline\Cooldown.xml
 Localization.lua
 DragonridingUtil.lua
 Mainline\MinimapUtil.lua
+AreaPoiUtil.lua
+Mainline\ReputationUtil.lua
+Mainline\TraitUtil.lua

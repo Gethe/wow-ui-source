@@ -9,6 +9,8 @@ local UIModifiedInstance =
 		{
 			Name = "GetModifiedInstanceInfoFromMapID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

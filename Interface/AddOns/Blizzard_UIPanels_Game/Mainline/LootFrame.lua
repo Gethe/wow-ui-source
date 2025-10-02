@@ -253,12 +253,20 @@ function LootFrameElementMixin:Init()
 		item, texture, quantity, itemQuality = CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, quantity, item, texture, itemQuality);
 	end
 
-	local quality = itemQuality or Enum.ItemQuality.Common;
-	local color = ITEM_QUALITY_COLORS[quality].color;
-
 	self.Text:SetText(item);
-	self.Text:SetVertexColor(color:GetRGB());
-	self.NameFrame:SetVertexColor(color:GetRGB());
+
+	local quality = itemQuality or Enum.ItemQuality.Common;
+	local colorData = nil;
+	if self.ignoreColorOverrides then
+		colorData = ColorManager.GetDefaultColorDataForItemQuality(quality);
+	else
+		colorData = ColorManager.GetColorDataForItemQuality(quality);
+	end
+
+	if colorData then
+		self.Text:SetVertexColor(colorData.color:GetRGB());
+		self.NameFrame:SetVertexColor(colorData.color:GetRGB());
+	end
 
 	if questID and not isActive then
 		self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG);
@@ -277,9 +285,11 @@ function LootFrameElementMixin:Init()
 		SetItemButtonTextureVertexColor(self.Item, 1.0, 1.0, 1.0);
 		SetItemButtonNormalTextureVertexColor(self.Item, 1.0, 1.0, 1.0);
 	end
-	
+
 	local link = GetLootSlotLink(slotIndex);
-	SetItemButtonQuality(self.Item, quality, link);
+	local suppressOverlays = false;
+	local isBound = false;
+	SetItemButtonQuality(self.Item, quality, link, suppressOverlays, isBound, self.ignoreColorOverrides);
 	self.Item.icon:SetTexture(texture);
 
 	if quantity > 1 then

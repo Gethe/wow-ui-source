@@ -39,6 +39,7 @@ local DIFFICULTY_NAMES =
 	[DifficultyUtil.ID.DungeonTimewalker] = PLAYER_DIFFICULTY_TIMEWALKER,
 	[DifficultyUtil.ID.RaidTimewalker] = PLAYER_DIFFICULTY_TIMEWALKER,
 	[DifficultyUtil.ID.Raid40] = PLAYER_DIFFICULTY1,
+	[DifficultyUtil.ID.RaidStory] = PLAYER_DIFFICULTY_STORY_RAID,
 }
 
 local PRIMARY_RAIDS = { DifficultyUtil.ID.PrimaryRaidLFR, DifficultyUtil.ID.PrimaryRaidNormal, DifficultyUtil.ID.PrimaryRaidHeroic, DifficultyUtil.ID.PrimaryRaidMythic };
@@ -63,6 +64,70 @@ end
 function DifficultyUtil.InStoryRaid()
 	local difficultyID = select(3, GetInstanceInfo());
 	return difficultyID == DifficultyUtil.ID.RaidStory;
+end
+
+function DifficultyUtil.DoesCurrentRaidDifficultyMatch(compareDifficultyID)
+	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
+	if isDynamicInstance then
+		if IsLegacyDifficulty(difficultyID) then
+			local validNormalSize = difficultyID == DifficultyUtil.ID.Raid10Normal or difficultyID == DifficultyUtil.ID.Raid25Normal;
+			if validNormalSize and compareDifficultyID == DifficultyUtil.ID.PrimaryRaidNormal then
+				return true;
+			end
+			
+			local validHeroicSize = difficultyID == DifficultyUtil.ID.Raid10Heroic or difficultyID == DifficultyUtil.ID.Raid25Heroic;
+			if validHeroicSize and compareDifficultyID == DifficultyUtil.ID.PrimaryRaidHeroic then
+				return true;
+			end
+		elseif difficultyID == compareDifficultyID then
+			return true;
+		end
+	elseif GetRaidDifficultyID() == compareDifficultyID then
+		return true;
+	end
+	return false; 
+end
+
+function DifficultyUtil.IsRaidDifficultyEnabled(compareDifficultyID)
+	if IsInInstance() then
+		return false;
+	end
+
+	if IsInGroup() and not UnitIsGroupLeader("player") then
+		return false;
+	end
+
+	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return false;
+	end
+
+	local difficultyID, _, _, _, isDynamicInstance = select(3, GetInstanceInfo());
+	if isDynamicInstance and CanChangePlayerDifficulty() then
+		local toggleDifficultyID = select(7, GetDifficultyInfo(difficultyID));
+		if toggleDifficultyID then
+			return CheckToggleDifficulty(toggleDifficultyID, compareDifficultyID);
+		end
+	end
+
+	return true; 
+end
+
+function DifficultyUtil.IsDungeonDifficultyEnabled(difficultyID)
+	-- difficultyID not currently checked. Dungeon difficulties are collectively enabled or disabled.
+	local inInstance, instanceType = IsInInstance();
+	if inInstance then
+		return false;
+	end
+
+	if instanceType == "raid" then
+		return false;
+	end
+
+	if IsInGroup() and not UnitIsGroupLeader("player") then
+		return false;
+	end
+
+	return not UnitPopupSharedUtil.HasLFGRestrictions();
 end
 
 local difficultyToMaxPlayersMap = { };

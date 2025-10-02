@@ -5,11 +5,11 @@ StaticPopupDialogs["PROFESSIONS_RECRAFT_REPLACE_OPTIONAL_REAGENT"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 
-	OnShow = function(self, data)
-		self.text:SetText(PROFESSIONS_RECRAFTING_REPLACE_OPTIONAL:format(data.itemName));
+	OnShow = function(dialog, data)
+		dialog:SetText(PROFESSIONS_RECRAFTING_REPLACE_OPTIONAL:format(data.itemName));
 	end,
 
-	OnAccept = function(self, data)
+	OnAccept = function(dialog, data)
 		data.callback();
 	end,
 
@@ -311,7 +311,7 @@ end
 
 -- OverrideQuality has to be passed into GameTooltip:SetRecipeResultItem in order for applyConcentration to be respected.
 -- Otherwise, the tooltip code automatically determines the current output item quality without applying concentration.
-function ProfessionsRecipeSchematicFormMixin:GetOutputOverrideQuality()
+function ProfessionsRecipeSchematicFormMixin:GetOutputOverrideQualityID()
 	local operationInfo = self:GetRecipeOperationInfo();
 	if not operationInfo or not self.currentRecipeInfo.qualityIDs then
 		return nil;
@@ -680,8 +680,8 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		GameTooltip:SetOwner(self.OutputIcon, "ANCHOR_RIGHT");
 		local reagents = self.transaction:CreateCraftingReagentInfoTbl();
 
-		self.OutputIcon:SetScript("OnUpdate", function() 
-			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
+		self.OutputIcon:SetScript("OnUpdate", function()
+			GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetAllocationItemGUID(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQualityID());
 		end);
 	end);
 
@@ -691,7 +691,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end);
 
 	self.OutputIcon:SetScript("OnClick", function()
-		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self:GetOutputOverrideQuality());
+		local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, self.transaction:CreateCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self:GetOutputOverrideQualityID());
 		HandleModifiedItemClick(outputItemInfo.hyperlink);
 	end);
 
@@ -784,6 +784,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		self.recraftSlot.InputSlot:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
+				-- If the user currently has an item on the cursor that could transition to recraft, drop it here instead of opening the flyout.
+				if self.recraftSlot.InputSlot:CheckDropCursorItemOnSlot() then
+					return;
+				end
+
 				local flyout = ToggleProfessionsItemFlyout(self.recraftSlot.InputSlot, self);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)
@@ -841,7 +846,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				GameTooltip:SetOwner(self.recraftSlot.OutputSlot, "ANCHOR_RIGHT");
 
 				local reagents = self.transaction:CreateCraftingReagentInfoTbl();
-				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQuality());
+				GameTooltip:SetRecipeResultItem(self.recipeSchematic.recipeID, reagents, self.transaction:GetRecraftAllocation(), self:GetCurrentRecipeLevel(), self:GetOutputOverrideQualityID());
 			end
 		end);
 
@@ -864,31 +869,32 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 
 	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
-		local reagentType = reagentSlotSchematic.reagentType;
-		-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
-		local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
-		local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
-		
-		local slots = self.reagentSlots[sectionType];
-		if not slots then
-			slots = {};
-			self.reagentSlots[sectionType] = slots;
-		end
+		if isRecraft or not reagentSlotSchematic.hiddenInCraftingForm then
+			local reagentType = reagentSlotSchematic.reagentType;
+			-- modifying-required slots cannot be correctly ordered by their logical slot indices, but design wants them at the top.
+			local isModifyingRequiredSlot = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+			local sectionType = (isModifyingRequiredSlot and Enum.CraftingReagentType.Basic) or reagentType;
+			
+			local slots = self.reagentSlots[sectionType];
+			if not slots then
+				slots = {};
+				self.reagentSlots[sectionType] = slots;
+			end
 
-		local slot = self.reagentSlotPool:Acquire();
-		if isModifyingRequiredSlot then
-			table.insert(slots, 1, slot);
-		else
-			table.insert(slots, slot);
-		end
+			local slot = self.reagentSlotPool:Acquire();
+			if isModifyingRequiredSlot then
+				table.insert(slots, 1, slot);
+			else
+				table.insert(slots, slot);
+			end
 
-		slot:SetParent(slotParents[sectionType]);
-		
-		slot.CustomerState:SetShown(false);
-		slot:Init(self.transaction, reagentSlotSchematic);
-		slot:Show();
+			slot:SetParent(slotParents[sectionType]);
+			
+			slot.CustomerState:SetShown(false);
+			slot:Init(self.transaction, reagentSlotSchematic);
+			slot:Show();
 
-		if reagentType == Enum.CraftingReagentType.Basic then
+			if reagentType == Enum.CraftingReagentType.Basic then
 			if Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 				slot.Button:SetScript("OnClick", function(button, buttonName, down)
 					if IsShiftKeyDown() then
@@ -951,7 +957,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					GameTooltip:Show();
 				end);
 			end
-		elseif not (self.isInspection and reagentType == Enum.CraftingReagentType.Finishing) then
+			elseif not (self.isInspection and reagentType == Enum.CraftingReagentType.Finishing) then
 			local locked, lockedReason;
 
 			if not self.isInspection then
@@ -1121,6 +1127,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 					end
 				end
 			end);
+			end
 		end
 	end
 	
@@ -1438,8 +1445,15 @@ function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 	local text;
 	if outputItemInfo.hyperlink then
 		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
-		text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
-	else
+		if item:IsItemDataCached() then
+			text = WrapTextInColor(item:GetItemName(), item:GetItemQualityColor().color);
+		else
+			item:ContinueOnItemLoad(function()
+				self:UpdateOutputItem();
+			end);
+		end
+	end
+	if not text then
 		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 	end
 		
@@ -1512,7 +1526,8 @@ function ProfessionsRecipeSchematicFormMixin:UpdateRecraftSlot(operationInfo)
 		end
 
 		if operationInfo then
-			SetItemCraftingQualityOverlayOverride(self.recraftSlot.OutputSlot, operationInfo.craftingQuality);
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(operationInfo.recipeID, operationInfo.craftingQuality);
+			SetItemCraftingQualityOverlayOverride(self.recraftSlot.OutputSlot, qualityInfo);
 		end
 	end
 end

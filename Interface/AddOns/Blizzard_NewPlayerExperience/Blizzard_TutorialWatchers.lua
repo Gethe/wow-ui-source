@@ -304,23 +304,16 @@ end
 -- Low Health Watcher
 -- ------------------------------------------------------------------------------------------------------------
 Class_LowHealthWatcher = class("LowHealthWatcher", Class_TutorialBase);
-function Class_LowHealthWatcher:OnInitialize()
-	self.useFoodQuestID = TutorialData:GetFactionData().UseFoodQuest;
-end
-
 function Class_LowHealthWatcher:OnAdded()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.useFoodQuestID) then
-		TutorialManager:StartWatcher(self:Name());
-	end
+	TutorialManager:StartWatcher(self:Name());
 end
 
 function Class_LowHealthWatcher:StartWatching()
-	if C_QuestLog.IsQuestFlaggedCompleted(self.useFoodQuestID) then
-		Dispatcher:RegisterEvent("UNIT_HEALTH", self);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
-		Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
-		self.inCombat = false;
-	end
+	Dispatcher:RegisterEvent("UNIT_HEALTH", self);
+	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
+	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+
+	self.inCombat = false;
 end
 
 function Class_LowHealthWatcher:StopWatching()
@@ -341,14 +334,11 @@ function Class_LowHealthWatcher:UNIT_HEALTH(arg1)
 	if arg1 == "player" then
 		local isDeadOrGhost = UnitIsDeadOrGhost("player");
 		if (not isDeadOrGhost) and (UnitHealth(arg1)/UnitHealthMax(arg1) <= TutorialData.LOW_HEALTH_PERCENTAGE) and not self.inCombat then
-			Dispatcher:UnregisterEvent("UNIT_HEALTH", self);
-
 			local tutorialData = TutorialData:GetFactionData();
-			local container, slot = TutorialHelper:FindItemInContainer(tutorialData.FoodItem);
-			if container and slot then
-				TutorialManager:Queue(Class_EatFood.name);
+			local button = TutorialHelper:GetActionButtonBySpellID(tutorialData.SelfHealSpellID);
+			if button then
+				TutorialManager:Queue(Class_SelfHeal.name);
 			end
-			TutorialManager:StopWatcher(self:Name());
 		end
 	end
 end
@@ -558,22 +548,49 @@ end
 function Class_HunterStableWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("PET_STABLE_SHOW", self);
 	Dispatcher:UnregisterEvent("PET_STABLE_CLOSED", self);
+	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
+end
+
+function Class_HunterStableWatcher:TryComplete()
+	local count = C_StableInfo.GetNumStablePets();
+	if count > 0 then
+		self:Complete();
+		return true;
+	end
+
+	return false;
+end
+
+function Class_HunterStableWatcher:GetPointerAnchorFrame()
+	if StableFrame then
+		return StableFrame.StableTogglePetButton;
+	end
+	return nil;
 end
 
 function Class_HunterStableWatcher:PET_STABLE_SHOW()
-	local count = C_StableInfo.GetNumStablePets();
-	if count > 0 then
-		self:Complete();
+	if self:TryComplete() then
 		return;
 	end
-	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", PetStableStabledPet5, 10, 0, nil, "LEFT");
+
+	Dispatcher:RegisterEvent("PET_STABLE_UPDATE", self);
+
+	local pointerAnchorFrame = self:GetPointerAnchorFrame();
+	assertsafe(pointerAnchorFrame, "Put In Stable button not found.");
+
+	self:ShowPointerTutorial(NPEV2_HUNTER_STABLE_PET, "LEFT", pointerAnchorFrame, 10, 0, nil, "LEFT");
 end
 
 function Class_HunterStableWatcher:PET_STABLE_CLOSED()
-	local count = C_StableInfo.GetNumStablePets();
-	if count > 0 then
-		self:Complete();
+	if self:TryComplete() then
+		return;
 	end
+
+	Dispatcher:UnregisterEvent("PET_STABLE_UPDATE", self);
+end
+
+function Class_HunterStableWatcher:PET_STABLE_UPDATE()
+	self:TryComplete();
 end
 
 function Class_HunterStableWatcher:OnInterrupt(interruptedBy)
@@ -781,6 +798,7 @@ function Class_LootCorpseWatcher:StartWatching()
 	end
 	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:RegisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:StopWatching()
@@ -788,12 +806,7 @@ function Class_LootCorpseWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
 	Dispatcher:UnregisterEvent("CHAT_MSG_LOOT", self);
 	Dispatcher:UnregisterEvent("CHAT_MSG_MONEY", self);
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
-
-	if (self.canLootTimer) then
-		self.canLootTimer:Cancel();
-		self.canLootTimer = nil;
-	end
+	Dispatcher:UnregisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:WatchQuestMob(unitID)
@@ -831,31 +844,16 @@ end
 -- Entering Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_DISABLED(...)
 	self:SuppressChildren();
-	Dispatcher:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
 -- Leaving Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_ENABLED(...)
 	self:UnsuppressChildren();
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
--- Watch for units dying while in combat.  if that happened, check the unit to see if the
--- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
-	local eventData = {CombatLogGetCurrentEventInfo()};
-	local logEvent = eventData[2];
-	local unitGUID = eventData[8];
-	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
-		-- Wait for mirror data
-		if not self.canLootTimer then
-			self.canLootTimer = C_Timer.NewTimer(1, function()
-				if CanLootUnit(unitGUID) then
-					self:UnitLootable(unitGUID);
-				end
-				self.canLootTimer = nil;
-			end);
-		end
+function Class_LootCorpseWatcher:UNIT_LOOT(unitGUID, hasLoot)
+	if CanLootUnit(unitGUID) then
+		self:UnitLootable(unitGUID);
 	end
 end
 
@@ -866,7 +864,7 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 		return;
 	end
 
-	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if (unitID == hasKilled) then			
 			tutorial:ForceBegin(unitID);

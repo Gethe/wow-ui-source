@@ -13,6 +13,10 @@ function ClassTalentSearchMixin:InitializeSearch()
 
 	-- Initialize search controller
 	self.searchController = CreateAndInitFromMixin(SpellSearchControllerMixin, searchSources);
+	local function CanSearchActionBar()
+		return not self:IsInspecting();
+	end
+	self.SearchPreviewContainer:AddSuggestedResult(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self), CanSearchActionBar);
 
 	self.isInspecting = self:IsInspecting();
 
@@ -39,12 +43,6 @@ function ClassTalentSearchMixin:UpdateEnabledSearchTypes()
 	local disableActionBarSearch = self.isInspecting;
 	local forceClearSearch = wasInspecting ~= self.isInspecting;
 	self.searchController:SetFilterDisabled(SpellSearchUtil.FilterType.ActionBar, disableActionBarSearch, forceClearSearch);
-
-	if disableActionBarSearch then
-		self.SearchPreviewContainer:DisableDefaultResultButton();
-	else
-		self.SearchPreviewContainer:SetDefaultResultButton(NotOnActionBarSearchText, GenerateClosure(self.OnNotOnActionBarButtonClicked, self));
-	end
 end
 
 function ClassTalentSearchMixin:SetPreviewResultSearch(previewSearchText)
@@ -183,7 +181,15 @@ function ClassTalentSearchMixin:GetAllSearchableNodeInfos()
 		local nodeID = talentButton:GetNodeID();
 		local nodeInfo = talentButton:GetNodeInfo();
 		if nodeID and nodeInfo then
-			self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+			-- Only include talents that belong to a hero talent spec if that hero talent spec is
+			-- available to the current class talent spec.
+			if nodeInfo.subTreeID then
+				if self.HeroTalentsContainer:IsNodeInAvailableSubTree(nodeInfo) then
+					self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+				end
+			else
+				self.cachedSearchableNodesMap[nodeID] = nodeInfo;
+			end
 		end
 	end
 	return self.cachedSearchableNodesMap;

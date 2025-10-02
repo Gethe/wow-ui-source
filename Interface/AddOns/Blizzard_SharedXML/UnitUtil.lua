@@ -6,12 +6,16 @@ function IsPlayerGuid(guid)
 	return guid == GetPlayerGuid();
 end
 
-function IsPlayerInitialSpec()
-	if(GetSpecialization() == nil) then
-		return false
+function IsInitialSpec(specializationIndex)
+	if not specializationIndex then
+		return false;
 	end
 
-	return GetSpecialization() > GetNumSpecializations();
+	return specializationIndex > GetNumSpecializations();
+end
+
+function IsPlayerInitialSpec()
+	return IsInitialSpec(C_SpecializationInfo.GetSpecialization());
 end
 
 function GetNameAndServerNameFromGUID(unitGUID)
@@ -30,9 +34,9 @@ end
 PlayerUtil = {};
 
 function PlayerUtil.GetCurrentSpecID()
-	local currentSpecialization = GetSpecialization();
+	local currentSpecialization = C_SpecializationInfo.GetSpecialization();
 	if currentSpecialization then
-		return GetSpecializationInfo(currentSpecialization);
+		return C_SpecializationInfo.GetSpecializationInfo(currentSpecialization);
 	end
 
 	return nil;
@@ -99,15 +103,4 @@ end
 
 function PlayerUtil.CanUseClassTalents()
 	return C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec();
-end
-
-function PlayerUtil.HasFriendlyReaction(unit)
-    local reaction = UnitReaction("player", unit);
-
-	-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile.
-    if reaction and reaction <= 4 then
-        return false;
-    end
-
-	return true;
 end

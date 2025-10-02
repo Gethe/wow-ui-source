@@ -18,6 +18,7 @@ local AchievementInfo =
 		{
 			Name = "GetRewardItemID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local AchievementInfo =
 		{
 			Name = "GetSupercedingAchievements",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +48,7 @@ local AchievementInfo =
 		{
 			Name = "IsGuildAchievement",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +63,7 @@ local AchievementInfo =
 		{
 			Name = "IsValidAchievement",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +78,7 @@ local AchievementInfo =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +130,7 @@ local AchievementInfo =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "achievementAlreadyEarnedOnAccount", Type = "bool", Nilable = false },
 			},
 		},
 		{

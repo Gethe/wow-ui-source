@@ -22,12 +22,14 @@ function TutorialQueue:Add(tutorialInstance, ...)
 end
 
 function TutorialQueue:NotifyDone(callingTutorial)
-	if self.currentTutorial and self.currentTutorial == callingTutorial then
+	--assertsafe(callingTutorial ~= nil, "callingTutorial was nil");
+	callingTutorial.inProgress = false;
+		
+	if self.currentTutorial == callingTutorial then
 		TutorialManager:DebugLog("    QUEUE COMPLETE: "..self.currentTutorial.class.name);
-		self.currentTutorial:Complete();
-		self.currentTutorial.inProgress = false;
 		self.currentTutorial = nil;
 	end
+
 	self:CheckQueue();
 end
 

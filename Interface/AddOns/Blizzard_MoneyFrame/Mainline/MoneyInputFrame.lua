@@ -26,11 +26,6 @@ function MoneyInputFrame_SetGoldOnly(moneyFrame, set)
 	end
 end
 
-function MoneyInputFrame_SetCopperShown(moneyFrame, shown)
-	moneyFrame.copper:SetShown(shown);
-	moneyFrame:SetWidth(shown and 176 or 126);
-end
-
 function MoneyInputFrame_GetCopper(moneyFrame)
 	local totalCopper = 0;
 	local copper = moneyFrame.copper:GetText();
@@ -101,9 +96,9 @@ function MoneyInputFrame_OnTextChanged(self)
 			moneyFrame.fixedCopper:Show();
 			moneyFrame.fixedCopper.amount:SetText(moneyFrame.copper:GetNumber());
 			moneyFrame.copper:Hide();
-			moneyFrame.gold:SetWidth(self.normalWidth);
+			moneyFrame.gold:SetDesiredWidth(self.baseWidth);
 		else
-			moneyFrame.gold:SetWidth(self.minWidth);
+			moneyFrame.gold:SetDesiredWidth(self.minWidth);
 			moneyFrame.silver:Show();
 			moneyFrame.fixedSilver:Hide();
 			moneyFrame.copper:Show();
@@ -134,10 +129,9 @@ end
 
 function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
 	local goldFrame = frame.gold;
-	goldFrame.normalWidth = goldFrame:GetWidth();
 	goldFrame.minWidth = width;
 	goldFrame.expandOnDigits = expandOnDigits;
-	goldFrame:SetWidth(width);
+	goldFrame:SetDesiredWidth(width);
 	if ( frame.goldOnly ) then
 		return;
 	end
@@ -240,7 +234,7 @@ function MoneyInputFrame_PickupPlayerMoney(moneyFrame)
 	local copper = MoneyInputFrame_GetCopper(moneyFrame);
 	if ( copper > GetMoney() ) then
 		if UIErrorsFrame then
-			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);			
+			UIErrorsFrame:AddMessage(ERR_NOT_ENOUGH_MONEY, 1.0, 0.1, 0.1, 1.0);
 		end
 	else
 		PickupPlayerMoney(copper);
@@ -273,70 +267,105 @@ function LargeMoneyInputBoxMixin:OnTextChanged()
 	self:GetParent():OnAmountChanged();
 end
 
-LargeMoneyInputFrameMixin = {};
-
-function LargeMoneyInputFrameMixin:OnLoad()
-	if self.hideCopper then
-		self.CopperBox:Hide();
-		self.SilverBox:ClearAllPoints();
-		self.SilverBox:SetPoint("RIGHT", self.CopperBox, "RIGHT");
-
-		self.GoldBox.nextEditBox = self.SilverBox;
-		self.SilverBox.previousEditBox = self.GoldBox;
-		self.SilverBox.nextEditBox = self.nextEditBox;
+function MoneyFrameEditBoxGold_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() and moneyFrame.previousFocus then
+		moneyFrame.previousFocus:SetFocus();
 	else
-		self.GoldBox.nextEditBox = self.SilverBox;
-		self.SilverBox.previousEditBox = self.GoldBox;
-		self.SilverBox.nextEditBox = self.CopperBox;
-		self.CopperBox.previousEditBox = self.GoldBox;
-		self.CopperBox.nextEditBox = self.nextEditBox;
+		moneyFrame.silver:SetFocus();
 	end
 end
 
-function LargeMoneyInputFrameMixin:SetNextEditBox(nextEditBox)
-	if self.hideCopper then
-		self.SilverBox.nextEditBox = nextEditBox or self.GoldBox;
+function MoneyFrameEditBoxGold_OnEnterPressed(self)
+	self:GetParent().silver:SetFocus();
+end
 
-		if nextEditBox then
-			nextEditBox.previousEditBox = self.SilverBox;
-		end
+function MoneyFrameEditBoxSilver_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() or not moneyFrame.copper:IsShown() then
+		moneyFrame.gold:SetFocus();
 	else
-		self.CopperBox.nextEditBox = nextEditBox or self.GoldBox;
+		moneyFrame.copper:SetFocus();
+	end
+end
 
-		if nextEditBox then
-			nextEditBox.previousEditBox = self.CopperBox;
+function MoneyFrameEditBoxSilver_OnEnterPressed(self)
+	local moneyFrame = self:GetParent();
+	if not moneyFrame.copper:IsShown() then
+		moneyFrame.gold:SetFocus();
+	else
+		moneyFrame.copper:SetFocus();
+	end
+end
+
+function MoneyFrameEditBoxCopper_OnTabPressed(self)
+	local moneyFrame = self:GetParent();
+	if IsShiftKeyDown() then
+		moneyFrame.silver:SetFocus();
+	else
+		if moneyFrame.nextFocus then
+			moneyFrame.nextFocus:SetFocus();
+		else
+			self:ClearFocus();
 		end
 	end
 end
 
-function LargeMoneyInputFrameMixin:Clear()
-	self.CopperBox:Clear();
-	self.SilverBox:Clear();
-	self.GoldBox:Clear();
-end
-
-function LargeMoneyInputFrameMixin:SetEnabled(enabled)
-	self.CopperBox:SetEnabled(enabled);
-	self.SilverBox:SetEnabled(enabled);
-	self.GoldBox:SetEnabled(enabled);
-end
-
-function LargeMoneyInputFrameMixin:SetAmount(amount)
-	self.CopperBox:SetAmount(amount % COPPER_PER_SILVER);
-	self.SilverBox:SetAmount(math.floor((amount % COPPER_PER_GOLD) / COPPER_PER_SILVER));
-	self.GoldBox:SetAmount(math.floor(amount / COPPER_PER_GOLD));
-end
-
-function LargeMoneyInputFrameMixin:GetAmount()
-	return self.CopperBox:GetAmount() + (self.SilverBox:GetAmount() * COPPER_PER_SILVER) + (self.GoldBox:GetAmount() * COPPER_PER_GOLD);
-end
-
-function LargeMoneyInputFrameMixin:SetOnValueChangedCallback(callback)
-	self.onValueChangedCallback = callback;
-end
-
-function LargeMoneyInputFrameMixin:OnAmountChanged(callback)
-	if self.onValueChangedCallback then
-		self.onValueChangedCallback();
+function MoneyFrameEditBoxCopper_OnEnterPressed(self)
+	local moneyFrame = self:GetParent();
+	if moneyFrame.nextFocus then
+		moneyFrame.nextFocus:SetFocus();
+	else
+		self:ClearFocus();
 	end
+end
+
+MoneyFrameEditBoxMixin = {};
+
+function MoneyFrameEditBoxMixin:OnLoad()
+	self.texture:SetAtlas(self.coinAtlas);
+	self.label:SetText(self.coinSymbol);
+end
+
+function MoneyFrameEditBoxMixin:SetIsUserScaled()
+	if self.isUserScaled then
+		return;
+	end
+
+	self.isUserScaled = true;
+	self.label:SetFontObject(UserScaledFontGameHighlightRight);
+	self:SetFontObject(UserScaledChatFontNormal);
+
+	Mixin(self, UserScaledElementMixin);
+	Mixin(self.texture, UserScaledElementMixin);
+
+	local scale = TextSizeManager:GetScale();
+	self:OnTextScaleUpdated(scale, self);
+	self.texture:OnTextScaleUpdated(scale, self.texture);
+
+	TextSizeManager:RegisterObject(self);
+	TextSizeManager:RegisterObject(self.texture);
+end
+
+function MoneyFrameEditBoxMixin:SetDesiredWidth(width)
+	-- NOTE: This acts as a passthrough to SetWidth until the frame becomes user-scaled, at which point the UserScaledElement method overrides.
+	self:SetWidth(width);
+end
+
+MoneyInputFrameMixin = {};
+
+function MoneyInputFrameMixin:SetIsUserScaled()
+	if self.isUserScaled then
+		return;
+	end
+
+	self.isUserScaled = true;
+	self.gold:SetIsUserScaled();
+	self.silver:SetIsUserScaled();
+	self.copper:SetIsUserScaled();
+
+	Mixin(self, UserScaledElementMixin);
+
+	self:OnTextScaleUpdated(TextSizeManager:GetScale(), self);
+	TextSizeManager:RegisterObject(self);
 end

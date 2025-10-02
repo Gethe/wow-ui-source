@@ -9,6 +9,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "CanSelectPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "ConfirmAzeriteEmpoweredItemRespec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +35,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetAllTierInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +50,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetAllTierInfoByItemID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,6 +75,8 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetPowerInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,6 +91,8 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetPowerText",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +109,8 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetSpecsForPower",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,6 +125,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasAnyUnselectedPowers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -129,6 +140,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasBeenViewed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,6 +155,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,6 +170,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItemByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +185,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeritePreviewSourceDisplayable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +210,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerAvailableForSpec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,6 +226,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerSelected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +242,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SelectPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -240,6 +258,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SetHasBeenViewed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

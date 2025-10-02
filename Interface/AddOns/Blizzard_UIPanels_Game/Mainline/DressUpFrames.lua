@@ -13,21 +13,27 @@ function DressUpItemLink(link, forcedFrame)
 	return false;
 end
 
-function DressUpItemLocation(itemLocation)
+function DressUpItemLocation(itemLocation, forcedFrame)
 	if( itemLocation and itemLocation:IsValid() ) then 
 		local itemTransmogInfo = C_Item.GetCurrentItemTransmogInfo(itemLocation);
 		-- non-equippable items won't have an appearanceID
 		if itemTransmogInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
-			return DressUpItemTransmogInfo(itemTransmogInfo);
+			return DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame);
 		end
 	end
 	return false;
 end
 
 function DressUpTransmogLink(link)
-	if ( not link or not (strsub(link, 1, 16) == "transmogillusion" or strsub(link, 1, 18) == "transmogappearance") ) then
+	if not link then
 		return false;
 	end
+
+	local linkType = LinkUtil.ExtractLink(link);
+	if linkType ~= LinkTypes.TransmogIllusion and linkType ~= LinkTypes.TransmogAppearance then
+		return false;
+	end
+
 	return DressUpVisual(link);
 end
 
@@ -150,18 +156,21 @@ end
 function DressUpTransmogSet(itemModifiedAppearanceIDs, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
 	local forcePlayerRefresh = true;
+	local link = nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, link);
 end
 
 function DressUpBattlePetLink(link, forcedFrame)
 	if( link ) then 
-		local _, _, _, linkType, linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
 		if ( linkType == "item") then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID, speciesID = C_PetJournal.GetPetInfoByItemID(tonumber(linkID));
 			if (creatureID and displayID) then
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
 			end
 		elseif ( linkType == "battlepet" ) then
+			local linkID, _, _, _, _, _, battlePetID, battlePetDisplayID = LinkUtil.SplitLinkOptions(linkOptions);
 			local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
 			if ( speciesID == tonumber(linkID)) then
 				return DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame);
@@ -198,7 +207,7 @@ function DressUpBattlePet(creatureID, displayID, speciesID, link, forcedFrame)
 
 	local battlePetActor = frame.ModelScene:GetActorByTag("pet");
 	if ( battlePetActor ) then
-		battlePetActor:SetModelByCreatureDisplayID(displayID);
+		battlePetActor:SetModelByCreatureDisplayID(displayID, true);
 		battlePetActor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 	end
 	return true;
@@ -209,12 +218,15 @@ function DressUpMountLink(link, forcedFrame)
 		local mountID = 0;
 		local shouldSetModelFromHyperlink = false;
 
-		local _, _, _, linkType, linkID = strsplit(":|H", link);
+		local linkType, linkOptions = LinkUtil.ExtractLink(link);
 		if linkType == "item" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromItem(tonumber(linkID));
 		elseif linkType == "spell" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
 		elseif linkType == "mount" then
+			local linkID = LinkUtil.SplitLinkOptions(linkOptions);
 			mountID = C_MountJournal.GetMountFromSpell(tonumber(linkID));
 			shouldSetModelFromHyperlink = true;
 		end
@@ -353,7 +365,7 @@ function DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh,
 	end
 end
 
-function DressUpItemTransmogInfo(itemTransmogInfo)
+function DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame)
 	local frame = forcedFrame or GetFrameAndSetBackground();
 	DressUpFrame_Show(frame);
 
@@ -368,7 +380,7 @@ end
 
 function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh)
 	local frame = GetFrameAndSetBackground();
-	local itemModifiedAppearanceIDs, fromLink = nil,
+	local itemModifiedAppearanceIDs, fromLink = nil, nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink);
 
 	local playerActor = frame.ModelScene:GetPlayerActor();
@@ -503,11 +515,10 @@ end
 
 function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
 	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
-		self:SetPropagateKeyboardInput(false);
 		self.mousedOverFrame:OnCycleKeyDown();
-	else
-		self:SetPropagateKeyboardInput(true);
+		return false;
 	end
+	return true;
 end
 
 function DressUpOutfitDetailsPanelMixin:MarkDirty()
@@ -733,8 +744,8 @@ function DressUpOutfitDetailsSlotMixin:OnMouseUp()
 			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
 		end
 		if link then
-			if not ChatEdit_InsertLink(link) then
-				ChatFrame_OpenChat(link);
+			if not ChatFrameUtil.InsertLink(link) then
+				ChatFrameUtil.OpenChat(link);
 			end
 		end
 	end
@@ -864,21 +875,6 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
 	return true;
 end
 
-local s_qualityToAtlasColorName = {
-	[Enum.ItemQuality.Poor] = "gray",
-	[Enum.ItemQuality.Common] = "white",
-	[Enum.ItemQuality.Uncommon] = "green",
-	[Enum.ItemQuality.Rare] = "blue",
-	[Enum.ItemQuality.Epic] = "purple",
-	[Enum.ItemQuality.Legendary] = "orange",
-	[Enum.ItemQuality.Artifact] = "artifact",
-	[Enum.ItemQuality.Heirloom] = "account"
-};
-
-function DressUpOutfitDetailsSlot_GetQualityColorName(itemQuality)
-	return s_qualityToAtlasColorName[itemQuality];
-end
-
 function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
 	-- info for tooltip
 	self.transmogID = transmogID;
@@ -903,7 +899,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 		if self.item then
 			nameColor = self.item:GetItemQualityColor().color;
 			local quality = self.item:GetItemQuality();
-			local colorName = DressUpOutfitDetailsSlot_GetQualityColorName(quality);
+			local colorName = ColorManager.GetColorDataForDressUpFrameQuality(quality);
 			borderType = colorName;
 		else
 			borderType = "illusion";

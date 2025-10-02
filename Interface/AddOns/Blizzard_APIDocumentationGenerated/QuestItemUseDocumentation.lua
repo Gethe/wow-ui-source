@@ -9,6 +9,7 @@ local QuestItemUse =
 		{
 			Name = "CanUseQuestItemOnObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

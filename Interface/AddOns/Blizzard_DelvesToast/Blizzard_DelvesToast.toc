@@ -1,0 +1,6 @@
+## Title: Blizzard_DelvesToast
+## Author: Blizzard Entertainment
+## AllowLoad: game
+## AllowLoadGameType: standard
+Blizzard_DelvesToast.lua
+Blizzard_DelvesToast.xml

@@ -1,7 +1,7 @@
 
 BANK_TAB_OFFSET = 4;
 BANK_TAB_HEIGHT = BANK_TAB_OFFSET + 73;
-NUM_RANK_FLAGS = 20;
+NUM_RANK_FLAGS = 21;
 MAX_GUILDRANKS = 10;
 
 function GuildControlUI_OnLoad(self)
@@ -74,6 +74,9 @@ end
 
 
 function GuildControlUI_OnEvent(self, event)
+	if(C_CVar.GetCVarBool("useClassicGuildUI")) then
+		return;
+	end
 	-- if the user clicks a checkbox while the results of a previous click still hasn't been
 	-- received back from the server, that checkbox will flicker unless we skip updates.
 	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates - 1;
@@ -344,7 +347,6 @@ function GuildControlUI_RankOrder_Update(self)
 				rankFrame.deleteButton:Enable();
 				rankFrame.deleteButton.tooltip = nil;
 				if ( i == numRanks ) then
-					GuildControlSetRank(i - 1);
 					local requiresAuthenticator = C_GuildInfo.GuildControlGetRankFlags(i - 1)[18];
 					if ( requiresAuthenticator ) then
 						rankFrame.deleteButton:Disable();
@@ -408,7 +410,6 @@ function GuildControlUI_CheckClicked(self)
 	end
 	GuildControlUI.numSkipUpdates = GuildControlUI.numSkipUpdates + 1;
 	GuildControlSetRankFlag(self:GetID(), self:GetChecked());
-	--WithdrawGoldEditBox_Update();
 end
 
 

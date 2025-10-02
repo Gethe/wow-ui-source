@@ -9,6 +9,7 @@ local ResearchInfo =
 		{
 			Name = "GetDigSitesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

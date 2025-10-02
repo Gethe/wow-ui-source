@@ -91,7 +91,10 @@ function NPE_QuestManager:ReinitializeExistingQuests()
 	self.IsReinitializing = true;
 
 	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		self:QUEST_ACCEPTED(i);
+		local questID = C_QuestLog.GetQuestIDForLogIndex(i);
+		if questID then
+			self:QUEST_ACCEPTED(questID);
+		end
 	end
 
 	self:QUEST_LOG_UPDATE();

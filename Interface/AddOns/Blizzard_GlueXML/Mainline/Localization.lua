@@ -1,11 +1,7 @@
 -- luacheck: ignore 111 (setting non-standard global variable)
 
 local l10nTable = {
-	deDE = {
-        localizeFrames = function()
-			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLargeOutline);
-        end,
-	},
+	deDE = {},
 	enGB = {},
 	enUS = {
         localizeFrames = function()
@@ -19,8 +15,6 @@ local l10nTable = {
         localizeFrames = function()
 			RealmCharactersSort:SetWidth(RealmCharactersSort:GetWidth() + 8);
 			RealmLoadSort:SetWidth(RealmLoadSort:GetWidth() - 8);
-
-			RPEUPgradeInfoFrame.ControlsFrame.Header:SetFontObject(GameFontNormal);
         end,
 	},
 	itIT = {},
@@ -34,8 +28,6 @@ local l10nTable = {
 
 			ServerAlertFrame:SetWidth(350);
 			ServerAlertFrame:SetHeight(400);
-
-			SHOW_KOREAN_RATINGS = true;
         end,
 	},
 	ptBR = {},
@@ -52,8 +44,6 @@ local l10nTable = {
 
 			-- Hide save username button
 			HIDE_SAVE_ACCOUNT_NAME_CHECKBUTTON = true;
-
-			SHOW_CHINA_AGE_APPROPRIATENESS_WARNING = true;
         end,
 	},
 	zhTW = {

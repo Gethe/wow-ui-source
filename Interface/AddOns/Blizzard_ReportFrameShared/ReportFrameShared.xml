@@ -122,6 +122,39 @@
 					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="ScreenshotReportingFrame" hidden="true">
+				<Size x="350" y="210"/>
+				<Frames>
+					<Button parentKey="TakeScreenshotButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="Take Screenshot">
+						<Size x="140" y="21"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ScreenshotDescription" text="REPORTING_REPORT_SCREENSHOT_DESCRIPTION" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TakeScreenshotButton" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ScreenshotPreview" atlas="UI-Frame-DialogBox-BackgroundTile">
+							<Size x="250" y="140"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ScreenshotDescription" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ScreenshotEmptyText" text="REPORTING_REPORT_SCREENSHOT_EMPTY" inherits="GameFontNormal">
+							<Size x="150" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ScreenshotPreview"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
 			<ScrollFrame parentKey="Comment" hidden="true" inherits="InputScrollFrameTemplate">
 				<Size x="350" y="46"/>
 				<KeyValues>
@@ -162,6 +195,28 @@
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 			<OnAttributeChanged method="OnAttributeChanged"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ReportScreenshotModeFrame" mixin="ScreenshotModeFrameMixin" inherits="TopLevelParentScaleFrameTemplate" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="matchAnchors" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ScreenshotInstructions" inherits="Game22Font" text="REPORTING_SCREENSHOT_INSTRUCTIONS">
+					<Size x="500" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="300" />
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -129,6 +129,7 @@
 	</Frame>
 	<Frame name="MageArcaneChargesFrame" inherits="MageArcaneChargesFrameTemplate" mixin="MagePowerBar">
 		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
 			<KeyValue key="showTooltip" value="true" type="boolean"/>
 			<KeyValue key="topPadding" value="7" type="number"/>
 		</KeyValues>

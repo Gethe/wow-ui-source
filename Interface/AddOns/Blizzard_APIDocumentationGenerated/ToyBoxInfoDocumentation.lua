@@ -9,6 +9,7 @@ local ToyBoxInfo =
 		{
 			Name = "ClearFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local ToyBoxInfo =
 		{
 			Name = "IsToySourceValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +43,7 @@ local ToyBoxInfo =
 		{
 			Name = "NeedsFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

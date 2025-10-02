@@ -19,7 +19,7 @@ function MovieFrame_PlayMovie(self, index)
 		CinematicStarted(Enum.CinematicType.GlueMovie, movieID);
 	else
 		if ( self.showError ) then
-			GlueDialog_Show("ERROR_CINEMATIC");
+			StaticPopup_Show("ERROR_CINEMATIC");
 		end
 		GlueParent_CloseSecondaryScreen();
 	end

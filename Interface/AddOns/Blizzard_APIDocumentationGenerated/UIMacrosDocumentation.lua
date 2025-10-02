@@ -7,8 +7,40 @@ local UIMacros =
 	Functions =
 	{
 		{
+			Name = "GetMacroName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "macroId", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSelectedMacroIcon",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "macroId", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "textureNum", Type = "fileID", Nilable = false },
+			},
+		},
+		{
 			Name = "RunMacroText",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +51,8 @@ local UIMacros =
 		{
 			Name = "SetMacroExecuteLineCallback",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

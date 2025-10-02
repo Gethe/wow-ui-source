@@ -16,11 +16,11 @@ function AddPerksProgramTutorials()
 		TutorialManager:AddWatcher(Class_PerksProgramProductPurchased:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_OPEN) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.PerksProgramActivitiesOpen) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesPromptWatcher:new(), true);
 	end
 
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_INTRO) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.PerksProgramActivitiesIntro) then
 		TutorialManager:AddWatcher(Class_PerksProgramActivitiesOpenWatcher:new(), true);
 	end
 end
@@ -69,7 +69,7 @@ function Class_PerksProgramFreezeItemWatcher:OnPerkProgramFrameShow()
 end
 
 function Class_PerksProgramFreezeItemWatcher:OnProductFrozen()
-	if PerksProgramFrame:HasFrozenItem() then
+	if PerksProgramFrame and PerksProgramFrame:HasFrozenItem() then
 		self:FinishTutorial();
 		return;
 	end
@@ -119,7 +119,7 @@ function Class_PerksProgramOverwriteFrozenItemWatcher:StopWatching()
 end
 
 function Class_PerksProgramOverwriteFrozenItemWatcher:OnPerkProgramFrameShow()
-	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self.hasFrozenItem = PerksProgramFrame and PerksProgramFrame:HasFrozenItem();
 	self:TryShowHelptip();
 end
 
@@ -129,7 +129,7 @@ function Class_PerksProgramOverwriteFrozenItemWatcher:OnProductFrozen()
 		return;
 	end
 
-	self.hasFrozenItem = PerksProgramFrame:HasFrozenItem();
+	self.hasFrozenItem = PerksProgramFrame and PerksProgramFrame:HasFrozenItem();
 	self:TryShowHelptip();
 end
 
@@ -273,7 +273,7 @@ function Class_PerksProgramActivitiesPromptWatcher:OnInitialize()
 	self.helpTipInfo = {
 		text = TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_OPEN,
+		bitfieldFlag = Enum.FrameTutorialAccount.PerksProgramActivitiesOpen,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
 		alignment = HelpTip.Alignment.Right,
@@ -333,7 +333,7 @@ function Class_PerksProgramActivitiesOpenWatcher:OnInitialize()
 	self.helpTipInfo = {
 		text = MONTHLY_ACTIVITIES_HELP_1,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_PERKS_PROGRAM_ACTIVITIES_INTRO,
+		bitfieldFlag = Enum.FrameTutorialAccount.PerksProgramActivitiesIntro,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		targetPoint = HelpTip.Point.TopEdgeLeft,
 		onAcknowledgeCallback = GenerateClosure(self.FinishTutorial, self),

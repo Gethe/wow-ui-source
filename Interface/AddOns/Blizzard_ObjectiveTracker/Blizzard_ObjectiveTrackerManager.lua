@@ -2,6 +2,7 @@ ObjectiveTrackerManager = {
 	containers = { },
 	moduleToContainerMap = { },
 	backgroundAlpha = 0,
+	canAddModules = true,
 };
 
 function ObjectiveTrackerManager:AssignModulesOrder(modules)
@@ -14,6 +15,16 @@ function ObjectiveTrackerManager:AddContainer(container)
 	self.containers[container] = true;
 	-- pass current alpha to new container
 	container:OnAdded(self.backgroundAlpha);
+end
+
+function ObjectiveTrackerManager:HasAnyModules()
+	for container in pairs(self.containers) do
+		if container:HasAnyModules() then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function ObjectiveTrackerManager:UpdateAll()
@@ -154,7 +165,7 @@ function ObjectiveTrackerManager:CanShowPOIs(module)
 		self.questPOIEnabled = GetCVarBool("questPOI");
 		self.questPOIEnabledModules = { };
 		EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(self.OnCVarChanged, self);
+		CVarCallbackRegistry:RegisterCallback("questPOI", function(_, value) self:OnCVarChanged("questPOI", value); end, self);
 	end
 
 	if not self.questPOIEnabledModules[module] then
@@ -164,37 +175,60 @@ function ObjectiveTrackerManager:CanShowPOIs(module)
 	return self.questPOIEnabled;
 end
 
+function ObjectiveTrackerManager:EnumerateActiveBlocksByTag(tag, callback)
+	local ContainerEnumerateActiveModuleBlocksByTag = function(module)
+		if module:MatchesTag(tag) then
+			module:EnumerateActiveBlocks(callback);
+		end
+	end
+
+	for container in pairs(self.containers) do
+		container:ForEachModule(ContainerEnumerateActiveModuleBlocksByTag);
+	end
+end
+
 function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadingUI)
 	if not isInitialLogin and not isReloadingUI then
 		return;
 	end
-
-	local orderedModules = {
-		ScenarioObjectiveTracker,
-		UIWidgetObjectiveTracker,
-		CampaignQuestObjectiveTracker,	
-		QuestObjectiveTracker,
-		AdventureObjectiveTracker,
-		AchievementObjectiveTracker,
-		MonthlyActivitiesObjectiveTracker,
-		ProfessionsRecipeTracker,
-		BonusObjectiveTracker,
-		WorldQuestObjectiveTracker,
-	};
-
-	self:AssignModulesOrder(orderedModules);
+	
 	local mainTrackerFrame = ObjectiveTrackerFrame;
 	self:AddContainer(mainTrackerFrame);
-	self:SetModuleContainer(ScenarioObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(UIWidgetObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(CampaignQuestObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(QuestObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(AdventureObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(AchievementObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(MonthlyActivitiesObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(ProfessionsRecipeTracker, mainTrackerFrame);
-	self:SetModuleContainer(BonusObjectiveTracker, mainTrackerFrame);
-	self:SetModuleContainer(WorldQuestObjectiveTracker, mainTrackerFrame);	
+
+	if self.canAddModules then
+		local orderedModules = {
+			ScenarioObjectiveTracker,
+			UIWidgetObjectiveTracker,
+			CampaignQuestObjectiveTracker,	
+			QuestObjectiveTracker,
+			AdventureObjectiveTracker,
+			AchievementObjectiveTracker,
+			MonthlyActivitiesObjectiveTracker,
+			InitiativeTasksObjectiveTracker,
+			ProfessionsRecipeTracker,
+			BonusObjectiveTracker,
+			WorldQuestObjectiveTracker,
+		};
+
+		self:AssignModulesOrder(orderedModules);
+		for i, module in ipairs(orderedModules) do
+			self:SetModuleContainer(module, mainTrackerFrame);
+		end
+	end
+
+	self:UpdateAll();
+end
+
+function ObjectiveTrackerManager:RemoveAllModules()
+	for container in pairs(self.containers) do
+		container:RemoveAllModules();
+	end
+
+	self:UpdateAll();
+end
+
+function ObjectiveTrackerManager:SetCanAddModules(canAdd)
+	self.canAddModules = canAdd;
 end
 
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", ObjectiveTrackerManager.OnPlayerEnteringWorld, ObjectiveTrackerManager);

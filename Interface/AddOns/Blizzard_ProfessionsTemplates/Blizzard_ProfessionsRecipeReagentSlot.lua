@@ -267,26 +267,45 @@ function ProfessionsReagentSlotMixin:GetInventoryDetails()
 end
 
 function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
+	local icon = nil;
+	
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	if reagentSlotSchematic and Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 		-- First try only allocations
-		local foundMultiple, foundIndex = self:GetAllocationDetails();
+		local transaction = self:GetTransaction();
+		for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+			local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(allocation.reagent.itemID);
+			if qualityInfo then
+				if icon == nil then
+					icon = qualityInfo.iconInventory;
+				else
+					icon = qualityInfo.iconMixed;
+					break;
+				end
+			end
+		end
 
 		-- Then include inventory if necessary
-		if not foundMultiple and not foundIndex then
-			foundMultiple, foundIndex = self:GetInventoryDetails();
+		if icon == nil then
+			local useCharacterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
+			for index, reagent in ipairs(reagentSlotSchematic.reagents) do
+				local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
+				if quantity > 0 then
+					local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(reagent.itemID);
+					if qualityInfo then
+						if icon == nil then
+							icon = qualityInfo.iconInventory;
+						else
+							icon = qualityInfo.iconMixed;
+							break;
+						end
+					end
+				end
+			end
 		end
-
-		if foundMultiple then
-			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
-		elseif foundIndex then
-			self.Button.QualityOverlay:SetAtlas(("Professions-Icon-Quality-Tier%d-Inv"):format(foundIndex), TextureKitConstants.UseAtlasSize);
-		else
-			self.Button.QualityOverlay:SetAtlas(nil);
-		end
-	else
-		self.Button.QualityOverlay:SetAtlas(nil);
 	end
+
+	self.Button.QualityOverlay:SetAtlas(icon, TextureKitConstants.UseAtlasSize);
 end
 
 function ProfessionsReagentSlotMixin:SetNameText(text)

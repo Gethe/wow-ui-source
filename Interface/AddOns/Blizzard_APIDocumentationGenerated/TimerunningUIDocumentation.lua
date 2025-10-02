@@ -6,6 +6,15 @@ local TimerunningUI =
 
 	Functions =
 	{
+		{
+			Name = "GetActiveTimerunningSeasonID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "activeTimerunningSeasonID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

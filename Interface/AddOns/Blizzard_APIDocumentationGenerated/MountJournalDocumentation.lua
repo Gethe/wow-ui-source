@@ -9,6 +9,7 @@ local MountJournal =
 		{
 			Name = "ApplyMountEquipment",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local MountJournal =
 		{
 			Name = "ClearFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +51,7 @@ local MountJournal =
 		{
 			Name = "GetAllCreatureDisplayIDsForMountID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +84,7 @@ local MountJournal =
 		{
 			Name = "GetCollectedFilterSetting",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +99,8 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountAllCreatureDisplayInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +115,7 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,6 +130,8 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,7 +148,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
@@ -149,6 +158,8 @@ local MountJournal =
 		{
 			Name = "GetDisplayedMountInfoExtra",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,6 +191,7 @@ local MountJournal =
 		{
 			Name = "GetIsFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +207,8 @@ local MountJournal =
 		{
 			Name = "GetMountAllCreatureDisplayInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -218,6 +232,7 @@ local MountJournal =
 		{
 			Name = "GetMountFromItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -232,6 +247,7 @@ local MountJournal =
 		{
 			Name = "GetMountFromSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -255,6 +271,8 @@ local MountJournal =
 		{
 			Name = "GetMountInfoByID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,7 +289,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },
@@ -281,6 +299,8 @@ local MountJournal =
 		{
 			Name = "GetMountInfoExtraByID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,6 +323,7 @@ local MountJournal =
 		{
 			Name = "GetMountLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -317,6 +338,8 @@ local MountJournal =
 		{
 			Name = "GetMountUsabilityByID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -370,6 +393,7 @@ local MountJournal =
 		{
 			Name = "IsItemMountEquipment",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Determines if the item is mount equipment based on its class and subclass." },
 
 			Arguments =
@@ -394,6 +418,7 @@ local MountJournal =
 		{
 			Name = "IsSourceChecked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -408,6 +433,7 @@ local MountJournal =
 		{
 			Name = "IsTypeChecked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -431,6 +457,7 @@ local MountJournal =
 		{
 			Name = "IsValidSourceFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -445,6 +472,7 @@ local MountJournal =
 		{
 			Name = "IsValidTypeFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -459,6 +487,7 @@ local MountJournal =
 		{
 			Name = "NeedsFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -473,6 +502,7 @@ local MountJournal =
 		{
 			Name = "Pickup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -486,6 +516,7 @@ local MountJournal =
 		{
 			Name = "SetAllSourceFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -495,6 +526,7 @@ local MountJournal =
 		{
 			Name = "SetAllTypeFilters",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -504,6 +536,7 @@ local MountJournal =
 		{
 			Name = "SetCollectedFilterSetting",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -518,6 +551,7 @@ local MountJournal =
 		{
 			Name = "SetIsFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -528,6 +562,7 @@ local MountJournal =
 		{
 			Name = "SetSearch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -537,6 +572,7 @@ local MountJournal =
 		{
 			Name = "SetSourceFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -547,6 +583,7 @@ local MountJournal =
 		{
 			Name = "SetTypeFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -557,6 +594,7 @@ local MountJournal =
 		{
 			Name = "SummonByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -604,35 +642,6 @@ local MountJournal =
 	Tables =
 	{
 		{
-			Name = "MountType",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "Ground", Type = "MountType", EnumValue = 0 },
-				{ Name = "Flying", Type = "MountType", EnumValue = 1 },
-				{ Name = "Aquatic", Type = "MountType", EnumValue = 2 },
-				{ Name = "Dragonriding", Type = "MountType", EnumValue = 3 },
-				{ Name = "RideAlong", Type = "MountType", EnumValue = 4 },
-			},
-		},
-		{
-			Name = "MountTypeFlag",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 1,
-			MaxValue = 8,
-			Fields =
-			{
-				{ Name = "IsFlyingMount", Type = "MountTypeFlag", EnumValue = 1 },
-				{ Name = "IsAquaticMount", Type = "MountTypeFlag", EnumValue = 2 },
-				{ Name = "IsDragonRidingMount", Type = "MountTypeFlag", EnumValue = 4 },
-				{ Name = "IsRideAlongMount", Type = "MountTypeFlag", EnumValue = 8 },
-			},
-		},
-		{
 			Name = "MountCreatureDisplayInfo",
 			Type = "Structure",
 			Fields =
@@ -654,7 +663,7 @@ local MountJournal =
 				{ Name = "sourceType", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
 				{ Name = "isFactionSpecific", Type = "bool", Nilable = false },
-				{ Name = "faction", Type = "number", Nilable = true },
+				{ Name = "faction", Type = "PvPFaction", Nilable = true },
 				{ Name = "shouldHideOnChar", Type = "bool", Nilable = false },
 				{ Name = "isCollected", Type = "bool", Nilable = false },
 				{ Name = "mountID", Type = "number", Nilable = false },

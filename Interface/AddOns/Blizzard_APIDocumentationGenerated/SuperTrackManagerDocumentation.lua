@@ -28,8 +28,27 @@ local SuperTrackManager =
 			},
 		},
 		{
+			Name = "GetNextWaypointForMap",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "uiMapID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "x", Type = "number", Nilable = false },
+				{ Name = "y", Type = "number", Nilable = false },
+				{ Name = "waypointDescription", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSuperTrackedContent",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -38,8 +57,20 @@ local SuperTrackManager =
 			},
 		},
 		{
+			Name = "GetSuperTrackedItemName",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSuperTrackedMapPin",
 			Type = "Function",
+			MayReturnNothing = true,
 
 			Returns =
 			{
@@ -122,6 +153,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedContent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,6 +164,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedMapPin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,6 +175,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedQuestID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,6 +185,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedUserWaypoint",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,6 +195,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedVignette",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +210,11 @@ local SuperTrackManager =
 			Name = "SuperTrackingChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_CHANGED",
+		},
+		{
+			Name = "SuperTrackingPathUpdated",
+			Type = "Event",
+			LiteralName = "SUPER_TRACKING_PATH_UPDATED",
 		},
 	},
 

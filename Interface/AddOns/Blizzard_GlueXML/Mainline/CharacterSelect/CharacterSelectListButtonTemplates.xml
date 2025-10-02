@@ -45,25 +45,4 @@
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
-
-	<Button name="CharSelectLockedButtonTemplate" virtual="true" enableMouse="true" motionScriptsWhileDisabled="true" mixin="CharacterSelectLockedButtonMixin" hidden="true">
-		<Size x="63" y="76"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="TooltipAnchor">
-					<Size x="20" y="35"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture parentKey="Icon" atlas="UI-CharacterCreate-PadLock" setAllPoints="true"/>
-		<HighlightTexture parentKey="Highlight" atlas="UI-CharacterCreate-PadLock" alpha="0.1" alphaMode="ADD" setAllPoints="true"/>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
 </Ui>

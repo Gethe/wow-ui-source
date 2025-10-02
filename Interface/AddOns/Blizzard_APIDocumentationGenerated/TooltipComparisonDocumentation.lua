@@ -9,6 +9,8 @@ local TooltipComparison =
 		{
 			Name = "GetItemComparisonDelta",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,6 +28,8 @@ local TooltipComparison =
 		{
 			Name = "GetItemComparisonInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

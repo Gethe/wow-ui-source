@@ -9,6 +9,7 @@ local ContentTracking =
 		{
 			Name = "GetBestMapForTrackable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +45,8 @@ local ContentTracking =
 		{
 			Name = "GetCurrentTrackingTarget",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +63,8 @@ local ContentTracking =
 		{
 			Name = "GetEncounterTrackingInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local ContentTracking =
 		{
 			Name = "GetNextWaypointForTrackable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +97,8 @@ local ContentTracking =
 		{
 			Name = "GetObjectiveText",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,6 +115,8 @@ local ContentTracking =
 		{
 			Name = "GetTitle",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +132,7 @@ local ContentTracking =
 		{
 			Name = "GetTrackablesOnMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +149,7 @@ local ContentTracking =
 		{
 			Name = "GetTrackedIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,6 +164,8 @@ local ContentTracking =
 		{
 			Name = "GetVendorTrackingInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -166,6 +180,8 @@ local ContentTracking =
 		{
 			Name = "GetWaypointText",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +197,7 @@ local ContentTracking =
 		{
 			Name = "IsNavigable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If successful, returns if the trackable is either on your current map, or if we're able to determine a route to that map from your location via waypoints." },
 
 			Arguments =
@@ -198,6 +215,7 @@ local ContentTracking =
 		{
 			Name = "IsTrackable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +231,7 @@ local ContentTracking =
 		{
 			Name = "IsTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -228,6 +247,7 @@ local ContentTracking =
 		{
 			Name = "StartTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,6 +263,7 @@ local ContentTracking =
 		{
 			Name = "StopTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -254,6 +275,7 @@ local ContentTracking =
 		{
 			Name = "ToggleTracking",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

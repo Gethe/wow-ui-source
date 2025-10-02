@@ -8,6 +8,8 @@ local Os =
 		{
 			Name = "CopyToClipboard",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

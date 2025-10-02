@@ -1,0 +1,18 @@
+## Title: Blizzard_StaticPopup_Game
+## Dependencies: Blizzard_StaticPopup, Blizzard_ItemButton, Blizzard_AutoComplete, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates
+## AllowLoad: game
+GameDialogDefsUtil.lua
+GameDialogDefs.lua
+[Family]\GameDialogDefs.lua
+
+GameDialog.lua
+[Family]\GameDialog.lua
+GameDialog.xml
+
+[Family]\StaticPopupSpecial.xml [AllowLoadGameType mainline]
+
+[Game]\StaticPopupGlyphs.lua  [AllowLoadGameType wrath, cata, mists]
+
+[Family]\StaticPopupSpecial.lua [AllowLoadGameType classic]
+[Family]\StaticPopupSpecial.xml [AllowLoadGameType classic]
+[Family]\InviteConfirmationDialog.lua [AllowLoadGameType classic]

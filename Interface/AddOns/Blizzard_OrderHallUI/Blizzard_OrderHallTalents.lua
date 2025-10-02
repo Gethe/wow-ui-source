@@ -335,8 +335,8 @@ StaticPopupDialogs["ORDER_HALL_TALENT_RESEARCH"] = {
 	text = "%s";
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		self.data.button:ActivateTalent();
+	OnAccept = function(dialog, data)
+		data.button:ActivateTalent();
 	end,
 	timeout = 0,
 	exclusive = 1,

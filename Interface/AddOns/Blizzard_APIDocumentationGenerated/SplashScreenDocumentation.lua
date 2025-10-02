@@ -22,11 +22,22 @@ local SplashScreen =
 		{
 			Name = "RequestLatestSplashScreen",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "fromGameMenu", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "SendSplashScreenActionLaunchedTelem",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
+			Name = "SendSplashScreenCloseTelem",
+			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 
@@ -45,18 +56,6 @@ local SplashScreen =
 
 	Tables =
 	{
-		{
-			Name = "SplashScreenType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "WhatsNew", Type = "SplashScreenType", EnumValue = 0 },
-				{ Name = "SeasonRollOver", Type = "SplashScreenType", EnumValue = 1 },
-			},
-		},
 		{
 			Name = "SplashScreenInfo",
 			Type = "Structure",

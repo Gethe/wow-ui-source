@@ -7,8 +7,26 @@ local SharedTraits =
 	Functions =
 	{
 		{
+			Name = "CanEditConfig",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the player can make changes to the specified talent config." },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canEdit", Type = "bool", Nilable = false },
+				{ Name = "errorMessage", Type = "cstring", Nilable = false, Documentation = { "If canEdit is false, this will be filled out with text explaining why the player can not make changes." } },
+			},
+		},
+		{
 			Name = "CanPurchaseRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +43,7 @@ local SharedTraits =
 		{
 			Name = "CanRefundRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +59,7 @@ local SharedTraits =
 		{
 			Name = "CascadeRepurchaseRanks",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +76,7 @@ local SharedTraits =
 		{
 			Name = "ClearCascadeRepurchaseHistory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +90,7 @@ local SharedTraits =
 		{
 			Name = "CommitConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +105,7 @@ local SharedTraits =
 		{
 			Name = "ConfigHasStagedChanges",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +120,7 @@ local SharedTraits =
 		{
 			Name = "GenerateImportString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,6 +135,7 @@ local SharedTraits =
 		{
 			Name = "GenerateInspectImportString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +150,8 @@ local SharedTraits =
 		{
 			Name = "GetConditionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,6 +167,8 @@ local SharedTraits =
 		{
 			Name = "GetConfigIDBySystemID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +183,8 @@ local SharedTraits =
 		{
 			Name = "GetConfigIDByTreeID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,6 +199,8 @@ local SharedTraits =
 		{
 			Name = "GetConfigInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,8 +213,25 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "GetConfigVariationID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "systemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "variationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetConfigsByType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +246,8 @@ local SharedTraits =
 		{
 			Name = "GetDefinitionInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,6 +262,8 @@ local SharedTraits =
 		{
 			Name = "GetEntryInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,6 +274,23 @@ local SharedTraits =
 			Returns =
 			{
 				{ Name = "entryInfo", Type = "TraitEntryInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetIncreasedTraitData",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "entryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemName", Type = "table", InnerType = "IncreasedTraitData", Nilable = false },
 			},
 		},
 		{
@@ -234,6 +305,7 @@ local SharedTraits =
 		{
 			Name = "GetNodeCost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,6 +321,8 @@ local SharedTraits =
 		{
 			Name = "GetNodeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,6 +338,8 @@ local SharedTraits =
 		{
 			Name = "GetStagedChanges",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns IDs of Trait Nodes with pending changes, grouped by the type of change; Returns nothing if there are no pending changes" },
 
 			Arguments =
@@ -281,6 +357,7 @@ local SharedTraits =
 		{
 			Name = "GetStagedChangesCost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,6 +372,8 @@ local SharedTraits =
 		{
 			Name = "GetSubTreeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -310,6 +389,8 @@ local SharedTraits =
 		{
 			Name = "GetSystemIDByTreeID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -324,6 +405,7 @@ local SharedTraits =
 		{
 			Name = "GetTraitCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -341,6 +423,8 @@ local SharedTraits =
 		{
 			Name = "GetTraitDescription",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,6 +440,8 @@ local SharedTraits =
 		{
 			Name = "GetTraitSystemFlags",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -370,6 +456,8 @@ local SharedTraits =
 		{
 			Name = "GetTraitSystemWidgetSetID",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,6 +472,7 @@ local SharedTraits =
 		{
 			Name = "GetTreeCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -400,6 +489,7 @@ local SharedTraits =
 		{
 			Name = "GetTreeHash",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -414,6 +504,8 @@ local SharedTraits =
 		{
 			Name = "GetTreeInfo",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -429,6 +521,8 @@ local SharedTraits =
 		{
 			Name = "GetTreeNodes",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a list of nodeIDs, sorted ascending, for a given treeID. Contains nodes for all class specializations." },
 
 			Arguments =
@@ -460,8 +554,26 @@ local SharedTraits =
 			},
 		},
 		{
+			Name = "PurchaseAllRanks",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "ignoreCost", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PurchaseRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -477,6 +589,7 @@ local SharedTraits =
 		{
 			Name = "RefundAllRanks",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -492,6 +605,7 @@ local SharedTraits =
 		{
 			Name = "RefundRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -508,6 +622,7 @@ local SharedTraits =
 		{
 			Name = "ResetTree",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -523,6 +638,7 @@ local SharedTraits =
 		{
 			Name = "ResetTreeByCurrency",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -539,6 +655,7 @@ local SharedTraits =
 		{
 			Name = "RollbackConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -553,6 +670,7 @@ local SharedTraits =
 		{
 			Name = "SetSelection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -570,6 +688,7 @@ local SharedTraits =
 		{
 			Name = "StageConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -584,6 +703,55 @@ local SharedTraits =
 		{
 			Name = "TalentTestUnlearnSpells",
 			Type = "Function",
+		},
+		{
+			Name = "TryPurchaseAllRanks",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TryPurchaseToNode",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TryRefundToNode",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+				{ Name = "nodeID", Type = "number", Nilable = false },
+				{ Name = "entryID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
 		},
 	},
 
@@ -708,10 +876,29 @@ local SharedTraits =
 				{ Name = "treeID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "TryPurchaseToNodePartialSuccess",
+			Type = "Event",
+			LiteralName = "TRY_PURCHASE_TO_NODE_PARTIAL_SUCCESS",
+			Payload =
+			{
+				{ Name = "nodeFinishedOn", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "IncreasedTraitData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "itemNameIncreasing", Type = "string", Nilable = false },
+				{ Name = "itemQualityIncreasing", Type = "ItemQuality", Nilable = false },
+				{ Name = "numPointsIncreased", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "TraitCondInfo",
 			Type = "Structure",
@@ -818,6 +1005,8 @@ local SharedTraits =
 				{ Name = "isVisible", Type = "bool", Nilable = false },
 				{ Name = "isDisplayError", Type = "bool", Nilable = false, Documentation = { "True if this node fails the TRAIT_CONDITION_TYPE_DISPLAY_ERROR condition check. Used to communicate a problem with the node to the player (e.g. A prerequisite node has not been purchased.) but will not prevent the player from spending points on the node." } },
 				{ Name = "ranksPurchased", Type = "number", Nilable = false },
+				{ Name = "ranksIncreased", Type = "number", Nilable = false },
+				{ Name = "entryIDToRanksIncreased", Type = "LuaValueVariant", Nilable = false, Documentation = { "A map of the entry IDs on this node to the number of ranks increased. This covers all entries on the node, which is important in the case of selection nodes where we have more than one option that could be increased." } },
 				{ Name = "activeRank", Type = "number", Nilable = false },
 				{ Name = "currentRank", Type = "number", Nilable = false },
 				{ Name = "activeEntry", Type = "TraitEntryRankInfo", Nilable = true },
@@ -887,6 +1076,7 @@ local SharedTraits =
 				{ Name = "ID", Type = "number", Nilable = false },
 				{ Name = "gates", Type = "table", InnerType = "TraitGateInfo", Nilable = false },
 				{ Name = "hideSingleRankNumbers", Type = "bool", Nilable = false },
+				{ Name = "rootNodeID", Type = "number", Nilable = true },
 			},
 		},
 		{

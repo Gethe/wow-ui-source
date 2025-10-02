@@ -10,7 +10,14 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 	local gender = UnitSex("player");
 	local guildFactionData = C_Reputation.GetGuildFactionData();
 	local achievementID, itemID, itemName, iconTexture, repLevel, moneyCost = GetGuildRewardInfo(index);
-	self.Name:SetText(itemName);
+
+	-- Only set the name if there's no itemID or it's different.
+	-- This prevents a flicker if the reward items got evicted from sparse.
+	if self.itemID ~= itemID and not self.Name:GetText() then
+		self.Name:SetText(itemName);
+	end
+	self.itemID = itemID;
+
 	self.Icon:SetTexture(iconTexture);
 
 	if ( moneyCost and moneyCost > 0 ) then
@@ -40,7 +47,7 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 		self.Icon:SetDesaturated(false);
 		self.Name:SetFontObject(GameFontNormal);
 		self.Lock:Hide();
-		if ( repLevel > guildFactionData.reaction ) then
+		if ( guildFactionData and repLevel > guildFactionData.reaction ) then
 			local factionStandingtext = GetText("FACTION_STANDING_LABEL"..repLevel, gender);
 			self.SubText:SetFormattedText(REQUIRES_GUILD_FACTION, factionStandingtext);
 			self.SubText:Show();
@@ -53,26 +60,34 @@ function CommunitiesGuildRewardsButtonMixin:Init(elementData)
 	self.index = index;
 end
 
-function CommunitiesGuildRewardsFrame_OnLoad(self)
+CommunitiesGuildRewardsFrameMixin = { };
+
+function CommunitiesGuildRewardsFrameMixin:OnLoad()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CommunitiesGuildRewardsButtonTemplate", function(button, elementData)
 		button:Init(elementData);
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
-
-	self:RegisterEvent("GUILD_REWARDS_LIST");
 end
 
-function CommunitiesGuildRewardsFrame_OnShow(self)
+function CommunitiesGuildRewardsFrameMixin:OnShow()
+	self:RegisterEvent("GUILD_REWARDS_LIST");
+	self:RegisterEvent("GUILD_REWARDS_LIST_UPDATE");
+
 	RequestGuildRewards();
 end
 
-function CommunitiesGuildRewardsFrame_OnEvent(self, event)
-	CommunitiesGuildRewards_Update(self);
+function CommunitiesGuildRewardsFrameMixin:OnHide()
+	self:UnregisterEvent("GUILD_REWARDS_LIST");
+	self:UnregisterEvent("GUILD_REWARDS_LIST_UPDATE");
 end
 
-function CommunitiesGuildRewards_Update(self)
+function CommunitiesGuildRewardsFrameMixin:OnEvent(event)
+	self:Update(self);
+end
+
+function CommunitiesGuildRewardsFrameMixin:Update()
 	local dataProvider = CreateDataProvider();
 	for index = 1, GetNumGuildRewards() do
 		if GetGuildRewardInfo(index) ~= nil then
@@ -128,7 +143,7 @@ end
 function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementID, itemID = GetGuildRewardInfo(self.index);
-		ChatEdit_LinkItem(itemID);
+		ChatFrameUtil.LinkItem(itemID);
 	elseif (button == "LeftButton" and IsControlKeyDown()) then
 		local achievementID = GetGuildRewardInfo(self.index);
 		if(achievementID and achievementID > 0) then
@@ -142,7 +157,7 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 			rootDescription:CreateTitle(itemName);
 
 			rootDescription:CreateButton(GUILD_NEWS_LINK_ITEM, function()
-				ChatEdit_LinkItem(itemID);
+				ChatFrameUtil.LinkItem(itemID);
 			end);
 
 			if achievementID and achievementID > 0 then
@@ -204,6 +219,9 @@ end
 
 function CommunitiesGuildFactionBarMixin:UpdateFaction()
 	local guildFactionData = C_Reputation.GetGuildFactionData();
+	if not guildFactionData then 
+		return;
+	end
 	
 	if not self:IsMouseOver() then
 		local gender = UnitSex("player");

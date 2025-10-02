@@ -1,4 +1,4 @@
 ## Title: Blizzard Item Interaction UI
 ## LoadOnDemand: 1
-
+## Dependencies: Blizzard_Colors
 Blizzard_ItemInteractionUI.xml
