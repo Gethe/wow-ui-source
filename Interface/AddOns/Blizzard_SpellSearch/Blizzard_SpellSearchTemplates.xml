@@ -44,6 +44,37 @@
 		</Scripts>
 	</Button>
 
+	<Button name="SpellSearchSuggestedResultButtonTemplate" hidden="true" virtual="true">
+		<Size x="176" y="27"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon" atlas="talents-search-suggestion-magnifyingglass" useAtlasSize="false">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="400" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="_search-rowbg"/>
+		<PushedTexture atlas="_search-rowbg"/>
+	</Button>
+
 	<Frame name="SpellSearchPreviewContainerTemplate" mixin="SpellSearchPreviewContainerMixin" virtual="true">
 		<Size x="176" y="27"/>
 		<KeyValues>
@@ -117,41 +148,6 @@
 					</Layer>
 				</Layers>
 			</Frame>
-
-			<Button parentKey="DefaultResultButton" hidden="true">
-				<Size x="176" y="27"/>
-				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="TOPRIGHT"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="3">
-						<Texture parentKey="HighlightTexture" atlas="search-highlight" alphaMode="ADD" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" atlas="talents-search-suggestion-magnifyingglass" useAtlasSize="false">
-							<Size x="14" y="14"/>
-							<Anchors>
-								<Anchor point="LEFT" x="10" y="1"/>
-							</Anchors>
-						</Texture>
-						<FontString parentKey="Text" inherits="GameFontHighlightSmall" justifyH="LEFT">
-							<Size x="400" y="0"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" y="0"/>
-								<Anchor point="RIGHT" x="-5" y="0"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<NormalTexture atlas="_search-rowbg"/>
-				<PushedTexture atlas="_search-rowbg"/>
-			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

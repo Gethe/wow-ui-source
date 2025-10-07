@@ -299,7 +299,7 @@ function CharacterCreateMixin:BeginVASTransaction()
 end
 
 function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
-	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+	return errorID == Enum.VasTransactionPurchaseResult.DbNameNotAvailable or errorID == Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName;
 end
 
 function CharacterCreateMixin:OnStoreVASPurchaseError()
@@ -999,6 +999,8 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
 				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTimerunning then
+			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TIMERUNNING;
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1371,7 +1373,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.GetTimerunningSeasonID() then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.IsTimerunningEnabled() then
 			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction (or timerunning which also skips the faction choice)
 			return self.selectedFaction;
 		else
@@ -1394,7 +1396,7 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
-		not C_CharacterCreation.GetTimerunningSeasonID();
+		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
@@ -2196,7 +2198,7 @@ function CharacterCreateZoneChoiceMixin:Setup()
 	end
 
 	-- No zone choice / NPE for Timerunning characters.
-	if (C_CharacterCreation.GetTimerunningSeasonID()) then
+	if (C_CharacterCreation.IsTimerunningEnabled()) then
 		self:SetUseNPE(false);
 		self.shouldShow = false;
 		return;

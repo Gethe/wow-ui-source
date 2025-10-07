@@ -309,7 +309,6 @@ function EncounterJournal_OnLoad(self)
 
 		local scrollBox = EncounterJournal.searchResults.ScrollBox;
 		local scrollBar = EncounterJournal.searchResults.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 	end
 
@@ -2289,6 +2288,14 @@ end
 
 function EncounterJournalSearchBoxShowAllResults_OnEnter(self)
 	EncounterJournal.searchBox:SetSearchPreviewSelectionToAllResults();
+end
+
+function EncounterJournal_OpenJournalLink(tag, jtype, id, difficultyID)
+	jtype = tonumber(jtype);
+	id = tonumber(id);
+	difficultyID = tonumber(difficultyID);
+	local instanceID, encounterID, sectionID, tierIndex = EJ_HandleLinkPath(jtype, id);
+	EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, nil, nil, tierIndex);
 end
 
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)

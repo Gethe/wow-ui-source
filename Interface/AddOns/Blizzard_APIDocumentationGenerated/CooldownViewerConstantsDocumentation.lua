@@ -3,6 +3,17 @@ local CooldownViewerConstants =
 	Tables =
 	{
 		{
+			Name = "CooldownSetLinkedSpellFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "UseAsTooltip", Type = "CooldownSetLinkedSpellFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CooldownSetSpellFlags",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -11,7 +22,7 @@ local CooldownViewerConstants =
 			Fields =
 			{
 				{ Name = "HideAura", Type = "CooldownSetSpellFlags", EnumValue = 1 },
-				{ Name = "PlaceHolder1", Type = "CooldownSetSpellFlags", EnumValue = 2 },
+				{ Name = "HideByDefault", Type = "CooldownSetSpellFlags", EnumValue = 2 },
 			},
 		},
 		{

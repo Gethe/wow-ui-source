@@ -611,10 +611,25 @@ function SettingsButtonControlMixin:OnLoad()
 	self.Button.New:SetScale(.8);
 end
 
+function SettingsButtonControlMixin:EvaluateName()
+	if type(self.data.buttonText) == "function" then
+		return self.data.buttonText();
+	end
+
+	return self.data.buttonText;
+end
+
 function SettingsButtonControlMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 
-	self.Button:SetText(self.data.buttonText);
+	if self.data.gameDataFunc then
+		local function OnGameEvent()
+			self.data.gameDataFunc(self.Button);
+		end
+		self.cbrHandles:AddHandle(EventRegistry:RegisterFrameEventAndCallbackWithHandle(self.data.gameDataEvent, OnGameEvent, self));
+	end
+
+	self.Button:SetText(self:EvaluateName());
 	self.Button:SetScript("OnClick", self.data.buttonClick);
 	self.Button:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 	
@@ -638,6 +653,7 @@ function SettingsButtonControlMixin:Init(initializer)
 end
 
 function SettingsButtonControlMixin:Release()
+	self.cbrHandles:Unregister();
 	self.Button:SetScript("OnClick", nil);
 	SettingsListElementMixin.Release(self);
 end
@@ -654,8 +670,8 @@ function SettingsButtonControlMixin:EvaluateState()
 	self:DisplayEnabled(enabled);
 end
 
-function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags, newTagID)
-	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip, newTagID = newTagID};
+function CreateSettingsButtonInitializer(name, buttonText, buttonClick, tooltip, addSearchTags, newTagID, gameDataFunc)
+	local data = {name = name, buttonText = buttonText, buttonClick = buttonClick, tooltip = tooltip, newTagID = newTagID, gameDataFunc = gameDataFunc};
 	local initializer = Settings.CreateElementInitializer("SettingButtonControlTemplate", data);
 
 	-- Some settings buttons, like ones that open to a setting category, should not show up in search.

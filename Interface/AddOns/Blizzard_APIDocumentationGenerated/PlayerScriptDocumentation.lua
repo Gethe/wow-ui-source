@@ -173,6 +173,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetAllowRecentAlliesSeeLocation",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "allowRecentAlliesSeeLocation", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAreaSpiritHealerTime",
 			Type = "Function",
 
@@ -1291,6 +1300,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "PlayerIsTimerunning",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsTimerunning", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PortGraveyard",
 			Type = "Function",
 		},
@@ -1359,6 +1377,15 @@ local PlayerScript =
 			Arguments =
 			{
 				{ Name = "allow", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetAllowRecentAlliesSeeLocation",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "allowRecentAlliesSeeLocation", Type = "bool", Nilable = false },
 			},
 		},
 		{

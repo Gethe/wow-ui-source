@@ -184,6 +184,8 @@ function GlueDialogMixin:Init(which, text_arg1, text_arg2, data, insertedFrame)
 	else
 		spinner:Hide();
 	end
+
+	self:SetupStartDelay(dialogInfo);
 end
 
 function GlueDialogMixin:SetBackground(useDark)
@@ -354,4 +356,18 @@ end
 
 function GlueDialogMixin:OnHyperlinkLeave(...)
 	StaticPopup_OnHyperlinkLeave(self, ...);
+end
+
+function GlueDialogMixin:SetupStartDelay(dialogInfo)
+	if dialogInfo.StartDelay then
+		self.startDelay = dialogInfo.StartDelay(self);
+		self:GetButton(1):SetEnabled(not self.startDelay or self.startDelay <= 0);
+	elseif dialogInfo.acceptDelay then
+		self.acceptDelay = dialogInfo.acceptDelay;
+		self:GetButton(1):Disable();
+	else
+		self.startDelay = nil;
+		self.acceptDelay = nil;
+		self:GetButton(1):Enable();
+	end
 end

@@ -1322,23 +1322,6 @@ function EJMicroButtonMixin:EvaluateAlertVisibility()
 	local alertShown = false;
 	if self.playerEntered and self.varsLoaded and self.zoneEntered then
 		if self:IsEnabled() then
-			local showAlert = not Kiosk.IsEnabled() and not GetCVarBool("hideAdventureJournalAlerts");
-			if( showAlert ) then
-				-- display alert if the player hasn't opened the journal for a long time
-				local lastTimeOpened = tonumber(GetCVar("advJournalLastOpened"));
-				if ( GetServerTime() - lastTimeOpened > EJ_ALERT_TIME_DIFF ) then
-					alertShown = MainMenuMicroButton_ShowAlert(self, AJ_MICRO_BUTTON_ALERT_TEXT);
-					if alertShown then
-						MicroButtonPulse(EJMicroButton);
-					end
-				end
-
-				if ( lastTimeOpened ~= 0 ) then
-					SetCVar("advJournalLastOpened", GetServerTime() );
-				end
-
-				self:UpdateAlerts(true);
-			end
 			self:UpdateLastEvaluations();
 		end
 	end
@@ -1537,12 +1520,25 @@ function StoreMicroButtonMixin:EvaluateAlertVisibility(level)
 end
 
 function StoreMicroButtonMixin:UpdateMicroButton()
-	if ( StoreFrame and StoreFrame_IsShown() ) then
-		self:SetPushed();
-		DisableMicroButtons(true);
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		if CatalogShopFrame and wasShown then
+			self:SetPushed();
+			DisableMicroButtons(true);
+		else
+			EnableMicroButtons();
+			self:SetNormal();
+		end
 	else
-		EnableMicroButtons();
-		self:SetNormal();
+		local wasShown = StoreFrame_IsShown();
+		if ( StoreFrame and wasShown ) then
+			self:SetPushed();
+			DisableMicroButtons(true);
+		else
+			EnableMicroButtons();
+			self:SetNormal();
+		end
 	end
 
 	self:Show();

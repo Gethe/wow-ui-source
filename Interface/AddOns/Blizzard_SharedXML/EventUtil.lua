@@ -13,9 +13,16 @@ function ContinueAfterAllEventsMixin:Init(callback, ...)
 		self.events[event] = false;
 
 		local function OnEventReceived()
+			if self.events[event] then
+				return;
+			end
+
 			self.events[event] = true;
 
-			EventRegistry:UnregisterFrameEventAndCallback(event, self);
+			-- 11.2.5 Temporary change until CBR registrations and unregistrations are deferred during dispatch.
+			RunNextFrame(function()
+				EventRegistry:UnregisterFrameEventAndCallback(event, self);
+			end);
 
 			if self:HaveReceivedAllEvents() then
 				callback();

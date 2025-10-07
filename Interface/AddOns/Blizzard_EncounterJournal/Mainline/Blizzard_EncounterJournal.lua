@@ -353,7 +353,6 @@ function EncounterJournal_OnLoad(self)
 
 		local scrollBox = EncounterJournal.searchResults.ScrollBox;
 		local scrollBar = EncounterJournal.searchResults.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 	end
 
@@ -686,17 +685,12 @@ function EncounterJournal_OnShow(self)
 		return;
 	end
 
-	if PlayerGetTimerunningSeasonID() then
+	if PlayerIsTimerunning() then
 		C_EncounterJournal.InitalizeSelectedTier();
 	end
 	C_EncounterJournal.OnOpen();
 
 	self:RegisterEvent("SPELL_TEXT_UPDATE");
-	if ( tonumber(GetCVar("advJournalLastOpened")) == 0 ) then
-		SetCVar("advJournalLastOpened", GetServerTime() );
-	end
-	MainMenuMicroButton_HideAlert(EJMicroButton);
-	MicroButtonPulseStop(EJMicroButton);
 
 	UpdateMicroButtons();
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
@@ -765,7 +759,7 @@ end
 
 function EncounterJournal_CheckAndDisplaySuggestedContentTab()
 	EncounterJournal.dungeonsTab:ClearAllPoints();
-	if PlayerGetTimerunningSeasonID() then
+	if PlayerIsTimerunning() then
 		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
 		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT");
 	else

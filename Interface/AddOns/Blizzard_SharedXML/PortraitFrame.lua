@@ -71,6 +71,21 @@ function PortraitFrameMixin:SetPortraitToClassIcon(classFilename)
 	self:SetPortraitTexCoord(left, right, bottom, top);
 end
 
+function PortraitFrameMixin:SetPortraitToSpecIcon()
+	local specialization = C_SpecializationInfo.GetSpecialization();
+	if specialization ~= nil then
+		local icon = select(4, C_SpecializationInfo.GetSpecializationInfo(specialization));
+		if icon then
+			self:SetPortraitTexCoord(0, 1, 0, 1);
+			self:SetPortraitToAsset(icon);
+			return;
+		end
+	end
+
+	local fileName = select(2, UnitClass("player"));
+	self:SetPortraitToClassIcon(fileName);
+end
+
 function PortraitFrameMixin:SetPortraitTexCoord(...)
 	self:GetPortrait():SetTexCoord(...);
 end

@@ -30,17 +30,15 @@ ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH = 240;
 function ItemSocketingFrame_OnLoad(self)
 	self:RegisterEvent("SOCKET_INFO_UPDATE");
 	self:RegisterEvent("SOCKET_INFO_CLOSE");
-	self:RegisterEvent("SOCKET_INFO_BIND_CONFIRM");
-	self:RegisterEvent("SOCKET_INFO_REFUNDABLE_CONFIRM");
-	self:RegisterEvent("SOCKET_INFO_ACCEPT");
-	self:RegisterEvent("SOCKET_INFO_SUCCESS");
-	self:RegisterEvent("SOCKET_INFO_FAILURE");
 	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
 	ButtonFrameTemplate_HideButtonBar(self);
 
 	self.ScrollFrame:RegisterCallback("OnScrollRangeChanged", function(scrollFrame, xrange, yrange)
 		ItemSocketingSocketButton_OnScrollRangeChanged(scrollFrame);
 	end);
+
+	self.SocketingContainer.ApplySocketsButton:ClearAllPoints();
+	self.SocketingContainer.ApplySocketsButton:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -5, 4);
 end
 
 function ItemSocketingFrame_OnEvent(self, event, ...)
@@ -52,39 +50,192 @@ function ItemSocketingFrame_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SOCKET_INFO_CLOSE" ) then
 		HideUIPanel(ItemSocketingFrame);
-	elseif ( event == "SOCKET_INFO_BIND_CONFIRM" ) then
-		StaticPopup_Show("BIND_SOCKET");
-	elseif ( event == "SOCKET_INFO_REFUNDABLE_CONFIRM" ) then
-		StaticPopup_Show("REFUNDABLE_SOCKET");
-	elseif ( event == "SOCKET_INFO_ACCEPT" ) then
-		self.isSocketing = true;
-		ItemSocketingSocketButton_Disable();
-		ItemSocketingFrame_DisableSockets();
-	elseif ( event == "SOCKET_INFO_SUCCESS" ) then
-		self.isSocketing = nil;
-		ItemSocketingFrame_EnableSockets();
-	elseif ( event == "SOCKET_INFO_FAILURE" ) then
-		self.isSocketing = nil;
-		ItemSocketingFrame_EnableSockets();
 	end
 end
 
 function ItemSocketingFrame_Update()
-	ItemSocketingFrame.destroyingGem = nil;
-	ItemSocketingFrame.itemIsRefundable = nil;
-	ItemSocketingFrame.itemIsBoundTradeable = nil;
-	if(GetSocketItemRefundable()) then
-		ItemSocketingFrame.itemIsRefundable = true;
-	elseif(GetSocketItemBoundTradeable() and HasBoundGemProposed()) then -- Only gems flagged "Soulbound" on their enchantments will remove item tradability when socketed
-		ItemSocketingFrame.itemIsBoundTradeable = true;
+	ItemSocketingFrame.SocketingContainer:Update();
+
+	-- Set portrait
+	local icon = select(2, C_ItemSocketInfo.GetSocketItemInfo());
+	ItemSocketingFrame:SetPortraitToAsset(icon);
+
+	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
+	-- Owner needs to be set everytime since it is cleared everytime the tooltip is hidden
+	ItemSocketingDescription:SetOwner(ItemSocketingScrollChild, "ANCHOR_PRESERVE");
+	ItemSocketingDescription:SetSocketedItem();
+end
+
+function ItemSocketingSocketButton_OnScrollRangeChanged()
+	ItemSocketingDescription:SetSocketedItem();
+end
+
+GenericSocketButtonMixin = {};
+
+function GenericSocketButtonMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	self:RegisterEvent("SOCKET_INFO_UPDATE");
+end
+
+function GenericSocketButtonMixin:ClickSocketButton()
+	StaticPopup_Hide("DELETE_ITEM");
+	StaticPopup_Hide("DELETE_QUEST_ITEM");
+	StaticPopup_Hide("DELETE_GOOD_ITEM");
+	StaticPopup_Hide("DELETE_GOOD_QUEST_ITEM");
+	C_ItemSocketInfo.ClickSocketButton(self:GetID());
+end
+
+function GenericSocketButtonMixin:OnClick()
+	if ( IsModifiedClick() ) then
+		local link = C_ItemSocketInfo.GetNewSocketLink(self:GetID()) or
+		C_ItemSocketInfo.GetExistingSocketLink(self:GetID());
+		HandleModifiedItemClick(link);
+	else
+		self:ClickSocketButton();
+	end
+end
+
+function GenericSocketButtonMixin:OnReceiveDrag()
+	self:ClickSocketButton();
+end
+
+function GenericSocketButtonMixin:OnDragStart()
+	self:ClickSocketButton();
+end
+
+function GenericSocketButtonMixin:OnEnter()
+	local newSocket = C_ItemSocketInfo.GetNewSocketInfo(self:GetID());
+	local existingSocket = C_ItemSocketInfo.GetExistingSocketInfo(self:GetID());
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if ( newSocket ) then
+		GameTooltip:SetSocketGem(self:GetID());
+	else
+		GameTooltip:SetExistingSocketGem(self:GetID());
+	end
+	if ( newSocket and existingSocket ) then
+		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
+		ShoppingTooltip1:ClearAllPoints();
+		ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
+		ShoppingTooltip1:SetExistingSocketGem(self:GetID(), true);
+		ShoppingTooltip1:Show();
+	end
+end
+
+function GenericSocketButtonMixin:OnLeave()
+	GameTooltip:Hide();
+	ShoppingTooltip1:Hide();
+end
+
+function GenericSocketButtonMixin:OnEvent(event, ...)
+	if ( event == "SOCKET_INFO_UPDATE" ) then
+		if ( GameTooltip:IsOwned(self) ) then
+			self:OnEnter();
+		end
+	end
+end
+
+local GENERIC_ITEM_SOCKETING_FRAME_EVENTS = {
+	"SOCKET_INFO_BIND_CONFIRM",
+	"SOCKET_INFO_REFUNDABLE_CONFIRM",
+	"SOCKET_INFO_ACCEPT",
+	"SOCKET_INFO_SUCCESS",
+	"SOCKET_INFO_FAILURE",
+};
+
+GenericItemSocketingFrameMixin = {};
+
+function GenericItemSocketingFrameMixin:OnLoad()
+	self.socketUIType = Enum.ItemSocketInfoUIType.RemixArtifactUI;
+
+	local function ApplySocketButtonOnClick()
+		if ( self:GetParent().itemIsBoundTradeable ) then
+			local dialog = StaticPopup_Show("END_BOUND_TRADEABLE", nil, nil, "gem");
+		elseif ( self:GetParent().destroyingGem ) then
+			StaticPopup_Show("CONFIRM_ACCEPT_SOCKETS");
+		else
+			C_ItemSocketInfo.AcceptSockets();
+			PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
+		end
 	end
 
-	local numSockets = GetNumSockets();
+	self.ApplySocketsButton.onClickHandler = ApplySocketButtonOnClick;
+
+	-- We always want this event registered
+	self:RegisterEvent("SOCKET_INFO_UI_EVENT_REGISTRATION_UPDATE");
+end
+
+function GenericItemSocketingFrameMixin:OnShow()
+	self:RegisterEvents();
+end
+
+function GenericItemSocketingFrameMixin:OnHide()
+	self:UnregisterEvents();
+
+	if self.isSocketing then
+		self:EnableSockets();
+		self.isSocketing = nil;
+	end
+	StaticPopup_Hide("CONFIRM_ACCEPT_SOCKETS");
+	C_ItemSocketInfo.CloseSocketInfo();
+end
+
+function GenericItemSocketingFrameMixin:RegisterEvents()
+	if not self.registeredForEvents then
+		FrameUtil.RegisterFrameForEvents(self, GENERIC_ITEM_SOCKETING_FRAME_EVENTS);
+		self.registeredForEvents = true;
+	end
+end
+
+function GenericItemSocketingFrameMixin:UnregisterEvents()
+	if self.registeredForEvents then
+		FrameUtil.UnregisterFrameForEvents(self, GENERIC_ITEM_SOCKETING_FRAME_EVENTS);
+		self.registeredForEvents = false;
+	end
+end
+
+function GenericItemSocketingFrameMixin:OnEvent(event, ...)
+	if event == "SOCKET_INFO_UI_EVENT_REGISTRATION_UPDATE" then
+		local socketUIType = ...;
+		if socketUIType == self.socketUIType then
+			self:RegisterEvents();
+		else
+			self:UnregisterEvents();
+		end
+	elseif event == "SOCKET_INFO_BIND_CONFIRM" then
+		StaticPopup_Show("BIND_SOCKET");
+	elseif event == "SOCKET_INFO_REFUNDABLE_CONFIRM" then
+		StaticPopup_Show("REFUNDABLE_SOCKET");
+	elseif event == "SOCKET_INFO_ACCEPT" then
+		self.isSocketing = true;
+		self.ApplySocketsButton:Disable();
+		self:DisableSockets();
+	elseif event == "SOCKET_INFO_SUCCESS" then
+		self.isSocketing = nil;
+		self:EnableSockets();
+	elseif event == "SOCKET_INFO_FAILURE" then
+		self.isSocketing = nil;
+		self:EnableSockets();
+	end
+end
+
+function GenericItemSocketingFrameMixin:Update()
+	self.destroyingGem = nil;
+	self.itemIsRefundable = nil;
+	self.itemIsBoundTradeable = nil;
+
+	if C_ItemSocketInfo.GetSocketItemRefundable() then
+		self.itemIsRefundable = true;
+	elseif C_ItemSocketInfo.GetSocketItemBoundTradeable() and C_ItemSocketInfo.HasBoundGemProposed() then -- Only gems flagged "Soulbound" on their enchantments will remove item tradability when socketed
+		self.itemIsBoundTradeable = true;
+	end
+
+	local numSockets = C_ItemSocketInfo.GetNumSockets();
 	local name, icon, quality, gemMatchesSocket;
 	local numNewGems = numSockets;
 	local bracketsOpen;
 	local numMatches = 0;
-	for i, socket in ipairs(ItemSocketingFrame.Sockets) do
+	for i, socket in ipairs(self.SocketFrames) do
 		if ( i <= numSockets ) then
 			local gemBorder = socket.Background;
 			local closedBracket = socket.BracketFrame.ClosedBracket;
@@ -92,27 +243,27 @@ function ItemSocketingFrame_Update()
 			local gemColorText = socket.BracketFrame.ColorText;
 
 			-- See if there's a replacement gem and if not see if there's an existing gem
-			name, icon, gemMatchesSocket = GetNewSocketInfo(i);
+			name, icon, gemMatchesSocket = C_ItemSocketInfo.GetNewSocketInfo(i);
 			bracketsOpen = 1;
 			if ( not name ) then
-				name, icon, gemMatchesSocket = GetExistingSocketInfo(i);
+				name, icon, gemMatchesSocket = C_ItemSocketInfo.GetExistingSocketInfo(i);
 				if ( icon ) then
 					bracketsOpen = nil;
 				end
 
 				-- Count down new gems if there's no name
 				numNewGems = numNewGems - 1;
-			elseif ( GetExistingSocketInfo(i) ) then
-				ItemSocketingFrame.destroyingGem = 1;
+			elseif ( C_ItemSocketInfo.GetExistingSocketInfo(i) ) then
+				self.destroyingGem = 1;
 			end
 			--Handle one color only right now
-			local gemColor = GetSocketTypes(i);
+			local gemColor = C_ItemSocketInfo.GetSocketTypes(i);
 			if ( gemMatchesSocket ) then
 				local color = GEM_TYPE_INFO[gemColor];
-				AnimatedShine_Start(socket, color.r, color.g, color.b);
+				socket.Shine:Start(color.r, color.g, color.b);
 				numMatches = numMatches + 1;
 			else
-				AnimatedShine_Stop(socket);
+				socket.Shine:Stop();
 			end
 			if ( bracketsOpen ) then
 				-- Show open brackets
@@ -163,96 +314,39 @@ function ItemSocketingFrame_Update()
 
 	-- Position the sockets and show/hide the border graphics
 	if ( numSockets == 3 ) then
-		ItemSocketingSocket1Right:Hide();
-		ItemSocketingSocket2Left:Show();
-		ItemSocketingSocket2Right:Hide();
-		ItemSocketingSocket3Left:Show();
-		ItemSocketingSocket3Right:Show();
-		ItemSocketingSocket1:SetPoint("BOTTOM", ItemSocketingFrame, "BOTTOM", -75, 32);
+		self.Socket1:SetPoint("BOTTOM", self, "BOTTOM", -75, 33);
 	elseif ( numSockets == 2 ) then
-		ItemSocketingSocket1Right:Hide();
-		ItemSocketingSocket2Left:Show();
-		ItemSocketingSocket2Right:Show();
-		ItemSocketingSocket1:SetPoint("BOTTOM", ItemSocketingFrame, "BOTTOM", -35, 32);
+		self.Socket1:SetPoint("BOTTOM", self, "BOTTOM", -35, 33);
 	else
-		ItemSocketingSocket1:SetPoint("BOTTOM", ItemSocketingFrame, "BOTTOM", 0, 32);
-		ItemSocketingSocket1Right:Show();
+		self.Socket1:SetPoint("BOTTOM", self, "BOTTOM", 0, 33);
 	end
 
-	-- Set portrait
-	name, icon, quality = GetSocketItemInfo();
-	ItemSocketingFrame:SetPortraitToAsset(icon);
+	self.Socket1.RightFiligree:SetShown(numSockets == 1);
+	self.Socket2.RightFiligree:SetShown(numSockets == 2);
+	self.Socket3.RightFiligree:SetShown(numSockets == 3);
 
-	ItemSocketingDescription:SetMinimumWidth(ITEM_SOCKETING_DESCRIPTION_MIN_WIDTH, true);
-	-- Owner needs to be set everytime since it is cleared everytime the tooltip is hidden
-	ItemSocketingDescription:SetOwner(ItemSocketingScrollChild, "ANCHOR_PRESERVE");
-	ItemSocketingDescription:SetSocketedItem();
+	self.Socket1.LeftFiligree:SetShown(true);
+	self.Socket2.LeftFiligree:SetShown(numSockets > 1);
+	self.Socket3.LeftFiligree:SetShown(numSockets > 2);
 
 	-- Update socket button
 	if ( numNewGems == 0 ) then
-		ItemSocketingSocketButton_Disable();
-	elseif ( not ItemSocketingFrame.isSocketing ) then
-		ItemSocketingSocketButton_Enable();
+		self.ApplySocketsButton:Disable();
+	elseif ( not self.isSocketing ) then
+		self.ApplySocketsButton:Enable();
 	end
 end
 
-function ItemSocketingFrame_DisableSockets()
-	for i = 1, MAX_NUM_SOCKETS do
-		local socket = _G["ItemSocketingSocket"..i];
+function GenericItemSocketingFrameMixin:DisableSockets()
+	for i, socket in ipairs(self.SocketFrames) do
 		socket:Disable();
-		socket.icon:SetDesaturated(true);
+		socket.Icon:SetDesaturated(true);
 	end
 end
 
-function ItemSocketingFrame_EnableSockets()
-	for i = 1, MAX_NUM_SOCKETS do
-		local socket = _G["ItemSocketingSocket"..i];
+function GenericItemSocketingFrameMixin:EnableSockets()
+	for i, socket in ipairs(self.SocketFrames) do
 		socket:Enable();
-		socket.icon:SetDesaturated(false);
+		socket.Icon:SetDesaturated(false);
 	end
-end
-
-function ItemSocketingSocketButton_OnScrollRangeChanged()
-	ItemSocketingDescription:SetSocketedItem();
-end
-
-function ItemSocketingSocketButton_OnEnter(self)
-	local newSocket = GetNewSocketInfo(self:GetID());
-	local existingSocket = GetExistingSocketInfo(self:GetID());
-
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	if ( newSocket ) then
-		GameTooltip:SetSocketGem(self:GetID());
-	else
-		GameTooltip:SetExistingSocketGem(self:GetID());
-	end
-	if ( newSocket and existingSocket ) then
-		ShoppingTooltip1:SetOwner(GameTooltip, "ANCHOR_NONE");
-		ShoppingTooltip1:ClearAllPoints();
-		ShoppingTooltip1:SetPoint("TOPLEFT", "GameTooltip", "TOPRIGHT", 0, -10);
-		ShoppingTooltip1:SetExistingSocketGem(self:GetID(), true);
-		ShoppingTooltip1:Show();
-	end
-end
-
-function ItemSocketingSocketButton_OnEvent(self, event, ...)
-	if ( event == "SOCKET_INFO_UPDATE" ) then
-		if ( GameTooltip:IsOwned(self) ) then
-			ItemSocketingSocketButton_OnEnter(self);
-		end
-	end
-end
-
-function ItemSocketingSocketButton_Disable()
-	ItemSocketingSocketButton:Disable();
-	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-	ItemSocketingSocketButton.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Disabled");
-end
-
-function ItemSocketingSocketButton_Enable()
-	ItemSocketingSocketButton:Enable();
-	ItemSocketingSocketButton.Left:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-	ItemSocketingSocketButton.Middle:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
-	ItemSocketingSocketButton.Right:SetTexture("Interface\\Buttons\\UI-Panel-Button-Up");
 end

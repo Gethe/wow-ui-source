@@ -561,15 +561,40 @@ function AchievementFrameCategories_OnLoad (self)
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
-function AchievementFrameCategories_ExpandToCategory(category)
-	local categories = achievementFunctions.categories;
-	local index, elementData = FindInTableIf(categories, function(elementData)
+function AchievementFrameCategories_FindCategoryElement(categories, category)
+	local _index, elementData = FindInTableIf(categories, function(elementData)
 		return elementData.id == category;
 	end);
 
+	return elementData;
+end
+
+function AchievementFrameCategories_ExpandToCategory(category)
+	local elementData = AchievementFrameCategories_FindCategoryElement(achievementFunctions.categories, category);
+
+	-- If the category was not found in the current tab, try the opposite tab (guild vs personal achievements).
+	if not elementData then
+		local alternateCategories, alternateTabIndex;
+
+		if InGuildView() then
+			alternateCategories = ACHIEVEMENT_FUNCTIONS.categories;
+			alternateTabIndex = AchievementCategoryIndex;
+		else
+			alternateCategories = GUILD_ACHIEVEMENT_FUNCTIONS.categories;
+			alternateTabIndex = GuildCategoryIndex;
+		end
+
+		elementData = AchievementFrameCategories_FindCategoryElement(alternateCategories, category);
+
+		-- If found in the other tab, switch to it.
+		if elementData then
+			AchievementFrameBaseTab_OnClick(alternateTabIndex);
+		end
+	end
+
 	if elementData and elementData.isChild then
 		local openID = elementData.parent;
-		for _, iterElementData in ipairs(categories) do
+		for _, iterElementData in ipairs(achievementFunctions.categories) do
 			iterElementData.hidden = iterElementData.isChild and iterElementData.parent ~= openID;
 		end
 	end

@@ -117,7 +117,7 @@
 				<Texture parentKey="Icon">
 					<Size x="49" y="49"/>
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-4"/>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
@@ -133,7 +133,7 @@
 			<Layer level="ARTWORK">
 				<Texture parentKey="IconBorder" atlas="tokens-frame-small" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOP"/>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -141,19 +141,19 @@
 				<Texture parentKey="Glow" inherits="services-ring-large-glow" alpha="0.8" hidden="true">
 					<Size x="196" y="193"/>
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="3"/>
+						<Anchor point="CENTER" relativeKey="$parent.IconBorder" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
 				<Texture parentKey="Ring" atlas="tokens-counterbg" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconBorder" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Number" inherits="GameTooltipHeaderText" hidden="true">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="2"/>
+						<Anchor point="CENTER" relativeKey="$parent.Ring" relativePoint="CENTER" x="0" y="0"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
@@ -656,13 +656,13 @@
 										</Texture>
 										<Texture parentKey="IconBorder" atlas="tokens-frame-regular" useAtlasSize="true">
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-8" y="5"/>
+												<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="0"/>
 											</Anchors>
 										</Texture>
 										<FontString parentKey="TitleText" inherits="GlueFontNormalLarge" justifyH="LEFT">
 											<Size x="230" y="0"/>
 											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="11" y="10"/>
+												<Anchor point="LEFT" relativeKey="$parent.IconBorder" relativePoint="RIGHT" x="11" y="0"/>
 											</Anchors>
 										</FontString>
 									</Layer>

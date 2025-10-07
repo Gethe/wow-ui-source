@@ -1,7 +1,6 @@
 
 G_GameMenuFrameContextKey = "GameMenuFrame";
 
-
 GameMenuFrameMixin = {};
 
 local GameMenuFrameEvents = {
@@ -67,6 +66,18 @@ function GameMenuFrameMixin:InitButtons()
 			HideUIPanel(self);
 			callback();
 		end;
+	end
+
+	self.NewExternalEventFrame:Hide();
+	if C_ExternalEventURL.HasURL() then
+		local isNew = C_ExternalEventURL.IsNew();
+		local useGoldRedButton = true;
+		local externalEventButton = self:AddButton(GAMEMENU_EXTERNALEVENT, GenerateMenuCallback(function() C_ExternalEventURL.LaunchURL() end), nil, nil, useGoldRedButton);
+		if isNew then
+			self.NewExternalEventFrame:SetPoint("BOTTOMRIGHT", externalEventButton:GetFontString(), "LEFT", 16, -10);
+			self.NewExternalEventFrame:Show();
+		end
+		self:AddSection();
 	end
 
 	-- A few settings are disabled without a tooltip in Kiosk mode.

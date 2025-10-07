@@ -3863,15 +3863,16 @@ local Unit =
 		{
 			Name = "PhaseReason",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Phasing", Type = "PhaseReason", EnumValue = 0 },
 				{ Name = "Sharding", Type = "PhaseReason", EnumValue = 1 },
 				{ Name = "WarMode", Type = "PhaseReason", EnumValue = 2 },
 				{ Name = "ChromieTime", Type = "PhaseReason", EnumValue = 3 },
+				{ Name = "TimerunningHwt", Type = "PhaseReason", EnumValue = 4 },
 			},
 		},
 		{

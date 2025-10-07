@@ -285,6 +285,7 @@ function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 		newData.sheatheWeapon = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
 		newData.hideWeapon = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
 		newData.autodress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+		newData.noCameraSpin = bit.band(flags, Enum.UIModelSceneFlags.NoCameraSpin) == Enum.UIModelSceneFlags.NoCameraSpin;
 
 		if actorIDs and #actorIDs > 0 then
 			local actorInfo;

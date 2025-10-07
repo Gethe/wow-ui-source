@@ -1215,3 +1215,66 @@ SlashCmdList["COUNTDOWN"] = function(msg)
 		C_PartyInfo.DoCountdown(number);
 	end
 end
+
+SecureCmdList["SUMMON_BATTLE_PET"] = function(msg)
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
+	local pet = SecureCmdOptionParse(msg);
+	if ( type(pet) == "string" ) then
+		local _, petID = C_PetJournal.FindPetIDByName(string.trim(pet));
+		if ( petID ) then
+			C_PetJournal.SummonPetByGUID(petID);
+		else
+			C_PetJournal.SummonPetByGUID(pet);
+		end
+	end
+end
+
+SecureCmdList["RANDOMPET"] = function(msg)
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
+	if ( SecureCmdOptionParse(msg) ) then
+		C_PetJournal.SummonRandomPet(false);
+	end
+end
+
+SecureCmdList["RANDOMFAVORITEPET"] = function(msg)
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
+	if ( SecureCmdOptionParse(msg) ) then
+		C_PetJournal.SummonRandomPet(true);
+	end
+end
+
+SecureCmdList["DISMISSBATTLEPET"] = function(msg)
+	-- GAME RULES TODO:: This should be an explicit game rule.
+	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
+		return;
+	end
+
+	if ( SecureCmdOptionParse(msg) ) then
+		local petID = C_PetJournal.GetSummonedPetGUID();
+		if ( petID ) then
+			C_PetJournal.SummonPetByGUID(petID);
+		end
+	end
+end
+
+SlashCmdList["RAID_INFO"] = function(msg)
+	RaidFrame.slashCommand = 1;
+	if ( ( GetNumSavedInstances() + GetNumSavedWorldBosses() > 0 ) and not RaidInfoFrame:IsVisible() ) then
+		ToggleRaidFrame();
+		RaidInfoFrame:Show();
+	elseif ( not RaidFrame:IsVisible() ) then
+		ToggleRaidFrame();
+	end
+end

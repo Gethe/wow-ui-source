@@ -22,7 +22,7 @@ function ClassTalentLoadoutImportDialogMixin:OnAccept()
 	if self.AcceptButton:IsEnabled() then
 		local importText = self.ImportControl:GetText();
 		local loadoutName = self.NameControl:GetText();
-		local success = PlayerSpellsFrame.TalentsFrame:ImportLoadout(importText, loadoutName);
+		local success = PlayerSpellsFrame.TalentsFrame:ImportLoadout(importText, loadoutName, importText);
 		
 		if success then
 			StaticPopupSpecial_Hide(self);

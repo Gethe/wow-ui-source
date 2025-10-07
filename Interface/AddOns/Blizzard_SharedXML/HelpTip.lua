@@ -25,6 +25,7 @@
 		appendFrame = nil,						-- if a helptip needs a custom display you can append your own frame to the text
 		appendFrameYOffset = nil,				-- the offset for the vertical anchor for appendFrame
 		autoHideWhenTargetHides = false,		-- if the target frame hides, the helptip will hide if this is set and call the onHideCallback with an apprpropriate reason
+		ignoreInParentLayout = true,			-- off: if the parent is a layoutFrame helptip will no longer be ignored in the layout process
 	}
 ]]--
 
@@ -489,6 +490,7 @@ function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 	self.info = info;
 	self.lastInfoText = info.text;
 	self.relativeRegion = relativeRegion;
+	self.ignoreInLayout = (info.ignoreInParentLayout ~= false);
 
 	if info.autoEdgeFlipping then
 		local targetPoint = self:GetTargetPoint();

@@ -22,6 +22,7 @@ Classic\HonorFrameTemplates.xml
 Cata\HonorFrame.xml
 Mists\QuestScrollFrameAndPanelTemplates.xml
 Wrath\QuestFrameTemplates.xml
+Classic\QuestFrame.lua
 TBC\QuestFrame.lua
 TBC\QuestFrame.xml
 Wrath\QuestPOI.lua

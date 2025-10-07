@@ -479,6 +479,7 @@ function ProfessionsMixin:OnHide()
 
 	C_TradeSkillUI.CloseTradeSkill();
 	C_CraftingOrders.CloseCrafterCraftingOrders();
+	C_WowSurvey.TriggerSurveyServe(Enum.SurveyDeliveryMoment.ProfessionTable);
 end
 
 -- Set dynamically

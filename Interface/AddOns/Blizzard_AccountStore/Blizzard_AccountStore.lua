@@ -64,7 +64,7 @@ function FullscreenAccountStoreContainerMixin:OnShow()
 	end
 
 	StaticPopup_SetFullScreenFrame(self);
-	AlertFrame:SetFullScreenFrame(self, "HIGH");
+	AlertFrame:SetFullScreenFrame(self);
 	AlertFrame:SetBaseAnchorFrame(AccountStoreFrameBottom);
 	ActionStatus:SetAlternateParentFrame(self);
 

@@ -29,7 +29,7 @@ local ItemConstants =
 				{ Name = "Agility", Type = "BonusStatIndex", EnumValue = 3 },
 				{ Name = "Strength", Type = "BonusStatIndex", EnumValue = 4 },
 				{ Name = "Intellect", Type = "BonusStatIndex", EnumValue = 5 },
-				{ Name = "SpiritUnused", Type = "BonusStatIndex", EnumValue = 6 },
+				{ Name = "Spirit", Type = "BonusStatIndex", EnumValue = 6 },
 				{ Name = "Stamina", Type = "BonusStatIndex", EnumValue = 7 },
 				{ Name = "Energy", Type = "BonusStatIndex", EnumValue = 8 },
 				{ Name = "Rage", Type = "BonusStatIndex", EnumValue = 9 },
@@ -228,9 +228,9 @@ local ItemConstants =
 		{
 			Name = "ItemConsumableSubclass",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 11,
+			MaxValue = 12,
 			Fields =
 			{
 				{ Name = "Generic", Type = "ItemConsumableSubclass", EnumValue = 0 },
@@ -245,6 +245,7 @@ local ItemConstants =
 				{ Name = "VantusRune", Type = "ItemConsumableSubclass", EnumValue = 9 },
 				{ Name = "UtilityCurio", Type = "ItemConsumableSubclass", EnumValue = 10 },
 				{ Name = "CombatCurio", Type = "ItemConsumableSubclass", EnumValue = 11 },
+				{ Name = "Relic", Type = "ItemConsumableSubclass", EnumValue = 12 },
 			},
 		},
 		{
@@ -643,7 +644,7 @@ local ItemConstants =
 			{
 				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
 				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
-				{ Name = "INVALID_TRANSACTION_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
+				{ Name = "INVALID_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
 				{ Name = "DEFAULT_ITEM_SAVE_VERSION", Type = "number", Value = 2 },
 				{ Name = "CURRENT_ITEM_SAVE_VERSION", Type = "number", Value = DEFAULT_ITEM_SAVE_VERSION },
 				{ Name = "DEFAULT_ARTIFACT_POWERS_VERSION", Type = "number", Value = 1 },

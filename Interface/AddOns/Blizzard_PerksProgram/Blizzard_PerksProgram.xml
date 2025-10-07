@@ -769,12 +769,12 @@
 							<Layer level="OVERLAY">
 								<Texture parentKey="ItemCountBG" atlas="tokens-counterbg" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="CENTER" relativePoint="TOPLEFT" x="3" y="-3"/>
+										<Anchor point="CENTER" relativePoint="TOPLEFT" x="3" y="0"/>
 									</Anchors>
 								</Texture>
 								<FontString parentKey="ItemCountText" inherits="GameFontHighlight">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.ItemCountBG" x="0" y="3"/>
+										<Anchor point="CENTER" relativeKey="$parent.ItemCountBG" x="0" y="0"/>
 									</Anchors>
 								</FontString>
 							</Layer>

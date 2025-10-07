@@ -121,6 +121,19 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "GetMinimumCountdownDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "milliseconds", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetReverse",
 			Type = "Function",
 
@@ -319,6 +332,16 @@ local FrameAPICooldown =
 			Arguments =
 			{
 				{ Name = "hideNumbers", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetMinimumCountdownDuration",
+			Type = "Function",
+			Documentation = { "Controls the minimum duration above which countdown text will be shown. This is applied based upon the total duration of the cooldown, not the remaining duration as it ticks down." },
+
+			Arguments =
+			{
+				{ Name = "milliseconds", Type = "number", Nilable = false },
 			},
 		},
 		{

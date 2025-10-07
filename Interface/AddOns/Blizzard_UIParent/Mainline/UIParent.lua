@@ -174,6 +174,9 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("ARTIFACT_RESPEC_PROMPT");
 	self:RegisterEvent("ARTIFACT_RELIC_FORGE_UPDATE");
 
+	-- Events for Remix Artifact UI
+	self:RegisterEvent("REMIX_ARTIFACT_UPDATE");
+
 	-- Events for Adventure Map UI
 	self:RegisterEvent("ADVENTURE_MAP_OPEN");
 
@@ -242,9 +245,6 @@ function UIParent_OnLoad(self)
 	-- Challenge Mode 2.0
 	self:RegisterEvent("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN");
 	self:RegisterEvent("CHALLENGE_MODE_COMPLETED");
-
-	-- Used for Order Hall UI
-	self:RegisterUnitEvent("UNIT_AURA", "player");
 
 	self:RegisterEvent("TAXIMAP_OPENED");
 
@@ -480,10 +480,7 @@ function BlackMarket_LoadUI()
 end
 
 function ItemUpgrade_LoadUI()
-	-- ACHURCHILL TODO: remove once item upgrade testing is done
-	if not OldItemUpgradeFrame then
-		UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
-	end
+	UIParentLoadAddOn("Blizzard_ItemUpgradeUI");
 end
 
 function PlayerChoice_LoadUI()
@@ -599,6 +596,16 @@ function GenericTraitUI_LoadUI()
 	UIParentLoadAddOn("Blizzard_GenericTraitUI");
 end
 
+function RemixArtifactTutorialUI_LoadUI()
+	UIParentLoadAddOn("Blizzard_RemixArtifactTutorialUI");
+end
+
+function RemixArtifactUI_LoadUI()
+	UIParentLoadAddOn("Blizzard_RemixArtifactUI");
+
+	RemixArtifactTutorialControllerFrame:RegisterForRemixArtifactFrameEvents();
+end
+
 function SubscriptionInterstitial_LoadUI()
 	C_AddOns.LoadAddOn("Blizzard_SubscriptionInterstitialUI");
 end
@@ -613,15 +620,6 @@ function NPETutorial_AttemptToBegin(event)
 	end
 	if ( playerEnteredWorld and varsLoaded ) then
 		NPE_CheckTutorials();
-	end
-end
-
-function OrderHall_CheckCommandBar()
-	if (not OrderHallCommandBar or not OrderHallCommandBar:IsShown()) then
-		if (C_Garrison.IsPlayerInGarrison(Enum.GarrisonType.Type_7_0_Garrison)) then
-			OrderHall_LoadUI();
-			OrderHallCommandBar:Show();
-		end
 	end
 end
 
@@ -908,7 +906,7 @@ function ToggleToyCollection(autoPageToCollectedToyID)
 end
 
 local function IsPVPTabAllowed()
-	if PlayerGetTimerunningSeasonID() then
+	if PlayerIsTimerunning() then
 		-- PVP Tab is disabled during Timerunning, so don't allow the toggle key to show it
 		return false;
 	end
@@ -935,12 +933,22 @@ function ToggleStoreUI(contextKey)
 		return;
 	end
 
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			securecall("CloseAllWindows");
+		end
+		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
+	else
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			securecall("CloseAllWindows");
+		end
+		StoreFrame_SetShown(not wasShown, contextKey);
 	end
-	StoreFrame_SetShown(not wasShown, contextKey);
 end
 
 function SetStoreUIShown(shown)
@@ -1279,7 +1287,12 @@ function UIParent_OnEvent(self, event, ...)
 
 		NPETutorial_AttemptToBegin(event);
 
-		StoreFrame_CheckForFree(event);
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(event);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 		EventUtil.TriggerOnVariablesLoaded();
 	elseif ( event == "PLAYER_LOGIN" ) then
 		TimeManager_LoadUI();
@@ -1512,7 +1525,7 @@ function UIParent_OnEvent(self, event, ...)
 			local isSkippingStartingArea = C_SummonInfo.IsSummonSkippingStartExperience();
 			if ( isSkippingStartingArea ) then -- check if skiping start experience
 				StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
-			elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+			elseif (summonType == Enum.SummonReason.Scenario) then
 				StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
 			else
 				StaticPopup_Show("CONFIRM_SUMMON");
@@ -1529,15 +1542,15 @@ function UIParent_OnEvent(self, event, ...)
 
 		for i, spellConfirmation in ipairs(spellConfirmations) do
 			if spellConfirmation.spellID then
-				if spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT then
+				if spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.StaticText then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
-				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT then
+				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert then
 					StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", spellConfirmation.text, spellConfirmation.duration, spellConfirmation.spellID);
-				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING then
+				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.SimpleWarning then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING", spellConfirmation.text, nil, spellConfirmation.spellID);
-				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT then
+				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert then
 					StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", spellConfirmation.text, nil, spellConfirmation.spellID);
-				elseif spellConfirmation.confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL then
+				elseif spellConfirmation.confirmType == Enum.ConfirmationPromptUIType.BonusRoll then
 					BonusRollFrame_StartBonusRoll(spellConfirmation.spellID, spellConfirmation.text, spellConfirmation.duration, spellConfirmation.currencyID, spellConfirmation.currencyCost, spellConfirmation.difficultyID);
 				end
 			end
@@ -1554,7 +1567,6 @@ function UIParent_OnEvent(self, event, ...)
 		for i=1, #pendingLootRollIDs do
 			GroupLootContainer_AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
 		end
-		OrderHall_CheckCommandBar();
 
 		self.battlefieldBannerShown = nil;
 
@@ -1575,6 +1587,10 @@ function UIParent_OnEvent(self, event, ...)
 		end
 
 		ExpansionTrial_CheckLoadUI();
+
+		if PlayerIsTimerunning() then
+			RemixArtifactTutorialUI_LoadUI();
+		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -1698,24 +1714,28 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "SPELL_CONFIRMATION_PROMPT" ) then
 		local spellID, confirmType, text, duration, currencyID, currencyCost, difficultyID = ...;
-		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
+		if ( confirmType == Enum.ConfirmationPromptUIType.StaticText ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT", text, duration, spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT_ALERT ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_PROMPT_ALERT", text, duration, spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarning ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING", text, nil, spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING_ALERT ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert ) then
 			StaticPopup_Show("SPELL_CONFIRMATION_WARNING_ALERT", text, nil, spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.BonusRoll ) then
 			BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID);
 		end
 	elseif ( event == "SPELL_CONFIRMATION_TIMEOUT" ) then
 		local spellID, confirmType = ...;
-		if ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_STATIC_TEXT ) then
+		if ( confirmType == Enum.ConfirmationPromptUIType.StaticText ) then
 			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT", spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_SIMPLE_WARNING ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.StaticTextAlert ) then
+			StaticPopup_Hide("SPELL_CONFIRMATION_PROMPT_ALERT", spellID);
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarning ) then
 			StaticPopup_Hide("SPELL_CONFIRMATION_WARNING", spellID);
-		elseif ( confirmType == LE_SPELL_CONFIRMATION_PROMPT_TYPE_BONUS_ROLL ) then
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.SimpleWarningAlert ) then
+			StaticPopup_Hide("SPELL_CONFIRMATION_WARNING_ALERT", spellID);
+		elseif ( confirmType == Enum.ConfirmationPromptUIType.BonusRoll ) then
 			BonusRollFrame_CloseBonusRoll();
 		end
 	elseif ( event == "SAVED_VARIABLES_TOO_LARGE" ) then
@@ -1764,7 +1784,7 @@ function UIParent_OnEvent(self, event, ...)
 		local summonType, skipStartingArea = arg1, arg2;
 		if ( skipStartingArea ) then -- check if skiping start experience
 			StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
-		elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+		elseif (summonType == Enum.SummonReason.Scenario) then
 			StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
 		else
 			StaticPopup_Show("CONFIRM_SUMMON");
@@ -2096,7 +2116,12 @@ function UIParent_OnEvent(self, event, ...)
 		C_AddOns.LoadAddOn("Blizzard_BehavioralMessaging");
 		BehavioralMessagingTray:OnEvent(event, ...);
 	elseif ( event == "PRODUCT_DISTRIBUTIONS_UPDATED" ) then
-		StoreFrame_CheckForFree(event);
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.CheckForFree(self, value);
+		else
+			StoreFrame_CheckForFree(event);
+		end
 	elseif ( event == "LOADING_SCREEN_ENABLED" ) then
 		TopBannerManager_LoadingScreenEnabled();
 	elseif ( event == "LOADING_SCREEN_DISABLED" ) then
@@ -2126,8 +2151,6 @@ function UIParent_OnEvent(self, event, ...)
 			ChallengeModeCompleteBanner:OnEvent(event, ...);
 		end
 		self:UnregisterEvent("CHALLENGE_MODE_COMPLETED");
-	elseif (event == "UNIT_AURA") then
-		OrderHall_CheckCommandBar();
 	elseif (event == "TAXIMAP_OPENED") then
 		local uiMapSystem = ...;
 		if (uiMapSystem == Enum.UIMapSystem.Taxi) then
@@ -2187,6 +2210,15 @@ function UIParent_OnEvent(self, event, ...)
 
 			GenericTraitFrame:SetTreeID(traitTreeID);
 			ShowUIPanel(GenericTraitFrame);
+		end
+	elseif ( event == "REMIX_ARTIFACT_UPDATE") then
+		if not RemixArtifactFrame then
+			RemixArtifactUI_LoadUI();
+		end
+
+		RemixArtifactFrame:UpdateTraitTree();
+		if not RemixArtifactFrame:IsShown() then
+			ShowUIPanel(RemixArtifactFrame);
 		end
 	elseif (event == "GLOBAL_MOUSE_DOWN" or event == "GLOBAL_MOUSE_UP") then
 		local buttonID = ...;
@@ -2255,42 +2287,30 @@ function UIParent_UpdateTopFramePositions()
 	local yOffset = 0;
 	local xOffset = -230;
 
-	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
-		yOffset = OrderHallCommandBar:GetHeight();
+	local statusFrames = {};
+	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
+		table.insert(statusFrames, GMChatStatusFrame);
+	end
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
+	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
+		table.insert(statusFrames, BehavioralMessagingTray);
+	end
+	if WowSurveyStatusFrame and WowSurveyStatusFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyStatusFrame);
 	end
 
 	local buffOffset = 0;
-	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
-	local notificationAnchorTo = UIParent;
-	if gmChatStatusFrameShown then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-
-		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
-		notificationAnchorTo = GMChatStatusFrame;
-	end
-
-	if ticketStatusFrameShown then
-		if gmChatStatusFrameShown then
-			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+	for i, frame in ipairs(statusFrames) do
+		frame:ClearAllPoints();
+		if i == 1 then
+			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		else
-			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
 		end
 
-		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
-		notificationAnchorTo = TicketStatusFrame;
-	end
-
-	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
-	if reportNotificationShown then
-		BehavioralMessagingTray:ClearAllPoints();
-		if notificationAnchorTo ~= UIParent then
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
-		else
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
-		end
-
-		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+		buffOffset = math.max(buffOffset, frame:GetHeight());
 	end
 
 	if BuffFrame:IsInDefaultPosition() then
@@ -2322,6 +2342,7 @@ function ToggleGameMenu()
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
+	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then

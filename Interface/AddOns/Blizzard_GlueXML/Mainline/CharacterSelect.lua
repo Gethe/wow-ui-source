@@ -874,7 +874,7 @@ function CharacterSelect_SelectCharacter(index, noCreate)
         CharSelectEnterWorldButton:SetText(text);
 
 		if characterInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
-			if IsRPEBoostEligible(selectedCharacterID) and CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress) and not CharacterSelectUI:IsCollectionsActive() then
+			if IsRPEBoostEligible(selectedCharacterID) and not CharacterSelectUI:IsCollectionsActive() then
 				BeginCharacterServicesFlow(RPEUpgradeFlow, {});
 				if CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow == RPEUpgradeFlow and IsVeteranTrialAccount() then
 					CharSelectServicesFlow_Minimize(); --if they need to resubscribe, get the RPE flow out of the way.
@@ -997,8 +997,7 @@ function CharacterSelect_AllowedToEnterWorld()
         return false;
     end
 
-    local timerunningSeasonID = GetCharacterTimerunningSeasonID(guid);
-    if (timerunningSeasonID and not IsTimerunningEnabled()) then
+    if (IsCharacterTimerunning(guid) and not IsTimerunningEnabled()) then
         return false, TIMERUNNING_DISABLED_TOOLTIP;
     end
 
@@ -1155,12 +1154,16 @@ function AccountUpgradePanel_GetBannerInfo()
 		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
 		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
 		if shouldShowBanner then
+			-- TEMP CHANGE FOR 11.2.5: Show 12.0.0 expansion info for players with Brown Box
+			upgradeLevel = 11;
+			-- END TEMP CHANGE
+			
 			local expansionDisplayInfo = GetExpansionDisplayInfo(upgradeLevel);
 			if not expansionDisplayInfo then
 				return currentExpansionLevel, false;
 			end
 
-			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.features, expansionDisplayInfo.textureKit;
+			return currentExpansionLevel, shouldShowBanner, UPGRADE_ACCOUNT_SHORT, expansionDisplayInfo.features, expansionDisplayInfo.textureKit, upgradeLevel;
 		else
 			return currentExpansionLevel, shouldShowBanner;
 		end
@@ -1219,12 +1222,25 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI(contextKey)
-	local wasShown = StoreFrame_IsShown();
-    if ( not wasShown ) then
-        --We weren't showing, now we are. We should hide all other panels.
-        -- not sure if anything is needed here at the gluescreen
-    end
-    StoreFrame_SetShown(not wasShown, contextKey);
+	if not CharacterSelectUtil.IsStoreAvailable() then
+		return;
+	end
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
+		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
+	else
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
+		StoreFrame_SetShown(not wasShown, contextKey);
+	end
 end
 
 function SetStoreUIShown(shown)
@@ -2804,10 +2820,17 @@ function CollapsableUpgradeFrameMixin:OnLoad()
 end
 
 function CollapsableUpgradeFrameMixin:OnShow()
-	local currentExpansionLevel, _shouldShowBanner, upgradeButtonText, features, textureKit = AccountUpgradePanel_GetBannerInfo();
-	local upgradeLogo = GetDisplayedExpansionLogo(currentExpansionLevel);
-	self:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit);
-	self.ExpandBar.TrialBG:SetShown(currentExpansionLevel == nil);
+	local currentExpansionLevel, shouldShowBanner, upgradeButtonText, features, textureKit, upgradeLevel = AccountUpgradePanel_GetBannerInfo();
+
+	-- Necessary for an edge case where the player logs into a trial account then backs out and logs into a non-trial account
+	-- In that case, the upgrade panel is already shown when CharacterSelect becomes shown, so this OnShow gets called before EvaluateShownState hides it again
+	if shouldShowBanner ~= true then
+		self:Hide();
+		return;
+	end
+
+	local upgradeLogo = GetDisplayedExpansionLogo(upgradeLevel or currentExpansionLevel);
+	self:UpdateContent(upgradeButtonText, upgradeLogo, features);
 	self.textureKit = textureKit;
 	self:EvaluateCollapsedState();
 end
@@ -2865,11 +2888,10 @@ function CollapsableUpgradeFrameMixin:EvaluateCollapsedState()
 	CharacterSelect_UpdateGameRoomBillingFrameAnchors();
 end
 
-function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLogo, features, textureKit)
+function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLogo, features)
 	self.UpgradeButton:SetText(upgradeButtonText);
 
 	self.featureFramePool:ReleaseAll();
-
 
 	for index, feature in ipairs(features) do
 		if index <= self.MAX_UPGRADE_FEATURES then
@@ -2879,7 +2901,7 @@ function CollapsableUpgradeFrameMixin:UpdateContent(upgradeButtonText, upgradeLo
 			featureFrame.layoutIndex = index;
 			featureFrame:Show();
 		end
-    end
+	end
 
 	self.Features:Layout();
 	self.ExpandBar.Logo:SetTexture(upgradeLogo);

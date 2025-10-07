@@ -22,8 +22,8 @@ CompactUnitFrameProfiles.CVarOptions = {
 	pvpFramesHealthText							= "pvpHealthText",
 };
 
-function CompactUnitFrameProfiles:OnCVarChanged(name)
-	if self.variablesLoaded and self.CVarOptions[name] then
+function CompactUnitFrameProfiles:OnCVarChanged(_value)
+	if self.variablesLoaded then
 		self:ApplyCurrentSettings();
 	end
 end
@@ -35,7 +35,10 @@ end
 
 function CompactUnitFrameProfiles:Init()
 	EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
-	CVarCallbackRegistry:RegisterCVarChangedCallback(self.OnCVarChanged, self);
+
+	for cvar, _option in pairs(self.CVarOptions) do
+		CVarCallbackRegistry:RegisterCallback(cvar, self.OnCVarChanged, self);
+	end
 end
 
 

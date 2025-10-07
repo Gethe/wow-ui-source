@@ -361,7 +361,7 @@ end
 
 --------------------------------------------------
 -- Selection Choice Mixin (flyout choice shown by select mixins)
-ClassTalentSelectionChoiceMixin = CreateFromMixins(TalentSelectionChoiceMixin);
+ClassTalentSelectionChoiceMixin = CreateFromMixins(TalentSelectionChoiceArtMixin);
 
 function ClassTalentSelectionChoiceMixin:OnLoad()
 	-- Overrides TalentButtonArtMixin.
@@ -374,9 +374,9 @@ function ClassTalentSelectionChoiceMixin:OnLoad()
 end
 
 function ClassTalentSelectionChoiceMixin:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, selectionIndex)
-	-- Overrides TalentSelectionChoiceMixin.
+	-- Overrides TalentSelectionChoiceArtMixin.
 
-	TalentSelectionChoiceMixin.SetSelectionInfo(self, entryInfo, canSelectChoice, isCurrentSelection, selectionIndex);
+	TalentSelectionChoiceArtMixin.SetSelectionInfo(self, entryInfo, canSelectChoice, isCurrentSelection, selectionIndex);
 
 	local entryID = self:GetEntryID();
 	local nodeInfo = self:GetNodeInfo();
@@ -400,7 +400,7 @@ function ClassTalentSelectionChoiceMixin:AddTooltipInstructions(tooltip)
 	end
 	AssistedCombatManager:AddSpellTooltipLine(tooltip, self:GetSpellID(), self:GetOverriddenSpellID());
 
-	TalentSelectionChoiceMixin.AddTooltipInstructions(self, tooltip);
+	TalentSelectionChoiceArtMixin.AddTooltipInstructions(self, tooltip);
 end
 
 function ClassTalentSelectionChoiceMixin:GetActionBarStatus()

@@ -1214,6 +1214,16 @@ function GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, a
 	return arg2;
 end
 
+local function ShouldAddRecentAllyIconToName(frameChatType, senderGUID)
+	local isWhisper = (frameChatType == "WHISPER");
+	-- Don't add the icon if the chat frame is a whisper window
+	if not senderGUID or isWhisper then
+		return false;
+	end 
+
+	return C_RecentAllies.IsRecentAllyByGUID(senderGUID);
+end
+
 function RemoveExtraSpaces(str)
 	return string.gsub(str, "     +", "    ");	--Replace all instances of 5+ spaces with only 4 spaces.
 end
@@ -1705,6 +1715,10 @@ function ChatFrame_MessageEventHandler(self, event, ...)
 						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
 					else
 						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
+						local senderGUID = arg12;
+						if not usingEmote and ShouldAddRecentAllyIconToName(self.chatType, senderGUID) then
+							playerLink = playerLink .. " " .. CreateAtlasMarkup("friendslist-recentallies-yellow", 11, 11);
+						end
 					end
 				end
 

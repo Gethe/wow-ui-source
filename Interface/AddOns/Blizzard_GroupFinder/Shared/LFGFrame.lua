@@ -1987,7 +1987,7 @@ function LFGCooldownCover_SetUp(self, backfillFrame)
 	self:SetFrameLevel(self:GetParent():GetFrameLevel() + 9);
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");	--For logging in/reloading ui
-	self:RegisterEvent("UNIT_AURA");	--The cooldown is still technically a debuff
+	self:RegisterEvent("LFG_COOLDOWNS_UPDATED");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
 	self.backfillFrame = backfillFrame;
@@ -2004,11 +2004,8 @@ function LFGCooldownCover_ChangeSettings(self, showAll, showCooldown)
 end
 
 function LFGCooldownCover_OnEvent(self, event, ...)
-	local arg1 = ...;
-	if ( event ~= "UNIT_AURA" or arg1 == "player" or strsub(arg1, 1, 5) == "party" or strsub(arg1, 1, 4) == "raid" ) then
-		if ( self:GetParent():IsVisible() ) then --Otherwise, we should be updated when the parent is shown.
-			LFGCooldownCover_Update(self);
-		end
+	if ( self:GetParent():IsVisible() ) then --Otherwise, we should be updated when the parent is shown.
+		LFGCooldownCover_Update(self);
 	end
 end
 

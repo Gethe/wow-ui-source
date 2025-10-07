@@ -988,7 +988,7 @@
 			MultiActionButtonUp("MultiBar7", 12);
 		end
 	</Binding>
-	
+
 	<!-- Target function key bindings header="TARGETING" -->
 	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
 		if ( keystate == "down" ) then
@@ -1246,6 +1246,9 @@
 	</Binding>
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame();
+	</Binding>
+	<Binding name="TOGGLECOOLDOWNVIEWERSETTINGS" category="BINDING_HEADER_INTERFACE">
+		CooldownViewerSettings:TogglePanel();
 	</Binding>
 
 	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">

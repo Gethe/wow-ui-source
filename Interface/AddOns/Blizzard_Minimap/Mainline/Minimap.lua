@@ -26,7 +26,7 @@ local REMOVED_FILTERS = {
 };
 
 local ALWAYS_ON_FILTERS = {
-	[Enum.MinimapTrackingFilter.QuestPoIs] = true,
+	[Enum.MinimapTrackingFilter.QuestPOIs] = true,
 	[Enum.MinimapTrackingFilter.TaxiNode] = true,
 	[Enum.MinimapTrackingFilter.Innkeeper] = true,
 	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
@@ -834,6 +834,11 @@ function ExpansionLandingPageMinimapButtonMixin:SetBestLandingPageMode()
 end
 
 function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
+	if not GameRulesUtil.ShouldShowExpansionLandingPageButton() then
+		self:Hide();
+		return;
+	end
+
 	local previousMode = self.mode;
 	local wasInGarrisonMode = self:IsInGarrisonMode();
 	self:SetBestLandingPageMode();

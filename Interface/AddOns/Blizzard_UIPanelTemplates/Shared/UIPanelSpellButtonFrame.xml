@@ -7,6 +7,8 @@
 			<KeyValue key="spellID" value="" type="number"/>
 			<KeyValue key="labelText" value="" type="string"/>
 			<KeyValue key="resizeToText" value="true" type="boolean"/>
+			<KeyValue key="buttonBorderAtlas" value="" type="string"/>
+			<KeyValue key="buttonBorderAtlasSize" value="" type="number"/> <!~~ dimension for both width and height, if omitted then atlas size will be used ~~>
 			-->
 			<KeyValue key="textPadLeft" value="8" type="number"/>
 			<KeyValue key="textPadRight" value="4" type="number"/>

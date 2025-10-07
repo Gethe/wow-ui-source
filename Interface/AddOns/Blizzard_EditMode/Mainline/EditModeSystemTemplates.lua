@@ -1099,16 +1099,12 @@ function EditModeActionBarSystemMixin:UseSettingAltName(setting)
 end
 
 local function EnterQuickKeybindMode()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("hideSelections");
-	HideUIPanel(EditModeManagerFrame);
+	EditModeManagerFrame:CheckHideAndLockEditMode();
 	QuickKeybindFrame:Show();
 end
 
 local function OpenActionBarSettings()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("hideSelections");
-	HideUIPanel(EditModeManagerFrame);
+	EditModeManagerFrame:CheckHideAndLockEditMode();
 	Settings.OpenToCategory(Settings.ACTION_BAR_CATEGORY_ID);
 end
 
@@ -1137,9 +1133,7 @@ end
 EditModeUnitFrameSystemMixin = {};
 
 local function OpenRaidFrameSettings()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("hideSelections");
-	HideUIPanel(EditModeManagerFrame);
+	EditModeManagerFrame:CheckHideAndLockEditMode();
 	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, RAID_FRAMES_LABEL);
 end
 
@@ -1503,9 +1497,7 @@ end
 EditModeArenaUnitFrameSystemMixin = {};
 
 local function OpenPvpFrameSettings()
-	EditModeManagerFrame:ClearSelectedSystem();
-	EditModeManagerFrame:SetEditModeLockState("hideSelections");
-	HideUIPanel(EditModeManagerFrame);
+	EditModeManagerFrame:CheckHideAndLockEditMode();
 	Settings.OpenToCategory(Settings.INTERFACE_CATEGORY_ID, PVP_FRAMES_LABEL);
 end
 
@@ -2664,6 +2656,28 @@ function EditModeCooldownViewerSystemMixin:OnUpdateSystem(anySettingsDirty)
 	if anySettingsDirty then
 		self:RefreshLayout();
 	end
+end
+
+function EditModeCooldownViewerSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	local settingsButton = extraButtonPool:Acquire();
+	settingsButton.layoutIndex = 5;
+	settingsButton:SetText(HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS);
+	local fromEditMode = true;
+	settingsButton:SetOnClickHandler(function() CooldownViewerSettings:ShowUIPanel(fromEditMode); end);
+	settingsButton:Show();
+
+	local optionsButton = extraButtonPool:Acquire();
+	optionsButton.layoutIndex = 6;
+	optionsButton:SetText(HUD_EDIT_MODE_COOLDOWN_VIEWER_OPTIONS);
+	optionsButton:SetOnClickHandler(function()
+		local fromEditMode = true;
+		CooldownViewerSettings:ShowOptionsPanel(fromEditMode);
+	end);
+	optionsButton:Show();
+
+	return true;
 end
 
 local EditModeSystemSelectionLayout =

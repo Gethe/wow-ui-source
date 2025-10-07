@@ -107,7 +107,7 @@ function BNToastMixin:OnClick()
 			FriendsListFrame_ToggleInvites();
 		end
 
-		FriendsTabHeaderTab1:Click();
+		FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
 	elseif toastType == BN_TOAST_TYPE_ONLINE or toastType == BN_TOAST_TYPE_BROADCAST then
 		local accountInfo = C_BattleNet.GetAccountInfoByID(toastData);
 		if accountInfo then --This player may have been removed from our friends list, so we may not have a name.

@@ -39,11 +39,6 @@ FRIEND_TAB_WHO = 2;
 FRIEND_TAB_RAID = 3;
 FRIEND_TAB_QUICK_JOIN = 4;
 
-FRIEND_HEADER_TAB_COUNT = 2;	-- Updated in FriendsTabHeaderMixin:OnLoad based on whether RAF is enabled or not
-FRIEND_HEADER_TAB_FRIENDS = 1;
-FRIEND_HEADER_TAB_IGNORE = 2;
-FRIEND_HEADER_TAB_RAF = 3;
-
 local INVITE_RESTRICTION_NO_GAME_ACCOUNTS = 0;
 local INVITE_RESTRICTION_CLIENT = 1;
 local INVITE_RESTRICTION_LEADER = 2;
@@ -64,8 +59,8 @@ local playerRealmName;
 local playerFactionGroup;
 local whoSortValue = 1;
 
-FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "IgnoreListFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
-FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame", "IgnoreListFrame" };
+FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "RecentAlliesFrame", "WhoFrame", "RecruitAFriendFrame", "RaidFrame" };
+FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES = { "FriendsListFrame" };
 function FriendsFrame_ShowSubFrame(frameName)
 	local subFrames = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and FRIENDSFRAME_PLUNDERSTORM_SUBFRAMES or FRIENDSFRAME_SUBFRAMES;
 	for index, value in pairs(subFrames) do
@@ -79,6 +74,22 @@ function FriendsFrame_ShowSubFrame(frameName)
 			_G[value]:Hide();
 		end
 	end
+end
+
+function FriendsFrame_GetBestUIPanelWidth()
+	if FriendsFrame.IgnoreListWindow:IsShown() then
+		local padding = 10;
+		return FriendsFrame:GetWidth() + FriendsFrame.IgnoreListWindow:GetWidth() + padding;
+	end
+
+	return FriendsFrame:GetWidth();
+end
+
+-- The ignore list is anchored to the side of the FriendsFrame, but is part of the same UI
+-- We need to update UIPanelPositions when we hide/show the ignore list for cases where the player has other windows open
+function FriendsFrame_UpdateUIPanelWidth()
+	SetUIPanelAttribute(FriendsFrame, "width", FriendsFrame_GetBestUIPanelWidth());
+	UpdateUIPanelPositions(FriendsFrame);
 end
 
 function FriendsFrame_SummonButton_OnShow (self)
@@ -256,8 +267,8 @@ function FriendsFrame_OnLoad(self)
 		self:SetPoint("TOPLEFT", 50, -50);
 
 		-- disable non glue friend Tabs
-		FriendsTabHeader.Tab2:Hide();
-		FriendsTabHeader.Tab3:Hide();
+		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recentAlliesTabID, false);
+		FriendsTabHeader.TabSystem:SetTabShown(FriendsTabHeader.recruitAFriendTabID, false);
 		FriendsFrameTab1:Hide();
 		FriendsFrameTab2:Hide();
 		FriendsFrameTab3:Hide();
@@ -303,7 +314,7 @@ function FriendsFrame_OnLoad(self)
 			end
 		end);
 
-		ScrollUtil.InitScrollBoxListWithScrollBar(IgnoreListFrame.ScrollBox, IgnoreListFrame.ScrollBar, view);
+		ScrollUtil.InitScrollBoxListWithScrollBar(FriendsFrame.IgnoreListWindow.ScrollBox, FriendsFrame.IgnoreListWindow.ScrollBar, view);
 	end
 
 	-- Who list
@@ -339,6 +350,10 @@ local function IsRAFHelpTipShowing()
 end
 
 function FriendsFrame_OnShow(self)
+	EventRegistry:RegisterCallback("FriendsFrame.IgnoreListVisibilityChanged", FriendsFrame_UpdateUIPanelWidth);
+
+	FriendsFrame_UpdateUIPanelWidth();
+
 	local onGlues =  C_Glue.IsOnGlueScreen();
 	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
 	if not onGlues and not inPlunderstorm then
@@ -355,10 +370,14 @@ function FriendsFrame_OnShow(self)
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
 	if IsRAFHelpTipShowing() then
-		PanelTemplates_SetTab(FriendsTabHeader, 3);
+		local rafTabID = FriendsTabHeader.recruitAFriendTabID;
+		FriendsTabHeader:SelectTab(rafTabID);
 		if IsIntroRAFHelpTipShowing() then
 			RecruitAFriendFrame:ShowSplashScreen();
-			FriendsTabHeader.Tab3.New:Show();
+			local rafTabButton = FriendsTabHeader:GetTabButton(rafTabID);
+			if rafTabButton then
+				rafTabButton.New:Show();
+			end
 			HelpTip:Acknowledge(QuickJoinToastButton, RAF_INTRO_TUTORIAL_TEXT);
 		else
 			HelpTip:Acknowledge(QuickJoinToastButton, RAF_REWARD_TUTORIAL_TEXT);
@@ -368,7 +387,7 @@ function FriendsFrame_OnShow(self)
 	FriendsFrameBattlenetFrame.UnavailableInfoFrame:ClearAllPoints();
 	FriendsFrameBattlenetFrame.UnavailableInfoFrame:SetPoint("TOPLEFT", FriendsFrame, "TOPRIGHT", -2, -18);	
 	FriendsFrame_Update();
-	FriendsTabHeaderTab1:OnClick();
+	FriendsTabHeader:SelectTab(FriendsTabHeader.friendsTabID);
 
 	EventRegistry:RegisterCallback("GameMode.Selected", function()
 		self:Hide();
@@ -400,27 +419,27 @@ function FriendsFrame_Update()
 	FriendsFrame_UpdateInsetVisibility();
 
 	if selectedTab == FRIEND_TAB_FRIENDS then
-		local selectedHeaderTab = PanelTemplates_GetSelectedTab(FriendsTabHeader) or FRIEND_HEADER_TAB_FRIENDS;
+		local selectedHeaderTab = FriendsTabHeader:GetTab() or 1;
 
 		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
 		FriendsFrameInset:SetPoint("TOPLEFT", 4, -83);
 		FriendsFrameIcon:SetTexture("Interface\\FriendsFrame\\Battlenet-Portrait");
 
-		for i, Tab in ipairs(FriendsTabHeader.Tabs) do
+		for i, tab in ipairs(FriendsTabHeader:GetTabSet()) do
 			if i ~= selectedHeaderTab then
-				Tab.New:Hide();
+				local tabButton = FriendsTabHeader:GetTabButton(tab);
+				tabButton.New:Hide();
 			end
 		end
 
-		if selectedHeaderTab == FRIEND_HEADER_TAB_FRIENDS then
+		if selectedHeaderTab == FriendsTabHeader.friendsTabID then
 			C_FriendList.ShowFriends();
-			FriendsFrame:SetTitle(FRIENDS_LIST);
+			FriendsFrame:SetTitle(CONTACTS_LIST_TITLE);
 			FriendsFrame_ShowSubFrame("FriendsListFrame");
-		elseif selectedHeaderTab == FRIEND_HEADER_TAB_IGNORE then
-			FriendsFrame:SetTitle(IGNORE_LIST);
-			FriendsFrame_ShowSubFrame("IgnoreListFrame");
-			IgnoreList_Update();
-		elseif selectedHeaderTab == FRIEND_HEADER_TAB_RAF then
+		elseif selectedHeaderTab == FriendsTabHeader.recentAlliesTabID then
+			FriendsFrame:SetTitle(CONTACTS_RECENT_ALLIES_TITLE);
+			FriendsFrame_ShowSubFrame("RecentAlliesFrame");
+		elseif selectedHeaderTab == FriendsTabHeader.recruitAFriendTabID then
 			FriendsFrame:SetTitle(RECRUIT_A_FRIEND);
 			FriendsFrame_ShowSubFrame("RecruitAFriendFrame");
 		end
@@ -479,17 +498,26 @@ function FriendsFrame_OnHide(self)
 		end
 	end
 	FriendsFriendsFrame:Hide();
-	FriendsTabHeader.Tab3.New:Hide();
+	local rafTabButton = FriendsTabHeader:GetTabButton(FriendsTabHeader.recruitAFriendTabID);
+	if rafTabButton then
+		rafTabButton.New:Hide();
+	end
+	FriendsFrame.IgnoreListWindow:Hide();
 
-	EventRegistry:UnregisterCallback("GameMode.Selected", self);	
+	EventRegistry:UnregisterCallback("GameMode.Selected", self);
+	EventRegistry:UnregisterCallback("FriendsFrame.IgnoreListVisibilityChanged", self);
 end
 
 FriendsTabHeaderMixin = {};
 
 function FriendsTabHeaderMixin:OnLoad()
-	self:SetRAFSystemEnabled(C_RecruitAFriend.IsEnabled());
-	PanelTemplates_SetTab(self, 1);
+	TabSystemOwnerMixin.OnLoad(self);
+	self:SetTabSystem(self.TabSystem);
+
+	self:GenerateHeaderTabs();
+
 	self:RegisterEvent("RAF_SYSTEM_ENABLED_STATUS");
+	self:RegisterEvent("RECENT_ALLIES_SYSTEM_STATUS_UPDATED");
 
 	local bnetAFK, bnetDND = select(5, BNGetInfo());
 	if bnetAFK then
@@ -564,39 +592,75 @@ function FriendsTabHeaderMixin:OnLoad()
 	end
 end
 
+function FriendsTabHeaderMixin:OnShow()
+	self:RefreshTabVisibility();
+end
+
 function FriendsTabHeaderMixin:OnEvent(event, ...)
-	if event == "RAF_SYSTEM_ENABLED_STATUS" then
-		local rafEnabled = ...;
-		self:SetRAFSystemEnabled(rafEnabled);
+	if event == "RAF_SYSTEM_ENABLED_STATUS" or event == "RECENT_ALLIES_SYSTEM_STATUS_UPDATED" then
+		self:RefreshTabVisibility();
 	end
 end
 
-function FriendsTabHeaderMixin:SetRAFSystemEnabled(rafEnabled)
+function FriendsTabHeaderMixin:GenerateHeaderTabs()
+	self.friendsTabID = self:AddNamedTab(FRIENDS);
+	self.recentAlliesTabID = self:AddNamedTab(CONTACTS_RECENT_ALLIES_TAB_NAME);
+	self.recruitAFriendTabID = self:AddNamedTab(RECRUIT_A_FRIEND);
+end
+
+function FriendsTabHeaderMixin:RefreshTabVisibility()
+	-- Friends List Tab is always visible
+	self.TabSystem:SetTabShown(self.friendsTabID, true);
+
+	self.TabSystem:SetTabShown(self.recentAlliesTabID, C_RecentAllies.IsSystemEnabled());
+
+	local rafEnabled = C_RecruitAFriend.IsEnabled();
 	if rafEnabled then
 		local inGameFriendsListDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameFriendsListDisabled);
 		rafEnabled = not C_Glue.IsOnGlueScreen() and (not inGameFriendsListDisabled);
 	end
+	self.TabSystem:SetTabShown(self.recruitAFriendTabID, rafEnabled);
 
-	FRIEND_HEADER_TAB_COUNT = rafEnabled and 3 or 2;
+	self:TryUpdateInvalidTabSelection();
+end
 
-	local selectedHeaderTab = PanelTemplates_GetSelectedTab(FriendsTabHeader);
-	if not rafEnabled and selectedHeaderTab == FRIEND_HEADER_TAB_RAF then
-		PanelTemplates_SetTab(self, 1);
+function FriendsTabHeaderMixin:TryUpdateInvalidTabSelection()
+	local tabButton = self:GetTabButton();
+	local tabButtonIsVisible = tabButton and tabButton:IsShown();
+	if not tabButtonIsVisible then
+		self:SelectFirstAvailableTab();
+	end
+end
+
+function FriendsTabHeaderMixin:GetTabButton(tabID)
+	if tabID then
+		return self.TabSystem:GetTabButton(tabID);
+	end
+end
+
+function FriendsTabHeaderMixin:SelectTab(tabID)
+	if tabID then
+		self.TabSystem:SetTab(tabID);
 		FriendsFrame_Update();
 	end
+end
 
-	self.Tab3:SetShown(rafEnabled);
-	PanelTemplates_SetNumTabs(self, FRIEND_HEADER_TAB_COUNT);
-	PanelTemplates_UpdateTabs(self);
+function FriendsTabHeaderMixin:SelectFirstAvailableTab()
+	self:SelectTab(1);
 end
 
 -- Used for the sub-tabs within Friends
-FriendsTabMixin = {};
+FriendsTabMixin = CreateFromMixins(TabSystemButtonMixin);
+
+function FriendsTabMixin:OnLoad()
+	for _, tabTexture in ipairs(self.RotatedTextures) do
+		tabTexture:SetHeight(tabTexture:GetHeight() * 0.75);
+	end
+end
 
 function FriendsTabMixin:OnClick()
-	PanelTemplates_Tab_OnClick(self, FriendsTabHeader);
+	TabSystemButtonMixin.OnClick(self);
 	FriendsFrame_Update();
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 -- Used for the tabs at the bottom
@@ -866,7 +930,7 @@ function IgnoreList_Update()
 			dataProvider:Insert({squelchType=SQUELCH_TYPE_BLOCK_INVITE, index=index});
 		end
 	end
-	IgnoreListFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	FriendsFrame.IgnoreListWindow.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	local selectedSquelchType, selectedSquelchIndex = IgnoreList_GetSelected();
 
@@ -881,7 +945,7 @@ function IgnoreList_Update()
 		end
 	end
 
-	FriendsFrameUnsquelchButton:SetEnabled(hasSelection);
+	FriendsFrame.IgnoreListWindow.UnignorePlayerButton:SetEnabled(hasSelection);
 end
 
 function WhoList_InitButton(button, elementData)
@@ -915,6 +979,10 @@ function WhoList_InitButton(button, elementData)
 		button.tooltip1 = info.fullName;
 		button.tooltip2 = WHO_LIST_LEVEL_TOOLTIP:format(info.level);
 		button.tooltip3 = variableText;
+	else
+		button.tooltip1 = nil;
+		button.tooltip2 = nil;
+		button.tooltip3 = nil;
 	end
 
 	local selected = WhoFrame.selectedWho == index;
@@ -1215,7 +1283,7 @@ function FriendsFrame_SelectSquelched(squelchType, index)
 	FriendsFrame.selectedSquelchType = squelchType;
 
 	local function UpdateButtonSelection(type, index, selected)
-		local button = IgnoreListFrame.ScrollBox:FindFrameByPredicate(function(button, elementData)
+		local button = FriendsFrame.IgnoreListWindow.ScrollBox:FindFrameByPredicate(function(button, elementData)
 			return elementData.squelchType == type and elementData.index == index;
 		end);
 		if button then
@@ -1476,32 +1544,46 @@ function ToggleFriendsSubPanel(panelIndex)
 	local panelShown =
 		FriendsFrame:IsShown() and
 		PanelTemplates_GetSelectedTab(FriendsFrame) == FRIEND_TAB_FRIENDS and
-		FriendsTabHeader.selectedTab == panelIndex;
+		FriendsTabHeader:GetTab() == panelIndex;
 
 	if ( panelShown ) then
 		HideUIPanel(FriendsFrame);
 	else
 		PanelTemplates_SetTab(FriendsFrame, FRIEND_TAB_FRIENDS);
-		PanelTemplates_SetTab(FriendsTabHeader, panelIndex);
+		FriendsTabHeader:SelectTab(panelIndex);
 		FriendsFrame_Update();
 		ShowUIPanel(FriendsFrame);
 	end
 end
 
 function ToggleFriendsPanel()
-	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_FRIENDS);
+	ToggleFriendsSubPanel(FriendsTabHeader.friendsTabID);
 end
 
-function ToggleIgnorePanel()
-	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_IGNORE);
+function ToggleRecentAlliesPanel()
+	ToggleFriendsSubPanel(FriendsTabHeader.recentAlliesTabID);
 end
 
 function ToggleRafPanel()
-	ToggleFriendsSubPanel(FRIEND_HEADER_TAB_RAF);
+	ToggleFriendsSubPanel(FriendsTabHeader.recruitAFriendTabID);
 end
 
 function ToggleQuickJoinPanel()
 	ToggleFriendsFrame(FRIEND_TAB_QUICK_JOIN);
+end
+
+function ToggleIgnorePanel()
+	-- The ignore window is a child frame of the FriendsFrame so we either want to show them both or hide them both
+	local alreadyShowingFriendsFrame = FriendsFrame:IsShown();
+	if alreadyShowingFriendsFrame and not FriendsFrame.IgnoreListWindow:IsShown() then
+		-- If we're already showing the friends frame we just need to show the ignore list
+		FriendsFrame.IgnoreListWindow:Show();
+		return;
+	end
+
+	-- Otherwise show them both or hide them both
+	SetUIPanelShown(FriendsFrame, not alreadyShowingFriendsFrame);
+	FriendsFrame.IgnoreListWindow:SetShown(FriendsFrame:IsShown());
 end
 
 function WhoFrame_GetDefaultWhoCommand()
@@ -1539,8 +1621,10 @@ end
 -- Battle.net stuff starts here
 
 function FriendsFrame_CheckBattlenetStatus()
+	local frame = FriendsFrameBattlenetFrame;
+	frame.ContactsMenuButton:Refresh();
+	
 	if ( BNFeaturesEnabled() ) then
-		local frame = FriendsFrameBattlenetFrame;
 		if ( BNConnected() ) then
 			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
 			local _, battleTag = BNGetInfo();
@@ -1557,7 +1641,6 @@ function FriendsFrame_CheckBattlenetStatus()
 				frame:Hide();
 			end
 			frame.UnavailableLabel:Hide();
-			frame.BroadcastButton:Show();
 			frame.UnavailableInfoButton:Hide();
 			frame.UnavailableInfoFrame:Hide();
 		else
@@ -1565,10 +1648,9 @@ function FriendsFrame_CheckBattlenetStatus()
 			FriendsFrameBattlenetFrame_HideSubFrames();
 			frame.Tag:Hide();
 			frame.UnavailableLabel:Show();
-			frame.BroadcastButton:Hide();
 			frame.UnavailableInfoButton:Show();
 		end
-		if ( FriendsFrame:IsShown() ) then
+		if ( FriendsFrame.IgnoreListWindow:IsShown() ) then
 			IgnoreList_Update();
 		end
 		-- has its own check if it is being shown, after it updates the count on the QuickJoinToastButton
@@ -1869,22 +1951,14 @@ end
 
 FriendsBroadcastFrameMixin = {};
 
-function FriendsBroadcastFrameMixin:OnLoad()
-	self.BroadcastButton = self:GetParent().BroadcastButton;
-end
-
 function FriendsBroadcastFrameMixin:ShowFrame()
 	self:UpdateBroadcast();
 	self:Show();
 	self.EditBox:SetFocus();
-	self.BroadcastButton:SetNormalTexture("Interface\\FriendsFrame\\broadcast-hover");
-	self.BroadcastButton:SetPushedTexture("Interface\\FriendsFrame\\broadcast-pressed-hover");
 end
 
 function FriendsBroadcastFrameMixin:HideFrame()
 	self:Hide();
-	self.BroadcastButton:SetNormalTexture("Interface\\FriendsFrame\\broadcast-normal");
-	self.BroadcastButton:SetPushedTexture("Interface\\FriendsFrame\\broadcast-press");
 end
 
 function FriendsBroadcastFrameMixin:ToggleFrame()
@@ -2802,7 +2876,7 @@ function TravelPassButton_OnEnter(self)
 	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 
 	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
-		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName]), nil, nil, nil, true);
+		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName] or FACTION_NEUTRAL), nil, nil, nil, true);
 	end
 
 	if ( restriction == INVITE_RESTRICTION_NONE ) then
@@ -2924,5 +2998,73 @@ function WhoFrameColumnHeaderMixin:OnEnter()
 end
 
 function WhoFrameColumnHeaderMixin:OnLeave()
+	GameTooltip:Hide();
+end
+FriendsIgnoreListMixin = {};
+
+function FriendsIgnoreListMixin:OnLoad()
+	self:InitializeFrameVisuals();
+end
+
+function FriendsIgnoreListMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", true);
+	IgnoreList_Update();
+end
+
+function FriendsIgnoreListMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+	EventRegistry:TriggerEvent("FriendsFrame.IgnoreListVisibilityChanged", false);
+end
+
+function FriendsIgnoreListMixin:InitializeFrameVisuals()
+	ButtonFrameTemplate_HidePortrait(self);
+	self:SetTitle(IGNORE_LIST);
+
+	self.TopTileStreaks:Hide();
+	self.Inset:ClearAllPoints();
+	self.Inset:SetPoint("TOPLEFT", self, "TOPLEFT", 11, -28);
+	self.Inset:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 36);
+
+	self.ScrollBox:ClearAllPoints();
+	self.ScrollBox:SetPoint("TOPLEFT", self.Inset, 5, -5);
+	self.ScrollBox:SetPoint("BOTTOMRIGHT", self.Inset, -22, 2);
+end
+
+function FriendsIgnoreListMixin:ToggleFrame()
+	self:SetShown(not self:IsShown());
+	PlaySound(SOUNDKIT.IG_CHAT_EMOTE_BUTTON);
+end
+
+ContactsMenuMixin = {};
+
+function ContactsMenuMixin:OnShow()
+	self:Refresh();
+end
+
+function ContactsMenuMixin:Refresh()
+	self:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("CONTACTS_MENU");
+
+		local canUseBroadCastFrame = BNFeaturesEnabled() and BNConnected();
+		if canUseBroadCastFrame then
+			rootDescription:CreateButton(CONTACTS_MENU_BROADCAST_BUTTON_NAME, function()
+				self:GetParent().BroadcastFrame:ToggleFrame();		
+			end);
+		end
+
+		rootDescription:CreateButton(CONTACTS_MENU_IGNORE_BUTTON_NAME, function()
+			FriendsFrame.IgnoreListWindow:ToggleFrame();
+		end);
+	end);
+end
+
+function ContactsMenuMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, CONTACTS_MENU_NAME);
+	GameTooltip:Show();
+end
+
+function ContactsMenuMixin:OnLeave()
 	GameTooltip:Hide();
 end

@@ -133,6 +133,29 @@ function EditModeManagerFrameMixin:IsEditModeActive()
 	return self.editModeActive;
 end
 
+function EditModeManagerFrameMixin:CheckHideAndLockEditMode(lockState)
+	if self:IsEditModeActive() then
+		self:ClearSelectedSystem();
+		self:SetEditModeLockState(lockState or "hideSelections");
+		HideUIPanel(self);
+	end
+end
+
+function EditModeManagerFrameMixin:ShowIfActive()
+	if self:IsEditModeActive() then
+		ShowUIPanel(self);
+		return true;
+	end
+
+	return false;
+end
+
+function EditModeManagerFrameMixin:CreateEnterEditModeMenuButton(description, buttonText)
+	local button = description:CreateButton(buttonText, function() ShowUIPanel(self); end);
+	button:SetEnabled(self:CanEnterEditMode());
+	return button;
+end
+
 function EditModeManagerFrameMixin:SetEditModeLockState(lockState)
 	self.editModeLockState = lockState;
 end

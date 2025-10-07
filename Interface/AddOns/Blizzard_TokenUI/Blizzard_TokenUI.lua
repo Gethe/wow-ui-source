@@ -2,11 +2,19 @@ UIPanelWindows["TokenFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
 TokenHeaderMixin = {};
 
+function TokenHeaderMixin:OnLoad_TokenHeaderTemplate()
+	self:SetClickHandler(function(_header, button)
+		if button == "LeftButton" then
+			self:ToggleCollapsed();
+		end
+	end);
+end
+
 function TokenHeaderMixin:Initialize(elementData)
 	self.elementData = elementData;
 
-	self.Name:SetText(self.elementData.name or "");
-	self:RefreshCollapseIcon();
+	self:GetTitleRegion():SetText(self.elementData.name or "");
+	self:UpdateCollapsedState(self:IsCollapsed());
 end
 
 function TokenHeaderMixin:IsCollapsed()
@@ -17,23 +25,6 @@ function TokenHeaderMixin:ToggleCollapsed()
 	C_CurrencyInfo.ExpandCurrencyList(self.elementData.currencyIndex, self:IsCollapsed());
 	TokenFrame:Update();
 	TokenFramePopup:CloseIfHidden();
-end
-
-function TokenHeaderMixin:RefreshCollapseIcon()
-	self.Right:SetAtlas(self:IsCollapsed() and "Options_ListExpand_Right" or "Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
-	self.HighlightRight:SetAtlas(self:IsCollapsed() and "Options_ListExpand_Right" or "Options_ListExpand_Right_Expanded", TextureKitConstants.UseAtlasSize);
-end
-
-function TokenHeaderMixin:OnMouseDown()
-	self.Name:AdjustPointsOffset(1, -1);
-end
-
-function TokenHeaderMixin:OnMouseUp()
-	self.Name:AdjustPointsOffset(-1, 1);
-end
-
-function TokenHeaderMixin:OnClick()
-	self:ToggleCollapsed();
 end
 
 TokenEntryMixin = {};
@@ -57,7 +48,7 @@ function TokenEntryMixin:Initialize(elementData)
 
 	self.Content.CurrencyIcon:SetTexture(elementData.iconFileID);
 	self.Content.WatchedCurrencyCheck:SetShown(elementData.isShowInBackpack);
-	
+
 	self:RefreshHighlightVisuals();
 end
 
@@ -271,7 +262,7 @@ function TokenFrameMixin:OnLoad()
 			factory("TokenSubHeaderTemplate", Initializer);
 			return;
 		end
-		
+
 		factory("TokenEntryTemplate", Initializer);
 	end);
 
@@ -339,7 +330,7 @@ function TokenFrameMixin:OnShow()
 			local button = rootDescription:CreateRadio(GetCurrencyFilterTypeName(filterType), IsFilterTypeSelected, SetFilterTypeSelected, filterType);
 
 			local tooltipDescription = GetCurrencyFilterTypeTooltipDescription(filterType);
-			if tooltipDescription then				
+			if tooltipDescription then
 				button:SetTooltip(function(tooltip, elementDescription)
 					GameTooltip_AddHighlightLine(tooltip, tooltipDescription);
 				end);
@@ -516,7 +507,7 @@ function TokenFrameMixin:UpdatePopup(button)
 	TokenFramePopup.BackpackCheckbox:SetChecked(button.elementData.isShowInBackpack);
 
 	TokenFramePopup.CurrencyTransferToggleButton:Refresh(button.elementData);
-	
+
 	TokenFramePopup:SetHeight(TokenFramePopup:CalculateBestHeight());
 end
 
@@ -728,7 +719,7 @@ function BackpackTokenMixin:OnClick()
 			return;
 		end
 	end
-	
+
 	if IsModifiedClick("TOKENWATCHTOGGLE") then
 		C_CurrencyInfo.SetCurrencyBackpackByID(self.currencyID, false);
 		BackpackTokenFrame:Update();

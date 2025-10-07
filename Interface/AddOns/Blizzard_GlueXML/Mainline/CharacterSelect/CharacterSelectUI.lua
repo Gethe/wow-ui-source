@@ -646,8 +646,7 @@ function CharacterSelectHeaderMixin:Initialize(characterID)
 		self.Level:SetText(CHARACTER_SELECT_HEADER_INFO:format(self.basicCharacterInfo.experienceLevel));
 
 		local guid = self.basicCharacterInfo.guid;
-		local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid) or nil;
-		self.TimerunningIcon:SetShown(timerunningSeasonID ~= nil);
+		self.TimerunningIcon:SetShown(IsCharacterTimerunning(guid));
 
 		self:SetWidth(math.max(self.Name:GetStringWidth(), self.Level:GetStringWidth()));
 	end

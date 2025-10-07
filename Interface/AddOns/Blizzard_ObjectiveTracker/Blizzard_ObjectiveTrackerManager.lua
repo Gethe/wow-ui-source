@@ -154,7 +154,7 @@ function ObjectiveTrackerManager:CanShowPOIs(module)
 		self.questPOIEnabled = GetCVarBool("questPOI");
 		self.questPOIEnabledModules = { };
 		EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(self.OnCVarChanged, self);
+		CVarCallbackRegistry:RegisterCallback("questPOI", function(_, value) self:OnCVarChanged("questPOI", value); end, self);
 	end
 
 	if not self.questPOIEnabledModules[module] then

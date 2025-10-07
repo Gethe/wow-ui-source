@@ -41,7 +41,7 @@
 		</Scripts>
 	</Button>
 
-	<ContainedAlertFrame name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="DungeonCompletionAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="336" y="80"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -161,7 +161,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="AchievementAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="300" y="101"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -319,7 +319,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="CriteriaAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="CriteriaAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="256" y="84"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="0"/>
@@ -432,7 +432,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GuildChallengeAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GuildChallengeAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="270" y="75"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -546,7 +546,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GuildRenamedAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" mixin="GuildRenamedAlertMixin" virtual="true">
+	<ContainedAlertFrame name="GuildRenamedAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" mixin="GuildRenamedAlertMixin" virtual="true">
 		<Size x="270" y="75"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -659,7 +659,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="ScenarioLegionInvasionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="ScenarioLegionInvasionAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="311" y="78"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -718,7 +718,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="ScenarioAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="ScenarioAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="311" y="78"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -830,7 +830,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="MoneyWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="MoneyWonAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="249" y="71"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -885,7 +885,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="HonorAwardedAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="HonorAwardedAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="249" y="70"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -941,7 +941,7 @@
 	</ContainedAlertFrame>
 
 	<Texture name="LootUpgradeFrame_ArrowTemplate" hidden="false" alpha="0" alphaMode="BLEND" atlas="loottoast-arrow-blue" useAtlasSize="true" virtual ="true"/>
-	<ContainedAlertFrame name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="LootWonAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="276" y="96"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -1078,7 +1078,7 @@
 		<Color r="1" g="1" b="1"/>
 	</FontString>
 
-	<ContainedAlertFrame name="LootUpgradeFrameTemplate" parent="UIParent" hidden="true" alpha="0" frameStrata="DIALOG" frameLevel="1" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="LootUpgradeFrameTemplate" parent="UIParent" hidden="true" alpha="0" frameLevel="1" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="276" y="96"/>
 		<KeyValues>
 			<KeyValue key="numArrows" value="5" type="number"/>
@@ -1249,7 +1249,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="DigsiteCompleteToastFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="DigsiteCompleteToastFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="241" y="81"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1344,7 +1344,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="EntitlementDeliveredAlertFrameBaseTemplate" parent="UIParent" hidden="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="63" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="EntitlementDeliveredAlertFrameBaseTemplate" parent="UIParent" hidden="true" frameLevel="63" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="294" y="84"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -1488,7 +1488,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GarrisonBuildingAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GarrisonBuildingAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="317" y="82"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1581,7 +1581,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GarrisonRandomMissionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GarrisonRandomMissionAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="317" y="82"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1722,7 +1722,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GarrisonMissionAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GarrisonMissionAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="317" y="82"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -1811,7 +1811,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="GarrisonFollowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GarrisonFollowerAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="317" y="82"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -2113,7 +2113,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-    <ContainedAlertFrame name="GarrisonTalentAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="GarrisonTalentAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="317" y="82"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="170"/>
@@ -2206,7 +2206,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewRecipeLearnedAlertFrameTemplate" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="NewRecipeLearnedAlertFrameTemplate" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="312" y="89"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -2297,7 +2297,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="SkillLineSpecsUnlockedAlertFrameTemplate" mixin="SkillLineSpecsUnlockedAlertFrameMixin" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="SkillLineSpecsUnlockedAlertFrameTemplate" mixin="SkillLineSpecsUnlockedAlertFrameMixin" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="312" y="89"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -2388,7 +2388,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="WorldQuestCompleteAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="WorldQuestCompleteAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="337" y="78"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="128"/>
@@ -2462,7 +2462,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="LegendaryItemAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" inherits="AlertFrameTemplate" virtual="true">
+	<ContainedAlertFrame name="LegendaryItemAlertFrameTemplate" parent="UIParent" hidden="true" inherits="AlertFrameTemplate" virtual="true">
 		<Size x="302" y="119"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -2626,7 +2626,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="ItemAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="ItemAlertFrameMixin" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="ItemAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="ItemAlertFrameMixin" inherits="AlertFrameTemplate">
 		<Size x="276" y="96"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">
@@ -2726,7 +2726,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewPetAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewPetAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewPetAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewPetAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="PetToast-background" useAtlasSize="true">
@@ -2738,7 +2738,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewMountAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewMountAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewMountAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewMountAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="MountToast-background" useAtlasSize="true">
@@ -2750,7 +2750,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewToyAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewToyAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewToyAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewToyAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
@@ -2762,7 +2762,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewWarbandSceneAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewWarbandSceneAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewWarbandSceneAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewWarbandSceneAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="loottoast-camp" useAtlasSize="true">
@@ -2774,7 +2774,7 @@
 		</Layers>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewRuneforgePowerAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewRuneforgePowerAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewRuneforgePowerAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewRuneforgePowerAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="LootToast-MoreAwesome" useAtlasSize="true">
@@ -2792,7 +2792,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="NewCosmeticAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" mixin="NewCosmeticAlertFrameMixin" inherits="ItemAlertFrameTemplate">
+	<ContainedAlertFrame name="NewCosmeticAlertFrameTemplate" parent="UIParent" hidden="true" virtual="true" mixin="NewCosmeticAlertFrameMixin" inherits="ItemAlertFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="Background" atlas="CosmeticToast-Background" useAtlasSize="true">
@@ -2818,7 +2818,7 @@
 		</Frames>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="MonthlyActivityFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="MonthlyActivityFrameTemplate" parent="UIParent" hidden="true" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="256" y="84"/>
 		<Anchors>
 			<Anchor point="BOTTOM" x="0" y="0"/>

@@ -1068,7 +1068,6 @@ function WardrobeSetsCollectionContainerMixin:OnLoad()
 	end);
 	view:SetPadding(0,0,44,0,0);
 
-	local panExtent = buttonHeight;
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	g_selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Intrusive);

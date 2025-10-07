@@ -132,6 +132,17 @@ local TextureUtils =
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
 			},
 		},
+		{
+			Name = "SetURLTexture",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "url", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =

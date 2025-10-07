@@ -914,34 +914,37 @@ function ChallengeModeCompleteBannerMixin:PlayBanner(challengeCompletionInfo)
 				end
 			end
 		end
-		if(formatString) then
+		if(GameRulesUtil.ShouldShowMythicPlusRating() and formatString) then
 			local chatString = DUNGEON_SCORE_INCREASE_PARTY_MEMBERS:format(formatString);
 			local info = ChatTypeInfo["SYSTEM"];
 			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
 		end
 	end
 
-	local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true) <= 1;
-	if (challengeCompletionInfo.isEligibleForScore and ((challengeCompletionInfo.oldOverallDungeonScore and challengeCompletionInfo.newOverallDungeonScore) or (isOnlyRunThisSeason))) then
-		local gainedScore = challengeCompletionInfo.newOverallDungeonScore - challengeCompletionInfo.oldOverallDungeonScore;
-		local color = C_ChallengeMode.GetDungeonScoreRarityColor(challengeCompletionInfo.newOverallDungeonScore);
-		if (not color) then
-			color = HIGHLIGHT_FONT_COLOR;
-		end
-		self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(challengeCompletionInfo.newOverallDungeonScore, gainedScore))));
-
-		local showChatMessage = gainedScore or isOnlyRunThisSeason;
-		if(showChatMessage) then
-			local chatString;
-			if(challengeCompletionInfo.keystoneUpgradeLevels and challengeCompletionInfo.keystoneUpgradeLevels > 0) then
-				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(challengeCompletionInfo.newOverallDungeonScore), gainedScore, challengeCompletionInfo.keystoneUpgradeLevels);
-			else
-				chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(challengeCompletionInfo.newOverallDungeonScore), gainedScore);
+	if (GameRulesUtil.ShouldShowMythicPlusRating()) then
+		local isOnlyRunThisSeason = #C_MythicPlus.GetRunHistory(true, true, true) <= 1;
+		if (challengeCompletionInfo.isEligibleForScore and ((challengeCompletionInfo.oldOverallDungeonScore and challengeCompletionInfo.newOverallDungeonScore) or (isOnlyRunThisSeason))) then
+			local gainedScore = challengeCompletionInfo.newOverallDungeonScore - challengeCompletionInfo.oldOverallDungeonScore;
+			local color = C_ChallengeMode.GetDungeonScoreRarityColor(challengeCompletionInfo.newOverallDungeonScore);
+			if (not color) then
+				color = HIGHLIGHT_FONT_COLOR;
 			end
-			local info = ChatTypeInfo["SYSTEM"];
-			DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+			self.DescriptionLineThree:SetText(CHALLENGE_COMPLETE_DUNGEON_SCORE:format(color:WrapTextInColorCode(CHALLENGE_COMPLETE_DUNGEON_SCORE_FORMAT_TEXT:format(challengeCompletionInfo.newOverallDungeonScore, gainedScore))));
+
+			local showChatMessage = gainedScore or isOnlyRunThisSeason;
+			if(showChatMessage) then
+				local chatString;
+				if(challengeCompletionInfo.keystoneUpgradeLevels and challengeCompletionInfo.keystoneUpgradeLevels > 0) then
+					chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_KEYSTONE_UPGRADE_CHAT_LINK:format(color:WrapTextInColorCode(challengeCompletionInfo.newOverallDungeonScore), gainedScore, challengeCompletionInfo.keystoneUpgradeLevels);
+				else
+					chatString = CHALLENGE_MODE_TIMED_DUNGEON_SCORE_CHAT_LINK:format(color:WrapTextInColorCode(challengeCompletionInfo.newOverallDungeonScore), gainedScore);
+				end
+				local info = ChatTypeInfo["SYSTEM"];
+				DEFAULT_CHAT_FRAME:AddMessage(chatString, info.r, info.g, info.b, info.id);
+			end
 		end
 	end
+
 	local sortedUnitTokens = self:GetSortedPartyMembers();
 
 	self:Show();
@@ -1012,8 +1015,12 @@ end
 function ChallengeModeCompleteBannerMixin:CreateAndPositionPartyMembers(num)
 	local frameWidth, spacing, distance = 61, 22, -131;
 
-	CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
-	ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
+	if not GameRulesUtil.ShouldShowMythicPlusRating() then
+		distance = distance + 24;
+	end
+
+    CreateFrames(self, "PartyMembers", num, "ChallengeModeBannerPartyMemberTemplate");
+    ReanchorFrames(self.PartyMembers, "TOPLEFT", self.Title, "TOP", frameWidth, spacing, distance);
 end
 
 function ChallengeModeCompleteBannerMixin:PerformAnimOut()

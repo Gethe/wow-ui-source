@@ -14,8 +14,8 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
-	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true" justifyH="RIGHT">
+
+	<Frame name="ItemUpgradeStatTemplateLeft" inherits="ItemUpgradeStatTemplate" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="ItemLevelText" inherits="GameFontNormal" justifyH="RIGHT">
@@ -64,7 +64,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="ItemUpgradeEffectRowTemplate" virtual="true">
 		<Size x="382" y="100"/>
 		<Layers>
@@ -186,7 +186,7 @@
 				</FontString>
 			</Layer>
 		</Layers>
-		
+
 		<Frames>
 			<Frame parentKey="LeftItemLevel" hidden="true">
 				<Size x="180" y="24"/>
@@ -275,7 +275,7 @@
 							<TexCoords left="0.00781250" right="0.16406250" top="0.58203125" bottom="0.67773438"/>
 						</Texture>
 						<Texture parentKey="TextFrame" file="Interface\Reforging\Reforge-Texture" >
-							<Size x="348" y="73"/>	
+							<Size x="348" y="73"/>
 							<TexCoords left="0.13281250" right="0.81250000" top="0.00781250" bottom="0.57812500"/>
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="RIGHT" x="-10" />
@@ -313,7 +313,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Frame" file="Interface\Reforging\Reforge-Texture">
-							<Size x="78" y="77"/>	
+							<Size x="78" y="77"/>
 							<TexCoords left="0.81640625" right="0.96875000" top="0.00781250" bottom="0.60937500"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
@@ -323,14 +323,14 @@
 				</Layers>
 				<Frames>
 					<Frame parentKey="Cost" enableMouse="true" mixin="ItemUpgradeCurrencyMixin">
-						<Size x="32" y="13"/> 
+						<Size x="32" y="13"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TextFrame" relativePoint="BOTTOMRIGHT" x="-19" y="17"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture parentKey="Icon" hidden="true">
-									<Size x="13" y="13"/> 
+									<Size x="13" y="13"/>
 									<Anchors>
 										<Anchor point="RIGHT"/>
 									</Anchors>
@@ -338,7 +338,7 @@
 								<FontString parentKey="Amount" inherits="GameFontNormal" justifyH="RIGHT">
 									<Size x="0" y="12"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2" y=""/>
+										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-2"/>
 									</Anchors>
 									<Color r="1" g="1" b="1" a="1"/>
 								</FontString>
@@ -370,8 +370,8 @@
 				</Scripts>
 				<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
 				<HighlightTexture file="Interface\Reforging\Reforge-Texture" alphaMode="ADD">
-					<Size x="67" y="67"/>	
-					<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>	
+					<Size x="67" y="67"/>
+					<TexCoords left="0.00195313" right="0.12890625" top="0.00781250" bottom="0.51562500"/>
 				</HighlightTexture>
 			</Button>
 			<Frame parentKey="ButtonFrame">
@@ -462,7 +462,7 @@
 				</Scripts>
 			</Frame>
 		</Frames>
-		
+
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

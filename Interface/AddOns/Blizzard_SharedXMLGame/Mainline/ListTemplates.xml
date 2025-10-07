@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CollapseButtonTemplate" mixin="CollapseButtonMixin" registerForClicks="LeftButtonUp" propagateMouseInput="Both" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture alphaMode="ADD" alpha="0.4">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Button name="ListHeaderVisualTemplate" mixin="ListHeaderVisualMixin" virtual="true">
+		<Frames>
+			<Button parentKey="CollapseButton" inherits="CollapseButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" x="-6"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="1"/>
+				<Anchor point="RIGHT" relativeKey="$parent.CollapseButton" x="-4" y="1"/>
+			</Anchors>
+		</ButtonText>
+		<NormalTexture atlas="questlog-tab"/>
+		<HighlightTexture atlas="questlog-tab" alphaMode="ADD" alpha="0.4"/>
+		<NormalFont style="Game15Font_Shadow"/>
+		<HighlightFont style="Game15Font_Shadow"/>
+	</Button>
+
+	<Button name="ListHeaderCodeTemplate" mixin="ListHeaderMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+		</Scripts>
+	</Button>
+
+	<Button name="ListHeaderThreeSliceTemplate" inherits="ListHeaderCodeTemplate" mixin="ListHeaderThreeSliceMixin" virtual="true">
+		<Size y="26"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Left" atlas="Options_ListExpand_Left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Right" atlas="Options_ListExpand_Right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Middle" atlas="_Options_ListExpand_Middle" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormalLeft">
+					<Size y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Right" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightLeft" atlas="Options_ListExpand_Left" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightRight" atlas="Options_ListExpand_Right" useAtlasSize="true" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="HighlightMiddle" atlas="_Options_ListExpand_Middle" useAtlasSize="false" alphaMode="ADD" alpha="0.4" parentArray="HighlightTextureRegions">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

@@ -23,7 +23,7 @@ function LFGListPVEStub_OnShow(self)
 	LFGListFrame:SetFrameLevel(self:GetFrameLevel());
 
 	local filters = Enum.LFGListFilter.PvE;
-	if PVEFrame:TimerunningEnabled() then
+	if TimerunningUtil.TimerunningEnabledForPlayer() then
 		filters = bit.band(filters, Enum.LFGListFilter.Timerunning);
 	end
 	LFGListFrame_SetBaseFilters(LFGListFrame, filters);
@@ -262,7 +262,12 @@ function GroupFinderFrame_EvaluateButtonVisibility(self)
 		GroupFinderFrame_UpdateButtonAnchors(self);
 	else
 		GroupFinderFrame_SetupLFR(self, self.groupButton2);
-		GroupFinderFrame_SetupPremadeGroup(self, self.groupButton3);		
+		GroupFinderFrame_SetupPremadeGroup(self, self.groupButton3);
+
+		local spacing = -30;
+		self.groupButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, -101);
+		self.groupButton2:SetPoint("TOP", self.groupButton1, "BOTTOM", 0, spacing);
+		self.groupButton3:SetPoint("TOP", self.groupButton2, "BOTTOM", 0, spacing);
 	end
 end
 
@@ -309,7 +314,7 @@ function GroupFinderFrame_EvaluateHelpTips(self)
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};
-		if PVEFrame:TimerunningEnabled() then
+		if TimerunningUtil.TimerunningEnabledForPlayer() then
 			HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton4);
 		else
 			HelpTip:Show(self, helpTipInfo, GroupFinderFrameGroupButton3);
@@ -400,15 +405,11 @@ function PVEFrameMixin:OnLoad()
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
 
-function PVEFrameMixin:TimerunningEnabled()
-	return PlayerGetTimerunningSeasonID();
-end
-
 function PVEFrameMixin:ScenariosEnabled()
 	-- scenarios are currently only enabled in Timerunning
 	-- Keeping this seperate from the Timerunning check to leave 
 	-- room for Design to add other conditions
-	return self:TimerunningEnabled();
+	return GameRulesUtil.ScenariosEnabled();
 end
 
 function PVEFrameMixin:OnShow()
@@ -425,13 +426,12 @@ function PVEFrameMixin:OnShow()
 		end
 	end	
 
-	-- If timerunning enabled, hide PVP and M+, and re-anchor delves to Dungeons tab
-	if self:TimerunningEnabled() then
+	-- If timerunning enabled, hide PVP, M+, and delves tab
+	if TimerunningUtil.TimerunningEnabledForPlayer() then
+		self.tab1:Hide();
 		self.tab2:Hide();
 		self.tab3:Hide();
-		if self.tab4:IsShown() then
-			self.tab4:SetPoint("TOPLEFT", self.tab1, "TOPRIGHT", 3, 0);
-		end
+		self.tab4:Hide();
 	else
 	-- Otherwise, anchor Delves tab to PVP if M+ hidden, or to M+ if both are shown - to prevent a gap if the player is ineligible for M+ and we hide the tab
 		if self.tab4:IsShown() then

@@ -671,7 +671,7 @@ function ClassTalentsFrameMixin:UpdateTalentButtonPosition(talentButton)
 	end
 end
 
-function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo)
+function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
 	-- Overrides TalentFrameBaseMixin.
 
 	local posY = nodeInfo.posY;

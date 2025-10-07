@@ -355,6 +355,28 @@ function PerksProgramModelSceneContainerFrameMixin:Init()
 	self:SetupModelSceneForTransmogs(data, modelSceneID, forceSceneChange);
 end
 
+function PerksProgramModelSceneContainerFrameMixin:UpdatePlayerModel(data, forceSceneChange)
+	self.currentData = data;
+	local categoryID = self.currentData.perksVendorCategoryID;
+	
+	if categoryID == Enum.PerksVendorCategoryType.Mount then
+		local playerActor = self.MainModelScene:GetPlayerActor("player-rider");
+		local mountActor = self.MainModelScene:GetActorByTag(DEFAULT_MOUNT_ACTOR_TAG);
+
+		if (playerActor and mountActor) then
+			mountActor:DetachFromMount(playerActor);
+			playerActor:ClearModel();
+
+			local creatureName, spellID, icon, active, isUsable, sourceType = C_MountJournal.GetMountInfoByID(data.mountID);
+			local defaultCreatureDisplayID, descriptionText, sourceText, isSelfMount, _, _, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(data.mountID);
+			local useNativeForm = PerksProgramFrame:GetUseNativeForm();
+			self.MainModelScene:AttachPlayerToMount(mountActor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm);
+		end
+	else
+		self:OnProductSelected(self.currentData, forceSceneChange);
+	end
+end
+
 function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, forceSceneChange)
 	local oldData = self.currentData;
 	self.currentData = data;
@@ -429,7 +451,7 @@ function PerksProgramModelSceneContainerFrameMixin:OnFormChanged(useNativeForm)
 	PerksProgramFrame:SetUseNativeForm(useNativeForm);
 	if self.currentData then
 		local forceSceneChange = true;
-		self:OnProductSelected(self.currentData, forceSceneChange);
+		self:UpdatePlayerModel(self.currentData, forceSceneChange);
 	end
 end
 
@@ -495,7 +517,7 @@ function PerksProgramModelSceneContainerFrameMixin:OnCelebratePurchase(purchased
 end
 
 local function FlagsChanged(data)
-	if (data["autodress"] ~= nil) or (data["sheatheWeapon"] ~= nil) or (data["hideWeapon"] ~= nil) then 		
+	if (data["autodress"] ~= nil) or (data["sheatheWeapon"] ~= nil) or (data["hideWeapon"] ~= nil) or (data["noCameraSpin"] ~= nil) then 		
 		return true;
 	end
 	return false;

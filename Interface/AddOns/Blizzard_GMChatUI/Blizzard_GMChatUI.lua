@@ -180,20 +180,15 @@ function GMChatFrame_Close()
 	GMChatFrame:Hide();
 end
 
-function GMChatStatusFrame_OnLoad(self)
-	NineSliceUtil.ApplyUniqueCornersLayout(self.Pulse, "gmglow");
-	for index, region in enumerate_regions(self.Pulse) do
-		region:SetBlendMode("ADD");
-	end
-	self.Pulse.Anim:Play();
+GMChatStatusMixin = {};
 
-	self:SetWidth(math.max(self.TitleText:GetWidth(), self.SubtitleText:GetWidth()) + 50);
-	self:SetHeight(self.TitleText:GetHeight() + self.SubtitleText:GetHeight() + 20);
-
-	local bgR, bgG, bgB = TOOLTIP_DEFAULT_BACKGROUND_COLOR:GetRGB();
-	self.NineSlice:SetCenterColor(bgR, bgG, bgB, 1);
+function GMChatStatusMixin:OnLoad()
+	self.TitleText:SetText(GM_CHAT_STATUS_READY);
+	self.SubtitleText:SetText(GM_CHAT_STATUS_READY_DESCRIPTION);
+	StatusUIMixin.OnLoad(self);
 end
 
-function GMChatStatusFrame_OnClick()
+function GMChatStatusMixin:OnClick()
 	GMChatFrame_Show();
 end
+

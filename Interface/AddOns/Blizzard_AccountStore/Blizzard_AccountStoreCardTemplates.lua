@@ -295,7 +295,8 @@ function AccountStoreTransmogSetCardMixin:UpdateCardDisplay()
 			local members = C_WoWLabsMatchmaking.GetCurrentParty();
 			local playerRaceName, playerGender = GetPlayerActorName();
 			local overrideActorName = nil;
-			local playerActor = self.ModelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
+			local forceAlternateForm = nil;
+			local playerActor = self.ModelScene:GetPlayerActor(overrideActorName, forceAlternateForm, playerRaceName, playerGender);
 			if playerActor then
 				playerActor:ReleaseFrontEndCharacterDisplays();
 			end
@@ -309,14 +310,15 @@ function AccountStoreTransmogSetCardMixin:UpdateCardDisplay()
 			return playerActor;
 		else
 			local playerRaceName, playerGender, useNativeForm = GetPlayerActorName();
-			local overrideActorName = nil;
 			local flags = select(4, C_ModelInfo.GetModelSceneInfoByID(modelSceneID));
 			local sheatheWeapons = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
 			local hideWeapons = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
 			local autoDress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
 			local itemModifiedAppearanceIDs = nil; -- We set these below.
+			local overrideActorName = nil;
+			local forceAlternateForm = nil;
 			SetupPlayerForModelScene(self.ModelScene, overrideActorName, itemModifiedAppearanceIDs, sheatheWeapons, autoDress, hideWeapons, useNativeForm, playerRaceName, playerGender);
-			return self.ModelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
+			return self.ModelScene:GetPlayerActor(overrideActorName, forceAlternateForm, playerRaceName, playerGender);
 		end
 	end
 

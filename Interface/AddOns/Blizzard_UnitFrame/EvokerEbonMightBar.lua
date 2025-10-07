@@ -80,7 +80,7 @@ function EvokerEbonMightBarMixin:EvaluateUnit()
 end
 
 function EvokerEbonMightBarMixin:OnBarEnabled()
-	self:RegisterEvent("UNIT_AURA");
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 
 	self:UpdateArt();
 	self:UpdateMinMaxPower();

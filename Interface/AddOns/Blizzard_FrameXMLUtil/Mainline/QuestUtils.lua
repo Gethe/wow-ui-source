@@ -194,7 +194,7 @@ function QuestUtil.ApplyQuestIconActiveToTexture(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconActive(...));
 end
 
-local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency, _isRepeatable, _isImportant, _isMeta)
+local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency, _isRepeatable, _isImportant, _isMeta, questInfoID)
 	local quest = QuestCache:Get(questID);
 	-- allow for possible overrides. For most things, prefer what the client API classification returns
 	if isComplete == nil then
@@ -205,7 +205,7 @@ local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency
 		frequency = quest.frequency;
 	end
 
-	local classification = C_QuestInfoSystem.GetQuestClassification(questID);
+	local classification = C_QuestInfoSystem.GetQuestClassification(questID, questInfoID);
 	local isLegendary = classification == Enum.QuestClassification.Legendary;
 	local isRepeatable = classification == Enum.QuestClassification.Recurring;
 	local isImportant = classification == Enum.QuestClassification.Important;
@@ -216,10 +216,10 @@ local function GetQuestIconLookInfo(questID, isComplete, _isLegendary, frequency
 	return isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta;
 end
 
-function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant, isMeta)
+function QuestUtil.GetQuestIconOfferForQuestID(questID, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID)
 	local unusedIsComplete = false;
 	local isCampaign, isCalling;
-	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	unusedIsComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, unusedIsComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 	return QuestUtil.GetQuestIconOffer(isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 
@@ -227,9 +227,9 @@ function QuestUtil.ApplyQuestIconOfferToTextureForQuestID(texture, ...)
 	ApplyAssetToTexture(texture, QuestUtil.GetQuestIconOfferForQuestID(...));
 end
 
-function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta)
+function QuestUtil.GetQuestIconActiveForQuestID(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID)
 	local isCampaign, isCalling;
-	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+	isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta = GetQuestIconLookInfo(questID, isComplete, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 	return QuestUtil.GetQuestIconActive(isComplete, isLegendary, frequency, isRepeatable, isCampaign, isCalling, isImportant, isMeta);
 end
 

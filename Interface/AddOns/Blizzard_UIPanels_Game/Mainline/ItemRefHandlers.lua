@@ -144,12 +144,27 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.StoreCategory, function(link, text, linkData, contextData)
 	local category = string.split(":", linkData.options);
 	if category == "token" then
-		StoreFrame_SetTokenCategory();
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.SetTokenCategory();
+		else
+			StoreFrame_SetTokenCategory();
+		end
 		ToggleStoreUI();
 	elseif category == "games" then
-		StoreFrame_OpenGamesCategory();
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.OpenGamesCategory();
+		else
+			StoreFrame_OpenGamesCategory();
+		end
 	elseif category == "services" then
-		StoreFrame_SetServicesCategory();
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.SetServicesCategory();
+		else
+			StoreFrame_SetServicesCategory();
+		end
 		ToggleStoreUI();
 	elseif category == "gametime" then
 		StoreInterfaceUtil.OpenToSubscriptionProduct();

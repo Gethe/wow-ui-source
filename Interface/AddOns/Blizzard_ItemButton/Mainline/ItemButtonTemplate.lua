@@ -1,12 +1,3 @@
-ItemButtonConstants =
-{
-	ContextMatch =
-	{
-		Standard = 1,
-		RuneForging = 2,
-	},
-};
-
 function GetFormattedItemQuantity(quantity, maxQuantity)
 	if quantity > (maxQuantity or 9999) then
 		return "*";
@@ -228,7 +219,7 @@ local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppress
 
 	if color then
 		if itemIDOrLink then
-			if IsArtifactRelicItem(itemIDOrLink) then
+			if C_ItemSocketInfo.IsArtifactRelicItem(itemIDOrLink) then
 				SetItemButtonBorder(button, [[Interface\Artifacts\RelicIconFrame]]);
 			else
 				SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
@@ -289,7 +280,7 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 			button.IconOverlay2:SetAtlas("ConduitIconFrame-Corners");
 			button.IconOverlay2:Show();
 		end
-	elseif C_Item.IsCurioItem(itemIDOrLink) then
+	elseif C_Item.IsCurioItem(itemIDOrLink) or C_Item.IsRelicItem(itemIDOrLink) then
 		local color = GetButtonOverlayQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("delves-curios-icon-border");

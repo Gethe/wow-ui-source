@@ -197,35 +197,6 @@ function QuestSearcher:RestoreHeaderStates()
 	self.headerStates = nil;
 end
 
-QuestLogTabButtonMixin = { };
-
-function QuestLogTabButtonMixin:OnMouseDown(button)
-	if button == "LeftButton" then
-		self.Icon:SetPoint("CENTER", -1, -1);
-	end
-end
-
-function QuestLogTabButtonMixin:OnMouseUp(button, upInside)
-	if button == "LeftButton" then
-		self.Icon:SetPoint("CENTER", -2, 0);
-		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
-	end
-end
-
-function QuestLogTabButtonMixin:SetChecked(checked)
-	if checked then
-		self.Icon:SetAtlas(self.activeAtlas, TextureKitConstants.UseAtlasSize);
-	else
-		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize);
-	end
-	self.SelectedTexture:SetShown(checked);
-end
-
-function QuestLogTabButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
-	GameTooltip:SetText(self.tooltipText);
-end
-
 QuestLogMixin = { };
 
 function QuestLogMixin:GetPanelExtraWidth()
@@ -413,121 +384,35 @@ function QuestLogHeaderCodeMixin:GetButtonType()
 end
 
 function QuestLogHeaderCodeMixin:OnLoad()
-	local isMouseOver = false;
-	self:CheckHighlightTitle(isMouseOver);
-	self:SetPushedTextOffset(1, -1);
-end
+	ListHeaderMixin.OnLoad(self);
 
-function QuestLogHeaderCodeMixin:OnClick(button)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if button == "LeftButton" then
-		local info = C_QuestLog.GetInfo(self.questLogIndex);
-		if info then
-			if info.isCollapsed then
-				ExpandQuestHeader(self.questLogIndex);
-			else
-				CollapseQuestHeader(self.questLogIndex);
+	self:SetClickHandler(function(header, button)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		if button == "LeftButton" then
+			local info = C_QuestLog.GetInfo(self.questLogIndex);
+			if info then
+				if info.isCollapsed then
+					ExpandQuestHeader(self.questLogIndex);
+				else
+					CollapseQuestHeader(self.questLogIndex);
+				end
 			end
-		end
-	elseif button == "RightButton" then
-		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
-			rootDescription:SetTag("MENU_QUEST_MAP_FRAME");
+		elseif button == "RightButton" then
+			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+				rootDescription:SetTag("MENU_QUEST_MAP_FRAME");
 
-			rootDescription:CreateButton(QUEST_LOG_TRACK_ALL, function()
-				QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
-			end);
-
-			if QuestUtil.CanRemoveQuestWatch() then
-				rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
-					QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+				rootDescription:CreateButton(QUEST_LOG_TRACK_ALL, function()
+					QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, true);
 				end);
-			end
-		end);
-	end
-end
 
-function QuestLogHeaderCodeMixin:OnEnter()
-	local isMouseOver = true;
-	self:CheckHighlightTitle(isMouseOver);
-	self:CheckUpdateTooltip(isMouseOver);
-	if self.CollapseButton then
-		self.CollapseButton:LockHighlight();
-	end
-end
-
-function QuestLogHeaderCodeMixin:OnLeave()
-	local isMouseOver = false;
-	self:CheckHighlightTitle(isMouseOver);
-	self:CheckUpdateTooltip(isMouseOver);
-	if self.CollapseButton then
-		self.CollapseButton:UnlockHighlight();
-	end
-end
-
-function QuestLogHeaderCodeMixin:GetTitleRegion()
-	return self.ButtonText or self.Text;
-end
-
-function QuestLogHeaderCodeMixin:GetTitleColor(useHighlight)
-	return useHighlight and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
-end
-
-function QuestLogHeaderCodeMixin:IsTruncated()
-	return self:GetTitleRegion():IsTruncated();
-end
-
-function QuestLogHeaderCodeMixin:CheckHighlightTitle(isMouseOver)
-	local color = self:GetTitleColor(isMouseOver)
-	self:GetTitleRegion():SetTextColor(color:GetRGB());
-end
-
-function QuestLogHeaderCodeMixin:CheckUpdateTooltip(isMouseOver)
-	local tooltip = GetAppropriateTooltip();
-
-	if self:IsTruncated() and isMouseOver then
-		tooltip:ClearAllPoints();
-		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", 239, 0);
-		tooltip:SetOwner(self, "ANCHOR_PRESERVE");
-		GameTooltip_SetTitle(tooltip, self:GetTitleRegion():GetText(), nil, true);
-	else
-		tooltip:Hide();
-	end
-end
-
-function QuestLogHeaderCodeMixin:OnMouseDown()
-	local pressed = true;
-	if self.Text then
-		self.Text:AdjustPointsOffset(1, -1);
-	end
-	self.CollapseButton:UpdatePressedState(pressed);
-end
-
-function QuestLogHeaderCodeMixin:OnMouseUp()
-	local pressed = false;
-	if self.Text then
-		self.Text:AdjustPointsOffset(-1, 1);
-	end
-	self.CollapseButton:UpdatePressedState(pressed);
-end
-
-function QuestLogHeaderCodeMixin:UpdateCollapsedState(_displayState, info)
-	self.CollapseButton:UpdateCollapsedState(info.isCollapsed);
-end
-
-QuestLogHeaderCollapseButtonMixin = { };
-
-function QuestLogHeaderCollapseButtonMixin:UpdatePressedState(pressed)
-	if pressed then
-		self.Icon:AdjustPointsOffset(1, -1);
-	else
-		self.Icon:AdjustPointsOffset(-1, 1);
-	end
-end
-
-function QuestLogHeaderCollapseButtonMixin:UpdateCollapsedState(collapsed)
-	local atlas = collapsed and "questlog-icon-expand" or "questlog-icon-shrink";
-	self.Icon:SetAtlas(atlas, true);
-	self:SetHighlightAtlas(atlas);
+				if QuestUtil.CanRemoveQuestWatch() then
+					rootDescription:CreateButton(QUEST_LOG_UNTRACK_ALL, function()
+						QuestMapFrame:SetHeaderQuestsTracked(self.questLogIndex, false);
+					end);
+				end
+			end);
+		end
+	end);
 end
 
 function QuestMapFrame_OnLoad(self)
@@ -565,13 +450,13 @@ function QuestMapFrame_OnLoad(self)
 	QuestMapFrame_SetupSettingsDropdown(self);
 
 	local function TabHandler(tab, button, upInside)
-		QuestLogTabButtonMixin.OnMouseUp(tab, button, upInside);
 		if button == "LeftButton" and upInside then
 			self:SetDisplayMode(tab.displayMode);
 		end
 	end
+
 	for i, frame in ipairs(self.TabButtons) do
-		frame:SetScript("OnMouseUp", TabHandler);
+		frame:SetCustomOnMouseUpHandler(TabHandler);
 	end
 
 	self:SetDisplayMode(QuestLogDisplayMode.Quests);
@@ -1847,6 +1732,9 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local questID = info.questID;
 	local questLogIndex = info.questLogIndex;
 
+	button:ClearAllPoints();
+	button:SetPoint("TOPLEFT"); -- Anchor for height calculation, will be reanchored by VerticalLayoutFrame
+
 	button.info = info;
 	button.questID = questID;
 	button.questLogIndex = questLogIndex;
@@ -2005,7 +1893,7 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 end
 
 local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, info)
-	button:UpdateCollapsedState(displayState, info);
+	button:UpdateCollapsedState(info.isCollapsed);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
 
@@ -2047,7 +1935,7 @@ function CovenantCallingsHeaderMixin:UpdateText()
 end
 
 function CovenantCallingsHeaderMixin:UpdateCollapsedState(displayState, info)
-	QuestLogHeaderCodeMixin.UpdateCollapsedState(self, displayState, info);
+	ListHeaderMixin.UpdateCollapsedState(self, info.isCollapsed);
 	self.SelectedHighlight:SetShown(not info.isCollapsed);
 end
 

@@ -172,7 +172,7 @@ StaticPopupDialogs["PETRENAMECONFIRM"] = {
 		C_PetInfo.PetRename(data.newName, data.petNumber);
 	end,
 	OnUpdate = function(dialog, elapsed)
-		if ( not UnitExists("pet") and not data.petNumber ) then
+		if ( not UnitExists("pet") and not dialog.data.petNumber ) then
 			dialog:Hide();
 		end
 	end,
@@ -1464,6 +1464,10 @@ StaticPopupDialogs["PERKS_PROGRAM_DISABLED"] = {
 StaticPopupDialogs["REMIX_END_OF_EVENT_NOTICE"] = {
     text = REMIX_END_OF_EVENT_NOTICE,
     button1 = OKAY,
+	OnShow = function(dialog, _data)
+		local dialogText = GameRulesUtil.IsTimerunningSeasonActive() and REMIX_EARLY_CHARACTER_CONVERSION_NOTICE or REMIX_END_OF_EVENT_NOTICE;
+		dialog:SetText(dialogText);
+	end,
 }
 
 StaticPopupDialogs["CONFIRM_PROFESSION_RESPEC"] = {

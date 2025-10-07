@@ -283,6 +283,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsPlayerInTimerunningHeroicWorldTier",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inTimerunningHeroicWorldTier", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerNPERestricted",
 			Type = "Function",
 

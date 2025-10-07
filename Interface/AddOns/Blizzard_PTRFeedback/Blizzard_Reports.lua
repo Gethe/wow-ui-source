@@ -94,7 +94,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
     end
     
     local IsTimerunningActive = function()
-        if (C_UnitAuras.GetPlayerAuraBySpellID(424143)) then
+        if (C_UnitAuras.GetPlayerAuraBySpellID(1213439)) then
             return 1
         end
         

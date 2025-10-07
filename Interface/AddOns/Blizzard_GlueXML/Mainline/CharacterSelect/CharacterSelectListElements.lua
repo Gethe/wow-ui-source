@@ -242,6 +242,8 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 
 	self:UpdateVASState();
 
+	self:UpdateTimerunningConversionState();
+
 	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
 	local arrowShown = self:CanSelect() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self.characterID);
 	self:SetArrowButtonShown(arrowShown);
@@ -263,6 +265,10 @@ function CharacterSelectListCharacterMixin:GetCharacterInfo()
 	return self.characterInfo;
 end
 
+local function ShouldHideCharacterListTokens()
+	return CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown();
+end
+
 function CharacterSelectListCharacterMixin:UpdateVASState()
 	local paidServiceButton = self.PaidServiceButton;
 	local restoreCharacterServiceFrame = self.RestoreCharacterServiceFrame;
@@ -273,7 +279,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	notificationButton:SetHasInProgress(false, tooltip1, tooltip2);
 	restoreCharacterServiceFrame:Hide();
 
-	if CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown() then
+	if ShouldHideCharacterListTokens() then
 		paidServiceButton:Hide();
 		return;
 	end
@@ -365,6 +371,36 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 		end
 	else
 		paidServiceButton:Hide();
+	end
+end
+
+function CharacterSelectListCharacterMixin:UpdateTimerunningConversionState()
+	if not GameRulesUtil.IsTimerunningSeasonActive() then
+		return;
+	end
+
+	if not self.EarlyTimerunningConversionButton then
+		self.EarlyTimerunningConversionButton = CreateFrame("BUTTON", nil, self, "TimerunningConversionButtonTemplate");
+		self.EarlyTimerunningConversionButton:SetPoint("RIGHT", self, "LEFT", -5, 0);
+	end
+
+	local earlyTimerunningConversionButton = self.EarlyTimerunningConversionButton;
+
+	if not self:IsSelected() or ShouldHideCharacterListTokens() or CharacterSelect.undeleting then
+		earlyTimerunningConversionButton:Hide();
+		return;
+	end
+
+	local guid = self:GetCharacterGUID();
+	if guid then
+		local charTimerunningConversionAllowed = IsCharacterTimerunningConversionAllowed(guid);
+
+		if charTimerunningConversionAllowed then
+			earlyTimerunningConversionButton:SetPoint("RIGHT", self.PaidServiceButton:IsShown() and self.PaidServiceButton or self ,"LEFT" ,-5, 0);
+			earlyTimerunningConversionButton:Show();
+		else
+			earlyTimerunningConversionButton:Hide();
+		end
 	end
 end
 
@@ -1071,7 +1107,12 @@ function CharacterSelectListNotificationButtonMixin:OnClickLock()
 	local isAccountLocked = self.lockCharacterSelectButton.isAccountLocked;
 	if not isAccountLocked and self:CanUnlockByExpansionPurchase() then
 		ToggleStoreUI();
-		StoreFrame_SetGamesCategory();
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.SetGamesCategory();
+		else
+			StoreFrame_SetGamesCategory();
+		end
 		return;
 	end
 
@@ -1155,7 +1196,12 @@ function CharacterSelectListNotificationButtonMixin:ShowStoreFrameForBoostType(b
 		ToggleStoreUI();
 	end
 
-	StoreFrame_SelectBoost(boostType, reason, guid);
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		CatalogShopInboundInterface.SelectBoost(boostType, reason, guid);
+	else
+		StoreFrame_SelectBoost(boostType, reason, guid);
+	end
 end
 
 

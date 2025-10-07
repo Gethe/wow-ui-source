@@ -104,19 +104,6 @@ function CharacterFrameMixin:OnLoad()
 	PanelTemplates_SetTab(self, 1);
 end
 
-function CharacterFrameMixin:SetPortraitToSpecIcon()
-	local specialization = C_SpecializationInfo.GetSpecialization();
-	local icon = specialization ~= nil and select(4, C_SpecializationInfo.GetSpecializationInfo(specialization));
-	if not icon then
-		local name, fileName, classID = UnitClass("player");
-		self:SetPortraitToClassIcon(fileName);
-		return;
-	end
-
-	self:SetPortraitTexCoord(0, 1, 0, 1);
-	self:SetPortraitToAsset(icon);
-end
-
 function CharacterFrameMixin:UpdatePortrait()
 	local useSpecIcon = self.activeSubframe == "PaperDollFrame";
 	if useSpecIcon then
@@ -406,7 +393,7 @@ CharacterFrameTabButtonMixin = {};
 
 function CharacterFrameTabButtonMixin:OnClick(button)
 	PanelTemplates_Tab_OnClick(self, CharacterFrame);
-	
+
 	local name = self:GetName();
 	if ( name == "CharacterFrameTab1" ) then
 		ToggleCharacter("PaperDollFrame");

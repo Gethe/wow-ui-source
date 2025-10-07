@@ -224,7 +224,7 @@ function ClassTalentImportExportMixin:ImportLoadout(importText, loadoutName)
 
 	local newConfigHasPurchasedRanks = #loadoutEntryInfo > 0;
 	local configInfo = C_Traits.GetConfigInfo(configID);
-	local success, errorString = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName);
+	local success, errorString = C_ClassTalents.ImportLoadout(configID, loadoutEntryInfo, loadoutName, importText);
 	if(not success) then
 		self:ShowImportError(errorString or LOADOUT_ERROR_IMPORT_FAILED);
 		return false;
@@ -258,7 +258,7 @@ function ClassTalentImportExportMixin:ViewLoadout(importText, level)
 
 	local loadoutContent = self:ReadLoadoutContent(importStream, treeID);
 	local loadoutEntryInfo = self:ConvertToImportLoadoutEntryInfo(configID, treeID, loadoutContent);
-	return C_ClassTalents.ViewLoadout(loadoutEntryInfo), specID;
+	return C_ClassTalents.ViewLoadout(loadoutEntryInfo, importText), specID;
 end
 
 -- Returns true if all elements in the treehash are zero

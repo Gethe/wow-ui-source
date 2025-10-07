@@ -206,7 +206,8 @@ function CharacterSelectListMixin:InitScrollBox()
 
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
-	local left = 82;
+	local counterPositioning = select(4, self.ScrollBox:GetPointByName("TOPLEFT"));
+	local left = math.abs(counterPositioning - 10);
 	local pad = 0;
 	local spacing = 2;
 	view:SetPadding(pad, pad, left, pad, spacing);

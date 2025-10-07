@@ -21,6 +21,7 @@ EmoteList = {
 	"SIT",
 	"SLEEP",
 	"KNEEL",
+	"LEAN",
 };
 
 -- list of text emotes that we want to show on the Speech submenu (these have sounds)

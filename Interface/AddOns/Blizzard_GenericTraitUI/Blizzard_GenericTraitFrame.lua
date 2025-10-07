@@ -383,7 +383,7 @@ function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 	end
 end
 
-function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo)
+function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
 	-- Overrides TalentFrameBaseMixin.
 
 	-- Layer the nodes so shadows line up properly, including for edges.

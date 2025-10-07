@@ -366,6 +366,11 @@ function ObjectiveTrackerBlockMixin:AddRightEdgeFrame(settings, identifier, ...)
 	return frame;
 end
 
+function ObjectiveTrackerBlockMixin:HasActiveAnim()
+	-- Can override in derived mixins
+	return false;
+end
+
 ObjectiveTrackerBlockHeaderMixin = { };
 
 function ObjectiveTrackerBlockHeaderMixin:OnLoad()

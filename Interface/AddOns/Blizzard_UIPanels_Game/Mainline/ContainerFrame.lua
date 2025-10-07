@@ -1382,7 +1382,7 @@ function ContainerFrameItemButton_OnClick(self, button)
 				local info = C_Container.GetContainerItemInfo(self:GetBagID(), self:GetID());
 				local itemID = info and info.itemID;
 				if itemID then
-					if IsArtifactRelicItem(itemID) then
+					if C_ItemSocketInfo.IsArtifactRelicItem(itemID) then
 						if C_ArtifactUI.CanApplyArtifactRelic(itemID, false) then
 							C_Container.SocketContainerItem(self:GetBagID(), self:GetID());
 						elseif C_ArtifactUI.GetEquippedArtifactInfo() then
