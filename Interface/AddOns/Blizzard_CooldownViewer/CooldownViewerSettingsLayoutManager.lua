@@ -304,7 +304,9 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownOrderToLayout(layout, ord
 	-- NOTE: This should not trigger pending changes because its called when deserializing.
 	-- NOTE: This must be a copy to ensure that tables are never reused because of how the dataProvider
 	-- can pass its displayIDs to the current layout, we don't want to directly reference those.
-	layout.orderedCooldownIDs = CopyTable(orderedCooldownIDs);
+	if orderedCooldownIDs then
+		layout.orderedCooldownIDs = CopyTable(orderedCooldownIDs);
+	end
 end
 
 function CooldownViewerLayoutManagerMixin:ReadCooldownOrderFromLayout(layout)

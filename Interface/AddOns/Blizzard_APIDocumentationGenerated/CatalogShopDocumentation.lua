@@ -203,6 +203,11 @@ local CatalogShop =
 		{
 			Name = "OpenCatalogShopInteraction",
 			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "ProductDisplayedTelemetry",
@@ -258,6 +263,10 @@ local CatalogShop =
 			Name = "CatalogShopDataRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DATA_REFRESH",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopDisabled",
@@ -268,11 +277,19 @@ local CatalogShop =
 			Name = "CatalogShopFetchFailure",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_FAILURE",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopFetchSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_SUCCESS",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopOpenSimpleCheckout",
@@ -433,7 +450,6 @@ local CatalogShop =
 				{ Name = "wideCardBGTexture", Type = "string", Nilable = true },
 				{ Name = "wideCardFGTexture", Type = "string", Nilable = true },
 				{ Name = "previewIconTexture", Type = "string", Nilable = true },
-				{ Name = "hasTimeRemaining", Type = "bool", Nilable = false },
 				{ Name = "optionalWideCardBackgroundTexture", Type = "string", Nilable = true },
 				{ Name = "isBundle", Type = "bool", Nilable = false },
 				{ Name = "bundleChildrenSize", Type = "number", Nilable = false },
@@ -442,6 +458,7 @@ local CatalogShop =
 				{ Name = "virtualCurrencies", Type = "table", InnerType = "CatalogShopVirtualCurrency", Nilable = false },
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
+				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
 			},
 		},
 		{

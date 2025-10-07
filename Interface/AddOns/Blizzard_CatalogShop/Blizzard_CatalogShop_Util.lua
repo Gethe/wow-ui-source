@@ -1128,7 +1128,7 @@ function CatalogShopUtil.GetTypeText(productInfo)
 	local secureEnv = GetCurrentEnvironment();
 	if (productInfo.type) then
 		if (productInfo.isBundle or false) then
-			return string.format(secureEnv[productInfo.type], productInfo.bundleChildrenSize);
+			return string.format(secureEnv[productInfo.type], productInfo.numBundleDetailCards);
 		else
 			return secureEnv[productInfo.type];
 		end

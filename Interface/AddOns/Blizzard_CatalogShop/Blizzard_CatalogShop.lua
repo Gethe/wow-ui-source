@@ -47,7 +47,8 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
-	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED")
+	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
+	self:RegisterEvent("BN_DISCONNECTED");
 	-- RNM: Removed becuase this was no longer used in Shop 2.0 
 	-- self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 	self:InitVariables();
@@ -92,6 +93,8 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self.JustFinishedOrdering = false;
 	self.JustOrderedBoost = false;
 	self.justPurchasedProductID = nil;
+	self.shoppingSessionUUIDStr = nil;
+	self.failedLoad = false;
 	local useNativeForm = true;
 	self:SetUseNativeForm(useNativeForm);
 
@@ -256,8 +259,20 @@ end
 
 function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	if event == "CATALOG_SHOP_DATA_REFRESH" then
-		--... handle it
+		local shoppingSessionUUIDStr = ...;
+		if shoppingSessionUUIDStr and (shoppingSessionUUIDStr ~= self.shoppingSessionUUIDStr) then
+			return;
+		end
+
 		self.categoryIDs = C_CatalogShop.GetAvailableCategoryIDs();
+
+		-- Empty list of categories makes the shop unusable
+		if (self.categoryIDs == nil) or (#self.categoryIDs == 0) then
+			self.failedLoad = true;
+			self:HideLoadingScreen();
+			self:ShowUnavailableScreen();
+		end
+
 		self.HeaderFrame:SetCategories(self.categoryIDs);
 	elseif event == "CATALOG_SHOP_REBUILD_SCROLL_BOX" then
 		local resetSelection = false;
@@ -284,13 +299,27 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		end
 
 	elseif event =="CATALOG_SHOP_FETCH_SUCCESS" then
+		local shoppingSessionUUIDStr = ...;
+		if shoppingSessionUUIDStr and (shoppingSessionUUIDStr ~= self.shoppingSessionUUIDStr) then
+			return;
+		end
+
+		if self.failedLoad then
+			return;
+		end
+
 		self:HideLoadingScreen();
 		self:HideUnavailableScreen();
 	elseif event =="CATALOG_SHOP_FETCH_FAILURE" then
+		local shoppingSessionUUIDStr = ...;
+		if shoppingSessionUUIDStr and (shoppingSessionUUIDStr ~= self.shoppingSessionUUIDStr) then
+			return;
+		end
+
 		-- handle error
+		self.failedLoad = true;
 		self:HideLoadingScreen();
 		self:ShowUnavailableScreen();
-
 	elseif event =="CATALOG_SHOP_PURCHASE_SUCCESS" then
 		local justPurchasedProductID = ...;
 
@@ -327,6 +356,8 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
 		--	// Finish implementation when completing [WOW11-144188]
 		--...handle it
+	elseif (event == "BN_DISCONNECTED") then
+		self:Hide();
 	end
 end
 
@@ -363,7 +394,7 @@ function CatalogShopMixin:OnShow()
 		GlueParent_AddModalFrame(self);
 	end
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + CatalogShopConstants.ScreenPadding.Horizontal, self:GetHeight() + CatalogShopConstants.ScreenPadding.Vertical);
-	C_CatalogShop.OpenCatalogShopInteraction();
+	self.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteraction();
 end
 
 function CatalogShopMixin:OnHide()
@@ -394,6 +425,9 @@ function CatalogShopMixin:OnHide()
 	self.ProductDetailsContainerFrame:Hide();
 	self.ForegroundContainer:Hide();
 	self:SetCatalogShopLinkTag(nil);
+	self:HideLoadingScreen();
+	self.shoppingSessionUUIDStr = nil;
+	self.failedLoad = false;
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
@@ -419,7 +453,7 @@ end
 
 function CatalogShopMixin:SetCatalogShopLinkTag(linkTag)
 	if self:IsShown() then
-		self.HeaderFrame.CatalogShopNavBar:SelectCatorgyByLinkTag(linkTag);
+		self.HeaderFrame.CatalogShopNavBar:SelectCategoryByLinkTag(linkTag);
 		self.linkTag = nil;
 	else
 		self.linkTag = linkTag;
@@ -542,11 +576,11 @@ function CatalogShopMixin:ShowProductDetails()
 end
 
 function CatalogShopMixin:AcceptError()
-	if ( self.CatalogShopErrorFrame:ErrorNeedsAck() ) then
+	if self.CatalogShopErrorFrame.ErrorNeedsAck then
 		-- TODO fix this C_StoreSecure call
 		C_StoreSecure.AckFailure();
 	end
-	StoreFrame.CatalogShopErrorFrame:Hide();
+	self.CatalogShopErrorFrame:Hide();
 	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
 end
 

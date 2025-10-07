@@ -264,8 +264,10 @@ function CooldownViewerSettingsDataProviderMixin:ChangeOrderIndex(sourceIndex, d
 			table.insert(cooldownIDs, finalDestIndex, sourceID);
 
 			layoutManager:WriteCooldownOrderToActiveLayout(cooldownIDs);
-			self:TriggerDataChangeInternal();
 		end
+
+		-- Updates were prevented in the first change, ensure that things are updated now.
+		self:TriggerDataChangeInternal();
 	end
 end
 

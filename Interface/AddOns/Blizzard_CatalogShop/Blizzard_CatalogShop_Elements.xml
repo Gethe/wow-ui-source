@@ -620,30 +620,30 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture parentKey="Icon" >
+				<Texture parentKey="Icon" name="store-error-icon" file="Interface\Store\Store-Main" virtual="true">
+					<Size x="188" y="185"/>
+					<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>
 					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="CENTER" x="0" y="50" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Line" >
+				<Texture parentKey="Line" name="store-error-line" file="Interface\Store\Store-Main" virtual="true">
+					<Size x="298" y="2"/>
+					<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>
 					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="CENTER" x="0" y="-20" />
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Title" inherits="GameFontNormalLarge">
 					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="BOTTOM" relativeKey="$parent.Line" relativePoint="TOP" x="0" y="6" />
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GameFontHighlight" justifyV="TOP">
 					<Size x="250" y="0" />
 					<Anchors>
-						<Anchor point="LEFT" x="20" y="0"/>
 						<Anchor point="TOP" relativeKey="$parent.Line" relativePoint="BOTTOM" x="0" y="-6" />
 					</Anchors>
 				</FontString>
@@ -657,7 +657,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="SecureDialogBorderOpaqueTemplate" />
-			<Button parentKey="AcceptButton" mixin="" inherits="SharedButtonTemplate">
+			<Button parentKey="AcceptButton" inherits="CatalogShopButtonTemplate">
 				<Size x="120" y="22" />
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="20" />
@@ -666,7 +666,7 @@
 					<KeyValue key="catalogShopOnClickMethod" value="AcceptError" type="string"/>
 				</KeyValues>
 			</Button>
-			<Button parentKey="WebsiteButton" inherits="SharedButtonTemplate">
+			<Button parentKey="WebsiteButton" inherits="CatalogShopButtonTemplate">
 				<Size x="120" y="22" />
 				<KeyValues>
 					<KeyValue key="catalogShopOnClickMethod" value="WebsiteError" type="string"/>
