@@ -1003,6 +1003,7 @@ function HousingMicroButtonMixin:OnLoad()
 
 	self:RegisterForClicks("AnyUp");
 	self:RegisterEvent("UPDATE_BINDINGS");
+	self:RegisterEvent("HOUSING_SERVICES_AVAILABILITY_UPDATED");
 	EventRegistry:RegisterCallback("HousingDashboard.Toggled", self.UpdateMicroButton, self);
 
 	self:UpdateTooltipText();
@@ -1011,6 +1012,8 @@ end
 function HousingMicroButtonMixin:OnEvent(event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
 		self:UpdateTooltipText();
+	elseif ( event == "HOUSING_SERVICES_AVAILABILITY_UPDATED" ) then
+		self:UpdateMicroButton();
 	end
 end
 
@@ -1044,9 +1047,11 @@ function HousingMicroButtonMixin:UpdateMicroButton()
 		-- Don't need to worry about reshowing because Timerunners can only hit this in a single UI session
 		self:Hide();
 		return;
-	end
-
-	if ( C_PlayerInfo.IsPlayerNPERestricted() ) then
+	elseif ( not C_Housing.IsHousingServiceEnabled() ) then
+		self:Disable();
+		self.disabledTooltip = ERR_HOUSING_ACTION_UNAVAILABLE;
+		return;
+	elseif ( C_PlayerInfo.IsPlayerNPERestricted() ) then
 		self:Disable();
 		self.disabledTooltip = HOUSING_MICROBUTTON_NPE_RESTRICTED_TOOLTIP;
 		return;
@@ -1400,11 +1405,8 @@ function CollectionMicroButtonMixin:OnLoad()
 	self:RegisterEvent("COMPANION_LEARNED");
 	self:RegisterEvent("PET_JOURNAL_LIST_UPDATE");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("TRAIT_CONFIG_LIST_UPDATED");
 
 	self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-
-	self:TryShowUnspentDragonridingGlyphReminder();
 end
 
 function CollectionMicroButtonMixin:OnEvent(event, ...)
@@ -1437,8 +1439,6 @@ function CollectionMicroButtonMixin:OnEvent(event, ...)
 		self:EvaluateAlertVisibility();
 	elseif ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS");
-	elseif ( event == "TRAIT_CONFIG_LIST_UPDATED" ) then
-		self:TryShowUnspentDragonridingGlyphReminder();
 	end
 end
 
@@ -1477,15 +1477,6 @@ function CollectionMicroButtonMixin:UpdateMicroButton()
 	else
 		self:Enable();
 		self:SetNormal();
-	end
-end
-
-function CollectionMicroButtonMixin:TryShowUnspentDragonridingGlyphReminder()
-	if DragonridingUtil.CanSpendDragonridingGlyphs() then
-		if MainMenuMicroButton_ShowAlert(CollectionsMicroButton, DRAGONFLIGHT_LANDING_PAGE_UNSPENT_GLYPHS) then
-			local tabIndex = 1;
-			CollectionsMicroButton_SetAlert(tabIndex);
-		end
 	end
 end
 

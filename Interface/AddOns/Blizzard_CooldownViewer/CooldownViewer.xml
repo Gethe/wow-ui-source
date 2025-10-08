@@ -231,14 +231,14 @@
 				</Layers>
 			</Frame>
 			<StatusBar parentKey="Bar" frameLevel="511">
-				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
-					<Color r="1.0" g="0.5" b="0.25"/>
-				</BarTexture>
+				<Size y="19"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3"/>
 					<Anchor point="RIGHT"/>
 				</Anchors>
-				<Size y="19"/>
+				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
+					<Color r="1.0" g="0.5" b="0.25"/>
+				</BarTexture>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">

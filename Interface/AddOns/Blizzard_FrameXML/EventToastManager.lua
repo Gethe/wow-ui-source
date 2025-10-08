@@ -1317,7 +1317,12 @@ end
 
 EventToastHouseUpgradeAvailableMixin = {}
 
-function EventToastHouseUpgradeAvailableMixin:Setup(_toastInfo)
+function EventToastHouseUpgradeAvailableMixin:Setup(toastInfo)
+	self.SubTitle:SetText(toastInfo.subtitle);
+
+	local borderAtlasInfo = C_Texture.GetAtlasInfo("housing-celebrationtoast-frame");
+	self.Border:SetWidth((self.Border:GetHeight() / borderAtlasInfo.height) * borderAtlasInfo.width);
+
 	self:Show();
 	self:SetSkipParentAnim(true);
 	self:AnimIn();

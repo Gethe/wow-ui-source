@@ -314,7 +314,7 @@ function CooldownViewerSettingsItemMixin:BeginOrderChange(eatNextGlobalMouseUp)
 end
 
 function CooldownViewerSettingsItemMixin:PlayAlertSample(alert)
-	print("Playing alert: " .. tostring(CooldownViewerAlert_GetPayloadText(alert)));
+	CooldownViewerAlert_PlayAlert(self:GetNameText(), alert);
 end
 
 do
@@ -974,83 +974,81 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 		local lastLayoutType = nil;
 		local addedCharacterSpecificHeader = false;
 		for layoutID, layoutInfo in layoutManager:EnumerateLayouts() do
-			if layoutManager:CanActivateLayout(layoutInfo) then
-				local index = CooldownManagerLayout_GetID(layoutInfo);
-				local layoutType = CooldownManagerLayout_GetType(layoutInfo);
-				local layoutName = CooldownManagerLayout_GetName(layoutInfo);
+			local index = CooldownManagerLayout_GetID(layoutInfo);
+			local layoutType = CooldownManagerLayout_GetType(layoutInfo);
+			local layoutName = CooldownManagerLayout_GetName(layoutInfo);
 
-				if layoutType == Enum.CooldownLayoutType.Character and not addedCharacterSpecificHeader then
-					addedCharacterSpecificHeader = true;
-					local characterName = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
-					rootDescription:CreateTitle(characterName);
-				end
+			if layoutType == Enum.CooldownLayoutType.Character and not addedCharacterSpecificHeader then
+				addedCharacterSpecificHeader = true;
+				local characterName = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
+				rootDescription:CreateTitle(characterName);
+			end
 
-				if lastLayoutType and lastLayoutType ~= layoutType then
-					rootDescription:CreateDivider();
-				end
+			if lastLayoutType and lastLayoutType ~= layoutType then
+				rootDescription:CreateDivider();
+			end
 
-				lastLayoutType = layoutType;
+			lastLayoutType = layoutType;
 
-				local isUserLayout = layoutType == Enum.CooldownLayoutType.Account or layoutType == Enum.CooldownLayoutType.Character;
-				local layoutButton = rootDescription:CreateRadio(layoutName, IsSelected, SetSelected, index);
+			local isUserLayout = layoutType == Enum.CooldownLayoutType.Account or layoutType == Enum.CooldownLayoutType.Character;
+			local layoutButton = rootDescription:CreateRadio(layoutName, IsSelected, SetSelected, index);
 
-				local canActivateLayout = layoutManager:CanActivateLayout(layoutInfo);
-				layoutButton:SetEnabled(canActivateLayout);
-				if not canActivateLayout then
-					layoutButton:SetTooltip(function(tooltip, elementDescription)
-						--- TODO: Localize and make utility to show spec name.
-						GameTooltip_SetTitle(tooltip, "[PH] Cannot switch to layout");
-						GameTooltip_AddErrorLine(tooltip, "[PH] " .. layoutName .. " is for spec: " .. CooldownManagerLayout_GetClassAndSpecTag(layoutInfo));
-					end);
-				end
+			local canActivateLayout = layoutManager:CanActivateLayout(layoutInfo);
+			layoutButton:SetEnabled(canActivateLayout);
+			if not canActivateLayout then
+				layoutButton:SetTooltip(function(tooltip, elementDescription)
+					--- TODO: Localize and make utility to show spec name.
+					GameTooltip_SetTitle(tooltip, "[PH] Cannot switch to layout");
+					GameTooltip_AddErrorLine(tooltip, "[PH] " .. layoutName .. " is for spec: " .. CooldownManagerLayout_GetClassAndSpecTag(layoutInfo));
+				end);
+			end
 
-				if isUserLayout then
-					local copyButton = layoutButton:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
-						print("NYI: Copy cooldown layout" .. layoutName);
-					end);
+			if isUserLayout then
+				local copyButton = layoutButton:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
+					print("NYI: Copy cooldown layout" .. layoutName);
+				end);
+				copyButton:SetEnabled(false);
+				copyButton:SetTooltip(function(tooltip, elementDescription)
+					GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
+					GameTooltip_AddErrorLine(tooltip, "NYI: Copy cooldown layout" .. layoutName);
+				end);
+
+				--[[ Copy button functionality coming soon...
+				local layoutsMaxed = layoutManager:AreLayoutsFullyMaxed();
+				if layoutsMaxed or layoutManager:HasPendingChanges() then
 					copyButton:SetEnabled(false);
+
+					local maxLayoutsPerType = layoutManager:GetMaxLayoutsForType(); -- todo: it's always the same for now.
+					local tooltipText = layoutsMaxed and HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(maxLayoutsPerType, maxLayoutsPerType) or HUD_EDIT_MODE_ERROR_COPY;
 					copyButton:SetTooltip(function(tooltip, elementDescription)
 						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
 						GameTooltip_AddErrorLine(tooltip, "NYI: Copy cooldown layout" .. layoutName);
 					end);
-
-					--[[ Copy button functionality coming soon...
-					local layoutsMaxed = layoutManager:AreLayoutsFullyMaxed();
-					if layoutsMaxed or layoutManager:HasPendingChanges() then
-						copyButton:SetEnabled(false);
-
-						local maxLayoutsPerType = layoutManager:GetMaxLayoutsForType(); -- todo: it's always the same for now.
-						local tooltipText = layoutsMaxed and HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(maxLayoutsPerType, maxLayoutsPerType) or HUD_EDIT_MODE_ERROR_COPY;
-						copyButton:SetTooltip(function(tooltip, elementDescription)
-							GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
-							GameTooltip_AddErrorLine(tooltip, tooltipText);
-						end);
-					end
-					--]]
-
-					layoutButton:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
-						CooldownViewerLayoutDialog:ShowRenameLayoutDialog(layoutID, layoutInfo);
-					end);
-
-					layoutButton:DeactivateSubmenu();
-
-					layoutButton:AddInitializer(function(button, description, menu)
-						local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-						MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
-						MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
-						MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
-							description:ForceOpenSubmenu();
-						end);
-
-						local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-						MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
-						MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
-						MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
-							CooldownViewerLayoutDialog:ShowDeleteLayoutDialog(layoutID, layoutInfo);
-							menu:Close();
-						end);
-					end);
 				end
+				--]]
+
+				layoutButton:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
+					CooldownViewerLayoutDialog:ShowRenameLayoutDialog(layoutID, layoutInfo);
+				end);
+
+				layoutButton:DeactivateSubmenu();
+
+				layoutButton:AddInitializer(function(button, description, menu)
+					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+						description:ForceOpenSubmenu();
+					end);
+
+					local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+					MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
+					MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
+						CooldownViewerLayoutDialog:ShowDeleteLayoutDialog(layoutID, layoutInfo);
+						menu:Close();
+					end);
+				end);
 			end
 		end
 

@@ -30,6 +30,27 @@ local HousingLayoutUITypes =
 			},
 		},
 		{
+			Name = "HousingLayoutStairDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Up", Type = "HousingLayoutStairDirection", EnumValue = 0 },
+				{ Name = "Down", Type = "HousingLayoutStairDirection", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "DoorConnectionInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "doorID", Type = "number", Nilable = false },
+				{ Name = "connectionType", Type = "HousingRoomComponentType", Nilable = false },
+			},
+		},
+		{
 			Name = "RoomOptionInfo",
 			Type = "Structure",
 			Fields =

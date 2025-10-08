@@ -31,6 +31,16 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "DeletePreviewCartDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "DestroyEntry",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -110,7 +120,22 @@ local HousingCatalogUI =
 
 			Returns =
 			{
-				{ Name = "entryIDs", Type = "table", InnerType = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "entryInfos", Type = "table", InnerType = "HousingFeaturedDecorEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPreviewCartItemShown",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -147,6 +172,17 @@ local HousingCatalogUI =
 				{ Name = "subcategoryIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SetPreviewCartItemShown",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "shown", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -177,6 +213,29 @@ local HousingCatalogUI =
 			{
 				{ Name = "subcategoryID", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "HousingDecorAddToPreviewList",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_ADD_TO_PREVIEW_LIST",
+			Payload =
+			{
+				{ Name = "previewItemData", Type = "HousingPreviewItemData", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorPreviewListRemoveFromWorld",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD",
+			Payload =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingDecorPreviewListUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_UPDATED",
 		},
 		{
 			Name = "HousingStorageEntryUpdated",
@@ -234,6 +293,7 @@ local HousingCatalogUI =
 			Fields =
 			{
 				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "itemID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "asset", Type = "ModelAsset", Nilable = true },
 				{ Name = "iconTexture", Type = "FileAsset", Nilable = true },
@@ -253,6 +313,7 @@ local HousingCatalogUI =
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false },
 				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "remainingRedeemable", Type = "number", Nilable = false },
+				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -279,6 +340,15 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "HousingFeaturedDecorEntry",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingMarketInfo",
 			Type = "Structure",
 			Fields =
@@ -286,6 +356,22 @@ local HousingCatalogUI =
 				{ Name = "price", Type = "number", Nilable = false },
 				{ Name = "productID", Type = "number", Nilable = false },
 				{ Name = "bundleIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingPreviewItemData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "isBundleParent", Type = "bool", Nilable = false },
+				{ Name = "isBundleChild", Type = "bool", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+				{ Name = "decorEntryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "icon", Type = "number", Nilable = false },
+				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "salePrice", Type = "number", Nilable = true },
 			},
 		},
 	},

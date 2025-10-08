@@ -220,7 +220,7 @@ function NavigationBarMixin:SetupScrolling()
 	end
 end
 
-function NavigationBarMixin:SelectCatorgyByLinkTag(linkTag)
+function NavigationBarMixin:SelectCategoryByLinkTag(linkTag)
 	if not linkTag then
 		self.selectionBehavior:SelectFirstElementData(IsElementDataSectionInfo);
 		return;
@@ -248,7 +248,7 @@ function NavigationBarMixin:Init(buttonInfos)
 	self:SetupNavigationScrollView();
 	self:SetupNavigationData(buttonInfos);
 	local linkTag = CatalogShopFrame:GetCatalogShopLinkTag(); -- ok for this to be nil
-	self:SelectCatorgyByLinkTag(linkTag)
+	self:SelectCategoryByLinkTag(linkTag)
 	self:SetupScrolling();
 end
 

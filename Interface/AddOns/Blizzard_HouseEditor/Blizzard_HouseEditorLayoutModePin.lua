@@ -57,6 +57,27 @@ end
 HousingLayoutDoorPinMixin = CreateFromMixins(HousingLayoutBasePinMixin);
 
 function HousingLayoutDoorPinMixin:Init()
+	self.connectionType = nil;
+
+	local pin = self:GetPin();
+	local doorInfo = pin and pin:IsValid() and self:GetPin():GetDoorConnectionInfo() or nil;
+	self.connectionType = doorInfo and doorInfo.connectionType or nil;
+	self.enabledTooltip = HOUSING_LAYOUT_UNOCCUPIED_DOOR_TOOLTIP;
+
+	if self.connectionType == Enum.HousingRoomComponentType.Ceiling then
+		self.ArrowIcon:SetRotation(0);
+		self.ArrowIcon:Show();
+		self:SetPoint("CENTER", pin, "CENTER", 0, 50);
+		self.enabledTooltip = HOUSING_LAYOUT_UP_DOOR_TOOLTIP;
+	elseif self.connectionType == Enum.HousingRoomComponentType.Floor then
+		self.ArrowIcon:SetRotation(PI);
+		self.ArrowIcon:Show();
+		self:SetPoint("CENTER", pin, "CENTER", 0, -50);
+		self.enabledTooltip = HOUSING_LAYOUT_DOWN_DOOR_TOOLTIP;
+	else
+		self.ArrowIcon:Hide();
+	end
+
 	self:Update();
 end
 
@@ -66,11 +87,13 @@ function HousingLayoutDoorPinMixin:Update()
 	end
 
 	local pin = self:GetPin();
-	local isAvailableDoor = not pin:IsActiveDoor();
-	self:SetEnabled(isAvailableDoor);
-	self.disabledTooltip = not isAvailableDoor and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or nil;
+	local isOccupied = pin:IsOccupiedDoor();
+	local isAtBudgetMax = C_HousingLayout.GetNumActiveRooms() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isEnabled = not isOccupied and not isAtBudgetMax;
+	self:SetEnabled(isEnabled);
+	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;
 
-	if (not isAvailableDoor) then
+	if (isOccupied) then
 		self:Hide();
 	elseif C_HousingLayout.HasSelectedRoom() then
 		self:SetShown(pin:IsAnyPartOfRoomSelected());
@@ -93,7 +116,6 @@ function HousingLayoutDoorPinMixin:UpdateVisuals()
 	local isSelected = self:GetPin():IsSelected();
 	
 	local isFocused = isEnabled and (isHovered or isSelected);
-	self:SetScale(isFocused and 1.25 or 1);
 	self:SetAlpha(isEnabled and 1 or 0.2);
 
 	self.Icon:SetShown(not isFocused);
@@ -102,17 +124,20 @@ function HousingLayoutDoorPinMixin:UpdateVisuals()
 end
 
 function HousingLayoutDoorPinMixin:OnEnter()
+	local isEnabled = self:IsEnabled();
 	local hasTooltipContent = false;
 	local tooltip = GameTooltip;
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 
-	if self:IsEnabled() then
-		GameTooltip_AddHighlightLine(tooltip, HOUSING_LAYOUT_UNOCCUPIED_DOOR_TOOLTIP);
+	if isEnabled then
+		GameTooltip_AddHighlightLine(tooltip, self.enabledTooltip);
 		hasTooltipContent = true;
 	elseif self.disabledTooltip then
 		GameTooltip_AddErrorLine(tooltip, self.disabledTooltip);
 		hasTooltipContent = true;
 	end
+
+	self.ArrowIconHover:SetShown(isEnabled and self.ArrowIcon:IsShown());
 
 	tooltip:SetShown(hasTooltipContent);
 
@@ -120,9 +145,7 @@ function HousingLayoutDoorPinMixin:OnEnter()
 
 	EventRegistry:TriggerEvent("HousingLayoutDoorPin.MouseOver", self, self:GetPin());
 
-	local pin = self:GetPin();
-	if pin and pin:GetPinType() == Enum.HousingLayoutPinType.Door
-			and not pin:IsActiveDoor() then
+	if self:HasActivePin() and self:IsEnabled() then
 		--only play for door nodes that can have rooms added to them
 		PlaySound(SOUNDKIT.HOUSING_ADD_ROOM_HOVER)
 	end
@@ -130,6 +153,8 @@ end
 
 function HousingLayoutDoorPinMixin:OnLeave()
 	GameTooltip_Hide();
+
+	self.ArrowIconHover:Hide();
 
 	self:UpdateVisuals();
 end

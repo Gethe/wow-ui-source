@@ -255,7 +255,7 @@ function HouseEditorRoomCountMixin:OnLoad()
 end
 
 function HouseEditorRoomCountMixin:UpdateCount()
-	local currentNumRooms = C_HousingLayout.GetNumActiveRooms();
+	local currentSpentBudget = C_HousingLayout.GetSpentPlacementBudget();
 	local roomPlacementBudget = C_HousingLayout.GetRoomPlacementBudget();
-	self.Text:SetText(HOUSING_LAYOUT_NUM_ROOMS:format(currentNumRooms, roomPlacementBudget));
+	self.Text:SetText(HOUSING_LAYOUT_NUM_ROOMS:format(currentSpentBudget, roomPlacementBudget));
 end

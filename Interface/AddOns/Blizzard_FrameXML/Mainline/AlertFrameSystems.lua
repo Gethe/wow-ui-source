@@ -127,7 +127,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 end
 
 local function SetRewardInternal(frame, texture, rewardID)
-	SetPortraitToTexture(frame.texture, texture);
+	frame.texture:SetTexture(texture);
 	frame.rewardID = rewardID;
 end
 
@@ -1099,7 +1099,7 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 	if questData.currencyRewards then
 		for currencyIndex, currencyTexture in ipairs(questData.currencyRewards) do
 			local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
-			SetPortraitToTexture(rewardFrame.texture, currencyTexture);
+			rewardFrame.texture:SetTexture(currencyTexture);
 			rewardFrame.currencyIndex = currencyIndex;
 		end
 	end

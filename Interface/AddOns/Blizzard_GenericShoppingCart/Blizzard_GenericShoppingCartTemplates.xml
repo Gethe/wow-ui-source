@@ -272,7 +272,7 @@
 					</Button>
 
 					<!-- TEMP BUTTON -->
-					<Button parentKey="AddToCartButton" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin">
+					<Button parentKey="AddToCartButton" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin" hidden="true">
 						<KeyValues>
 							<KeyValue key="serviceName" value="ShoppingCartDataServices.AddToCart" type="global"/>
 						</KeyValues>
@@ -289,7 +289,7 @@
 						</Layers>
 					</Button>
 					<!-- TEMP BUTTON -->
-					<Button parentKey="AddToCartButtonBundle" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin">
+					<Button parentKey="AddToCartButtonBundle" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin" hidden="true">
 						<KeyValues>
 							<KeyValue key="serviceName" value="ShoppingCartDataServices.AddToCart" type="global"/>
 							<KeyValue key="bundleButton" value="true" type="boolean"/>

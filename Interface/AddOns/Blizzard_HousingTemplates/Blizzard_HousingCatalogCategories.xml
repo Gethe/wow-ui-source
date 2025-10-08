@@ -103,6 +103,8 @@
 	<Frame name="HousingCatalogCategoriesTemplate" mixin="HousingCatalogCategoriesMixin" inherits="VerticalLayoutFrame" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="75" type="number"/>
+			<KeyValue key="categoryButtonSize" value="64" type="number"/>
+			<KeyValue key="subcategoryButtonSize" value="54" type="number"/>
 			<KeyValue key="topPadding" value="6" type="number"/>
 			<KeyValue key="backgroundCategories" value="house-chest-nav-bg_primary" type="string"/>
 			<KeyValue key="backgroundSubcategories" value="house-chest-nav-bg_secondary" type="string"/>

@@ -42,6 +42,10 @@ function HousingMarketCartItemMixin:OnLoad()
 		return self.elementData;
 	end;
 
+	self.PlaceInWorldButton.GetEventData = function (_btn)
+		return { cartID = self.elementData.cartID, decorEntryID = self.elementData.decorEntryID };
+	end
+
 	self.selected = false;
 	self:Refresh();
 end
@@ -56,9 +60,12 @@ function HousingMarketCartItemMixin:Refresh()
 		return;
 	end
 
+	self:SetEnabled(self.elementData.decorGUID);
+	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID);
+
 	self.ItemName:SetText(self.elementData.name or "");
 	self.Icon:SetTexture(self.elementData.icon or nil);
-	self.PriceContainer:SetPrice(self.elementData.price or 0, self.elementData.salePrice or 0);
+	self.PriceContainer:SetPrice(self.elementData.price or 0, self.elementData.salePrice);
 
 	self:UpdatePreviewStatusIcon();
 end
@@ -68,14 +75,24 @@ function HousingMarketCartItemMixin:SetSelection(selected)
 end
 
 function HousingMarketCartItemMixin:OnEnter()
-	self.HighlightTexture:Show();
 	self.mouseHovered = true;
+
+	if not self:IsEnabled() then
+		return;
+	end
+
+	self.HighlightTexture:Show();
 	self:UpdatePreviewStatusIcon();
 end
 
 function HousingMarketCartItemMixin:OnLeave()
-	self.HighlightTexture:Hide();
 	self.mouseHovered = false;
+
+	if not self:IsEnabled() then
+		return;
+	end
+
+	self.HighlightTexture:Hide();
 	self:UpdatePreviewStatusIcon();
 end
 

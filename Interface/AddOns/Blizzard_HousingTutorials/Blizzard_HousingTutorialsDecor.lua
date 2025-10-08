@@ -33,6 +33,15 @@ function HouseDecorQuestWatcherMixin:OnHouseEditorStateUpdated(decorModeActive)
 		if not finished then
 			self.houseDecorTutorial:BeginState(HousingTutorialStates.QuestTutorials.QuestInProgress);
 		end
+
+		local storagePanel = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.LayoutStorageFrame);
+		if storagePanel then
+			if self.houseDecorTutorial.questID == HousingTutorialQuestIDs.CleanupQuest then
+				storagePanel:SetCollapsed(true);
+			elseif self.houseDecorTutorial.questID == HousingTutorialQuestIDs.DecorateQuest then
+				storagePanel:SetCollapsed(false);
+			end
+		end
 	else
 		self.houseDecorTutorial:Deactivate();
 	end
@@ -59,6 +68,14 @@ function HouseDecorQuestWatcherMixin:InitHouseDecorTutorial(questID, questTutori
 	questTutorialData.helpTipInfos[HousingTutorialStates.QuestTutorials.ObjectivesComplete].parent = houseEditorButton;
 
 	self.houseDecorTutorial = CreateAndInitFromMixin(HouseDecorQuestTutorialMixin, questID, questTutorialData.helpTipInfos, questTutorialData.helpTipSystemName, questTutorialData.bitfieldFlag);
+
+	if questID == HousingTutorialQuestIDs.DecorateQuest then
+		-- if the decorate portion is finished, we want to progress the tutorial
+		local _objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(questID, 1, false);
+		if finished then
+			self.houseDecorTutorial.earlyFinished = true;
+		end
+	end
 end
 
 function HouseDecorQuestWatcherMixin:Quest_Accepted(questData)
@@ -87,15 +104,33 @@ function HouseDecorQuestWatcherMixin:Quest_Updated(questData)
 		elseif helpTipShowing then
 			HelpTip:Hide(self.houseDecorTutorial.helpTipParent, helpTipInfo.text);
 		end
+
+		if questID == HousingTutorialQuestIDs.DecorateQuest then
+			-- if the decorate portion is finished, we want to progress the tutorial
+			local _objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(questID, 1, false);
+			if finished and not self.houseDecorTutorial.earlyFinished then
+				self.houseDecorTutorial.earlyFinished = true;
+				self:ObjectivesCompleteInternal(questData);
+			end
+		end
 	end
 end
 
 function HouseDecorQuestWatcherMixin:Quest_ObjectivesComplete(questData)
-	if self.houseDecorTutorial and questData.QuestID == self.houseDecorTutorial.questID then
+	local questID = questData.QuestID;
+	if questData.QuestID == HousingTutorialQuestIDs.DecorateQuest then
+		return;
+	end
+
+	self:ObjectivesCompleteInternal(questData);
+end
+
+function HouseDecorQuestWatcherMixin:ObjectivesCompleteInternal(questData)
+	local questID = questData.QuestID;
+	if self.houseDecorTutorial and questID == self.houseDecorTutorial.questID then
 		self.houseDecorTutorial:UpdateInProgressHelpTip();
 	end
 
-	local questID = questData.QuestID;
 	local questTutorialData = HousingTutorialData.HouseDecorTutorial.QuestTutorials[questID];
 	if questTutorialData then
 		self:InitHouseDecorTutorial(questID, questTutorialData);

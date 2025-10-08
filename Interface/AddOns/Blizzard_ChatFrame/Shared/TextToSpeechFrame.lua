@@ -143,12 +143,12 @@ function TextToSpeech_PlayNextQueuedMessage()
 	end
 end
 
-function TextToSpeech_Speak(text, voice)
+function TextToSpeech_Speak(text, voice, neverQueue)
 	-- Queue messages
 	local uiHidden = not UIParent:IsShown();
-	local shouldQueue = playbackActive or uiHidden;
+	local shouldQueue = (playbackActive or uiHidden) and not neverQueue;
 	if shouldQueue then
-		table.insert(queuedMessages, {text=text, voice=voice});
+		table.insert(queuedMessages, {text = text, voice = voice});
 
 		if uiHidden then
 			TextToSpeech_StartPlayNextQueuedMessageTimer();
@@ -170,12 +170,14 @@ function TextToSpeech_Speak(text, voice)
 	end
 
 	playbackActive = true;
+
+	local overlap = false;
 	C_VoiceChat.SpeakText(
 		voice.voiceID,
 		text,
-		Enum.VoiceTtsDestination.QueuedLocalPlayback,
 		C_TTSSettings.GetSpeechRate(),
-		C_TTSSettings.GetSpeechVolume()
+		C_TTSSettings.GetSpeechVolume(),
+		overlap
 	);
 end
 
@@ -754,21 +756,36 @@ local function IsMessageTypeEnabled(messageType)
 	return false;
 end
 
-function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ignoreActivitySound)
-	local type = nil;
+local function TextToSpeechFrame_GetSpeakerVoiceForMessageType(messageType)
+	local voice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard);
+	if messageType == "SYSTEM" and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice) then
+		local alternateVoice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Alternate);
+		if alternateVoice then
+			return alternateVoice;
+		end
+	end
 
+	return voice;
+end
+
+local function TextToSpeechFrame_GetMessageType(id)
 	if id then
-		type = C_ChatInfo.GetChatTypeName(id);
+		local typeName = C_ChatInfo.GetChatTypeName(id);
+		if typeName then
+			return typeName;
+		end
 	end
 
 	-- Any messages missing a type are treated as SYSTEM messages.
-	if ( not type ) then
-		type = "SYSTEM";
-	end
+	return "SYSTEM";
+end
+
+function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ignoreActivitySound)
+	local messageType = TextToSpeechFrame_GetMessageType(id);
 
 	-- Check that option is enabled for this type or group of types
 	if not ignoreTypeFilters then
-		if not IsMessageTypeEnabled(type) then
+		if not IsMessageTypeEnabled(messageType) then
 			return;
 		end
 	end
@@ -790,14 +807,7 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ig
 	lastMessage = message;
 	lastMessageTime = timeNow;
 
-	local voice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Standard);
-	if type == "SYSTEM" and C_TTSSettings.GetSetting(Enum.TtsBoolSetting.AlternateSystemVoice) then
-		local alternateVoice = TextToSpeech_GetSelectedVoice(Enum.TtsVoiceType.Alternate);
-		if alternateVoice then
-			voice = alternateVoice;
-		end
-	end
-
+	local voice = TextToSpeechFrame_GetSpeakerVoiceForMessageType(messageType);
 	if not voice then
 		return;
 	end
@@ -807,6 +817,14 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ig
 	end
 
 	TextToSpeech_Speak(message, voice);
+end
+
+function TextToSpeechFrame_PlayCooldownAlertMessage(_alert, message)
+	local voice = TextToSpeechFrame_GetSpeakerVoiceForMessageType(nil);
+	if voice then
+		local alwaysPlayImmediately = true;
+		TextToSpeech_Speak(message, voice, alwaysPlayImmediately);
+	end
 end
 
 function TextToSpeechFrame_AddMessageObserver(frame, message, r, g, b, id)

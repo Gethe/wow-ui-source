@@ -214,6 +214,7 @@ Interface\AddOns\Blizzard_MovePad\Blizzard_MovePad.toc
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.toc
 Interface\AddOns\Blizzard_NewPlayerExperienceGuide\Blizzard_NewPlayerExperienceGuide.toc
 Interface\AddOns\Blizzard_NewPlayerExperience\Blizzard_NewPlayerExperience.toc
+Interface\AddOns\Blizzard_Notification\Blizzard_Notification.toc
 Interface\AddOns\Blizzard_ObjectAPI\Blizzard_ObjectAPI_Mainline.toc
 Interface\AddOns\Blizzard_ObjectiveTracker\Blizzard_ObjectiveTracker.toc
 Interface\AddOns\Blizzard_ObliterumUI\Blizzard_ObliterumUI.toc
@@ -260,6 +261,7 @@ Interface\AddOns\Blizzard_ReportFrameShared\Blizzard_ReportFrameShared.toc
 Interface\AddOns\Blizzard_ReportFrame\Blizzard_ReportFrame.toc
 Interface\AddOns\Blizzard_RestrictedAddOnEnvironment\Blizzard_RestrictedAddOnEnvironment.toc
 Interface\AddOns\Blizzard_RuneforgeUI\Blizzard_RuneforgeUI.toc
+Interface\AddOns\Blizzard_SavedSets\Blizzard_SavedSets.toc
 Interface\AddOns\Blizzard_ScrappingMachineUI\Blizzard_ScrappingMachineUI.toc
 Interface\AddOns\Blizzard_ScriptErrorsFrame\Blizzard_ScriptErrorsFrame.toc
 Interface\AddOns\Blizzard_ScriptErrors\Blizzard_ScriptErrors.toc

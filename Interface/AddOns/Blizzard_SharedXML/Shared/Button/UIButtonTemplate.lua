@@ -59,6 +59,9 @@ function UIButtonMixin:OnLeave()
 	self:RunCustomTextFormatter();
 
 	local tooltip = GetAppropriateTooltip();
+	if not tooltip then
+		return;
+	end
 	tooltip:Hide();
 end
 

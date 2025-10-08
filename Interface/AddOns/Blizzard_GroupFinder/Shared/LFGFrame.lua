@@ -533,7 +533,7 @@ function LFG_SetRoleIconIncentive(roleButton, incentiveIndex)
 		elseif ( incentiveIndex == LFG_ROLE_SHORTAGE_RARE ) then
 			tex = "Interface\\Icons\\INV_Misc_Coin_17";
 		end
-		SetPortraitToTexture(roleButton.incentiveIcon.texture, tex);
+		roleButton.incentiveIcon.texture:SetTexture(tex);
 		roleButton.incentiveIcon:Show();
 		roleButton.shortageBorder:Show();
 	else
@@ -913,7 +913,7 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 end
 
 function LFGDungeonReadyDialogReward_SetMisc(button)
-	SetPortraitToTexture(button.texture, "Interface\\Icons\\inv_misc_coin_02");
+	button.texture:SetTexture("Interface\\Icons\\inv_misc_coin_02");
 	button.rewardType = "misc";
 	button:Show();
 end
@@ -926,7 +926,7 @@ function LFGDungeonReadyDialogReward_SetReward(button, dungeonID, rewardIndex, r
 		name, texturePath, quantity = GetLFGDungeonShortageRewardInfo(dungeonID, rewardArg, rewardIndex);
 	end
 	if ( texturePath ) then	--Otherwise, we may be waiting on the item data to come from the server.
-		SetPortraitToTexture(button.texture, texturePath);
+		button.texture:SetTexture(texturePath);
 	end
 	button.rewardType = rewardType;
 	button.rewardID = rewardIndex;

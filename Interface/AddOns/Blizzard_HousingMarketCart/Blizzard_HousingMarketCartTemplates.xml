@@ -7,7 +7,7 @@
 		</KeyValues>
 	</Button>
 	
-	<Frame name="HousingMarketCartFrame" inherits="ShoppingCartVisualsFrameTemplate" mixin="HousingMarketCartFrameMixin" parent="UIParent">
+	<Frame name="HousingMarketCartFrameTemplate" inherits="ShoppingCartVisualsFrameTemplate" mixin="HousingMarketCartFrameMixin" virtual="true">
 		<Size x="400" y="500"/>
 		<KeyValues>
 			<KeyValue key="eventNamespace" value="HOUSING_MARKET_EVENT_NAMESPACE" type="global"/>
@@ -15,10 +15,23 @@
 			<KeyValue key="spacingSize" value="6" type="number"/>
 			<KeyValue key="sizingItemTemplate" value="HousingMarketCartItemTemplate" type="string"/>
 		</KeyValues>
-		<Anchors>
-			<Anchor point="BOTTOM" relativePoint="BOTTOM" x="350" y="250"/>
-		</Anchors>
 
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CartUpdatedFlipbookTexture" alphaMode="ADD" atlas="decor-ability-mode-fx-flipbook" hidden="true">
+					<Size x="125" y="125"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CartHiddenContainer.ViewCartButton"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Animations>
+			<AnimationGroup parentKey="CartUpdatedFlipbookAnim" setToFinalAlpha="true">
+				<FlipBook childKey="CartUpdatedFlipbookTexture" duration="1" order="1" flipBookRows="6" flipBookColumns="6" flipBookFrames="36" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

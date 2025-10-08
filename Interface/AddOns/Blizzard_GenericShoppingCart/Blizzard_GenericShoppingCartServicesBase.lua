@@ -1,7 +1,9 @@
 ShoppingCartServiceRegistrantMixin = CreateFromMixins(CallbackRegistrantMixin);
 
 function ShoppingCartServiceRegistrantMixin:AddServiceEvents(services)
-	self.Events = {};
+	if not self.Events then
+		self.Events = {};
+	end
 
 	for eventName, event in pairs(services) do
 		if self[eventName] then

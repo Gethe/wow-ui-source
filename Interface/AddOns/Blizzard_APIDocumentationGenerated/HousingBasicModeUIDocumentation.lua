@@ -176,6 +176,16 @@ local HousingBasicModeUI =
 				{ Name = "catalogEntryID", Type = "HousingCatalogEntryID", Nilable = false },
 			},
 		},
+		{
+			Name = "StartPlacingPreviewDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "catalogEntryID", Type = "HousingCatalogEntryID", Nilable = false },
+			},
+		},
 	},
 
 	Events =

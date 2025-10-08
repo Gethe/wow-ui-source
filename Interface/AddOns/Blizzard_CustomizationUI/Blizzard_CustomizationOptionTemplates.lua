@@ -719,7 +719,13 @@ function CustomizationElementMixin:OnEnter()
 				GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
 			end
 
-			GameTooltip_AddHighlightLine(tooltip, "Choice ID: "..choiceData.fixtureID or 0);
+			if choiceData.id then
+				GameTooltip_AddHighlightLine(tooltip, "Choice ID: " .. choiceData.id);
+			end
+
+			if choiceData.fixtureID then
+				GameTooltip_AddHighlightLine(tooltip, "Fixture ID: " .. choiceData.fixtureID);
+			end
 		end
 
 		tooltip:Show();

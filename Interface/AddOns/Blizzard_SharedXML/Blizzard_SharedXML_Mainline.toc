@@ -116,9 +116,9 @@ Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
 StringUtil.lua
 TypeUtil.lua
-Dump.lua
+Dump.lua [AllowLoadEnvironment Global]
 MixinUtil.lua
-DebugBarManager.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
 ScrollableTabsContainer.lua
 ScrollableTabsContainer.xml
 
@@ -175,7 +175,8 @@ Mainline\Selector\Blizzard_ScrollBoxSelector.xml
 TemplatedList.xml
 PagedList.xml
 
-HelpTip.xml
+HelpTip.lua [AllowLoadEnvironment Global]
+HelpTip.xml [AllowLoadEnvironment Global]
 
 Mainline\ScrollDefine.lua
 Mainline\ScrollDefine.xml
@@ -206,7 +207,7 @@ DialogUtil.lua
 Shared\InputBox\InputBoxTemplates.lua
 Shared\InputBox\InputBoxTemplates.xml
 
-SharedBasicControls.lua
+SharedBasicControls.lua [AllowLoadEnvironment Global]
 SharedBasicControls.xml
 Mainline\UIDropDownMenu.lua
 Mainline\UIDropDownMenuTemplates.lua

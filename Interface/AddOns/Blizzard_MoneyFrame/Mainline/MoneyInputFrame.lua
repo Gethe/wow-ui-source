@@ -127,7 +127,15 @@ function MoneyInputFrame_OnTextChanged(self)
 	end
 end
 
-function MoneyInputFrame_SetCompact(frame, width, expandOnDigits)
+function MoneyInputFrame_SetCompact(frame, width, expandOnDigits, smallDenominationWidth)
+	if smallDenominationWidth then
+		frame.silver:SetWidth(smallDenominationWidth);
+		frame.silver.baseWidth = smallDenominationWidth;
+
+		frame.copper:SetWidth(smallDenominationWidth);
+		frame.copper.baseWidth = smallDenominationWidth;
+	end
+
 	local goldFrame = frame.gold;
 	goldFrame.minWidth = width;
 	goldFrame.expandOnDigits = expandOnDigits;

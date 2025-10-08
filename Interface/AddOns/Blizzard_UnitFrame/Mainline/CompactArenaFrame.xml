@@ -86,7 +86,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-
+			<Layer level="BORDER">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SpecPortraitTexture" relativePoint="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.SpecPortraitTexture" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="SpecPortraitTexture"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="RoleIconTexture" file="Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES">
 					<Size x="12" y="12"/>

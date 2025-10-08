@@ -42,29 +42,6 @@
 					<Anchor point="BOTTOMRIGHT" x="-23"/>
 				</Anchors>
 			</Frame>
-			<!-- Not using built-in scrollbox shadows as these need to be able to extend outside the boundaries of the scrollbox's clipping -->
-			<Frame parentKey="Shadows" setAllPoints="true" hidden="false">
-				<Layers>
-				<Layer level="OVERLAY">
-					<Texture parentKey="Upper" atlas="Artifacts-Retiring-Gradient">
-						<Size y="60"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-							<Anchor point="TOPRIGHT"/>
-						</Anchors>
-						<TexCoords left="0" right="1" top="1" bottom="0" />
-					</Texture>
-
-					<Texture parentKey="Lower" atlas="Artifacts-Retiring-Gradient">
-						<Size y="60"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT"/>
-							<Anchor point="BOTTOMRIGHT"/>
-						</Anchors>
-					</Texture>
-				</Layer>
-			</Layers>
-			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>

@@ -88,11 +88,17 @@
 						<FontString parentKey="Price" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="RIGHT">
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="LEFT">
+						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Shadow_Large2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
 							<Color color="GREEN_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
 						</FontString>
-						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="LEFT">
+						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Shadow_Large2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
 							<Color color="GRAY_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="10" type="number"/>
+							</KeyValues>
 						</FontString>
 						<FontString parentKey="Name" inherits="SystemFont_Shadow_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
 							<Color color="WHITE_FONT_COLOR"/>
@@ -119,7 +125,7 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="OVERLAY" >
+					<Layer level="OVERLAY" textureSubLevel="2" >
 						<Texture parentKey="PurchasedIcon" atlas="perks-owned-small" hidden="true" useAtlasSize="true" >
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-22" y="-22" />
@@ -134,7 +140,7 @@
 							<Size x="60" y="19"/>
 							<Color color="WHITE_FONT_COLOR"/>
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="2" y="-33" />
+								<Anchor point="TOPRIGHT" x="-4" y="-33" />
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Strikethrough" texelSnappingBias="0.0" snapToPixelGrid="false" >

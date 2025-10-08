@@ -19,6 +19,14 @@ local HousingDecorUI =
 			Type = "Function",
 		},
 		{
+			Name = "EnterPreviewState",
+			Type = "Function",
+		},
+		{
+			Name = "ExitPreviewState",
+			Type = "Function",
+		},
+		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
 
@@ -52,6 +60,15 @@ local HousingDecorUI =
 			Returns =
 			{
 				{ Name = "numPlaced", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetNumPreviewDecor",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numDecor", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -106,6 +123,30 @@ local HousingDecorUI =
 			Returns =
 			{
 				{ Name = "includeChildrenEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsModeDisabledForPreviewState",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "mode", Type = "HouseEditorMode", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isModeDisabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPreviewState",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPreviewState", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -192,6 +233,15 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "HousingDecorPreviewStateChanged",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_PREVIEW_STATE_CHANGED",
+			Payload =
+			{
+				{ Name = "isPreviewState", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingDecorRemoved",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_REMOVED",
@@ -217,9 +267,9 @@ local HousingDecorUI =
 		{
 			Name = "HousingDecorActionFlags",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 512,
+			MaxValue = 1024,
 			Fields =
 			{
 				{ Name = "None", Type = "HousingDecorActionFlags", EnumValue = 0 },
@@ -233,6 +283,7 @@ local HousingDecorUI =
 				{ Name = "TargetHouseExterior", Type = "HousingDecorActionFlags", EnumValue = 128 },
 				{ Name = "MaintainLastTarget", Type = "HousingDecorActionFlags", EnumValue = 256 },
 				{ Name = "IncludeTargetChildren", Type = "HousingDecorActionFlags", EnumValue = 512 },
+				{ Name = "PreviewDecor", Type = "HousingDecorActionFlags", EnumValue = 1024 },
 			},
 		},
 		{

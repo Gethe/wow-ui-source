@@ -6,9 +6,6 @@ CharacterSelectListMixin = {};
 
 function CharacterSelectListMixin:OnLoad()
 	self.AddGroupButton:SetScript("OnClick", function()
-		-- Clear helptip if not yet closed.
-		SetCVar("seenCharacterSelectAddGroupHelpTip", 1);
-		HelpTip:Hide(self.AddGroupButton, CHARACTER_SELECT_ADD_GROUP_HELPTIP);
 		PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
 
 		CharacterListEditGroupFrame:ShowNewGroupFrame();
@@ -515,8 +512,6 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 	self.SearchBox:SetText("");
 
 	if isUndeleting then
-		HelpTip:Hide(self, CHARACTER_SELECT_WARBAND_INTRO_HELPTIP);
-
 		self.UndeleteRealmLabel:SetText(CHARACTER_SELECT_UNDELETE_REALM_LABEL:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 		local helpTipInfo = {
 			text = CHARACTER_SELECT_UNDELETE_REALM_HELPTIP,
@@ -588,30 +583,8 @@ function CharacterSelectListMixin:SetScrollEnabled(enabled)
 end
 
 function CharacterSelectListMixin:EvaluateHelptips()
-	if IsCharacterSelectListModeRealmless() then
-		local introHelpTipInfo = {
-			text = CHARACTER_SELECT_WARBAND_INTRO_HELPTIP,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.LeftEdgeTop,
-			cvar = "seenCharacterSelectWarbandHelpTip",
-			cvarValue = "1",
-			checkCVars = true,
-			offsetY = -153
-		};
-		HelpTip:Show(self, introHelpTipInfo);
-	end
-
-	if self.AddGroupButton:IsShown() then
-		local addGroupHelpTipInfo = {
-			text = CHARACTER_SELECT_ADD_GROUP_HELPTIP,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.LeftEdgeCenter,
-			cvar = "seenCharacterSelectAddGroupHelpTip",
-			cvarValue = "1",
-			checkCVars = true,
-		};
-		HelpTip:Show(self.AddGroupButton, addGroupHelpTipInfo);
-	end
+	-- Warbands helptips used to be here.
+	-- Keeping the function around for the future since it's called from several places.
 end
 
 function CharacterSelectListMixin:ClearSearch()

@@ -113,7 +113,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local settingComputeEffects = settings["graphicsComputeEffects"] or settings["raidGraphicsComputeEffects"];
 	local settingOutlineMode = settings["graphicsOutlineMode"] or settings["raidGraphicsOutlineMode"];
 	local settingTextureResolution = settings["graphicsTextureResolution"] or settings["raidGraphicsTextureResolution"];
-	local settingSpellDensity = settings["graphicsSpellDensity"] or settings["raidGraphicsSpellDensity"];
+	local settingSpellDensity = nil;
+	if(C_VideoOptions.IsSpellVisualDensitySystemSupported()) then
+		settingSpellDensity = settings["graphicsSpellDensity"] or settings["raidGraphicsSpellDensity"];
+	end
 	local settingProjectedTextures = settings["graphicsProjectedTextures"] or settings["raidGraphicsProjectedTextures"];
 	local settingViewDistance = settings["graphicsViewDistance"] or settings["raidGraphicsViewDistance"];
 	local settingEnvironmentDetail = settings["graphicsEnvironmentDetail"] or settings["raidGraphicsEnvironmentDetail"];
@@ -357,7 +360,13 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	InitControlDropdown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
 	InitControlDropdown(self.OutlineMode, settingOutlineMode, OUTLINE_MODE, OPTION_TOOLTIP_OUTLINE_MODE, GetOutlineModeOptions);
 	InitControlDropdown(self.TextureResolution, settingTextureResolution, TEXTURE_DETAIL, OPTION_TOOLTIP_TEXTURE_DETAIL, GenerateClosure(GraphicsOverrides.GetTextureResolutionOptions, settingTextureResolution, AddValidatedSettingOption, AddRecommended));
-	InitControlDropdown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
+	if(C_VideoOptions.IsSpellVisualDensitySystemSupported()) then
+		InitControlDropdown(self.SpellDensity, settingSpellDensity, SPELL_DENSITY, OPTION_TOOLTIP_SPELL_DENSITY, GetSpellDensityOptions);
+	else
+		self.SpellDensity:Hide()		
+		local point, _, relativePoint, offsetX, offsetY = self.ProjectedTextures:GetPoint();
+		self.ProjectedTextures:SetPoint(point, self.TextureResolution, relativePoint, offsetX, offsetY);
+	end
 	InitControlDropdown(self.ProjectedTextures, settingProjectedTextures, PROJECTED_TEXTURES, OPTION_TOOLTIP_PROJECTED_TEXTURES, GetProjectedTexturesOptions);
 	InitControlSlider(	self.ViewDistance, settingViewDistance, FARCLIP, OPTION_TOOLTIP_FARCLIP, options);
 	InitControlSlider(	self.EnvironmentDetail, settingEnvironmentDetail,	ENVIRONMENT_DETAIL, OPTION_TOOLTIP_ENVIRONMENT_DETAIL, options);

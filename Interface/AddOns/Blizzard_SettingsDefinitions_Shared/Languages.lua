@@ -16,7 +16,13 @@ local function GetTextLocalesOptions()
 end
 
 local function GetAudioLocalesOptions()
-	return CreateOptions("enUS", GetCVar("audioLocale"), GetCVar("textLocale"));
+	local textLocale = GetCVar("textLocale");
+	if textLocale == "enUS" then
+		-- English text can only be accompanied by English audio.
+		return CreateOptions("enUS");
+	end
+
+	return CreateOptions("enUS", textLocale);
 end
 
 local function SetAudioLocaleSettingToDefault(setting)

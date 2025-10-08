@@ -1163,7 +1163,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
-		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
 	else
 		--Update your role icons
 		if ( isDPS ) then

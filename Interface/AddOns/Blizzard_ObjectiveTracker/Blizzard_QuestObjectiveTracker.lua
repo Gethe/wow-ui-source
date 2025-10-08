@@ -1,6 +1,6 @@
 local settings = {
 	headerText = TRACKER_HEADER_QUESTS,
-	events = { "QUEST_LOG_UPDATE", "QUEST_WATCH_LIST_CHANGED", "QUEST_AUTOCOMPLETE", "SUPER_TRACKING_CHANGED", "QUEST_TURNED_IN", "QUEST_POI_UPDATE" },
+	events = { "QUEST_LOG_UPDATE", "QUEST_WATCH_LIST_CHANGED", "QUEST_AUTOCOMPLETE", "SUPER_TRACKING_CHANGED", "QUEST_TURNED_IN", "QUEST_POI_UPDATE", "SUPER_TRACKING_PATH_UPDATED" },
 	lineTemplate = "QuestObjectiveLineTemplate",
 	blockTemplate = "ObjectiveTrackerQuestPOIBlockTemplate",
 	rightEdgeFrameSpacing = 2,

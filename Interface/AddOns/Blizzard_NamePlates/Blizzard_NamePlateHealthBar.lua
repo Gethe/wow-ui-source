@@ -18,6 +18,9 @@ function NamePlateHealthBarMixin:OnLoad()
 	-- visually match the desired order when both are displayed.
 	self:SetBarText(self.Text, self.RightText, self.LeftText);
 
+	-- Use AbbreviateLargeNumbers for large values.
+	self.capNumericDisplay = true;
+
 	self:UpdateTextDisplay();
 
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.INFO_DISPLAY_CVAR, self.OnInfoDisplayCVarChanged, self);

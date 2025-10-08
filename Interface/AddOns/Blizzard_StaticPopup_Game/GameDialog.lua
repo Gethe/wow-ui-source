@@ -315,7 +315,11 @@ function GameDialogMixin:SetupAlertIcon(dialogInfo, data)
 	elseif ( dialogInfo.showAlertGear ) then
 		self.AlertIcon:SetTexture("Interface\\DialogFrame\\UI-Dialog-Icon-AlertOther");
 	elseif ( dialogInfo.customAlertIcon ) then
-		self.AlertIcon:SetTexture(dialogInfo.customAlertIcon);
+		if dialogInfo.alertIconIsAtlas then
+			self.AlertIcon:SetAtlas(dialogInfo.customAlertIcon);
+		else
+			self.AlertIcon:SetTexture(dialogInfo.customAlertIcon);
+		end
 	end
 end
 

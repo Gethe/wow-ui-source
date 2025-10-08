@@ -7,7 +7,6 @@ local HouseEditorFrameLifetimeEvents =
 
 local HouseEditorFrameShownEvents =
 {
-	"HOUSE_EDITOR_MODE_CHANGE_FAILURE",
 	"HOUSING_DECOR_SELECT_RESPONSE",
 };
 
@@ -32,9 +31,6 @@ function HouseEditorFrameMixin:OnEvent(event, ...)
 	if event == "HOUSE_EDITOR_MODE_CHANGED" then
 		local newMode = ...;
 		self:OnActiveModeChanged(newMode);
-	elseif event == "HOUSE_EDITOR_MODE_CHANGE_FAILURE" then
-		local result = ...;
-		self:OnModeChangeFailure(result);
 	elseif event == "HOUSING_DECOR_SELECT_RESPONSE" then
 		local result = ...;
 		self:OnDecorSelectResponse(result);
@@ -114,30 +110,14 @@ end
 function HouseEditorFrameMixin:HandleEscape()
 	if not StaticPopup_EscapePressed() then
 		if not self.activeModeFrame or not self.activeModeFrame:TryHandleEscape() then
-			C_HouseEditor.LeaveHouseEditor();
+			HousingFramesUtil.LeaveHouseEditor()
 		end
 	end
-end
-
-function HouseEditorFrameMixin:OnModeChangeFailure(result)
-	self:ReportResult(result, ERR_HOUSE_EDITOR_MODE_FAILED, ERR_HOUSE_EDITOR_MODE_FAILED_FMT);
 end
 
 function HouseEditorFrameMixin:OnDecorSelectResponse(result)
 	if result ~= Enum.HousingResult.Success then
 		UIErrorsFrame:AddExternalErrorMessage(ERR_HOUSING_DECOR_SELECT_FAILED);
-	end
-end
-
-function HouseEditorFrameMixin:ReportResult(result, failureString, failureWithErrorString)
-	if result ~= Enum.HousingResult.Success then
-		local errorMessage = failureString;
-
-		local resultText = HousingResultToErrorText[availabilityResult];
-		if resultText and resultText ~= "" then
-			errorMessage = failureWithErrorString:fmt(resultText);
-		end
-		UIErrorsFrame:AddExternalErrorMessage(errorMessage);
 	end
 end
 

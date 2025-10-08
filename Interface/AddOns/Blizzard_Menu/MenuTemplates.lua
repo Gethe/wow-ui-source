@@ -756,6 +756,12 @@ function WowStyle1FilterDropdownMixin:OnLoad()
 	DropdownTextMixin.OnLoad(self);
 	WowFilterButtonMixin.OnLoad(self);
 
+	if self.baseFontObject then
+		self.Text:SetFontObject(self.baseFontObject);
+	else
+		self.baseFontObject = self.Text:GetFontObject();
+	end
+
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
 end
@@ -779,6 +785,18 @@ end
 
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
 	self.Background:SetAtlas(self:GetBackgroundAtlas(), TextureKitConstants.UseAtlasSize);
+end
+
+function WowStyle1FilterDropdownMixin:OnEnable()
+	ButtonStateBehaviorMixin.OnEnable(self);
+
+	self.Text:SetFontObject(self.baseFontObject);
+end
+
+function WowStyle1FilterDropdownMixin:OnDisable()
+	ButtonStateBehaviorMixin.OnDisable(self);
+
+	self.Text:SetFontObject(self.disableFontObject);
 end
 
 --[[

@@ -97,9 +97,11 @@ function TutorialMainFrameMixin:_SetContent(content)
 		text:SetText(content.text);
 		text:SetWidth(text:GetStringWidth());
 		text:SetHeight(text:GetStringHeight());
-		text:ClearAllPoints();
-		text:SetPoint("LEFT", self.ContainerFrame.Icon, "RIGHT", "25", "0");
 	end
+
+	local hasContentIcon = not not content.icon;
+	local hasContentIconFrame = not not content.iconFrame;
+	assertsafe(not (hasContentIcon and hasContentIconFrame), "Can't use both icon and iconFrame");
 
 	if content.icon then
 		if content.iconWidth and content.iconHeight then
@@ -112,9 +114,27 @@ function TutorialMainFrameMixin:_SetContent(content)
 	else
 		icon:SetAtlas(nil);
 		icon:Hide();
+	end
+
+	if content.iconFrame then
+		content.iconFrame:SetParent(self.ContainerFrame);
+		content.iconFrame:ClearAllPoints();
+		content.iconFrame:SetPoint("LEFT");
+		self.ContainerFrame.iconFrame = content.iconFrame;
+	elseif self.ContainerFrame.iconFrame then
+		self.ContainerFrame.iconFrame:Hide();
+		self.ContainerFrame.iconFrame:SetParent(nil);
+		self.ContainerFrame.iconFrame = nil;
+	end
+
+	if content.icon or content.iconFrame then
+		text:ClearAllPoints();
+		text:SetPoint("LEFT", self.ContainerFrame.iconFrame or self.ContainerFrame.Icon, "RIGHT", "25", "0");
+	else
 		text:ClearAllPoints();
 		text:SetPoint("CENTER");
 	end
+
 	self.ContainerFrame:MarkDirty();
 	self:_AnimateIn();
 end

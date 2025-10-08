@@ -45,7 +45,12 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 		self.BorderOverlay:SetAtlas(layoutInfo.NineSliceFormatString:format(layoutInfo.NineSliceTextureKit));
 	else
 		self.NineSlice.DetailTop:SetAtlas(layoutInfo.DetailTopAtlas, true);
-		if layoutInfo.NineSliceTextureKit ~= nil then
+		if layoutInfo.NineSliceLayoutName then
+			local layout = NineSliceUtil.GetLayout(layoutInfo.NineSliceLayoutName);
+			if layout then
+				NineSliceUtil.ApplyLayout(self.NineSlice, layout);
+			end
+		elseif layoutInfo.NineSliceTextureKit then
 			NineSliceUtil.ApplyUniqueCornersLayout(self.NineSlice, layoutInfo.NineSliceTextureKit);
 		end
 	end

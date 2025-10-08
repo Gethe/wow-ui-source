@@ -291,7 +291,7 @@ function PreMatchArenaUnitFrameMixin:Update(index)
 		self.SpecNameText:SetText(specName);
 		self.ClassNameText:SetText(className);
 
-		SetPortraitToTexture(self.SpecPortraitTexture, specIcon);
+		self.SpecPortraitTexture:SetTexture(specIcon);
 		SetRoleIconTexture(self.RoleIconTexture , role);
 		SetFrameBarColor(self.BarTexture, class);
 

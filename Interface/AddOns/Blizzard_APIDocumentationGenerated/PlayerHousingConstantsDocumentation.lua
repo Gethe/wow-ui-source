@@ -176,28 +176,6 @@ local PlayerHousingConstants =
 			},
 		},
 		{
-			Name = "HousingHistoryEntryType",
-			Type = "Enumeration",
-			NumValues = 12,
-			MinValue = 0,
-			MaxValue = 11,
-			Fields =
-			{
-				{ Name = "Invalid", Type = "HousingHistoryEntryType", EnumValue = 0 },
-				{ Name = "NeighborhoodCreated", Type = "HousingHistoryEntryType", EnumValue = 1 },
-				{ Name = "NeighborhoodDeleted", Type = "HousingHistoryEntryType", EnumValue = 2 },
-				{ Name = "NeighborhoodRenamed", Type = "HousingHistoryEntryType", EnumValue = 3 },
-				{ Name = "NeighborhoodOwnerChanged", Type = "HousingHistoryEntryType", EnumValue = 4 },
-				{ Name = "NeighborhoodManagerAdded", Type = "HousingHistoryEntryType", EnumValue = 5 },
-				{ Name = "NeighborhoodManagerRemoved", Type = "HousingHistoryEntryType", EnumValue = 6 },
-				{ Name = "NeighborhoodHouseAdded", Type = "HousingHistoryEntryType", EnumValue = 7 },
-				{ Name = "NeighborhoodHouseMoveFrom", Type = "HousingHistoryEntryType", EnumValue = 8 },
-				{ Name = "NeighborhoodHouseMoveTo", Type = "HousingHistoryEntryType", EnumValue = 9 },
-				{ Name = "NeighborhoodHouseRemoved", Type = "HousingHistoryEntryType", EnumValue = 10 },
-				{ Name = "NeighborhoodPlotReserved", Type = "HousingHistoryEntryType", EnumValue = 11 },
-			},
-		},
-		{
 			Name = "HousingLayoutRestriction",
 			Type = "Enumeration",
 			NumValues = 10,
@@ -264,9 +242,9 @@ local PlayerHousingConstants =
 		{
 			Name = "HousingResult",
 			Type = "Enumeration",
-			NumValues = 64,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 63,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "Success", Type = "HousingResult", EnumValue = 0 },
@@ -333,6 +311,9 @@ local PlayerHousingConstants =
 				{ Name = "FixtureNotOwned", Type = "HousingResult", EnumValue = 61 },
 				{ Name = "DecorItemNotDestroyable", Type = "HousingResult", EnumValue = 62 },
 				{ Name = "HouseExteriorRootNotFound", Type = "HousingResult", EnumValue = 63 },
+				{ Name = "DecorCannotBeRedeemed", Type = "HousingResult", EnumValue = 64 },
+				{ Name = "TimerunningNotAllowed", Type = "HousingResult", EnumValue = 65 },
+				{ Name = "TooManyRequests", Type = "HousingResult", EnumValue = 66 },
 			},
 		},
 		{
@@ -412,6 +393,18 @@ local PlayerHousingConstants =
 			},
 		},
 		{
+			Name = "HousingRoomComponentTextureFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "HousingRoomComponentTextureFlags", EnumValue = 0 },
+				{ Name = "UnlockedByDefault", Type = "HousingRoomComponentTextureFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "HousingRoomComponentType",
 			Type = "Enumeration",
 			NumValues = 7,
@@ -457,6 +450,18 @@ local PlayerHousingConstants =
 			},
 		},
 		{
+			Name = "HousingThemeFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "HousingThemeFlags", EnumValue = 0 },
+				{ Name = "UnlockedByDefault", Type = "HousingThemeFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "NeighborhoodFlags",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -472,9 +477,9 @@ local PlayerHousingConstants =
 		{
 			Name = "NeighborhoodInviteResult",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Success", Type = "NeighborhoodInviteResult", EnumValue = 0 },
@@ -487,6 +492,7 @@ local PlayerHousingConstants =
 				{ Name = "InviteLimit", Type = "NeighborhoodInviteResult", EnumValue = 7 },
 				{ Name = "NotEnoughPlots", Type = "NeighborhoodInviteResult", EnumValue = 8 },
 				{ Name = "NotFound", Type = "NeighborhoodInviteResult", EnumValue = 9 },
+				{ Name = "TooManyRequests", Type = "NeighborhoodInviteResult", EnumValue = 10 },
 			},
 		},
 		{

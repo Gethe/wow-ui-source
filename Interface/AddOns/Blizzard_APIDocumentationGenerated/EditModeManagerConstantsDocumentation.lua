@@ -325,9 +325,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeCooldownViewerSetting",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeCooldownViewerSetting", EnumValue = 0 },
@@ -341,6 +341,7 @@ local EditModeManagerConstants =
 				{ Name = "HideWhenInactive", Type = "EditModeCooldownViewerSetting", EnumValue = 8 },
 				{ Name = "ShowTimer", Type = "EditModeCooldownViewerSetting", EnumValue = 9 },
 				{ Name = "ShowTooltips", Type = "EditModeCooldownViewerSetting", EnumValue = 10 },
+				{ Name = "BarWidthScale", Type = "EditModeCooldownViewerSetting", EnumValue = 11 },
 			},
 		},
 		{

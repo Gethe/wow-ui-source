@@ -1092,6 +1092,11 @@ end
 
 function AchievementTemplateMixin:OnEnter()
 	self.Highlight:Show();
+
+	if ( not self.id ) then
+		return; -- This happens when we create buttons
+	end
+
     EventRegistry:TriggerEvent("AchievementFrameAchievement.OnEnter", self, self.id);
 end
 

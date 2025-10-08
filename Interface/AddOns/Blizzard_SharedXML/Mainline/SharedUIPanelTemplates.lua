@@ -321,7 +321,9 @@ function SidePanelTabButtonMixin:SetChecked(checked)
 	else
 		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize);
 	end
-	self.SelectedTexture:SetShown(checked);
+	if self.SelectedTexture then
+		self.SelectedTexture:SetShown(checked);
+	end
 end
 
 function SidePanelTabButtonMixin:OnEnter()

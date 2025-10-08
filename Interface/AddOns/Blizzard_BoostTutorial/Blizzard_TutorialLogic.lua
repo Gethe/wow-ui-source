@@ -367,18 +367,18 @@ end
 -- Arrow frame that points at something on screen
 -- Frame is automatically closed when tutorial is shutdown
 -- This function clears any existing poitners before adding the new one
-function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("ShowPointerTutorial");
 
 	self:HidePointerTutorials();
-	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Adds a pointer tutorial ontop of existing pointers
-function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;

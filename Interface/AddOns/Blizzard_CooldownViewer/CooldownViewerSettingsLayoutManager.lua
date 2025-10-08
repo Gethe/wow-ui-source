@@ -600,13 +600,13 @@ function CooldownViewerLayoutManagerMixin:WriteCooldownAlertsToLayout(layout, al
 	end
 end
 
-function CooldownViewerLayoutManagerMixin:FindExistingAlert(cooldownID, existingAlert)
+function CooldownViewerLayoutManagerMixin:FindExistingAlert(cooldownID, alert)
 	local alerts = self:GetAlerts(cooldownID, Enum.CDMLayoutMode.AccessOnly);
 
 	if alerts then
-		for _, alert in ipairs(alerts) do
-			if CooldownViewerAlert_MatchesTypeAndEvent(alert, existingAlert) then
-				return alert;
+		for _, existingAlert in ipairs(alerts) do
+			if CooldownViewerAlert_Matches(existingAlert, alert) then
+				return existingAlert;
 			end
 		end
 	end
@@ -654,7 +654,7 @@ function CooldownViewerLayoutManagerMixin:RemoveAlert(cooldownID, alert)
 
 	if alerts then
 		for i, existingAlert in ipairs(alerts) do
-			if CooldownViewerAlert_MatchesTypeAndEvent(existingAlert, alert)  then
+			if CooldownViewerAlert_Matches(existingAlert, alert)  then
 				-- NOTE: There's no need to remove the alerts table now, just leave it empty.
 				-- When the layout is serialized, just don't write empty alert tables to saved data.
 				table.remove(alerts, i);

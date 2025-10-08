@@ -79,21 +79,6 @@ local CooldownViewerConstants =
 			},
 		},
 		{
-			Name = "CooldownViewerSoundAlertType",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 1,
-			MaxValue = 5,
-			Fields =
-			{
-				{ Name = "Ding1", Type = "CooldownViewerSoundAlertType", EnumValue = 1 },
-				{ Name = "Ding2", Type = "CooldownViewerSoundAlertType", EnumValue = 2 },
-				{ Name = "Ding3", Type = "CooldownViewerSoundAlertType", EnumValue = 3 },
-				{ Name = "Ding4", Type = "CooldownViewerSoundAlertType", EnumValue = 4 },
-				{ Name = "TextToSpeech", Type = "CooldownViewerSoundAlertType", EnumValue = 5 },
-			},
-		},
-		{
 			Name = "CooldownViewerUIConstants",
 			Type = "Constants",
 			Values =

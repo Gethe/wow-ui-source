@@ -22,11 +22,33 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 	local function toggleAllowedIndoors() 
 		self:TryCallSearcherFunc("ToggleAllowedIndoors");
 	end
+
 	local function getAllowedOutdoors()
 		return self:TryCallSearcherFunc("IsAllowedOutdoorsActive");
 	end
-	local function toggleAllowedOutdoors() 
+	local function toggleAllowedOutdoors()
 		self:TryCallSearcherFunc("ToggleAllowedOutdoors");
+	end
+
+	local function getCollected()
+		return self:TryCallSearcherFunc("IsCollectedActive");
+	end
+	local function toggleCollected()
+		self:TryCallSearcherFunc("ToggleCollected");
+	end
+
+	local function getUncollected()
+		return self:TryCallSearcherFunc("IsUncollectedActive");
+	end
+	local function toggleUncollected()
+		self:TryCallSearcherFunc("ToggleUncollected");
+	end
+
+	local function getFirstAcquisitionBonusOnly()
+		return self:TryCallSearcherFunc("IsFirstAcquisitionBonusOnlyActive");
+	end
+	local function toggleFirstAcquisitionBonusOnly()
+		self:TryCallSearcherFunc("ToggleFirstAcquisitionBonusOnly");
 	end
 
 	local function checkAllTagGroup(groupID)
@@ -48,6 +70,12 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_DYEABLE, getCustomizableOnly, toggleCustomizableOnly);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_INDOORS, getAllowedIndoors, toggleAllowedIndoors);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_OUTDOORS, getAllowedOutdoors, toggleAllowedOutdoors);
+
+		if self.housingMarketFiltersAvailable then
+			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_COLLECTED, getCollected, toggleCollected);
+			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_UNCOLLECTED, getUncollected, toggleUncollected);
+			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_FIRST_ACQUISITION, getFirstAcquisitionBonusOnly, toggleFirstAcquisitionBonusOnly);
+		end
 
 		for groupIndex, tagGroup in ipairs(self.filterTagGroups) do
 			if tagGroup.tags and TableHasAnyEntries(tagGroup.tags) then
@@ -84,10 +112,16 @@ function HousingCatalogFiltersMixin:AreFiltersAtDefault()
 		return true;
 	end
 
-	if self.catalogSearcher:IsCustomizableOnlyActive() then 
+	-- Don't show the reset button while disabled.
+	if not self.FilterDropdown:IsEnabled() then
+		return true;
+	end
+
+	if self.catalogSearcher:IsCustomizableOnlyActive() or self.catalogSearcher:IsFirstAcquisitionBonusOnlyActive() then
 		return false;
 	end
-	if not self.catalogSearcher:IsAllowedIndoorsActive() or not self.catalogSearcher:IsAllowedOutdoorsActive() then 
+	if not self.catalogSearcher:IsAllowedIndoorsActive() or not self.catalogSearcher:IsAllowedOutdoorsActive() or
+		not self.catalogSearcher:IsCollectedActive() or not self.catalogSearcher:IsUncollectedActive() then
 		return false;
 	end
 
@@ -110,6 +144,7 @@ function HousingCatalogFiltersMixin:ResetFiltersToDefault()
 	self.catalogSearcher:SetCustomizableOnly(false);
 	self.catalogSearcher:SetAllowedIndoors(true);
 	self.catalogSearcher:SetAllowedOutdoors(true);
+	self:ResetHousingMarketFilters();
 	for _, tagGroup in ipairs(self.filterTagGroups) do
 		self.catalogSearcher:SetAllInFilterTagGroup(tagGroup.groupID, true);
 	end
@@ -118,4 +153,56 @@ end
 
 function HousingCatalogFiltersMixin:SetEnabled(enabled)
 	self.FilterDropdown:SetEnabled(enabled);
+	self.FilterDropdown:ValidateResetState();
+end
+
+function HousingCatalogFiltersMixin:ResetHousingMarketFilters()
+	self.catalogSearcher:SetCollected(true);
+	self.catalogSearcher:SetUncollected(true);
+	self.catalogSearcher:SetFirstAcquisitionBonusOnly(false);
+end
+
+function HousingCatalogFiltersMixin:SetHousingMarketFiltersAvailable(available)
+	self.housingMarketFiltersAvailable = available;
+
+	if not available then
+		self:ResetHousingMarketFilters();
+	end
+
+	self.FilterDropdown:ValidateResetState();
+end
+
+HousingCatalogSearchBoxMixin = {};
+
+function HousingCatalogSearchBoxMixin:OnLoad()
+	SearchBoxTemplate_OnLoad(self);
+
+	self.clearButton:SetScript("OnClick", function(btn)
+		SearchBoxTemplateClearButton_OnClick(btn);
+		self:UpdateTextSearch(self:GetText());
+	end);
+end
+
+function HousingCatalogSearchBoxMixin:Initialize(onSearchTextUpdatedCallback)
+	self.onSearchTextUpdatedCallback = onSearchTextUpdatedCallback;
+end
+
+function HousingCatalogSearchBoxMixin:OnTextChanged()
+	SearchBoxTemplate_OnTextChanged(self);
+
+	if self:HasFocus() then
+		local currentText = self:GetText();
+		local numSearchChars = strlenutf8(currentText);
+		if numSearchChars >= MIN_CHARACTER_SEARCH then
+			self:UpdateTextSearch(currentText);
+		else
+			self:UpdateTextSearch("");
+		end
+	end
+end
+
+function HousingCatalogSearchBoxMixin:UpdateTextSearch(text)
+	if self.onSearchTextUpdatedCallback then
+		self.onSearchTextUpdatedCallback(text);
+	end
 end

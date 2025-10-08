@@ -88,16 +88,12 @@
 				</Layers>
 			</Button>
 
-			<EditBox parentKey="SearchBox" mixin="HouseEditorStorageSearchBoxMixin" inherits="SearchBoxTemplate" letters="40">
+			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate">
 				<Size y="30"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="20" y="-20"/>
 					<Anchor point="TOPRIGHT" x="-160" y="-20"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnTextChanged method="OnTextChanged"/>
-				</Scripts>
 			</EditBox>
 
 			<Frame parentKey="Filters" inherits="HousingCatalogFiltersTemplate">

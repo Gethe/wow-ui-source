@@ -16,6 +16,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownDisplayDuration",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 			Documentation = { "The returned duration unit is milliseconds, unaffected by modRate." },
 
 			Arguments =
@@ -30,6 +31,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownDuration",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 			Documentation = { "The returned duration unit is milliseconds and is multiplied by the modRate." },
 
 			Arguments =
@@ -44,6 +46,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownTimes",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 
 			Arguments =
 			{
@@ -218,7 +221,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetCooldown",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -230,7 +234,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetCooldownDuration",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -241,7 +246,8 @@ local FrameAPICooldown =
 		{
 			Name = "SetCooldownUNIX",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

@@ -29,6 +29,22 @@ local KeyBindings =
 			},
 		},
 		{
+			Name = "GetBindingByKey",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "action", Type = "cstring", Nilable = false },
+				{ Name = "context", Type = "BindingContext", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "binding", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBindingContextForAction",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

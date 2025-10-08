@@ -2700,9 +2700,7 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSettingVisibleSetting()
 end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarContent()
-	if self.SetBarContent then
-		self:SetBarContent(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarContent));
-	end
+	self:SetBarContent(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarContent));
 end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingHideWhenInactive()
@@ -2715,6 +2713,10 @@ end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTooltips()
 	self:SetTooltipsShown(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.ShowTooltips) == 1);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarWidthScale()
+	self:SetBarWidthScale(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarWidthScale) / 100);
 end
 
 function EditModeCooldownViewerSystemMixin:UseSettingAltName(setting)
@@ -2754,6 +2756,8 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSy
 		self:UpdateSystemSettingShowTimer();
 	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTooltips) then
 		self:UpdateSystemSettingShowTooltips();
+	elseif setting == Enum.EditModeCooldownViewerSetting.BarWidthScale and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarWidthScale) then
+		self:UpdateSystemSettingBarWidthScale();
 	end
 
 	if not entireSystemUpdate then

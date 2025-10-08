@@ -170,6 +170,11 @@ function NamePlateAurasMixin:AddAura(aura, checkFilters)
 			return false;
 		end
 
+		-- Avoid filling up the list of player buffs with information not relevant to the player.
+		if self:IsPlayer() == true and not aura.dispelName and aura.duration == 0 then
+			return false;
+		end
+
 		self.buffList[auraInstanceID] = aura;
 		return true;
 	elseif C_Spell.IsSpellCrowdControl(aura.spellId) then
@@ -291,6 +296,10 @@ function NamePlateAurasMixin:GetLossOfControlAura()
 
 	local lossOfControlData = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, LOSS_OF_CONTROL_ACTIVE_INDEX);
 	if not lossOfControlData then
+		return nil;
+	end
+
+	if not lossOfControlData.auraInstanceID then
 		return nil;
 	end
 

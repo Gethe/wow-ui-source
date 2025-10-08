@@ -1246,7 +1246,7 @@ function CommunitiesFrameMixin:UpdatePortrait()
 	self.PortraitOverlay.TabardBorder:SetShown(isGuildCommunity);
 
 	if clubInfo == nil then
-		SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\achievement_guildperk_havegroup willtravel");
+		self.PortraitOverlay.Portrait:SetTexture("Interface\\Icons\\achievement_guildperk_havegroup willtravel");
 	elseif isGuildCommunity then
 		SetLargeGuildTabardTextures("player", self.PortraitOverlay.TabardEmblem, self.PortraitOverlay.TabardBackground, self.PortraitOverlay.TabardBorder);
 	else
@@ -1328,7 +1328,7 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 			end
 			self.CommunitiesControlFrame:SetShown(displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER);
 		else
-			SetPortraitToTexture(self.PortraitOverlay.Portrait, "Interface\\Icons\\Achievement_General_StayClassy");
+			self.PortraitOverlay.Portrait:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 			local invitationInfo = C_Club.GetInvitationInfo(clubId);
 			if invitationInfo then
 				self.InvitationFrame:DisplayInvitation(invitationInfo);

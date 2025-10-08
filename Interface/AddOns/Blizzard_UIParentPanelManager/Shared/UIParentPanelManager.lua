@@ -1,7 +1,3 @@
-if not IsInGlobalEnvironment() then
-	return;
-end
-
 local _, addonTable = ...; -- Used for passing functions between UIParentPanelManager.lua and other files in this addon.
 
 -- UIPanel Management constants
@@ -45,6 +41,7 @@ showFailedFunc: [func]  --  Function to call when attempting to show the frame v
 width: [number]  --  Override width to use instead of the frame's actual width for layout/position calculations.
 height: [number]  --  Override height to use instead of the frame's actual height for layout/position calculations.
 extraWidth: [number]  --  Extra buffer width to add when checking frame's width for layout/position calculations. Is added to 'width' if also set, otherwise is added to frame's actual width.
+extraWidthFunc: [func(frame)]  --  Function that returns a non-hardcoded float value to use as the frame's extraWidth, used the same way the regular extraWidth attribute is used.
 extraHeight: [number]  --  Extra buffer height to add when checking frame's height for layout/position calculations. Is added to 'height' if also set, otherwise is added to frame's actual height.
 xoffset: [number]  --  X offset to add when positioning the frame within the UI parent.
 yoffset: [number]  --  Y offset to add when positioning the frame within the UI parent. Actual y position is also clamped based on minYOffset & bottomClampOverride.
@@ -56,7 +53,7 @@ checkFit: [0,1]  --  If 1, frame is scaled down if needed to fit within the curr
 checkFitExtraWidth: [number]  --  (default 20) Extra buffer width added when checking the frame's current size when rescaling for checkFit.
 checkFitExtraHeight: [number]  --  (default 20) Extra buffer height added when checking the frame's current size when rescaling for checkFit.
 autoMinimizeWithOtherPanels: [bool] -- If true, frame will be automatically minimized if being shown with other UI panels, maximized if alone; requires setMinimizedFunc to also be set.
-autoMinimizeOnCondition: [bool|func(frame)] -- Bool or Funcion that returns a bool to indicate whether frame should be minimized; Requires setMinimizedFunc to be set; If autoMinimizeWithOtherPanels is also true, frame will be minimized if this func returns true OR other frames are showing
+autoMinimizeOnCondition: [bool|func(frame)] -- Bool or Function that returns a bool to indicate whether frame should be minimized; Requires setMinimizedFunc to be set; If autoMinimizeWithOtherPanels is also true, frame will be minimized if this func returns true OR other frames are showing
 setMinimizedFunc: [func(frame, bool)] -- Called to minimize/maximize the frame as part of auto minimize logic
 ]]--
 
@@ -854,7 +851,16 @@ end
 
 function GetUIPanelWidthUnscaled(frame, extraWidth)
 	extraWidth = extraWidth or 0;
-	extraWidth = extraWidth + (GetUIPanelAttribute(frame, "extraWidth") or 0);
+	
+	local panelAttrExtraWidth = GetUIPanelAttribute(frame, "extraWidth");
+	if not panelAttrExtraWidth then
+		local panelAttrExtraWidthFunc = GetUIPanelAttribute(frame, "extraWidthFunc");
+		if panelAttrExtraWidthFunc then
+			panelAttrExtraWidth = panelAttrExtraWidthFunc(frame);
+		end
+	end
+
+	extraWidth = extraWidth + (panelAttrExtraWidth or 0);
 
 	local frameWidth = GetUIPanelAttribute(frame, "width") or frame:GetWidth();
 

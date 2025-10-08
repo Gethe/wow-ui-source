@@ -753,6 +753,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 1,
 		},
 
+		-- BarWidthScale
+		{
+			setting = Enum.EditModeCooldownViewerSetting.BarWidthScale,
+			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BUFFBAR_WIDTH_SCALE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
 		-- Opacity
 		{
 			setting = Enum.EditModeCooldownViewerSetting.Opacity,

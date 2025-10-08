@@ -67,6 +67,10 @@ function HousingCornerstonePurchaseFrameMixin:OnLoad()
 
 	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
 	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
+
+	self.MoneyFrame.GoldButton:EnableMouse(false);
+	self.MoneyFrame.SilverButton:EnableMouse(false);
+	self.MoneyFrame.CopperButton:EnableMouse(false);
 end
 
 function HousingCornerstonePurchaseFrameMixin:OnEvent(event, ...)
@@ -91,6 +95,13 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 	self.neighborhoodInfo = C_HousingNeighborhood.GetCornerstoneNeighborhoodInfo();
 
 	self.PlotText:SetText(string.format(HOUSING_PLOT_NUMBER, self.houseInfo.plotID));
+
+	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
+	if self.houseInfo.plotCost == 0 then
+		MoneyFrame_SetType(self.PriceMoneyFrame, "GUILD_REPAIR");
+	else
+		MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
+	end
 	MoneyFrame_Update("HousingCornerstonePriceMoneyFrame", self.houseInfo.plotCost);
 
 	self.NeighborhoodText:SetText(self.neighborhoodInfo.neighborhoodName);
@@ -313,6 +324,14 @@ end
 
 function MoveHouseConfirmationDialogMixin:OnShow()
 	local discountPrice = C_HousingNeighborhood.GetDiscountedMovePrice();
+
+	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
+	if discountPrice == 0 then
+		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "GUILD_REPAIR");
+	else
+		MoneyFrame_SetType(self.PriceMoneyFrameDiscount, "STATIC");
+	end
+
 	--Handle negative values in case the refund from old house is more than the cost of the new house
 	if discountPrice < 0 then
 		discountPrice = math.abs(discountPrice);

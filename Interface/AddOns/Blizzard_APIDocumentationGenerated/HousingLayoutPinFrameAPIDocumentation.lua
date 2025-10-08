@@ -55,7 +55,7 @@ local HousingLayoutPinFrameAPI =
 			},
 		},
 		{
-			Name = "GetDoorID",
+			Name = "GetDoorConnectionInfo",
 			Type = "Function",
 
 			Arguments =
@@ -64,7 +64,7 @@ local HousingLayoutPinFrameAPI =
 
 			Returns =
 			{
-				{ Name = "doorID", Type = "number", Nilable = true },
+				{ Name = "connectionInfo", Type = "DoorConnectionInfo", Nilable = true },
 			},
 		},
 		{
@@ -107,19 +107,6 @@ local HousingLayoutPinFrameAPI =
 			},
 		},
 		{
-			Name = "IsActiveDoor",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "isActive", Type = "bool", Nilable = true },
-			},
-		},
-		{
 			Name = "IsAnyPartOfRoomSelected",
 			Type = "Function",
 			Documentation = { "Returns true if this pin's associated room, or anything attached to it, is selected. Ex: If pin is for a door, returns true if its room, or any other doors on that room, are selected" },
@@ -131,6 +118,20 @@ local HousingLayoutPinFrameAPI =
 			Returns =
 			{
 				{ Name = "isSelected", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsOccupiedDoor",
+			Type = "Function",
+			Documentation = { "Will be nil if pin is not a Door" },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isOccupied", Type = "bool", Nilable = true },
 			},
 		},
 		{

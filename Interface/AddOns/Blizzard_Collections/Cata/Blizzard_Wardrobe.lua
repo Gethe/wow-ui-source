@@ -29,7 +29,7 @@ function WardrobeCollectionFrameMixin:OnLoad()
 	self.selectedCollectionTab = WARDROBE_TAB_ITEMS;
 	self.selectedTransmogTab = WARDROBE_TAB_ITEMS;
 
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\Icons\\inv_misc_enggizmos_19");
+	self:GetParent().portrait:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
 
 	self.FilterButton:SetWidth(85);
 

@@ -9,6 +9,7 @@ function TabSystemTrackerMixin:Init()
 	self.tabbedElements = {};
 	self.tabIDToElementSet = {};
 	self.tabIDToTabCallback = {};
+	self.tabIDToTabDeselectCallback = {};
 end
 
 function TabSystemTrackerMixin:AddTab(tabID, ...)
@@ -30,7 +31,18 @@ function TabSystemTrackerMixin:SetTabCallback(tabID, callback)
 	self.tabIDToTabCallback[tabID] = callback;
 end
 
+function TabSystemTrackerMixin:SetTabDeselectCallback(tabID, callback)
+	self.tabIDToTabDeselectCallback[tabID] = callback;
+end
+
 function TabSystemTrackerMixin:SetTab(tabID)
+	if self.tabID and tabID ~= self.tabID then
+		local deselectCallback = self.tabIDToTabDeselectCallback[self.tabID];
+		if deselectCallback then
+			deselectCallback();
+		end
+	end
+
 	self.tabID = tabID;
 
 	local elementSet = self.tabIDToElementSet[tabID];
@@ -77,6 +89,10 @@ end
 
 function TabSystemOwnerMixin:SetTabCallback(tabID, callback)
 	self.internalTabTracker:SetTabCallback(tabID, callback);
+end
+
+function TabSystemOwnerMixin:SetTabDeselectCallback(tabID, callback)
+	self.internalTabTracker:SetTabDeselectCallback(tabID, callback);
 end
 
 function TabSystemOwnerMixin:SetTab(tabID)

@@ -9,4 +9,11 @@
 			</DropdownButton>
 		</Frames>
 	</Frame>
+
+	<EditBox name="HousingCatalogSearchBoxTemplate" mixin="HousingCatalogSearchBoxMixin" inherits="SearchBoxTemplate" letters="40" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnTextChanged method="OnTextChanged"/>
+		</Scripts>
+	</EditBox>
 </Ui>

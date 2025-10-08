@@ -9,7 +9,7 @@ local FrameAPITooltip =
 			Name = "SetText",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

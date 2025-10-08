@@ -537,6 +537,14 @@ function SelectionBehaviorMixin:SelectElementData(elementData)
 	securecallfunction(SecureSelectElementData, self, elementData);
 end
 
+local function SecureDeselectElementData(behavior, elementData)
+	behavior:SetElementDataSelected_Internal(elementData, false);
+end
+
+function SelectionBehaviorMixin:DeselectElementData(elementData)
+	securecallfunction(SecureDeselectElementData, self, elementData);
+end
+
 function SelectionBehaviorMixin:SelectElementDataByPredicate(predicate)
 	local elementData = self.scrollBox:FindElementDataByPredicate(predicate);
 	if elementData then
@@ -575,6 +583,10 @@ end
 
 function SelectionBehaviorMixin:Select(frame)
 	return self:SelectElementData(frame:GetElementData());
+end
+
+function SelectionBehaviorMixin:Deselect(frame)
+	return self:DeselectElementData(frame:GetElementData());
 end
 
 function SelectionBehaviorMixin:ToggleSelect(frame)

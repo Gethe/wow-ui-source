@@ -727,7 +727,7 @@ function ChallengesKeystoneSlotMixin:OnEvent(event, ...)
 
 		local texture = select(10, C_Item.GetItemInfo(itemID));
 
-		SetPortraitToTexture(self.Texture, texture);
+		self.Texture:SetTexture(texture);
 
 		self:GetParent():OnKeystoneSlotted();
 	end
@@ -801,7 +801,7 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 	if (type(affixInfo) == "table") then
 		local info = affixInfo;
 
-		SetPortraitToTexture(self.Portrait, CHALLENGE_MODE_EXTRA_AFFIX_INFO[info.key].texture);
+		self.Portrait:SetTexture(CHALLENGE_MODE_EXTRA_AFFIX_INFO[info.key].texture);
 
 		if (info.pct > 999) then
 			self.Percent:SetFontObject("SystemFont_Shadow_Med1_Outline");
@@ -818,7 +818,7 @@ function ChallengesKeystoneFrameAffixMixin:SetUp(affixInfo)
 
 		local _, _, filedataid = C_ChallengeMode.GetAffixInfo(affixID);
 
-		SetPortraitToTexture(self.Portrait, filedataid);
+		self.Portrait:SetTexture(filedataid);
 
 		self.Percent:Hide();
 

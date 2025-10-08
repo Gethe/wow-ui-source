@@ -156,6 +156,15 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "IsHousingServiceEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsInsideHouse",
 			Type = "Function",
 
@@ -367,6 +376,11 @@ local HousingUI =
 			Name = "HousingMarketAvailabilityUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_MARKET_AVAILABILITY_UPDATED",
+		},
+		{
+			Name = "HousingServicesAvailabilityUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_SERVICES_AVAILABILITY_UPDATED",
 		},
 		{
 			Name = "MoveOutReservationUpdated",

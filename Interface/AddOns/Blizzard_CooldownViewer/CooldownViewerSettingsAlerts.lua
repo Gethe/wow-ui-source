@@ -33,8 +33,24 @@ function CooldownViewerSettingsEditAlertMixin:SetCooldown(cooldownItem)
 	self.CooldownName:SetText(cooldownItem:GetNameText());
 end
 
+function CooldownViewerSettingsEditAlertMixin:GetCooldownID()
+	return self.cooldownID;
+end
+
+function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
+	local cooldownID = self:GetCooldownID();
+
+	-- TODO: Add query API for valid events from cooldownID; something like C_CooldownViewer.GetValidAlertTypes...
+	-- note: also requires that the event types be moved to tag
+	if cooldownID then
+		return { Enum.CooldownViewerAlertEventType.Available, Enum.CooldownViewerAlertEventType.PandemicTime, Enum.CooldownViewerAlertEventType.OnCooldown, Enum.CooldownViewerAlertEventType.ChargeGained };
+	end
+
+	return nil;
+end
+
 function CooldownViewerSettingsEditAlertMixin:DisplayForCooldown(cooldownItem)
-	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, Enum.CooldownViewerSoundAlertType.Ding1);
+	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, CooldownViewerSound.ImpactsLowThud);
 	local isNewAlert = true;
 	self:DisplayForAlert(cooldownItem, alert, isNewAlert);
 end
@@ -46,7 +62,7 @@ function CooldownViewerSettingsEditAlertMixin:DisplayForAlert(cooldownItem, aler
 
 	self:UpdateAddButton(isNewAlert);
 	self:SetCooldown(cooldownItem);
-	self:SetupDropdowns(needsAddToCooldown);
+	self:SetupDropdowns();
 	self:Show();
 end
 
@@ -66,6 +82,24 @@ function CooldownViewerSettingsEditAlertMixin:AddCurrentAlert()
 	self.owner:RefreshLayout();
 	return status;
 end
+
+local eventTypeDropdownData =
+{
+	[Enum.CooldownViewerAlertEventType.Available] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE,
+	[Enum.CooldownViewerAlertEventType.PandemicTime] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_PANDEMIC,
+	[Enum.CooldownViewerAlertEventType.OnCooldown] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_ON_COOLDOWN,
+	[Enum.CooldownViewerAlertEventType.ChargeGained] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_CHARGE_GAINED,
+};
+
+local soundCategoryKeyToText =
+{
+	Animals = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_ANIMALS,
+	Devices = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_DEVICES,
+	Impacts = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_IMPACTS,
+	Instruments = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_INSTRUMENTS,
+	War2 = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_WAR2,
+	War3 = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_WAR3,
+}
 
 function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 	local function SetAlertType(elementData, _inputData, _menuProxy)
@@ -89,12 +123,18 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 		return CooldownViewerAlert_GetEventText(self.workingCopyOfAlert);
 	end);
 
+	local validEventTypes = self:GetValidEventTypesForCooldown();
 	self.EventDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_EVENT");
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE, SetAlertEvent, Enum.CooldownViewerAlertEventType.Available);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_PANDEMIC, SetAlertEvent, Enum.CooldownViewerAlertEventType.PandemicTime);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_ON_COOLDOWN, SetAlertEvent, Enum.CooldownViewerAlertEventType.OnCooldown);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_CHARGE_GAINED, SetAlertEvent, Enum.CooldownViewerAlertEventType.ChargeGained);
+
+		if validEventTypes then
+			for _, eventType in ipairs(validEventTypes) do
+				rootDescription:CreateButton(eventTypeDropdownData[eventType], SetAlertEvent, eventType);
+			end
+		else
+			-- TODO: Add "nothing available...", or likely prevent the frame from showing up at all, this could be queried externally.
+			rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_AVAILABLE, SetAlertEvent, Enum.CooldownViewerAlertEventType.Available);
+		end
 	end);
 
 	local function SetAlertPayload(elementData, _inputData, _menuProxy)
@@ -105,12 +145,21 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 		return CooldownViewerAlert_GetPayloadText(self.workingCopyOfAlert);
 	end);
 
+	local function BuildSoundMenus(description, currentTable)
+		for key, value in pairs (currentTable) do
+			if value.soundEnum and value.text then
+				description:CreateButton(value.text, SetAlertPayload, value.soundEnum);
+			elseif type(value) == "table" then
+				local nestedDescription = description:CreateButton(soundCategoryKeyToText[key], nop, -1);
+				BuildSoundMenus(nestedDescription, value);
+			end
+		end
+	end
+
 	self.PayloadDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_PAYLOAD");
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_DING1, SetAlertPayload, Enum.CooldownViewerSoundAlertType.Ding1);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_DING2, SetAlertPayload, Enum.CooldownViewerSoundAlertType.Ding2);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_DING3, SetAlertPayload, Enum.CooldownViewerSoundAlertType.Ding3);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_DING4, SetAlertPayload, Enum.CooldownViewerSoundAlertType.Ding4);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, SetAlertPayload, Enum.CooldownViewerSoundAlertType.TextToSpeech);
+		BuildSoundMenus(rootDescription, CooldownViewerSoundData);
+		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, SetAlertPayload, CooldownViewerSound.TextToSpeech);
+
 	end);
 end

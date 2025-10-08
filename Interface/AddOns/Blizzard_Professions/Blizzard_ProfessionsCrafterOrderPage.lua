@@ -10,14 +10,13 @@ local orderTypeTabTitles =
 };
 
 local function SetTabTitleWithCount(tabButton, type, count)
-	if tabButton then
-		local title = orderTypeTabTitles[type];
-		if type == Enum.CraftingOrderType.Public then
-			tabButton.Text:SetText(title);
-		else
-			tabButton.Text:SetText(string.format("%s (%s)", title, count));
-		end
+	local title = orderTypeTabTitles[type];
+	if type == Enum.CraftingOrderType.Public then
+		tabButton.Text:SetText(title);
+		return;
 	end
+
+	tabButton.Text:SetText(string.format("%s (%s)", title, count));
 end
 
 ProfessionsCrafterOrderListElementMixin = CreateFromMixins(TableBuilderRowMixin);
@@ -171,6 +170,17 @@ function ProfessionsCraftingOrderPageMixin:InitOrderTypeTabs()
 		local stretchWidth = typeTab.Text:GetWidth() + bufferWidth;
 		typeTab:SetTabWidth(math.max(minWidth, stretchWidth));
 	end
+
+	self.BrowseFrame.NpcOrdersButton:SetScript("OnEnter", function(typeTab)
+		GameTooltip:SetOwner(typeTab, "ANCHOR_RIGHT");
+		local professionFrame = self:GetProfessionFrame();
+		local professionInfo = professionFrame.professionInfo;
+		local expansionName = professionInfo and professionInfo.expansionName or "";
+		GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_PATRON_ORDERS_TAB_TOOLTIP_NAME:format(expansionName));
+		GameTooltip:Show();
+	end);
+	
+	self.BrowseFrame.NpcOrdersButton:SetScript("OnLeave", GameTooltip_Hide);
 end
 
 function ProfessionsCraftingOrderPageMixin:InitRecipeList()
@@ -383,8 +393,9 @@ function ProfessionsCraftingOrderPageMixin:OnEvent(event, ...)
 		elseif type == Enum.CraftingOrderType.Npc then
 			tabButton = self.BrowseFrame.NpcOrdersButton;
 		end
-
-		SetTabTitleWithCount(tabButton, type, count);
+		if tabButton then
+			SetTabTitleWithCount(tabButton, type, count);
+		end
 	elseif event == "CRAFTINGORDERS_REJECT_ORDER_RESPONSE" then
 		local result, orderID = ...;
 		local success = (result == Enum.CraftingOrderResult.Ok);
@@ -561,11 +572,23 @@ function ProfessionsCraftingOrderPageMixin:Init(professionInfo)
 			self:StartDefaultSearch();
 			self:CheckForClaimedOrder();
 		end
+
+		-- For Patron orders, we want the count to align with the orders filtered by expansion. Until these
+		-- orders arrive, set the count to 0.
+		local count = 0;
+		SetTabTitleWithCount(self.BrowseFrame.NpcOrdersButton, Enum.CraftingOrderType.Npc, count);
 	end
 
+	-- The crafting order recipe list is now based on the currently selected expansion in the recipes page, however when
+	-- no orders exist for the selected expansion, create an empty data provider instead.
 	local searching = self.BrowseFrame.RecipeList.SearchBox:HasText();
-	local dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, false, self:GetCollapses());
-	
+	local dataProvider;
+	if C_CraftingOrders.SkillLineHasOrders(self.professionInfo.professionID) then
+		dataProvider = Professions.GenerateCraftingDataProvider(self.professionInfo.professionID, searching, false, self:GetCollapses());
+	else
+		dataProvider = CreateTreeDataProvider();
+	end
+
 	if searching or changedProfessionID then
 		self.BrowseFrame.RecipeList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
 	else

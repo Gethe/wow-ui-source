@@ -418,7 +418,7 @@ function ProductContainerFrameMixin:InitProductContainer()
 
 	local function GetProductContainerDataProvider()
 		local dataProvider = CreateDataProvider();
-
+		local prevHeaderName = "";
 		for _, sectionData in ipairs(self.sectionData) do
 			local sectionID = sectionData.ID;
 			if sectionData.productIDs then
@@ -430,8 +430,12 @@ function ProductContainerFrameMixin:InitProductContainer()
 				end
 				-- Only add a header section if we added atleast one product for this Section (filtering can cause this to be 0)
 				-- Additionally only add a header if the section name has a valid string
+				-- And don't add a header in the case that this header would match the previous [WOW11-151520]
 				local headerIsBlank = (not sectionData.sectionDisplayName) or (sectionData.sectionDisplayName == "");
-				if (not headerIsBlank) and atLeastOneProductAdded then
+				local headerSameAsPrev = (prevHeaderName == sectionData.sectionDisplayName);
+				if (not headerSameAsPrev) and (not headerIsBlank) and atLeastOneProductAdded then
+					-- Track our last entered Header string, we want to collapse Sections with matching Header strings
+					prevHeaderName = sectionData.sectionDisplayName;
 					-- Add our section header element if we have products to Show
 					addSectionToDataProvider(dataProvider, self.categoryID, sectionID);
 				end

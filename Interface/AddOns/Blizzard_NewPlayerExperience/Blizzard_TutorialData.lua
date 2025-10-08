@@ -167,6 +167,8 @@ TutorialData.HunterTamePetSpells = {883, 1515};
 
 TutorialData.NPEDungeonID = 2043;
 
+TutorialData.TabTargetingQuestID = 55184;
+
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.ClassData = {
 	WARRIOR = {

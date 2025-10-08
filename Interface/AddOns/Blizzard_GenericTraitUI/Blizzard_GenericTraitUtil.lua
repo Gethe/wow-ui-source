@@ -36,9 +36,14 @@ local GenericTraitFrameLayoutOptions = {
 	},
 
 	Skyriding = {
+		NineSliceLayoutName = "ButtonFrameTemplateNoPortraitLessPadding",
+		BackgroundAtlas = "ui-frame-dragonflight-backgroundtile",
 		Title = GENERIC_TRAIT_FRAME_DRAGONRIDING_TITLE,
-		HeaderSize = { Width = 500, Height = 130 },
-		PanOffset = { x = -80, y = -35 },
+		HeaderSize = { Width = 350, Height = 50 },
+		PanOffset = { x = 20, y = -50 },
+		FrameSize = { Width = 450, Height = 450 },
+		CloseButtonOffset = { x = 3, y = 6 },
+		UseOldNineSlice = true,
 	},
 
 	TheWeaver = {

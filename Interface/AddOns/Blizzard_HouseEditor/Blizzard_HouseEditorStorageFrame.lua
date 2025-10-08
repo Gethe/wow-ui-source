@@ -65,18 +65,28 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	local editorMode = C_HouseEditor.GetActiveHouseEditorMode();
 	self.catalogSearcher:SetEditorModeContext(editorMode);
 	self.Filters:Initialize(self.catalogSearcher);
+	self.SearchBox:Initialize(GenerateClosure(self.OnSearchTextUpdated, self));
 
 	self.Categories:Initialize(GenerateClosure(self.OnCategoryFocusChanged, self), { withOwnedEntriesOnly = true, editorModeContext = editorMode });
-
-	self.OptionsContainer.Shadows:ClearAllPoints();
-	self.OptionsContainer.Shadows:SetPoint("TOPLEFT", self.Categories, "TOPRIGHT", 2, 0);
-	self.OptionsContainer.Shadows:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -18, 2);
 
 	self:SetTabSystem(self.TabSystem);
 	self.storageTabID = self:AddNamedTab(HOUSE_EDITOR_CATALOG_STORAGE_TAB);
 	self:SetTabCallback(self.storageTabID, function() self:OnStorageTabSelected(); end);
 	self.marketTabID = self:AddNamedTab(HOUSE_EDITOR_CATALOG_MARKET_TAB);
 	self:SetTabCallback(self.marketTabID, function() self:OnMarketTabSelected(); end);
+	self:SetTabDeselectCallback(self.marketTabID, function() self:OnMarketTabDeselected(); end);
+
+	--add a dialog confirming that you want to switch tabs, as doing so will delete your preview decor.
+	self.TabSystem:SetTabSelectedCallback(function(tabID)
+		if tabID == self.storageTabID and C_HousingDecor.GetNumPreviewDecor() > 0 then
+			StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+				self:SetTab(tabID);
+			end);
+			return true; --stops the tab from being selected, for now.
+		else
+			return self:SetTab(tabID);
+		end
+	end);
 
 	self:SetTab(self.storageTabID);
 	self:UpdateMarketTabVisibility();
@@ -109,16 +119,20 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		-- We're going to use leaving world as a "good enough" point for refreshing data from the catalog shop.
 		self.hasMarketData = false;
-	elseif event == "CATALOG_SHOP_DATA_REFRESH" then
+	elseif event == "CATALOG_SHOP_FETCH_SUCCESS" or event == "CATALOG_SHOP_DATA_REFRESH" then
 		C_HousingCatalog.RequestHousingMarketInfoRefresh();
 		self.hasMarketData = true;
-	elseif event == "CATALOG_SHOP_FETCH_SUCCESS" then
 		self:UpdateCatalogData();
 	elseif event == "CATALOG_SHOP_FETCH_FAILURE" then
 		-- TODO:: We should probably have specific handling for the error. For now, just restart.
 		local allowMovement = true;
 		C_CatalogShop.OpenCatalogShopInteraction(allowMovement);
 	end
+end
+
+local function SetCartFrameShown(shown, preserveCartState)
+	local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartVisualServices.SetCartFrameShown);
+	EventRegistry:TriggerEvent(cartShownEvent, shown, preserveCartState);
 end
 
 function HouseEditorStorageFrameMixin:OnShow()
@@ -133,6 +147,15 @@ function HouseEditorStorageFrameMixin:OnShow()
 	end
 
 	self:CheckStartMarketInteraction();
+
+	SavedSetsUtil.ContinueOnLoad(function()
+		self:UpdateMarketTabNotification();
+		self:CheckShowMarketAllCategoryNotification();
+	end);
+
+	if C_HousingDecor.IsPreviewState() then
+		SetCartFrameShown(true, true);
+	end
 end
 
 function HouseEditorStorageFrameMixin:OnHide()
@@ -145,6 +168,8 @@ function HouseEditorStorageFrameMixin:OnHide()
 		C_CatalogShop.CloseCatalogShopInteraction();
 		self.catalogShopInteractionStarted = false;
 	end
+
+	SetCartFrameShown(false, true);
 end
 
 function HouseEditorStorageFrameMixin:OnResizeStopped()
@@ -190,6 +215,10 @@ function HouseEditorStorageFrameMixin:OnStorageTabSelected()
 	categorySearchParams.includeFeaturedCategory = false;
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_primary");
+
+	self.Filters:SetHousingMarketFiltersAvailable(false);
+	local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
+	EventRegistry:TriggerEvent(cartShownEvent);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabSelected()
@@ -200,11 +229,19 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected()
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
+	self:UpdateMarketTabNotification();
 	self:CheckStartMarketInteraction();
+	C_HousingDecor.EnterPreviewState();
+
+	SetCartFrameShown(true);
+end
+
+function HouseEditorStorageFrameMixin:OnMarketTabDeselected()
+	SetCartFrameShown(false);
 end
 
 function HouseEditorStorageFrameMixin:CheckStartMarketInteraction()
-	if self:IsInMarketTab() and not self.catalogShopInteractionStarted and not self.hasMarketData then
+	if not self.catalogShopInteractionStarted and not self.hasMarketData then
 		self.catalogShopInteractionStarted = true;
 
 		local allowMovement = true;
@@ -223,12 +260,91 @@ function HouseEditorStorageFrameMixin:UpdateMarketTabVisibility()
 	end
 end
 
+function HouseEditorStorageFrameMixin:ShouldShowAllCategoryNotification()
+	if not self:IsInMarketTab() or self.Categories:IsAllCategoryFocused() then
+		return false;
+	end
+
+	return self:HasUnseenDecor();
+end
+
+function HouseEditorStorageFrameMixin:HasUnseenDecor()
+	if not SavedSetsUtil.IsLoaded() then
+		return false;
+	end
+
+	local numSearchItems = self.catalogSearcher:GetNumSearchItems();
+	if self.checkedNumSearchItems ~= numSearchItems then
+		-- If we haven't ever seen anything don't show a notification.
+		if not SavedSetsUtil.HasAny(SavedSetsUtil.RegisteredSavedSets.SeenHousingMarketDecorIDs) then
+			self.hasUnseenDecor = false;
+		else
+			local entries = self.catalogSearcher:GetAllSearchItems();
+			local decorIDs = {};
+			for _i, entryID in ipairs(entries) do
+				if entryID.entryType == Enum.HousingCatalogEntryType.Decor then
+					table.insert(decorIDs, entryID.recordID);
+				end
+			end
+
+			self.hasUnseenDecor = not SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenHousingMarketDecorIDs, decorIDs);
+		end
+
+		self.checkedNumSearchItems = numSearchItems;
+	end
+
+	return self.hasUnseenDecor;
+end
+
+function HouseEditorStorageFrameMixin:CheckShowMarketAllCategoryNotification()
+	self.Categories:SetCategoryNotification(Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID, self:ShouldShowAllCategoryNotification());
+end
+
+function HouseEditorStorageFrameMixin:ShouldShowMarketTabNotification()
+	if self:IsInMarketTab() then
+		return false;
+	end
+
+	if self:HasUnseenDecor() then
+		return true;
+	end
+
+	if not self.hasMarketData or not SavedSetsUtil.IsLoaded() then
+		return false;
+	end
+
+	-- If we haven't ever seen anything don't show a notification.
+	if not SavedSetsUtil.HasAny(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs) then
+		return false;
+	end
+
+	local availableProductIDs = self:GetAvailableProductIDs();
+	if not SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, availableProductIDs) then
+		return true;
+	end
+
+	return false;
+end
+
+function HouseEditorStorageFrameMixin:UpdateMarketTabNotification()
+	self.TabSystem:SetTabNotification(self.marketTabID, self:ShouldShowMarketTabNotification());
+end
+
 function HouseEditorStorageFrameMixin:IsInMarketTab()
 	return self:GetTab() == self.marketTabID;
 end
 
-function HouseEditorStorageFrameMixin:IsMarketTabShown()
-	return self.TabSystem:IsTabShown(self.marketTabID);
+function HouseEditorStorageFrameMixin:GetAvailableProductIDs()
+	local availableProductIDs = {};
+	for _i, bundleEntry in ipairs(C_HousingCatalog.GetFeaturedBundles()) do
+		table.insert(availableProductIDs, bundleEntry.productID);
+	end
+
+	for _i, decorEntry in ipairs(C_HousingCatalog.GetFeaturedDecor()) do
+		table.insert(availableProductIDs, decorEntry.productID);
+	end
+
+	return availableProductIDs;
 end
 
 function HouseEditorStorageFrameMixin:UpdateCatalogData()
@@ -236,20 +352,40 @@ function HouseEditorStorageFrameMixin:UpdateCatalogData()
 		return;
 	end
 
+	self:UpdateMarketTabNotification();
+	self:CheckShowMarketAllCategoryNotification();
+
 	if self.Categories:IsFeaturedCategoryFocused() then
 		if self.hasMarketData then
 			local entries = C_HousingCatalog.GetFeaturedBundles();
-			for _i, decorEntryID in ipairs(C_HousingCatalog.GetFeaturedDecor()) do
-				table.insert(entries, decorEntryID);
+			for _i, decorEntry in ipairs(C_HousingCatalog.GetFeaturedDecor()) do
+				table.insert(entries, decorEntry.entryID);
 			end
 
 			local retainCurrentPosition = true;
 			self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition);
+
+			local availableProductIDs = self:GetAvailableProductIDs();
+			SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, availableProductIDs);
 		end
 	else
 		local entries = self.catalogSearcher:GetCatalogSearchResults();
 		local retainCurrentPosition = true;
 		self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition);
+
+		if self:IsInMarketTab() then
+			if self.Categories:IsAllCategoryFocused() then
+				local decorIDs = {};
+				for _i, entryID in ipairs(entries) do
+					if entryID.entryType == Enum.HousingCatalogEntryType.Decor then
+						table.insert(decorIDs, entryID.recordID);
+					end
+				end
+
+				SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenHousingMarketDecorIDs, decorIDs);
+				self.hasUnseenDecor = false;
+			end
+		end
 	end
 
 	self:UpdateLoadingSpinner();
@@ -339,18 +475,17 @@ function HouseEditorStorageFrameMixin:OnSearchTextUpdated(newSearchText)
 
 		-- On searching something new, clear out any active category focus so we're searching all categories
 		if newSearchText and newSearchText ~= "" then
-			if self.catalogSearcher:GetFilteredCategoryID() or self.catalogSearcher:GetFilteredSubcategoryID() then
-				self.catalogSearcher:SetFilteredCategoryID(nil);
-				self.catalogSearcher:SetFilteredSubcategoryID(nil);
-			end
-
+			self.catalogSearcher:SetFilteredCategoryID(nil);
+			self.catalogSearcher:SetFilteredSubcategoryID(nil);
 			self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID);
 		end
 	end
 end
 
 function HouseEditorStorageFrameMixin:OnCategoryFocusChanged(focusedCategoryID, focusedSubcategoryID)
-	if focusedCategoryID == Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID then
+	local isFeaturedCategory = (focusedCategoryID == Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
+	self.Filters:SetEnabled(not isFeaturedCategory);
+	if isFeaturedCategory then
 		self:ClearSearchText();
 		self:UpdateCatalogData();
 	else
@@ -369,9 +504,9 @@ function HouseEditorStorageFrameMixin:OnCategoryFocusChanged(focusedCategoryID, 
 		-- On focusing categories, clear out any previous search text
 		if (focusedCategoryID or focusedSubcategoryID) and self.catalogSearcher:GetSearchText() then
 			if focusedCategoryID ~= Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID then
-			self:ClearSearchText();
+				self:ClearSearchText();
+			end
 		end
-	end
 	end
 end
 
@@ -382,34 +517,4 @@ function HouseEditorStorageFrameMixin:ClearSearchText()
 
 	self.catalogSearcher:SetSearchText(nil);
 	SearchBoxTemplate_ClearText(self.SearchBox);
-end
-
-
-HouseEditorStorageSearchBoxMixin = {};
-
-function HouseEditorStorageSearchBoxMixin:OnLoad()
-	SearchBoxTemplate_OnLoad(self);
-
-	self.clearButton:SetScript("OnClick", function(btn)
-		SearchBoxTemplateClearButton_OnClick(btn);
-		self:UpdateTextSearch(self:GetText());
-	end);
-end
-
-function HouseEditorStorageSearchBoxMixin:OnTextChanged()
-	SearchBoxTemplate_OnTextChanged(self);
-
-	if self:HasFocus() then
-		local currentText = self:GetText();
-		local numSearchChars = strlenutf8(currentText);
-		if numSearchChars == 0 or numSearchChars >= MIN_CHARACTER_SEARCH then
-			self:UpdateTextSearch(currentText);
-		elseif numSearchChars > 0 and numSearchChars < MIN_CHARACTER_SEARCH then
-			self:UpdateTextSearch("");
-		end
-	end
-end
-
-function HouseEditorStorageSearchBoxMixin:UpdateTextSearch(text)
-	self:GetParent():OnSearchTextUpdated(text);
 end

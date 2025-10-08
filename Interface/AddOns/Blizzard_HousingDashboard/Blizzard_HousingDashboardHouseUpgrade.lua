@@ -94,7 +94,19 @@ function HousingUpgradeFrameMixin:SelectHouseLevel(houseLevelFavor)
 	self.displayLevel = houseLevelFavor.houseLevel + 1;
 	self.houseFavor = houseLevelFavor.houseFavor;
 	self.houseFavorNeeded = C_Housing.GetHouseLevelFavorForLevel(self.actualLevel + 1);
+
 	self.CurrentLevelFrame.HouseLevelText:SetText(self.actualLevel);
+	self.CurrentLevelFrame.HouseLevelText:ClearAllPoints()
+	-- The FRIZQT font has a problemm with rendering 1 (or numbers starting with 1), which causes it to be off center
+	-- So, we have to detect that and manually bump it back into the center
+	local levelString = tostring(self.actualLevel);
+	local indexOf1 = string.find(levelString, "1");
+	if indexOf1 == 1 then
+		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", -2, -10);
+	else
+		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", 0, -10);
+	end
+
 	if not self.hasSelectedLevel and self:AllRewardsLoaded() then
 		local fromOnShow, forceRefresh = false, true;
 		self:SelectLevel(self.displayLevel, fromOnShow, forceRefresh);

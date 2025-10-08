@@ -1,6 +1,7 @@
 local ModelSceneID = 691;
 local ActorTag = "decor";
 local QuestionMarkIconFileDataID = 134400;
+local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
 
 HousingCatalogEntryMixin = {};
 
@@ -65,17 +66,51 @@ function HousingCatalogEntryMixin.Reset(framePool, self)
 	self:TypeSpecificReset();
 end
 
-function HousingCatalogEntryMixin:IsInvalidArea()
-	local indoors = C_Housing.IsInsideHouse();
-	local invalidIndoors = indoors and not self.entryInfo.isAllowedIndoors;
-	local invalidOutdoors = not indoors and not self.entryInfo.isAllowedOutdoors;
-	return invalidIndoors, invalidOutdoors;
+-- Returns bool isValid, invalidTooltip, invalidError
+function HousingCatalogEntryMixin:GetIsValid()
+	local isValid, invalidTooltip, invalidError = true, nil, nil;
+
+	-- First check for invalid data
+	if not self:HasValidData() then
+		isValid = false;
+		invalidTooltip = nil;
+		invalidError = nil;
+	end
+
+	-- If valid so far, check for invalid house editor context
+	if isValid and C_HouseEditor.IsHouseEditorActive() then
+		local currentlyIndoors = C_Housing.IsInsideHouse();
+		local invalidIndoors = currentlyIndoors and not self.entryInfo.isAllowedIndoors;
+		local invalidOutdoors = not currentlyIndoors and not self.entryInfo.isAllowedOutdoors;
+
+		isValid = not invalidIndoors and not invalidOutdoors;
+
+		if invalidIndoors then
+			invalidTooltip =  HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE;
+			invalidError = HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE_ERROR;
+		elseif invalidOutdoors then
+			invalidTooltip = HOUSING_DECOR_ONLY_PLACEABLE_INSIDE;
+			invalidError = HOUSING_DECOR_ONLY_PLACEABLE_INSIDE_ERROR
+		end
+	end
+
+	-- If still valid so far, do type-specific valid check
+	if isValid then
+		isValid, invalidTooltip, invalidError = self:GetTypeSpecificIsValid();
+	end
+
+	return isValid, invalidTooltip, invalidError;
+end
+
+function HousingCatalogEntryMixin:AddInvalidTooltipLine(tooltip)
+	local isValid, invalidTooltip = self:GetIsValid();
+	if not isValid and invalidTooltip then
+		GameTooltip_AddErrorLine(tooltip, invalidTooltip);
+	end
 end
 
 function HousingCatalogEntryMixin:UpdateVisuals()
-
-	local invalidIndoors, invalidOutdoors = self:IsInvalidArea();
-	local valid = not invalidIndoors and not invalidOutdoors;
+	local valid = self:GetIsValid();
 
 	if self.entryInfo.iconTexture or self.entryInfo.iconAtlas then
 		self.ModelScene:Hide();
@@ -119,14 +154,19 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:Show();
 	end
 
-	if self:IsInMarketView() then
+	if C_HousingDecor.IsPreviewState() then
 		local marketInfo = self.entryInfo.marketInfo;
 		local price = marketInfo and marketInfo.price or 0;
-		self.InfoText:SetText(price .. CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16));
+		self.InfoText:SetText(price .. HearthsteelAtlasMarkup);
 		self.InfoText:SetShown(price > 0);
 	else
 		self.InfoText:SetText(self.entryInfo.quantity + self.entryInfo.remainingRedeemable);
 		self.InfoText:SetShown(self.entryInfo.showQuantity);
+	end
+
+	-- If already being hovered, make sure to refresh the tooltip
+	if self:IsMouseMotionFocus() then
+		self:OnEnter();
 	end
 end
 
@@ -154,17 +194,11 @@ function HousingCatalogEntryMixin:OnEnter()
 	if not self:HasValidData() then
 		return;
 	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
 
 	self:AddTooltipTitle(GameTooltip);
 	self:AddTooltipLines(GameTooltip);
-
-	local invalidIndoors, invalidOutdoors = self:IsInvalidArea();
-	if invalidIndoors then
-		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE);
-	elseif invalidOutdoors then
-		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_ONLY_PLACEABLE_INSIDE);
-	end
 
 	EventRegistry:TriggerEvent("HousingCatalogEntry.TooltipCreated", self, GameTooltip);
 
@@ -200,17 +234,28 @@ function HousingCatalogEntryMixin:OnMouseUp()
 end
 
 function HousingCatalogEntryMixin:OnClick(button)
-	if button == "RightButton" then
-		self:ShowContextMenu();
-	else
-		local isDrag = false;
-		self:OnInteract(isDrag);
-	end
+	local isDrag = false;
+	self:OnInteract(button, isDrag);
 end
 
 function HousingCatalogEntryMixin:OnDragStart()
+	local button = nil;
 	local isDrag = true;
-	self:OnInteract(isDrag);
+	self:OnInteract(button, isDrag);
+end
+
+function HousingCatalogEntryMixin:OnInteract(button, isDrag)
+	if not self:HasValidData() then
+		return;
+	end
+
+	EventRegistry:TriggerEvent("HousingCatalogEntry.OnInteract", self, button, isDrag);
+
+	if button == "RightButton" then
+		self:ShowContextMenu();
+	else
+		self:TypeSpecificOnInteract(button, isDrag);
+	end
 end
 
 function HousingCatalogEntryMixin:TypeSpecificInit()
@@ -221,6 +266,11 @@ function HousingCatalogEntryMixin:TypeSpecificReset()
 	-- Optional override
 end
 
+function HousingCatalogEntryMixin:GetTypeSpecificIsValid()
+	-- Optional override, should return isValid, invalidTooltip, invalidError
+	return true, nil, nil;
+end
+
 function HousingCatalogEntryMixin:UpdateTypeSpecificData()
 	-- Optional override
 end
@@ -229,16 +279,11 @@ function HousingCatalogEntryMixin:ClearTypeSpecificData()
 	-- Optional override
 end
 
-function HousingCatalogEntryMixin:IsInMarketView()
-	-- Optional override
-	return false;
-end
-
 function HousingCatalogEntryMixin:ShowContextMenu()
 	-- Optional override
 end
 
-function HousingCatalogEntryMixin:OnInteract(isDrag)
+function HousingCatalogEntryMixin:TypeSpecificOnInteract(isDrag)
 	-- Type-specific override required
 	assert(false);
 end
@@ -255,7 +300,7 @@ function HousingCatalogEntryMixin:AddTooltipLines(tooltip)
 end
 
 
-HousingCatalogDecorEntryMixin = {};
+HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
 function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
 	local dyeNames = self.entryInfo.customizations;
@@ -268,8 +313,27 @@ end
 
 function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local entryInfo = self.entryInfo;
+	local marketInfo = entryInfo.marketInfo;
+
 	local total = entryInfo.numPlaced + entryInfo.numStored;
-	GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, entryInfo.numStored));
+	if total ~= 0 then
+		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, entryInfo.numStored));
+	end
+
+	if entryInfo.firstAcquisitionBonus > 0 then
+		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_FIRST_ACQUISITION_FORMAT:format(entryInfo.firstAcquisitionBonus));
+	end
+
+	self:AddInvalidTooltipLine(tooltip);
+
+	if marketInfo and marketInfo.price then
+		local priceText = marketInfo.price .. HearthsteelAtlasMarkup;
+		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(priceText));
+	end
+
+	if marketInfo and #marketInfo.bundleIDs > 0 then
+		GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_BUNDLE_DISCLAIMER, DISCLAIMER_TOOLTIP_COLOR);
+	end
 
 	local dyeNames = entryInfo.customizations;
 	if dyeNames and #dyeNames > 0 then
@@ -278,47 +342,43 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	end
 end
 
-StaticPopupDialogs["HOUSING_LAYOUT_MAX_DECOR_REACHED"] = {
-	text = HOUSING_LAYOUT_DECOR_LIMIT_REACHED,
+StaticPopupDialogs["HOUSING_MAX_DECOR_REACHED"] = {
+	text = ERR_PLACED_DECOR_LIMIT_REACHED,
 	button1 = OKAY,
 	button2 = nil
 };
 
-function HousingCatalogDecorEntryMixin:IsInMarketView()
-	-- TODO:: Replace this hack. For now I'm not sure how preview placement will work so I'm disabling it.
-	local storagePanel = HouseEditorFrame and HouseEditorFrame.StoragePanel or nil;
-	if storagePanel and storagePanel:IsInMarketTab() then
-		return true;
+function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
+	if not C_HouseEditor.IsHouseEditorActive() then
+		return;
 	end
-
-	return false;
-end
-
-function HousingCatalogDecorEntryMixin:OnInteract(isDrag)
-	-- TODO:: Allow preview placement when quantity is 0.
-	if not self:HasValidData() or self.entryInfo.quantity + self.entryInfo.remainingRedeemable <= 0 then
+	
+	if not self:HasValidData() or (not C_HousingDecor.IsPreviewState() and self.entryInfo.quantity + self.entryInfo.remainingRedeemable <= 0) then
 		return;
 	end
 
 	local decorPlaced = C_HousingDecor.GetNumDecorPlaced();
 	local maxDecor = C_HousingDecor.GetMaxDecorPlaced();
 	if decorPlaced >= maxDecor then
-		StaticPopup_Show("HOUSING_LAYOUT_MAX_DECOR_REACHED");
+		StaticPopup_Show("HOUSING_MAX_DECOR_REACHED");
 		return;
 	end
 
-	local invalidIndoors, invalidOutdoors = self:IsInvalidArea();
-	if invalidIndoors then
-		UIErrorsFrame:AddMessage(HOUSING_DECOR_ONLY_PLACEABLE_OUTSIDE_ERROR, RED_FONT_COLOR:GetRGBA());
-		return;
-	elseif invalidOutdoors then
-		UIErrorsFrame:AddMessage(HOUSING_DECOR_ONLY_PLACEABLE_INSIDE_ERROR, RED_FONT_COLOR:GetRGBA());
+	local isValid, invalidTooltip, invalidError = self:GetIsValid();
+	if not isValid then
+		local errorMessage = invalidError or invalidTooltip;
+		if errorMessage then
+			UIErrorsFrame:AddMessage(errorMessage, RED_FONT_COLOR:GetRGBA());
+		end
 		return;
 	end
 
-	if self:IsInMarketView() then
-		-- TODO:: Implement preview placement for market tab
+	local StartPlacing;
+	if C_HousingDecor.IsPreviewState() then
+		StartPlacing = function() C_HousingBasicMode.StartPlacingPreviewDecor(self.entryID); end
 	else
+		StartPlacing = function() C_HousingBasicMode.StartPlacingNewDecor(self.entryID); end
+	end
 	
 	local sound;
 	local size = self.entryInfo.size;
@@ -331,25 +391,24 @@ function HousingCatalogDecorEntryMixin:OnInteract(isDrag)
 	end
 	PlaySound(sound);
 
-		if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
-			C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
+	if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
+		C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
 
-			RunNextFrame(function()
-				C_HousingBasicMode.StartPlacingNewDecor(self.entryID);
-			end);
-			return;
-		end
+		RunNextFrame(function()
+			StartPlacing();
+		end);
+		return;
+	end
 
-		local activeHouseEditorMode = C_HouseEditor.GetActiveHouseEditorMode();
-		local activeEditorModeFrame = HouseEditorFrame and HouseEditorFrame:GetActiveModeFrame();
-		if activeHouseEditorMode == Enum.HouseEditorMode.BasicDecor and activeEditorModeFrame then
-			-- if user dragged icon from the house chest, then add decor on mouse up.
-			-- otherwise, user clicked on house chest icon; don't add decor until next click.
-			activeEditorModeFrame.commitNewDecorOnMouseUp = isDrag;
+	local activeHouseEditorMode = C_HouseEditor.GetActiveHouseEditorMode();
+	local activeEditorModeFrame = HouseEditorFrame and HouseEditorFrame:GetActiveModeFrame();
+	if activeHouseEditorMode == Enum.HouseEditorMode.BasicDecor and activeEditorModeFrame then
+		-- if user dragged icon from the house chest, then add decor on mouse up.
+		-- otherwise, user clicked on house chest icon; don't add decor until next click.
+		activeEditorModeFrame.commitNewDecorOnMouseUp = isDrag;
 
-			-- HOUSING_TODO: We should add some kind of out error to these kinds of APIs so we can display any failure reasons
-			C_HousingBasicMode.StartPlacingNewDecor(self.entryID);
-		end
+		-- HOUSING_TODO: We should add some kind of out error to these kinds of APIs so we can display any failure reasons
+		StartPlacing();
 	end
 end
 
@@ -436,6 +495,24 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
 			end
 		end
+
+		if self.entryInfo.marketInfo then
+			local addToCartButton = rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
+				local elementData = {
+					isBundleParent = false,
+					isBundleChild = false,
+				
+					id = self.entryInfo.itemID,
+					name = self.entryInfo.name,
+					decorEntryID = self.entryID,
+					icon = self.entryInfo.iconTexture,
+					price = self.entryInfo.marketInfo.originalPrice or self.entryInfo.marketInfo.price,
+					salePrice = self.entryInfo.marketInfo.originalPrice and self.entryInfo.marketInfo.price or nil,
+				};
+
+				EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), elementData);
+			end);
+		end
 	end);
 end
 
@@ -445,11 +522,13 @@ local RoomEntryEvents = {
 	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
 	"HOUSING_LAYOUT_DOOR_SELECTED",
 	"HOUSING_LAYOUT_DOOR_SELECTION_CHANGED",
+	"HOUSING_LAYOUT_ROOM_RECEIVED",
+	"HOUSING_LAYOUT_ROOM_REMOVED",
+	"HOUSE_LEVEL_CHANGED"
 };
 
 function HousingCatalogRoomEntryMixin:TypeSpecificInit()
 	FrameUtil.RegisterFrameForEvents(self, RoomEntryEvents);
-	self.isValid = true;
 end
 
 function HousingCatalogRoomEntryMixin:TypeSpecificReset()
@@ -459,22 +538,31 @@ end
 function HousingCatalogRoomEntryMixin:OnEvent(event, ...)
 	if event == "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED" then
 		local anySelected, roomID = ...;
-
 		self:SetSelected(anySelected and roomID == self.entryID.recordID);
-	elseif event == "HOUSING_LAYOUT_DOOR_SELECTED" then
-		local roomGUID, doorComponentId = ...;
-		self:SetValid(C_HousingLayout.HasValidConnection(roomGUID, doorComponentId, self.entryID.recordID));
-	elseif event == "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED" then
-		local hasSelectedDoor = ...;
-		if not hasSelectedDoor then
-			self:SetValid(true);
-		end
+	elseif event == "HOUSING_LAYOUT_DOOR_SELECTED" or event == "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED" 
+		or event == "HOUSING_LAYOUT_ROOM_RECEIVED" or event == "HOUSING_LAYOUT_ROOM_REMOVED" or event == "HOUSE_LEVEL_CHANGED" then
+		self:UpdateVisuals();
 	end
 end
 
-function HousingCatalogRoomEntryMixin:SetValid(isValid)
-	self.isValid = isValid;
-	self.Icon:SetDesaturation(isValid and 0.0 or 1.0);
+function HousingCatalogRoomEntryMixin:GetTypeSpecificIsValid()
+	local isValid, invalidTooltip, invalidError = true, nil, nil;
+
+	local isAtBudgetMax = C_HousingLayout.GetNumActiveRooms() >= C_HousingLayout.GetRoomPlacementBudget();
+	if isAtBudgetMax then
+		isValid = false;
+		invalidTooltip = ERR_PLACED_ROOM_LIMIT_REACHED;
+	end
+
+	local doorComponentID, roomGUID = C_HousingLayout.GetSelectedDoor();
+	if isValid and doorComponentID and roomGUID then
+		isValid = C_HousingLayout.HasValidConnection(roomGUID, doorComponentID, self.entryID.recordID);
+		if not isValid then
+			invalidTooltip = HOUSING_LAYOUT_CANT_PLACE_ROOM_TOOLTIP;
+		end
+	end
+
+	return isValid, invalidTooltip, invalidError;
 end
 
 function HousingCatalogRoomEntryMixin:UpdateTypeSpecificData()
@@ -496,13 +584,20 @@ function HousingCatalogRoomEntryMixin:SetSelected(isSelected)
 end
 
 function HousingCatalogRoomEntryMixin:AddTooltipLines(tooltip)
-	if not self.isValid then
-		GameTooltip_AddColoredLine(tooltip, HOUSING_LAYOUT_CANT_PLACE_ROOM_TOOLTIP, RED_FONT_COLOR);
-	end
+	self:AddInvalidTooltipLine(tooltip);
 end
 
-function HousingCatalogRoomEntryMixin:OnInteract(isDrag)
-	if not self:HasValidData() or not self.isValid or isDrag then
+function HousingCatalogRoomEntryMixin:TypeSpecificOnInteract(button, isDrag)
+	if not C_HouseEditor.IsHouseEditorActive() or isDrag then
+		return;
+	end
+
+	local isValid, invalidTooltip, invalidError = self:GetIsValid();
+	if not isValid then
+		local errorMessage = invalidError or invalidTooltip;
+		if errorMessage then
+			UIErrorsFrame:AddMessage(errorMessage, RED_FONT_COLOR:GetRGBA());
+		end
 		return;
 	end
 
@@ -519,16 +614,12 @@ function HousingCatalogRoomEntryMixin:OnInteract(isDrag)
 		return;
 	end
 
-	if C_HousingLayout.HasSelectedDoor() then
-		C_HousingLayout.CreateNewRoom(roomID);
-	else
-		local selectedFloorplan = C_HousingLayout.GetSelectedFloorplan();
-		if selectedFloorplan then
-			C_HousingLayout.DeselectFloorplan();
-		end
+	local selectedFloorplan = C_HousingLayout.GetSelectedFloorplan();
+	if selectedFloorplan then
+		C_HousingLayout.DeselectFloorplan();
+	end
 
-		if not selectedFloorplan or selectedFloorplan ~= roomID then
-			C_HousingLayout.SelectFloorplan(roomID);
-		end
+	if not selectedFloorplan or selectedFloorplan ~= roomID then
+		C_HousingLayout.SelectFloorplan(roomID);
 	end
 end

@@ -1,4 +1,3 @@
-local RPE_MAP_ID = 2927;
 local RPE_QUEST_ID = 90883;
 
 function AddDragonridingTutorials()
@@ -8,15 +7,18 @@ function AddDragonridingTutorials()
 end
 
 function AddDragonridingRPETutorials()
-	if not TutorialManager:GetWatcher("DragonRiding_RPE_Watcher") then
-		local mapID = GetMapID();
-		if mapID == RPE_MAP_ID then
+	local watcher = TutorialManager:GetWatcher("DragonRiding_RPE_Watcher");
+	if not watcher then
+		if C_PlayerInfo.IsPlayerInRPE() then
 			TutorialManager:AddWatcher(Class_Dragonriding_RPE_Watcher:new(), true);
+		else
+			EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
+				AddDragonridingRPETutorials();
+			end, Class_Dragonriding_RPE_Watcher);
 		end
+	else
+		watcher:StopTutorial();
 	end
-	EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
-		AddDragonridingRPETutorials();
-	end, Class_Dragonriding_RPE_Watcher);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -87,14 +89,19 @@ function Class_Dragonriding_RPE_Watcher:StartWatching()
 end
 
 function Class_Dragonriding_RPE_Watcher:StartTutorial()
+	EventRegistry:RegisterCallback("CollectionsJournal.OnShow", self.OnCollectionsJournalOnShow, self);
+	EventRegistry:RegisterCallback("CollectionsJournal.TabSet", self.OnCollectionsJournalTabSet, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_IS_GLIDING_CHANGED", self.OnPlayerGlidingChanged, self);
+	EventRegistry:RegisterFrameEventAndCallback("PLAYER_CAN_GLIDE_CHANGED", self.OnPlayerCanGlideChanged, self);
 	EventRegistry:RegisterFrameEventAndCallback("UNIT_SPELLCAST_SUCCEEDED", self.OnUnitSpellcastSucceeded, self);
 	EventRegistry:RegisterFrameEventAndCallback("QUEST_REMOVED", self.OnQuestRemoved, self);
 	EventRegistry:RegisterFrameEventAndCallback("PLAYER_STOPPED_TURNING", self.OnPlayerStoppedTurning, self);
+	EventRegistry:RegisterFrameEventAndCallback("ACTIONBAR_SLOT_CHANGED", self.OnActionBarSlotChanged, self);
 
-	--[[ RPE_TODO: Implement the steps for mounting a flying mount
 	local isGliding, canGlide = C_PlayerInfo.GetGlidingInfo();
-	if canGlide then
+	if isGliding then
+		self.step = DragonridingTutorialStep.FlyHigher;
+	elseif canGlide then
 		self.step = DragonridingTutorialStep.TakeOff;
 	else
 		local actionButton = self:GetMountActionButton();
@@ -104,28 +111,26 @@ function Class_Dragonriding_RPE_Watcher:StartTutorial()
 			self.step = DragonridingTutorialStep.OpenMountJournal;
 		end
 	end
-	]]--
-
-	local isGliding = C_PlayerInfo.GetGlidingInfo();
-	if isGliding then
-		self.step = DragonridingTutorialStep.FlyHigher;
-	else
-		self.step = DragonridingTutorialStep.TakeOff;
-	end
 	self:EvaluateStep();
 end
 
 function Class_Dragonriding_RPE_Watcher:StopTutorial()
+	EventRegistry:UnregisterCallback("CollectionsJournal.Show", self);
+	EventRegistry:UnregisterCallback("CollectionsJournal.TabSet", self);
+	EventRegistry:UnregisterCallback("MountJournal.OnHide", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_IS_GLIDING_CHANGED", self);
+	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_CAN_GLIDE_CHANGED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("UNIT_SPELLCAST_SUCCEEDED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("QUEST_REMOVED", self);
 	EventRegistry:UnregisterFrameEventAndCallback("PLAYER_STOPPED_TURNING", self);
+	EventRegistry:UnregisterFrameEventAndCallback("ACTIONBAR_SLOT_CHANGED", self);
 	self:HideTutorialFrames();
 	self.step = nil;
 end
 
 function Class_Dragonriding_RPE_Watcher:HideTutorialFrames()
-	-- There can only be 1 tutorial frame tracked so trying to hide one that's not visible will blow away the info anyway
+	-- There can only be 1 tutorial frame tracked so trying to hide one that's not visible will blow away the info anyway,
+	-- causing the call for the displayed frame to fail to hide it, so make the appropriate call per step.
 	if self.step == DragonridingTutorialStep.TakeOff then
 		self:HideDoubleKeyTutorial();
 	elseif self.step == DragonridingTutorialStep.FlyHigher or self.step == DragonridingTutorialStep.SurgeForward then
@@ -133,6 +138,8 @@ function Class_Dragonriding_RPE_Watcher:HideTutorialFrames()
 	else
 		self:HideScreenTutorial();
 	end
+	TutorialDragButton:Hide();
+	self:HidePointerTutorials();
 end
 
 function Class_Dragonriding_RPE_Watcher:AdvanceStep()
@@ -148,6 +155,53 @@ function Class_Dragonriding_RPE_Watcher:OnQuestAccepted(questID)
 	end
 end
 
+function Class_Dragonriding_RPE_Watcher:OnActionBarSlotChanged()
+	if self.step == DragonridingTutorialStep.DragMount then
+		self:AdvanceStep();
+	end
+end
+
+function Class_Dragonriding_RPE_Watcher:OnCollectionsJournalOnShow(tabID)
+	if self.step == DragonridingTutorialStep.OpenMountJournal then
+		-- Select Mounts tab
+		local mountsTabID = CollectionsJournal.MountsTab:GetID();
+		if tabID ~= mountsTabID then
+			CollectionsJournal_SetTab(CollectionsJournal, mountsTabID);
+		end
+		-- Change filter to only Collected and Flying, and reset to all sources.
+		-- DefaultFilters will do most of the work, turn off what's unwanted afterwards.
+		C_MountJournal.SetDefaultFilters();
+		C_MountJournal.SetCollectedFilterSetting(LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED, false);
+		for filterIndex = 1, Enum.MountTypeMeta.NumValues do
+			if C_MountJournal.IsValidTypeFilter(filterIndex) then
+				local mountType = filterIndex - 1;
+				if mountType ~= Enum.MountType.Flying then
+					C_MountJournal.SetTypeFilter(filterIndex, false);
+				end
+			end
+		end
+		MountJournal.FilterDropdown:ValidateResetState();
+
+		self:AdvanceStep();
+	elseif self.step == DragonridingTutorialStep.DragMount then
+		self:ShowDragMountTutorial();
+	end
+end
+
+function Class_Dragonriding_RPE_Watcher:OnMountJournalOnHide()
+	TutorialDragButton:Hide();
+	self:HidePointerTutorials();
+end
+
+function Class_Dragonriding_RPE_Watcher:OnCollectionsJournalTabSet(journal, tabID)
+	if self.step == DragonridingTutorialStep.DragMount then
+		local mountsTabID = CollectionsJournal.MountsTab:GetID();
+		if tabID == mountsTabID and self.step == DragonridingTutorialStep.DragMount then
+			self:ShowDragMountTutorial();
+		end
+	end
+end
+
 function Class_Dragonriding_RPE_Watcher:OnPlayerGlidingChanged(isGliding)
 	if isGliding and self.step == DragonridingTutorialStep.TakeOff then
 		self:AdvanceStep();
@@ -158,6 +212,18 @@ function Class_Dragonriding_RPE_Watcher:OnPlayerGlidingChanged(isGliding)
 			self:EvaluateStep();
 		else
 			self:HideTutorialFrames();
+		end
+	end
+end
+
+function Class_Dragonriding_RPE_Watcher:OnPlayerCanGlideChanged(canGlide)
+	if canGlide and self.step == DragonridingTutorialStep.MountUp then
+		self:AdvanceStep();
+	elseif self.step == DragonridingTutorialStep.TakeOff then
+		if canGlide then
+			self:ShowTakeOffTutorial();
+		else
+			self:HideDoubleKeyTutorial();
 		end
 	end
 end
@@ -185,15 +251,49 @@ function Class_Dragonriding_RPE_Watcher:OnQuestRemoved(questID)
 	end
 end
 
+function Class_Dragonriding_RPE_Watcher:ShowTakeOffTutorial()
+	local key = TutorialHelper:GetMapBinding();
+	local bindingString = GetBindingKey("JUMP");
+	local content = { text = RPE_SKYRIDING_TAKE_OFF, icon = nil, keyText1 = bindingString, keyText2 = bindingString, separator = RPE_SKYRIDING_COMMA };
+	self:ShowDoubleKeyTutorial(content);
+end
+
+function Class_Dragonriding_RPE_Watcher:ShowDragMountTutorial()
+	if not MountJournal:IsShown() then
+		return;
+	end
+
+	local scrollBoxFrames = MountJournal.ScrollBox:GetFrames();
+	local targetFrame = scrollBoxFrames and scrollBoxFrames[1];
+	local actionButton = targetFrame and TutorialHelper:FindEmptyButton();
+	if actionButton then
+		TutorialDragButton:Hide();
+		TutorialDragButton:Show(targetFrame, actionButton);
+	end
+
+	if targetFrame then
+		local overrideMaxWidth = 400;
+		self:ShowPointerTutorial(RPE_SKYRIDING_DRAG_MOUNT_HELPTIP, "DOWN", targetFrame, 0, 0, nil, "LEFT", overrideMaxWidth);
+	end
+end
+
 function Class_Dragonriding_RPE_Watcher:EvaluateStep()
 	if self.step == DragonridingTutorialStep.OpenMountJournal then
+		self:ShowPointerTutorial(RPE_SKYRIDING_COLLECTIONS_HELPTIP, "DOWN", CollectionsMicroButton, 0, 0, nil, "DOWN");
 	elseif self.step == DragonridingTutorialStep.DragMount then
+		self:ShowDragMountTutorial();
+		-- because OnHide is not synchronous
+		RunNextFrame(function()
+			EventRegistry:RegisterCallback("MountJournal.OnHide", self.OnMountJournalOnHide, self);
+		end);
 	elseif self.step == DragonridingTutorialStep.MountUp then
+		TutorialDragButton:Hide();
+		self:HidePointerTutorials();
+		local content = { text = RPE_SKYRIDING_MOUNT_UP };
+		self:ShowScreenTutorial(content);
 	elseif self.step == DragonridingTutorialStep.TakeOff then
-		local key = TutorialHelper:GetMapBinding();
-		local bindingString = GetBindingKey("JUMP");
-		local content = { text = RPE_SKYRIDING_TAKE_OFF, icon = nil, keyText1 = bindingString, keyText2 = bindingString, separator = RPE_SKYRIDING_COMMA };
-		self:ShowDoubleKeyTutorial(content);
+		self:HideScreenTutorial();
+		self:ShowTakeOffTutorial();
 	elseif self.step == DragonridingTutorialStep.FlyHigher then
 		self:HideDoubleKeyTutorial();
 		local bindingString = GetBindingKey("JUMP");

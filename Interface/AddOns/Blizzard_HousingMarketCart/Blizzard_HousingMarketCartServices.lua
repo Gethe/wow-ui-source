@@ -87,10 +87,3 @@ function HousingMarketHideCartServiceMixin:GetEventData()
 	local shown = false;
 	return shown;
 end
-
-HousingMarketPlaceInWorldServiceMixin = {};
-
-function HousingMarketPlaceInWorldServiceMixin:GetEventData()
-	-- TODO: implement
-	return nil;
-end

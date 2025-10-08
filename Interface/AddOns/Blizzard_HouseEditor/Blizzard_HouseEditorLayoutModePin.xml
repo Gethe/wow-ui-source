@@ -76,6 +76,22 @@
 						</Anchors>
 					</Texture>
 				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="0">
+					<Texture parentKey="ArrowIcon" atlas="housing-floor-arrow-up" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="0">
+					<Texture parentKey="ArrowIconHover" atlas="housing-floor-arrow-up" texelSnappingBias="0.0" snapToPixelGrid="false" alphaMode="ADD" alpha="0.3" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ArrowIcon"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArrowIcon"/>
+						</Anchors>
+					</Texture>
+				</Layer>
 			</Layers>
 			<Scripts>
 				<OnEnter method="OnEnter"/>

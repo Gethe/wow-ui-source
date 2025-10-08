@@ -77,7 +77,7 @@ function PlayerSpellsFrameMixin:OnEvent(event)
 		self:UpdatePortrait();
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		-- There's a lot of player spell info thrashing while exiting/re-entering world, avoid displaying during it
-		self:Hide();
+		HideUIPanel(self);
 	end
 end
 
@@ -156,7 +156,7 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 
 	self:UpdateFrameTitle();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TabSet", PlayerSpellsFrame, tabID);
-	
+
 	return true; -- Don't show the tab as selected yet.
 end
 
@@ -432,7 +432,7 @@ function PlayerSpellsFrameMixin:SetMinimized(shouldBeMinimized)
 	if not self.isMinimized and shouldBeMinimized then
 		-- Prevent non-UIParent code manually calling SetMinimized when auto behavior intentionally disabled
 		assert(self:IsMinimizingEnabled());
-		
+
 		self.isMinimized = true;
 		if not self:DoesTabSupportMinimizedMode(currentTab) then
 			local minimizableTabID = self:GetDefaultMinimizableTab();

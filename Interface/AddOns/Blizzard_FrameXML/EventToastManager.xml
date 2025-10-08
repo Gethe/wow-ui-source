@@ -1440,35 +1440,44 @@
 	</Frame>
 
 	
-	<Frame name="EventToastHouseUpgradeAvailableTemplate" mixin="EventToastHouseUpgradeAvailableMixin" inherits="EventToastAnimationsTemplate" virtual="true" alpha="0">
+	<Frame name="EventToastHouseUpgradeAvailableTemplate" mixin="EventToastHouseUpgradeAvailableMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true" alpha="0">
 		<Size x="845" y="495"/>
 		<KeyValues>
 			<KeyValue key="animInStartDelay" value="0" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture atlas="housing-celebrationtoast-back" useAtlasSize="true">
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER" text="HOUSE_UPGRADE_AVAILABLE_TOAST">
+					<Size x="400"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP" y="-3"/>
 					</Anchors>
-				</Texture>
-				<Texture parentKey="CenterGlow" atlas="housing-celebrationtoast-outerglowrays" alpha="0" useAtlasSize="true">
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Size x="380"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-8"/>
 					</Anchors>
-				</Texture>
-				<Texture atlas="housing-celebrationtoast-frame" useAtlasSize="true">
+				</FontString>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG" atlas="evergreen-scenario-black-background">
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOP" relativeKey="$parent.Title" y="32"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.SubTitle" y="-32"/>
+						<Anchor point="LEFT" relativeKey="$parent.Title" x="-48"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Title" x="48"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFont_Gigantic" text="HOUSE_UPGRADE_AVAILABLE_TOAST">
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture parentKey="Border" atlas="housing-celebrationtoast-frame">
+					<Size x="1"/>
 					<Anchors>
-						<Anchor point="CENTER" y="-3"/>
+						<Anchor point="TOP" relativeKey="$parent.BG" y="76"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BG" y="-76"/>
 					</Anchors>
-				</FontString>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Animations>

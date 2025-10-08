@@ -40,15 +40,15 @@ function PTR_IssueReporter.RegisterUIPanelTabEvent(eventString, index, offsetBut
 		if not (PTR_IssueReporter.RegisteredUIPanelButtons[frame]) then
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame] = CreateFrame("Button", eventString.."BugButton", frame, "UIPanelBugButton")
 		end
-		
-		if ((index) and (index == tabIndex)) or (index == nil) then
+
+		if ((index) and (index == tabIndex)) or (index == nil) or (tabIndex == nil) then
 			local offset = 40
 			if (offsetButton) then
 				offset = 70
 			end
 			
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetScript("OnClick", function()
-				PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, index))
+				PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, tabIndex))
 			end)            
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, 20)
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:Show()

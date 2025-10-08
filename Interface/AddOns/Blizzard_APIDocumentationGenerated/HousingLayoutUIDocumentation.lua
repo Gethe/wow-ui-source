@@ -26,13 +26,13 @@ local HousingLayoutUI =
 			Type = "Function",
 		},
 		{
-			Name = "CreateNewRoom",
+			Name = "ConfirmStairChoice",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "roomRecordID", Type = "number", Nilable = false },
+				{ Name = "choice", Type = "HousingLayoutStairDirection", Nilable = true },
 			},
 		},
 		{
@@ -53,15 +53,6 @@ local HousingLayoutUI =
 			},
 		},
 		{
-			Name = "GetRoomOptions",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "roomOptions", Type = "table", InnerType = "RoomOptionInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "GetRoomPlacementBudget",
 			Type = "Function",
 
@@ -71,12 +62,53 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "GetSelectedDoor",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "If a door is selected, returns its component id and the guid of the room it belongs to; Otherwise returns nothing" },
+
+			Returns =
+			{
+				{ Name = "selectedDoorComponentID", Type = "number", Nilable = false },
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSelectedFloorplan",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "roomID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSelectedRoom",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "If a Room is selected, returns the room's guid; Otherwise returns nothing" },
+
+			Returns =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSelectedStairwellRoomCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "stairwellRoomCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpentPlacementBudget",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spentPlacementBudget", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -101,6 +133,7 @@ local HousingLayoutUI =
 		{
 			Name = "HasSelectedDoor",
 			Type = "Function",
+			Documentation = { "Returns true if a door component is currently selected" },
 
 			Returns =
 			{
@@ -119,10 +152,26 @@ local HousingLayoutUI =
 		{
 			Name = "HasSelectedRoom",
 			Type = "Function",
+			Documentation = { "Returns true if a room is selected, will NOT return true if a door is selected" },
 
 			Returns =
 			{
 				{ Name = "hasSelectedRoom", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasStairs",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "roomRecordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasStairs", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -414,6 +463,11 @@ local HousingLayoutUI =
 			{
 				{ Name = "floor", Type = "number", Nilable = false },
 			},
+		},
+		{
+			Name = "ShowStairDirectionConfirmation",
+			Type = "Event",
+			LiteralName = "SHOW_STAIR_DIRECTION_CONFIRMATION",
 		},
 	},
 

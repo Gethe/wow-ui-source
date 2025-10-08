@@ -47,7 +47,16 @@ function ShoppingCartDataManagerMixin:SetClearCartCallback(clearCartCallback)
 	self.ClearCartCallback = clearCartCallback;
 end
 
+local CartIDCounter = 0;
+
+local function IncrementAndGetCurrCartID()
+	CartIDCounter = CartIDCounter + 1;
+	return CartIDCounter;
+end
+
 function ShoppingCartDataManagerMixin:AddToCart(cartItem)
+	cartItem.cartID = IncrementAndGetCurrCartID();
+
 	table.insert(self.cartList, cartItem);
 
 	if self.AddToCartCallback then
@@ -57,21 +66,30 @@ function ShoppingCartDataManagerMixin:AddToCart(cartItem)
 	self:UpdateCart();
 end
 
+function ShoppingCartDataManagerMixin:RemoveFromCartInternal(index, currCartItem)
+	table.remove(self.cartList, index);
+
+	if self.RemoveFromCartCallback then
+		self.RemoveFromCartCallback(index, currCartItem)
+	end
+	
+	self:UpdateCart();
+	return index, currCartItem;
+end
+
 function ShoppingCartDataManagerMixin:RemoveFromCart(cartItemToRemove)
-	if not self.RemovalPredicate then
-		return nil, nil;
+	if self.RemovalPredicate then
+		for index, currCartItem in ipairs(self.cartList) do
+			if self.RemovalPredicate(cartItemToRemove, currCartItem) then
+				return self:RemoveFromCartInternal(index, currCartItem);
+			end
+		end
 	end
 
+	-- Default to checking the cart ID
 	for index, currCartItem in ipairs(self.cartList) do
-		if self.RemovalPredicate(cartItemToRemove, currCartItem) then
-			table.remove(self.cartList, index);
-
-			if self.RemoveFromCartCallback then
-				self.RemoveFromCartCallback(index, currCartItem)
-			end
-
-			self:UpdateCart();
-			return index, currCartItem;
+		if cartItemToRemove.cartID == currCartItem.cartID then
+			return self:RemoveFromCartInternal(index, currCartItem);
 		end
 	end
 

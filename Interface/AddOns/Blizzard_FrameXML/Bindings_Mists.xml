@@ -1168,10 +1168,10 @@
 		TogglePerformancePause();
 	</Binding>
 	<Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues(1);
+		TogglePerformanceValues(false);
 	</Binding>
 	<Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues(0);
+		TogglePerformanceValues(true);
 	</Binding>
 	<Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ResetPerformanceValues();

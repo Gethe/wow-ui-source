@@ -6,6 +6,6 @@
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
 Mainline\UIPanelWindows.lua
-Shared\UIParentPanelManager.lua
-Mainline\UIParentPanelManagerOverrides.lua
-Shared\UpdateUIPanelPositions.lua
+Shared\UIParentPanelManager.lua [AllowLoadEnvironment Global]
+Mainline\UIParentPanelManagerOverrides.lua [AllowLoadEnvironment Global]
+Shared\UpdateUIPanelPositions.lua [AllowLoadEnvironment Global]

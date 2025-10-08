@@ -180,6 +180,39 @@ function CooldownViewerItemDataMixin:GetSpellID()
 	return nil;
 end
 
+function CooldownViewerItemDataMixin:SpellIDMatchesAnyAssociatedSpellIDs(spellID)
+	if spellID == self:GetAuraSpellID() then
+		return true;
+	end
+
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		if cooldownInfo.linkedSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.overrideTooltipSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.overrideSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.spellID == spellID then
+			return true;
+		end
+
+		for _, linkedSpellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
+			if linkedSpellID == spellID then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
 function CooldownViewerItemDataMixin:GetAuraSpellID()
 	return self.auraSpellID;
 end

@@ -233,56 +233,6 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		self:SetModelScene(self.productInfo, true, displayInfo, productType);
 	end
 
-	local isFullyOwned = self.productInfo.isFullyOwned;
-	local discountPercentage = self.productInfo.discountPercentage or 0;
-	if discountPercentage > 0 and not isFullyOwned then
-		local priceElement = container.OriginalPrice;
-		priceElement:ClearAllPoints();
-		priceElement:SetSize(0, 20);
-		priceElement:SetPoint("BOTTOM", 0, 20);
-		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
-		priceElement:SetText(self.productInfo.originalPrice);
-
-		local discountPriceElement = container.DiscountPrice;
-		discountPriceElement:ClearAllPoints();
-		discountPriceElement:SetSize(0, 20);
-		discountPriceElement:SetPoint("BOTTOM", 0, 20);
-		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
-		discountPriceElement:SetText(self.productInfo.price);
-
-		--DrawLine(self, parent, self.startX - x, self.startY - y, self.endX - x, self.endY - y, self.thickness or 32, 1);
-		local strikeThrough = container.Strikethrough;
-		strikeThrough:ClearAllPoints();
-		strikeThrough:SetPoint("LEFT", priceElement, "LEFT", 0, 0);
-		strikeThrough:SetPoint("RIGHT", priceElement, "RIGHT", 0, 0);
-		strikeThrough:Show();
-
-		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
-		container.DiscountAmount:Show();
-
-		container.DiscountSaleTag:Show();
-		container.DiscountPrice:Show();
-		container.OriginalPrice:Show();
-		container.Strikethrough:Show();
-		container.Price:Hide();
-	else
-		local priceElement = container.Price;
-		priceElement:ClearAllPoints();
-		priceElement:SetSize(0, 20);
-		priceElement:SetJustifyH("CENTER");
-		priceElement:SetPoint("BOTTOM", 0, 20);
-		priceElement:SetPoint("LEFT", 15, 0);
-		priceElement:SetPoint("RIGHT", -15, 0);
-		priceElement:SetText(self.productInfo.price);
-		priceElement:Show();
-
-		container.DiscountSaleTag:Hide();
-		container.DiscountAmount:Hide();
-		container.DiscountPrice:Hide();
-		container.OriginalPrice:Hide();
-		container.Strikethrough:Hide();				
-	end
-
 	container.Name:SetText(self.productInfo.name);	
 	container.PurchasedIcon:SetShown(isFullyOwned);
 end
@@ -311,15 +261,67 @@ function SmallCatalogShopProductCardMixin:Layout()
 	nameElement:ClearAllPoints();
 	nameElement:SetJustifyH("CENTER");
 	nameElement:SetJustifyV("MIDDLE");
-	nameElement:SetPoint("TOP", divider, "TOP", 0, -4);
+	nameElement:SetPoint("TOP", divider, "TOP", 0, -3);
 	nameElement:SetPoint("LEFT", 15, 0);
 	nameElement:SetPoint("RIGHT", -15, 0);
-	nameElement:SetPoint("BOTTOM", 0, 40);
+	nameElement:SetPoint("BOTTOM", 0, 42);
 
 	local timeRemaining = container.TimeRemaining;
 	timeRemaining:ClearAllPoints();
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
 	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
+
+	local isFullyOwned = self.productInfo.isFullyOwned;
+	local discountPercentage = self.productInfo.discountPercentage or 0;
+	if discountPercentage > 0 and not isFullyOwned then
+		local priceElement = container.OriginalPrice;
+		priceElement:ClearAllPoints();
+		priceElement:SetPoint("TOP", container, "BOTTOM", 0, 27);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetPoint("BOTTOM", 0, 13);
+		priceElement:SetText(self.productInfo.originalPrice);
+
+		local strikeThrough = container.Strikethrough;
+		local strikeThroughLength = priceElement:GetStringWidth() * 0.5;
+		strikeThrough:ClearAllPoints();
+		strikeThrough:SetPoint("LEFT", priceElement, "CENTER", -strikeThroughLength, 0);
+		strikeThrough:SetPoint("RIGHT", priceElement, "CENTER", strikeThroughLength, 0);
+		strikeThrough:Show();
+
+		local discountPriceElement = container.DiscountPrice;
+		discountPriceElement:ClearAllPoints();
+		discountPriceElement:SetPoint("BOTTOM", priceElement, "TOP", 0, 1);
+		discountPriceElement:SetPoint("TOP", priceElement, "TOP", 0, 15);
+		discountPriceElement:SetPoint("LEFT", 15, 0);
+		discountPriceElement:SetPoint("RIGHT", -15, 0);
+		discountPriceElement:SetText(self.productInfo.price);
+
+		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+		container.DiscountAmount:Show();
+
+		container.DiscountSaleTag:Show();
+		container.DiscountPrice:Show();
+		container.OriginalPrice:Show();
+		container.Strikethrough:Show();
+		container.Price:Hide();
+	else
+		local priceElement = container.Price;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(0, 20);
+		priceElement:SetJustifyH("CENTER");
+		priceElement:SetPoint("BOTTOM", 0, 17);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetText(self.productInfo.price);
+		priceElement:Show();
+
+		container.DiscountSaleTag:Hide();
+		container.DiscountAmount:Hide();
+		container.DiscountPrice:Hide();
+		container.OriginalPrice:Hide();
+		container.Strikethrough:Hide();				
+	end
 
 	local background = self.BackgroundContainer.Background;
 	background:ClearAllPoints();
@@ -676,6 +678,59 @@ function WideCatalogShopProductCardMixin:Layout()
 	timeRemaining:ClearAllPoints();
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
 	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
+
+	local isFullyOwned = self.productInfo.isFullyOwned;
+	local discountPercentage = self.productInfo.discountPercentage or 0;
+	if discountPercentage > 0 and not isFullyOwned then
+		local priceElement = container.OriginalPrice;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(175, 20);
+		priceElement:SetPoint("BOTTOM", 0, 20);
+		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
+		priceElement:SetJustifyH("RIGHT");
+		priceElement:SetText(self.productInfo.originalPrice);
+
+		local strikeThrough = container.Strikethrough;
+		local strikeThroughLength = priceElement:GetStringWidth();
+		print(strikeThroughLength);
+		strikeThrough:ClearAllPoints();
+		strikeThrough:SetPoint("LEFT", priceElement, "RIGHT", -strikeThroughLength, 0);
+		strikeThrough:SetPoint("RIGHT", priceElement, "RIGHT", 0, 0);
+		strikeThrough:Show();
+
+		local discountPriceElement = container.DiscountPrice;
+		discountPriceElement:ClearAllPoints();
+		discountPriceElement:SetSize(175, 20);
+		discountPriceElement:SetPoint("BOTTOM", 0, 20);
+		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
+		discountPriceElement:SetJustifyH("LEFT");
+		discountPriceElement:SetText(self.productInfo.price);
+
+		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+		container.DiscountAmount:Show();
+
+		container.DiscountSaleTag:Show();
+		container.DiscountPrice:Show();
+		container.OriginalPrice:Show();
+		container.Strikethrough:Show();
+		container.Price:Hide();
+	else
+		local priceElement = container.Price;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(0, 20);
+		priceElement:SetJustifyH("CENTER");
+		priceElement:SetPoint("BOTTOM", 0, 17);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetText(self.productInfo.price);
+		priceElement:Show();
+
+		container.DiscountSaleTag:Hide();
+		container.DiscountAmount:Hide();
+		container.DiscountPrice:Hide();
+		container.OriginalPrice:Hide();
+		container.Strikethrough:Hide();				
+	end
 
 	local background = self.BackgroundContainer.Background;
 	background:ClearAllPoints();

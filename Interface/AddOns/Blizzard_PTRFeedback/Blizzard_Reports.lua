@@ -543,6 +543,10 @@ function PTR_IssueReporter.CreateReports()
 		ProfessionTalents = 9,
 		WarbandsCharacterSelect = 10,
 		HouseEditMode = 11,
+		HousingDashboard = 12,
+		HouseFinder = 13,
+		HousingCornerstone = 14,
+		NeighborhoodBulletinBoard = 15,
 	}
 	
 	----------------------------------------------- Edit Mode ------------------------------------------------
@@ -554,23 +558,7 @@ function PTR_IssueReporter.CreateReports()
 	
 	editModeReport:SetButton("I have found an issue with edit mode.", PTR_IssueReporter.Assets.EditModeIcon)
 	editModeReport:RegisterButtonEvent(event.EditModeEntered)
-	editModeReport:RegisterButtonEventEnd(event.EditModeExit)    
-	
-	----------------------------------------------- House Edit Mode ------------------------------------------------
-	local GetHouseEditMode = function()
-		return C_HouseEditor.GetActiveHouseEditorMode()
-	end
-
-	local houseEditModeReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: House Edit Mode")
-	PTR_IssueReporter.AttachDefaultCollectionToSurvey(houseEditModeReport, true)
-	
-	houseEditModeReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with House Edit Mode?")
-	houseEditModeReport:AddDataCollection(collector.PassValue, UIPanelIDs.HouseEditMode)
-	houseEditModeReport:AddDataCollection(collector.RunFunction, GetHouseEditMode)
-	
-	houseEditModeReport:SetButton("I have found an issue with house edit mode.", PTR_IssueReporter.Assets.HouseEditModeIcon)
-	houseEditModeReport:RegisterButtonEvent(event.HouseEditModeEntered)
-	houseEditModeReport:RegisterButtonEventEnd(event.HouseEditModeExited)
+	editModeReport:RegisterButtonEventEnd(event.EditModeExit)
 	
 	-------------------------------------------- Mount Collection ---------------------------------------------
 	local mountUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Mounts UI")
@@ -615,7 +603,7 @@ function PTR_IssueReporter.CreateReports()
 	appearancesUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Appearances UI?")
 	appearancesUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.Appearances)
 
-	appearancesUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 5)
+	appearancesUIReport:RegisterUIPanelClick("CollectionsJournal.TabSet", 5, true)
 	
 	------------------------------------------- Adventure Guide -------------------------------------------------
 	local suggestedContentUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Adventure Guide UI")
@@ -625,7 +613,7 @@ function PTR_IssueReporter.CreateReports()
 	suggestedContentUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.AdventureGuide)
 
 	suggestedContentUIReport:RegisterUIPanelClick("EncounterJournal.TabSet", 1)
-	
+
 	------------------------------------------- Class Talents -------------------------------------------------
 	local getSpecIDFunc = function()
 		local ID = 0
@@ -674,6 +662,54 @@ function PTR_IssueReporter.CreateReports()
 	professionTalentUIReport:AddDataCollection(collector.RunFunction, getProfSpecID)
 
 	professionTalentUIReport:RegisterUIPanelClick("ProfessionsFrame.TabSet", 2)
+	
+	----------------------------------------------- House Edit Mode ------------------------------------------------
+	local GetHouseEditMode = function()
+		return C_HouseEditor.GetActiveHouseEditorMode()
+	end
+
+	local houseEditModeReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: House Edit Mode")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(houseEditModeReport, true)
+	
+	houseEditModeReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with House Edit Mode?")
+	houseEditModeReport:AddDataCollection(collector.PassValue, UIPanelIDs.HouseEditMode)
+	houseEditModeReport:AddDataCollection(collector.RunFunction, GetHouseEditMode)
+	
+	houseEditModeReport:SetButton("I have found an issue with house edit mode.", PTR_IssueReporter.Assets.HouseEditModeIcon)
+	houseEditModeReport:RegisterButtonEvent(event.HouseEditModeEntered)
+	houseEditModeReport:RegisterButtonEventEnd(event.HouseEditModeExited)
+	
+	--------------------------------------------- Housing Dashboard --------------------------------------------------
+	local housingDashboardUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Housing Dashboard UI")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(housingDashboardUIReport, true)
+	
+	housingDashboardUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Housing Dashboard UI?")
+	housingDashboardUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.HousingDashboard)
+	housingDashboardUIReport:RegisterUIPanelClick(event.HouseDashboardToggled)
+	
+	--------------------------------------------- House Finder --------------------------------------------------
+	local houseFinderUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: House Finder UI")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(houseFinderUIReport, true)
+	
+	houseFinderUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the House Finder UI?")
+	houseFinderUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.HouseFinder)
+	houseFinderUIReport:RegisterUIPanelClick(event.HouseFinderOpened)
+
+	--------------------------------------------- Housing Cornerstone --------------------------------------------------
+	local housingCornerstoneUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Housing Cornerstone UI")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(housingCornerstoneUIReport, true)
+	
+	housingCornerstoneUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Housing Cornerstone UI?")
+	housingCornerstoneUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.HousingCornerstone)
+	housingCornerstoneUIReport:RegisterUIPanelClick(event.HouseCornerstoneOpened)
+
+	--------------------------------------------- Neighborhood Bulletin Board --------------------------------------------------
+	local neighborhoodBulletinBoardUIReport = PTR_IssueReporter.CreateSurvey(17, "Issue Report: Neighborhood Bulletin Board UI")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(neighborhoodBulletinBoardUIReport, true)
+	
+	neighborhoodBulletinBoardUIReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with the Neighborhood Bulletin Board UI?")
+	neighborhoodBulletinBoardUIReport:AddDataCollection(collector.PassValue, UIPanelIDs.NeighborhoodBulletinBoard)
+	neighborhoodBulletinBoardUIReport:RegisterUIPanelClick(event.HouseBulletinBoardOpened)
 	
 	--------------------------------- Scenario Reporting ---------------------------------------------
 	

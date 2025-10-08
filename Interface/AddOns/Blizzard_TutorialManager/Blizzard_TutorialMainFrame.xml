@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_TutorialMainFrame.lua" />
 
-	<Frame name="TutorialMainFrame_Frame" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="UIParent" alpha="0">
+	<Frame name="TutorialMainFrameTemplate" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="UIParent" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
 			<KeyValue key="heightPadding" value="64" type="number"/>
@@ -54,6 +54,8 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
+
+	<Frame name="TutorialMainFrame_Frame" inherits="TutorialMainFrameTemplate"/>
 
 	<Frame name="TutorialSingleKey_Frame" mixin="TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0">
 		<KeyValues>

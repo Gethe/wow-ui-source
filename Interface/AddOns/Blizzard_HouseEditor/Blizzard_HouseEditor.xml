@@ -23,6 +23,12 @@
 				</Anchors>
 			</Frame>
 
+			<Frame parentKey="MarketShoppingCartFrame" inherits="HousingMarketCartFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-30" y="20"/>
+				</Anchors>
+			</Frame>
+
 			<Frame parentKey="BasicDecorModeFrame" inherits="HouseEditorBasicDecorModeTemplate" setAllPoints="true" hidden="true">
 				<KeyValues>
 					<KeyValue key="modeType" value="Enum.HouseEditorMode.BasicDecor" type="global" />

@@ -809,6 +809,8 @@ function MonthlyActivitiesFrameMixin:OnShow()
 
 	self.ScrollBox:ScrollToBegin();
 	self:UpdateActivities();
+
+	HelpTip:Hide(MicroMenuContainer, TUTORIAL_PERKS_PROGRAM_ACTIVITIES_OPEN);
 end
 
 function MonthlyActivitiesFrameMixin:OnHide()

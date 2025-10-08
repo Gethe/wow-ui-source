@@ -1,6 +1,21 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-			
+
+	<Button name="PlaceInWorldButtonTemplate" inherits="HousingMarketShoppingCartServiceButtonTemplate" frameLevel="1500" virtual="true">
+		<Size x="24" y="24"/>
+		<KeyValues>
+			<KeyValue key="serviceName" value="HousingMarketCartDataServiceEvents.PlaceInWorld" type="global"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" setAllPoints="true">
+					<Color r="1" g="1" b="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	
 	<Button name="HousingMarketCartItemTemplate" mixin="HousingMarketCartItemMixin" propagateMouseInput="Both" virtual="true">
 		<Size x="300" y="80"/>
 		<Frames>
@@ -16,6 +31,12 @@
 					<Anchor point="RIGHT" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
 			</Frame>
+
+			<Button parentKey="PlaceInWorldButton" inherits="PlaceInWorldButtonTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="6" y="-12"/>
+				</Anchors>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -276,23 +297,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
-			<Button parentKey="PlaceInWorldButton" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketPlaceInWorldServiceMixin" frameLevel="1500">
-				<Size x="24" y="24"/>
-				<KeyValues>
-					<KeyValue key="serviceName" value="ShoppingCartVisualServices.OnCartItemInteraction" type="global"/>
-				</KeyValues>
+
+			<Button parentKey="PlaceInWorldButton" inherits="PlaceInWorldButtonTemplate">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.VisualContainer" relativePoint="TOPLEFT" x="6" y="-12"/>
 				</Anchors>
-
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="BG" setAllPoints="true">
-							<Color r="1" g="1" b="1"/>
-						</Texture>
-					</Layer>
-				</Layers>
 			</Button>
 		</Frames>
 		<Scripts>

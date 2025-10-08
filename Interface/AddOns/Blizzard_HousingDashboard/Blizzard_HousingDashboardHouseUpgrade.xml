@@ -145,22 +145,26 @@
 				<Texture parentKey="Background"  atlas="housing-dashboard-bg-elwynn" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture atlas="housing-dashboard-filigree-corner-TL" useAtlasSize="true">
+				<Texture atlas="housing-dashboard-filigree-corner-TL">
+					<Size x="54" y="42"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="housing-dashboard-filigree-corner-TR" useAtlasSize="true">
+				<Texture atlas="housing-dashboard-filigree-corner-TR">
+					<Size x="54" y="42"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="4" y="2"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="housing-dashboard-filigree-corner-BL" useAtlasSize="true">
+				<Texture atlas="housing-dashboard-filigree-corner-BL">
+					<Size x="66" y="50"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-6" y="-2"/>
 					</Anchors>
 				</Texture>
-				<Texture atlas="housing-dashboard-filigree-corner-BR" useAtlasSize="true">
+				<Texture atlas="housing-dashboard-filigree-corner-BR">
+					<Size x="66" y="50"/>
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
 					</Anchors>
@@ -246,32 +250,32 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="leaf1" atlas="house-upgrade-radial-leaf01" useAtlasSize="true">
+										<Texture parentKey="leaf1" atlas="house-upgrade-radial-leaf01" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="TOPRIGHT" relativePoint="CENTER" x="-110" y="-56"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="leaf2" atlas="house-upgrade-radial-leaf02" useAtlasSize="true">
+										<Texture parentKey="leaf2" atlas="house-upgrade-radial-leaf02" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-88" y="-60"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="leaf3" atlas="house-upgrade-radial-leaf03" useAtlasSize="true">
+										<Texture parentKey="leaf3" atlas="house-upgrade-radial-leaf03" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="TOP" relativePoint="CENTER" x="-73" y="-31"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="leaf4" atlas="house-upgrade-radial-leaf04" useAtlasSize="true">
+										<Texture parentKey="leaf4" atlas="house-upgrade-radial-leaf04" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="RIGHT" relativePoint="CENTER" x="76" y="-37"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="leaf5" atlas="house-upgrade-radial-leaf05" useAtlasSize="true">
+										<Texture parentKey="leaf5" atlas="house-upgrade-radial-leaf05" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="88" y="-62"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="leaf6" atlas="house-upgrade-radial-leaf06" useAtlasSize="true">
+										<Texture parentKey="leaf6" atlas="house-upgrade-radial-leaf06" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 											<Anchors>
 												<Anchor point="TOP" relativePoint="CENTER" x="118" y="-56"/>
 											</Anchors>
@@ -336,23 +340,26 @@
 										</Scripts>
 										<Layers>
 											<Layer level="ARTWORK">
-												<Texture parentKey="Threshold" alpha="0.6" alphaMode="ADD" atlas="house-upgrade-radial-bar-threshold" useAtlasSize="true">
-													<Anchors>
-														<Anchor point="CENTER"/>
-													</Anchors>
-												</Texture>
-												<Texture parentKey="Flipbook" atlas="housing-level-fillbar-threshold-flipbook">
+												<Texture parentKey="Threshold" alpha="0.6" alphaMode="ADD" atlas="house-upgrade-radial-bar-threshold" texelSnappingBias="0.0" snapToPixelGrid="false">
 													<Size x="112" y="112"/>
 													<Anchors>
 														<Anchor point="CENTER"/>
 													</Anchors>
 												</Texture>
-												<Texture parentKey="LeadEdge" atlas="house-upgrade-radial-bar-edge" useAtlasSize="true">
+												<Texture parentKey="Flipbook" atlas="housing-level-fillbar-threshold-flipbook" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="112" y="112"/>
 													<Anchors>
 														<Anchor point="CENTER"/>
 													</Anchors>
 												</Texture>
-												<MaskTexture parentKey="BarMask" file="Interface\Housing\HouseUpgradePanelBarMask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+												<Texture parentKey="LeadEdge" atlas="house-upgrade-radial-bar-edge" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="112" y="112"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<MaskTexture parentKey="BarMask" file="Interface\Housing\HouseUpgradePanelBarMask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="128" y="128"/>
 													<Anchors>
 														<Anchor point="CENTER"/>
 													</Anchors>
@@ -375,7 +382,8 @@
 						</Frames>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" useAtlasSize="true">
+								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Size x="234" y="152"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -404,18 +412,20 @@
 						</Texture>
 						<Texture parentKey="Background" atlas="house-upgrade-reward-track-bg">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-70"/>
-								<Anchor point="BOTTOMRIGHT" x="70"/>
+								<Anchor point="TOP"/>
+								<Anchor point="LEFT" relativeKey="$parent.$parent"/>
+								<Anchor point="BOTTOM"/>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent"/>
 							</Anchors>
 						</Texture>
 						<Texture atlas="house-upgrade-shadow-corbel-left" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="-70"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" y="10"/>
 							</Anchors>
 						</Texture>
 						<Texture atlas="house-upgrade-shadow-corbel-right" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" x="70"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" y="10"/>
 							</Anchors>
 						</Texture>
 					</Layer>

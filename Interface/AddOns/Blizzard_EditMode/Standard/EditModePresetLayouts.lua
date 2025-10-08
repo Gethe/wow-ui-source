@@ -634,6 +634,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+				-- [Enum.EditModeCooldownViewerSetting.BarWidthScale] = 100,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -656,6 +657,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+				-- [Enum.EditModeCooldownViewerSetting.BarWidthScale] = 100,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -678,6 +680,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+				-- [Enum.EditModeCooldownViewerSetting.BarWidthScale] = 100,
 			},
 			anchorInfo = {
 				point = "BOTTOM",
@@ -700,6 +703,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
 				[Enum.EditModeCooldownViewerSetting.ShowTooltips] = 1,
+				[Enum.EditModeCooldownViewerSetting.BarWidthScale] = 100,
 			},
 			anchorInfo = {
 				point = "BOTTOM",

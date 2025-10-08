@@ -8,7 +8,11 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="SwatchEmpty" atlas="Housing_Customize_Dye_Swatch_Empty" setAllPoints="true" hidden="true"/>
+				<Texture parentKey="SwatchEmpty" atlas="dye-drop-no-dye_32" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="SwatchStart" atlas="Housing_Customize_Dye_Swatch_Base" setAllPoints="true"/>
@@ -247,7 +251,7 @@
 							<Anchor point="BOTTOM" x="0" y="15"/>
 						</Anchors>
 					</Button>
-					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
+					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="APPLY" motionScriptsWhileDisabled="true">
 						<Size x ="100" y="20"/>
 						<Anchors>
 							<Anchor point="RIGHT" x="-20" y="0"/>
@@ -346,7 +350,7 @@
 	<Frame name="HousingRoomComponentPaneTemplate" mixin="RoomComponentPaneMixin" inherits="VerticalLayoutFrame" enableMouse="true" virtual="true">
 		<KeyValues>
 			<KeyValue key="leftPadding" value="20" type="number"/>
-			<KeyValue key="rightPadding" value="75" type="number"/>
+			<KeyValue key="rightPadding" value="60" type="number"/>
 			<KeyValue key="topPadding" value="10" type="number"/>
 			<KeyValue key="bottomPadding" value="30" type="number"/>
 			<KeyValue key="spacing" value="20" type="number"/>
@@ -390,11 +394,13 @@
 				</KeyValues>
 			</Frame>
 
-			<Button parentKey="ApplyThemeToRoomButton" inherits="UIPanelButtonTemplate" text="STYLE_ALL">
-					<Size x ="75" y="20"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.ThemeDropdown" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
+			<Button parentKey="ApplyThemeToRoomButton">
+				<Size x="25" y="25"/>
+				<NormalTexture atlas="housing-apply-to-all-icon"/>
+				<PushedTexture atlas="housing-apply-to-all-icon" alpha="0.5"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ThemeDropdown" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
 			</Button>
 
 			<Frame parentKey="WallpaperDropdown" inherits="HousingRoomComponentWallpaperTemplate" parentArray="dropdowns">
@@ -404,8 +410,10 @@
 				</KeyValues>
 			</Frame>
 
-			<Button parentKey="ApplyWallpaperToAllWallsButton" inherits="UIPanelButtonTemplate" text="WALL_ALL">
-				<Size x ="75" y="20"/>
+			<Button parentKey="ApplyWallpaperToAllWallsButton">
+				<Size x="25" y="25"/>
+				<NormalTexture atlas="housing-apply-to-all-icon"/>
+				<PushedTexture atlas="housing-apply-to-all-icon" alpha="0.5"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.WallpaperDropdown" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>

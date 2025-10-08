@@ -334,7 +334,7 @@ local SHIPMENT_TYPE_LOOSE = 4;
 
 local function SetupShipment(shipmentFrame, texture, applyMask, name, buildingID, plotID, containerID, shipmentsReady, shipmentsTotal, creationTime, duration, shipmentType, index)
 	if (applyMask) then
-		SetPortraitToTexture(shipmentFrame.Icon, texture);
+		shipmentFrame.Icon:SetTexture(texture);
 	else
 		shipmentFrame.Icon:SetTexture(texture);
 	end

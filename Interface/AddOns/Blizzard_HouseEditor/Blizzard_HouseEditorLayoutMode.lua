@@ -229,7 +229,7 @@ end
 
 function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	self.currentFloor = C_HousingLayout.GetViewedFloor();
-	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(self.currentFloor));
+	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(self.currentFloor + 1)); -- Floors start at 0, which is confusing for players so display starting at 1
 
 	self.UpButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
 	self.DownButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));

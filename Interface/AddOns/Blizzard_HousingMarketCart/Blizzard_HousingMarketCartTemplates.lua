@@ -19,6 +19,22 @@ function HousingMarketCartFrameMixin:OnLoad()
 	end;
 
 	ShoppingCartVisualsFrameMixin.OnLoad(self);
+
+	local function ResetAnim()
+		self.isPendingAddedToCartAnim = false;
+		self.CartUpdatedFlipbookTexture:Hide();
+	end
+
+	self.CartUpdatedFlipbookAnim:SetScript("OnFinished", ResetAnim);
+end
+
+function HousingMarketCartFrameMixin:OnShow()
+	ShoppingCartVisualsFrameMixin.OnShow(self);
+
+	if self.isPendingAddedToCartAnim then
+		self.CartUpdatedFlipbookTexture:Show();
+		self.CartUpdatedFlipbookAnim:Play();
+	end
 end
 
 function HousingMarketCartFrameMixin:GetEventNamespace()
@@ -28,11 +44,25 @@ end
 function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 	local function InitializeItem(button, elementData)
 		button:InitItem(elementData);
+
+		if elementData.decorGUID then
+			if C_HousingCatalog.IsPreviewCartItemShown(elementData.decorGUID) then
+				self.selectionBehavior:Select(button);
+			else
+				self.selectionBehavior:Deselect(button);
+			end
+		end
+
 		button:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
 
 		button:SetScript("OnClick", function(btn)
 			self.selectionBehavior:ToggleSelect(btn);
-			btn:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
+			local selected = self.selectionBehavior:IsElementDataSelected(elementData);
+			btn:SetSelection(selected);
+
+			if elementData.decorGUID then
+				C_HousingCatalog.SetPreviewCartItemShown(elementData.decorGUID, selected);
+			end
 		end);
 	end
 
@@ -50,11 +80,26 @@ function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 
 	local function InitializeBundleSubItem(button, elementData)
 		button:InitItem(elementData);
+
+		if elementData.decorGUID then
+			if C_HousingCatalog.IsPreviewCartItemShown(elementData.decorGUID) then
+				self.selectionBehavior:Select(button);
+			else
+				self.selectionBehavior:Deselect(button);
+			end
+		end
+
 		button:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
 
 		button:SetScript("OnClick", function(btn)
 			self.selectionBehavior:ToggleSelect(btn);
-			btn:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
+
+			local selected = self.selectionBehavior:IsElementDataSelected(elementData);
+			btn:SetSelection(selected);
+
+			if elementData.decorGUID then
+				C_HousingCatalog.SetPreviewCartItemShown(elementData.decorGUID, selected);
+			end
 		end);
 	end
 
@@ -74,11 +119,11 @@ function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 end
 
 function HousingMarketCartFrameMixin:SetupDataManager()
-	self.CartDataManager = CreateFromMixins(ShoppingCartDataManagerMixin);
+	self.CartDataManager = CreateFromMixins(HousingMarketCartDataManagerMixin);
 	self.CartDataManager:Init(self.eventNamespace);
 	self.CartDataManager:SetRemovalPredicate(function(itemToRemove, itemToCheck)
 		-- Need to compare something more unique
-		return itemToRemove.id == itemToCheck.id;
+		return itemToRemove.decorGUID and itemToRemove.decorGUID == itemToCheck.decorGUID;
 	end);
 
 	self.CartDataManager:SetUpdateCartCallback(function(cartList)
@@ -91,6 +136,16 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 
 	self.CartDataManager:SetAddToCartCallback(function(cartItem)
 		self:AddItemToList(cartItem);
+
+		RunNextFrame(function()
+			-- Frame doesn't get hidden until after adding to the list upon pulling from the catalog
+			self.isPendingAddedToCartAnim = not self:IsShown();
+
+			if not self.isPendingAddedToCartAnim then
+				self.CartUpdatedFlipbookTexture:Show();
+				self.CartUpdatedFlipbookAnim:Play();
+			end
+		end);
 	end);
 
 	self.CartDataManager:SetRemoveFromCartCallback(function(itemIndex, cartItem)
@@ -100,6 +155,10 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 	self.CartDataManager:SetClearCartCallback(function()
 		local dataProvider = CreateDataProvider();
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	end);
+
+	self.CartDataManager:SetPlaceInWorldCallback(function(_placeItemData)
+		self:FullUpdate();
 	end);
 end
 
@@ -165,7 +224,7 @@ function HousingMarketCartFrameMixin:AddItemToList(item)
 	end
 end
 
-function HousingMarketCartFrameMixin:RemoveItemFromList(_itemIndex, item)
+function HousingMarketCartFrameMixin:RemoveItemFromList(itemIndex, item)
 	if item.id then
 		local dataProvider = self.ScrollBox:GetDataProvider();
 		local dataProviderIndex = dataProvider:FindIndex(item);
@@ -182,6 +241,10 @@ function HousingMarketCartFrameMixin:RemoveItemFromList(_itemIndex, item)
 				end
 			end
 		end
+
+		if item.decorGUID then
+			C_HousingCatalog.DeletePreviewCartDecor(item.decorGUID);
+		end
 	end
 end
 
@@ -189,4 +252,75 @@ function HousingMarketCartFrameMixin:UpdateNumItemsInCart()
 	local numItemsInCart = self.CartDataManager:GetNumItemsInCart();
 	self.CartVisibleContainer.Header.Title:SetText(string.format(GENERIC_CART_PREVIEW_TITLE, numItemsInCart));
 	self.CartHiddenContainer.ViewCartButton:UpdateNumItemsInCart(numItemsInCart);
+end
+
+HousingMarketCartDataServiceEvents = {
+	PlaceInWorld = "PlaceInWorld",
+};
+
+HousingMarketCartDataManagerMixin = CreateFromMixins(ShoppingCartDataManagerMixin);
+
+function HousingMarketCartDataManagerMixin:Init(eventNamespace)
+	ShoppingCartDataManagerMixin.Init(self, eventNamespace);
+
+	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_UPDATED", self);
+	Dispatcher:RegisterEvent("HOUSING_DECOR_ADD_TO_PREVIEW_LIST", self);
+	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD", self);
+
+	self:AddServiceEvents(HousingMarketCartDataServiceEvents);
+end
+
+function HousingMarketCartDataManagerMixin:ClearCart()
+	for _i, cartItem in ipairs(self.cartList) do
+		if cartItem.decorGUID then
+			C_HousingCatalog.DeletePreviewCartDecor(cartItem.decorGUID);
+		end
+	end
+
+	ShoppingCartDataManagerMixin.ClearCart(self);
+end
+
+function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_UPDATED()
+	
+end
+
+function HousingMarketCartDataManagerMixin:HOUSING_DECOR_ADD_TO_PREVIEW_LIST(...)
+	local itemToAdd = ...;
+	if self.pendingPlaceCartID then
+		for _i, cartItem in ipairs(self.cartList) do
+			if itemToAdd.id == cartItem.id and cartItem.cartID == self.pendingPlaceCartID then
+				cartItem.decorGUID = itemToAdd.decorGUID;
+				self.pendingPlaceCartID = nil;
+				break;
+			end
+		end
+	else
+		self:AddToCart(itemToAdd);
+	end
+end
+
+function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD(...)
+	local decorGUID = ...;
+	
+	for _i, cartItem in ipairs(self.cartList) do
+		if cartItem.decorGUID == decorGUID then
+			cartItem.decorGUID = nil;
+			self:UpdateCart();
+			break;
+		end
+	end
+end
+
+function HousingMarketCartDataManagerMixin:PlaceInWorld(placeItemData)
+	self.pendingPlaceCartID = placeItemData.cartID;
+
+	C_HousingBasicMode.StartPlacingPreviewDecor(placeItemData.decorEntryID);
+
+	if self.PlaceInWorldCallback then
+		self.PlaceInWorldCallback(placeItemData);
+	end
+end
+
+function HousingMarketCartDataManagerMixin:SetPlaceInWorldCallback(placeInWorldCallback)
+	self.PlaceInWorldCallback = placeInWorldCallback;
 end

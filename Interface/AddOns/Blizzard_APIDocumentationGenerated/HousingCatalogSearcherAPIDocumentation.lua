@@ -6,6 +6,19 @@ local HousingCatalogSearcherAPI =
 	Functions =
 	{
 		{
+			Name = "GetAllSearchItems",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "matchingEntryIDs", Type = "table", InnerType = "HousingCatalogEntryID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCatalogSearchResults",
 			Type = "Function",
 
@@ -74,6 +87,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "GetNumSearchItems",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "numSearchItems", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchText",
 			Type = "Function",
 
@@ -113,6 +139,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "IsCollectedActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCustomizableOnlyActive",
 			Type = "Function",
 
@@ -126,7 +165,33 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "IsFirstAcquisitionBonusOnlyActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOwnedOnlyActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUncollectedActive",
 			Type = "Function",
 
 			Arguments =
@@ -190,6 +255,16 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetCollected",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCustomizableOnly",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -242,6 +317,16 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetFirstAcquisitionBonusOnly",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetOwnedOnly",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -273,6 +358,16 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetUncollected",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleAllowedIndoors",
 			Type = "Function",
 
@@ -282,6 +377,14 @@ local HousingCatalogSearcherAPI =
 		},
 		{
 			Name = "ToggleAllowedOutdoors",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ToggleCollected",
 			Type = "Function",
 
 			Arguments =
@@ -308,7 +411,23 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "ToggleFirstAcquisitionBonusOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "ToggleOwnedOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ToggleUncollected",
 			Type = "Function",
 
 			Arguments =

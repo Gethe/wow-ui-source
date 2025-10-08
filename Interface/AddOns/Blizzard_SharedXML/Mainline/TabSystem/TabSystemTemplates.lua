@@ -119,6 +119,22 @@ function TabSystemButtonMixin:SetTabEnabled(enabled, errorReason)
 	self.errorReason = errorReason;
 end
 
+function TabSystemButtonMixin:SetTabNotification(showNotification)
+	if showNotification then
+		if not self.notificationFrame then
+			if self.isTabOnTop then
+				self.notificationFrame = NotificationUtil.AcquireNotification("TOP", self, "TOP", 0, 10);
+			else
+				self.notificationFrame = NotificationUtil.AcquireNotification("BOTTOM", self, "BOTTOM", 0, -10);
+			end
+		end
+
+	elseif self.notificationFrame then
+		NotificationUtil.ReleaseNotification(self.notificationFrame);
+		self.notificationFrame = nil;
+	end
+end
+
 function TabSystemButtonMixin:UpdateTabWidth()
 	local sidesWidth = self.Left:GetWidth() + self.Right:GetWidth();
 	local width = sidesWidth + TabSideExtraSpacing;
@@ -183,6 +199,10 @@ function TabSystemMixin:SetTabVisuallySelected(tabID)
 	for i, tab in ipairs(self.tabs) do
 		tab:SetTabSelected(tab:GetTabID() == tabID);
 	end
+end
+
+function TabSystemMixin:SetTabNotification(tabID, showNotification)
+	self.tabs[tabID]:SetTabNotification(showNotification);
 end
 
 function TabSystemMixin:SetTabShown(tabID, isShown)

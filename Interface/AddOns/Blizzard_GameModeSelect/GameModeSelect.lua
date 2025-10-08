@@ -210,51 +210,24 @@ function GameModeFrameMixin:SetDisabledForMode(gameModeRecordID, disabled)
 	end
 end
 
-function GameModeFrameMixin:CreateModeButtons()
+function GameModeFrameMixin:OnLoad()
 	self.buttonGroup = CreateRadioButtonGroup();
-	local numDisplayedGameModes = C_GameRules.GetNumDisplayedGameModes();
+	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameMode, self);
 
-	for i = 1, numDisplayedGameModes do
-		local gameModeRecordID = C_GameRules.GetDisplayedGameModeRecordIDAtIndex(i);
-		local hasPromo = C_GameRules.DoesGameModeHavePromo(gameModeRecordID);
-		local isDisabled = not C_GameRules.IsGameModeEnabled(gameModeRecordID);
-		local gameModeButton = nil;
-
-		if hasPromo then
-			gameModeButton = CreateFrame("Button", "Button"..i, self, "GameModePromoButtonTemplate");
-		else
-			gameModeButton = CreateFrame("Button", "Button"..i, self, "GameModeButtonTemplate");
-		end
-
-		gameModeButton:SetGameMode(gameModeRecordID);
-
-		if isDisabled then
-			gameModeButton:SetDisabled(true);
-		end
-
-		if i == 1 then
-			gameModeButton:SetPoint("TOPLEFT");
-		else
-			local relativeButton = self.buttonGroup:GetAtIndex(i - 1);
-			gameModeButton:SetPoint("LEFT", relativeButton, "RIGHT", GameModeSelectButtonSpacing, 0);
-		end
-
-		self.buttonGroup:AddButton(gameModeButton);
+	self.gameModeButtonTemplates = { "GameModeButtonTemplate", "GameModePromoButtonTemplate" };
+	self.gameModeButtonPools = CreateFramePoolCollection();
+	for index, templateType in ipairs(self.gameModeButtonTemplates) do
+		self.gameModeButtonPools:CreatePool("Button", self, templateType);
 	end
 
-	self.buttonGroup:RegisterCallback(ButtonGroupBaseMixin.Event.Selected, self.SelectGameMode, self);
-	self:TryShowGameModeButtons();
-end
-
-function GameModeFrameMixin:OnLoad()
-	self:CreateModeButtons();
-
+	self:RegisterEvent("AVAILABLE_GAME_MODES_UPDATED");
 	self:RegisterEvent("GAME_MODE_DISPLAY_INFO_UPDATED");
 	self:RegisterEvent("GAME_MODE_DISPLAY_MODE_TOGGLE_DISABLED");
 
 	self:AddDynamicEventMethod(EventRegistry, "GameMode.Selected", self.OnGameModeSelected);
 	self:AddDynamicEventMethod(EventRegistry, "RealmList.Cancel", self.OnRealmListCancel);	
 
+	self:OnAvailableGameModesUpdated();
 end
 
 function GameModeFrameMixin:OnShow()
@@ -276,7 +249,9 @@ function GameModeFrameMixin:OnKeyDown(key)
 end
 
 function GameModeFrameMixin:OnEvent(event, ...)
-	if event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
+	if event == "AVAILABLE_GAME_MODES_UPDATED" then
+		self:OnAvailableGameModesUpdated();
+	elseif event == "GAME_MODE_DISPLAY_INFO_UPDATED" then
 		-- When switching to a different game mode, hide the frame if connection succeeded.
 		if self:IsShown() then
 			EventRegistry:TriggerEvent("GameModeFrame.Hide");
@@ -285,6 +260,42 @@ function GameModeFrameMixin:OnEvent(event, ...)
 		local gameModeRecordID, disabled = ...;
 		self:SetDisabledForMode(gameModeRecordID, disabled);
 	end
+end
+
+function GameModeFrameMixin:OnAvailableGameModesUpdated()
+	-- Clear out any existing buttons and then repopulate based on latest list of available modes.
+	self.buttonGroup:RemoveAllButtons();
+	self.gameModeButtonPools:ReleaseAll();
+
+	local numDisplayedGameModes = C_GameRules.GetNumDisplayedGameModes();
+	for i = 1, numDisplayedGameModes do
+		local gameModeRecordID = C_GameRules.GetDisplayedGameModeRecordIDAtIndex(i);
+		local hasPromo = C_GameRules.DoesGameModeHavePromo(gameModeRecordID);
+		local isDisabled = not C_GameRules.IsGameModeEnabled(gameModeRecordID);
+		local gameModeButton = nil;
+		if hasPromo then
+			gameModeButton = self.gameModeButtonPools:Acquire("GameModePromoButtonTemplate");
+		else
+			gameModeButton = self.gameModeButtonPools:Acquire("GameModeButtonTemplate");
+		end
+
+		gameModeButton:SetGameMode(gameModeRecordID);
+
+		if isDisabled then
+			gameModeButton:SetDisabled(true);
+		end
+
+		if i == 1 then
+			gameModeButton:SetPoint("TOPLEFT");
+		else
+			local relativeButton = self.buttonGroup:GetAtIndex(i - 1);
+			gameModeButton:SetPoint("LEFT", relativeButton, "RIGHT", GameModeSelectButtonSpacing, 0);
+		end
+
+		self.buttonGroup:AddButton(gameModeButton);
+	end
+
+	self:TryShowGameModeButtons();
 end
 
 function GameModeFrameMixin:OnGameModeSelected(requestedGameModeRecordID)

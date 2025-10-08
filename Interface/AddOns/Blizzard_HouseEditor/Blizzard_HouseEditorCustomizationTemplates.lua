@@ -3,7 +3,13 @@ HousingDyePaneMixin = {};
 function HousingDyePaneMixin:OnLoad()
 	ClickToDragMixin.OnLoad(self);
 	self.dyeSlotPool = CreateFramePool("FRAME", self.DyeSlotContainer, "HousingDecorDyeSlotTemplate", HousingDecorDyeSlotMixin.Reset);
-	
+
+	local function CloseDyePane()
+		-- This will clear the preview dyes and close this pane by deselecting the decor
+		C_HousingCustomizeMode.CancelActiveEditing();
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
+	end
+
 	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
 		local anyChanges = C_HousingCustomizeMode.CommitDyesForSelectedDecor();
 		if anyChanges then
@@ -13,13 +19,8 @@ function HousingDyePaneMixin:OnLoad()
 		end
 
 		DyeSelectionPopout:SetDyeSlotInfo(DyeSelectionPopout.dyeSlotInfo);
+		CloseDyePane();
 	end);
-
-	local function CloseDyePane()
-		-- This will clear the preview dyes and close this pane by deselecting the decor
-		C_HousingCustomizeMode.CancelActiveEditing();
-		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
-	end
 
 	self.ButtonFrame.CancelButton:SetScript("OnClick", CloseDyePane);
 	self.CloseButton:SetScript("OnClick", CloseDyePane);
@@ -72,11 +73,20 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 		self.dyeSlotFramesByChannel[dyeSlotEntry.channel] = dyeSlotFrame;
 	end
 
+	local canAffordDyes = true;
 	local dyesToSpend = self:GetPreviewDyeInfos();
+	local dyeCounts = {};
 	for i, dyeCostIcon in ipairs(self.dyeCostIcons) do
 		local dyeInfo = dyesToSpend[i];
 		if dyeInfo then
-			dyeCostIcon:Init(dyeInfo.itemID, dyeInfo.numOwned);
+			dyeCounts[dyeInfo.itemID] = (dyeCounts[dyeInfo.itemID] or 0) + 1;
+
+			local dyeIsValid = dyeCounts[dyeInfo.itemID] <= dyeInfo.numOwned;
+			if not dyeIsValid then
+				canAffordDyes = false;
+			end
+
+			dyeCostIcon:Init(dyeInfo.itemID, dyeInfo.numOwned, not dyeIsValid);
 		else
 			dyeCostIcon:Hide();
 		end
@@ -84,6 +94,9 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 
 	self.DyeCostContainer:SetShown(#dyesToSpend > 0);
 	self.DyeCostContainer:Layout();
+
+	self.ButtonFrame.ApplyButton:SetEnabled((numDyesToRemove > 0 or #dyesToSpend > 0) and canAffordDyes);
+	self.ButtonFrame.ApplyButton.disabledTooltip = not canAffordDyes and HOUSING_DECOR_DYE_NOT_ENOUGH_DYE or nil;
 end
 
 function HousingDyePaneMixin:UpdateDecorInfo(decorInstanceInfo)
@@ -299,9 +312,11 @@ function HousingDecorDyeSwatchMixin:SetDyeColorInfo(dyeColorInfo, isSelected, on
 		self.SwatchEnd:SetVertexColor(dyeColorInfo.swatchColorEnd:GetRGB());
 		self.SwatchStart:Show();
 		self.SwatchEnd:Show();
+		self.Highlight:Show();
 	else
 		self.SwatchStart:Hide();
 		self.SwatchEnd:Hide();
+		self.Highlight:Hide();
 		self.SwatchEmpty:Show();
 	end
 
@@ -431,16 +446,16 @@ HousingRoomComponentWallpaperMixin = CreateFromMixins(HousingRoomComponentOption
 
 function HousingRoomComponentWallpaperMixin:UpdateDropdown()
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		local function IsSelected(ID)
-			return ID == self.roomComponentInfo.currentWallpaper;
+		local function IsSelected(wallpaper)
+			return wallpaper.roomComponentTextureRecID == self.roomComponentInfo.currentRoomComponentTextureRecID;
 		end
 
-		local function SetSelected(ID)
-			if not IsSelected(ID) then
+		local function SetSelected(wallpaper)
+			if not IsSelected(wallpaper) then
 				self:PlaySelectedSound();
 			end
 
-			C_HousingCustomizeMode.ApplyWallpaperToSelectedRoomComponent(ID);
+			C_HousingCustomizeMode.ApplyWallpaperToSelectedRoomComponent(wallpaper.roomComponentTextureRecID);
 		end
 
 		local type = self.roomComponentInfo.type;
@@ -448,7 +463,7 @@ function HousingRoomComponentWallpaperMixin:UpdateDropdown()
 
 		local wallpapersByID = {};
 		for _, wallpaper in ipairs(wallpapers) do
-			wallpapersByID[wallpaper.fileDataID] = wallpaper;
+			wallpapersByID[wallpaper.roomComponentTextureRecID] = wallpaper;
 		end
 
 		--TODO: incporporate ownership when ownership is implemented.
@@ -456,7 +471,7 @@ function HousingRoomComponentWallpaperMixin:UpdateDropdown()
 
 		local function AddButton(wallpaper)
 			if wallpaper then
-				rootDescription:CreateHighlightRadio(wallpaper.name, IsSelected, SetSelected, wallpaper.fileDataID);
+				rootDescription:CreateHighlightRadio(wallpaper.name, IsSelected, SetSelected, wallpaper);
 			end
 		end
 		
@@ -527,7 +542,7 @@ function RoomComponentPaneMixin:OnLoad()
 	end);
 
 	self.ApplyWallpaperToAllWallsButton:SetScript("OnClick", function()
-		C_HousingCustomizeMode.ApplyWallpaperToAllWalls(self.roomComponentInfo.currentWallpaper);
+		C_HousingCustomizeMode.ApplyWallpaperToAllWalls(self.roomComponentInfo.currentRoomComponentTextureRecID);
 	end);
 end
 
@@ -604,7 +619,7 @@ end
 
 HousingDyeCostIconMixin = {};
 
-function HousingDyeCostIconMixin:Init(itemID, numOwned)
+function HousingDyeCostIconMixin:Init(itemID, numOwned, unowned)
 	self.itemID = itemID;
 	self.numOwned = numOwned;
 	self.coloredItemName = nil;
@@ -629,6 +644,8 @@ function HousingDyeCostIconMixin:Init(itemID, numOwned)
 		self.coloredItemName = qualityColor:WrapTextInColorCode(item:GetItemName());
 
 		self.DyeIcon:SetTexture(itemIcon);
+		local iconTint = unowned and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR
+		self.DyeIcon:SetVertexColor(iconTint:GetRGBA());
 		self:Show();
 
 		self:GetParent():MarkDirty();

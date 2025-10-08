@@ -815,9 +815,9 @@ local VoiceChat =
 			{
 				{ Name = "voiceID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "cstring", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 				{ Name = "rate", Type = "number", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
+				{ Name = "overlap", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1211,9 +1211,8 @@ local VoiceChat =
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FAILED",
 			Payload =
 			{
-				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
 			},
 		},
 		{
@@ -1222,9 +1221,7 @@ local VoiceChat =
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FINISHED",
 			Payload =
 			{
-				{ Name = "numConsumers", Type = "number", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 			},
 		},
 		{
@@ -1233,10 +1230,7 @@ local VoiceChat =
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_STARTED",
 			Payload =
 			{
-				{ Name = "numConsumers", Type = "number", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "durationMS", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 			},
 		},
 		{
@@ -1320,23 +1314,6 @@ local VoiceChat =
 				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
 				{ Name = "InvalidInputDevice", Type = "VoiceChatStatusCode", EnumValue = 23 },
 				{ Name = "InvalidOutputDevice", Type = "VoiceChatStatusCode", EnumValue = 24 },
-			},
-		},
-		{
-			Name = "VoiceTtsDestination",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "RemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 0 },
-				{ Name = "LocalPlayback", Type = "VoiceTtsDestination", EnumValue = 1 },
-				{ Name = "RemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 2 },
-				{ Name = "QueuedRemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 3 },
-				{ Name = "QueuedLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 4 },
-				{ Name = "QueuedRemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 5 },
-				{ Name = "ScreenReader", Type = "VoiceTtsDestination", EnumValue = 6 },
 			},
 		},
 		{

@@ -20,7 +20,7 @@ end
 function ReforgingFrame_OnLoad(self)
 	self:RegisterEvent("FORGE_MASTER_SET_ITEM");
 	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED");
-	SetPortraitToTexture(ReforgingFramePortrait, "Interface\\Reforging\\Reforge-Portrait");
+	ReforgingFramePortrait:SetPortraitToAsset("Interface\\Reforging\\Reforge-Portrait");
 
 	ReforgingFrameTopTileStreaks:Hide();
 	ReforgingFrameTitleBg:SetDrawLayer("BACKGROUND", -1);

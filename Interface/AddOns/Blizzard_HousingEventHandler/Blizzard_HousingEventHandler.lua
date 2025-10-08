@@ -1,11 +1,41 @@
 -- Helpers for non-Housing code needing to make housing-related API calls while relevant Housing addons may not be loaded (ex: Keybindings)
 HousingFramesUtil = {};
 
+StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
+	text = HOUSING_PREVIEW_DECOR_WARNING,
+	button1 = OKAY,
+	button2 = CANCEL,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+
+	OnAccept = function(dialog, cb)
+		cb();
+	end
+}
+
+--TODO: eventually we want a more robust "confirm leaving mode" system
+--See HouseEditorUI.cpp
+function HousingFramesUtil.LeaveHouseEditor()
+	if C_HousingDecor.GetNumPreviewDecor() > 0 then
+		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function() C_HouseEditor.LeaveHouseEditor(); end);
+	else
+		C_HouseEditor.LeaveHouseEditor();
+	end
+end
+
 function HousingFramesUtil.ToggleHouseEditor()
 	if C_HouseEditor.IsHouseEditorActive() then
-		C_HouseEditor.LeaveHouseEditor();
+		HousingFrameUtil.LeaveHouseEditor();
 	else
-		C_HouseEditor.EnterHouseEditor();
+		local initialResult = C_HouseEditor.EnterHouseEditor();
+		if initialResult ~= Enum.HousingResult.Success then
+			local errorText = HousingResultToErrorText[initialResult];
+			if errorText and errorText ~= "" then
+				UIErrorsFrame:AddExternalErrorMessage(errorText);
+			end
+		end
 	end
 end
 
@@ -46,7 +76,7 @@ function HousingFramesUtil.SetExpertDecorSubmode(submode)
 end
 
 function HousingFramesUtil.ToggleHousingDashboard()
-	if (PlayerIsTimerunning()) then
+	if (PlayerIsTimerunning() or not C_Housing.IsHousingServiceEnabled()) then
 		return;
 	end
 
@@ -109,6 +139,20 @@ function HousingEventHandlerMixin:OnEditorModeChanged(...)
 	if not HouseEditorFrame then
 		C_AddOns.LoadAddOn("Blizzard_HouseEditor");
 		HouseEditorFrame:OnEvent("HOUSE_EDITOR_MODE_CHANGED", ...);
+	end
+end
+
+-- Handler for this is here rather than in HouseEditorFrame since the failure may be preventing the HouseEditor from even being activated
+function HousingEventHandlerMixin:OnEditorModeChangeFailed(...)
+	local result = ...;
+	if result ~= Enum.HousingResult.Success then
+		local errorMessage = ERR_HOUSE_EDITOR_MODE_FAILED;
+
+		local resultText = HousingResultToErrorText[result];
+		if resultText and resultText ~= "" then
+			errorMessage = ERR_HOUSE_EDITOR_MODE_FAILED_FMT:format(resultText);
+		end
+		UIErrorsFrame:AddExternalErrorMessage(errorMessage);
 	end
 end
 
@@ -197,9 +241,37 @@ function HousingEventHandlerMixin:ShowOwnershipTransferRequestConfirmation(neigh
 	StaticPopup_Show("HOUSING_TRANSFER_OWNER_REQUEST_CONFIRMATION", currentOwnerName, neighborhoodName);
 end
 
+StaticPopupDialogs["HOUSING_LAYOUT_STAIRS_DIRECTION_CONFIRM"] = {
+	text = HOUSING_LAYOUT_STAIRS_CONFIRMATION,
+	button1 = HOUSING_LAYOUT_STAIRS_UP,
+	button2 = HOUSING_LAYOUT_STAIRS_DOWN,
+	selectCallbackByIndex = true,
+	closeButton = true,
+	closeButtonIsHide = true,
+
+	OnButton1 = function(self, data)
+		C_HousingLayout.ConfirmStairChoice(Enum.HousingLayoutStairDirection.Up);
+		self:Hide();
+	end,
+	OnButton2 = function(self, data)
+		C_HousingLayout.ConfirmStairChoice(Enum.HousingLayoutStairDirection.Down);
+		self:Hide();
+	end,
+	OnCloseClicked = function (self)
+		C_HousingLayout.ConfirmStairChoice(nil);
+		self:Hide();
+	end,
+	hideOnEscape = 0,
+};
+
+function HousingEventHandlerMixin:ShowStairDirectionConfirmation()
+	StaticPopup_Show("HOUSING_LAYOUT_STAIRS_DIRECTION_CONFIRM");
+end
+
 local HousingEventHandler = CreateAndInitFromMixin(HousingEventHandlerMixin);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_PLOT_ENTERED", HousingEventHandler.OnPlotEntered, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGED", HousingEventHandler.OnEditorModeChanged, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGE_FAILURE", HousingEventHandler.OnEditorModeChangeFailed, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("OPEN_PLOT_CORNERSTONE", HousingEventHandler.OpenCornerstone, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("OPEN_NEIGHBORHOOD_CHARTER", HousingEventHandler.OpenCharter, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("OPEN_NEIGHBORHOOD_CHARTER_SIGNATURE_REQUEST", HousingEventHandler.OpenCharterSignatureRequest, HousingEventHandler);
@@ -208,3 +280,4 @@ EventRegistry:RegisterFrameEventAndCallback("OPEN_CREATE_CHARTER_NEIGHBORHOOD_UI
 EventRegistry:RegisterFrameEventAndCallback("OPEN_CHARTER_CONFIRMATION_UI", HousingEventHandler.OpenCreateCharterNeighborhoodConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_PLAYER_EVICTED_DIALOG", HousingEventHandler.ShowPlayerEvictedConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG", HousingEventHandler.ShowOwnershipTransferRequestConfirmation, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("SHOW_STAIR_DIRECTION_CONFIRMATION", HousingEventHandler.ShowStairDirectionConfirmation, HousingEventHandler);

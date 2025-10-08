@@ -1,5 +1,6 @@
 
 ShoppingCartVisualServices = {
+	SetCartFrameShown = "SetCartFrameShown",
 	SetCartShown = "SetCartShown",
 	OnCartItemInteraction = "OnCartItemInteraction",
 };
@@ -186,6 +187,14 @@ function ShoppingCartVisualsFrameMixin:UpdateScrollBar()
 	elseif self.CartHiddenContainer:IsShown() then
 		self:SetHeight(self.CartHiddenContainer:GetHeight());
 	end
+end
+
+function ShoppingCartVisualsFrameMixin:SetCartFrameShown(isShown)
+	if not self:IsShown() and isShown then
+		self:SetCartShown(false);
+	end
+
+	self:SetShown(isShown);
 end
 
 function ShoppingCartVisualsFrameMixin:SetCartShown(isShown)

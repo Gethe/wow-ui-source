@@ -222,7 +222,6 @@ PlayerLocationDocumentation.lua
 PlayerMentorshipDocumentation.lua
 PlayerScriptDocumentation.lua
 PonyDocumentation.lua
-PortraitDocumentation.lua
 ProfessionSpecUIDocumentation.lua
 PvpInfoDocumentation.lua
 QuestHubInfoDocumentation.lua

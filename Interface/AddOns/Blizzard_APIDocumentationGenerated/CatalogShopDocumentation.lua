@@ -220,6 +220,11 @@ local CatalogShop =
 			{
 				{ Name = "shouldAllowMovement", Type = "bool", Nilable = false, Default = false },
 			},
+
+			Returns =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "ProductDisplayedTelemetry",
@@ -278,6 +283,10 @@ local CatalogShop =
 			Name = "CatalogShopDataRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DATA_REFRESH",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopDisabled",
@@ -288,11 +297,19 @@ local CatalogShop =
 			Name = "CatalogShopFetchFailure",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_FAILURE",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopFetchSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_SUCCESS",
+			Payload =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
 		},
 		{
 			Name = "CatalogShopOpenSimpleCheckout",
@@ -461,6 +478,7 @@ local CatalogShop =
 				{ Name = "licenseTermDuration", Type = "number", Nilable = false },
 				{ Name = "virtualCurrencies", Type = "table", InnerType = "CatalogShopVirtualCurrency", Nilable = false },
 				{ Name = "isHidden", Type = "bool", Nilable = false },
+				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 			},
 		},
 		{

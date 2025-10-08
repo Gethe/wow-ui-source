@@ -12,6 +12,7 @@ function HousingCatalogCategoriesMixin:OnLoad()
 	self.categoryPool = CreateFramePool("BUTTON", self, "HousingCatalogCategoryTemplate");
 	self.subcategoryPool = CreateFramePool("BUTTON", self, "HousingCatalogSubcategoryTemplate");
 	self.categorySearchParams = { withOwnedEntriesOnly = false };
+	self.AllSubcategoriesStandIn:SetSize(self.subcategoryButtonSize, self.subcategoryButtonSize);
 end
 
 function HousingCatalogCategoriesMixin:OnEvent(event, ...)
@@ -176,6 +177,17 @@ function HousingCatalogCategoriesMixin:IsFeaturedCategoryFocused()
 	return self.focusedCategoryID == Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID;
 end
 
+function HousingCatalogCategoriesMixin:IsAllCategoryFocused()
+	return self.focusedCategoryID == Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID;
+end
+
+function HousingCatalogCategoriesMixin:SetCategoryNotification(categoryID, shown)
+	local categoryFrame = self.categoryFramesByID[categoryID];
+	if categoryFrame then
+		categoryFrame:SetNotificationShown(shown);
+	end
+end
+
 function HousingCatalogCategoriesMixin:BuildDisplayedCategories()
 	if self:DoesFocusedCategoryShowSubcategories() then
 		local focusedCategory = self.categories[self.focusedCategoryID];
@@ -255,7 +267,11 @@ function HousingCatalogCategoriesMixin:DisplayTopLevelCategories()
 	-- Finally instantiate frames for each of them
 	local currLayoutIndex = 1;
 	for _, category in ipairs(categoriesToShow) do
-		local categoryFrame = self.categoryPool:Acquire();
+		local categoryFrame, isNew = self.categoryPool:Acquire();
+		if isNew then
+			-- If this is a newly created frame from the pool, set it to the correct size
+			categoryFrame:SetSize(self.categoryButtonSize, self.categoryButtonSize);
+		end
 		local showAsExpanded = false;
 		categoryFrame:Init(category.categoryInfo, showAsExpanded);
 		categoryFrame.layoutIndex = currLayoutIndex;
@@ -310,7 +326,11 @@ function HousingCatalogCategoriesMixin:DisplaySubcategoriesUnderCategory(categor
 	-- Finally sort and instantiate frames for the subcategories
 	table.sort(subcategoriesToShow, function (s1, s2) return s1.orderIndex < s2.orderIndex; end );
 	for _, subcategoryInfo in ipairs(subcategoriesToShow) do
-		local subcategoryFrame = self.subcategoryPool:Acquire();
+		local subcategoryFrame, isNew = self.subcategoryPool:Acquire();
+		if isNew then
+			-- If this is a newly created frame from the pool, set it to the correct size
+			subcategoryFrame:SetSize(self.subcategoryButtonSize, self.subcategoryButtonSize);
+		end
 		local showAsExpanded = false;
 		subcategoryFrame:Init(subcategoryInfo, showAsExpanded);
 		subcategoryFrame.layoutIndex = currLayoutIndex;
@@ -440,6 +460,10 @@ function BaseHousingCatalogCategoryMixin:OnLoad()
 	BaseHousingActionButtonMixin.OnLoad(self);
 end
 
+function BaseHousingCatalogCategoryMixin:Init()
+	self:HideNotification();
+end
+
 function BaseHousingCatalogCategoryMixin:ProcessAtlasKey(iconName)
 	self.atlasKey = nil;
 	self.atlasNames = nil;
@@ -483,6 +507,23 @@ end
 
 function BaseHousingCatalogCategoryMixin:IsActive()
 	return self.isActive;
+end
+
+function BaseHousingCatalogCategoryMixin:SetNotificationShown(shown)
+	if shown then
+		if not self.notificationFrame then
+			self.notificationFrame = NotificationUtil.AcquireLargeNotification("TOPRIGHT", self, "TOPRIGHT", 1, 1);
+		end
+	else
+		self:HideNotification();
+	end
+end
+
+function BaseHousingCatalogCategoryMixin:HideNotification()
+	if self.notificationFrame then
+		NotificationUtil.ReleaseNotification(self.notificationFrame);
+		self.notificationFrame = nil;
+	end
 end
 
 function BaseHousingCatalogCategoryMixin:OnClick()
@@ -530,6 +571,8 @@ HousingCatalogCategoryMixin = {};
 -- Inherits BaseHousingCatalogCategoryMixin
 
 function HousingCatalogCategoryMixin:Init(displayInfo, showingAsParent)
+	BaseHousingCatalogCategoryMixin.Init(self);
+
 	self.isActive = false;
 	self.ID = displayInfo.ID;
 	self.enabledTooltip = displayInfo.name;

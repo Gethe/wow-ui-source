@@ -1142,7 +1142,7 @@ function CatalogShopUtil.SetServicesContainerIcon(icon, displayInfo)
 		local formattedIcon = ("%s-large"):format(displayInfo.iconTextureKit);
 		icon:SetAtlas(formattedIcon);
 	elseif displayInfo.iconFileDataID then
-		SetPortraitToTexture(icon, displayInfo.iconFileDataID);
+		icon:SetTexture(displayInfo.iconFileDataID);
 	end
 end
 

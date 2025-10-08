@@ -146,9 +146,9 @@ end
 TextToSpeechCommands = CreateAndInitFromMixin(TextToSpeechCommandsMixin);
 
 local function TextToSpeech_CommandOptionHandler(cmd)
-	local val = TEXTTOSPEECH_CONFIG[cmd.option] or false;
+	local val = C_TTSSettings.GetSetting(cmd.option) or false;
 	local newVal = not val;
-	TEXTTOSPEECH_CONFIG[cmd.option] = newVal;
+	C_TTSSettings.SetSetting(cmd.option, newVal)
 	cmd:GetCommands():SpeakConfirmation(GetOptionConfirmation(cmd.cmdName, newVal));
 	return true;
 end
@@ -279,8 +279,8 @@ do
 		);
 	end
 
-	AddVoiceChatCommand(SLASH_TEXTTOSPEECH_VOICE, SLASH_TEXTTOSPEECH_HELP_VOICE, SLASH_TEXTTOSPEECH_VOICE_CHANGED_CONFIRMATION, "standard");
-	AddVoiceChatCommand(SLASH_TEXTTOSPEECH_ALTVOICE, SLASH_TEXTTOSPEECH_HELP_ALTVOICE, SLASH_TEXTTOSPEECH_ALTVOICE_CHANGED_CONFIRMATION, "alternate");
+	AddVoiceChatCommand(SLASH_TEXTTOSPEECH_VOICE, SLASH_TEXTTOSPEECH_HELP_VOICE, SLASH_TEXTTOSPEECH_VOICE_CHANGED_CONFIRMATION, Enum.TtsVoiceType.Standard);
+	AddVoiceChatCommand(SLASH_TEXTTOSPEECH_ALTVOICE, SLASH_TEXTTOSPEECH_HELP_ALTVOICE, SLASH_TEXTTOSPEECH_ALTVOICE_CHANGED_CONFIRMATION, Enum.TtsVoiceType.Alternate);
 end
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_DEFAULT,
@@ -293,14 +293,14 @@ TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_DEFAULT,
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_SAMPLE,
 	function(cmd)
-		TextToSpeech_PlaySample("standard");
+		TextToSpeech_PlaySample(Enum.TtsVoiceType.Standard);
 		return true;
 	end, nil, SLASH_TEXTTOSPEECH_HELP_SAMPLE
 );
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_ALTSAMPLE,
 	function(cmd)
-		TextToSpeech_PlaySample("alternate");
+		TextToSpeech_PlaySample(Enum.TtsVoiceType.Alternate);
 		return true;
 	end, nil, SLASH_TEXTTOSPEECH_HELP_ALTSAMPLE
 );

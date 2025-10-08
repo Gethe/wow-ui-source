@@ -134,17 +134,17 @@
 								<Texture parentKey="totalAbsorbOverlay"/>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<FontString parentKey="Text" inherits="SystemFont_NamePlate">
+								<FontString parentKey="Text" inherits="SystemFont_NamePlate" ignoreParentScale="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="-5" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="RightText" inherits="SystemFont_NamePlate">
+								<FontString parentKey="RightText" inherits="SystemFont_NamePlate" ignoreParentScale="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="-5" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="LeftText" inherits="SystemFont_NamePlate">
+								<FontString parentKey="LeftText" inherits="SystemFont_NamePlate" ignoreParentScale="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="0" y="0" relativeKey="$parent.RightText" relativePoint="LEFT"/>
 									</Anchors>
@@ -200,12 +200,12 @@
 						<Texture parentKey="Icon" hidden="true">
 							<!-- Anchoring and size handled dynamically in lua.-->
 						</Texture>
-						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar">
+						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" ignoreParentScale="true">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT">
+						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" ignoreParentScale="true">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="0"/>
 								<Anchor point="RIGHT" x="-4" y="0"/>
@@ -381,7 +381,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="LEFT">
+				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="LEFT" ignoreParentScale="true">
 					<!-- Anchoring and size handled dynamically in lua.-->
 				</FontString>
 			</Layer>

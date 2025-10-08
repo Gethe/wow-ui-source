@@ -167,22 +167,22 @@ end
 local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 local function GroupFinderFrame_InitLFG(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\INV_Helmet_08");
+	button.icon:SetTexture("Interface\\Icons\\INV_Helmet_08");
 	button.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitScenarios(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\Icon_Scenarios");
+	button.icon:SetTexture("Interface\\Icons\\Icon_Scenarios");
 	button.name:SetText(SCENARIOS_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitLFR(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	button.icon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	button.name:SetText(RAID_FINDER_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitPremadeGroup(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	button.icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	button.name:SetText(LFGLIST_NAME);
 end
 

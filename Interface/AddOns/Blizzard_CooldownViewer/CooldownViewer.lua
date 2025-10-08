@@ -3,7 +3,7 @@ local function IsSpellOnGCD(spellID, spellCooldownInfo)
 	local gcdInfo = C_Spell.GetSpellCooldown(61304);
 
 	-- Return false if the spell is not on cooldown at all
-	if spellCooldownInfo.duration ~= 0 then
+	if gcdInfo and spellCooldownInfo.duration ~= 0 then
 		-- Compare the current cooldown state of the spell with the current GCD state
 		-- If the spell's cooldown is the same as the GCD's, and both are active,
 		-- then the spell is currently on the GCD.
@@ -24,24 +24,29 @@ local function IsDebugSpell(spellID)
 	return false;
 end
 
-local function CheckDisplayCooldownState(functionName, cooldownItem)
-	local spellID = cooldownItem:GetSpellID();
+local function LogCooldown(spellID, functionName, fmt, ...)
 	if IsDebugSpell(spellID) then
-		print(("%s[%.4f] %d state: isOnGCD: %s, isEnabled: %s, allowAvailableAlert: %s allowOnCDAlert: %s\n"):format(functionName, GetTime(), spellID,
-		tostring(cooldownItem.isOnGCD), tostring(cooldownItem.cooldownEnabled), tostring(cooldownItem.allowAvailableAlert), tostring(cooldownItem.allowOnCooldownAlert)));
+		local msg = fmt:format(...);
+		print(("%.2f [%d]: %s : %s"):format(GetTime(), spellID, functionName, msg));
 	end
+end
+
+local function CheckDisplayCooldownState(functionName, cooldownItem)
+	LogCooldown(cooldownItem:GetSpellID(), functionName, "isOnGCD: %s, isEnabled: %s, allowAvailableAlert: %s allowOnCDAlert: %s",
+		tostring(cooldownItem.isOnGCD), tostring(cooldownItem.cooldownEnabled),
+		tostring(cooldownItem.allowAvailableAlert), tostring(cooldownItem.allowOnCooldownAlert));
 end
 
 local function CheckDisplayCooldownInfo(functionName, spellID, cachedInfo)
 	if IsDebugSpell(spellID) then
-		local cdInfo = C_Spell.GetSpellCooldown(spellID);
-
 		local isOnGCD = IsSpellOnGCD(spellID, cachedInfo);
-		print(("%s[%.4f] CDInfo for %d: ST: %.4f, Dur: %.4f, Enabled: %s, Mod: %.4f, Cat: %s, Recovery: %.4f, structOnGCD: %s, hackOnGCD: %s\n"):format(functionName, GetTime(), spellID,
-		cachedInfo.startTime, cachedInfo.duration, tostring(cachedInfo.isEnabled), cachedInfo.modRate, tostring(cachedInfo.activeCategory),
-		(cachedInfo.timeUntilEndOfStartRecovery or 0), tostring(cachedInfo.isOnGCD), tostring(isOnGCD)));
 
-		assertsafe(tCompare(cachedInfo, cdInfo), "cd info mismatch");
+		LogCooldown(spellID, functionName, "ST: %.4f, Dur: %.4f, Enabled: %s, Mod: %.4f, Cat: %s, Recovery: %.4f, structOnGCD: %s, hackOnGCD: %s",
+			cachedInfo.startTime, cachedInfo.duration, tostring(cachedInfo.isEnabled), cachedInfo.modRate, tostring(cachedInfo.activeCategory),
+			(cachedInfo.timeUntilEndOfStartRecovery or 0), tostring(cachedInfo.isOnGCD), tostring(isOnGCD));
+
+		local cdInfo = C_Spell.GetSpellCooldown(spellID);
+		assertsafe(cdInfo == cachedInfo or tCompare(cachedInfo, cdInfo), "cd info mismatch");
 		assertsafe(cachedInfo.isOnGCD == isOnGCD, "GCD hack mismatch");
 	end
 end
@@ -487,11 +492,6 @@ function CooldownViewerCooldownItemMixin:OnCooldownDone()
 	end
 
 	CheckDisplayCooldownState("OnCooldownDone", self);
-
-	if self.allowAvailableAlert then
-		self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
-		self.allowAvailableAlert = nil;
-	end
 end
 
 function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowShowEvent(spellID)
@@ -559,7 +559,7 @@ function CooldownViewerCooldownItemMixin:NeedsSpellRangeUpdate(spellID)
 	return false;
 end
 
-function CooldownViewerCooldownItemMixin:CacheCooldownValues()
+function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura()
 	-- If the spell results in a self buff, give those values precedence over the spell's cooldown until the buff is gone.
 	if self:CanUseAuraForCooldown() then
 		local totemData = self:GetTotemData();
@@ -576,8 +576,12 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 			self.cooldownUseAuraDisplayTime = true;
 			self.cooldownPlayFlash = false;
 			self.cooldownPaused = false;
-			return;
+			return true;
 		end
+
+		-- TODO: Check the target to see if it has any of the spells related to this aura...not sure
+		-- if the totem stuff above would ever apply something to the target that should be reflected in
+		-- the cooldown item state...but for sure the aura will.
 
 		local auraData = self:GetAuraData();
 		if auraData then
@@ -593,10 +597,17 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 			self.cooldownUseAuraDisplayTime = true;
 			self.cooldownPlayFlash = false;
 			self.cooldownPaused = false;
-			return;
+			return true;
 		end
 	end
 
+	return false;
+end
+
+function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges()
+	-- TODO: Determine whether or not spells that have charges should ever check the target to see if it has related auras.
+	-- I want to think that would be impossible, but if it's not which one should take precedence? Or is this the kind of thing
+	-- where both the charge state and the aura state need to both contribute to the visual state for the item?
 	local spellChargeInfo = self:GetSpellChargeInfo();
 	local displayChargeCooldown = spellChargeInfo and (spellChargeInfo.cooldownStartTime or 0) > 0 and (spellChargeInfo.currentCharges or 0) > 0;
 
@@ -615,14 +626,39 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 		self.cooldownUseAuraDisplayTime = false;
 		self.cooldownPlayFlash = true;
 		self.cooldownPaused = false;
-		return;
+		return true;
 	end
 
-	local spellCooldownInfo = self:GetSpellCooldownInfo();
-	if spellCooldownInfo then
-		local spellID = self:GetSpellID();
+	return false;
+end
 
-		CheckDisplayCooldownInfo("CacheCooldownValues", spellID, spellCooldownInfo);
+local targetAuraCacheTime;
+local targetAuraCache;
+local function GetTargetAurasCached()
+	local now = GetTime();
+	if not targetAuraCache or not targetAuraCacheTime or now ~= targetAuraCacheTime then
+		targetAuraCache = C_UnitAuras.GetUnitAuras("target", "HARMFUL|PLAYER") or {};
+		targetAuraCacheTime = now;
+	end
+
+	return targetAuraCache;
+end
+
+function CooldownViewerCooldownItemMixin:GetTargetRelatedAuraInfo()
+	for _, aura in ipairs(GetTargetAurasCached()) do
+		if self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
+			return aura;
+		end
+	end
+end
+
+function CooldownViewerCooldownItemMixin:SetCooldownParamsFromSpellCooldown()
+	local spellID = self:GetSpellID();
+	local spellCooldownInfo = spellID and C_Spell.GetSpellCooldown(spellID);
+	if spellCooldownInfo then
+		CheckDisplayCooldownInfo("SetCooldownParamsFromSpellCooldown", spellID, spellCooldownInfo);
+
+		local now = GetTime();
 
 		self.isOnGCD = spellCooldownInfo.isOnGCD;
 		self.allowOnCooldownAlert = not self.isOnGCD and spellCooldownInfo.duration > (self.cooldownDuration or 0) and spellCooldownInfo.duration > 0;
@@ -631,24 +667,122 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.cooldownStartTime = spellCooldownInfo.startTime;
 		self.cooldownDuration = spellCooldownInfo.duration;
+
+		local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
+		self.cooldownIsActive = endTime > now;
+
+		LogCooldown(spellID, "SetCooldownParamsFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
+
+		self.isOnActualCooldown = not self.isOnGCD and self.cooldownIsActive;
+		self.cooldownCategory = spellCooldownInfo.activeCategory;
 		self.cooldownModRate = spellCooldownInfo.modRate;
 		self.cooldownSwipeColor = CooldownViewerConstants.ITEM_COOLDOWN_COLOR;
 		self.cooldownShowDrawEdge = false;
 		self.cooldownShowSwipe = true;
 		self.cooldownUseAuraDisplayTime = false;
 		self.cooldownPaused = false;
+		self.cooldownDesaturated = self.isOnActualCooldown;
+		self.cooldownPlayFlash = self.isOnActualCooldown;
 
-		if spellCooldownInfo.activeCategory == Constants.SpellCooldownConsts.GLOBAL_RECOVERY_CATEGORY then
-			self.cooldownDesaturated = false;
-			self.cooldownPlayFlash = false;
-		else
-			self.cooldownDesaturated = true;
-			self.cooldownPlayFlash = true;
-		end
+		self:CheckInstallOnCooldownDoneCallback(endTime - now, spellCooldownInfo);
 
-		return;
+		return true;
 	end
 
+	return false;
+end
+
+function CooldownViewerCooldownItemMixin:CancelOnCooldownDoneCallback()
+	if self.onCooldownDoneCallback then
+		LogCooldown(self:GetSpellID(), "CancelCallback", "%s", tostring(self.onCooldownDoneCallback));
+		-- self.onCooldownDoneCallback:Cancel();
+		self.onCooldownDoneCallback = nil;
+	end
+end
+
+function CooldownViewerCooldownItemMixin:NeedsOnCooldownDoneCallback()
+	return self.cooldownIsActive and not self.isOnGCD and not self.cooldownCategory;
+end
+
+local callbackCounter = 1;
+
+function CooldownViewerCooldownItemMixin:CheckInstallOnCooldownDoneCallback(callbackDelay, spellCooldownInfo)
+	-- Because there's no uniquely identifying event when a cooldown finishes and the spell is ready to cast again, and the aura on the target
+	-- could last longer than the spell's cooldown install a callback that will drive state updates and alert behavior for the cooldown item.
+	self:CancelOnCooldownDoneCallback();
+
+	if self:NeedsOnCooldownDoneCallback() then
+		local installCounter = callbackCounter;
+		self.onCooldownDoneCallback = installCounter;
+		callbackCounter = callbackCounter + 1;
+		-- self.onCooldownDoneCallback = C_Timer.NewTimer(callbackDelay, function()
+		C_Timer.After(callbackDelay, function()
+			LogCooldown(self:GetSpellID(), "CallCallback", "%s", tostring(self.onCooldownDoneCallback));
+
+			-- Always run the callback, but check to see if the state is something that requires the alert signal.
+			if self:NeedsOnCooldownDoneCallback() and self.onCooldownDoneCallback == installCounter then
+				LogCooldown(self:GetSpellID(), "CallbackActivated", "%s", tostring(self.onCooldownDoneCallback));
+
+				if self.allowAvailableAlert then
+					self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
+					self.allowAvailableAlert = nil;
+				end
+
+				-- Need to refresh the entire button state after the cooldown finishes, this is what simulates the client sending
+				-- a final SPELL_UPDATE_COOLDOWN event.
+				self:RefreshData();
+			end
+
+			self.onCooldownDoneCallback = nil;
+		end);
+
+		LogCooldown(spellID, "InstallCallback", "%d", tostring(self.onCooldownDoneCallback));
+		CheckDisplayCooldownInfo("InstallCallback", self:GetSpellID(), spellCooldownInfo);
+	end
+end
+
+function CooldownViewerCooldownItemMixin:CheckModifyCooldownParamsFromAura()
+	-- The intent is that this is only called when there was available cooldown data from the spell because it further modifies
+	-- the cooldown parameters based on the current state of the aura.
+	local targetAura = self:GetTargetRelatedAuraInfo();
+	if targetAura then
+		local now = GetTime();
+		local auraIsActive = targetAura.expirationTime >= now;
+
+		if auraIsActive then
+			self.cooldownStartTime = targetAura.expirationTime - targetAura.duration;
+			self.cooldownDuration = targetAura.duration;
+			self.cooldownIsActive = true;
+			self.cooldownModRate = targetAura.timeMod;
+			self.cooldownSwipeColor = CooldownViewerConstants.ITEM_AURA_COLOR;
+
+			self.cooldownShowDrawEdge = false;
+			self.cooldownShowSwipe = true;
+			-- self.cooldownUseAuraDisplayTime = true;
+			self.cooldownPaused = false;
+
+			LogCooldown(self:GetSpellID(), "CheckModifyCooldownParamsFromAura", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
+		end
+
+		-- TODO: Wire up pandemic checks...
+
+		return true;
+	end
+
+	return false;
+end
+
+function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpell()
+	-- First set the cooldown data up from the spell, and then check to see if the aura is active and it can modify the state of the cooldown.
+	if self:SetCooldownParamsFromSpellCooldown() then
+		self:CheckModifyCooldownParamsFromAura();
+		return true;
+	end
+
+	return false;
+end
+
+function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEditMode()
 	if self:HasEditModeData() then
 		self.cooldownEnabled = true;
 		self.cooldownStartTime = GetTime() - GetEditModeElapsedTime(self.editModeIndex);
@@ -661,7 +795,18 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 		self.cooldownUseAuraDisplayTime = false;
 		self.cooldownPlayFlash = false;
 		self.cooldownPaused = true;
-		return;
+		return true;
+	end
+
+	return false;
+end
+
+function CooldownViewerCooldownItemMixin:CacheCooldownValues()
+	if self:CheckCacheCooldownValuesFromAura() or
+		self:CheckCacheCooldownValuesFromCharges() or
+		self:CheckCacheCooldownValuesFromSpell() or
+		self:CheckCacheCooldownValuesFromEditMode() then
+		return true;
 	end
 
 	self.cooldownEnabled = false;
@@ -675,6 +820,13 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 	self.cooldownUseAuraDisplayTime = false;
 	self.cooldownPlayFlash = false;
 	self.cooldownPaused = false;
+	self.isOnGCD = false;
+	self.cooldownIsActive = false;
+	self.allowOnCooldownAlert = false;
+	self.isOnActualCooldown = false;
+	self.cooldownCategory = nil;
+
+	return false;
 end
 
 function CooldownViewerCooldownItemMixin:CacheChargeValues()
@@ -771,6 +923,8 @@ function CooldownViewerCooldownItemMixin:RefreshSpellChargeInfo()
 end
 
 function CooldownViewerCooldownItemMixin:RefreshIconDesaturation()
+	LogCooldown(self:GetSpellID(), "RefreshIconDesaturation", "%s, expired: %s", tostring(self.cooldownDesaturated), tostring(self:IsExpired()));
+
 	local iconTexture = self:GetIconTexture();
 	local desaturated = self.cooldownDesaturated and not self:IsExpired();
 
@@ -1041,6 +1195,10 @@ function CooldownViewerBuffBarItemMixin:SetBarContent(barContent)
 	self:GetBarFrame():SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
 
+function CooldownViewerBuffBarItemMixin:SetBarWidth(barWidth)
+	self:SetWidth(barWidth);
+end
+
 function CooldownViewerBuffBarItemMixin:SetTimerShown(shownSetting)
 	local durationFontString = self:GetDurationFontString();
 	if durationFontString then
@@ -1196,7 +1354,8 @@ function CooldownViewerMixin:OnShow()
 	-- Events passed directly to the items.
 	self:RegisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
-	self:RegisterUnitEvent("UNIT_AURA", "player");
+	self:RegisterUnitEvent("UNIT_AURA", "player", "target");
+	self:RegisterUnitEvent("UNIT_TARGET", "player");
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function() self:RefreshLayout(); end, self);
@@ -1209,6 +1368,7 @@ function CooldownViewerMixin:OnHide()
 	self:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED");
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:UnregisterEvent("UNIT_AURA");
+	self:UnregisterEvent("UNIT_TARGET");
 	self:UnregisterEvent("PLAYER_TOTEM_UPDATE");
 
 	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnDataChanged", self);
@@ -1236,43 +1396,63 @@ function CooldownViewerMixin:OnEvent(event, ...)
 			itemFrame:OnSpellUpdateCooldownEvent(spellID, baseSpellID, startRecoveryCategory);
 		end
 	elseif event == "UNIT_AURA" then
-		local _unit, unitAuraUpdateInfo = ...;
-
-		if unitAuraUpdateInfo then
-			if unitAuraUpdateInfo.removedAuraInstanceIDs then
-				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
-					local itemFrames = self.auraInstanceIDToItemFramesMap[auraInstanceID];
-					if itemFrames then
-						for _, itemFrame in ipairs(itemFrames) do
-							itemFrame:OnUnitAuraRemovedEvent();
-						end
-					end
-				end
-			end
-
-			if unitAuraUpdateInfo.updatedAuraInstanceIDs then
-				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
-					local itemFrames = self.auraInstanceIDToItemFramesMap[auraInstanceID];
-					if itemFrames then
-						for _, itemFrame in ipairs(itemFrames) do
-							itemFrame:OnUnitAuraUpdatedEvent();
-						end
-					end
-				end
-			end
-
-			if unitAuraUpdateInfo.addedAuras then
-				for itemFrame in self.itemFramePool:EnumerateActive() do
-					itemFrame:OnUnitAuraAddedEvent(unitAuraUpdateInfo);
-				end
-			end
-		end
+		local unit, unitAuraUpdateInfo = ...;
+		self:OnUnitAura(unit, unitAuraUpdateInfo);
+	elseif event == "UNIT_TARGET" then
+		local unit = ...;
+		self:OnUnitTarget(unit);
 	elseif event == "PLAYER_TOTEM_UPDATE" then
 		local slot = ...;
 		local _haveTotem, name, startTime, duration, _icon, modRate, spellID = GetTotemInfo(slot);
 		for itemFrame in self.itemFramePool:EnumerateActive() do
 			itemFrame:OnPlayerTotemUpdateEvent(slot, name, startTime, duration, modRate, spellID);
 		end
+	end
+end
+
+function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+	if unit == "player" and unitAuraUpdateInfo then
+		if unitAuraUpdateInfo.removedAuraInstanceIDs then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+				local itemFrames = self.auraInstanceIDToItemFramesMap[auraInstanceID];
+				if itemFrames then
+					for _, itemFrame in ipairs(itemFrames) do
+						itemFrame:OnUnitAuraRemovedEvent();
+					end
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.updatedAuraInstanceIDs then
+			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
+				local itemFrames = self.auraInstanceIDToItemFramesMap[auraInstanceID];
+				if itemFrames then
+					for _, itemFrame in ipairs(itemFrames) do
+						itemFrame:OnUnitAuraUpdatedEvent();
+					end
+				end
+			end
+		end
+
+		if unitAuraUpdateInfo.addedAuras then
+			for itemFrame in self.itemFramePool:EnumerateActive() do
+				itemFrame:OnUnitAuraAddedEvent(unitAuraUpdateInfo);
+			end
+		end
+	elseif unit == "target" then
+		self:RefreshActiveFramesForTargetChange();
+	end
+end
+
+function CooldownViewerMixin:OnUnitTarget(_unit)
+	self:RefreshActiveFramesForTargetChange();
+end
+
+function CooldownViewerMixin:RefreshActiveFramesForTargetChange()
+	-- TODO: First pass, update everything; can afford to be more selective once a mapping is built that will only
+	-- check the relevant frames that need updates (ones that care about target state)
+	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:RefreshData();
 	end
 end
 
@@ -1472,6 +1652,14 @@ function CooldownViewerMixin:SetTooltipsShown(shownSetting)
 	end
 end
 
+function CooldownViewerMixin:SetBarContent(_barContent)
+	-- override as needed
+end
+
+function CooldownViewerMixin:SetBarWidthScale(_barWidthScale)
+	-- override as needed
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for Essential and Utility Cooldown Viewers.
 CooldownViewerCooldownMixin = CreateFromMixins(CooldownViewerMixin);
@@ -1626,6 +1814,8 @@ function BuffBarCooldownViewerMixin:OnLoad()
 	CooldownViewerBuffMixin.OnLoad(self);
 
 	self.barContent = Enum.CooldownViewerBarContent.IconAndName;
+	self.baseBarWidth = 220;
+	self.barWidthScale = 1;
 end
 
 function BuffBarCooldownViewerMixin:OnShow()
@@ -1650,6 +1840,7 @@ function BuffBarCooldownViewerMixin:OnAcquireItemFrame(itemFrame)
 	CooldownViewerBuffMixin.OnAcquireItemFrame(self, itemFrame);
 
 	itemFrame:SetBarContent(self.barContent);
+	itemFrame:SetBarWidth(self:GetBarWidth());
 end
 
 function BuffBarCooldownViewerMixin:SetBarContent(barContent)
@@ -1658,4 +1849,15 @@ function BuffBarCooldownViewerMixin:SetBarContent(barContent)
 	for itemFrame in self.itemFramePool:EnumerateActive() do
 		itemFrame:SetBarContent(barContent);
 	end
+end
+
+function BuffBarCooldownViewerMixin:SetBarWidthScale(barWidthScale)
+	-- using a "reasonably small value that could be a scale" as the max, because you can go over 100% scale.
+	assertsafe(barWidthScale and barWidthScale >= 0 and barWidthScale <= 3, "barWidthScale should be a percentage");
+
+	self.barWidthScale = barWidthScale;
+end
+
+function BuffBarCooldownViewerMixin:GetBarWidth()
+	return self.baseBarWidth * self.barWidthScale;
 end

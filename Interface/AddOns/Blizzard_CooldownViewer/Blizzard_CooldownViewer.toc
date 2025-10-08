@@ -2,6 +2,7 @@
 ## AllowLoadGameType: standard
 ## Dependencies: Blizzard_EditMode
 CooldownViewerSettingsConstants.lua
+CooldownViewerSoundAlertData.lua
 CooldownViewerUtil.lua
 CooldownViewerAlert.lua
 CooldownViewerSettingsAlerts.lua

@@ -39,12 +39,17 @@ local HouseEditorModesBarShownEvents = {
 	"HOUSE_EDITOR_AVAILABILITY_CHANGED",
 	"HOUSE_EDITOR_MODE_CHANGED",
 	"HOUSE_INFO_UPDATED",
+	"HOUSING_DECOR_PREVIEW_STATE_CHANGED",
 };
 
 HouseEditorModesBarMixin = CreateFromMixins(BaseHouseEditorModesBarMixin);
 function HouseEditorModesBarMixin:OnEvent(event, ...)
 	BaseHouseEditorModesBarMixin.OnEvent(self, event, ...);
-	if event == "HOUSE_INFO_UPDATED" or event == "HOUSE_EDITOR_MODE_CHANGED" or event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" then
+	if     event == "HOUSE_INFO_UPDATED"
+		or event == "HOUSE_EDITOR_MODE_CHANGED"
+		or event == "HOUSE_EDITOR_AVAILABILITY_CHANGED"
+		or event == "HOUSING_DECOR_PREVIEW_STATE_CHANGED"
+	then
 		self:UpdateButtonStates();
 	end
 end
@@ -108,6 +113,10 @@ function HouseEditorModeButtonMixin:CheckEnabled()
 
 	if not HousingTutorialUtil.IsModeValidForTutorial(self.editorMode) and not HousingTutorialUtil.HousingQuestTutorialComplete() then
 		return false, HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, ERR_HOUSING_RESULT_NOT_IN_TUTORIAL);
+	end
+
+	if C_HousingDecor.IsModeDisabledForPreviewState(self.editorMode) then
+		return false, HOUSING_PREVIEW_DECOR_UNSUPPORTED_MODE;
 	end
 
 	if not self:IsShown() then

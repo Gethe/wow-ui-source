@@ -381,7 +381,7 @@ local function GetHealthBarHeight(namePlateStyle, namePlateScale)
 end
 
 local function GetHealthBarFontHeight(namePlateScale)
-	return 16 * namePlateScale.vertical;
+	return 12 * namePlateScale.vertical;
 end
 
 local function GetCastBarHeight(namePlateStyle, namePlateScale)
@@ -395,7 +395,7 @@ local function GetCastBarHeight(namePlateStyle, namePlateScale)
 end
 
 local function GetCastBarFontHeight(namePlateScale)
-	return 12 * namePlateScale.vertical;
+	return 10 * namePlateScale.vertical;
 end
 
 local function GetCastBarIconHeight(namePlateScale)

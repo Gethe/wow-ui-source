@@ -44,7 +44,7 @@ local HousingCustomizeModeUI =
 
 			Arguments =
 			{
-				{ Name = "wallpaperFileDataID", Type = "number", Nilable = false },
+				{ Name = "roomComponentTextureRecID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -54,7 +54,7 @@ local HousingCustomizeModeUI =
 
 			Arguments =
 			{
-				{ Name = "wallpaperFileDataID", Type = "number", Nilable = false },
+				{ Name = "roomComponentTextureRecID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -341,6 +341,7 @@ local HousingCustomizeModeUI =
 				{ Name = "currentThemeSet", Type = "number", Nilable = true },
 				{ Name = "availableThemeSets", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "currentWallpaper", Type = "number", Nilable = true },
+				{ Name = "currentRoomComponentTextureRecID", Type = "number", Nilable = true },
 				{ Name = "ceilingType", Type = "HousingRoomComponentCeilingType", Nilable = false },
 				{ Name = "doorType", Type = "HousingRoomComponentDoorType", Nilable = false },
 			},
@@ -351,7 +352,7 @@ local HousingCustomizeModeUI =
 			Fields =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "fileDataID", Type = "number", Nilable = false },
+				{ Name = "roomComponentTextureRecID", Type = "number", Nilable = false },
 			},
 		},
 	},

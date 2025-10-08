@@ -26,6 +26,15 @@ local HouseExteriorUI =
 			},
 		},
 		{
+			Name = "GetCurrentHouseExteriorSize",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "houseExteriorSize", Type = "HousingFixtureSize", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentHouseExteriorTypeName",
 			Type = "Function",
 

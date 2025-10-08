@@ -458,6 +458,13 @@
 										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
 									</Anchors>
 								</FontString>
+								<FontString parentKey="PendingPurchasesText" inherits="SystemFont_Small2" wordwrap="true" text="CATALOG_SHOP_PENDING_PURCHASES" justifyH="CENTER" justifyV="MIDDLE" >
+									<Color color="RED_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.PurchaseButton" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+									</Anchors>
+								</FontString>
 							</Layer>
 						</Layers>
 					</Frame>

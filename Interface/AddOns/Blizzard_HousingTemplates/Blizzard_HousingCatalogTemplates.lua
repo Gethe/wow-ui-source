@@ -132,14 +132,8 @@ function ScrollingHousingCatalogMixin:OnLoad()
 			end
 		end
 	end);
-
-	self.ScrollBox:SetUseShadowsForEdgeFade(true);
-	-- Not actually using built-in scrollbox shadows as our shadows need to be able to extend outside the boundaries of the scrollbox's clipping
-	-- So hijacking scrollbox's dynamic turning off/on of lower & upper shadows to use ours instead
-	self.ScrollBox.SetShadowsShown = function(scrollBox, showLower, showUpper)
-		self.Shadows.Upper:SetShown(showUpper);
-		self.Shadows.Lower:SetShown(showLower);
-	end
+	
+	self.ScrollBox:SetEdgeFadeLength(75);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end

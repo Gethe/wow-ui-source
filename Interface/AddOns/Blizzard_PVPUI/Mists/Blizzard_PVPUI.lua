@@ -36,22 +36,22 @@ function PVPQueueFrame_OnLoad(self)
 	local englishFaction = UnitFactionGroup("player");
 	local currencyInfo;
 
-	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
+	self.CategoryButton1.Icon:SetTexture("Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
 	currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CLASSIC_HONOR_CURRENCY_ID);
 	self.CategoryButton1.CurrencyAmount:SetText(currencyInfo.quantity);
 	self.CategoryButton1.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Honor-"..englishFaction);
 
-	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
+	self.CategoryButton2.Icon:SetTexture("Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
 	self.CategoryButton2.CurrencyIcon:SetTexture("Interface\\PVPFrame\\PVPCurrency-Conquest-"..englishFaction);
 	currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_POINTS_CURRENCY_ID);
 	self.CategoryButton2.CurrencyAmount:SetText(currencyInfo.quantity);
 
-	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\ability_warrior_offensivestance");
+	self.CategoryButton3.Icon:SetTexture("Interface\\Icons\\ability_warrior_offensivestance");
 	self.CategoryButton3.Name:SetText(WARGAMES);
 
-	SetPortraitToTexture(self.CategoryButton4.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.CategoryButton4.Icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton4.Name:SetText(LFGLIST_NAME);
 
 	if (UnitFactionGroup("player") == PLAYER_FACTION_GROUP[0]) then

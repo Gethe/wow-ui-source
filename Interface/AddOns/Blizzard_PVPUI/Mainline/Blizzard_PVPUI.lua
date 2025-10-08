@@ -317,7 +317,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	rewardFrame:RefreshRoleShortageBonus();
 
 	if rewardTexture then
-		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
+		rewardFrame.Icon:SetTexture(rewardTexture);
 		rewardFrame.honor = honor;
 		rewardFrame.experience = experience;
 		rewardFrame.itemID = itemID;
@@ -337,19 +337,19 @@ local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "Plundersto
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
-	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
+	self.CategoryButton1.Icon:SetTexture("Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
 
-	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
+	self.CategoryButton2.Icon:SetTexture("Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
 
-	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.CategoryButton3.Icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
 	self.CategoryButton4.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
 	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
 
-	SetPortraitToTexture(self.CategoryButton5.Icon, "Interface\\Icons\\ability_hunter_focusedaim");
+	self.CategoryButton5.Icon:SetTexture("Interface\\Icons\\ability_hunter_focusedaim");
 	self.CategoryButton5.Name:SetText(PVP_TAB_TRAINING_GROUNDS);
 
 	PVPQueueFrame_UpdateAnchoringForAvailableModes(self);

@@ -379,7 +379,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						SetPortraitToTexture(self.Icon, C_Spell.GetSpellTexture(241260));
+						self.Icon:SetTexture(C_Spell.GetSpellTexture(241260));
 					</OnLoad>
 					<OnEnter function="PVPRewardEnlistmentBonus_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>

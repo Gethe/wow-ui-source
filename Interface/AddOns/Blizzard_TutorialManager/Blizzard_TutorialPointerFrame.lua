@@ -44,7 +44,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- @Usage TutorialPointerFrame:Show(content, direction, frame, ofsX, ofsY [,relativePoint])
-function TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
+function TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	ofsX = ofsX or 0;
 	ofsY = ofsY or 0;
 
@@ -97,10 +97,13 @@ function TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, 
 	end
 	frame.Content.Text:SetText(content);
 
+	local maxWidth = overrideWidth or 200;
+	frame.Content.Text:SetWidth(maxWidth);
+
 	local contentHeight = frame.Content.Text:GetHeight() + 40;
 	local contentWidth = frame.Content.Text:GetStringWidth();
-	if contentWidth > 200 then
-		contentWidth = 200;
+	if contentWidth > maxWidth then
+		contentWidth = maxWidth;
 	end
 	contentWidth = contentWidth + 40;
 

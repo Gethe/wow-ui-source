@@ -277,6 +277,11 @@ local GameRules =
 			},
 		},
 		{
+			Name = "AvailableGameModesUpdated",
+			Type = "Event",
+			LiteralName = "AVAILABLE_GAME_MODES_UPDATED",
+		},
+		{
 			Name = "EventRealmQueuesUpdated",
 			Type = "Event",
 			LiteralName = "EVENT_REALM_QUEUES_UPDATED",

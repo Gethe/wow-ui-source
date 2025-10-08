@@ -159,7 +159,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="Footer" atlas="housing-basic-panel-footer" setAllPoints="true"/>
+						<Texture parentKey="WoodSign" atlas="housing-woodsign" setAllPoints="true"/>
 					</Layer>
 					<Layer level="ARTWORK">
 						<FontString parentKey="ForSaleText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_FORSALE">
@@ -192,7 +192,7 @@
 				<DisabledFont style="GameFontHighlightMedium"/>
 				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
-			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="MoneyFrameTemplate">
+			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="MoneyFrameTemplate" enableMouse="false">
 				<Anchors>
 					<Anchor point="BOTTOM" y="8"/>
 				</Anchors>

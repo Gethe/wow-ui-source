@@ -1,7 +1,3 @@
-if not IsInGlobalEnvironment() then
-	return;
-end
-
 local _, addonTable = ...; -- Used for passing functions between UIParentPanelManager.lua and other files in this addon.
 
 local function FrameShouldBePositionManaged(frame)

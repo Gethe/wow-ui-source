@@ -2001,10 +2001,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
 		StaticPopup_Show("WOW_MOUSE_NOT_FOUND");
 	elseif ( event == "TALENTS_INVOLUNTARILY_RESET" ) then
-		if ( arg1 ) then
-			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
-		else
-			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+		if not C_PlayerInfo.IsReturningCharacter() then
+			local isForPet = arg1;
+			if isForPet then
+				StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
+			else
+				StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+			end
 		end
 	elseif (event == "SPEC_INVOLUNTARILY_CHANGED" ) then
 		StaticPopup_Show("SPEC_INVOLUNTARILY_CHANGED")
@@ -2263,7 +2266,9 @@ function UIParent_OnEvent(self, event, ...)
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
 			if(not currentTarget) then
-				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+				if (previousTarget) then
+					PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+				end
 			elseif(previousTarget ~= currentTarget) then
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end

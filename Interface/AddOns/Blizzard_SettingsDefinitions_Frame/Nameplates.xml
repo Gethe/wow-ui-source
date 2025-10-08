@@ -14,10 +14,18 @@
 			</Button>
 		</Frames>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" atlas="options_frame_child">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="OVERLAY">
 				<FontString text="PREVIEW" inherits="GameFontHighlightSmall">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="0"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="10" y="-10"/>
 					</Anchors>
 				</FontString>
 			</Layer>
