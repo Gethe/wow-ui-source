@@ -241,7 +241,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabDeselected()
 end
 
 function HouseEditorStorageFrameMixin:CheckStartMarketInteraction()
-	if not self.catalogShopInteractionStarted and not self.hasMarketData then
+	if not self.catalogShopInteractionStarted and not self.hasMarketData and C_Housing.IsHousingMarketEnabled() then
 		self.catalogShopInteractionStarted = true;
 
 		local allowMovement = true;
