@@ -54,7 +54,7 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 
 		local createCharacterCallback = function()
 			-- Don't show the popup with the create character choice since the player just selected timerunner.
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, timerunningSeasonID);
+			StaticPopup_Show("TIMERUNNING_CHOICE_WARNING");
 		end;
 
 		if GetCVar("showCreateCharacterRealmConfirmDialog") == "1" then
@@ -79,12 +79,6 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 	self:UpdateState();
 end
 
-function TimerunningFirstTimeDialogMixin:OnKeyDown(key)
-	if key == "ESCAPE" then
-		self:Dismiss();
-	end
-end
-
 function TimerunningFirstTimeDialogMixin:OnShow()
 	self:UpdateState();
 end
@@ -99,12 +93,52 @@ function TimerunningFirstTimeDialogMixin:OnEvent(event, ...)
 	end
 end
 
+local TIMERUNNING_INFO_PANEL_DESC = {
+	[Constants.TimerunningConsts.TIMERUNNING_SEASON_NONE] = {
+		textureSuffix = "",
+		rewardAnchorOffsetX = 193,
+		rewardAnchorOffsetY = 44,
+	},
+	[Constants.TimerunningConsts.TIMERUNNING_SEASON_PANDARIA] = {
+		textureSuffix = "",
+		rewardAnchorOffsetX = 193,
+		rewardAnchorOffsetY = 44,
+	},
+	[Constants.TimerunningConsts.TIMERUNNING_SEASON_LEGION] = {
+		textureSuffix = "-legion",
+		rewardAnchorOffsetX = 193,
+		rewardAnchorOffsetY = 44,
+	},
+};
+
+local TIMERUNNING_LOCALE_SUFFIX_OVERRIDES = {
+	["zhCN"] = "cn",
+	["zhTW"] = "tw",
+};
+
 function TimerunningFirstTimeDialogMixin:UpdateState()
-	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID();
-	local shouldShow = activeTimerunningSeasonID ~= nil and GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup") ~= activeTimerunningSeasonID;
+	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID() or Constants.TimerunningConsts.TIMERUNNING_SEASON_NONE;
+	local seenTimerunningFirstLoginPopup = GetCVarNumberOrDefault("seenTimerunningFirstLoginPopup");
+	local neverShow = seenTimerunningFirstLoginPopup == -1;
+	-- There is no current legion dialog art, so the frame is being hidden until then
+	local shouldShow = not neverShow and activeTimerunningSeasonID ~= TIMERUNNING_SEASON_NONE and seenTimerunningFirstLoginPopup ~= activeTimerunningSeasonID;
 	local canShow = (IsConnectedToServer() and (CharacterSelect:IsShown()) or (CharacterCreateFrame:IsShown() and (not TimerunningChoicePopup or not TimerunningChoicePopup:IsShown())) and (not IsBetaBuild()));
 	self:SetShown(canShow and shouldShow);
 	self.InfoPanel.CreateButton:SetEnabled(IsTimerunningEnabled());
+
+	local infoPanelDesc = TIMERUNNING_INFO_PANEL_DESC[activeTimerunningSeasonID];
+	local textureSuffix = infoPanelDesc.textureSuffix;
+	self.InfoPanel.Background:SetAtlas("timerunning-infographic-background"..textureSuffix);
+	self.InfoPanel.LogoFX:SetAtlas("timerunning-infographic-logo-fx"..textureSuffix);
+	self.InfoPanel.RewardsImage:SetAtlas("timerunning-infographic-rewards"..textureSuffix);
+
+	local isMoPTimerunning = activeTimerunningSeasonID == Constants.TimerunningConsts.TIMERUNNING_SEASON_PANDARIA;
+	self.InfoPanel.RewardsImage:SetPoint("CENTER", self.InfoPanel, "CENTER", infoPanelDesc.rewardAnchorOffsetX, infoPanelDesc.rewardAnchorOffsetY);
+	self.InfoPanel.TopDescription:SetShown(isMoPTimerunning);
+
+	local localeString = GetLocale();
+	local localeSuffix = TIMERUNNING_LOCALE_SUFFIX_OVERRIDES[localeString] or "en";
+	self.InfoPanel.Logo:SetAtlas("timerunning-infographic-logo"..textureSuffix.."-"..localeSuffix);
 end
 
 function TimerunningFirstTimeDialogMixin:ShowFromClick(shownFromPopup)
@@ -125,12 +159,8 @@ function TimerunningFirstTimeDialogMixin:Dismiss(suppressPopup)
 	end
 end
 
-TimerunningChoiceInfoButtonMixin = {};
-
-function TimerunningChoiceInfoButtonMixin:OnClick()
-	TimerunningChoicePopup:Hide();
-	local shownFromPopup = true;
-	TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
+function TimerunningFirstTimeDialogMixin:OnEscapePressed()
+	self:Dismiss();
 end
 
 StaticPopupDialogs["TIMERUNNING_CHOICE_WARNING"] = {
@@ -141,6 +171,12 @@ StaticPopupDialogs["TIMERUNNING_CHOICE_WARNING"] = {
 		TimerunningChoicePopup:Hide();
 		CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, GetActiveTimerunningSeasonID());
 	end,
+	OnCancel = function(dialog, data)
+		if GlueParent_GetCurrentScreen() == "charcreate" then
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
+		end
+	end,
+	cover = true,
 };
 
 TimerunningChoiceDialogMixin = {};
@@ -150,6 +186,8 @@ function TimerunningChoiceDialogMixin:OnLoad()
 		self.Header:SetText(TimerunningUtil.AddLargeIcon(self.headerText));
 		self.Header:SetPoint("TOP", -6, -20);
 		AddCreateButtonDisabledState(self.SelectButton);
+
+		self.descriptionText = TimerunningUtil.GetTimerunningChoiceDesc();
 	else
 		self.Header:SetText(self.headerText);
 		self.Header:SetPoint("TOP", 0, -20);
@@ -162,11 +200,11 @@ function TimerunningChoiceDialogMixin:OnLoad()
 			C_LiveEvent.OnLiveEventPopupClicked(GetActiveTimerunningSeasonID());
 		end
 
-		if self.isTimerunning and GlueParent_GetCurrentScreen() == "charcreate" then
+		TimerunningChoicePopup:Hide();
+		if self.isTimerunning then
 			StaticPopup_Show("TIMERUNNING_CHOICE_WARNING");
 		else
-			TimerunningChoicePopup:Hide();
-			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal, self.isTimerunning and GetActiveTimerunningSeasonID() or nil);
+			CharacterSelectUtil.CreateNewCharacter(Enum.CharacterCreateType.Normal);
 		end
 	end);
 end
@@ -181,6 +219,12 @@ TimerunningChoicePopupMixin = {};
 
 function TimerunningChoicePopupMixin:OnLoad()
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
+
+	TimerunningChoiceDialogCreateTimerunning.InfoButton:SetScript("OnClick", function()
+		self:Hide();
+		local shownFromPopup = true;
+		TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
+	end);
 end
 
 function TimerunningChoicePopupMixin:OnShow()
@@ -196,18 +240,20 @@ function TimerunningChoicePopupMixin:OnEvent(event, ...)
 	end
 end
 
-function TimerunningChoicePopupMixin:OnKeyDown(key)
-	if key == "ESCAPE" then
-		self:Hide();
-	end
-end
-
 TimerunningEventBannerMixin = {};
 
 local TimerunningTimeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 TimerunningTimeRemainingFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, false);
 function TimerunningTimeRemainingFormatter:GetMinInterval(seconds)
-	return SecondsFormatter.Interval.Days;
+	if not seconds then
+		return SecondsFormatter.Interval.Days;
+	elseif seconds > SECONDS_PER_DAY then
+		return SecondsFormatter.Interval.Days;
+	elseif seconds > SECONDS_PER_HOUR then
+		return SecondsFormatter.Interval.Hours;
+	end
+
+	return SecondsFormatter.Interval.Minutes;
 end
 
 function TimerunningEventBannerMixin:OnLoad()
@@ -244,8 +290,23 @@ function TimerunningEventBannerMixin:OnEvent(event, ...)
 end
 
 function TimerunningEventBannerMixin:UpdateShown()
-	local showTimerunning = GetActiveTimerunningSeasonID() ~= nil;
+	local activeTimerunningSeasonID = GetActiveTimerunningSeasonID()
+	local showTimerunning = activeTimerunningSeasonID ~= nil;
+	if showTimerunning then
+		self:SetParent(CharacterSelectCharacterFrame);
+		self:SetPoint("BOTTOM", CharacterSelectCharacterFrame, "BOTTOM", 0, 70);
+
+		CharacterSelectCharacterFrame.ScrollBox:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6);
+	else
+		self:SetParent(GlueParent);
+		self:ClearAllPoints();
+
+		CharacterSelectCharacterFrame.ScrollBox:SetPoint("BOTTOMRIGHT", CharacterSelectCharacterFrame, "BOTTOMRIGHT", -32, 83);
+	end
+
 	self:SetShown(showTimerunning);
+
+	self.Header:SetText(TimerunningUtil.GetTimerunningBannerHeaderText());
 
 	local createCharacterEnabled = CharacterSelectUI.VisibilityFramesContainer.CharacterList.CreateCharacterButton:IsEnabled();
 	TimerunningCreateCharacterButtonGlow:SetShown(createCharacterEnabled and showTimerunning);
@@ -278,4 +339,80 @@ function TimerunningEventBannerMixin:OnClick()
 	TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
 
 	C_LiveEvent.OnLiveEventBannerClicked(GetActiveTimerunningSeasonID());
+end
+
+StaticPopupDialogs["CONVERT_TIMERUNNER_EARLY"] = {
+	text = CONVERT_TIMERUNNER_EARLY_DIALOG_TEXT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		TryConvertTimerunningCharacterToStandard(data.characterGuid);
+	end,
+	OnCancel = function(dialog, data)
+		-- Nothing atm
+	end,
+	timeout = 0,
+	whileDead = 1,
+	exclusive = 1,
+	showAlert = 1,
+	hideOnEscape = 1,
+	acceptDelay = 5,
+	fullscreen = 1,
+};
+
+TimerunningConversionButtonMixin = {};
+
+function TimerunningConversionButtonMixin:OnClick()
+	if CharacterSelectUtil.IsAccountLocked() then
+		return;
+	end
+
+	local characterID = self:GetParent():GetCharacterID();
+	local includeEmptySlots = true;
+	local numCharacters = GetNumCharacters(includeEmptySlots);
+	if characterID <= 0 or (characterID > numCharacters) then
+		-- Somehow our character order got borked, scroll to top and get an updated character list.
+		CharacterSelectCharacterFrame.ScrollBox:ScrollToBegin();
+	
+		CharacterSelectListUtil.GetCharacterListUpdate();
+		return;
+	end
+
+	local data = {};
+	data.characterGuid = self:GetParent():GetCharacterGUID();
+	StaticPopup_Show("CONVERT_TIMERUNNER_EARLY", nil, nil, data);
+end
+
+function TimerunningConversionButtonMixin:OnMouseDown()
+	self.pushed = true;
+
+	self:UpdateTextureStates();
+end
+
+function TimerunningConversionButtonMixin:OnMouseUp()
+	self.pushed = false;
+
+	self:UpdateTextureStates();
+end
+
+function TimerunningConversionButtonMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
+	GlueTooltip:SetText(TIMERUNNING_CONVERSION_ENABLED_TOOLTIP, 1.0, 1.0, 1.0);
+
+	self.hovered = true;
+	self:UpdateTextureStates();
+end
+
+function TimerunningConversionButtonMixin:OnLeave()
+	GlueTooltip:Hide();
+
+	self.hovered = false;
+	self:UpdateTextureStates();
+end
+
+function TimerunningConversionButtonMixin:UpdateTextureStates()
+	self.HighlightIcon:SetShown(self.hovered and not self.pushed);
+	self.HighlightBorder:SetShown(self.hovered);
+
+	self.Icon:SetPoint("CENTER", self, "CENTER", self.pushed and 2 or 0, self.pushed and -2 or 0);
 end

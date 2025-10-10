@@ -3,7 +3,27 @@ local s_vasQueueTimes = {};
 local s_autoSwitchRealm = false;
 local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
 
-CharacterSelectUtil = {};
+CharacterSelectUtil.ConfigParam = {
+	DisableCampsites = 1,					-- Disable the camps button in the nav bar.
+	DisableRealmSelection = 2,				-- Disable the Realms button in the nav bar.
+	VASTokens = 3,							-- Show/Hide VAS tokens.
+	CharacterListSearch = 4,				-- Show/Hide the character list search bar.
+	CharacterListAddGroup = 5,				-- Show/Hide the character list add group button.
+	CharacterListGroupCollapse = 6,			-- Prevent collapsing character groups. Useful when there's only 1.
+	CharacterListFaction = 7,				-- Show/Hide the display of character faction.
+	CharacterListUngroupedSection = 8,		-- Only show character list groups.
+	CharacterListDetails = 9,				-- Show/Hide the display of character info (level, class, zone, etc).
+	CharacterContext = 10,					-- Show/Hide the display of character info in the scene.
+	CharacterTooltips = 11,					-- Allow/disallow tooltips in the character select list and in the camp scene.
+};
+
+function CharacterSelectUtil.GetConfig()
+	return CharacterSelectUI:GetConfig();
+end
+
+function CharacterSelectUtil.ShouldExpandCharacterList()
+	return GetCVarBool("expandWarbandCharacterList");
+end
 
 function CharacterSelectUtil.IsUndeleting()
 	return CharacterSelect.undeleting;
@@ -73,24 +93,6 @@ function CharacterSelectUtil.GetVASQueueTime(guid)
 	return s_vasQueueTimes[guid];
 end
 
-function CharacterSelectUtil.GetCharacterInfoTable(characterIndex)
-	local characterGuid = GetCharacterGUID(characterIndex);
-
-	if not characterGuid then
-		return nil;
-	end
-
-	local characterInfo = GetBasicCharacterInfo(characterGuid);
-	if not characterInfo.name then
-		return nil;
-	end
-
-	local serviceCharacterInfo = GetServiceCharacterInfo(characterGuid);
-	MergeTable(characterInfo, serviceCharacterInfo);
-
-	return characterInfo;
-end
-
 function CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY)
 	if timerunningSeasonID then
 		return CreateAtlasMarkup("timerunning-glues-icon", 11, 11, offsetX, offsetY)..name;
@@ -105,7 +107,12 @@ end
 
 function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, characterID)
 	if not characterInfo then
-		return;
+		return false;
+	end
+
+	local config = CharacterSelectUtil.GetConfig();
+	if not config[CharacterSelectUtil.ConfigParam.CharacterTooltips] then
+		return false;
 	end
 
 	-- Block 1
@@ -131,7 +138,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 	local money = CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress) and characterInfo.money or 0;
 
 	-- Block 5
-	local hasGearUpdate = characterID and IsRPEBoostEligible(characterID);
+	local catchupAvailable = characterID and IsRPEBoostEligible(characterID);
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
 	GameTooltip_AddColoredLine(GlueTooltip, CHARACTER_SELECT_REALM_TOOLTIP:format(realmName), GRAY_FONT_COLOR);
@@ -176,18 +183,15 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 
 		SetTooltipMoney(GlueTooltip, money);
 	end
-
+	
 	-- Add a blank line only if we have populated fields for the next section.
-	if hasGearUpdate then
+	if catchupAvailable then
 		GameTooltip_AddBlankLineToTooltip(GlueTooltip);
 
-		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE1);
-		GameTooltip_AddNormalLine(GlueTooltip, RPE_TOOLTIP_LINE2);
-
-		if not CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress) then
-			GameTooltip_AddErrorLine(GlueTooltip, RPE_TOOLTIP_CHARACTER_ON_DIFFERENT_REALM);
-		end
+		GameTooltip_AddNormalLine(GlueTooltip, RPE_CATCH_UP_AVAILABLE);
 	end
+
+	return true;
 end
 
 function CharacterSelectUtil.GetFormattedCurrentRealmName()
@@ -209,4 +213,8 @@ end
 function CharacterSelectUtil.IsSameRealmAsCurrent(realmAddress)
 	local currentRealmAddress = select(5, GetServerName());
 	return (currentRealmAddress and realmAddress) and realmAddress == currentRealmAddress;
+end
+
+function CharacterSelectUtil.IsFilteringCharacterList()
+	return CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() ~= "";
 end

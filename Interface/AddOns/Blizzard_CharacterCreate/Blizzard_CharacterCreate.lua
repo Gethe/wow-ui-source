@@ -22,7 +22,7 @@ local ClassTrialSpecs;
 local ZoneChoiceFrame;
 local NewPlayerTutorial;
 
-local HUMAN_RADE_ID = 1;
+local HUMAN_RACE_ID = 1;
 local ORC_RACE_ID = 2;
 
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
@@ -195,18 +195,18 @@ function CharacterCreateMixin:OnShow()
 
 	local _, selectedFaction;
 	local existingCharacterID = self:GetExistingCharacterID();
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
 	if existingCharacterID then
 		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
+		local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
 		if not fullCharacterCreateDisabled then
 			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName or "");
 		end
 	else
 		self.currentPaidServiceName = nil;
 		C_CharacterCreation.ResetCharCustomize();
-		if not fullCharacterCreateDisabled then
+		if not C_GameRules.IsPlunderstorm() then
 			NameChoiceFrame.EditBox:SetText("");
 		end
 	end
@@ -220,13 +220,8 @@ function CharacterCreateMixin:OnShow()
 
 	RaceAndClassFrame:UpdateState(selectedFaction);
 
-	if IsKioskGlueEnabled() then
-		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
-		if templateIndex then
-			C_CharacterCreation.SetCharacterTemplate(templateIndex);
-		else
-			C_CharacterCreation.ClearCharacterTemplate();
-		end
+	if KioskFrame then
+		KioskFrame:HandleCharacterCreateOnShow();
 	end
 end
 
@@ -299,7 +294,7 @@ function CharacterCreateMixin:BeginVASTransaction()
 end
 
 function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
-	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+	return errorID == Enum.VasTransactionPurchaseResult.DbNameNotAvailable or errorID == Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName;
 end
 
 function CharacterCreateMixin:OnStoreVASPurchaseError()
@@ -564,8 +559,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	RaceAndClassFrame:SetShown(mode == CHAR_CREATE_MODE_CLASS_RACE);
 	CharCustomizeFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if not fullCharacterCreateDisabled then
+	if not C_GameRules.IsPlunderstorm() then
 		NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	end
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
@@ -589,10 +583,8 @@ end
 function CharacterCreateMixin:NavBack()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 	if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
-		if( IsKioskGlueEnabled() ) then
-			GlueParent_SetScreen("kioskmodesplash");
-		else
-			if CharacterUpgrade_IsCreatedCharacterTrialBoost() then
+		if( not (KioskFrame and KioskFrame:NavBack()) ) then
+			if CharacterUpgrade_IsCreatedCharacterTrialBoost() or CharacterUpgrade_IsCreatedCharacterUpgrade() then
 				CharacterUpgrade_ResetBoostData();
 			end
 
@@ -691,8 +683,7 @@ function CharacterCreateMixin:SetMissingOptionsNavBlockersEnabled(enabled)
 end
 
 function CharacterCreateMixin:GetSelectedName()
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if fullCharacterCreateDisabled then
+	if C_GameRules.IsPlunderstorm() then
 		return "";
 	end
 	return NameChoiceFrame.EditBox:GetText();
@@ -708,10 +699,10 @@ function CharacterCreateMixin:CreateCharacter()
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
-		if Kiosk.IsEnabled() then
-			KioskModeSplash:SetAutoEnterWorld(true);
+		if KioskFrame then
+			KioskFrame:HandleCreateCharacter();
 		end
-
+		
 		self.creatingCharacter = true;
 		self:UpdateForwardButton();
 
@@ -999,6 +990,8 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
 				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTimerunning then
+			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TIMERUNNING;
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1371,7 +1364,7 @@ function CharacterCreateRaceAndClassMixin:GetCreateCharacterFaction()
 		-- Class Trials need to use no faction...their faction choice is sent up separately after the character is created
 		return nil;
 	elseif self.selectedRaceData.isNeutralRace then
-		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.GetTimerunningSeasonID() then
+		if C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() or ZoneChoiceFrame.useNPE or CharacterCreateFrame:HasService() or C_CharacterCreation.IsTimerunningEnabled() then
 			-- For neutral races, if the player is using a character template, chose to start in the NPE or is using a paid service we need to pass back the selected faction (or timerunning which also skips the faction choice)
 			return self.selectedFaction;
 		else
@@ -1394,7 +1387,7 @@ function CharacterCreateRaceAndClassMixin:CanTrialBoostCharacter()
 		not C_CharacterCreation.IsTrialAccountRestricted() and
 		not CharacterCreateFrame:HasService() and
 		(C_CharacterCreation.GetCharacterCreateType() ~= Enum.CharacterCreateType.Boost) and
-		not C_CharacterCreation.GetTimerunningSeasonID();
+		not C_CharacterCreation.IsTimerunningEnabled();
 end
 
 function CharacterCreateRaceAndClassMixin:UpdateClassTrialButtonVisibility()
@@ -2196,7 +2189,7 @@ function CharacterCreateZoneChoiceMixin:Setup()
 	end
 
 	-- No zone choice / NPE for Timerunning characters.
-	if (C_CharacterCreation.GetTimerunningSeasonID()) then
+	if (C_CharacterCreation.IsTimerunningEnabled()) then
 		self:SetUseNPE(false);
 		self.shouldShow = false;
 		return;
@@ -2266,7 +2259,7 @@ end
 function SelectOtherRaceAvailable()
 	local currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
 	if (currentFaction == "Alliance") then
-		RaceAndClassFrame:SetCharacterRace(HUMAN_RADE_ID);
+		RaceAndClassFrame:SetCharacterRace(HUMAN_RACE_ID);
 	elseif (currentFaction == "Horde") then
 		RaceAndClassFrame:SetCharacterRace(ORC_RACE_ID);
 	end

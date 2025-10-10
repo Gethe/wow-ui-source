@@ -44,7 +44,7 @@ end
 function ArtifactPowerButtonMixin:OnEnter()
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		local _, cursorItemID = GetCursorInfo();
-		if cursorItemID and IsArtifactRelicItem(cursorItemID) then
+		if cursorItemID and C_ItemSocketInfo.IsArtifactRelicItem(cursorItemID) then
 			-- no tooltip
 			return;
 		end
@@ -59,7 +59,7 @@ local SEQUENCE = { "LeftButton", "RightButton", "RightButton", "RightButton", "R
 function ArtifactPowerButtonMixin:OnClick(button)
 	if self.style ~= ARTIFACT_POWER_STYLE_RUNE and not self.locked then
 		if ( IsModifiedClick("CHATLINK") ) then
-			ChatEdit_InsertLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID()));
+			ChatFrameUtil.InsertLink(C_ArtifactUI.GetPowerHyperlink(self:GetPowerID()));
 			return;
 		end
 		if not C_ArtifactUI.IsArtifactDisabled() and not C_ArtifactUI.IsAtForge() then

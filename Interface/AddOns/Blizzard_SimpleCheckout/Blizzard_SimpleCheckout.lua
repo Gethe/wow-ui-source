@@ -3,6 +3,7 @@ SimpleCheckoutMixin = {};
 
 function SimpleCheckoutMixin:OnLoad()
 	self:RegisterEvent("STORE_OPEN_SIMPLE_CHECKOUT");
+	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 end
 
 function SimpleCheckoutMixin:OnEvent(event, ...)
@@ -14,6 +15,21 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
 				self:SetFocus();
+			else
+				self:Hide();
+			end
+		else
+			self:CancelOpenCheckout();
+		end
+	elseif (event == "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT") then
+		local checkoutID = ...;
+		if (CatalogShopFrame:IsShown()) then
+			self:CalculateDesiredSize();
+			self:RecalculateSize();
+			self:Show();
+			if (self:OpenCheckout(checkoutID)) then
+				self:SetFocus();
+				CatalogShopFrame:HideForCheckout();
 			else
 				self:Hide();
 			end

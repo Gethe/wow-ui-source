@@ -166,6 +166,16 @@ local ChatConstants =
 				{ Name = "channelType", Type = "PermanentChatChannelType", Nilable = false },
 			},
 		},
+		{
+			Name = "ChatFrameConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MaxChatWindows", Type = "number", Value = 10 },
+				{ Name = "MaxChatChannels", Type = "number", Value = 20 },
+				{ Name = "MaxCharacterNameBytes", Type = "number", Value = FULLNAME_MAX_CHAR },
+			},
+		},
 	},
 };
 

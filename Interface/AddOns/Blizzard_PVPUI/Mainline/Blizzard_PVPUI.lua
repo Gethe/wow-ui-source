@@ -186,12 +186,12 @@ function PVPUIFrame_ToggleFrame(sidePanelName, selection)
 end
 
 function PVPUIFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and UnitLevel("player") >= 90 then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.LFGList) and UnitLevel("player") >= 90 then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
+			bitfieldFlag = Enum.FrameTutorialAccount.LFGList,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};
@@ -1520,8 +1520,8 @@ end
 function ConquestFrameButton_OnClick(self, button)
 	if(IsModifiedClick("CHATLINK")) then
 		local link = GetPvpRatingLink(UnitName("player"));
-		if not ChatEdit_InsertLink(link) then
-			ChatFrame_OpenChat(link);
+		if not ChatFrameUtil.InsertLink(link) then
+			ChatFrameUtil.OpenChat(link);
 		end
 		return;
 	end

@@ -1,0 +1,502 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="HouseUpgradeLevelFrameTemplate" mixin="HouseUpgradeLevelFrameMixin" virtual="true">
+		<Size x="72" y="48"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Plaque" atlas="house-upgrade-reward-level-plaque-incomplete" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Level" inherits="GameFontHighlightLarge" text="0">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color color="DARKYELLOW_FONT_COLOR"/>
+				</FontString>
+				<Texture parentKey="Pip" atlas="housing-dashboard-fillbar-pip-complete">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="common-icon-checkmark">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="HouseUpgradeRewardFrameLargeTemplate" mixin="HouseUpgradeRewardFrameMixin" virtual="true">
+		<Size x="304" y="88"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="house-upgrade-reward-large-tile-bg" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PortraitFrame">
+				<Size x="58" y="58" />
+				<Anchors>
+					<Anchor point="LEFT" x="20"/>
+				</Anchors>
+				<Layers>
+					<Layer level ="BACKGROUND">
+						<Texture parentKey="Background" atlas="house-upgrade-reward-icon-frame" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Portrait" atlas="house-decor-budget-icon" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="UpArrow" atlas="house-reward-green-arrow-up" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ModelScene parentKey="ModelScene" inherits="NonInteractableModelSceneMixinTemplate" hidden="true">
+						<Size x="58" y="58"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+			</Frame>
+			<Frame parentKey="ValueIncreaseReward" hidden="true">
+				<Anchors>
+					<Anchor point ="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Divider" atlas="house-upgrade-header-divider-horz">
+							<Size x="160" y="2"/>
+							<Anchors>
+								<Anchor point="LEFT" x="-10"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ValueName" inherits="GameFontHighlight" text="TEMP" wordwrap="true" justifyH="LEFT" justifyV="BOTTOM">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-10"/>
+								<Anchor point="BOTTOMRIGHT"  relativePoint="TOPRIGHT" x="-5" y="-38" />
+							</Anchors>
+							<Color color="DARKYELLOW_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="OldValue" inherits="GameFontHighlightLarge" text ="-">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="5" y="22"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Arrow" atlas="house-reward-increase-arrows" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.OldValue" relativePoint="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="NewValue" inherits="GameFontHighlightLarge" text ="-">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="10" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ObjectReward" hidden="true" setAllPoints="true">
+				<Anchors>
+					<Anchor point ="LEFT" relativeKey="$parent.PortraitFrame" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="TOP"/>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ObjectName" inherits="GameFontHighlight" text="TEMP" wordwrap="true" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="5" y="-5"/>
+								<Anchor point="BOTTOMRIGHT" x="-10" y="5"/>
+							</Anchors>
+							<Color color="DARKYELLOW_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HouseUpgradeRewardFrameSmallTemplate" inherits="HouseUpgradeRewardFrameLargeTemplate" virtual="true">
+		<Size x="202" y="88"/>
+	</Frame>
+	
+	<Frame name="HousingUpgradeFrameTemplate" mixin="HousingUpgradeFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background"  atlas="housing-dashboard-bg-elwynn" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture atlas="housing-dashboard-filigree-corner-TL">
+					<Size x="54" y="42"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="housing-dashboard-filigree-corner-TR">
+					<Size x="54" y="42"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="4" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="housing-dashboard-filigree-corner-BL">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-6" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="housing-dashboard-filigree-corner-BR">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="OwnerText" inherits="GameFontHighlightHuge">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-24"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="house-upgrade-header-divider-horz">
+					<Size x="188" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OwnerText" relativePoint="BOTTOMLEFT" x="-10" y="-4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="AddressText" inherits="GameFontHighlightLarge">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOMLEFT" x="10" y="-4"/>
+					</Anchors>
+					<Color color="DARKYELLOW_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="TeleportToHouseButton" mixin="HousingTeleportToHouseMixin">
+				<Size x="42" y="42"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-28" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="dashboard-panel-homestone-teleport-button" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawEdge="false" hideCountdownNumbers="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+						</Anchors>		
+					</Cooldown>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnClick method="OnClick"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
+
+			<Frame parentKey="CurrentLevelFrame" mixin="HouseUpgradeCurrentLevelFrameMixin">
+				<Size x="256" y="158"/>
+				<Anchors>
+					<Anchor point="TOP" y="-11"/>
+				</Anchors>		 
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="HouseLevelText" inherits="Game48Font" text="0">
+							<Anchors>
+								<Anchor point="CENTER" y="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="HouseBarFrame" hidden="false" inherits="EasyFrameAnimationsTemplate" propagateMouseInput="Motion">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Size x="128" y="128"/>
+						<Frames>
+							<Frame parentKey="HouseBarFrame" propagateMouseInput="Motion">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="leaf1" atlas="house-upgrade-radial-leaf01" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="TOPRIGHT" relativePoint="CENTER" x="-110" y="-56"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="leaf2" atlas="house-upgrade-radial-leaf02" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-88" y="-60"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="leaf3" atlas="house-upgrade-radial-leaf03" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="TOP" relativePoint="CENTER" x="-73" y="-31"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="leaf4" atlas="house-upgrade-radial-leaf04" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="CENTER" x="76" y="-37"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="leaf5" atlas="house-upgrade-radial-leaf05" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="88" y="-62"/>
+											</Anchors>
+										</Texture>
+										<Texture parentKey="leaf6" atlas="house-upgrade-radial-leaf06" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+											<Anchors>
+												<Anchor point="TOP" relativePoint="CENTER" x="118" y="-56"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Animations>
+									<AnimationGroup parentKey="LeafAnimation" looping="REPEAT" setToFinalAlpha="true">
+										<Rotation childKey="leaf1" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+											<Origin point="TOPRIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf1" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="5">
+											<Origin point="TOPRIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf2" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+											<Origin point="BOTTOMRIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf2" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="6">
+											<Origin point="BOTTOMRIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf3" duration="1" order="1" smoothing="IN_OUT" degrees="-3">
+											<Origin point="TOP"/>
+										</Rotation>
+										<Rotation childKey="leaf3" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
+											<Origin point="TOP"/>
+										</Rotation>
+										<Rotation childKey="leaf4" duration="1" order="1" smoothing="IN_OUT" degrees="4">
+											<Origin point="RIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf4" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-2">
+											<Origin point="RIGHT"/>
+										</Rotation>
+										<Rotation childKey="leaf5" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+											<Origin point="BOTTOMLEFT"/>
+										</Rotation>
+										<Rotation childKey="leaf5" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="3">
+											<Origin point="BOTTOMLEFT"/>
+										</Rotation>
+										<Rotation childKey="leaf6" duration="1" order="1" smoothing="IN_OUT" degrees="5">
+											<Origin point="TOP"/>
+										</Rotation>
+										<Rotation childKey="leaf6" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="-4">
+											<Origin point="TOP"/>
+										</Rotation>
+									</AnimationGroup>
+								</Animations>
+							</Frame>
+							<Frame parentKey="Bar" propagateMouseInput="Motion">
+								<Size x="128" y="128"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<Frames>
+									<Cooldown parentKey="BarFill" reverse="true" hideCountdownNumbers="true" rotation="180"  mixin="HouseUpgradeProgressBarMixin" propagateMouseInput="Motion">
+										<Size x="128" y="128"/>
+										<Anchors>
+											<Anchor point="CENTER" x="1" y="-7"/>
+										</Anchors>
+										<SwipeTexture file="Interface\Housing\house-upgrade-radial-bar-fill"/>
+										<Scripts>
+											<OnLoad method="OnLoad"/>
+										</Scripts>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture parentKey="Threshold" alpha="0.6" alphaMode="ADD" atlas="house-upgrade-radial-bar-threshold" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="112" y="112"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="Flipbook" atlas="housing-level-fillbar-threshold-flipbook" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="112" y="112"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<Texture parentKey="LeadEdge" atlas="house-upgrade-radial-bar-edge" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="112" y="112"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+												</Texture>
+												<MaskTexture parentKey="BarMask" file="Interface\Housing\HouseUpgradePanelBarMask.png" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" texelSnappingBias="0.0" snapToPixelGrid="false">
+													<Size x="128" y="128"/>
+													<Anchors>
+														<Anchor point="CENTER"/>
+													</Anchors>
+													<MaskedTextures>
+														<MaskedTexture childKey="Threshold"/>
+														<MaskedTexture childKey="LeadEdge"/>
+													</MaskedTextures>
+												</MaskTexture>
+											</Layer>
+										</Layers>
+										<Animations>
+											<AnimationGroup parentKey="BarAnimation">
+												<FlipBook childKey="Flipbook" duration="1" order="1" flipBookRows="5" flipBookColumns="6" flipBookFrames="30" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+												<Alpha childKey="Flipbook" duration="0.1" order="1" startDelay="0.9" fromAlpha="1" toAlpha="0"/>
+											</AnimationGroup>
+										</Animations>
+									</Cooldown>
+								</Frames>
+							</Frame>
+						</Frames>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" texelSnappingBias="0.0" snapToPixelGrid="false">
+									<Size x="234" y="152"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			
+			<Frame parentKey="TrackFrame" mixin="HouseLevelTrackFrameMixin" inherits="RewardTrackFrameTemplate">
+				<Size x="650" y="72"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CurrentLevelFrame" relativePoint="BOTTOM" y="20" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="house-upgrade-bg-radial-glow-center" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="20"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Background" atlas="house-upgrade-reward-track-bg">
+							<Anchors>
+								<Anchor point="TOP"/>
+								<Anchor point="LEFT" relativeKey="$parent.$parent"/>
+								<Anchor point="BOTTOM"/>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="house-upgrade-shadow-corbel-left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="BOTTOMLEFT" y="10"/>
+							</Anchors>
+						</Texture>
+						<Texture atlas="house-upgrade-shadow-corbel-right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ReminderText" inherits="GameFontHighlightLarge" text="HOUSING_DASHBOARD_VISIT_NPC">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<KeyValues>
+					<KeyValue key="elementTemplate" value="HouseUpgradeLevelFrameTemplate" type="string"/>
+					<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START" type="global"/>
+					<KeyValue key="scrollStopSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_STOP" type="global"/>
+					<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START" type="global"/>
+				</KeyValues>
+			</Frame>
+
+			<CheckButton parentKey="WatchFavorButton" mixin="HouseWatchFavorButtonMixin" inherits="UICheckButtonArtTemplate">
+				<Size x="21" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TrackFrame" relativePoint="TOPRIGHT" x="60" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontHighlightSmall" justifyH="LEFT" text="MAJOR_FACTION_WATCH_FACTION_BUTTON_LABEL">
+							<KeyValues>
+								<KeyValue key="minLineHeight" value="8" type="number"/>
+							</KeyValues>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</CheckButton>
+
+			<Frame parentKey="RewardsFrame" inherits="GridLayoutFrame">
+				<Size x="618" y="188"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ComingSoonText" inherits="GameFontHighlightLarge" text="HOUSING_DASHBOARD_COMING_SOON" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TrackFrame" relativePoint="BOTTOM" x="0" y="-20" />
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="stride" value="2" type="number"/>
+					<KeyValue key="isHorizontal" value="true" type="boolean"/>
+					<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+					<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+					<KeyValue key="childXPadding" value="10" type="number"/>
+					<KeyValue key="childYPadding" value="8" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

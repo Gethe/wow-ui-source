@@ -54,6 +54,20 @@ local PetJournalInfo =
 			},
 		},
 		{
+			Name = "GetNonBattlePetLinkByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "link", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetNumDisplays",
 			Type = "Function",
 

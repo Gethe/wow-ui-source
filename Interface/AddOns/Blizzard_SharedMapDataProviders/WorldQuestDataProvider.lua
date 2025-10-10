@@ -431,7 +431,7 @@ end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)
 	if not self.dataProvider:HandleClick(self) then
-		if not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
+		if not ChatFrameUtil.TryInsertQuestLinkForQuestID(self.questID) then
 			local watchType = C_QuestLog.GetQuestWatchType(self.questID);
 			local isSuperTracked = C_SuperTrack.GetSuperTrackedQuestID() == self.questID;
 

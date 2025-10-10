@@ -672,8 +672,17 @@ local function SetupAuraButtonConfiguration( header, newChild, defaultConfigFunc
 	end
 end
 
-function SecureAuraHeader_OnLoad(self)
-	self:RegisterEvent("UNIT_AURA");
+function SecureAuraHeader_OnLoad(_self)
+	-- No-op; retained for backwards compatibility.
+end
+
+function SecureAuraHeader_OnShow(self)
+	SecureAuraHeader_UpdateEventRegistrations(self);
+	SecureAuraHeader_Update(self);
+end
+
+function SecureAuraHeader_OnHide(self)
+	SecureAuraHeader_UpdateEventRegistrations(self);
 end
 
 function SecureAuraHeader_OnUpdate(self)
@@ -688,8 +697,7 @@ end
 
 function SecureAuraHeader_OnEvent(self, event, ...)
 	if ( self:IsVisible() ) then
-		local unit = SecureButton_GetUnit(self);
-		if ( event == "UNIT_AURA" and ... == unit ) then
+		if ( event == "UNIT_AURA" ) then
 			SecureAuraHeader_Update(self);
 		end
 	end
@@ -699,8 +707,29 @@ function SecureAuraHeader_OnAttributeChanged(self, name, value)
 	if ( name == "_ignore" or self:GetAttribute("_ignore") ) then
 		return;
 	end
+
+	if ( name == "unit" or name == "unitsuffix" ) then
+		-- Note that this won't catch attribute updates if the header has useparent
+		-- propagation applied; addons will need to call UpdateEventRegistrations
+		-- themselves or manually propagate the "unit" attribute down to this
+		-- header.
+		SecureAuraHeader_UpdateEventRegistrations(self);
+	end
+
 	if ( self:IsVisible() ) then
 		SecureAuraHeader_Update(self);
+	end
+end
+
+function SecureAuraHeader_GetUnit(self)
+	return SecureButton_GetUnit(self) or "player";
+end
+
+function SecureAuraHeader_UpdateEventRegistrations(self)
+	if self:IsVisible() then
+		self:RegisterUnitEvent("UNIT_AURA", SecureAuraHeader_GetUnit(self));
+	else
+		self:UnregisterEvent("UNIT_AURA");
 	end
 end
 
@@ -961,7 +990,7 @@ sorters.TIME = sorters.EXPIRES;
 function SecureAuraHeader_Update(self)
 	local filter = self:GetAttribute("filter");
 	local groupBy = self:GetAttribute("groupBy");
-	local unit = SecureButton_GetUnit(self) or "player";
+	local unit = SecureAuraHeader_GetUnit(self);
 	local includeWeapons = tonumber(self:GetAttribute("includeWeapons"));
 	if ( includeWeapons == 0 ) then
 		includeWeapons = nil
@@ -975,6 +1004,7 @@ function SecureAuraHeader_Update(self)
 	end
 	local sortDirection = self:GetAttribute("sortDirection");
 	local separateOwn = tonumber(self:GetAttribute("separateOwn")) or 0;
+	local maxAuraCount = tonumber(self:GetAttribute("maxAuraCount"));
 	if ( separateOwn > 0 ) then
 		separateOwn = 1;
 	elseif (separateOwn < 0 ) then
@@ -1022,58 +1052,26 @@ function SecureAuraHeader_Update(self)
 			weaponPosition = #sortingTable + 1;
 		end
 
-		local i = 1;
-		if (AuraUtil.ForEachAura) then
-			-- Mainline iteration-style.
-			AuraUtil.ForEachAura(unit, fullFilter, nil, function(...)
-				local aura, _, duration = freshTable();
-				aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _ = ...;
-				aura.filter = fullFilter;
-				aura.index = i;
-				aura.shouldConsolidate = false; -- Deprecated for mainline.
-				local targetList = sortingTable;
-				if ( consolidateTable and aura.shouldConsolidate ) then
-					if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
-						targetList = consolidateTable;
-					end
+		-- Manually counting because indexed iteration over the next table produces secrets,
+		-- which explode when fed into SetAttribute.
+		local index = 1;
+		for _, auraData in ipairs(C_UnitAuras.GetUnitAuras(unit, fullFilter, maxAuraCount)) do
+			local aura, _, duration = freshTable();
+			aura.name = auraData.name;
+			duration = auraData.duration;
+			aura.expires = auraData.expirationTime;
+			aura.caster = auraData.caster;
+			aura.filter = fullFilter;
+			aura.index = index;
+			aura.shouldConsolidate = false; -- Deprecated. Does this mean everything around consolidateTable should be removed...?
+			local targetList = sortingTable;
+			if ( consolidateTable and aura.shouldConsolidate ) then
+				if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
+					targetList = consolidateTable;
 				end
-				tinsert(targetList, aura);
-				i = i + 1;
-				return false;
-			end);
-		else
-			-- Classic iteration-style. (TODO: Unify me!)
-			repeat
-				local aura, _, duration = freshTable();
-				if C_UnitAuras then
-					local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, fullFilter);
-					if(auraData == nil) then 
-						aura.name = nil;
-					else
-						aura.name = auraData.name;
-						duration = auraData.duration;
-						aura.expires = auraData.expirationTime;
-						aura.caster = auraData.sourceUnit;
-						aura.shouldConsolidate = #auraData.points > 0;
-					end
-				else
-					aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
-				end
-				if ( aura.name ) then
-					aura.filter = fullFilter;
-					aura.index = i;
-					local targetList = sortingTable;
-					if ( consolidateTable and aura.shouldConsolidate ) then
-						if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
-							targetList = consolidateTable;
-						end
-					end
-					tinsert(targetList, aura);
-				else
-					releaseTable(aura);
-				end
-				i = i + 1;
-			until ( not aura.name );
+			end
+			tinsert(targetList, aura);
+			index = index + 1;
 		end
 	end
 	if ( includeWeapons and not weaponPosition ) then

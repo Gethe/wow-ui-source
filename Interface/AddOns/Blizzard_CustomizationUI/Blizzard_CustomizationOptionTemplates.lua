@@ -307,76 +307,28 @@ do
 				return MenuResponse.Refresh;
 			end
 		end
-		
-		local function OnEnter(button)
-			local description = button:GetElementDescription();
-			local choiceData = description:GetData();
+
+		local function OnButtonEnter(button)
+			local choiceData = button:GetChoiceData();
 			customizationFrame:PreviewChoice(optionData, choiceData);
-
-			local showDebugTooltipInfo = CustomizationUtil.ShouldShowDebugTooltipInfo();
-	
-			local tooltipText, tooltipLockedText = button.SelectionDetails:GetTooltipText();
-			if tooltipText or showDebugTooltipInfo then
-				local tooltip = self:GetAppropriateTooltip();
-
-				tooltip:SetOwner(self, "ANCHOR_NONE");
-					tooltip:SetPoint("BOTTOMRIGHT", button, "TOPLEFT", 0, 0);
-
-				if tooltipText then
-					GameTooltip_AddHighlightLine(tooltip, tooltipText);
-				end
-
-				if tooltipLockedText then
-					GameTooltip_AddNormalLine(tooltip, tooltipLockedText);
-				end
-
-				if showDebugTooltipInfo then
-					if tooltipText then
-						GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
-					end
-
-					GameTooltip_AddHighlightLine(tooltip, "Choice ID: "..choiceData.id);
-				end
-
-				tooltip:Show();
-			end
 
 			if self:HasSound() and not IsSelected(choiceData) then
 				self:GetAudioInterface():PlayAudio(self:GetSoundKit(choiceData));
 			end
-	
-			local selected = IsSelected(choiceData);
-			if not selected then
-				button.HighlightBGTex:SetAlpha(0.15);
-				button.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-				button.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
-			end
 		end
 
-		local function OnLeave(button)
+		local function OnButtonLeave(button)
 			customizationFrame.previewIsDirty = true;
 
-			local tooltip = self:GetAppropriateTooltip();
-			tooltip:Hide();
-				
 			if self:GetAudioInterface() then
 				self:GetAudioInterface():StopAudio();
-			end
-			
-			local description = button:GetElementDescription();
-			local choiceData = description:GetData();
-			local selected = IsSelected(choiceData);
-			if not selected then
-				button.HighlightBGTex:SetAlpha(0);
-				button.SelectionDetails:UpdateFontColors(choiceData, selected, hasAFailedReq);
 			end
 		end
 	
 		local function FinalizeLayout(button, description, menu, columns, rows)
 			-- Frames have size overrides if their containing menu has multiple columns.
 			local hasMultipleColumns = columns > 1;
-			button.SelectionDetails:AdjustWidth(hasMultipleColumns, hasALockedChoice);
-			button:Layout();
+			button:FinalizeLayout(hasMultipleColumns, hasALockedChoice);
 		end
 
 		for choiceIndex, choiceData in ipairs(optionData.choices) do
@@ -384,15 +336,16 @@ do
 
 			local optionDescription = rootDescription:CreateTemplate("CustomizationDropdownElementTemplate");
 			optionDescription:AddInitializer(function(button, description, menu)
-				button.HighlightBGTex:SetAlpha(0);
-	
+				button:SetOnEnterCallback(OnButtonEnter);
+				button:SetOnLeaveCallback(OnButtonLeave);
+				button:SetGetTooltipFunc(function () return self.GetAppropriateTooltip(); end)
+
 				button:SetScript("OnClick", function(button, buttonName)
 					description:Pick(MenuInputContext.MouseButton, buttonName);
 				end);
 				
 				local selected = IsSelected(choiceData);
-				
-				button.SelectionDetails:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
+				button:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
 
 				--[[
 				We will have 2 Layout() calls. One for the reference width, and another to account
@@ -401,8 +354,8 @@ do
 				button:Layout();
 			end);
 
-			optionDescription:SetOnEnter(OnEnter);
-			optionDescription:SetOnLeave(OnLeave);
+			optionDescription:SetOnEnter(CustomizationDropdownElementMixin.OnEnter);
+			optionDescription:SetOnLeave(CustomizationDropdownElementMixin.OnLeave);
 			optionDescription:SetIsSelected(IsSelected);
 			optionDescription:SetCanSelect(CanSelect);
 			optionDescription:SetResponder(OnSelect);
@@ -420,8 +373,9 @@ do
 
 			local selected = false;
 			local failedReq = false;
+			local lockedChoice = false;
 			local clampNameSize = true;
-			self.Dropdown.SelectionDetails:Init(currentChoice, optionData.currentChoiceIndex, selected, failedReq, clampNameSize);
+			self.Dropdown.SelectionDetails:Init(currentChoice, optionData.currentChoiceIndex, selected, failedReq, lockedChoice, clampNameSize);
 			self.Dropdown.SelectionDetails:Layout();
 		end
 		
@@ -459,9 +413,9 @@ end
 
 local CUSTOMIZATION_LOCK_WIDTH = 24;
 
-CustomizationDropdownElementDetailsMixin = {};
+CustomizationElementDetailsMixin = {};
 
-function CustomizationDropdownElementDetailsMixin:GetTooltipText()
+function CustomizationElementDetailsMixin:GetTooltipText()
 	local name;
 	if self.lockedText or (self.SelectionName:IsShown() and self.SelectionName:IsTruncated()) then
 		name = self.name;
@@ -471,17 +425,32 @@ function CustomizationDropdownElementDetailsMixin:GetTooltipText()
 		return name;
 	end
 
-	return name, BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+	local lockedText = self.skipLockedTextFormat and self.lockedText or BARBERSHOP_CUSTOMIZATION_SOURCE_FORMAT:format(self.lockedText);
+
+	return name, lockedText;
 end
 
-function CustomizationDropdownElementDetailsMixin:AdjustWidth(multipleColumns, hasALockedChoice)
+function CustomizationElementDetailsMixin:SetOverrideWidth(overrideWidth)
+	self.overrideWidth = overrideWidth;
+end
+
+function CustomizationElementDetailsMixin:SetSkipLockedTextFormat(skipLockedTextFormat)
+	self.skipLockedTextFormat = skipLockedTextFormat;
+end
+
+function CustomizationElementDetailsMixin:AdjustWidth(multipleColumns, hasALockedChoice)
+	if self.overrideWidth then
+		self:SetWidth(self.overrideWidth);
+		return;
+	end
+
 	local width = 116;
 	if multipleColumns then
-	if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
+		if self.ColorSwatch1:IsShown() or self.ColorSwatch2:IsShown() then
 			width = self.SelectionNumber:GetWidth() + self.ColorSwatch2:GetWidth() + 18;
-	elseif self.SelectionName:IsShown() then
+		elseif self.SelectionName:IsShown() then
 			width = 108;
-	else
+		else
 			width = 42;
 		end
 	end
@@ -493,6 +462,7 @@ function CustomizationDropdownElementDetailsMixin:AdjustWidth(multipleColumns, h
 	self:SetWidth(Round(width));
 end
 
+-- If there are no ineligible entries in the menu, we can use the regular defaults for selected & non-selected entries
 local function GetNormalSelectionTextFontColor(choiceData, isSelected)
 	if isSelected then
 		return NORMAL_FONT_COLOR;
@@ -501,6 +471,8 @@ local function GetNormalSelectionTextFontColor(choiceData, isSelected)
 	end
 end
 
+-- If there are any ineligible entries in the menu, we use a different color for eligible, non-selected entries
+-- to make them easier to tell apart from the ineligible ones (since DISABLED_FONT_COLOR looks similar to CUSTOMIZATION_CHOICE_INELIGIBLE_COLOR)
 local function GetFailedReqSelectionTextFontColor(choiceData, isSelected)
 	if isSelected then
 		return NORMAL_FONT_COLOR;
@@ -511,7 +483,7 @@ local function GetFailedReqSelectionTextFontColor(choiceData, isSelected)
 	end
 end
 
-function CustomizationDropdownElementDetailsMixin:GetFontColors(choiceData, isSelected, hasAFailedReq)
+function CustomizationElementDetailsMixin:GetFontColors(choiceData, isSelected, hasAFailedReq)
 	if self.selectable then
 		local fontColorFunction = hasAFailedReq and GetFailedReqSelectionTextFontColor or GetNormalSelectionTextFontColor;
 		local fontColor = fontColorFunction(choiceData, isSelected);
@@ -526,7 +498,7 @@ function CustomizationDropdownElementDetailsMixin:GetFontColors(choiceData, isSe
 	end
 end
 
-function CustomizationDropdownElementDetailsMixin:UpdateFontColors(choiceData, isSelected, hasAFailedReq)
+function CustomizationElementDetailsMixin:UpdateFontColors(choiceData, isSelected, hasAFailedReq)
 	local nameColor, numberColor = self:GetFontColors(choiceData, isSelected, hasAFailedReq);
 	self.SelectionName:SetTextColor(nameColor:GetRGB());
 	self.SelectionNumber:SetTextColor(numberColor:GetRGB());
@@ -539,7 +511,7 @@ local function startsWithOne(index)
 	return indexString:sub(1, 1) == "1";
 end
 
-function CustomizationDropdownElementDetailsMixin:SetShowAsNew(showAsNew)
+function CustomizationElementDetailsMixin:SetShowAsNew(showAsNew)
 	if showAsNew then
 		self.SelectionNumber:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
 
@@ -555,7 +527,7 @@ function CustomizationDropdownElementDetailsMixin:SetShowAsNew(showAsNew)
 	end
 end
 
-function CustomizationDropdownElementDetailsMixin:UpdateText(choiceData, isSelected, hasAFailedReq, hideNumber, hasColors)
+function CustomizationElementDetailsMixin:UpdateText(choiceData, isSelected, hasAFailedReq, hideNumber, hasColors)
 	self:UpdateFontColors(choiceData, isSelected, hasAFailedReq);
 
 	self.SelectionNumber:SetText(self.index);
@@ -592,7 +564,13 @@ function CustomizationDropdownElementDetailsMixin:UpdateText(choiceData, isSelec
 	self:SetShowAsNew(showAsNew);
 end
 
-function CustomizationDropdownElementDetailsMixin:Init(choiceData, index, isSelected, hasAFailedReq, hasALockedChoice, clampNameSize)
+--[[
+Expected choiceData members
+	Standard/required: id, name, choiceIndex
+	Optional: isLocked, lockedText, isNew, ineligibleChoice, disabled, swatchColor1, swatchColor2, soundKit
+]]--
+
+function CustomizationElementDetailsMixin:Init(choiceData, index, isSelected, hasAFailedReq, hasALockedChoice, clampNameSize)
 	if not index then
 		self.SelectionName:SetText(CHARACTER_CUSTOMIZE_POPOUT_UNSELECTED_OPTION);
 		self.SelectionName:Show();
@@ -702,8 +680,140 @@ end
 
 ----------------- Dropdown Button -----------------
 
+-- Non-dropdown-specific base mixin
+CustomizationElementMixin = {};
+
+function CustomizationElementMixin:OnLoad()
+	self.SelectionDetails.SelectionName:SetPoint("RIGHT");
+end
+
+function CustomizationElementMixin:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice)
+	self.HighlightBGTex:SetAlpha(0);
+	self.hasAFailedReq = hasAFailedReq;
+	self.hasALockedChoice = hasALockedChoice;
+	self.SelectionDetails:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
+end
+
+function CustomizationElementMixin:OnEnter()
+	local choiceData = self:GetChoiceData();
+
+	local showDebugTooltipInfo = CustomizationUtil.ShouldShowDebugTooltipInfo();
+
+	local tooltipText, tooltipLockedText = self.SelectionDetails:GetTooltipText();
+	if tooltipText or showDebugTooltipInfo then
+		local tooltip = self:GetAppropriateTooltip();
+
+		tooltip:SetOwner(self, "ANCHOR_NONE");
+		tooltip:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 0, 0);
+
+		if tooltipText then
+			GameTooltip_AddHighlightLine(tooltip, tooltipText);
+		end
+
+		if tooltipLockedText then
+			GameTooltip_AddNormalLine(tooltip, tooltipLockedText);
+		end
+
+		if showDebugTooltipInfo then
+			if tooltipText then
+				GameTooltip_AddBlankLineToTooltip(tooltip, tooltipText);
+			end
+
+			if choiceData.id then
+				GameTooltip_AddHighlightLine(tooltip, "Choice ID: " .. choiceData.id);
+			end
+
+			if choiceData.fixtureID then
+				GameTooltip_AddHighlightLine(tooltip, "Fixture ID: " .. choiceData.fixtureID);
+			end
+		end
+
+		tooltip:Show();
+	end
+
+	if not self:IsSelected() then
+		self.HighlightBGTex:SetAlpha(0.15);
+		self.SelectionDetails.SelectionNumber:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.SelectionDetails.SelectionName:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	end
+end
+
+function CustomizationElementMixin:OnLeave()
+	local tooltip = self:GetAppropriateTooltip();
+	tooltip:Hide();
+
+	local isSelected = self:IsSelected();
+	if not isSelected then
+		self.HighlightBGTex:SetAlpha(0);
+		self.SelectionDetails:UpdateFontColors(self:GetChoiceData(), isSelected, self.hasAFailedReq);
+	end
+end
+
+function CustomizationElementMixin:FinalizeLayout(hasMultipleColumns, hasALockedChoice)
+	self.SelectionDetails:AdjustWidth(hasMultipleColumns, hasALockedChoice);
+	self:Layout();
+end
+
+function CustomizationElementMixin:GetChoiceData()
+	-- Required
+	assert(false);
+end
+
+function CustomizationElementMixin:IsSelected()
+	-- Required
+	assert(false);
+end
+
+function CustomizationElementMixin:GetAppropriateTooltip()
+	-- Required
+	assert(false);
+end
+
+
+-- Inherits CustomizationElementTemplate
 CustomizationDropdownElementMixin = {};
 
-function CustomizationDropdownElementMixin:OnLoad()
-	self.SelectionDetails.SelectionName:SetPoint("RIGHT");
+function CustomizationDropdownElementMixin:SetOnEnterCallback(onEnterCallback)
+	self.onEnterCallback = onEnterCallback;
+end
+
+function CustomizationDropdownElementMixin:OnEnter()
+	CustomizationElementMixin.OnEnter(self);
+	if self.onEnterCallback then
+		self.onEnterCallback(self);
+	end
+end
+
+function CustomizationDropdownElementMixin:SetOnLeaveCallback(onLeaveCallback)
+	self.onLeaveCallback = onLeaveCallback;
+end
+
+function CustomizationDropdownElementMixin:OnLeave()
+	CustomizationElementMixin.OnLeave(self);
+	if self.onLeaveCallback then
+		self.onLeaveCallback(self);
+	end
+end
+
+function CustomizationDropdownElementMixin:GetChoiceData()
+	local description = self:GetElementDescription();
+	return description:GetData();
+end
+
+function CustomizationDropdownElementMixin:IsSelected()
+	local description = self:GetElementDescription();
+	return description:IsSelected(description:GetData());
+end
+
+function CustomizationDropdownElementMixin:SetGetTooltipFunc(getTooltipFunc)
+	self.getAppropriateTooltipFunc = getTooltipFunc;
+end
+
+function CustomizationDropdownElementMixin:GetAppropriateTooltip()
+	if self.getAppropriateTooltipFunc then
+		return self.getAppropriateTooltipFunc();
+	end
+
+	-- Fallback to FrameUtil global
+	return GetAppropriateTooltip();
 end

@@ -760,7 +760,7 @@ end
 
 function ArtifactPerksMixin:RefreshCursorHighlights()
 	local type, itemID, itemLink = GetCursorInfo();
-	if type == "item" and IsArtifactRelicItem(itemID) then
+	if type == "item" and C_ItemSocketInfo.IsArtifactRelicItem(itemID) then
 		self:HideHighlightForRelicItemID(itemID, itemLink);
 	end
 end
@@ -1297,7 +1297,7 @@ function ArtifactTitleTemplateMixin:OnRelicSlotClicked(relicSlot)
 				return true;
 			else
 				local _, itemID = GetCursorInfo();
-				if itemID and IsArtifactRelicItem(itemID) then
+				if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) then
 					UIErrorsFrame:AddMessage(RELIC_SLOT_INVALID, 1.0, 0.1, 0.1, 1.0);
 					return true;
 				else

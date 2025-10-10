@@ -1646,10 +1646,10 @@ function Blizzard_CombatLog_SpellMenuClick(action, spellName, spellId, eventType
 	elseif ( action == "LINK" ) then
 		local spellLink = C_Spell.GetSpellLink(spellId);
 
-		if ( ChatEdit_GetActiveWindow() ) then
-			ChatEdit_InsertLink(spellLink);
+		if ( ChatFrameUtil.GetActiveWindow() ) then
+			ChatFrameUtil.InsertLink(spellLink);
 		else
-			ChatFrame_OpenChat(spellLink);
+			ChatFrameUtil.OpenChat(spellLink);
 		end
 		return;
 	end
@@ -3409,7 +3409,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.Unit, function(link, text, linkData, cont
 	local guid, name = string.split(":", linkData.options);
 
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink (name);
+		ChatFrameUtil.InsertLink (name);
 		return;
 	elseif( contextData.button == "RightButton") then
 		-- Show Popup Menu
@@ -3428,7 +3428,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.RaidTargetIcon, function(link, text, link
 		-- need to fix this to be actual texture
 		CreateCombatLogContextMenu(contextData.frame, Blizzard_CombatLog_CreateUnitMenu(Blizzard_CombatLog_BitToBraceCode(tonumber(bit)), nil, tonumber(bit)));
 	elseif ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
+		ChatFrameUtil.InsertLink (Blizzard_CombatLog_BitToBraceCode(tonumber(bit)));
 	end
 end);
 
@@ -3440,7 +3440,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.Spell, function(link, text, linkData, con
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( spellId > 0 ) then
 			local spellLink = C_Spell.GetSpellLink(spellId, glyphId);
-			if ( ChatEdit_InsertLink(spellLink) ) then
+			if ( ChatFrameUtil.InsertLink(spellLink) ) then
 				return;
 			end
 		else

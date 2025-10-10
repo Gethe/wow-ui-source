@@ -1,6 +1,23 @@
 RAID_CLASS_COLORS = {};
 do
-	local classes = {"HUNTER", "WARLOCK", "PRIEST", "PALADIN", "MAGE", "ROGUE", "DRUID", "SHAMAN", "WARRIOR", "DEATHKNIGHT", "MONK", "DEMONHUNTER", "EVOKER"};
+	local classes =
+	{
+		"HUNTER",
+		"WARLOCK",
+		"PRIEST",
+		"PALADIN",
+		"MAGE",
+		"ROGUE",
+		"DRUID",
+		"SHAMAN",
+		"WARRIOR",
+		"DEATHKNIGHT",
+		"MONK",
+		"DEMONHUNTER",
+		"EVOKER",
+		"ADVENTURER",
+		"TRAVELER"
+	};
 
 	for i, className in ipairs(classes) do
 		RAID_CLASS_COLORS[className] = C_ClassColor.GetClassColor(className);

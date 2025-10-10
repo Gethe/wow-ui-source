@@ -199,7 +199,7 @@
 								GuildRegistrar_PurchaseCharter();
 							</OnEnterPressed>
 							<OnEscapePressed>
-								ChatEdit_FocusActiveWindow();
+								ChatFrameUtil.FocusActiveWindow();
 							</OnEscapePressed>
 						</Scripts>
 						<FontString inherits="ChatFontNormal"/>

@@ -487,6 +487,8 @@
 		<KeyValues>
 			<KeyValue key="layoutIndex" value="2" type="number"/>
 			<KeyValue key="bottomPadding" value="8" type="number"/>
+			<KeyValue key="editModeSelectionTopOffset" value="0" type="number"/>
+			<KeyValue key="editModeSelectionBottomOffset" value="-12" type="number"/>
 			<KeyValue key="playCastFX" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>

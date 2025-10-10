@@ -51,6 +51,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 					<OnMouseDown method="OnMouseDown"/> 
@@ -333,6 +334,9 @@
 						<DisabledTexture parentKey="DisabledTexture" atlas="glues-characterselect-button-card-down-disabled" useAtlasSize="true"/>
 					</Button>
 				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 		<Animations>

@@ -242,6 +242,30 @@ function ProfessionsSpecPathMixin:SetAndApplySize(width, height) -- Override
 	self:SetHitRectInsets(dx, dx, dy, dy);
 end
 
+function ProfessionsSpecPathMixin:ApplyVisualState(visualState) -- Override
+	local color = TalentButtonUtil.GetColorForBaseVisualState(visualState);
+	local r, g, b = color:GetRGB();
+	self.SpendText:SetTextColor(r, g, b);
+	self.StateBorder:SetColorTexture(r, g, b);
+
+	local isRefundInvalid = (visualState == TalentButtonUtil.BaseVisualState.RefundInvalid);
+	local disabledColor = isRefundInvalid and DIM_RED_FONT_COLOR or WHITE_FONT_COLOR;
+	self.Icon:SetVertexColor(disabledColor:GetRGBA());
+
+	local isGated = (visualState == TalentButtonUtil.BaseVisualState.Gated);
+	local isStrongDisabledOverlay = not isRefundInvalid and isGated;
+	self.Icon:SetAlpha(isStrongDisabledOverlay and 0.5 or 1.0);
+	self.DisabledOverlay:SetAlpha(isStrongDisabledOverlay and 0.7 or 0.3);
+
+	local isLocked = (visualState == TalentButtonUtil.BaseVisualState.Locked);
+	local isDimmed = not isRefundInvalid and (isGated or isLocked);
+	self.Icon:SetDesaturated(isDimmed);
+
+	local isDisabled = (visualState == TalentButtonUtil.BaseVisualState.Disabled);
+	local showDisabledOverlay = not isRefundInvalid and (isGated or isLocked or isDisabled);
+	self.DisabledOverlay:SetShown(showDisabledOverlay);
+end
+
 function ProfessionsSpecPathMixin:OnClick(button, down) -- Override
 	if not self.isDetailedView and not self:GetTalentFrame():AnyPopupShown() then
 		if not self.selected then
@@ -471,7 +495,7 @@ function ProfessionsSpecPathMixin:SetVisualState(state) -- Override
 		return;
 	end
 
-	TalentButtonBasicArtMixin.ApplyVisualState(self, baseVisualState);
+	self:ApplyVisualState(baseVisualState);
 
 	self.state = state;
 
@@ -561,12 +585,40 @@ end
 ProfessionsSpecPathMixin.UpdateEntryInfo = TalentDisplayMixin.UpdateEntryInfo;
 
 
-ProfessionsSpecPerkMixin = CreateFromMixins(TalentButtonBasicArtMixin, TalentDisplayMixin);
+ProfessionsSpecPerkMixin = CreateFromMixins(TalentDisplayMixin);
 
 function ProfessionsSpecPerkMixin:OnLoad()
-	TalentButtonBasicArtMixin.OnLoad(self);
-
+	self:ApplySize(self:GetSize());
 	self.PipLockinAnim:SetScript("OnFinished", function() self:UpdateIconTexture(true); end);
+end
+
+function ProfessionsSpecPerkMixin:SetAndApplySize(width, height)
+	self:SetSize(width, height);
+	self:ApplySize(width, height);
+end
+
+function ProfessionsSpecPerkMixin:ApplySize(width, height)
+	local sizingAdjustment = self.sizingAdjustment;
+	if sizingAdjustment == nil then
+		return;
+	end
+
+	for _, sizingAdjustmentInfo in ipairs(sizingAdjustment) do
+		local region = self[sizingAdjustmentInfo.region];
+		if region then
+			local sizeAdjustment = sizingAdjustmentInfo.adjust;
+			local anchorX = sizingAdjustmentInfo.anchorX;
+			local anchorY = sizingAdjustmentInfo.anchorY;
+
+			if sizeAdjustment then
+				region:SetSize(width + sizeAdjustment, height + sizeAdjustment);
+			end
+			if anchorX or anchorY then
+				local point, relativeTo, relativePoint, x, y = region:GetPoint();
+				region:SetPoint(point, relativeTo, relativePoint, anchorX or x, anchorY or y);
+			end
+		end
+	end
 end
 
 function ProfessionsSpecPerkMixin:GetParentMaxRank()

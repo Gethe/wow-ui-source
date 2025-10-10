@@ -463,20 +463,6 @@ function UnitPopupGarrisonVisitButtonMixin:CanShow(contextData)
 	return C_Garrison.IsVisitGarrisonAvailable() and (not C_PartyInfo.IsCrossFactionParty());
 end
 
--- TODO: Uncomment once Edit Mode is complete for Unit Frames
---[[
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupMovePlayerFrameButtonMixin:CanShow(contextData)
-	return false;
-end]]--
-
--- TODO: Uncomment once Edit Mode is complete for Unit Frames
---[[
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupMoveTargetFrameButtonMixin:CanShow(contextData)
-	return false;
-end]]--
-
 function UnitPopupEnterEditModeMixin:GetText(contextData)
 	return HUD_EDIT_MODE_MENU;
 end

@@ -759,7 +759,7 @@ end
 local function CheckDisplayMessageForNotification(resultCode, guid)
 	local message, sound = GetNotification(resultCode, guid);
 	if message then
-		ChatFrame_DisplaySystemMessageInPrimary(message);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(message);
 	end
 
 	if sound then
@@ -868,7 +868,7 @@ end
 function QuestSessionManagerMixin:OnQuestRemoved(questID, wasReplayQuest)
 	if wasReplayQuest then
 		QuestEventListener:AddCallback(questID, function()
-			ChatFrame_DisplaySystemMessageInPrimary(QUEST_SESSION_REPLAY_QUEST_REMOVED:format(QuestUtils_GetQuestName(questID)));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(QUEST_SESSION_REPLAY_QUEST_REMOVED:format(QuestUtils_GetQuestName(questID)));
 		end);
 	end
 end

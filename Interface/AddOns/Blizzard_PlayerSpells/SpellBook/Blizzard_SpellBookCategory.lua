@@ -182,16 +182,18 @@ function SpellBookClassCategoryMixin:UpdateSpellGroups()
 	local newSpellGroups = {};
 
 	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.Class);
-	local classSpellsGroup = {
-		displayName = skillLineInfo.name,
-		slotIndexOffset = skillLineInfo.itemIndexOffset,
-		numSpellBookItems = skillLineInfo.numSpellBookItems,
-		skillLineIndex = Enum.SpellBookSkillLineIndex.Class,
-		showActionBarStatuses = true,
-		spellBookItemSlotIndices = {},
-		orderedSpellBookItemSlotIndices = {},
-	};
-	table.insert(newSpellGroups, classSpellsGroup);
+	if skillLineInfo then
+		local classSpellsGroup = {
+			displayName = skillLineInfo.name,
+			slotIndexOffset = skillLineInfo.itemIndexOffset,
+			numSpellBookItems = skillLineInfo.numSpellBookItems,
+			skillLineIndex = Enum.SpellBookSkillLineIndex.Class,
+			showActionBarStatuses = true,
+			spellBookItemSlotIndices = {},
+			orderedSpellBookItemSlotIndices = {},
+		};
+		table.insert(newSpellGroups, classSpellsGroup);
+	end
 
 	local numSpecializations = GetNumSpecializations(false, false);
 	local numAvailableSkillLines = C_SpellBook.GetNumSpellBookSkillLines();

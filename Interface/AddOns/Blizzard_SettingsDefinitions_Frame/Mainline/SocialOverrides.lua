@@ -51,3 +51,10 @@ function SocialOverrides.CreateCensorMessagesSetting(category)
 			Settings.VarType.Number, CENSOR_SOURCE_EXCLUDE, defaultValue, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CENTER_SOURCE_EXCLUDE);
 end
+
+function SocialOverrides.CreateBlockNeighborhoodInvitesSetting(category)
+	local defaultValue = false;
+	local setting = Settings.RegisterProxySetting(category, "PROXY_BLOCK_NEIGHBORHOOD_INVITES",
+		Settings.VarType.Boolean, BLOCK_NEIGHBORHOOD_INVITES, defaultValue, GetAutoDeclineNeighborhoodInvites, SetAutoDeclineNeighborhoodInvites);
+	Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_NEIGHBORHOOD_INVITES);
+end

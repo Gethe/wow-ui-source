@@ -643,3 +643,70 @@ function CurrencyHorizontalLayoutFrameMixin:AddItem(itemID, overrideAmount, colo
 
 	return fontString, frame;
 end
+
+AnimatedShineMixin = {};
+
+local NUM_SHINES = 4;
+
+function AnimatedShineMixin:Start(r, g, b)
+	if ( not tContains(SHINES_TO_ANIMATE, self) ) then
+		self.timer = 0;
+		tinsert(SHINES_TO_ANIMATE, self);
+	end
+
+	for i = 1, NUM_SHINES do
+		local currShine = self["Shine"..i];
+		currShine:Show();
+
+		if ( r ) then
+			currShine:SetVertexColor(r, g, b);
+		end
+	end
+end
+
+function AnimatedShineMixin:Stop()
+	tDeleteItem(SHINES_TO_ANIMATE, self);
+	for i = 1, NUM_SHINES do
+		local currShine = self["Shine"..i];
+		currShine:Hide();
+	end
+end
+
+function AnimatedShineMixin:Update(elapsed)
+	local shine1, shine2, shine3, shine4;
+	local speed = 2.5;
+	local distance;
+
+	shine1 = self["Shine1"];
+	shine2 = self["Shine2"];
+	shine3 = self["Shine3"];
+	shine4 = self["Shine4"];
+
+	self.timer = self.timer+elapsed;
+	if ( self.timer > speed*4 ) then
+		self.timer = 0;
+	end
+
+	distance = self:GetWidth();
+	if ( self.timer <= speed  ) then
+		shine1:SetPoint("CENTER", self, "TOPLEFT", self.timer/speed*distance, 0);
+		shine2:SetPoint("CENTER", self, "BOTTOMRIGHT", -self.timer/speed*distance, 0);
+		shine3:SetPoint("CENTER", self, "TOPRIGHT", 0, -self.timer/speed*distance);
+		shine4:SetPoint("CENTER", self, "BOTTOMLEFT", 0, self.timer/speed*distance);
+	elseif ( self.timer <= speed*2 ) then
+		shine1:SetPoint("CENTER", self, "TOPRIGHT", 0, -(self.timer-speed)/speed*distance);
+		shine2:SetPoint("CENTER", self, "BOTTOMLEFT", 0, (self.timer-speed)/speed*distance);
+		shine3:SetPoint("CENTER", self, "BOTTOMRIGHT", -(self.timer-speed)/speed*distance, 0);
+		shine4:SetPoint("CENTER", self, "TOPLEFT", (self.timer-speed)/speed*distance, 0);
+	elseif ( self.timer <= speed*3 ) then
+		shine1:SetPoint("CENTER", self, "BOTTOMRIGHT", -(self.timer-speed*2)/speed*distance, 0);
+		shine2:SetPoint("CENTER", self, "TOPLEFT", (self.timer-speed*2)/speed*distance, 0);
+		shine3:SetPoint("CENTER", self, "BOTTOMLEFT", 0, (self.timer-speed*2)/speed*distance);
+		shine4:SetPoint("CENTER", self, "TOPRIGHT", 0, -(self.timer-speed*2)/speed*distance);
+	else
+		shine1:SetPoint("CENTER", self, "BOTTOMLEFT", 0, (self.timer-speed*3)/speed*distance);
+		shine2:SetPoint("CENTER", self, "TOPRIGHT", 0, -(self.timer-speed*3)/speed*distance);
+		shine3:SetPoint("CENTER", self, "TOPLEFT", (self.timer-speed*3)/speed*distance, 0);
+		shine4:SetPoint("CENTER", self, "BOTTOMRIGHT", -(self.timer-speed*3)/speed*distance, 0);
+	end
+end

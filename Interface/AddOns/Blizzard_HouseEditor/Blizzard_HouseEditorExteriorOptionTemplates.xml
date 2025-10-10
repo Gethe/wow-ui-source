@@ -1,0 +1,102 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Base choice entry for non-menu-system use -->
+	<Button name="HouseExteriorOptionElementTemplate" mixin="HouseExteriorOptionElementMixin" inherits="CustomizationElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="widthPadding" value="14" type="number"/>
+			<KeyValue key="overrideDetailsWidth" value="180" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<!-- Base choice entry for dropdown menu use -->
+	<Button name="HouseExteriorOptionDropdownElementTemplate" mixin="HouseExteriorOptionDropdownElementMixin" inherits="CustomizationElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="overrideDetailsWidth" value="160" type="number"/>
+		</KeyValues>
+	</Button>
+
+	<!-- Base dropdown containing multiple dropdown elements -->
+	<Frame name="HouseExteriorOptionDropdownTemplate" mixin="HouseExteriorOptionDropdownMixin" inherits="ResizeLayoutFrame" virtual="true">
+		 <KeyValues>
+			<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+			<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate" >
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+				</KeyValues>
+				<Size x="140" y="25"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Dropdown" relativePoint="LEFT" x="-75"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Placeholder dropdown for not-yet-implemented options -->
+	<!-- TODO: Remove once house size & type swapping are implemented -->
+	<Frame name="HouseExteriorPlaceholderDropdownTemplate" mixin="HouseExteriorPlaceholderDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	</Frame>
+
+	<!-- Dropdown specifically for Core Fixture options -->
+	<Frame name="HouseExteriorCoreFixtureDropdownTemplate" mixin="HouseExteriorCoreFixtureDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	</Frame>
+
+	<!-- List of non-core fixture options -->
+	<Frame name="HouseExteriorFixtureOptionListTemplate" mixin="HouseExteriorFixtureOptionListMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="230" type="number"/>
+			<KeyValue key="leftPadding" value="20" type="number"/>
+			<KeyValue key="rightPadding" value="20" type="number"/>
+			<KeyValue key="topPadding" value="10" type="number"/>
+			<KeyValue key="bottomPadding" value="20" type="number"/>
+			<KeyValue key="spacing" value="3" type="number"/>
+			<KeyValue key="expand" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-dropdown-bg" setAllPoints="true" alpha="0.6">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="RemoveButton" inherits="HouseExteriorOptionElementTemplate" virtual="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

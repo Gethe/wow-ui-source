@@ -212,6 +212,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	self:AddDataProvider(CreateFromMixins(WaypointLocationDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(DragonridingRaceDataProviderMixin));
 	self:AddDataProvider(CreateFromMixins(SuperTrackWaypointDataProviderMixin));
+	self:AddDataProvider(CreateFromMixins(NeighborhoodMapDataProviderMixin));
 
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.MapPlunderstormCircle) then
 		self:AddDataProvider(CreateFromMixins(PlunderstormCircleDataProviderMixin));
@@ -254,6 +255,7 @@ function WorldMapMixin:AddStandardDataProviders()
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_DELVE_ENTRANCE");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_FLIGHT_POINT");
+	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_NEIGHBORHOOD_MAP_OBJECTS");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_INVASION");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_PET_TAMER");
 	pinFrameLevelsManager:AddFrameLevel("PIN_FRAME_LEVEL_SELECTABLE_GRAVEYARD");
@@ -550,22 +552,42 @@ end
 
 -- ============================================ GLOBAL API ===============================================================================
 function ToggleQuestLog()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionToggleQuestLog();
 end
 
 function ToggleWorldMap()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionToggleSelf();
 end
 
 function OpenWorldMap(mapID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionOpenSelf(mapID);
 end
 
 function OpenQuestLog(mapID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	WorldMapFrame:HandleUserActionOpenQuestLog(mapID);
 end
 
 function OpenMapToEventPoi(areaPoiID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	local mapID = C_EventScheduler.GetEventUiMapID(areaPoiID);
 	if mapID then
 		OpenWorldMap(mapID);

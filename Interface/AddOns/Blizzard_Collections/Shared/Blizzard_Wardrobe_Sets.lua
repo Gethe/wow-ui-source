@@ -570,7 +570,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 
 	if HelpTip:IsShowing(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL) then
 		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL);
-		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB, true);
+		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogSetsTab, true);
 	end
 end
 
@@ -1068,7 +1068,6 @@ function WardrobeSetsCollectionContainerMixin:OnLoad()
 	end);
 	view:SetPadding(0,0,44,0,0);
 
-	local panExtent = buttonHeight;
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	g_selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Intrusive);

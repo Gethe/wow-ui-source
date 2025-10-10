@@ -1003,6 +1003,20 @@ function PaperDollFrame_SetSpellPower(statFrame, unit)
 	statFrame:Show();
 end
 
+local function GetSecondaryBonus(rating, base, bonusCoeff)	
+	-- For Legion Remix Timerunners, secondary stat bonuses all come from auras not actual stats
+	-- BonusCoeff is only from mastery, all other call sights should be 1
+	-- default bonus coeff call sights where we don't use this
+	if PlayerIsTimerunning() then
+		return base;
+	end
+
+	if not bonusCoeff then
+		bonusCoeff = 1;
+	end
+	return (GetCombatRatingBonus(rating) * bonusCoeff);
+end
+
 function PaperDollFrame_SetCritChance(statFrame, unit)
 	if ( unit ~= "player" ) then
 		statFrame:Hide();
@@ -1041,7 +1055,7 @@ function PaperDollFrame_SetCritChance(statFrame, unit)
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_CRITICAL_STRIKE, critChance, true, critChance);
 
 	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_CRITICAL_STRIKE)..FONT_COLOR_CODE_CLOSE;
-	local extraCritChance = GetCombatRatingBonus(rating);
+	local extraCritChance = GetSecondaryBonus(rating, critChance);
 	local extraCritRating = GetCombatRating(rating);
 	if (GetCritChanceProvidesParryEffect()) then
 		statFrame.tooltip2 = format(CR_CRIT_PARRY_RATING_TOOLTIP, BreakUpLargeNumbers(extraCritRating), extraCritChance, GetCombatRatingBonusForCombatRatingValue(CR_PARRY, extraCritRating));
@@ -1136,7 +1150,9 @@ function PaperDollFrame_SetHaste(statFrame, unit)
 	if (not statFrame.tooltip2) then
 		statFrame.tooltip2 = STAT_HASTE_TOOLTIP;
 	end
-	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(rating)), GetCombatRatingBonus(rating));
+	local hasteRating = GetCombatRating(rating);
+	local hasteBonus = GetSecondaryBonus(rating, haste);
+	statFrame.tooltip2 = statFrame.tooltip2 .. format(STAT_HASTE_BASE_TOOLTIP, BreakUpLargeNumbers(hasteRating), hasteBonus);
 
 	statFrame:Show();
 end
@@ -1172,9 +1188,9 @@ function Mastery_OnEnter(statFrame)
 
 	local _, class = UnitClass("player");
 	local mastery, bonusCoeff = GetMasteryEffect();
-	local masteryBonus = GetCombatRatingBonus(CR_MASTERY) * bonusCoeff;
+	local masteryBonus = GetSecondaryBonus(CR_MASTERY, mastery, bonusCoeff);
 
-	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();
+	local primaryTalentTree = C_SpecializationInfo.GetSpecialization();	
 	if (primaryTalentTree) then
 		local masterySpells = C_SpecializationInfo.GetSpecializationMasterySpells(primaryTalentTree)
 		local hasAddedAnyMasterySpell = false;
@@ -1406,45 +1422,7 @@ end
 
 local CHARACTER_SHEET_MODEL_SCENE_ID = 595;
 function PaperDollFrame_SetPlayer()
-	CharacterModelScene:ReleaseAllActors();
-	CharacterModelScene:TransitionToModelSceneID(CHARACTER_SHEET_MODEL_SCENE_ID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
-
-	local form = GetShapeshiftFormID();
-	local creatureDisplayID = C_PlayerInfo.GetDisplayID();
-	local nativeDisplayID = C_PlayerInfo.GetNativeDisplayID();
-	if form and creatureDisplayID ~= 0 and not UnitOnTaxi("player") then
-		local actorTag = ANIMAL_FORMS[form] and ANIMAL_FORMS[form].actorTag or nil;
-		if actorTag then
-			local actor = CharacterModelScene:GetPlayerActor(actorTag);
-			if actor then
-				-- We need to SetModelByCreatureDisplayID() for Shapeshift forms if:
-				-- 1. We have a form active (already checked above)
-				-- 2. The display granted by that form is *not* our native Player display (e.g. anything *but* Glyph of Stars)
-				-- 3. The Player is *not* mirror imaged
-				-- 4. The Player *is* currently their native race (e.g. *not* using a transform Toy of some kind)
-				local displayIDIsNative = (creatureDisplayID == nativeDisplayID);
-				local displayRaceIsNative = C_PlayerInfo.IsDisplayRaceNative();
-				local isMirrorImage = C_PlayerInfo.IsMirrorImage();
-				local useShapeshiftDisplayID = (not displayIDIsNative and not isMirrorImage and displayRaceIsNative);
-				if useShapeshiftDisplayID then
-					actor:SetModelByCreatureDisplayID(creatureDisplayID, true);
-					actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-					return;
-				end
-			end
-		end
-	end
-
-	local actor = CharacterModelScene:GetPlayerActor();
-	if actor then
-		local hasAlternateForm, inAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-		local sheatheWeapon = GetSheathState() == 1;
-		local autodress = true;
-		local hideWeapon = false;
-		local useNativeForm = not inAlternateForm;
-		actor:SetModelByUnit("player", sheatheWeapon, autodress, hideWeapon, useNativeForm);
-		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
-	end
+	ModelSceneUtil.SetUpCharacterSheetScene(CharacterModelScene);
 end
 
 function PaperDollFrame_OnShow(self)
@@ -1462,6 +1440,9 @@ function PaperDollFrame_OnShow(self)
 
 	PaperDollFrame_SetPlayer();
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
+
+	local shown = true;
+	EventRegistry:TriggerEvent("PaperDollFrame.VisibilityUpdated", shown);
 end
 
 function PaperDollFrame_OnHide(self)
@@ -1470,6 +1451,9 @@ function PaperDollFrame_OnHide(self)
 	PaperDollSidebarTabs:Hide();
 	PaperDollFrame_HideInventoryFixupComplete(self);
 	self:UnregisterEvent("UNIT_MODEL_CHANGED");
+
+	local shown = false;
+	EventRegistry:TriggerEvent("PaperDollFrame.VisibilityUpdated", shown);
 end
 
 function PaperDollFrame_ClearIgnoredSlots()
@@ -1781,6 +1765,7 @@ function PaperDollItemSlotButton_OnEnter(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 
+	GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
 	local hasItem, hasCooldown, repairCost = GameTooltip:SetInventoryItem("player", self:GetID());
 	if ( not hasItem ) then
 		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
@@ -2785,7 +2770,7 @@ PaperDollItemSocketDisplayMixin = {};
 
 function PaperDollItemSocketDisplayMixin:SetItem(item)
 	-- Currently only showing socket display for timerunning characters
-	local showSocketDisplay = item ~= nil and PlayerGetTimerunningSeasonID() ~= nil;
+	local showSocketDisplay = item ~= nil and PlayerIsTimerunning();
 	self:SetShown(showSocketDisplay);
 
 	if not showSocketDisplay then

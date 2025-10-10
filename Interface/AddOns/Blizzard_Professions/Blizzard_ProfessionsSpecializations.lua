@@ -856,6 +856,21 @@ function ProfessionsSpecFrameMixin:AttemptConfigOperation(...) -- Override
 	self:UpdateConfigButtonsState();
 end
 
+function ProfessionsSpecFrameMixin:SetConfigID(configID) -- Override
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	self.configID = configID;
+end
+
+function ProfessionsSpecFrameMixin:GetConfigID() -- Override
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	return self.configID;
+end
+
+
 function ProfessionsSpecFrameMixin:HasValidConfig()
 	return (self:GetConfigID() ~= nil) and (self:GetTalentTreeID() ~= nil);
 end

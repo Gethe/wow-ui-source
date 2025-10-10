@@ -64,6 +64,10 @@ function CastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
 end
 
 function CastingBarMixin:UpdateShownState(desiredShow)
+	if (self == PlayerCastingBarFrame) and not GameRulesUtil.ShouldShowPlayerCastBar() then
+		desiredShow = false;
+	end
+
 	self:UpdateCastTimeTextShown();
 
 	if self.isInEditMode then
@@ -79,7 +83,7 @@ function CastingBarMixin:UpdateShownState(desiredShow)
 		return;
 	end
 
-	self:SetShown(self.casting and self.showCastbar);
+	self:SetShown(self.casting and self:ShouldShowCastBar());
 end
 
 -- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
@@ -338,7 +342,7 @@ function CastingBarMixin:OnEvent(event, ...)
 			end
 		end
 
-		self:UpdateShownState(self.showCastbar);
+		self:UpdateShownState(self:ShouldShowCastBar());
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
 		self:HandleCastStop(event, ...);
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
@@ -442,7 +446,7 @@ function CastingBarMixin:OnEvent(event, ...)
 			end
 		end
 
-		self:UpdateShownState(self.showCastbar);
+		self:UpdateShownState(self:ShouldShowCastBar());
 
 		-- AddStages after Show so that the layout is valid
 		if (isChargeSpell) then
@@ -713,7 +717,7 @@ function CastingBarMixin:StopAnims()
 end
 
 function CastingBarMixin:UpdateIsShown()
-	if ( self.casting and self.showCastbar ) then
+	if ( self.casting and self:ShouldShowCastBar() ) then
 		self:OnEvent("PLAYER_ENTERING_WORLD")
 	else
 		local desiredShowFalse = false;
@@ -757,6 +761,10 @@ function CastingBarMixin:UpdateCastTimeText()
 
 	local text = string.format(CAST_BAR_CAST_TIME, seconds);
 	self.CastTimeText:SetText(text);
+end
+
+function CastingBarMixin:ShouldShowCastBar()
+	return self.showCastbar and (self.unit ~= nil);
 end
 
 function CastingBarMixin:SetAndUpdateShowCastbar(showCastbar)
@@ -1023,26 +1031,6 @@ function CastingBarMixin:ClearStages()
 	self.NumStages = 0;
 	table.wipe(self.StagePoints);
 	table.wipe(self.StageTiers);
-end
-
-
-
-PlayerCastingBarMixin = {};
-
-function PlayerCastingBarMixin:OnLoad()
-	local showTradeSkills = true;
-	local showShieldNo = false;
-	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
-	self.Icon:Hide();
-end
-
-function PlayerCastingBarMixin:OnShow()
-	CastingBarMixin.OnShow(self);
-	UIParentManagedFrameMixin.OnShow(self); 
-end
-
-function PlayerCastingBarMixin:IsAttachedToPlayerFrame()
-	return self.attachedToPlayerFrame;
 end
 
 

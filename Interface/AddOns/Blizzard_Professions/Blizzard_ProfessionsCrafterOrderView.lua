@@ -114,7 +114,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 
 		if self.order.orderType == Enum.CraftingOrderType.Npc then
 			HelpTip:Hide(self.CreateButton, CRAFTING_ORDERS_FIRST_NPC_ORDER_HELPTIP);
-			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_CREATE_BUTTON, true);
+			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.NpcCraftingOrderCreateButton, true);
 		end
      end);
 
@@ -159,7 +159,7 @@ function ProfessionsCrafterOrderViewMixin:InitButtons()
 		local canWhisper = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild;
 		if canWhisper then
 			rootDescription:CreateButton(WHISPER_MESSAGE, function()
-				ChatFrame_SendTell(self.order.customerName);
+				ChatFrameUtil.SendTell(self.order.customerName);
 			end);
 		else
 			local button = rootDescription:CreateButton(WHISPER_MESSAGE, nop);
@@ -782,7 +782,7 @@ local npcOrderCreateButtonHelpTipInfo =
 	alignment = HelpTip.Alignment.Center,
 	offsetX = 0,
 	cvarBitfield = "closedInfoFramesAccountWide",
-	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDER_CREATE_BUTTON,
+	bitfieldFlag = Enum.FrameTutorialAccount.NpcCraftingOrderCreateButton,
 	checkCVars = true,
 };
 

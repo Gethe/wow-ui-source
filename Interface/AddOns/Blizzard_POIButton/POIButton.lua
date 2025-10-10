@@ -480,7 +480,7 @@ function POIButtonMixin:OnClick(button)
 
 	local questID = self:GetQuestID();
 	if questID then
-		if ChatEdit_TryInsertQuestLinkForQuestID(questID) then
+		if ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) then
 			return;
 		end
 

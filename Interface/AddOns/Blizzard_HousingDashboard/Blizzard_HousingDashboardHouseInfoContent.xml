@@ -1,0 +1,107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HousingDashboardHouseInfoTemplate" mixin="HousingDashboardHouseInfoMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<DropdownButton parentKey="HouseDropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x= "-20" y="-30"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Button parentKey="HouseFinderButton" hidden="true" inherits="UIPanelButtonTemplate">
+				<Size x="116" y="32"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.HouseDropdown" relativePoint="LEFT" x="-10"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+
+			<Frame parentKey="DashboardNoHousesFrame" setAllPoints="true" enableMouse="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="housing-dashboard-bg-empty" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" y="-4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_NO_HOUSE_TEXT">
+							<Size x="320"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SubtitleText" inherits="GameFontNormal" text="" hidden="true" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="NoHouseButton" inherits="UIPanelButtonHeightScaledTemplate">
+						<Size x="160" y="32"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="-50" relativeKey="$parent.SubtitleText" relativePoint="BOTTOM"/>
+						</Anchors>
+						<NormalFont style="GameFontNormal"/>
+						<HighlightFont style="GameFontNormal"/>
+						<DisabledFont style="GameFontDisable"/>
+						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="ContentFrame" inherits="TabSystemOwnerTemplate" mixin="HousingDashboardHouseInfoContentFrameMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+						<KeyValues>
+							<KeyValue key="minTabWidth" value="100" type="number"/>
+							<KeyValue key="maxTabWidth" value="150" type="number"/>
+							<KeyValue key="tabTemplate" value="TabSystemTopButtonTemplate" type="string"/>
+							<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="60"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="EndeavorFrame" frameLevel="100" setAllPoints="true" hidden="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_ENDEAVORS_COMING_SOON">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="HouseUpgradeFrame" frameLevel="100" setAllPoints="true" hidden="true" inherits="HousingUpgradeFrameTemplate">
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

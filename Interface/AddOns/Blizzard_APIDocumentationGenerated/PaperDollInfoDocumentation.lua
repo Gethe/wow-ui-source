@@ -171,6 +171,15 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "IsRangedSlotShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "OffhandHasShield",
 			Type = "Function",
 

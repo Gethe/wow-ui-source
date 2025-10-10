@@ -33,6 +33,19 @@ local FrameAPIModelSceneFrame =
 			},
 		},
 		{
+			Name = "GetAllowOverlappedModels",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "allowOverlappedModels", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCameraFarClip",
 			Type = "Function",
 
@@ -330,6 +343,15 @@ local FrameAPIModelSceneFrame =
 				{ Name = "point2DX", Type = "number", Nilable = false },
 				{ Name = "point2DY", Type = "number", Nilable = false },
 				{ Name = "depth", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAllowOverlappedModels",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "allowOverlappedModels", Type = "bool", Nilable = false },
 			},
 		},
 		{

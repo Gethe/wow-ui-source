@@ -83,6 +83,8 @@
 					<KeyValue key="textPadLeft" value="13" type="number"/>
 					<KeyValue key="textPadRight" value="5" type="number"/>
 					<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOMLEFT" type="string"/>
+					<KeyValue key="buttonBorderAtlas" value="spellbook-rotationhelper-iconframe" type="string"/>
+					<KeyValue key="buttonBorderAtlasSize" value="35" type="number"/>
 				</KeyValues>
 				<Size x="120" y="33"/>
 				<Anchors>

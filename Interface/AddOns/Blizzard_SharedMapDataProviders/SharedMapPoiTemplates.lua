@@ -584,13 +584,16 @@ function SuperTrackablePinMixin:UpdateSuperTrackTextureAnchors()
 	-- override
 	if self:IsSuperTracked() and not self.isAnchored then
 		self.isAnchored = true;
+
+		local relativeTo = self.Texture or self;
+
 		self.SuperTrackGlow:ClearAllPoints();
-		self.SuperTrackGlow:SetPoint("TOPLEFT", self.Texture, "TOPLEFT", -18, 18);
-		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", self.Texture, "BOTTOMRIGHT", 18, -18);
+		self.SuperTrackGlow:SetPoint("TOPLEFT", relativeTo, "TOPLEFT", -18, 18);
+		self.SuperTrackGlow:SetPoint("BOTTOMRIGHT", relativeTo, "BOTTOMRIGHT", 18, -18);
 
 		local x, y = self:GetSuperTrackMarkerOffset();
 		self.SuperTrackMarker:ClearAllPoints();
-		self.SuperTrackMarker:SetPoint("CENTER", self.Texture, "BOTTOMRIGHT", x, y);
+		self.SuperTrackMarker:SetPoint("CENTER", relativeTo, "BOTTOMRIGHT", x, y);
 	end
 end
 

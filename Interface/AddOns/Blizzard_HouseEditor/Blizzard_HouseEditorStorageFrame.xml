@@ -1,0 +1,180 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="HouseEditorStorageButtonTemplate" mixin="HouseEditorStorageButtonMixin" clampedToScreen="true" virtual="true">
+		<Size x="64" y="72"/>
+		<Anchors>
+			<Anchor point="LEFT" y="150"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="house-chest-open-drawer-button">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="OverlayIcon" parentArray="OverlayIcons" atlas="house-chest-open-drawer-button" alphaMode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HouseEditorStorageTabTemplate" inherits="TabSystemButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_BOTTOM"/>
+			<KeyValue key="tooltipAnchorX" type="number" value="0"/>
+			<KeyValue key="tooltipAnchorY" type="number" value=""/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="HouseEditorStorageFrameTemplate" mixin="HouseEditorStorageFrameMixin" inherits="TabSystemOwnerTemplate" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
+		<Size x="600" y="651"/>
+		<KeyValues>
+			<KeyValue key="minWidth" value="415" type="number"/>
+			<KeyValue key="maxWidth" value="827" type="number"/>
+			<KeyValue key="minHeight" value="651" type="number"/>
+			<KeyValue key="maxHeight" value="800" type="number"/>
+			<KeyValue key="widthSnapMultiplier" value="102" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="LEFT" y="150"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="house-chest-container-bg" texelSnappingBias="0.0" snapToPixelGrid="false" enableMouseMotion="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="HeaderBackground" atlas="house-chest-header-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="404" y="68"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-68"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="CornerBorder" atlas="house-chest-corbel-topright" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="74" y="49"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-2.5" y="-2.5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the storage frame -->
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+
+			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate">
+				<Size y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-20"/>
+					<Anchor point="TOPRIGHT" x="-160" y="-20"/>
+				</Anchors>
+			</EditBox>
+
+			<Frame parentKey="Filters" inherits="HousingCatalogFiltersTemplate">
+				<Size y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="10" y="0"/>
+					<Anchor point="RIGHT" x="-25" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="Categories" inherits="HousingCatalogCategoriesTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="75" type="number"/>
+					<KeyValue key="topPadding" value="5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="OptionsContainer" inherits="ScrollingHousingCatalogTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="85" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.OptionsContainer" relativePoint="CENTER"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="100" type="number"/>
+					<KeyValue key="maxTabWidth" value="150" type="number"/>
+					<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
+					<KeyValue key="tabTemplate" value="HouseEditorStorageTabTemplate" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="22" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CollapseButton">
+				<Size x="32" y="74"/>
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-3" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="house-chest-close-drawer-button" setAllPoints="true" />
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="OverlayIcon" atlas="house-chest-close-drawer-button" setAllPoints="true" alphaMode="ADD" alpha="0.5" hidden="true" />
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="ResizeButton" mixin="PanelResizeButtonMixin">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	
+</Ui>

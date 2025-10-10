@@ -336,6 +336,7 @@ function ItemRefTooltipMixin:OnLoad()
 	GameTooltip_OnLoad(self);
 	self:RegisterForDrag("LeftButton");
 	self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
+	self.updateTooltipTimer = nil;
 end
 
 function ItemRefTooltipMixin:OnUpdate(elapsed)
@@ -343,7 +344,7 @@ function ItemRefTooltipMixin:OnUpdate(elapsed)
 		self:RefreshData();
 	end
 	if self.updateTooltipTimer then
-		if ( IsModifiedClick("COMPAREITEMS") ) then
+		if TooltipUtil.ShouldDoItemComparison(self) then
 			self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
 			if ( self.updateTooltipTimer > 0 ) then
 				return;
@@ -374,6 +375,7 @@ function ItemRefTooltipMixin:OnLeave()
 		frame:Hide();
 	end
 	self.updateTooltipTimer = nil;
+	TooltipComparisonManager:Clear(self);
 end
 
 function ItemRefTooltipMixin:ItemRefSetHyperlink(link)

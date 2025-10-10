@@ -39,6 +39,20 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasExists",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "atlasExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasID",
 			Type = "Function",
 
@@ -130,6 +144,17 @@ local TextureUtils =
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 				{ Name = "titleID", Type = "string", Nilable = false },
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+			},
+		},
+		{
+			Name = "SetURLTexture",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "url", Type = "cstring", Nilable = false },
 			},
 		},
 	},

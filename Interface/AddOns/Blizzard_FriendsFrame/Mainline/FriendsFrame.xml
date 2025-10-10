@@ -1,7 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="FriendsTabTemplate" inherits="PanelTopTabButtonTemplate" mixin="FriendsTabMixin" virtual="true">
-		<Size x="280" y="32"/>
+	<Button name="FriendsTabTemplate" inherits="TabSystemButtonTemplate" mixin="FriendsTabMixin" virtual="true">
+		<Size y="24"/>
+		<KeyValues>
+			<KeyValue key="isTabOnTop" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="New" inherits="NewFeatureLabelNoAnimateTemplate" frameLevel="20">
 				<Anchors>
@@ -10,6 +13,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
@@ -510,11 +514,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" mixin="FriendsTabHeaderMixin" setAllPoints="true">
-				<KeyValues>
-					<KeyValue key="maxTabWidth" value="110" type="number"/>
-				</KeyValues>
+			<Frame name="FriendsTabHeader" parentKey="FriendsTabHeader" inherits="TabSystemOwnerTemplate" mixin="FriendsTabHeaderMixin" setAllPoints="true">
 				<Frames>
+					<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+						<KeyValues>
+							<KeyValue key="minTabWidth" value="100" type="number"/>
+							<KeyValue key="maxTabWidth" value="150" type="number"/>
+							<KeyValue key="tabTemplate" value="FriendsTabTemplate" type="string"/>
+							<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="18" y="-60"/>
+						</Anchors>
+					</Frame>
 					<Frame name="FriendsFrameBattlenetFrame" parentKey="BattlenetFrame">
 						<Size x="190" y="29"/>
 						<Anchors>
@@ -534,6 +546,7 @@
 									<Color r="0.345" g="0.667" b="0.867" />
 								</FontString>
 								<FontString parentKey="UnavailableLabel" inherits="FriendsFont_Normal" text="BATTLENET_UNAVAILABLE" hidden="true">
+									<Size x="150"/>
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>
@@ -547,23 +560,34 @@
 							</OnHide>
 						</Scripts>
 						<Frames>
-							<Button parentKey="BroadcastButton">
+							<DropdownButton parentKey="ContactsMenuButton" inherits="SquareIconButtonTemplate" mixin="ContactsMenuMixin">
 								<Size x="32" y="32"/>
+								<KeyValues>
+									<KeyValue key="iconSize" value="12" type="number"/>
+									<KeyValue key="tooltipTitle" value="CONTACTS_MENU_NAME" type="global"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="OVERLAY">
+										<Texture parentKey="Icon" file="Interface\Buttons\SquareButtonTextures">
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+											<TexCoords left="0.45312500" right="0.64062500" bottom="0.01562500" top="0.20312500"/>
+										</Texture>
+									</Layer>
+								</Layers>
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="3" y="0"/>
+									<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0"/>
 								</Anchors>
 								<Scripts>
-									<OnClick>
-										self:GetParent().BroadcastFrame:ToggleFrame();
-									</OnClick>
+									<OnShow method="OnShow"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
 								</Scripts>
-								<NormalTexture file="Interface\FriendsFrame\broadcast-normal"/>
-								<PushedTexture file="Interface\FriendsFrame\broadcast-press"/>
-								<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-							</Button>
+							</DropdownButton>
 							<Button parentKey="UnavailableInfoButton" inherits="UIPanelInfoButton" hidden="true">
 								<Anchors>
-									<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="4" y="0"/>
+									<Anchor point="LEFT" relativeKey="$parent.UnavailableLabel" relativePoint="RIGHT" x="0" y="0"/>
 								</Anchors>
 								<Scripts>
 									<OnClick>
@@ -700,7 +724,6 @@
 									</Button>
 								</Frames>
 								<Scripts>
-									<OnLoad method="OnLoad"/>
 									<OnMouseDown>
 										self.EditBox:SetFocus();
 									</OnMouseDown>
@@ -743,16 +766,10 @@
 							<Anchor point="RIGHT" relativeKey="$parent.BattlenetFrame" relativePoint="LEFT" x="-7"/>
 						</Anchors>
 					</DropdownButton>
-					<Button name="FriendsTabHeaderTab1" parentKey="Tab1" inherits="FriendsTabTemplate" text="FRIENDS" id="1">
-						<Anchors>
-							<Anchor point="TOPLEFT" x="18" y="-51"/>
-						</Anchors>
-					</Button>
-					<Button name="FriendsTabHeaderTab2" parentKey="Tab2" inherits="FriendsTabTemplate" text="IGNORE" id="2"/>
-					<Button name="FriendsTabHeaderTab3" parentKey="Tab3" inherits="FriendsTabTemplate" text="RECRUIT_A_FRIEND" id="3"/>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />
+					<OnShow method="OnShow"/>
 					<OnEvent method="OnEvent" />
 				</Scripts>
 			</Frame>
@@ -849,31 +866,51 @@
 					<OnHide function="FriendsListFrame_OnHide"/>
 				</Scripts>
 			</Frame>
-			<Frame name="IgnoreListFrame" hidden="true" setAllPoints="true">
+			<Frame name="RecentAlliesFrame" hidden="true" setAllPoints="true">
 				<Frames>
-					<Button name="FriendsFrameIgnorePlayerButton" inherits="FriendsFrameButtonTemplate_BottomLeft" text="IGNORE_PLAYER">
-						<Scripts>
-							<OnClick function="FriendsFrameIgnorePlayerButton_OnClick"/>
-						</Scripts>
-					</Button>
-					<Button name="FriendsFrameUnsquelchButton" inherits="FriendsFrameButtonTemplate_BottomRight" text="REMOVE_PLAYER">
+					<Frame parentKey="List" inherits="RecentAlliesListTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="3" y="-4"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-3" y="2"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="IgnoreListWindow" inherits="ButtonFrameTemplate"  hidden="true" mixin="FriendsIgnoreListMixin">
+				<Size x="273" y="292"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="5" y="-53"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="UnignorePlayerButton" inherits="UIPanelButtonTemplate" text="UNIGNORE_PLAYER_BUTTON_LABEL">
+						<Size x="130" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" y="8"/>
+						</Anchors>
 						<Scripts>
 							<OnClick function="FriendsFrameUnsquelchButton_OnClick"/>
 						</Scripts>
 					</Button>
+
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Inset" x="4" y="-4"/>
-							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.Inset" x="-22" y="2"/>
+							<Anchor point="TOPLEFT" x="1"  y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="-20"/>
 						</Anchors>
 					</Frame>
+		
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-3"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="3"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
 			</Frame>
 			<Frame name="WhoFrame" setAllPoints="true" hidden="true">
 				<Frames>
@@ -1064,7 +1101,7 @@
 					</OnHide>
 				</Scripts>
 			</Frame>
-			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="FRIENDS">
+			<Button name="FriendsFrameTab1" inherits="FriendsFrameTabTemplate" id="1" text="CONTACTS_TAB_TITLE">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="5" y="-30"/>
 				</Anchors>

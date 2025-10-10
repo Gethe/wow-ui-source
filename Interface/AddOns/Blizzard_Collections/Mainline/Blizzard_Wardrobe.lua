@@ -41,34 +41,39 @@ function TransmogFrameMixin:OnLoad()
 	self.ModelScene.ControlFrame:SetModelScene(WardrobeTransmogFrame.ModelScene);
 	self.ToggleSecondaryAppearanceCheckbox.Label:SetPoint("RIGHT", WardrobeCollectionFrame.ItemsCollectionFrame.PagingFrame.PageText, "LEFT", -40, 0);
 
-	self.SpecDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_TRANSMOG");
+	local classID = select(3, UnitClass("player"));
+	if C_SpecializationInfo.GetNumSpecializationsForClassID(classID) > 1 then
+		self.SpecDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_TRANSMOG");
 
-		rootDescription:CreateTitle(TRANSMOG_APPLY_TO);
+			rootDescription:CreateTitle(TRANSMOG_APPLY_TO);
 
-		local function IsSelected(currentSpecOnly)
-			return GetCVarBool("transmogCurrentSpecOnly") == currentSpecOnly;
-		end
+			local function IsSelected(currentSpecOnly)
+				return GetCVarBool("transmogCurrentSpecOnly") == currentSpecOnly;
+			end
 
-		local function SetSelected(currentSpecOnly)
-			SetCVar("transmogCurrentSpecOnly", currentSpecOnly);
-		end
+			local function SetSelected(currentSpecOnly)
+				SetCVar("transmogCurrentSpecOnly", currentSpecOnly);
+			end
 
-		local currentSpecOnly = true;
-		rootDescription:CreateRadio(TRANSMOG_ALL_SPECIALIZATIONS, IsSelected, SetSelected, not currentSpecOnly);
+			local currentSpecOnly = true;
+			rootDescription:CreateRadio(TRANSMOG_ALL_SPECIALIZATIONS, IsSelected, SetSelected, not currentSpecOnly);
 
-		local spec = C_SpecializationInfo.GetSpecialization();
-		local name = spec and select(2, C_SpecializationInfo.GetSpecializationInfo(spec)) or nil;
-		if name then
-			rootDescription:CreateRadio(TRANSMOG_CURRENT_SPECIALIZATION, IsSelected, SetSelected, currentSpecOnly);
+			local spec = C_SpecializationInfo.GetSpecialization();
+			local name = spec and select(2, C_SpecializationInfo.GetSpecializationInfo(spec)) or nil;
+			if name then
+				rootDescription:CreateRadio(TRANSMOG_CURRENT_SPECIALIZATION, IsSelected, SetSelected, currentSpecOnly);
 
-			local title = rootDescription:CreateTitle(format(PARENS_TEMPLATE, name));
-			title:AddInitializer(function(button, description, menu)
-				button.fontString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
-				button.fontString:AdjustPointsOffset(16, 0);
-			end);
-		end
-	end);
+				local title = rootDescription:CreateTitle(format(PARENS_TEMPLATE, name));
+				title:AddInitializer(function(button, description, menu)
+					button.fontString:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
+					button.fontString:AdjustPointsOffset(16, 0);
+				end);
+			end
+		end);
+	else
+		self.SpecDropdown:Hide();
+	end
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)
@@ -87,7 +92,7 @@ function TransmogFrameMixin:OnEvent(event, ...)
 				end
 			end
 			-- specs button tutorial
-			if ( hasPending and not hasUndo ) then
+			if ( hasPending and not hasUndo and self.SpecDropdown:IsShown() ) then
 				if ( not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON) ) then
 					local helpTipInfo = {
 						text = TRANSMOG_SPECS_BUTTON_TUTORIAL,
@@ -457,7 +462,16 @@ function TransmogFrameMixin:UpdateApplyButton()
 	if StaticPopup_FindVisible("TRANSMOG_APPLY_WARNING") then
 		canApply = false;
 	end
-	MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost or 0, true);	-- always show 0 copper
+
+	local showCost = not C_GameRules.IsGameRuleActive(Enum.GameRule.HideTransmogZeroCost) or (cost and (cost ~= 0));
+	self.MoneyFrame:SetShown(showCost);
+	self.MoneyLeft:SetShown(showCost);
+	self.MoneyMiddle:SetShown(showCost);
+	self.MoneyRight:SetShown(showCost);
+	if showCost then
+		MoneyFrame_Update("WardrobeTransmogMoneyFrame", cost or 0, true);	-- always show 0 copper
+	end
+
 	self.ApplyButton:SetEnabled(canApply);
 	self.ModelScene.ClearAllPendingButton:SetShown(canApply);
 end
@@ -719,8 +733,16 @@ function TransmogSlotButtonMixin:OnAnimFinished()
 	self:Update();
 end
 
+function TransmogSlotButtonMixin:UpdateNoItemState(showNoItem)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.HideUnavailableTransmogSlots) then
+		self:SetShown(not showNoItem);
+	else
+		self.NoItemTexture:SetShown(showNoItem);
+	end
+end
+
 function TransmogSlotButtonMixin:Update()
-	if not self:IsShown() then
+	if not self:IsShown() and not C_GameRules.IsGameRuleActive(Enum.GameRule.HideUnavailableTransmogSlots) then
 		return;
 	end
 
@@ -743,7 +765,9 @@ function TransmogSlotButtonMixin:Update()
 			else
 				self.Icon:SetTexture(texture);
 			end
-			self.NoItemTexture:Hide();
+
+			local showNoItem = false;
+			self:UpdateNoItemState(showNoItem);
 		else
 			local tag = TRANSMOG_INVALID_CODES[cannotTransmogrifyReason];
 			local slotID, defaultTexture = GetInventorySlotInfo(self.slot);
@@ -759,8 +783,9 @@ function TransmogSlotButtonMixin:Update()
 			else
 				self.Icon:SetTexture(texture);
 			end
-			
-			self.NoItemTexture:Show();
+
+			local showNoItem = true;
+			self:UpdateNoItemState(showNoItem);
 		end
 	else
 		-- check for weapons lacking visual attachments
@@ -775,13 +800,13 @@ function TransmogSlotButtonMixin:Update()
 			self.invalidWeapon = false;
 		end
 
-		if ( hasPending or hasUndo or canTransmogrify ) then
-			self.Icon:SetTexture(texture or ENCHANT_EMPTY_SLOT_FILEDATAID);
-			self.NoItemTexture:Hide();
-		else
+		local showNoItem = not hasPending and not hasUndo and not canTransmogrify;
+		self:UpdateNoItemState(showNoItem);
+		if ( showNoItem ) then
 			self.Icon:SetColorTexture(0, 0, 0);
-			self.NoItemTexture:Show();
-		end
+		else
+			self.Icon:SetTexture(texture or ENCHANT_EMPTY_SLOT_FILEDATAID);
+		end		
 	end
 	self:SetEnabled(canTransmogrify or hasUndo);
 
@@ -1652,7 +1677,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 		};
 		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 	else
-		if (GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB)) then
+		if (GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogSetsTab)) then
 			return;
 		end
 
@@ -1660,7 +1685,7 @@ function WardrobeItemsCollectionMixin:CheckHelpTip()
 			text = TRANSMOG_SETS_TAB_TUTORIAL,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB,
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSetsTab,
 			targetPoint = HelpTip.Point.BottomEdgeCenter,
 			checkCVars = true,
 		};

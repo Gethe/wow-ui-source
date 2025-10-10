@@ -143,7 +143,7 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupFrame()
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:BeginEffects()
-	-- Overriden by inheriting frame, if needed
+	-- Overridden by inheriting frame, if needed
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:CancelEffects()

@@ -1098,7 +1098,7 @@ function GarrisonFollowerListButton_OnModifiedClick(self, button)
 		end
 
 		if ( followerLink ) then
-			ChatEdit_InsertLink(followerLink);
+			ChatFrameUtil.InsertLink(followerLink);
 		end
 	end
 end
@@ -2406,7 +2406,7 @@ function GarrisonFollowerPageAbility_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
 		if (abilityLink) then
-			ChatEdit_InsertLink(abilityLink);
+			ChatFrameUtil.InsertLink(abilityLink);
 		end
 	else
 		local followerTab = self:GetParent():GetParent():GetParent();
@@ -2825,7 +2825,7 @@ function GarrisonFollowerEquipmentMixin:OnClick(button)
 	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
 		if (abilityLink) then
-			ChatEdit_InsertLink(abilityLink);
+			ChatFrameUtil.InsertLink(abilityLink);
 		end
 	elseif (self.abilityID) then
 		if ( button == "LeftButton") then

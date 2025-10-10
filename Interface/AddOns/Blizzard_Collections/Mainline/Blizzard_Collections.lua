@@ -11,7 +11,7 @@ function CollectionsJournal_GetTab(self)
 end
 
 function CollectionsJournal_ValidateTab(tabIndex)
-	if PlayerGetTimerunningSeasonID() and tabIndex == COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS then
+	if PlayerIsTimerunning() and tabIndex == COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS then
 		-- Heirlooms are disabled during timerunning, so don't bother showing the tab
 		return false;
 	end
@@ -66,7 +66,7 @@ end
 
 function CollectionsJournal_CheckAndDisplayHeirloomsTab()
 	CollectionsJournal.WardrobeTab:ClearAllPoints();
-	if PlayerGetTimerunningSeasonID() then
+	if PlayerIsTimerunning() then
 		PanelTemplates_HideTab(CollectionsJournal, CollectionsJournal.HeirloomsTab:GetID());
 		CollectionsJournal.WardrobeTab:SetPoint("LEFT", CollectionsJournal.ToysTab, "RIGHT");
 	else
@@ -85,6 +85,9 @@ function CollectionsJournal_OnShow(self)
 	UpdateMicroButtons();
 
 	CollectionsJournal_CheckAndDisplayHeirloomsTab();
+
+	-- trigger with selected tab
+	EventRegistry:TriggerEvent("CollectionsJournal.OnShow", CollectionsJournal_GetTab(self));
 end
 
 function CollectionsJournal_OnHide(self)
@@ -92,4 +95,6 @@ function CollectionsJournal_OnHide(self)
 	UpdateMicroButtons();
 
 	CollectionsMicroButton:EvaluateAlertVisibility();
+
+	EventRegistry:TriggerEvent("CollectionsJournal.OnHide", CollectionsJournal_GetTab(self));
 end

@@ -48,12 +48,38 @@
 		<HighlightFont style="UserScaledFontGameHighlight"/>
 	</Button>
 
-	<Frame name="StaticPopupTemplate" inherits="ResizeLayoutFrame" mixin="GameDialogMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
+	<Frame name="StaticPopupBaseTemplate" mixin="GameDialogBaseMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
+		<Size x="320" y="72"/>
+		<Frames>
+			<Frame parentKey="BG" useParentLevel="true" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-7">
+						<Texture parentKey="Bottom"/>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-4">
+						<Texture parentKey="Top"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="StaticPopupTemplate" inherits="StaticPopupBaseTemplate, ResizeLayoutFrame" mixin="GameDialogMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="onCloseCallback" value="StaticPopup_OnCloseButtonClicked" type="global" />
 			<KeyValue key="heightPadding" value="16" type="number"/>
 		</KeyValues>
-		<Size x="320" y="72"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TopSpacer">
@@ -125,16 +151,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="BG" useParentLevel="true" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-7">
-						<Texture parentKey="Bottom"/>
-					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="-4">
-						<Texture parentKey="Top"/>
-					</Layer>
-				</Layers>
-			</Frame>
 			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
@@ -151,14 +167,6 @@
 					<OnKeyUp function="nop"/>
 				</Scripts>
 			</Frame>
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
-				</Anchors>
-			</Button>
 			<Frame parentKey="ButtonContainer" inherits="ResizeLayoutFrame">
 				<Frames>
 					<Button name="$parentButton1" parentKey="Button1" inherits="StaticPopupButtonTemplate" id="1"/>

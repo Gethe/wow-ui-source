@@ -21,7 +21,7 @@ local PerksVendorConstants =
 				{ Name = "Activity", Type = "PerksVendorCategoryType", EnumValue = 21 },
 				{ Name = "GmAdjustment", Type = "PerksVendorCategoryType", EnumValue = 22 },
 				{ Name = "Achievement", Type = "PerksVendorCategoryType", EnumValue = 23 },
-				{ Name = "Refund", Type = "PerksVendorCategoryType", EnumValue = 24 },
+				{ Name = "UnusedPerksVendorCategoryRefundUnused", Type = "PerksVendorCategoryType", EnumValue = 24 },
 			},
 		},
 	},

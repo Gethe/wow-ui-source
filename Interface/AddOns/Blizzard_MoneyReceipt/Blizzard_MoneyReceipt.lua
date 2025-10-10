@@ -41,7 +41,7 @@ do
 			else
 				msg = CRAFTING_ORDERS_ORDER_FULFILLED_SINGLE_FMT:format(orderTypeString, itemNameString, playerNameString, moneyString);
 			end
-			ChatFrame_DisplaySystemMessageInPrimary(msg);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(msg);
 		end
 	end
 end
@@ -65,7 +65,7 @@ function ReceiptMixin:Display()
 	if self.startingMoney then
 		local delta = GetMoney() - self.startingMoney;
 		if delta > 0 then
-			ChatFrame_DisplaySystemMessageInPrimary(GENERIC_MONEY_GAINED_RECEIPT:format(GetMoneyString(delta, true)));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(GENERIC_MONEY_GAINED_RECEIPT:format(GetMoneyString(delta, true)));
 		end
 	end
 end

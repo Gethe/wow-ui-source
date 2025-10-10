@@ -16,7 +16,13 @@ local function GetTextLocalesOptions()
 end
 
 local function GetAudioLocalesOptions()
-	return CreateOptions("enUS", GetCVar("audioLocale"), GetCVar("textLocale"));
+	local textLocale = GetCVar("textLocale");
+	if textLocale == "enUS" then
+		-- English text can only be accompanied by English audio.
+		return CreateOptions("enUS");
+	end
+
+	return CreateOptions("enUS", textLocale);
 end
 
 local function SetAudioLocaleSettingToDefault(setting)
@@ -52,8 +58,7 @@ end
 local function SetupDropdown(dropdown, setting, options, width, initTooltip)
 	local function Inserter(rootDescription, isSelected, setSelected)
 		for index, localeTbl in ipairs(options()) do
-			local optionDescription = rootDescription:CreateTemplate("SettingsDropdownButtonTemplate");
-			Settings.CreateDropdownButton(optionDescription, localeTbl, isSelected, setSelected);
+			local optionDescription = Settings.CreateDropdownButton(rootDescription, localeTbl, isSelected, setSelected);
 			
 			-- Language dropdown requires all the initialization from Settings.CreateDropdownButton,
 			-- except it needs to display it's selected value as a texture, not text.
@@ -67,6 +72,8 @@ local function SetupDropdown(dropdown, setting, options, width, initTooltip)
 		end
 	end
 
+	setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
+
 	Settings.InitDropdown(dropdown, setting, Inserter, initTooltip);
 end
 
@@ -74,6 +81,8 @@ end
 local BaseLanguageDropdownControlMixin = {}; 
 
 function BaseLanguageDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
+	self.Control:HideSteppers();
+
 	SetupDropdown(self.Control.Dropdown, setting, options, initTooltip);
 end
 

@@ -34,3 +34,4 @@ FrameWatcher.lua
 TaggableObject.lua
 TimedCallback.lua
 RegionLayoutManager.lua
+ModelSceneUtil.lua

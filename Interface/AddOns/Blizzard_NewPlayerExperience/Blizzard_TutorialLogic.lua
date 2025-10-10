@@ -62,7 +62,7 @@ function TutorialLogic:Begin()
 	self.playerClass = TutorialHelper:GetClass();
 	self.factionData = TutorialData:GetFactionData();-- get the data for the player's faction
 	self.vendorQuestID = self.factionData.UseVendorQuest;
-	self.specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
+	self.specQuestID = self.factionData.SpecQuestTrackID;
 	
 	TutorialQuestManager:RegisterForCallbacks(self);-- Certain tutorials kick off when quests are accepted
 	
@@ -110,8 +110,9 @@ function TutorialLogic:Begin()
 	TutorialManager:AddTutorial(Class_MountReceived:new());
 	TutorialManager:AddTutorial(Class_AddMountToActionBar:new());
 	TutorialManager:AddTutorial(Class_UseMount:new());
+	TutorialManager:AddTutorial(Class_HousingSkip:new());
 
-	local specQuestID = TutorialHelper:FilterByClass(self.factionData.SpecQuests);
+	local specQuestID = self.factionData.SpecQuestTrackID;
 	TutorialManager:AddTutorial(Class_ChangeSpec_NPE:new(), nil, specQuestID);
 	local autoStart = true;
 	TutorialManager:AddWatcher(Class_StarterTalentWatcher_NPE:new(), autoStart);
@@ -149,6 +150,7 @@ function TutorialLogic:Begin()
 	end	
 	TutorialManager:AddWatcher(Class_InventoryWatcher:new(), autoStart);
 	TutorialManager:AddWatcher(Class_LowHealthWatcher:new(), autoStart);
+	TutorialManager:AddWatcher(Class_TabTargetingWatcher:new(), autoStart);
 
 	-- start NPE
 	TutorialManager:Queue(Class_Intro_KeyboardMouse.name);
@@ -172,6 +174,7 @@ function TutorialLogic:Shutdown()
 	TutorialManager:ShutdownWatcher(Class_Death_Watcher.name);
 	TutorialManager:ShutdownWatcher(Class_LootCorpseWatcher.name);
 	TutorialManager:ShutdownWatcher(Class_LowHealthWatcher.name);
+	TutorialManager:ShutdownWatcher(Class_TabTargetingWatcher.name);
 
 	TutorialManager:ShutdownTutorial(Class_AddSpellToActionBarService.name);
 	TutorialManager:ShutdownTutorial(Class_ItemUpgradeCheckingService.name);
@@ -205,6 +208,7 @@ function TutorialLogic:Shutdown()
 	TutorialManager:ShutdownTutorial(Class_MountReceived.name);
 	TutorialManager:ShutdownTutorial(Class_AddMountToActionBar.name);
 	TutorialManager:ShutdownTutorial(Class_UseMount.name);
+	TutorialManager:ShutdownTutorial(Class_HousingSkip.name);
 	TutorialManager:ShutdownTutorial(Class_ChangeSpec_NPE.name);
 	TutorialManager:ShutdownTutorial(Class_TalentPoints.name);
 	TutorialManager:ShutdownTutorial(Class_Death_ReleaseCorpse.name);

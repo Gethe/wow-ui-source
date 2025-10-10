@@ -42,8 +42,8 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 
 		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
 			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
-			if not ChatEdit_InsertLink(hyperlink) then
-				ChatFrame_OpenChat(hyperlink);
+			if not ChatFrameUtil.InsertLink(hyperlink) then
+				ChatFrameUtil.OpenChat(hyperlink);
 			end
 		end);
 
@@ -54,11 +54,11 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 		end);
 	end);
 
-	ChatEdit_RegisterForStickyFocus(self);
+	ChatFrameUtil.RegisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnHide()
-	ChatEdit_UnregisterForStickyFocus(self);
+	ChatFrameUtil.UnregisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnClick()

@@ -35,13 +35,13 @@ function MapCanvasMixin:OnUpdate()
 end
 
 function MapCanvasMixin:SetMapID(mapID)
-	if Kiosk.IsEnabled() and KioskFrame:HasWhitelistedMaps() then
-		local mapIDs = KioskFrame:GetWhitelistedMapIDs();
+	if KioskFrame and KioskFrame:HasAllowedMaps() then
+		local mapIDs = KioskFrame:GetAllowedMapIDs();
 		if not tContains(mapIDs, mapID) then
 			if not self.mapID then
-				-- Initialize to an allowed map and assert. Using whitelisted maps is only
+				-- Initialize to an allowed map and assert. Using approved maps is only
 				-- suitable if we know exactly the maps the player should be in.
-				assert(false, "Map ID "..mapID.." is not amongst the whitelisted maps.");
+				assert(false, "Map ID "..mapID.." is not amongst the approved maps.");
 				mapID = mapIDs[1];
 			else
 				-- Not in our list, so don't change the map.
@@ -791,6 +791,10 @@ function MapCanvasMixin:GetCanvasScale()
 	return self.ScrollContainer:GetCanvasScale();
 end
 
+function MapCanvasMixin:HasZoomLevels()
+	return self.ScrollContainer:HasZoomLevels();
+end
+
 function MapCanvasMixin:GetCanvasZoomPercent()
 	return self.ScrollContainer:GetCanvasZoomPercent();
 end
@@ -1156,5 +1160,24 @@ end
 function MapCanvasMixin:HandleUIAction(actionType)
 	if actionType == Enum.UIActionType.UpdateMapSystem then
 		self:RefreshAllDataProviders();
+	end
+end
+
+function MapCanvasMixin:SetAllPinsByTemplateGlowing(pinTemplate, glowing, glowLoopCount)
+	local pinPool = self.pinPools[pinTemplate];
+	if pinPool then
+		for pin in pinPool:EnumerateActive() do
+			if glowing then
+				if pin.StartGlow then
+					pin:StartGlow(glowLoopCount);
+				end
+			else
+				if pin.StopGlow then
+					pin:StopGlow();
+				end
+			end
+		end
+
+		self.ScrollContainer:MarkCanvasDirty();
 	end
 end

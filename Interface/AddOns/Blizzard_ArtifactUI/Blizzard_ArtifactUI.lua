@@ -274,7 +274,7 @@ function ArtifactUIMixin:OnInventoryItemMouseEnter(bag, slot)
 			local itemLink = itemInfo.hyperlink;
 			local itemID = itemInfo.itemID;
 
-			if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() then
+			if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) and not CursorHasItem() then
 				self.PerksTab:ShowHighlightForRelicItemID(itemID, itemLink);
 				self.PerksTab.TitleContainer:RefreshRelicHighlights(itemID, itemLink);
 			end
@@ -288,7 +288,7 @@ function ArtifactUIMixin:OnInventoryItemMouseLeave(bag, slot)
 		local itemLink = itemInfo.hyperlink;
 		local itemID = itemInfo.itemID;
 
-		if itemID and IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
+		if itemID and C_ItemSocketInfo.IsArtifactRelicItem(itemID) and not CursorHasItem() and self.PerksTab:IsVisible() then
 			self.PerksTab:HideHighlightForRelicItemID(itemID, itemLink);
 			self.PerksTab.TitleContainer:RefreshRelicHighlights();
 		end

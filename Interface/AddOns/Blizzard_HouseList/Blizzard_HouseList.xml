@@ -1,0 +1,151 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<EventButton name="HouseEntryTemplate" mixin="HouseEntryTemplateMixin" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="house-list-container-closed" setAllPoints="true"/>	
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="PlusMinusBack" atlas="common-dropdown-c-button">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-10" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HouseNameText" inherits="Game15Font_Shadow" text="House Name Here">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="PlusMinus" atlas="common-icon-plus">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.PlusMinusBack"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Spacer" atlas="house-list-open-divider" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseNameText" relativePoint="BOTTOMLEFT" x="-5" y="-4"/>
+					</Anchors>
+					<Size x="350" y="4"/>
+				</Texture>
+				<FontString parentKey="HouseOwnerLabel" inherits="Game13FontShadow" hidden="true" text="HOUSING_DASHBOARD_OWNER_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Spacer" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="HouseOwnerText" inherits="Game13FontShadow" hidden="true" text="owner name here">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseOwnerLabel" relativePoint="TOPRIGHT" x="3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HouseLocationLabel" inherits="Game13FontShadow" hidden="true" text="HOUSING_DASHBOARD_LOCATION_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseOwnerLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="HouseLocationText" inherits="Game13FontShadow" hidden="true" text="plot # here">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseLocationLabel" relativePoint="TOPRIGHT" x="3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HouseNeighborhoodLabel" inherits="Game13FontShadow" hidden="true" text="HOUSING_DASHBOARD_NEIGHBORHOOD_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseLocationLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="HouseNeighborhoodText" inherits="Game13FontShadow" hidden="true" justifyH="LEFT" text="neighborhood name here">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseNeighborhoodLabel" relativePoint="TOPRIGHT" x="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="VisitHouseButton" inherits="UIPanelButtonTemplate" hidden="true" text="VIEW_HOUSES_VISIT_BUTTON">
+				<Size x="160" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="15"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalMed2"/>
+				<HighlightFont style="GameFontNormalMed2"/>
+				<DisabledFont style="GameFontHighlightMedium"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+		</Frames>
+	</EventButton>
+
+	<Frame name="HouseListFrame" mixin="HouseListFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEvent method="OnEvent"/>
+            <OnShow method="OnShow"/>
+            <OnHide method="OnHide"/>
+        </Scripts>
+        <Size x="400" y="200"/>
+        <Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" atlas="housing-basic-container" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-6" y="-32"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+            <Layer level="ARTWORK">
+				<Texture parentKey="DecorativeFoliage" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="Game15Font_Shadow" text="">
+					<Anchors>
+						<Anchor point="TOP" y="-10"/>
+					</Anchors>
+				</FontString>
+                <FontString parentKey="NoHousesText" inherits="Game15Font_Shadow" hidden="true" text="VIEW_HOUSES_NO_HOUSES">
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
+            <Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+                <Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-32"/>
+					<Anchor point="BOTTOMRIGHT" x="-16" y="5"/>
+                </Anchors>
+            </Frame>
+
+            <EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+                <Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-18" y="-34"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-14" y="7"/>
+                </Anchors>
+            </EventFrame>
+					
+            <Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+        </Frames>
+    </Frame>
+
+</Ui>

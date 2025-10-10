@@ -154,6 +154,8 @@ function ClassTalentsFrameMixin:OnShow()
 	self.HeroTalentsContainer:UpdateHeroTalentInfo();
 
 	self:SetBackgroundAnimationsPlaying(true);
+
+	self:CheckLoadSystemTutorials();
 end
 
 function ClassTalentsFrameMixin:LoadSavedVariables()
@@ -525,8 +527,8 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 
 	local function ChatLinkCallback()
 		local chatLink = self:GenerateChatLink();
-		if not ChatEdit_InsertLink(chatLink) then
-			ChatFrame_OpenChat(chatLink);
+		if not ChatFrameUtil.InsertLink(chatLink) then
+			ChatFrameUtil.OpenChat(chatLink);
 		end
 	end
 
@@ -606,6 +608,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 			end
 
 			self:GetParent():CheckConfirmResetAction(ConfirmFinishLoadConfiguration, CancelLoadConfiguration);
+			self:CheckLoadSystemTutorials(configID);
 		end
 
 	self.LoadSystem:SetLoadCallback(LoadConfiguration);
@@ -671,7 +674,7 @@ function ClassTalentsFrameMixin:UpdateTalentButtonPosition(talentButton)
 	end
 end
 
-function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo)
+function ClassTalentsFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
 	-- Overrides TalentFrameBaseMixin.
 
 	local posY = nodeInfo.posY;
@@ -841,31 +844,22 @@ function ClassTalentsFrameMixin:RefreshConfigID()
 end
 
 function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)
-	if not forceUpdate and (configID == self:GetConfigID()) then
-		return;
-	end
+	-- Overrides TalentFrameBaseMixin.
 
+	-- Class talents have special behaivor required when clearing a configID.
 	if not configID then
+		if not forceUpdate and (configID == self:GetConfigID()) then
+			return;
+		end
+
 		-- We're probably returning from an Inspect state back to current play with no chosen spec
         -- So clear everything back out as it was when we first loaded
-		TalentFrameBaseMixin.SetConfigID(self, configID);
 		self.configurationInfo = nil;
 		local forceTreeUpdate = true;
 		self:SetTalentTreeID(nil, forceTreeUpdate);
-		return;
+	else
+		TalentFrameBaseMixin.SetConfigID(self, configID, forceUpdate);
 	end
-
-	local configInfo = C_Traits.GetConfigInfo(configID);
-	if not configInfo then
-		return;
-	end
-
-	TalentFrameBaseMixin.SetConfigID(self, configID);
-
-	self.configurationInfo = configInfo;
-
-	local forceTreeUpdate = true;
-	self:SetTalentTreeID(self.configurationInfo.treeIDs[1], forceTreeUpdate);
 end
 
 function ClassTalentsFrameMixin:SetTalentTreeID(talentTreeID, forceUpdate)
@@ -1637,6 +1631,34 @@ function ClassTalentsFrameMixin:CheckHeroTalentTutorial(subTreeInfo, tipOffsetX,
 	else
 		HelpTip:Hide(tipParent, TUTORIAL_HERO_TALENT_NONE_SPENT);
 	end
+end
+
+function ClassTalentsFrameMixin:CheckLoadSystemTutorials(changedConfigID)
+	local isLapsed = false;	-- RPE_TODO: real data
+
+	if changedConfigID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID and isLapsed then
+		SetCVarBitfield("closedInfoFramesRPE", Enum.FrameTutorialRPE.TalentStarterBuild, true);
+		HelpTip:Hide(self.LoadSystem, RPE_STARTER_BUILD_TUTORIAL);
+	end
+
+	if C_ClassTalents.GetStarterBuildActive() then
+		return;
+	end
+
+	if not isLapsed or GetCVarBitfield("closedInfoFramesRPE", Enum.FrameTutorialRPE.TalentStarterBuild) then
+		return;
+	end
+
+	local helpTipInfo = {
+		text = RPE_STARTER_BUILD_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesRPE",
+		bitfieldFlag = Enum.FrameTutorialRPE.TalentStarterBuild,
+		targetPoint = HelpTip.Point.TopEdgeLeft,
+		offsetX = 20,
+		alignment = HelpTip.Alignment.Left,
+	};
+	HelpTip:Show(self.LoadSystem, helpTipInfo);
 end
 
 --------------------------- Script Command Helpers --------------------------------

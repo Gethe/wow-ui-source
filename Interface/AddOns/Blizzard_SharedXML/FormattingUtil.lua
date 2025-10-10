@@ -65,9 +65,11 @@ MoneyStringConstants =
 	DontSeparateThousands = false,
 	CheckGoldThreshold = true,
 	DontCheckGoldThreshold = false,
+	ShowZeroAsGold = true,
+	ShowZeroAsLowerDenomination = false,
 };
 
-function GetMoneyString(money, separateThousands, checkGoldThreshold)
+function GetMoneyString(money, separateThousands, checkGoldThreshold, showZeroAsGold)
 	local goldString, silverString, copperString;
 	local gold = floor(money / (COPPER_PER_SILVER * SILVER_PER_GOLD));
 	local silver = floor((money - (gold * COPPER_PER_SILVER * SILVER_PER_GOLD)) / COPPER_PER_SILVER);
@@ -89,6 +91,10 @@ function GetMoneyString(money, separateThousands, checkGoldThreshold)
 		end
 		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
 		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
+	end
+
+	if showZeroAsGold and ( money == 0 ) then
+		return goldString;
 	end
 
 	copper = FormatDisplayCopper(checkGoldThreshold, gold, silver, copper);

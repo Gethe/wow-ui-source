@@ -85,7 +85,7 @@ end
 
 function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullName)
 	if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() and not UnitIsGroupLeader("player") then
-		ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 	else
 		if not UnitPopupSharedUtil.TryBNInvite(contextData) then
 			if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then

@@ -14,6 +14,27 @@ local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
 	dialog.hideOnEscape = false;
 end
 
+StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
+	text = CONFIRM_XP_LOSS_NO_SICKNESS_NO_DURABILITY,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(dialog, data)
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
+	OnUpdate = function(dialog, elapsed)
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			dialog:Hide();
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	text = "",		-- supplied dynamically.
 	button1 = "",	-- supplied dynamically.
@@ -41,6 +62,12 @@ StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	multiple = 1,
 	whileDead = 1,
 	wide = 1, -- Always wide to accomodate the alert icon if it is present.
+};
+
+StaticPopupDialogs["OKAY"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
 };
 
 StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
@@ -470,7 +497,7 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		AcceptSockets();
+		C_ItemSocketInfo.AcceptSockets();
 		PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 	end,
 	timeout = 0,
@@ -743,7 +770,7 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -869,7 +896,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 	OnAccept = function(dialog, data)
 		local channel = dialog:GetEditBox():GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -877,7 +904,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 		local dialog = editBox:GetParent();
 		local channel = editBox:GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		editBox:SetText("");
 		dialog:Hide();
 	end,
@@ -895,7 +922,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -922,7 +949,7 @@ StaticPopupDialogs["CHANNEL_PASSWORD"] = {
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -1484,7 +1511,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1514,7 +1541,7 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1544,7 +1571,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1557,6 +1584,40 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	exclusive = 1,
 	whileDead = 1,
 	hideOnEscape = 1
+};
+
+StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
+	text = SET_FRIENDNOTE_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 127,
+	countInvisibleLetters = true,
+	editBoxWidth = 350,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+
+	OnAccept = function(dialog, data)
+		C_RecentAllies.SetRecentAllyNote(data.characterData.guid, dialog:GetEditBox():GetText());
+	end,
+	OnShow = function(dialog, data)
+		local currentNote = data.interactionData.note;
+		dialog:GetEditBox():SetText(currentNote or "");
+		
+		dialog:GetEditBox():SetFocus();
+	end,
+	OnHide = function(dialog, data)
+		ChatEdit_FocusActiveWindow();
+		dialog:GetEditBox():SetText("");
+	end,
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		C_RecentAllies.SetRecentAllyNote(data.characterData.guid, dialog:GetEditBox():GetText());
+		dialog:Hide();
+	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
 StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
@@ -1578,7 +1639,7 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1672,7 +1733,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1724,7 +1785,7 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1755,7 +1816,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1786,7 +1847,7 @@ StaticPopupDialogs["SET_GUILD_COMMUNITIY_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -2348,7 +2409,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)

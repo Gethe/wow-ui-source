@@ -1427,6 +1427,21 @@ local Item =
 			},
 		},
 		{
+			Name = "IsRelicItem",
+			Type = "Function",
+			Documentation = { "Returns whether the item is a consumable relic  that can be applied to an artifact weapon." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsUsableItem",
 			Type = "Function",
 

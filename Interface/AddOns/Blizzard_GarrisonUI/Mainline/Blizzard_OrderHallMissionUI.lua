@@ -125,8 +125,8 @@ function OrderHallMission:DefaultTab()
 end
 
 function OrderHallMission:ShouldShowMissionsAndFollowersTabs()
-	-- If we don't have any followers, hide followers and missions tabs
-	return C_Garrison.GetNumFollowers(self.followerTypeID) > 0;
+	-- If the player is timerunning or doesn't have any followers, hide followers and missions tabs
+	return GameRulesUtil.ShouldOrderHallBeActive() and C_Garrison.GetNumFollowers(self.followerTypeID) > 0;
 end
 
 function OrderHallMission:SetupTabs()
@@ -1051,6 +1051,11 @@ function OrderHallMission:CheckTutorials(advance)
 	if (not OrderHallMissionTutorialFrame) then
 		return;
 	end
+
+	if (PlayerIsTimerunning()) then
+		return;
+	end
+
 	local lastTutorial, tutorialFlags, cvarVal = ReadTutorialCVAR();
 	if (cvarVal == seenAllTutorials) then
 		return;

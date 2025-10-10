@@ -1,0 +1,108 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HouseEditorExpertDecorModeTemplate" mixin="HouseEditorExpertDecorModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
+			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+				<Frames>
+					<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_SELECT_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_DELETEDECOR"/>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="SubmodeBar" inherits="HouseEditorSubmodesBarTemplate">
+				<KeyValues>
+					<KeyValue key="spacing" value="-12" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeKey="$parent.$parent.ModeBar.ExpertDecorModeButton" x="0" y="18"/>
+				</Anchors>
+				<Frames>
+					<!-- TODO: Replace with real submode button template once we have the proper icon -->
+					<Button parentKey="ResetButton" mixin="ExpertDecorResetButtonMixin" inherits="HouseEditorOLDSubmodeButtonTemplate">
+						<Size x="42" y="42"/>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							<KeyValue key="enabledTooltip" type="global" value="HOUSING_EXPERT_DECOR_RESET"/>
+							<KeyValue key="iconAtlas" type="string" value="GM-raidMarker-remove"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="TranslateSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Translate"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-horzmove-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-horzmove-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-horzmove-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_TRANSLATE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_TRANSLATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORTRANSLATESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-horzmove"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="RotateSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Rotate"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-rotate-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-rotate-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-rotate-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_ROTATE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_ROTATE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORROTATESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-rotate"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="ScaleSubmodeButton" mixin="ExpertDecorSubmodeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+							<KeyValue key="submode" type="global" value="Enum.HousingPrecisionSubmode.Scale"/>
+							<KeyValue key="iconDefault" type="string" value="decor-ability-expert-scale-default"/>
+							<KeyValue key="iconActive" type="string" value="decor-ability-expert-scale-active"/>
+							<KeyValue key="iconPressed" type="string" value="decor-ability-expert-scale-pressed"/>
+							<KeyValue key="enabledTooltip" value="HOUSING_EXPERT_DECOR_SUBMODE_SCALE" type="global"/>
+							<KeyValue key="enabledTooltipKeybind" value="HOUSING_EXPERT_DECOR_SUBMODE_SCALE_FMT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORSCALESUBMODE"/>
+							<KeyValue key="glowMaskKey" type="string" value="expert-scale"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
+			<OnHide method="OnHide" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

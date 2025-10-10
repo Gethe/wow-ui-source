@@ -72,14 +72,14 @@
 					</OnClick>
 					<OnEnter>
 						SetCursorHoveredItemTradeItem(true);
-						
+
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetTradeTargetItem(self:GetParent():GetID());
 						CursorUpdate(self);
 					</OnEnter>
 					<OnLeave>
 						SetCursorHoveredItemTradeItem(false);
-						
+
 						GameTooltip_Hide();
 						ResetCursor();
 					</OnLeave>
@@ -404,7 +404,7 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						MoneyInputFrame_SetCompact(self, 62, 7);
+						MoneyInputFrame_SetCompact(self, 62, 7, 35);
 						MoneyInputFrame_SetOnValueChangedFunc(self, TradeFrame_UpdateMoney);
 						self:RegisterEvent("PLAYER_TRADE_MONEY");
 					</OnLoad>

@@ -76,8 +76,8 @@ function PerksProgramProductsFrameMixin:Init()
 	local DefaultPad = 5;
 	local DefaultSpacing = 1;
 
-	local function InitializeHeader(frame, headerInfo)
-		frame.Text:SetText(headerInfo.uiGroupInfo.name);
+	local function InitializeHeader(header, headerInfo)
+		header:SetHeaderText(headerInfo.uiGroupInfo.name);
 	end
 
 	local function InitializeButton(frame, itemInfo)
@@ -94,7 +94,7 @@ function PerksProgramProductsFrameMixin:Init()
 	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, DefaultSpacing);
 	view:SetElementFactory(function(factory, elementData)
 		if elementData.isHeaderInfo then
-			factory("PerksProgramProductHeaderTemplate", InitializeHeader);
+			factory("BarDividerTemplate", InitializeHeader);
 		elseif elementData.isItemInfo then
 			factory("PerksProgramProductButtonTemplate", InitializeButton);
 		end
@@ -285,6 +285,7 @@ function PerksProgram_TranslateDisplayInfo(perksVendorCategoryID, displayInfo)
 		newData.sheatheWeapon = bit.band(flags, Enum.UIModelSceneFlags.SheatheWeapon) == Enum.UIModelSceneFlags.SheatheWeapon;
 		newData.hideWeapon = bit.band(flags, Enum.UIModelSceneFlags.HideWeapon) == Enum.UIModelSceneFlags.HideWeapon;
 		newData.autodress = bit.band(flags, Enum.UIModelSceneFlags.Autodress) == Enum.UIModelSceneFlags.Autodress;
+		newData.noCameraSpin = bit.band(flags, Enum.UIModelSceneFlags.NoCameraSpin) == Enum.UIModelSceneFlags.NoCameraSpin;
 
 		if actorIDs and #actorIDs > 0 then
 			local actorInfo;

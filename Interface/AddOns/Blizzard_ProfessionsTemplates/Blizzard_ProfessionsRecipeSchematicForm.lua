@@ -784,6 +784,11 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 
 		self.recraftSlot.InputSlot:SetScript("OnMouseDown", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
+				-- If the user currently has an item on the cursor that could transition to recraft, drop it here instead of opening the flyout.
+				if self.recraftSlot.InputSlot:CheckDropCursorItemOnSlot() then
+					return;
+				end
+
 				local flyout = ToggleProfessionsItemFlyout(self.recraftSlot.InputSlot, self);
 				if flyout then
 					local function OnFlyoutItemSelected(o, flyout, elementData)

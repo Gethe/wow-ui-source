@@ -464,35 +464,6 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PlayerFrameBottomManagedFrameTemplate" inherits="UIParentManagedFrameTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="layoutParent" value="PlayerFrameBottomManagedFramesContainer" type="global"/>
-			<KeyValue key="align" value="center" type="string"/>
-			<KeyValue key="isPlayerFrameBottomManagedFrame" value="true" type="boolean"/>
-		</KeyValues>
-	</Frame>
-
-	<Frame name="PlayerFrameManagedContainerTemplate" parent="PlayerFrame" inherits="VerticalLayoutFrame" mixin="UIParentManagedFrameContainerMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="spacing" value="2" type="number"/>
-			<KeyValue key="respectChildScale" value="true" type="boolean"/>
-			<KeyValue key="minimumHeight" value="1" type="number"/>
-		</KeyValues>
-		<Frames>
-			<Frame parentKey="BottomManagedLayoutContainer" inherits="HorizontalLayoutFrame">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="500" type="number"/>
-					<KeyValue key="spacing" value="-10" type="number"/>
-					<KeyValue key="align" value="center" type="string"/>
-					<KeyValue key="fixedWidth" value="160" type="number"/>
-				</KeyValues>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="PlayerFrameBottomManagedFramesContainer" inherits="PlayerFrameManagedContainerTemplate" mixin="PlayerFrameBottomManagedFramesContainerMixin">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="160" type="number"/>

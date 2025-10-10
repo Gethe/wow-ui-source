@@ -153,7 +153,7 @@ end
 function DragonridingPanelSkillsButtonMixin:OnClick()
 	GenericTraitUI_LoadUI();
 
-	GenericTraitFrame:SetSystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
+	GenericTraitFrame:SetConfigIDBySystemID(Constants.MountDynamicFlightConsts.TRAIT_SYSTEM_ID);
 	GenericTraitFrame:SetTreeID(Constants.MountDynamicFlightConsts.TREE_ID);
 	ToggleFrame(GenericTraitFrame);
 end

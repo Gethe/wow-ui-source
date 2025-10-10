@@ -193,6 +193,20 @@ function DelvesCompanionAbilityListFrameMixin:OnUpdate(...)
 end
 
 --[[ Ability List Frame: SharedTalentFrame overrides and utilities ]]
+function DelvesCompanionAbilityListFrameMixin:SetConfigID(configID)
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	self.configID = configID;
+end
+
+function DelvesCompanionAbilityListFrameMixin:GetConfigID()
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	return self.configID;
+end
+
 function DelvesCompanionAbilityListFrameMixin:GetTemplateForTalentType(...)
 	return "DelvesCompanionAbilityTemplate";
 end

@@ -1,0 +1,97 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier forbidden="true">
+		<Frame name="HouseEditorLayoutFloorSelectTemplate" mixin="HouseEditorLayoutFloorSelectMixin" virtual="true">
+			<Size x="150" y="50"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" x="-40" y="50" />
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="FloorText" inherits="GameFontHighlightLarge" justifyH="CENTER" justifyV="MIDDLE">
+						<Size x="0" y="0"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="UpButton">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT"/>
+					</Anchors>
+					<NormalTexture atlas="housing-floor-arrow-up-default" setAllPoints="true"/>
+					<PushedTexture atlas="housing-floor-arrow-up-pressed" setAllPoints="true"/>
+					<DisabledTexture atlas="housing-floor-arrow-up-disabled" setAllPoints="true"/>
+					<HighlightTexture atlas="housing-floor-arrow-up-default" setAllPoints="true" alphaMode="ADD"/>
+				</Button>
+				<Button parentKey="DownButton">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="RIGHT"/>
+					</Anchors>
+					<NormalTexture atlas="housing-floor-arrow-down-default" setAllPoints="true"/>
+					<PushedTexture atlas="housing-floor-arrow-down-pressed" setAllPoints="true"/>
+					<DisabledTexture atlas="housing-floor-arrow-down-disabled" setAllPoints="true"/>
+					<HighlightTexture atlas="housing-floor-arrow-down-default" setAllPoints="true" alphaMode="ADD"/>
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent"/>
+				<OnShow method="OnShow"/>
+				<OnHide method="OnHide"/>
+			</Scripts>
+		</Frame>
+
+		<Frame name="HouseEditorLayoutModeTemplate" mixin="HouseEditorLayoutModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
+			<Frames>
+				<Frame parentKey="RoomCount" inherits="HouseEditorRoomCountTemplate"/>
+				<Frame parentKey="FloorSelect" inherits="HouseEditorLayoutFloorSelectTemplate"/>
+				<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+					<Frames>
+						<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_SELECT_INSTRUCTION" type="global"/>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="DeselectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_CANCEL_INSTRUCTION" type="global"/>
+								<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="ZoomInInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_ZOOM_IN_INSTRUCTION" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTCAMERA_ZOOM_IN" type="string"/>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="ZoomOutInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="HOUSING_LAYOUT_ZOOM_OUT_INSTRUCTION" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTCAMERA_ZOOM_OUT" type="string"/>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+						</Frame>
+					</Frames>
+				</Frame>
+				<Button parentKey="LayoutDragUnderlay" frameStrata="LOW" registerForClicks="LeftButtonUp" setAllPoints="true">
+				</Button>
+			</Frames>
+			<Scripts>
+				<OnLoad method="OnLoad"/>
+				<OnEvent method="OnEvent" inherit="prepend"/>
+				<OnShow method="OnShow" inherit="prepend"/>
+				<OnHide method="OnHide" inherit="prepend"/>
+				<OnMouseWheel method="OnMouseWheel"/>
+			</Scripts>
+		</Frame>
+	</ScopedModifier>
+</Ui>

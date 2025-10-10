@@ -291,6 +291,79 @@ function MenuTemplates.CreateRadio(text, isSelected, onSelect, data)
 	return elementDescription;
 end
 
+function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, onEnter)
+	local optionDescription = CreateMenuElementDescription("WowMenuDropdownHighlightRadioTemplate");
+
+	local truncated = false;
+
+	local function OnEnter(button)
+		button.HighlightBGTex:SetAlpha(0.15);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		end
+
+		if truncated then
+			MenuUtil.ShowTooltip(button, function(tooltip)
+				GameTooltip_SetTitle(tooltip, text);
+			end);
+		end
+
+		if onEnter then
+			onEnter(data);
+		end
+	end
+
+	local function OnLeave(button)
+		button.HighlightBGTex:SetAlpha(0);
+
+		local description = button:GetElementDescription();
+		if description:IsEnabled() and not description:IsSelected() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		end
+
+		MenuUtil.HideTooltip(button);
+	end
+
+	optionDescription:AddInitializer(function(button, description, menu)
+		button:SetScript("OnClick", function(button, buttonName)
+			description:Pick(MenuInputContext.MouseButton, buttonName);
+		end);
+
+		-- This button template is modified in Languages.lua to hide the text and display
+		-- a texture for each locale, so we need to redisplay the text. We don't have to worry
+		-- about that texture here because it is managed by the compositor.
+		button.Text:Show();
+		button.Text:SetTextToFit(text);
+		button.Text:SetWidth(button.Text:GetWidth() + 10);
+
+		button.HighlightBGTex:SetAlpha(0);
+
+		local fontColor = nil;
+		if description:IsSelected() then
+			button.Text:SetTextColor(NORMAL_FONT_COLOR:GetRGBA());
+		elseif description:IsEnabled() then
+			button.Text:SetTextColor(VERY_LIGHT_GRAY_COLOR:GetRGB());
+		else
+			button.Text:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
+
+		truncated = button.Text:IsTruncated();
+
+		button:Layout();
+	end);
+
+	optionDescription:SetIsSelected(isSelected);
+	optionDescription:SetResponder(onSelect);
+	optionDescription:SetOnEnter(OnEnter); 
+	optionDescription:SetOnLeave(OnLeave);
+	optionDescription:SetRadio(true);
+	optionDescription:SetData(data);
+
+	return optionDescription;
+end
+
 function MenuTemplates.CreateSpacer(extent)
 	local function Initializer(frame, description, menu)
 		frame:SetHeight(extent or 10);
@@ -507,7 +580,11 @@ function DropdownSelectionTextMixin:UpdateToMenuSelections(menuDescription, curr
 		end
 		
 		if #texts > 0 then
-			text = table.concat(texts, LIST_DELIMITER);
+			if self.dontConcatenateText then
+				text = texts[1];
+			else
+				text = table.concat(texts, LIST_DELIMITER);
+			end
 		end
 	end
 
@@ -655,6 +732,12 @@ function WowStyle1FilterDropdownMixin:OnLoad()
 	DropdownTextMixin.OnLoad(self);
 	WowFilterButtonMixin.OnLoad(self);
 
+	if self.baseFontObject then
+		self.Text:SetFontObject(self.baseFontObject);
+	else
+		self.baseFontObject = self.Text:GetFontObject();
+	end
+
 	local x, y = 2, -1;
 	self:SetDisplacedRegions(x, y, self.Text);
 end
@@ -678,6 +761,18 @@ end
 
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
 	self.Background:SetAtlas(self:GetBackgroundAtlas(), TextureKitConstants.UseAtlasSize);
+end
+
+function WowStyle1FilterDropdownMixin:OnEnable()
+	ButtonStateBehaviorMixin.OnEnable(self);
+
+	self.Text:SetFontObject(self.baseFontObject);
+end
+
+function WowStyle1FilterDropdownMixin:OnDisable()
+	ButtonStateBehaviorMixin.OnDisable(self);
+
+	self.Text:SetFontObject(self.disableFontObject);
 end
 
 --[[

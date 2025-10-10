@@ -222,14 +222,15 @@ end
 
 --Externally accessed functions
 function CompactUnitFrame_SetUnit(frame, unit)
-	if ( unit ~= frame.unit or frame.hideCastbar ~= frame.optionTable.hideCastbar ) then
+	local hideCastBar = not GameRulesUtil.ShouldShowNamePlateCastBar() or frame.optionTable.hideCastbar;
+	if ( unit ~= frame.unit or frame.hideCastbar ~= hideCastBar ) then
 		frame.unit = unit;
 		frame.displayedUnit = unit;	--May differ from unit if unit is in a vehicle.
 		frame.inVehicle = false;
 		frame.readyCheckStatus = nil
 		frame.readyCheckDecay = nil;
 		frame.isTanking = nil;
-		frame.hideCastbar = frame.optionTable.hideCastbar;
+		frame.hideCastbar = hideCastBar;
 		frame.healthBar.healthBackground = nil;
 
 		frame.aurasDirty = nil;
@@ -243,12 +244,14 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		else
 			CompactUnitFrame_UnregisterEvents(frame);
 		end
-		if ( unit and not frame.optionTable.hideCastbar ) then
+		if ( unit and not hideCastBar ) then
 			if ( frame.castBar ) then
+				frame.castBar:SetAndUpdateShowCastbar(true);
 				frame.castBar:SetUnit(unit, false, true);
 			end
 		else
 			if ( frame.castBar ) then
+				frame.castBar:SetAndUpdateShowCastbar(false);
 				frame.castBar:SetUnit(nil, nil, nil);
 			end
 		end
@@ -729,7 +732,7 @@ function ShouldShowName(frame)
 			failedRequirement = true;
 		end
 
-		if ( frame.optionTable.displayNameWhenSelected ) then
+		if ( C_CVar.GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected ) then
 			if ( UnitIsUnit(frame.unit, "target") ) then
 				return true;
 			end

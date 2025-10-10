@@ -29,7 +29,7 @@ local ItemConstants =
 				{ Name = "Agility", Type = "BonusStatIndex", EnumValue = 3 },
 				{ Name = "Strength", Type = "BonusStatIndex", EnumValue = 4 },
 				{ Name = "Intellect", Type = "BonusStatIndex", EnumValue = 5 },
-				{ Name = "SpiritUnused", Type = "BonusStatIndex", EnumValue = 6 },
+				{ Name = "Spirit", Type = "BonusStatIndex", EnumValue = 6 },
 				{ Name = "Stamina", Type = "BonusStatIndex", EnumValue = 7 },
 				{ Name = "Energy", Type = "BonusStatIndex", EnumValue = 8 },
 				{ Name = "Rage", Type = "BonusStatIndex", EnumValue = 9 },
@@ -198,9 +198,9 @@ local ItemConstants =
 		{
 			Name = "ItemClass",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Consumable", Type = "ItemClass", EnumValue = 0 },
@@ -223,14 +223,15 @@ local ItemConstants =
 				{ Name = "Battlepet", Type = "ItemClass", EnumValue = 17 },
 				{ Name = "WoWToken", Type = "ItemClass", EnumValue = 18 },
 				{ Name = "Profession", Type = "ItemClass", EnumValue = 19 },
+				{ Name = "Housing", Type = "ItemClass", EnumValue = 20 },
 			},
 		},
 		{
 			Name = "ItemConsumableSubclass",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 11,
+			MaxValue = 12,
 			Fields =
 			{
 				{ Name = "Generic", Type = "ItemConsumableSubclass", EnumValue = 0 },
@@ -245,6 +246,7 @@ local ItemConstants =
 				{ Name = "VantusRune", Type = "ItemConsumableSubclass", EnumValue = 9 },
 				{ Name = "UtilityCurio", Type = "ItemConsumableSubclass", EnumValue = 10 },
 				{ Name = "CombatCurio", Type = "ItemConsumableSubclass", EnumValue = 11 },
+				{ Name = "Relic", Type = "ItemConsumableSubclass", EnumValue = 12 },
 			},
 		},
 		{
@@ -286,6 +288,22 @@ local ItemConstants =
 				{ Name = "SingingSea", Type = "ItemGemColor", EnumValue = 268435456 },
 				{ Name = "SingingWind", Type = "ItemGemColor", EnumValue = 536870912 },
 				{ Name = "Fiber", Type = "ItemGemColor", EnumValue = 1073741824 },
+			},
+		},
+		{
+			Name = "ItemHousingSubclass",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "Decor", Type = "ItemHousingSubclass", EnumValue = 0 },
+				{ Name = "Dye", Type = "ItemHousingSubclass", EnumValue = 1 },
+				{ Name = "Room", Type = "ItemHousingSubclass", EnumValue = 2 },
+				{ Name = "RoomCustomization", Type = "ItemHousingSubclass", EnumValue = 3 },
+				{ Name = "ExteriorCustomization", Type = "ItemHousingSubclass", EnumValue = 4 },
+				{ Name = "ServiceItem", Type = "ItemHousingSubclass", EnumValue = 5 },
 			},
 		},
 		{
@@ -643,7 +661,7 @@ local ItemConstants =
 			{
 				{ Name = "NUM_ITEM_ENCHANTMENT_SOCKETS", Type = "number", Value = 3 },
 				{ Name = "MAX_LOOT_OBJECT_ITEMS", Type = "number", Value = 31 },
-				{ Name = "INVALID_TRANSACTION_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
+				{ Name = "INVALID_BANK_TAB_SLOT", Type = "number", Value = 0xFF },
 				{ Name = "DEFAULT_ITEM_SAVE_VERSION", Type = "number", Value = 2 },
 				{ Name = "CURRENT_ITEM_SAVE_VERSION", Type = "number", Value = DEFAULT_ITEM_SAVE_VERSION },
 				{ Name = "DEFAULT_ARTIFACT_POWERS_VERSION", Type = "number", Value = 1 },

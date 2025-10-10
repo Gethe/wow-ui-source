@@ -83,6 +83,11 @@ function CharacterSelectListGroupHeaderMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 end
 
+function CharacterSelectListGroupHeaderMixin:OnShow()
+	local config = CharacterSelectUtil.GetConfig();
+	self:SetEnabled(config[CharacterSelectUtil.ConfigParam.CharacterListGroupCollapse]);
+end
+
 function CharacterSelectListGroupHeaderMixin:OnEnter()
 	ButtonStateBehaviorMixin.OnEnter(self);
 
@@ -242,6 +247,8 @@ function CharacterSelectListCharacterMixin:SetData(elementData, inGroup)
 
 	self:UpdateVASState();
 
+	self:UpdateTimerunningConversionState();
+
 	local filteringByBoostable = CharacterUpgradeCharacterSelectBlock_IsFilteringByBoostable();
 	local arrowShown = self:CanSelect() and filteringByBoostable and CharacterUpgradeCharacterSelectBlock_IsCharacterBoostable(self.characterID);
 	self:SetArrowButtonShown(arrowShown);
@@ -263,6 +270,10 @@ function CharacterSelectListCharacterMixin:GetCharacterInfo()
 	return self.characterInfo;
 end
 
+local function ShouldHideCharacterListTokens()
+	return CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown();
+end
+
 function CharacterSelectListCharacterMixin:UpdateVASState()
 	local paidServiceButton = self.PaidServiceButton;
 	local restoreCharacterServiceFrame = self.RestoreCharacterServiceFrame;
@@ -273,7 +284,7 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	notificationButton:SetHasInProgress(false, tooltip1, tooltip2);
 	restoreCharacterServiceFrame:Hide();
 
-	if CharacterServicesFlow_IsShowing() or CharacterSelectUI.CollectionsFrame:IsShown() then
+	if ShouldHideCharacterListTokens() then
 		paidServiceButton:Hide();
 		return;
 	end
@@ -368,6 +379,36 @@ function CharacterSelectListCharacterMixin:UpdateVASState()
 	end
 end
 
+function CharacterSelectListCharacterMixin:UpdateTimerunningConversionState()
+	if not GameRulesUtil.IsTimerunningSeasonActive() then
+		return;
+	end
+
+	if not self.EarlyTimerunningConversionButton then
+		self.EarlyTimerunningConversionButton = CreateFrame("BUTTON", nil, self, "TimerunningConversionButtonTemplate");
+		self.EarlyTimerunningConversionButton:SetPoint("RIGHT", self, "LEFT", -5, 0);
+	end
+
+	local earlyTimerunningConversionButton = self.EarlyTimerunningConversionButton;
+
+	if not self:IsSelected() or ShouldHideCharacterListTokens() or CharacterSelect.undeleting then
+		earlyTimerunningConversionButton:Hide();
+		return;
+	end
+
+	local guid = self:GetCharacterGUID();
+	if guid then
+		local charTimerunningConversionAllowed = IsCharacterTimerunningConversionAllowed(guid);
+
+		if charTimerunningConversionAllowed then
+			earlyTimerunningConversionButton:SetPoint("RIGHT", self.PaidServiceButton:IsShown() and self.PaidServiceButton or self ,"LEFT" ,-5, 0);
+			earlyTimerunningConversionButton:Show();
+		else
+			earlyTimerunningConversionButton:Hide();
+		end
+	end
+end
+
 function CharacterSelectListCharacterMixin:SetArrowButtonShown(shown)
 	if shown and not self.Arrow:IsShown() then
 		self.Arrow:Show();
@@ -387,10 +428,12 @@ function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -12, 95);
 	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradePanel.UpgradeButton:IsEnabled() then
 		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
+		GlueTooltip:Show();
+	elseif CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID()) then
+		GlueTooltip:Show();
 	else
-		CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID());
+		GlueTooltip:Hide();
 	end
-	GlueTooltip:Show();
 end
 
 function CharacterSelectListCharacterMixin:IsSelected()
@@ -406,7 +449,9 @@ function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 	end
 
 	local isIconAssigned = self.characterInfo.faction ~= "Neutral";
-	if isIconAssigned then
+	local config = CharacterSelectUtil.GetConfig();
+	local showFaction = config[CharacterSelectUtil.ConfigParam.CharacterListFaction];
+	if isIconAssigned and showFaction then
 		self.InnerContent.FactionEmblemSelected:SetShown(isSelected);
 		self.InnerContent.FactionEmblem:SetShown(not isSelected);
 	end
@@ -512,6 +557,21 @@ end
 
 CharacterSelectListCharacterInnerContentMixin = {};
 
+function CharacterSelectListCharacterInnerContentMixin:OnShow()
+	self.Text.Name:ClearAllPoints();
+
+	local config = CharacterSelectUtil.GetConfig();
+	if config[CharacterSelectUtil.ConfigParam.CharacterListDetails] then
+		self.Text.Info:Show();
+		self.Text.Status:Show();
+		self.Text.Name:SetPoint("TOPLEFT", 14, -14);
+	else
+		self.Text.Info:Hide();
+		self.Text.Status:Hide();
+		self.Text.Name:SetPoint("LEFT", self, "LEFT", 14, 0);
+	end
+end
+
 function CharacterSelectListCharacterInnerContentMixin:OnEnter(isSelected)
 	local isHighlight = true;
 	self:UpdateHighlightUI(isHighlight, isSelected);
@@ -533,7 +593,11 @@ function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
 	if isSelected then
 		if not isMouseOverMoveButton then
 			self.SelectedHighlight:Hide();
-			self.FactionEmblemSelected:Show();
+
+			local config = CharacterSelectUtil.GetConfig();
+			if config[CharacterSelectUtil.ConfigParam.CharacterListFaction] then
+				self.FactionEmblemSelected:Show();
+			end
 		end
 	else
 		self.Highlight:Hide();
@@ -582,7 +646,7 @@ function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
 	-- If we are in the middle of a VAS flow, ensure enabled state is correct (handles cases like window size changing during flow).
 	-- Gear Update flow doesn't affect enabled state.
 	local enabledState = true;
-	if CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow and CharacterServicesMaster.flow ~= RPEUpgradeFlow then
+	if CharSelectServicesFlowFrame:IsShown() and CharacterServicesMaster.flow then
 		local servicesSelectedCharacterID = CharacterServicesMaster.flow:GetCurrentResults().characterID;
 		if servicesSelectedCharacterID then
 			enabledState = self:GetParent():GetCharacterID() == servicesSelectedCharacterID;
@@ -750,12 +814,12 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			if characterInfo.isLockedByExpansion then
 				statusText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 			else
-				if areCharServicesShown and CharacterServicesMaster.flow ~= RPEUpgradeFlow then
+				if areCharServicesShown then
 					statusText:SetFontObject("GlueFontHighlightLarge");
 					statusText:SetText(characterInfo.realmName);
 				elseif IsRPEBoostEligible(self:GetParent():GetCharacterID()) then
 					statusText:SetFontObject("GlueFontHighlightLarge");
-					statusText:SetText(RPE_GEAR_UPDATE);
+					statusText:SetText(RPE_CATCH_UP_AVAILABLE);
 				else
 					statusText:SetFontObject("GlueFontDisableLarge");
 					statusText:SetText(zone);
@@ -819,7 +883,9 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateFactionEmblem()
 	local factionEmblemHighlight = self.FactionEmblemHighlight;
 	local factionEmblemSelected = self.FactionEmblemSelected;
 
-	if not self.characterInfo then
+	local config = CharacterSelectUtil.GetConfig();
+	local showFaction = config[CharacterSelectUtil.ConfigParam.CharacterListFaction];
+	if not self.characterInfo or not showFaction then
 		factionEmblem:Hide();
 		factionEmblemSelected:Hide();
 		return;
@@ -854,7 +920,7 @@ function CharacterSelectListCharacterInnerContentMixin:SetEnabledState(isEnabled
 			infoText:SetText(self.coloredClassName);
 		end
 
-		if statusText:GetText() == RPE_GEAR_UPDATE then
+		if statusText:GetText() == RPE_CATCH_UP_AVAILABLE then
 			statusText:SetTextColor(RPE_FONT_COLOR:GetRGBA());
 		else
 			statusText:SetTextColor(0.5, 0.5, 0.5);
@@ -910,7 +976,10 @@ end
 function CharacterSelectListCharacterInnerContentMixin:UpdateHighlightUI(isHighlight, isSelected)
 	self.SelectedHighlight:SetShown(isHighlight and isSelected);
 	self.Highlight:SetShown(isHighlight and not isSelected);
-	self.FactionEmblemHighlight:SetShown(isHighlight and not isSelected);
+
+	local config = CharacterSelectUtil.GetConfig();
+	local showFaction = config[CharacterSelectUtil.ConfigParam.CharacterListFaction];
+	self.FactionEmblemHighlight:SetShown(isHighlight and not isSelected and showFaction);
 end
 
 
@@ -1071,7 +1140,12 @@ function CharacterSelectListNotificationButtonMixin:OnClickLock()
 	local isAccountLocked = self.lockCharacterSelectButton.isAccountLocked;
 	if not isAccountLocked and self:CanUnlockByExpansionPurchase() then
 		ToggleStoreUI();
-		StoreFrame_SetGamesCategory();
+		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+		if useNewCashShop then
+			CatalogShopInboundInterface.SetGamesCategory();
+		else
+			StoreFrame_SetGamesCategory();
+		end
 		return;
 	end
 
@@ -1155,7 +1229,12 @@ function CharacterSelectListNotificationButtonMixin:ShowStoreFrameForBoostType(b
 		ToggleStoreUI();
 	end
 
-	StoreFrame_SelectBoost(boostType, reason, guid);
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		CatalogShopInboundInterface.SelectBoost(boostType, reason, guid);
+	else
+		StoreFrame_SelectBoost(boostType, reason, guid);
+	end
 end
 
 

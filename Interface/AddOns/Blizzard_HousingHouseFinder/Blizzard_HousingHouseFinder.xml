@@ -1,0 +1,531 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="HouseFinderNeighborhoodButtonTemplate" virtual="true" mixin="HouseFinderNeighborhoodButtonMixin">
+		<Size x="217" y="63"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ButtonBackground" atlas="housefinder_neighborhood-list-item-default" setAllPoints="true">
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NeighborhoodName" inherits="Game13FontShadow" text="neighborhood-name">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="15" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodType" inherits="GameFontHighlightSmall" text="neighborhood-type">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodName" relativePoint="BOTTOMLEFT" y="-4"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodOwner" inherits="GameFontHighlightSmall" text="neighborhood-owner">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodType" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<Texture parentKey="SuggestionIcon" atlas="housing-invite-icon" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<HighlightTexture atlas="Options_List_Active" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="HouseFinderFrame" mixin="HouseFinderFrameMixin" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="976" y="496"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="NeighborhoodListFrame" >
+				<Size x="256" y="479"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="-16"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="NeighborhoodListBG" atlas="housefinder_neighborhood-list-bg" setAllPoints="true"/>
+						<Texture parentKey="NeighborhoodTitleBG" atlas="housefinder_header-bg-gradient">
+							<Anchors>
+								<Anchor point="TOPLEFT" y ="-20"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-70"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NeighborhoodsLabel" inherits="Game13FontShadow" text="HOUSING_HOUSEFINDER_NEIGHBORHOODS">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-50"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ListBottomGradient">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="32"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="BottomGradient" atlas="QuestLog-Frame-Gradient-bottom" setAllPoints="true"/>
+							</Layer>
+						</Layers>
+					</Frame>
+					<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="1" y="-70"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="256"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="-23" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="4" type="number"/>
+						</KeyValues>
+						<ScrollChild>
+							<Frame parentKey="NeighborhoodList" inherits="VerticalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="leftPadding" value="5" type="number"/>
+									<KeyValue key="topPadding" value="5" type="number"/>
+									<KeyValue key="spacing" value="5" type="number"/>
+								</KeyValues>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<ScrollFrame parentKey="BNetScrollFrame" inherits="ScrollFrameTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="1" y="-86"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="256"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="-23" type="number"/>
+							<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="4" type="number"/>
+						</KeyValues>
+						<ScrollChild>
+							<Frame parentKey="NeighborhoodList" inherits="VerticalLayoutFrame">
+								<KeyValues>
+									<KeyValue key="leftPadding" value="5" type="number"/>
+									<KeyValue key="topPadding" value="5" type="number"/>
+									<KeyValue key="spacing" value="5" type="number"/>
+								</KeyValues>
+							</Frame>
+						</ScrollChild>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="SearchDescriptionText" inherits="GameFontNormalSmall">
+									<Size y="16"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="9" y="14"/>
+									</Anchors>
+									<Color r="0.5" g="0.5" b="0.5"/>
+								</FontString>
+								<FontString parentKey="NotFoundText" inherits="Game13FontShadow" text="HOUSEFINDER_SEARCH_NOT_FOUND" hidden="true">
+									<Size y="15"/>
+									<Anchors>
+										<Anchor point="CENTER" y="20"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</ScrollFrame>
+					<Frame parentKey="LoadingSpinnerList" inherits="SpinnerTemplate" frameLevel="2000">
+						<Size x="60" y="60"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.ScrollFrame"/>
+						</Anchors>
+					</Frame>
+					<EditBox parentKey="BNetFriendSearchBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate" mixin="HouseFinderBNetFriendSearchBoxMixin">
+						<Size x="165" y="20"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="82" y="-12"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="LeftBorder" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-25" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture parentKey="RightBorder" file="Interface\Common\Common-Input-Border">
+									<Size x="8" y="20"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+								</Texture>
+								<Texture parentKey="MiddleBorder" file="Interface\Common\Common-Input-Border">
+									<Size x="0" y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LeftBorder" relativePoint="RIGHT"/>
+										<Anchor point="RIGHT" relativeKey="$parent.RightBorder" relativePoint="LEFT"/>
+									</Anchors>
+									<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+								<FontString parentKey="FillText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="HOUSEFINDER_SEARCH_DEFAULT_TEXT">
+									<Anchors>
+										<Anchor point="LEFT" x="2" y="0"/>
+									</Anchors>
+									<Color r="0.35" g="0.35" b="0.35"/>
+								</FontString>
+								<FontString parentKey="AutoCompleteText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+								<Texture parentKey="Icon" atlas="housefinder_neighborhood-battlenet-friends-icon">
+									<Size x="14" y="10"/>
+									<Anchors>
+										<Anchor point="LEFT" x="-20" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="ClearButton" hidden="true">
+								<Size x="16" y="16"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="-1" y="-1"/>
+								</Anchors>
+								<NormalTexture atlas="RedButton-Exit"/>
+								<PushedTexture atlas="RedButton-exit-pressed"/>
+								<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnEnterPressed method="OnEnterPressed"/>
+							<OnEscapePressed method="OnEscapePressed"/>
+							<OnTextChanged method="OnTextChanged"/>
+							<OnEditFocusGained method="OnEditFocusGained"/>
+							<OnEditFocusLost method="OnEditFocusLost"/>
+						</Scripts>
+						<FontString inherits="FriendsFont_Small">
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</EditBox>
+					<Button parentKey="RefreshButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-7" y="-34"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+									<Size x="16" y="16"/>
+									<Anchors>
+										<Anchor point="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="PlotInfoFrame" mixin="HouseFinderPlotInfoFrameMixin" enableMouse="true" hidden="true">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-20"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="housing-dashboard-bg-elwynn" setAllPoints="true"/>
+						<MaskTexture parentKey="Mask" atlas="SquareMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="256"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Background"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="PlotTitleBG" atlas="housefinder_header-bg-gradient">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" x="256" y="-67"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="VisitButtonBG" atlas="housefinder_button-bg-gradient">
+							<Size x="270" y="145"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="BOTTOMLEFT" x="128" y="80"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="VisitDescriptionBG" atlas="housefinder_subtext-bg-gradient" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.VisitButtonBG" y="50"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="TopRightFiligree" atlas="housing-dashboard-filigree-wood-small-TR" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="256" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomLeftFiligree" atlas="housing-dashboard-filigree-wood-small-BL" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BottomRightFiligree" atlas="housing-dashboard-filigree-wood-small-BR" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="256"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="PlotLabel" inherits="Game22Font" justifyH="LEFT">
+							<Size x="241" y="30"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.PlotTitleBG" x="15" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="VisitDescription" inherits="GameFontNormalSmall" text="HOUSEFINDER_VISIT_DESCRIPTION">
+							<Size x="160" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.VisitDescriptionBG"/>
+							</Anchors>
+							<Color r="0.5" g="0.5" b="0.5"/>
+						</FontString>
+						<FontString parentKey="PriceLabel" inherits="Game13FontShadow" text="HOUSEFINDER_PRICE_LABEL">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PlotLabel" y="-40"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSEFINDER_NEIGHBORHOOD_LABEL">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.PriceLabel" y="-30"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="LocationLabel" inherits="Game13FontShadow" text="HOUSEFINDER_LOCATION_LABEL">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" x= "10" y="-21"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="LocationText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TypeLabel" inherits="Game13FontShadow" text="HOUSEFINDER_TYPE_LABEL">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.LocationLabel" y="-21"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="TypeText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TypeLabel" relativePoint="RIGHT" x="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="OwnerLabel" inherits="Game13FontShadow" text="HOUSEFINDER_OWNER_LABEL">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TypeLabel" y="-21"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="OwnerText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.OwnerLabel" relativePoint="RIGHT" x="3"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ReservationError" inherits="Game13FontShadow" hidden="true" text="HOUSEFINDER_RESERVATION_ERROR">
+							<Size y="50"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.VisitButtonBG" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+							<Color r="1.0" g="0" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="BackButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="56" y="-3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK" textureSubLevel="5">
+								<Texture parentKey="Icon" atlas="housefinder_back-arrow">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="ButtonLabel" inherits="Game13FontShadow" text="HOUSEFINDER_BACK_BUTTON">
+									<Size y="20"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button parentKey="VisitHouseButton" inherits="UIPanelButtonHeightScaledTemplate" text="HOUSEFINDER_VISIT_BUTTON">
+						<Size x="100" y="30"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.VisitButtonBG"/>
+						</Anchors>
+						<NormalFont style="GameFontNormalLarge"/>
+						<HighlightFont style="GameFontNormalLarge"/>
+						<DisabledFont style="GameFontHighlightMedium"/>
+						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+					</Button>
+					<Frame parentKey="LoadingSpinnerVisitButton" inherits="SpinnerTemplate" hidden="true" frameLevel="2000">
+						<Size x="60" y="60"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.VisitHouseButton"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.PriceLabel" relativePoint="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			
+			<Frame parentKey="HouseFinderMapCanvasFrame" inherits="MapCanvasFrameTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodListFrame" relativePoint="TOPRIGHT" x="4" y="-9"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
+				</Anchors>
+				<Frames>
+					<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-2"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="2"/>
+						</Anchors>
+					</ScrollFrame>
+					<Frame parentKey="BorderFrame" frameLevel="510">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="WoodBorderFrame" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodListFrame" relativePoint="TOPRIGHT" x="-3" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="SelectedPlotTooltip" inherits="TooltipBorderedFrameTemplate" mixin="SelectedPlotTooltipMixin" hidden="true">
+				<Size x="150" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+				<Layers>
+					<Layer level="BORDER" textureSubLevel="3">
+						<Texture parentKey="Arrow" atlas="Tooltip-NineSlice-BottomArrow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativePoint="BOTTOM" y="7"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="CornerIcon" atlas="housefinder_forsale-icon-circle">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="HeaderText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="10" y="-10"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="SubText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText"  relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+						<FontString parentKey="FooterText" inherits="Game13FontShadow" text="">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.SubText"  relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.SubText"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="LoadingSpinnerMap" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.HouseFinderMapCanvasFrame"/>
+				</Anchors>
+			</Frame>
+			
+		</Frames>
+	</Frame>
+
+</Ui>

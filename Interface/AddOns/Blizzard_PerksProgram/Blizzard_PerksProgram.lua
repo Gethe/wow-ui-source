@@ -217,7 +217,7 @@ function PerksProgramMixin:OnShow()
 	C_PerksProgram.RequestPendingChestRewards();
 
 	StaticPopup_SetFullScreenFrame(self);
-	AlertFrame:SetFullScreenFrame(self, "HIGH");
+	AlertFrame:SetFullScreenFrame(self);
 	AlertFrame:SetBaseAnchorFrame(self.FooterFrame.RotateButtonContainer);
 	ActionStatus:SetAlternateParentFrame(self);
 

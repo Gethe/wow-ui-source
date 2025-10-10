@@ -451,6 +451,16 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "ReportGroupAsAdvertisement",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SaveAdvancedFilter",
 			Type = "Function",
 
@@ -664,6 +674,11 @@ local LFGListInfo =
 			Name = "LfgListSearchResultsReceived",
 			Type = "Event",
 			LiteralName = "LFG_LIST_SEARCH_RESULTS_RECEIVED",
+		},
+		{
+			Name = "LfgListUpdateSearchResults",
+			Type = "Event",
+			LiteralName = "LFG_LIST_UPDATE_SEARCH_RESULTS",
 		},
 	},
 

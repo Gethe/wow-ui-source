@@ -144,6 +144,7 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ENTRY_CREATION_FAILED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("LFG_LIST_UPDATE_SEARCH_RESULTS");
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
@@ -234,7 +235,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local searchResultID, newStatus, oldStatus, kstringGroupName = ...;
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
-			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 
 		if IsDeclined(newStatus) then
@@ -2045,7 +2046,7 @@ function LFGListApplicantMember_OnMouseDown(self)
 		rootDescription:CreateTitle(name or "");
 
 		local whisperButton = rootDescription:CreateButton(WHISPER, function()
-			ChatFrame_SendTell(name);
+			ChatFrameUtil.SendTell(name);
 		end);
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_PLAYER, function()
@@ -2277,6 +2278,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 			end
 		end
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "LFG_LIST_UPDATE_SEARCH_RESULTS" ) then
+		LFGListSearchPanel_UpdateResultList(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -2322,8 +2325,12 @@ end
 local function LFGListAdvancedFiltersActivitiesAllChecked(enabled)
 	local seasonGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentSeason, Enum.LFGListFilter.PvE));
 	local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
+	local timerunningGroups = {};
+	if PlayerIsTimerunning() then
+		timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+	end
 	
-	return #enabled.activities == (#seasonGroups + #expansionGroups);
+	return #enabled.activities == (#seasonGroups + #expansionGroups + #timerunningGroups);
 end
 
 local function LFGListAdvancedFiltersDifficultyNoneChecked(enabled)
@@ -2357,6 +2364,11 @@ local function LFGListAdvancedFiltersCheckAllDungeons(enabled)
 
 	tAppendAll(allDungeons, seasonGroups);
 	tAppendAll(allDungeons, expansionGroups);
+
+	if PlayerIsTimerunning() then
+		local timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+		tAppendAll(allDungeons, timerunningGroups);
+	end
 
 	enabled.activities = allDungeons;
 end
@@ -2451,10 +2463,22 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 			local seasonGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(seasonGroups);
 
-			rootDescription:CreateSpacer();
+			if not TableIsEmpty(seasonGroups) then
+				rootDescription:CreateSpacer();
+			end
 
 			local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(expansionGroups);
+
+			if not TableIsEmpty(expansionGroups) then
+				rootDescription:CreateSpacer();
+			end
+
+			if PlayerIsTimerunning() then
+				local timerunning = PlayerIsTimerunning() and Enum.LFGListFilter.Timerunning or 0;
+				local timerunningGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.Timerunning, Enum.LFGListFilter.PvE));
+				AddGroup(timerunningGroups);
+			end
 		end
 
 		rootDescription:CreateSpacer();
@@ -3218,7 +3242,6 @@ function LFGListSearchEntry_UpdateExpiration(self)
 end
 
 function LFGListSearchEntry_CreateContextMenu(self)
-	local panel = LFGListFrame.SearchPanel;
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_SEARCH_ENTRY");
 
@@ -3227,7 +3250,7 @@ function LFGListSearchEntry_CreateContextMenu(self)
 		rootDescription:CreateTitle(searchResultInfo.name);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 
 		if not searchResultInfo.leaderName then
@@ -3244,12 +3267,10 @@ function LFGListSearchEntry_CreateContextMenu(self)
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_GROUP_FOR, function()
 			LFGList_ReportListing(self.resultID, searchResultInfo.leaderName);
-			LFGListSearchPanel_UpdateResultList(panel);
 		end);
 
 		rootDescription:CreateButton(REPORT_GROUP_FINDER_ADVERTISEMENT, function()
-			LFGList_ReportAdvertisement(self.resultID, searchResultInfo.leaderName);
-			LFGListSearchPanel_UpdateResultList(panel);
+			LFGList_ReportAdvertisement(self.resultID);
 		end);
 	end);
 end
@@ -3836,8 +3857,8 @@ end
 
 -- TODO: Fix for Level Squish
 function LFGListUtil_GetCurrentExpansion()
-	if PVEFrame:TimerunningEnabled() then
-		return LE_EXPANSION_MISTS_OF_PANDARIA;
+	if TimerunningUtil.TimerunningEnabledForPlayer() then
+		return TimerunningUtil.GetTimerunningExpansion();
 	else
 		return GetExpansionForLevel(UnitLevel("player")) or LE_EXPANSION_LEVEL_CURRENT;
 	end
@@ -3993,13 +4014,8 @@ function LFGList_ReportListing(searchResultID, leaderName)
 	ReportFrame:InitiateReport(reportInfo, leaderName);
 end
 
-function LFGList_ReportAdvertisement(searchResultID, leaderName)
-	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
-	reportInfo:SetGroupFinderSearchResultID(searchResultID);
-	ReportFrame:SetMinorCategoryFlag(Enum.ReportMinorCategory.Advertisement, true);
-	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
-	local sendReportWithoutDialog = true;
-	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog);
+function LFGList_ReportAdvertisement(searchResultID)
+	C_LFGList.ReportGroupAsAdvertisement(searchResultID);
 end
 
 function LFGList_ReportApplicant(applicantID, applicantName)

@@ -1,6 +1,7 @@
 local function RequestAssignPCTForResults(results, isValidationOnly)
 	local currentRealmAddress = select(5, GetServerName());
 
+	-- For Seamless VAS, Server overrides currentRealmAddress with virtual realmaddress from the selected character
 	return C_CharacterServices.AssignPCTDistribution(
 		currentRealmAddress,
 		results.selectedCharacterGUID,
@@ -23,17 +24,13 @@ function DoesClientThinkTheCharacterIsEligibleForPCT(characterID)
 	local errors = {};
 
 	if characterInfo then
-		local isSameRealm = CharacterSelectUtil.IsSameRealmAsCurrent(characterInfo.realmAddress);
-		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_1, isSameRealm);
-		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_ON_DIFFERENT_REALM_2, isSameRealm);
-
 		if characterInfo.mailSenders then
-			CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #characterInfo.mailSenders == 0);
+			CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasMail, #characterInfo.mailSenders == 0);
 		end
 
-		CheckAddVASErrorCode(errors, Enum.VasError.CharLocked, not characterInfo.hasVasRevoked)
-		CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, characterInfo.experienceLevel >= 10);
-		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(characterInfo.guid));
+		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbCharLocked, not characterInfo.hasVasRevoked)
+		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasNewPlayerExperienceRestriction, not IsCharacterNPERestricted(characterInfo.guid));
 		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.PaidCharacterTransfer));
 
 		local canTransfer = #errors == 0;
@@ -156,13 +153,15 @@ function PCTDestinationSelectBlock:IsFinished(wasFromRewind)
 	-- Different realm, same account
 	-- Different realm, different account
 
+	if result.destinationRealm == "" then
+		return false;
+	end
+
 	local realmAddress, isSameRealm = ValidateVasRealm(result.destinationRealm);
 	if realmAddress then
-		if isSameRealm then
-			return (result.account.accountGUID and GetCurrentWoWAccountGUID() ~= result.account.accountGUID) or IsValidEmailAddress(result.account.accountEmail);
-		else
-			return result.account.accountGUID or IsValidEmailAddress(result.account.accountEmail);
-		end
+		-- With Seamless VAS refactor: we cannot enfore same realm different account here because the UI doesn't know the virtual realm of a remote character
+		-- This will be enforced on the server.
+		return result.account.accountGUID or IsValidEmailAddress(result.account.accountEmail);
 	end
 
 	return false;

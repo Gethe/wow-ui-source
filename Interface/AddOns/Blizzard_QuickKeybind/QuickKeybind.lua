@@ -151,7 +151,7 @@ function QuickKeybindFrameMixin:OnShow()
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();
 	local showQuickKeybindEffects = true;
 	-- ACTION BARS TODO: Re-enable these effects with proper art
-	--MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
+	--MainActionBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	--MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	ExtraActionBar_ForceShowIfNeeded();
 end
@@ -159,10 +159,10 @@ end
 function QuickKeybindFrameMixin:OnHide()
 	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeDisabled");
 
-	if EditModeManagerFrame:IsEditModeActive() then
-		ShowUIPanel(EditModeManagerFrame);
-	elseif not GameMenuFrame:IsShown() then
-		SettingsPanel:Open();
+	if not EditModeManagerFrame:ShowIfActive() then
+		if not GameMenuFrame:IsShown() then
+			SettingsPanel:Open();
+		end
 	end
 
 	ActionButtonUtil.HideAllActionButtonGrids();
@@ -170,7 +170,7 @@ function QuickKeybindFrameMixin:OnHide()
 
 	local showQuickKeybindEffects = false;
 	-- ACTION BARS TODO: Re-enable these effects with proper art
-	--MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
+	--MainActionBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	--MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	ExtraActionBar_CancelForceShow();
 end

@@ -1,7 +1,7 @@
 local l10nTable = {
 	zhCN = {
 		localize = function()
-			TimerunningFirstTimeDialog.InfoPanel.Logo:SetAtlas("timerunning-infographic-logo-cn");
+			TimerunningFirstTimeDialog:UpdateState();
 			TimerunningChoiceDialogCreateStandard:SetHeight(220);
 			TimerunningChoiceDialogCreateTimerunning:SetHeight(220);
 			TimerunningChoiceDialogCreateTimerunning.Glow.RotatingGlow:Hide();
@@ -9,7 +9,7 @@ local l10nTable = {
 	},
 	zhTW = {
 		localize = function()
-			TimerunningFirstTimeDialog.InfoPanel.Logo:SetAtlas("timerunning-infographic-logo-tw");
+			TimerunningFirstTimeDialog:UpdateState();
 			TimerunningChoiceDialogCreateStandard:SetHeight(220);
 			TimerunningChoiceDialogCreateTimerunning:SetHeight(220);
 			TimerunningChoiceDialogCreateTimerunning.Glow.RotatingGlow:Hide();

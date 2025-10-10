@@ -528,6 +528,7 @@ function SpellBookItemMixin:OnIconEnter()
 	elseif itemType == Enum.SpellBookItemType.Flyout then
 		UpdateOnBarHighlightMarksByFlyout(actionID);
 	elseif itemType == Enum.SpellBookItemType.PetAction then
+		EventRegistry:TriggerEvent("PetAbilities.OnEnter", tooltip, self.spellBookItemInfo)
 		UpdateOnBarHighlightMarksByPetAction(actionID);
 		PetActionBar:UpdatePetActionHighlightMarks(actionID);
 		PetActionBar:Update();
@@ -614,9 +615,9 @@ function SpellBookItemMixin:OnModifiedIconClick(button)
 				local spellName = self.spellBookItemInfo.name;
 				local subName = self.spellBookItemInfo.subName
 				if subName and strlen(subName) > 0 then
-					ChatEdit_InsertLink(spellName.."("..subName..")");
+					ChatFrameUtil.InsertLink(spellName.."("..subName..")");
 				else
-					ChatEdit_InsertLink(spellName);
+					ChatFrameUtil.InsertLink(spellName);
 				end
 			end
 		else
@@ -626,7 +627,7 @@ function SpellBookItemMixin:OnModifiedIconClick(button)
 				-- If spell is not a trade skill, use regular spell link
 				chatLink = C_SpellBook.GetSpellBookItemLink(self.slotIndex, self.spellBank);
 			end
-			ChatEdit_InsertLink(chatLink);
+			ChatFrameUtil.InsertLink(chatLink);
 		end
 	elseif IsModifiedClick("PICKUPACTION") then
 		C_SpellBook.PickupSpellBookItem(self.slotIndex, self.spellBank);

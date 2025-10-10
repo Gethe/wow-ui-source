@@ -201,7 +201,7 @@ function AssistedCombatManager:SetAssistedHighlightFrameShown(actionButton, show
 			highlightFrame = CreateFrame("FRAME", nil, actionButton, "ActionBarButtonAssistedCombatHighlightTemplate");
 			actionButton.AssistedCombatHighlightFrame = highlightFrame;
 			highlightFrame:SetPoint("CENTER");
-			highlightFrame:SetFrameLevel(MainMenuBar:GetEndCapsFrameLevel() - 1);
+			highlightFrame:SetFrameLevel(MainActionBar:GetEndCapsFrameLevel() - 1);
 			-- have to do this to get a single frame of the flipbook instead of the whole texture
 			highlightFrame.Flipbook.Anim:Play();
 			highlightFrame.Flipbook.Anim:Stop();

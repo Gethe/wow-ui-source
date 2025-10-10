@@ -3370,7 +3370,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value, guildFollowInfo)
 				frame.ChangeIconFrame:Hide();
 				frame.ValidationDescription:ClearAllPoints();
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
-				StoreVASValidationFrame_ValidationDescription_SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true), true);
+				StoreVASValidationFrame_ValidationDescription_SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasTransactionPurchaseResult.DbRaceClassComboIneligible, character, true), true);
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;

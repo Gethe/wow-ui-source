@@ -1,7 +1,7 @@
 ## Title: Blizzard_OverrideActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_ActionBar, Blizzard_UnitFrame
+## Dependencies: Blizzard_ActionBar, Blizzard_UnitFrame, Blizzard_MicroMenu
 ## AllowLoad: Game
-## AllowLoadGameType: mainline
+OverrideActionBar.lua
 OverrideActionBar.xml

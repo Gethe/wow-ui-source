@@ -4,12 +4,13 @@
 ## Dependencies: Blizzard_FrameXML, Blizzard_EditMode, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_POIButton, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_Colors, Blizzard_HelpPlate
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
+Shared\CastingBarFrame.lua
 Mainline\CastingBarFrame.lua
 Mainline\CastingBarFrame.xml
 Mainline\DressUpFrames.lua
 Mainline\DressUpFrames.xml
-Mainline\ExtraAbilityContainer.lua
-Mainline\ExtraAbilityContainer.xml
+Shared\ExtraAbilityContainer.lua
+Shared\ExtraAbilityContainer.xml
 Mainline\CharacterFrame.lua
 Mainline\CharacterFrame.xml
 Mainline\AzeritePaperDollItemOverlay.lua
@@ -83,8 +84,8 @@ Shared\GossipFrameShared.lua
 Shared\GossipFrameShared.xml
 Mainline\GossipFrame.lua
 Mainline\GossipFrame.xml
-Mainline\VehicleSeatIndicator.lua
-Mainline\VehicleSeatIndicator.xml
+Shared\VehicleSeatIndicator.lua
+Shared\VehicleSeatIndicator.xml
 Shared\PlayerInteractionFrameManager.lua
 Shared\PlayerInteractionFrameManager.xml
 Mainline\Localization.lua

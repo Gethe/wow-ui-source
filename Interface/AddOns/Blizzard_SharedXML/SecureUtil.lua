@@ -109,7 +109,8 @@ function SetupPlayerForModelScene(modelScene, overrideActorName, itemModifiedApp
 		return;
 	end
 
-	local actor = modelScene:GetPlayerActor(overrideActorName, playerRaceName, playerGender);
+	local forceAlternateForm = nil;
+	local actor = modelScene:GetPlayerActor(overrideActorName, forceAlternateForm, playerRaceName, playerGender);
 	if actor then
 		sheatheWeapons = (sheatheWeapons == nil) or sheatheWeapons;
 		hideWeapons = (hideWeapons == nil) or hideWeapons;

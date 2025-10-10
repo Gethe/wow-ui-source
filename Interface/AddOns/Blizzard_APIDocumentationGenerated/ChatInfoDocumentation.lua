@@ -663,7 +663,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -698,7 +698,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -757,7 +757,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -782,7 +782,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -807,7 +807,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -832,7 +832,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -857,7 +857,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -882,7 +882,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -907,7 +907,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -932,7 +932,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -957,7 +957,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -982,7 +982,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1007,7 +1007,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1032,7 +1032,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1057,7 +1057,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1082,7 +1082,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1107,7 +1107,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1141,7 +1141,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1166,7 +1166,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1191,7 +1191,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1216,7 +1216,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1241,7 +1241,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1266,7 +1266,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1291,7 +1291,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1316,7 +1316,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1341,7 +1341,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1366,7 +1366,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1391,7 +1391,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1416,7 +1416,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1441,7 +1441,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1466,7 +1466,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1491,7 +1491,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1516,7 +1516,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1541,7 +1541,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1566,7 +1566,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1591,7 +1591,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1616,7 +1616,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1641,7 +1641,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1666,7 +1666,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1691,7 +1691,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1716,7 +1716,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1741,7 +1741,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1766,7 +1766,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1791,7 +1791,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1816,7 +1816,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1841,7 +1841,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1866,7 +1866,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1891,7 +1891,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1916,7 +1916,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1941,7 +1941,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1966,7 +1966,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1991,7 +1991,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2016,7 +2016,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2041,7 +2041,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2066,7 +2066,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2091,7 +2091,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2116,7 +2116,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2141,7 +2141,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2166,7 +2166,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2191,7 +2191,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2216,7 +2216,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2241,7 +2241,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2266,7 +2266,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2291,7 +2291,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2316,7 +2316,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2341,7 +2341,7 @@ local ChatInfo =
 				{ Name = "isMobile", Type = "bool", Nilable = false },
 				{ Name = "isSubtitle", Type = "bool", Nilable = false },
 				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
-				{ Name = "supressRaidIcons", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -2535,6 +2535,30 @@ local ChatInfo =
 				{ Name = "message", Type = "cstring", Nilable = false },
 				{ Name = "chatType", Type = "cstring", Nilable = true, Documentation = { "ChatType, defaults to SLASH_CMD_PARTY." } },
 				{ Name = "target", Type = "cstring", Nilable = true, Documentation = { "Only applies for targeted channels" } },
+			},
+		},
+		{
+			Name = "ChatMessageEventParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+				{ Name = "playerName", Type = "cstring", Nilable = false },
+				{ Name = "languageName", Type = "cstring", Nilable = false },
+				{ Name = "channelName", Type = "cstring", Nilable = false },
+				{ Name = "playerName2", Type = "cstring", Nilable = false },
+				{ Name = "specialFlags", Type = "cstring", Nilable = false },
+				{ Name = "zoneChannelID", Type = "number", Nilable = false },
+				{ Name = "channelIndex", Type = "number", Nilable = false },
+				{ Name = "channelBaseName", Type = "cstring", Nilable = false },
+				{ Name = "languageID", Type = "number", Nilable = false },
+				{ Name = "lineID", Type = "number", Nilable = false },
+				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+				{ Name = "bnSenderID", Type = "number", Nilable = false },
+				{ Name = "isMobile", Type = "bool", Nilable = false },
+				{ Name = "isSubtitle", Type = "bool", Nilable = false },
+				{ Name = "hideSenderInLetterbox", Type = "bool", Nilable = false },
+				{ Name = "suppressRaidIcons", Type = "bool", Nilable = false },
 			},
 		},
 		{

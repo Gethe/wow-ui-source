@@ -283,7 +283,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true" inherits="UIWidgetContainerTemplate">
+	<Frame name="IslandsQueueFrameCardFrameTemplate" virtual="true" inherits="UIWidgetContainerNoResizeTemplate">
 		<Size x="950" y="642"/>
 		<KeyValues>
 			<KeyValue key="showAndHideOnWidgetSetRegistration" value="false" type="boolean"/>

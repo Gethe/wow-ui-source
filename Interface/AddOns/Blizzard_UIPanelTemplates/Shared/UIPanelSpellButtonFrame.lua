@@ -7,6 +7,16 @@ function UIPanelSpellButtonFrameMixin:OnLoad()
 	local height = self:GetHeight();
 	button:SetSize(height, height);
 
+	if self.buttonBorderAtlas then
+		self.Button.Border:SetTexCoord(0, 1, 0, 1);
+		local useAtlasSize = true;
+		if self.buttonBorderAtlasSize then
+			self.Button.Border:SetSize(self.buttonBorderAtlasSize, self.buttonBorderAtlasSize);
+			useAtlasSize = false;
+		end
+		self.Button.Border:SetAtlas(self.buttonBorderAtlas, useAtlasSize);
+	end
+
 	button:SetScript("OnClick", GenerateClosure(self.OnIconClick, self));
 	button:SetScript("OnDragStart", GenerateClosure(self.OnIconDragStart, self));
 	button:SetScript("OnEnter", GenerateClosure(self.OnIconEnter, self));

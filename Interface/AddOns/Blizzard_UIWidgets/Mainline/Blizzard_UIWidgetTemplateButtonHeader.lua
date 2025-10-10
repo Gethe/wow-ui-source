@@ -31,10 +31,26 @@ function UIWidgetTemplateButtonHeaderMixin:Setup(widgetInfo, widgetContainer)
 	end
 	self.ButtonContainer:Layout();
 
+	self:EvaluateTutorials(widgetInfo.frameTextureKit);
+
 	self:Layout();
 	self:Show();
 end
 
 function UIWidgetTemplateButtonHeaderMixin:OnLoad()
 	self.buttonPool = CreateFramePool("BUTTON", self.ButtonContainer, "UIWidgetBaseButtonTemplate");
+end
+
+function UIWidgetTemplateButtonHeaderMixin:EvaluateTutorials(textureKit)
+	if textureKit == "lorewalking-scenario" then
+		local helpTipInfo = {
+			text = LOREWALKING_QUESTS_HIDDEN_HELP_TIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			cvarBitfield = "closedInfoFrames",
+			bitfieldFlag = LE_FRAME_TUTORIAL_LOREWALKING_QUESTS_HIDDEN,
+			checkCVars = true,
+			targetPoint = HelpTip.Point.LeftEdgeCenter,
+		};
+		HelpTip:Show(self, helpTipInfo);
+	end
 end

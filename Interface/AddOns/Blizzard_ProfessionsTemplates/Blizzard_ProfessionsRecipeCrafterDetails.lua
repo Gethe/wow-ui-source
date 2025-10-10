@@ -70,7 +70,7 @@ function ProfessionsCrafterDetailsStatLineMixin:SetProfessionType(professionType
 end
 
 function ProfessionsCrafterDetailsStatLineMixin:OnEnter()
-	-- Overriden for bonus stat lines
+	-- Overridden for bonus stat lines
 	if self.statLineType ~= nil and self.professionType ~= nil and self.baseValue ~= nil then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:ClearLines();

@@ -228,6 +228,10 @@ function TreeDataProviderMixin:Init()
 	self.node = CreateTreeNode(self);
 end
 
+function TreeDataProviderMixin:IsVirtual()
+	return false;
+end
+
 function TreeDataProviderMixin:GetChildrenNodes()
 	return self.node:GetNodes();
 end

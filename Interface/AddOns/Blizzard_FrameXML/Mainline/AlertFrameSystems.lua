@@ -22,6 +22,7 @@ function AlertFrameSystems_Register()
 	NewWarbandSceneAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewWarbandSceneAlertFrameTemplate", NewWarbandSceneAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
+	HousingItemEarnedAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HousingItemEarnedAlertFrameTemplate", HousingItemEarnedAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -1439,4 +1440,14 @@ function GuildRenameAlertSystem:CheckAddAlert(guildName, status)
 	end
 end
 
+-- [[ HousingItemEarnedAlertFrameSystem ]] --
 
+--! TODO Need to know what _rewardData looks like so we can set DecorType, DecorName, Icon, and maybe IconBorder's color
+--! TODO Need to know when to fire this toast. If on event, add to AlertSystems.lua OnEvent
+function HousingItemEarnedAlertFrameSystem_SetUp(frame, _rewardData)
+	frame.LightRays:SetAlpha(0);
+	frame.LightRays2:SetAlpha(0);
+	frame.glowAnimIn:Play();
+	frame.sparklesAnimIn:Play();
+	frame.lightRaysAnimIn:Play();
+end

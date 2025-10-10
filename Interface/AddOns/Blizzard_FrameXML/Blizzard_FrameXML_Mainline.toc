@@ -4,7 +4,6 @@
 ## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Colors
 ## LoadFirst: 1
 ## AllowLoad: Game
-## AllowLoadGameType: standard
 Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
@@ -13,11 +12,11 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 Mainline\TutorialFrame.lua
 Mainline\TutorialFrame.xml
-Mainline\SecureTemplatesBase.xml
-Mainline\SecureTemplates.lua
+SecureTemplatesBase.xml
+SecureTemplates.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
-Mainline\SecureTemplates.xml
+SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 AzeriteAnimationTemplates.xml

@@ -39,6 +39,36 @@ local InteractionManagerFrameInfo = {
 		loadFunc = AlliedRaces_LoadUI,
 		showFunc = nop; 
 	},
+    [Enum.PlayerInteractionType.HousingBulletinBoard] = 
+	{
+		frame = "HousingBulletinBoardFrame",
+		loadFunc = function() 
+            if not HousingBulletinBoardFrame then
+                C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
+            end
+        end,
+	},
+	[Enum.PlayerInteractionType.RenameNeighborhood] = 
+	{
+		frame = "NeighborhoodChangeNameDialog",
+		loadFunc = function() 
+			if not HousingBulletinBoardFrame then
+				C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
+			end
+			StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
+			NeighborhoodChangeNameDialog.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
+		end,
+	},
+	[Enum.PlayerInteractionType.OpenHouseFinder] = 
+	{
+		frame = "HouseFinderFrame",
+		loadFunc = function() 
+			if not HouseFinderFrame then
+				C_AddOns.LoadAddOn("Blizzard_HousingHouseFinder");
+			end
+			ShowUIPanel(HouseFinderFrame);
+		end,
+	},
 	[Enum.PlayerInteractionType.GuildBanker] = 
 	{
 		frame = "GuildBankFrame",

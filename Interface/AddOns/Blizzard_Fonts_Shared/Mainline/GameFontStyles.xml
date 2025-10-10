@@ -1,0 +1,81 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Font name="NumberFontNormalRightGreen" inherits="NumberFontNormalRight" virtual="true" >
+		<Color r="0.1" g="1.0" b="0.1"/>
+	</Font>
+
+	<Font name="NumberFontSmallYellowLeft" inherits="NumberFont_Small" justifyH="LEFT" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+
+	<Font name="NumberFontSmallWhiteLeft" inherits="NumberFont_Small" justifyH="LEFT" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="NumberFontSmallBattleNetBlueLeft" inherits="NumberFont_Small" justifyH="LEFT" virtual="true" >
+		<Color r="0.510" g="0.773" b="1.0"/>
+	</Font>
+
+	<Font name="Number11FontWhite" inherits="Number11Font" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number13FontRed" inherits="Number13Font" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="PriceFontYellow" inherits="PriceFont" virtual="true" >
+		<Color r="1.0" g="0.82" b="0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number14FontGreen" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="0.1" g="1" b="0.1"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number14FontRed" inherits="NumberFont_Normal_Med" virtual="true" >
+		<Color r="1" g="0.1" b="0.1"/>
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="Number18FontWhite" inherits="Number18Font" virtual="true" >
+		<Color r="1.0" g="1.0" b="1.0"/>
+		<Shadow>
+			<Offset>
+				<AbsDimension x="1" y="-1"/>
+			</Offset>
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+	</Font>
+
+	<Font name="TextStatusBarText" inherits="SystemFont_Outline_Small" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="MissionCombatTextFontOutline" inherits="SystemFont_Outline_WTF2" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+</Ui>

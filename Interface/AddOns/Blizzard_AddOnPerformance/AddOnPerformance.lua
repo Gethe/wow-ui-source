@@ -37,7 +37,7 @@ end
 function AddOnPerformanceMixin:DisplayMessage(msg)
 	if msg.type == Enum.AddOnPerformanceMessageType.SpecificAddOnChatWarning and msg.addOnName then
 		local message = string.format(ADDON_PERFORMANCE_SPECIFIC_WARNING_TEXT, msg.addOnName);
-		Chat_AddSystemMessage(message);
+		ChatFrameUtil.AddSystemMessage(message);
 	elseif msg.type == Enum.AddOnPerformanceMessageType.SpecificAddOnErrorDialog and msg.addOnName then
 		StaticPopup_Show("ADDON_PERFORMANCE_SPECIFIC_ERROR", msg.addOnName);
 	elseif msg.type == Enum.AddOnPerformanceMessageType.OverallAddOnErrorDialog then

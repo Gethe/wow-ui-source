@@ -100,6 +100,20 @@ local ReportSystem =
 			Type = "Function",
 		},
 		{
+			Name = "RequiresScreenshotForReportType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "reportType", Type = "ReportType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "requiresScreenshot", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SendReport",
 			Type = "Function",
 			HasRestrictions = true,
@@ -110,6 +124,19 @@ local ReportSystem =
 				{ Name = "reportInfo", Type = "ReportInfo", Mixin = "ReportInfoMixin", Nilable = false },
 				{ Name = "playerLocation", Type = "PlayerLocation", Mixin = "PlayerLocationMixin", Nilable = true },
 			},
+		},
+		{
+			Name = "SetScreenshotPreviewTexture",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "TakeReportScreenshot",
+			Type = "Function",
 		},
 	},
 
@@ -124,6 +151,11 @@ local ReportSystem =
 				{ Name = "result", Type = "SendReportResult", Nilable = false },
 				{ Name = "reportType", Type = "ReportType", Nilable = false },
 			},
+		},
+		{
+			Name = "ReportScreenshotReady",
+			Type = "Event",
+			LiteralName = "REPORT_SCREENSHOT_READY",
 		},
 	},
 

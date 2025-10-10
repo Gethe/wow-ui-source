@@ -264,6 +264,11 @@ local LFGInfo =
 			LiteralName = "LFG_COMPLETION_REWARD",
 		},
 		{
+			Name = "LfgCooldownsUpdated",
+			Type = "Event",
+			LiteralName = "LFG_COOLDOWNS_UPDATED",
+		},
+		{
 			Name = "LfgEnabledStateChanged",
 			Type = "Event",
 			LiteralName = "LFG_ENABLED_STATE_CHANGED",

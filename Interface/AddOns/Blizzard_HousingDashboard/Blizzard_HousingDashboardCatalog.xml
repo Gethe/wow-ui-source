@@ -1,0 +1,112 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingCatalogFrameTemplate" mixin="HousingCatalogFrameMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="housing-basic-panel-background" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-55"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="PreviewBackground" atlas="catalog-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOP" x="46" y="-55"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="Filters" inherits="HousingCatalogFiltersTemplate">
+				<Size x="100" y="20"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-30"/>
+				</Anchors>
+			</Frame>
+
+			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate">
+				<Size x="150" y="30"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Filters" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+			</EditBox>
+
+			<Frame parentKey="Categories" inherits="HousingCatalogCategoriesTemplate">
+				<KeyValues>
+					<KeyValue key="fixedWidth" value="70" type="number"/>
+					<KeyValue key="topPadding" value="10" type="number"/>
+					<KeyValue key="categoryButtonSize" value="48" type="number"/>
+					<KeyValue key="subcategoryButtonSize" value="48" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" y="-55"/>
+					<Anchor point="BOTTOMLEFT" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="OptionsContainer" inherits="ScrollingHousingCatalogTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.Categories" x="30" y="-12"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="37" y="10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="OverlayDecorations" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Divider" atlas="catalog-main-divider" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+							<Size x="48"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.$parent.PreviewBackground" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.$parent.PreviewBackground" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PreviewCornerLeft" atlas="catalog-corbel-bottom-left" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+							<Size x="66" y="50"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="-2" y="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PreviewCornerRight" atlas="catalog-corbel-bottom-right" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+							<Size x="66" y="50"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.PreviewBackground" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="PreviewFrame" inherits="HousingModelPreviewTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PreviewBackground" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PreviewBackground" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<!-- TODO: Remove once majority of core expected Catalog functionality has been implemented -->
+			<Frame parentKey="TempDisclaimer" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="DisclaimerText" inherits="GameFontHighlightHuge" text="Catalog UI is a work in progress" degrees="45">
+							<Anchors>
+								<Anchor point="CENTER" x="40"/>
+							</Anchors>
+							<Color r="1.0" g="0.0" b="1.0" />
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -906,3 +906,71 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 		Dispatcher:RegisterEvent("CHAT_MSG_MONEY", self);
 	end
 end
+
+-- ============================================================================================================
+-- Tab targeting - watches for progress on a specific quest
+-- ============================================================================================================
+
+Class_TabTargetingWatcher = class("TabTargetingWatcher", Class_TutorialBase);
+
+function Class_TabTargetingWatcher:StartWatching()
+	if C_QuestLog.IsComplete(TutorialData.TabTargetingQuestID) or C_QuestLog.IsQuestFlaggedCompleted(TutorialData.TabTargetingQuestID) then
+		self:Complete();
+		return;
+	end
+
+	local onQuest = C_QuestLog.IsOnQuest(TutorialData.TabTargetingQuestID);
+	if onQuest then
+		local objectiveIndex = 1;
+		local displayComplete = false;
+		local _objectiveText, _objectiveType, _finished, numFulfilled, numRequired = GetQuestObjectiveInfo(TutorialData.TabTargetingQuestID, objectiveIndex, displayComplete);
+		if numRequired - numFulfilled <= 1 then
+			-- Not enough left to transition from one kill to another
+			self:Complete();
+			return;
+		end
+		self.lastFulfilled = numFulfilled;
+		Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
+	else
+		Dispatcher:RegisterEvent("QUEST_ACCEPTED", self);
+	end
+end
+
+function Class_TabTargetingWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("QUEST_ACCEPTED", self);
+	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	Dispatcher:UnregisterEvent("PLAYER_TARGET_CHANGED", self);
+end
+
+function Class_TabTargetingWatcher:QUEST_ACCEPTED(questID)
+	if questID == TutorialData.TabTargetingQuestID then
+		self.lastFulfilled = 0;
+		Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
+	end
+end
+
+function Class_TabTargetingWatcher:QUEST_LOG_UPDATE()
+	local objectiveIndex = 1;
+	local displayComplete = false;
+	local _objectiveText, _objectiveType, _finished, numFulfilled, _numRequired = GetQuestObjectiveInfo(TutorialData.TabTargetingQuestID, objectiveIndex, displayComplete);
+	if numFulfilled > self.lastFulfilled then
+		self.lastFulfilled = numFulfilled;
+		local bindingString = GetBindingKey("TARGETNEARESTENEMY");
+		if bindingString then
+			local content = { text = NPE_TAB_TARGETING, keyText = bindingString };
+			self:ShowSingleKeyTutorial(content);
+			C_Timer.After(0.1, function()
+				Dispatcher:RegisterEvent("PLAYER_TARGET_CHANGED", self);
+			end);
+		end
+	end
+end
+
+function Class_TabTargetingWatcher:PLAYER_TARGET_CHANGED()
+	self:HideSingleKeyTutorial();
+	self:Complete();
+end
+
+function Class_TabTargetingWatcher:OnComplete()
+	self:StopWatching();
+end

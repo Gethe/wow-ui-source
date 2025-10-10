@@ -719,6 +719,10 @@ function MapCanvasScrollControllerMixin:GetCurrentScrollY()
 	return self.currentScrollY or self.targetScrollY;
 end
 
+function MapCanvasScrollControllerMixin:HasZoomLevels()
+	return not not self.zoomLevels;
+end
+
 function MapCanvasScrollControllerMixin:GetCanvasZoomPercent()
 	return PercentageBetween(self:GetCanvasScale(), self:GetScaleForMinZoom(), self:GetScaleForMaxZoom());
 end

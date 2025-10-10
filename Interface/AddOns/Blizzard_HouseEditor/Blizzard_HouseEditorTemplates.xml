@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="BaseHouseEditorModeTemplate" mixin="BaseHouseEditorModeMixin" virtual="true">
+		<Scripts>
+			<OnShow method="BaseOnShow"/>
+			<OnHide method="BaseOnHide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="HouseEditorInstructionsContainerTemplate" mixin="HouseEditorInstructionsContainerMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="RIGHT" x="-30" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HouseEditorInstructionTemplate" mixin="HouseEditorInstructionMixin" inherits="HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="minimumHeight" value="45" type="number"/>
+			<KeyValue key="spacing" value="10" type="number"/>
+			<!-- 
+			iconAtlas: Atlas to use as this instruction's icon; Typically indicates a certain mouse control type
+			controlText: Text to display instead of an icon; Typically indicates a certain control key
+			keybindName: The name of the keybinding for instruction; Will display the key bound to it (if there is one)
+			instructionText: Text displayed to the right of the icon or control text; Typically explains what a control does
+
+			<KeyValue key="iconAtlas" value="" type="string"/>
+			<KeyValue key="controlText" value="" type="global"/>
+			<KeyValue key="keybindName" value="" type="global"/>
+			<KeyValue key="instructionText" value="" type="global"/> -->
+		</KeyValues>
+		<Size x="1" y="0"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="InstructionText" inherits="GameFontHighlightLarge" justifyH="RIGHT" wordwrap="false">
+					<KeyValues>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+					</KeyValues>
+					<Size x="0" y="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Control">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+				<Size x="45" y="45"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" useAtlasSize="false" atlas="plunderstorm-icon-key" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="54" y="48"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" useAtlasSize="false">
+							<Size x="45" y="45"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="Number16Font" hidden="true">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Background"/>
+							</Anchors>
+							<Color color="HIGHLIGHT_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HouseEditorBudgetCountTemplate" mixin="HouseEditorBudgetCountMixin" inherits="ResizeLayoutFrame" enableMouseMotion="true" virtual="true">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-40" y="-53"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightHuge">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="HouseEditorDecorCountTemplate" mixin="HouseEditorDecorCountMixin" inherits="HouseEditorBudgetCountTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="house-decor-budget-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HouseEditorRoomCountTemplate" mixin="HouseEditorRoomCountMixin" inherits="HouseEditorBudgetCountTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture atlas="house-room-limit-icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

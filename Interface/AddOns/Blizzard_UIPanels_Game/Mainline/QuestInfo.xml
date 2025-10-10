@@ -129,7 +129,7 @@
 				if ( IsModifiedClick("CHATLINK") ) then
 					local followerLink = C_Garrison.GetFollowerLinkByID(self.ID);
 					if ( followerLink ) then
-						ChatEdit_InsertLink(followerLink);
+						ChatFrameUtil.InsertLink(followerLink);
 					end
 				end
 			</OnClick>

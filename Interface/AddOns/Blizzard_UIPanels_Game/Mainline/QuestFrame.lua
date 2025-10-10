@@ -372,8 +372,8 @@ function QuestFrameGreetingPanel_OnShow()
 		lastTitleButton = nil;
 		for i=(numActiveQuests + 1), (numActiveQuests + numAvailableQuests) do
 			local questTitleButton = QuestFrameGreetingPanel.titleButtonPool:Acquire();
-			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta = GetAvailableQuestInfo(i - numActiveQuests);
-			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta);
+			local isTrivial, frequency, isRepeatable, isLegendary, questID, isImportant, isMeta, questInfoID = GetAvailableQuestInfo(i - numActiveQuests);
+			QuestUtil.ApplyQuestIconOfferToTextureForQuestID(questTitleButton.Icon, questID, isLegendary, frequency, isRepeatable, isImportant, isMeta, questInfoID);
 			
 			local title = GetAvailableTitle(i - numActiveQuests);
 			if ( isTrivial ) then

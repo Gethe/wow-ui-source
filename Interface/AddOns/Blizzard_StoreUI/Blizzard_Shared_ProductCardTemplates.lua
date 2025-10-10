@@ -442,21 +442,21 @@ function StoreCardMixin:ShowIcon(displayData)
 			if iconItemQuantity and iconItemQuantity ~= 0 then
 				self.ItemQuantityCircle:Show();
 				self.ItemQuantityCircle:ClearAllPoints();
-				self.ItemQuantityCircle:SetPoint("CENTER", self.Icon, "CENTER", 29, -28);
+				self.ItemQuantityCircle:SetPoint("CENTER", self.Icon, "CENTER", 29, -25);
 
 				self.ItemQuantity:Show();
 				self.ItemQuantity:ClearAllPoints();
 				self.ItemQuantity:SetText(iconItemQuantity);
 				if iconItemQuantity == 1 then
-					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", -1, 3);
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", -1, 0);
 				else
-					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", 0, 3);
+					self.ItemQuantity:SetPoint("CENTER", self.ItemQuantityCircle, "CENTER", 0, 0);
 				end
 			end
 
 			self.IconBorder:ClearAllPoints();
 			self.IconBorder:SetAtlas("tokens-frame-regular", true);
-			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -3);
+			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, 0);
 		end
 		self.IconBorder:Show();
 	else

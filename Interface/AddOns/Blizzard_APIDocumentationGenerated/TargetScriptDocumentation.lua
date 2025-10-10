@@ -89,6 +89,10 @@ local TargetScript =
 			Type = "Function",
 		},
 		{
+			Name = "TargetLockOnToggle",
+			Type = "Function",
+		},
+		{
 			Name = "TargetNearest",
 			Type = "Function",
 

@@ -13,6 +13,8 @@ local replacePortraitCvarNames = {
 	"ReplaceOtherPlayerPortraits",
 };
 
+CVarCallbackRegistry:SetCVarCachable("threatShowNumeric");
+
 --[[
 	This system uses "update" functions as OnUpdate, and OnEvent handlers.
 	This "Initialize" function registers the events to handle.
@@ -1134,7 +1136,7 @@ function GetUnitName(unit, showServerName)
 end
 
 function ShowNumericThreat()
-	if ( GetCVar("threatShowNumeric") == "1" ) then
+	if (CVarCallbackRegistry:GetCVarValueBool("threatShowNumeric")) then
 		return true;
 	else
 		return false;

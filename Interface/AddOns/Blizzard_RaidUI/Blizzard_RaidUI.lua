@@ -643,7 +643,7 @@ function RaidPullout_ReadyCheckFinished(pulloutFrame)
 end
 
 function RaidPullout_ReadyCheckFinishFunc(pulloutButton)
-	RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pulloutButton:GetParent().showBuffs);
+	AuraUtil.RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pulloutButton:GetParent().showBuffs);
 end
 
 function RaidPullout_GeneratePulloutFrame(fileName, class)
@@ -917,7 +917,7 @@ function RaidPullout_Update(pullOutFrame)
 				_G[pulloutButton:GetName().."ReadyCheck"]:Hide();
 
 				-- Handle auras if ready check is hidden
-				RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pullOutFrame.showBuffs);
+				AuraUtil.RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pullOutFrame.showBuffs);
 			end
 
 			--Handle vehicle indicator
@@ -975,7 +975,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
 			if ( not _G[self:GetName().."ReadyCheck"]:IsShown() ) then
-				RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
+				AuraUtil.RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
 			end
 		end
 	elseif (( event == "UNIT_ENTERED_VEHICLE" ) or ( event == "UNIT_EXITED_VEHICLE" )) then

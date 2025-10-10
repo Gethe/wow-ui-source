@@ -151,7 +151,7 @@ function InterfaceOverrides.ShowTutorialsOnButtonClick()
 end
 
 function InterfaceOverrides.RunSettingsCallback(callback)
-	if not Settings.IsPlunderstorm() then
+	if not C_GameRules.IsPlunderstorm() then
 		callback();
 	end
 end

@@ -3,11 +3,34 @@ AccountStoreItemDisplayMixin = {};
 
 local AccountStoreItemDisplayEvents = {
 	"ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+	"ACCOUNT_STORE_FRONT_UPDATED",
+	"ACCOUNT_STORE_TRANSACTION_ERROR",
 };
 
+function AccountStoreItemDisplayMixin:InitializeStore(storeFrontID)
+	-- First store, or store change
+	if (not self.storeFrontID) or (storeFrontID ~= self.storeFrontID) then
+		self.categoryLastPage = {}; -- Last page viewed for each category
+		self.currentPage = 0;
+		self.storeFrontID = storeFrontID;
+	end
+
+	self.areItemsAvailable = false;
+	if self.currentItemRack then
+		local items = {};
+		self.currentItemRack:SetItems(items);
+	end
+	if self.categoryTypeToItemRack then
+		for cateogryType, itemRack in pairs(self.categoryTypeToItemRack) do
+		  itemRack:Hide();
+		end
+	else
+		self.categoryTypeToItemRack = {};
+	end
+end
+
 function AccountStoreItemDisplayMixin:OnLoad()
-	self.categoryTypeToItemRack = {};
-	self.currentPage = 1;
+	self:InitializeStore();
 
 	self.Footer.PrevPageButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.ACCOUNT_STORE_PAGE_NAVIGATION);
@@ -32,22 +55,24 @@ function AccountStoreItemDisplayMixin:OnLoad()
 
 	self.Footer.CurrencyAvailable:SetScript("OnLeave", function() GetAppropriateTooltip():Hide(); end);
 
-	self:AddDynamicEventMethod(EventRegistry, "AccountStore.StoreFrontSet", self.OnStoreFrontSet);
-	self:AddDynamicEventMethod(EventRegistry, "AccountStore.CategorySelected", self.OnCategorySelected);
+	self:AddStaticEventMethod(EventRegistry, "AccountStore.StoreFrontSet", self.OnStoreFrontSet);
+	self:AddStaticEventMethod(EventRegistry, "AccountStore.CategorySelected", self.OnCategorySelected);
 end
 
 function AccountStoreItemDisplayMixin:OnShow()
 	CallbackRegistrantMixin.OnShow(self);
 
-	FrameUtil.RegisterFrameForEvents(self, AccountStoreItemDisplayEvents);
+	self.areItemsAvailable = false;
 
-	if self.storeFrontID then
-		C_AccountStore.RequestStoreFrontInfoUpdate(self.storeFrontID);
-	end
+	FrameUtil.RegisterFrameForEvents(self, AccountStoreItemDisplayEvents);
 end
 
 function AccountStoreItemDisplayMixin:OnHide()
 	CallbackRegistrantMixin.OnHide(self);
+	AccountStoreUtil.CloseStaticPopups();
+
+	local items = {};
+	self.currentItemRack:SetItems(items);
 
 	FrameUtil.UnregisterFrameForEvents(self, AccountStoreItemDisplayEvents);
 end
@@ -58,6 +83,17 @@ function AccountStoreItemDisplayMixin:OnEvent(event, ...)
 		if currencyID == self.currencyID then
 			self:UpdateCurrencyAvailable();
 		end
+	elseif event == "ACCOUNT_STORE_FRONT_UPDATED" then
+		local storeFrontID = ...;
+		if storeFrontID == self.storeFrontID then
+			self.areItemsAvailable = true;
+			local forceUpdate = true;
+			self:OnCategorySelected(self.categoryID, forceUpdate);
+			self.currentItemRack:Show();
+		end
+	elseif event == "ACCOUNT_STORE_TRANSACTION_ERROR" then
+		local resultCode = ...;
+		StaticPopup_Show("ACCOUNT_STORE_TRANSACTION_ERROR");
 	end
 end
 
@@ -66,15 +102,18 @@ function AccountStoreItemDisplayMixin:OnMouseWheel(delta)
 end
 
 function AccountStoreItemDisplayMixin:OnStoreFrontSet(storeFrontID)
-	C_AccountStore.RequestStoreFrontInfoUpdate(storeFrontID);
+	self:InitializeStore(storeFrontID);
 
-	self.storeFrontID = storeFrontID;
-	self.currencyID = C_AccountStore.GetCurrencyIDForStore(storeFrontID);
-	self:UpdateCurrencyAvailable();
+	if self.storeFrontID then
+		C_AccountStore.RequestStoreFrontInfoUpdate(self.storeFrontID);
+		self.currencyID = C_AccountStore.GetCurrencyIDForStore(self.storeFrontID);
+		self:UpdateCurrencyAvailable();
+	end
 end
 
-function AccountStoreItemDisplayMixin:OnCategorySelected(categoryID)
-	if categoryID ~= self.categoryID then
+function AccountStoreItemDisplayMixin:OnCategorySelected(categoryID, forceUpdate)
+	local pageForceUpdate = forceUpdate;
+	if categoryID ~= self.categoryID or forceUpdate then
 		self.categoryID = categoryID;
 		self.categoryItems = C_AccountStore.GetCategoryItems(categoryID);
 
@@ -87,10 +126,11 @@ function AccountStoreItemDisplayMixin:OnCategorySelected(categoryID)
 		end
 
 		self.currentItemRack = itemRack;
+		pageForceUpdate = true;
 	end
 
-	local forceUpdate = true;
-	self:SetPage(1, forceUpdate);
+	local pageToShow = self.categoryLastPage[categoryID] or 1;
+	self:SetPage(pageToShow, pageForceUpdate);
 	self.currentItemRack:Show();
 end
 
@@ -118,10 +158,13 @@ function AccountStoreItemDisplayMixin:SetPage(page, forceUpdate)
 	self.currentPage = page;
 
 	local items = {};
-	local maxCardsPerPage = self.currentItemRack:GetMaxCards();
-	for i = 1, page * maxCardsPerPage do
-		local itemIndex = (page - 1) * maxCardsPerPage + i;
-		table.insert(items, self.categoryItems[itemIndex]);
+	if self.areItemsAvailable then
+		local maxCardsPerPage = self.currentItemRack:GetMaxCards();
+		for i = 1, page * maxCardsPerPage do
+			local itemIndex = (page - 1) * maxCardsPerPage + i;
+			table.insert(items, self.categoryItems[itemIndex]);
+		end
+		self.categoryLastPage[self.categoryID] = page;
 	end
 
 	self.currentItemRack:SetItems(items);

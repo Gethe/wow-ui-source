@@ -145,7 +145,12 @@ function CVarCallbackRegistry:ClearCache(cvar)
 	self.cvarValueCache[cvar] = nil;
 end
 
-function CVarCallbackRegistry:RegisterCVarChangedCallback(func, owner, ...)
+-- NOTE: This will invoke the supplied callback for **ALL** CVar changes, as
+-- if listening directly for the CVAR_UPDATE event.
+--
+-- You probably don't want this! Instead, call RegisterCallback("cvarName", func[, owner])
+-- instead to only receive updates for individual CVars.
+function CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(func, owner, ...)
 	return self:RegisterCallback(CVarCallbackRegistry.Event.OnCVarChanged, func, owner, ...);
 end
 

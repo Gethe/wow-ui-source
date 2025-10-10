@@ -61,7 +61,7 @@ function CombatOverrides.AdjustCombatSettings(category)
 end
 
 function CombatOverrides.RunSettingsCallback(callback)
-	if not Settings.IsPlunderstorm() then
+	if not C_GameRules.IsPlunderstorm() then
 		callback();
 	end
 end

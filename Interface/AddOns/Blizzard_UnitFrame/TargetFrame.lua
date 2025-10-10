@@ -1005,7 +1005,7 @@ function TargetFrameMixin:CreateSpellbar(event, boss)
 	end
 
 	-- check to see if the castbar should be shown
-	if (GetCVar("showTargetCastbar") == "0") then
+	if (not GameRulesUtil.ShouldShowTargetCastBar()) then
 		spellbar.showCastbar = false;
 	end
 end
@@ -1075,11 +1075,7 @@ function TargetSpellBarMixin:OnEvent(event, ...)
 
 	--	Check for target specific events
 	if ((event == "VARIABLES_LOADED") or ((event == "CVAR_UPDATE") and (arg1 == "showTargetCastbar"))) then
-		if (GetCVar("showTargetCastbar") == "0") then
-			self.showCastbar = false;
-		else
-			self.showCastbar = true;
-		end
+		self.showCastbar = GameRulesUtil.ShouldShowTargetCastBar();
 
 		if (not self.showCastbar) then
 			self:Hide();
@@ -1175,7 +1171,7 @@ function TargetOfTargetMixin:Update()
 		UnitFrame_Update(self);
 		self:CheckDead();
 		self:HealthCheck();
-		RefreshDebuffs(self, self.unit, nil, nil, true);
+		AuraUtil.RefreshAuras(self, self.unit, nil, nil, true, false);
 	else
 		if (self:IsShown()) then
 			self:Hide();

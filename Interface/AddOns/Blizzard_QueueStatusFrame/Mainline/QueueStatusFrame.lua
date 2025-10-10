@@ -310,6 +310,9 @@ function QueueStatusButtonMixin:OnClick(button)
 					return;
 				end
 			end
+
+			-- If left-click had no other action, open the context menu:
+			self:ShowContextMenu();
 		end
 	end
 end
@@ -853,6 +856,11 @@ local function GetDisplayNameFromCategory(category)
 		end
 	end
 
+	local overrideName = GameRulesUtil.GetOverrideLFGCategoryName(category);
+	if overrideName then
+		return overrideName;
+	end
+
 	return LFG_CATEGORY_NAMES[category];
 end
 
@@ -1105,7 +1113,11 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 		entry.SubTitle:Hide();
 	end
 
-	height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
+	if queuedTime then
+		height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
+	else
+		entry.TimeInQueue:Hide();
+	end
 
 	if ( extraText ) then
 		entry.ExtraText:SetText(extraText);
@@ -1394,17 +1406,17 @@ function QueueStatusDropdown_AddLFGButtons(description, category)
 					end);
 				end
 			elseif ( IsInLFGDungeon() ) then
-				description:CreateButton(TELEPORT_OUT_OF_DUNGEON, function()
+				description:CreateButton(GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.TeleportOutText), function()
 					LFGTeleport(true);
 				end);
 			else
-				description:CreateButton(TELEPORT_TO_DUNGEON, function()
+				description:CreateButton(GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.TeleportInText), function()
 					LFGTeleport(false);
 				end);
 			end
 		end
 		if ( addExitOption ) then
-			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
+			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.LeaveText);
 
 			if C_PartyInfo.IsPartyWalkIn() then
 				text = INSTANCE_WALK_IN_LEAVE;

@@ -1,0 +1,182 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+<Frame name="HousingCharterSignatureTemplate" virtual="true">
+    <Size x="275" y="16"/>
+    <Layers>
+        <Layer level="ARTWORK">
+            <FontString parentKey="PlayerNameText" inherits="Game12Font" justifyH="LEFT" text="HOUSING_CHARTER_UNSIGNED">
+                <Size x="275"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" />
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+</Frame>
+
+<Frame name="HousingCharterRequestSignatureDialog" mixin="HousingCharterRequestSignatureFrameMixin" inherits="DefaultPanelTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+    <Size x="400" y="300"/>
+    <Scripts>
+        <OnLoad method="OnLoad"/>
+    </Scripts>
+    <Layers>
+        <Layer level="ARTWORK">
+            <FontString parentKey="DescriptionText" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_REQUEST_DESCRIPTION">
+                <Size x="350"/>
+                <Anchors>
+                    <Anchor point="TOP" x="0" y="-30"/>
+                </Anchors>
+            </FontString>
+            <FontString parentKey="LocationText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_LOCATION">
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+            </FontString>
+            <FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_NAME">
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.LocationText" relativePoint="BOTTOM" y="-8"/>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_SIGN_BUTTON">
+            <Size x="152" y="42"/>
+            <Anchors>
+                <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+            </Anchors>
+            <NormalFont style="GameFontNormalSmall"/>
+            <HighlightFont style="GameFontNormalSmall"/>
+            <DisabledFont style="GameFontDisableSmall"/>
+            <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+        </Button>
+        <Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_DECLINE_BUTTON">
+            <Size x="152" y="42"/>
+            <Anchors>
+                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+            </Anchors>
+            <NormalFont style="GameFontNormalSmall"/>
+            <HighlightFont style="GameFontNormalSmall"/>
+            <DisabledFont style="GameFontDisableSmall"/>
+            <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+        </Button>
+    </Frames>
+</Frame>
+
+<Frame name="HousingCharterFrame" mixin="HousingCharterMixin" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+		<OnEvent method="OnEvent"/>
+		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
+	</Scripts>
+	<Size x="650" y="400"/>
+	<Layers>
+		<Layer level="BORDER">
+			<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+		</Layer>
+		<Layer level="BACKGROUND" textureSubLevel="-7">
+			<Texture parentKey="Background" atlas="housing-basic-panel--stone-background">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="BACKGROUND" textureSubLevel="-6">
+			<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-20" y="20"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="20" y="-60"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Title" inherits="Game21Font" text="HOUSING_CREATENEIGHBORHOOD_CHARTER">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-30"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="PlayersLabel" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_PLAYERS">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-70"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="LocationLabel" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_NEIGHBORHOOD_LOCATION">
+				<Anchors>
+					<Anchor point="LEFT" x="30" y="-35"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="LocationText" inherits="Game15Font_Shadow" text="location name here">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="NeighborhoodNameLabel" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_NEIGHBORHOOD_NAME">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="CENTER" x="10" y="-35"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" text="neighborhood name here">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeKey="$parent.NeighborhoodNameLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="CharterDescription" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_DESCRIPTION">
+				<Size x="590"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeKey="$parent.LocationText" relativePoint="BOTTOMLEFT" y="-35"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame parentKey="SignaturesFrame">
+			<Size x="590" y="130"/>
+			<Anchors>
+				<Anchor point="TOPLEFT"  relativeKey="$parent.PlayersLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+			</Anchors>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture atlas="housing-basic-container" setAllPoints="true"/>
+				</Layer>
+			</Layers>
+		</Frame>
+		<Button parentKey="SettingsButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_SETTINGS_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOM" relativePoint="BOTTOM" y="20"/>
+			</Anchors>
+			<NormalFont style="GameFontNormalSmall"/>
+			<HighlightFont style="GameFontNormalSmall"/>
+			<DisabledFont style="GameFontDisableSmall"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<Button parentKey="RequestButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="RIGHT" relativeKey="$parent.SettingsButton" relativePoint="LEFT" x="-5"/>
+			</Anchors>
+			<NormalFont style="GameFontNormalSmall"/>
+			<HighlightFont style="GameFontNormalSmall"/>
+			<DisabledFont style="GameFontDisableSmall"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+		<Button parentKey="CloseButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_CLOSE_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.SettingsButton" relativePoint="RIGHT" x="5"/>
+			</Anchors>
+			<NormalFont style="GameFontNormalSmall"/>
+			<HighlightFont style="GameFontNormalSmall"/>
+			<DisabledFont style="GameFontDisableSmall"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+	</Frames>
+</Frame>
+
+</Ui>

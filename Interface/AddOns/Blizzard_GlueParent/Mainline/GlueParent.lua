@@ -84,10 +84,8 @@ function GlueParentMixin:OnLoad()
 	-- Events for Global Mouse Down
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
 	self:RegisterEvent("GLOBAL_MOUSE_UP");
-	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
-	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
-	self:RegisterEvent("KIOSK_SESSION_EXPIRATION_CHANGED");
 	self:RegisterEvent("SCRIPTED_ANIMATIONS_UPDATE");
+	self:RegisterEvent("KIOSK_ENABLED");
 
 	self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
 
@@ -96,6 +94,14 @@ function GlueParentMixin:OnLoad()
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GlueParentMixin.OnStoreFrameClosed);
 
 	OnDisplaySizeChanged(self);
+
+	--[[
+	This is only expected to evaluate true when reloading the UI. Avoid removing this,
+	otherwise every reference to Kiosk addon frames and API will require a load check.
+	]]--
+	if Kiosk.IsEnabled() then
+		C_AddOns.LoadAddOn("Blizzard_Kiosk");
+	end
 end
 
 function GlueParentMixin:OnSecondaryScreenClosed(unused_secondaryScreen, contextKey, openingNewScreen)
@@ -175,12 +181,11 @@ function GlueParentMixin:OnEvent(event, ...)
 		if not IsGlobalMouseEventHandled(buttonID, event) then
 			UIDropDownMenu_HandleGlobalMouseEvent(buttonID, event);
 		end
-	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
-		GlueParent_SetScreen("kioskmodesplash");
-	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
-		StaticPopup_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	elseif(event == "SCRIPTED_ANIMATIONS_UPDATE") then
 		ScriptedAnimationEffectsUtil.ReloadDB();
+	elseif (event == "KIOSK_ENABLED") then
+		C_AddOns.LoadAddOn("Blizzard_Kiosk");
+		StaticPopup_Show("KIOSK_ENABLED");
 	end
 end
 
@@ -796,9 +801,7 @@ end
 function GetDisplayedExpansionLogo(expansionLevel)
 	local isTrial = expansionLevel == nil;
 
-	if isTrial then
-		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
-	elseif expansionLevel <= GetMinimumExpansionLevel() then
+	if isTrial or expansionLevel <= GetMinimumExpansionLevel() then
 		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
 		if expansionInfo then
 			return expansionInfo.logo;
@@ -828,7 +831,12 @@ function UpgradeAccount()
 		StoreInterfaceUtil.OpenToSubscriptionProduct();
 	else
 		if C_StorePublic.DoesGroupHavePurchaseableProducts(WOW_GAMES_CATEGORY_ID) then
-			StoreFrame_SetGamesCategory();
+			local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+			if useNewCashShop then
+				CatalogShopInboundInterface.SetGamesCategory();
+			else
+				StoreFrame_SetGamesCategory();
+			end
 			ToggleStoreUI();
 		else
 			PlaySound(SOUNDKIT.GS_LOGIN_NEW_ACCOUNT);

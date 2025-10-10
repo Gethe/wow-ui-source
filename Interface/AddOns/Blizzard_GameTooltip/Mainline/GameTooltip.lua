@@ -397,6 +397,8 @@ function GameTooltip_OnHide(self)
 
 	GameTooltip_ClearStatusBars(self);
 	GameTooltip_ClearStatusBarWatch(self);
+
+	self.suppressAutomaticCompareItem = false;
 end
 
 function GameTooltip_CycleSecondaryComparedItem(self)
@@ -728,6 +730,10 @@ function GameTooltip_AddQuest(self, questIDArg)
 	GameTooltip:Show();
 end
 
+function GameTooltip_SuppressAutomaticCompareItem(tooltip)
+	tooltip.suppressAutomaticCompareItem = true;
+end
+
 function EmbeddedItemTooltip_UpdateSize(self)
 	local itemTooltipExtraBorderHeight = 22;
 	if ( self.Tooltip:IsShown() ) then
@@ -941,15 +947,19 @@ function GameTooltipDataMixin:OnEvent(event, ...)
 	end
 end
 
-function GameTooltipDataMixin:SetWorldCursor(anchorType)
+function GameTooltipDataMixin:SetWorldCursor(anchorType, parent)
 	local tooltipData = C_TooltipInfo.GetWorldCursor();
+	if not parent then
+		parent = UIParent;
+	end
+
 	if anchorType == Enum.WorldCursorAnchorType.Default then
-		GameTooltip_SetDefaultAnchor(self, UIParent);
+		GameTooltip_SetDefaultAnchor(self, parent);
 	elseif anchorType == Enum.WorldCursorAnchorType.Cursor then
 		local tooltipAnchor = (tooltipData and tooltipData.worldLootObjectInventoryType) and "ANCHOR_CURSOR_RIGHT" or "ANCHOR_CURSOR";
 		self:SetOwner(UIParent, tooltipAnchor);
 	elseif anchorType == Enum.WorldCursorAnchorType.Nameplate then
-		self:SetOwner(UIParent, "ANCHOR_NONE");
+		self:SetOwner(parent, "ANCHOR_NONE");
 		self:SetObjectTooltipPosition();
 	end
 

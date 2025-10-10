@@ -26,7 +26,7 @@ function ProfessionsGuildListingMixin:OnLoad()
 		
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if elementData.fullName then
-				ChatFrame_SendTell(elementData.fullName);
+				ChatFrameUtil.SendTell(elementData.fullName);
 			end
 		end);
 	end);

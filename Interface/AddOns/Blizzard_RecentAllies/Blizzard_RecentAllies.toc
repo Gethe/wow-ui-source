@@ -1,0 +1,7 @@
+## Title: Blizzard Recent Allies
+## AllowLoad: both
+## AllowLoadGameType: mainline
+
+Blizzard_RecentAlliesUtil.lua
+Blizzard_RecentAlliesTemplates.lua
+Blizzard_RecentAlliesTemplates.xml

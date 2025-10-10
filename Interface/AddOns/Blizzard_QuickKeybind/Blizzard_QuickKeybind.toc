@@ -3,5 +3,4 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_SettingsDefinitions_Frame
 ## AllowLoad: Game
-## AllowLoadGameType: mainline
 QuickKeybind.xml

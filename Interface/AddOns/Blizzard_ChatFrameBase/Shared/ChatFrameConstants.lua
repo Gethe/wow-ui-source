@@ -1,3 +1,32 @@
+ChatFrameConstants = {
+	-- Interval at which the scroll-to-bottom button in the chat frame will
+	-- flash while the user has scrolled back through messages.
+	ScrollToBottomFlashInterval = 0.5;
+
+	-- Seconds between incoming whisper messages that the 'tell' sound cue
+	-- will be played.
+	WhisperSoundAlertCooldown = 300;
+
+	-- Number of recently whispered players that will be remembered for
+	-- tab completion.
+	MaxRememberedWhisperTargets = 10;
+
+	-- Character length at which to truncate community names for display.
+	TruncatedCommunityNameLength = 12;
+	TruncatedCommunityNameWithoutChannelLength = 24;
+};
+
+MessageFrameScrollButtonConstants = {
+	-- Number of seconds after initially clicking the scroll down/up buttons
+	-- before the message frame will scrolled by one message.
+	InitialScrollDelay = 0;
+
+	-- Number of seconds that must elapse while holding the scroll down/up
+	-- buttons pressed before the message frame will be scrolled by one
+	-- message.
+	ClickScrollDelay = 0.05;
+};
+
 ICON_LIST = {
 	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:",
 	"|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_2:",
@@ -87,3 +116,20 @@ GROUP_LANGUAGE_INDEPENDENT_STRINGS =
 	"g7",
 	"g8",
 };
+
+CHAT_CATEGORY_LIST = {
+	PARTY = { "PARTY_LEADER", "PARTY_GUIDE", "MONSTER_PARTY" },
+	RAID = { "RAID_LEADER", "RAID_WARNING" },
+	GUILD = { "GUILD_ACHIEVEMENT", "GUILD_ITEM_LOOTED" },
+	WHISPER = { "WHISPER_INFORM", "AFK", "DND" },
+	CHANNEL = { "CHANNEL_JOIN", "CHANNEL_LEAVE", "CHANNEL_NOTICE", "CHANNEL_USER", "CHANNEL_NOTICE_USER" },
+	INSTANCE_CHAT = { "INSTANCE_CHAT_LEADER" },
+	BN_WHISPER = { "BN_WHISPER_INFORM" },
+};
+
+CHAT_INVERTED_CATEGORY_LIST = {};
+for category, sublist in pairs(CHAT_CATEGORY_LIST) do
+	for _, item in pairs(sublist) do
+		CHAT_INVERTED_CATEGORY_LIST[item] = category;
+	end
+end

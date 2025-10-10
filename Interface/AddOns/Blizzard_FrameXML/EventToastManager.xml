@@ -1438,4 +1438,52 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
+
+	
+	<Frame name="EventToastHouseUpgradeAvailableTemplate" mixin="EventToastHouseUpgradeAvailableMixin" inherits="EventToastManagerFrameTemplateNormal" virtual="true" alpha="0">
+		<Size x="845" y="495"/>
+		<KeyValues>
+			<KeyValue key="animInStartDelay" value="0" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFont_Gigantic" justifyH="CENTER" text="HOUSE_UPGRADE_AVAILABLE_TOAST">
+					<Size x="400"/>
+					<Anchors>
+						<Anchor point="TOP" y="-3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubTitle" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
+					<Size x="380"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-8"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="BG" atlas="evergreen-scenario-black-background">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" y="32"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.SubTitle" y="-32"/>
+						<Anchor point="LEFT" relativeKey="$parent.Title" x="-48"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Title" x="48"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture parentKey="Border" atlas="housing-celebrationtoast-frame">
+					<Size x="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BG" y="76"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.BG" y="-76"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate"/>
+			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate"/>
+		</Animations>
+	</Frame>
+
 </Ui>

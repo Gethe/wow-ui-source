@@ -1,6 +1,6 @@
 ALERT_FRAME_COALESCE_CONTINUE = 1; -- Return to continue trying to find an alert to coalesce on to, coalescing failed
 ALERT_FRAME_COALESCE_SUCCESS = 2; -- Return to signal coalescing was a success and that there's no longer a need to continue trying to coalesce onto other frames
-
+DEFAULT_FULLSCREEN_STRATA = "FULLSCREEN_DIALOG";
 -- [[ ContainedAlertSystem ]] --
 
 ContainedAlertSubSystemMixin = {};
@@ -260,8 +260,8 @@ function AlertContainerMixin:OnLoad()
 	self.alertFrameSubSystems = {};
 	self.reasonsToBlockLeftClickingAlerts = {};
 
-	self.FullscreenFrame = UIParent;
-	self.FullscreenStrata = "DIALOG";
+	self.fullscreenFrame = UIParent;
+	self.fullscreenStrata = DEFAULT_FULLSCREEN_STRATA;
 	self.baseAnchorFrame = self;
 
 	-- True must always mean that a system is enabled, a single false will cause the system to queue alerts.
@@ -384,15 +384,15 @@ end
 
 function AlertContainerMixin:SetFullScreenFrame(frame, strata)
 	if frame then
-		self.FullscreenFrame = frame;
-		self.FullscreenStrata = strata;
+		self.fullscreenFrame = frame;
+		self.fullscreenStrata = strata or DEFAULT_FULLSCREEN_STRATA;
 		self:ReparentAlerts();
 	end
 end
 
 function AlertContainerMixin:ClearFullScreenFrame()
-	self.FullscreenFrame = UIParent;
-	self.FullscreenStrata = "DIALOG";
+	self.fullscreenFrame = UIParent;
+	self.fullscreenStrata = DEFAULT_FULLSCREEN_STRATA;
 	self:ReparentAlerts();
 end
 
@@ -400,8 +400,8 @@ function AlertContainerMixin:ReparentAlerts()
 	for i, alertFrameSubSystem in ipairs(self.alertFrameSubSystems) do
 		if alertFrameSubSystem.alertFramePool then
 			for alertFrame in alertFrameSubSystem.alertFramePool:EnumerateActive() do				
-				alertFrame:SetParent(self.FullscreenFrame);
-				alertFrame:SetFrameStrata(self.FullscreenStrata);
+				alertFrame:SetParent(self.fullscreenFrame);
+				alertFrame:SetFrameStrata(self.fullscreenStrata);
 			end
 		end
 	end
@@ -454,8 +454,8 @@ end
 function AlertContainerMixin:AddAlertFrame(frame)
 	self:UpdateAnchors();
 
-	frame:SetParent(self.FullscreenFrame);
-	frame:SetFrameStrata(self.FullscreenStrata);
+	frame:SetParent(self.fullscreenFrame);
+	frame:SetFrameStrata(self.fullscreenStrata);
 
 	AlertFrame_ShowNewAlert(frame);
 end

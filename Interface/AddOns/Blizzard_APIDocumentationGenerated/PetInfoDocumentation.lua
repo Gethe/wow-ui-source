@@ -7,6 +7,16 @@ local PetInfo =
 	Functions =
 	{
 		{
+			Name = "GetPetTalentTree",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "talentTreeName", Type = "stringView", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPetTamersForMap",
 			Type = "Function",
 
@@ -56,6 +66,10 @@ local PetInfo =
 			{
 				{ Name = "petNumber", Type = "number", Nilable = true },
 			},
+		},
+		{
+			Name = "PetAssistMode",
+			Type = "Function",
 		},
 		{
 			Name = "PetRename",

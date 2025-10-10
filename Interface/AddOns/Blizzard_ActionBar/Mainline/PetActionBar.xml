@@ -49,6 +49,7 @@
 			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.PetActionBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
 		</KeyValues>
 
 		<Scripts>

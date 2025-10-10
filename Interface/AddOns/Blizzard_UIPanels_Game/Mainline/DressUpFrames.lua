@@ -744,8 +744,8 @@ function DressUpOutfitDetailsSlotMixin:OnMouseUp()
 			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
 		end
 		if link then
-			if not ChatEdit_InsertLink(link) then
-				ChatFrame_OpenChat(link);
+			if not ChatFrameUtil.InsertLink(link) then
+				ChatFrameUtil.OpenChat(link);
 			end
 		end
 	end

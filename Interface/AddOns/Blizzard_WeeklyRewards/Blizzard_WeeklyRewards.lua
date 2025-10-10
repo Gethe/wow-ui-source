@@ -841,7 +841,7 @@ function WeeklyRewardActivityItemMixin:OnLeave()
 end
 
 function WeeklyRewardActivityItemMixin:OnUpdate()
-	if TooltipUtil.ShouldDoItemComparison() then
+	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip);

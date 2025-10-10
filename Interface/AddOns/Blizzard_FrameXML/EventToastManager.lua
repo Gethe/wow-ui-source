@@ -92,6 +92,7 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.SingleLineWithIcon] = {template = "EventToastManagerSingleLineWithIconTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.Scoreboard] = {template = "EventToastScoreboardTemplate", frameType = "FRAME", hideAutomatically = false,},
+	[Enum.EventToastDisplayType.HouseUpgradeAvailable] = {template = "EventToastHouseUpgradeAvailableTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -1313,3 +1314,17 @@ function EventToastScoreboardMixin:OnHide()
 	self.WidgetContainer:UnregisterForWidgetSet();
 	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
 end
+
+EventToastHouseUpgradeAvailableMixin = {}
+
+function EventToastHouseUpgradeAvailableMixin:Setup(toastInfo)
+	self.SubTitle:SetText(toastInfo.subtitle);
+
+	local borderAtlasInfo = C_Texture.GetAtlasInfo("housing-celebrationtoast-frame");
+	self.Border:SetWidth((self.Border:GetHeight() / borderAtlasInfo.height) * borderAtlasInfo.width);
+
+	self:Show();
+	self:SetSkipParentAnim(true);
+	self:AnimIn();
+end
+

@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HouseEditorCustomizeModeTemplate" mixin="HouseEditorCustomizeModeMixin" inherits="BaseHouseEditorModeTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
+			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
+				<!-- intentionally left blank -->
+			</Frame>
+
+			<Frame parentKey="DecorCustomizationsPane" inherits="HousingDyePaneTemplate" hidden="true">
+				<Size x="250" y="290"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-125" y="135"/> 
+				</Anchors>
+			</Frame>
+
+			<Frame name="DyeSelectionPopout" frameStrata="HIGH" inherits="HousingDecorDyeSlotPopoutTemplate" hidden="true">
+				<Size x="250" y="450"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DecorCustomizationsPane" relativePoint="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="RoomComponentCustomizationsPane" inherits="HousingRoomComponentPaneTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" x="-125" y="135"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
+			<OnHide method="OnHide" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>
