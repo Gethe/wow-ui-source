@@ -394,13 +394,18 @@ function CharacterSelectListCharacterMixin:UpdateTimerunningConversionState()
 	local guid = self:GetCharacterGUID();
 	if guid then
 		local charTimerunningConversionAllowed = IsCharacterTimerunningConversionAllowed(guid);
-
+		-- We currently don't have access to foreign realm characters creation time stamp,
+		-- so we only show the conversion button if the character is on the same realm
 		if charTimerunningConversionAllowed then
 			earlyTimerunningConversionButton:SetPoint("RIGHT", self.PaidServiceButton:IsShown() and self.PaidServiceButton or self ,"LEFT" ,-5, 0);
 			earlyTimerunningConversionButton:Show();
 		else
 			earlyTimerunningConversionButton:Hide();
 		end
+
+		local onSameRealm = CharacterSelectUtil.IsSameRealmAsCurrent(self.characterInfo.realmAddress);
+		earlyTimerunningConversionButton:SetEnabled(onSameRealm);
+		earlyTimerunningConversionButton:DesaturateHierarchy(onSameRealm and 0.0 or 1.0);
 	end
 end
 

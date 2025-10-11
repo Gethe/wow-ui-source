@@ -8,6 +8,9 @@ function TokenHeaderMixin:OnLoad_TokenHeaderTemplate()
 			self:ToggleCollapsed();
 		end
 	end);
+
+	self:SetTitleColor(false, NORMAL_FONT_COLOR);
+	self:SetTitleColor(true, NORMAL_FONT_COLOR);
 end
 
 function TokenHeaderMixin:Initialize(elementData)

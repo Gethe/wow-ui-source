@@ -700,8 +700,8 @@ SpellBookItemMixin.ArtSet = {
 		},
 		inactiveBorder = "spellbook-item-iconframe-passive-inactive",
 		inactiveBorderAnchors = {
-			CreateAnchor("TOPLEFT", nil, "TOPLEFT", 0, 0),
-			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 0, 0),
+			CreateAnchor("TOPLEFT", nil, "TOPLEFT", -10, 7),
+			CreateAnchor("BOTTOMRIGHT", nil, "BOTTOMRIGHT", 2, -7),
 		},
 		borderSheenMask = "talents-node-circle-sheenmask",
 		borderSheenMaskAnchors = {

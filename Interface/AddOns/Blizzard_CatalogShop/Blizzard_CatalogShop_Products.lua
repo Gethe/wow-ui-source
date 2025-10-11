@@ -95,9 +95,13 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 	end
 
 	local scrollBox = self.ProductsScrollBoxContainer.ScrollBox;
-	local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.catalogShopProductID == productID;
-	end);
+	local foundElementData = nil;
+	-- Only search for the element if our scrollBox is set up (no view means it hasn't had data assigned)
+	if scrollBox and scrollBox:GetView() then
+		foundElementData = select(2, scrollBox:FindByPredicate(function(elementData)
+			return elementData.catalogShopProductID == productID;
+		end));
+	end
 
 	if foundElementData then
 		MergeTable(foundElementData, productInfo);

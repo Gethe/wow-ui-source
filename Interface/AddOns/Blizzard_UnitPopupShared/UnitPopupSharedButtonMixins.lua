@@ -3777,7 +3777,7 @@ function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:GetText(contextData)
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:CanShow(contextData)
-	return contextData.recentAllyData ~= nil;
+	return false;
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:IsDisabledInKioskMode()
