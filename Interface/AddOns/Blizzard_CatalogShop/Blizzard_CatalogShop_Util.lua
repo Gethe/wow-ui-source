@@ -48,7 +48,7 @@ local function SetAnimations(actor, actorDisplayInfoData, overrideAnimations)
 		return;
 	end
 
-	if not actor or actorDisplayInfoData then
+	if not actor or not actorDisplayInfoData then
 		return;
 	end
 
@@ -967,6 +967,12 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 	else
 		local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
 		actor:SetPosition(x, y, z);
+
+		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
+		actor:SetSpellVisualKit(nil);
+		actor:StopAnimationKit();
+		actor:SetAnimation(0, 0, 1.0);
+		SetAnimations(actor, actorDisplayInfoData);
 	end
 
 	actor:SetYaw(math.rad(actorDisplayData.yaw));
@@ -1024,6 +1030,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 	-- APPLY CHANGES TO ACTOR
 	local productType = displayData.productType;
 	local isTransmogScene = false;
+	local actorDisplayBucket = displayData.actorDisplayBucket;
+	local actorDisplayData;
 	local actor;
 	local modelSceneTag = displayData.modelSceneTag or nil;
 
@@ -1040,6 +1048,12 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 		isTransmogScene = true;
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
+		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+			if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
+				actorDisplayData = actorDisplayDataFromBucket;
+				break;
+			end
+		end
 	end
 
 	local overrideActorDiplayData = displayData.overrideActorDisplayBucket and displayData.overrideActorDisplayBucket[1] or nil;
@@ -1050,15 +1064,13 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
 		end
 	else
-		-- TODO we have something else, maybe a bundle?
-		local actorDisplayBucket = displayData.actorDisplayBucket;
 		if not actorDisplayBucket then
 			return;
 		end
-		for i, actorDisplayData in ipairs(actorDisplayBucket) do
-			actor = modelScene:GetActorByTag(actorDisplayData.scriptTag);
+		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+			actor = modelScene:GetActorByTag(actorDisplayDataFromBucket.scriptTag);
 			if actor then
-				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isTransmogScene, tryUseOverrideAnim)
+				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayDataFromBucket, isTransmogScene, tryUseOverrideAnim)
 				if overrideActorDiplayData then
 					local isOverrideData = true;
 					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)

@@ -9,7 +9,8 @@ local restedLevelUpAtlas = "UI-HUD-ExperienceBar-Fill-Rested-2x-Flipbook";
 ExpBarMixin = {};
 
 function ExpBarMixin:GetMaxLevel()
-	return GetMaxLevelForPlayerExpansion();
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	return GameRulesUtil.GetEffectiveMaxLevelForPlayer();
 end
 
 function ExpBarMixin:IsCapped()

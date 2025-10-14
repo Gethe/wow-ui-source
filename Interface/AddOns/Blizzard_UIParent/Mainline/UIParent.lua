@@ -2972,7 +2972,9 @@ function GetDisplayedInviteType(guid)
 end
 
 function IsLevelAtEffectiveMaxLevel(level)
-	return level >= GetMaxLevelForPlayerExpansion();
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
+	return level >= maxLevel;
 end
 
 local INTERFACE_ACTION_BLOCKED_COUNT = 0;
