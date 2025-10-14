@@ -60,9 +60,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastDisplayType",
 			Type = "Enumeration",
-			NumValues = 14,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 13,
+			MaxValue = 14,
 			Fields =
 			{
 				{ Name = "NormalSingleLine", Type = "EventToastDisplayType", EnumValue = 0 },
@@ -79,6 +79,7 @@ local UIEventToastManager =
 				{ Name = "FlightpointDiscovered", Type = "EventToastDisplayType", EnumValue = 11 },
 				{ Name = "CapstoneUnlocked", Type = "EventToastDisplayType", EnumValue = 12 },
 				{ Name = "SingleLineWithIcon", Type = "EventToastDisplayType", EnumValue = 13 },
+				{ Name = "Scoreboard", Type = "EventToastDisplayType", EnumValue = 14 },
 			},
 		},
 		{

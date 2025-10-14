@@ -864,7 +864,6 @@ local TransmogItems =
 				{ Name = "canDisplayOnPlayer", Type = "bool", Nilable = false },
 				{ Name = "uiOrder", Type = "number", Nilable = false },
 				{ Name = "exclusions", Type = "number", Nilable = false },
-				{ Name = "restrictedSlotID", Type = "luaIndex", Nilable = true },
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "hasRequiredHoliday", Type = "bool", Nilable = false },
 				{ Name = "hasActiveRequiredHoliday", Type = "bool", Nilable = false },

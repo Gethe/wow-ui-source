@@ -9,6 +9,7 @@ ChatBubbleTemplates.xml
 Classic\WorldFrame.lua
 Classic\WorldFrame.xml
 Classic\UIParentDebugMenu.lua
+Classic\UIParent.lua
 Shared\UIParent.lua
 Wrath\UIParent.lua
 Classic\UIParent.xml

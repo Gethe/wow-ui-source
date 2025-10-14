@@ -151,7 +151,7 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<Frame name="SmallMoneyFrameTemplate" virtual="true">
+	<Frame name="SmallMoneyFrameTemplate" mixin="SmallMoneyFrameMixin" virtual="true">
 		<Size>
 			<AbsDimension x="128" y="13"/>
 		</Size>

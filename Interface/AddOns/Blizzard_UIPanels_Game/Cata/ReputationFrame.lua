@@ -83,12 +83,34 @@ function ReputationFrame_SetRowType(factionRow, rowType, hasRep)	--rowType is a 
 end
 
 function ReputationWatchBar_Update(newLevel)
-	local name, reaction, min, max, value = GetWatchedFactionInfo();
+	local name, reaction, min, max, value, factionID  = GetWatchedFactionInfo();
 	local visibilityChanged = nil;
 	if ( not newLevel ) then
 		newLevel = UnitLevel("player");
 	end
 	if ( name ) then
+		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID);
+		local colorIndex = reaction;
+		-- if it's a different faction, save possible friendship id
+		if ( ReputationWatchBar.factionID ~= factionID ) then
+			ReputationWatchBar.factionID = factionID;
+			ReputationWatchBar.friendshipID = repInfo.friendshipFactionID;
+		end
+
+		local isCappedFriendship;
+		-- do something different for friendships
+		if ( ReputationWatchBar.friendshipID and ReputationWatchBar.friendshipID > 0) then
+			
+			if ( repInfo.nextThreshold ) then
+				min, max, value =  repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing;
+			else
+				-- max rank, make it look like a full bar
+				min, max, value = 0, 1, 1;
+				isCappedFriendship = true;
+			end
+			colorIndex = 5; -- always color friendships green
+		end
+
 		-- See if it was already shown or not
 		if ( not ReputationWatchBar:IsShown() ) then
 			visibilityChanged = 1;
@@ -100,8 +122,13 @@ function ReputationWatchBar_Update(newLevel)
 		min = 0;
 		ReputationWatchBar.StatusBar:SetMinMaxValues(min, max);
 		ReputationWatchBar.StatusBar:SetValue(value);
-		ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);
-		local color = FACTION_BAR_COLORS[reaction];
+		
+		if ( isCappedFriendship ) then
+			ReputationWatchBar.OverlayFrame.Text:SetText(name);
+		else
+			ReputationWatchBar.OverlayFrame.Text:SetText(name.." "..value.." / "..max);
+		end
+		local color = FACTION_BAR_COLORS[colorIndex];
 		ReputationWatchBar.StatusBar:SetStatusBarColor(color.r, color.g, color.b);
 		ReputationWatchBar:Show();
 		

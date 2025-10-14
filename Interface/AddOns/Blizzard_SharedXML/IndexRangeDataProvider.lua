@@ -15,6 +15,10 @@ function IndexRangeDataProviderMixin:Init(size)
 	self:SetSize(size);
 end
 
+function IndexRangeDataProviderMixin:IsVirtual()
+	return true;
+end
+
 function IndexRangeDataProviderMixin:Enumerate(indexBegin, indexEnd)
 	indexBegin = indexBegin and (indexBegin - 1) or 0;
 	indexEnd = indexEnd or self.size;

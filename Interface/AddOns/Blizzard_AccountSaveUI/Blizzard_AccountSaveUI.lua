@@ -15,10 +15,10 @@ StaticPopupDialogs["ACCOUNT_SAVE_SUCCESS"] = {
 	button2 = ACCOUNT_SAVE_CLOSE_BUTTON,
 	html = 1,
 	explicitAcknowledge = true,
-	OnAccept = function()
-		LaunchURL(GlueDialog.data);
+	OnAccept = function(dialog, data)
+		LaunchURL(data);
 	end,
-	OnCancel = function()
+	OnCancel = function(dialog, data)
 	end,
 }
 
@@ -77,10 +77,10 @@ function AccountSaveFrameMixin:UpdateAccountState()
 	if C_AccountServices.IsAccountSaveInProgress() then
 		self.LockEditBox:SetEnabled(false);
 		self.SaveButton:SetEnabled(false);
-		GlueDialog_Show("ACCOUNT_SAVE_IN_PROGRESS");
+		StaticPopup_Show("ACCOUNT_SAVE_IN_PROGRESS");
 	else
 		self.LockEditBox:SetEnabled(true);
-		GlueDialog_Hide("ACCOUNT_SAVE_IN_PROGRESS");
+		StaticPopup_Hide("ACCOUNT_SAVE_IN_PROGRESS");
 	end
 
 	if self.activeState ~= oldState then
@@ -131,7 +131,8 @@ function AccountSaveFrameMixin:OnEvent(event, ...)
 		if result == Enum.AccountExportResult.Success then
 			local fileLink = "<a href=\"" .. outputFolderPath .. "\">".. outputFilePath .. "</a>";
 			local successMessage = HTML_START_CENTERED .. ACCOUNT_SAVE_SUCCESS .. "|n|n" .. ACCOUNT_SAVE_SUCCESS_DETAILS .. "|n|n" .. fileLink .. HTML_END;
-			GlueDialog_Show("ACCOUNT_SAVE_SUCCESS", successMessage, outputFolderPath);
+			local text2 = nil;
+			StaticPopup_Show("ACCOUNT_SAVE_SUCCESS", successMessage, text2, outputFolderPath);
 		else
 			self:ProcessAccountSaveError(result);
 		end
@@ -162,7 +163,7 @@ function AccountSaveFrameMixin:ProcessAccountSaveError(errorCode)
 		errorText = ACCOUNT_SAVE_ERROR_OTHER;
 	end
 
-	GlueDialog_Show("OKAY_MUST_ACCEPT", errorText);
+	StaticPopup_Hide("OKAY_MUST_ACCEPT", errorText);
 end
 
 function AccountSaveFrameMixin:OnSizeChanged()

@@ -15,6 +15,14 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "ClearVertexOffsets",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "GetAtlas",
 			Type = "Function",
 

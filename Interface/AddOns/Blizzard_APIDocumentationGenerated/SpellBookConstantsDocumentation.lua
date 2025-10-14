@@ -17,6 +17,18 @@ local SpellBookConstants =
 				{ Name = "Flyout", Type = "SpellBookItemType", EnumValue = 4 },
 			},
 		},
+		{
+			Name = "SpellBookSpellBank",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Player", Type = "SpellBookSpellBank", EnumValue = 0 },
+				{ Name = "Pet", Type = "SpellBookSpellBank", EnumValue = 1 },
+			},
+		},
 	},
 };
 

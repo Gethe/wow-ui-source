@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXMLBase
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_FontStyles_Frame, Blizzard_SharedXML, Blizzard_SharedXMLGame
+## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame
 ## AllowLoad: Game
 ## AllowLoadGameType: cata
 Classic\IconDataProvider.lua

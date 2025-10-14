@@ -135,7 +135,7 @@ function PetStable_Update()
 			name = UnitName("pet") or "";
 			level = UnitLevel("pet");
 			family = UnitCreatureFamily("pet") or "";
-			talent = GetPetTalentTree() or "";
+			talent = C_PetInfo.GetPetTalentTree() or "";
 			PetStableLevelText:SetFormattedText(STABLE_PET_INFO_TEXT, name, level, family, talent);
 			SetPetStablePaperdoll(PetStableModel);
 			if ( not PetStableModel:IsShown() ) then
@@ -170,7 +170,7 @@ function PetStable_Update()
 		name = UnitName("pet") or "";
 		level = UnitLevel("pet");
 		family = UnitCreatureFamily("pet") or "";
-		talent = GetPetTalentTree() or "";
+		talent = C_PetInfo.GetPetTalentTree() or "";
 		PetStableCurrentPet.tooltip = name;
 		PetStableCurrentPet.tooltipSubtext = format(STABLE_PET_INFO_TOOLTIP_TEXT, level, family, talent);
 	elseif ( GetStablePetInfo(1) ) then

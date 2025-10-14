@@ -18,11 +18,12 @@ local ProfessionConstants =
 		{
 			Name = "CraftingOrderFlags",
 			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 1,
+			NumValues = 6,
+			MinValue = 0,
 			MaxValue = 16,
 			Fields =
 			{
+				{ Name = "None", Type = "CraftingOrderFlags", EnumValue = 0 },
 				{ Name = "IsRecraft", Type = "CraftingOrderFlags", EnumValue = 1 },
 				{ Name = "HasNoneReagents", Type = "CraftingOrderFlags", EnumValue = 2 },
 				{ Name = "HasSomeReagents", Type = "CraftingOrderFlags", EnumValue = 4 },
@@ -114,6 +115,24 @@ local ProfessionConstants =
 				{ Name = "Timeout", Type = "CraftingOrderResult", EnumValue = 44 },
 				{ Name = "TooManyItems", Type = "CraftingOrderResult", EnumValue = 45 },
 				{ Name = "WrongVersion", Type = "CraftingOrderResult", EnumValue = 46 },
+			},
+		},
+		{
+			Name = "CraftingOrderSortType",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "ItemName", Type = "CraftingOrderSortType", EnumValue = 0 },
+				{ Name = "AveTip", Type = "CraftingOrderSortType", EnumValue = 1 },
+				{ Name = "MaxTip", Type = "CraftingOrderSortType", EnumValue = 2 },
+				{ Name = "Quantity", Type = "CraftingOrderSortType", EnumValue = 3 },
+				{ Name = "Reagents", Type = "CraftingOrderSortType", EnumValue = 4 },
+				{ Name = "Tip", Type = "CraftingOrderSortType", EnumValue = 5 },
+				{ Name = "TimeRemaining", Type = "CraftingOrderSortType", EnumValue = 6 },
+				{ Name = "Status", Type = "CraftingOrderSortType", EnumValue = 7 },
 			},
 		},
 		{

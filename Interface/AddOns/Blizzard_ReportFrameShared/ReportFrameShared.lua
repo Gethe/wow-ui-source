@@ -67,13 +67,12 @@ function SharedReportFrameMixin:SetupDropdownByReportType(reportType)
 	self.ReportingMajorCategoryDropdown:Show();
 end
 
-function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
+function SharedReportFrameMixin:InitiateReport(reportInfo, playerName, playerLocation, isBnetReport)
 	self:SetAttribute("initiate_report", {
 		reportInfo = reportInfo,
 		playerName = playerName,
 		playerLocation = playerLocation,
 		isBnetReport = isBnetReport,
-		sendReportWithoutDialog = sendReportWithoutDialog,
 	});
 end
 
@@ -85,7 +84,7 @@ function SharedReportFrameMixin:UpdateHarmfulToMinorsMinorCategoryEnabled()
 	end
 end
 
-function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog)
+function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport)
 	if(not reportInfo) then
 		return;
 	end
@@ -97,12 +96,7 @@ function SharedReportFrameMixin:InitiateReportInternal(reportInfo, playerName, p
 	self:UpdateThankYouMessage(false);
 
 	self.isBnetReport = isBnetReport;
-	self:SetShown(not sendReportWithoutDialog);
-	if (sendReportWithoutDialog) then
-		self:SendReport();
-		self:Reset();
-		return;
-	end
+	self:Show();
 
 	if(playerName) then
 		self.ReportString:SetText(REPORTING_REPORT_PLAYER:format(playerName));
@@ -191,6 +185,7 @@ function SharedReportFrameMixin:SendReport()
 	self.reportInfo:SetReportMajorCategory(self.selectedMajorType);
 	self.reportInfo:SetMinorCategoryFlags(self.minorCategoryFlags:GetFlags());
 	self.reportInfo:SetComment(self.Comment.EditBox:GetText());
+
 	C_ReportSystem.SendReport(self.reportInfo, self.reportPlayerLocation);
 end
 
@@ -468,8 +463,7 @@ do
 			local playerName = data.playerName;
 			local playerLocation = data.playerLocation and Mixin(data.playerLocation, PlayerLocationMixin) or nil;
 			local isBnetReport = data.isBnetReport;
-			local sendReportWithoutDialog = data.sendReportWithoutDialog;
-			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport, sendReportWithoutDialog);
+			self:InitiateReportInternal(reportInfo, playerName, playerLocation, isBnetReport);
 		end
 	end
 end

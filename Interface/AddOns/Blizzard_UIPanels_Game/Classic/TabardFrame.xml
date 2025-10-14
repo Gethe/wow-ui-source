@@ -66,58 +66,20 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="TabardFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="384" y="512"/>
+	<Frame name="TabardFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
-					<AbsDimension x="0" y="-104"/>
+					<AbsDimension x="16" y="-116"/>
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="45"/>
-		</HitRectInsets>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="TabardFramePortrait">
-                    <Size x="60" y="60"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" x="7" y="-6"/>
-                    </Anchors>
-                </Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\PaperDollInfoFrame\UI-Character-General-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\ClassTrainerFrame\UI-ClassTrainer-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -127,7 +89,7 @@
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="23" y="-76"/>
+								<AbsDimension x="8" y="-66"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -137,7 +99,7 @@
 				<Texture name="TabardFrameOuterFrameTopLeft" file="Interface\TabardFrame\TabardFrameOuterFrame">
 					<Size x="20" y="39"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="19" y="-73"/>
+						<Anchor point="TOPLEFT" x="8" y="-63"/>
 					</Anchors>
 					<TexCoords left="0.109375" right="0.1875" top="0" bottom="0.3046875"/>
 				</Texture>
@@ -235,13 +197,13 @@
 				<FontString name="TabardFrameNameText" inherits="GameFontNormal">
 					<Size x="109" y="16"/>
 					<Anchors>
-						 <Anchor point="CENTER" x="6" y="232"/>
+						 <Anchor point="CENTER" x="6" y="202"/>
 					</Anchors>
 				</FontString>
 				<FontString name="TabardFrameGreetingText" inherits="GameFontHighlight" text="TABARDVENDORGREETING">
 					<Size x="250" y="0"/>
 					<Anchors>
-						<Anchor point="TOP" relativeTo="TabardFrame" x="10" y="-39"/>
+						<Anchor point="TOP" relativeTo="TabardFrame" x="15" y="-28"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -250,13 +212,13 @@
 			<TabardModel name="TabardModel">
                 <Size x="303" y="317"/>
                 <Anchors>
-                    <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="-14" y="114"/>
+                    <Anchor point="BOTTOM" relativeTo="TabardFrame" relativePoint="BOTTOM" x="0" y="38"/>
                 </Anchors>
 				<Frames>
 					<Button name="TabardCharacterModelRotateLeftButton">
 						<Size x="35" y="35"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="TabardFrame" x="26" y="110"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="TabardFrame" x="14" y="33"/>
 						</Anchors>
 						<Scripts>
 							<OnLoad>
@@ -328,7 +290,7 @@
 						<Texture name="TabardFrameCustomizationBorder" file="Interface\TabardFrame\TabardFrameCustomizationFrame">
 							<Size x="256" y="256"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" x="-9" y="50"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" x="26" y="-28"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -389,15 +351,28 @@
 					<OnLoad function="RaiseFrameLevel"/>
 				</Scripts>
 			</Frame>
+			<Frame name="TabardFrameMoneyInset" inherits="InsetFrameTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="170" y="25"/>
+				</Anchors>
+			</Frame>
+			<Frame name="TabardFrameMoneyBg" inherits="ThinGoldEdgeTemplate" >
+				<Size x="120" y="30"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" x="166" y="24"/>
+					<Anchor point="BOTTOMLEFT" x="7" y="6"/>
+				</Anchors>
+			</Frame>
 			<Frame name="TabardFrameMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT" x="183" y="86"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TabardFrame" relativePoint="BOTTOMLEFT" x="175" y="8"/>
 				</Anchors>
 			</Frame>
 			<Button name="TabardFrameAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT" x="224" y="-420"/>
+					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT" x="213" y="-409"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -408,20 +383,11 @@
 			<Button name="TabardFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 				<Size x="80" y="22"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT" x="305" y="-420"/>
+					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPLEFT" x="294" y="-409"/>
 				</Anchors>
 				<Scripts>
 					<OnClick function="HideParentPanel"/>
 				</Scripts>
-			</Button>
-			<Button name="TabardFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="TabardFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="-24"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
 			</Button>
 		</Frames>
 		<Scripts>

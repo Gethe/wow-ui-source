@@ -68,8 +68,12 @@
 			<!-- If true, game mode drawer is centered on game mode button.
 			     If false, game moder drawer is centered on nav bar. -->
 			<KeyValue key="gameModeDrawerAnchorsToButton" value="true" type="boolean"/>
-
-			<KeyValue key="shopIconSize" value="24" type="number"/>
+			
+			<!-- If true, nav bar is scaled by the UI Default Scale. -->
+			<KeyValue key="useDefaultScale" value="false" type="boolean"/>
+			
+			<!-- Sets the scale of the game mode selection drawer relative to its default. -->
+			<KeyValue key="gameModeDrawerScale" value="1" type="number"/>
 		</KeyValues>
 		<Size y="55"/>
 		<Frames>

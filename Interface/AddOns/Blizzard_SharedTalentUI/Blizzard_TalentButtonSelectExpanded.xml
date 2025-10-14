@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Button name="TalentButtonSelectExpandedTemplate" mixin="TalentButtonSelectExpandedDisplayMixin" inherits="TalentDisplayTemplate" virtual="true">
+		<Size x="1" y="1"/>
+		<Frames>
+			<Frame parentKey="SelectionFrame" inherits="TalentSelectionChoiceFrameTemplate">
+				<KeyValues>
+					<KeyValue key="dialogStyle" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

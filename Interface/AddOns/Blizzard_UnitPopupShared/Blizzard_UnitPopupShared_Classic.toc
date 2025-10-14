@@ -1,7 +1,7 @@
 ## Title: Blizzard_UnitPopupShared
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXML
+## Dependencies: Blizzard_SharedXML, Blizzard_Colors
 ## AllowLoad: Game
 ## AllowLoadGameType: classic
 UnitPopupSharedUtils.lua

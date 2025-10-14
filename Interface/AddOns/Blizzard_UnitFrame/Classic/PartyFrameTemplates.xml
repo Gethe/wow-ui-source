@@ -1,5 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="PartyFrameBarSegmentTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillTexture" value="Interface\TargetingFrame\UI-StatusBar" type="string"/>
+		</KeyValues>
+	</Frame>
+	
 	<Frame name="PartyBuffFrameTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="15" y="15"/>
 		<Layers>
@@ -152,8 +158,9 @@
 				local prefix = "PartyMemberFrame"..id.."PetFrame";
 				local unit = "partypet"..id;
 				UnitFrame_Initialize(self, unit,  _G[prefix.."Name"], _G[prefix.."Portrait"],
-					   _G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
-				       nil, nil, _G[prefix.."Flash"]);
+							_G[prefix.."HealthBar"], _G[prefix.."HealthBarText"],
+							nil, nil, _G[prefix.."Flash"],
+							nil, nil, _G[prefix.."MyHealPredictionBar"], _G[prefix.."OtherHealPredictionBar"]);
 				SetTextStatusBarTextZeroText(_G[prefix.."HealthBar"], DEAD);
 				_G[prefix.."Name"]:Hide();
 				SecureUnitButton_OnLoad(self, unit);
@@ -201,9 +208,14 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame setAllPoints="true">
+			<Frame name="$parentPowerBarAlt" inherits="UnitPowerBarAltTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="RIGHT" x="13" y="5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="textureFrame" setAllPoints="true">
 				<Frames>
-					<Frame setAllPoints="true">
+					<Frame parentKey="childFrame" setAllPoints="true">
 						<Layers>
 							<Layer level="BORDER">
 								<Texture name="$parentTexture" file="Interface\TargetingFrame\UI-PartyFrame">
@@ -232,6 +244,8 @@
 									</Anchors>
 									<TexCoords left="0" right="0.2734375" top="0" bottom="0.5625"/>
 								</Texture>
+								<Texture parentKey="overAbsorbGlow" inherits="OverAbsorbGlowTemplate" hidden ="true"/>
+								<Texture parentKey="overHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate" hidden ="true"/>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture name="$parentLeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
@@ -275,6 +289,12 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="47" y="-12"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="MyHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, MyHealPredictionBarTemplate"/>
+					<Frame parentKey="OtherHealPredictionBar" inherits="PartyFrameBarSegmentTemplate, OtherHealPredictionBarTemplate"/>
+					<Frame parentKey="HealAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, HealAbsorbBarTemplate"/>
+					<Frame parentKey="TotalAbsorbBar" inherits="PlayerFrameBarSegmentTemplate, TotalAbsorbBarTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						TextStatusBar_Initialize(self);
@@ -289,6 +309,9 @@
 						PartyMemberHealthCheck(self, value);
 						UnitFrameHealthBar_OnValueChanged(self, value);
 					</OnValueChanged>
+					<OnSizeChanged>
+						UnitFrameHealPredictionBars_UpdateSize(self:GetParent());
+					</OnSizeChanged>
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>

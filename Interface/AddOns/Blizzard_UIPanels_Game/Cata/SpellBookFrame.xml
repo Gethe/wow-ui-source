@@ -32,20 +32,14 @@
 	</Texture>
 	
 	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="30" y="30"/>
-		</Size>
+		<Size  x="30" y="30"/>
 	</Frame>
 	<CheckButton name="SpellBookSkillLineTabTemplate" virtual="true" hidden="true">
-		<Size>
-			<AbsDimension x="32" y="32"/>
-		</Size>
+		<Size x="32" y="32"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture file="Interface\SpellBook\SpellBook-SkillLineTab">
-					<Size>
-						<AbsDimension x="64" y="64"/>
-					</Size>
+					<Size x="64" y="64"/>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -162,9 +156,7 @@
 					</Anchors>
 				</Texture>
 				<Texture name="$parentAutoCastable" file="Interface\Buttons\UI-AutoCastableOverlay" hidden="true">
-					<Size>
-						<AbsDimension x="60" y="60"/>
-					</Size>
+					<Size x="60" y="60"/>
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset>
@@ -192,7 +184,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate"/>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" inherits="CooldownFrameTemplate" hideCountdownNumbers="true"/>
 			<Frame name="$textureTrainBook" hidden="true" parentKey="TrainBook" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
@@ -221,9 +213,7 @@
 			<OnLeave method="OnLeave" />
 		</Scripts>
 		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
-		<Size>
-				<AbsDimension x="64" y="64"/>
-					</Size>
+		<Size x="64" y="64"/>
 					<Anchors>
 				<Anchor point="CENTER">
 							<Offset>
@@ -275,7 +265,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown" />
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" parentKey="cooldown" hideCountdownNumbers="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
@@ -541,7 +531,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="SpellBookFrame" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
+	<Frame name="SpellBookFrame" mixin="SpellBookFrameMixin" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate" frameStrata="MEDIUM">
 		<Size x="550" y="525" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -590,9 +580,7 @@
 				<Layers>
 					<Layer level="OVERLAY">
 						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
+							<Size x="102" y="0"/>
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
 									<Offset>
@@ -606,9 +594,7 @@
 				</Layers>
 				<Frames>
 					<Button name="SpellBookPrevPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame" x="-66" y="26" />
 						</Anchors>
@@ -621,9 +607,7 @@
 						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
 					<Button name="SpellBookNextPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" x="-31" y="26" />
 						</Anchors>
@@ -752,9 +736,7 @@
 						</Anchors>
 					</CheckButton>
 					<Frame name="SpellBookTabFlashFrame" hidden="true">
-						<Size>
-							<AbsDimension x="10" y="10"/>
-						</Size>
+						<Size x="10" y="10"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="SpellBookSkillLineTab1">
 								<Offset>
@@ -765,65 +747,49 @@
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="SpellBookSkillLineTab1Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab1"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab2Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab2"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab3Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab3"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab4Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab4"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab5Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab5"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab6Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab6"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab7Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab7"/>
 									</Anchors>
 								</Texture>
 								<Texture name="SpellBookSkillLineTab8Flash" file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD" hidden="true">
-									<Size>
-										<AbsDimension x="64" y="64"/>
-									</Size>
+									<Size x="64" y="64"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeTo="SpellBookSkillLineTab8"/>
 									</Anchors>
@@ -904,10 +870,10 @@
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad function="SpellBookFrame_OnLoad"/>
-			<OnEvent function="SpellBookFrame_OnEvent"/>
-			<OnShow function="SpellBookFrame_OnShow"/>
-			<OnHide function="SpellBookFrame_OnHide"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

@@ -68,7 +68,7 @@ function SettingsPanelMixin:OnLoad()
 	local settingsList = self:GetSettingsList();
 	settingsList.Header.DefaultsButton.Text:SetText(SETTINGS_DEFAULTS);
 	settingsList.Header.DefaultsButton:SetScript("OnClick", function(button, buttonName, down)
-		ShowAppropriateDialog("GAME_SETTINGS_APPLY_DEFAULTS");
+		StaticPopup_Show("GAME_SETTINGS_APPLY_DEFAULTS");
 	end);
 
 	self.SearchBox:HookScript("OnTextChanged", GenerateClosure(self.OnSearchTextChanged, self));
@@ -89,7 +89,7 @@ function SettingsPanelMixin:OnLoad()
 	EventRegistry:RegisterCallback("KeybindListener.RebindFailed", self.OnKeybindRebindFailed, self);
 	EventRegistry:RegisterCallback("KeybindListener.RebindSuccess", self.OnKeybindRebindSuccess, self);
 
-	CVarCallbackRegistry:RegisterCVarChangedCallback(self.OnCVarChanged, self);
+	CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(self.OnCVarChanged, self);
 
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
@@ -112,7 +112,7 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 	if setting:GetValue() == nil then
 		return;
 	end
-	
+
 	-- The value is forced because the setting will always evaluate the current state of this
 	-- cvar as unchanged due to the source of the value being the cvar that was just modified.
 	-- This won't produce a recursive overflow because when setting the value legimately through
@@ -138,7 +138,7 @@ function SettingsPanelMixin:OnShow()
 	local force = true;
 	self:SelectFirstCategory(force);
 
-	-- Checks for if there are any categories to show on the AddOnsTab 
+	-- Checks for if there are any categories to show on the AddOnsTab
 	local categories = self:GetCategoryList();
 	local showTabs = false;
 	for _, category in ipairs(categories.allCategories) do
@@ -167,7 +167,9 @@ function SettingsPanelMixin:OnShow()
 	self:CheckApplyButton();
 
 	self:CallRefreshOnCanvases();
-	self:CheckTutorials(); 
+	self:CheckTutorials();
+
+	categories:RefreshNewFeatures();
 end
 
 function SettingsPanelMixin:CheckTutorials()
@@ -190,13 +192,15 @@ function SettingsPanelMixin:OnHide()
 		GlueParent_RemoveModalFrame(self);
 		GlueParent_CloseSecondaryScreen();
 		return;
-	else 
+	else
 		UpdateMicroButtons();
 	end
 
 	local checked = Settings.GetValue("PROXY_CHARACTER_SPECIFIC_BINDINGS");
 	local bindingSet = checked and Enum.BindingSet.Character or Enum.BindingSet.Account;
 	SaveBindings(bindingSet);
+
+	EventRegistry:TriggerEvent("SettingsPanel.OnHide");
 end
 
 function SettingsPanelMixin:Commit(unrevertable)
@@ -208,7 +212,7 @@ end
 
 function SettingsPanelMixin:Close(skipTransitionBackToOpeningPanel)
 	if self:HasUnappliedSettings() then
-		ShowAppropriateDialog("GAME_SETTINGS_CONFIRM_DISCARD");
+		StaticPopup_Show("GAME_SETTINGS_CONFIRM_DISCARD");
 	else
 		self:ExitWithCommit(skipTransitionBackToOpeningPanel);
 	end
@@ -249,9 +253,7 @@ function SettingsPanelMixin:TransitionBackOpeningPanel()
 	HideUIPanel(self);
 
 	if not C_Glue.IsOnGlueScreen() then
-		if EditModeManagerFrame:IsEditModeActive() then
-			ShowUIPanel(EditModeManagerFrame);
-		else
+		if not EditModeManagerFrame:ShowIfActive() then
 			ToggleGameMenu();
 		end
 	end
@@ -271,7 +273,7 @@ function SettingsPanelMixin:OpenToCategory(categoryID, scrollToElementName)
 	local categoryTbl = self:GetCategoryList():GetCategory(categoryID);
 	if categoryTbl then
 		categoryTbl:SetExpanded(true);
-		 
+
 		self:SelectCategory(categoryTbl);
 
 		if scrollToElementName then
@@ -319,14 +321,14 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
 			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
 			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
-			
+
 			if not unrevertable then
 				if securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.Revertable) then
 					local originalValue = securecallfunction(setting.GetValueDerived, setting);
 					table.insert(self.revertableSettings, {setting = setting, originalValue = originalValue});
 				end
 			end
-			
+
 			securecallfunction(setting.Commit, setting);
 		end
 
@@ -337,10 +339,10 @@ function SettingsPanelMixin:CommitSettings(unrevertable)
 
 	if #self.revertableSettings > 0 then
 		local duration = 8.0;
-		ShowAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
+		StaticPopup_Show("GAME_SETTINGS_TIMED_CONFIRMATION", nil, nil, duration);
 		local function Timer()
 			self:RevertSettings();
-			HideAppropriateDialog("GAME_SETTINGS_TIMED_CONFIRMATION");
+			StaticPopup_Hide("GAME_SETTINGS_TIMED_CONFIRMATION");
 		end
 		self.Timer = C_Timer.NewTimer(duration, Timer);
 	end
@@ -355,7 +357,7 @@ function SettingsPanelMixin:FinalizeCommit(saveBindings, gxRestart, windowUpdate
 	if gxRestart then
 		RestartGx();
 	end
-	
+
 	if windowUpdate then
 		UpdateWindow();
 	end
@@ -421,8 +423,10 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	self:WipeModifiedTable();
 	self:CheckApplyButton();
 	self:FinalizeCommit(saveBindings, gxRestart, windowUpdate);
-	
+
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
+
+	EventRegistry:TriggerEvent("Settings.Defaulted");
 end
 
 function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
@@ -466,6 +470,8 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	if currentCategory == self.keybindingsCategory then
 		Settings.SafeLoadBindings(Enum.BindingSet.Default);
 	end
+
+	EventRegistry:TriggerEvent("Settings.CategoryDefaulted", currentCategory);
 end
 
 function SettingsPanelMixin:HasUnappliedSettings()
@@ -534,7 +540,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 		table.insert(words, word);
 	end
 
-	-- Score is the number of matching characters. 
+	-- Score is the number of matching characters.
 	local scoredInitializers = {};
 	local function ParseCategory(category, parentCategory)
 		local layout = self:GetLayout(category);
@@ -565,7 +571,7 @@ function SettingsPanelMixin:FindInitializersMatchingSearchText(searchText)
 
 	local matchScores = GetKeysArray(scoredInitializers);
 	table.sort(matchScores, function(a, b) return a > b end);
-	
+
 	-- Shuffle all of the initializers that are now ordered by match score into their respective category.
 	local scoredInitializersList = {};
 	local initializerLists = {};
@@ -916,9 +922,9 @@ function SettingsPanelMixin:OnKeybindStartedListening(action, slotIndex)
 
 	local settingsList = self:GetSettingsList();
 	settingsList:SetInputBlockerShown(true);
-	
+
 	self:SetOutputText(SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL:format(GetBindingName(action), GetBindingText("ESCAPE")));
-	
+
 	EventRegistry:TriggerEvent("Settings.ReparentBindingsToInputBlocker", settingsList:GetInputBlocker());
 end
 

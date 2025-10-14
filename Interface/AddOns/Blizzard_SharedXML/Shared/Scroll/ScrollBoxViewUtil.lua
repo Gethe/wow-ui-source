@@ -23,3 +23,35 @@ function ScrollBoxViewUtil.SetVerticalPoint(frame, offset, indent, elementStretc
 	end
 	return frame:GetHeight();
 end
+
+function ScrollBoxViewUtil.CheckDataIndicesReturn(dataIndexBegin, dataIndexEnd)
+	local size = dataIndexEnd - dataIndexBegin;
+	local capacity = 1000;
+	if size >= capacity then
+		--[[ 
+		Erroring here to avoid stalling the client by requesting an excessive number. This can happen
+		if a frame doesn't correct frame extents (1 height/width), causing a much larger range to be 
+		displayed than expected.
+		]]--
+		error(string.format("CheckDataIndicesReturn encountered an unsupported size. %d/%d", size, capacity));
+	end
+
+	return dataIndexBegin, dataIndexEnd;
+end
+
+function ScrollBoxViewUtil.CreateFrameLevelCounter(frameLevelPolicy, referenceFrameLevel, range)
+	if frameLevelPolicy == ScrollBoxViewMixin.FrameLevelPolicy.Ascending then
+		local frameLevel = referenceFrameLevel + 1;
+		return function()
+			frameLevel = frameLevel + 1;
+			return frameLevel;
+		end
+	elseif frameLevelPolicy == ScrollBoxViewMixin.FrameLevelPolicy.Descending then
+		local frameLevel = referenceFrameLevel + 1 + range;
+		return function()
+			frameLevel = frameLevel - 1;
+			return frameLevel;
+		end
+	end
+	return nil;
+end

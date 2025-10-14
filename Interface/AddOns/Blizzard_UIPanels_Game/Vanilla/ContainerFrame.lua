@@ -18,3 +18,7 @@ function ContainerFrame_UpdateQuestItem(frame, itemIndex, itemButton)
 		questTexture:Hide();
 	end
 end
+
+function ContainerFrame_UpdateSearchBox(id, frame)
+	-- no search box in Vanilla
+end

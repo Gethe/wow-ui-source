@@ -195,6 +195,7 @@ do
 	end
 
 	function ChannelRosterMixin:UpdateFromTextChannelID(channelID)
+		self:SetSpinnerShown(false);
 		-- Link the voice channel id if there is one
 		local _, _, _, _, _, _, _, channelType = GetChannelDisplayInfo(channelID);
 		local voiceChannel = C_VoiceChat.GetChannelForChannelType(channelType);
@@ -234,6 +235,8 @@ do
 	end
 
 	function ChannelRosterMixin:UpdateFromVoiceChannelID(channelID)
+		self:SetSpinnerShown(false);
+
 		self.voiceChannelID = channelID;
 
 		return self:UpdateFromOpaqueChannel(C_VoiceChat.GetChannel(channelID), GetVoiceChannelInfo, UpdateVoiceChannelRosterEntry);
@@ -280,7 +283,14 @@ do
 		end
 	end
 
+	function ChannelRosterMixin:SetSpinnerShown(shown)
+		self.Spinner:SetShown(shown);
+		self.ScrollFrame:SetShown(not shown);
+	end
+
 	function ChannelRosterMixin:UpdateFromCommunityStream(channelButton)
+		self:SetSpinnerShown(not C_Club.AreMembersReady(channelButton.clubId));
+
 		-- Link the voice channel id if there is one
 		local voiceChannel = C_VoiceChat.GetChannelForCommunityStream(channelButton.clubId, channelButton.streamId);
 		self.voiceChannelID = voiceChannel and voiceChannel.channelID or nil;

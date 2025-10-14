@@ -57,6 +57,20 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetAllEntriesForCategory",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "lfgDungeonIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDungeonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -81,6 +95,21 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetLevelUpInstances",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "currPlayerLevel", Type = "number", Nilable = false },
+				{ Name = "isRaid", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "instances", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoleCheckDifficultyDetails",
 			Type = "Function",
 
@@ -88,6 +117,20 @@ local LFGInfo =
 			{
 				{ Name = "maxLevel", Type = "number", Nilable = true },
 				{ Name = "isLevelReduced", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HideNameFromUI",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "dungeonID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldHide", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -163,6 +206,11 @@ local LFGInfo =
 			Name = "LfgCompletionReward",
 			Type = "Event",
 			LiteralName = "LFG_COMPLETION_REWARD",
+		},
+		{
+			Name = "LfgCooldownsUpdated",
+			Type = "Event",
+			LiteralName = "LFG_COOLDOWNS_UPDATED",
 		},
 		{
 			Name = "LfgEnabledStateChanged",

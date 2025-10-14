@@ -205,21 +205,6 @@
 					</Anchors>
 				</FontString>
 			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-2">
-				<Texture parentKey="SpecRing" atlas="equipmentmanager-spec-border" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="18" y="-18"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="-3">
-				<Texture parentKey="SpecIcon">
-					<Size x="18" y="18"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.SpecRing" relativePoint="CENTER" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="-1">
 				<Texture name="$parentHighlightBar" parentKey="HighlightBar" file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar-Blue" alpha="0.4" alphaMode="ADD" hidden="true">
 					<TexCoords left="0.2" right="0.8" top="0" bottom="1"/>
@@ -260,10 +245,8 @@
 						self.texture:SetPoint("TOPLEFT", 0, 0);
 					</OnMouseUp>
 					<OnClick>
-						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText());
-						if ( dialog ) then
-							dialog.data = self:GetParent().setID;
-						else
+						local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", self:GetParent().text:GetText(), nil, self:GetParent().setID);
+						if ( not dialog ) then
 							UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 						end
 					</OnClick>
@@ -771,7 +754,7 @@
 					</ItemButton>
 					<ItemButton name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="130" y="16"/>
+							<Anchor point="BOTTOMLEFT" x="106" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -787,6 +770,16 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="5" y="0"/>
 						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<!-- From MoP onward, the secondary hand slot is the bottom-right slot. -->
+								<Texture parentKey="BottomRightSlotTexture" inherits="Char-Slot-Bottom-Right">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 					</ItemButton>
 					<ItemButton name="CharacterRangedSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
@@ -794,7 +787,8 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture inherits="Char-Slot-Bottom-Right">
+								<!-- Prior to MoP, the ranged slot is the bottom-right slot. -->
+								<Texture parentKey="BottomRightSlotTexture" inherits="Char-Slot-Bottom-Right">
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeTo="$parentFrame" relativePoint="TOPRIGHT"/>
 									</Anchors>

@@ -30,9 +30,9 @@
 				</KeyValues>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
-					<OnEnter method="OnEnter" inherit="append"/>
+					<OnEnter method="OnEnter"/>
 					<OnEvent method="OnEvent"/>
-					<OnLeave method="OnLeave" inherit="append"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Button>
 		</Frames>

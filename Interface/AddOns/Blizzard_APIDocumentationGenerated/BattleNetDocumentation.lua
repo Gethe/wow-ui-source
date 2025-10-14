@@ -16,6 +16,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "BNCheckBattleTagInviteToRecentAlly",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "recentAllyGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
 
@@ -119,6 +128,7 @@ local BattleNet =
 		{
 			Name = "InstallHighResTextures",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 	},
 

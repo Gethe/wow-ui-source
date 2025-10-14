@@ -4,6 +4,5 @@
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: vanilla
-LoopingSoundEffect.lua
 Shared\Localization.lua
 Vanilla\Localization.lua

@@ -677,6 +677,7 @@
 								</Scripts>
 							</Frame>
 							<DropdownButton parentKey="VariantSetsDropdown" inherits="WowStyle1DropdownTemplate" frameLevel="6">
+								<Size x="160" y="24"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-6" y="-6"/>
 								</Anchors>

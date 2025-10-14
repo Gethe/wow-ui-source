@@ -275,6 +275,15 @@ local Transmog =
 			},
 		},
 		{
+			Name = "IsTransmogEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isTransmogEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LoadOutfit",
 			Type = "Function",
 

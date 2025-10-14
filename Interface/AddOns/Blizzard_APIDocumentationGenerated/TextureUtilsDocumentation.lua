@@ -30,6 +30,15 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasElements",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "atlases", Type = "table", InnerType = "textureAtlas", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasID",
 			Type = "Function",
 
@@ -109,6 +118,17 @@ local TextureUtils =
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
 			},
 		},
+		{
+			Name = "SetURLTexture",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+				{ Name = "url", Type = "cstring", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -135,6 +155,7 @@ local TextureUtils =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "elementName", Type = "cstring", Nilable = false },
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "height", Type = "number", Nilable = false },
 				{ Name = "rawSize", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },

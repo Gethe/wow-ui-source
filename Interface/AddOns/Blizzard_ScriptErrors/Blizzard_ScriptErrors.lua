@@ -1,8 +1,3 @@
-local function IsInGlobalEnvironment()
-	-- NOTE: This can't use GetCurrentEnvironment; it would neet to check getfenv(3)
-	return getfenv(2) == getfenv(0);
-end
-
 if not IsInGlobalEnvironment() then
 	return;
 end
@@ -25,26 +20,11 @@ local function GetErrorData()
 	return stack, locals;
 end
 
-local warningHandlers = {};
 local errorHandlers = {};
-
-function AddLuaWarningHandler(handler)
-	assert(issecure());
-	table.insert(warningHandlers, handler);
-end
 
 function AddLuaErrorHandler(handler)
 	assert(issecure());
 	table.insert(errorHandlers, handler);
-end
-
-function HandleLuaWarning(warnType, warningMessage)
-	local stack, locals = GetErrorData();
-	C_Log.LogMessage(Enum.LogPriority.Warning, string.format("Lua Warning: message=%s", warningMessage));
-
-	for index, handler in ipairs(warningHandlers) do
-		pcall(handler, warnType, warningMessage, stack, locals);
-	end
 end
 
 local function HandleLuaError(errorMessage)
@@ -52,14 +32,18 @@ local function HandleLuaError(errorMessage)
 	local formattedMessage = string.format("Lua Error: %s\n%s", errorMessage, stack);
 	addframetext(formattedMessage);
 	
-	C_Log.LogMessage(Enum.LogPriority.Error, formattedMessage);
+	-- Eventually remove this from Lua. Stack information should be obtainable from
+	-- the native error handler.
+	C_Log.LogErrorMessage(formattedMessage);
 
 	for index, handler in ipairs(errorHandlers) do
 		pcall(handler, errorMessage, stack, locals);
 	end
 
 	if ProcessExceptionClient then
-		ProcessExceptionClient(string.format("%sLocals: %s", errorMessage or "", locals or ""), errorMessage);
+		-- Skip HandleLuaError and the C++ error handler
+		local framesToSkip = 2;
+		ProcessExceptionClient(string.format("%s\nLocals: %s", errorMessage or "", locals or ""), errorMessage, framesToSkip);
 	end
 end
 

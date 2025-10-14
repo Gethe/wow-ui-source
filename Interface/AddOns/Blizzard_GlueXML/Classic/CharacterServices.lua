@@ -3,7 +3,7 @@
 CHARACTER_UPGRADE_CREATE_CHARACTER_DATA = nil;
 
 local UPGRADE_BONUS_LEVEL = 60;
-
+local CHARACTERSERVICEINFO_FLAGS_ALLOW_MAX_LEVEL_BOOST = 0x00000002;
 CURRENCY_KRW = 3;
 
 local factionLogoTextures = {
@@ -12,8 +12,8 @@ local factionLogoTextures = {
 };
 
 local factionLabels = {
-	[1] = FACTION_HORDE,
-	[2] = FACTION_ALLIANCE,
+	[0] = FACTION_HORDE,
+	[1] = FACTION_ALLIANCE,
 };
 
 -- TODO: Expose enum to Lua?
@@ -87,6 +87,7 @@ StaticPopupDialogs["BOOST_FACTION_CHANGE_IN_PROGRESS"] = {
 };
 
 local CharacterUpgradeCharacterSelectBlock = { FrameName = "CharacterUpgradeSelectCharacterFrame", Back = false, Next = false, Finish = false, AutoAdvance = true, ResultsLabel = SELECT_CHARACTER_RESULTS_LABEL, ActiveLabel = SELECT_CHARACTER_ACTIVE_LABEL, Popup = "BOOST_ALLIED_RACE_HERITAGE_ARMOR_WARNING" };
+local CharacterUpgradeFactionSelectBlock = { FrameName = "CharacterUpgradeFactionSelectFrame", Back = true, Next = true, Finish = false, AutoAdvance = true, SkipOnRewind = true, ResultsLabel = SELECT_FACTION_RESULTS_LABEL, ActiveLabel = SELECT_FACTION_ACTIVE_LABEL};
 local CharacterUpgradeEndStep = { Back = true, Next = false, Finish = true, HiddenStep = true, SkipOnRewind = true };
 
 CharacterServicesFlowPrototype = {};
@@ -97,7 +98,8 @@ CharacterUpgradeFlow = Mixin(
 
 		Steps = {
 			[1] = CharacterUpgradeCharacterSelectBlock,
-			[2] = CharacterUpgradeEndStep,
+			[2] = CharacterUpgradeFactionSelectBlock,
+			[3] = CharacterUpgradeEndStep,
 		},
 	},
 	CharacterServicesFlowMixin
@@ -234,8 +236,8 @@ function CharacterUpgradeFlow:IsUnrevoke()
 		return nil;
 	end
 
-	local experienceLevel = select(7, GetCharacterInfo(results.charid));
-	return experienceLevel >= self.data.level;
+	local isRevokedCharacterUpgrade = select(24, GetCharacterInfo(results.charid));
+	return isRevokedCharacterUpgrade;
 end
 
 function CharacterUpgradeFlow:Initialize(controller)
@@ -271,7 +273,21 @@ end
 
 function CharacterUpgradeFlow:Finish(controller)
 	local results = self:BuildResults(self:GetNumSteps());
-	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted) then
+	
+	if (not CharacterUpgradeMaxLevelWarningFrame.warningAccepted) then
+		local realmName = GetServerName();
+		local name, _, _, class, classFileName, _, level, _, _, _, _, _, _, _, _, prof1, prof2, _, _, _, _, isTrialBoost, _, revokedCharacterUpgrade = GetCharacterInfo(results.charid);
+		if(level == self.data.level) then -- If character is the target level for this boost
+			CharacterUpgradeMaxLevelWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
+			CharacterUpgradeMaxLevelWarningBackground.ConfirmButton:Disable();
+			CharacterUpgradeMaxLevelWarningBackground.Text:SetText(CHARACTER_UPGRADE_MAX_LEVEL_POPUP_TEXT:format(self.data.level));
+			CharacterUpgradeMaxLevelWarningBackground.CharacterDetails:SetText(CHARACTER_UPGRADE_CONFIRMATION_TEXT:format(name, realmName, RAID_CLASS_COLORS[classFileName].colorStr, class, level, self.data.level));
+			CharacterUpgradeMaxLevelWarningFrame:Show();
+			return false;
+		end
+	end
+
+	if (not CharacterUpgradeSecondChanceWarningFrame.warningAccepted and not CharacterUpgradeMaxLevelWarningFrame.warningAccepted) then
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:SetText(self:GetFinishLabel());
 		CharacterUpgradeSecondChanceWarningBackground.ConfirmButton:Disable();
 
@@ -309,7 +325,7 @@ function CharacterUpgradeFlow:Finish(controller)
 		local guid = select(15, GetCharacterInfo(results.charid));
 		if (guid ~= results.playerguid) then
 			-- Bail because guid has changed!
-			message(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
+			SetBasicMessageDialogText(CHARACTER_UPGRADE_CHARACTER_LIST_CHANGED_ERROR);
 			self:Restart(controller);
 			return false;
 		end
@@ -444,7 +460,7 @@ local function IsUsingValidProductForCreateNewCharacterBoost()
 	return not C_CharacterServices.IsTrialBoostEnabled() or not IsUsingValidProductForTrialBoost(CharacterUpgradeFlow.data);
 end
 
-local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken)
+local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, usedMaxLevelBoost)
 	if (boostInProgress or vasServiceInProgress or hasWowToken) then
 		return false;
 	end
@@ -461,7 +477,14 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 		return false;
 	end
 
-	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
+	if level == flowData.level and not revokedCharacterUpgrade then
+		local allowMaxLevelBoost = bit.band(flowData.flags, CHARACTERSERVICEINFO_FLAGS_ALLOW_MAX_LEVEL_BOOST) == CHARACTERSERVICEINFO_FLAGS_ALLOW_MAX_LEVEL_BOOST;
+		if (not allowMaxLevelBoost) or usedMaxLevelBoost then
+			return false;
+		end
+	end
+
+	if isExpansionTrialCharacter and CanUpgradeExpansion() then
 		return false;
 	elseif isTrialBoost then
 		if level >= flowData.level and not IsUsingValidProductForTrialBoost(flowData) then
@@ -472,7 +495,7 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 			return false;
 		end
 	else
-		if level >= flowData.level then
+		if level > flowData.level then
 			return false;
 		end
 	end
@@ -480,8 +503,8 @@ local function IsBoostFlowValidForCharacter(flowData, classID, level, raceID, bo
 	return true;
 end
 
-local function CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken)
-	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken);
+local function CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, usedMaxLevelBoost)
+	return IsBoostFlowValidForCharacter(CharacterUpgradeFlow.data, classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, usedMaxLevelBoost);
 end
 
 local function IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade)
@@ -520,9 +543,9 @@ function GetAvailableBoostTypesForCharacterByGUID(characterGUID)
 	local availableBoosts = {};
 	local upgradeDistributions = C_SharedCharacterServices.GetUpgradeDistributions();
 	if upgradeDistributions then
-		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, raceID = GetCharacterInfoByGUID(characterGUID);
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, raceID, _, hasWowToken, _, usedMaxLevelBoost = GetCharacterInfoByGUID(characterGUID);
 		for boostType, data in pairs(upgradeDistributions) do
-			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter) then
+			if IsBoostFlowValidForCharacter(C_CharacterServices.GetCharacterServiceDisplayData(boostType), classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, usedMaxLevelBoost) then
 				availableBoosts[#availableBoosts + 1] = boostType;
 			end
 		end
@@ -739,8 +762,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	for i = 1, numDisplayedCharacters do
 		local button = _G["CharSelectCharacterButton"..i];
 		_G["CharSelectPaidService"..i]:Hide();
-		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
-		local canBoostCharacter = CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken);
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken, _, maxLevelBoostUsed = GetCharacterInfo(GetCharIDFromIndex(i+CHARACTER_LIST_OFFSET));
+		local canBoostCharacter = CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, maxLevelBoostUsed);
 
 		SetCharacterButtonEnabled(button, canBoostCharacter);
 
@@ -770,8 +793,8 @@ function CharacterUpgradeCharacterSelectBlock:Initialize(results)
 	end
 
 	for i = 1, GetNumCharacters() do
-		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken = GetCharacterInfo(GetCharIDFromIndex(i));
-		if CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken) then
+		local _, _, _, _, _, classID, level, _, _, _, _, _, _, _, playerguid, _, _, _, boostInProgress, _, _, isTrialBoost, _, revokedCharacterUpgrade, vasServiceInProgress, _, _, isExpansionTrialCharacter, _, _, _, _, _, raceID, _, hasWowToken, _, maxLevelBoostUsed = GetCharacterInfo(GetCharIDFromIndex(i));
+		if CanBoostCharacter(classID, level, raceID, boostInProgress, isTrialBoost, revokedCharacterUpgrade, vasServiceInProgress, isExpansionTrialCharacter, hasWowToken, maxLevelBoostUsed) then
 			if IsCharacterEligibleForVeteranBonus(level, isTrialBoost, revokedCharacterUpgrade) then
 				self.hasVeteran = true;
 			end
@@ -978,4 +1001,50 @@ function CharacterUpgradeEndStep:OnRewind()
 	if (CharacterUpgradeSecondChanceWarningFrame:IsShown()) then
 		CharacterUpgradeSecondChanceWarningFrame:Hide();
 	end
+end
+
+function CharacterUpgradeFactionSelectBlock:Initialize(results, wasFromRewind)
+	local factionName = C_CharacterServices.GetFactionGroupByIndex(results.charid)
+
+	if FACTION_IDS[factionName] then
+		self.faction = FACTION_IDS[factionName];
+	else
+		self.faction = -1;
+	end
+
+	local function SelectFaction(factionID)
+		self.faction = factionID;
+		CharacterServicesMaster_Update();
+	end
+
+	local hordeText = SELECT_FACTION_RESULTS_FORMAT:format(factionColors[0], FACTION_HORDE);
+	local allianceText = SELECT_FACTION_RESULTS_FORMAT:format(factionColors[1], FACTION_ALLIANCE);
+
+	self.frame.ControlsFrame.Dropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:CreateRadio(hordeText, function() return false; end, SelectFaction, 0);
+		rootDescription:CreateRadio(allianceText, function() return false; end, SelectFaction, 1);
+	end);
+
+	CharacterServicesMaster_Update();
+end
+
+function CharacterUpgradeFactionSelectBlock:IsFinished(wasFromRewind)
+	return self.faction and self.faction >= 0;
+end
+
+function CharacterUpgradeFactionSelectBlock:GetResult()
+	return { faction = self.faction };
+end
+
+function CharacterUpgradeFactionSelectBlock:SkipIf(results)
+	local factionName = C_CharacterServices.GetFactionGroupByIndex(results.charid)
+	return FACTION_IDS[factionName] ~= nil;
+end
+
+
+function CharacterUpgradeFactionSelectBlock:FormatResult()
+	local factionName = factionLabels[self.faction] or "";
+	local color = factionColors[self.faction] or 0
+
+	return SELECT_FACTION_RESULTS_FORMAT:format(color, factionName);
 end

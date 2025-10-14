@@ -28,10 +28,10 @@ if ( InGlue() ) then
 		text = ADDONS_OUT_OF_DATE,
 		button1 = DISABLE_ADDONS,
 		button2 = LOAD_ADDONS,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonDialog_Show("CONFIRM_DISABLE_ADDONS");
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("CONFIRM_LOAD_ADDONS");
 		end,
 	}
@@ -40,10 +40,10 @@ if ( InGlue() ) then
 		text = CONFIRM_LOAD_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			C_AddOns.SetAddonVersionCheck(false);
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -52,10 +52,10 @@ if ( InGlue() ) then
 		text = CONFIRM_DISABLE_ADDONS,
 		button1 = OKAY,
 		button2 = CANCEL,
-		OnAccept = function()
+		OnAccept = function(dialog, data)
 			AddonList_DisableOutOfDate();
 		end,
-		OnCancel = function()
+		OnCancel = function(dialog, data)
 			AddonDialog_Show("ADDONS_OUT_OF_DATE");
 		end,
 	}
@@ -130,11 +130,6 @@ if ( InGlue() ) then
 				AddonDialog_Show("ADDONS_OUT_OF_DATE");
 				HasShownAddonOutOfDateDialog = true;
 			end
-			if ( AddonList_HasNewVersion() ) then
-				CharacterSelectAddonsButtonGlow:Show();
-			else
-				CharacterSelectAddonsButtonGlow:Hide();
-			end
 			CharacterSelectAddonsButton:Show();
 		else
 			CharacterSelectAddonsButton:Hide();
@@ -155,7 +150,7 @@ function AddonList_HasAnyChanged()
 	for i = 1, C_AddOns.GetNumAddOns() do
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		local reason = select(5, C_AddOns.GetAddOnInfo(i))
@@ -164,18 +159,6 @@ function AddonList_HasAnyChanged()
 		end
 	end
 	return false
-end
-
-function AddonList_HasNewVersion()
-	local hasNewVersion = false;
-	for i = 1, C_AddOns.GetNumAddOns() do
-		local name, title, notes, loadable, reason, security, newVersion = C_AddOns.GetAddOnInfo(i);
-		if ( newVersion ) then
-			hasNewVersion = true;
-			break;
-		end
-	end
-	return hasNewVersion;
 end
 
 function AddonList_Show()
@@ -219,15 +202,15 @@ function AddonList_OnLoad(self)
 		self.shouldReload = false;
 		self.outOfDate = C_AddOns.IsAddonVersionCheckEnabled() and AddonList_HasOutOfDate();
 		self.outOfDateIndexes = {};
-		local playerName = UnitName("player");
+		local character = GetAddonCharacter();
 		for i = 1, C_AddOns.GetNumAddOns() do
-			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, playerName) > 0);
+			self.startStatus[i] = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 			if (select(5, C_AddOns.GetAddOnInfo(i)) == "INTERFACE_VERSION") then
 				tinsert(self.outOfDateIndexes, i);
 			end
 		end
 	end
-	
+
 	AddonListScrollFrameScrollChildFrame:SetParent(AddonListScrollFrame);
 
 	self.Dropdown:SetWidth(140);
@@ -260,7 +243,7 @@ end
 local function TriStateCheckbox_SetState(checked, checkButton)
 	local checkedTexture = _G[checkButton:GetName().."CheckedTexture"];
 	if ( not checkedTexture ) then
-		message("Can't find checked texture");
+		SetBasicMessageDialogText("Can't find checked texture");
 	end
 	if ( not checked or checked == 0 ) then
 		-- nil or 0 means not checked
@@ -300,7 +283,7 @@ function AddonList_Update()
 			checkbox = _G["AddonListEntry"..i.."Enabled"];
 			local checkboxState = C_AddOns.GetAddOnEnableState(addonIndex, character);
 			if ( not InGlue() ) then
-				enabled = (C_AddOns.GetAddOnEnableState(addonIndex, UnitName("player")) > 0);
+				enabled = (C_AddOns.GetAddOnEnableState(addonIndex, character) > 0);
 			else
 				enabled = (checkboxState > 0);
 			end
@@ -521,7 +504,7 @@ function AddonList_HasOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then
@@ -547,7 +530,7 @@ function AddonList_DisableOutOfDate()
 		local name, title, notes, loadable, reason = C_AddOns.GetAddOnInfo(i);
 		local character = nil;
 		if (not InGlue()) then
-			character = UnitName("player");
+			character = GetAddonCharacter();
 		end
 		local enabled = (C_AddOns.GetAddOnEnableState(i, character) > 0);
 		if ( enabled and not loadable and reason == "INTERFACE_VERSION" ) then

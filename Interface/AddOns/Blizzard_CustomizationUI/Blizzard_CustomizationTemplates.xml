@@ -1,12 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<GameTooltip name="CustomizationNoHeaderTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate">
+	<GameTooltip name="CustomizationNoHeaderTooltip" inherits="SharedTooltipTemplate, TopLevelParentScaleFrameTemplate" mixin="CustomizationNoHeaderTooltipMixin">
 		<KeyValues>
 			<KeyValue key="textLeft1Font" value="GameFontNormalMed2" type="string"/>
 			<KeyValue key="textRight1Font" value="GameFontNormalMed2" type="string"/>
 			<KeyValue key="textLeft2Font" value="GameFontNormalMed2" type="string"/>
 			<KeyValue key="textRight2Font" value="GameFontNormalMed2" type="string"/>
 		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</GameTooltip>
 
 	<Button name="CustomizationBaseButtonTemplate" mixin="CustomizationBaseButtonMixin" virtual="true">

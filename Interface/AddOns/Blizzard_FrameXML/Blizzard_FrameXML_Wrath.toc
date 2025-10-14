@@ -12,6 +12,7 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 Classic\SecureTemplatesBase.xml
 Classic\SecureTemplates.lua
+Classic\SecureTemplates_Shared.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
 Classic\SecureTemplates.xml
@@ -64,3 +65,4 @@ Classic\LootHistory.lua
 Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
+Shared\EquipmentManager.lua

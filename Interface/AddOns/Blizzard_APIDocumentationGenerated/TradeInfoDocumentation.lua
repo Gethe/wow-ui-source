@@ -6,6 +6,33 @@ local TradeInfo =
 
 	Functions =
 	{
+		{
+			Name = "AddTradeMoney",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Adds any cursor-held money to the current trade offer." },
+		},
+		{
+			Name = "PickupTradeMoney",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTradeMoney",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Sets the amount of money in the current trade offer." },
+
+			Arguments =
+			{
+				{ Name = "amount", Type = "WOWMONEY", Nilable = false },
+			},
+		},
 	},
 
 	Events =

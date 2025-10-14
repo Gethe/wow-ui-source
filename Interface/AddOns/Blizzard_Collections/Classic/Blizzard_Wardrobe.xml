@@ -712,6 +712,7 @@
 					<Button parentKey="SecondaryHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
 						<KeyValues>
 							<KeyValue key="slot" value="SECONDARYHANDSLOT" type="string"/>
+							<KeyValue key="twoButtonXPos" value="27" type="string"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="45"/>
@@ -720,6 +721,7 @@
 					<Button parentKey="MainHandButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate">
 						<KeyValues>
 							<KeyValue key="slot" value="MAINHANDSLOT" type="string"/>
+							<KeyValue key="twoButtonXPos" value="-27" type="string"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="BOTTOM" x="-53" y="45"/>

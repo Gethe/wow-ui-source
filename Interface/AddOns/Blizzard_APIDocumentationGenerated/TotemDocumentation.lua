@@ -46,6 +46,7 @@ local Totem =
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -90,6 +91,7 @@ local Totem =
 				{ Name = "duration", Type = "number", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 	},

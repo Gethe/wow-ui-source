@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ArenaUI.lua"/>
 	<StatusBar name="ArenaCastingBarFrameTemplate" drawLayer="BORDER" virtual="true" hidden="true">
 		<Size x="80" y="14"/>
 		<Layers>
@@ -404,6 +403,8 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad function="ArenaPrepFrames_OnLoad"/>
+			<OnEvent function="ArenaPrepFrames_OnEvent"/>
 			<OnShow function="ArenaPrepFrames_OnShow"/>
 			<OnHide function="ArenaPrepFrames_OnHide"/>
 		</Scripts>

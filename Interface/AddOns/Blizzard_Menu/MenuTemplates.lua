@@ -659,6 +659,23 @@ function WowStyle1FilterDropdownMixin:OnLoad()
 	self:SetDisplacedRegions(x, y, self.Text);
 end
 
+function WowStyle1FilterDropdownMixin:GetBackgroundAtlas()
+	if self:IsEnabled() then
+		if self:IsDownOver() then
+			return WowStyle1FilterDropdownStateDownOver;
+		elseif self:IsOver() then
+			return WowStyle1FilterDropdownStateOver;
+		elseif self:IsDown() then
+			return WowStyle1FilterDropdownStateDown;
+		elseif self:IsMenuOpen() then	
+			return WowStyle1FilterDropdownStateOpen;
+		else
+			return WowStyle1FilterDropdownStateEnabled;
+		end
+	end
+	return WowStyle1FilterDropdownStateDisabled;
+end
+
 function WowStyle1FilterDropdownMixin:OnButtonStateChanged()
 	self.Background:SetAtlas(self:GetBackgroundAtlas(), TextureKitConstants.UseAtlasSize);
 end

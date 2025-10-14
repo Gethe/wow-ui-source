@@ -51,10 +51,10 @@ function DoesClientThinkTheCharacterIsEligibleForPFC(characterID)
 	local _, otherFaction = CharacterHasAlternativeRaceOptions(characterID);
 	local errors = {};
 
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, level >= 10);
-	CheckAddVASErrorCode(errors, Enum.VasError.HasMail, #mailSenders == 0);
-	CheckAddVASErrorCode(errors, Enum.VasError.RaceClassComboIneligible, otherFaction);
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq, level >= 10);
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasMail, #mailSenders == 0);
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbRaceClassComboIneligible, otherFaction);
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbIneligibleMapID, not IsCharacterInTutorialMap(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidFactionChange));
 
 	local canTransfer = #errors == 0;

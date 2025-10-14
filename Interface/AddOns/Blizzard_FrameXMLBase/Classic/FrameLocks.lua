@@ -24,7 +24,6 @@ local HIDE_MOST = {
 	FocusFrame			= "hidden",
 	TemporaryEnchantFrame = "hidden",
 	ZoneAbilityFrame	= "hidden",
-	OrderHallCommandBar	= "hidden",
 	WorldStateScoreFrame = "hidden",
 	UIWidgetTopCenterContainerFrame = "hidden",
 }

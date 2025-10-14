@@ -1,3 +1,11 @@
+local _, addonTable = ...
+
+local MoneyTypeInfo = addonTable.MoneyTypeInfo;
+
+local COPPER_PER_SILVER = 100;
+local SILVER_PER_GOLD = 100;
+local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
+
 MONEY_INPUT_MAX_GOLD_DIGITS = 6;
 
 function MoneyFrame_OnLoad(self)
@@ -81,7 +89,7 @@ function MoneyFrame_SetType(self, type)
 
 	local info = MoneyTypeInfo[type];
 	if ( not info ) then
-		message("Invalid money type: "..(type or "INVALID TYPE"));
+		SetBasicMessageDialogText("Invalid money type: "..(type or "INVALID TYPE"));
 		return;
 	end
 	self.info = info;
@@ -115,7 +123,7 @@ function MoneyFrame_UpdateMoney(moneyFrame)
 			MoneyFrame_Update(moneyFrame, money);
 		end
 	else
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
 end
 
@@ -141,7 +149,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 	end
 
 	-- Breakdown the money into denominations
@@ -311,7 +319,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 	frame.moneyWidth = width;
 
 	-- attach text now that denominations have been computed
-	local prefixText = _G[frameName.."PrefixText"];
+	local prefixText = frameName and _G[frameName.."PrefixText"];
 	if ( prefixText ) then
 		if ( prefixText:GetText() and money > 0 ) then
 			prefixText:Show();
@@ -331,7 +339,7 @@ function MoneyFrame_Update(frameName, money, forceShow)
 			prefixText:Hide();
 		end
 	end
-	local suffixText = _G[frameName.."SuffixText"];
+	local suffixText = frameName and _G[frameName.."SuffixText"];
 	if ( suffixText ) then
 		if ( suffixText:GetText() and money > 0 ) then
 			suffixText:Show();
@@ -372,7 +380,7 @@ function MoneyFrame_AccumulateAlignmentWidths(frameName, widths)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 		return;
 	end
 
@@ -411,7 +419,7 @@ function MoneyFrame_UpdateAlignment(frameName, widths)
 
 	local info = frame.info;
 	if ( not info ) then
-		message("Error moneyType not set");
+		SetBasicMessageDialogText("Error moneyType not set");
 		return;
 	end
 
@@ -491,4 +499,10 @@ function AltCurrencyFrame_Update(frameName, texture, cost, canAfford)
 	buttonTexture:SetWidth(iconWidth);
 	buttonTexture:SetHeight(iconWidth);
 	button:SetWidth(button:GetTextWidth() + MONEY_ICON_WIDTH_SMALL);
+end
+
+SmallMoneyFrameMixin = {};
+
+function SmallMoneyFrameMixin:SetIsUserScaled()
+	-- Classic does not support user scaled money frames, see WOW12-16834
 end

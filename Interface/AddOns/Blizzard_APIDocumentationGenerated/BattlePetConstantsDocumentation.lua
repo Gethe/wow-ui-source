@@ -290,9 +290,9 @@ local BattlePetConstants =
 		{
 			Name = "BattlePetTypes",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Humanoid", Type = "BattlePetTypes", EnumValue = 0 },
@@ -305,7 +305,6 @@ local BattlePetConstants =
 				{ Name = "Beast", Type = "BattlePetTypes", EnumValue = 7 },
 				{ Name = "Aquatic", Type = "BattlePetTypes", EnumValue = 8 },
 				{ Name = "Mechanical", Type = "BattlePetTypes", EnumValue = 9 },
-				{ Name = "NonCombat", Type = "BattlePetTypes", EnumValue = 10 },
 			},
 		},
 		{

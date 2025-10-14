@@ -160,7 +160,13 @@ function CollectionWardrobeUtil.GetAppearanceNameTextAndColor(appearanceInfo, in
 	local text, color;
 	if appearanceInfo.name then
 		text = appearanceInfo.name;
-		color = ITEM_QUALITY_COLORS[appearanceInfo.quality].color;
+
+		local colorData = ColorManager.GetColorDataForItemQuality(appearanceInfo.quality);
+		if colorData then
+			color = colorData.color;
+		else
+			color = WHITE_FONT_COLOR;
+		end
 	else
 		text = RETRIEVING_ITEM_INFO;
 		color = RED_FONT_COLOR;

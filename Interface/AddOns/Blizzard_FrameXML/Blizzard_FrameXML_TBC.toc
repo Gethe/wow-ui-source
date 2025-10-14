@@ -29,7 +29,7 @@ FontStyles.xml
 ..\Blizzard_SharedXMLBase\Flags.lua
 ..\Blizzard_SharedXMLBase\CallbackRegistry.lua
 ..\Blizzard_SharedXMLBase\CvarUtil.lua
-..\Blizzard_SharedXML\Color.lua
+..\Blizzard_SharedXMLBase\Color.lua
 ..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\Blizzard_SharedXML\LinkUtil.lua
 ..\Blizzard_SharedXML\InterfaceUtil.lua
@@ -44,8 +44,6 @@ FontStyles.xml
 ..\Blizzard_SharedXML\Classic\NineSliceLayouts.lua
 ..\Blizzard_SharedXML\NineSlice.lua
 ..\Blizzard_SharedXML\Backdrop.xml
-..\Blizzard_SharedXML\Color.lua
-..\..\Interface_TBC\SharedXML\ColorUtil.lua
 ..\Blizzard_SharedXML\Constants.lua
 ..\Blizzard_SharedXMLBase\LocaleUtil.lua
 

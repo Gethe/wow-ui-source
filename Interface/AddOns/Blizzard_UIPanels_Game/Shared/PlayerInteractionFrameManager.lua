@@ -81,10 +81,6 @@ local InteractionManagerFrameInfo = {
 		frame = "WardrobeFrame",
 		loadFunc = CollectionsJournal_LoadUI 
 	},
-	[Enum.PlayerInteractionType.VoidStorageBanker] = {
-		frame = "VoidStorageFrame",
-		loadFunc = VoidStorage_LoadUI
-	},
 	[Enum.PlayerInteractionType.BlackMarketAuctioneer] = {
 		frame = "BlackMarketFrame",
 		showFunc = "BlackMarketFrame_Show",
@@ -178,8 +174,13 @@ local InteractionManagerFrameInfo = {
 							EventRegistry:TriggerEvent("MajorFactionRenownMixin.MajorFactionRenownRequest", majorFactionID);
 							ShowUIPanel(MajorFactionRenownFrame);
 						end
-					end;
-	}
+					end,
+	},
+	[Enum.PlayerInteractionType.GuildRename] = {
+		frame = "GuildRenameFrame",
+		loadFunc = function() UIParentLoadAddOn("Blizzard_GuildRename"); end,
+		showFunc = function() GuildRenameFrame:BeginInteraction(); end,
+	},
 };
 
 PlayerInteractionFrameManagerMixin = { };

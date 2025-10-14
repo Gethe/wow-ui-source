@@ -10,6 +10,11 @@ function GossipSharedTitleButtonMixin:Resize()
 	self:SetHeight(math.max(self:GetTextHeight() + 2, self.Icon:GetHeight()));
 end
 
+function GossipSharedTitleButtonMixin:SetTextAndResize(text)
+	self:SetText(text);
+	self:Resize();
+end
+
 function GossipSharedTitleButtonMixin:OnEnter()
 
 end
@@ -30,14 +35,6 @@ function GossipSharedQuestButtonMixin:UpdateTitleForQuest(questID, titleText, is
 	else
 		self:SetFormattedText(NORMAL_QUEST_DISPLAY, titleText);
 		self.Icon:SetVertexColor(1,1,1);
-	end
-
-	if QuestUtil.QuestTextContrastUseLightText() then
-		self:GetFontString():SetFixedColor(true);
-		self:GetFontString():SetTextColor(STONE_MATERIAL_TEXT_COLOR:GetRGB());
-	else
-		self:GetFontString():SetFixedColor(false);
-		self:GetFontString():SetTextColor(PARCHMENT_MATERIAL_TEXT_COLOR:GetRGB());
 	end
 
 	self:Resize();
@@ -97,17 +94,8 @@ function GossipOptionButtonMixin:Setup(optionInfo)
 
 	self:Resize();
 	self:Show();
-
-	if QuestUtil.QuestTextContrastUseLightText() then
-		local textColor, titleTextColor = GetMaterialTextColors("Stone");
-		self:GetFontString():SetFixedColor(true);
-		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
-	else
-		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
-		self:GetFontString():SetFixedColor(false);
-		self:GetFontString():SetTextColor(textColor[1], textColor[2], textColor[3]);
-	end
 end
+
 function GossipOptionButtonMixin:OnClick(button)
 	C_GossipInfo.SelectOptionByIndex(self:GetID());
 end
@@ -117,25 +105,10 @@ function GossipGreetingTextMixin:Setup(text)
 	self.GreetingText:SetText(text);
 	self:Show();
 	self:SetSize(270, self.GreetingText:GetHeight());
-	if QuestUtil.QuestTextContrastUseLightText() then
-		local textColor, titleTextColor = GetMaterialTextColors("Stone");
-		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-	else
-		local textColor, titleTextColor = GetMaterialTextColors("Parchment");
-		self.GreetingText:SetTextColor(textColor[1], textColor[2], textColor[3]);
-	end
 end
-
-local function GreetingTextInitializer(button, elementData)
-	button:Setup(elementData.text);
-end
-
-local function ButtonInitializer(button, elementData)
-	button:Setup(elementData.info);
-end
-
 
 GossipFrameSharedMixin = {};
+
 function GossipFrameSharedMixin:AvailableQuestButtonInit(button, elementData)
 	button:Setup(elementData.info);
 	if(self.tutorialMode) then
@@ -166,18 +139,29 @@ function GossipFrameSharedMixin:UpdateScrollBox()
 		end
 	end);
 
+	local GreetingTextInitializer = function(greetingTextFrame, elementData)
+		self:RegisterFontString(greetingTextFrame.GreetingText);
+		greetingTextFrame:Setup(elementData.text);
+	end
+	
+	local ButtonInitializer = function(button, elementData)
+		self:RegisterFontString(button:GetFontString());
+		button:Setup(elementData.info);
+	end
+
+	local elementTypes = 
+	{
+		[GOSSIP_BUTTON_TYPE_TITLE] = { template = "GossipGreetingTextTemplate", initializer = GreetingTextInitializer, },
+		[GOSSIP_BUTTON_TYPE_DIVIDER] = { template = "GossipSpacerFrameTemplate", },
+		[GOSSIP_BUTTON_TYPE_OPTION] = { template = "GossipTitleOptionButtonTemplate", initializer = ButtonInitializer, },
+		[GOSSIP_BUTTON_TYPE_ACTIVE_QUEST] = { template = "GossipTitleActiveQuestButtonTemplate", initializer = ButtonInitializer, },
+		[GOSSIP_BUTTON_TYPE_AVAILABLE_QUEST] = { template = "GossipTitleAvailableQuestButtonTemplate", initializer = ButtonInitializer, },
+	};
+
 	view:SetElementFactory(function(factory, elementData)
-		local buttonType = elementData.buttonType;
-		if buttonType == GOSSIP_BUTTON_TYPE_TITLE then
-			factory("GossipGreetingTextTemplate", GreetingTextInitializer);
-		elseif buttonType == GOSSIP_BUTTON_TYPE_DIVIDER then
-			factory("GossipSpacerFrameTemplate");
-		elseif buttonType == GOSSIP_BUTTON_TYPE_OPTION then
-			factory("GossipTitleOptionButtonTemplate", ButtonInitializer);
-		elseif(buttonType == GOSSIP_BUTTON_TYPE_ACTIVE_QUEST) then
-			factory("GossipTitleActiveQuestButtonTemplate", ButtonInitializer);
-		elseif(buttonType == GOSSIP_BUTTON_TYPE_AVAILABLE_QUEST) then
-			factory("GossipTitleAvailableQuestButtonTemplate", ButtonInitializer);
+		local elementTypeData = elementTypes[elementData.buttonType];
+		if elementTypeData then
+			factory(elementTypeData.template, elementTypeData.initializer);
 		end
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.GreetingPanel.ScrollBox, self.GreetingPanel.ScrollBar, view);
@@ -205,7 +189,7 @@ function GossipOptionSort(leftInfo, rightInfo)
 	return GossipFrameMixin:SortOrder(leftInfo, rightInfo)
 end
 
-function GossipFrameSharedMixin:HandleShow()
+function GossipFrameSharedMixin:HandleShow(_textureKit)
 -- if there is only a non-gossip option, then go to it directly
 	self.gossipOptions = C_GossipInfo.GetOptions();
 	table.sort(self.gossipOptions, GossipOptionSort);
@@ -305,6 +289,8 @@ function GossipFrameSharedMixin:Update()
 	else
 		self:SetPortraitToAsset("Interface\\QuestFrame\\UI-QuestLog-BookIcon");
 	end
+
+	self:UpdateTheme();
 end
 
 function GossipFrameSharedMixin:SetGossipTitle(title)

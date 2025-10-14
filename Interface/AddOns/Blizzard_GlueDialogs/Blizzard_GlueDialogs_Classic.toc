@@ -1,9 +1,0 @@
-## Title: Blizzard_GlueDialogs
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_GlueParent
-## OptionalDeps: Blizzard_AutoComplete
-## AllowLoad: Glue
-## AllowLoadGameType: classic
-Classic\GlueDialog.lua
-Classic\GlueDialog.xml

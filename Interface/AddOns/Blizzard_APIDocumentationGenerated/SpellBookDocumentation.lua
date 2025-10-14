@@ -18,6 +18,56 @@ local SpellBook =
 				{ Name = "petNameToken", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "IsSpellInSpellBook",
+			Type = "Function",
+			Documentation = { "Returns true if a spell should be found in the spellbook. This function can also return true for spells that aren't known, such as override spells granted by an aura linked to class talents" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+				{ Name = "includeOverrides", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isInSpellBook", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellKnown",
+			Type = "Function",
+			Documentation = { "Returns true if a player knows a spell. This function can also return true for spells that aren't in the spellbook, such as temporarily-granted abilities" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+			},
+
+			Returns =
+			{
+				{ Name = "isKnown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellKnownOrInSpellBook",
+			Type = "Function",
+			Documentation = { "Returns true if a spell is considered to be known or present in the spellbook" },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellBank", Type = "SpellBookSpellBank", Nilable = false, Default = "Player" },
+				{ Name = "includeOverrides", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isKnownOrInSpellBook", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -102,16 +152,37 @@ local SpellBook =
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+				{ Name = "category", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown category of the spell. A nil value indicates the spell does not have a cooldown category." } },
+				{ Name = "startRecoveryCategory", Type = "number", Nilable = true, Documentation = { "If the spellID parameter is set, the cooldown start recovery category of the spell. A nil value indicates the spell does not have a cooldown start recovery category." } },
+			},
 		},
 		{
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
+			},
 		},
 		{
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+		},
+		{
+			Name = "SpellUpdateUses",
+			Type = "Event",
+			LiteralName = "SPELL_UPDATE_USES",
+			Payload =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
+				{ Name = "baseSpellID", Type = "number", Nilable = true, Documentation = { "Will be set to the base spell if the spellID parameter is an override spell." } },
+			},
 		},
 		{
 			Name = "SpellsChanged",

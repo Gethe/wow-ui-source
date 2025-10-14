@@ -43,6 +43,20 @@ local SimpleFontAPI =
 			},
 		},
 		{
+			Name = "GetFontHeight",
+			Type = "Function",
+			Documentation = { "Return is either in uiUnits or internal height due to fixedHeight." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "height", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFontObject",
 			Type = "Function",
 
@@ -190,6 +204,7 @@ local SimpleFontAPI =
 		{
 			Name = "SetFontHeight",
 			Type = "Function",
+			Documentation = { "Preserves all flags, does correct height conversion due to fixedHeight." },
 
 			Arguments =
 			{

@@ -221,6 +221,80 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCreatureFamily",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitCreatureType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitFactionGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "checkDisplayRace", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionGroupTag", Type = "cstring", Nilable = false },
+				{ Name = "localized", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGetTotalAbsorbs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitGetTotalHealAbsorbs",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
 
@@ -232,6 +306,21 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitInOtherParty",
+			Type = "Function",
+			Documentation = { "Checks whether this unit cannot see your party chat because it is in an instance group" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "inOtherParty", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -263,6 +352,35 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsGroupAssistant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistant", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsGroupLeader",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "partyCategory", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
 
@@ -278,6 +396,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitLeadsAnyGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isLeader", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitNumPowerBarTimers",
 			Type = "Function",
 
@@ -289,6 +421,20 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitOwnerGUID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "ownerGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -552,6 +698,15 @@ local Unit =
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "NeutralFactionSelectResult",
+			Type = "Event",
+			LiteralName = "NEUTRAL_FACTION_SELECT_RESULT",
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -848,6 +1003,11 @@ local Unit =
 			},
 		},
 		{
+			Name = "ShowFactionSelectUi",
+			Type = "Event",
+			LiteralName = "SHOW_FACTION_SELECT_UI",
+		},
+		{
 			Name = "SpellConfirmationPrompt",
 			Type = "Event",
 			LiteralName = "SPELL_CONFIRMATION_PROMPT",
@@ -870,6 +1030,15 @@ local Unit =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "effectValue", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitAbsorbAmountChanged",
+			Type = "Event",
+			LiteralName = "UNIT_ABSORB_AMOUNT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
 			},
 		},
 		{
@@ -1004,6 +1173,15 @@ local Unit =
 			Name = "UnitHappiness",
 			Type = "Event",
 			LiteralName = "UNIT_HAPPINESS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealAbsorbAmountChanged",
+			Type = "Event",
+			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
@@ -1468,6 +1646,24 @@ local Unit =
 
 	Tables =
 	{
+		{
+			Name = "UnitCreatureFamilyResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitCreatureTypeResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "UnitPowerBarInfo",
 			Type = "Structure",

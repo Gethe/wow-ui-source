@@ -468,7 +468,9 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 
 	-- Set up the colors
 	local info = ChatTypeInfo[chatType];
-	chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
+	if info then
+		chatTab.selectedColorTable = { r = info.r, g = info.g, b = info.b };
+	end
 	FCFTab_UpdateColors(chatTab, not chatFrame.isDocked or chatFrame == FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
 
 	chatFrame:SetResizeBounds(CHAT_FRAME_MIN_WIDTH, CHAT_FRAME_NORMAL_MIN_HEIGHT);
@@ -611,8 +613,7 @@ function FCF_GetNumActiveChatFrames()
 end
 
 function FCF_RenameChatWindow_Popup()
-	local dialog = StaticPopup_Show("NAME_CHAT");
-	dialog.data = FCF_GetCurrentChatFrameID();
+	StaticPopup_Show("NAME_CHAT", nil, nil, FCF_GetCurrentChatFrameID());
 end
 
 function FCF_NewChatWindow()

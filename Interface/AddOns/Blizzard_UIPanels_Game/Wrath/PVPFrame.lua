@@ -27,18 +27,6 @@ function PVPFrame_ExpansionSpecificOnEvent(self, event, ...)
 	end
 end
 
-function TogglePVPFrame()
-	if ( UnitLevel("player") >= SHOW_PVP_LEVEL ) then
-		if ( PVPParentFrame:IsShown() ) then
-			HideUIPanel(PVPParentFrame);
-		else
-			ShowUIPanel(PVPParentFrame);
-			PVPFrame_UpdateTabs();
-		end
-	end
-	UpdateMicroButtons();
-end
-
 function PVPFrame_UpdateTabs()
 	local selectedTab = PanelTemplates_GetSelectedTab(PVPParentFrame)
 	if (selectedTab == nil or selectedTab == 1) then

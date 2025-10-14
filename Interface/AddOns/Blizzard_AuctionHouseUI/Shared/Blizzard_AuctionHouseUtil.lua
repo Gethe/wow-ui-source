@@ -322,9 +322,13 @@ function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hi
 	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and itemKey.itemLevel and not hideItemLevel;
 	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and itemKey.itemLevel or nil);
 	local itemQuality = itemKeyInfo.quality;
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
 
-	return itemQualityColor.color:WrapTextInColorCode(itemDisplayText);
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		return colorData.color:WrapTextInColorCode(itemDisplayText);
+	end
+
+	return itemDisplayText;
 end
 
 function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo)
@@ -342,8 +346,12 @@ function AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionDa
 		end
 	end
 
-	local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
-	return itemQualityColor.color;
+	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+	if colorData then
+		return colorData.color;
+	end
+
+	return WHITE_FONT_COLOR;
 end
 
 function AuctionHouseUtil.GetQuantityDisplayTextFromOwnedAuctionData(ownedAuctionData)

@@ -48,6 +48,7 @@ local LFGListInfo =
 		{
 			Name = "CreateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -184,6 +185,21 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "GetAvailableActivityGroups",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+				{ Name = "filter", Type = "number", Nilable = false, Default = 0 },
+			},
+
+			Returns =
+			{
+				{ Name = "activityIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFilteredSearchResults",
 			Type = "Function",
 
@@ -191,6 +207,17 @@ local LFGListInfo =
 			{
 				{ Name = "totalResultsFound", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "filteredResults", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGroupLeaverCountsByRole",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "tankLeavers", Type = "number", Nilable = false },
+				{ Name = "healerLeavers", Type = "number", Nilable = false },
+				{ Name = "damageLeavers", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -367,8 +394,19 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "ReportGroupAsAdvertisement",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "searchResultID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "Search",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -384,6 +422,7 @@ local LFGListInfo =
 		{
 			Name = "SetEntryTitle",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -413,6 +452,7 @@ local LFGListInfo =
 		{
 			Name = "UpdateListing",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -559,6 +599,11 @@ local LFGListInfo =
 			Name = "LfgListSearchResultsReceived",
 			Type = "Event",
 			LiteralName = "LFG_LIST_SEARCH_RESULTS_RECEIVED",
+		},
+		{
+			Name = "LfgListUpdateSearchResults",
+			Type = "Event",
+			LiteralName = "LFG_LIST_UPDATE_SEARCH_RESULTS",
 		},
 	},
 
@@ -762,6 +807,7 @@ local LFGListInfo =
 				{ Name = "assignedRole", Type = "cstring", Nilable = false },
 				{ Name = "lfgRoles", Type = "LFGRoles", Nilable = false },
 				{ Name = "isLeader", Type = "bool", Nilable = false },
+				{ Name = "isLeaver", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{

@@ -179,6 +179,7 @@ local EncounterJournal =
 		{
 			Name = "SetTab",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

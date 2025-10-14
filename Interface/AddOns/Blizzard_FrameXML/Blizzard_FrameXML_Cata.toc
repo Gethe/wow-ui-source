@@ -12,6 +12,7 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 Classic\SecureTemplatesBase.xml
 Classic\SecureTemplates.lua
+Classic\SecureTemplates_Shared.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
 Classic\SecureTemplates.xml
@@ -54,6 +55,8 @@ Cata\Blizzard_TalentUITemplates.xml
 MovieFrame.lua
 MovieFrame.xml
 Classic\RolePoll.xml
+SpellActivationOverlay.xml
+GuildInviteFrame.xml
 Classic\StreamingFrame.lua
 Classic\StreamingFrame.xml
 IconIntroAnimation.lua
@@ -64,5 +67,6 @@ Classic\LootHistory.lua
 Classic\LootHistory.xml
 Classic\ClassTrainerFrameTemplates.xml
 Wrath\EquipmentManager.lua
+Shared\EquipmentManager.lua
 EquipmentFlyout.xml
 GhostFrame.xml

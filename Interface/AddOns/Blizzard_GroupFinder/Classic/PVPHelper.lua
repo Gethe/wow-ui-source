@@ -100,7 +100,33 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 	
 	PVPReadyDialog.text:SetFormattedText(CONFIRM_BATTLEFIELD_ENTRY, displayName, nil);
 
+	-- Classic doesnt currently use SubText, but if ever we do, account for it.
+	local dynamicDialogHeight = self.windowHeightOffset + PVPReadyDialog.text:GetHeight() + PVPReadyDialog.SubText:GetHeight();
+	self:SetSize(self:GetWidth(), dynamicDialogHeight);
+
 	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 	StaticPopupSpecial_Show(PVPReadyDialog);
 	FlashClientIcon();
+end
+
+-------------------------------------------------------------------
+-- Update PVP Queue status
+-------------------------------------------------------------------
+
+function PVP_UpdateStatus()
+	BATTLEFIELD_SHUTDOWN_TIMER = 0;
+
+	for i=1, GetMaxBattlefieldID() do
+		local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i);
+		if ( status == "active" ) then
+			-- In the battleground
+			BATTLEFIELD_SHUTDOWN_TIMER = GetBattlefieldInstanceExpiration()/1000;
+			if ( BATTLEFIELD_SHUTDOWN_TIMER > 0 and not PVPTimerFrame.updating ) then
+				PVPTimerFrame:SetScript("OnUpdate", PVPTimerFrame_OnUpdate);
+				PVPTimerFrame.updating = true;
+				BATTLEFIELD_TIMER_THRESHOLD_INDEX = 1;
+				PREVIOUS_BATTLEFIELD_MOD = 0;
+			end
+		end
+	end
 end

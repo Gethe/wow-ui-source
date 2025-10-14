@@ -108,11 +108,6 @@ function UIParent_UpdateTopFramePositions()
 	local yOffset = 0;
 	local xOffset = -180;
 
-	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
-		topOffset = 12;
-		yOffset = OrderHallCommandBar:GetHeight();
-	end
-
 	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
 		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
 	end
@@ -121,38 +116,30 @@ function UIParent_UpdateTopFramePositions()
 		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
-	local buffOffset = 0;
-	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
-	local notificationAnchorTo = UIParent;
-	if gmChatStatusFrameShown then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-
-		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
-		notificationAnchorTo = GMChatStatusFrame;
+	local statusFrames = {};
+	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
+		table.insert(statusFrames, GMChatStatusFrame);
+	end
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
+	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
+		table.insert(statusFrames, BehavioralMessagingTray);
+	end
+	if WowSurveyFrame and WowSurveyFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyFrame);
 	end
 
-	if ticketStatusFrameShown then
-		if gmChatStatusFrameShown then
-			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+	local buffOffset = 0;
+	for i, frame in ipairs(statusFrames) do
+		frame:ClearAllPoints();
+		if i == 1 then
+			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		else
-			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
 		end
 
-		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
-		notificationAnchorTo = TicketStatusFrame;
-	end
-
-	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
-	if reportNotificationShown then
-		BehavioralMessagingTray:ClearAllPoints();
-		if notificationAnchorTo ~= UIParent then
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
-		else
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
-	end
-
-		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+		buffOffset = math.max(buffOffset, frame:GetHeight());
 	end
 
 	local y = -(buffOffset + 13)
@@ -180,6 +167,7 @@ UIPARENT_MANAGED_FRAME_POSITIONS = {
 	["MultiCastActionBarFrame"] = {baseY = 8, bottomLeft = actionBarOffset, watchBar = 1, maxLevel = 1, anchorTo = "MainMenuBar", point = "BOTTOMLEFT", rpoint = "TOPLEFT", xOffset = 30};
 	["AuctionProgressFrame"] = {baseY = true, yOffset = 18, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1};
 	["TalkingHeadFrame"] = {baseY = true, yOffset = 0, bottomEither = actionBarOffset, overrideActionBar = overrideActionBarTop, petBattleFrame = petBattleTop, bonusActionBar = 1, pet = 1, watchBar = 1, tutorialAlert = 1, playerPowerBarAlt = 1, extraActionBarFrame = 1, ZoneAbilityFrame = 1, classResourceOverlayFrame = 1};
+	["PlayerPowerBarAlt"] = {baseY = true, yOffset = 100, bottomEither = actionBarOffset};
 
 	-- Vars
 	-- These indexes require global variables of the same name to be declared. For example, if I have an index ["FOO"] then I need to make sure the global variable
@@ -335,6 +323,7 @@ local function FramePositionDelegate_OnAttributeChanged(self, attribute)
 end
 
 local FramePositionDelegate = CreateFrame("FRAME");
+FramePositionDelegate:SetForbidden();
 FramePositionDelegate:SetScript("OnAttributeChanged", FramePositionDelegate_OnAttributeChanged);
 
 function FramePositionDelegate:ShowUIPanel(frame, force)

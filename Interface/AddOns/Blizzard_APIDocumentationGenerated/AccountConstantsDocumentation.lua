@@ -5,9 +5,9 @@ local AccountConstants =
 		{
 			Name = "AccountData",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 20,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 19,
 			Fields =
 			{
 				{ Name = "Config", Type = "AccountData", EnumValue = 0 },
@@ -27,6 +27,9 @@ local AccountConstants =
 				{ Name = "UIEditModeChar", Type = "AccountData", EnumValue = 14 },
 				{ Name = "FrontendChatSettings", Type = "AccountData", EnumValue = 15 },
 				{ Name = "CharacterListOrder", Type = "AccountData", EnumValue = 16 },
+				{ Name = "CooldownManager", Type = "AccountData", EnumValue = 17 },
+				{ Name = "CooldownManager2", Type = "AccountData", EnumValue = 18 },
+				{ Name = "Shop2PendingOrders", Type = "AccountData", EnumValue = 19 },
 			},
 		},
 		{
@@ -70,9 +73,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 61,
+			NumValues = 64,
 			MinValue = 0,
-			MaxValue = 60,
+			MaxValue = 63,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -136,6 +139,9 @@ local AccountConstants =
 				{ Name = "CurrencyTransferLog", Type = "AccountTransType", EnumValue = 58 },
 				{ Name = "LgVendorPurchase", Type = "AccountTransType", EnumValue = 59 },
 				{ Name = "SaveWarbandGroups", Type = "AccountTransType", EnumValue = 60 },
+				{ Name = "Profile", Type = "AccountTransType", EnumValue = 61 },
+				{ Name = "WarbandSceneCollection", Type = "AccountTransType", EnumValue = 62 },
+				{ Name = "EventRecords", Type = "AccountTransType", EnumValue = 63 },
 			},
 		},
 		{
@@ -170,6 +176,42 @@ local AccountConstants =
 			},
 		},
 		{
+			Name = "ChallengeModeHistoryFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "ChallengeModeHistoryFlags", EnumValue = 0 },
+				{ Name = "ConfirmedLeaver", Type = "ChallengeModeHistoryFlags", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryResult",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Successful", Type = "ChallengeModeHistoryResult", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryResult", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "ChallengeModeHistoryStatus",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Normal", Type = "ChallengeModeHistoryStatus", EnumValue = 0 },
+				{ Name = "Leaver", Type = "ChallengeModeHistoryStatus", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "DisableAccountProfilesFlags",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -188,9 +230,9 @@ local AccountConstants =
 		{
 			Name = "ItemCollectionType",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "ItemCollectionNone", Type = "ItemCollectionType", EnumValue = 0 },
@@ -201,7 +243,11 @@ local AccountConstants =
 				{ Name = "ItemCollectionRuneforgeLegendaryAbility", Type = "ItemCollectionType", EnumValue = 5 },
 				{ Name = "ItemCollectionTransmogIllusion", Type = "ItemCollectionType", EnumValue = 6 },
 				{ Name = "ItemCollectionWarbandScene", Type = "ItemCollectionType", EnumValue = 7 },
-				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 7 },
+				{ Name = "ItemCollectionRoom", Type = "ItemCollectionType", EnumValue = 8 },
+				{ Name = "ItemCollectionExteriorFixture", Type = "ItemCollectionType", EnumValue = 9 },
+				{ Name = "ItemCollectionRoomThemes", Type = "ItemCollectionType", EnumValue = 10 },
+				{ Name = "ItemCollectionRoomMaterials", Type = "ItemCollectionType", EnumValue = 11 },
+				{ Name = "NumItemCollectionTypes", Type = "ItemCollectionType", EnumValue = 11 },
 			},
 		},
 	},

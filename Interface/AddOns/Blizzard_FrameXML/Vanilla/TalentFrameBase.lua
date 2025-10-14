@@ -6,7 +6,6 @@ MAX_NUM_TALENTS = 40;
 PLAYER_TALENTS_PER_TIER = 5;
 PET_TALENTS_PER_TIER = 3;
 
-DEFAULT_TALENT_SPEC = "spec1";
 DEFAULT_TALENT_TAB = 1;
 
 TALENT_BUTTON_SIZE = 32;
@@ -14,11 +13,6 @@ MAX_NUM_BRANCH_TEXTURES = 30;
 MAX_NUM_ARROW_TEXTURES = 30;
 INITIAL_TALENT_OFFSET_X = 35;
 INITIAL_TALENT_OFFSET_Y = 20;
-
-
-
-
-
 
 function TalentFrame_Update(TalentFrame)
 	if ( not TalentFrame ) then
@@ -39,11 +33,11 @@ function TalentFrame_Update(TalentFrame)
 		-- even though we have inspection data for more than one talent group, we're only showing one for now
 		isActiveTalentGroup = true;
 	else
-		isActiveTalentGroup = TalentFrame.talentGroup == GetActiveTalentGroup(TalentFrame.inspect, TalentFrame.pet);
+		isActiveTalentGroup = TalentFrame.talentGroup == C_SpecializationInfo.GetActiveSpecGroup(TalentFrame.inspect, TalentFrame.pet);
 	end
 	-- Setup Frame
 	local base;
-	local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
+	local _, name, _, icon, _, _, pointsSpent, background, previewPointsSpent = C_SpecializationInfo.GetSpecializationInfo(selectedTab, TalentFrame.inspect, TalentFrame.pet, nil, nil, TalentFrame.talentGroup);
 	if ( name ) then
 		base = "Interface\\TalentFrame\\"..background.."-";
 	else
@@ -67,7 +61,7 @@ function TalentFrame_Update(TalentFrame)
 	local numTalents = GetNumTalents(selectedTab, TalentFrame.inspect, TalentFrame.pet);
 	-- Just a reminder error if there are more talents than available buttons
 	if ( numTalents > MAX_NUM_TALENTS ) then
-		message("Too many talents in talent frame!");
+		SetBasicMessageDialogText("Too many talents in talent frame!");
 	end
 	-- get unspent talent points
 	local unspentPoints = TalentFrame_UpdateTalentPoints(TalentFrame);
@@ -87,69 +81,67 @@ function TalentFrame_Update(TalentFrame)
 		local button = _G[buttonName];
 		if ( i <= numTalents ) then
 			-- Set the button info
-			local talentName, iconTexture, tier, column, rank, maxRank, meetsPrereq, previewRank, meetsPreviewPrereq, isExceptional =
-				GetTalentInfo(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup);
-			if ( talentName ) then
+			local talentInfoQuery = {};
+			talentInfoQuery.specializationIndex = selectedTab;
+			talentInfoQuery.talentIndex = i;
+			talentInfoQuery.isInspect = TalentFrame.inspect;
+			talentInfoQuery.isPet = TalentFrame.pet;
+			talentInfoQuery.groupIndex = TalentFrame.talentGroup;
+			local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+
+			if ( talentInfo ) then
 				local displayRank;
 				if ( preview ) then
-					displayRank = previewRank;
+					displayRank = talentInfo.previewRank;
 				else
-					displayRank = rank;
+					displayRank = talentInfo.rank;
 				end
 
 				_G[buttonName.."Rank"]:SetText(displayRank);
-				SetTalentButtonLocation(button, tier, column);
-				TalentFrame.TALENT_BRANCH_ARRAY[tier][column].id = button:GetID();
+				SetTalentButtonLocation(button, talentInfo.tier, talentInfo.column);
+				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
 			
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
-				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
-				forceDesaturated = 1;
-			else
-				forceDesaturated = nil;
-			end
+				forceDesaturated = (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0;
 
-			-- is this talent's tier unlocked?
-			if ( ((tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
-				tierUnlocked = 1;
-			else
-				tierUnlocked = nil;
-			end
+				-- is this talent's tier unlocked?
+				tierUnlocked = (talentInfo.tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent;
 
-			SetItemButtonTexture(button, iconTexture);
+				SetItemButtonTexture(button, talentInfo.icon);
 
-			-- Talent must meet prereqs or the player must have no points to spend
-			local prereqsSet =
-				TalentFrame_SetPrereqs(TalentFrame, tier, column, forceDesaturated, tierUnlocked, preview,
-				GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
-			if ( prereqsSet and ((preview and meetsPreviewPrereq) or (not preview and meetsPrereq)) ) then
-				SetItemButtonDesaturated(button, nil);
+				-- Talent must meet prereqs or the player must have no points to spend
+				local prereqsSet =
+					TalentFrame_SetPrereqs(TalentFrame, talentInfo.tier, talentInfo.column, forceDesaturated, tierUnlocked, preview,
+					GetTalentPrereqs(selectedTab, i, TalentFrame.inspect, TalentFrame.pet, TalentFrame.talentGroup));
+				if ( prereqsSet and ((preview and talentInfo.meetsPreviewPrereq) or (not preview and talentInfo.meetsPrereq)) ) then
+					SetItemButtonDesaturated(button, nil);
 
-				if ( displayRank < maxRank ) then
-				-- Rank is green if not maxed out
-					_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
-					_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+					if ( displayRank < talentInfo.maxRank ) then
+					-- Rank is green if not maxed out
+						_G[buttonName.."Slot"]:SetVertexColor(0.1, 1.0, 0.1);
+						_G[buttonName.."Rank"]:SetTextColor(GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+					else
+						_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
+						_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+					end
+					_G[buttonName.."RankBorder"]:Show();
+					_G[buttonName.."Rank"]:Show();
 				else
-					_G[buttonName.."Slot"]:SetVertexColor(1.0, 0.82, 0);
-					_G[buttonName.."Rank"]:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-				end
-				_G[buttonName.."RankBorder"]:Show();
-				_G[buttonName.."Rank"]:Show();
-			else
-				SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
+					SetItemButtonDesaturated(button, 1, 0.65, 0.65, 0.65);
 					_G[buttonName.."Slot"]:SetVertexColor(0.5, 0.5, 0.5);
-				if ( rank == 0 ) then
+					if ( talentInfo.rank == 0 ) then
 						_G[buttonName.."RankBorder"]:Hide();
 						_G[buttonName.."Rank"]:Hide();
-				else
+					else
 						_G[buttonName.."RankBorder"]:SetVertexColor(0.5, 0.5, 0.5);
 						_G[buttonName.."Rank"]:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
+					end
 				end
-			end
-			button:Show();
+				button:Show();
 			else
 				button:Hide();
 			end
-		else	
+		else
 			button:Hide();
 		end
 	end
@@ -263,7 +255,7 @@ function TalentFrame_GetArrowTexture(TalentFrame)
 	local arrowTexture = _G[talentFrameName.."Arrow"..TalentFrame.arrowIndex];
 	TalentFrame.arrowIndex = TalentFrame.arrowIndex + 1;
 	if ( not arrowTexture ) then
-		message("Not enough arrow textures");
+		SetBasicMessageDialogText("Not enough arrow textures");
 	else
 		arrowTexture:Show();
 		return arrowTexture;
@@ -276,7 +268,7 @@ function TalentFrame_GetBranchTexture(TalentFrame)
 	TalentFrame.textureIndex = TalentFrame.textureIndex + 1;
 	if ( not branchTexture ) then
 		--branchTexture = CreateTexture("TalentFrameBranch"..TalentFrame.textureIndex);
-		message("Not enough branch textures");
+		SetBasicMessageDialogText("Not enough branch textures");
 	else
 		branchTexture:Show();
 		return branchTexture;

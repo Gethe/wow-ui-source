@@ -7,6 +7,15 @@ local PartyInfo =
 	Functions =
 	{
 		{
+			Name = "ChallengeModeRestrictionsActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "restrictionsActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ConfirmLeaveParty",
 			Type = "Function",
 			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
@@ -41,6 +50,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetAvailableLootMethods",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "methods", Type = "table", InnerType = "LootMethod", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -56,8 +74,34 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "GetLootMethod",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+				{ Name = "masterLootPartyID", Type = "number", Nilable = true },
+				{ Name = "masterLooterRaidID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetMinLevel",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "category", Type = "luaIndex", Nilable = true, Documentation = { "If not provided, the active party is used" } },
+			},
+
+			Returns =
+			{
+				{ Name = "minLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "InviteUnit",
 			Type = "Function",
+			RequiresValidInviteTarget = true,
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
 
 			Arguments =
@@ -91,6 +135,21 @@ local PartyInfo =
 			Returns =
 			{
 				{ Name = "isFull", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetLootMethod",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "method", Type = "LootMethod", Nilable = false },
+				{ Name = "lootMaster", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -154,6 +213,25 @@ local PartyInfo =
 			Name = "GroupRosterUpdate",
 			Type = "Event",
 			LiteralName = "GROUP_ROSTER_UPDATE",
+		},
+		{
+			Name = "InstanceAbandonVoteFinished",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_FINISHED",
+			Payload =
+			{
+				{ Name = "votePassed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "InstanceAbandonVoteStarted",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_STARTED",
+		},
+		{
+			Name = "InstanceAbandonVoteUpdated",
+			Type = "Event",
+			LiteralName = "INSTANCE_ABANDON_VOTE_UPDATED",
 		},
 		{
 			Name = "InstanceBootStart",
@@ -276,6 +354,18 @@ local PartyInfo =
 
 	Tables =
 	{
+		{
+			Name = "LeavePartyConfirmReason",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "QuestSync", Type = "LeavePartyConfirmReason", EnumValue = 0 },
+				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
+			},
+		},
 	},
 };
 
