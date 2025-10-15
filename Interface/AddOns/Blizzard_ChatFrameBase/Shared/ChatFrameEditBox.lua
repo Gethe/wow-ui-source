@@ -23,12 +23,8 @@ function ChatFrameEditBoxBaseMixin:SetStickyType(stickyType)
 	self:SetAttribute("stickyType", stickyType);
 end
 
-local function GetChannelTargetSecure(editBox)
-	return editBox.channelTarget;
-end
-
 function ChatFrameEditBoxBaseMixin:GetChannelTarget()
-	local channelTarget = securecallfunction(GetChannelTargetSecure, self); -- may be a name or an index
+	local channelTarget = self:GetAttribute("channelTarget"); -- may be a name or an index
 	if channelTarget == nil then
 		return 0;
 	end
@@ -38,19 +34,15 @@ function ChatFrameEditBoxBaseMixin:GetChannelTarget()
 end
 
 function ChatFrameEditBoxBaseMixin:SetChannelTarget(channelTarget)
-	self.channelTarget = channelTarget;
-end
-
-local function GetTellTargetSecure(editBox)
-	return editBox.tellTarget;
+	self:SetAttribute("channelTarget", channelTarget);
 end
 
 function ChatFrameEditBoxBaseMixin:GetTellTarget()
-	return securecallfunction(GetTellTargetSecure, self);
+	return self:GetAttribute("tellTarget");
 end
 
 function ChatFrameEditBoxBaseMixin:SetTellTarget(tellTarget)
-	self.tellTarget = tellTarget;
+	self:SetAttribute("tellTarget", tellTarget);
 end
 
 function ChatFrameEditBoxBaseMixin:AddHistory()

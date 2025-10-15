@@ -11,8 +11,17 @@ local ExpertDecorModeShownEvents =
 HouseEditorExpertDecorModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
 
 function HouseEditorExpertDecorModeMixin:TryHandleEscape()
-	if C_HousingExpertMode.IsDecorSelected() or C_HousingExpertMode.IsHouseExteriorSelected() then
+	local decorPlacementInProgress = C_HousingExpertMode.IsDecorSelected();
+	local housePlacementInProgress = C_HousingExpertMode.IsHouseExteriorSelected();
+	if decorPlacementInProgress or housePlacementInProgress then
 		C_HousingExpertMode.CancelActiveEditing();
+
+		if decorPlacementInProgress then
+			PlaySound(SOUNDKIT.HOUSING_PLACE_ITEM_CANCEL);
+		else
+			PlaySound(SOUNDKIT.HOUSING_PLACE_HOUSE_CANCEL);
+		end
+
 		return true;
 	end
 	return false;
@@ -20,13 +29,15 @@ end
 
 function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_DECOR_PRECISION_SUBMODE_CHANGED" then
-		local activeSubmode = ...;
 		self:StopLoopingSound();
-		self:UpdateSubmodeButtons(activeSubmode);
+		local activeSubmode = ...;
+		local forceUpdateState = false;
+		self:UpdateActiveSubmode(activeSubmode, forceUpdateState);
 	elseif event == "HOUSING_EXPERT_MODE_SELECTED_TARGET_CHANGED" then
 		local isManipulating = false;
 		self:UpdateShownInstructions(isManipulating);
-		self.SubmodeBar.ResetButton:UpdateState();
+		local forceUpdateState = true;
+		self:UpdateActiveSubmode(C_HousingExpertMode.GetPrecisionSubmode(), forceUpdateState);
 
 		local anythingSelect, targetType = ...;
 		if anythingSelect and targetType == Enum.HousingExpertModeTargetType.Decor then
@@ -37,7 +48,7 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_EXPERT_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering, targetType = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			if targetType == Enum.HousingExpertModeTargetType.Decor then
 				self:OnDecorHovered();
 			end
@@ -58,7 +69,8 @@ end
 function HouseEditorExpertDecorModeMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, ExpertDecorModeShownEvents);
 	EventRegistry:TriggerEvent("HouseEditor.HouseStorageSetShown", false);
-	self:UpdateSubmodeButtons(C_HousingExpertMode.GetPrecisionSubmode());
+	local forceUpdateState = true;
+	self:UpdateActiveSubmode(C_HousingExpertMode.GetPrecisionSubmode(), forceUpdateState);
 	local isManipulating = false;
 	self:UpdateShownInstructions(isManipulating);
 	self:UpdateKeybinds();
@@ -124,10 +136,10 @@ function HouseEditorExpertDecorModeMixin:UpdateKeybinds()
 	self.Instructions:UpdateAllControls();
 end
 
-function HouseEditorExpertDecorModeMixin:UpdateSubmodeButtons(activeSubmode)
+function HouseEditorExpertDecorModeMixin:UpdateActiveSubmode(activeSubmode, forceUpdateState)
 	for _, submodeButton in ipairs(self.SubmodeBar.Buttons) do
 		if submodeButton.submode then
-			submodeButton:SetActive(submodeButton.submode == activeSubmode);
+			submodeButton:SetActive(submodeButton.submode == activeSubmode, forceUpdateState);
 		end
 	end
 
@@ -184,17 +196,33 @@ function HouseEditorExpertDecorModeMixin:PlaySelectedSoundForSize(size)
 	);
 end
 
+function HouseEditorExpertDecorModeMixin:PlaySelectedHouseSoundForSize(size)
+	self:PlaySoundForHouseSize(size,
+		SOUNDKIT.HOUSING_EXPERTMODE_HOUSE_SELECT,
+		SOUNDKIT.HOUSING_EXPERTMODE_HOUSE_SELECT,
+		SOUNDKIT.HOUSING_EXPERTMODE_HOUSE_SELECT
+	);
+end
 
 -- Inherits HouseEditorSubmodeButtonMixin
 ExpertDecorSubmodeButtonMixin = {};
 
-function ExpertDecorSubmodeButtonMixin:SetActive(active)
-	if self.isActive == active then
+function ExpertDecorSubmodeButtonMixin:SetActive(active, forceUpdateState)
+	if self.isActive == active and not forceUpdateState then
 		return;
 	end
 
 	self.isActive = active;
 	self:UpdateState();
+end
+
+function ExpertDecorSubmodeButtonMixin:CheckEnabled()
+	local restriction = C_HousingExpertMode.GetPrecisionSubmodeRestriction(self.submode);
+	if restriction == Enum.HousingExpertSubmodeRestriction.None then
+		return true;
+	end
+
+	return false, HousingExpertSubmodeRestrictionStrings[restriction];
 end
 
 function ExpertDecorSubmodeButtonMixin:IsActive()

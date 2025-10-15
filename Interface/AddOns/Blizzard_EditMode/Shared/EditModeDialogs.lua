@@ -58,6 +58,7 @@ end
 		cancelText = string,				-- String for close/cancel
 		disabledAcceptTooltip = opt string,	-- String for tooltip when accept button is disabled
 		needsEditbox = bool,				-- Whether the layout name edit box is needed
+		useLayoutNameForEditBox = bool,		-- Use the layout name as the initial edit box text and select it
 		needsCharacterSpecific = bool,		-- Whether the layout is character-specific
 		onCancelEvent = string,				-- Event name to fire when the dialog is canceled
 
@@ -74,15 +75,15 @@ function EditModeBaseDialogMixin:GetModeData()
 	return self.dialogModeData;
 end
 
-function EditModeBaseDialogMixin:SetMode(mode, ...)
+function EditModeBaseDialogMixin:SetMode(mode, layoutName, ...)
 	local modeData = self.modes[mode];
 	assertsafe(modeData ~= nil, "Mode %s was unsupported.", tostring(mode));
 	self.dialogModeData = modeData;
-	self:SetupControlsForMode(modeData, ...);
+	self:SetupControlsForMode(modeData, layoutName, ...);
 	self:UpdateAcceptButtonEnabledState();
 end
 
-function EditModeBaseDialogMixin:SetupControlsForMode(modeData, ...)
+function EditModeBaseDialogMixin:SetupControlsForMode(_modeData, _layoutName, ...)
 	-- Override as needed, call base class
 	StaticPopupSpecial_Show(self);
 end
@@ -219,13 +220,20 @@ end
 
 EditModeLayoutDialogMixin = {};
 
-function EditModeLayoutDialogMixin:SetupControlsForMode(modeData, ...)
-	self.Title:SetText(modeData.title:format(...));
+function EditModeLayoutDialogMixin:SetupControlsForMode(modeData, layoutName, ...)
+	self.Title:SetText(modeData.title:format(layoutName, ...));
 	self:GetAcceptButton():SetText(modeData.acceptText);
 	self:GetAcceptButton().disabledTooltip = modeData.disabledAcceptTooltip;
 	self:GetCancelButton():SetText(modeData.cancelText);
 	self:GetEditBox():SetShown(modeData.needsEditbox);
-	self:GetEditBox():SetText("");
+
+	if modeData.needsEditbox then
+		self:GetEditBox():SetText(modeData.useLayoutNameForEditBox and layoutName or "");
+		self:GetEditBox():HighlightText();
+	else
+		self:GetEditBox():SetText("");
+	end
+
 	self:GetCharacterSpecificButton():SetShown(modeData.needsCharacterSpecific);
 
 	if modeData.needsEditbox and modeData.needsCharacterSpecific then

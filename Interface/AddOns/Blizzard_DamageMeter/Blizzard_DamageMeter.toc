@@ -1,5 +1,11 @@
 ## Title: Blizzard_DamageMeter
 ## AllowLoadGameType: standard
 ## Dependencies: Blizzard_EditMode
+DamageMeterEntry.lua
+DamageMeterEntry.xml
+DamageMeterUnitBreakdown.lua
+DamageMeterUnitBreakdown.xml
+DamageMeterWindow.lua
+DamageMeterWindow.xml
 DamageMeter.lua
 DamageMeter.xml

@@ -122,6 +122,19 @@ function HousingFramesUtil.ZoomLayoutCamera(zoom)
 	C_HousingLayout.ZoomLayoutCamera(zoom);
 end
 
+function HousingFramesUtil.RotateBasicDecorSelection(direction)
+	if C_HousingBasicMode.IsDecorSelected() then
+		C_HousingBasicMode.RotateDecor(direction);
+	elseif C_HousingBasicMode.IsHouseExteriorSelected() then
+		C_HousingBasicMode.RotateHouseExterior(direction);
+	else
+		-- Nothing selected, early out & avoid playing sound
+		return;
+	end
+
+	PlaySound(SOUNDKIT.HOUSING_ROTATE_ITEM);
+end
+
 -- Handler for events that may fire while relevant Housing addons may not be loaded
 HousingEventHandlerMixin = {}
 
@@ -268,6 +281,15 @@ function HousingEventHandlerMixin:ShowStairDirectionConfirmation()
 	StaticPopup_Show("HOUSING_LAYOUT_STAIRS_DIRECTION_CONFIRM");
 end
 
+function HousingEventHandlerMixin:ShowHousingItemAcquiredAlert(itemType, itemName, icon)
+	local rewardData = {};
+	rewardData.itemType = itemType;
+	rewardData.itemName = itemName;
+	rewardData.icon = icon;
+
+	HousingItemEarnedAlertFrameSystem:AddAlert(rewardData);
+end
+
 local HousingEventHandler = CreateAndInitFromMixin(HousingEventHandlerMixin);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_PLOT_ENTERED", HousingEventHandler.OnPlotEntered, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGED", HousingEventHandler.OnEditorModeChanged, HousingEventHandler);
@@ -281,3 +303,4 @@ EventRegistry:RegisterFrameEventAndCallback("OPEN_CHARTER_CONFIRMATION_UI", Hous
 EventRegistry:RegisterFrameEventAndCallback("SHOW_PLAYER_EVICTED_DIALOG", HousingEventHandler.ShowPlayerEvictedConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG", HousingEventHandler.ShowOwnershipTransferRequestConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_STAIR_DIRECTION_CONFIRMATION", HousingEventHandler.ShowStairDirectionConfirmation, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("NEW_HOUSING_ITEM_ACQUIRED", HousingEventHandler.ShowHousingItemAcquiredAlert, HousingEventHandler);

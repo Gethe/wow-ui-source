@@ -250,16 +250,6 @@ local HousingLayoutUI =
 			},
 		},
 		{
-			Name = "RotateDraggedRoom",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "isLeft", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -2,5 +2,12 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="DamageMeter" mixin="DamageMeterMixin" inherits="EditModeDamageMeterSystemTemplate" parent="UIParent">
 		<Size x="400" y="200"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
 	</Frame>
 </Ui>

@@ -3,9 +3,7 @@
 	<Frame name="EncounterTimelineViewTemplate" mixin="EncounterTimelineViewMixin" secureMixin="EncounterTimelineViewSecureMixin" flattenRenderLayers="true" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" setAllPoints="true" alpha="0">
-					<Color a="1"/>
-				</Texture>
+				<Texture parentKey="Background" setAllPoints="true" alpha="0"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="LineEnd" atlas="combattimeline-line-right" useAtlasSize="true"/>

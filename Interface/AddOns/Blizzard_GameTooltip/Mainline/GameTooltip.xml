@@ -6,7 +6,7 @@
 			<KeyValue key="supportsDataRefresh" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<StatusBar parentKey="StatusBar" name="$parentStatusBar" mixin="GameTooltipUnitHealthBarMixin" hidden="true">
+			<StatusBar parentKey="StatusBar" name="$parentStatusBar" mixin="GameTooltipUnitHealthBarMixin" secureMixin="GameTooltipUnitHealthBarSecureMixin" hidden="true">
 				<Size x="0" y="8"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="2" y="-1"/>

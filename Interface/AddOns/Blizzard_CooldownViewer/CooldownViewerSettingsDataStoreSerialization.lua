@@ -276,9 +276,11 @@ function CooldownViewerDataStoreSerializationMixin:ReadData()
 	local reader = versionedDataReaders[settingsDataVersion];
 	assertsafe(type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion));
 
+	layoutManager:LockNotifications();
 	layoutManager:SetShouldCheckAddLayoutStatus(false);
 	reader(deserializedTable, layoutManager);
 	layoutManager:SetShouldCheckAddLayoutStatus(true);
+	layoutManager:UnlockNotifications();
 end
 
 function CooldownViewerDataStoreSerializationMixin:WriteData()

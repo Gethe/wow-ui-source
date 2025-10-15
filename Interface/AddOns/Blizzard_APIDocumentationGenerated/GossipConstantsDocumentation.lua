@@ -69,7 +69,7 @@ local GossipConstants =
 				{ Name = "CharacterBanker", Type = "GossipNpcOption", EnumValue = 56 },
 				{ Name = "AccountBanker", Type = "GossipNpcOption", EnumValue = 57 },
 				{ Name = "ProfessionRespec", Type = "GossipNpcOption", EnumValue = 58 },
-				{ Name = "Unused", Type = "GossipNpcOption", EnumValue = 59 },
+				{ Name = "RenameNeighborhood", Type = "GossipNpcOption", EnumValue = 59 },
 				{ Name = "HousingCreateGuildNeighborhood", Type = "GossipNpcOption", EnumValue = 60 },
 				{ Name = "HousingGetNeighborhoodCharter", Type = "GossipNpcOption", EnumValue = 61 },
 				{ Name = "GuildRename", Type = "GossipNpcOption", EnumValue = 62 },

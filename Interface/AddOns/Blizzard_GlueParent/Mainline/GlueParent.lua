@@ -798,32 +798,8 @@ function IsKioskGlueEnabled()
 	return Kiosk.IsEnabled() and not Kiosk.IsCompetitiveModeEnabled();
 end
 
-function GetDisplayedExpansionLogo(expansionLevel)
-	local isTrial = expansionLevel == nil;
-
-	if isTrial or expansionLevel <= GetMinimumExpansionLevel() then
-		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	else
-		local expansionInfo = GetExpansionDisplayInfo(expansionLevel);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	end
-
-	return nil;
-end
-
-function SetExpansionLogo(texture, expansionLevel)
-	local logo = GetDisplayedExpansionLogo(expansionLevel);
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
+function GetGameReleaseType()
+	return Enum.ReleaseType.Original;
 end
 
 function UpgradeAccount()

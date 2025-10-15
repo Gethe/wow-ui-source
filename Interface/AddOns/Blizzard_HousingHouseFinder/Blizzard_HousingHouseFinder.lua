@@ -146,6 +146,7 @@ end
 
 function HouseFinderFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HouseSettingsFrameShownEvents);
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.OpenHouseFinder);
 
 	self:ShowNeighborhoodList();
 

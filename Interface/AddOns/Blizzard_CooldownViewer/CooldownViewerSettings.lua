@@ -1145,6 +1145,7 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 			cancelText = CANCEL,
 			disabledAcceptTooltip = nil,
 			needsEditbox = true,
+			useLayoutNameForEditBox = true,
 			needsCharacterSpecific = false, -- Account specific doesn't apply to this dialog
 			onAcceptCallback = function(_layoutManager, dialog)
 				return self:RenameLayoutFromDialog(dialog);
@@ -1576,6 +1577,7 @@ function CooldownViewerSettingsMixin:CheckSaveCurrentLayout()
 			-- This will show the rename dialog, but allow the new layout to be selected
 			-- If the user doesn't complete the rename that's fine, the default layout will continue to have its default name.
 			CooldownViewerLayoutDialog:ShowRenameLayoutDialog(CooldownManagerLayout_GetID(activeLayout), activeLayout);
+			CooldownManagerLayout_SetIsDefault(activeLayout, false);
 		end
 
 		-- Always save layouts when selecting non-default layouts.

@@ -127,7 +127,13 @@ function GameMenuFrameMixin:InitButtons()
 	end
 
 	local editModeDisabled = not EditModeManagerFrame:CanEnterEditMode();
-	self:AddButton(HUD_EDIT_MODE_MENU, GenerateMenuCallback(GenerateFlatClosure(ShowUIPanel, EditModeManagerFrame, force)), editModeDisabled);
+	local editModeButton = self:AddButton(HUD_EDIT_MODE_MENU, GenerateMenuCallback(GenerateFlatClosure(ShowUIPanel, EditModeManagerFrame, force)), editModeDisabled);
+	if not editModeDisabled and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager) then
+		self.EditModeNotification:SetPoint("TOPLEFT", editModeButton, "TOPLEFT", -5, 5);
+		self.EditModeNotification:Show();
+	else
+		self.EditModeNotification:Hide();
+	end
 
 	if self:GetRatingsButtonShown() then
 		-- RatingMenuFrame can only be opened from the game menu so it uses custom behavior to re-show the game menu after closing.

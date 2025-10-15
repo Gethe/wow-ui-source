@@ -79,6 +79,7 @@ CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
 CursorUtilDocumentation.lua
+DamageMeterDocumentation.lua
 DateAndTimeDocumentation.lua
 DeathAlertDocumentation.lua
 DeathInfoDocumentation.lua
@@ -92,6 +93,7 @@ EncodingUtilDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EncounterTimelineDocumentation.lua
+EncounterWarningsDocumentation.lua
 EndOfMatchUIDocumentation.lua
 EquipmentManagerDocumentation.lua
 EventSchedulerUIDocumentation.lua
@@ -415,6 +417,7 @@ EncodingUtilConstantsDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EncounterTimelineConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
+ExpansionConstantsDocumentation.lua
 ExpansionLevelConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua

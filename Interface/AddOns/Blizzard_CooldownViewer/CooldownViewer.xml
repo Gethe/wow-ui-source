@@ -8,6 +8,15 @@
 			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-1">
+				<Texture parentKey="PandemicIcon">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+					<Color r="1" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
@@ -272,8 +281,18 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="EssentialCooldownViewer" mixin="EssentialCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+
+	<Frame name="CooldownViewerTemplate" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" mixin="CooldownViewerMixin" parent="UIParent" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="EssentialCooldownViewer" mixin="EssentialCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Essential" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ESSENTIAL_COOLDOWNS" type="global"/>
@@ -282,15 +301,9 @@
 			<KeyValue key="layoutIndex" value="10" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="UtilityCooldownViewer" mixin="UtilityCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="UtilityCooldownViewer" mixin="UtilityCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Utility" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_UTILITY_COOLDOWNS" type="global"/>
@@ -299,15 +312,9 @@
 			<KeyValue key="layoutIndex" value="11" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="BuffIconCooldownViewer" mixin="BuffIconCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="BuffIconCooldownViewer" mixin="BuffIconCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffIcon" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFFS" type="global"/>
@@ -316,26 +323,14 @@
 			<KeyValue key="layoutIndex" value="9" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="BuffBarCooldownViewer" mixin="BuffBarCooldownViewerMixin" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="BuffBarCooldownViewer" mixin="BuffBarCooldownViewerMixin" inherits="CooldownViewerTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFF_BARS" type="global"/>
 			<KeyValue key="itemTemplate" value="CooldownViewerBuffBarItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBar" type="global"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

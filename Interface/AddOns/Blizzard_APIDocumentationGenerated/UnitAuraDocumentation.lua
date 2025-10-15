@@ -54,7 +54,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -71,7 +71,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByIndex",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -89,7 +89,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -106,7 +106,8 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySpellName",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -143,7 +144,7 @@ local UnitAura =
 		{
 			Name = "GetBuffDataByIndex",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -176,7 +177,7 @@ local UnitAura =
 		{
 			Name = "GetDebuffDataByIndex",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -194,7 +195,8 @@ local UnitAura =
 		{
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -208,9 +210,29 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetRefreshExtendedDuration",
+			Type = "Function",
+			SecretWhenAurasRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the client-predicted new duration of this aura if it were cast again right now. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "newDuration", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetUnitAuraBySpellID",
 			Type = "Function",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
 
@@ -229,7 +251,7 @@ local UnitAura =
 			Name = "GetUnitAuras",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -315,7 +337,7 @@ local UnitAura =
 			Name = "UnitAura",
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },

@@ -256,7 +256,7 @@ end
 
 function EncounterTimelineViewElementMixin:SetTooltipSpell(spellID)
 	if spellID and self:GetSpellTooltipsEnabled() then
-		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent);
+		GameTooltip_SetDefaultAnchor(GameTooltip, self);
 		GameTooltip:SetSpellByID(spellID);
 	elseif GameTooltip:IsOwned(self) then
 		GameTooltip:Hide();

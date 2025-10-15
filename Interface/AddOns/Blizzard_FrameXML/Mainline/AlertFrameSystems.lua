@@ -1442,9 +1442,27 @@ end
 
 -- [[ HousingItemEarnedAlertFrameSystem ]] --
 
---! TODO Need to know what _rewardData looks like so we can set DecorType, DecorName, Icon, and maybe IconBorder's color
---! TODO Need to know when to fire this toast. If on event, add to AlertSystems.lua OnEvent
-function HousingItemEarnedAlertFrameSystem_SetUp(frame, _rewardData)
+local HousingItemTypeStrings = {
+	[Enum.HousingItemToastType.Decor] = HOUSING_ITEM_TOAST_TYPE_DECOR,
+	[Enum.HousingItemToastType.Room] = HOUSING_ITEM_TOAST_TYPE_ROOM,
+	[Enum.HousingItemToastType.Customization] = HOUSING_ITEM_TOAST_TYPE_CUSTOMIZATION,
+	[Enum.HousingItemToastType.Fixture] = HOUSING_ITEM_TOAST_TYPE_FIXTURE,
+};
+
+function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
+	PlaySound(SOUNDKIT.HOUSING_ITEM_ACQUIRED);
+	if rewardData.icon then
+		frame.Icon:SetTexture(rewardData.icon);
+	--rooms, customizations, and fixtures have no unique icon, just a generic one for every item
+	elseif rewardData.itemType == Enum.HousingItemToastType.Room then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericRoom");
+	elseif rewardData.itemType == Enum.HousingItemToastType.Fixture then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericFixture");
+	elseif rewardData.itemType == Enum.HousingItemToastType.Customization then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericCustomization");
+	end
+	frame.DecorType:SetText(HousingItemTypeStrings[rewardData.itemType]);
+	frame.DecorName:SetText(rewardData.itemName);
 	frame.LightRays:SetAlpha(0);
 	frame.LightRays2:SetAlpha(0);
 	frame.glowAnimIn:Play();

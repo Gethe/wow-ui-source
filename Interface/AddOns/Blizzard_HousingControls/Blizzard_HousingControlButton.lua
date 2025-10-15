@@ -63,21 +63,6 @@ end
 -- Inherits BaseHousingControlButtonMixin
 HouseEditorButtonMixin = {};
 
-function HouseEditorButtonMixin:UpdateVisuals(isPressed)
-	BaseHousingActionButtonMixin.UpdateVisuals(self, isPressed);
-	local state = self:GetState(isPressed);
-	local keybindBG = self.keybindIconDefault;
-	if state.isEnabled and state.isActive then
-		keybindBG = self.keybindIconActive;
-	end
-	self.KeybindBackground:SetAtlas(keybindBG);
-end
-
-function HouseEditorButtonMixin:UpdateKeybind()
-	BaseHousingActionButtonMixin.UpdateKeybind(self);
-	self.KeybindBackground:SetShown(self.bindingKey and self.bindingKey ~= "");
-end
-
 function HouseEditorButtonMixin:CheckEnabled()
 	local disabledTooltip = nil;
 	local availabilityResult = C_HouseEditor.GetHouseEditorAvailability();

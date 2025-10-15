@@ -10,7 +10,8 @@ local ClassColor =
 			Name = "GetClassColor",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
+			ReturnsNeverSecret = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

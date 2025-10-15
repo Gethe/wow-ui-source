@@ -63,11 +63,15 @@ function HouseEditorExteriorCustomizationModeMixin:OnShow()
 	end
 
 	self:UpdateCoreFixtureOptions();
+
+	PlaySound(SOUNDKIT.HOUSING_ENTER_EXTERIOR_EDIT_MODE);
 end
 
 function HouseEditorExteriorCustomizationModeMixin:OnHide()
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorExteriorCustomizationMode);
 	FrameUtil.UnregisterFrameForEvents(self, ExteriorCustomizationModeShownEvents);
+
+	PlaySound(SOUNDKIT.HOUSING_EXIT_EXTERIOR_EDIT_MODE);
 end
 
 function HouseEditorExteriorCustomizationModeMixin:TryHandleEscape()
@@ -144,9 +148,16 @@ function HouseEditorExteriorCustomizationModeMixin:UpdatetSelectedPoint()
 		self.FixtureOptionList:ClearAndHide();
 	end
 
+	if self.selectLoopSound then
+		StopSound(self.selectLoopSound);
+		self.selectLoopSound = nil;
+	end
+
 	-- Set up new options
 	if selectedFixturePointInfo then
 		self.FixtureOptionList:ShowFixturePointInfo(selectedFixturePointInfo);
+		PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_NODE_SELECT);
+		self.selectLoopSound = select(2, PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_NODE_SELECT_LOOP));
 	end
 
 	self:UpdateAllPointVisuals();

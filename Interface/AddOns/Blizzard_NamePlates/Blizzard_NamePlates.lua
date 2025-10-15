@@ -367,39 +367,39 @@ local function GetAuraFrameHeight(namePlateScale)
 	-- This is intentionally not accounting for a potential second row of debuffs. A second row of
 	-- debuffs can cause overlap when stacking nameplates.
 	local auraScale = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.AURA_SCALE_CVAR);
-	return 25 * auraScale * namePlateScale.aura;
+	return NamePlateConstants.AURA_ITEM_HEIGHT * auraScale * namePlateScale.aura;
 end
 
 local function GetHealthBarHeight(namePlateStyle, namePlateScale)
 	if namePlateStyle == Enum.NamePlateStyle.Default or namePlateStyle == Enum.NamePlateStyle.Block then
-		local largeHealthBarHeight = 20;
+		local largeHealthBarHeight = NamePlateConstants.LARGE_HEALTH_BAR_HEIGHT;
 		return largeHealthBarHeight * namePlateScale.vertical;
 	end
 
-	local smallHealthBarHeight = 10;
+	local smallHealthBarHeight = NamePlateConstants.SMALL_HEALTH_BAR_HEIGHT;
 	return smallHealthBarHeight * namePlateScale.vertical;
 end
 
 local function GetHealthBarFontHeight(namePlateScale)
-	return 12 * namePlateScale.vertical;
+	return NamePlateConstants.HEALTH_BAR_FONT_HEIGHT * namePlateScale.vertical;
 end
 
 local function GetCastBarHeight(namePlateStyle, namePlateScale)
 	if namePlateStyle == Enum.NamePlateStyle.CastFocus or namePlateStyle == Enum.NamePlateStyle.Block then
-		local largeCastBarHeight = 16;
+		local largeCastBarHeight = NamePlateConstants.LARGE_CAST_BAR_HEIGHT;
 		return largeCastBarHeight * namePlateScale.vertical;
 	end
 
-	local smallCastBarHeight = 10;
+	local smallCastBarHeight = NamePlateConstants.SMALL_CAST_BAR_HEIGHT;
 	return smallCastBarHeight * namePlateScale.vertical;
 end
 
 local function GetCastBarFontHeight(namePlateScale)
-	return 10 * namePlateScale.vertical;
+	return NamePlateConstants.CAST_BAR_FONT_HEIGHT * namePlateScale.vertical;
 end
 
 local function GetCastBarIconHeight(namePlateScale)
-	return 12 * namePlateScale.vertical;
+	return NamePlateConstants.CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
 end
 
 local function IsUnitNameInsideHealthBar(namePlateStyle)

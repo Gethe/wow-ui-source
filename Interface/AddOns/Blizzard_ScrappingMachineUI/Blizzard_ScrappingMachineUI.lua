@@ -140,7 +140,8 @@ ScrappingMachineItemSlotMixin = {};
 
 function ScrappingMachineItemSlotMixin:RefreshIcon()
 	self.itemLocation = C_ScrappingMachineUI.GetCurrentPendingScrapItemLocationByIndex(self.SlotNumber);
-	if (not self.itemLocation) then
+	-- itemLocation can be nil or non-nil and empty so we need to check both
+	if (not self.itemLocation or not self.itemLocation.HasAnyLocation or not self.itemLocation:HasAnyLocation()) then
 		self:ClearSlot();
 		return;
 	end

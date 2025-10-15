@@ -923,7 +923,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeEncounterEventsSetting.Transparency,
 			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_TRANSPARENCY,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 0,
+			minValue = 50,
 			maxValue = 100,
 			stepSize = 1,
 			ConvertValue = ConvertValueDefault,
@@ -968,17 +968,112 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	[Enum.EditModeSystem.DamageMeter] =
 	{
+		-- Style
+		{
+			setting = Enum.EditModeDamageMeterSetting.Style,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = {
+				{ value = Enum.DamageMeterStyle.Default, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_DEFAULT },
+				{ value = Enum.DamageMeterStyle.Thin, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_THIN },
+			},
+		},
+
+		-- Numbers
+		{
+			setting = Enum.EditModeDamageMeterSetting.Numbers,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options = {
+				{ value = Enum.DamageMeterNumbers.Minimal, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_MINIMAL },
+				{ value = Enum.DamageMeterNumbers.Compact, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPACT },
+				{ value = Enum.DamageMeterNumbers.Complete, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPLETE },
+			},
+		},
+
+		-- Frame Width
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameWidth,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 300,
+			maxValue = 600,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Frame Height
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 150,
+			maxValue = 400,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Padding
+		{
+			setting = Enum.EditModeDamageMeterSetting.Padding,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_PADDING,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 2,
+			maxValue = 10,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+		},
+
+		-- Transparency
+		{
+			setting = Enum.EditModeDamageMeterSetting.Transparency,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_TRANSPARENCY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
 		-- Visibility
 		{
 			setting = Enum.EditModeDamageMeterSetting.Visibility,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.DamageMeterVisibility.Always, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_ALWAYS},
 				{value = Enum.DamageMeterVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_COMBAT},
 				{value = Enum.DamageMeterVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_HIDDEN},
 			},
+		},
+
+		-- Lock Scroll
+		{
+			setting = Enum.EditModeDamageMeterSetting.LockScroll,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_LOCK_SCROLL,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Spec Icon
+		{
+			setting = Enum.EditModeDamageMeterSetting.ShowSpecIcon,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_SHOW_SPEC_ICON,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Class Color
+		{
+			setting = Enum.EditModeDamageMeterSetting.ShowClassColor,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_SHOW_CLASS_COLOR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
 };

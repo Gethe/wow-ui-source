@@ -963,7 +963,7 @@ end
 RAID_TARGET_TEXTURE_COLUMNS = 4;
 RAID_TARGET_TEXTURE_ROWS = 4;
 function SetRaidTargetIconTexture(texture, raidTargetIconIndex)
-	texture:SetSpriteSheetCell(raidTargetIconIndex - 1, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
+	texture:SetSpriteSheetCell(raidTargetIconIndex, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
 end
 
 function SetRaidTargetIcon(unit, index)

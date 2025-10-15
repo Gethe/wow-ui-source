@@ -1,22 +1,27 @@
-
------------------ Global Strings -----------------
-HOUSING_EXPERT_DECOR_GLOBAL_SPACE_ACTIVATE = "Switch to Global Space editing";--[ Do NOT add to global strings unless global/local space switching is kept as feature ]--
-HOUSING_EXPERT_DECOR_GLOBAL_SPACE_DEACTIVATE = "Switch to Local Space editing";--[ Do NOT add to global strings unless global/local space switching is kept as feature ]--
-
 ----------------- Enum to Global String Lookups -----------------
 HousingResultToErrorText = {
 	[Enum.HousingResult.CannotAfford] = ERR_HOUSING_RESULT_CANNOT_AFFORD,
 	[Enum.HousingResult.CollisionInvalid] = ERR_HOUSING_RESULT_COLLISION_INVALID,
 	[Enum.HousingResult.DbError] = ERR_HOUSING_RESULT_DB_ERROR,
+	[Enum.HousingResult.DecorItemNotDestroyable] = ERR_HOUSING_RESULT_DECOR_ITEM_NOT_DESTROYABLE,
 	[Enum.HousingResult.DecorNotFound] = ERR_HOUSING_RESULT_DECOR_NOT_FOUND,
 	[Enum.HousingResult.FilterRejected] = ERR_HOUSING_RESULT_FILTER_REJECTED,
+	[Enum.HousingResult.FixtureCantDeleteDoor] = ERR_HOUSING_RESULT_FIXTURE_CANT_DELETE_DOOR,
+	[Enum.HousingResult.FixtureHookEmpty] = ERR_HOUSING_RESULT_FIXTURE_HOOK_EMPTY,
+	[Enum.HousingResult.FixtureHookOccupied] = ERR_HOUSING_RESULT_FIXTURE_HOOK_OCCUPIED,
+	[Enum.HousingResult.FixtureHouseTypeMismatch] = ERR_HOUSING_RESULT_FIXTURE_HOUSE_TYPE_MISMATCH,
+	[Enum.HousingResult.FixtureNotFound] = ERR_HOUSING_RESULT_FIXTURE_NOT_FOUND,
+	[Enum.HousingResult.FixtureNotOwned] = ERR_HOUSING_RESULT_FIXTURE_NOT_OWNED,
+	[Enum.HousingResult.FixtureSizeMismatch] = ERR_HOUSING_RESULT_FIXTURE_SIZE_MISMATCH,
+	[Enum.HousingResult.FixtureTypeMismatch] = ERR_HOUSING_RESULT_FIXTURE_TYPE_MISMATCH,
 	[Enum.HousingResult.GenericFailure] = ERR_HOUSING_RESULT_GENERIC_FAILURE,
 	[Enum.HousingResult.HouseNotFound] = ERR_HOUSING_RESULT_HOUSE_NOT_FOUND,
 	[Enum.HousingResult.IncorrectFaction] = ERR_HOUSING_RESULT_INCORRECT_FACTION,
 	[Enum.HousingResult.InvalidDecorItem] = ERR_HOUSING_RESULT_INVALID_DECOR_ITEM,
+	[Enum.HousingResult.InvalidDistance] = ERR_HOUSING_RESULT_INVALID_DISTANCE,
 	[Enum.HousingResult.InvalidGuild] = ERR_HOUSING_RESULT_INVALID_GUILD,
 	[Enum.HousingResult.InvalidInteraction] = ERR_HOUSING_RESULT_INVALID_INTERACTION,
-	[Enum.HousingResult.InvalidNameProvided] = ERR_HOUSING_RESULT_INVALID_NAME_PROVIDED,
+	[Enum.HousingResult.InvalidNeighborhoodName] = ERR_HOUSING_RESULT_INVALID_NEIGHBORHOOD_NAME,
 	[Enum.HousingResult.InvalidRoomLayout] = ERR_HOUSING_RESULT_INVALID_ROOM_LAYOUT,
 	[Enum.HousingResult.LockedByOtherPlayer] = ERR_HOUSING_RESULT_LOCKED_BY_OTHER_PLAYER,
 	[Enum.HousingResult.LockOperationFailed] = ERR_HOUSING_RESULT_LOCK_OPERATION_FAILED,
@@ -24,6 +29,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.MoreHouseSlotsNeeded] = ERR_HOUSING_RESULT_MORE_HOUSE_SLOTS_NEEDED,
 	[Enum.HousingResult.NeighborhoodNotFound] = ERR_HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND,
 	[Enum.HousingResult.NotInDecorEditMode] = ERR_HOUSING_RESULT_NOT_IN_DECOR_EDIT_MODE,
+	[Enum.HousingResult.NotInFixtureEditMode] = ERR_HOUSING_RESULT_NOT_IN_FIXTURE_EDIT_MODE,
 	[Enum.HousingResult.NotInLayoutEditMode] = ERR_HOUSING_RESULT_NOT_IN_LAYOUT_EDIT_MODE,
 	[Enum.HousingResult.NotInsideHouse] = ERR_HOUSING_RESULT_NOT_INSIDE_HOUSE,
 	[Enum.HousingResult.NotOnOwnedPlot] = ERR_HOUSING_RESULT_NOT_ON_OWNED_PLOT,
@@ -97,4 +103,10 @@ HousingLayoutMoveRestrictionStrings = {
 	[Enum.HousingLayoutRestriction.StairwellConnection] = ERR_HOUSING_LAYOUT_MOVE_RESTRICTION_STAIRWELL,
 	[Enum.HousingLayoutRestriction.LastRoom] = ERR_HOUSING_LAYOUT_MOVE_RESTRICTION_LAST_ROOM,
 	[Enum.HousingLayoutRestriction.UnreachableRoom] = ERR_HOUSING_LAYOUT_MOVE_RESTRICTION_UNREACHABLE,
+};
+
+HousingExpertSubmodeRestrictionStrings = {
+	[Enum.HousingExpertSubmodeRestriction.NotInExpertMode] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_NOT_IN_EXPERT,
+	[Enum.HousingExpertSubmodeRestriction.NoHouseExteriorScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_HOUSE_EXTERIOR_SCALE,
+	[Enum.HousingExpertSubmodeRestriction.NoWMOScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_WMO_SCALE,
 };

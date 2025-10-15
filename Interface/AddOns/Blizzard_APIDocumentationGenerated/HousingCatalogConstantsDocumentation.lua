@@ -47,6 +47,18 @@ local HousingCatalogConstants =
 			},
 		},
 		{
+			Name = "HousingCatalogSortType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "DateAdded", Type = "HousingCatalogSortType", EnumValue = 0 },
+				{ Name = "Alphabetical", Type = "HousingCatalogSortType", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "HousingCatalogConsts",
 			Type = "Constants",
 			Values =
@@ -69,6 +81,8 @@ local HousingCatalogConstants =
 				{ Name = "HOUSING_CATALOG_ALL_CATEGORY_ID", Type = "number", Value = 18 },
 				{ Name = "HOUSING_CATALOG_SIZE_DATAGROUP_ID", Type = "number", Value = 2 },
 				{ Name = "HOUSING_CATALOG_NONE_TAG_ID", Type = "number", Value = -33 },
+				{ Name = "HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT", Type = "number", Value = 1317 },
+				{ Name = "HOUSING_CATALOG_DECOR_MODELSCENEID_FLAT", Type = "number", Value = 1318 },
 			},
 		},
 		{

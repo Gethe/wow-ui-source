@@ -81,7 +81,7 @@ local PlayerInteractionManagerConstants =
 				{ Name = "AccountBanker", Type = "PlayerInteractionType", EnumValue = 68 },
 				{ Name = "ProfessionRespec", Type = "PlayerInteractionType", EnumValue = 69 },
 				{ Name = "CornerstoneInteraction", Type = "PlayerInteractionType", EnumValue = 70 },
-				{ Name = "Unused", Type = "PlayerInteractionType", EnumValue = 71 },
+				{ Name = "RenameNeighborhood", Type = "PlayerInteractionType", EnumValue = 71 },
 				{ Name = "HousingBulletinBoard", Type = "PlayerInteractionType", EnumValue = 72 },
 				{ Name = "HousingPedestal", Type = "PlayerInteractionType", EnumValue = 73 },
 				{ Name = "CreateGuildNeighborhood", Type = "PlayerInteractionType", EnumValue = 74 },

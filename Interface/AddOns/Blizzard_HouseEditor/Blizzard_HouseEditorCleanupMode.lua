@@ -12,7 +12,7 @@ function HouseEditorCleanupModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_CLEANUP_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			self:OnDecorHovered();
 		else
 			GameTooltip:Hide();

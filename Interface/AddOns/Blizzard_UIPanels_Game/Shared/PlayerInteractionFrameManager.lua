@@ -48,6 +48,17 @@ local InteractionManagerFrameInfo = {
             end
         end,
 	},
+	[Enum.PlayerInteractionType.RenameNeighborhood] = 
+	{
+		frame = "NeighborhoodChangeNameDialog",
+		loadFunc = function() 
+			if not HousingBulletinBoardFrame then
+				C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
+			end
+			StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
+			NeighborhoodChangeNameDialog.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
+		end,
+	},
 	[Enum.PlayerInteractionType.OpenHouseFinder] =
 	{
 		frame = "HouseFinderFrame",

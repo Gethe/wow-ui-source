@@ -39,6 +39,9 @@ function AuraUtil.UnpackAuraData(auraData)
 		auraData.isFromPlayerOrPlayerPet,
 		auraData.nameplateShowAll,
 		auraData.timeMod,
+		auraData.isTankRoleAura,
+		auraData.isHealerRoleAura,
+		auraData.isDPSRoleAura,
 		unpack(auraData.points);
 end
 
@@ -177,7 +180,7 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		return AuraUtil.AuraUpdateChangedType.None;
 	end
 
-	if aura.isBossAura and not aura.isRaid and not ignoreDebuffs then
+	if (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and not aura.isRaid and not ignoreDebuffs then
 		aura.debuffType = aura.isHarmful and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.BossBuff;
 		return AuraUtil.AuraUpdateChangedType.Debuff;
 	elseif aura.isHarmful and not aura.isRaid and not ignoreDebuffs then
@@ -192,11 +195,11 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		aura.isBuff = true;
 		return AuraUtil.AuraUpdateChangedType.Buff;
 	elseif aura.isHarmful and aura.isRaid then
-		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not aura.isBossAura and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
+		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not (aura.isBossAura or IsRoleAura(aura)) and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
 			aura.debuffType = AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
 			return AuraUtil.AuraUpdateChangedType.Debuff;
 		elseif not ignoreDispelDebuffs and AuraUtil.DispellableDebuffTypes[aura.dispelName] ~= nil then
-			aura.debuffType = aura.isBossAura and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
+			aura.debuffType = (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
 			return AuraUtil.AuraUpdateChangedType.Dispel;
 		end
 	end
@@ -410,4 +413,8 @@ function AuraUtil.RefreshAuras(frame, unit, numAuras, suffix, checkCVar, showBuf
 	else
 		RefreshDebuffs(frame, unit, numAuras, suffix, checkCVar);
 	end
+end
+
+function AuraUtil.IsRoleAura(aura)
+	return aura.isTankRoleAura or aura.isHealerRoleAura or aura.isDPSRoleAura;
 end

@@ -74,9 +74,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 35,
+			NumValues = 36,
 			MinValue = 1,
-			MaxValue = 35,
+			MaxValue = 36,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -114,17 +114,7 @@ local Tutorial =
 				{ Name = "EnconterJournalTutorialsTabSeen", Type = "FrameTutorialAccount", EnumValue = 33 },
 				{ Name = "HousingMarketTab", Type = "FrameTutorialAccount", EnumValue = 34 },
 				{ Name = "HousingTeleportButton", Type = "FrameTutorialAccount", EnumValue = 35 },
-			},
-		},
-		{
-			Name = "FrameTutorialRPE",
-			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "TalentStarterBuild", Type = "FrameTutorialRPE", EnumValue = 1 },
+				{ Name = "RPETalentStarterBuild", Type = "FrameTutorialAccount", EnumValue = 36 },
 			},
 		},
 	},

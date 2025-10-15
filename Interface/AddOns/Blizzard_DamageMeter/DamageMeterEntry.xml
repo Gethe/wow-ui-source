@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="DamageMeterEntryTemplate" mixin="DamageMeterEntryMixin" virtual="true">
+		<Size y ="32"/>
+		<Frames>
+			<Frame parentKey="Icon">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar parentKey="StatusBar">
+				<Size y="32"/>
+				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</StatusBar>
+		</Frames>
+	</Button>
+</Ui>

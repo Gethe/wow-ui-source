@@ -468,6 +468,7 @@ local TransmogSets =
 				{ Name = "favorite", Type = "bool", Nilable = false },
 				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
 				{ Name = "validForCharacter", Type = "bool", Nilable = false },
+				{ Name = "grantAsPrecedingVariant", Type = "bool", Nilable = false },
 			},
 		},
 		{

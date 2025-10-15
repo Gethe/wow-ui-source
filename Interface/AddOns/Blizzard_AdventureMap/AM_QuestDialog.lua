@@ -28,6 +28,7 @@ function AdventureMapQuestChoiceDialogMixin:ShowWithQuest(parent, anchorRegion, 
 	self.onClosedCallback = onClosedCallback;
 
 	self:ClearAllPoints();
+	self.anchorRegion = anchorRegion;
 	self:SetPoint("CENTER", anchorRegion);
 
 	if newQuest then
@@ -56,16 +57,21 @@ function AdventureMapQuestChoiceDialogMixin:OnEvent(event, ...)
 		if questID == self.questID then
 			self:Refresh();
 		end
+	elseif event == "QUEST_LOG_UPDATE" then
+		-- unfortunately have to use generic event to update in case of rewards being loaded async
+		self:Refresh();
 	end
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnShow()
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:Refresh();
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnHide()
 	self:UnregisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
 
 	self:Finalize();
 end
@@ -227,7 +233,18 @@ function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 		self.Details.Child:SetHeight(height);
 
 		self.Details:Show();
+
+		local portraitInfo = C_AdventureMap.GetQuestPortraitInfo(self.questID);
+		if portraitInfo then
+			QuestFrame_ShowQuestPortrait(self, portraitInfo.portraitDisplayID, portraitInfo.mountPortraitDisplayID, portraitInfo.modelSceneID, portraitInfo.text, portraitInfo.name, -0, -27, true);
+			local xOffset = QuestModelScene:GetWidth() / 2;
+			self:SetPoint("CENTER", self.anchorRegion, -xOffset , 0);
+		else
+			QuestFrame_HideQuestPortrait();
+			self:SetPoint("CENTER", self.anchorRegion, 0, 0);
+		end
 	else
+		QuestFrame_HideQuestPortrait();
 		self.Details:Hide();
 	end
 end

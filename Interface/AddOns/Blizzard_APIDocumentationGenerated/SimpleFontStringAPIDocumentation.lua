@@ -235,6 +235,19 @@ local SimpleFontStringAPI =
 			},
 		},
 		{
+			Name = "GetScaleAnimationMode",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
+			},
+		},
+		{
 			Name = "GetShadowColor",
 			Type = "Function",
 
@@ -457,7 +470,7 @@ local SimpleFontStringAPI =
 			Name = "SetFormattedText",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -522,6 +535,16 @@ local SimpleFontStringAPI =
 			Arguments =
 			{
 				{ Name = "radians", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetScaleAnimationMode",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "scaleAnimationMode", Type = "FontStringScaleAnimationMode", Nilable = false },
 			},
 		},
 		{

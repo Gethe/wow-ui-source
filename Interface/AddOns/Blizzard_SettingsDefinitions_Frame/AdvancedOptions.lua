@@ -85,14 +85,50 @@ local function Register()
 		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMBAT_WARNINGS_LABEL));
 	end);
 
-	-- Enable Encounter Timeline
+	-- Enable Boss Warnings
+
+	InterfaceOverrides.RunSettingsCallback(function()
+		local parentInitializer;
+
+		do
+			local function GenerateTooltipText()
+				local isAvailable = C_EncounterWarnings.IsFeatureAvailable();
+				if isAvailable then
+					return COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_TOOLTIP;
+				else
+					return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_TOOLTIP, COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_NOT_AVAILABLE);
+				end
+			end
+
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsEnabled", COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL, GenerateTooltipText);
+			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+			parentInitializer = initializer;
+		end
+
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideMediumWarnings", COMBAT_WARNINGS_HIDE_MEDIUM_WARNINGS_LABEL, COMBAT_WARNINGS_HIDE_MEDIUM_WARNINGS_TOOLTIP);
+			initializer:SetParentInitializer(parentInitializer);
+		end
+
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideMinorWarnings", COMBAT_WARNINGS_HIDE_MINOR_WARNINGS_LABEL, COMBAT_WARNINGS_HIDE_MINOR_WARNINGS_TOOLTIP);
+			initializer:SetParentInitializer(parentInitializer);
+		end
+
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideIfNotTargetingPlayer", COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_LABEL, COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_TOOLTIP);
+			initializer:SetParentInitializer(parentInitializer);
+		end
+	end);
+
+	-- Enable Boss Timeline
 	InterfaceOverrides.RunSettingsCallback(function()
 		local function GenerateTooltipText()
-			local isAvailable, failureReason = C_EncounterTimeline.IsTimelineSupported();
+			local isAvailable = C_EncounterTimeline.IsTimelineSupported();
 			if isAvailable then
 				return COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP;
 			else
-				return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP, failureReason);
+				return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP, COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_NOT_AVAILABLE);
 			end
 		end
 
@@ -141,6 +177,27 @@ local function Register()
 		local managerInitializer = CreateSettingsButtonInitializer("", HUD_EDIT_MODE_COOLDOWN_VIEWER_SETTINGS, OpenCooldownManager, nil, addSearchTags, "ADVANCED_COOLDOWN_SETTINGS");
 		layout:AddInitializer(managerInitializer);
 	end);
+
+	--[[ Disabled until real functionality exists
+	-- Damage Meter
+	InterfaceOverrides.RunSettingsCallback(function()
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DAMAGE_METER_LABEL));
+	end);
+
+	InterfaceOverrides.RunSettingsCallback(function()
+		-- Damage Meter enable checkbox
+		local function TooltipFn()
+			local isAvailable, failureReason = C_DamageMeter.IsDamageMeterAvailable();
+			if isAvailable then
+				return ENABLE_DAMAGE_METER_TOOLTIP;
+			else
+				return format("%s|n|n%s", ENABLE_DAMAGE_METER_TOOLTIP, failureReason);
+			end
+		end
+
+		Settings.SetupCVarCheckbox(category, "damageMeterEnabled", ENABLE_DAMAGE_METER, TooltipFn);
+	end);
+	]]
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

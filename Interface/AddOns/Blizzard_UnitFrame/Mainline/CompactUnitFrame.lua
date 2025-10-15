@@ -1565,7 +1565,7 @@ do
 				CompactUnitFrame_UtilSetDebuff(debuffFrame, aura);
 				frameNum = frameNum + 1;
 
-				if aura.isBossAura then
+				if aura.isBossAura or AuraUtil.IsRoleAura(aura) then
 					-- Boss auras are about twice as big as normal debuffs, so we may need to display fewer buffs
 					local bossDebuffScale = (debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE)/debuffFrame.baseSize;
 					maxDebuffs = maxDebuffs - (bossDebuffScale - 1);
@@ -1700,7 +1700,7 @@ function CompactUnitFrame_UtilSetDebuff(debuffFrame, aura)
 	debuffFrame.border:SetVertexColor(color.r, color.g, color.b);
 
 	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
-	if ( aura.isBossAura ) then
+	if ( aura.isBossAura or AuraUtil.IsRoleAura(aura) ) then
 		local size = min(debuffFrame.baseSize + BOSS_DEBUFF_SIZE_INCREASE, debuffFrame.maxHeight);
 		debuffFrame:SetSize(size, size);
 	else

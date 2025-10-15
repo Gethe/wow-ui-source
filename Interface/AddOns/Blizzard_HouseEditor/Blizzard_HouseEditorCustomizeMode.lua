@@ -28,7 +28,7 @@ function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering, targetType = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			if targetType == Enum.HousingCustomizeModeTargetType.Decor then
 				self:OnDecorHovered();
 			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then

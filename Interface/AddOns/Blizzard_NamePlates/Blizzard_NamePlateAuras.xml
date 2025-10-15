@@ -2,7 +2,7 @@
 ..\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="NameplateAuraItemTemplate" virtual="true" enableMouse="true" hidden="true" mixin="NamePlateAuraItemMixin">
-		<Size x="25" y="25"/>
+		<!-- Size handled dynamically in lua.-->
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
@@ -41,6 +41,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad" />
 			<OnEnter method="OnEnter" />
 			<OnLeave method="OnLeave" />
 		</Scripts>

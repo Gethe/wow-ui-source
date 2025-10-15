@@ -52,26 +52,12 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="EncounterEventFrame" inherits="RaidBossEmoteFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
-		<KeyValues>
-			<KeyValue key="controlPrivateAnchor" value="true" type="boolean"/>
-		</KeyValues>
-		<Anchors>
-			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad function="EncounterEventFrame_OnLoad"/>
-			<OnUpdate function="RaidNotice_OnUpdate"/>
-			<OnEvent function="EncounterEventFrame_OnEvent"/>
-		</Scripts>
-	</Frame>
-
 	<Frame name="RaidBossEmoteFrame" inherits="RaidBossEmoteFrameTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
 		<KeyValues>
 			<KeyValue key="controlPrivateAnchor" value="true" type="boolean"/>
 		</KeyValues>
 		<Anchors>
-			<Anchor point="TOP" relativeTo="EncounterEventFrame" relativePoint="BOTTOM"/>
+			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
 		</Anchors>
 	</Frame>
 	

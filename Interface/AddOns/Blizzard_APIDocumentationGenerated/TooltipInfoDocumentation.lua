@@ -1195,7 +1195,7 @@ local TooltipInfo =
 			Name = "GetUnitAura",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1214,7 +1214,7 @@ local TooltipInfo =
 			Name = "GetUnitBuff",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1233,7 +1233,7 @@ local TooltipInfo =
 			Name = "GetUnitBuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -1252,7 +1252,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuff",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1271,7 +1271,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenInCombat = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =

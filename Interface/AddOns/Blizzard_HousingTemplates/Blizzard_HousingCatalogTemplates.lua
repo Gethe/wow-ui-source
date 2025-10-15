@@ -134,6 +134,7 @@ function ScrollingHousingCatalogMixin:OnLoad()
 	end);
 	
 	self.ScrollBox:SetEdgeFadeLength(75);
+	self.ScrollBox:SetPoint("TOPLEFT", 0, self.scrollBoxTopOffset);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end

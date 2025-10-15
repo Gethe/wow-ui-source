@@ -286,6 +286,7 @@ local ChatInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+				{ Name = "lockdownReason", Type = "ChatMessagingLockdownReason", Nilable = true, Documentation = { "Optionally specified reason for the chat lockdown. Always nil if isRestricted is false, but should also be treated as potentially nil if true." } },
 			},
 		},
 		{
@@ -394,7 +395,7 @@ local ChatInfo =
 		{
 			Name = "IsTimerunningPlayer",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -473,7 +474,7 @@ local ChatInfo =
 		{
 			Name = "ReplaceIconAndGroupExpressions",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -2476,19 +2477,6 @@ local ChatInfo =
 			{
 				{ Name = "mapname", Type = "cstring", Nilable = false },
 				{ Name = "timeLeft", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "EncounterEvent",
-			Type = "Event",
-			LiteralName = "ENCOUNTER_EVENT",
-			Payload =
-			{
-				{ Name = "text", Type = "cstring", Nilable = false },
-				{ Name = "playerName", Type = "cstring", Nilable = false },
-				{ Name = "displayTime", Type = "number", Nilable = false },
-				{ Name = "enableBossEmoteEventSound", Type = "bool", Nilable = false },
-				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
 			},
 		},
 		{

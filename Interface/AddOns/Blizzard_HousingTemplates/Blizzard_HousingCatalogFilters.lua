@@ -66,6 +66,14 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 		self:TryCallSearcherFunc("ToggleFilterTag", data.groupID, data.tagID);
 	end
 
+	local function IsSortTypeChecked(parameter)
+		return self:TryCallSearcherFunc("GetSortType") == parameter;
+	end
+
+	local function SetSortTypeChecked(parameter)
+		self:TryCallSearcherFunc("SetSortType", parameter);
+	end
+
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_DYEABLE, getCustomizableOnly, toggleCustomizableOnly);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_INDOORS, getAllowedIndoors, toggleAllowedIndoors);
@@ -76,6 +84,10 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_UNCOLLECTED, getUncollected, toggleUncollected);
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_FIRST_ACQUISITION, getFirstAcquisitionBonusOnly, toggleFirstAcquisitionBonusOnly);
 		end
+
+		local sortBySubmenu = rootDescription:CreateButton(RAID_FRAME_SORT_LABEL);
+		sortBySubmenu:CreateRadio(HOUSING_CHEST_SORT_TYPE_DATE_ADDED, IsSortTypeChecked, SetSortTypeChecked, Enum.HousingCatalogSortType.DateAdded);
+		sortBySubmenu:CreateRadio(HOUSING_CHEST_SORT_TYPE_ALPHABETICAL, IsSortTypeChecked, SetSortTypeChecked, Enum.HousingCatalogSortType.Alphabetical);
 
 		for groupIndex, tagGroup in ipairs(self.filterTagGroups) do
 			if tagGroup.tags and TableHasAnyEntries(tagGroup.tags) then

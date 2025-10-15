@@ -472,6 +472,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsProtected",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{

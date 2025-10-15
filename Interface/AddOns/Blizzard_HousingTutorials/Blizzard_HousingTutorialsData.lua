@@ -232,7 +232,7 @@ HousingTutorialData = {
 
 	HousingTeleportToHouseTutorial = {
 		HousingMicroButton = "HousingMicroButton",
-		TeleportButton = "HousingDashboardFrame.ContentFrame.HouseUpgradeFrame.TeleportToHouseButton",
+		TeleportButton = "HousingDashboardFrame.HouseInfoContent.ContentFrame.HouseUpgradeFrame.TeleportToHouseButton",
 
 		HousingHouseTeleportHelpTipInfos = {
 			[HousingTutorialStates.TeleportToHouseTutorial.MicroButton] = {

@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="DamageMeterWindowTemplate" mixin="DamageMeterWindowMixin" virtual="true">
+		<Size x="400" y="200"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" atlas="options_frame_child">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+			<DropdownButton parentKey="TrackedStatDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="TOPLEFT" x="-5"/>
+				</Anchors>
+			</DropdownButton>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TrackedStatDropdown" relativePoint="BOTTOMLEFT" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-19"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="UnitBreakdownFrame" inherits="DamageMeterUnitBreakdownTemplate" hidden="true">
+				<!-- Anchored dynamically in lua-->
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

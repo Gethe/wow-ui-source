@@ -665,7 +665,7 @@ local PlayerScript =
 			Name = "GetPlayerInfoByGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

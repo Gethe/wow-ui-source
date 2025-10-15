@@ -2850,6 +2850,46 @@ do
 	end
 end
 
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOrientation()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingIconDirection()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingIconSize()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOverallSize()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingBackground()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingTransparency()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingVisibility()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowSpellName()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowTooltips()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowTimer()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
 function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -2858,29 +2898,26 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireS
 		return;
 	end
 
-	-- EETODO: Temp hack until settings are implemented for warnings.
-	if self.systemIndex == Enum.EditModeEncounterEventsSystemIndices.Timeline then
-		if setting == Enum.EditModeEncounterEventsSetting.Orientation and self:HasSetting(Enum.EditModeEncounterEventsSetting.Orientation) then
-			self:SetViewOrientation(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation));
-		elseif setting == Enum.EditModeEncounterEventsSetting.IconDirection and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconDirection) then
-			self:SetIconDirection(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection));
-		elseif setting == Enum.EditModeEncounterEventsSetting.IconSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconSize) then
-			self:SetIconSizeMultiplier(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize));
-		elseif setting == Enum.EditModeEncounterEventsSetting.OverallSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.OverallSize) then
-			self:SetContainerScale(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize));
-		elseif setting == Enum.EditModeEncounterEventsSetting.Background and self:HasSetting(Enum.EditModeEncounterEventsSetting.Background) then
-			self:SetBackgroundTransparency(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Background));
-		elseif setting == Enum.EditModeEncounterEventsSetting.Transparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.Transparency) then
-			self:SetViewTransparency(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency));
-		elseif setting == Enum.EditModeEncounterEventsSetting.Visibility and self:HasSetting(Enum.EditModeEncounterEventsSetting.Visibility) then
-			self:SetTimelineVisibility(self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Visibility));
-		elseif setting == Enum.EditModeEncounterEventsSetting.ShowSpellName and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowSpellName) then
-			self:SetSpellNamesEnabled(self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowSpellName));
-		elseif setting == Enum.EditModeEncounterEventsSetting.ShowTooltips and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTooltips) then
-			self:SetSpellTooltipsEnabled(self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTooltips));
-		elseif setting == Enum.EditModeEncounterEventsSetting.ShowTimer and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTimer) then
-			self:SetSpellTimersEnabled(self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTimer));
-		end
+	if setting == Enum.EditModeEncounterEventsSetting.Orientation and self:HasSetting(Enum.EditModeEncounterEventsSetting.Orientation) then
+		self:UpdateSystemSettingOrientation();
+	elseif setting == Enum.EditModeEncounterEventsSetting.IconDirection and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconDirection) then
+		self:UpdateSystemSettingIconDirection();
+	elseif setting == Enum.EditModeEncounterEventsSetting.IconSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconSize) then
+		self:UpdateSystemSettingIconSize();
+	elseif setting == Enum.EditModeEncounterEventsSetting.OverallSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.OverallSize) then
+		self:UpdateSystemSettingOverallSize();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Background and self:HasSetting(Enum.EditModeEncounterEventsSetting.Background) then
+		self:UpdateSystemSettingBackground();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Transparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.Transparency) then
+		self:UpdateSystemSettingTransparency();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Visibility and self:HasSetting(Enum.EditModeEncounterEventsSetting.Visibility) then
+		self:UpdateSystemSettingVisibility();
+	elseif setting == Enum.EditModeEncounterEventsSetting.ShowSpellName and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowSpellName) then
+		self:UpdateSystemSettingShowSpellName();
+	elseif setting == Enum.EditModeEncounterEventsSetting.ShowTooltips and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTooltips) then
+		self:UpdateSystemSettingShowTooltips();
+	elseif setting == Enum.EditModeEncounterEventsSetting.ShowTimer and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTimer) then
+		self:UpdateSystemSettingShowTimer();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -3112,6 +3149,42 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingVisibility()
 	self:UpdateShownState();
 end
 
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingStyle()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumbers()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameWidth()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameHeight()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingPadding()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingTransparency()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingLockScroll()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowSpecIcon()
+	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowClassColor()
+	-- NYI
+end
+
 function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -3121,6 +3194,24 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 
 	if setting == Enum.EditModeDamageMeterSetting.Visibility and self:HasSetting(Enum.EditModeDamageMeterSetting.Visibility) then
 		self:UpdateSystemSettingVisibility();
+	elseif setting == Enum.EditModeDamageMeterSetting.Style and self:HasSetting(Enum.EditModeDamageMeterSetting.Style) then
+		self:UpdateSystemSettingStyle();
+	elseif setting == Enum.EditModeDamageMeterSetting.Numbers and self:HasSetting(Enum.EditModeDamageMeterSetting.Numbers) then
+		self:UpdateSystemSettingNumbers();
+	elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameWidth) then
+		self:UpdateSystemSettingFrameWidth();
+	elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameHeight) then
+		self:UpdateSystemSettingFrameHeight();
+	elseif setting == Enum.EditModeDamageMeterSetting.Padding and self:HasSetting(Enum.EditModeDamageMeterSetting.Padding) then
+		self:UpdateSystemSettingPadding();
+	elseif setting == Enum.EditModeDamageMeterSetting.Transparency and self:HasSetting(Enum.EditModeDamageMeterSetting.Transparency) then
+		self:UpdateSystemSettingTransparency();
+	elseif setting == Enum.EditModeDamageMeterSetting.LockScroll and self:HasSetting(Enum.EditModeDamageMeterSetting.LockScroll) then
+		self:UpdateSystemSettingLockScroll();
+	elseif setting == Enum.EditModeDamageMeterSetting.ShowSpecIcon and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowSpecIcon) then
+		self:UpdateSystemSettingShowSpecIcon();
+	elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowClassColor) then
+		self:UpdateSystemSettingShowClassColor();
 	end
 
 	if not entireSystemUpdate then

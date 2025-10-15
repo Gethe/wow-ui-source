@@ -1,6 +1,5 @@
 EncounterTimelineViewSetting = {
-	BackgroundTransparency = "BackgroundTransparency",
-	ContainerScale = "containerScale",
+	BackgroundTransparency = "backgroundTransparency",
 	CrossAxisExtent = "crossAxisExtent",
 	CrossAxisOffset = "crossAxisOffset",
 	DividerOffset = "dividerOffset",
@@ -10,7 +9,7 @@ EncounterTimelineViewSetting = {
 	EventOutroOffsetEnd = "eventOutroOffsetEnd",
 	IconDirection = "iconDirection",
 	IconSize = "iconSize",
-	IconSizeMultiplier = "iconSizeMultiplier",
+	IconScale = "iconScale",
 	LongTrackEventExtent = "longTrackEventExtent",
 	LongTrackEventLimit = "longTrackEventLimit",
 	LongTrackEventSpacing = "longTrackEventSpacing",
@@ -36,9 +35,7 @@ EncounterTimelineViewSetting = {
 	SpellNamesEnabled = "spellNamesEnabled",
 	SpellTimersEnabled = "spellTimersEnabled",
 	SpellTooltipsEnabled = "spellTooltipsEnabled",
-	TimelineVisibility = "timelineVisibility",
 	ViewOrientation = "viewOrientation",
-	ViewTransparency = "viewTransparency",
 };
 
 -- This map also defines what settings attributes are valid, so nil values are not allowed.
@@ -47,14 +44,11 @@ EncounterTimelineDefaultViewSettings = {
 
 	[EncounterTimelineViewSetting.BackgroundTransparency] = 0,
 	[EncounterTimelineViewSetting.IconDirection] = Enum.EncounterEventsIconDirection.Right,
-	[EncounterTimelineViewSetting.IconSizeMultiplier] = 100,
+	[EncounterTimelineViewSetting.IconScale] = 1,
 	[EncounterTimelineViewSetting.ViewOrientation] = Enum.EncounterEventsOrientation.Horizontal,
-	[EncounterTimelineViewSetting.ContainerScale] = 100,
-	[EncounterTimelineViewSetting.ViewTransparency] = 100,
 	[EncounterTimelineViewSetting.SpellTooltipsEnabled] = true,
 	[EncounterTimelineViewSetting.SpellTimersEnabled] = true,
 	[EncounterTimelineViewSetting.SpellNamesEnabled] = true,
-	[EncounterTimelineViewSetting.TimelineVisibility] = Enum.EncounterEventsVisibility.InCombat,
 
 	-- For the below settings we'll describe them in terms of their effects
 	-- on a default left-to-right horizontal bar.

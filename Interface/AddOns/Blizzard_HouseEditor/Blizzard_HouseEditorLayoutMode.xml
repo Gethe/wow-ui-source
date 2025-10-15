@@ -90,7 +90,6 @@
 				<OnEvent method="OnEvent" inherit="prepend"/>
 				<OnShow method="OnShow" inherit="prepend"/>
 				<OnHide method="OnHide" inherit="prepend"/>
-				<OnMouseWheel method="OnMouseWheel"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

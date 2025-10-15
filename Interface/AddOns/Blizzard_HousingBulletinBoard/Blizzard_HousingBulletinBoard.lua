@@ -28,7 +28,6 @@ function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodIn
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.neighborhoodOwnerType = neighborhoodInfo.neighborhoodOwnerType;
 	self.ResidentsTab:OnNeighborhoodInfoUpdated(neighborhoodInfo);
-	NeighborhoodSettingsFrame:OnNeighborhoodInfoUpdated(neighborhoodInfo);
 
 	local bgAtlasPrefix = "housing-dashboard-bg-";
 	local bgAtlasSuffix = C_HousingNeighborhood.GetCurrentNeighborhoodTextureSuffix();
@@ -38,12 +37,6 @@ function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodIn
 
 	self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
-		--Temp, remove once neighborhoods can be renamed from NPC
-		if C_HousingNeighborhood.IsNeighborhoodOwner() then
-			rootDescription:CreateButton("Rename", function()
-					ShowUIPanel(NeighborhoodSettingsFrame);
-				end);
-		end
 	end);
 end
 
@@ -662,34 +655,6 @@ function HousingInviteSearchBoxMixin:OnTextChanged(userInput)
 end
 
 --//////////////////////////////////////////////////////////////////////
-NeighborhoodSettingsFrameMixin = {}
-
-function NeighborhoodSettingsFrameMixin:OnLoad()
-    self:SetTitle(HOUSING_NEIGHBORHOOD_SETTINGS_TITLE);
-
-    self.ChangeNameButton:SetScript("OnClick", self.OnChangeNameClicked);
-end
-
-function NeighborhoodSettingsFrameMixin:OnEvent()
-
-end
-
-function NeighborhoodSettingsFrameMixin:OnShow()
-
-end
-
-function NeighborhoodSettingsFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
-    self.neighborhoodName = neighborhoodInfo.neighborhoodName;
-    self.NameText:SetText(self.neighborhoodName);
-end
-
-function NeighborhoodSettingsFrameMixin:OnChangeNameClicked()
-    NeighborhoodSettingsFrame.newName = HOUSING_NEIGHBORHOOD_SETTINGS_NEWNAME;
-    StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
-    NeighborhoodChangeNameDialog.NameText:SetText(NeighborhoodSettingsFrame.neighborhoodName);
-end
-
---//////////////////////////////////////////////////////////////////////
 NeighborhoodChangeNameDialogMixin = {}
 
 local NAME_CHANGE_DIALOG_SHOWING_EVENTS = {
@@ -702,6 +667,7 @@ end
 
 function NeighborhoodChangeNameDialogMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, NAME_CHANGE_DIALOG_SHOWING_EVENTS);
+	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.RenameNeighborhood);
 end
 
 function NeighborhoodChangeNameDialogMixin:OnEvent(event, ...)
@@ -727,4 +693,24 @@ end
 
 function NeighborhoodChangeNameDialogMixin:OnConfirmClicked()
 	C_HousingNeighborhood.ValidateNeighborhoodName(NeighborhoodChangeNameDialog.NameEditBox:GetText());
+end
+
+--//////////////////////////////////////////////////////////////////////
+NeighborhoodChangeNameCostMixin = {}
+
+local RENAME_TOKEN_ITEM_ID =  234128;
+
+function NeighborhoodChangeNameCostMixin:OnLoad()
+	local iconTexture = C_Item.GetItemIconByID(RENAME_TOKEN_ITEM_ID);
+	self.Icon:SetTexture(iconTexture);
+end
+
+function NeighborhoodChangeNameCostMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetItemByID(RENAME_TOKEN_ITEM_ID);
+	GameTooltip:Show();
+end
+
+function NeighborhoodChangeNameCostMixin:OnLeave()
+	GameTooltip:Hide();
 end

@@ -882,6 +882,15 @@
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-6" y="-6"/>
 								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="PrecedingVariantIcon" atlas="lootroll-icon-transmog" useAtlasSize="true" hidden="true">
+											<Anchors>
+												<Anchor point="RIGHT" relativePoint="LEFT" x="-4" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
 							</DropdownButton>
 						</Frames>
 					</Frame>

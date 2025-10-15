@@ -263,6 +263,8 @@ function ClassTalentsFrameMixin:OnHide()
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TalentTab.Hide");
 
 	self:SetBackgroundAnimationsPlaying(false);
+
+	self:CancelLoadSystemTutorials();
 end
 
 function ClassTalentsFrameMixin:OnEvent(event, ...)
@@ -1634,31 +1636,43 @@ function ClassTalentsFrameMixin:CheckHeroTalentTutorial(subTreeInfo, tipOffsetX,
 end
 
 function ClassTalentsFrameMixin:CheckLoadSystemTutorials(changedConfigID)
-	local isLapsed = false;	-- RPE_TODO: real data
-
-	if changedConfigID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID and isLapsed then
-		SetCVarBitfield("closedInfoFramesRPE", Enum.FrameTutorialRPE.TalentStarterBuild, true);
-		HelpTip:Hide(self.LoadSystem, RPE_STARTER_BUILD_TUTORIAL);
-	end
-
-	if C_ClassTalents.GetStarterBuildActive() then
+	if C_ClassTalents.GetStarterBuildActive()  then
 		return;
 	end
 
-	if not isLapsed or GetCVarBitfield("closedInfoFramesRPE", Enum.FrameTutorialRPE.TalentStarterBuild) then
+	if not C_PlayerInfo.IsPlayerInRPE() or GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RPETalentStarterBuild) then
 		return;
 	end
 
-	local helpTipInfo = {
-		text = RPE_STARTER_BUILD_TUTORIAL,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		cvarBitfield = "closedInfoFramesRPE",
-		bitfieldFlag = Enum.FrameTutorialRPE.TalentStarterBuild,
-		targetPoint = HelpTip.Point.TopEdgeLeft,
-		offsetX = 20,
-		alignment = HelpTip.Alignment.Left,
-	};
-	HelpTip:Show(self.LoadSystem, helpTipInfo);
+	if not self.rpeTalentStarterBuildTimer then
+		EventRegistry:RegisterCallback("Menu.OpenMenuTag", function(o, tag)
+			if tag == "MENU_CLASS_TALENT_PROFILE" then
+				SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RPETalentStarterBuild, true);
+				HelpTip:Hide(self.LoadSystem, NPEV2_TALENTS_STARTER_BUILD);
+				self:CancelLoadSystemTutorials();
+			end
+		end, self);
+
+		self.rpeTalentStarterBuildTimer = C_Timer.NewTimer(3, function()
+			local helpTipInfo = {
+				text = NPEV2_TALENTS_STARTER_BUILD,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = Enum.FrameTutorialAccount.RPETalentStarterBuild,
+				buttonStyle = HelpTip.ButtonStyle.GotIt,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				alignment = HelpTip.Alignment.Center,
+			};
+			HelpTip:Show(self.LoadSystem, helpTipInfo);
+		end);
+	end
+end
+
+function ClassTalentsFrameMixin:CancelLoadSystemTutorials()
+	if self.rpeTalentStarterBuildTimer then
+		EventRegistry:UnregisterCallback("Menu.OpenMenuTag", self);
+		self.rpeTalentStarterBuildTimer:Cancel();
+		self.rpeTalentStarterBuildTimer = nil;
+	end
 end
 
 --------------------------- Script Command Helpers --------------------------------

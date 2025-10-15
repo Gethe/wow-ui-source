@@ -27,15 +27,6 @@ function HouseEditorBasicDecorModeMixin:OnLoad()
 		end
 	end);
 
-	self.DecorMoveOverlay:SetScript("OnMouseWheel", function(_, direction)
-		if C_HousingBasicMode.IsDecorSelected() then
-			C_HousingBasicMode.RotateDecor(direction);
-		elseif C_HousingBasicMode.IsHouseExteriorSelected() then
-			C_HousingBasicMode.RotateHouseExterior(direction);
-		end
-		PlaySound(SOUNDKIT.HOUSING_ROTATE_ITEM);
-	end);
-
 	self.commitNewDecorOnMouseUp = true;
 
 	self:SetInstructionShown(self.Instructions.SelectedInstructions, false);
@@ -57,7 +48,7 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_BASIC_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering, targetType = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			if targetType == Enum.HousingBasicModeTargetType.Decor then
 				self:OnDecorHovered();
 			end
@@ -151,8 +142,17 @@ function HouseEditorBasicDecorModeMixin:SetInstructionShown(instructionSet, shou
 end
 
 function HouseEditorBasicDecorModeMixin:TryHandleEscape()
-	if C_HousingBasicMode.IsPlacingNewDecor() or C_HousingBasicMode.IsDecorSelected() or C_HousingBasicMode.IsHouseExteriorSelected() then
+	local decorPlacementInProgress = C_HousingBasicMode.IsPlacingNewDecor() or C_HousingBasicMode.IsDecorSelected();
+	local housePlacementInProgress = C_HousingBasicMode.IsHouseExteriorSelected();
+	if decorPlacementInProgress or housePlacementInProgress then
 		C_HousingBasicMode.CancelActiveEditing();
+
+		if decorPlacementInProgress then
+			PlaySound(SOUNDKIT.HOUSING_PLACE_ITEM_CANCEL);
+		else
+			PlaySound(SOUNDKIT.HOUSING_PLACE_HOUSE_CANCEL);
+		end
+
 		return true;
 	end
 	return false;

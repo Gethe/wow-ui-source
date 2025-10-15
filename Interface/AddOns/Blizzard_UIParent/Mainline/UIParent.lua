@@ -1976,14 +1976,14 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DAILY_RESET_INSTANCE_WELCOME" ) then
 		local instanceName = arg1;
 		local resetTime = arg2;
-		message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
+		local message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 
 	elseif ( event == "INSTANCE_RESET_WARNING" ) then
 		local warningString = arg1;
 		local resetTime = arg2;
-		message = format(warningString, SecondsToTime(resetTime, nil, 1));
+		local message = format(warningString, SecondsToTime(resetTime, nil, 1));
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 

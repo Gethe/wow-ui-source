@@ -716,7 +716,13 @@ function CooldownViewerLayoutManagerMixin:NotifyListeners()
 		self.needsNotificationAfterUnlock = true;
 	else
 		self.needsNotificationAfterUnlock = false;
-		EventRegistry:TriggerEvent("CooldownViewerSettings.OnDataChanged");
+
+		if not self.notificationsCompletelyDisabled then
+			assertsafe(not self.notifying, "This is not re-entrant");
+			self.notifying = true;
+			EventRegistry:TriggerEvent("CooldownViewerSettings.OnDataChanged");
+			self.notifying = false;
+		end
 	end
 end
 
@@ -736,6 +742,25 @@ end
 
 function CooldownViewerLayoutManagerMixin:AreNotificationsLocked()
 	return self.notificationLockCount and self.notificationLockCount > 0;
+end
+
+function CooldownViewerLayoutManagerMixin:CheckDisableNotifications()
+	-- There's a somewhat less than ideal situation here. The dataProvider and layoutManager are coupled because
+	-- when external systems need to ask the provider for displayData, the provider needs to load both static data
+	-- and reconcile that against the currently active layout.
+	-- Since the external system is likely responding to a layout manager "OnDataChanged" notification and the dataProvider
+	-- might need to update the currently active layout with reconciled data, this could lead to OnDataChanged being triggered
+	-- while OnDataChanged is being processed, nobody likes reentrancy. So, to handle this I am adding the concept of completely
+	-- disabling OnDataChanged notifications while this is happening. The catch is that the only time this should be allowed to
+	-- be disabled is while an OnDataChanged event is being processed, otherwise, listners will probably want to know about the
+	-- updates.
+	if self.notifying then
+		self.notificationsCompletelyDisabled = true;
+	end
+end
+
+function CooldownViewerLayoutManagerMixin:EnableNotifications()
+	self.notificationsCompletelyDisabled = false;
 end
 
 function CooldownViewerLayoutManagerMixin:IsValidLayoutName(proposedLayoutName)

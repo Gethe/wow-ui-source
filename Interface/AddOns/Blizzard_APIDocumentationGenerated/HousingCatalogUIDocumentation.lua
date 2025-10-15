@@ -298,6 +298,7 @@ local HousingCatalogUI =
 				{ Name = "asset", Type = "ModelAsset", Nilable = true },
 				{ Name = "iconTexture", Type = "FileAsset", Nilable = true },
 				{ Name = "iconAtlas", Type = "textureAtlas", Nilable = true },
+				{ Name = "uiModelSceneID", Type = "number", Nilable = true },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "showQuantity", Type = "bool", Nilable = false },
 				{ Name = "categoryIDs", Type = "table", InnerType = "number", Nilable = false },

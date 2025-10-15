@@ -59,10 +59,10 @@ local NeighborhoodInitiativesConstants =
 			MaxValue = 3,
 			Fields =
 			{
-				{ Name = "NeighborhoodInitiativeUpdateStatusStarted", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 0 },
-				{ Name = "NeighborhoodInitiativeUpdateStatusMilestoneCompleted", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 1 },
-				{ Name = "NeighborhoodInitiativeUpdateStatusCompleted", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 2 },
-				{ Name = "NeighborhoodInitiativeUpdateStatusFailed", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 3 },
+				{ Name = "Started", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 0 },
+				{ Name = "MilestoneCompleted", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 1 },
+				{ Name = "Completed", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 2 },
+				{ Name = "Failed", Type = "NeighborhoodInitiativeUpdateStatus", EnumValue = 3 },
 			},
 		},
 		{

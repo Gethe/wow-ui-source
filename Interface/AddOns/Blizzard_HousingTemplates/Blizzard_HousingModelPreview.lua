@@ -1,11 +1,11 @@
-local ModelSceneID = 691;
 local ActorTag = "decor";
 
 HousingModelPreviewMixin = {};
 
 function HousingModelPreviewMixin:OnLoad()
 	local forceSceneChange = true;
-	self.ModelScene:TransitionToModelSceneID(ModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+	self.ModelScene:TransitionToModelSceneID(Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+	self.ModelSceneControls:SetModelScene(self.ModelScene);
 end
 
 function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
@@ -15,10 +15,23 @@ function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
 	self.Name:SetText(catalogEntryInfo.name);
 
 	if catalogEntryInfo.asset then
+		local modelSceneID = catalogEntryInfo.uiModelSceneID or Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT;
+		local forceSceneChange = true;
+		self.ModelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
+
 		local actor = self.ModelScene:GetActorByTag(ActorTag);
 		if actor then
+			actor:SetPreferModelCollisionBounds(true);
 			actor:SetModelByFileID(catalogEntryInfo.asset);
 		end
+
+		self.ModelScene:Show();
+		self.ModelSceneControls:Show();
+		self.PreviewUnavailableText:Hide();
+	else
+		self.ModelScene:Hide();
+		self.ModelSceneControls:Hide();
+		self.PreviewUnavailableText:Show();
 	end
 end
 

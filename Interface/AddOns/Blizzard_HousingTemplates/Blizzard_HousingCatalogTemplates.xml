@@ -30,6 +30,7 @@
 			<KeyValue key="bottomPadding" value="0" type="number"/>
 			<KeyValue key="leftPadding" value="0" type="number"/>
 			<KeyValue key="rightPadding" value="0" type="number"/>
+			<KeyValue key="scrollBoxTopOffset" value="0" type="number"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
@@ -44,8 +45,9 @@
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+					<Anchor point="TOP"/>
+					<Anchor point="LEFT" relativeKey="$parent.ScrollBox" relativePoint="RIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOM"/>
 				</Anchors>
 			</EventFrame>
 		</Frames>

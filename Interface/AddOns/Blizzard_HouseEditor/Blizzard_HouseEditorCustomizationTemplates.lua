@@ -7,7 +7,6 @@ function HousingDyePaneMixin:OnLoad()
 	local function CloseDyePane()
 		-- This will clear the preview dyes and close this pane by deselecting the decor
 		C_HousingCustomizeMode.CancelActiveEditing();
-		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
 	end
 
 	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
@@ -35,6 +34,7 @@ end
 
 function HousingDyePaneMixin:OnHide()
 	DyeSelectionPopout:Hide();
+	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
 end
 
 function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
@@ -62,6 +62,10 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 		local function onClickCallback()
 			DyeSelectionPopout:SetDyeSlotInfo(dyeSlotEntry);
 			DyeSelectionPopout:Show();
+			if self.currentChannel ~= dyeSlotEntry.channel then
+				PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_OPEN_COLOR_PALETTE);
+			end
+
 			if self.currentChannel then
 				self.dyeSlotFramesByChannel[self.currentChannel].CurrentSwatch:UpdateSelected(false);
 			end
@@ -164,11 +168,9 @@ function HousingDecorDyeSlotPopoutMixin:OnLoad()
 		if self.dyeSlotInfo then
 			self:SetDyeSlotInfo(self.dyeSlotInfo);
 		end
-	end);
-end
 
-function HousingDecorDyeSlotPopoutMixin:OnShow()
-	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_OPEN_COLOR_PALETTE);
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_SHOW_ONLY_OWNED_CLICK);
+	end);
 end
 
 function HousingDecorDyeSlotPopoutMixin:ReinitScrollBox()

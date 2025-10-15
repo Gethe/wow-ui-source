@@ -119,8 +119,9 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 			self.ContentFrame.InitiativesFrame:RefreshInitiativeTab();
 			local initiativeTasksTracked = C_NeighborhoodInitiative.GetTrackedInitiativeTasks();
 			local trackedTaskIDs = initiativeTasksTracked.trackedIDs;
-			local dataProvider = self.ContentFrame.InitiativesFrame.InitiativeSetFrame.InitiativeTasks.TaskList:GetDataProvider();
 			local excludeCollapsed = false;
+			local dataProvider = self.ContentFrame.InitiativesFrame.InitiativeSetFrame.InitiativeTasks.TaskList:GetDataProvider();
+				if davaProvider then
 				dataProvider:ForEach(function(elementData)
 				local data = elementData:GetData();
 				data.tracked = tContains(trackedTaskIDs, data.ID);
@@ -128,6 +129,8 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 				self.ContentFrame.InitiativesFrame.InitiativeSetFrame.InitiativeTasks.TaskList:ForEachFrame(function(frame, elementData)
 					frame:UpdateTracked();
 				end);
+				end
+				
 		end
 
 	end
@@ -574,7 +577,7 @@ function InitiativesTabMixin:RefreshActivityLog()
 		end
 
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetEdgeFadeLength(SCROLL_BOX_EDGE_FADE_LENGTH);
-		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetDataProvider(dataProvider);
+		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 end
 
@@ -594,8 +597,7 @@ end
 
 function InitiativeTaskButtonMixin:UpdateTracked()
 	local data = self:GetData();
-	-- TODO UI: Add tracking check mark
-	-- self.TrackingCheckmark:SetShown(data and data.tracked);
+	-- TODO UI: Add tracking check mark WOW12-33999
 end
 
 function InitiativeTaskButtonMixin:OnEnter()

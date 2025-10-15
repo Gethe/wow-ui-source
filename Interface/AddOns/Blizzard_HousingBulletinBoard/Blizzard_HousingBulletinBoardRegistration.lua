@@ -6,7 +6,6 @@ do
 	};
 	RegisterUIPanel(HousingBulletinBoardFrame, attributes);
     attributes.pushable = 3;
-	RegisterUIPanel(NeighborhoodSettingsFrame, attributes);
 	RegisterUIPanel(HousingInviteResidentFrame, attributes);
 
 end

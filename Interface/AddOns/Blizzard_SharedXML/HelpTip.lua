@@ -240,7 +240,7 @@ function HelpTip:IsRestricted(info)
 		end
 		if info.text == TALENT_MICRO_BUTTON_NO_HERO_SPEC
 		or info.text == TALENT_MICRO_BUTTON_UNSPENT_TALENTS
-		or info.text == RPE_STARTER_BUILD_TUTORIAL
+		or info.text == NPEV2_TALENTS_STARTER_BUILD
 		or info.text == TUTORIAL_SUPERTRACK_STEP_1 then
 			return false;
 		end
@@ -379,6 +379,7 @@ function HelpTipTemplateMixin:OnLoad()
 	self.acknowledged = false;
 
 	self.OkayButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:Acknowledge();
 	end);
 

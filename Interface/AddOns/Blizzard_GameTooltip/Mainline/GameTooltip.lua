@@ -963,7 +963,16 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType, parent)
 		self:SetObjectTooltipPosition();
 	end
 
-	local oldInfo = self:GetPrimaryTooltipInfo();
+	-- Reading old tooltip info can taint if the tooltip was previously shown
+	-- by a user addon. We don't want this taint to travel into ProcessInfo
+	-- because this can result in the tooltip displaying no lines if the new
+	-- world cursor info we'd want to show has any secret line data/text.
+	--
+	-- Note that irrespective of this securecall we can taint if the 'elseif'
+	-- branch is evaluated when reading the getterName/fadeOut fields. This
+	-- at present causes no observable issues.
+
+	local oldInfo = securecallfunction(self.GetPrimaryTooltipInfo, self);
 
 	if tooltipData then
 		local tooltipInfo = {
@@ -1005,9 +1014,14 @@ function GameTooltipUnitHealthBarMixin:OnLoad()
 	self:SetMinMaxValues(0, 1);
 end
 
+-- Attributes are used for guid storage because there's a taint path for some
+-- addon tooltip customizations that persists between hiding and showing
+-- a tooltip for a different unit, which can fail catastrophically in the
+-- OnUpdate handler when health data is secret.
+
 function GameTooltipUnitHealthBarMixin:SetWatch(guid)
-	self.guid = guid;
-	self:SetValue(0);
+	self:SetAttribute("guid", guid);
+	self:ResetUnitHealth();
 	self:Show();
 	self:UpdateUnitHealth();
 end
@@ -1015,8 +1029,7 @@ end
 function GameTooltipUnitHealthBarMixin:StopUpdates()
 	-- get the current health, last update might have been right before killing blow
 	self:UpdateUnitHealth();
-
-	self.guid = nil;
+	self:SetAttribute("guid", nil);
 end
 
 function GameTooltipUnitHealthBarMixin:ClearWatch()
@@ -1024,12 +1037,18 @@ function GameTooltipUnitHealthBarMixin:ClearWatch()
 	self:Hide();
 end
 
+function GameTooltipUnitHealthBarMixin:ResetUnitHealth()
+	self:SetValue(0);
+end
+
 function GameTooltipUnitHealthBarMixin:UpdateUnitHealth()
-	if not self.guid then
+	local guid = self:GetAttribute("guid");
+
+	if not guid then
 		return;
 	end
 
-	local percentHealth = UnitPercentHealthFromGUID(self.guid);
+	local percentHealth = UnitPercentHealthFromGUID(guid);
 	if percentHealth then
 		self:SetValue(percentHealth);
 	end
@@ -1037,4 +1056,18 @@ end
 
 function GameTooltipUnitHealthBarMixin:OnUpdate()
 	self:UpdateUnitHealth();
+end
+
+-- We promote a couple of methods to a secure mixin method so they can be
+-- invoked from tainted execution paths in SetWatch/ClearWatch without
+-- causing further secret-related errors.
+
+GameTooltipUnitHealthBarSecureMixin = {};
+
+function GameTooltipUnitHealthBarSecureMixin:ResetUnitHealth()
+	GameTooltipUnitHealthBarMixin.ResetUnitHealth(self);
+end
+
+function GameTooltipUnitHealthBarSecureMixin:UpdateUnitHealth()
+	GameTooltipUnitHealthBarMixin.UpdateUnitHealth(self);
 end

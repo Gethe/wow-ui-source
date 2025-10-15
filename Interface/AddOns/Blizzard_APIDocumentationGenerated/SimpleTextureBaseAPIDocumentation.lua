@@ -266,7 +266,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetAtlas",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -388,11 +388,11 @@ local SimpleTextureBaseAPI =
 			Name = "SetSpriteSheetCell",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.TexCoords },
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "cell", Type = "number", Nilable = false },
+				{ Name = "cell", Type = "luaIndex", Nilable = false },
 				{ Name = "numRows", Type = "number", Nilable = false },
 				{ Name = "numColumns", Type = "number", Nilable = false },
 				{ Name = "cellWidth", Type = "number", Nilable = true },
@@ -403,7 +403,7 @@ local SimpleTextureBaseAPI =
 			Name = "SetTexCoord",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.TexCoords },
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -426,7 +426,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetTexture",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

@@ -145,6 +145,31 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "DamageMeterNumbers",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Minimal", Type = "DamageMeterNumbers", EnumValue = 0 },
+				{ Name = "Compact", Type = "DamageMeterNumbers", EnumValue = 1 },
+				{ Name = "Complete", Type = "DamageMeterNumbers", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DamageMeterStyle",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Default", Type = "DamageMeterStyle", EnumValue = 0 },
+				{ Name = "Thin", Type = "DamageMeterStyle", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "DamageMeterVisibility",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -361,12 +386,21 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeDamageMeterSetting",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 0,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Visibility", Type = "EditModeDamageMeterSetting", EnumValue = 0 },
+				{ Name = "Style", Type = "EditModeDamageMeterSetting", EnumValue = 1 },
+				{ Name = "Numbers", Type = "EditModeDamageMeterSetting", EnumValue = 2 },
+				{ Name = "FrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
+				{ Name = "FrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
+				{ Name = "Padding", Type = "EditModeDamageMeterSetting", EnumValue = 5 },
+				{ Name = "Transparency", Type = "EditModeDamageMeterSetting", EnumValue = 6 },
+				{ Name = "LockScroll", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
+				{ Name = "ShowSpecIcon", Type = "EditModeDamageMeterSetting", EnumValue = 8 },
+				{ Name = "ShowClassColor", Type = "EditModeDamageMeterSetting", EnumValue = 9 },
 			},
 		},
 		{

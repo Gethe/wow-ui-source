@@ -109,6 +109,10 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 	local persistedLayoutOrderedCooldownIDs = activeLayoutMatchesCurrentSpec and CooldownManagerLayout_GetOrderedCooldownIDs(activeLayout);
 	local layoutOrderedCooldownIDs = persistedLayoutOrderedCooldownIDs and CopyTable(persistedLayoutOrderedCooldownIDs);
 
+	if layoutManager then
+		layoutManager:CheckDisableNotifications();
+	end
+
 	if layoutOrderedCooldownIDs then
 		-- Ensure there's nothing in saved data that's not in static data (don't save things that cannot exist)
 		local invertedDefaultIDs = tInvert(defaultOrderedCooldownIDs); -- NOTE: tInvert returns a copy, it doesn't modify the original.
@@ -139,6 +143,10 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 		end
 	end
 
+	if layoutManager then
+		layoutManager:EnableNotifications();
+	end
+
 	self.displayDataDirty = false;
 	self.displayData = {
 		cooldownInfoByID = cooldownInfoByID,
@@ -164,24 +172,34 @@ local function RunDataProviderCallbackThatRequiresLayoutNotifications(dataProvid
 end
 
 function CooldownViewerSettingsDataProviderMixin:ResetCurrentToDefaults()
-	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager) layoutManager:ResetCurrentToDefaults() end);
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:ResetCurrentToDefaults()
+	end);
 end
 
 -- Non-destructive, just deactivates the current layout, but doesn't delete anything
 function CooldownViewerSettingsDataProviderMixin:UseDefaultLayout()
-	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager) layoutManager:UseDefaultLayout() end);
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:UseDefaultLayout()
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:ResetToRestorePoint()
-	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager) layoutManager:ResetToRestorePoint() end);
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:ResetToRestorePoint()
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SwitchToBestLayoutForSpec()
-	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager) layoutManager:SwitchToBestLayoutForSpec() end);
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:SwitchToBestLayoutForSpec()
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SetActiveLayoutByID(layoutID)
-	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager) layoutManager:SetActiveLayoutByID(layoutID) end);
+	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
+		layoutManager:SetActiveLayoutByID(layoutID)
+	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:MarkDirty()

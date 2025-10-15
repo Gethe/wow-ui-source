@@ -134,11 +134,13 @@ function HousingHouseSettingsFrameMixin:OnIgnoreListClicked()
 end
 
 function HousingHouseSettingsFrameMixin:OnAbandonHouseClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON);
 	AbandonHouseConfirmationDialog:SetHouseInfo(self.houseInfo);
 	StaticPopupSpecial_Show(AbandonHouseConfirmationDialog);
 end
 
 function HousingHouseSettingsFrameMixin:OnSaveClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_SAVE_BUTTON);
 	local newOwnerGUID = self.characterList[self.selectedOwnerID].playerGUID;
 	local accessSettings = FlagsUtil.Combine(self.PlotAccess.selectedOptions, self.HouseAccess.selectedOptions, true);
 	C_Housing.SaveHouseSettings(newOwnerGUID, accessSettings);
@@ -224,6 +226,7 @@ function HouseSettingsAccessOptionsMixin:SetupOptions(label, accessTypes, anyone
 		option.Checkbox.accessOptionsMixin = self;
 		option.Checkbox:SetScript("OnClick", function(self)
 			self.accessOptionsMixin:OptionSelected(self.accessType, self:GetChecked(), true);
+			PlaySound(SOUNDKIT.HOUSING_SETTINGS_TOGGLE_CHECKBOX);
 		end);
 		--option.Checkbox:SetChecked(FlagsUtil.IsSet(selectedAccessTypes, accessType));
 		table.insert(self.accessOptions, option);
@@ -253,6 +256,7 @@ function AbandonHouseConfirmationDialogMixin:OnLoad()
 	self.CancelButton:SetText(HOUSING_HOUSE_SETTINGS_ABANDON_CANCEL);
 	self.ConfirmButton:SetScript("OnClick", GenerateClosure(self.OnConfirmClicked, self));
 	self.CancelButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CANCEL);
 		StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	end);
 end
@@ -266,6 +270,8 @@ function AbandonHouseConfirmationDialogMixin:SetHouseInfo(houseInfo)
 end
 
 function AbandonHouseConfirmationDialogMixin:OnConfirmClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CONFIRMATION);
+
 	C_Housing.RelinquishHouse(self.houseInfo.houseGUID);
 	StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	HideUIPanel(HousingHouseSettingsFrame);

@@ -114,6 +114,29 @@ function HousingCatalogCategoriesMixin:GetCategorySearchParams()
 	return self.categorySearchParams and CopyTable(self.categorySearchParams) or {};
 end
 
+function HousingCatalogCategoriesMixin:GetFocusedCategoryString()
+	local categoryID = self.focusedCategoryID;
+	local subcategoryID = self.focusedSubcategoryID;
+	if not categoryID then
+		categoryID = Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID;
+		subcategoryID = nil;
+	end
+
+	local category = self.categories[categoryID];
+	local subcategoryInfo = (category and subcategoryID) and category.subcategoryInfos[subcategoryID] or nil;
+
+	-- Focusing a specific subcategory within a category - return a formatted string containing both
+	if category and subcategoryInfo then
+		return string.format(HOUSING_CATALOG_CATEGORY_PATH_FMT, category.categoryInfo.name, subcategoryInfo.name);
+	-- Just focusing a category - return its name
+	elseif category then
+		return category.categoryInfo.name;
+	-- Nothing focused right now, nothing to return
+	else
+		return nil;
+	end
+end
+
 function HousingCatalogCategoriesMixin:AddCategoryInfo(categoryID, categoryInfo)
 	local subcategories = {};
 	if categoryInfo.subcategoryIDs and #categoryInfo.subcategoryIDs > 0 then

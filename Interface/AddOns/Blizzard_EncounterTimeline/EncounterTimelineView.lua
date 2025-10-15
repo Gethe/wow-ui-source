@@ -401,7 +401,7 @@ function EncounterTimelineViewMixin:GetEventFramePool(_eventID)
 end
 
 function EncounterTimelineViewMixin:CalculateEventFrameExtents()
-	return self:GetIconSize() * (self:GetIconSizeMultiplier() / 100);
+	return self:GetIconSize() * self:GetIconScale();
 end
 
 function EncounterTimelineViewMixin:InitializeEventFrame(eventFrame, eventID)
@@ -852,8 +852,13 @@ function EncounterTimelineViewMixin:UpdateLayout()
 
 	-- Once track sections are calculated fix up our art...
 
-	self:SetAlpha(self:GetViewTransparency() / 100);
-	self.Background:SetAlpha(self:GetBackgroundTransparency() / 100);
+	self.Background:SetAlpha(self:GetBackgroundTransparency());
+
+	if self:IsVertical() then
+		self.Background:SetAtlas("combattimeline-line-shadow-vertical");
+	else
+		self.Background:SetAtlas("combattimeline-line-shadow");
+	end
 
 	local crossAxisOffset = self:GetCrossAxisOffset();
 

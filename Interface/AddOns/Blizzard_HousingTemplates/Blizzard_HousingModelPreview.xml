@@ -9,15 +9,25 @@
 						<Anchor point="TOPRIGHT" x="-20" y="-24"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="PreviewUnavailableText" inherits="GameFontHighlight" text="HOUSING_CATALOG_MODEL_PREVIEW_UNAVAILABLE" justifyH="CENTER" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<ModelScene parentKey="ModelScene" inherits="NoZoomModelSceneMixinTemplate" useParentLevel="true">
+			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="30" y="-100"/>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="55"/>
 				</Anchors>
 			</ModelScene>
+			<Frame parentKey="ModelSceneControls" inherits="ModelSceneControlFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="10"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

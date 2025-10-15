@@ -399,13 +399,18 @@ function CharacterSelectListCharacterMixin:UpdateTimerunningConversionState()
 	local guid = self:GetCharacterGUID();
 	if guid then
 		local charTimerunningConversionAllowed = IsCharacterTimerunningConversionAllowed(guid);
-
+		-- We currently don't have access to foreign realm characters creation time stamp,
+		-- so we only show the conversion button if the character is on the same realm
 		if charTimerunningConversionAllowed then
 			earlyTimerunningConversionButton:SetPoint("RIGHT", self.PaidServiceButton:IsShown() and self.PaidServiceButton or self ,"LEFT" ,-5, 0);
 			earlyTimerunningConversionButton:Show();
 		else
 			earlyTimerunningConversionButton:Hide();
 		end
+
+		local onSameRealm = CharacterSelectUtil.IsSameRealmAsCurrent(self.characterInfo.realmAddress);
+		earlyTimerunningConversionButton:SetEnabled(onSameRealm);
+		earlyTimerunningConversionButton:DesaturateHierarchy(onSameRealm and 0.0 or 1.0);
 	end
 end
 
@@ -770,7 +775,7 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 				else
 					statusText:SetText(nil);
 				end
-			elseif CanUpgradeExpansion() then
+			elseif CanUpgradeToCurrentExpansion() then
 				statusText:SetText(CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_BUY_EXPANSION);
 			else
 				statusText:SetText(CHARACTER_SELECT_INFO_TRIAL_BOOST_APPLY_BOOST_TOKEN);
@@ -851,7 +856,7 @@ function CharacterSelectListCharacterInnerContentMixin:SetupPadlock()
 		tooltip2 = CHARACTER_SELECT_ACCOUNT_LOCKED;
 		tooltipTextColor = RED_FONT_COLOR;
 	elseif characterInfo.isExpansionTrialCharacter then
-		if IsExpansionTrial() or CanUpgradeExpansion() then
+		if IsExpansionTrial() or CanUpgradeToCurrentExpansion() then
 			-- Player has to upgrade to unlock this character
 			tooltip1 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TITLE;
 			tooltip2 = CHARACTER_SELECT_INFO_EXPANSION_TRIAL_BOOST_LOCKED_TOOLTIP_TEXT;
@@ -1186,7 +1191,7 @@ function CharacterSelectListNotificationButtonMixin:OnClickLock()
 end
 
 function CharacterSelectListNotificationButtonMixin:CanUnlockByExpansionPurchase()
-	return (self.lockCharacterSelectButton.isLockedByExpansion or IsExpansionTrialCharacter(self.lockGuid)) and CanUpgradeExpansion();
+	return (self.lockCharacterSelectButton.isLockedByExpansion or IsExpansionTrialCharacter(self.lockGuid)) and CanUpgradeToCurrentExpansion();
 end
 
 function CharacterSelectListNotificationButtonMixin:ShowBoostUnlockDialog()

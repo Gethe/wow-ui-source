@@ -3,5 +3,11 @@
 ## Dependencies: Blizzard_EditMode
 
 EncounterWarningsConstants.lua
+EncounterWarningsUtil.lua
+EncounterWarningsViewSettings.lua
+EncounterWarningsViewElements.lua
+EncounterWarningsViewElements.xml
+EncounterWarningsView.lua
+EncounterWarningsView.xml
 EncounterWarnings.lua
 EncounterWarnings.xml

@@ -296,6 +296,7 @@
 						<KeyValues>
 							<KeyValue key="layoutFramesGoingRight" value="false" type="boolean"/>
 							<KeyValue key="maxAuraItemsDisplayed" value="2" type="number"/>
+							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.$parent.ClassificationFrame" relativePoint="LEFT" x="-5"/>
@@ -304,6 +305,7 @@
 					<Frame parentKey="CrowdControlListFrame" inherits="NamePlateAuraListTemplate">
 						<KeyValues>
 							<KeyValue key="maxAuraItemsDisplayed" value="2" type="number"/>
+							<KeyValue key="needsFixedHeight" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.$parent.HealthBarsContainer.healthBar" relativePoint="RIGHT" x="5"/>

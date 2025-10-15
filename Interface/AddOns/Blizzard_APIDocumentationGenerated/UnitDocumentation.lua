@@ -1240,6 +1240,43 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitHealthMissing",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitHealthMax() - UnitHealth()" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthPercent",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns percent of health remaining - can be scaled to [0, 100] for display purposes" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+				{ Name = "scaleTo100", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "percent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitHealth",
 			Type = "Function",
 			SecretReturns = true,
@@ -2277,7 +2314,7 @@ local Unit =
 			Name = "UnitPercentHealthFromGUID",
 			Type = "Function",
 			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -2454,6 +2491,45 @@ local Unit =
 			Returns =
 			{
 				{ Name = "maxPower", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerMissing",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitPowerMax() - UnitPower()" },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerPercent",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns percent of power available - can be scaled to [0, 100] for display purposes" },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+				{ Name = "scaleTo100", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "percent", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -2659,6 +2735,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSexBase",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sex", Type = "UnitSex", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitShouldDisplayName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -2836,7 +2927,7 @@ local Unit =
 			Name = "UnitTokenFromGUID",
 			Type = "Function",
 			SecretNonPlayerUnitOrMinionWhileInCombat = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

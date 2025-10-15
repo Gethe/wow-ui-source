@@ -800,6 +800,16 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "HasMatchStarted",
+			Type = "Function",
+			Documentation = { "Returns true if a match is either active or complete." },
+
+			Returns =
+			{
+				{ Name = "hasStarted", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsActiveBattlefield",
 			Type = "Function",
 
@@ -1023,6 +1033,17 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "warModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "JoinBattlefield",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "battlemasterListId", Type = "number", Nilable = false },
 			},
 		},
 		{

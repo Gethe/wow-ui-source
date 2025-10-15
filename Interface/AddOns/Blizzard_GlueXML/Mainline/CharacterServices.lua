@@ -58,7 +58,7 @@ local function IsBoostFlowValidForCharacter(flowData, level, boostInProgress, is
 		return false;
 	end
 
-	if isExpansionTrialCharacter and CanUpgradeExpansion()  then
+	if isExpansionTrialCharacter and CanUpgradeToCurrentExpansion()  then
 		return false;
 	elseif isTrialBoost then
 		return true;

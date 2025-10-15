@@ -1464,6 +1464,10 @@ function UnitPopupDungeonDifficulty1ButtonMixin:GetDifficultyID()
 	return 1;
 end
 
+function UnitPopupDungeonDifficulty1ButtonMixin:IsSupported()
+	return select(1, GetDifficultyInfo(self:GetDifficultyID()));
+end
+
 function UnitPopupDungeonDifficulty1ButtonMixin:IsChecked(contextData)
 	return GetDungeonDifficultyID() == self:GetDifficultyID();
 end
@@ -2421,7 +2425,7 @@ function UnitPopupRaidTargetBaseMixin:CreateMenuDescription(rootDescription, con
 		local raidTargetIconIndex = self:GetRaidTargetIndex();
 		if raidTargetIconIndex > 0 then
 			rightTexture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons");
-			rightTexture:SetSpriteSheetCell(raidTargetIconIndex - 1, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
+			rightTexture:SetSpriteSheetCell(raidTargetIconIndex, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
 		else
 			rightTexture:SetTexture("");
 		end
@@ -3603,7 +3607,7 @@ function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:GetText(contextData)
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:CanShow(contextData)
-	return contextData.recentAllyData ~= nil;
+	return false;
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:IsDisabledInKioskMode()

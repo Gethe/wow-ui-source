@@ -43,24 +43,6 @@
 			<KeyValue key="keybindIconDefault" type="string" value="keybind-bg"/>
 			<KeyValue key="keybindIconActive" type="string" value="keybind-bg_active"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="KeybindBackground" atlas="keybind-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<FontString parentKey="ControlText" inherits="NumberFontNormalSmall" justifyH="CENTER" justifyV="MIDDLE">
-					<Size y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.KeybindBackground"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 	</Button>
 	
 	<Button name="HouseSettingsButtonTemplate" inherits="HousingControlModeButtonTemplate" mixin="HouseSettingsButtonMixin" virtual="true">

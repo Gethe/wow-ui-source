@@ -19,25 +19,32 @@
 							<KeyValue key="layoutIndex" value="3" type="number"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="RotateInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+					<Frame parentKey="RotateLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
-							<KeyValue key="iconAtlas" value="newplayertutorial-icon-mouse-middlebutton" type="string"/>
-							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_INSTRUCTION" type="global"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_LEFT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_BASICDECOR_ROTATELEFT"/>
 							<KeyValue key="layoutIndex" value="4" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_RIGHT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_BASICDECOR_ROTATERIGHT"/>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
 							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
 							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
-							<KeyValue key="layoutIndex" value="5" type="number"/>
+							<KeyValue key="layoutIndex" value="6" type="number"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
 							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
 							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
-							<KeyValue key="layoutIndex" value="6" type="number"/>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
 						</KeyValues>
 					</Frame>
 				</Frames>

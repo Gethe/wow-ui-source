@@ -1,6 +1,10 @@
 -- For displaying individual buffs/debuffs/crowd control.
 NamePlateAuraItemMixin = {};
 
+function NamePlateAuraItemMixin:OnLoad()
+	self:SetSize(NamePlateConstants.AURA_ITEM_HEIGHT, NamePlateConstants.AURA_ITEM_HEIGHT);
+end
+
 function NamePlateAuraItemMixin:OnEnter()
 	local tooltip = GetAppropriateTooltip();
 	GameTooltip_SetDefaultAnchor(tooltip, self);
@@ -50,6 +54,10 @@ function NamePlateAuraItemMixin:SetAura(aura)
 	local enabled = aura.duration > 0;
 	local forceShowDrawEdge = true;
 	CooldownFrame_Set(self.Cooldown, aura.expirationTime - aura.duration, aura.duration, enabled, forceShowDrawEdge);
+
+	-- Don't show numbers for auras longer than a minute.
+	local hideCountdownNumbers = aura.duration > 60;
+	self.Cooldown:SetHideCountdownNumbers(hideCountdownNumbers);
 end
 
 -- The unit to which the nameplate is attached.
@@ -285,6 +293,11 @@ function NamePlateAurasMixin:RefreshList(listFrame, auraList)
 		local stopIterating = auraIndex > listFrame.maxAuraItemsDisplayed
 		return stopIterating;
 	end);
+
+	-- Needed for layout of lists vertically centered on the health bar (buff and crowd control) so they have a discrete height.
+	if listFrame.needsFixedHeight then
+		listFrame.fixedHeight = self.auraItemScale * NamePlateConstants.AURA_ITEM_HEIGHT;
+	end
 
 	listFrame:Layout();
 end

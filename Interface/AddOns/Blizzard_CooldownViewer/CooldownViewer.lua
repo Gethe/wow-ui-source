@@ -91,6 +91,10 @@ end
 -- Base Mixin for all Cooldown Viewer items.
 CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin);
 
+function CooldownViewerItemMixin:OnUpdate(_elapsed, _timeNow)
+	-- override as needed
+end
+
 function CooldownViewerItemMixin:GetCooldownFrame()
 	return self.Cooldown;
 end
@@ -429,9 +433,79 @@ function CooldownViewerItemMixin:TriggerAlertEvent(event)
 	end
 end
 
+function CooldownViewerItemMixin:SetPandemicAlertTriggerTime(timeNow, pandemicStartTime, pandemicEndTime)
+	self.pandemicAlertTriggerTime = pandemicStartTime;
+	self.pandemicStartTime = pandemicStartTime;
+	self.pandemicEndTime = pandemicEndTime;
+
+	LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
+
+	self:CheckPandemicTimeDisplay(timeNow);
+end
+
+function CooldownViewerItemMixin:GetPandemicAlertTriggerTime()
+	return self.pandemicAlertTriggerTime;
+end
+
+function CooldownViewerItemMixin:ShouldTriggerPandemicAlert(timeNow)
+	return self.pandemicAlertTriggerTime and timeNow >= self.pandemicAlertTriggerTime and (not self.nextAvailableTimeToPlayPandemicAlert or timeNow >= self.nextAvailableTimeToPlayPandemicAlert);
+end
+
+function CooldownViewerItemMixin:TriggerPandemicAlert()
+	assertsafe(self.pandemicEndTime, "PandemicTime alert should not be triggered unless the CDItem [%d] has a valid pandemic end time.", (self:GetCooldownID() or 0));
+	self.pandemicAlertTriggerTime = nil; -- Just clear the alert state once it plays
+	self.nextAvailableTimeToPlayPandemicAlert = self.pandemicEndTime; -- Prevent the alert from playing again for this instance in case target changes
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.PandemicTime);
+
+	-- NOTE: No need to refresh anything after the alert fires because the visual state of the button should remain in pandemic until the aura is removed.
+	LogCooldown(self:GetSpellID(), "TriggerPandemicAlert", "Displaying pandemic state for %s", self:GetNameText());
+end
+
+function CooldownViewerItemMixin:CheckPandemicTimeDisplay(timeNow)
+	if self.PandemicIcon then -- not really, gonna do this with function overrides i guess...
+		self.PandemicIcon:SetShown(self:IsInPandemicTime(timeNow));
+	end
+end
+
+function CooldownViewerItemMixin:IsInPandemicTime(timeNow)
+	return self.pandemicStartTime and timeNow >= self.pandemicStartTime and timeNow <= self.pandemicEndTime;
+end
+
+function CooldownViewerItemMixin:OnNewTarget()
+	-- This is the first thing that should happen when handling a target switch
+	-- Clear out all state data that was built while a previous target existed.
+	self:SetPandemicAlertTriggerTime(GetTime(), nil, nil);
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for Essential and Utility cooldown items.
 CooldownViewerCooldownItemMixin = CreateFromMixins(CooldownViewerItemMixin);
+
+function CooldownViewerCooldownItemMixin:OnUpdate(_elapsed, timeNow)
+	if self:ShouldTriggerAvailableAlert(timeNow) then
+		self:TriggerAvailableAlert();
+	end
+
+	if self:ShouldTriggerPandemicAlert(timeNow) then
+		self:TriggerPandemicAlert(timeNow);
+	end
+
+	self:CheckPandemicTimeDisplay(timeNow);
+end
+
+function CooldownViewerCooldownItemMixin:ShouldTriggerAvailableAlert(timeNow)
+	return self.allowAvailableAlert and self.availableAlertTriggerTime and timeNow >= self.availableAlertTriggerTime;
+end
+
+function CooldownViewerCooldownItemMixin:TriggerAvailableAlert()
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
+
+	-- Need to refresh the entire button state after the cooldown finishes, this is what simulates the client sending
+	-- a final SPELL_UPDATE_COOLDOWN event which is required to update the icon in case it was tracking buffs.
+	self:RefreshData();
+end
 
 function CooldownViewerCooldownItemMixin:GetChargeCountFrame()
 	return self.ChargeCount;
@@ -660,16 +734,16 @@ function CooldownViewerCooldownItemMixin:SetCooldownParamsFromSpellCooldown()
 
 		local now = GetTime();
 
+		local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
+		self.cooldownIsActive = endTime > now;
 		self.isOnGCD = spellCooldownInfo.isOnGCD;
 		self.allowOnCooldownAlert = not self.isOnGCD and spellCooldownInfo.duration > (self.cooldownDuration or 0) and spellCooldownInfo.duration > 0;
 		self.allowAvailableAlert = self.allowAvailableAlert or (not self.isOnGCD and spellCooldownInfo.duration > 0 and self.cooldownEnabled);
+		self.availableAlertTriggerTime = self.allowAvailableAlert and endTime or nil;
 
 		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.cooldownStartTime = spellCooldownInfo.startTime;
 		self.cooldownDuration = spellCooldownInfo.duration;
-
-		local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
-		self.cooldownIsActive = endTime > now;
 
 		LogCooldown(spellID, "SetCooldownParamsFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
 
@@ -684,64 +758,17 @@ function CooldownViewerCooldownItemMixin:SetCooldownParamsFromSpellCooldown()
 		self.cooldownDesaturated = self.isOnActualCooldown;
 		self.cooldownPlayFlash = self.isOnActualCooldown;
 
-		self:CheckInstallOnCooldownDoneCallback(endTime - now, spellCooldownInfo);
-
 		return true;
 	end
 
 	return false;
 end
 
-function CooldownViewerCooldownItemMixin:CancelOnCooldownDoneCallback()
-	if self.onCooldownDoneCallback then
-		LogCooldown(self:GetSpellID(), "CancelCallback", "%s", tostring(self.onCooldownDoneCallback));
-		-- self.onCooldownDoneCallback:Cancel();
-		self.onCooldownDoneCallback = nil;
-	end
-end
-
-function CooldownViewerCooldownItemMixin:NeedsOnCooldownDoneCallback()
-	return self.cooldownIsActive and not self.isOnGCD and not self.cooldownCategory;
-end
-
-local callbackCounter = 1;
-
-function CooldownViewerCooldownItemMixin:CheckInstallOnCooldownDoneCallback(callbackDelay, spellCooldownInfo)
-	-- Because there's no uniquely identifying event when a cooldown finishes and the spell is ready to cast again, and the aura on the target
-	-- could last longer than the spell's cooldown install a callback that will drive state updates and alert behavior for the cooldown item.
-	self:CancelOnCooldownDoneCallback();
-
-	if self:NeedsOnCooldownDoneCallback() then
-		local installCounter = callbackCounter;
-		self.onCooldownDoneCallback = installCounter;
-		callbackCounter = callbackCounter + 1;
-		-- self.onCooldownDoneCallback = C_Timer.NewTimer(callbackDelay, function()
-		C_Timer.After(callbackDelay, function()
-			LogCooldown(self:GetSpellID(), "CallCallback", "%s", tostring(self.onCooldownDoneCallback));
-
-			-- Always run the callback, but check to see if the state is something that requires the alert signal.
-			if self:NeedsOnCooldownDoneCallback() and self.onCooldownDoneCallback == installCounter then
-				LogCooldown(self:GetSpellID(), "CallbackActivated", "%s", tostring(self.onCooldownDoneCallback));
-
-				if self.allowAvailableAlert then
-					self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
-					self.allowAvailableAlert = nil;
-				end
-
-				-- Need to refresh the entire button state after the cooldown finishes, this is what simulates the client sending
-				-- a final SPELL_UPDATE_COOLDOWN event.
-				self:RefreshData();
-			end
-
-			self.onCooldownDoneCallback = nil;
-		end);
-
-		LogCooldown(spellID, "InstallCallback", "%d", tostring(self.onCooldownDoneCallback));
-		CheckDisplayCooldownInfo("InstallCallback", self:GetSpellID(), spellCooldownInfo);
-	end
-end
-
 function CooldownViewerCooldownItemMixin:CheckModifyCooldownParamsFromAura()
+	if not self:CanUseAuraForCooldown() then
+		return false;
+	end
+
 	-- The intent is that this is only called when there was available cooldown data from the spell because it further modifies
 	-- the cooldown parameters based on the current state of the aura.
 	local targetAura = self:GetTargetRelatedAuraInfo();
@@ -761,10 +788,17 @@ function CooldownViewerCooldownItemMixin:CheckModifyCooldownParamsFromAura()
 			-- self.cooldownUseAuraDisplayTime = true;
 			self.cooldownPaused = false;
 
-			LogCooldown(self:GetSpellID(), "CheckModifyCooldownParamsFromAura", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
-		end
+			-- If the related spell could be cast again right now, what would the new duration be? This informs the pandemic-time alert.
+			local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration("target", targetAura.auraInstanceID, self:GetSpellID());
+			local carriedOverToNewCast = extendedDuration and (extendedDuration - targetAura.duration) or 0;
+			local allowPandemicAlert = carriedOverToNewCast > 0;
 
-		-- TODO: Wire up pandemic checks...
+			LogCooldown(self:GetSpellID(), "CheckModifyCooldownParamsFromAura", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive), (extendedDuration or 0));
+
+			if allowPandemicAlert then
+				self:SetPandemicAlertTriggerTime(now, self.cooldownStartTime + (self.cooldownDuration - carriedOverToNewCast), targetAura.expirationTime);
+			end
+		end
 
 		return true;
 	end
@@ -1167,9 +1201,11 @@ function CooldownViewerBuffBarItemMixin:OnLoad()
 	pipTexture:SetPoint("CENTER", barFrame:GetStatusBarTexture(), "RIGHT", 0, 0);
 end
 
-function CooldownViewerBuffBarItemMixin:OnUpdate()
-	self:RefreshCooldownInfo();
-	self:RefreshActive();
+function CooldownViewerBuffBarItemMixin:OnUpdate(_elapsed, _timeNow)
+	if self:IsActive() then
+		self:RefreshCooldownInfo();
+		self:RefreshActive();
+	end
 end
 
 function CooldownViewerBuffBarItemMixin:SetBarContent(barContent)
@@ -1358,7 +1394,9 @@ function CooldownViewerMixin:OnShow()
 	self:RegisterUnitEvent("UNIT_TARGET", "player");
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
 
-	EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function() self:RefreshLayout(); end, self);
+	EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", function()
+		self:RefreshLayout();
+	end, self);
 
 	self:RefreshLayout();
 end
@@ -1410,6 +1448,13 @@ function CooldownViewerMixin:OnEvent(event, ...)
 	end
 end
 
+function CooldownViewerMixin:OnUpdate(elapsed)
+	local now = GetTime();
+	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:OnUpdate(elapsed, now);
+	end
+end
+
 function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
 	if unit == "player" and unitAuraUpdateInfo then
 		if unitAuraUpdateInfo.removedAuraInstanceIDs then
@@ -1452,6 +1497,7 @@ function CooldownViewerMixin:RefreshActiveFramesForTargetChange()
 	-- TODO: First pass, update everything; can afford to be more selective once a mapping is built that will only
 	-- check the relevant frames that need updates (ones that care about target state)
 	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:OnNewTarget();
 		itemFrame:RefreshData();
 	end
 end
@@ -1853,7 +1899,7 @@ end
 
 function BuffBarCooldownViewerMixin:SetBarWidthScale(barWidthScale)
 	-- using a "reasonably small value that could be a scale" as the max, because you can go over 100% scale.
-	assertsafe(barWidthScale and barWidthScale >= 0 and barWidthScale <= 3, "barWidthScale should be a percentage");
+	assertsafe(barWidthScale and barWidthScale > 0 and barWidthScale <= 3, "barWidthScale should be a percentage");
 
 	self.barWidthScale = barWidthScale;
 end

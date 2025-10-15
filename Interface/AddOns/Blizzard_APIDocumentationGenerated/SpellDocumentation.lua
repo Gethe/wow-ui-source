@@ -194,7 +194,7 @@ local Spell =
 		{
 			Name = "GetSpellCastCount",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns number of times a spell can be cast, typically based on availability of things like required reagent items; Returns 0 if spell is not found" },
 
@@ -212,7 +212,7 @@ local Spell =
 			Name = "GetSpellCharges",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating spell; May return nil if spell is not found or is not charge-based" },
 
@@ -230,7 +230,7 @@ local Spell =
 			Name = "GetSpellCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
@@ -333,7 +333,7 @@ local Spell =
 			Name = "GetSpellLossOfControlCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
+			SecretWhenCooldownsRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
@@ -351,7 +351,7 @@ local Spell =
 		{
 			Name = "GetSpellMaxCumulativeAuraApplications",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

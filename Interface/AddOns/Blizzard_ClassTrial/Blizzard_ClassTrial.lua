@@ -170,7 +170,7 @@ function ClassTrialDialogMixin:OnEvent(event, ...)
 	end
 
 	if event == "CLASS_TRIAL_TIMER_START" then
-		if not CanUpgradeExpansion() then
+		if not CanUpgradeToCurrentExpansion() then
 			self:ShowThanks(SOUNDKIT.UI_70_BOOST_THANKSFORPLAYING);
 		end
 	elseif event == "CLASS_TRIAL_UPGRADE_COMPLETE" then
@@ -216,7 +216,7 @@ end
 
 function ExpansionTrialDialogMixin:OnEvent(event, ...)
 	if event == "CLASS_TRIAL_TIMER_START" then
-		if CanUpgradeExpansion() then
+		if CanUpgradeToCurrentExpansion() then
 			self:SetupDialogType(false);
 			self:Show();
 		end
@@ -336,7 +336,7 @@ end
 
 function ClassTrialTimerDisplayMixin:OnMouseUp()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	if CanUpgradeExpansion() then
+	if CanUpgradeToCurrentExpansion() then
 		ExpansionTrialThanksForPlayingDialog:Show();
 	else
 		ClassTrialThanksForPlayingDialog:ShowThanks();

@@ -486,6 +486,13 @@ function WardrobeSetsCollectionMixin:OnLoad()
 		return variantSet.description;
 	end);
 
+	self.DetailsFrame.VariantSetsDropdown.PrecedingVariantIcon:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, TRANSMOG_SET_GRANTS_PRECEDING_VARIANTS, NORMAL_FONT_COLOR, true);
+		GameTooltip:Show();
+	end);
+	self.DetailsFrame.VariantSetsDropdown.PrecedingVariantIcon:SetScript("OnLeave", GameTooltip_Hide);
+
 	self.selectedVariantSets = { };
 end
 
@@ -702,6 +709,28 @@ function WardrobeSetsCollectionMixin:DisplaySet(setID)
 	else
 		self.DetailsFrame.VariantSetsDropdown:Hide();
 	end
+
+	-- Preceding variant icon
+	local showPrecedingVariantIcon = false;
+	if showVariantSetsDropdown and variantSets then
+		showPrecedingVariantIcon = true;
+		local foundPrecedingVariantSet = false;
+		for _, set in ipairs(variantSets) do
+			if (set.uiOrder < setInfo.uiOrder) and (not set.hiddenUntilCollected or set.collected) then
+				foundPrecedingVariantSet = true;
+				if not set.grantAsPrecedingVariant then
+					-- found a preceding variant set that doesn't have the flag, don't show the variant icon
+					showPrecedingVariantIcon = false;
+					break;
+				end
+			end
+		end
+
+		-- If we never found a preceding variant set, don't show the variant icon
+		showPrecedingVariantIcon = showPrecedingVariantIcon and foundPrecedingVariantSet;
+	end
+
+	self.DetailsFrame.VariantSetsDropdown.PrecedingVariantIcon:SetShown(showPrecedingVariantIcon);
 end
 
 function WardrobeSetsCollectionMixin:SetItemFrameQuality(itemFrame)

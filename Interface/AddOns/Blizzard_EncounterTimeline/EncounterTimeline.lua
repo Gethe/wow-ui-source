@@ -1,4 +1,4 @@
-EncounterTimelineMixin = CreateFromMixins(EditModeEncounterEventsSystemMixin, EncounterTimelineViewSettingsAccessorMixin, EncounterTimelineViewSettingsMutatorMixin);
+EncounterTimelineMixin = CreateFromMixins(EditModeEncounterEventsSystemMixin);
 
 function EncounterTimelineMixin:OnLoad()
 	EditModeEncounterEventsSystemMixin.OnSystemLoad(self);
@@ -58,22 +58,6 @@ function EncounterTimelineMixin:HasView(view)
 	return self.TimelineView == view;
 end
 
-function EncounterTimelineMixin:GetViewSetting(key)
-	return self:GetView():GetViewSetting(key);
-end
-
-function EncounterTimelineMixin:SetViewSetting(key, value)
-	self:GetView():SetViewSetting(key, value);
-
-	-- This setting is a bit of a hack, since we want it applied to
-	-- the container rather than the view to keep the edit mode shell
-	-- synced up properly.
-
-	if key == EncounterTimelineViewSetting.ContainerScale then
-		self:SetScale(value / 100);
-	end
-end
-
 function EncounterTimelineMixin:IsExplicitlyShown()
 	return self.isExplicitlyShown == true;
 end
@@ -111,11 +95,15 @@ function EncounterTimelineMixin:EvaluateVisibility()
 		return true;
 	elseif not C_EncounterTimeline.IsTimelineEnabled() then
 		return false;
-	elseif self:GetTimelineVisibility() == Enum.EncounterEventsVisibility.Always then
+	end
+
+	local visibility = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Visibility);
+
+	if visibility == Enum.EncounterEventsVisibility.Always then
 		return true;
-	elseif self:GetTimelineVisibility() == Enum.EncounterEventsVisibility.Hidden then
+	elseif visibility == Enum.EncounterEventsVisibility.Hidden then
 		return false;
-	elseif self:GetTimelineVisibility() == Enum.EncounterEventsVisibility.InCombat then
+	elseif visibility == Enum.EncounterEventsVisibility.InCombat then
 		if C_InstanceEncounter.IsEncounterInProgress() and C_InstanceEncounter.ShouldShowTimelineForEncounter() then
 			return true;
 		elseif C_EncounterTimeline.HasAnyEvents() or self:HasEventFrames() then
@@ -197,4 +185,53 @@ function EncounterTimelineMixin:BeginHide()
 	end
 
 	self.HideAnimation:Play();
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingOrientation()
+	local orientation = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
+	self:GetView():SetViewOrientation(orientation);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingIconDirection()
+	local iconDirection = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection);
+	self:GetView():SetIconDirection(iconDirection);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingIconSize()
+	local iconScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize) / 100;
+	self:GetView():SetIconScale(iconScale);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingOverallSize()
+	local frameScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize) / 100;
+	self:SetScale(frameScale);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingBackground()
+	local backgroundAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Background) / 100;
+	self:GetView():SetBackgroundTransparency(backgroundAlpha);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingTransparency()
+	local frameAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency) / 100;
+	self:SetAlpha(frameAlpha);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingVisibility()
+	self:UpdateVisibility();
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingShowSpellName()
+	local spellNamesEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowSpellName);
+	self:GetView():SetSpellNamesEnabled(spellNamesEnabled);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingShowTooltips()
+	local tooltipsEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTooltips);
+	self:GetView():SetSpellTooltipsEnabled(tooltipsEnabled);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingShowTimer()
+	local timersEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTimer);
+	self:GetView():SetSpellTimersEnabled(timersEnabled);
 end

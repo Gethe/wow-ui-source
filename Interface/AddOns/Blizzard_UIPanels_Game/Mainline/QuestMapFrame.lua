@@ -415,6 +415,10 @@ function QuestLogHeaderCodeMixin:OnLoad()
 	end);
 end
 
+function QuestLogHeaderCodeMixin:UpdateCollapsedState(displayState, info)
+	ListHeaderMixin.UpdateCollapsedState(self, info.isCollapsed);
+end
+
 function QuestMapFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("QUEST_LOG_CRITERIA_UPDATE");
@@ -1893,7 +1897,7 @@ local function QuestLogQuests_AddCampaignHeaderButton(displayState, info)
 end
 
 local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, info)
-	button:UpdateCollapsedState(info.isCollapsed);
+	button:UpdateCollapsedState(displayState, info);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
 
@@ -1935,7 +1939,7 @@ function CovenantCallingsHeaderMixin:UpdateText()
 end
 
 function CovenantCallingsHeaderMixin:UpdateCollapsedState(displayState, info)
-	ListHeaderMixin.UpdateCollapsedState(self, info.isCollapsed);
+	QuestLogHeaderCodeMixin.UpdateCollapsedState(self, displayState, info);
 	self.SelectedHighlight:SetShown(not info.isCollapsed);
 end
 

@@ -346,12 +346,12 @@ local EncounterTimeline =
 			{
 				{ Name = "id", Type = "EncounterTimelineEventID", Nilable = false },
 				{ Name = "source", Type = "EncounterTimelineEventSource", Nilable = false },
-				{ Name = "tooltipSpellID", Type = "number", Nilable = false, ConditionalSecret = true },
-				{ Name = "iconFileID", Type = "fileID", Nilable = false, ConditionalSecret = true },
+				{ Name = "tooltipSpellID", Type = "number", Nilable = false, SecretValue = true },
+				{ Name = "iconFileID", Type = "fileID", Nilable = false, SecretValue = true },
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
-				{ Name = "priority", Type = "EncounterTimelineEventPriority", Nilable = false, ConditionalSecret = true },
-				{ Name = "role", Type = "EncounterTimelineEventRole", Nilable = false, ConditionalSecret = true },
-				{ Name = "dispelType", Type = "EncounterTimelineEventDispelType", Nilable = false, ConditionalSecret = true },
+				{ Name = "priority", Type = "EncounterTimelineEventPriority", Nilable = false, SecretValue = true },
+				{ Name = "role", Type = "EncounterTimelineEventRole", Nilable = false, SecretValue = true },
+				{ Name = "dispelType", Type = "EncounterTimelineEventDispelType", Nilable = false, SecretValue = true },
 			},
 		},
 		{

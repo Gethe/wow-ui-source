@@ -8,6 +8,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "GetName",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectName },
 
 			Arguments =
 			{
@@ -35,6 +36,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "HasAnySecretAspect",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
 
 			Arguments =
 			{
@@ -48,6 +50,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "HasSecretAspect",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -64,6 +67,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "HasSecretValues",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
 
 			Arguments =
 			{
@@ -77,6 +81,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "IsForbidden",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{

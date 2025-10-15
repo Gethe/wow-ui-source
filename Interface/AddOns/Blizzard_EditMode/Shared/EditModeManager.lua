@@ -2587,7 +2587,7 @@ function EditModeAccountSettingsMixin:SetEncounterEventsShown(shown, isUserInput
 end
 
 function EditModeAccountSettingsMixin:GetEncounterEventsFrames()
-	local frames = { EncounterTimeline, CriticalEncounterWarnings, MediumEncounterWarnings, NormalEncounterWarnings };
+	local frames = { EncounterTimeline, CriticalEncounterWarnings, MediumEncounterWarnings, MinorEncounterWarnings };
 	assertsafe(#frames == Enum.EditModeEncounterEventsSystemIndicesMeta.NumValues, "Missing encounter events frame.");
 	return frames;
 end
@@ -2715,6 +2715,11 @@ function EditModeManagerTutorialMixin:ShowHelpTip()
 end
 
 function EditModeManagerTutorialMixin:ProgressHelpTips()
+	-- the cvarbitfield flag will be set by each helptip, but just updating once
+	if self.currentTipIndex == 1 then
+		MainMenuMicroButton:UpdateNotificationIcon();
+	end
+
 	self.currentTipIndex = self.currentTipIndex + 1;
 
 	if self.currentTipIndex > #HelpTipInfos then

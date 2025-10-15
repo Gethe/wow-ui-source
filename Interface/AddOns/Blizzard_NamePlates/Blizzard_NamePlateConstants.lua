@@ -23,6 +23,15 @@ NamePlateConstants =
 	TARGET_BORDER_COLOR = CreateColor(1, 1, 1);
 	FOCUS_TARGET_BORDER_COLOR = CreateColor(1.0, 0.49, 0.039);
 
+	AURA_ITEM_HEIGHT = 25;
+	LARGE_HEALTH_BAR_HEIGHT = 20;
+	SMALL_HEALTH_BAR_HEIGHT = 10;
+	HEALTH_BAR_FONT_HEIGHT = 12;
+	LARGE_CAST_BAR_HEIGHT = 16;
+	SMALL_CAST_BAR_HEIGHT = 10;
+	CAST_BAR_FONT_HEIGHT = 10;
+	CAST_BAR_ICON_HEIGHT = 12;
+
 	NAME_PLATE_SCALES =
 	{
 		[Enum.NamePlateSize.Small] = { horizontal = 0.75, vertical = 0.8, classification = 1.0, aura = 0.75, aggroHighlight = 1.0},

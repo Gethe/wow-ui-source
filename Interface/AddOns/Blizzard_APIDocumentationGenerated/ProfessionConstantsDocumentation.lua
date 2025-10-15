@@ -197,7 +197,7 @@ local ProfessionConstants =
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "ItemRecraftFlagInvalid", Type = "ItemRecraftFlags", EnumValue = 1 },
+				{ Name = "Invalid", Type = "ItemRecraftFlags", EnumValue = 1 },
 			},
 		},
 		{
@@ -208,8 +208,8 @@ local ProfessionConstants =
 			MaxValue = 2,
 			Fields =
 			{
-				{ Name = "CraftingOrderFlagAllowMultiple", Type = "NpcCraftingOrderSetFlags", EnumValue = 1 },
-				{ Name = "CraftingOrderFlagAllowDuplicate", Type = "NpcCraftingOrderSetFlags", EnumValue = 2 },
+				{ Name = "AllowMultiple", Type = "NpcCraftingOrderSetFlags", EnumValue = 1 },
+				{ Name = "AllowDuplicate", Type = "NpcCraftingOrderSetFlags", EnumValue = 2 },
 			},
 		},
 		{
@@ -329,13 +329,13 @@ local ProfessionConstants =
 			MaxValue = 6,
 			Fields =
 			{
-				{ Name = "RcoCloseFulfill", Type = "RcoCloseReason", EnumValue = 0 },
-				{ Name = "RcoCloseExpire", Type = "RcoCloseReason", EnumValue = 1 },
-				{ Name = "RcoCloseCancel", Type = "RcoCloseReason", EnumValue = 2 },
-				{ Name = "RcoCloseReject", Type = "RcoCloseReason", EnumValue = 3 },
-				{ Name = "RcoCloseGmCancel", Type = "RcoCloseReason", EnumValue = 4 },
-				{ Name = "RcoCloseCrafterFulfill", Type = "RcoCloseReason", EnumValue = 5 },
-				{ Name = "RcoCloseInvalid", Type = "RcoCloseReason", EnumValue = 6 },
+				{ Name = "Fulfill", Type = "RcoCloseReason", EnumValue = 0 },
+				{ Name = "Expire", Type = "RcoCloseReason", EnumValue = 1 },
+				{ Name = "Cancel", Type = "RcoCloseReason", EnumValue = 2 },
+				{ Name = "Reject", Type = "RcoCloseReason", EnumValue = 3 },
+				{ Name = "GmCancel", Type = "RcoCloseReason", EnumValue = 4 },
+				{ Name = "CrafterFulfill", Type = "RcoCloseReason", EnumValue = 5 },
+				{ Name = "Invalid", Type = "RcoCloseReason", EnumValue = 6 },
 			},
 		},
 		{

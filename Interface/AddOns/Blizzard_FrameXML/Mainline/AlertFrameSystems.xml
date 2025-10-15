@@ -3056,6 +3056,7 @@
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.DecorType" relativePoint="BOTTOM" y="-5"/>
 						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel"/>
+						<Anchor point="RIGHT" x="-20"/>
 					</Anchors>
 				</FontString>
 			</Layer>

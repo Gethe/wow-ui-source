@@ -25,6 +25,17 @@
 					<Anchor point="CENTER"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="EditModeNotification" frameLevel="100" hidden="true">
+				<Size x="21" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="UI-HUD-MicroMenu-Communities-Icon-Notification" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

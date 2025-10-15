@@ -1669,6 +1669,12 @@
 <Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
 </Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATELEFT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RotateBasicDecorSelection(1);
+</Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATERIGHT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RotateBasicDecorSelection(-1);
+</Binding>
 
 <!-- Housing Expert Decor Edit Mode keybindings -->
 <Binding name="HOUSING_EXPERTDECORTRANSLATESUBMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" header="BLANK20" preface="HOUSING_EXPERTDECOR_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">

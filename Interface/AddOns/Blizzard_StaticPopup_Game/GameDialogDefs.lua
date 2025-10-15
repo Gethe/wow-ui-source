@@ -3142,3 +3142,41 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	timeout = 0,
 	exclusive = 1,
 };
+
+StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
+	text = GROUP_FINDER_DELIST_WARNING_TITLE,
+	GetExpirationSubText = function(dialog, data, timeleft)
+		local dialogInfo = dialog.dialogInfo;
+		return dialogInfo.subText:format(SecondsToTime(timeleft));
+	end,
+	subText = GROUP_FINDER_DELIST_WARNING_SUBTEXT,
+	button1 = LIST_MY_GROUP,
+	button2 = GROUP_FINDER_DESLIST_WARNING_EDIT_LISTING,
+	button3 = UNLIST_MY_GROUP,
+
+	OnAccept = function(dialog, data)
+		dialog.delistOnHide = false;
+	end,
+
+	OnCancel = function(dialog, data, reason)
+		if(reason ~= "timeout") then
+			LFGListUtil_OpenBestWindow(true);
+			dialog.delistOnHide = false;
+		end
+	end,
+
+	OnHide = function(dialog, data)
+		if  (C_LFGList.HasActiveEntryInfo() and dialog.delistOnHide) then
+			C_LFGList.RemoveListing();
+		end
+	end,
+
+	OnShow = function(dialog, data)
+		dialog:SetText(GROUP_FINDER_DELIST_WARNING_TITLE:format(data.listingTitle));
+		dialog.timeleft = data.delistTime;
+		dialog.delistOnHide = true;
+	end,
+
+	whileDead = 1,
+	showAlert = 1,
+}

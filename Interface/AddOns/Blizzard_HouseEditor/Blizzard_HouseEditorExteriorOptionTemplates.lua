@@ -136,6 +136,7 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection, columns, padding, compactionMargin);
 		rootDescription:AddMenuAcquiredCallback(function(menu)
 			menu:SetScale(self.Dropdown:GetEffectiveScale());
+			PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_CLICK);
 		end);
 
 		local function IsSelected(choiceData)
@@ -170,6 +171,7 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 				button:SetScript("OnClick", function(button, buttonName)
 					if not selected then
 						description:Pick(MenuInputContext.MouseButton, buttonName);
+						PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION);
 					end
 				end);
 				
@@ -206,6 +208,8 @@ function HouseExteriorFixtureOptionListMixin:OnLoad()
 		if self.fixturePointInfo and self.fixturePointInfo.canSelectionBeRemoved then
 			C_HouseExterior.RemoveFixtureFromSelectedPoint();
 			C_HouseExterior.CancelActiveExteriorEditing();
+
+			PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_NONE);
 		end
 	end);
 
@@ -224,6 +228,14 @@ function HouseExteriorFixtureOptionListMixin:HasAnyLockedChoices()
 	end
 	return false;
 end
+
+local FixtureTypeToSoundKit = {
+	["Door"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_DOOR,
+	["Roof Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_ROOF_WINDOW,
+	["Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_WINDOW,
+	["Tower"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_TOWER,
+	["Chimney"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_CHIMNEY,
+};
 
 function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointInfo)
 	self.fixturePointInfo = fixturePointInfo;
@@ -264,6 +276,9 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 		elementButton:SetScript("OnClick", function(button, buttonName)
 			if not isSelected and not fixtureOption.isLocked then
 				C_HouseExterior.SelectFixtureOption(fixtureOption.fixtureID);
+
+				local soundKit = FixtureTypeToSoundKit[fixtureOption.typeName] or SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION;
+				PlaySound(soundKit);
 			end
 		end);
 		elementButton:Init(fixtureOption, index + 1, isSelected, hasAnyFailedReqs, hasAnyLockedChoices);

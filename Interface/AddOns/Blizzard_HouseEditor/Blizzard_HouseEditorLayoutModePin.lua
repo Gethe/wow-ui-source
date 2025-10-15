@@ -103,6 +103,12 @@ function HousingLayoutDoorPinMixin:Update()
 		self:Show();
 	end
 
+	local selected = self:GetPin():IsSelected();
+	if not selected and self.selectedLoopSound then
+		StopSound(self.selectedLoopSound);
+		self.selectedLoopSound = nil;
+	end
+
 	self:UpdateVisuals();
 end
 
@@ -166,6 +172,13 @@ function HousingLayoutDoorPinMixin:OnClick()
 	end
 
 	self:GetPin():Select();
+
+	PlaySound(SOUNDKIT.HOUSING_LAYOUT_SELECT_ADD_ROOM_NODE);
+	if self.selectedLoopSound then
+		StopSound(self.selectedLoopSound);
+		self.selectedLoopSound = nil;
+	end
+	self.selectedLoopSound = select(2, PlaySound(SOUNDKIT.HOUSING_LAYOUT_SELECT_ADD_ROOM_NODE_LOOP));
 end
 
 function HousingLayoutDoorPinMixin:GetDebugName()

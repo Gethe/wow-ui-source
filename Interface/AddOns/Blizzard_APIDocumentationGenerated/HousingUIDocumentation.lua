@@ -398,6 +398,17 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "NewHousingItemAcquired",
+			Type = "Event",
+			LiteralName = "NEW_HOUSING_ITEM_ACQUIRED",
+			Payload =
+			{
+				{ Name = "itemType", Type = "HousingItemToastType", Nilable = false },
+				{ Name = "itemName", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = true },
+			},
+		},
+		{
 			Name = "PlayerCharacterListUpdated",
 			Type = "Event",
 			LiteralName = "PLAYER_CHARACTER_LIST_UPDATED",
@@ -458,6 +469,20 @@ local HousingUI =
 
 	Tables =
 	{
+		{
+			Name = "HousingItemToastType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Room", Type = "HousingItemToastType", EnumValue = 0 },
+				{ Name = "Fixture", Type = "HousingItemToastType", EnumValue = 1 },
+				{ Name = "Customization", Type = "HousingItemToastType", EnumValue = 2 },
+				{ Name = "Decor", Type = "HousingItemToastType", EnumValue = 3 },
+			},
+		},
 	},
 };
 

@@ -15,6 +15,22 @@ local AdventureMap =
 				{ Name = "adventureMapTextureKit", Type = "textureKit", Nilable = false },
 			},
 		},
+		{
+			Name = "GetQuestPortraitInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "AdventureMapQuestPortraitInfo", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -56,6 +72,18 @@ local AdventureMap =
 
 	Tables =
 	{
+		{
+			Name = "AdventureMapQuestPortraitInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "portraitDisplayID", Type = "number", Nilable = false },
+				{ Name = "mountPortraitDisplayID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "text", Type = "string", Nilable = false },
+				{ Name = "modelSceneID", Type = "number", Nilable = true },
+			},
+		},
 	},
 };
 
