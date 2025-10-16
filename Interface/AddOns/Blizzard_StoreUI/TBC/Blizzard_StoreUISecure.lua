@@ -987,40 +987,14 @@ end
 function StoreFrame_UpdateCategories(self)
 	local categories = GetStoreProductGroups();
 
-	for i = 1, #categories do
-		local frame = self.CategoryFrames[i];
-		local groupID = categories[i];
-		if ( not frame ) then
-			frame = CreateForbiddenFrame("Button", nil, self, "StoreCategoryTemplate");
-
-			--[[
-							WARNING: ScopeModifiers don't work for templates!
-				These functions will fail to load properly if this template is instantiated outside
-				of the initial C_AddOns.LoadAddon call because we'll have lost the scoped modifiers and the
-				reference to the addon environment if we instantiate them later.
-
-				We have to manually set these scripts (below) for them to work properly.
-			--]]
-
-			frame:SetScript("OnEnter", StoreCategory_OnEnter);
-			frame:SetScript("OnLeave", StoreCategory_OnLeave);
-			frame:SetScript("OnClick", StoreCategory_OnClick);
-			frame:SetPoint("TOPLEFT", self.CategoryFrames[i - 1], "BOTTOMLEFT", 0, 0);
-
-			self.CategoryFrames[i] = frame;
-		end
-
-		StoreCategoryFrame_SetGroupID(frame, groupID);
-
-		frame:Show();
+	local newDataProvider = CreateDataProvider();
+	for index = 1, #categories do
+		newDataProvider:Insert({index = index, groupID = categories[index]});
 	end
+	self.CategoryScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	self.BrowseNotice:ClearAllPoints();
-	self.BrowseNotice:SetPoint("TOP", self.CategoryFrames[#categories], "BOTTOM", 0, -15);
-
-	for i = #categories + 1, #self.CategoryFrames do
-		self.CategoryFrames[i]:Hide();
-	end
+	self.BrowseNotice:SetPoint("TOP", self.CategoryScrollBox, "BOTTOM", 0, -15);
 end
 
 function StoreFrame_OnLoad(self)
@@ -1097,6 +1071,21 @@ function StoreFrame_OnLoad(self)
 
 	self.variablesLoaded = false;
 	self.distributionsUpdated = false;
+
+	-- Setup categories
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("StoreCategoryTemplate", function(button, elementData)
+		StoreFrame_InitCategoryButton(button, elementData);
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.CategoryScrollBox, self.CategoryScrollBar, view);
+end
+
+function StoreFrame_InitCategoryButton(frame, elementData)
+	StoreCategoryFrame_SetGroupID(frame, elementData.groupID);
+
+	frame:SetScript("OnEnter", StoreCategory_OnEnter);
+	frame:SetScript("OnLeave", StoreCategory_OnLeave);
+	frame:SetScript("OnClick", StoreCategory_OnClick);
 end
 
 local JustFinishedOrdering = false;

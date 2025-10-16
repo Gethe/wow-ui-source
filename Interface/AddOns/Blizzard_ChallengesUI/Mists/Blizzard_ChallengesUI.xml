@@ -61,17 +61,17 @@
 		</Scripts>
 	</Button>
 	<Button name="ChallengesItemRewardTemplate" virtual="true">
-		<Size x="39" y="39"/>
+		<Size x="34" y="34"/>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon">
-					<Size x="39" y="39"/>
+					<Size x="34" y="34"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
+				<FontString inherits="NumberFontNormalSmall" justifyH="RIGHT" parentKey="Count">
 					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="1" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -137,7 +137,7 @@
 			</Button>
 			<Button inherits="ChallengesItemRewardTemplate" parentKey="Reward2">
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Reward2" relativePoint="LEFT" x="-10" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.Reward1" relativePoint="LEFT" x="-10" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>
@@ -319,20 +319,24 @@
 					<Anchor point="TOPLEFT" x="8" y="-64"/>
 				</Anchors>
 			</Button>
-
-			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow3">
+			<Frame name="$parentRewardRow4" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow4">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentDetails" x="0" y="-246"/>
 				</Anchors>
 			</Frame>
+			<Frame name="$parentRewardRow3" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow4" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
+				</Anchors>
+			</Frame>
 			<Frame name="$parentRewardRow2" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow2">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow3" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow3" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 				</Anchors>
 			</Frame>
 			<Frame name="$parentRewardRow1" inherits="ChallengeRewardRowTemplate" parentKey="RewardRow1">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow2" relativePoint="BOTTOMLEFT" x="0" y="-22"/>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardRow2" relativePoint="BOTTOMLEFT" x="0" y="-12"/>
 				</Anchors>
 			</Frame>
 		</Frames>
