@@ -233,6 +233,10 @@ function HouseEditorStorageFrameMixin:UpdateMarketTabVisibility()
 	end
 end
 
+function HouseEditorStorageFrameMixin:IsMarketTabShown()
+	return self.TabSystem:IsTabShown(self.marketTabID);
+end
+
 function HouseEditorStorageFrameMixin:ShouldShowAllCategoryNotification()
 	if not self:IsInMarketTab() or self.Categories:IsAllCategoryFocused() then
 		return false;
