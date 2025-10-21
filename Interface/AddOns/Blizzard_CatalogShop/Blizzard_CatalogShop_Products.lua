@@ -90,7 +90,8 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 
 	local productInfo = CatalogShopFrame:GetProductInfo(productID);
 	if not productInfo then
-		assert(false, "No productInfo for productID " .. productID);
+		-- Return early since nothing else can be done at this point.
+		-- Not worth asserting here because the next time all products are refreshed the data will be correct.
 		return;
 	end
 

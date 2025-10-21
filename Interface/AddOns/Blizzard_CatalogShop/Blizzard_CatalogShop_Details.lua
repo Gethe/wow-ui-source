@@ -154,4 +154,8 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
 	self.ShadowLayer:SetShown(self.usesScrollBox);
 	self:AllDataRefresh(true);
+
+	-- Adding an Update to the scroll box with forceLayout set to true so the child elements will refresh after a product is selected.
+	local forceLayout = true;
+	self.ProductsScrollBoxContainer.ScrollBox:Update(forceLayout);
 end

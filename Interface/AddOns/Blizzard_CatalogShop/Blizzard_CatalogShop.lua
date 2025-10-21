@@ -31,24 +31,13 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH");
 	self:RegisterEvent("CATALOG_SHOP_PURCHASE_SUCCESS");
 	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	self:RegisterEvent("CATALOG_SHOP_RESULT_ERROR");
-	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
-	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
-	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
-	self:RegisterEvent("STORE_REFRESH");
-	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
-	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
-	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
-	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
-	self:RegisterEvent("BN_DISCONNECTED");
 	-- RNM: Removed becuase this was no longer used in Shop 2.0 
 	-- self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
 	self:InitVariables();
@@ -278,6 +267,10 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		local resetSelection = false;
 		self.ProductContainerFrame:UpdateProducts(resetSelection);
 	elseif event == "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH" then
+		if not self:IsShown() then
+			return;
+		end
+
 		local productID = ...;
 		if self.ProductContainerFrame:IsShown() then
 			self.ProductContainerFrame:UpdateSpecificProduct(productID);
@@ -285,9 +278,8 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 			-- If the details frame is shown, update it with the specific product info
 			self.ProductDetailsContainerFrame:UpdateSpecificProduct(productID);
 		end
-	elseif event =="CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT" then
+	elseif event == "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT" then
 		--... handle it
-	
 	elseif event =="SIMPLE_CHECKOUT_CLOSED" then
 		self:ShowAfterCheckout();
 
@@ -339,11 +331,6 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--self:ShowUnavailableScreen();
 		local err, internalErr = C_StoreSecure.GetFailureInfo();
 		self:OnError(err, true, internalErr);
-	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if not SimpleCheckout:IsShown() then
-			self:Hide();
-			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
-		end
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		--local result = ...;
 		--if (StoreFrame_GetSelectedCategoryID() == WOW_TOKEN_CATEGORY_ID) then
@@ -356,8 +343,6 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
 		--	// Finish implementation when completing [WOW11-144188]
 		--...handle it
-	elseif (event == "BN_DISCONNECTED") then
-		self:Hide();
 	end
 end
 

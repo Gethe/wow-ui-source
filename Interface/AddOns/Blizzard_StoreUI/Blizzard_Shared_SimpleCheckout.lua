@@ -23,30 +23,18 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		self:CalculateDesiredSize();
 		self:RecalculateSize();
-	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if (C_Glue.IsOnGlueScreen()) then
-			self.closeShopOnHide = true;
-		end
 	end
 end
 
 function SimpleCheckoutMixin:OnShow()
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self.closeShopOnHide = false;
 end
 
 function SimpleCheckoutMixin:OnHide()
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-	self:UnregisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	
-	if (C_Glue.IsOnGlueScreen() and self.closeShopOnHide) then
-		_G.SetStoreUIShown(false);
-		_G.StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
-		self.closeShopOnHide = false;
-	end
 	
 	self:CloseCheckout();
 end
