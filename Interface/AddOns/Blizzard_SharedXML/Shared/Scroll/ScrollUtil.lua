@@ -477,10 +477,39 @@ function SelectionBehaviorMixin:SelectPreviousElementData(predicate)
 	return self:SelectOffsetElementData(-1, predicate);
 end
 
+function SelectionBehaviorMixin:IsFirstElementDataSelected()
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if not dataProvider then
+		return false;
+	end
+	local firstElementData = dataProvider:Find(1);
+	if not firstElementData then
+		return false;
+	end
+	return self:IsElementDataSelected(firstElementData);
+end
+
+function SelectionBehaviorMixin:IsLastElementDataSelected()
+	local dataProvider = self.scrollBox:GetDataProvider();
+	if not dataProvider then
+		return false;
+	end
+	local lastElementData = dataProvider:Find(dataProvider:GetSize());
+	if not lastElementData then
+		return false;
+	end
+	return self:IsElementDataSelected(lastElementData);
+end
+
 function SelectionBehaviorMixin:SelectOffsetElementData(offset, predicate)
 	local dataProvider = self.scrollBox:GetDataProvider();
 	if dataProvider then
 		local currentElementData = self:GetFirstSelectedElementData();
+		if currentElementData == nil then
+			-- Cannot do a relative selection without at least one selection.
+			error("Attempted to select an adjacent element without an existing selection.")
+		end
+
 		local currentIndex = dataProvider:FindIndex(currentElementData);
 		local offsetIndex = currentIndex + offset;
 		local searchOffset = offset > 0 and 1 or -1;
@@ -1628,4 +1657,21 @@ end
 
 function ScrollBoxFactoryInitializerMixin:IsTemplate(frameTemplate)
 	return frameTemplate == self.frameTemplate;
+end
+
+function ScrollUtil.GetScrollableDirections(scrollBox)
+	local scrollPercentage = scrollBox:GetScrollPercentage();
+
+	local interpolateTo = scrollBox:GetScrollInterpolator():GetInterpolateTo();
+	if interpolateTo then
+		scrollPercentage = interpolateTo;
+	end
+	
+	-- Small exponential representations of zero (ex. E-15) don't evaluate as > 0, 
+	-- and 1.0 can be represented by .99999XXXXXX.
+	local hasScrollableExtent = scrollBox:HasScrollableExtent();
+	local scrollEnabled = hasScrollableExtent and scrollBox:IsScrollAllowed();
+	local backEnabled = scrollEnabled and scrollPercentage > MathUtil.Epsilon;
+	local forwardEnabled = scrollEnabled and scrollPercentage < (1 - MathUtil.Epsilon);
+	return backEnabled, forwardEnabled;
 end

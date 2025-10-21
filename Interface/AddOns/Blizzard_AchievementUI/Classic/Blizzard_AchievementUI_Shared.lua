@@ -226,7 +226,7 @@ end
 
 function AchievementFrameCategory_StatusBarTooltip(self)
 	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	GameTooltip:SetMinimumWidth(128, 1);
+	GameTooltip:SetMinimumWidth(128, true);
 	GameTooltip:SetText(self.name, 1, 1, 1, nil, 1);
 	GameTooltip_ShowStatusBar(GameTooltip, 0, self.numAchievements, self.numCompleted, self.numCompletedText);
 	GameTooltip:Show();
@@ -358,7 +358,7 @@ function AchievementShield_SetPoints(points, pointString, normalFont, smallFont)
 		pointString:SetText("");
 		return;
 	end
-	if ( points <= 100 ) then
+	if ( points < 100 ) then
 		pointString:SetFontObject(normalFont);
 	else
 		pointString:SetFontObject(smallFont);
@@ -533,7 +533,10 @@ function AchievementFrameStats_Update ()
 		
 		tinsert(displayStatCategoriesStats, {id = category, header = true});
 		for i=1, numStats do
-			tinsert(displayStatCategoriesStats, {id = GetAchievementInfo(category, i)});
+			local quantity, skip, id = GetStatistic(category, i);
+			if ( not skip ) then
+				tinsert(displayStatCategoriesStats, {id = id});
+			end
 		end
 		-- add all the subcategories and their stat id's
 		for i, cat in next, categories do
@@ -541,7 +544,10 @@ function AchievementFrameStats_Update ()
 				tinsert(displayStatCategoriesStats, {id = cat.id, header = true});
 				numStats = GetCategoryNumAchievements(cat.id);
 				for k=1, numStats do
-					tinsert(displayStatCategoriesStats, {id = GetAchievementInfo(cat.id, k)});
+					local quantity, skip, id = GetStatistic(cat.id, k);
+					if ( not skip ) then
+						tinsert(displayStatCategoriesStats, {id = id});
+					end
 				end
 			end
 		end
@@ -589,11 +595,15 @@ function AchievementFrameStats_SetStat(button, category, index, colorIndex, isSu
 		id, name = GetAchievementInfoFromCriteria(category);
 	end
 
+	if (not id) then
+		return;
+	end
+
 	button.id = id;
 	
 	if ( not colorIndex ) then
 		if ( not index ) then
-			message("Error, need a color index or index");
+			SetBasicMessageDialogText("Error, need a color index or index");
 		end
 		colorIndex = index;
 	end
@@ -667,6 +677,14 @@ function AchievementStatButton_OnClick(self)
 		AchievementFrame_SelectSummaryStatistic(self.id);
 	end
 end
+
+function AchievementStatButton_OnEnter(self)
+	if ( self.text:IsTruncated() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.text:GetText(), 1, 1, 1, 1, 1);
+	end
+end
+
 
 -- [[ Summary Frame ]] --
 
@@ -983,7 +1001,7 @@ function AchievementFrameComparisonStats_SetStat (button, category, index, color
 	
 	if ( not colorIndex ) then
 		if ( not index ) then
-			message("Error, need a color index or index");
+			SetBasicMessageDialogText("Error, need a color index or index");
 		end
 		colorIndex = index;
 	end

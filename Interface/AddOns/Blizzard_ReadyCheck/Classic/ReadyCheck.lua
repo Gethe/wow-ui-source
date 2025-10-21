@@ -21,7 +21,22 @@ function ShowReadyCheck(initiator, timeLeft)
 			ReadyCheckListenerFrame:Hide();
 		else
 			SetPortraitTexture(ReadyCheckPortrait, initiator);
-			ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
+			local _, _, difficultyID = GetInstanceInfo();
+			if ( not difficultyID or difficultyID == 0 ) then
+				-- not in an instance, go by current difficulty setting
+				if (UnitInRaid("player")) then
+					difficultyID = GetRaidDifficultyID();
+				else
+					difficultyID = GetDungeonDifficultyID();
+				end
+			end
+			local difficultyName, _, _, _, _, _, toggleDifficultyID = GetDifficultyInfo(difficultyID);
+			if ( toggleDifficultyID and toggleDifficultyID > 0 ) then
+				-- the current difficulty might change while inside an instance so show the difficulty on the ready check
+				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE.."\n"..RAID_DIFFICULTY..": "..difficultyName, initiator);
+			else
+				ReadyCheckFrameText:SetFormattedText(READY_CHECK_MESSAGE, initiator);
+			end
 			ReadyCheckListenerFrame:Show();
 		end
 	end

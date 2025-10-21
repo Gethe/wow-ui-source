@@ -490,7 +490,9 @@ function QuestInfo_ShowRewards()
 
 	for index, spellID in ipairs(spellRewards) do
 		local spellInfo = C_QuestInfoSystem.GetQuestRewardSpellInfo(questID, spellID);
-		local knownSpell = IsSpellKnownOrOverridesKnown(spellID);
+		local spellBank = Enum.SpellBookSpellBank.Player;
+		local includeOverrides = true;
+		local knownSpell = C_SpellBook.IsSpellInSpellBook(spellID, spellBank, includeOverrides);
 
 		-- only allow the spell reward if user can learn it
 		--  texture, name, isTradeskillSpell, isSpellLearned, hideSpellLearnText, isBoostSpell, garrFollowerID, genericUnlock

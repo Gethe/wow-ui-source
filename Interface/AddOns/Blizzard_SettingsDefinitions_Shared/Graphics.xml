@@ -22,6 +22,12 @@
 					<Anchor point="LEFT" relativePoint="CENTER" x="-40"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Text" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
@@ -46,6 +52,12 @@
 			<Frame parentKey="SliderWithSteppers" inherits="MinimalSliderWithSteppersTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="CENTER" x="-80" y="3"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Text" relativePoint="LEFT"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -73,6 +85,12 @@
 				<Size x="550" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="CENTER" x="-10" y="-25"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Text" relativePoint="LEFT"/>
 				</Anchors>
 			</Frame>
 		</Frames>
@@ -105,6 +123,12 @@
 				<Size x="550" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="CENTER" x="-10" y="-25"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Text" relativePoint="LEFT"/>
 				</Anchors>
 			</Frame>
 		</Frames>

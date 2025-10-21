@@ -1,0 +1,82 @@
+## Title: Blizzard_UIPanels_Game
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_CharacterFrame, Blizzard_ActionBar, Blizzard_Minimap, Blizzard_AccessibilityTemplates, Blizzard_HelpPlate
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: tbc
+Shared\CastingBarFrame.lua
+Classic\CastingBarFrame.lua
+Classic\CastingBarFrame.xml
+Classic\SpellBookFrame.lua
+Vanilla\SpellBookFrame.lua
+Vanilla\SpellBookFrame.xml
+Classic\SkillFrame.lua
+Classic\SkillFrame.xml
+Vanilla\ReputationFrame.lua
+Vanilla\ReputationFrame.xml
+Classic\FriendshipStatusBar.lua
+Classic\FriendshipStatusBar.xml
+Vanilla\HonorFrame.lua
+Classic\HonorFrame_Shared.lua
+Classic\HonorFrameTemplates.xml
+Vanilla\HonorFrame.xml
+TBC\QuestFrameTemplates.xml
+Classic\QuestFrame.lua
+TBC\QuestFrame.lua
+TBC\QuestFrame.xml
+TBC\QuestLogFrame.lua
+TBC\QuestLogFrame.xml
+TBC\QuestInfo.lua
+TBC\QuestInfo.xml
+TBC\MerchantFrame.lua
+TBC\MerchantFrame.xml
+Classic\TradeFrame.lua
+Classic\TradeFrame.xml
+Vanilla\ContainerFrame.lua
+Classic\ContainerFrame_Shared.lua
+Classic\ContainerFrame.xml
+Classic\LootFrame.lua
+Classic\LootFrame.xml
+Classic\ItemTextFrame.lua
+Classic\ItemTextFrame.xml
+Classic\TaxiFrame.lua
+Classic\TaxiFrame.xml
+Classic\ItemRef.lua
+Classic\ItemRef.xml
+Classic\ItemRefHandlers.lua
+Shared\ItemRefHandlersShared.lua
+Classic\ProductChoice.lua
+Classic\ProductChoice.xml
+Classic\FriendsFrame.lua
+Classic\FriendsFrame.xml
+Classic\UnitPositionFrameTemplates.lua
+Classic\UnitPositionFrameTemplates.xml
+Classic\TabardFrame.lua
+Classic\TabardFrame.xml
+Classic\PetStable.lua
+Classic\PetStable.xml
+TBC\BankFrame.lua
+TBC\BankFrame.xml
+Shared\SocialQueue.lua
+Classic\GuildRegistrarFrame.lua
+Classic\GuildRegistrarFrame.xml
+Classic\PetitionFrame.lua
+Classic\PetitionFrame.xml
+Shared\GossipFrameShared.lua
+Shared\GossipFrameShared.xml
+Classic\GossipFrame.lua
+Classic\GossipFrame.xml
+Classic\MailFrame.lua
+Classic\MailFrame.xml
+Classic\RatingMenuFrame.xml
+Classic\PVPFrameBase.lua
+Classic\PVPFrame.lua
+Classic\PVPFrameTemplates.xml
+Classic\PVPFrame.xml
+Classic\BattlefieldFrame.lua
+Classic\BattlefieldFrame.xml
+Shared\PlayerInteractionFrameManager.lua
+Shared\PlayerInteractionFrameManager.xml
+Classic\Localization.lua
+Vanilla\Localization.lua

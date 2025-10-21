@@ -58,7 +58,6 @@ function GlueParent_OnLoad(self)
 	self:RegisterEvent("OPEN_STATUS_DIALOG");
 	self:RegisterEvent("REALM_LIST_UPDATED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("LUA_WARNING");
 	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self:RegisterEvent("KIOSK_SESSION_SHUTDOWN");
 	self:RegisterEvent("KIOSK_SESSION_EXPIRED");
@@ -80,21 +79,19 @@ function GlueParent_OnEvent(self, event, ...)
 		GlueParent_UpdateDialogs();
 	elseif ( event == "OPEN_STATUS_DIALOG" ) then
 		local dialog, text = ...;
-		GlueDialog_Show(dialog, text);
+		StaticPopup_Show(dialog, text);
 	elseif ( event == "REALM_LIST_UPDATED" ) then
 		RealmList_Update();
 	elseif ( event == "DISPLAY_SIZE_CHANGED" ) then
 		OnDisplaySizeChanged(self);
-	elseif ( event == "LUA_WARNING" ) then
-		HandleLuaWarning(...);
 	elseif ( event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT" ) then
 		if not StoreFrame_IsShown() then
-			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "KIOSK_SESSION_SHUTDOWN" or event == "KIOSK_SESSION_EXPIRED") then
 		GlueParent_SetScreen("kioskmodesplash");
 	elseif (event == "KIOSK_SESSION_EXPIRATION_CHANGED") then
-		GlueDialog_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
+		StaticPopup_Show("OKAY", KIOSK_SESSION_TIMER_CHANGED);
 	end
 end
 
@@ -135,7 +132,9 @@ end
 function GlueParent_UpdateDialogs()
 	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
 
-	if ( auroraState == LE_AURORA_STATE_CONNECTING ) then
+	if ( auroraState == LE_AURORA_STATE_WAITING_FOR_NETWORK ) then
+		StaticPopup_Show("CANCEL", LOGIN_STATE_WAITFORNETWORK)
+	elseif ( auroraState == LE_AURORA_STATE_CONNECTING ) then
 		local isQueued, queuePosition, estimatedSeconds = C_Login.GetLogonQueueInfo();
 		if ( isQueued ) then
 			local queueMessage;
@@ -147,9 +146,9 @@ function GlueParent_UpdateDialogs()
 				queueMessage = string.format(BNET_LOGIN_QUEUE_TIME_LEFT, queuePosition, estimatedSeconds / 60);
 			end
 
-			GlueDialog_Show("CANCEL", queueMessage);
+			StaticPopup_Show("CANCEL", queueMessage);
 		else
-			GlueDialog_Show("CANCEL", LOGIN_STATE_CONNECTING);
+			StaticPopup_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
 	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
@@ -222,20 +221,21 @@ function GlueParent_UpdateDialogs()
 		end
 
 		if ( isHTML ) then
-			GlueDialog_Show("OKAY_HTML", localizedString);
+			StaticPopup_Show("OKAY_HTML", localizedString);
 		elseif ( hasURL ) then
-			GlueDialog_Show("OKAY_WITH_URL", localizedString, urlTag);
+			local text2  = nil;
+			StaticPopup_Show("OKAY_WITH_URL", localizedString, text2, urlTag);
 		elseif ( useGenericURL ) then
-			GlueDialog_Show("OKAY_WITH_GENERIC_URL", localizedString);
+			StaticPopup_Show("OKAY_WITH_GENERIC_URL", localizedString);
 		else
-			GlueDialog_Show("OKAY", localizedString);
+			StaticPopup_Show("OKAY", localizedString);
 		end
 
 		C_Login.ClearLastError();
 	elseif (  waitingForRealmList ) then
-		GlueDialog_Show("REALM_LIST_IN_PROGRESS");
+		StaticPopup_Show("REALM_LIST_IN_PROGRESS");
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
-		GlueDialog_Show("CANCEL", GAME_SERVER_LOGIN);
+		StaticPopup_Show("CANCEL", GAME_SERVER_LOGIN);
 	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local serverName, pvp, rp, down = GetServerName();
 		local waitPosition, waitMinutes, hasFCM, allowedPvpTeamForCharacterCreate, canCreateOnlyIfExisting = C_Login.GetWaitQueueInfo();
@@ -272,13 +272,13 @@ function GlueParent_UpdateDialogs()
 
 		if ( hasFCM ) then
 			queueString = queueString .. "\n\n" .. _G["QUEUE_FCM"];
-			GlueDialog_Show("QUEUED_WITH_FCM", queueString);
+			StaticPopup_Show("QUEUED_WITH_FCM", queueString);
 		else
-			GlueDialog_Show("QUEUED_NORMAL", queueString);
+			StaticPopup_Show("QUEUED_NORMAL", queueString);
 		end
 	else
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
-		GlueDialog_Hide();
+		StaticPopup_HideAll();
 	end
 end
 
@@ -287,18 +287,18 @@ function GlueParent_EnsureValidScreen()
 	if ( not GlueParent_IsScreenValid(currentScreen) ) then
 		local bestScreen = GlueParent_GetBestScreen();
 
-		C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
+		C_Log.LogMessage(string.format("Screen invalid. Changing from=\"%s\" to=\"%s\"", currentScreen or "none", bestScreen));
 		
 		GlueParent_SetScreen(bestScreen);
 	end
 end
 
 local function GlueParent_ChangeScreen(screenInfo, screenTable)
-	C_Log.LogMessage(Enum.LogPriority.Normal, string.format("Switching to screen=\"%s\"", screenInfo.frame));
+	C_Log.LogMessage(string.format("Switching to screen=\"%s\"", screenInfo.frame));
 
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
-		if ( info ~= screenInfo ) then
+		if ( info ~= screenInfo and _G[info.frame] ) then
 			_G[info.frame]:Hide();
 		end
 	end
@@ -716,6 +716,38 @@ function UpgradeAccount()
 	end
 end
 
+function GetDisplayedExpansionLogo(expansionLevel, releaseType)
+	local isTrial = expansionLevel == nil;
+
+	if isTrial then
+		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
+	elseif expansionLevel <= GetMinimumExpansionLevel() then
+		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC, releaseType);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	else
+		local expansionInfo = GetExpansionDisplayInfo(expansionLevel, releaseType);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	end
+
+	return nil;
+end
+
+function SetExpansionLogo(texture, expansionLevel, releaseType)
+	releaseType = releaseType or LE_RELEASE_TYPE_CLASSIC;
+
+	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
+	if logo then
+		texture:SetTexture(logo);
+		texture:Show();
+	else
+		texture:Hide();
+	end
+end
+
 function MinutesToTime(mins, hideDays)
 	local time = "";
 	local count = 0;
@@ -746,7 +778,8 @@ function CheckSystemRequirements(includeSeenWarnings)
 	for i, warning in ipairs(configWarnings) do
 		local text = C_ConfigurationWarnings.GetConfigurationWarningString(warning);
 		if text then
-			GlueDialog_Queue("CONFIGURATION_WARNING", text, { configurationWarning = warning });
+			local text2 = nil;
+			StaticPopup_Queue("CONFIGURATION_WARNING", text, text2, { configurationWarning = warning });
 		end
 	end
 end

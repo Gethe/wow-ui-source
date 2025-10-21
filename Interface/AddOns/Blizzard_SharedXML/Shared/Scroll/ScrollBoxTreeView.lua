@@ -3,7 +3,7 @@ ScrollBoxListTreeListViewMixin = CreateFromMixins(ScrollBoxListLinearViewMixin);
 
 function ScrollBoxListTreeListViewMixin:Init(indent, top, bottom, left, right, spacing)
 	ScrollBoxListLinearViewMixin.Init(self, top, bottom, left, right, spacing);
-	self:SetElementIndent(indent);
+	self:SetElementIndent(indent or 10);
 end
 
 function ScrollBoxListTreeListViewMixin:InitDefaultDrag(scrollBox)
@@ -17,16 +17,6 @@ end
 
 function ScrollBoxListTreeListViewMixin:ReverseForEachElementData(func)
 	error("ReverseForEachElementData unsupported in ScrollBoxListTreeListViewMixin.");
-end
-
--- Deprecated, use FindElementData
-function ScrollBoxListTreeListViewMixin:Find(index)
-	return self:FindElementData(index);
-end
-
--- Deprecated, use FindElementDataIndex
-function ScrollBoxListTreeListViewMixin:FindIndex(elementData)
-	return self:FindElementDataIndex(elementData);
 end
 
 function ScrollBoxListTreeListViewMixin:FindElementData(index)
@@ -168,9 +158,9 @@ function ScrollBoxListTreeListViewMixin:GetLayoutFunction()
 end
 
 function ScrollBoxListTreeListViewMixin:Layout()
-	return self:LayoutInternal(self:GetLayoutFunction());
+	self:LayoutInternal(self:GetLayoutFunction());
 end
 
 function CreateScrollBoxListTreeListView(indent, top, bottom, left, right, spacing)
-	return CreateAndInitFromMixin(ScrollBoxListTreeListViewMixin, indent or 10, top or 0, bottom or 0, left or 0, right or 0, spacing or 0);
+	return CreateAndInitFromMixin(ScrollBoxListTreeListViewMixin, indent, top, bottom, left, right, spacing);
 end

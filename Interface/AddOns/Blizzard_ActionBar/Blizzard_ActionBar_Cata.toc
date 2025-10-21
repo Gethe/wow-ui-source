@@ -1,12 +1,13 @@
 ## Title: Blizzard_ActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_FrameXML, Blizzard_UnitFrame, Blizzard_ChatFrame
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_FrameXML, Blizzard_UnitFrame, Blizzard_ChatFrame, Blizzard_HelpPlate
 ## LoadFirst: 1
 ## AllowLoadGameType: cata
 ## AllowLoad: Game
 ActionButtonUtil.lua
 Shared\MainMenuBarMicroButtons.lua
+Classic\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.lua
 Cata\MainMenuBarMicroButtons.xml
 Classic\MainMenuBar.lua

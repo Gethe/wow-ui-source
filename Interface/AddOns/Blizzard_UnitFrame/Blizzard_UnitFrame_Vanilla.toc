@@ -11,8 +11,11 @@ Classic\UnitFrame.lua
 UnitFrame.xml
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
+Classic\UnitPowerBarAlt.lua
+Classic\UnitPowerBarAlt.xml
 Classic\PartyFrameTemplates.xml
 Classic\PartyFrame.xml
+Shared\TargetFrame.lua
 Vanilla\TargetFrame.xml
 Vanilla\PetFrame.lua
 Classic\PetFrame.xml

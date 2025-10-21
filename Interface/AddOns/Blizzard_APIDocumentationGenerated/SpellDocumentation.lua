@@ -7,6 +7,16 @@ local Spell =
 	Functions =
 	{
 		{
+			Name = "CancelSpellByID",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "DoesSpellExist",
 			Type = "Function",
 			Documentation = { "Returns true if the spell exists, regardless of whether the player has learned it" },
@@ -19,6 +29,17 @@ local Spell =
 			Returns =
 			{
 				{ Name = "spellExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "EnableSpellRangeCheck",
+			Type = "Function",
+			Documentation = { "Used in conjunction with SpellRangeCheckUpdate to inform the UI when a spell goes in or out of range with the current target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the spell should dispatch SpellRangeCheckUpdate. False if the spell no longer needs the event." } },
 			},
 		},
 		{
@@ -67,6 +88,22 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellCooldown",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns nil if spell is not found" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellDescription",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -112,6 +149,21 @@ local Spell =
 			Returns =
 			{
 				{ Name = "spellInfo", Type = "SpellInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellLevelLearned",
+			Type = "Function",
+			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "levelLearned", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -460,6 +512,18 @@ local Spell =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
+			Payload =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the spell. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
 			},
 		},
 		{

@@ -222,7 +222,57 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetExpertise",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertise", Type = "number", Nilable = false },
+				{ Name = "offhandExpertise", Type = "number", Nilable = false },
+				{ Name = "rangedExpertise", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetExpertisePercent",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "mainhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "offhandExpertisePercent", Type = "number", Nilable = false },
+				{ Name = "rangedExpertisePercent", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLootSpecialization",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMastery",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMasteryEffect",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "masteryEffect", Type = "number", Nilable = false },
+				{ Name = "bonusCoefficient", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetModResilienceDamageReduction",
 			Type = "Function",
 
 			Returns =
@@ -237,6 +287,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideAPBySpellPower",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -259,6 +318,24 @@ local PlayerScript =
 		},
 		{
 			Name = "GetPVPTimer",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpPowerDamage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPvpPowerHealing",
 			Type = "Function",
 
 			Returns =
@@ -391,6 +468,24 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "IsGuildLeader",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInGuild",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemPreferredArmorType",
 			Type = "Function",
 
@@ -465,6 +560,15 @@ local PlayerScript =
 			Returns =
 			{
 				{ Name = "result", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "PlayerIsInCombat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "playerIsInCombat", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -548,6 +652,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "SetLootSpecialization",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTaxiBenchmarkMode",
 			Type = "Function",
 
@@ -595,6 +708,7 @@ local PlayerScript =
 		{
 			Name = "SitStandOrDescendStart",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "StartAttack",
@@ -635,6 +749,15 @@ local PlayerScript =
 
 	Events =
 	{
+		{
+			Name = "PlayerInCombatChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			Payload =
+			{
+				{ Name = "inCombat", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

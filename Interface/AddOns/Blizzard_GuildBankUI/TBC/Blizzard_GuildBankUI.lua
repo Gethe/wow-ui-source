@@ -43,6 +43,11 @@ function GuildBankFrameMixin:OnLoad()
 	self.maxTabWidth = 128;
 	self:UpdateTabs();
 	self:UpdateTabard();
+
+	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+		self.TopTileStreaks:Hide();
+		self.Bg:Hide();
+	end
 end
 
 function GuildBankFrameMixin:OnEvent(event, ...)
@@ -92,6 +97,8 @@ function GuildBankFrameMixin:OnEvent(event, ...)
 		if ( self.BuyInfo:IsShown() ) then
 			self:UpdateTabBuyingInfo();
 		end
+	elseif ( ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) and event == "INVENTORY_SEARCH_UPDATE" ) then	
+		self:UpdateFiltered();
 	end
 end
 
@@ -179,6 +186,12 @@ function GuildBankFrameMixin:Update()
 			SetItemButtonTexture(button, texture);
 			SetItemButtonCount(button, itemCount);
 			SetItemButtonDesaturated(button, locked);
+
+			if ( isFiltered ) then
+				button.searchOverlay:Show();
+			else
+				button.searchOverlay:Hide();
+			end
 		end
 		MoneyFrame_Update("GuildBankMoneyFrame", GetGuildBankMoney());
 		if ( CanWithdrawGuildBankMoney() ) then
@@ -207,6 +220,30 @@ function GuildBankFrameMixin:Update()
 	end
 	--Update remaining money
 	self:UpdateWithdrawMoney();
+end
+
+function GuildBankFrameMixin:UpdateFiltered()
+	-- Figure out which mode you're in and which tab is selected
+	if ( self.mode == "bank" ) then
+		-- Update the tab items
+		local tab = GetCurrentGuildBankTab();
+		local index, button, column, isFiltered;
+		for i=1, MAX_GUILDBANK_SLOTS_PER_TAB do
+			index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP);
+			if ( index == 0 ) then
+				index = NUM_SLOTS_PER_GUILDBANK_GROUP;
+			end
+			column = ceil((i-0.5)/NUM_SLOTS_PER_GUILDBANK_GROUP);
+			button = self.Columns[column].Buttons[index];
+			isFiltered = ( select(4, GetGuildBankItemInfo(tab, i)) );
+			
+			if ( isFiltered ) then
+				button.searchOverlay:Show();
+			else
+				button.searchOverlay:Hide();
+			end
+		end
+	end
 end
 
 function GuildBankFrameMixin:UpdateTabBuyingInfo()
@@ -387,7 +424,14 @@ function GuildBankFrameMixin:UpdateTabs()
 			self.TabLimitBG:SetPoint("RIGHT", self.WithdrawButton, "LEFT", -14, -1);
 		else
 			self.TabLimitBG:ClearAllPoints();
-			self.TabLimitBG:SetPoint("TOP", "GuildBankFrame", "TOP", 6, -388);
+
+			local relativePointY = -388;
+
+			if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
+				relativePointY = -378;
+			end
+
+			self.TabLimitBG:SetPoint("TOP", "GuildBankFrame", "TOP", 6, relativePointY);
 		end
 
 		self.LimitLabel:Show();
@@ -428,6 +472,9 @@ end
 
 function GuildBankFrameMixin:UpdateWithdrawMoney()
 	local withdrawLimit = GetGuildBankWithdrawMoney();
+
+	local isMistsOrGreater = ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA);
+
 	if ( withdrawLimit >= 0 ) then
 		local amount;
 		if ( (not CanGuildBankRepair() and not CanWithdrawGuildBankMoney()) or (CanGuildBankRepair() and not CanWithdrawGuildBankMoney()) ) then
@@ -442,10 +489,18 @@ function GuildBankFrameMixin:UpdateWithdrawMoney()
 			self.WithdrawButton:Enable();
 		end
 		MoneyFrame_Update("GuildBankWithdrawMoneyFrame", withdrawLimit);
-		self.UnlimitedLabel:Hide();
+		if(isMistsOrGreater) then
+			self.MoneyFrameBG.UnlimitedLabel:Hide();
+		else
+			self.UnlimitedLabel:Hide();
+		end
 		self.WithdrawMoneyFrame:Show();
 	else
-		self.UnlimitedLabel:Show();
+		if(isMistsOrGreater) then
+			self.MoneyFrameBG.UnlimitedLabel:Show();
+		else
+			self.UnlimitedLabel:Show();
+		end
 		self.WithdrawMoneyFrame:Hide();
 	end
 end
@@ -509,7 +564,7 @@ function GuildBankTabButtonMixin:OnLoad()
 end
 
 function GuildBankTabButtonMixin:OnEvent(event, ...)
-	if ( event == "INVENTORY_SEARCH_UPDATE" ) then
+	if ( ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) and event == "INVENTORY_SEARCH_UPDATE" ) then
 		self:UpdateFiltered();
 	end
 end
@@ -529,6 +584,17 @@ end
 
 function GuildBankTabButtonMixin:OnLeave()
 	GameTooltip:Hide();
+end
+
+function GuildBankTabButtonMixin:UpdateFiltered()
+	if ( self:IsVisible() ) then
+		local filtered = ( select(7, GetGuildBankTabInfo(self:GetParent():GetID())) );
+		if ( filtered ) then
+			self.SearchOverlay:Show();
+	else
+			self.SearchOverlay:Hide();
+		end
+	end
 end
 
 GuildBankFrameTabMixin = {};
@@ -943,4 +1009,12 @@ function GuildBankPopupEditBoxMixin:OnEnterPressed()
 		popupFrame:ConfirmEdit();
 	end
 	self:ClearFocus();
+end
+
+GuildItemSearchBoxMixin = {};
+
+function GuildItemSearchBoxMixin:OnLoad()
+	if not ClassicExpansionAtLeast(LE_EXPANSION_CATACLYSM) then
+		self:Hide();
+	end
 end

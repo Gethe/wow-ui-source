@@ -272,17 +272,22 @@ function TooltipComparisonManager:SetItemTooltip(isPrimaryTooltip)
 				local itemName = C_Item.GetItemNameByID(additionalItem.guid or additionalItem.hyperlink);
 				local itemQuality = C_Item.GetItemQualityByID(additionalItem.guid or additionalItem.hyperlink);
 				if itemName then
-					local itemQualityColor = ITEM_QUALITY_COLORS[itemQuality];
-					local hexColor = itemQualityColor.color:GenerateHexColor();
-					GameTooltip_AddBlankLineToTooltip(tooltip);			
-					GameTooltip_AddNormalLine(tooltip, formatString:format(hexColor, itemName));
+					GameTooltip_AddBlankLineToTooltip(tooltip);
+
+					local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
+					if colorData then
+						local hexColor = colorData.color:GenerateHexColor();
+						GameTooltip_AddNormalLine(tooltip, formatString:format(hexColor, itemName));
+					else
+						GameTooltip_AddNormalLine(tooltip, itemName);
+					end
 				end
 			end
 			-- the stats
 			for i, deltaLine in ipairs(delta) do
 				GameTooltip_AddHighlightLine(tooltip, deltaLine);
 			end
-			
+
 			-- cyclable items?
 			if #self.compareInfo.additionalItems > 1 and GetCVarBool("allowCompareWithToggle") then
 				GameTooltip_AddBlankLineToTooltip(tooltip);

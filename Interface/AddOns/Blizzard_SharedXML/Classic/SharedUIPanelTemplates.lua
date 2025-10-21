@@ -279,7 +279,7 @@ end
 function SearchBoxTemplate_OnLoad(self)
 	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
 	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(SEARCH);
+	self.Instructions:SetText(self.instructionText);
 	self.Instructions:ClearAllPoints();
 	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
 	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
@@ -1127,6 +1127,11 @@ function DropdownWithSteppersMixin:Decrement()
 	self.Dropdown:Decrement();
 end
 
+function DropdownWithSteppersMixin:HideSteppers()
+	self.DecrementButton:Hide();
+	self.IncrementButton:Hide();
+end
+
 function DropdownWithSteppersMixin:SetSteppersEnabled(canDecrement, canIncrement)
 	if self.Dropdown:IsEnabled() then
 		self.DecrementButton:SetEnabled(canDecrement);
@@ -1169,174 +1174,6 @@ end
 
 function DefaultScaleFrameMixin:UpdateScale()
 	ApplyDefaultScale(self, self.minScale, self.maxScale);
-end
-
-UIButtonMixin = {}
-
-function UIButtonMixin:InitButton()
-	if self.buttonArtKit then
-		self:SetButtonArtKit(self.buttonArtKit);
-	end
-
-	if self.disabledTooltip then
-		self:SetMotionScriptsWhileDisabled(true);
-	end
-end
-
-function UIButtonMixin:OnClick(...)
-	PlaySound(self.onClickSoundKit or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-
-	if self.onClickHandler then
-		self.onClickHandler(self, ...);
-	end
-end
-
-function UIButtonMixin:OnEnter()
-	if self.onEnterHandler and self.onEnterHandler(self) then
-		return;
-	end
-
-	local defaultTooltipAnchor = "ANCHOR_RIGHT";
-	if self:IsEnabled() then
-		if self.tooltipTitle or self.tooltipText then
-			local tooltip = GetAppropriateTooltip();
-			tooltip:SetOwner(self, self.tooltipAnchor or defaultTooltipAnchor, self.tooltipOffsetX, self.tooltipOffsetY);
-
-			if self.tooltipTitle then
-				GameTooltip_SetTitle(tooltip, self.tooltipTitle, self.tooltipTitleColor);
-			end
-
-			if self.tooltipText then
-				local wrap = true;
-				if self.tooltipDisableWrapText then
-					wrap = false;
-				end
-
-				GameTooltip_AddColoredLine(tooltip, self.tooltipText, self.tooltipTextColor or NORMAL_FONT_COLOR, wrap);
-			end
-
-			tooltip:Show();
-		end
-	else
-		if self.disabledTooltip then
-			local tooltip = GetAppropriateTooltip();
-			GameTooltip_ShowDisabledTooltip(tooltip, self, self.disabledTooltip, self.disabledTooltipAnchor or defaultTooltipAnchor, self.disabledTooltipOffsetX, self.disabledTooltipOffsetY);
-		end
-	end
-end
-
-function UIButtonMixin:OnLeave()
-	local tooltip = GetAppropriateTooltip();
-	tooltip:Hide();
-end
-
-function UIButtonMixin:SetButtonArtKit(buttonArtKit)
-	self.buttonArtKit = buttonArtKit;
-
-	self:SetNormalAtlas(buttonArtKit);
-	self:SetPushedAtlas(buttonArtKit.."-Pressed");
-	self:SetDisabledAtlas(buttonArtKit.."-Disabled");
-	self:SetHighlightAtlas(buttonArtKit.."-Highlight");
-end
-
-function UIButtonMixin:SetOnClickHandler(onClickHandler, onClickSoundKit)
-	self.onClickHandler = onClickHandler;
-	self.onClickSoundKit = onClickSoundKit;
-end
-
-function UIButtonMixin:GetOnClickSoundKit()
-	return self.onClickSoundKit;
-end
-
-function UIButtonMixin:SetOnEnterHandler(onEnterHandler)
-	self.onEnterHandler = onEnterHandler;
-end
-
-function UIButtonMixin:SetTooltipInfo(tooltipTitle, tooltipText)
-	self.tooltipTitle = tooltipTitle;
-	self.tooltipText = tooltipText;
-end
-
-function UIButtonMixin:SetTooltipAnchor(tooltipAnchor, tooltipOffsetX, tooltipOffsetY)
-	self.tooltipAnchor = tooltipAnchor;
-	self.tooltipOffsetX = tooltipOffsetX;
-	self.tooltipOffsetY = tooltipOffsetY;
-end
-
-function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor, disabledTooltipOffsetX, disabledTooltipOffsetY)
-	self.disabledTooltip = disabledTooltip;
-	self.disabledTooltipAnchor = disabledTooltipAnchor;
-	self.disabledTooltipOffsetX = disabledTooltipOffsetX;
-	self.disabledTooltipOffsetY = disabledTooltipOffsetY;
-	self:SetMotionScriptsWhileDisabled(disabledTooltip ~= nil);
-end
-
-IconButtonMixin = CreateFromMixins(UIButtonMixin);
-
-function IconButtonMixin:OnLoad()
-	if self.icon then
-		self:SetIcon(self.icon);
-	elseif self.iconAtlas then
-		self:SetAtlas(self.iconAtlas, self.useAtlasSize);
-	end
-	
-	if self.useIconAsHighlight then
-		if self.icon then
-			self:SetHighlightTexture(self.icon, "ADD");
-		elseif self.iconAtlas then
-			self:SetHighlightAtlas(self.iconAtlas, "ADD");
-		end
-
-		local highlightTexture = self:GetHighlightTexture();
-		highlightTexture:SetPoint("TOPLEFT", self.Icon, "TOPLEFT");
-		highlightTexture:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT");
-	end
-
-	if self.iconSize then
-		self.Icon:SetSize(self.iconSize, self.iconSize);
-	elseif self.iconWidth then
-		self.Icon:SetSize(self.iconWidth, self.iconHeight);
-	end
-end
-
-function IconButtonMixin:OnMouseDown()
-	if self:IsEnabled() then
-		self.Icon:SetPoint("CENTER", self, "CENTER", 1, -1);
-	end
-end
-
-function IconButtonMixin:OnMouseUp()
-	self.Icon:SetPoint("CENTER", self, "CENTER");
-end
-
-function IconButtonMixin:SetIcon(icon)
-	self.Icon:SetTexture(icon);
-end
-
-function IconButtonMixin:SetAtlas(atlas, useAtlasSize)
-	self.Icon:SetAtlas(atlas, useAtlasSize);
-end
-
-function IconButtonMixin:SetEnabledState(enabled)
-	self:SetEnabled(enabled);
-	self.Icon:SetDesaturated(not enabled);
-end
-
-SquareIconButtonMixin = CreateFromMixins(IconButtonMixin);
-
-function SquareIconButtonMixin:OnMouseDown()
-	-- Overrides IconButtonMixin.
-
-	if self:IsEnabled() then
-		-- Square icon button template still uses down-to-the-left depress behavior to match the existing art.
-		self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
-	end
-end
-
-function SquareIconButtonMixin:OnMouseUp()
-	-- Overrides IconButtonMixin.
-
-	self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
 end
 
 -- Click to drag directly attached to frame itself.
@@ -2390,4 +2227,37 @@ end
 
 function IconSelectorEditBoxMixin:SetIconSelector(iconSelector)
 	self.editBoxIconSelector = iconSelector;
+end
+
+UIPanelIconDropdownButtonMixin = { };
+
+function UIPanelIconDropdownButtonMixin:OnMouseDown()
+	self.Icon:AdjustPointsOffset(1, -1);
+end
+
+function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
+	self.Icon:AdjustPointsOffset(-1, 1);
+end
+
+ClearButtonMixin = {};
+function ClearButtonMixin:OnEnter()
+	self.texture:SetAlpha(1.0);
+end
+
+function ClearButtonMixin:OnLeave()
+	self.texture:SetAlpha(0.5);
+end
+
+function ClearButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
+	end
+end
+
+function ClearButtonMixin:OnMouseUp()
+	self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
+end
+
+function ClearButtonMixin:OnClick()
+	SearchBoxTemplateClearButton_OnClick(self);
 end

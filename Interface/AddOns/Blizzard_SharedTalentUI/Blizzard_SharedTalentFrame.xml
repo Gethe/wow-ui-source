@@ -7,6 +7,7 @@
 		getTemplateType: function to map talent types to template types.
 		getSpecializedMixin: function to map talent types to an additional mixin for the button.
 		getEdgeTemplateType: function to map template types to edge types.
+		getSpecializedChoiceMixin: function to map talent types to an additional mixin for the choice popup display.
 		buttonSize: size for all talent buttons and displays.
 		topPadding: space around buttons and edges to make room for frames, portraits, etc.
 		leftPadding: space around buttons and edges to make room for frames, portraits, etc.
@@ -21,7 +22,6 @@
 		enableCommitCastBar: if overlay player cast bar should be displayed while commit is in progress.
 		enableCommitSpinner: if a spinner should be played during commit time.
 		enableCommitEndFlash: if background flash should be played on commit completion.
-		getSpecializedChoiceMixin: function to map talent types to an additional mixin for the choice popup display.
 		defaultSelectSound: sound to play if select sound is not specified in an override button template.
 		defaultDeselectSound: sound to play if deselect sound is not specified in an override button template.
 		-->
@@ -29,6 +29,7 @@
 			<KeyValue key="getTemplateType" value="TalentButtonUtil.GetTemplateForTalentType" type="global"/>
 			<KeyValue key="getSpecializedMixin" value="TalentButtonUtil.GetSpecializedMixin" type="global"/>
 			<KeyValue key="getEdgeTemplateType" value="TalentButtonUtil.GetTemplateForEdgeVisualStyle" type="global"/>
+			<KeyValue key="getSpecializedChoiceMixin" value="TalentButtonUtil.GetSpecializedChoiceMixin" type="global"/>
 			<KeyValue key="buttonSize" value="40" type="number"/>
 			<KeyValue key="topPadding" value="0" type="number"/>
 			<KeyValue key="leftPadding" value="0" type="number"/>
@@ -45,7 +46,6 @@
 			<KeyValue key="enableCommitEndFlash" value="false" type="boolean"/>
 			
 			<!--
-			<KeyValue key="getSpecializedChoiceMixin" value="nil" type="global"/>
 			<KeyValue key="defaultSelectSound" value="SOUNDKIT.FOOBAR" type="global"/>
 			<KeyValue key="defaultDeselectSound" value="SOUNDKIT.FOOBAR" type="global"/>
 			-->

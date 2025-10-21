@@ -347,7 +347,7 @@
 					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
 				</Anchors>
 			</Frame>
-			<Button name="CharacterFrameExpandButton">
+			<Button name="CharacterFrameExpandButton" hidden="true">
 				<Size x="32" y="32"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" x="-2" y="-1"/>

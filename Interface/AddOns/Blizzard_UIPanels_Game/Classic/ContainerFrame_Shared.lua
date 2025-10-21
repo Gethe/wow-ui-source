@@ -537,24 +537,9 @@ function ContainerFrame_Update(frame)
 	end
 	--]]
 
-	--Update Searchbox and sort button
-	--[[
-	if ( id == 0 ) then
-		BagItemSearchBox:SetParent(frame);
-		BagItemSearchBox:SetPoint("TOPLEFT", frame, "TOPLEFT", 54, -37);
-		BagItemSearchBox.anchorBag = frame;
-		BagItemSearchBox:Show();
-		BagItemAutoSortButton:SetParent(frame);
-		BagItemAutoSortButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -9, -34);
-		BagItemAutoSortButton:Show();
-	elseif ( BagItemSearchBox.anchorBag == frame ) then
-		BagItemSearchBox:ClearAllPoints();
-		BagItemSearchBox:Hide();
-		BagItemSearchBox.anchorBag = nil;
-		BagItemAutoSortButton:ClearAllPoints();
-		BagItemAutoSortButton:Hide();
-	end
-	--]]
+	--Update Searchbox
+	ContainerFrame_UpdateSearchBox(id, frame);
+	
 
 	for i=1, frame.size, 1 do
 		itemButton = _G[name.."Item"..i];

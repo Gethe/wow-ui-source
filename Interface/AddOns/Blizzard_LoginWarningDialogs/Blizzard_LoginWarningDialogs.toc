@@ -1,7 +1,7 @@
 ## Title: Blizzard_LoginWarningDialogs
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## RequiredDep: Blizzard_SharedXML, Blizzard_GlueXMLBase
+## RequiredDep: Blizzard_SharedXML, Blizzard_GlueXMLBase, Blizzard_GlueParent
 ## AllowLoad: Glue
 Localization.lua
 Blizzard_LoginWarningDialogs.lua

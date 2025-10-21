@@ -35,6 +35,10 @@ function TradeSkillFrame_OnShow(self)
 end
 
 function TradeSkillFrame_SetupSubClassDropdown(self)
+	if not TradeSkillFrame:IsShown() or not self then
+		return;
+	end
+
 	local function IsSelected(index)
 		if index > 0 and (GetTradeSkillSubClassFilter(0) == 1) then
 			return false;
@@ -59,6 +63,10 @@ function TradeSkillFrame_SetupSubClassDropdown(self)
 end
 
 function TradeSkillFrame_SetupInvSlotDropdown(self)
+	if not TradeSkillFrame:IsShown() or not self then
+		return;
+	end
+
 	local function IsSelected(index)
 		return GetTradeSkillInvSlotFilter(index) == 1;
 	end

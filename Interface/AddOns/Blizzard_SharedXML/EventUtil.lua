@@ -13,9 +13,16 @@ function ContinueAfterAllEventsMixin:Init(callback, ...)
 		self.events[event] = false;
 
 		local function OnEventReceived()
+			if self.events[event] then
+				return;
+			end
+
 			self.events[event] = true;
 
-			EventRegistry:UnregisterFrameEventAndCallback(event, self);
+			-- 11.2.5 Temporary change until CBR registrations and unregistrations are deferred during dispatch.
+			RunNextFrame(function()
+				EventRegistry:UnregisterFrameEventAndCallback(event, self);
+			end);
 
 			if self:HaveReceivedAllEvents() then
 				callback();
@@ -44,13 +51,28 @@ function EventUtil.AreVariablesLoaded()
 	return GlueParent or (UIParent and UIParent.variablesLoaded);
 end
 
+local eventUtilVariablesLoadedCallbacks = {};
 function EventUtil.ContinueOnVariablesLoaded(callback)
 	if EventUtil.AreVariablesLoaded() then
 		callback();
 		return;
 	end
 
-	EventUtil.ContinueAfterAllEvents(callback, "VARIABLES_LOADED");
+	table.insert(eventUtilVariablesLoadedCallbacks, callback);
+end
+
+local secureexecuterange = secureexecuterange;
+local eventUtilContinueOnVariablesLoadedTriggered = false;
+function EventUtil.TriggerOnVariablesLoaded()
+	if eventUtilContinueOnVariablesLoadedTriggered then
+		-- If TriggerOnVariablesLoaded has been called once already, don't do anything further.
+    	return;
+	end
+	eventUtilContinueOnVariablesLoadedTriggered = true;
+
+	secureexecuterange(eventUtilVariablesLoadedCallbacks, function(_, callback)
+		callback();
+	end);
 end
 
 function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
@@ -61,6 +83,15 @@ function EventUtil.ContinueOnAddOnLoaded(addOnName, callback)
 	end
 
 	EventUtil.RegisterOnceFrameEventAndCallback("ADDON_LOADED", callback, addOnName);
+end
+
+function EventUtil.ContinueOnPlayerLogin(callback)
+	if IsLoggedIn() then
+		callback();
+		return;
+	end
+
+	EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_LOGIN", callback);
 end
 
 -- ... are optional event arguments that are required to match before the callback is invoked.

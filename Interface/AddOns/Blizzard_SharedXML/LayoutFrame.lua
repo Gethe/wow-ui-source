@@ -35,7 +35,7 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 		local region = select(i, ...);
 		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
 		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
-		if region:IsShown() and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
+		if (region:IsShown() or region.includeAsLayoutChildWhenHidden) and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
 			layoutChildren[#layoutChildren + 1] = region;
 		end
 	end
@@ -151,6 +151,10 @@ end
 
 function BaseLayoutMixin:SetHeightPadding(padding)
 	self.heightPadding = padding;
+end
+
+function BaseLayoutMixin:SetWidthPadding(padding)
+	self.widthPadding = padding;
 end
 
 function BaseLayoutMixin:GetHeightPadding()
@@ -293,10 +297,8 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 				childWidth = expandToWidth - leftPadding - rightPadding - frameLeftPadding - frameRightPadding;
 				child:SetWidth(childWidth);
 
-				local existingChildHeight = childHeight;
 				local ignoreRectYes = true;
 				childHeight = self:GetChildHeight(child, ignoreRectYes);
-				assertsafe(childHeight == existingChildHeight, "childHeight changed due to SetWidth call");
 			end
 		end
 
@@ -385,10 +387,8 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 				childHeight = expandToHeight - topPadding - bottomPadding - frameTopPadding - frameBottomPadding;
 				child:SetHeight(childHeight);
 
-				local existingChildWidth = childWidth;
 				local ignoreRectYes = true;
 				childWidth = self:GetChildWidth(child, ignoreRectYes);
-				assertsafe(childWidth == existingChildWidth, "childWidth changed due to SetHeight call");
 			end
 		end
 
@@ -411,7 +411,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			rightOffset = rightOffset + rightPadding;
 			if (child.align == "bottom") then
 				local bottomOffset = frameBottomPadding + bottomPadding;
-				child:SetPoint("BOTTOMRIGH", -rightOffset, bottomOffset);
+				child:SetPoint("BOTTOMRIGHT", -rightOffset, bottomOffset);
 			elseif (child.align == "center") then
 				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
 				child:SetPoint("RIGHT", -rightOffset, -topOffset);
@@ -462,20 +462,20 @@ function ResizeLayoutMixin:IgnoreLayoutIndex()
 	return true;
 end
 
-function ResizeLayoutMixin:SetWidthPadding(widthPadding)
-	self.widthPadding = widthPadding;
-end
-
-function ResizeLayoutMixin:SetHeightPadding(heightPadding)
-	self.heightPadding = heightPadding;
-end
-
 function ResizeLayoutMixin:SetMinimumWidth(minimumWidth)
 	self.minimumWidth = minimumWidth;
 end
 
+function ResizeLayoutMixin:GetMinimumWidth()
+	return self.minimumWidth;
+end
+
 function ResizeLayoutMixin:SetMaximumWidth(maximumWidth)
 	self.maximumWidth = maximumWidth;
+end
+
+function ResizeLayoutMixin:GetMaximumWidth()
+	return self.maximumWidth;
 end
 
 function ResizeLayoutMixin:Layout()
@@ -507,10 +507,13 @@ function ResizeLayoutMixin:Layout()
 	if fw and fh then
 		self:SetSize(fw, fh);
 	elseif left and right and top and bottom then
-		local minw = self.minimumWidth;
-		local maxw = self.maximumWidth;
 		local width = GetSize((right - left) + self:GetWidthPadding(), fw, self.minimumWidth, self.maximumWidth);
 		local height = GetSize((top - bottom) + self:GetHeightPadding(), fh, self.minimumHeight, self.maximumHeight);
+
+		self:SetSize(width, height);
+	else
+		local width = GetSize(1, fw, self.minimumWidth, self.maximumWidth);
+		local height = GetSize(1, fh, self.minimumHeight, self.maximumHeight);
 
 		self:SetSize(width, height);
 	end
@@ -716,4 +719,44 @@ end
 
 function StaticGridLayoutFrameMixin:IgnoreLayoutIndex()
 	return true;
+end
+
+-- Note: we're still discussing options to handle the script override problems with
+-- Layout frames so use this only when necesssary for now since it may be replaced.
+OverrideLayoutFrameOnUpdateMixin = {};
+
+-- Override in your derived mixin.
+function OverrideLayoutFrameOnUpdateMixin:NeedsOnUpdate()
+	return false;
+end
+
+-- Override in your derived mixin.
+function OverrideLayoutFrameOnUpdateMixin:OverrideOnUpdate(_elapsed)
+end
+
+-- Use this to register/unregisterd OnUpdate.
+function OverrideLayoutFrameOnUpdateMixin:UpdateOnUpdateRegistration()
+	if self:ShouldRegisterOnUpdate() then
+		if not self:GetScript("OnUpdate") then
+			self:SetScript("OnUpdate", self.OnUpdate);
+		end
+	elseif self:GetScript("OnUpdate") then
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+-- Internal function, don't override. Override NeedsOnUpdate instead.
+function OverrideLayoutFrameOnUpdateMixin:ShouldRegisterOnUpdate()
+	return self.dirty or self:NeedsOnUpdate();
+end
+
+-- Internal function, don't override. Override OverrideOnUpdate instead.
+function OverrideLayoutFrameOnUpdateMixin:OnUpdate(elapsed)
+	BaseLayoutMixin.OnUpdate(self, elapsed);
+
+	if self:NeedsOnUpdate() then
+		self:OverrideOnUpdate(elapsed);
+	end
+
+	self:UpdateOnUpdateRegistration();
 end

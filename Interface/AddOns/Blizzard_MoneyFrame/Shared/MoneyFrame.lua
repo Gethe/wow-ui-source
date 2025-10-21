@@ -249,37 +249,66 @@ function MoneyFrame_UpdateTrialErrorButton(self)
 	return money;
 end
 
+local MONEY_FRAME_FONT_SMALL = true;
+local MONEY_FRAME_FONT_LARGE = false;
+local MONEY_FRAME_FONT_USER_SCALED = true;
+local MONEY_FRAME_FONT_FIXED_SCALE = false;
+
+local moneyFrameFonts =
+{
+	[MONEY_FRAME_FONT_SMALL] =
+	{
+		[MONEY_FRAME_FONT_USER_SCALED] =
+		{
+			["yellow"] = UserScaledFontNumberNormalRightYellow,
+			["red"] = UserScaledFontNumberNormalRightRed,
+			["gray"] = UserScaledFontNumberNormalRightGray,
+			["default"] = UserScaledFontNumberNormalRight,
+		},
+
+		[MONEY_FRAME_FONT_FIXED_SCALE] =
+		{
+			["yellow"] = NumberFontNormalRightYellow,
+			["red"] = NumberFontNormalRightRed,
+			["gray"] = NumberFontNormalRightGray,
+			["default"] = NumberFontNormalRight,
+		},
+	},
+
+	[MONEY_FRAME_FONT_LARGE] =
+	{
+		-- Not yet supported.
+		[MONEY_FRAME_FONT_USER_SCALED] =
+		{
+			["yellow"] = NumberFontNormalLargeRightYellow,
+			["red"] = NumberFontNormalLargeRightRed,
+			["gray"] = NumberFontNormalLargeRightGray,
+			["default"] = NumberFontNormalLargeRight,
+		},
+
+		[MONEY_FRAME_FONT_FIXED_SCALE] =
+		{
+			["yellow"] = NumberFontNormalLargeRightYellow,
+			["red"] = NumberFontNormalLargeRightRed,
+			["gray"] = NumberFontNormalLargeRightGray,
+			["default"] = NumberFontNormalLargeRight,
+		},
+	},
+};
+
+local function GetMoneyFrameFont(moneyFrame, color)
+	local isSmall = moneyFrame.small ~= nil and moneyFrame.small ~= false and moneyFrame.small ~= 0;
+	local isUserScaled = moneyFrame.isUserScaled ~= nil and moneyFrame.isUserScaled ~= false and moneyFrame.isUserScaled ~= 0;
+	local fonts = moneyFrameFonts[isSmall][isUserScaled];
+	local font = fonts[color];
+	return font or fonts.default;
+end
+
 function SetMoneyFrameColorByFrame(moneyFrame, color)
-	local fontObject;
-	if ( moneyFrame.small ) then
-		if ( color == "yellow" ) then
-			fontObject = NumberFontNormalRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalRightGray;
-		else
-			fontObject = NumberFontNormalRight;
-		end
-	else
-		if ( color == "yellow"  ) then
-			fontObject = NumberFontNormalLargeRightYellow;
-		elseif ( color == "red" ) then
-			fontObject = NumberFontNormalLargeRightRed;
-		elseif ( color == "gray" ) then
-			fontObject = NumberFontNormalLargeRightGray;
-		else
-			fontObject = NumberFontNormalLargeRight;
-		end
-	end
-
-	local goldButton = moneyFrame.GoldButton;
-	local silverButton = moneyFrame.SilverButton;
-	local copperButton = moneyFrame.CopperButton;
-
-	goldButton:SetNormalFontObject(fontObject);
-	silverButton:SetNormalFontObject(fontObject);
-	copperButton:SetNormalFontObject(fontObject);
+	local fontObject = GetMoneyFrameFont(moneyFrame, color);
+	moneyFrame.GoldButton:SetNormalFontObject(fontObject);
+	moneyFrame.SilverButton:SetNormalFontObject(fontObject);
+	moneyFrame.CopperButton:SetNormalFontObject(fontObject);
 end
 
 function SetMoneyFrameColor(frameName, color)

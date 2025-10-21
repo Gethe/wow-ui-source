@@ -27,15 +27,15 @@ local function Register()
 		local resourceSetting, resourceInitializer = Settings.SetupCVarCheckbox(category, "nameplateResourceOnTarget", DISPLAY_PERSONAL_RESOURCE_ON_ENEMY, OPTION_TOOLTIP_DISPLAY_PERSONAL_RESOURCE_ON_ENEMY);
 		resourceInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
 
-		-- Show Personal Cooldowns
-		CombatOverrides.RunSettingsCallback(function()
-		local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
-		cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
-		end);
-
 		-- Show Friendly Buffs
 		local buffsSetting, buffsInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyBuffs", DISPLAY_PERSONAL_FRIENDLY_BUFFS, OPTION_TOOLTIP_DISPLAY_PERSONAL_FRIENDLY_BUFFS);
 		buffsInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+
+		-- Show Personal Cooldowns
+		CombatOverrides.RunSettingsCallback(function()
+			local cooldownSetting, cooldownInitializer = Settings.SetupCVarCheckbox(category, "nameplateShowPersonalCooldowns", DISPLAY_PERSONAL_COOLDOWNS, OPTION_TOOLTIP_DISPLAY_PERSONAL_COOLDOWNS);
+			cooldownInitializer:SetParentInitializer(nameplateInitializer, IsModifiable);
+		end);
 	end
 
 	-- Self Highlight
@@ -93,15 +93,15 @@ local function Register()
 			local autoSelfCast = GetCVarBool("autoSelfCast");
 			if not hasSelfCastKey and not autoSelfCast then
 				return 1;
-			elseif autoSelfCast then
+			elseif not hasSelfCastKey and autoSelfCast then
 				return 2;
-			elseif hasSelfCastKey then
+			elseif hasSelfCastKey and not autoSelfCast then
 				return 3;
 			end
-			
+
 			return 4;
 		end
-		
+
 		local function SetValue(value)
 			local selfCastKeySetting = Settings.GetSetting("SELFCAST");
 

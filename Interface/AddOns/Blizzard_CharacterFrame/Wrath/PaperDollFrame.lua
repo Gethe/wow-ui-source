@@ -295,7 +295,7 @@ local function SetLeftStatSelected(value)
 end
 
 local function IsRightStatSelected(value)
-	return value == GetCVar("playerStatLeftDropdown");
+	return value == GetCVar("playerStatRightDropdown");
 end
 
 local function SetRightStatSelected(value)
@@ -613,7 +613,8 @@ function PaperDollFrame_SetArmor(statFrame, unit)
 
 	PaperDollFormatStat(ARMOR, base, posBuff, negBuff, statFrame, text);
 	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitLevel(unit));
-	statFrame.tooltip2 = format(DEFAULT_STATARMOR_TOOLTIP, armorReduction);
+	local armorReductionText = format("%.2f", armorReduction);
+	statFrame.tooltip2 = format(DEFAULT_STATARMOR_TOOLTIP, armorReductionText);
 	
 	if ( unit == "player" ) then
 		local petBonus = ComputePetBonus("PET_BONUS_ARMOR", effectiveArmor );
@@ -1284,22 +1285,7 @@ function CharacterRangedDamageFrame_OnEnter(self)
 end
 
 function PaperDollFrame_GetArmorReduction(armor, attackerLevel)
-	local levelModifier = attackerLevel;
-	if ( levelModifier > 59 ) then
-		levelModifier = levelModifier + (4.5 * (levelModifier-59));
-	end
-	local temp = 0.1*armor/(8.5*levelModifier + 40);
-	temp = temp/(1+temp);
-
-	if ( temp > 0.75 ) then
-		return 75;
-	end
-
-	if ( temp < 0 ) then
-		return 0;
-	end
-
-	return format("%.2f", (temp*100));
+	return C_PaperDollInfo.GetArmorEffectiveness(armor, attackerLevel) * 100;
 end
 
 function PaperDollFormatStat(name, base, posBuff, negBuff, frame, textString)
@@ -2209,10 +2195,8 @@ end
 function GearManagerDialogDeleteSet_OnClick (self)
 	local selectedSet = GearManagerDialog.selectedSet;
 	if ( selectedSet ) then
-		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name);
-		if ( dialog ) then
-			dialog.data = selectedSet.id;
-		else
+		local dialog = StaticPopup_Show("CONFIRM_DELETE_EQUIPMENT_SET", selectedSet.name, nil, selectedSet.id);
+		if ( not dialog ) then
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);
 		end
 	end
@@ -2514,9 +2498,8 @@ function GearManagerDialogPopupOkay_OnClick (self, button, pushed)
 	local icon = popup.selectedTexture;
 	local setID = C_EquipmentSet.GetEquipmentSetID(popup.name);
 	if ( setID ) then	
-		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name);
+		local dialog = StaticPopup_Show("CONFIRM_OVERWRITE_EQUIPMENT_SET", popup.name, nil, setID);
 		if ( dialog ) then
-			dialog.data = setID;
 			dialog.selectedIcon = icon;
 		else
 			UIErrorsFrame:AddMessage(ERR_CLIENT_LOCKED_OUT, 1.0, 0.1, 0.1, 1.0);

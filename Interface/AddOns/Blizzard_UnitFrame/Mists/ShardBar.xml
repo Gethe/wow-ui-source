@@ -1,0 +1,409 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+  
+	<!-- Patchwerk texture info  size=64,128
+	SHARDS
+	<Texture name="UI-WarlockShard-Shard.png" >
+		<Size x="17" y="16"/>	
+		<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-ShardGlow.png" >
+		<Size x="26" y="23"/>	
+		<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-Smoke.png" >
+		<Size x="32" y="32"/>	
+		<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
+	</Texture>
+	<Texture name="UI-WarlockShard-BG.png" >
+		<Size x="52" y="29"/>	
+		<TexCoords left="0.01562500" right="0.82812500" top="0.60937500" bottom="0.83593750"/>	
+		Interface\\PlayerFrame\\
+	</Texture>
+
+	DEMONOLOGY
+	<Texture name="FillBg" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.00390625" right="0.51953125" top="0.00390625" bottom="0.09765625"/>	
+	</Texture>
+	<Texture name="Fill" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.00390625" right="0.51953125" top="0.10546875" bottom="0.19921875"/>	
+	</Texture>
+	<Texture name="Fill-Activate" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.00390625" right="0.51953125" top="0.20703125" bottom="0.30078125"/>	
+	</Texture>
+	<Texture name="BarFrame-Activate" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="169" y="52"/>	
+		<TexCoords left="0.00390625" right="0.66406250" top="0.30859375" bottom="0.51171875"/>	
+	</Texture>
+	<Texture name="BarFrame" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="169" y="52"/>	
+		<TexCoords left="0.00390625" right="0.66406250" top="0.51953125" bottom="0.72265625"/>	
+	</Texture>	 
+
+	<Texture name="Notch-Activate" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="7" y="22"/>	
+		<TexCoords left="0.00390625" right="0.03125000" top="0.00390625" bottom="0.08984375"/>	
+	</Texture>
+	<Texture name="Notch" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="7" y="22"/>	
+		<TexCoords left="0.00390625" right="0.03125000" top="0.09765625" bottom="0.18359375"/>	
+	</Texture>
+	<Texture name="Fill-Activate" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.03906250" right="0.55468750" top="0.00390625" bottom="0.09765625"/>	
+	</Texture>
+	<Texture name="Fill" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.03906250" right="0.55468750" top="0.10546875" bottom="0.19921875"/>	
+	</Texture>
+	<Texture name="FillBg" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="132" y="24"/>	
+		<TexCoords left="0.03906250" right="0.55468750" top="0.20703125" bottom="0.30078125"/>	
+	</Texture>
+	<Texture name="BarFrame-Activate" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="169" y="52"/>	
+		<TexCoords left="0.03906250" right="0.69921875" top="0.30859375" bottom="0.51171875"/>	
+	</Texture>
+	<Texture name="BarFrame" file="Interface\PlayerFrame\Warlock-DemonologyUI" virtual="true" >
+		<Size x="169" y="52"/>	
+		<TexCoords left="0.03906250" right="0.69921875" top="0.51953125" bottom="0.72265625"/>	
+	</Texture>	
+	-->
+  
+  
+	<Frame name="ShardTemplate" virtual="true" hidden="false">
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha target="$parentFill" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.2" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="2"/>
+				<Scripts>
+					<OnPlay>
+						local parent = self:GetParent();
+						parent.shardFill:SetAlpha(0.0);
+						parent.shardFill:Show();
+						parent.shardGlow:SetAlpha(0);
+					</OnPlay>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.shardFill:SetAlpha(1.0);
+						parent.shardGlow:SetAlpha(0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut">
+				<Alpha		target="$parentFill" fromAlpha="1" toAlpha="0" duration="0.2" order="1"/>
+				<Alpha		target="$parentSmokeA" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha		target="$parentSmokeB" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Rotation 	target="$parentSmokeA" duration="0.3" order="1" degrees="63"/>
+				<Rotation	target="$parentSmokeB" duration="0.4" order="1" degrees="-52"/>
+				<Scale 		target="$parentSmokeA" fromScaleX="1.0" fromScaleY="1.0" toScaleX="1.2" toScaleY="1.2" duration="0.3" order="1"/>
+				<Scale		target="$parentSmokeB" fromScaleX="1.2" fromScaleY="1.2" toScaleX="2.5" toScaleY="2.5" duration="0.4" order="1"/>
+				<Alpha		target="$parentSmokeA" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Alpha		target="$parentSmokeB" fromAlpha="1" toAlpha="0" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeA" fromScaleX="2.5" fromScaleY="2.5" toScaleX="0.4" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scale		target="$parentSmokeB" fromScaleX="2.5" fromScaleY="2.5" toScaleX="0.4" toScaleY="0.4" duration="0.25" order="2"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent().shardFill:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="52" y="29"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow"  file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardGlow" alphaMode="ADD" alpha="0">
+					<Size x="26" y="23"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="1"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.42187500" top="0.14843750" bottom="0.32812500"/>	
+				</Texture>
+				<Texture name="$parentSmokeA" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeA">
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="5"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.51562500" top="0.34375000" bottom="0.59375000"/>	
+				</Texture>			
+				<Texture name="$parentSmokeB" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardSmokeB">
+					<Size x="32" y="32"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSmokeA"/>
+					</Anchors>
+					<TexCoords right="0.01562500" left="0.51562500" bottom="0.34375000" top="0.59375000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFill" file="Interface\PlayerFrame\UI-WarlockShard" parentKey="shardFill">
+					<Size x="17" y="16"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.28125000" top="0.00781250" bottom="0.13281250"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture file="Interface\PlayerFrame\UI-WarlockShard">
+					<Size x="52" y="29"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="3"/>
+					</Anchors>
+					<TexCoords left="0.01562500" right="0.82812500" top="0.60937500" bottom="0.83593750"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.shardFill:Hide();
+				self.shardGlow:SetAlpha(0.0);
+				self.shardSmokeA:SetAlpha(0.0);
+				self.shardSmokeB:SetAlpha(0.0);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="BurningEmberTemplate" virtual="true">
+		<Size x="36" y="39"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha target="$parentGlow2" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.15" order="2"/>
+				<Alpha target="$parentGlow2" fromAlpha="1" toAlpha="0" duration="0.15" order="2"/>
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.glow:SetAlpha(0.0);
+						parent.glow2:SetAlpha(0.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut">
+				<Alpha target="$parentGlow" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha target="$parentGlow2" fromAlpha="0" toAlpha="1" duration="0.1" order="1"/>
+				<Alpha target="$parentGlow" fromAlpha="1" toAlpha="0" duration="0.15" order="2"/>
+				<Alpha target="$parentGlow2" fromAlpha="1" toAlpha="0" duration="0.15" order="2"/>
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.glow:SetAlpha(0.0);
+						parent.glow2:SetAlpha(0.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="border" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
+					<TexCoords left="0.15234375" right="0.29296875" top="0.32812500" bottom="0.93750000"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentFill" file="Interface\PlayerFrame\Warlock-DestructionUI" parentKey="fill">
+					<Size x="20" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="7"/>
+					</Anchors>
+					<TexCoords left="0.30078125" right="0.37890625" top="0.32812500" bottom="0.67187500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentFire" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true" parentKey="fire" hidden="true">
+					<TexCoords left="0.00390625" right="0.14453125" top="0.32812500" bottom="0.93750000"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentGlow" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true" parentKey="glow" alpha="0" alphaMode="ADD">
+					<TexCoords left="0.00390625" right="0.14453125" top="0.32812500" bottom="0.93750000"/>
+				</Texture>	
+				<Texture name="$parentGlow2" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true" parentKey="glow2" alpha="0" alphaMode="ADD">
+					<TexCoords left="0.00390625" right="0.14453125" top="0.32812500" bottom="0.93750000"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="WarlockPowerFrame" parent="PlayerFrame" toplevel="true" hidden="true" mixin="WarlockPowerFrameMixin">
+		<Size>
+		  <AbsDimension x="110" y="25"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM" x="50" y="34"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="showAnim">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.5" order="1"/>
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame name="ShardBarFrame" hidden="true" enableMouse="true" mixin="ShardBarMixin">
+				<Size>
+				  <AbsDimension x="110" y="25"/>
+				</Size>
+				<Anchors>
+				  <Anchor point="TOPLEFT"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="-10" right="9" top="0" bottom="3"/>
+				</HitRectInsets>
+				<Frames>
+					<Frame name="$parentShard1" inherits="ShardTemplate" parentKey="shard1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-10" y="0"/>
+						</Anchors>
+					</Frame>	
+					<Frame name="$parentShard2" inherits="ShardTemplate" parentKey="shard2">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShard1" relativePoint="TOPLEFT" x="30"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentShard3" inherits="ShardTemplate" parentKey="shard3">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShard2" relativePoint="TOPLEFT" x="30"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentShard4" inherits="ShardTemplate" parentKey="shard4">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentShard3" relativePoint="TOPLEFT" x="30"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter>
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
+						GameTooltip:SetText(SOUL_SHARDS_POWER, 1, 1, 1);
+						GameTooltip:AddLine(SOUL_SHARDS_TOOLTIP, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="DemonicFuryBarFrame" hidden="true" enableMouse="true" mixin="DemonicFuryBarMixin">
+				<Size>
+				  <AbsDimension x="169" y="52"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-28" y="15"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="14" right="17" top="12" bottom="12"/>
+				</HitRectInsets>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\PlayerFrame\Warlock-DemonologyUI">
+							<Size x="132" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-2" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.03906250" right="0.55468750" top="0.20703125" bottom="0.30078125"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture file="Interface\PlayerFrame\Warlock-DemonologyUI" parentKey="fill">
+							<Size x="132" y="24"/>
+							<Anchors>
+								<Anchor point="LEFT" x="17" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.03906250" right="0.55468750" top="0.10546875" bottom="0.19921875"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PlayerFrame\Warlock-DemonologyUI" setAllPoints="true" parentKey="bar">
+							<TexCoords left="0.03906250" right="0.69921875" top="0.51953125" bottom="0.72265625"/>	
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="Notch" file="Interface\PlayerFrame\Warlock-DemonologyUI" parentKey="notch">
+							<Size x="7" y="22"/>
+							<Anchors>
+								<Anchor point="LEFT" x="40" y="-1"/>
+							</Anchors>
+							<TexCoords left="0.00390625" right="0.03125000" top="0.09765625" bottom="0.18359375"/>
+						</Texture>
+						<FontString name="$parentPowertext" inherits="TextStatusBarText" parentKey="powerText" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						self.lockShow = 1;
+						local power = UnitPower("player", Enum.PowerType.DemonicFury);
+						TextStatusBar_UpdateTextStringWithValues(self, self.powerText, power, 1, self.maxPower);
+						GameTooltip_SetDefaultAnchor(GameTooltip, self);
+						GameTooltip:SetText(DEMONIC_FURY, 1, 1, 1);
+						GameTooltip:AddLine(DEMONIC_FURY_TOOLTIP, nil, nil, nil, true);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						if ( not self.showText ) then
+							self.lockShow = 0;
+							self.powerText:Hide();
+						end
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="BurningEmbersBarFrame" hidden="true" enableMouse="true" mixin="BurningEmbersBarMixin">
+				<Size x="148" y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-21" y="1"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="22" right="25" top="3" bottom="-9"/>
+				</HitRectInsets>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background" file="Interface\PlayerFrame\Warlock-DestructionUI" setAllPoints="true">
+							<Size x="148" y="18"/>	
+							<TexCoords left="0.00390625" right="0.58203125" top="0.01562500" bottom="0.29687500"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentEmber1" inherits="BurningEmberTemplate" parentKey="ember1">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="16" y="7"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentEmber2" inherits="BurningEmberTemplate" parentKey="ember2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentEmber1" x="26" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentEmber3" inherits="BurningEmberTemplate" parentKey="ember3">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentEmber2" x="26" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentEmber4" inherits="BurningEmberTemplate" parentKey="ember4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentEmber3" x="26" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

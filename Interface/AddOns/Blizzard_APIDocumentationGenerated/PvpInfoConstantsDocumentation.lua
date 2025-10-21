@@ -37,6 +37,7 @@ local PvpInfoConstants =
 			Values =
 			{
 				{ Name = "MaxPlayersPerInstance", Type = "number", Value = 80 },
+				{ Name = "MAX_PVP_LOCK_LIST_MAP", Type = "number", Value = 2 },
 			},
 		},
 	},

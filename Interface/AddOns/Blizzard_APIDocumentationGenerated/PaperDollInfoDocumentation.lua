@@ -7,6 +7,15 @@ local PaperDollInfo =
 	Functions =
 	{
 		{
+			Name = "CanAutoEquipCursorItem",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canAutoEquip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
 
@@ -36,12 +45,61 @@ local PaperDollInfo =
 			},
 		},
 		{
+			Name = "GetInspectGuildInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitString", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetInspectRatedBGData",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "ratedBGData", Type = "InspectRatedBGData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "minItemLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "IsInventorySlotEnabled",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "slotName", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRangedSlotShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -66,16 +124,6 @@ local PaperDollInfo =
 
 	Events =
 	{
-		{
-			Name = "ActiveTalentGroupChanged",
-			Type = "Event",
-			LiteralName = "ACTIVE_TALENT_GROUP_CHANGED",
-			Payload =
-			{
-				{ Name = "changedTo", Type = "number", Nilable = false },
-				{ Name = "changedFrom", Type = "number", Nilable = false },
-			},
-		},
 		{
 			Name = "CharacterPointsChanged",
 			Type = "Event",
@@ -154,11 +202,6 @@ local PaperDollInfo =
 			},
 		},
 		{
-			Name = "PlayerTalentUpdate",
-			Type = "Event",
-			LiteralName = "PLAYER_TALENT_UPDATE",
-		},
-		{
 			Name = "PreviewPetTalentPointsChanged",
 			Type = "Event",
 			LiteralName = "PREVIEW_PET_TALENT_POINTS_CHANGED",
@@ -226,6 +269,17 @@ local PaperDollInfo =
 	Tables =
 	{
 		{
+			Name = "InspectGuildInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "achievementPoints", Type = "number", Nilable = false },
+				{ Name = "numMembers", Type = "number", Nilable = false },
+				{ Name = "guildName", Type = "string", Nilable = false },
+				{ Name = "realmName", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "InspectPVPData",
 			Type = "Structure",
 			Fields =
@@ -235,6 +289,16 @@ local PaperDollInfo =
 				{ Name = "gamesPlayed", Type = "number", Nilable = false },
 				{ Name = "roundsWon", Type = "number", Nilable = false },
 				{ Name = "roundsPlayed", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "InspectRatedBGData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "rating", Type = "number", Nilable = false },
+				{ Name = "played", Type = "number", Nilable = false },
+				{ Name = "won", Type = "number", Nilable = false },
 			},
 		},
 	},

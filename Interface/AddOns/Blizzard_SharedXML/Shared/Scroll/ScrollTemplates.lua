@@ -59,6 +59,20 @@ function ScrollingEditBoxMixin:OnLoad()
 	editBox:RegisterCallback("OnEditFocusLost", self.OnEditBoxFocusLost, self);
 	editBox:RegisterCallback("OnMouseUp", self.OnEditBoxMouseUp, self);
 	editBox:RegisterCallback("OnKeyDown", self.OnEditBoxKeyDown, self);
+
+	if self.useDefaultEnterHandling then
+		self:RegisterCallback("OnEnterPressed", function(o, editBox)
+			if editBox:IsMultiLine() then
+				self:Insert("\n");
+			end
+		end);
+	end
+
+	if self.useDefaultEscapeHandling then
+		self:RegisterCallback("OnEscapePressed", function(o, editBox)
+			self:ClearFocus();
+		end);
+	end
 end
 
 function ScrollingEditBoxMixin:UpdateScrollBox()

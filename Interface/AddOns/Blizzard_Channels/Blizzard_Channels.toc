@@ -1,5 +1,5 @@
 ## Title: Blizzard_Channels
-## Dependencies: Blizzard_SocialToast
+## Dependencies: Blizzard_SocialToast, Blizzard_HelpPlate
 ## AllowLoadGameType: classic
 VoiceUtils.lua
 ChannelButton.xml

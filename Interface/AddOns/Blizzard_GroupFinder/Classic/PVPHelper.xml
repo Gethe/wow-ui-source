@@ -101,6 +101,8 @@
 	<Frame name="PVPReadyDialog" inherits="BackdropTemplate" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true">
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DARK_DIALOG_32_32" type="global"/>
+			<!-- Classic resizes this window dynamically based on Text + Subtext + OffsetHeight -->
+			<KeyValue key="windowHeightOffset" value="65"/>
 		</KeyValues>
 		<Size>
 			<AbsDimension x="320" y="110"/>

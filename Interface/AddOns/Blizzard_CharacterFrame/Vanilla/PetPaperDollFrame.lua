@@ -148,8 +148,11 @@ function PetPaperDollFrame_SetStats()
 		-- Set the tooltip text
 		local tooltipText = HIGHLIGHT_FONT_COLOR_CODE.._G["SPELL_STAT"..(i).."_NAME"].." ";
 		-- Get class specific tooltip for that stat
-		local temp, classFileName = UnitClass("pet");
-		local classStatText = _G[strupper(classFileName).."_"..frame.stat.."_".."TOOLTIP"];
+		local classStatText = nil;
+		local classFileName = select(2, UnitClass("pet"));
+		if(classFileName) then
+			classStatText = _G[strupper(classFileName).."_"..frame.stat.."_".."TOOLTIP"];
+		end
 		-- If can't find one use the default
 		if ( not classStatText ) then
 			classStatText = _G["DEFAULT".."_"..frame.stat.."_".."TOOLTIP"];

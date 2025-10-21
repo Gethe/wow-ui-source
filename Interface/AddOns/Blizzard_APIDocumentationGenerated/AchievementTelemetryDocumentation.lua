@@ -9,6 +9,7 @@ local AchievementTelemetry =
 		{
 			Name = "LinkAchievementInClub",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local AchievementTelemetry =
 		{
 			Name = "LinkAchievementInWhisper",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{

@@ -79,9 +79,10 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 	                    threatFrame, "player", _G[thisName.."NumericalThreat"],
 						healthBar.MyHealPredictionBar,
 						healthBar.OtherHealPredictionBar,
-						nil, nil, nil,
-						nil, nil,
-						nil, nil);
+						healthBar.TotalAbsorbBar, healthBar.TotalAbsorbBarOverlay,
+						self.textureFrame.overAbsorbGlow, self.textureFrame.overHealAbsorbGlow,
+						healthBar.HealAbsorbBar, healthBar.HealAbsorbBarLeftShadow,
+						healthBar.HealAbsorbBarRightShadow, nil);
 
 	TargetFrame_Update(self);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
@@ -103,11 +104,11 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 
-	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+	CVarCallbackRegistry:RegisterCallback("showTargetOfTarget", TargetFrame_OnCVarChanged, self);
 end
 
 function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
-	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+	if( self.totFrame ) then
 		TargetofTarget_Update(self.totFrame);
 	end
 end
@@ -115,7 +116,7 @@ end
 function TargetFrame_Update (self)
 	-- This check is here so the frame will hide when the target goes away
 	-- even if some of the functions below are hooked by addons.
-	if ( not UnitExists(self.unit) and not ShowBossFrameWhenUninteractable(self.unit) ) then
+	if ( not ShouldShowTargetFrame(self) ) then
 		self:Hide();
 	else
 		self:Show();
@@ -267,6 +268,12 @@ function TargetFrame_CheckLevel (self)
 	if ( UnitIsCorpse(self.unit) ) then
 		self.levelText:Hide();
 		self.highLevelTexture:Show();
+	elseif (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
+		local petLevel = UnitBattlePetLevel(self.unit);
+		self.levelText:SetVertexColor(1.0, 0.82, 0.0);
+		self.levelText:SetText(petLevel);
+		self.levelText:Show();
+		self.highLevelTexture:Hide();
 	elseif ( targetEffectiveLevel > 0 ) then
 		-- Normal level target
 		self.levelText:SetText(targetEffectiveLevel);
@@ -345,13 +352,13 @@ function TargetFrame_CheckFaction (self)
 end
 
 function TargetFrame_CheckBattlePet(self)
-	--[[if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
+	if ( UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit) ) then
 		local petType = UnitBattlePetType(self.unit);
 		self.petBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.petBattleIcon:Show();
 	else
 		self.petBattleIcon:Hide();
-	end]]
+	end
 end
 
 
@@ -1247,10 +1254,8 @@ function FocusFrame_OnDragStop(self)
 	end
 end
 
-function FocusFrameMixin:SetSmallSize(smallSize, onChange)
+function FocusFrameMixin:SetSmallSize(smallSize)
 	if ( smallSize and not FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = true;
 		FocusFrame.maxBuffs = 0;
 		FocusFrame.maxDebuffs = 8;
@@ -1263,11 +1268,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 4);
 		FocusFrameTextureFrameName:SetWidth(120);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", x * SMALL_FOCUS_UPSCALE + 29, (y - GetScreenHeight()) * SMALL_FOCUS_UPSCALE - 13);
-		end
 		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
@@ -1281,8 +1281,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 --		TargetFrame_CheckClassification(FocusFrame, true);
 		TargetFrame_Update(FocusFrame);
 	elseif ( not smallSize and FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = false;
 		FocusFrame.maxBuffs = nil;
 		FocusFrame.maxDebuffs = nil;
@@ -1295,11 +1293,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarText);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 3);
 		FocusFrameTextureFrameName:SetWidth(100);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", (x - 29) / SMALL_FOCUS_UPSCALE, (y + 13) / SMALL_FOCUS_UPSCALE - GetScreenHeight());
-		end
 		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");

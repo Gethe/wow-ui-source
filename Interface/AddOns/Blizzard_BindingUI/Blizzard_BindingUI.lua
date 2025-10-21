@@ -14,7 +14,7 @@ StaticPopupDialogs["CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS"] = {
 	text = CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		SaveBindings(KeyBindingFrame.which);
 		KeyBindingFrame.outputText:SetText("");
 		KeyBindingFrame_SetSelected(nil);
@@ -30,11 +30,11 @@ StaticPopupDialogs["CONFIRM_LOSE_BINDING_CHANGES"] = {
 	text = CONFIRM_LOSE_BINDING_CHANGES,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		KeyBindingFrame_ChangeBindingProfile();
 		KeyBindingFrame.bindingsChanged = nil;
 	end,
-	OnCancel = function(self)
+	OnCancel = function(dialog, data)
 		if ( KeyBindingFrame.characterSpecificButton:GetChecked() ) then
 			KeyBindingFrame.characterSpecificButton:SetChecked();
 		else
@@ -50,7 +50,7 @@ StaticPopupDialogs["CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS"] = {
 	text = CONFIRM_RESET_KEYBINDINGS,
 	button1 = OKAY,
 	button2 = CANCEL,
-	OnAccept = function(self)
+	OnAccept = function(dialog, data)
 		KeyBindingFrame_ResetBindingsToDefault();
 	end,
 	timeout = 0,

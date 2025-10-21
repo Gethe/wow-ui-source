@@ -37,6 +37,15 @@ local RaidLocks =
 				{ Name = "encounterIsComplete", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsRaidLockExtendFeatureEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "raidLockExtendFeatureEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

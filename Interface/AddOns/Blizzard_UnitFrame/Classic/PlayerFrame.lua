@@ -21,8 +21,8 @@ function PlayerFrame_OnLoad(self)
 						 healthBar.OtherHealPredictionBar,
 						 healthBar.TotalAbsorbBar,
 						 healthBar.TotalAbsorbBarOverlay,
-						 healthBar.OverAbsorbGlow,
-						 healthBar.OverHealAbsorbGlow,
+						 self.rightFrame.textFrame.overAbsorbGlow,
+						 self.rightFrame.textFrame.overHealAbsorbGlow,
 						 healthBar.HealAbsorbBar,
 						 healthBar.HealAbsorbBarLeftShadow,
 						 healthBar.HealAbsorbBarRightShadow,
@@ -130,7 +130,7 @@ function PlayerFrame_UpdatePartyLeader()
 		PlayerGuideIcon:Hide();
 	end
 
-	local lootMethod, lootMaster = GetLootMethod();
+	local lootMethod, lootMaster = C_PartyInfo.GetLootMethod();
 	if ( lootMaster == 0 and IsInGroup() ) then
 		PlayerMasterIcon:Show();
 	else
@@ -723,7 +723,7 @@ function PlayerFrame_HideVehicleTexture()
 	elseif ( class == "DEATHKNIGHT" ) then
 		RuneFrame:Show();
 	elseif ( class == "PRIEST" and PriestBarFrame) then
-		PriestBarFrame_CheckAndShow();
+		PriestBarFrame:CheckAndShow();
 	end
 end
 

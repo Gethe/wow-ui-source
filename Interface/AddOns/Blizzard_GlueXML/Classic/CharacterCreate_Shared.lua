@@ -1,6 +1,9 @@
 CHARACTER_FACING_INCREMENT = 2;
 NUM_CHAR_CUSTOMIZATIONS = 5;
 MIN_CHAR_NAME_LENGTH = 2;
+PANDAREN_RACE_ID = 24;
+PANDAREN_ALLIANCE_RACE_ID = 25;
+PANDAREN_HORDE_RACE_ID = 26;
 
 FACTION_BACKDROP_COLOR_TABLE = {
 	Alliance = {
@@ -11,13 +14,17 @@ FACTION_BACKDROP_COLOR_TABLE = {
 		color = GLUE_HORDE_COLOR,
 		borderColor = GLUE_HORDE_BORDER_COLOR,
 	},
+	Player = {
+		color = GLUE_NEUTRAL_COLOR,
+		borderColor = GLUE_NEUTRAL_BORDER_COLOR,
+	},
 };
 
 function CharacterCreateEnumerateRaces()
 	local races = C_CharacterCreation.GetAvailableRaces();
 	CharacterCreate.numRaces = #races;
 	if ( CharacterCreate.numRaces > MAX_RACES ) then
-		message("Too many races!  Update MAX_RACES");
+		SetBasicMessageDialogText("Too many races!  Update MAX_RACES");
 		return;
 	end
 
@@ -32,7 +39,16 @@ function CharacterCreateEnumerateRaces()
 	end
 	for index, raceData in pairs(races) do
 		coords = RACE_ICON_TCOORDS[strupper(raceData.fileName.."_"..gender)];
-		_G["CharacterCreateRaceButton"..index.."NormalTexture"]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+
+		local normalTexture = _G["CharacterCreateRaceButton"..index].normalTexture;
+		local pushedTexture = _G["CharacterCreateRaceButton"..index].pushedTexture;
+
+		normalTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+
+		if pushedTexture then -- Not all versions have the pushed texture
+			pushedTexture:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		end
+
 		button = _G["CharacterCreateRaceButton"..index];
 		button:Show();
 		button.tooltip = nil;
@@ -47,6 +63,15 @@ function CharacterCreateEnumerateRaces()
 			if (currentFaction ~= raceData.factionInternalName and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
 				disable = false;
 			end
+
+			if raceData.raceID == PANDAREN_RACE_ID then
+				if currentFaction == "Alliance" then
+					raceData.raceID = PANDAREN_HORDE_RACE_ID;
+				elseif currentFaction == "Horde" then
+					raceData.raceID = PANDAREN_ALLIANCE_RACE_ID;
+				end
+			end
+
 		elseif CharacterCreateFrame.paidServiceType == PAID_RACE_CHANGE or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 			local _, currentFaction = C_PaidServices.GetCurrentFaction();
 			if CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
@@ -54,7 +79,8 @@ function CharacterCreateEnumerateRaces()
 			end
 			local currentRace = C_PaidServices.GetCurrentRaceID();
 			local currentClass = C_PaidServices.GetCurrentClassID();
-			if (currentFaction == raceData.factionInternalName and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
+			local factionCheck = currentFaction == raceData.factionInternalName or raceData.isNeutralRace;
+			if (factionCheck and currentRace ~= raceData.raceID and C_CharacterCreation.IsRaceClassValid(raceData.raceID, currentClass)) then
 				disable = false;
 			end
 		elseif isBoostedCharacter and CharacterUpgradeFlow and CharacterUpgradeFlow.data and CharacterUpgradeFlow.data.boostType and C_CharacterServices.DoesBoostTypeRestrictRace(CharacterUpgradeFlow.data.boostType, raceData.raceID) then
@@ -73,15 +99,14 @@ function CharacterCreateEnumerateRaces()
 			if ( texture ) then
 				texture:SetDesaturated(true);
 			end
-			button:SetText("");
 		else
 			button:Enable();
 			local texture = button:GetNormalTexture();
 			if ( texture ) then
 				texture:SetDesaturated(false);
 			end
-			button.tooltip = raceData.name;
 		end
+		button.tooltip = raceData.name;
 
 		button.raceID = raceData.raceID;
 	end
@@ -105,7 +130,7 @@ function CharacterCreateEnumerateClasses()
 	CharacterCreate.numClasses = numDisplayClasses;
 	
 	if ( CharacterCreate.numClasses > MAX_CLASSES_PER_RACE ) then
-		message("Too many classes!  Update MAX_CLASSES_PER_RACE");
+		SetBasicMessageDialogText("Too many classes!  Update MAX_CLASSES_PER_RACE");
 		return;
 	end
 
@@ -175,7 +200,7 @@ function CharacterCreateMixin:OnLoad()
 	CharacterCreate.selectedGender = 0;
 
 	C_CharacterCreation.SetCharCustomizeFrame("CharacterCreate");
-	C_CharacterCreation.SetSelectedPreviewGearType(Enum.PreviewGearType.Starting);
+	C_CharacterCreation.SetSelectedPreviewGearType(Enum.NewCharGear.Start);
 	--CharCreateModel:SetLight(1, 0, 0, -0.707, -0.707, 0.7, 1.0, 1.0, 1.0, 0.8, 1.0, 1.0, 0.8);
 
 	for i=1, NUM_CHAR_CUSTOMIZATIONS, 1 do
@@ -201,15 +226,22 @@ function CharacterCreateMixin:OnShow()
 		self.currentPaidServiceName = nil;
 		--randomly selects a combination
 		C_CharacterCreation.ResetCharCustomize();
-		if (not C_Reincarnation.IsReincarnating()) then
-			CharacterCreateNameEdit:SetText("");
-			CharCreateOkayButton:SetText(CHARACTER_CREATE_ACCEPT);
-		else
+
+		if C_Reincarnation.IsReincarnating() then
 			local guid, charName = C_Reincarnation.GetReincarnatingCharacter();
 			CharacterCreateNameEdit:SetText(charName);
 			CharacterCreateNameEdit:Disable();
 			CharacterCreateRandomName:Disable();
-			CharCreateOkayButton:SetText(DEATH_REINCARNATE_CHARACTER);
+		else
+			CharacterCreateNameEdit:SetText("");
+		end
+
+		if C_GameRules.IsHardcoreActive() then
+			if (C_Reincarnation.IsReincarnating()) then
+				CharCreateOkayButton:SetText(DEATH_REINCARNATE_CHARACTER);
+			else
+				CharCreateOkayButton:SetText(CHARACTER_CREATE_ACCEPT);
+			end
 		end
 	end
 
@@ -224,7 +256,7 @@ function CharacterCreateMixin:OnShow()
 	C_CharacterCreation.SetCharacterCreateFacing(-15);
 
 	-- Set in locale files. We only support random names for English.
-	if ( ALLOW_RANDOM_NAME_BUTTON ) then
+	if ( ALLOW_RANDOM_NAME_BUTTON and CharacterCreateNameEdit:IsShown() ) then
 		CharacterCreateRandomName:Show();
 	end
 
@@ -243,6 +275,16 @@ function CharacterCreateMixin:OnShow()
 end
 
 function CharacterCreateMixin:OnHide()
+	if (self.state == "CUSTOMIZATION") then
+		CharacterCreate_Back();
+	end
+
+	if CharacterCreatePreviewFrame then
+		-- Character previews will need to be redone if coming back to character create. One reason is all the memory used for
+		-- tracking the frames (on the c side) will get released if the user returns to the login screen.
+		CharacterCreatePreviewFrame.rebuildPreviews = true;
+	end
+
 	SetInCharacterCreate(false);
 	CharacterCreateFrame:ClearPaidServiceInfo();
 	CharacterCreateFrame:ClearVASInfo();
@@ -272,35 +314,35 @@ function CharacterCreateMixin:OnEvent(event, ...)
 			CharacterSelect.selectGuid = guid;
 			GlueParent_SetScreen("charselect");
 		elseif (C_Reincarnation.IsReincarnating()) then
-			GlueDialog_Show("OKAY", CHAR_CREATE_REINCARNATION_FAILED);
+			StaticPopup_Show("OKAY", CHAR_CREATE_REINCARNATION_FAILED);
 			-- Kick them back out to character select
 		else	
-			GlueDialog_Show("OKAY", _G[errorCode]);
+			StaticPopup_Show("OKAY", _G[errorCode]);
 		end
 	elseif ( event == "CUSTOMIZE_CHARACTER_STARTED" ) then
-		GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
+		StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", CHAR_CUSTOMIZE_IN_PROGRESS);
 	elseif ( event == "CUSTOMIZE_CHARACTER_RESULT" ) then
 		local success, err = ...;
 		if ( success ) then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 		else
-			GlueDialog_Show("OKAY", _G[err]);
+			StaticPopup_Show("OKAY", _G[err]);
 		end
 	elseif ( event == "RACE_FACTION_CHANGE_STARTED" ) then
 		local changeType = ...;
 		if ( changeType == "RACE" ) then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", RACE_CHANGE_IN_PROGRESS);
 		elseif ( changeType == "FACTION" ) then
-			GlueDialog_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
+			StaticPopup_Show("PAID_SERVICE_IN_PROGRESS", FACTION_CHANGE_IN_PROGRESS);
 		end
 	elseif ( event == "RACE_FACTION_CHANGE_RESULT" ) then
 		local success, err = ...;
 		if ( success ) then
-			GlueDialog_Hide("PAID_SERVICE_IN_PROGRESS");
+			StaticPopup_Hide("PAID_SERVICE_IN_PROGRESS");
 			GlueParent_SetScreen("charselect");
 		else
-			GlueDialog_Show("OKAY", _G[err]);
+			StaticPopup_Show("OKAY", _G[err]);
 		end
 	elseif event == "STORE_VAS_PURCHASE_ERROR" then
 		self:OnStoreVASPurchaseError();
@@ -342,7 +384,7 @@ function CharacterCreateMixin:BeginVASTransaction()
 end
 
 function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
-	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+	return errorID == Enum.VasTransactionPurchaseResult.DbNameNotAvailable or errorID == Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName;
 end
 
 function CharacterCreateMixin:OnStoreVASPurchaseError()
@@ -356,7 +398,8 @@ function CharacterCreateMixin:OnStoreVASPurchaseError()
 				break;
 			end
 		end
-		GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, exitAfterError);
+		local text2 = nil;
+		StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", displayMsg, text2, exitAfterError);
 	end
 end
 
@@ -368,7 +411,8 @@ function CharacterCreateMixin:OnAssignVASResponse(token, storeError, vasPurchase
 			CharacterCreateFrame:Exit();
 		else
 			local exitAfterError = not self:IsVASErrorUserFixable(vasPurchaseResult);
-			GlueDialog_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, exitAfterError);
+			local text2 = nil;
+			StaticPopup_Show("CHARACTER_CREATE_VAS_ERROR", errorMsg, text2, exitAfterError);
 		end
 	end
 end
@@ -404,6 +448,7 @@ function CharacterCreateMixin:OnUpdate(elapsed)
 		local diff = (x - self.lastCursorPosX) * self.RotationConstant;
 		self.lastCursorPosX = x;
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + diff);
+		CharacterCreate_RotatePreviews();
 	end
 end
 
@@ -416,16 +461,22 @@ function CharacterCreateMixin:Exit()
 	GlueParent_SetScreen("charselect");
 end
 
+function CharacterCreateMixin:OnMouseWheel(delta)
+	if CharacterCreatePreviewFrame and CharacterCreatePreviewFrame:IsShown() then
+		CharacterCreate_ChangeFeatureVariation(delta * -1);
+	end
+end
+
 function CharacterCreate_OnChar()
 end
 
 function CharacterCreate_OnKeyDown(self, key)
-	if ( key == "ESCAPE" ) then
-		CharacterCreate_Back();
-	elseif ( key == "ENTER" ) then
-		CharacterCreate_Okay();
-	elseif ( key == "PRINTSCREEN" ) then
+	if ( key == "PRINTSCREEN" ) then
 		Screenshot();
+	elseif key == "ENTER" then
+		CharacterCreate_Forward();
+	elseif key == "ESCAPE" then
+		CharacterCreate_Back();
 	end
 end
 
@@ -433,7 +484,112 @@ function CharacterCreate_UpdateModel(self)
 	C_CharacterCreation.UpdateCustomizationScene();
 end
 
-function CharacterCreate_Okay()
+function CharacterCreate_GetCurrentStateIndex()
+
+	if not CHARACTER_CREATE_STATES then
+		return 1;
+	end
+
+	if CharacterCreateFrame.state then
+		for i=1, #CHARACTER_CREATE_STATES do
+			if CharacterCreateFrame.state == CHARACTER_CREATE_STATES[i] then
+				return i;
+			end
+		end
+	end
+
+	return 1;
+end
+
+function CharacterCreate_GetNumStates()
+	if not CHARACTER_CREATE_STATES then
+		return 1;
+	end
+	return #CHARACTER_CREATE_STATES;
+end
+
+function CharacterCreate_Back()
+
+	local stateIndex = CharacterCreate_GetCurrentStateIndex();
+
+	if stateIndex <= 1 then
+		if( IsKioskGlueEnabled() ) then
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
+			GlueParent_SetScreen("kioskmodesplash");
+		else
+			PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
+			CHARACTER_SELECT_BACK_FROM_CREATE = true;
+			GlueParent_SetScreen("charselect");
+		end
+		return;
+	end
+
+	CharacterCreateFrame.state = CHARACTER_CREATE_STATES[stateIndex - 1];
+
+	if CharacterCreateFrame.state == "CLASSRACE" then
+		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
+		CharacterCreateClassFrame:Show();
+		CharacterCreateRaceFrame:Show();
+		CharacterCreateMoreInfoButton:Show();
+		CharacterCustomizationFrame:Hide();
+		CharacterCreatePreviewFrame:Hide();
+		CharCreateOkayButton:SetText(CUSTOMIZE);
+		CharacterCreateNameEdit:Hide();
+		CharacterCreateRandomName:Hide();
+
+		--back to awesome gear
+		C_CharacterCreation.SetSelectedPreviewGearType(1);
+
+		-- back to normal camera
+		C_CharacterCreation.SetFaceCustomizeCamera(false, false);
+	end
+end
+
+function CharacterCreate_Forward()
+	local stateIndex = CharacterCreate_GetCurrentStateIndex();
+
+	if stateIndex + 1 > CharacterCreate_GetNumStates() then
+		CreateCharacter();
+		return;
+	end
+
+	CharacterCreateFrame.state = CHARACTER_CREATE_STATES[stateIndex + 1];
+
+	if CharacterCreateFrame.state == "CUSTOMIZATION" then
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+		CharacterCreateClassFrame:Hide();
+		CharacterCreateRaceFrame:Hide();
+		CharacterCreateMoreInfoButton:Hide();
+		CharacterCustomizationFrame:Show();
+		CharacterCreatePreviewFrame:Show();
+		CharacterTemplateConfirmDialog:Hide();
+
+		CharacterCreate_PrepPreviewModels();
+		if ( CharacterCreateFrame.customizationType ) then
+			CharacterCreate_ResetFeaturesDisplay();
+		else
+			CharacterCreate_SelectCustomizationType(1);
+		end
+
+		CharCreateOkayButton:SetText(FINISH);
+		CharacterCreateNameEdit:Show();
+		if ( ALLOW_RANDOM_NAME_BUTTON ) then
+			CharacterCreateRandomName:Show();
+		end
+
+		--You just went to customization mode - show the boring start gear
+		C_CharacterCreation.SetSelectedPreviewGearType(0);
+
+		-- set cam
+		if (CharacterCreateFrame.customizationType and CharacterCreateFrame.customizationType > 1) then
+			C_CharacterCreation.SetFaceCustomizeCamera(true, false);
+		else
+			C_CharacterCreation.SetFaceCustomizeCamera(false, false);
+		end
+	end
+end
+
+function CreateCharacter()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CREATE_CHAR);
 
 	-- CLASS-36892: Fixes self found state in CPP mismatching the UI
@@ -442,9 +598,9 @@ function CharacterCreate_Okay()
 	end
 
 	if CharacterCreateFrame.paidServiceType then
-		GlueDialog_Show("CONFIRM_PAID_SERVICE");
+		StaticPopup_Show("CONFIRM_PAID_SERVICE");
 	elseif CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidFactionChange or CharacterCreateFrame.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
-		GlueDialog_Show("CONFIRM_VAS_FACTION_CHANGE");
+		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	elseif C_Reincarnation.IsReincarnating() then
 		CharacterReincarnatePopUpDialog:ShowWarning();
 	else
@@ -455,25 +611,19 @@ function CharacterCreate_Okay()
 		end
 
 		local isPvP = select(2, GetServerName()); -- Grabbing whether we're a PvP realm from GetServerName()
+		
+		-- If using templates, pandaren must pick a faction.
+		local _, faction = C_CharacterCreation.GetFactionForRace(CharacterCreate.selectedRace);
 
-		if (HardcorePopUpFrame and C_GameRules.IsHardcoreActive()) then
+		if ( C_CharacterCreation.IsUsingCharacterTemplate() or C_CharacterCreation.IsForcingCharacterTemplate() ) and ( faction ~= "Alliance" and faction ~= "Horde" ) then
+			CharacterTemplateConfirmDialog:Show();	
+		elseif (HardcorePopUpFrame and C_GameRules.IsHardcoreActive()) then
 			HardcorePopUpFrame:ShowCharacterCreationWarning();
 		elseif (RealmWarningPopUpFrame and isPvP == true) then
 			RealmWarningPopUpFrame:ShowCharacterCreationWarning();
 		else
 			C_CharacterCreation.CreateCharacter(CharacterCreateNameEdit:GetText());
 		end
-	end
-end
-
-function CharacterCreate_Back()
-	if( IsKioskGlueEnabled() ) then
-		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
-		GlueParent_SetScreen("kioskmodesplash");
-	else
-		PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
-		CHARACTER_SELECT_BACK_FROM_CREATE = true;
-		GlueParent_SetScreen("charselect");
 	end
 end
 
@@ -517,17 +667,36 @@ end
 function CharacterCreate_Randomize()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_LOOK);
 	C_CharacterCreation.RandomizeCharCustomization();
+
+	if CharacterCreate_ResetFeaturesDisplay then
+		CharacterCreate_ResetFeaturesDisplay();
+	end
+end
+
+function CharacterCreate_RotatePreviews()
+	if ( CharacterCreatePreviewFrame and CharacterCreatePreviewFrame:IsShown() ) then
+		local facing = ((C_CharacterCreation.GetCharacterCreateFacing()) / -180) * math.pi;
+		local previews = CharacterCreatePreviewFrame.previews;
+		for index = CharacterCreatePreviewFrame.selectionIndex - 3, CharacterCreatePreviewFrame.selectionIndex + 3 do
+			local previewFrame = previews[index];
+			if ( previewFrame and previewFrame.model:HasCustomCamera() ) then
+				previewFrame.model:SetCameraFacing(facing);
+			end
+		end
+	end
 end
 
 function CharacterCreateRotateRight_OnUpdate(self)
 	if ( self:GetButtonState() == "PUSHED" ) then
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() + CHARACTER_FACING_INCREMENT);
+		CharacterCreate_RotatePreviews();
 	end
 end
 
 function CharacterCreateRotateLeft_OnUpdate(self)
 	if ( self:GetButtonState() == "PUSHED" ) then
 		C_CharacterCreation.SetCharacterCreateFacing(C_CharacterCreation.GetCharacterCreateFacing() - CHARACTER_FACING_INCREMENT);
+		CharacterCreate_RotatePreviews();
 	end
 end
 
@@ -620,4 +789,16 @@ function CharacterCreate_isClassEnabled(class)
 	end
 
 	return false;
+end
+CharacterCreateScrollFrameMixin = {};
+
+function CharacterCreateScrollFrameMixin:OnLoad()
+	CharacterCreateRaceScrollFrameScrollBar:ClearAllPoints();
+	CharacterCreateRaceScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateRaceScrollFrame, "TOPRIGHT", 7, 4);
+	CharacterCreateRaceScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateRaceScrollFrame, "BOTTOMRIGHT", 7, 12);
+	GlueScrollFrame_OnScrollRangeChanged(self);
+end
+
+function CharacterCreateScrollFrameMixin:OnScrollRangeChanged(xrange, yrange)
+	GlueScrollFrame_OnScrollRangeChanged(self, yrange);
 end

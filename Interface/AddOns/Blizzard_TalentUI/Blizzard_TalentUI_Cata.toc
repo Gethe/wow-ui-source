@@ -1,5 +1,8 @@
 ## Title: Blizzard Talent UI
 ## LoadOnDemand: 1
+## Dependencies: Blizzard_HelpPlate
+Classic\Blizzard_TalentUI_Shared.lua
+Classic\Blizzard_TalentUI_Shared.xml
 Cata\Blizzard_TalentUI.lua
 Cata\Blizzard_TalentUI.xml
 Classic\Localization.lua

@@ -95,11 +95,61 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "CooldownViewerBarContent",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "IconAndName", Type = "CooldownViewerBarContent", EnumValue = 0 },
+				{ Name = "IconOnly", Type = "CooldownViewerBarContent", EnumValue = 1 },
+				{ Name = "NameOnly", Type = "CooldownViewerBarContent", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "CooldownViewerIconDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Left", Type = "CooldownViewerIconDirection", EnumValue = 0 },
+				{ Name = "Right", Type = "CooldownViewerIconDirection", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "CooldownViewerOrientation",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Horizontal", Type = "CooldownViewerOrientation", EnumValue = 0 },
+				{ Name = "Vertical", Type = "CooldownViewerOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "CooldownViewerVisibleSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "CooldownViewerVisibleSetting", EnumValue = 0 },
+				{ Name = "InCombat", Type = "CooldownViewerVisibleSetting", EnumValue = 1 },
+				{ Name = "Hidden", Type = "CooldownViewerVisibleSetting", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 28,
+			NumValues = 29,
 			MinValue = 0,
-			MaxValue = 27,
+			MaxValue = 28,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -130,6 +180,7 @@ local EditModeManagerShared =
 				{ Name = "ShowTimerBars", Type = "EditModeAccountSetting", EnumValue = 25 },
 				{ Name = "ShowVehicleSeatIndicator", Type = "EditModeAccountSetting", EnumValue = 26 },
 				{ Name = "ShowArchaeologyBar", Type = "EditModeAccountSetting", EnumValue = 27 },
+				{ Name = "ShowCooldownViewer", Type = "EditModeAccountSetting", EnumValue = 28 },
 			},
 		},
 		{
@@ -255,6 +306,41 @@ local EditModeManagerShared =
 			},
 		},
 		{
+			Name = "EditModeCooldownViewerSetting",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "Orientation", Type = "EditModeCooldownViewerSetting", EnumValue = 0 },
+				{ Name = "IconLimit", Type = "EditModeCooldownViewerSetting", EnumValue = 1 },
+				{ Name = "IconDirection", Type = "EditModeCooldownViewerSetting", EnumValue = 2 },
+				{ Name = "IconSize", Type = "EditModeCooldownViewerSetting", EnumValue = 3 },
+				{ Name = "IconPadding", Type = "EditModeCooldownViewerSetting", EnumValue = 4 },
+				{ Name = "Opacity", Type = "EditModeCooldownViewerSetting", EnumValue = 5 },
+				{ Name = "VisibleSetting", Type = "EditModeCooldownViewerSetting", EnumValue = 6 },
+				{ Name = "BarContent", Type = "EditModeCooldownViewerSetting", EnumValue = 7 },
+				{ Name = "HideWhenInactive", Type = "EditModeCooldownViewerSetting", EnumValue = 8 },
+				{ Name = "ShowTimer", Type = "EditModeCooldownViewerSetting", EnumValue = 9 },
+				{ Name = "ShowTooltips", Type = "EditModeCooldownViewerSetting", EnumValue = 10 },
+			},
+		},
+		{
+			Name = "EditModeCooldownViewerSystemIndices",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Essential", Type = "EditModeCooldownViewerSystemIndices", EnumValue = 1 },
+				{ Name = "Utility", Type = "EditModeCooldownViewerSystemIndices", EnumValue = 2 },
+				{ Name = "BuffIcon", Type = "EditModeCooldownViewerSystemIndices", EnumValue = 3 },
+				{ Name = "BuffBar", Type = "EditModeCooldownViewerSystemIndices", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "EditModeDurabilityFrameSetting",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -372,9 +458,9 @@ local EditModeManagerShared =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -397,6 +483,7 @@ local EditModeManagerShared =
 				{ Name = "TimerBars", Type = "EditModeSystem", EnumValue = 17 },
 				{ Name = "VehicleSeatIndicator", Type = "EditModeSystem", EnumValue = 18 },
 				{ Name = "ArchaeologyBar", Type = "EditModeSystem", EnumValue = 19 },
+				{ Name = "CooldownViewer", Type = "EditModeSystem", EnumValue = 20 },
 			},
 		},
 		{

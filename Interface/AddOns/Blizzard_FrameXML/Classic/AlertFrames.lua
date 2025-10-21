@@ -421,6 +421,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("STORE_PRODUCT_DELIVERED");
 	self:RegisterEvent("NEW_TOY_ADDED");
+	self:RegisterEvent("CHALLENGE_MODE_COMPLETED_REWARDS");
 end
 
 function AlertFrameMixin:OnEvent(event, ...)
@@ -586,6 +587,8 @@ function AlertFrameMixin:OnEvent(event, ...)
 			-- May be invasion reward
 			InvasionAlertSystem:AddCoalesceData(questID, rewardItemLink, texture);
 		end
+	elseif ( event == "CHALLENGE_MODE_COMPLETED_REWARDS" ) then
+		ChallengeModeAlertSystem:AddAlert(...);
 	end
 end
 
@@ -722,6 +725,10 @@ function AlertFrame_PlayAnimations(frame)
 	if frame:ManagesOwnOutroAnimation() then
 		AlertFrame_PlayOutroAnimation(frame);
 	end
+end
+
+function AlertFrame_SetDuration(frame, duration)
+	frame.duration = duration;
 end
 
 function AlertFrame_ShowNewAlert(frame)

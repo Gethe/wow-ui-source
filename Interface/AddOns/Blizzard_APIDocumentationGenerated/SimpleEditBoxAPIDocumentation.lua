@@ -676,15 +676,6 @@ local SimpleEditBoxAPI =
 			},
 		},
 		{
-			Name = "SetFontStringIgnoreParentAlpha",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "ignoreParentAlpha", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetHighlightColor",
 			Type = "Function",
 

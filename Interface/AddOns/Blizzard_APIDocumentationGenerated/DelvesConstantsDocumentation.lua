@@ -30,17 +30,26 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "DelveAssistActionData",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "assistedPlayer", Type = "string", Nilable = false },
+				{ Name = "mapName", Type = "cstring", Nilable = true },
+				{ Name = "creatureName", Type = "cstring", Nilable = true },
+				{ Name = "receivedSpellID", Type = "number", Nilable = true },
+				{ Name = "assistAction", Type = "AssistActionType", Nilable = false },
+			},
+		},
+		{
 			Name = "DelvesConsts",
 			Type = "Constants",
 			Values =
 			{
 				{ Name = "DELVES_MIN_PLAYER_LEVEL_CONTENT_TUNING_ID", Type = "number", Value = 2677 },
 				{ Name = "DELVES_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
-				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
 				{ Name = "DELVES_COMPANION_INFO_SELECTION_CHARACTER_DATA_ELEMENT_ID", Type = "number", Value = 13 },
-				{ Name = "COMPANION_SEASONAL_LEVEL_START", Type = "number", Value = 10 },
-				{ Name = "BRANN_MAX_LEVEL", Type = "number", Value = 60 },
-				{ Name = "BRANN_XP_FACTION_ID", Type = "number", Value = 1203 },
+				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
 			},
 		},
 	},

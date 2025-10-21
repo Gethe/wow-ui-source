@@ -1276,8 +1276,6 @@ function CommunitiesFrameMixin:OnClubSelected(clubId)
 	if clubSelected then
 		SetCVar("lastSelectedClubId", clubId)
 
-		C_Club.SetClubPresenceSubscription(clubId);
-
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		if clubInfo then
 			local selectedStream = self:GetSelectedStreamForClub(clubId);

@@ -129,6 +129,7 @@ function QuestLog_OnEvent(self, event, ...)
 			else
 				QuestFramePushQuestButton:Disable();
 			end
+			QuestLogControlPanel_UpdateState();
 		end
 	end
 

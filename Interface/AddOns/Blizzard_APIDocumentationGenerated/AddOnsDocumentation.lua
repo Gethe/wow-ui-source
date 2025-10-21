@@ -83,7 +83,7 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -118,7 +118,35 @@ local AddOns =
 				{ Name = "loadable", Type = "bool", Nilable = false },
 				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
-				{ Name = "updateAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnInterfaceVersion",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "interfaceVersion", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnLocalTable",
+			Type = "Function",
+			Documentation = { "Returns the addon table (passed as the second argument of ... to files) for any addon that opts in through setting AllowAddOnTableAccess: 1 in the toc file. Insecure code cannot query addon tables from Blizzard addons." },
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "table", Type = "LuaValueVariant", Nilable = false },
 			},
 		},
 		{
@@ -137,6 +165,34 @@ local AddOns =
 			},
 		},
 		{
+			Name = "GetAddOnName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnNotes",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "notes", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAddOnOptionalDependencies",
 			Type = "Function",
 
@@ -147,7 +203,35 @@ local AddOns =
 
 			Returns =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "deps", Type = "cstring", Nilable = false, StrideIndex = 1 },
+			},
+		},
+		{
+			Name = "GetAddOnSecurity",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "security", Type = "AddOnSecurityStatus", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnTitle",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "name", Type = "uiAddon", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "title", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -323,6 +407,20 @@ local AddOns =
 			},
 		},
 		{
+			Name = "AddOnSecurityStatus",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Secure", Type = "AddOnSecurityStatus", EnumValue = 0 },
+				{ Name = "Insecure", Type = "AddOnSecurityStatus", EnumValue = 1 },
+				{ Name = "Banned", Type = "AddOnSecurityStatus", EnumValue = 2 },
+				{ Name = "NotAvailable", Type = "AddOnSecurityStatus", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "AddOnInfo",
 			Type = "Structure",
 			Fields =
@@ -333,7 +431,6 @@ local AddOns =
 				{ Name = "loadable", Type = "bool", Nilable = false },
 				{ Name = "reason", Type = "cstring", Nilable = false },
 				{ Name = "security", Type = "cstring", Nilable = false },
-				{ Name = "updateAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

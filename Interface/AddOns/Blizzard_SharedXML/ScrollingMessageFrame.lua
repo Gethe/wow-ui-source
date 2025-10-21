@@ -330,6 +330,9 @@ function ScrollingMessageFrameMixin:OnPreLoad()
 
 	self.visibleLines = {};
 	self.onDisplayRefreshedCallbacks = {};
+
+	self:RegisterEvent("COLOR_OVERRIDE_UPDATED");
+	self:RegisterEvent("COLOR_OVERRIDES_RESET");
 end
 
 function ScrollingMessageFrameMixin:OnPostShow()
@@ -338,6 +341,15 @@ end
 
 function ScrollingMessageFrameMixin:OnPostHide()
 	self:ResetSelectingText();
+end
+
+function ScrollingMessageFrameMixin:OnPostEvent(event, ...)
+	if event == "COLOR_OVERRIDE_UPDATED" then
+		local overrideType = ...;
+		self:OnColorsUpdated();
+	elseif event == "COLOR_OVERRIDES_RESET" then
+		self:OnColorsUpdated();
+	end
 end
 
 function ScrollingMessageFrameMixin:OnPostUpdate(elapsed)
@@ -388,6 +400,16 @@ function ScrollingMessageFrameMixin:OnPostMouseUp(buttonName, inside)
 			local _, visibleLineIndex = self:FindCharacterAndLineIndexAtCoordinate(x, y);
 			local visibleLine = self.visibleLines[visibleLineIndex];
 			self.onLineRightClickedCallback(self, visibleLineIndex, visibleLine:GetText());
+		end
+	end
+end
+
+function ScrollingMessageFrameMixin:OnColorsUpdated()
+	for lineIndex, visibleLine in ipairs(self.visibleLines) do
+		local messageIndex = lineIndex + self.scrollOffset;
+		local messageInfo = self.historyBuffer:GetEntryAtIndex(messageIndex);
+		if messageInfo then
+			visibleLine:OnColorsUpdated();
 		end
 	end
 end
@@ -607,7 +629,7 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 				local alpha = self:CalculateLineAlphaValueFromTimestamp(now, lineTimestamp);
 				visibleLine:SetAlpha(alpha);
 				visibleLine:SetShown(alpha > 0);
-				
+
 				if alpha > 0 then
 					oldestFadingLineTimestamp = math.min(oldestFadingLineTimestamp, lineTimestamp);
 				end

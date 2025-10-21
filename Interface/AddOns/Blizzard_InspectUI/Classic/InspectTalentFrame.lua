@@ -14,15 +14,32 @@ end
 
 function InspectTalentFrameTalent_OnEvent(self, event, ...)
 	if ( GameTooltip:IsOwned(self) ) then
-		GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-			InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		local talentInfoQuery = {};
+		talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+		talentInfoQuery.talentIndex = self:GetID();
+		talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+		talentInfoQuery.isPet = InspectTalentFrame.pet;
+		talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+		local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+		if talentInfo then
+			GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+		end
 	end
 end
 
 function InspectTalentFrameTalent_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetTalent(PanelTemplates_GetSelectedTab(InspectTalentFrame), self:GetID(),
-		InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+
+	local talentInfoQuery = {};
+	talentInfoQuery.specializationIndex = PanelTemplates_GetSelectedTab(InspectTalentFrame);
+	talentInfoQuery.talentIndex = self:GetID();
+	talentInfoQuery.isInspect = InspectTalentFrame.inspect;
+	talentInfoQuery.isPet = InspectTalentFrame.pet;
+	talentInfoQuery.groupIndex = InspectTalentFrame.talentGroup;
+	local talentInfo = C_SpecializationInfo.GetTalentInfo(talentInfoQuery);
+	if talentInfo then
+		GameTooltip:SetTalent(talentInfo.talentID, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+	end
 end
 
 function InspectTalentFrame_UpdateTabs()
@@ -34,7 +51,7 @@ function InspectTalentFrame_UpdateTabs()
 		if ( tab ) then
 			talentSpecInfoCache[i] = talentSpecInfoCache[i] or { };
 			if ( i <= numTabs ) then
-				local _, name, _, icon, pointsSpent, background, previewPointsSpent = GetTalentTabInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, InspectTalentFrame.talentGroup);
+				local _, name, _, icon, _, _, pointsSpent, background, previewPointsSpent = C_SpecializationInfo.GetSpecializationInfo(i, InspectTalentFrame.inspect, InspectTalentFrame.pet, nil, nil, InspectTalentFrame.talentGroup);
 				if ( i == selectedTab ) then
 					-- If tab is the selected tab set the points spent info
 					local displayPointsSpent = pointsSpent + previewPointsSpent;
@@ -54,7 +71,7 @@ function InspectTalentFrame_UpdateTabs()
 end
 
 function InspectTalentFrame_Update()
-	InspectTalentFrame.talentGroup = GetActiveTalentGroup(InspectTalentFrame.inspect);
+	InspectTalentFrame.talentGroup = C_SpecializationInfo.GetActiveSpecGroup(InspectTalentFrame.inspect);
 	InspectTalentFrame.unit = InspectFrame.unit;
 
 	-- update spec info first
@@ -79,15 +96,19 @@ function InspectTalentFrame_Update()
 	TalentFrame_Update(InspectTalentFrame);
 
 	-- Update unspent talent point text
-	local unspentTalentPoints = TalentFrame_GetUnspentTalentPoints(InspectTalentFrame);
+	local unspentTalentPoints = InspectTalentFrame.GetUnspentTalentNumFunc(InspectTalentFrame);
 	InspectTalentFrameTalentPointsText:SetFormattedText(UNSPENT_TALENT_POINTS, HIGHLIGHT_FONT_COLOR_CODE..unspentTalentPoints..FONT_COLOR_CODE_CLOSE);
 end
 
 function InspectTalentFrame_OnLoad(self)
-	self.updateFunction = InspectTalentFrame_Update;
 	self.inspect = true;
 	self.pet = false;
 	self.talentGroup = 1;
+	if(TalentFrame_UpdateTalentPoints) then
+		self.GetUnspentTalentNumFunc = TalentFrame_UpdateTalentPoints;
+	else
+		self.GetUnspentTalentNumFunc = TalentFrame_GetUnspentTalentPoints;
+	end
 
 	TalentFrame_Load(self);
 
@@ -120,6 +141,15 @@ function InspectTalentFrame_OnEvent(self, event, ...)
 	if ( event == "INSPECT_READY" ) then
 		InspectTalentFrame_Update();
 	end
+end
+
+InspectTalentFrameTabMixin = {};
+
+function InspectTalentFrameTabMixin:OnClick()
+	PanelTemplates_Tab_OnClick(self, InspectTalentFrame);
+	InspectTalentFrame_Update(self);
+	TalentFrame_Update(InspectTalentFrame);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function InspectTalentFrameDownArrow_OnClick(self)

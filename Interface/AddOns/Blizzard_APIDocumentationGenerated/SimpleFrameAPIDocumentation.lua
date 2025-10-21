@@ -27,6 +27,38 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "ClearAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ClearAttribute",
+			Type = "Function",
+			IsProtectedFunction = true,
+
+			Arguments =
+			{
+				{ Name = "attributeName", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cleared", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearAttributes",
+			Type = "Function",
+			IsProtectedFunction = true,
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "CreateFontString",
 			Type = "Function",
 
@@ -151,6 +183,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableGamePadButton",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -160,6 +193,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableGamePadStick",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -169,6 +203,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableKeyboard",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -182,13 +217,13 @@ local SimpleFrameAPI =
 			Arguments =
 			{
 				{ Name = "attributeName", Type = "cstring", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "arguments", Type = "cstring", Nilable = true, StrideIndex = 1 },
 			},
 
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
-				{ Name = "unpackedPrimitiveType", Type = "string", Nilable = false, StrideIndex = 1 },
+				{ Name = "returns", Type = "cstring", Nilable = true, StrideIndex = 1 },
 			},
 		},
 		{
@@ -244,7 +279,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "scriptObject", Type = "ScriptObject", Nilable = false, StrideIndex = 1 },
+				{ Name = "children", Type = "SimpleFrame", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -355,6 +390,21 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "GetHighestFrameLevel",
+			Type = "Function",
+			Documentation = { "Returns the highest framelevel of the frame and its first order children, or all children if iterateAllChildren is true." },
+
+			Arguments =
+			{
+				{ Name = "iterateAllChildren", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "frameLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHitRectInsets",
 			Type = "Function",
 
@@ -458,7 +508,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "scriptObject", Type = "ScriptObject", Nilable = false, StrideIndex = 1 },
+				{ Name = "regions", Type = "SimpleRegion", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -504,6 +554,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "HasAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasAlphaGradient", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFixedFrameLevel",
 			Type = "Function",
 
@@ -532,6 +595,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Hide",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -594,6 +658,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsFrameBuffer",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isFrameBuffer", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsGamePadButtonEnabled",
 			Type = "Function",
 
@@ -617,6 +694,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHighlightLocked",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "locked", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -773,6 +863,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Lower",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -781,6 +872,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Raise",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -814,7 +906,7 @@ local SimpleFrameAPI =
 
 			Arguments =
 			{
-				{ Name = "unpackedPrimitiveType", Type = "number", Nilable = false, StrideIndex = 1 },
+				{ Name = "buttons", Type = "MouseButton", Nilable = false, StrideIndex = 1 },
 			},
 		},
 		{
@@ -853,6 +945,16 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetAlphaGradient",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "number", Nilable = false },
+				{ Name = "gradient", Type = "vector2", Mixin = "Vector2DMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "SetAttribute",
 			Type = "Function",
 
@@ -875,6 +977,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetClampRectInsets",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -887,6 +990,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetClampedToScreen",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -924,6 +1028,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFixedFrameLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -933,6 +1038,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFixedFrameStrata",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -951,6 +1057,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFrameLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -960,6 +1067,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFrameStrata",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -978,6 +1086,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHitRectInsets",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1000,6 +1109,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHyperlinksEnabled",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1009,6 +1119,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetID",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1027,6 +1138,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetIgnoreParentScale",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1054,6 +1166,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetPropagateKeyboardInput",
 			Type = "Function",
+			HasRestrictions = true,
 
 			Arguments =
 			{
@@ -1084,6 +1197,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetScale",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1093,6 +1207,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetShown",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1102,6 +1217,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetToplevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1120,6 +1236,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetUsingParentLevel",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1138,6 +1255,7 @@ local SimpleFrameAPI =
 		{
 			Name = "Show",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1146,6 +1264,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StartMoving",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1155,6 +1274,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StartSizing",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{
@@ -1165,6 +1285,7 @@ local SimpleFrameAPI =
 		{
 			Name = "StopMovingOrSizing",
 			Type = "Function",
+			IsProtectedFunction = true,
 
 			Arguments =
 			{

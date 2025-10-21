@@ -68,6 +68,18 @@ local CharacterCustomizationShared =
 			},
 		},
 		{
+			Name = "NewCharGear",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Start", Type = "NewCharGear", EnumValue = 0 },
+				{ Name = "Preview", Type = "NewCharGear", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CharCustomizationCategory",
 			Type = "Structure",
 			Fields =
@@ -112,6 +124,7 @@ local CharacterCustomizationShared =
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST", Type = "CharCustomizationType", Value = CustomOptionTattoo },
 				{ Name = "CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST", Type = "CharCustomizationType", Value = CustomOptionTattooColor },
 				{ Name = "NUM_CUSTOM_DISPLAY", Type = "number", Value = Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_LAST - Constants.CharCustomizationConstants.CHAR_CUSTOMIZE_CUSTOM_DISPLAY_OPTION_FIRST + 1 },
+				{ Name = "NAME_RESERVATION_DAYS", Type = "number", Value = 30 },
 			},
 		},
 		{

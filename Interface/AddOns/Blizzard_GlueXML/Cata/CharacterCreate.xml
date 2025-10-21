@@ -81,7 +81,7 @@
 			<OnEnter function="CharacterCreateRaceButton_OnEnter"/>
 			<OnLeave function="CharacterCreateRaceButton_OnLeave"/>
 		</Scripts>
-		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
+		<NormalTexture name="$parentNormalTexture" parentKey="normalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Races"/>
 	</CheckButton>
 	<CheckButton name="CharacterCreateClassButtonTemplate" inherits="CharacterCreateIconButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Layers>
@@ -256,21 +256,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<ScrollFrame name="CharacterCreateRaceScrollFrame" inherits="GlueScrollFrameTemplate">
+							<ScrollFrame name="CharacterCreateRaceScrollFrame" inherits="GlueScrollFrameTemplate" mixin="CharacterCreateScrollFrameMixin">
 								<Size x="220" y="224"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="20" y="-55"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										CharacterCreateRaceScrollFrameScrollBar:ClearAllPoints();
-										CharacterCreateRaceScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateRaceScrollFrame, "TOPRIGHT", 7, 4);
-										CharacterCreateRaceScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateRaceScrollFrame, "BOTTOMRIGHT", 7, 12);
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-									</OnLoad>
-									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-									</OnScrollRangeChanged>
+									<OnLoad method="OnLoad"/>
+									<OnScrollRangeChanged method="OnScrollRangeChanged"/>
 								</Scripts>
 								<ScrollChild>
 									<Frame name="CharacterCreateRaceScrollChild">
@@ -329,21 +322,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<ScrollFrame name="CharacterCreateClassScrollFrame" inherits="GlueScrollFrameTemplate">
+							<ScrollFrame name="CharacterCreateClassScrollFrame" inherits="GlueScrollFrameTemplate" mixin="CharacterCreateScrollFrameMixin">
 								<Size x="220" y="224"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="20" y="-55"/>
 								</Anchors>
 								<Scripts>
-									<OnLoad>
-										CharacterCreateClassScrollFrameScrollBar:ClearAllPoints();
-										CharacterCreateClassScrollFrameScrollBar:SetPoint("TOPLEFT", CharacterCreateClassScrollFrame, "TOPRIGHT", 7, 4);
-										CharacterCreateClassScrollFrameScrollBar:SetPoint("BOTTOMLEFT", CharacterCreateClassScrollFrame, "BOTTOMRIGHT", 7, 12);
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-									</OnLoad>
-									<OnScrollRangeChanged>
-										GlueScrollFrame_OnScrollRangeChanged(self, yrange);
-									</OnScrollRangeChanged>
+									<OnLoad method="OnLoad"/>
+									<OnScrollRangeChanged method="OnScrollRangeChanged"/>
 								</Scripts>
 								<ScrollChild>
 									<Frame name="CharacterCreateClassScrollChild">
@@ -830,12 +816,8 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnEscapePressed>
-								CharacterCreate_Back();
-							</OnEscapePressed>
-							<OnEnterPressed>
-								CharacterCreate_Okay();
-							</OnEnterPressed>
+							<OnEscapePressed function="CharacterCreate_Back"/>
+							<OnEnterPressed function="CharacterCreate_Forward"/>
 						</Scripts>
 						<FontString inherits="GlueEditBoxFont"/>
 						<TextInsets>
@@ -942,9 +924,7 @@
 							<Anchor point="TOP" relativeTo="CharacterCreateCharacterClass" relativePoint="BOTTOM" x="4" y="-3"/>
 						</Anchors>
 						<Scripts>
-							<OnClick>
-								CharacterCreate_Okay();
-							</OnClick>
+							<OnClick function="CharacterCreate_Forward"/>
 							<OnUpdate function="GlueParent_DeathKnightButtonSwap"/>
 						</Scripts>
 					</Button>

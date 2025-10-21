@@ -1188,11 +1188,13 @@ end
 function WatchFrameItem_UpdateCooldown (self)
 	local itemCooldown = _G[self:GetName().."Cooldown"];
 	local start, duration, enable = GetQuestLogSpecialItemCooldown(self:GetID());
-	CooldownFrame_Set(itemCooldown, start, duration, enable);
-	if ( duration > 0 and enable == 0 ) then
-		SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
-	else
-		SetItemButtonTextureVertexColor(self, 1, 1, 1);
+	if(start) then
+		CooldownFrame_Set(itemCooldown, start, duration, enable);
+		if ( duration > 0 and enable == 0 ) then
+			SetItemButtonTextureVertexColor(self, 0.4, 0.4, 0.4);
+		else
+			SetItemButtonTextureVertexColor(self, 1, 1, 1);
+		end
 	end
 end
 
@@ -1317,8 +1319,7 @@ function WatchFrameQuestPOI_OnClick(self, button)
 		WorldMapFrame_SelectQuestById(self.questID);
 		QuestPOI_SelectButtonByQuestID(WorldMapFrame, self.questID)
 	end
-	--SetSuperTrackedQuestID(self.questID);
-	PlaySound("igMainMenuOptionCheckBoxOn");
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function WatchFrame_SetWidth(width)

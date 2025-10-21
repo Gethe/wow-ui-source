@@ -46,6 +46,7 @@ do
 		self:RegisterEvent("CLUB_STREAM_ADDED");
 		self:RegisterEvent("CLUB_STREAM_REMOVED");
 		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+		self:RegisterEvent("CLUB_MEMBERS_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_PRESENCE_UPDATED");
 		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
@@ -62,29 +63,44 @@ do
 	end
 
 	function ChannelFrameMixin:OnShow()
-	-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
-	if CommunitiesFrame and CommunitiesFrame:IsShown() then
-		HideUIPanel(CommunitiesFrame);
-	end
+		-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
+		if CommunitiesFrame and CommunitiesFrame:IsShown() then
+			HideUIPanel(CommunitiesFrame);
+		end
 
-	ChatFrameChannelButton:HideTutorial();
+		ChatFrameChannelButton:HideTutorial();
 
-	local channel = self:GetList():GetSelectedChannelButton();
-	if channel and channel:ChannelIsCommunity() then
-		C_Club.SetClubPresenceSubscription(channel.clubId);
-	end
+		local channel = self:GetList():GetSelectedChannelButton();
+		if channel and channel:ChannelIsCommunity() then
+			self:SetFocusedClub(channel.clubId);
+		end
 
 		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
-	self:MarkDirty("UpdateAll");
+		self:MarkDirty("UpdateAll");
 		self:MarkDirty("CheckShowTutorial");
 	end
 
 	function ChannelFrameMixin:OnHide()
-	C_Club.ClearClubPresenceSubscription();
-
+		self:SetFocusedClub(nil);
 		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
-	StaticPopupSpecial_Hide(CreateChannelPopup);
+		StaticPopupSpecial_Hide(CreateChannelPopup);
 	end
+end
+
+function ChannelFrameMixin:SetFocusedClub(clubId)
+	if self.focusedClubId == clubId then
+		return;
+	end
+
+	if self.focusedClubId then
+		C_Club.UnfocusMembers(self.focusedClubId);
+		C_Club.ClearClubPresenceSubscription();
+	end
+	if clubId then
+		C_Club.FocusMembers(clubId);
+		C_Club.SetClubPresenceSubscription(clubId);
+	end
+	self.focusedClubId = clubId;
 end
 
 function ChannelFrameMixin:OnEvent(event, ...)
@@ -140,6 +156,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 	elseif event == "CLUB_STREAM_REMOVED" then
 		self:OnClubStreamRemoved(...);
 	elseif event == "CLUB_MEMBER_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBERS_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);
 	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
 		self:UpdateCommunityChannelIfSelected(...);

@@ -124,7 +124,7 @@ function CharacterServicesCharacterSelectorMixin:ProcessCharacterFromBlock(chara
 		end
 
 		if serviceInfo.requiresLogin then
-			GlueDialog_Show("MUST_LOG_IN_FIRST");
+			StaticPopup_Show("MUST_LOG_IN_FIRST");
 			CharSelectServicesFlowFrame:Hide();
 			return;
 		end

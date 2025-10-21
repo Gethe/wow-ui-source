@@ -36,6 +36,7 @@ local SILVER_PER_GOLD = 100;
 local COPPER_PER_GOLD = COPPER_PER_SILVER * SILVER_PER_GOLD;
 local WOW_SERVICES_CATEGORY_ID = 22;
 local PI = math.pi;
+local TRANSMOG_CATEGORY_ID = 139;
 
 local CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID = 239;
 local CHARACTER_TRANSFER_PRODUCT_ID = 189;
@@ -342,6 +343,8 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 		local text = BLIZZARD_STORE_BUY;
 		if (info.browseBuyButtonText) then
 			text = info.browseBuyButtonText;
+		elseif (selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+			text = currencyFormat(entryInfo.sharedData.currentDollars, entryInfo.sharedData.currentCents);
 		end
 		card.BuyButton:SetText(text);
 
@@ -460,7 +463,7 @@ function StoreFrame_UpdateCard(card, entryID, discountReset, forceModelUpdate)
 	local tryToShowTexture = not showAnyModel or bit.band(entryInfo.sharedData.flags, Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture) == Enum.BattlepayDisplayFlags.CardAlwaysShowsTexture;
 
 	if showAnyModel then
-		local showShadows = (card ~= StoreFrame.SplashSingle);
+		local showShadows = (card ~= StoreFrame.SplashSingle and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 		StoreProductCard_ShowModel(card, entryInfo, showShadows, forceModelUpdate);
 	else
 		StoreProductCard_HideModel(card);
@@ -652,10 +655,10 @@ function StoreFrame_SetNormalCategory(forceModelUpdate, numCardsPerPage)
 	products = StoreFrame_FilterEntries(products);
 	local numTotal = #products;
 
-	for i = 1, numCardsPerPage do
+	for i = 1, NUM_STORE_PRODUCT_CARDS do
 		local card = self.ProductCards[i];
 		local entryID = products[i + numCardsPerPage * (pageNum - 1)];
-		if ( not entryID ) then
+		if ( not entryID or i > numCardsPerPage) then
 			card:Hide();
 		else
 			StoreFrame_UpdateCard(card, entryID, nil, forceModelUpdate);
@@ -721,11 +724,28 @@ function StoreFrame_SetCategory(forceModelUpdate)
 	elseif productGroupInfo and productGroupInfo.displayType == Enum.BattlepayGroupDisplayType.DoubleWide then
 		StoreFrame_SetCardStyle(StoreFrame, "double-wide", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
 		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 2);
+	elseif(selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+		StoreFrame_SetCardStyle(StoreFrame, "transmog", NUM_STORE_PRODUCT_CARDS_PER_ROW / 2);
+		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS / 4);		
 	else
 		StoreFrame_SetCardStyle(StoreFrame, nil, NUM_STORE_PRODUCT_CARDS_PER_ROW);
 		StoreFrame_SetNormalCategory(forceModelUpdate, NUM_STORE_PRODUCT_CARDS);
 	end
 	StoreFrame_CheckMarketPriceUpdates();
+	StoreFrame_UpdateCategoryPaginationLayout();
+end
+
+function StoreFrame_UpdateCategoryPaginationLayout()
+	local self = StoreFrame;
+	if(selectedCategoryID == TRANSMOG_CATEGORY_ID) then
+		self.PrevPageButton:SetPoint("BOTTOMRIGHT", -57, 18);
+		self.NextPageButton:SetPoint("BOTTOMRIGHT", -22, 18);
+		self.PageText:SetPoint("BOTTOMRIGHT", -98, 28);
+	else
+		self.PrevPageButton:SetPoint("BOTTOMRIGHT", -57, 36);
+		self.NextPageButton:SetPoint("BOTTOMRIGHT", -22, 36);
+		self.PageText:SetPoint("BOTTOMRIGHT", -98, 46);
+	end
 end
 
 function StoreFrame_FindPageForBoost(boostType)
@@ -776,6 +796,8 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 		card.style = style;
 		if style == "double-wide" then
 			card:SetWidth(146 * 2);
+			card:SetHeight(209);
+			card.Card:SetSize(146, 209);
 			card.Card:SetAtlas("shop-card-bundle", true);
 			card.Card:SetTexCoord(0, 1, 0, 1);
 
@@ -789,8 +811,11 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card.ProductName:ClearAllPoints();
 			card.ProductName:SetPoint("BOTTOM", 0, 33);
 
+			card.CurrentPrice:Show();
 			card.CurrentPrice:ClearAllPoints();
 			card.CurrentPrice:SetPoint("BOTTOM", 0, 23);
+
+			card.BuyButton:Hide();
 
 			if i > (numPerRow * NUM_STORE_PRODUCT_CARD_ROWS) then
 				card:Hide();
@@ -802,8 +827,35 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 0, 0);
 				end
 			end
+		elseif style == "transmog" then
+
+			card:SetWidth(286);
+			card:SetHeight(433);
+			card.Card:SetAtlas("store-card-transmog", true);
+			card.Card:SetTexCoord(0, 1, 0, 1);
+			card.Card:SetSize(286, 433);
+
+			card.ProductName:SetWidth(250);
+			card.ProductName:ClearAllPoints();
+			card.ProductName:SetPoint("BOTTOM", 0, 50);
+
+			card.CurrentPrice:Hide();
+
+			card.BuyButton:Show();			
+
+			if i > (numPerRow * NUM_STORE_PRODUCT_CARD_ROWS) then
+				card:Hide();
+			elseif i ~= 1 then
+				card:ClearAllPoints();
+				if i % numPerRow == 1 then
+					card:SetPoint("TOP", self.ProductCards[i - numPerRow], "BOTTOM", 0, 0);
+				else
+					card:SetPoint("TOPLEFT", self.ProductCards[i - 1], "TOPRIGHT", 10, 0);
+				end
+			end
 		else
 			card:SetWidth(146);
+			card:SetHeight(209);
 			card.Card:SetSize(146, 209);
 			card.Card:SetTexture("Interface\\Store\\Store-Main");
 			card.Card:SetTexCoord(0.18457031, 0.32714844, 0.64550781, 0.84960938);
@@ -820,8 +872,11 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			card.ProductName:ClearAllPoints();
 			card.ProductName:SetPoint("BOTTOM", 0, 42);
 
+			card.CurrentPrice:Show();
 			card.CurrentPrice:ClearAllPoints();
 			card.CurrentPrice:SetPoint("BOTTOM", 0, 32);
+
+			card.BuyButton:Hide();
 
 			if i ~= 1 then
 				card:ClearAllPoints();
@@ -833,7 +888,7 @@ function StoreFrame_SetCardStyle(self, style, numPerRow)
 			end
 		end
 
-		if i % numPerRow == 0 then
+		if i % numPerRow == 0 or selectedCategoryID == TRANSMOG_CATEGORY_ID then
 			tooltipSides[card] = "LEFT";
 		else
 			tooltipSides[card] = "RIGHT";
@@ -932,40 +987,14 @@ end
 function StoreFrame_UpdateCategories(self)
 	local categories = GetStoreProductGroups();
 
-	for i = 1, #categories do
-		local frame = self.CategoryFrames[i];
-		local groupID = categories[i];
-		if ( not frame ) then
-			frame = CreateForbiddenFrame("Button", nil, self, "StoreCategoryTemplate");
-
-			--[[
-							WARNING: ScopeModifiers don't work for templates!
-				These functions will fail to load properly if this template is instantiated outside
-				of the initial C_AddOns.LoadAddon call because we'll have lost the scoped modifiers and the
-				reference to the addon environment if we instantiate them later.
-
-				We have to manually set these scripts (below) for them to work properly.
-			--]]
-
-			frame:SetScript("OnEnter", StoreCategory_OnEnter);
-			frame:SetScript("OnLeave", StoreCategory_OnLeave);
-			frame:SetScript("OnClick", StoreCategory_OnClick);
-			frame:SetPoint("TOPLEFT", self.CategoryFrames[i - 1], "BOTTOMLEFT", 0, 0);
-
-			self.CategoryFrames[i] = frame;
-		end
-
-		StoreCategoryFrame_SetGroupID(frame, groupID);
-
-		frame:Show();
+	local newDataProvider = CreateDataProvider();
+	for index = 1, #categories do
+		newDataProvider:Insert({index = index, groupID = categories[index]});
 	end
+	self.CategoryScrollBox:SetDataProvider(newDataProvider, ScrollBoxConstants.RetainScrollPosition);
 
 	self.BrowseNotice:ClearAllPoints();
-	self.BrowseNotice:SetPoint("TOP", self.CategoryFrames[#categories], "BOTTOM", 0, -15);
-
-	for i = #categories + 1, #self.CategoryFrames do
-		self.CategoryFrames[i]:Hide();
-	end
+	self.BrowseNotice:SetPoint("TOP", self.CategoryScrollBox, "BOTTOM", 0, -15);
 end
 
 function StoreFrame_OnLoad(self)
@@ -1042,6 +1071,21 @@ function StoreFrame_OnLoad(self)
 
 	self.variablesLoaded = false;
 	self.distributionsUpdated = false;
+
+	-- Setup categories
+	local view = CreateScrollBoxListLinearView();
+	view:SetElementInitializer("StoreCategoryTemplate", function(button, elementData)
+		StoreFrame_InitCategoryButton(button, elementData);
+	end);
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.CategoryScrollBox, self.CategoryScrollBar, view);
+end
+
+function StoreFrame_InitCategoryButton(frame, elementData)
+	StoreCategoryFrame_SetGroupID(frame, elementData.groupID);
+
+	frame:SetScript("OnEnter", StoreCategory_OnEnter);
+	frame:SetScript("OnLeave", StoreCategory_OnLeave);
+	frame:SetScript("OnClick", StoreCategory_OnClick);
 end
 
 local JustFinishedOrdering = false;
@@ -1152,7 +1196,7 @@ function StoreFrame_OnEvent(self, event, ...)
 	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
 		if not SimpleCheckout:IsShown() then
 			self:Hide();
-			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
+			StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
 		end
 	elseif (event == "LOGIN_STATE_CHANGED") then
 		if (C_Glue.IsOnGlueScreen()) then
@@ -1249,7 +1293,7 @@ end
 function StoreFrame_OnLegionDelivered(self)
 	self:Hide();
 	if (C_Glue.IsOnGlueScreen()) then
-		GlueDialog_Show("LEGION_PURCHASE_READY");
+		StaticPopup_Show("LEGION_PURCHASE_READY");
 	else
 		ServicesLogoutPopup_SetShowReason(ServicesLogoutPopup, "forLegion");
 	end
@@ -1265,7 +1309,7 @@ function StoreFrame_UpdateBuyButton()
 		return;
 	end
 
-	if (StoreFrame.SplashSingle:IsShown() or StoreFrame.SplashPairFirst:IsShown()) then
+	if (StoreFrame.SplashSingle:IsShown() or StoreFrame.SplashPairFirst:IsShown() or selectedCategoryID == TRANSMOG_CATEGORY_ID) then
 		self.BuyButton:Hide();
 	else
 		self.BuyButton:Show();
@@ -2251,9 +2295,9 @@ function StoreVASValidationFrame_OnEvent(self, event, ...)
 	elseif ( event == "VAS_QUEUE_STATUS_UPDATE" ) then
 		local transfer, factionTransfer = C_StoreGlue.GetVasTransferQueues();
 		local queueTime = Enum.VasQueueStatus.UnderAnHour;
-		if (VASServiceType == Enum.VasServiceType.CharacterTransfer) then
+		if (VASServiceType == Enum.VasServiceType.CharacterTransfer and transfer) then
 			queueTime = transfer;
-		elseif (VASServiceType == Enum.VasServiceType.FactionChange) then
+		elseif (VASServiceType == Enum.VasServiceType.FactionChange and factionTransfer) then
 			queueTime = factionTransfer;
 		end
 		if (queueTime > Enum.VasQueueStatus.UnderAnHour) then
@@ -2421,7 +2465,7 @@ function StoreProductCard_UpdateState(card)
 		local entryInfo = C_StoreSecure.GetEntryInfo(entryID);
 		local enableHighlight = card:GetID() ~= selectedEntryID and not isRotating and (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen());
 		card.HighlightTexture:SetAlpha(enableHighlight and 1 or 0);
-		if (not card.Description and card:IsMouseMotionFocus()) then
+		if (not card.Description and (card:IsMouseMotionFocus() or (card.BuyButton and card.BuyButton:IsMouseMotionFocus()))) then
 			if (isRotating) then
 				StoreTooltip:Hide()
 			else
@@ -2479,7 +2523,7 @@ function StoreProductCard_UpdateState(card)
 		card.Magnifier:SetAlpha(enableMagnifier and 1 or 0);
 	end
 	if ( card.SelectedTexture ) then
-		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID);
+		card.SelectedTexture:SetShown(card:GetID() == selectedEntryID and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 	end
 end
 
@@ -2512,7 +2556,7 @@ function StoreProductCard_OnEnter(self)
 	local entryInfo = C_StoreSecure.GetEntryInfo(self:GetID());
 	if (entryInfo.sharedData.productDecorator ~= Enum.BattlepayProductDecorator.VasService or C_Glue.IsOnGlueScreen()) then
 		if (self.HighlightTexture) then
-			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID());
+			self.HighlightTexture:SetShown(selectedEntryID ~= self:GetID() and selectedCategoryID ~= TRANSMOG_CATEGORY_ID);
 		end
 
 		StoreProductCard_UpdateMagnifier(self);
@@ -2528,6 +2572,16 @@ function StoreProductCard_OnLeave(self)
 		StoreProductCard_HideMagnifier(self);
 	end
 	StoreTooltip:Hide();
+end
+
+function StoreProductCardBuyButton_OnEnter(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnEnter(parent);
+end
+
+function StoreProductCardBuyButton_OnLeave(self)
+	local parent = self:GetParent();
+	StoreProductCard_OnLeave(parent);
 end
 
 function StoreProductCard_CheckShowStorePreviewOnClick(self)
@@ -3486,7 +3540,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
 				frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true));
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasTransactionPurchaseResult.DbRaceClassComboIneligible, character, true));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;
@@ -3891,6 +3945,11 @@ function VASCharacterSelectionContinueButton_OnClick(self)
 	local characters = C_StoreSecure.GetCharactersForRealm(SelectedRealm);
 
 	if (not characters[SelectedCharacter]) then
+		-- This should not happen
+		return;
+	end
+
+	if (not selectedEntryID) then
 		-- This should not happen
 		return;
 	end

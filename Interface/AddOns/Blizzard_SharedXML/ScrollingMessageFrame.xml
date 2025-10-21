@@ -9,13 +9,14 @@ UI.xsd">
 			<Frame parentKey="FontStringContainer" clipChildren="true" propagateHyperlinksToParent="true" setAllPoints="true" />
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnPreLoad" intrinsicOrder="precall" />
-			<OnUpdate method="OnPostUpdate" intrinsicOrder="postcall" />
-			<OnShow method="OnPostShow" intrinsicOrder="postcall" />
-			<OnHide method="OnPostHide" intrinsicOrder="postcall" />
-			<OnSizeChanged method="OnPreSizeChanged" intrinsicOrder="precall" />
-			<OnMouseDown method="OnPostMouseDown" intrinsicOrder="postcall" autoEnableInput="false" />
-			<OnMouseUp method="OnPostMouseUp" intrinsicOrder="postcall" autoEnableInput="false" />
+			<OnLoad method="OnPreLoad" intrinsicOrder="precall"/>
+			<OnUpdate method="OnPostUpdate" intrinsicOrder="postcall"/>
+			<OnShow method="OnPostShow" intrinsicOrder="postcall"/>
+			<OnHide method="OnPostHide" intrinsicOrder="postcall"/>
+			<OnEvent method="OnPostEvent" intrinsicOrder="postcall"/>
+			<OnSizeChanged method="OnPreSizeChanged" intrinsicOrder="precall"/>
+			<OnMouseDown method="OnPostMouseDown" intrinsicOrder="postcall" autoEnableInput="false"/>
+			<OnMouseUp method="OnPostMouseUp" intrinsicOrder="postcall" autoEnableInput="false"/>
 		</Scripts>
 	</Frame>
 </Ui>

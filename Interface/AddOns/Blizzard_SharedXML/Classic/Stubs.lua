@@ -8,6 +8,10 @@ function EditModeManagerFrame:IsEditModeActive()
 	return false;
 end
 
+function EditModeManagerFrame:ShowIfActive()
+	return false;
+end
+
 --HelpTip
 
 HelpTip = {}

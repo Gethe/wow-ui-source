@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Font name="GameFontDisableMed3" inherits="SystemFont_Shadow_Med3" virtual="true">
+		<Color r="0.5" g="0.5" b="0.5"/>
+	</Font>
+
+	<Font name="GameFontWhiteSmall" inherits="GameFontBlackSmall" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="LetterAndNumberFontNormalSmallGray" inherits="LetterAndNumberFont_OutlineThick_Mono_Small" virtual="true">
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
+
+	<Font name="NumberFontNormalLarge" inherits="NumberFont_Outline_Large" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+
+	<Font name="NumberFontNormalLargeRight" inherits="NumberFontNormalLarge" justifyH="RIGHT" virtual="true"/>
+
+	<Font name="NumberFontNormalLargeRightRed" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.1" b="0.1"/>
+	</Font>
+
+	<Font name="NumberFontNormalLargeRightYellow" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="1.0" g="0.82" b="0.0"/>
+	</Font>
+
+	<Font name="NumberFontNormalLargeRightGray" inherits="NumberFontNormalLargeRight" virtual="true" >
+		<Color r="0.6" g="0.6" b="0.6"/>
+	</Font>
+
+	<Font name="QuestTitleFontBlackShadowSmaller" inherits="QuestFont_Shadow_Larger" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1" g=".82" b="0"/>
+	</Font>
+
+	<Font name="TextStatusBarText" inherits="NumberFontNormal" virtual="true"/>
+</Ui>

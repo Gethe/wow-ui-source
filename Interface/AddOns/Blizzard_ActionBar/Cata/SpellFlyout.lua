@@ -3,16 +3,58 @@ local SPELLFLYOUT_DEFAULT_SPACING = 4;
 local SPELLFLYOUT_INITIAL_SPACING = 7;
 local SPELLFLYOUT_FINAL_SPACING = 4;
 
+SpellFlyoutMixin = {};
+SpellFlyoutButtonMixin = {};
 
-function SpellFlyoutButton_OnClick(self)
-	if (self.spellID) then
+function SpellFlyoutButtonMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+	_G[self:GetName() .. "Count"]:SetPoint("BOTTOMRIGHT", 0, 0);
+	_G[self:GetName() .. "Icon"]:SetTexCoord(0.0625, 0.9375, 0.0625, 0.9375);
+end
+
+function SpellFlyoutButtonMixin:OnClick(button)
+	if not self.spellID then
+		return;
+	end
+
+	if ( IsModifiedClick("CHATLINK") ) then
+		if ( MacroFrameText and MacroFrameText:HasFocus() ) then
+			if ( self.spellName ) then
+				ChatEdit_InsertLink(self.spellName);
+			end
+		else
+			local spellLink, tradeSkillLink = GetSpellLink(self.spellID);
+			if ( tradeSkillLink ) then
+				ChatEdit_InsertLink(tradeSkillLink);
+			elseif ( spellLink ) then
+				ChatEdit_InsertLink(spellLink);
+			end
+		end
+		self:UpdateState();
+	else
 		if (CastSpellByID(self.spellID)) then
 			self:GetParent():Hide();
 		end
 	end
 end
 
-function SpellFlyoutButton_SetTooltip(self)
+function SpellFlyoutButtonMixin:OnEnter()
+	self:SetTooltip();
+end
+
+function SpellFlyoutButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function SpellFlyoutButtonMixin:OnDragStart()
+	if (not self:GetParent().isActionBar or not GetCVarBool("lockActionBars") or IsModifiedClick("PICKUPACTION")) then
+		if (self.spellID) then
+			PickupSpell(self.spellID);
+		end
+	end
+end
+
+function SpellFlyoutButtonMixin:SetTooltip()
 	if ( GetCVar("UberTooltips") == "1" ) then
 		if (SpellFlyout.isActionBar) then
 			GameTooltip_SetDefaultAnchor(GameTooltip, self);
@@ -20,7 +62,7 @@ function SpellFlyoutButton_SetTooltip(self)
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4);
 		end
 		if ( GameTooltip:SetSpellByID(self.spellID) ) then
-			self.UpdateTooltip = SpellFlyoutButton_SetTooltip;
+			self.UpdateTooltip = function() self:SetTooltip(); end;
 		else
 			self.UpdateTooltip = nil;
 		end
@@ -37,19 +79,15 @@ function SpellFlyoutButton_SetTooltip(self)
 	end
 end
 
-function SpellFlyoutButton_UpdateCooldown(self)
+function SpellFlyoutButtonMixin:UpdateCooldown()
 	ActionButton_UpdateCooldown(self);
 end
 
-function SpellFlyoutButton_UpdateState(self)
-	if ( C_Spell.IsCurrentSpell(self.spellID) ) then
-		self:SetChecked(1);
-	else
-		self:SetChecked(nil);
-	end
+function SpellFlyoutButtonMixin:UpdateState()
+	self:SetChecked(C_Spell.IsCurrentSpell(self.spellID));
 end
 
-function SpellFlyoutButton_UpdateUsable(self)
+function SpellFlyoutButtonMixin:UpdateUsable()
 	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID);
 	local name = self:GetName();
 	local icon = _G[name.."Icon"];
@@ -62,7 +100,7 @@ function SpellFlyoutButton_UpdateUsable(self)
 	end
 end
 
-function SpellFlyoutButton_UpdateCount (self)
+function SpellFlyoutButtonMixin:UpdateCount()
 	local text = _G[self:GetName().."Count"];
 
 	if ( IsConsumableSpell(self.spellID)) then
@@ -77,18 +115,16 @@ function SpellFlyoutButton_UpdateCount (self)
 	end
 end
 
-function SpellFlyout_OnLoad(self)
-	self.Toggle = SpellFlyout_Toggle;
-	self.SetBorderColor = SpellFlyout_SetBorderColor;
+function SpellFlyoutMixin:OnLoad()
 	self.eventsRegistered = false;
 end
 
-function SpellFlyout_OnEvent(self, event, ...)
+function SpellFlyoutMixin:OnEvent(event, ...)
 	if (event == "SPELL_UPDATE_COOLDOWN") then
 		local i = 1;
 		local button = _G["SpellFlyoutButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCooldown(button);
+			button:UpdateCooldown();
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -96,7 +132,7 @@ function SpellFlyout_OnEvent(self, event, ...)
 		local i = 1;
 		local button = _G["SpellFlyoutButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateState(button);
+			button:UpdateState();
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -104,7 +140,7 @@ function SpellFlyout_OnEvent(self, event, ...)
 		local i = 1;
 		local button = _G["SpellFlyoutButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateUsable(button);
+			button:UpdateUsable();
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -112,8 +148,8 @@ function SpellFlyout_OnEvent(self, event, ...)
 		local i = 1;
 		local button = _G["SpellFlyoutButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCount(button);
-			SpellFlyoutButton_UpdateUsable(button);
+			button:UpdateCount();
+			button:UpdateUsable();
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -121,10 +157,10 @@ function SpellFlyout_OnEvent(self, event, ...)
 		local i = 1;
 		local button = _G["SpellFlyoutButton"..i];
 		while (button and button:IsShown()) do
-			SpellFlyoutButton_UpdateCooldown(button);
-			SpellFlyoutButton_UpdateState(button);
-			SpellFlyoutButton_UpdateUsable(button);
-			SpellFlyoutButton_UpdateCount(button);
+			button:UpdateCooldown();
+			button:UpdateState();
+			button:UpdateUsable();
+			button:UpdateCount();
 			i = i+1;
 			button = _G["SpellFlyoutButton"..i];
 		end
@@ -135,7 +171,7 @@ function SpellFlyout_OnEvent(self, event, ...)
 	end
 end
 
-function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActionBar)
+function SpellFlyoutMixin:Toggle(flyoutID, parent, direction, distance, isActionBar)
 
 	if (self:IsShown() and self:GetParent() == parent) then
 		self:Hide();
@@ -211,10 +247,10 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 			
 			_G[button:GetName().."Icon"]:SetTexture(GetSpellTexture(spellID));
 			button.spellID = spellID;
-			SpellFlyoutButton_UpdateCooldown(button);
-			SpellFlyoutButton_UpdateState(button);
-			SpellFlyoutButton_UpdateUsable(button);
-			SpellFlyoutButton_UpdateCount(button);
+			button:UpdateCooldown();
+			button:UpdateState();
+			button:UpdateUsable();
+			button:UpdateCount();
 			
 			prevButton = button;
 			numButtons = numButtons+1;
@@ -297,7 +333,7 @@ function SpellFlyout_Toggle(self, flyoutID, parent, direction, distance, isActio
 	end
 end
 
-function SpellFlyout_OnShow(self)
+function SpellFlyoutMixin:OnShow()
 	if (self.eventsRegistered == false) then
 		self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -314,7 +350,7 @@ function SpellFlyout_OnShow(self)
 	end
 end
 
-function SpellFlyout_OnHide(self)
+function SpellFlyoutMixin:OnHide()
 	if (self.eventsRegistered == true) then
 		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 		self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED");
@@ -334,7 +370,7 @@ function SpellFlyout_OnHide(self)
 	end
 end
 
-function SpellFlyout_SetBorderColor(self, r, g, b)
+function SpellFlyoutMixin:SetBorderColor(r, g, b)
 	self.HorizBg:SetVertexColor(r, g, b);
 	self.VertBg:SetVertexColor(r, g, b);
 	self.BgEnd:SetVertexColor(r, g, b);

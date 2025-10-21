@@ -1,0 +1,6 @@
+## Title: Blizzard_GlyphUI
+## LoadOnDemand: 1
+Cata\Blizzard_GlyphUI.lua
+Mists\Blizzard_GlyphUI.xml
+Mists\Blizzard_GlyphUI_Utils.lua
+Localization.lua

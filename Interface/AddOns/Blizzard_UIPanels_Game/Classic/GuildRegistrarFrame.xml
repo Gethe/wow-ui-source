@@ -1,13 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
-		<Size x="384" y="512"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="-104"/>
-		</Anchors>
-		<HitRectInsets>
-			<AbsInset left="0" right="30" top="0" bottom="70"/>
-		</HitRectInsets>
+	<Frame name="GuildRegistrarFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true" inherits="ButtonFrameTemplate">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="GuildRegistrarFramePortrait">
@@ -16,32 +9,14 @@
 						<Anchor point="TOPLEFT" x="7" y="-6"/>
 					</Anchors>
 				</Texture>
+				<Texture name="GuildRegistrarFrameBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-63"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size x="128" y="256"/>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size x="256" y="256"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
-					<Size x="128" y="256"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
-					</Anchors>
-				</Texture>
 				<FontString name="GuildRegistrarText" inherits="QuestFont" justifyH="LEFT">
 					<Size x="270" y="0"/>
 					<Anchors>
@@ -51,10 +26,17 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<!--This scroll bar is for cosmetic purposes; it never scrolls.-->
+			<EventFrame parentKey="ScrollBar" inherits="WowClassicScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-28" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
+				</Anchors>
+			</EventFrame>
 			<Frame name="GuildRegistrarNpcNameFrame">
 				<Size x="300" y="14"/>
 				<Anchors>
-					<Anchor point="TOP" relativeTo="GuildRegistrarFrame" relativePoint="TOP" x="0" y="-23"/>
+					<Anchor point="TOP" relativeTo="GuildRegistrarFrame" relativePoint="TOP" x="0" y="-4"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -65,43 +47,22 @@
 					<OnLoad function="RaiseFrameLevelByTwo"/>
 				</Scripts>
 			</Frame>
-			<Button name="GuildRegistrarFrameCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="CENTER" relativeTo="GuildRegistrarFrame" relativePoint="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-42" y="-30"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
 			<Frame name="GuildRegistrarGreetingFrame" setAllPoints="true" hidden="true">
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="GuildAvailableServicesText" inherits="QuestTitleFont" text="AVAILABLE_SERVICES" justifyH="LEFT">
 							<Size x="300" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="35" y="-100"/>
+								<Anchor point="TOPLEFT" x="35" y="-70"/>
 							</Anchors>
 						</FontString>
-						<Texture file="Interface\QuestFrame\UI-Quest-BotLeftPatch">
-							<Size>
-								<AbsDimension x="128" y="64"/>
-							</Size>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT">
-									<Offset>
-										<AbsDimension x="22" y="68"/>
-									</Offset>
-								</Anchor>
-							</Anchors>
-						</Texture>
 					</Layer>
 				</Layers>
 				<Frames>
 					<Button name="GuildRegistrarFrameGoodbyeButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="78" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -133,7 +94,7 @@
 						<FontString name="GuildRegistrarPurchaseText" inherits="QuestFont" text="GUILD_REGISTRAR_PURCHASE_TEXT" justifyH="LEFT">
 							<Size x="270" y="0"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="35" y="-95"/>
+								<Anchor point="TOPLEFT" x="20" y="-70"/>
 							</Anchors>
 						</FontString>
 						<FontString name="GuildRegistrarCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
@@ -158,7 +119,7 @@
 					<Button name="GuildRegistrarFrameCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
 						<Size x="75" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-40" y="72"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="GuildRegistrarFrame" relativePoint="BOTTOMRIGHT" x="-6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>
@@ -169,7 +130,7 @@
 					<Button name="GuildRegistrarFramePurchaseButton" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="PURCHASE">
 						<Size x="85" y="22"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativeTo="GuildRegistrarFrame" x="22" y="72"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="GuildRegistrarFrame" x="6" y="4"/>
 						</Anchors>
 						<Scripts>
 							<OnClick>

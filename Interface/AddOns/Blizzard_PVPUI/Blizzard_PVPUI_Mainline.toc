@@ -1,0 +1,10 @@
+## Title: Blizzard PVP UI
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: game
+## Dependencies: Blizzard_HelpPlate, Blizzard_GroupFinder, Blizzard_MatchmakingQueueDisplay
+## AllowLoadGameType: mainline
+Mainline\Blizzard_PVPUI.lua
+Mainline\Blizzard_PVPUI.xml
+Localization.lua

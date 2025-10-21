@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<!--
+		buttonArtKit: The art kit to use for the  button.
+						* The normal texture will be "buttonArtKit"
+						* The pressed texture will be "buttonArtKit-Pressed"
+						* The disabled texture will be "buttonArtKit-Disabled"
+						* The highlight texture will be "buttonArtKit-Highlight"
+		onClickHandler: forwards the standard OnClick arguments.
+		onClickSoundKit: sound to play for OnClick.
+		tooltipAnchor: where to anchor the tooltip for SetOwner.
+		tooltipTitle: the title text for the tooltip.
+		tooltipTitleColor: a color for tooltipTitle.
+		tooltipText: the body text for a tooltip; can be set with or without tooltipTitle.
+		tooltipTextColor: a color for tooltipText.
+		tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
+		tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
+		tooltipDisableWrapText: should the tooltip text wrapping be disabled.
+
+		<KeyValues>
+			<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
+			<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
+			<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipTitle" value="REFRESH_BUTTON_TOOLTIP_TITLE" type="string"/>
+			<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
+			<KeyValue key="tooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="tooltipOffsetY" value="0" type="number"/>
+			<KeyValue key="tooltipDisableWrapText" value="true" type="boolean"/>
+			<KeyValue key="disabledTooltip" value="REFRESH_BUTTON_TOOLTIP_DISABLED" type="string"/>
+			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="disabledTooltipOffsetX" value="0" type="number"/>
+			<KeyValue key="disabledTooltipOffsetY" value="0" type="number"/>
+		</KeyValues>
+		-->
+		<Frames>
+			<Frame parentKey="Controller" mixin="ButtonControllerMixin">
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="BigRedRefreshButtonTemplate" inherits="UIButtonTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<KeyValues>
+			<KeyValue key="buttonArtKit" value="128-RedButton-Refresh" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="BigRedExitButtonTemplate" inherits="UIButtonTemplate" virtual="true">
+		<Size x="128" y="128"/>
+		<KeyValues>
+			<KeyValue key="buttonArtKit" value="128-redbutton-exit" type="string"/>
+		</KeyValues>
+	</Button>
+	
+</Ui>

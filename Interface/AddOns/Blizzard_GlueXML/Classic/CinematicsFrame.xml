@@ -195,6 +195,13 @@
 				<NormalTexture atlas="StreamCinematic-CC-Up" />
 				<PushedTexture atlas="StreamCinematic-CC-Down" />
 			</Button>
+			<Button name="CinematicsButton5" inherits="CinematicsButtonTemplate" text="MISTS_OF_PANDARIA" hidden="true" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CinematicsButton3" relativePoint="BOTTOMLEFT" x="0" y="0" />
+				</Anchors>
+				<NormalTexture atlas="StreamCinematic-MoP-Up" />
+				<PushedTexture atlas="StreamCinematic-MoP-Down" />
+			</Button>
 			<CheckButton name="CinematicSubtitlesCheckbox" inherits="GlueCheckButtonTemplate">
 				<Size x="20" y="20"/>
 				<Anchors>
