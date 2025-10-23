@@ -844,6 +844,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
 	self.AccountSettings:SetExtraAbilitiesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExtraAbilities));
 	self.AccountSettings:SetBuffsAndDebuffsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBuffsAndDebuffs));
+	self.AccountSettings:SetExternalDefensivesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExternalDefensives));
 	self.AccountSettings:SetTalkingHeadFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTalkingHeadFrame));
 	self.AccountSettings:SetVehicleLeaveButtonShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowVehicleLeaveButton));
 	self.AccountSettings:SetBossFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBossFrames));
@@ -1742,6 +1743,7 @@ local checkBoxSetupData =
 	EncounterBar = { callbackName = "SetEncounterBarShown", mouseoverName = "SetEncounterBarMouseOver", },
 	ExtraAbilities = { callbackName = "SetExtraAbilitiesShown", mouseoverName = "SetExtraAbilitiesMouseOver", },
 	BuffsAndDebuffs = { callbackName = "SetBuffsAndDebuffsShown", mouseoverName = "SetBuffsAndDebuffsMouseOver", },
+	ExternalDefensives = { callbackName = "SetExternalDefensivesShown", mouseoverName = "SetExternalDefensivesMouseOver", },
 	TalkingHeadFrame = { callbackName = "SetTalkingHeadFrameShown", mouseoverName = "SetTalkingHeadFrameMouseOver", },
 	VehicleLeaveButton = { callbackName = "SetVehicleLeaveButtonShown", mouseoverName = "SetVehicleLeaveButtonMouseOver", },
 	BossFrames = { callbackName = "SetBossFramesShown", mouseoverName = "SetBossFramesMouseOver", },
@@ -1992,6 +1994,10 @@ function EditModeAccountSettingsMixin:SetBuffsAndDebuffsMouseOver(...)
 	DebuffFrame:ShowEditInstructions(...);
 end
 
+function EditModeAccountSettingsMixin:SetExternalDefensivesMouseOver(...)
+	ExternalDefensivesFrame:ShowEditInstructions(...);
+end
+
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameMouseOver(...)
 	TalkingHeadFrame:ShowEditInstructions(...);
 end
@@ -2209,23 +2215,38 @@ function EditModeAccountSettingsMixin:SetBuffsAndDebuffsShown(shown, isUserInput
 	end
 end
 
+function EditModeAccountSettingsMixin:SetExternalDefensivesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowExternalDefensives, shown);
+		self:RefreshExternalDefensives();
+	else
+		self.settingsCheckButtons.ExternalDefensives:SetControlChecked(shown);
+	end
+end
+
+local function RefreshAuraFrame(frame, isEditing)
+	frame:SetIsEditing(isEditing);
+
+	if isEditing then
+		frame:HighlightSystem();
+	else
+		frame:ClearHighlight();
+	end
+
+	frame:UpdateAuraButtons();
+end
+
 function EditModeAccountSettingsMixin:RefreshBuffsAndDebuffs()
 	local showBuffsAndDebuffs = self.settingsCheckButtons.BuffsAndDebuffs:IsControlChecked();
 
-	if showBuffsAndDebuffs then
-		BuffFrame.isInEditMode = true;
-		DebuffFrame.isInEditMode = true;
-		BuffFrame:HighlightSystem();
-		DebuffFrame:HighlightSystem();
-	else
-		BuffFrame.isInEditMode = false;
-		DebuffFrame.isInEditMode = false;
-		BuffFrame:ClearHighlight();
-		DebuffFrame:ClearHighlight();
+	local frames = { BuffFrame, DebuffFrame };
+	for _, auraFrame in pairs(frames) do
+		RefreshAuraFrame(auraFrame, showBuffsAndDebuffs);
 	end
+end
 
-	BuffFrame:UpdateAuraButtons();
-	DebuffFrame:UpdateAuraButtons();
+function EditModeAccountSettingsMixin:RefreshExternalDefensives()
+	RefreshAuraFrame(ExternalDefensivesFrame, self.settingsCheckButtons.ExternalDefensives:IsControlChecked());
 end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
@@ -2666,13 +2687,13 @@ EditModeManagerTutorialMixin = {};
 
 local HelpTipInfos = {
 	[1] = { text = EDIT_MODE_HELPTIPS_LAYOUTS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="LayoutDropdown",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true, system = "EditMode" },
 	[2] = { text = EDIT_MODE_HELPTIPS_SHOW_HIDDEN_FRAMES, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="AccountSettings",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true, system = "EditMode" },
 	[3] = { text = EDIT_MODE_HELPTIPS_ADVANCED_OPTIONS, buttonStyle = HelpTip.ButtonStyle.Next, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.RightEdgeCenter, relativeRegionParentKey="EnableAdvancedOptionsCheckButton",
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true, system = "EditMode" },
 	[4] = { text = EDIT_MODE_HELPTIPS_SELECT_FRAMES, buttonStyle = HelpTip.ButtonStyle.GotIt, offsetX = 0, offsetY = 0, targetPoint = HelpTip.Point.BottomEdgeCenter, hideArrow = true,
-			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true },
+			cvarBitfield = "closedInfoFramesAccountWide", bitfieldFlag = Enum.FrameTutorialAccount.EditModeManager, useParentStrata = true, system = "EditMode" },
 };
 
 function EditModeManagerTutorialMixin:OnLoad()

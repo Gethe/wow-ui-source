@@ -55,6 +55,7 @@ local NamePlateManager =
 			Name = "ForbiddenNamePlateCreated",
 			Type = "Event",
 			LiteralName = "FORBIDDEN_NAME_PLATE_CREATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "namePlateFrame", Type = "NamePlateFrame", Nilable = false },
@@ -64,6 +65,7 @@ local NamePlateManager =
 			Name = "ForbiddenNamePlateUnitAdded",
 			Type = "Event",
 			LiteralName = "FORBIDDEN_NAME_PLATE_UNIT_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
@@ -73,6 +75,7 @@ local NamePlateManager =
 			Name = "ForbiddenNamePlateUnitRemoved",
 			Type = "Event",
 			LiteralName = "FORBIDDEN_NAME_PLATE_UNIT_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
@@ -82,6 +85,7 @@ local NamePlateManager =
 			Name = "NamePlateCreated",
 			Type = "Event",
 			LiteralName = "NAME_PLATE_CREATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "namePlateFrame", Type = "NamePlateFrame", Nilable = false },
@@ -91,6 +95,7 @@ local NamePlateManager =
 			Name = "NamePlateUnitAdded",
 			Type = "Event",
 			LiteralName = "NAME_PLATE_UNIT_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
@@ -100,6 +105,7 @@ local NamePlateManager =
 			Name = "NamePlateUnitBehindCameraChanged",
 			Type = "Event",
 			LiteralName = "NAME_PLATE_UNIT_BEHIND_CAMERA_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -110,6 +116,7 @@ local NamePlateManager =
 			Name = "NamePlateUnitRemoved",
 			Type = "Event",
 			LiteralName = "NAME_PLATE_UNIT_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },

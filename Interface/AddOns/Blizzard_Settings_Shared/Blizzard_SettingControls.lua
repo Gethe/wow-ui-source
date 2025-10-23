@@ -61,7 +61,22 @@ local function InitializeSettingTooltip(initializer)
 	Settings.InitTooltip(initializer:GetName(), initializer:GetTooltip());
 end
 
-SettingsListSectionHeaderMixin = CreateFromMixins(DefaultTooltipMixin);
+SettingsNewTagMixin = { };
+
+function SettingsNewTagMixin:IsNewTagShown()
+	if self.data.newTagID then
+		return IsNewSettingInCurrentVersion(self.data.newTagID);
+	end
+end
+
+function SettingsNewTagMixin:MarkSettingAsSeen()
+	if self.data.newTagID then
+		MarkNewSettingAsSeen(self.data.newTagID);
+		return true;
+	end
+end
+
+SettingsListSectionHeaderMixin = CreateFromMixins(DefaultTooltipMixin, SettingsNewTagMixin);
 
 function SettingsListSectionHeaderMixin:OnLoad()
 	DefaultTooltipMixin.OnLoad(self);
@@ -74,10 +89,16 @@ function SettingsListSectionHeaderMixin:Init(initializer)
 	self:SetCustomTooltipAnchoring(self.Title, "ANCHOR_RIGHT");
 
 	self:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
+
+	local newTagShown = initializer:IsNewTagShown();
+	self.NewFeature:SetShown(newTagShown);
+	if newTagShown then
+		initializer:MarkSettingAsSeen();
+	end
 end
 
-function CreateSettingsListSectionHeaderInitializer(name, tooltip)
-	local data = {name = name, tooltip = tooltip};
+function CreateSettingsListSectionHeaderInitializer(name, tooltip, newTagID)
+	local data = {name = name, tooltip = tooltip, newTagID = newTagID};
 	return Settings.CreateElementInitializer("SettingsListSectionHeaderTemplate", data);
 end
 
@@ -121,21 +142,6 @@ function SettingsElementHierarchyMixin:AddEvaluateStateFrameEvent(event)
 		self.evaluateStateFrameEvents = {};
 	end
 	table.insert(self.evaluateStateFrameEvents, event);
-end
-
-SettingsNewTagMixin = { };
-
-function SettingsNewTagMixin:IsNewTagShown()
-	if self.data.newTagID then
-		return IsNewSettingInCurrentVersion(self.data.newTagID);
-	end
-end
-
-function SettingsNewTagMixin:MarkSettingAsSeen()
-	if self.data.newTagID then
-		MarkNewSettingAsSeen(self.data.newTagID);
-		return true;
-	end
 end
 
 SettingsListPanelInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin, SettingsNewTagMixin);
@@ -997,6 +1003,11 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	local inserter = Settings.CreateDropdownOptionInserter(dropdownOptions);
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
+
+	if initializer.getSelectionTextFunc then
+		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);
+		self.Control.Dropdown:UpdateToMenuSelections(self.Control.Dropdown:GetMenuDescription());
+	end
 
 	self.Control:SetEnabled(cbSetting:GetValue());
 end

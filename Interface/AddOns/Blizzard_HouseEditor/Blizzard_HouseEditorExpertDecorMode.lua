@@ -10,6 +10,10 @@ local ExpertDecorModeShownEvents =
 
 HouseEditorExpertDecorModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
 
+function HouseEditorExpertDecorModeMixin:OnLoad()
+	self.PlacedDecorListButton:SetListFrame(self.PlacedDecorList);
+end
+
 function HouseEditorExpertDecorModeMixin:TryHandleEscape()
 	local decorPlacementInProgress = C_HousingExpertMode.IsDecorSelected();
 	local housePlacementInProgress = C_HousingExpertMode.IsHouseExteriorSelected();
@@ -34,8 +38,8 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 		local forceUpdateState = false;
 		self:UpdateActiveSubmode(activeSubmode, forceUpdateState);
 	elseif event == "HOUSING_EXPERT_MODE_SELECTED_TARGET_CHANGED" then
-		local isManipulating = false;
-		self:UpdateShownInstructions(isManipulating);
+		self.isManipulating = false;
+		self:UpdateShownInstructions();
 		local forceUpdateState = true;
 		self:UpdateActiveSubmode(C_HousingExpertMode.GetPrecisionSubmode(), forceUpdateState);
 
@@ -56,8 +60,8 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 			GameTooltip:Hide();
 		end
 	elseif event == "HOUSING_DECOR_PRECISION_MANIPULATION_STATUS_CHANGED" then
-		local isManipulating = ...;
-		self:UpdateShownInstructions(isManipulating);
+		self.isManipulating = ...;
+		self:UpdateShownInstructions();
 	elseif event == "UPDATE_BINDINGS" then
 		self:UpdateKeybinds();
 	elseif event == "HOUSING_DECOR_PRECISION_MANIPULATION_EVENT" then
@@ -71,11 +75,13 @@ function HouseEditorExpertDecorModeMixin:OnShow()
 	EventRegistry:TriggerEvent("HouseEditor.HouseStorageSetShown", false);
 	local forceUpdateState = true;
 	self:UpdateActiveSubmode(C_HousingExpertMode.GetPrecisionSubmode(), forceUpdateState);
-	local isManipulating = false;
-	self:UpdateShownInstructions(isManipulating);
+	self.isManipulating = false;
+	self:UpdateShownInstructions();
 	self:UpdateKeybinds();
 	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorExpertDecorMode);
 	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorBasicAndExpertDecorMode);
+
+	self.PlacedDecorListButton:Show();
 end
 
 function HouseEditorExpertDecorModeMixin:OnHide()
@@ -83,6 +89,8 @@ function HouseEditorExpertDecorModeMixin:OnHide()
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorExpertDecorMode);
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorBasicAndExpertDecorMode);
 	self:StopLoopingSound();
+	self.PlacedDecorListButton:Hide();
+	self.PlacedDecorList:Hide();
 end
 
 function HouseEditorExpertDecorModeMixin:HandleManipulatorEvent(manipulatorEvent)
@@ -144,14 +152,29 @@ function HouseEditorExpertDecorModeMixin:UpdateActiveSubmode(activeSubmode, forc
 	end
 
 	self.SubmodeBar.ResetButton:UpdateState();
+
+	self.activeSubmode = activeSubmode;
+	self:UpdateShownInstructions();
 end
 
-function HouseEditorExpertDecorModeMixin:UpdateShownInstructions(isManipulating)
+function HouseEditorExpertDecorModeMixin:UpdateShownInstructions()
 	local isTargetSelected = C_HousingExpertMode.IsDecorSelected() or C_HousingExpertMode.IsHouseExteriorSelected();
+	local isManipulating = self.isManipulating;
+	local subMode = C_HousingExpertMode.GetPrecisionSubmode();
+
 	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isTargetSelected and not isManipulating);
 	self:SetInstructionShown(self.Instructions.SelectedInstructions, isTargetSelected and not isManipulating);
 	self:SetInstructionShown(self.Instructions.ManipulatingInstructions, isManipulating);
 	self:SetInstructionShown(self.Instructions.SelectedOrManipulatingInstructions, isTargetSelected or isManipulating);
+
+	local showMoveInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Translate;
+	self:SetInstructionShown(self.Instructions.SelectedAndMoveSubmodeInstructions, showMoveInstructions);
+
+	local showRotateInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Rotate;
+	self:SetInstructionShown(self.Instructions.SelectedAndRotateSubmodeInstructions, showRotateInstructions);
+
+	local showScaleInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Scale;
+	self:SetInstructionShown(self.Instructions.SelectedAndScaleSubmodeInstructions, showScaleInstructions);
 
 	if self.Instructions.RemoveInstruction then
 		local shouldShowRemove = false;

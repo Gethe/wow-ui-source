@@ -149,26 +149,31 @@ local StableInfo =
 			Name = "PetInfoUpdate",
 			Type = "Event",
 			LiteralName = "PET_INFO_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PetStableClosed",
 			Type = "Event",
 			LiteralName = "PET_STABLE_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableFavoritesUpdated",
 			Type = "Event",
 			LiteralName = "PET_STABLE_FAVORITES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableShow",
 			Type = "Event",
 			LiteralName = "PET_STABLE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableUpdate",
 			Type = "Event",
 			LiteralName = "PET_STABLE_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

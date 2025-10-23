@@ -34,11 +34,13 @@ local CovenantPreview =
 			Name = "CovenantPreviewClose",
 			Type = "Event",
 			LiteralName = "COVENANT_PREVIEW_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CovenantPreviewOpen",
 			Type = "Event",
 			LiteralName = "COVENANT_PREVIEW_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "previewInfo", Type = "CovenantPreviewInfo", Nilable = false },

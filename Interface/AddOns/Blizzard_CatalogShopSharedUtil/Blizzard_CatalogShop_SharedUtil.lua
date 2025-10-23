@@ -48,7 +48,7 @@ local function SetAnimations(actor, actorDisplayInfoData, overrideAnimations)
 		return;
 	end
 
-	if not actor or actorDisplayInfoData then
+	if not actor or not actorDisplayInfoData then
 		return;
 	end
 
@@ -249,7 +249,10 @@ CatalogShopUtil is a system for taking relevant product info and "flattening" it
 used by the UI team and it can only work with a single flat table.  
 
 ]]
-CatalogShopUtil = {};
+CatalogShopUtil = {
+	INTERVAL_UPDATE_SECONDS_TIME = 15.0,
+};
+
 function CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm)
 	local playerGender;
 	local playerRaceNameTag;
@@ -638,7 +641,7 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 				actor:SetAnimation(0);
 			end
 			local showPlayer = forceHidePlayer == nil or not forceHidePlayer; -- fetch this instead
-			local useNativeForm = CatalogShopFrame:GetUseNativeForm();
+			local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
 			--local useNativeForm = true; -- fetch this
 
 			local isSelfMount = false;
@@ -765,7 +768,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	end
 
 	local hideWeapon, sheatheWeapon, autoDress = false, true, true;
-	local useNativeForm = CatalogShopFrame:GetUseNativeForm();
+	local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
 	--local itemModifiedAppearanceID;
 	local itemModifiedAppearanceIDs;
 
@@ -790,7 +793,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 		hideWeapon = actorDisplayData.hideWeapon;
 		sheatheWeapon = actorDisplayData.sheatheWeapon;
 
-		local hideArmorSetting = CatalogShopFrame:GetHideArmorSetting();
+		local hideArmorSetting = CatalogShopFrame and CatalogShopFrame:GetHideArmorSetting() or false;
 		if hideArmorSetting == nil then
 			autoDress = actorDisplayData.autoDress;
 		else
@@ -946,7 +949,7 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 		if not C_Glue.IsOnGlueScreen() then
 			hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		end
-		local useNativeForm = CatalogShopFrame:GetUseNativeForm();
+		local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
 
 		if not isOverrideData then
 			local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
@@ -967,6 +970,12 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 	else
 		local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
 		actor:SetPosition(x, y, z);
+
+		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
+		actor:SetSpellVisualKit(nil);
+		actor:StopAnimationKit();
+		actor:SetAnimation(0, 0, 1.0);
+		SetAnimations(actor, actorDisplayInfoData);
 	end
 
 	actor:SetYaw(math.rad(actorDisplayData.yaw));
@@ -1024,6 +1033,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 	-- APPLY CHANGES TO ACTOR
 	local productType = displayData.productType;
 	local isTransmogScene = false;
+	local actorDisplayBucket = displayData.actorDisplayBucket;
+	local actorDisplayData;
 	local actor;
 	local modelSceneTag = displayData.modelSceneTag or nil;
 
@@ -1040,6 +1051,12 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 		isTransmogScene = true;
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
+		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+			if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
+				actorDisplayData = actorDisplayDataFromBucket;
+				break;
+			end
+		end
 	end
 
 	local overrideActorDiplayData = displayData.overrideActorDisplayBucket and displayData.overrideActorDisplayBucket[1] or nil;
@@ -1050,15 +1067,13 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
 		end
 	else
-		-- TODO we have something else, maybe a bundle?
-		local actorDisplayBucket = displayData.actorDisplayBucket;
 		if not actorDisplayBucket then
 			return;
 		end
-		for i, actorDisplayData in ipairs(actorDisplayBucket) do
-			actor = modelScene:GetActorByTag(actorDisplayData.scriptTag);
+		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+			actor = modelScene:GetActorByTag(actorDisplayDataFromBucket.scriptTag);
 			if actor then
-				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isTransmogScene, tryUseOverrideAnim)
+				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayDataFromBucket, isTransmogScene, tryUseOverrideAnim)
 				if overrideActorDiplayData then
 					local isOverrideData = true;
 					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, isTransmogScene, tryUseOverrideAnim, isOverrideData)
@@ -1214,4 +1229,81 @@ function CatalogShopUtil.GetTimeTexture(productInfo, productType)
 	else
 		return nil;
 	end
+end
+
+function CatalogShopUtil.GetProductInfo(productID)
+	local productInfo = C_CatalogShop.GetProductInfo(productID)
+	if not productInfo then
+		return nil;
+	end
+
+	local productDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(productInfo.catalogShopProductID);
+	if not productDisplayInfo then
+		error("CatalogShopMixin:GetProductInfo : product display info not found!")
+		return productInfo;
+	end
+		
+	local defaultPreviewModelSceneID = productDisplayInfo.defaultPreviewModelSceneID;
+	local overridePreviewModelSceneID = productDisplayInfo.overridePreviewModelSceneID or nil;
+	local defaultCardModelSceneID = productDisplayInfo.defaultCardModelSceneID;
+	local overrideCardModelSceneID = productDisplayInfo.overrideCardModelSceneID or nil;
+	local defaultWideCardModelSceneID = productDisplayInfo.defaultWideCardModelSceneID;
+	local overrideWideCardModelSceneID = productDisplayInfo.overrideWideCardModelSceneID or nil;
+
+	-- get preview scene display data
+	productInfo.sceneDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID);
+
+	-- get small card display data - should always be here
+	productInfo.cardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID);
+
+	-- get wide card display data if set
+	if defaultWideCardModelSceneID then
+		productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
+	end
+				
+	-- get bundle children display data
+	if productDisplayInfo.productType == CatalogShopConstants.ProductType.Bundle then
+		local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
+		if productInfo.sceneDisplayData then
+			productInfo.sceneDisplayData.bundleChildrenDisplayData = {};
+		end
+		if productInfo.cardDisplayData then
+			productInfo.cardDisplayData.bundleChildrenDisplayData = {};
+		end
+		if productInfo.wideCardDisplayData then
+			productInfo.wideCardDisplayData.bundleChildrenDisplayData = {};
+		end
+		for _, childData in ipairs(childrenProductData) do
+			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
+			-- If this product has an otherProductGameType then we can't use this product in our model scene (it's from another game)
+			if childProductDisplayInfo.otherProductGameType == nil then
+				if productInfo.sceneDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
+				end
+				if productInfo.cardDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
+				end
+				if productInfo.wideCardDisplayData then
+					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
+					childProductData.displayOrder = childData.displayOrder or 999;
+					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
+					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
+					childProductData.cameraDisplayData = nil;
+					table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
+				end
+			end
+		end
+	end
+
+	return productInfo;
 end

@@ -1,13 +1,22 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<Button name="HousingCatalogBundleDisplayTemplate" mixin="HousingCatalogBundleDisplayMixin" registerForClicks="LeftButtonUp,RightButtonUp" motionScriptsWhileDisabled="true" virtual="true">
-		<Size x="300" y="300"/>
-		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="Background" setAllPoints="true">
-					<Color r="0.2" g="0.2" b="0.2" a="0.75"/>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Size x="400" y="231"/>
+		<Frames>
+			<Button parentKey="Contents" inherits="WideCatalogShopProductCardTemplate" scale="0.717">
+				<KeyValues>
+					<KeyValue key="nonInteractive" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
 	</Button>
 </Ui>

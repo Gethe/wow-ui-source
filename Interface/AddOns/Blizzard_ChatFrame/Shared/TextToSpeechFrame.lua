@@ -143,7 +143,7 @@ function TextToSpeech_PlayNextQueuedMessage()
 	end
 end
 
-function TextToSpeech_Speak(text, voice, neverQueue)
+function TextToSpeech_Speak(text, voice, neverQueue, allowOverlappedSpeech)
 	-- Queue messages
 	local uiHidden = not UIParent:IsShown();
 	local shouldQueue = (playbackActive or uiHidden) and not neverQueue;
@@ -171,13 +171,12 @@ function TextToSpeech_Speak(text, voice, neverQueue)
 
 	playbackActive = true;
 
-	local overlap = false;
 	C_VoiceChat.SpeakText(
 		voice.voiceID,
 		text,
 		C_TTSSettings.GetSpeechRate(),
 		C_TTSSettings.GetSpeechVolume(),
-		overlap
+		allowOverlappedSpeech
 	);
 end
 
@@ -819,11 +818,11 @@ function TextToSpeechFrame_PlayMessage(frame, message, id, ignoreTypeFilters, ig
 	TextToSpeech_Speak(message, voice);
 end
 
-function TextToSpeechFrame_PlayCooldownAlertMessage(_alert, message)
+function TextToSpeechFrame_PlayCooldownAlertMessage(_alert, message, allowOverlappedSpeech)
 	local voice = TextToSpeechFrame_GetSpeakerVoiceForMessageType(nil);
 	if voice then
 		local alwaysPlayImmediately = true;
-		TextToSpeech_Speak(message, voice, alwaysPlayImmediately);
+		TextToSpeech_Speak(message, voice, alwaysPlayImmediately, allowOverlappedSpeech);
 	end
 end
 

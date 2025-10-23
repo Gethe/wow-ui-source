@@ -613,6 +613,7 @@ local MountJournal =
 			Name = "MountEquipmentApplyResult",
 			Type = "Event",
 			LiteralName = "MOUNT_EQUIPMENT_APPLY_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -622,16 +623,19 @@ local MountJournal =
 			Name = "MountJournalSearchUpdated",
 			Type = "Event",
 			LiteralName = "MOUNT_JOURNAL_SEARCH_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MountJournalUsabilityChanged",
 			Type = "Event",
 			LiteralName = "MOUNT_JOURNAL_USABILITY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NewMountAdded",
 			Type = "Event",
 			LiteralName = "NEW_MOUNT_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mountID", Type = "number", Nilable = false },

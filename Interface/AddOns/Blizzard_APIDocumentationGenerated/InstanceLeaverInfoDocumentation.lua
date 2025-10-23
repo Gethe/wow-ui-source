@@ -24,6 +24,7 @@ local InstanceLeaverInfo =
 			Name = "InstanceLeaverStatusChanged",
 			Type = "Event",
 			LiteralName = "INSTANCE_LEAVER_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isLeaver", Type = "bool", Nilable = false },

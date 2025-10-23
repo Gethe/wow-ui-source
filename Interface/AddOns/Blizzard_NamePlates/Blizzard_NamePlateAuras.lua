@@ -19,12 +19,7 @@ end
 function NamePlateAuraItemMixin:RefreshTooltip()
 	local tooltip = GetAppropriateTooltip();
 	if self.auraInstanceID then
-		local filterString = nil;
-		if self.isBuff then
-			tooltip:SetUnitBuffByAuraInstanceID(self.unitToken, self.auraInstanceID, filterString);
-		else
-			tooltip:SetUnitDebuffByAuraInstanceID(self.unitToken, self.auraInstanceID, filterString);
-		end
+		tooltip:SetUnitAuraByAuraInstanceID(self.unitToken, self.auraInstanceID);
 	elseif self.spellID then
 		local isPet = false;
 		tooltip:SetSpellByID(self.spellID, isPet);

@@ -165,7 +165,7 @@ end
 
 function ActionBar_PageUp()
 	local nextPage;
-	for i=GetActionBarPage() + 1, NUM_ACTIONBAR_PAGES do
+	for i=C_ActionBar.GetActionBarPage() + 1, NUM_ACTIONBAR_PAGES do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			nextPage = i;
 			break;
@@ -175,12 +175,12 @@ function ActionBar_PageUp()
 	if ( not nextPage ) then
 		nextPage = 1;
 	end
-	ChangeActionBarPage(nextPage);
+	C_ActionBar.SetActionBarPage(nextPage);
 end
 
 function ActionBar_PageDown()
 	local prevPage;
-	for i=GetActionBarPage() - 1, 1, -1 do
+	for i=C_ActionBar.GetActionBarPage() - 1, 1, -1 do
 		if ( VIEWABLE_ACTION_BAR_PAGES[i] ) then
 			prevPage = i;
 			break;
@@ -195,7 +195,7 @@ function ActionBar_PageDown()
 			end
 		end
 	end
-	ChangeActionBarPage(prevPage);
+	C_ActionBar.SetActionBarPage(prevPage);
 end
 
 ActionBarButtonEventsFrameMixin = {};
@@ -244,9 +244,7 @@ ActionBarActionEventsFrameMixin = {};
 
 function ActionBarActionEventsFrameMixin:OnLoad()
 	self.frames = {};
-	--self:RegisterEvent("ACTIONBAR_UPDATE_STATE");			not updating state from lua anymore, see SetActionUIButton
 	--self:RegisterEvent("ACTIONBAR_UPDATE_USABLE");		replaced with ACTION_USABLE_CHANGED
-	--self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");		not updating cooldown from lua anymore, see SetActionUIButton
 	self:RegisterEvent("SPELL_UPDATE_CHARGES");
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS");
 	self:RegisterEvent("TRADE_SKILL_SHOW");
@@ -537,7 +535,7 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 			self:RegisterActionBarButtonCheckFrames(self.action);
 		end
 
-		SetActionUIButton(self, action, self.cooldown);
+		C_ActionBar.RegisterActionUIButton(self, action, self.cooldown);
 
 		self:UpdateAssistedCombatRotationFrame();
 
@@ -556,11 +554,11 @@ function ActionBarActionButtonMixin:Update()
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
-	local texture = GetActionTexture(action);
+	local texture = C_ActionBar.GetActionTexture(action);
 
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ( HasAction(action) ) then
+	if ( C_ActionBar.HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
 			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
@@ -598,7 +596,7 @@ function ActionBarActionButtonMixin:Update()
 	-- Add a green border if button is an equipped item
 	local border = self.Border;
 	if border then
-		if ( IsEquippedAction(action) ) then
+		if ( C_ActionBar.IsEquippedAction(action) ) then
 			border:SetVertexColor(0, 1.0, 0, 0.5);
 			border:Show();
 		else
@@ -609,8 +607,8 @@ function ActionBarActionButtonMixin:Update()
 	-- Update Action Text
 	local actionName = self.Name;
 	if actionName then
-		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
-			actionName:SetText(GetActionText(action));
+		if ( not C_ActionBar.IsConsumableAction(action) and not C_ActionBar.IsStackableAction(action) and (C_ActionBar.IsItemAction(action) or C_ActionBar.GetActionUseCount(action) == 0) ) then
+			actionName:SetText(C_ActionBar.GetActionText(action));
 		else
 			actionName:SetText("");
 		end
@@ -670,12 +668,12 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 end
 
 function ActionBarActionButtonMixin:HasAction()
-    return HasAction(self.action);
+	return C_ActionBar.HasAction(self.action);
 end
 
 function ActionBarActionButtonMixin:UpdateState()
 	local action = self.action;
-	local isChecked = (IsCurrentAction(action) or IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
+	local isChecked = (C_ActionBar.IsCurrentAction(action) or C_ActionBar.IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
 	self:SetChecked(isChecked);
 end
 
@@ -684,7 +682,7 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 
 	assertsafe(action == nil or action == self.action);
 	if isUsable == nil or notEnoughMana == nil then
-		isUsable, notEnoughMana = IsUsableAction(self.action);
+		isUsable, notEnoughMana = C_ActionBar.IsUsableAction(self.action);
 	end
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0);
@@ -714,7 +712,7 @@ function ActionBarActionButtonMixin:CreateTextureOverlayFrame()
 end
 
 function ActionBarActionButtonMixin:UpdateProfessionQuality()
-	if IsItemAction(self.action) then
+	if C_ActionBar.IsItemAction(self.action) then
 		local qualityInfo = C_ActionBar.GetProfessionQualityInfo(self.action);
 		if qualityInfo then
 			if not self.ProfessionQualityOverlayFrame then
@@ -811,16 +809,16 @@ end
 function ActionBarActionButtonMixin:UpdateCount()
 	local text = self.Count;
 	local action = self.action;
-	if ( IsConsumableAction(action) or IsStackableAction(action) or (not IsItemAction(action) and GetActionCount(action) > 0) ) then
-		local count = GetActionCount(action);
+	if ( C_ActionBar.IsConsumableAction(action) or C_ActionBar.IsStackableAction(action) or (not C_ActionBar.IsItemAction(action) and C_ActionBar.GetActionUseCount(action) > 0) ) then
+		local count = C_ActionBar.GetActionUseCount(action);
 		if ( count > (self.maxDisplayCount or 9999 ) ) then
 			text:SetText("*");
 		else
 			text:SetText(count);
 		end
 	else
-		local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action);
-		if (maxCharges > 1) then
+		local chargeInfo = C_ActionBar.GetActionCharges(action);
+		if (chargeInfo.maxCharges > 0) then
 			text:SetText(charges);
 		else
 			text:SetText("");
@@ -833,6 +831,9 @@ function ActionButton_UpdateCooldownNumberHidden(actionButton)
 	local shouldBeHidden = actionButton.cooldown.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL or CVarCallbackRegistry:GetCVarValueBool(countdownForCooldownsCVarName) ~= true;
 	actionButton.cooldown:SetHideCountdownNumbers(shouldBeHidden);
 end
+
+local defaultCooldownInfo = { startTime = 0; duration = 0; isEnabled = false; modRate = 0 };
+local defaultChargeInfo = { currentCharges = 0; maxCharges = 0; cooldownStartTime = 0; cooldownDuration = 0; chargeModRate = 0 };
 
 -- Shared between action bar buttons and spell flyout buttons.
 function ActionButton_UpdateCooldown(self)
@@ -883,15 +884,17 @@ function ActionButton_UpdateCooldown(self)
 	elseif (self.spellID) then
 		locStart, locDuration = C_Spell.GetSpellLossOfControlCooldown(self.spellID);
 		
-		local spellCooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or {startTime = 0, duration = 0, isEnabled = false, modRate = 0};
+		local spellCooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or defaultCooldownInfo;
 		start, duration, enable, modRate = spellCooldownInfo.startTime, spellCooldownInfo.duration, spellCooldownInfo.isEnabled, spellCooldownInfo.modRate;
 
-		local chargeInfo = C_Spell.GetSpellCharges(self.spellID) or {currentCharges = 0, maxCharges = 0, cooldownStartTime = 0, cooldownDuration = 0, chargeModRate = 0};
+		local chargeInfo = C_Spell.GetSpellCharges(self.spellID) or defaultChargeInfo;
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
 	else
-		locStart, locDuration = GetActionLossOfControlCooldown(self.action);
-		start, duration, enable, modRate = GetActionCooldown(self.action);
-		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
+		locStart, locDuration = C_ActionBar.GetActionLossOfControlCooldown(self.action);
+		local actionCooldownInfo = C_ActionBar.GetActionCooldown(self.action);
+		start, duration, enable, modRate = actionCooldownInfo.startTime, actionCooldownInfo.duration, actionCooldownInfo.isEnabled, actionCooldownInfo.modRate;
+		local chargeInfo = C_ActionBar.GetActionCharges(self.action);
+		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = chargeInfo.currentCharges, chargeInfo.maxCharges, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate;
 	end
 
 	if ( (locStart + locDuration) > (start + duration) ) then
@@ -1069,7 +1072,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "UPDATE_SHAPESHIFT_FORM" ) then
 		-- need to listen for UPDATE_SHAPESHIFT_FORM because attack icons change when the shapeshift form changes
 		-- This is NOT intended to update everything about shapeshifting; most stuff should be handled by ActionBar-specific events such as UPDATE_BONUS_ACTIONBAR, UPDATE_USABLE, etc.
-		local texture = GetActionTexture(self.action);
+		local texture = C_ActionBar.GetActionTexture(self.action);
 		if (texture) then
 			self.icon:SetTexture(texture);
 		end
@@ -1098,19 +1101,19 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "TRADE_SKILL_SHOW" or event == "TRADE_SKILL_CLOSE"  or event == "ARCHAEOLOGY_CLOSED" ) then
 		self:UpdateState();
 	elseif ( event == "PLAYER_ENTER_COMBAT" ) then
-		if ( IsAttackAction(self.action) ) then
+		if ( C_ActionBar.IsAttackAction(self.action) ) then
 			self:StartFlash();
 		end
 	elseif ( event == "PLAYER_LEAVE_COMBAT" ) then
-		if ( IsAttackAction(self.action) ) then
+		if ( C_ActionBar.IsAttackAction(self.action) ) then
 			self:StopFlash();
 		end
 	elseif ( event == "START_AUTOREPEAT_SPELL" ) then
-		if ( IsAutoRepeatAction(self.action) ) then
+		if ( C_ActionBar.IsAutoRepeatAction(self.action) ) then
 			self:StartFlash();
 		end
 	elseif ( event == "STOP_AUTOREPEAT_SPELL" ) then
-		if ( self:IsFlashing() and not IsAttackAction(self.action) ) then
+		if ( self:IsFlashing() and not C_ActionBar.IsAttackAction(self.action) ) then
 			self:StopFlash();
 		end
 	elseif ( event == "PET_STABLE_UPDATE" or event == "PET_STABLE_SHOW") then
@@ -1143,7 +1146,7 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "UPDATE_SUMMONPETS_ACTION" ) then
 		local actionType, id = GetActionInfo(self.action);
 		if (actionType == "summonpet") then
-			local texture = GetActionTexture(self.action);
+			local texture = C_ActionBar.GetActionTexture(self.action);
 			if (texture) then
 				self.icon:SetTexture(texture);
 			end
@@ -1387,7 +1390,7 @@ end
 
 function ActionBarActionButtonMixin:UpdateFlash()
 	local action = self.action;
-	if ( (IsAttackAction(action) and IsCurrentAction(action)) or IsAutoRepeatAction(action) ) then
+	if ( (C_ActionBar.IsAttackAction(action) and C_ActionBar.IsCurrentAction(action)) or C_ActionBar.IsAutoRepeatAction(action) ) then
 		self:StartFlash();
 		
 		local actionType, actionID, actionSubtype = GetActionInfo(action);

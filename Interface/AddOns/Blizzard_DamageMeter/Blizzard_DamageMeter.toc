@@ -1,5 +1,7 @@
 ## Title: Blizzard_DamageMeter
 ## AllowLoadGameType: standard
+## LoadSavedVariablesFirst: 1
+## SavedVariablesPerCharacter: DamageMeterPerCharacterSettings
 ## Dependencies: Blizzard_EditMode
 DamageMeterEntry.lua
 DamageMeterEntry.xml

@@ -308,6 +308,17 @@ local ReputationInfo =
 
 	Events =
 	{
+		{
+			Name = "FactionStandingChanged",
+			Type = "Event",
+			LiteralName = "FACTION_STANDING_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "updatedStanding", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ExternalDefensivesFrame" parent="UIParent" inherits="BaseAuraFrameTemplate" mixin="ExternalDefensivesFrameMixin" frameStrata="LOW">
+		<KeyValues>
+			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
+			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.ExternalDefensivesFrame" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_FRAME_LABEL" type="global"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" x="0" y="-25" />
+		</Anchors>
+	</Frame>
+</Ui>

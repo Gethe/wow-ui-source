@@ -56,7 +56,7 @@ local Sound =
 			Arguments =
 			{
 				{ Name = "soundKitID", Type = "number", Nilable = false },
-				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "SI3UISoundSubType_Default" },
+				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "g_defaultSI3UISoundSubTypeForLua" },
 				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
 				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
 				{ Name = "overridePriority", Type = "number", Nilable = true },
@@ -86,11 +86,13 @@ local Sound =
 			Name = "SoundDeviceUpdate",
 			Type = "Event",
 			LiteralName = "SOUND_DEVICE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoundkitFinished",
 			Type = "Event",
 			LiteralName = "SOUNDKIT_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "soundHandle", Type = "number", Nilable = false },
@@ -106,7 +108,7 @@ local Sound =
 			Fields =
 			{
 				{ Name = "soundKitID", Type = "number", Nilable = false },
-				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "SI3UISoundSubType_Default" },
+				{ Name = "uiSoundSubType", Type = "UISoundSubType", Nilable = false, Default = "g_defaultSI3UISoundSubTypeForLua" },
 				{ Name = "forceNoDuplicates", Type = "bool", Nilable = false, Default = false },
 				{ Name = "runFinishCallback", Type = "bool", Nilable = false, Default = false },
 				{ Name = "overridePriority", Type = "number", Nilable = true },

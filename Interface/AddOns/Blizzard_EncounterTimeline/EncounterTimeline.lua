@@ -12,6 +12,11 @@ function EncounterTimelineMixin:OnLoad()
 	self:GetView():SetScript("OnSizeChanged", function() self:UpdateSize(); end);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameAcquired", self.OnEventFrameAcquired, self);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameReleased", self.OnEventFrameReleased, self);
+
+	for _, cvarName in ipairs(EncounterTimelineVisibilityCVars) do
+		CVarCallbackRegistry:SetCVarCachable(cvarName);
+		CVarCallbackRegistry:RegisterCallback(cvarName, function() self:UpdateVisibility(); end, self);
+	end
 end
 
 function EncounterTimelineMixin:OnEvent(event, ...)
@@ -93,7 +98,7 @@ function EncounterTimelineMixin:EvaluateVisibility()
 		return true;
 	elseif self:IsExplicitlyShown() then
 		return true;
-	elseif not C_EncounterTimeline.IsTimelineEnabled() then
+	elseif not C_EncounterTimeline.IsFeatureEnabled() then
 		return false;
 	end
 

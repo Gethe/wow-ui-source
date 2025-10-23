@@ -98,7 +98,7 @@ function EncounterWarningsViewMixin:ShowWarning(encounterWarningInfo)
 
 	if encounterWarningInfo.shouldPlaySound then
 		if EncounterWarningsViewSettings.AreSoundAlertsEnabled(self) then
-			EncounterWarningsUtil.PlaySoundForWarning(encounterWarningInfo);
+			C_EncounterWarnings.PlaySound(encounterWarningInfo.severity);
 		end
 	end
 

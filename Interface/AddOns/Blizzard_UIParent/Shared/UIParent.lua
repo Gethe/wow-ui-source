@@ -58,8 +58,8 @@ function UIParent_UpdateTopFramePositions()
 	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
 		table.insert(statusFrames, BehavioralMessagingTray);
 	end
-	if UserSurveyStatusFrame and UserSurveyStatusFrame:IsShown() then
-		table.insert(statusFrames, UserSurveyStatusFrame);
+	if WowSurveyStatusFrame and WowSurveyStatusFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyStatusFrame);
 	end
 
 	local buffOffset = 0;

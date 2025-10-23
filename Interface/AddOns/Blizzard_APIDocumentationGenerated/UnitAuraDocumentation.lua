@@ -123,6 +123,23 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetAuraDurationRemainingByAuraInstanceID",
+			Type = "Function",
+			SecretWhenAurasRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "durationRemaining", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuraSlots",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -338,6 +355,7 @@ local UnitAura =
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
 			SecretWhenAurasRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },

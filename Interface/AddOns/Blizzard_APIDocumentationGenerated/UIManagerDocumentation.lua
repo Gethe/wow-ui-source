@@ -82,11 +82,13 @@ local UIManager =
 			Name = "NotchedDisplayModeChanged",
 			Type = "Event",
 			LiteralName = "NOTCHED_DISPLAY_MODE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UiScaleChanged",
 			Type = "Event",
 			LiteralName = "UI_SCALE_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 

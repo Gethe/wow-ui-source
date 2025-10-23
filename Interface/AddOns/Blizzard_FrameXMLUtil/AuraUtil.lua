@@ -39,9 +39,6 @@ function AuraUtil.UnpackAuraData(auraData)
 		auraData.isFromPlayerOrPlayerPet,
 		auraData.nameplateShowAll,
 		auraData.timeMod,
-		auraData.isTankRoleAura,
-		auraData.isHealerRoleAura,
-		auraData.isDPSRoleAura,
 		unpack(auraData.points);
 end
 
@@ -195,7 +192,7 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		aura.isBuff = true;
 		return AuraUtil.AuraUpdateChangedType.Buff;
 	elseif aura.isHarmful and aura.isRaid then
-		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not (aura.isBossAura or IsRoleAura(aura)) and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
+		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
 			aura.debuffType = AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
 			return AuraUtil.AuraUpdateChangedType.Debuff;
 		elseif not ignoreDispelDebuffs and AuraUtil.DispellableDebuffTypes[aura.dispelName] ~= nil then

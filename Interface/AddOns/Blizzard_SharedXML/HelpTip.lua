@@ -233,9 +233,9 @@ function HelpTip:CanShow(info)
 end
 
 function HelpTip:IsRestricted(info)
-	if C_PlayerInfo.IsPlayerInRPE() then
+	if C_PlayerInfo and C_PlayerInfo.IsPlayerInRPE() then
 		-- in RPE block almost all helptips
-		if info.system == "TutorialSoftTargetInteraction" then
+		if info.system == "TutorialSoftTargetInteraction" or info.system == "EditMode" then
 			return false;
 		end
 		if info.text == TALENT_MICRO_BUTTON_NO_HERO_SPEC

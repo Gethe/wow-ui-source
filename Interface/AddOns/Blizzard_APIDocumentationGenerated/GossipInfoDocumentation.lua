@@ -193,7 +193,6 @@ local GossipInfo =
 		{
 			Name = "SelectActiveQuest",
 			Type = "Function",
-			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -204,7 +203,6 @@ local GossipInfo =
 		{
 			Name = "SelectAvailableQuest",
 			Type = "Function",
-			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -215,7 +213,6 @@ local GossipInfo =
 		{
 			Name = "SelectOption",
 			Type = "Function",
-			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -228,7 +225,6 @@ local GossipInfo =
 		{
 			Name = "SelectOptionByIndex",
 			Type = "Function",
-			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -246,11 +242,13 @@ local GossipInfo =
 			Name = "DynamicGossipPoiUpdated",
 			Type = "Event",
 			LiteralName = "DYNAMIC_GOSSIP_POI_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "GossipClosed",
 			Type = "Event",
 			LiteralName = "GOSSIP_CLOSED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "interactionIsContinuing", Type = "bool", Nilable = false },
@@ -260,6 +258,7 @@ local GossipInfo =
 			Name = "GossipConfirm",
 			Type = "Event",
 			LiteralName = "GOSSIP_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gossipID", Type = "number", Nilable = false },
@@ -271,11 +270,13 @@ local GossipInfo =
 			Name = "GossipConfirmCancel",
 			Type = "Event",
 			LiteralName = "GOSSIP_CONFIRM_CANCEL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GossipEnterCode",
 			Type = "Event",
 			LiteralName = "GOSSIP_ENTER_CODE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gossipID", Type = "number", Nilable = false },
@@ -285,11 +286,13 @@ local GossipInfo =
 			Name = "GossipOptionsRefreshed",
 			Type = "Event",
 			LiteralName = "GOSSIP_OPTIONS_REFRESHED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GossipShow",
 			Type = "Event",
 			LiteralName = "GOSSIP_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "uiTextureKit", Type = "textureKit", Nilable = true },

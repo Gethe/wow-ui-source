@@ -19,10 +19,6 @@ local HousingExpertModeUI =
 			Type = "Function",
 		},
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
 
@@ -111,6 +107,10 @@ local HousingExpertModeUI =
 			},
 		},
 		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
+		},
+		{
 			Name = "ResetPrecisionChanges",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -170,6 +170,7 @@ local HousingExpertModeUI =
 			Name = "HousingDecorPrecisionManipulationEvent",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PRECISION_MANIPULATION_EVENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "event", Type = "TransformManipulatorEvent", Nilable = false },
@@ -179,6 +180,7 @@ local HousingExpertModeUI =
 			Name = "HousingDecorPrecisionManipulationStatusChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PRECISION_MANIPULATION_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isManipulatingSelection", Type = "bool", Nilable = false },
@@ -188,6 +190,7 @@ local HousingExpertModeUI =
 			Name = "HousingDecorPrecisionSubmodeChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PRECISION_SUBMODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "activeSubmode", Type = "HousingPrecisionSubmode", Nilable = true },
@@ -197,6 +200,7 @@ local HousingExpertModeUI =
 			Name = "HousingExpertModeHoveredTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_EXPERT_MODE_HOVERED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
@@ -207,6 +211,7 @@ local HousingExpertModeUI =
 			Name = "HousingExpertModeSelectedTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_EXPERT_MODE_SELECTED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelectedTarget", Type = "bool", Nilable = false },

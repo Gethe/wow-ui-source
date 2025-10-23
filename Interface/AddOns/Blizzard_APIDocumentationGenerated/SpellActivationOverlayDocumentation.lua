@@ -29,6 +29,7 @@ local SpellActivationOverlay =
 			Name = "SpellActivationOverlayGlowHide",
 			Type = "Event",
 			LiteralName = "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -38,6 +39,7 @@ local SpellActivationOverlay =
 			Name = "SpellActivationOverlayGlowShow",
 			Type = "Event",
 			LiteralName = "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -47,6 +49,7 @@ local SpellActivationOverlay =
 			Name = "SpellActivationOverlayHide",
 			Type = "Event",
 			LiteralName = "SPELL_ACTIVATION_OVERLAY_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true },
@@ -56,6 +59,7 @@ local SpellActivationOverlay =
 			Name = "SpellActivationOverlayShow",
 			Type = "Event",
 			LiteralName = "SPELL_ACTIVATION_OVERLAY_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },

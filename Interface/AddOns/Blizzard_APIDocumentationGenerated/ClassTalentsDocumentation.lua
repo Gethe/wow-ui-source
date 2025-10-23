@@ -373,6 +373,7 @@ local ClassTalents =
 			Name = "ActiveCombatConfigChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_COMBAT_CONFIG_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
@@ -382,16 +383,19 @@ local ClassTalents =
 			Name = "SelectedLoadoutChanged",
 			Type = "Event",
 			LiteralName = "SELECTED_LOADOUT_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpecializationChangeCastFailed",
 			Type = "Event",
 			LiteralName = "SPECIALIZATION_CHANGE_CAST_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StarterBuildActivationFailed",
 			Type = "Event",
 			LiteralName = "STARTER_BUILD_ACTIVATION_FAILED",
+			SynchronousEvent = true,
 		},
 	},
 

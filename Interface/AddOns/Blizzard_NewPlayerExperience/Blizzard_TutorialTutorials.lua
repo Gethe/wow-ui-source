@@ -464,7 +464,7 @@ function Class_Intro_CombatTactics:UNIT_SPELLCAST_SUCCEEDED(caster, spelllineID,
 		self:HideAbilityPrompt();
 		self.firstTime = false;
 		local button = TutorialHelper:GetActionButtonBySpellID(spellID);
-		local isUsable = IsUsableAction(button.action);
+		local isUsable = C_ActionBar.IsUsableAction(button.action);
 		if isUsable then
 			self:ShowAbilityPrompt();
 		end
@@ -475,7 +475,7 @@ function Class_Intro_CombatTactics:UNIT_POWER_FREQUENT(unit, resource)
 	-- for the intro tutorial, we only sue this for warriors to ensure they have enough rage before slamming
 	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
 	if button then
-		local isUsable = IsUsableAction(button.action);
+		local isUsable = C_ActionBar.IsUsableAction(button.action);
 		if isUsable then
 			Dispatcher:UnregisterEvent("UNIT_POWER_FREQUENT", self);
 			self:ShowAbilityPrompt();
@@ -2973,7 +2973,7 @@ end
 
 function Class_UseMount:TryUseMount()
 	local button = TutorialHelper:GetActionButtonBySpellID(self.mountID);
-	if button and IsUsableAction(button.action) then
+	if button and C_ActionBar.IsUsableAction(button.action) then
 		self:ShowPointerTutorial(NPEV2_MOUNT_TUTORIAL_P4, "DOWN", button, 0, 10, nil, "UP");
 		self.Timer = C_Timer.NewTimer(12, function() TutorialManager:Finished(self:Name()); end);
 	end

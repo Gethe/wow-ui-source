@@ -61,16 +61,19 @@ local TaxiMap =
 			Name = "TaxiNodeStatusChanged",
 			Type = "Event",
 			LiteralName = "TAXI_NODE_STATUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TaximapClosed",
 			Type = "Event",
 			LiteralName = "TAXIMAP_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TaximapOpened",
 			Type = "Event",
 			LiteralName = "TAXIMAP_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "system", Type = "number", Nilable = false },

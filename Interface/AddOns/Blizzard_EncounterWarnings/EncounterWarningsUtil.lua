@@ -4,10 +4,6 @@ function EncounterWarningsUtil.GetSeverityFromSystemIndex(systemIndex)
 	return EncounterWarningsSystemSeverity[systemIndex];
 end
 
-function EncounterWarningsUtil.GetDefaultSoundKit(severity)
-	return GetValueOrCallFunction(EncounterWarningsSeveritySoundKits, severity);
-end
-
 function EncounterWarningsUtil.GetDefaultFontObject(severity)
 	return GetValueOrCallFunction(EncounterWarningsSeverityFonts, severity);
 end
@@ -46,23 +42,10 @@ function EncounterWarningsUtil.ShouldShowFrameForSystem(systemIndex)
 		return false;
 	end
 
-	if systemIndex == Enum.EditModeEncounterEventsSystemIndices.MediumWarnings and CVarCallbackRegistry:GetCVarValueBool("encounterWarningsHideMediumWarnings") then
-		return false;
-	end
+	local minimumSeverity = CVarCallbackRegistry:GetCVarNumberOrDefault("encounterWarningsLevel");
+	local systemSeverity = EncounterWarningsUtil.GetSeverityFromSystemIndex(systemIndex);
 
-	if systemIndex == Enum.EditModeEncounterEventsSystemIndices.NormalWarnings and CVarCallbackRegistry:GetCVarValueBool("encounterWarningsHideMinorWarnings") then
-		return false;
-	end
-
-	return true;
-end
-
-function EncounterWarningsUtil.PlaySoundForWarning(encounterWarningInfo)
-	local soundKitID = EncounterWarningsUtil.GetDefaultSoundKit(encounterWarningInfo.severity);
-
-	if soundKitID then
-		PlaySound(soundKitID);
-	end
+	return systemSeverity >= minimumSeverity;
 end
 
 function EncounterWarningsUtil.ShowChatMessageForWarning(encounterWarningInfo)

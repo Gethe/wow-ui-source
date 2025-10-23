@@ -57,6 +57,7 @@ local AssistedCombat =
 			Name = "AssistedCombatActionSpellCast",
 			Type = "Event",
 			LiteralName = "ASSISTED_COMBAT_ACTION_SPELL_CAST",
+			SynchronousEvent = true,
 		},
 	},
 

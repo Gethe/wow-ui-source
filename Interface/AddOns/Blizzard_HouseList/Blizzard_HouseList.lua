@@ -129,7 +129,7 @@ function HouseEntryTemplateMixin:Init(elementData)
 end
 
 function HouseEntryTemplateMixin:OnVisitHouseClicked()
-	C_HousingNeighborhood.VisitHouse(self.houseInfo.neighborhoodGUID, self.houseInfo.houseGUID, self.houseInfo.plotID);
+	C_Housing.VisitHouse(self.houseInfo.neighborhoodGUID, self.houseInfo.houseGUID, self.houseInfo.plotID);
 end
 
 function HouseEntryTemplateMixin:SetSelected(selected)

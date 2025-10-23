@@ -44,6 +44,7 @@ local UIEventToastManager =
 			Name = "DisplayEventToastLink",
 			Type = "Event",
 			LiteralName = "DISPLAY_EVENT_TOAST_LINK",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "link", Type = "string", Nilable = false },
@@ -53,6 +54,7 @@ local UIEventToastManager =
 			Name = "DisplayEventToasts",
 			Type = "Event",
 			LiteralName = "DISPLAY_EVENT_TOASTS",
+			SynchronousEvent = true,
 		},
 	},
 

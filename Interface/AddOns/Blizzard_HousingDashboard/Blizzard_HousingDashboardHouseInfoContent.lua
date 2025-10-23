@@ -146,13 +146,14 @@ function HousingDashboardHouseInfoMixin:OnHouseListUpdated(houseInfoList)
 		self.DashboardNoHousesFrame:Hide();
 		self.HouseDropdown:Show();
 		self.HouseFinderButton:Show();
-
 		self.ContentFrame:Initialize();
+		self.ContentFrame:Show();
 		self:RefreshHouseDropdown(houseInfoList);
 	else
 		self.DashboardNoHousesFrame:Show();
 		self.HouseDropdown:Hide();
 		self.HouseFinderButton:Hide();
+		self.ContentFrame:Hide();
 	end
 end
 
@@ -194,7 +195,7 @@ function HousingDashboardHouseInfoMixin:OnHouseFinderButtonClicked()
 	ShowUIPanel(HouseFinderFrame);
 	HideUIPanel(HousingDashboardFrame);
 
-	PlaySound(SOUNDKIT.HOUSING_DASHBOARD_BUTTON_CLICK);
+	PlaySound(SOUNDKIT.HOUSING_DASHBOARD_HOUSEFINDER_CLICK);
 end
 
 function HousingDashboardHouseInfoMixin:OnTutorialButtonClicked()

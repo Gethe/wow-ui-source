@@ -273,6 +273,7 @@ local AzeriteEmpoweredItem =
 			Name = "AzeriteEmpoweredItemEquippedStatusChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isHeartEquipped", Type = "bool", Nilable = false },
@@ -282,6 +283,7 @@ local AzeriteEmpoweredItem =
 			Name = "AzeriteEmpoweredItemSelectionUpdated",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },

@@ -20,6 +20,7 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshEncounterBar();
 	self:RefreshExtraAbilities();
 	self:RefreshBuffsAndDebuffs();
+	self:RefreshExternalDefensives();
 	self:RefreshTalkingHeadFrame();
 	self:RefreshVehicleLeaveButton();
 	self:RefreshBossFrames();

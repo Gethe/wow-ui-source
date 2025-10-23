@@ -354,7 +354,7 @@ function MenuTemplates.CreateHighlightRadio(text, isSelected, onSelect, data, on
 
 	optionDescription:SetIsSelected(isSelected);
 	optionDescription:SetResponder(onSelect);
-	optionDescription:SetOnEnter(OnEnter); 
+	optionDescription:SetOnEnter(OnEnter);
 	optionDescription:SetOnLeave(OnLeave);
 	optionDescription:SetRadio(true);
 	optionDescription:SetData(data);
@@ -405,11 +405,12 @@ do
 
 	function MenuTemplates.AttachAutoHideButton(parent, textureName)
 		local button = parent:AttachTemplate("WowMenuAutoHideButtonTemplate");
+		button:SetFrameStrata(parent:GetFrameStrata()); -- Machinery is broken.
 		button:Hide();
 
 		-- SetToDefaults wipes propagateMouseInput on pooled frames even though it was set by the template, so it needs to be set here every time.
 		button:SetPropagateMouseMotion(true);
-	
+
 		button:SetScript("OnLeave", OnAutoHideButtonLeave);
 
 		local texture = button.Texture;
@@ -419,6 +420,7 @@ do
 		parent.OnEnter = function(...)
 			onEnter(parent, ...);
 			button:Show();
+			button.Texture:Show();
 		end
 
 		local onLeave = parent.OnLeave or nop;
@@ -428,6 +430,20 @@ do
 		end
 		return button;
 	end
+end
+
+function MenuTemplates.AttachBasicButton(parent, width, height)
+	local button = parent:AttachFrame("Button");
+	button:SetFrameStrata(parent:GetFrameStrata()); -- Machinery is broken.
+
+	-- SetToDefaults wipes button state, desired states must be explicitly set now.
+	button:Show();
+	button:SetPropagateMouseMotion(true);
+	button:SetMouseClickEnabled(true);
+	button:SetMouseMotionEnabled(true);
+	button:SetSize(width or 16, height or 16);
+
+	return button;
 end
 
 function MenuTemplates.AttachUtilityButton(parent, textureAsset, width, height)

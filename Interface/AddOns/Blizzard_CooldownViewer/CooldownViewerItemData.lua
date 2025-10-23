@@ -322,13 +322,53 @@ function CooldownViewerItemDataMixin:GetNameText()
 	return "";
 end
 
-function CooldownViewerItemDataMixin:GetAuraData()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
+local targetAuraCacheTime;
+local targetAuraCache;
+local function GetTargetAurasCached()
+	local now = GetTime();
+	if not targetAuraCache or not targetAuraCacheTime or now ~= targetAuraCacheTime then
+		targetAuraCache = C_UnitAuras.GetUnitAuras("target", "HARMFUL|PLAYER") or {};
+		targetAuraCacheTime = now;
 	end
 
-	return C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+	return targetAuraCache;
+end
+
+function CooldownViewerItemDataMixin:GetTargetRelatedAuraInfo()
+	for _, aura in ipairs(GetTargetAurasCached()) do
+		if self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
+			return aura;
+		end
+	end
+
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetAuraData()
+	-- TODO: Cache these results.
+
+	-- TODO: If we get enough cases where having the aura means "it's active" then there are some other checks that can be nuked
+	local spellID = self:GetSpellID();
+	if spellID then
+		local selfAura = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+		if selfAura then
+			self.auraDataUnit = "player";
+			return selfAura;
+		end
+	end
+
+	local targetAura = self:GetTargetRelatedAuraInfo();
+	if targetAura then
+		self.auraDataUnit = "target";
+		return targetAura;
+	end
+
+	self.auraDataUnit = nil;
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetAuraDataUnit()
+	return self.auraDataUnit;
 end
 
 function CooldownViewerItemDataMixin:CanUseAuraForCooldown()
@@ -375,7 +415,7 @@ function CooldownViewerItemDataMixin:RefreshTooltip()
 	local tooltip = GetAppropriateTooltip();
 	local auraInstanceID = self:GetAuraSpellInstanceID();
 	if auraInstanceID then
-		tooltip:SetUnitBuffByAuraInstanceID("player", auraInstanceID);
+		tooltip:SetUnitAuraByAuraInstanceID(self:GetAuraDataUnit(), auraInstanceID);
 	else
 		local spellID = self:GetSpellID();
 		if spellID then
@@ -387,4 +427,19 @@ end
 
 function CooldownViewerItemDataMixin:UpdateShownState()
 	-- override as needed
+end
+
+function CooldownViewerItemDataMixin:IsActivelyCast()
+	-- override as necessary; this indicates that the spell related to the cooldown item can be cast by the player and isn't a proc.
+	return false;
+end
+
+function CooldownViewerItemDataMixin:CanTriggerAlertType(alertType)
+	if alertType == Enum.CooldownViewerAlertEventType.ChargeGained then
+		local chargeInfo = self:GetSpellChargeInfo();
+		return chargeInfo and chargeInfo.maxCharges > 0;
+	end
+
+	-- All other alert types depend on the cooldown item referring to something that is actively cast.
+	return self:IsActivelyCast();
 end

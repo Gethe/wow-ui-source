@@ -29,6 +29,7 @@ local UISystemVisibilityManager =
 			Name = "SystemVisibilityChanged",
 			Type = "Event",
 			LiteralName = "SYSTEM_VISIBILITY_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 

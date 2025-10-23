@@ -249,6 +249,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceActivated",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
@@ -259,6 +260,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceActivationFailed",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_ACTIVATION_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
@@ -269,6 +271,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = false },
@@ -279,16 +282,19 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceForgeClose",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_FORGE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AzeriteEssenceForgeOpen",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_FORGE_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AzeriteEssenceMilestoneUnlocked",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_MILESTONE_UNLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "milestoneID", Type = "number", Nilable = false },
@@ -298,11 +304,13 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceUpdate",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PendingAzeriteEssenceChanged",
 			Type = "Event",
 			LiteralName = "PENDING_AZERITE_ESSENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = true },

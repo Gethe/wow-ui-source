@@ -44,6 +44,7 @@ local FogOfWar =
 			Name = "FogOfWarUpdated",
 			Type = "Event",
 			LiteralName = "FOG_OF_WAR_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

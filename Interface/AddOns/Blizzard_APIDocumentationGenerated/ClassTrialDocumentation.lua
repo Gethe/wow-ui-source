@@ -14,11 +14,13 @@ local ClassTrial =
 			Name = "ClassTrialTimerStart",
 			Type = "Event",
 			LiteralName = "CLASS_TRIAL_TIMER_START",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ClassTrialUpgradeComplete",
 			Type = "Event",
 			LiteralName = "CLASS_TRIAL_UPGRADE_COMPLETE",
+			SynchronousEvent = true,
 		},
 	},
 

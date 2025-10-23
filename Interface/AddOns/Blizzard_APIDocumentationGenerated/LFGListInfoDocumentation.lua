@@ -608,6 +608,7 @@ local LFGListInfo =
 			Name = "LfgGroupDelistedLeadershipChange",
 			Type = "Event",
 			LiteralName = "LFG_GROUP_DELISTED_LEADERSHIP_CHANGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "listingName", Type = "string", Nilable = false },
@@ -618,6 +619,7 @@ local LFGListInfo =
 			Name = "LfgListActiveEntryUpdate",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ACTIVE_ENTRY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "created", Type = "bool", Nilable = true },
@@ -627,6 +629,7 @@ local LFGListInfo =
 			Name = "LfgListApplicantListUpdated",
 			Type = "Event",
 			LiteralName = "LFG_LIST_APPLICANT_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newPendingEntry", Type = "bool", Nilable = true },
@@ -637,6 +640,7 @@ local LFGListInfo =
 			Name = "LfgListApplicantUpdated",
 			Type = "Event",
 			LiteralName = "LFG_LIST_APPLICANT_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "applicantID", Type = "number", Nilable = false },
@@ -646,6 +650,7 @@ local LFGListInfo =
 			Name = "LfgListApplicationStatusUpdated",
 			Type = "Event",
 			LiteralName = "LFG_LIST_APPLICATION_STATUS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
@@ -658,26 +663,31 @@ local LFGListInfo =
 			Name = "LfgListAvailabilityUpdate",
 			Type = "Event",
 			LiteralName = "LFG_LIST_AVAILABILITY_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListEntryCreationFailed",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ENTRY_CREATION_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListEntryExpiredTimeout",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ENTRY_EXPIRED_TIMEOUT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListEntryExpiredTooManyPlayers",
 			Type = "Event",
 			LiteralName = "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListJoinedGroup",
 			Type = "Event",
 			LiteralName = "LFG_LIST_JOINED_GROUP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
@@ -688,6 +698,7 @@ local LFGListInfo =
 			Name = "LfgListSearchFailed",
 			Type = "Event",
 			LiteralName = "LFG_LIST_SEARCH_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reason", Type = "cstring", Nilable = true },
@@ -697,6 +708,7 @@ local LFGListInfo =
 			Name = "LfgListSearchResultUpdated",
 			Type = "Event",
 			LiteralName = "LFG_LIST_SEARCH_RESULT_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searchResultID", Type = "number", Nilable = false },
@@ -706,11 +718,13 @@ local LFGListInfo =
 			Name = "LfgListSearchResultsReceived",
 			Type = "Event",
 			LiteralName = "LFG_LIST_SEARCH_RESULTS_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgListUpdateSearchResults",
 			Type = "Event",
 			LiteralName = "LFG_LIST_UPDATE_SEARCH_RESULTS",
+			SynchronousEvent = true,
 		},
 	},
 

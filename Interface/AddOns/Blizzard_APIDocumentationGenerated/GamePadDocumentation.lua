@@ -276,6 +276,7 @@ local GamePad =
 			Name = "GamePadActiveChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_ACTIVE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
@@ -285,21 +286,25 @@ local GamePad =
 			Name = "GamePadConfigsChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_CONFIGS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadConnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_CONNECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadDisconnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_DISCONNECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadPowerChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_POWER_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },

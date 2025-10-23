@@ -588,11 +588,13 @@ local UIWidgetManager =
 			Name = "UpdateAllUiWidgets",
 			Type = "Event",
 			LiteralName = "UPDATE_ALL_UI_WIDGETS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateUiWidget",
 			Type = "Event",
 			LiteralName = "UPDATE_UI_WIDGET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "widgetInfo", Type = "UIWidgetInfo", Nilable = false },

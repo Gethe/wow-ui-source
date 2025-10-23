@@ -84,16 +84,13 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "IsRightControlKeyDown", "IsLeftControlKeyDown", "IsControlKeyDown",
     "IsLeftShiftKeyDown", "IsRightShiftKeyDown", "IsShiftKeyDown",
     "IsModifierKeyDown", "IsModifiedClick",
-    "GetMouseButtonClicked", "GetActionBarPage", "GetBonusBarOffset",
+    "GetMouseButtonClicked",
     "IsMounted", "IsSwimming", "IsSubmerged", "IsFlying", "IsFlyableArea", "IsAdvancedFlyableArea", "IsDrivableArea",
-    "IsIndoors", "IsOutdoors",
-	"HasVehicleActionBar", "HasOverrideActionBar", "HasTempShapeshiftActionBar",
-	"HasBonusActionBar", "GetBonusBarIndex", "GetVehicleBarIndex", "GetOverrideBarIndex",
-	"HasExtraActionBar", "GetTempShapeshiftBarIndex", "CanExitVehicle"
+    "IsIndoors", "IsOutdoors", "CanExitVehicle"
 };
 
 local OTHER_SAFE_FUNCTION_NAMES = {
-    "GetBindingKey", "HasAction",
+    "GetBindingKey",
     "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID", "UnitTargetsVehicleInRaidUI"
 };
 
@@ -115,6 +112,18 @@ ENV.IsHelpfulItem = C_Item.IsHelpfulItem;
 ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
 ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
 ENV.IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell;
+ENV.GetActionBarPage = C_ActionBar.GetActionBarPage;
+ENV.GetBonusBarIndex = C_ActionBar.GetBonusBarIndex;
+ENV.GetBonusBarOffset = C_ActionBar.GetBonusBarOffset;
+ENV.GetOverrideBarIndex = C_ActionBar.GetOverrideBarIndex;
+ENV.GetTempShapeshiftBarIndex = C_ActionBar.GetTempShapeshiftBarIndex;
+ENV.GetVehicleBarIndex = C_ActionBar.GetVehicleBarIndex;
+ENV.HasAction = C_ActionBar.HasAction;
+ENV.HasBonusActionBar = C_ActionBar.HasBonusActionBar;
+ENV.HasExtraActionBar = C_ActionBar.HasExtraActionBar;
+ENV.HasOverrideActionBar = C_ActionBar.HasOverrideActionBar;
+ENV.HasTempShapeshiftActionBar = C_ActionBar.HasTempShapeshiftActionBar;
+ENV.HasVehicleActionBar = C_ActionBar.HasVehicleActionBar;
 
 
 function ENV.PlayerCanAttack( unit )

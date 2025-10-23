@@ -761,6 +761,7 @@ local SharedTraits =
 			Name = "ConfigCommitFailed",
 			Type = "Event",
 			LiteralName = "CONFIG_COMMIT_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
@@ -770,6 +771,7 @@ local SharedTraits =
 			Name = "TraitCondInfoChanged",
 			Type = "Event",
 			LiteralName = "TRAIT_COND_INFO_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "condID", Type = "number", Nilable = false },
@@ -779,6 +781,7 @@ local SharedTraits =
 			Name = "TraitConfigCreated",
 			Type = "Event",
 			LiteralName = "TRAIT_CONFIG_CREATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configInfo", Type = "TraitConfigInfo", Nilable = false },
@@ -788,6 +791,7 @@ local SharedTraits =
 			Name = "TraitConfigDeleted",
 			Type = "Event",
 			LiteralName = "TRAIT_CONFIG_DELETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
@@ -797,11 +801,13 @@ local SharedTraits =
 			Name = "TraitConfigListUpdated",
 			Type = "Event",
 			LiteralName = "TRAIT_CONFIG_LIST_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TraitConfigUpdated",
 			Type = "Event",
 			LiteralName = "TRAIT_CONFIG_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
@@ -811,6 +817,7 @@ local SharedTraits =
 			Name = "TraitNodeChanged",
 			Type = "Event",
 			LiteralName = "TRAIT_NODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -820,6 +827,7 @@ local SharedTraits =
 			Name = "TraitNodeChangedPartial",
 			Type = "Event",
 			LiteralName = "TRAIT_NODE_CHANGED_PARTIAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
@@ -830,6 +838,7 @@ local SharedTraits =
 			Name = "TraitNodeEntryUpdated",
 			Type = "Event",
 			LiteralName = "TRAIT_NODE_ENTRY_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeEntryID", Type = "number", Nilable = false },
@@ -839,6 +848,7 @@ local SharedTraits =
 			Name = "TraitSubTreeChanged",
 			Type = "Event",
 			LiteralName = "TRAIT_SUB_TREE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "subTreeID", Type = "number", Nilable = false },
@@ -848,6 +858,7 @@ local SharedTraits =
 			Name = "TraitSystemInteractionStarted",
 			Type = "Event",
 			LiteralName = "TRAIT_SYSTEM_INTERACTION_STARTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "treeID", Type = "number", Nilable = false },
@@ -857,11 +868,13 @@ local SharedTraits =
 			Name = "TraitSystemNpcClosed",
 			Type = "Event",
 			LiteralName = "TRAIT_SYSTEM_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TraitTreeChanged",
 			Type = "Event",
 			LiteralName = "TRAIT_TREE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "treeID", Type = "number", Nilable = false },
@@ -871,6 +884,7 @@ local SharedTraits =
 			Name = "TraitTreeCurrencyInfoUpdated",
 			Type = "Event",
 			LiteralName = "TRAIT_TREE_CURRENCY_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "treeID", Type = "number", Nilable = false },
@@ -880,6 +894,7 @@ local SharedTraits =
 			Name = "TryPurchaseToNodePartialSuccess",
 			Type = "Event",
 			LiteralName = "TRY_PURCHASE_TO_NODE_PARTIAL_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeFinishedOn", Type = "number", Nilable = false },

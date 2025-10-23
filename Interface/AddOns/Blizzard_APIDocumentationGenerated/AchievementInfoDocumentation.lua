@@ -93,6 +93,7 @@ local AchievementInfo =
 			Name = "AchievementEarned",
 			Type = "Event",
 			LiteralName = "ACHIEVEMENT_EARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
@@ -103,6 +104,7 @@ local AchievementInfo =
 			Name = "AchievementPlayerName",
 			Type = "Event",
 			LiteralName = "ACHIEVEMENT_PLAYER_NAME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
@@ -112,11 +114,13 @@ local AchievementInfo =
 			Name = "AchievementSearchUpdated",
 			Type = "Event",
 			LiteralName = "ACHIEVEMENT_SEARCH_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CriteriaComplete",
 			Type = "Event",
 			LiteralName = "CRITERIA_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "criteriaID", Type = "number", Nilable = false },
@@ -126,6 +130,7 @@ local AchievementInfo =
 			Name = "CriteriaEarned",
 			Type = "Event",
 			LiteralName = "CRITERIA_EARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
@@ -137,11 +142,13 @@ local AchievementInfo =
 			Name = "CriteriaUpdate",
 			Type = "Event",
 			LiteralName = "CRITERIA_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InspectAchievementReady",
 			Type = "Event",
 			LiteralName = "INSPECT_ACHIEVEMENT_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
@@ -151,11 +158,13 @@ local AchievementInfo =
 			Name = "ReceivedAchievementList",
 			Type = "Event",
 			LiteralName = "RECEIVED_ACHIEVEMENT_LIST",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ReceivedAchievementMemberList",
 			Type = "Event",
 			LiteralName = "RECEIVED_ACHIEVEMENT_MEMBER_LIST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },
@@ -165,6 +174,7 @@ local AchievementInfo =
 			Name = "TrackedAchievementListChanged",
 			Type = "Event",
 			LiteralName = "TRACKED_ACHIEVEMENT_LIST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = true },
@@ -175,6 +185,7 @@ local AchievementInfo =
 			Name = "TrackedAchievementUpdate",
 			Type = "Event",
 			LiteralName = "TRACKED_ACHIEVEMENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "achievementID", Type = "number", Nilable = false },

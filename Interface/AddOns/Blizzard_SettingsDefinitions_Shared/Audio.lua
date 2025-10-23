@@ -535,6 +535,9 @@ local function Register()
 	-- Ping System
 	AudioOverrides.CreatePingSoundSettings(category, layout);
 
+	-- Encounter Warnings System
+	AudioOverrides.CreateEncounterWarningsSoundSettings(category, layout);
+
 	--Voice
 	if not C_Glue.IsOnGlueScreen() then
 		--[[

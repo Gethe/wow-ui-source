@@ -93,6 +93,7 @@ local UnitRole =
 			Name = "RoleChangedInform",
 			Type = "Event",
 			LiteralName = "ROLE_CHANGED_INFORM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "changedName", Type = "cstring", Nilable = false },
@@ -105,6 +106,7 @@ local UnitRole =
 			Name = "RolePollBegin",
 			Type = "Event",
 			LiteralName = "ROLE_POLL_BEGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "fromName", Type = "cstring", Nilable = false },

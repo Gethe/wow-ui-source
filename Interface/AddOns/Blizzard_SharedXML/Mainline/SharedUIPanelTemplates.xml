@@ -1533,8 +1533,14 @@
 	</Frame>
 
 	<Frame name="PanelDragBarTemplate" mixin="PanelDragBarMixin" virtual="true">
+		<KeyValues>
+			<!-- If true, will show the move cursor when hovering the bar, rather than only when dragged -->
+			<KeyValue key="showCursorOnHover" value="false" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
 		</Scripts>

@@ -92,4 +92,3 @@ end
 function EncounterTimelineUtil.EnumerateDefaultViewSettings()
 	return pairs(EncounterTimelineUtil.GetDefaultViewSettingsMap());
 end
-

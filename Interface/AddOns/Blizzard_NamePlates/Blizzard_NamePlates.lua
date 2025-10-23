@@ -38,8 +38,6 @@ function NamePlateDriverMixin:OnLoad()
 	{
 		["nameplateShowFriendlyClassColor"] = true,
 		["nameplateShowClassColor"] = true,
-		["nameplateResourceOnTarget"] = true,
-		["nameplateClassResourceTopInset"] = true,
 		[NamePlateConstants.SIZE_CVAR] = true,
 		[NamePlateConstants.STYLE_CVAR] = true,
 	};
@@ -234,13 +232,6 @@ function NamePlateDriverMixin:OnNamePlateResized(namePlateFrame)
 end
 
 function NamePlateDriverMixin:SetupClassNameplateBars()
-	local showMechanicOnTarget;
-	if self.classNamePlateMechanicFrame and self.classNamePlateMechanicFrame.overrideTargetMode ~= nil then
-		showMechanicOnTarget = self.classNamePlateMechanicFrame.overrideTargetMode;
-	else
-		showMechanicOnTarget = GetCVarBool("nameplateResourceOnTarget");
-	end
-
 	local bottomMostBar = nil;
 	local namePlatePlayer = self:GetNamePlateForUnit("player");
 	if namePlatePlayer then
@@ -278,17 +269,7 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 	end
 
 	if self.classNamePlateMechanicFrame then
-		if showMechanicOnTarget then
-			local namePlateTarget = self:GetNamePlateForUnit("target");
-			if namePlateTarget then
-				self.classNamePlateMechanicFrame:SetParent(namePlateTarget);
-				self.classNamePlateMechanicFrame:ClearAllPoints();
-				PixelUtil.SetPoint(self.classNamePlateMechanicFrame, "BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 4);
-				self.classNamePlateMechanicFrame:Show();
-			else
-				self.classNamePlateMechanicFrame:Hide();
-			end
-		elseif bottomMostBar then
+		if bottomMostBar then
 			self.classNamePlateMechanicFrame:SetParent(namePlatePlayer);
 			self.classNamePlateMechanicFrame:ClearAllPoints();
 			self.classNamePlateMechanicFrame:SetPoint("TOP", bottomMostBar, "BOTTOM", 0, self.classNamePlateMechanicFrame.paddingOverride or -4);
@@ -296,16 +277,6 @@ function NamePlateDriverMixin:SetupClassNameplateBars()
 		else
 			self.classNamePlateMechanicFrame:Hide();
 		end
-	end
-
-	if showMechanicOnTarget and self.classNamePlateMechanicFrame then
-		local percentOffset = tonumber(GetCVar("nameplateClassResourceTopInset")) or 0;
-		if self:IsUsingLargerNamePlateStyle() then
-			percentOffset = percentOffset + .1;
-		end
-		C_NamePlate.SetTargetClampingInsets(percentOffset * UIParent:GetHeight(), 0.0);
-	else
-		C_NamePlate.SetTargetClampingInsets(0.0, 0.0);
 	end
 end
 

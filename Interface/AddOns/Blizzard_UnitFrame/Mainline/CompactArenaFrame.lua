@@ -17,6 +17,9 @@ local debuffFrameInitialAnchor =
 local useClassColorsCvarName = "pvpFramesDisplayClassColor";
 CVarCallbackRegistry:SetCVarCachable(useClassColorsCvarName);
 
+local spellDiminishEnemiesCvarName = "spellDiminishPVPEnemiesEnabled";
+CVarCallbackRegistry:SetCVarCachable(spellDiminishEnemiesCvarName);
+
 local function GetUseClassColors()
 	return CVarCallbackRegistry:GetCVarValueBool(useClassColorsCvarName);
 end
@@ -113,6 +116,11 @@ function CompactArenaFrameMixin:OnLoad()
 		memberUnitFrame.CcRemoverFrame = ccRemoverFrame;
 		ccRemoverFrame:SetPoint(ccRemoverFrameInitialAnchor.point, memberUnitFrame, ccRemoverFrameInitialAnchor.relativePoint, ccRemoverFrameInitialAnchor.xOffset, ccRemoverFrameInitialAnchor.yOffset);
 
+		-- Create Spell Diminish status tray
+		local spellDiminishStatusTray = CreateFrame("Frame", nil, memberUnitFrame, "SpellDiminishStatusTrayTemplate");
+		memberUnitFrame.SpellDiminishStatusTray = spellDiminishStatusTray;
+		spellDiminishStatusTray:SetPoint("TOPLEFT", memberUnitFrame.CcRemoverFrame, "TOPRIGHT", 5, 0);
+
 		-- Create debuff frame
 		local debuffFrame = CreateFrame("Frame", nil, memberUnitFrame, "ArenaUnitFrameDebuffTemplate");
 		memberUnitFrame.DebuffFrame = debuffFrame;
@@ -132,6 +140,8 @@ function CompactArenaFrameMixin:OnLoad()
 
 	self:RefreshMembers();
 	EditModeSystemMixin.OnSystemLoad(self);
+
+	CVarCallbackRegistry:RegisterCallback(spellDiminishEnemiesCvarName, self.OnSpellDiminishEnemiesCVarChanged, self);
 end
 
 function CompactArenaFrameMixin:UpdateLayout()
@@ -153,10 +163,11 @@ function CompactArenaFrameMixin:UpdateLayout()
 
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
 		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
+		local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
 		local debuffFrame = memberUnitFrame.DebuffFrame;
 		local castingBarFrame = memberUnitFrame.CastingBarFrame;
 
-		if ccRemoverFrame and debuffFrame and castingBarFrame then
+		if ccRemoverFrame and debuffFrame and castingBarFrame and spellDiminishStatusTray then
 
 			-- Adjust ccRemoverFrame anchor to account for the frame border
 			local ccRemoverFrameXOffset = ccRemoverFrameInitialAnchor.xOffset + frameBorderOffset;
@@ -173,12 +184,13 @@ function CompactArenaFrameMixin:UpdateLayout()
 			local isFirstMemberFrame = i == 1;
 			if isFirstMemberFrame then
 				local ccRemoverWidth = ccRemoverFrame:GetWidth() + math.abs(ccRemoverFrameXOffset) - frameBorderOffset;
+				local spellDiminishStatusTrayWidth = spellDiminishStatusTray:GetWidth() + 10;
 				local debuffFrameWidth = debuffFrame:GetWidth() + math.abs(debuffFrameXOffset) - frameBorderOffset;
 				local castingBarXOffset = math.abs(select(4, castingBarFrame:GetPoint(1)));
 				local castingBarFrameWidth = castingBarFrame:GetWidth() + castingBarFrame.BorderShield:GetWidth() + castingBarXOffset;
 
-				width = width + ccRemoverWidth + debuffFrameWidth + castingBarFrameWidth;
-				unitFrameXOffset = unitFrameXOffset - ccRemoverWidth;
+				width = width + ccRemoverWidth + debuffFrameWidth + castingBarFrameWidth + spellDiminishStatusTrayWidth;
+				unitFrameXOffset = unitFrameXOffset - ccRemoverWidth - spellDiminishStatusTrayWidth;
 			end
 		end
 	end
@@ -191,6 +203,14 @@ end
 
 function CompactArenaFrameMixin:UpdateVisibility()
 	self:SetShown(IsInArena() or EditModeManagerFrame:GetNumArenaFramesForcedShown() > 0);
+end
+
+function CompactArenaFrameMixin:OnSpellDiminishEnemiesCVarChanged()
+	for _index, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		if memberUnitFrame.SpellDiminishStatusTray then
+			memberUnitFrame.SpellDiminishStatusTray:UpdateShownState();
+		end
+	end
 end
 
 function CompactArenaFrameMixin:RefreshMembers()
@@ -217,6 +237,11 @@ function CompactArenaFrameMixin:RefreshMembers()
 
 		if memberUnitFrame.DebuffFrame then
 			memberUnitFrame.DebuffFrame:SetUnit(memberUnitFrame.unitToken);
+		end
+
+		if memberUnitFrame.SpellDiminishStatusTray then
+			local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
+			spellDiminishStatusTray:SetUnit(memberUnitFrame.unitToken);
 		end
 
 		local stealthedUnitFrame = self.stealthedUnitFrames and self.stealthedUnitFrames[i];

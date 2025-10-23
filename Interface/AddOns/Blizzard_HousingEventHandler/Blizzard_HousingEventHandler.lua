@@ -27,7 +27,7 @@ end
 
 function HousingFramesUtil.ToggleHouseEditor()
 	if C_HouseEditor.IsHouseEditorActive() then
-		HousingFrameUtil.LeaveHouseEditor();
+		HousingFramesUtil.LeaveHouseEditor();
 	else
 		local initialResult = C_HouseEditor.EnterHouseEditor();
 		if initialResult ~= Enum.HousingResult.Success then
@@ -99,12 +99,11 @@ function HousingFramesUtil.SetGridVisible(gridVisible)
 	C_HousingDecor.SetGridVisible(gridVisible);
 end
 
-function HousingFramesUtil.DeleteDecor()
+function HousingFramesUtil.RemoveSelectedDecor()
 	if C_HousingDecor.IsDecorSelected() then
 		PlaySound(SOUNDKIT.HOUSING_DECOR_EDIT_OPTION_REMOVE_ITEM);
+		C_HousingDecor.RemoveSelectedDecor();
 	end
-
-	C_HousingDecor.DeleteDecor();
 end
 
 function HousingFramesUtil.SetGridSnapEnabled(gridSnapEnabled)

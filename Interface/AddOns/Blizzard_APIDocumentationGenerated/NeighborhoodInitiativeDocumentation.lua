@@ -133,11 +133,13 @@ local NeighborhoodInitiative =
 			Name = "InitiativeActivityLogUpdated",
 			Type = "Event",
 			LiteralName = "INITIATIVE_ACTIVITY_LOG_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InitiativeTaskCompleted",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASK_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "initiativeTaskID", Type = "number", Nilable = false },
@@ -147,6 +149,7 @@ local NeighborhoodInitiative =
 			Name = "InitiativeTasksTrackedListChanged",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASKS_TRACKED_LIST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "initiativeTaskID", Type = "number", Nilable = false },
@@ -157,11 +160,13 @@ local NeighborhoodInitiative =
 			Name = "InitiativeTasksTrackedUpdated",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASKS_TRACKED_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NeighborhoodInitiativeUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_INITIATIVE_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -234,23 +234,23 @@ local EncounterTimeline =
 			},
 		},
 		{
-			Name = "IsTimelineEnabled",
+			Name = "IsFeatureAvailable",
 			Type = "Function",
-			Documentation = { "Returns true if the encounter timeline feature has been enabled by the player. This function will always return false if the feature is not supported." },
+			Documentation = { "Returns true if the encounter timeline feature is available on this client." },
 
 			Returns =
 			{
-				{ Name = "isSupportedAndEnabled", Type = "bool", Nilable = false },
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{
-			Name = "IsTimelineSupported",
+			Name = "IsFeatureEnabled",
 			Type = "Function",
-			Documentation = { "Returns true if the encounter timeline feature is supported on this client. This function always returns a static value." },
+			Documentation = { "Returns true if the encounter timeline feature has been enabled by the player. This function will always return false if the feature is not available." },
 
 			Returns =
 			{
-				{ Name = "isSupported", Type = "bool", Nilable = false },
+				{ Name = "isAvailableAndEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -285,6 +285,8 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventAdded",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_ADDED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Fired when an event has been added to the timeline." },
 			Payload =
 			{
@@ -296,6 +298,8 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventPositionChanged",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_POSITION_CHANGED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Fired when an event position has changed substantially - eg. transitioning to a new track or subsection, or has changed sort order." },
 			Payload =
 			{
@@ -306,6 +310,8 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventRemoved",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_REMOVED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Fired when an event has been removed from the timeline. This is guaranteed to occur after all other timeline events within a single tick have fired. This is fired post-removal of the event, and so queries using the supplied event ID will return nil." },
 			Payload =
 			{
@@ -316,6 +322,8 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventStateChanged",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_STATE_CHANGED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Fired when an event has changed state." },
 			Payload =
 			{
@@ -327,12 +335,16 @@ local EncounterTimeline =
 			Name = "EncounterTimelineLayoutUpdated",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_LAYOUT_UPDATED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Fired when the layout of tracks on the timeline has been updated. This can include changes to the minimum or maximum durations of tracks." },
 		},
 		{
 			Name = "EncounterTimelineStateUpdated",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_STATE_UPDATED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Documentation = { "Signaled when conditions controlling the visibility of the encounter timeline are updated." },
 		},
 	},
@@ -351,7 +363,7 @@ local EncounterTimeline =
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "priority", Type = "EncounterTimelineEventPriority", Nilable = false, SecretValue = true },
 				{ Name = "role", Type = "EncounterTimelineEventRole", Nilable = false, SecretValue = true },
-				{ Name = "dispelType", Type = "EncounterTimelineEventDispelType", Nilable = false, SecretValue = true },
+				{ Name = "effectType", Type = "EncounterTimelineEventEffectType", Nilable = false, SecretValue = true },
 			},
 		},
 		{
@@ -376,7 +388,7 @@ local EncounterTimeline =
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "priority", Type = "EncounterTimelineEventPriority", Nilable = false, Default = "Normal" },
 				{ Name = "role", Type = "EncounterTimelineEventRole", Nilable = false, Default = "None" },
-				{ Name = "dispelType", Type = "EncounterTimelineEventDispelType", Nilable = false, Default = "None" },
+				{ Name = "effectType", Type = "EncounterTimelineEventEffectType", Nilable = false, Default = "None" },
 				{ Name = "paused", Type = "bool", Nilable = false, Default = false },
 			},
 		},

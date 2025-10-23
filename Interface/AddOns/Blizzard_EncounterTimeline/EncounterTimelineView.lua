@@ -786,7 +786,7 @@ function EncounterTimelineViewMixin:UpdateLayout()
 	self:UpdateViewAnchoring(EncounterTimelineUtil.GetViewOrientationSetup(self:GetViewOrientation(), self:GetIconDirection()));
 	self:UpdateTracks();
 
-	local maxLongTrackEventCount = self:GetLongTrackEventLimit();
+	local maxLongTrackEventCount = self:GetTrack(Enum.EncounterTimelineTrack.Long):GetMaximumEventCount();
 
 	-- The next work we need to do in a layout update is calculate the full
 	-- primary axis extent of the timeline, and within that the points at
@@ -848,8 +848,6 @@ function EncounterTimelineViewMixin:UpdateLayout()
 	self:SetTrackPrimaryAxisOffsets(Enum.EncounterTimelineTrack.Medium, mediumTrackStartOffset, mediumTrackEndOffset);
 	self:SetTrackPrimaryAxisOffsets(Enum.EncounterTimelineTrack.Short, shortTrackStartOffset, shortTrackEndOffset);
 
-	self:GetTrack(Enum.EncounterTimelineTrack.Long):SetMaximumEventCount(maxLongTrackEventCount + 1);
-
 	-- Once track sections are calculated fix up our art...
 
 	self.Background:SetAlpha(self:GetBackgroundTransparency());
@@ -862,6 +860,7 @@ function EncounterTimelineViewMixin:UpdateLayout()
 
 	local crossAxisOffset = self:GetCrossAxisOffset();
 
+	self.Divider:SetShown(maxLongTrackEventCount > 0);
 	self.Divider:ClearAllPoints();
 	self:SetRegionPoint(self.Divider, "END", self, "START", self:GetDividerOffset(), crossAxisOffset);
 
@@ -915,16 +914,16 @@ function EncounterTimelineViewMixin:UpdateLayout()
 
 	local shortTrackDuration = self:GetTrack(Enum.EncounterTimelineTrack.Short):GetTrackDuration();
 
-	for _index, maskTexture in ipairs(self.lineBreakMasks) do
-		local seconds = maskTexture.seconds;
+	for index, maskTexture in ipairs(self.lineBreakMasks) do
+		local seconds = EncounterTimelineUtil.CalculateLineBreakDuration(index, #self.lineBreakMasks, shortTrackDuration);
 
 		self.LineStart:RemoveMaskTexture(maskTexture);
 		self.LineEnd:RemoveMaskTexture(maskTexture);
 
 		if seconds <= (shortTrackDuration / 2) then
-			self.LineEnd:AddMaskTexture(maskTexture);
+			pcall(self.LineEnd.AddMaskTexture, self.LineEnd, maskTexture);
 		else
-			self.LineStart:AddMaskTexture(maskTexture);
+			pcall(self.LineStart.AddMaskTexture, self.LineStart, maskTexture);
 		end
 
 		maskTexture:ClearAllPoints();

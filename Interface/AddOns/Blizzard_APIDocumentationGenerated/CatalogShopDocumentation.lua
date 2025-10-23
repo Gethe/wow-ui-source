@@ -274,6 +274,7 @@ local CatalogShop =
 			Name = "CatalogShopAddPendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_ADD_PENDING_PRODUCT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -283,6 +284,7 @@ local CatalogShop =
 			Name = "CatalogShopDataRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DATA_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -292,11 +294,13 @@ local CatalogShop =
 			Name = "CatalogShopDisabled",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopFetchFailure",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -306,6 +310,7 @@ local CatalogShop =
 			Name = "CatalogShopFetchSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -315,6 +320,7 @@ local CatalogShop =
 			Name = "CatalogShopOpenSimpleCheckout",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "checkoutID", Type = "number", Nilable = false },
@@ -324,6 +330,7 @@ local CatalogShop =
 			Name = "CatalogShopPmtImageDownloaded",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "catalogProductID", Type = "number", Nilable = false },
@@ -333,6 +340,7 @@ local CatalogShop =
 			Name = "CatalogShopPurchaseSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_PURCHASE_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -342,11 +350,13 @@ local CatalogShop =
 			Name = "CatalogShopRebuildScrollBox",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_REBUILD_SCROLL_BOX",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopRemovePendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_REMOVE_PENDING_PRODUCT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -356,11 +366,13 @@ local CatalogShop =
 			Name = "CatalogShopResultError",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_RESULT_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopSpecificProductRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },

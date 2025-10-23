@@ -1482,7 +1482,7 @@ function IsRPEBoostEligible(charID)
 	if not guid then
 		return false;
 	end
-	return GetServiceCharacterInfo(guid).rpeResetAvailable;
+	return GetServiceCharacterInfo(guid).rpeArathiAvailable;
 end
 
 -- CHARACTER BOOST (SERVICES)

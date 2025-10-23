@@ -9,9 +9,10 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="NeighborhoodName" inherits="Game13FontShadow" text="neighborhood-name">
+				<FontString parentKey="NeighborhoodName" inherits="Game13FontShadow" justifyH="LEFT" justifyV="BOTTOM" text="neighborhood-name">
+					<Size x="170"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-25"/>
+						<Anchor point="LEFT" x="15" y="7"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="NeighborhoodType" inherits="GameFontHighlightSmall" text="neighborhood-type">
@@ -20,19 +21,76 @@
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<FontString parentKey="NeighborhoodOwner" inherits="GameFontHighlightSmall" text="neighborhood-owner">
+				<FontString parentKey="TypeSpacer" inherits="GameFontHighlightSmall" text="-">
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodType" relativePoint="RIGHT" x="4"/>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodType" relativePoint="RIGHT" x="2"/>
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<Texture parentKey="SuggestionIcon" atlas="housing-invite-icon" useAtlasSize="true" hidden="true">
+				<FontString parentKey="NeighborhoodOwner" inherits="GameFontHighlightSmall" text="neighborhood-owner">
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-5" y="-10"/>
+						<Anchor point="LEFT" relativeKey="$parent.TypeSpacer" relativePoint="RIGHT" x="2"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<Texture parentKey="SuggestionIcon" atlas="housing-invite-icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NeighborhoodName" relativePoint="TOPLEFT" x="-3" y="2"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="GuildIcon" frameStrata="HIGH" hidden="true">
+				<Size x="32" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.NeighborhoodName" relativePoint="TOPLEFT" x="4" y="8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TabardBG" atlas="UI-HUD-MicroMenu-GuildCommunities-GuildColor-Up" setAllPoints="true"/>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Emblem" file="Interface\GuildFrame\GuildEmblems_01">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="HIGHLIGHT" textureSubLevel="5">
+						<Texture parentKey="HighlightEmblem" file="Interface\GuildFrame\GuildEmblems_01" alphaMode="ADD" alpha="0.5">
+							<Size x="12" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="DeclineInviteButton" hidden="true" mixin="DeclineInviteButtonMixin">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+				</Anchors>
+				<NormalTexture atlas="common-icon-delete"/>
+				<HighlightTexture atlas="common-icon-delete" alphaMode="ADD"/>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" frameLevel="2000" hidden="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
@@ -454,6 +512,32 @@
 					</Frame>
 				</Frames>
 			</Frame>
+
+			<Frame parentKey="HouseFinderNotificationBanner" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HouseFinderMapCanvasFrame" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background" atlas="housefinder-messaging-gold">
+							<Size x="703" y="91"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NotificationText" inherits="Game13FontShadow" text="">
+							<Size x="500" y="40"/>
+							<Anchors>
+								<Anchor point="TOP" y="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
 			<Frame parentKey="WoodBorderFrame" frameLevel="510">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodListFrame" relativePoint="TOPRIGHT" x="-3" y="-5"/>

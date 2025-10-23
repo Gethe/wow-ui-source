@@ -1277,6 +1277,24 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitHealthPercentColor",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "colorCurve", Type = "LuaColorCurveObject", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitHealth",
 			Type = "Function",
 			SecretReturns = true,
@@ -2765,6 +2783,23 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitShouldDisplaySpellTargetName",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns whether the target's name should be displayed. Returns false if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSpellHaste",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -3138,11 +3173,13 @@ local Unit =
 			Name = "ActivePlayerSpecializationChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArenaCooldownsUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_COOLDOWNS_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3152,6 +3189,7 @@ local Unit =
 			Name = "ArenaCrowdControlSpellUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3162,6 +3200,7 @@ local Unit =
 			Name = "AutofollowBegin",
 			Type = "Event",
 			LiteralName = "AUTOFOLLOW_BEGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -3171,21 +3210,25 @@ local Unit =
 			Name = "AutofollowEnd",
 			Type = "Event",
 			LiteralName = "AUTOFOLLOW_END",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CancelSummon",
 			Type = "Event",
 			LiteralName = "CANCEL_SUMMON",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ComboTargetChanged",
 			Type = "Event",
 			LiteralName = "COMBO_TARGET_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ConfirmBinder",
 			Type = "Event",
 			LiteralName = "CONFIRM_BINDER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "areaName", Type = "cstring", Nilable = false },
@@ -3195,6 +3238,7 @@ local Unit =
 			Name = "ConfirmSummon",
 			Type = "Event",
 			LiteralName = "CONFIRM_SUMMON",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "summonReason", Type = "number", Nilable = false },
@@ -3205,6 +3249,7 @@ local Unit =
 			Name = "EclipseDirectionChange",
 			Type = "Event",
 			LiteralName = "ECLIPSE_DIRECTION_CHANGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "direction", Type = "cstring", Nilable = false },
@@ -3214,11 +3259,13 @@ local Unit =
 			Name = "HearthstoneBound",
 			Type = "Event",
 			LiteralName = "HEARTHSTONE_BOUND",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HonorXpUpdate",
 			Type = "Event",
 			LiteralName = "HONOR_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3228,6 +3275,7 @@ local Unit =
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3237,6 +3285,7 @@ local Unit =
 			Name = "IncomingSummonChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_SUMMON_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3246,6 +3295,7 @@ local Unit =
 			Name = "KnownTitlesUpdate",
 			Type = "Event",
 			LiteralName = "KNOWN_TITLES_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3255,11 +3305,13 @@ local Unit =
 			Name = "LocalplayerPetRenamed",
 			Type = "Event",
 			LiteralName = "LOCALPLAYER_PET_RENAMED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MirrorTimerPause",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_PAUSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -3270,6 +3322,7 @@ local Unit =
 			Name = "MirrorTimerStart",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -3284,6 +3337,7 @@ local Unit =
 			Name = "MirrorTimerStop",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_STOP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -3293,6 +3347,7 @@ local Unit =
 			Name = "NeutralFactionSelectResult",
 			Type = "Event",
 			LiteralName = "NEUTRAL_FACTION_SELECT_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -3302,6 +3357,7 @@ local Unit =
 			Name = "ObjectEnteredAOI",
 			Type = "Event",
 			LiteralName = "OBJECT_ENTERED_AOI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
@@ -3311,6 +3367,7 @@ local Unit =
 			Name = "ObjectLeftAOI",
 			Type = "Event",
 			LiteralName = "OBJECT_LEFT_AOI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
@@ -3320,16 +3377,19 @@ local Unit =
 			Name = "PetBarUpdateUsable",
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE_USABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetUiUpdate",
 			Type = "Event",
 			LiteralName = "PET_UI_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerCanGlideChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_CAN_GLIDE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "canGlide", Type = "bool", Nilable = false },
@@ -3339,6 +3399,7 @@ local Unit =
 			Name = "PlayerDamageDoneMods",
 			Type = "Event",
 			LiteralName = "PLAYER_DAMAGE_DONE_MODS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3348,16 +3409,19 @@ local Unit =
 			Name = "PlayerEnterCombat",
 			Type = "Event",
 			LiteralName = "PLAYER_ENTER_COMBAT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerFarsightFocusChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FARSIGHT_FOCUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerFlagsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FLAGS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3367,16 +3431,19 @@ local Unit =
 			Name = "PlayerFocusChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FOCUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerImpulseApplied",
 			Type = "Event",
 			LiteralName = "PLAYER_IMPULSE_APPLIED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerIsGlidingChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_IS_GLIDING_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isGliding", Type = "bool", Nilable = false },
@@ -3386,11 +3453,13 @@ local Unit =
 			Name = "PlayerLeaveCombat",
 			Type = "Event",
 			LiteralName = "PLAYER_LEAVE_COMBAT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLevelChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldLevel", Type = "number", Nilable = false },
@@ -3402,6 +3471,7 @@ local Unit =
 			Name = "PlayerLevelUp",
 			Type = "Event",
 			LiteralName = "PLAYER_LEVEL_UP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
@@ -3419,11 +3489,13 @@ local Unit =
 			Name = "PlayerMountDisplayChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_MOUNT_DISPLAY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerPvpKillsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_PVP_KILLS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3433,6 +3505,7 @@ local Unit =
 			Name = "PlayerPvpRankChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_PVP_RANK_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3442,26 +3515,31 @@ local Unit =
 			Name = "PlayerRegenDisabled",
 			Type = "Event",
 			LiteralName = "PLAYER_REGEN_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerRegenEnabled",
 			Type = "Event",
 			LiteralName = "PLAYER_REGEN_ENABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftEnemyChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_ENEMY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftFriendChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_FRIEND_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldTarget", Type = "WOWGUID", Nilable = false },
@@ -3472,11 +3550,14 @@ local Unit =
 			Name = "PlayerSoftTargetInteraction",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSpecializationChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3486,41 +3567,49 @@ local Unit =
 			Name = "PlayerStartedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_LOOKING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStartedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_MOVING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStartedTurning",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_TURNING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_LOOKING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_MOVING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedTurning",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_TURNING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTargetChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_TARGET_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTrialXpUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TRIAL_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3530,11 +3619,13 @@ local Unit =
 			Name = "PlayerUpdateResting",
 			Type = "Event",
 			LiteralName = "PLAYER_UPDATE_RESTING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerXpUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3544,11 +3635,13 @@ local Unit =
 			Name = "PortraitsUpdated",
 			Type = "Event",
 			LiteralName = "PORTRAITS_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ProvingGroundsScoreUpdate",
 			Type = "Event",
 			LiteralName = "PROVING_GROUNDS_SCORE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "points", Type = "number", Nilable = false },
@@ -3558,6 +3651,7 @@ local Unit =
 			Name = "PvpTimerUpdate",
 			Type = "Event",
 			LiteralName = "PVP_TIMER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3568,6 +3662,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "RUNE_POWER_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "runeIndex", Type = "number", Nilable = false },
@@ -3579,6 +3674,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "RUNE_TYPE_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "runeIndex", Type = "number", Nilable = false },
@@ -3588,11 +3684,13 @@ local Unit =
 			Name = "ShowFactionSelectUi",
 			Type = "Event",
 			LiteralName = "SHOW_FACTION_SELECT_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellConfirmationPrompt",
 			Type = "Event",
 			LiteralName = "SPELL_CONFIRMATION_PROMPT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -3608,6 +3706,7 @@ local Unit =
 			Name = "SpellConfirmationTimeout",
 			Type = "Event",
 			LiteralName = "SPELL_CONFIRMATION_TIMEOUT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -3618,6 +3717,7 @@ local Unit =
 			Name = "UnitAbsorbAmountChanged",
 			Type = "Event",
 			LiteralName = "UNIT_ABSORB_AMOUNT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3627,6 +3727,7 @@ local Unit =
 			Name = "UnitAreaChanged",
 			Type = "Event",
 			LiteralName = "UNIT_AREA_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3636,6 +3737,7 @@ local Unit =
 			Name = "UnitAttack",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3645,6 +3747,7 @@ local Unit =
 			Name = "UnitAttackPower",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK_POWER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3654,6 +3757,7 @@ local Unit =
 			Name = "UnitAttackSpeed",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK_SPEED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3663,11 +3767,13 @@ local Unit =
 			Name = "UnitCheatToggleEvent",
 			Type = "Event",
 			LiteralName = "UNIT_CHEAT_TOGGLE_EVENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UnitClassificationChanged",
 			Type = "Event",
 			LiteralName = "UNIT_CLASSIFICATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3677,6 +3783,7 @@ local Unit =
 			Name = "UnitCombat",
 			Type = "Event",
 			LiteralName = "UNIT_COMBAT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3690,6 +3797,7 @@ local Unit =
 			Name = "UnitConnection",
 			Type = "Event",
 			LiteralName = "UNIT_CONNECTION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3700,6 +3808,7 @@ local Unit =
 			Name = "UnitCtrOptions",
 			Type = "Event",
 			LiteralName = "UNIT_CTR_OPTIONS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3709,6 +3818,7 @@ local Unit =
 			Name = "UnitDamage",
 			Type = "Event",
 			LiteralName = "UNIT_DAMAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3718,6 +3828,7 @@ local Unit =
 			Name = "UnitDefense",
 			Type = "Event",
 			LiteralName = "UNIT_DEFENSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3727,6 +3838,7 @@ local Unit =
 			Name = "UnitDisplaypower",
 			Type = "Event",
 			LiteralName = "UNIT_DISPLAYPOWER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3737,6 +3849,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_DISTANCE_CHECK_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3747,6 +3860,7 @@ local Unit =
 			Name = "UnitFaction",
 			Type = "Event",
 			LiteralName = "UNIT_FACTION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3756,6 +3870,7 @@ local Unit =
 			Name = "UnitFlags",
 			Type = "Event",
 			LiteralName = "UNIT_FLAGS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3765,6 +3880,8 @@ local Unit =
 			Name = "UnitFormChanged",
 			Type = "Event",
 			LiteralName = "UNIT_FORM_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3774,6 +3891,7 @@ local Unit =
 			Name = "UnitHealAbsorbAmountChanged",
 			Type = "Event",
 			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3783,6 +3901,7 @@ local Unit =
 			Name = "UnitHealPrediction",
 			Type = "Event",
 			LiteralName = "UNIT_HEAL_PREDICTION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3792,6 +3911,8 @@ local Unit =
 			Name = "UnitHealth",
 			Type = "Event",
 			LiteralName = "UNIT_HEALTH",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3802,6 +3923,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_IN_RANGE_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3812,6 +3934,7 @@ local Unit =
 			Name = "UnitInventoryChanged",
 			Type = "Event",
 			LiteralName = "UNIT_INVENTORY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3821,6 +3944,8 @@ local Unit =
 			Name = "UnitLevel",
 			Type = "Event",
 			LiteralName = "UNIT_LEVEL",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3830,6 +3955,7 @@ local Unit =
 			Name = "UnitLoot",
 			Type = "Event",
 			LiteralName = "UNIT_LOOT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
@@ -3840,6 +3966,7 @@ local Unit =
 			Name = "UnitMana",
 			Type = "Event",
 			LiteralName = "UNIT_MANA",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3849,6 +3976,8 @@ local Unit =
 			Name = "UnitMaxHealthModifiersChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3859,6 +3988,8 @@ local Unit =
 			Name = "UnitMaxhealth",
 			Type = "Event",
 			LiteralName = "UNIT_MAXHEALTH",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3868,6 +3999,7 @@ local Unit =
 			Name = "UnitMaxpower",
 			Type = "Event",
 			LiteralName = "UNIT_MAXPOWER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3878,6 +4010,8 @@ local Unit =
 			Name = "UnitModelChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MODEL_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3887,6 +4021,7 @@ local Unit =
 			Name = "UnitNameUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_NAME_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3896,6 +4031,7 @@ local Unit =
 			Name = "UnitOtherPartyChanged",
 			Type = "Event",
 			LiteralName = "UNIT_OTHER_PARTY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3905,6 +4041,7 @@ local Unit =
 			Name = "UnitPet",
 			Type = "Event",
 			LiteralName = "UNIT_PET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3914,6 +4051,7 @@ local Unit =
 			Name = "UnitPetExperience",
 			Type = "Event",
 			LiteralName = "UNIT_PET_EXPERIENCE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3923,6 +4061,7 @@ local Unit =
 			Name = "UnitPhase",
 			Type = "Event",
 			LiteralName = "UNIT_PHASE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3932,6 +4071,8 @@ local Unit =
 			Name = "UnitPortraitUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_PORTRAIT_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3941,6 +4082,7 @@ local Unit =
 			Name = "UnitPowerBarHide",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3950,6 +4092,7 @@ local Unit =
 			Name = "UnitPowerBarShow",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3959,6 +4102,7 @@ local Unit =
 			Name = "UnitPowerBarTimerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_TIMER_UPDATE",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3968,6 +4112,7 @@ local Unit =
 			Name = "UnitPowerFrequent",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_FREQUENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3978,6 +4123,7 @@ local Unit =
 			Name = "UnitPowerPointCharge",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_POINT_CHARGE",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3987,6 +4133,7 @@ local Unit =
 			Name = "UnitPowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -3997,6 +4144,7 @@ local Unit =
 			Name = "UnitQuestLogChanged",
 			Type = "Event",
 			LiteralName = "UNIT_QUEST_LOG_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4006,6 +4154,7 @@ local Unit =
 			Name = "UnitRangedAttackPower",
 			Type = "Event",
 			LiteralName = "UNIT_RANGED_ATTACK_POWER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4015,6 +4164,7 @@ local Unit =
 			Name = "UnitRangeddamage",
 			Type = "Event",
 			LiteralName = "UNIT_RANGEDDAMAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4024,6 +4174,7 @@ local Unit =
 			Name = "UnitResistances",
 			Type = "Event",
 			LiteralName = "UNIT_RESISTANCES",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4033,6 +4184,7 @@ local Unit =
 			Name = "UnitSpellHaste",
 			Type = "Event",
 			LiteralName = "UNIT_SPELL_HASTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4043,6 +4195,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4055,6 +4208,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4067,6 +4221,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4079,6 +4234,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4091,6 +4247,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4103,6 +4260,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4116,6 +4274,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4128,6 +4287,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4140,6 +4300,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4152,6 +4313,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4163,6 +4325,7 @@ local Unit =
 			Name = "UnitSpellcastInterruptible",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTIBLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4172,6 +4335,7 @@ local Unit =
 			Name = "UnitSpellcastNotInterruptible",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4182,6 +4346,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4194,6 +4359,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4206,6 +4372,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4218,6 +4385,7 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_STOP",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4230,6 +4398,8 @@ local Unit =
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
 			SecretPayloads = true,
+			SynchronousEvent = true,
+			CallbackEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4241,6 +4411,7 @@ local Unit =
 			Name = "UnitStats",
 			Type = "Event",
 			LiteralName = "UNIT_STATS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4250,6 +4421,7 @@ local Unit =
 			Name = "UnitTarget",
 			Type = "Event",
 			LiteralName = "UNIT_TARGET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4259,6 +4431,7 @@ local Unit =
 			Name = "UnitTargetableChanged",
 			Type = "Event",
 			LiteralName = "UNIT_TARGETABLE_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4268,6 +4441,8 @@ local Unit =
 			Name = "UnitThreatListUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_THREAT_LIST_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4277,6 +4452,8 @@ local Unit =
 			Name = "UnitThreatSituationUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_THREAT_SITUATION_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -4286,21 +4463,25 @@ local Unit =
 			Name = "UpdateExhaustion",
 			Type = "Event",
 			LiteralName = "UPDATE_EXHAUSTION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateMouseoverUnit",
 			Type = "Event",
 			LiteralName = "UPDATE_MOUSEOVER_UNIT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateStealth",
 			Type = "Event",
 			LiteralName = "UPDATE_STEALTH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VehicleAngleUpdate",
 			Type = "Event",
 			LiteralName = "VEHICLE_ANGLE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "normalizedPitch", Type = "number", Nilable = false },

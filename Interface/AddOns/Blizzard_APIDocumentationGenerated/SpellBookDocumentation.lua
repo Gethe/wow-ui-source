@@ -719,6 +719,7 @@ local SpellBook =
 			Name = "CurrentSpellCastChanged",
 			Type = "Event",
 			LiteralName = "CURRENT_SPELL_CAST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cancelledCast", Type = "bool", Nilable = false },
@@ -728,6 +729,7 @@ local SpellBook =
 			Name = "LearnedSpellInSkillLine",
 			Type = "Event",
 			LiteralName = "LEARNED_SPELL_IN_SKILL_LINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -739,6 +741,7 @@ local SpellBook =
 			Name = "MaxSpellStartRecoveryOffsetChanged",
 			Type = "Event",
 			LiteralName = "MAX_SPELL_START_RECOVERY_OFFSET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clampedNewQueueWindowMs", Type = "number", Nilable = false },
@@ -748,6 +751,7 @@ local SpellBook =
 			Name = "PlayerTotemUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TOTEM_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
@@ -757,6 +761,8 @@ local SpellBook =
 			Name = "SpellFlyoutUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_FLYOUT_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = true },
@@ -768,6 +774,7 @@ local SpellBook =
 			Name = "SpellPushedToActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -779,6 +786,7 @@ local SpellBook =
 			Name = "SpellPushedToFlyoutOnActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -790,11 +798,14 @@ local SpellBook =
 			Name = "SpellUpdateCharges",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_CHARGES",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
@@ -807,6 +818,7 @@ local SpellBook =
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
@@ -816,11 +828,13 @@ local SpellBook =
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateUses",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USES",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
@@ -831,22 +845,26 @@ local SpellBook =
 			Name = "SpellsChanged",
 			Type = "Event",
 			LiteralName = "SPELLS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "StartAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "START_AUTOREPEAT_SPELL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StopAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "STOP_AUTOREPEAT_SPELL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UnitSpellcastSent",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SENT",
 			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unit", Type = "cstring", Nilable = false },
@@ -859,21 +877,25 @@ local SpellBook =
 			Name = "UpdateShapeshiftCooldown",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_COOLDOWN",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForm",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForms",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORMS",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftUsable",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_USABLE",
+			UniqueEvent = true,
 		},
 	},
 

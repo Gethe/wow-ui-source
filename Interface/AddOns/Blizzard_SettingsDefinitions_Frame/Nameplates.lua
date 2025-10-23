@@ -253,6 +253,17 @@ local function TogglePreviewNamePlateSimplifiedType(simplifiedType)
 	namePlate:ToggleSimplifiedType(simplifiedType);
 end
 
+local function CreateSelectionTextFunction(text)
+	return function(selections)
+		if #selections == 0 then
+			return text;
+		end
+
+		-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
+		return nil;
+	end
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(NAMEPLATE_OPTIONS_LABEL);
 	Settings.NAMEPLATE_OPTIONS_CATEGORY_ID = category:GetID();
@@ -369,7 +380,7 @@ local function Register()
 	end);
 
 	-- NamePlates
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL, "", "NAMEPLATES_LABEL"));
 
 	-- Needed but unused for all dropdowns with checkboxes.
 	local function GetValue()
@@ -379,6 +390,12 @@ local function Register()
 	-- Needed but unused for all dropdowns with checkboxes.
 	local function SetValue(value)
 
+	end
+
+	-- Used to clear all explicit values used by interacting with an individual setting any time a dropdown is closed/hidden.
+	local function OnDropdownHidden()
+		local explicitValues = {};
+		SetPreviewNamePlateExplicitValues(explicitValues);
 	end
 
 	-- Always Show NamePlates
@@ -451,19 +468,15 @@ local function Register()
 			return container:GetData();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_STACK_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
+		local function ResetToDefault()
+			SetCVarToDefault(namePlateStackingTypesCVar);
+			return 0;
 		end
 
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENABLE_STACKING", Settings.VarType.Number, UNIT_NAMEPLATES_ENABLE_STACKING, 0, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENABLE_STACKING", Settings.VarType.Number, UNIT_NAMEPLATES_ENABLE_STACKING, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENABLE_STACKING_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_STACK_NONE);
 		initializer.OnHide = OnDropdownHidden;
 	end
 
@@ -514,12 +527,6 @@ local function Register()
 		ShowPreviewNamePlateCastBar();
 	end);
 
-	-- Used to clear all explicit values used by interacting with an individual setting any time a dropdown is closed/hidden.
-	local function OnDropdownHidden()
-		local explicitValues = {};
-		SetPreviewNamePlateExplicitValues(explicitValues);
-	end
-
 	local nameplateInfoDisplayCVar = "nameplateInfoDisplay";
 	if C_CVar.GetCVar(nameplateInfoDisplayCVar) then
 		local function IsCurrentHealthPercentChecked()
@@ -550,23 +557,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateInfoDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			OnPreviewNamePlateInfoChanged();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_INFO_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_INFO_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_INFO_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_INFO_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_INFO_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_INFO_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_INFO_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -611,23 +614,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateCastBarDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			ShowPreviewNamePlateCastBar();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_CAST_BAR_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CAST_BAR_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_CAST_BAR_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CAST_BAR_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_CAST_BAR_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_CAST_BAR_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -655,23 +654,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateThreatDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			OnPreviewNamePlateThreatDisplayChanged();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_THREAT_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_THREAT_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_THREAT_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -706,23 +701,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateEnemyNpcAuraDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			TogglePreviewNamePlateEnemyNPCAuraDisplay();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -757,23 +748,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateEnemyPlayerAuraDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			TogglePreviewNamePlateEnemyPlayerAuraDisplay();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -808,23 +795,19 @@ local function Register()
 			return container:GetData();
 		end
 
+		local function ResetToDefault()
+			SetCVarToDefault(nameplateFriendlyPlayerAuraDisplayCVar);
+			return 0;
+		end
+
 		local function OnDropdownShow()
 			TogglePreviewNamePlateFriendlyPlayerAuraDisplay();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_NONE);
 		initializer.OnShow = OnDropdownShow;
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -875,20 +858,15 @@ local function Register()
 			return container:GetData();
 		end
 
-		local function GetSelectionText(selections)
-			if #selections == 0 then
-				return UNIT_NAMEPLATES_SIMPLIFIED_NONE;
-			end
-
-			-- Returning nil to use default behavior in DropdownSelectionTextMixin:UpdateToMenuSelections.
-			return nil;
+		local function ResetToDefault()
+			SetCVarToDefault(nameplatesSimplifiedTypesCVar);
+			return 0;
 		end
 
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_SIMPLIFIED",
-			Settings.VarType.Number, UNIT_NAMEPLATES_SIMPLIFIED, defaultValue, GetValue, SetValue);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_SIMPLIFIED", Settings.VarType.Number, UNIT_NAMEPLATES_SIMPLIFIED, ResetToDefault, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_SIMPLIFIED_TOOLTIP);
 		initializer.hideSteppers = true
-		initializer.getSelectionTextFunc = GetSelectionText;
+		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_SIMPLIFIED_NONE);
 	end
 end
 

@@ -881,6 +881,7 @@ local Calendar =
 			Name = "CalendarActionPending",
 			Type = "Event",
 			LiteralName = "CALENDAR_ACTION_PENDING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pending", Type = "bool", Nilable = false },
@@ -890,11 +891,13 @@ local Calendar =
 			Name = "CalendarCloseEvent",
 			Type = "Event",
 			LiteralName = "CALENDAR_CLOSE_EVENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CalendarEventAlarm",
 			Type = "Event",
 			LiteralName = "CALENDAR_EVENT_ALARM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "title", Type = "cstring", Nilable = false },
@@ -906,6 +909,7 @@ local Calendar =
 			Name = "CalendarNewEvent",
 			Type = "Event",
 			LiteralName = "CALENDAR_NEW_EVENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isCopy", Type = "bool", Nilable = false },
@@ -915,6 +919,7 @@ local Calendar =
 			Name = "CalendarOpenEvent",
 			Type = "Event",
 			LiteralName = "CALENDAR_OPEN_EVENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "calendarType", Type = "cstring", Nilable = false },
@@ -924,6 +929,7 @@ local Calendar =
 			Name = "CalendarUpdateError",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "errorReason", Type = "cstring", Nilable = false },
@@ -933,6 +939,7 @@ local Calendar =
 			Name = "CalendarUpdateErrorWithCount",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_ERROR_WITH_COUNT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "errorReason", Type = "cstring", Nilable = false },
@@ -943,6 +950,7 @@ local Calendar =
 			Name = "CalendarUpdateErrorWithPlayerName",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_ERROR_WITH_PLAYER_NAME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "errorReason", Type = "cstring", Nilable = false },
@@ -953,21 +961,26 @@ local Calendar =
 			Name = "CalendarUpdateEvent",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_EVENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CalendarUpdateEventList",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_EVENT_LIST",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "CalendarUpdateGuildEvents",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_GUILD_EVENTS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CalendarUpdateInviteList",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_INVITE_LIST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasCompleteList", Type = "bool", Nilable = true },
@@ -977,6 +990,7 @@ local Calendar =
 			Name = "CalendarUpdatePendingInvites",
 			Type = "Event",
 			LiteralName = "CALENDAR_UPDATE_PENDING_INVITES",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -144,6 +144,7 @@ local AreaPoiInfo =
 			Name = "AreaPoisUpdated",
 			Type = "Event",
 			LiteralName = "AREA_POIS_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

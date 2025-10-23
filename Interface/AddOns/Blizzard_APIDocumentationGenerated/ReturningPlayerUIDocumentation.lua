@@ -22,6 +22,7 @@ local ReturningPlayerUI =
 			Name = "ReturningPlayerPrompt",
 			Type = "Event",
 			LiteralName = "RETURNING_PLAYER_PROMPT",
+			SynchronousEvent = true,
 		},
 	},
 

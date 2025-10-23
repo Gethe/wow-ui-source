@@ -357,11 +357,13 @@ local Transmog =
 			Name = "TransmogCollectionCameraUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_CAMERA_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogCollectionItemFavoriteUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_ITEM_FAVORITE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
@@ -372,11 +374,13 @@ local Transmog =
 			Name = "TransmogCollectionItemUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TransmogCollectionSourceAdded",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_SOURCE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -386,6 +390,7 @@ local Transmog =
 			Name = "TransmogCollectionSourceRemoved",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_SOURCE_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -395,6 +400,8 @@ local Transmog =
 			Name = "TransmogCollectionUpdated",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COLLECTION_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "collectionIndex", Type = "luaIndex", Nilable = true },
@@ -407,6 +414,7 @@ local Transmog =
 			Name = "TransmogCosmeticCollectionSourceAdded",
 			Type = "Event",
 			LiteralName = "TRANSMOG_COSMETIC_COLLECTION_SOURCE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -416,6 +424,7 @@ local Transmog =
 			Name = "TransmogSearchUpdated",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SEARCH_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searchType", Type = "TransmogSearchType", Nilable = false },
@@ -426,11 +435,13 @@ local Transmog =
 			Name = "TransmogSetsUpdateFavorite",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SETS_UPDATE_FAVORITE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogSourceCollectabilityUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOG_SOURCE_COLLECTABILITY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
@@ -441,21 +452,25 @@ local Transmog =
 			Name = "TransmogrifyClose",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogrifyItemUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TransmogrifyOpen",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogrifySuccess",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
@@ -465,6 +480,7 @@ local Transmog =
 			Name = "TransmogrifyUpdate",
 			Type = "Event",
 			LiteralName = "TRANSMOGRIFY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = true },

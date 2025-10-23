@@ -31,21 +31,26 @@ local Tutorial =
 			Name = "LeavingTutorialArea",
 			Type = "Event",
 			LiteralName = "LEAVING_TUTORIAL_AREA",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NpeTutorialUpdate",
 			Type = "Event",
 			LiteralName = "NPE_TUTORIAL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TutorialCombatEvent",
 			Type = "Event",
 			LiteralName = "TUTORIAL_COMBAT_EVENT",
+			RequireNPERestricted = true,
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TutorialHighlightSpell",
 			Type = "Event",
 			LiteralName = "TUTORIAL_HIGHLIGHT_SPELL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -56,6 +61,7 @@ local Tutorial =
 			Name = "TutorialTrigger",
 			Type = "Event",
 			LiteralName = "TUTORIAL_TRIGGER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "tutorialIndex", Type = "number", Nilable = false },
@@ -66,6 +72,7 @@ local Tutorial =
 			Name = "TutorialUnhighlightSpell",
 			Type = "Event",
 			LiteralName = "TUTORIAL_UNHIGHLIGHT_SPELL",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -74,9 +81,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 36,
+			NumValues = 37,
 			MinValue = 1,
-			MaxValue = 36,
+			MaxValue = 37,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -115,6 +122,7 @@ local Tutorial =
 				{ Name = "HousingMarketTab", Type = "FrameTutorialAccount", EnumValue = 34 },
 				{ Name = "HousingTeleportButton", Type = "FrameTutorialAccount", EnumValue = 35 },
 				{ Name = "RPETalentStarterBuild", Type = "FrameTutorialAccount", EnumValue = 36 },
+				{ Name = "HousingInvalidCollision", Type = "FrameTutorialAccount", EnumValue = 37 },
 			},
 		},
 	},

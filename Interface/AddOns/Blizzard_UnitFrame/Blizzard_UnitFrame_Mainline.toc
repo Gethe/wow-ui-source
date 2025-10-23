@@ -1,7 +1,7 @@
 ## Title: Blizzard_UnitFrame
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_ActionBar, Blizzard_TextStatusBar
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_ActionBar, Blizzard_TextStatusBar, Blizzard_SpellDiminishUI
 ## AllowLoad: Game
 Mainline\BuilderSpenderFrame.lua
 Mainline\BuilderSpenderFrame.xml

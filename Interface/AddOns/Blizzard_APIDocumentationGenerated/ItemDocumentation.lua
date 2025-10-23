@@ -1237,6 +1237,22 @@ local Item =
 			},
 		},
 		{
+			Name = "IsDecorItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the item is a consumable decor item." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDecor", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsDressableItemByID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1686,16 +1702,19 @@ local Item =
 			Name = "ActionWillBindItem",
 			Type = "Event",
 			LiteralName = "ACTION_WILL_BIND_ITEM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BindEnchant",
 			Type = "Event",
 			LiteralName = "BIND_ENCHANT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CharacterItemFixupNotification",
 			Type = "Event",
 			LiteralName = "CHARACTER_ITEM_FIXUP_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "fixupVersion", Type = "number", Nilable = false },
@@ -1705,16 +1724,19 @@ local Item =
 			Name = "ConfirmBeforeUse",
 			Type = "Event",
 			LiteralName = "CONFIRM_BEFORE_USE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ConvertToBindToAccountConfirm",
 			Type = "Event",
 			LiteralName = "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DeleteItemConfirm",
 			Type = "Event",
 			LiteralName = "DELETE_ITEM_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemName", Type = "cstring", Nilable = false },
@@ -1727,6 +1749,7 @@ local Item =
 			Name = "EndBoundTradeable",
 			Type = "Event",
 			LiteralName = "END_BOUND_TRADEABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reason", Type = "cstring", Nilable = false },
@@ -1736,6 +1759,7 @@ local Item =
 			Name = "GetItemInfoReceived",
 			Type = "Event",
 			LiteralName = "GET_ITEM_INFO_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1746,6 +1770,7 @@ local Item =
 			Name = "ItemChanged",
 			Type = "Event",
 			LiteralName = "ITEM_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "previousHyperlink", Type = "string", Nilable = false },
@@ -1756,6 +1781,7 @@ local Item =
 			Name = "ItemConversionDataReady",
 			Type = "Event",
 			LiteralName = "ITEM_CONVERSION_DATA_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
@@ -1765,6 +1791,7 @@ local Item =
 			Name = "ItemCountChanged",
 			Type = "Event",
 			LiteralName = "ITEM_COUNT_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1774,6 +1801,7 @@ local Item =
 			Name = "ItemDataLoadResult",
 			Type = "Event",
 			LiteralName = "ITEM_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1784,6 +1812,7 @@ local Item =
 			Name = "MerchantConfirmTradeTimerRemoval",
 			Type = "Event",
 			LiteralName = "MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -1793,6 +1822,7 @@ local Item =
 			Name = "ReplaceEnchant",
 			Type = "Event",
 			LiteralName = "REPLACE_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existingStr", Type = "cstring", Nilable = false },
@@ -1803,6 +1833,7 @@ local Item =
 			Name = "ReplaceTradeskillEnchant",
 			Type = "Event",
 			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existing", Type = "cstring", Nilable = false },
@@ -1813,6 +1844,7 @@ local Item =
 			Name = "TradeReplaceEnchant",
 			Type = "Event",
 			LiteralName = "TRADE_REPLACE_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existing", Type = "cstring", Nilable = false },
@@ -1823,16 +1855,19 @@ local Item =
 			Name = "UseBindConfirm",
 			Type = "Event",
 			LiteralName = "USE_BIND_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UseNoRefundConfirm",
 			Type = "Event",
 			LiteralName = "USE_NO_REFUND_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WeaponEnchantChanged",
 			Type = "Event",
 			LiteralName = "WEAPON_ENCHANT_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 

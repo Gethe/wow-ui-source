@@ -93,7 +93,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeActionBarSetting.VisibleSetting,
 			name = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.ActionBarVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_ALWAYS},
 				{value = Enum.ActionBarVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_ACTION_BAR_VISIBLE_SETTING_IN_COMBAT},
@@ -240,7 +240,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.ViewRaidSize,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_RAID_SIZE,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.ViewRaidSize.Ten, text = "10"},
 				{value = Enum.ViewRaidSize.TwentyFive, text = "25"},
@@ -293,7 +293,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.RaidGroupDisplayType,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.RaidGroupDisplayType.SeparateGroupsVertical, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_VERTICAL},
 				{value = Enum.RaidGroupDisplayType.SeparateGroupsHorizontal, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_GROUPS_SEPARATE_GROUPS_HORIZONTAL},
@@ -307,7 +307,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeUnitFrameSetting.SortPlayersBy,
 			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.SortPlayersBy.Role, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_ROLE},
 				{value = Enum.SortPlayersBy.Group, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_SORT_BY_SETTING_GROUP},
@@ -440,6 +440,32 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 16,
 			stepSize = 1,
 		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeAuraFrameSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Visible Setting
+		{
+			setting = Enum.EditModeAuraFrameSetting.VisibleSetting,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.AuraFrameVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.AuraFrameVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.AuraFrameVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_HIDDEN},
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] =
@@ -457,7 +483,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 800,
 			stepSize = 1,
 
-			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value.
 			-- We do this to support more values than we're normally capable of based on data saving limits.
 			isCompositeNumberSetting = true,
 			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.WidthHundreds,
@@ -473,7 +499,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			maxValue = 800,
 			stepSize = 1,
 
-			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value. 
+			-- This means that this setting is made up of multiple other sub settings which combine to form this setting's value.
 			-- We do this to support more values than we're normally capable of based on data saving limits.
 			isCompositeNumberSetting = true,
 			compositeNumberHundredsSetting = Enum.EditModeChatFrameSetting.HeightHundreds,
@@ -783,7 +809,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.VisibleSetting,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.CooldownViewerVisibleSetting.Always, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_ALWAYS},
 				{value = Enum.CooldownViewerVisibleSetting.InCombat, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_VISIBLE_SETTING_IN_COMBAT},
@@ -796,7 +822,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.BarContent,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
-			options = 
+			options =
 			{
 				{value = Enum.CooldownViewerBarContent.IconAndName, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_AND_NAME},
 				{value = Enum.CooldownViewerBarContent.IconOnly, text = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_BAR_CONTENT_TYPE_ICON_ONLY},
@@ -831,13 +857,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		{
 			setting = Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs,
 			name = DISPLAY_PERSONAL_FRIENDLY_BUFFS,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
-
-		-- Show Resource on Target
-		{
-			setting = Enum.EditModePersonalResourceDisplaySetting.ShowResourceOnTarget,
-			name = DISPLAY_PERSONAL_RESOURCE_ON_ENEMY,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 

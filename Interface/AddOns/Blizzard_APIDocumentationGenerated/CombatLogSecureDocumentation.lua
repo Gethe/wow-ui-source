@@ -115,6 +115,8 @@ local CombatLogSecure =
 			Name = "CombatLogApplyFilterSettings",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_APPLY_FILTER_SETTINGS",
+			HasRestrictions = true,
+			CallbackEvent = true,
 			Payload =
 			{
 				{ Name = "filterSettings", Type = "LuaValueVariant", Nilable = false },
@@ -124,6 +126,7 @@ local CombatLogSecure =
 			Name = "CombatLogMessage",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "message", Type = "string", Nilable = false, Documentation = { "A preformatted combat log message protected by a |K string wrapper." } },
@@ -137,6 +140,8 @@ local CombatLogSecure =
 			Name = "CombatLogRefilterEntries",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_REFILTER_ENTRIES",
+			HasRestrictions = true,
+			CallbackEvent = true,
 		},
 	},
 

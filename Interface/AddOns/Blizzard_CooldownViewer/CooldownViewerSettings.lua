@@ -171,14 +171,8 @@ function CooldownViewerSettingsItemMixin:RefreshData()
 	end
 end
 
-local function GetAlertTypeAtlas(alertType)
-	if alertType == Enum.CooldownViewerAlertType.Sound then
-		return "CreditsScreen-Assets-Buttons-Play";
-	end
-end
-
 local function AddAlertTypeIcon(index, alertType, overlay)
-	local asset = GetAlertTypeAtlas(alertType);
+	local asset = CooldownViewerAlert_GetTypeAtlas(alertType);
 	if asset then
 		local icon = overlay.icons[index];
 		if not icon then
@@ -387,23 +381,22 @@ do
 			local alertType = CooldownViewerAlert_GetType(alert);
 			local alertButton = rootDescription:CreateButton("temp", function()
 				cooldownItem:PlayAlertSample(alert);
-			end);
+			end, 1);
 
 			alertButton:AddInitializer(function(button, description, menu)
-				MenuUtil.HookTooltipScripts(button, function(tooltip)
-					GameTooltip_SetTitle(tooltip, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_BUTTON_TOOLTIP_PREVIEW);
+				local playSampleButton = MenuTemplates.AttachBasicButton(button, 25, 25);
+				playSampleButton:SetPoint("TOPLEFT");
+				CooldownViewerAlert_SetupTypeButton(playSampleButton, alertType);
+				MenuTemplates.SetUtilityButtonTooltipText(playSampleButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_PLAY_SAMPLE);
+				MenuTemplates.SetUtilityButtonClickHandler(playSampleButton, function()
+					cooldownItem:PlayAlertSample(alert);
 				end);
-
-				local typeTexture = button:AttachTexture();
-				typeTexture:SetSize(20, 20); -- use atlas size?
-				typeTexture:SetPoint("TOPLEFT");
-				typeTexture:SetAtlas(GetAlertTypeAtlas(alertType)); -- use atlas size?
 
 				local payloadFontString = button.fontString;
 				payloadFontString:SetFontObject("GameFontNormalLarge");
 				payloadFontString:SetSize(0, 0);
 				payloadFontString:ClearAllPoints();
-				payloadFontString:SetPoint("TOPLEFT", typeTexture, "TOPRIGHT", 3, 0);
+				payloadFontString:SetPoint("TOPLEFT", playSampleButton, "TOPRIGHT", 3, 0);
 				payloadFontString:SetText(payloadText);
 
 				local eventFontString = button:AttachFontString();

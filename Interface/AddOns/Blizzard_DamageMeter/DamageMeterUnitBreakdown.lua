@@ -30,7 +30,24 @@ function DamageMeterUnitBreakdownMixin:InitializeScrollBox()
 		frame:Init(elementData);
 	end);
 
+	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
+	local elementSpacing = 4;
+	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
+
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	local topLeftX, topLeftY = 20, -5;
+	local bottomRightX, bottomRightY = -20, 0;
+	local withBarXOffset = 20;
+	local scrollBoxAnchorsWithBar = {
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("BOTTOMRIGHT", bottomRightX - withBarXOffset, bottomRightY);
+	};
+	local scrollBoxAnchorsWithoutBar = {
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("BOTTOMRIGHT", bottomRightX, bottomRightY);
+	};
+	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 end
 
 function DamageMeterUnitBreakdownMixin:GetEntryList()

@@ -135,6 +135,7 @@ local EditModeManager =
 			Name = "EditModeLayoutsUpdated",
 			Type = "Event",
 			LiteralName = "EDIT_MODE_LAYOUTS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "layoutInfo", Type = "EditModeLayouts", Nilable = false },

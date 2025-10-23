@@ -1,32 +1,71 @@
 local ModelSceneID = 691;
 local ActorTag = "decor";
 local QuestionMarkIconFileDataID = 134400;
-local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
 
 HousingCatalogEntryMixin = {};
 
 function HousingCatalogEntryMixin:OnLoad()
 	local forceSceneChange = true;
 	self.ModelScene:TransitionToModelSceneID(ModelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
+	self:TypeSpecificOnLoad();
 end
 
 function HousingCatalogEntryMixin:Init(elementData)
 	self.elementData = elementData;
 	self.entryID = elementData.entryID;
+	self.bundleEntryInfo = elementData.bundleEntryInfo;
 	local forceUpdate = true;
 	self:UpdateEntryData(forceUpdate);
+
+	if self.whileInitializedEvents then
+		FrameUtil.RegisterFrameForEvents(self, self.whileInitializedEvents);
+	end
 
 	self:TypeSpecificInit();
 end
 
+function HousingCatalogEntryMixin:IsBundleEntry()
+	return self.bundleEntryInfo ~= nil;
+end
+
+function HousingCatalogEntryMixin.Reset(framePool, self)
+	if self.whileInitializedEvents then
+		FrameUtil.UnregisterFrameForEvents(self, self.whileInitializedEvents);
+	end
+
+	Pool_HideAndClearAnchors(framePool, self);
+	self.elementData = nil
+	self.entryID = nil;
+	self:ClearEntryData();
+
+	self:TypeSpecificReset();
+end
+
+function HousingCatalogEntryMixin:OnShow()
+	if self.whileShownEvents then
+		FrameUtil.RegisterFrameForEvents(self, self.whileShownEvents);
+	end
+	self:UpdateVisuals();
+end
+
+function HousingCatalogEntryMixin:OnHide()
+	if self.whileShownEvents then
+		FrameUtil.UnregisterFrameForEvents(self, self.whileShownEvents);
+	end
+end
+
+function HousingCatalogEntryMixin:GetEntryData()
+	return self.entryID and C_HousingCatalog.GetCatalogEntryInfo(self.entryID) or nil;
+end
+
 function HousingCatalogEntryMixin:UpdateEntryData(forceUpdate)
-	if not self.elementData or not self.entryID then
+	local isValidBundleEntry = self:IsBundleEntry() and self.bundleEntryInfo and self.bundleEntryInfo.decorID;
+	if not self.elementData or (not self.entryID and not isValidBundleEntry) then
 		self:ClearEntryData();
 		return;
 	end
 
-	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
-
+	local entryInfo = self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
 	if not entryInfo then
 		self:ClearEntryData();
 		return;
@@ -55,15 +94,6 @@ function HousingCatalogEntryMixin:ClearEntryData()
 	self:ClearTypeSpecificData();
 
 	self.entryInfo = nil;
-end
-
-function HousingCatalogEntryMixin.Reset(framePool, self)
-	Pool_HideAndClearAnchors(framePool, self);
-	self.elementData = nil
-	self.entryID = nil;
-	self:ClearEntryData();
-
-	self:TypeSpecificReset();
 end
 
 -- Returns bool isValid, invalidTooltip, invalidError
@@ -110,6 +140,10 @@ function HousingCatalogEntryMixin:AddInvalidTooltipLine(tooltip)
 end
 
 function HousingCatalogEntryMixin:UpdateVisuals()
+	if not self:HasValidData() then
+		return;
+	end
+	
 	local valid = self:GetIsValid();
 
 	if self.entryInfo.iconTexture or self.entryInfo.iconAtlas then
@@ -154,10 +188,17 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:Show();
 	end
 
-	if C_HousingDecor.IsPreviewState() then
+	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
+
+	if self:IsBundleEntry() then
+		self.InfoText:Show();
+
+		-- TODO:: Eventually this should update based on the number that have been preview-placed.
+		self.InfoText:SetText(self.bundleEntryInfo.quantity);
+	elseif C_HousingDecor.IsPreviewState() then
 		local marketInfo = self.entryInfo.marketInfo;
 		local price = marketInfo and marketInfo.price or 0;
-		self.InfoText:SetText(price .. HearthsteelAtlasMarkup);
+		self.InfoText:SetText(Blizzard_HousingCatalogUtil.FormatPrice(price));
 		self.InfoText:SetShown(price > 0);
 	else
 		self.InfoText:SetText(self.entryInfo.quantity + self.entryInfo.remainingRedeemable);
@@ -183,7 +224,7 @@ function HousingCatalogEntryMixin:UpdateBackground(isPressed)
 end
 
 function HousingCatalogEntryMixin:HasValidData()
-	return self.elementData and self.entryInfo;
+	return self.elementData and (self.entryID or self.bundleEntryInfo);
 end
 
 function HousingCatalogEntryMixin:GetElementData()
@@ -258,6 +299,10 @@ function HousingCatalogEntryMixin:OnInteract(button, isDrag)
 	end
 end
 
+function HousingCatalogEntryMixin:TypeSpecificOnLoad()
+	-- Optional override
+end
+
 function HousingCatalogEntryMixin:TypeSpecificInit()
 	-- Optional override
 end
@@ -302,16 +347,27 @@ end
 
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
+function HousingCatalogDecorEntryMixin:GetEntryInfo()
+	-- Overrides HousingCatalogEntryMixin.
+
+	return self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or HousingCatalogEntryMixin.GetEntryInfo(self);
+end
+
 function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
+	-- Overrides HousingCatalogEntryMixin.
+
 	local dyeNames = self.entryInfo.customizations;
 	local isDyed = dyeNames and #dyeNames > 0;
 	local name = isDyed and HOUSING_DECOR_DYED_NAME_FORMAT:format(self.entryInfo.name) or self.entryInfo.name;
 	local placementCost = HOUSING_DECOR_PLACEMENT_COST_FORMAT:format(self.entryInfo.placementCost);
+	local itemQualityColor = ITEM_QUALITY_COLORS[self.entryInfo.quality or Enum.ItemQuality.Common].color;
 	local wrap = false;
-	GameTooltip_AddColoredDoubleLine(tooltip, name, placementCost, HIGHLIGHT_FONT_COLOR, HIGHLIGHT_FONT_COLOR, wrap);
+	GameTooltip_AddColoredDoubleLine(tooltip, name, placementCost, itemQualityColor, HIGHLIGHT_FONT_COLOR, wrap);
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
+	-- Overrides HousingCatalogEntryMixin.
+
 	local entryInfo = self.entryInfo;
 	local marketInfo = entryInfo.marketInfo;
 
@@ -326,13 +382,15 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 
 	self:AddInvalidTooltipLine(tooltip);
 
-	if marketInfo and marketInfo.price then
-		local priceText = marketInfo.price .. HearthsteelAtlasMarkup;
-		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(priceText));
-	end
+	if not self:IsBundleEntry() then
+		if marketInfo and marketInfo.price then
+				local priceText = Blizzard_HousingCatalogUtil.FormatPrice(marketInfo.price);
+			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(priceText));
+		end
 
-	if marketInfo and #marketInfo.bundleIDs > 0 then
-		GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_BUNDLE_DISCLAIMER, DISCLAIMER_TOOLTIP_COLOR);
+		if marketInfo and #marketInfo.bundleIDs > 0 then
+			GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_BUNDLE_DISCLAIMER, DISCLAIMER_TOOLTIP_COLOR);
+		end
 	end
 
 	local dyeNames = entryInfo.customizations;
@@ -353,12 +411,13 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 		return;
 	end
 	
+	-- TODO:: Support preview placement for bundles based on :IsBundleEntry()
 	if not self:HasValidData() or (not C_HousingDecor.IsPreviewState() and self.entryInfo.quantity + self.entryInfo.remainingRedeemable <= 0) then
 		return;
 	end
 
-	local decorPlaced = C_HousingDecor.GetNumDecorPlaced();
-	local maxDecor = C_HousingDecor.GetMaxDecorPlaced();
+	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
+	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
 	if decorPlaced >= maxDecor then
 		StaticPopup_Show("HOUSING_MAX_DECOR_REACHED");
 		return;
@@ -377,9 +436,14 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	if C_HousingDecor.IsPreviewState() then
 		StartPlacing = function() C_HousingBasicMode.StartPlacingPreviewDecor(self.entryID); end
 	else
+		-- Bundle entries should all be in the market view and can't be previewed otherwise.
+		if self:IsBundleEntry() then
+			return;
+		end
+
 		StartPlacing = function() C_HousingBasicMode.StartPlacingNewDecor(self.entryID); end
 	end
-	
+
 	local sound;
 	local size = self.entryInfo.size;
 	if size == Enum.HousingCatalogEntrySize.Tiny or size == Enum.HousingCatalogEntrySize.Small then
@@ -389,6 +453,7 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	else
 		sound = SOUNDKIT.HOUSING_SELECT_ITEM_LARGE;
 	end
+
 	PlaySound(sound);
 
 	if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
@@ -455,8 +520,19 @@ function HousingCatalogDecorEntryMixin:OnDestroyConfirmed(destroyAll)
 end
 
 function HousingCatalogDecorEntryMixin:ShowContextMenu()
+	local totalInStorage = self.entryInfo.quantity + self.entryInfo.remainingRedeemable;
+	if totalInStorage <= 0 then
+		return;
+	end
+
 	-- If any other catalog entry type is added that can also be destroyed, we can move all this to be shared
 	-- with some kind of conditional flag - for now, it's only for decor
+
+	-- For now there's no context menu for recordID-based entries since they can't be destroyed.
+	if self:IsBundleEntry() then
+		return;
+	end
+
 	local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
 
 	local showDisabledTooltip = function(tooltip, elementDescription)
@@ -518,7 +594,11 @@ end
 
 HousingCatalogRoomEntryMixin = {};
 
-local RoomEntryEvents = {
+local RoomEntryWhileInitializedEvents = {
+	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
+};
+
+local RoomEntryWhileShownEvents = {
 	"HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
 	"HOUSING_LAYOUT_DOOR_SELECTED",
 	"HOUSING_LAYOUT_DOOR_SELECTION_CHANGED",
@@ -527,12 +607,9 @@ local RoomEntryEvents = {
 	"HOUSE_LEVEL_CHANGED"
 };
 
-function HousingCatalogRoomEntryMixin:TypeSpecificInit()
-	FrameUtil.RegisterFrameForEvents(self, RoomEntryEvents);
-end
-
-function HousingCatalogRoomEntryMixin:TypeSpecificReset()
-	FrameUtil.UnregisterFrameForEvents(self, RoomEntryEvents);
+function HousingCatalogRoomEntryMixin:TypeSpecificOnLoad()
+	self.whileInitializedEvents = RoomEntryWhileInitializedEvents;
+	self.whileShownEvents = RoomEntryWhileShownEvents;
 end
 
 function HousingCatalogRoomEntryMixin:OnEvent(event, ...)
@@ -548,7 +625,7 @@ end
 function HousingCatalogRoomEntryMixin:GetTypeSpecificIsValid()
 	local isValid, invalidTooltip, invalidError = true, nil, nil;
 
-	local isAtBudgetMax = C_HousingLayout.GetNumActiveRooms() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
 	if isAtBudgetMax then
 		isValid = false;
 		invalidTooltip = ERR_PLACED_ROOM_LIMIT_REACHED;
@@ -563,6 +640,13 @@ function HousingCatalogRoomEntryMixin:GetTypeSpecificIsValid()
 	end
 
 	return isValid, invalidTooltip, invalidError;
+end
+
+function HousingCatalogRoomEntryMixin:HasValidData()
+	-- Overrides HousingCatalogEntryMixin.
+
+	-- For now, we don't support bundleEntryInfo-based room entries.
+	return self.elementData and self.entryInfo;
 end
 
 function HousingCatalogRoomEntryMixin:UpdateTypeSpecificData()
@@ -583,7 +667,18 @@ function HousingCatalogRoomEntryMixin:SetSelected(isSelected)
 	self:UpdateBackground(isPressed);
 end
 
+function HousingCatalogRoomEntryMixin:AddTooltipTitle(tooltip)
+	local placementCost = HOUSING_ROOM_PLACEMENT_COST_FORMAT:format(self.entryInfo.placementCost);
+	local itemQualityColor = ITEM_QUALITY_COLORS[self.entryInfo.quality or Enum.ItemQuality.Common].color;
+	local wrap = false;
+	GameTooltip_AddColoredDoubleLine(tooltip, self.entryInfo.name, placementCost, itemQualityColor, HIGHLIGHT_FONT_COLOR, wrap);
+end
+
 function HousingCatalogRoomEntryMixin:AddTooltipLines(tooltip)
+	if self.entryInfo.isPrefab then
+		GameTooltip_AddHighlightLine(tooltip, HOUSING_LAYOUT_PREFAB_ROOM_TOOLTIP);
+	end
+
 	self:AddInvalidTooltipLine(tooltip);
 end
 

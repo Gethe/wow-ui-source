@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_PagedContent
 ## AllowLoadGameType: standard
 
+Blizzard_HousingCatalogUtil.lua
 Blizzard_HousingData.lua
 Blizzard_HousingCatalogEntry.lua
 Blizzard_HousingCatalogEntry.xml

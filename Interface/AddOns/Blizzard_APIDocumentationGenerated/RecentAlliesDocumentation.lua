@@ -178,26 +178,31 @@ local RecentAllies =
 			Name = "LetRecentAlliesSeeLocationSettingUpdated",
 			Type = "Event",
 			LiteralName = "LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAlliesCacheUpdate",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_CACHE_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "RecentAlliesDataReady",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_DATA_READY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAlliesSystemStatusUpdated",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAllyDataUpdated",
 			Type = "Event",
 			LiteralName = "RECENT_ALLY_DATA_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },

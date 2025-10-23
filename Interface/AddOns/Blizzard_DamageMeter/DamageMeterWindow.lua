@@ -5,9 +5,13 @@ local DamageMeterWindowListEvents = {
 };
 
 function DamageMeterWindowMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+
 	self:InitializeScrollBox();
 	self:InitializeTrackedStatDropdown();
+	self:InitializeSegmentDropdown();
 	self:InitializeSettingsDropdown();
+	self:InitializeResizeButton();
 end
 
 function DamageMeterWindowMixin:OnShow()
@@ -26,6 +30,30 @@ function DamageMeterWindowMixin:OnEvent(event, ...)
 	end
 end
 
+function DamageMeterWindowMixin:OnEnter()
+	-- Handle showing the ResizeButton under the correct conditions.
+	self:SetScript("OnUpdate", function()
+		local shouldResizeButtonBeShown = self:IsMouseOver() or self.ResizeButton:IsMouseOver() or self:IsResizing();
+
+		if shouldResizeButtonBeShown and self.ResizeButton:GetAlpha() == 0 then
+			self.HideResizeButton:Stop();
+			self.ShowResizeButton:Play();
+		elseif not shouldResizeButtonBeShown and self.ResizeButton:GetAlpha() > 0 then
+			self:SetScript("OnUpdate", nil);
+			self.ShowResizeButton:Stop();
+			self.HideResizeButton:Play();
+		end
+	end);
+end
+
+function DamageMeterWindowMixin:OnDragStart()
+	self:StartMoving();
+end
+
+function DamageMeterWindowMixin:OnDragStop()
+	self:StopMovingOrSizing();
+end
+
 function DamageMeterWindowMixin:InitializeScrollBox()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("DamageMeterEntryTemplate", function(frame, elementData)
@@ -38,7 +66,24 @@ function DamageMeterWindowMixin:InitializeScrollBox()
 		end);
 	end);
 
+	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
+	local elementSpacing = 4;
+	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
+
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	local topLeftX, topLeftY = 20, -5;
+	local bottomRightX, bottomRightY = -20, 0;
+	local withBarXOffset = 20;
+	local scrollBoxAnchorsWithBar = {
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("BOTTOMRIGHT", bottomRightX - withBarXOffset, bottomRightY);
+	};
+	local scrollBoxAnchorsWithoutBar = {
+		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("BOTTOMRIGHT", bottomRightX, bottomRightY);
+	};
+	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 end
 
 function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
@@ -58,7 +103,8 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 	end
 
 	local function SetSelected(option)
-		self:SetTrackedStat(option);
+		-- Tracked stat changes need to go through the owner.
+		self:GetDamageMeterOwner():SetWindowFrameTrackedStat(self, option);
 	end
 
 	self.TrackedStatDropdown:SetupMenu(function(owner, rootDescription)
@@ -72,15 +118,26 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 			end
 		end
 	end);
+
+	-- Override Arrow positioning from the template.
+	self.TrackedStatDropdown.Arrow:ClearAllPoints();
+	self.TrackedStatDropdown.Arrow:SetPoint("LEFT", self.TrackedStatDropdown, "LEFT", 0, -2);
+end
+
+function DamageMeterWindowMixin:InitializeSegmentDropdown()
+	self.SegmentDropdown:SetupMenu(function(owner, rootDescription)
+		rootDescription:SetTag("MENU_DAMAGE_METER_SEGMENTS");
+
+	end);
 end
 
 function DamageMeterWindowMixin:InitializeSettingsDropdown()
 	local function IsCreateNewWindowFrameEnabled()
-		return self:GetDamageMeterOwner():CanCreateNewWindowFrame();
+		return self:GetDamageMeterOwner():CanShowNewWindowFrame();
 	end
 
 	local function IsDeleteWindowFrameEnabled()
-		return self:GetDamageMeterOwner():CanDeleteWindowFrame(self);
+		return self:GetDamageMeterOwner():CanHideWindowFrame(self);
 	end
 
 	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
@@ -97,15 +154,39 @@ function DamageMeterWindowMixin:InitializeSettingsDropdown()
 		end);
 
 		local createNewWindowFrameButton = rootDescription:CreateButton("PH - Create New Window", function(...)
-			self:GetDamageMeterOwner():CreateNewWindowFrame();
+			self:GetDamageMeterOwner():ShowNewWindowFrame();
 		end);
 		createNewWindowFrameButton:SetEnabled(IsCreateNewWindowFrameEnabled);
 
 		local deleteWindowFrameButton = rootDescription:CreateButton("PH - Delete Window", function(...)
-			self:GetDamageMeterOwner():DeleteWindowFrame(self);
+			self:GetDamageMeterOwner():HideWindowFrame(self);
 		end);
 		deleteWindowFrameButton:SetEnabled(IsDeleteWindowFrameEnabled)
 	end);
+end
+
+function DamageMeterWindowMixin:InitializeResizeButton()
+		self.ResizeButton:SetScript("OnMouseDown", function(button, mouseButtonName, _down)
+			if mouseButtonName == "LeftButton" then
+				button:SetButtonState("PUSHED", true);
+				button:GetHighlightTexture():Hide();
+				self:StartSizing("BOTTOMRIGHT");
+				self.isResizing = true;
+			end
+		end);
+
+		self.ResizeButton:SetScript("OnMouseUp", function(button, mouseButtonName, _down)
+			if mouseButtonName == "LeftButton" then
+				button:SetButtonState("NORMAL", false);
+				button:GetHighlightTexture():Show();
+				self:StopMovingOrSizing();
+				self.isResizing = false;
+			end
+		end);
+
+		self.ResizeButton:SetScript("OnEnter", function()
+			self:OnEnter();
+		end);
 end
 
 function DamageMeterWindowMixin:GetEntryList()
@@ -146,12 +227,19 @@ function DamageMeterWindowMixin:GetWindowFrameIndex()
 	return self.windowFrameIndex;
 end
 
+-- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
+-- any code other than DamageMeterMixin:SetWindowFrameTrackedStat
 function DamageMeterWindowMixin:SetTrackedStat(trackedStat)
 	self.trackedStat = trackedStat;
+	self.TrackedStatDropdown.StatName:SetText(trackedStat);
 end
 
 function DamageMeterWindowMixin:GetTrackedStat()
 	return self.trackedStat;
+end
+
+function DamageMeterWindowMixin:IsResizing()
+	return self.isResizing == true;
 end
 
 function DamageMeterWindowMixin:RefreshLayout()

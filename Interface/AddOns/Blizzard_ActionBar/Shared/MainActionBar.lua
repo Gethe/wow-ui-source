@@ -7,7 +7,7 @@ function MainActionBarMixin:OnLoad()
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
 
 	self.state = "player";
-	MainActionBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
+	MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 end
 
 function MainActionBarMixin:OnShow()
@@ -24,7 +24,7 @@ end
 
 function MainActionBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
-		MainActionBar.ActionBarPageNumber.Text:SetText(GetActionBarPage());
+		MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self:UpdateEndCaps();
 	end

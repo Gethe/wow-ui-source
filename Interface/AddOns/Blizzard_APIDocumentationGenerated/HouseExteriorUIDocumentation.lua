@@ -102,6 +102,7 @@ local HouseExteriorUI =
 			Name = "HousingCoreFixtureChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CORE_FIXTURE_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "coreFixtureType", Type = "HousingFixtureType", Nilable = false },
@@ -111,6 +112,7 @@ local HouseExteriorUI =
 			Name = "HousingFixtureHoverChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_FIXTURE_HOVER_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "anyHovered", Type = "bool", Nilable = false },
@@ -120,6 +122,7 @@ local HouseExteriorUI =
 			Name = "HousingFixturePointFrameAdded",
 			Type = "Event",
 			LiteralName = "HOUSING_FIXTURE_POINT_FRAME_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pointFrame", Type = "HousingFixturePointFrame", Nilable = false },
@@ -129,6 +132,7 @@ local HouseExteriorUI =
 			Name = "HousingFixturePointFrameReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_FIXTURE_POINT_FRAME_RELEASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pointFrame", Type = "HousingFixturePointFrame", Nilable = false },
@@ -138,11 +142,13 @@ local HouseExteriorUI =
 			Name = "HousingFixturePointFramesReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_FIXTURE_POINT_FRAMES_RELEASED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingFixturePointSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_FIXTURE_POINT_SELECTION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },

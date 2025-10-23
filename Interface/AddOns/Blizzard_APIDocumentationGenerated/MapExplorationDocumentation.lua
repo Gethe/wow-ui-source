@@ -46,6 +46,7 @@ local MapExploration =
 			Name = "MapExplorationUpdated",
 			Type = "Event",
 			LiteralName = "MAP_EXPLORATION_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

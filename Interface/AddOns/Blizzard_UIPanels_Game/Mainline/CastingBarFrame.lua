@@ -2,32 +2,32 @@ local CASTBAR_STAGE_INVALID = -1;
 local CASTBAR_STAGE_DURATION_INVALID = -1;
 
 CASTING_BAR_TYPES = {
-	applyingcrafting = { 
+	applyingcrafting = {
 		filling = "ui-castingbar-filling-applyingcrafting",
 		full = "ui-castingbar-full-applyingcrafting",
 		glow = "ui-castingbar-full-glow-applyingcrafting",
 		sparkFx = "CraftingGlow",
 		finishAnim = "CraftingFinish",
 	},
-	applyingtalents = { 
+	applyingtalents = {
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
 		sparkFx = "StandardGlow",
 	},
-	standard = { 
+	standard = {
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
 		sparkFx = "StandardGlow",
 		finishAnim = "StandardFinish",
 	},
-	empowered = { 
+	empowered = {
 		filling = "",
 		full = "",
 		glow = "",
 	},
-	channel = { 
+	channel = {
 		filling = "ui-castingbar-filling-channel",
 		full = "ui-castingbar-full-channel",
 		glow = "ui-castingbar-full-glow-channel",
@@ -39,7 +39,7 @@ CASTING_BAR_TYPES = {
 		full = "ui-castingbar-uninterruptable",
 		glow = "ui-castingbar-full-glow-standard",
 	},
-	interrupted = { 
+	interrupted = {
 		filling = "ui-castingbar-interrupted",
 		full = "ui-castingbar-interrupted",
 		glow = "ui-castingbar-full-glow-standard",
@@ -104,7 +104,7 @@ function CastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 		self.casting = nil;
 		self.channeling = nil;
 		self.reverseChanneling = nil;
-		
+
 		self:StopAnims();
 
 		if unit then
@@ -224,7 +224,7 @@ function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event,
 
 		self:PlayInterruptAnims();
 	end
-end 
+end
 
 function CastingBarMixin:HandleCastStop(event, ...)
 	if ( not self:IsVisible() ) then
@@ -233,13 +233,13 @@ function CastingBarMixin:HandleCastStop(event, ...)
 	end
 	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
 	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
-		
+
 		local castComplete = select(4, ...);
 		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
 			self:HandleInterruptOrSpellFailed(true, event, ...);
-			return; 
-		end 
-		
+			return;
+		end
+
 		-- Cast info not available once stopped, so update bar based on cached barType
 		local barTypeInfo = self:GetTypeInfo(self.barType);
 		self:SetStatusBarTexture(barTypeInfo.full);
@@ -381,7 +381,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		if isChargeSpell then
 			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit);
 		end
-		
+
 		self.maxValue = (endTime - startTime) / 1000;
 
 		self.barType = self:GetEffectiveType(not isChargeSpell, notInterruptible, isTradeSkill, isChargeSpell);
@@ -393,7 +393,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		end
 
 		self:ClearStages();
-		
+
 		if (isChargeSpell) then
 			self.value = GetTime() - (startTime / 1000);
 		else
@@ -532,10 +532,10 @@ function CastingBarMixin:FinishSpell()
 		self.Flash:SetAlpha(0.0);
 		self.Flash:Show();
 	end
-	
+
 	self:PlayFadeAnim();
 	self:PlayFinishAnim();
-	
+
 	self.casting = nil;
 	self.channeling = nil;
 	self.reverseChanneling = nil;
@@ -584,7 +584,7 @@ function CastingBarMixin:PlayInterruptAnims()
 	if self.HoldFadeOutAnim then
 		self.HoldFadeOutAnim:Play();
 	end
-	
+
 	if not self.playCastFX then
 		return;
 	end
@@ -804,6 +804,11 @@ function CastingBarMixin:UpdateTargetNameText()
 		return;
 	end
 
+	if not UnitShouldDisplaySpellTargetName(self.unit) then
+		self:SetTargetNameText(nil);
+		return;
+	end
+
 	local targetName = UnitSpellTargetName(self.unit);
 
 	self:SetTargetNameText(targetName);
@@ -980,7 +985,7 @@ function CastingBarMixin:AddStages(numStages)
 	local stageMaxValue = self.maxValue * 1000;
 
 	local getStageDuration = function(stage)
-		if stage == self.NumStages then	
+		if stage == self.NumStages then
 			return GetUnitEmpowerHoldAtMaxTime(self.unit);
 		else
 			return GetUnitEmpowerStageDuration(self.unit, stage-1);
@@ -1111,7 +1116,7 @@ function CastingBarMixin:UpdateStage()
 				end
 			end
 		end
-		
+
 		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
 		local chargeTier = self[chargeTierName];
 		if chargeTier then

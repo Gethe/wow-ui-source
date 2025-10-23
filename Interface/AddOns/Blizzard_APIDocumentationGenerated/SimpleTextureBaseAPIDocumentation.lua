@@ -78,6 +78,7 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "GetRotation",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Rotation },
 
 			Arguments =
 			{
@@ -366,7 +367,8 @@ local SimpleTextureBaseAPI =
 		{
 			Name = "SetRotation",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Rotation },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -392,7 +394,7 @@ local SimpleTextureBaseAPI =
 
 			Arguments =
 			{
-				{ Name = "cell", Type = "luaIndex", Nilable = false },
+				{ Name = "cell", Type = "luaIndex", Nilable = false, ConditionalSecret = true },
 				{ Name = "numRows", Type = "number", Nilable = false },
 				{ Name = "numColumns", Type = "number", Nilable = false },
 				{ Name = "cellWidth", Type = "number", Nilable = true },

@@ -42,6 +42,7 @@ local CombatText =
 			Name = "CombatTextUpdate",
 			Type = "Event",
 			LiteralName = "COMBAT_TEXT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "combatTextType", Type = "cstring", Nilable = false },

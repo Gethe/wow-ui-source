@@ -2,6 +2,7 @@ local BasicDecorModeShownEvents =
 {
 	"HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED",
 	"HOUSING_BASIC_MODE_HOVERED_TARGET_CHANGED",
+	"HOUSING_BASIC_MODE_PLACEMENT_FLAGS_UPDATED",
 	"GLOBAL_MOUSE_UP",
 	"UPDATE_BINDINGS",
 	"HOUSING_DECOR_PLACE_FAILURE",
@@ -29,7 +30,8 @@ function HouseEditorBasicDecorModeMixin:OnLoad()
 
 	self.commitNewDecorOnMouseUp = true;
 
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, false);
+	local decorIsSelected = false;
+	self:UpdateInstructions(decorIsSelected);
 end
 
 function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
@@ -55,6 +57,17 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 		else
 			GameTooltip:Hide();
 		end
+	elseif event == "HOUSING_BASIC_MODE_PLACEMENT_FLAGS_UPDATED" then
+		local targetType, invalidPlacementInfo = ...;
+		if invalidPlacementInfo.anyRestrictions then
+			if targetType == Enum.HousingBasicModeTargetType.Decor then
+				self:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo);
+			elseif targetType == Enum.HousingBasicModeTargetType.House then
+				self:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo);
+			end
+		else
+			GameTooltip:Hide();
+		end
 	elseif event == "GLOBAL_MOUSE_UP" then
 		local button = ...;
 		if button == "LeftButton" and C_HousingBasicMode.IsPlacingNewDecor() then
@@ -70,9 +83,24 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 		if errStr then
 			UIErrorsFrame:AddExternalErrorMessage(errStr);
 		end
+
+		if (result == Enum.HousingResult.CollisionInvalid or result == Enum.HousingResult.PlacementTargetInvalid) and not C_CVar.GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.HousingInvalidCollision) then
+			local helpTipInfo = {
+				text = string.format(HOUSING_PLACEMENT_COLLISION_ERROR_HELPTIP, (GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND)),
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = Enum.FrameTutorialAccount.HousingInvalidCollision,
+				autoHideWhenTargetHides = true,
+				acknowledgeOnHide = true,
+			};
+
+			HelpTip:Show(self.SubButtonBar.NudgeButton, helpTipInfo);
+		end
+
 		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
 	elseif event == "HOUSING_DECOR_PLACE_SUCCESS" then
-		local size = ...;
+		local _, size = ...;
 		self:PlayPlacedSoundForSize(size);
 	elseif event == "HOUSE_EXTERIOR_POSITION_SUCCESS" then
 		self:PlayPlacementSoundForHouse();
@@ -111,28 +139,39 @@ function HouseEditorBasicDecorModeMixin:OnHide()
 end
 
 function HouseEditorBasicDecorModeMixin:OnTargetSelected()
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, true);
+	local decorIsSelected = true;
+	self:UpdateInstructions(decorIsSelected);
 
-	if self.Instructions.RemoveInstruction then
-		local shouldShowRemove = false;
-		if C_HousingBasicMode.IsDecorSelected() then
-			local info = C_HousingBasicMode.GetSelectedDecorInfo();
-			shouldShowRemove = not info or info.canBeRemoved;
-		end
-		
-		self.Instructions.RemoveInstruction:SetShown(shouldShowRemove);
-	end
-
-	self.Instructions:UpdateLayout();
 	self.DecorMoveOverlay:Show();
 	self:GetParent():HideHouseStorage();
 end
 
 function HouseEditorBasicDecorModeMixin:OnTargetUnselected()
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, false);
+	local decorIsSelected = false;
+	self:UpdateInstructions(decorIsSelected);
 	self.Instructions:UpdateLayout();
 	self.DecorMoveOverlay:Hide();
 	self:GetParent():ShowHouseStorage();
+end
+
+function HouseEditorBasicDecorModeMixin:UpdateInstructions(decorIsSelected)
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, decorIsSelected);
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not decorIsSelected);
+
+	if decorIsSelected then
+		if self.Instructions.RemoveInstruction then
+			local shouldShowRemove = false;
+			if C_HousingBasicMode.IsDecorSelected() then
+				local info = C_HousingBasicMode.GetSelectedDecorInfo();
+				shouldShowRemove = not info or info.canBeRemoved;
+			end
+		
+			self.Instructions.RemoveInstruction:SetShown(shouldShowRemove);
+		end
+	end
+
+	self.Instructions:UpdateLayout();
+
 end
 
 function HouseEditorBasicDecorModeMixin:SetInstructionShown(instructionSet, shouldShow)
@@ -170,6 +209,38 @@ function HouseEditorBasicDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceIn
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
 		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
+
+		GameTooltip:Show();
+		return GameTooltip;
+	end
+end
+
+function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)
+	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
+
+		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
+
+		GameTooltip:Show();
+		return GameTooltip;
+	end
+end
+
+function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo)
+	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
+
+		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
+
+		GameTooltip:Show();
+		return GameTooltip;
+	elseif invalidPlacementInfo.notInRoom then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_OUTSIDE_PLOT_ERROR_TITLE, ERROR_COLOR);
 
 		GameTooltip:Show();
 		return GameTooltip;

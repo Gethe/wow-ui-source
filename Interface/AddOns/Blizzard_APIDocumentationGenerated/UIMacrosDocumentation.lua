@@ -67,6 +67,7 @@ local UIMacros =
 			Name = "UpdateMacros",
 			Type = "Event",
 			LiteralName = "UPDATE_MACROS",
+			SynchronousEvent = true,
 		},
 	},
 

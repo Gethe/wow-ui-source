@@ -270,6 +270,7 @@ local ContributionCollector =
 			Name = "ContributionChanged",
 			Type = "Event",
 			LiteralName = "CONTRIBUTION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "state", Type = "ContributionState", Nilable = false },
@@ -282,6 +283,7 @@ local ContributionCollector =
 			Name = "ContributionCollectorPending",
 			Type = "Event",
 			LiteralName = "CONTRIBUTION_COLLECTOR_PENDING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "contributionID", Type = "number", Nilable = false },
@@ -293,11 +295,13 @@ local ContributionCollector =
 			Name = "ContributionCollectorUpdate",
 			Type = "Event",
 			LiteralName = "CONTRIBUTION_COLLECTOR_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ContributionCollectorUpdateSingle",
 			Type = "Event",
 			LiteralName = "CONTRIBUTION_COLLECTOR_UPDATE_SINGLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "contributionID", Type = "number", Nilable = false },

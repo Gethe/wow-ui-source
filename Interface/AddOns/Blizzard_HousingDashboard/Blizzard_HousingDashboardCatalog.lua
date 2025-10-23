@@ -33,6 +33,7 @@ function HousingCatalogFrameMixin:OneTimeInit()
 	self.catalogSearcher:SetEditorModeContext(displayContext);
 
 	self.Filters:Initialize(self.catalogSearcher);
+	self.Filters:SetCollectionFiltersAvailable(true);
 	self.Categories:Initialize(GenerateClosure(self.OnCategoryFocusChanged, self), { withOwnedEntriesOnly = false, editorModeContext = displayContext });
 	self.SearchBox:Initialize(GenerateClosure(self.OnSearchTextUpdated, self));
 end
@@ -51,6 +52,7 @@ function HousingCatalogFrameMixin:OnEvent(event, ...)
 			-- and after other receiving while-shown cleanup events that will lead this UI to attempt to reference it
 			self.catalogSearcher = nil;
 			self.Filters:ClearSearcherReference();
+			self.OptionsContainer:ClearCatalogData();
 		end
 	end
 end
@@ -61,6 +63,7 @@ function HousingCatalogFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CatalogWhileVisibleEvents);
 	EventRegistry:RegisterCallback("HousingCatalogEntry.OnInteract", function(owner, catalogEntry, button, isDrag)
 		if button == "LeftButton" and not isDrag then
+			PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
 			self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo);
 			self.PreviewFrame:Show();
 		end
@@ -94,6 +97,15 @@ function HousingCatalogFrameMixin:UpdateCatalogData()
 	end
 
 	local entries = self.catalogSearcher:GetCatalogSearchResults();
+
+	-- If not currently showing anything in the preview pane, show the first entry in the list
+	if not self.PreviewFrame:IsShown() and entries and #entries > 0 then
+		local firstEntry = entries[1];
+		local firstEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(firstEntry);
+		self.PreviewFrame:PreviewCatalogEntryInfo(firstEntryInfo);
+		self.PreviewFrame:Show();
+	end
+
 	local retainCurrentPosition = true;
 	self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition);
 end

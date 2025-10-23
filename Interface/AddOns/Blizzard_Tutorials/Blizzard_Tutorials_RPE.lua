@@ -433,7 +433,7 @@ function Class_Dragonriding_RPE_Watcher:EvaluateStep()
 		local shown = false;
 		local btn = TutorialHelper:GetActionButtonBySpellID(SPELL_SURGE_FORWARD);
 		if btn then
-			local base = (NUM_ACTIONBAR_PAGES + GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS;
+			local base = (NUM_ACTIONBAR_PAGES + C_ActionBar.GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS;
 			local action = btn.action;
 			if action > base then
 				action = action - base;

@@ -267,12 +267,14 @@ local DelvesUI =
 			Name = "ActiveDelveDataUpdate",
 			Type = "Event",
 			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
 		},
 		{
 			Name = "DelveAssistAction",
 			Type = "Event",
 			LiteralName = "DELVE_ASSIST_ACTION",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when an assist action occurs in a delve." },
 			Payload =
 			{
@@ -283,12 +285,14 @@ local DelvesUI =
 			Name = "DelvesAccountDataElementChanged",
 			Type = "Event",
 			LiteralName = "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when player account data element(s) have changed. This drives curio ranks, and the UI should update when this is sent." },
 		},
 		{
 			Name = "PartyEligibilityForDelveTiersChanged",
 			Type = "Event",
 			LiteralName = "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when responses come in from RequestPartyEligibilityForDelveTiers." },
 			Payload =
 			{
@@ -300,18 +304,21 @@ local DelvesUI =
 			Name = "ShowDelvesCompanionConfigurationUI",
 			Type = "Event",
 			LiteralName = "SHOW_DELVES_COMPANION_CONFIGURATION_UI",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
 		},
 		{
 			Name = "ShowDelvesDisplayUI",
 			Type = "Event",
 			LiteralName = "SHOW_DELVES_DISPLAY_UI",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when the UI needs to display the Delves dashbaord." },
 		},
 		{
 			Name = "WalkInDataUpdate",
 			Type = "Event",
 			LiteralName = "WALK_IN_DATA_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when the player or a private party member join a new walk-in instance or when the instance is shut down." },
 		},
 	},

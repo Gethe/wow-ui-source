@@ -69,6 +69,19 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "AuraFrameVisibleSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "AuraFrameVisibleSetting", EnumValue = 0 },
+				{ Name = "InCombat", Type = "AuraFrameVisibleSetting", EnumValue = 1 },
+				{ Name = "Hidden", Type = "AuraFrameVisibleSetting", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "BagsDirection",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -185,9 +198,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 32,
+			NumValues = 33,
 			MinValue = 0,
-			MaxValue = 31,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -222,6 +235,7 @@ local EditModeManagerConstants =
 				{ Name = "ShowPersonalResourceDisplay", Type = "EditModeAccountSetting", EnumValue = 29 },
 				{ Name = "ShowEncounterEvents", Type = "EditModeAccountSetting", EnumValue = 30 },
 				{ Name = "ShowDamageMeter", Type = "EditModeAccountSetting", EnumValue = 31 },
+				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
 			},
 		},
 		{
@@ -279,9 +293,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAuraFrameSetting",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 10,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 9,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeAuraFrameSetting", EnumValue = 0 },
@@ -292,18 +306,21 @@ local EditModeManagerConstants =
 				{ Name = "IconSize", Type = "EditModeAuraFrameSetting", EnumValue = 5 },
 				{ Name = "IconPadding", Type = "EditModeAuraFrameSetting", EnumValue = 6 },
 				{ Name = "DeprecatedShowFull", Type = "EditModeAuraFrameSetting", EnumValue = 7 },
+				{ Name = "VisibleSetting", Type = "EditModeAuraFrameSetting", EnumValue = 8 },
+				{ Name = "Opacity", Type = "EditModeAuraFrameSetting", EnumValue = 9 },
 			},
 		},
 		{
 			Name = "EditModeAuraFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "BuffFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 1 },
 				{ Name = "DebuffFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 2 },
+				{ Name = "ExternalDefensivesFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 3 },
 			},
 		},
 		{
@@ -505,15 +522,14 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModePersonalResourceDisplaySetting",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "ShowFriendlyBuffs", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
-				{ Name = "ShowResourceOnTarget", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
-				{ Name = "HideHealthAndPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 2 },
-				{ Name = "OnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 3 },
+				{ Name = "HideHealthAndPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+				{ Name = "OnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 2 },
 			},
 		},
 		{

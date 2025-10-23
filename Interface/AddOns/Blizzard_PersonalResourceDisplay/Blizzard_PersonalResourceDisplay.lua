@@ -646,6 +646,7 @@ function PersonalResourceDisplayMixin:UpdateFriendlyBuffs()
 	for auraInstanceID, aura in pairs(self.friendlyBuffs) do
 		if buffIndex < FRIENDLY_BUFF_MAX_DISPLAY then
 			local buff = self.friendlyBuffPool:Acquire();
+			buff:SetUnit("player");
 			buff.auraInstanceID = auraInstanceID;
 			buff.layoutIndex = buffIndex;
 	

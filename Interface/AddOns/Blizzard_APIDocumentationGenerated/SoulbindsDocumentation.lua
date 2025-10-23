@@ -539,6 +539,7 @@ local Soulbinds =
 			Name = "SoulbindActivated",
 			Type = "Event",
 			LiteralName = "SOULBIND_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
@@ -548,11 +549,13 @@ local Soulbinds =
 			Name = "SoulbindConduitCollectionCleared",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_CLEARED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindConduitCollectionRemoved",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "conduitID", Type = "number", Nilable = false },
@@ -562,6 +565,7 @@ local Soulbinds =
 			Name = "SoulbindConduitCollectionUpdated",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "collectionData", Type = "ConduitCollectionData", Nilable = false },
@@ -571,6 +575,7 @@ local Soulbinds =
 			Name = "SoulbindConduitInstalled",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_INSTALLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -581,6 +586,7 @@ local Soulbinds =
 			Name = "SoulbindConduitUninstalled",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_UNINSTALLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -591,16 +597,19 @@ local Soulbinds =
 			Name = "SoulbindForgeInteractionEnded",
 			Type = "Event",
 			LiteralName = "SOULBIND_FORGE_INTERACTION_ENDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindForgeInteractionStarted",
 			Type = "Event",
 			LiteralName = "SOULBIND_FORGE_INTERACTION_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindNodeLearned",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_LEARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -610,6 +619,7 @@ local Soulbinds =
 			Name = "SoulbindNodeUnlearned",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_UNLEARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -619,6 +629,7 @@ local Soulbinds =
 			Name = "SoulbindNodeUpdated",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -628,11 +639,13 @@ local Soulbinds =
 			Name = "SoulbindPathChanged",
 			Type = "Event",
 			LiteralName = "SOULBIND_PATH_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindPendingConduitChanged",
 			Type = "Event",
 			LiteralName = "SOULBIND_PENDING_CONDUIT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },

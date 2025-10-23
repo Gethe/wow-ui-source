@@ -23,6 +23,7 @@ local EndOfMatchUI =
 			Name = "ShowEndOfMatchUI",
 			Type = "Event",
 			LiteralName = "SHOW_END_OF_MATCH_UI",
+			SynchronousEvent = true,
 		},
 	},
 

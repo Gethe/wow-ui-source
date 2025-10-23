@@ -82,14 +82,28 @@ local function Register()
 
 	-- Combat Warnings
 	InterfaceOverrides.RunSettingsCallback(function()
-		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMBAT_WARNINGS_LABEL));
-	end);
+		local subsectionInitializer;
 
-	-- Enable Boss Warnings
+		local _sectionTooltip = nil;
+		local sectionNewTagID = "COMBAT_WARNINGS_LABEL";
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMBAT_WARNINGS_LABEL, _sectionTooltip, sectionNewTagID));
 
-	InterfaceOverrides.RunSettingsCallback(function()
-		local parentInitializer;
+		-- Enable Boss Warnings
+		do
+			local function GenerateTooltipText()
+				local isAvailable = C_EncounterWarnings.IsFeatureAvailable() or C_EncounterTimeline.IsFeatureAvailable();
+				if isAvailable then
+					return COMBAT_WARNINGS_ENABLE_TOOLTIP;
+				else
+					return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_TOOLTIP, COMBAT_WARNINGS_NOT_AVAILABLE);
+				end
+			end
 
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "combatWarningsEnabled", COMBAT_WARNINGS_ENABLE_LABEL, GenerateTooltipText);
+			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+		end
+
+		-- Enable Text Warnings
 		do
 			local function GenerateTooltipText()
 				local isAvailable = C_EncounterWarnings.IsFeatureAvailable();
@@ -100,40 +114,68 @@ local function Register()
 				end
 			end
 
-			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsEnabled", COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL, GenerateTooltipText);
+			local function GetOptionData(options)
+				local container = Settings.CreateControlTextContainer();
+				container:Add(Enum.EncounterEventSeverity.Low, COMBAT_WARNINGS_TEXT_LEVEL_MINOR_LABEL, COMBAT_WARNINGS_TEXT_LEVEL_MINOR_TOOLTIP);
+				container:Add(Enum.EncounterEventSeverity.Medium, COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_LABEL, COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_TOOLTIP);
+				container:Add(Enum.EncounterEventSeverity.High, COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_LABEL, COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_TOOLTIP);
+				return container:GetData();
+			end
+
+			local severitySelectionTexts = {
+				[Enum.EncounterEventSeverity.High] = COMBAT_WARNINGS_TEXT_LEVEL_CRITICAL_SELECTION,
+				[Enum.EncounterEventSeverity.Medium] = COMBAT_WARNINGS_TEXT_LEVEL_MEDIUM_SELECTION,
+				[Enum.EncounterEventSeverity.Low] = COMBAT_WARNINGS_TEXT_LEVEL_MINOR_SELECTION,
+			};
+
+			local function GetSelectionText(selections)
+				local selectedValue = selections[1] and selections[1].data.value;
+				return severitySelectionTexts[selectedValue] or UNKNOWN;
+			end
+
+			local checkboxSetting = Settings.RegisterCVarSetting(category, "encounterWarningsEnabled", Settings.VarType.Boolean, COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
+			local checkboxLabel = COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL;
+			local checkboxTooltip = GenerateTooltipText;
+
+			local dropdownSetting = Settings.RegisterCVarSetting(category, "encounterWarningsLevel", Settings.VarType.Number, COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
+			local dropdownOptions = GetOptionData;
+			local dropdownLabel = COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL;
+			local dropdownTooltip = GenerateTooltipText;
+
+			local initializer = CreateSettingsCheckboxDropdownInitializer(checkboxSetting, checkboxLabel, checkboxTooltip, dropdownSetting, dropdownOptions, dropdownLabel, dropdownTooltip);
+			initializer.getSelectionTextFunc = GetSelectionText;
 			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
-			parentInitializer = initializer;
-		end
-
-		do
-			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideMediumWarnings", COMBAT_WARNINGS_HIDE_MEDIUM_WARNINGS_LABEL, COMBAT_WARNINGS_HIDE_MEDIUM_WARNINGS_TOOLTIP);
-			initializer:SetParentInitializer(parentInitializer);
-		end
-
-		do
-			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideMinorWarnings", COMBAT_WARNINGS_HIDE_MINOR_WARNINGS_LABEL, COMBAT_WARNINGS_HIDE_MINOR_WARNINGS_TOOLTIP);
-			initializer:SetParentInitializer(parentInitializer);
+			initializer:AddSearchTags(COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
+			layout:AddInitializer(initializer);
+			subsectionInitializer = initializer;
 		end
 
 		do
 			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideIfNotTargetingPlayer", COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_LABEL, COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_TOOLTIP);
-			initializer:SetParentInitializer(parentInitializer);
+			initializer:SetParentInitializer(subsectionInitializer);
 		end
-	end);
 
-	-- Enable Boss Timeline
-	InterfaceOverrides.RunSettingsCallback(function()
-		local function GenerateTooltipText()
-			local isAvailable = C_EncounterTimeline.IsTimelineSupported();
-			if isAvailable then
-				return COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP;
-			else
-				return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP, COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_NOT_AVAILABLE);
+		-- Enable Boss Timeline
+		do
+			local function GenerateTooltipText()
+				local isAvailable = C_EncounterTimeline.IsFeatureAvailable();
+				if isAvailable then
+					return COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP;
+				else
+					return string.format("%s|n|n%s", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_TOOLTIP, COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_NOT_AVAILABLE);
+				end
 			end
+
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineEnabled", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_LABEL, GenerateTooltipText);
+			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+			subsectionInitializer = initializer;
 		end
 
-		local setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineEnabled", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_LABEL, GenerateTooltipText);
-		initializer:AddModifyPredicate(C_EncounterTimeline.IsTimelineSupported);
+		-- Hide Long Countdowns
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineHideLongCountdowns", COMBAT_WARNINGS_HIDE_LONG_COUNTDOWNS_LABEL, COMBAT_WARNINGS_HIDE_LONG_COUNTDOWNS_TOOLTIP);
+			initializer:SetParentInitializer(subsectionInitializer);
+		end
 	end);
 
 	-- Cooldown Viewer
@@ -178,6 +220,18 @@ local function Register()
 		layout:AddInitializer(managerInitializer);
 	end);
 
+	-- External Defensives
+	InterfaceOverrides.RunSettingsCallback(function()
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(EXTERNAL_DEFENSIVES_LABEL));
+	end);
+
+	InterfaceOverrides.RunSettingsCallback(function()
+		local addSearchTags = false;
+
+		-- External Defensives enable checkbox
+		-- Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
+	end);
+
 	--[[ Disabled until real functionality exists
 	-- Damage Meter
 	InterfaceOverrides.RunSettingsCallback(function()
@@ -198,6 +252,18 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "damageMeterEnabled", ENABLE_DAMAGE_METER, TooltipFn);
 	end);
 	]]
+
+	InterfaceOverrides.RunSettingsCallback(function()
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SPELL_DIMINISH_SECTION_HEADER_LABEL));
+	end);
+
+	-- Spell Diminishing Returns
+	InterfaceOverrides.RunSettingsCallback(function()
+		local spellDiminishCVarsExist = C_CVar.GetCVar("spellDiminishPVPEnemiesEnabled") ~= nil and C_CVar.GetCVar("spellDiminishPVPEnemiesEnabled") ~= nil;
+		if spellDiminishCVarsExist then
+			local _pvpEnemiesEnabledSetting, _pvpEnemiesEnabledInitializer = Settings.SetupCVarCheckbox(category, "spellDiminishPVPEnemiesEnabled", SPELL_DIMINISH_PVP_ENABLE_SETTING_LABEL, SPELL_DIMINISH_PVP_ENABLE_SETTING_TOOLTIP);
+		end
+	end);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

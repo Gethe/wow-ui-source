@@ -8,12 +8,6 @@ EncounterWarningsSystemSeverity = {
 	[Enum.EditModeEncounterEventsSystemIndices.NormalWarnings] = Enum.EncounterEventSeverity.Low,
 };
 
-EncounterWarningsSeveritySoundKits = {
-	[Enum.EncounterEventSeverity.High] = function() return SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_HIGH; end,
-	[Enum.EncounterEventSeverity.Medium] = function() return SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_MEDIUM; end,
-	[Enum.EncounterEventSeverity.Low] = function() return SOUNDKIT.UI_ENCOUNTEREVENT_SEVERITY_LOW; end,
-};
-
 EncounterWarningsSeverityTextSizeLimits = {
 	-- These should be about ~110 less than the minimumWidths set up in XML
 	-- for the per-severity frames to keep the icons from escaping the bounds
@@ -39,7 +33,7 @@ EncounterWarningsSeverityColors = {
 -- cache on load and if changed will result in visibility of encounter warning
 -- frames being re-evaluated.
 EncounterWarningsVisibilityCVars = {
+	"combatWarningsEnabled",
 	"encounterWarningsEnabled",
-	"encounterWarningsHideMediumWarnings",
-	"encounterWarningsHideMinorWarnings",
+	"encounterWarningsLevel",
 };

@@ -14,6 +14,7 @@ local SkillInfo =
 			Name = "SkillLinesChanged",
 			Type = "Event",
 			LiteralName = "SKILL_LINES_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 

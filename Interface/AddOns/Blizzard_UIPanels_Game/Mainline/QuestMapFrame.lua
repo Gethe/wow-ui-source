@@ -230,13 +230,13 @@ function QuestLogMixin:SetDisplayMode(displayMode)
 end
 
 function QuestLogMixin:ValidateTabs()
-	local hasEvents = C_PlayerInfo.CanPlayerUseEventScheduler();
+	local canShowEvents = C_EventScheduler.CanShowEvents();
 	local showingEventsTab = self.EventsTab:IsShown();
 	local mapLegendRelativeTab = nil;
-	if hasEvents and not showingEventsTab then
+	if canShowEvents and not showingEventsTab then
 		self.EventsTab:Show();
 		mapLegendRelativeTab = self.EventsTab;
-	elseif not hasEvents and showingEventsTab then
+	elseif not canShowEvents and showingEventsTab then
 		self.EventsTab:Hide();
 		mapLegendRelativeTab = self.QuestsTab;
 		if self.displayMode == QuestLogDisplayMode.Events then
@@ -250,7 +250,7 @@ function QuestLogMixin:ValidateTabs()
 end
 
 function QuestLogMixin:CheckEventsTabTutorial()
-	local shouldShowHelp = self.EventsTab:IsShown() and C_PlayerInfo.CanPlayerUseEventScheduler() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EventSchedulerTabSeen);
+	local shouldShowHelp = self.EventsTab:IsShown() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EventSchedulerTabSeen);
 	if shouldShowHelp then
 		local helpTipInfo = {
 			text = EVENT_SCHEDULER_WORLD_MAP_HELP_TEXT,

@@ -1211,6 +1211,26 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetUnitAuraByAuraInstanceID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Obtains aura info like other functions with the caveat that the filters will always at least include the typically mutually exclusive HELPFUL|HARMFUL regardless of what the argument value is set to" },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetUnitBuff",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -1346,11 +1366,13 @@ local TooltipInfo =
 			Name = "HideHyperlinkTooltip",
 			Type = "Event",
 			LiteralName = "HIDE_HYPERLINK_TOOLTIP",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowHyperlinkTooltip",
 			Type = "Event",
 			LiteralName = "SHOW_HYPERLINK_TOOLTIP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hyperlink", Type = "string", Nilable = false },
@@ -1360,6 +1382,7 @@ local TooltipInfo =
 			Name = "TooltipDataUpdate",
 			Type = "Event",
 			LiteralName = "TOOLTIP_DATA_UPDATE",
+			UniqueEvent = true,
 			Documentation = { "Sends an update to the UI that a sparse or cache lookup has resolved" },
 			Payload =
 			{

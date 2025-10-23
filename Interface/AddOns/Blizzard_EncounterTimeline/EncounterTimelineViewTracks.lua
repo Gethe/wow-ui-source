@@ -34,6 +34,7 @@ function EncounterTimelineTrackBaseMixin:Init(trackInfo)
 	self.trackType = trackInfo.trackType;
 	self.minEventDuration = trackInfo.minEventDuration;
 	self.maxEventDuration = trackInfo.maxEventDuration;
+	self.maxEventCount = trackInfo.maxEventCount;
 
 	self.normalizedOffsetStart = 0;
 	self.normalizedOffsetEnd = 0;
@@ -59,6 +60,10 @@ end
 
 function EncounterTimelineTrackBaseMixin:GetMaximumEventDuration()
 	return self.maxEventDuration;
+end
+
+function EncounterTimelineTrackBaseMixin:GetMaximumEventCount()
+	return self.maxEventCount;
 end
 
 function EncounterTimelineTrackBaseMixin:IsDurationInRange(duration)
@@ -143,31 +148,16 @@ end
 
 EncounterTimelineSortedTrackMixin = CreateFromMixins(EncounterTimelineTrackBaseMixin);
 
-function EncounterTimelineSortedTrackMixin:Init(initialTrackInfo)
-	EncounterTimelineTrackBaseMixin.Init(self, initialTrackInfo);
-	self.maxEventCount = 0;
-end
-
 function EncounterTimelineSortedTrackMixin:CalculateNormalizedOffsetForDuration(_duration)
 	return self.normalizedOffsetEnd;
 end
 
 function EncounterTimelineSortedTrackMixin:CalculateNormalizedOffsetForEvent(eventPosition)
 	if self.normalizedOffsetStart ~= self.normalizedOffsetEnd then
-		local percentage = ClampedPercentageBetween(eventPosition.order, 1, self.maxEventCount);
-		return Lerp(self.normalizedOffsetStart, self.normalizedOffsetEnd, percentage);
+		return self.normalizedOffsetStart - (eventPosition.order - 1);
 	else
 		return self.normalizedOffsetStart;
 	end
-end
-
-function EncounterTimelineSortedTrackMixin:GetMaximumEventCount()
-	return self.maxEventCount;
-end
-
-function EncounterTimelineSortedTrackMixin:SetMaximumEventCount(maxEventCount)
-	assert(type(maxEventCount) == "number");
-	self.maxEventCount = maxEventCount;
 end
 
 -- Hidden tracks have fixed normalized offsets, as they're not meant to be

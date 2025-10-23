@@ -65,11 +65,13 @@ local IslandsQueueUI =
 			Name = "IslandsQueueClose",
 			Type = "Event",
 			LiteralName = "ISLANDS_QUEUE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "IslandsQueueOpen",
 			Type = "Event",
 			LiteralName = "ISLANDS_QUEUE_OPEN",
+			SynchronousEvent = true,
 		},
 	},
 

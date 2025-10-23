@@ -130,6 +130,7 @@ local DyeColorInfo =
 			Name = "DyeColorCategoryUpdated",
 			Type = "Event",
 			LiteralName = "DYE_COLOR_CATEGORY_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "dyeColorCategoryID", Type = "number", Nilable = false },
@@ -139,6 +140,7 @@ local DyeColorInfo =
 			Name = "DyeColorUpdated",
 			Type = "Event",
 			LiteralName = "DYE_COLOR_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "dyeColorID", Type = "number", Nilable = false },

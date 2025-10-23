@@ -126,7 +126,7 @@ function ActionBarActionButtonDerivedMixin:Update()
 	local action = self.action;
 	local icon = self.icon;
 	local buttonCooldown = self.cooldown;
-	local texture = GetActionTexture(action);
+	local texture = C_ActionBar.GetActionTexture(action);
 
 	if (self.action == 1) or (self.action == 2) then
 		if not self.ActionButtonCorners then
@@ -143,7 +143,7 @@ function ActionBarActionButtonDerivedMixin:Update()
 
 	icon:SetDesaturated(false);
 	local type, id = GetActionInfo(action);
-	if ( HasAction(action) ) then
+	if ( C_ActionBar.HasAction(action) ) then
 		if ( not self.eventsRegistered ) then
 			ActionBarActionEventsFrame:RegisterFrame(self);
 			self.eventsRegistered = true;
@@ -187,8 +187,8 @@ function ActionBarActionButtonDerivedMixin:Update()
 	-- Update Action Text
 	local actionName = self.Name;
 	if actionName then
-		if ( not IsConsumableAction(action) and not IsStackableAction(action) and (IsItemAction(action) or GetActionCount(action) == 0) ) then
-			actionName:SetText(GetActionText(action));
+		if ( not C_ActionBar.IsConsumableAction(action) and not C_ActionBar.IsStackableAction(action) and (C_ActionBar.IsItemAction(action) or C_ActionBar.GetActionUseCount(action) == 0) ) then
+			actionName:SetText(C_ActionBar.GetActionText(action));
 		else
 			actionName:SetText("");
 		end
@@ -324,7 +324,7 @@ function ActionBarActionButtonDerivedMixin:HideGrid(reason)
 		end
 	end
 
-	if ( not self:GetShowGrid() and not HasAction(self.action) ) then
+	if ( not self:GetShowGrid() and not C_ActionBar.HasAction(self.action) ) then
 		self:Hide();
 	end
 end

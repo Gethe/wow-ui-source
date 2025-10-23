@@ -201,21 +201,29 @@ local CombatLog =
 			Name = "CombatLogEntriesCleared",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_ENTRIES_CLEARED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CombatLogEvent",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_EVENT",
+			HasRestrictions = true,
+			SynchronousEvent = true,
+			CallbackEvent = true,
 		},
 		{
 			Name = "CombatLogEventUnfiltered",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_EVENT_UNFILTERED",
+			HasRestrictions = true,
+			SynchronousEvent = true,
+			CallbackEvent = true,
 		},
 		{
 			Name = "CombatLogMessageLimitChanged",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_MESSAGE_LIMIT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "messageLimit", Type = "number", Nilable = false },

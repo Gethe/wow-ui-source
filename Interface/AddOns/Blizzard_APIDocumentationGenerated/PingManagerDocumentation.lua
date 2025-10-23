@@ -85,6 +85,7 @@ local PingManager =
 			Name = "PingSystemError",
 			Type = "Event",
 			LiteralName = "PING_SYSTEM_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "error", Type = "cstring", Nilable = false },

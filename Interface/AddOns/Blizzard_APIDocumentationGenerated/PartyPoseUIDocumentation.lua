@@ -71,6 +71,7 @@ local PartyPoseUI =
 			Name = "ShowPartyPoseUI",
 			Type = "Event",
 			LiteralName = "SHOW_PARTY_POSE_UI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },

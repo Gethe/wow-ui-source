@@ -235,6 +235,22 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "RoomComponentSupportsVariant",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "variant", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "variantSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRoomComponentCeilingType",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -266,6 +282,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingCustomizeModeHoveredTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
@@ -276,6 +293,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingCustomizeModeSelectedTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelectedTarget", Type = "bool", Nilable = false },
@@ -286,6 +304,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingDecorCustomizationChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_CUSTOMIZATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -295,6 +314,7 @@ local HousingCustomizeModeUI =
 			Name = "HousingDecorDyeFailure",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_DYE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -302,9 +322,22 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "HousingRoomComponentCustomizationChangeFailed",
+			Type = "Event",
+			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGE_FAILED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingRoomComponentCustomizationChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -336,7 +369,6 @@ local HousingCustomizeModeUI =
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "type", Type = "HousingRoomComponentType", Nilable = false },
 				{ Name = "componentID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "canBeCustomized", Type = "bool", Nilable = false },
 				{ Name = "currentThemeSet", Type = "number", Nilable = true },
 				{ Name = "availableThemeSets", Type = "table", InnerType = "number", Nilable = false },

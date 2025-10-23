@@ -39,6 +39,7 @@ local RestrictedActions =
 			Name = "AddonActionBlocked",
 			Type = "Event",
 			LiteralName = "ADDON_ACTION_BLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isTainted", Type = "cstring", Nilable = false },
@@ -49,6 +50,7 @@ local RestrictedActions =
 			Name = "AddonActionForbidden",
 			Type = "Event",
 			LiteralName = "ADDON_ACTION_FORBIDDEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isTainted", Type = "cstring", Nilable = false },
@@ -59,6 +61,7 @@ local RestrictedActions =
 			Name = "MacroActionBlocked",
 			Type = "Event",
 			LiteralName = "MACRO_ACTION_BLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "function", Type = "cstring", Nilable = false },
@@ -68,6 +71,7 @@ local RestrictedActions =
 			Name = "MacroActionForbidden",
 			Type = "Event",
 			LiteralName = "MACRO_ACTION_FORBIDDEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "function", Type = "cstring", Nilable = false },

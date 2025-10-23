@@ -109,11 +109,13 @@ local HouseEditorUI =
 			Name = "HouseEditorAvailabilityChanged",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_AVAILABILITY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HouseEditorModeChangeFailure",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_MODE_CHANGE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -123,6 +125,7 @@ local HouseEditorUI =
 			Name = "HouseEditorModeChanged",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currentEditMode", Type = "HouseEditorMode", Nilable = false },

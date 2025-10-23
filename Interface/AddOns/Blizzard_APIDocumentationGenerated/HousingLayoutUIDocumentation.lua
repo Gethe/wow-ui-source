@@ -321,6 +321,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDoorSelected",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DOOR_SELECTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -331,6 +332,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDoorSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -340,6 +342,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDragTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isDraggingRoom", Type = "bool", Nilable = false },
@@ -349,6 +352,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutFloorplanSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -359,6 +363,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutNumFloorsChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prevNumFloors", Type = "number", Nilable = false },
@@ -369,6 +374,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFrameAdded",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAME_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pinFrame", Type = "HousingLayoutPinFrame", Nilable = false },
@@ -378,6 +384,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFrameReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAME_RELEASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pinFrame", Type = "HousingLayoutPinFrame", Nilable = false },
@@ -387,11 +394,13 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFramesReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAMES_RELEASED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomComponentThemeSetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_COMPONENT_THEME_SET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -404,16 +413,19 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomMoveInvalid",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_MOVE_INVALID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomMoved",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_MOVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomReceived",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prevNumFloors", Type = "number", Nilable = false },
@@ -425,16 +437,19 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomRemoved",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_REMOVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomReturned",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_RETURNED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -444,11 +459,13 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomSnapped",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_SNAPPED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutViewedFloorChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "floor", Type = "number", Nilable = false },
@@ -458,6 +475,7 @@ local HousingLayoutUI =
 			Name = "ShowStairDirectionConfirmation",
 			Type = "Event",
 			LiteralName = "SHOW_STAIR_DIRECTION_CONFIRMATION",
+			SynchronousEvent = true,
 		},
 	},
 

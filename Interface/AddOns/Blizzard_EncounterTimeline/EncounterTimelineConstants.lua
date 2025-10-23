@@ -189,3 +189,11 @@ EncounterTimelineViewNormalizedOffsets = {
 };
 
 EncounterTimelineViewDirtyFlag = FlagsUtil.MakeFlags("LayoutInvalidated");
+
+-- All CVars in the following list are imported into the CVarCallbackRegistry
+-- cache on load and if changed will result in visibility of the encounter
+-- timeline being re-evaluated.
+EncounterTimelineVisibilityCVars = {
+	"combatWarningsEnabled",
+	"encounterTimelineEnabled",
+};

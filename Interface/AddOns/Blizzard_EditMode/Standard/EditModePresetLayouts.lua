@@ -431,6 +431,25 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				offsetY = -155,
 			},
 		},
+		[Enum.EditModeAuraFrameSystemIndices.ExternalDefensivesFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Right,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.VisibleSetting] = Enum.AuraFrameVisibleSetting.Always,
+				[Enum.EditModeAuraFrameSetting.Opacity] = 100,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "UIParent",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = -25,
+			},
+		},
 	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] = {
@@ -718,7 +737,6 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.PersonalResourceDisplay] = {
 		settings = {
 			[Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs] = 0,
-			[Enum.EditModePersonalResourceDisplaySetting.ShowResourceOnTarget] = 0,
 			[Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower] = 0,
 			[Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat] = 0,
 		},
@@ -1251,6 +1269,25 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				relativePoint = "TOPRIGHT",
 				offsetX = -270,
 				offsetY = -155,
+			},
+		},
+		[Enum.EditModeAuraFrameSystemIndices.ExternalDefensivesFrame] = {
+			settings = {
+				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
+				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
+				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
+				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
+				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
+				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
+				[Enum.EditModeAuraFrameSetting.VisibleSetting] = Enum.AuraFrameVisibleSetting.Always,
+				[Enum.EditModeAuraFrameSetting.Opacity] = 100,
+			},
+			anchorInfo = {
+				point = "TOP",
+				relativeTo = "UIParent",
+				relativePoint = "TOP",
+				offsetX = 0,
+				offsetY = -25,
 			},
 		},
 	},

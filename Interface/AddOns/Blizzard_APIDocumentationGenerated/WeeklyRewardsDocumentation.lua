@@ -257,11 +257,13 @@ local WeeklyRewards =
 			Name = "WeeklyRewardsItemChanged",
 			Type = "Event",
 			LiteralName = "WEEKLY_REWARDS_ITEM_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WeeklyRewardsUpdate",
 			Type = "Event",
 			LiteralName = "WEEKLY_REWARDS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -73,6 +73,7 @@ local MailInfo =
 			Name = "CloseInboxItem",
 			Type = "Event",
 			LiteralName = "CLOSE_INBOX_ITEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mailIndex", Type = "luaIndex", Nilable = false },
@@ -82,11 +83,13 @@ local MailInfo =
 			Name = "MailClosed",
 			Type = "Event",
 			LiteralName = "MAIL_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MailFailed",
 			Type = "Event",
 			LiteralName = "MAIL_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
@@ -96,11 +99,14 @@ local MailInfo =
 			Name = "MailInboxUpdate",
 			Type = "Event",
 			LiteralName = "MAIL_INBOX_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "MailLockSendItems",
 			Type = "Event",
 			LiteralName = "MAIL_LOCK_SEND_ITEMS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "attachSlot", Type = "luaIndex", Nilable = false },
@@ -111,21 +117,26 @@ local MailInfo =
 			Name = "MailSendInfoUpdate",
 			Type = "Event",
 			LiteralName = "MAIL_SEND_INFO_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "MailSendSuccess",
 			Type = "Event",
 			LiteralName = "MAIL_SEND_SUCCESS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MailShow",
 			Type = "Event",
 			LiteralName = "MAIL_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MailSuccess",
 			Type = "Event",
 			LiteralName = "MAIL_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
@@ -135,21 +146,25 @@ local MailInfo =
 			Name = "MailUnlockSendItems",
 			Type = "Event",
 			LiteralName = "MAIL_UNLOCK_SEND_ITEMS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SendMailCodChanged",
 			Type = "Event",
 			LiteralName = "SEND_MAIL_COD_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SendMailMoneyChanged",
 			Type = "Event",
 			LiteralName = "SEND_MAIL_MONEY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdatePendingMail",
 			Type = "Event",
 			LiteralName = "UPDATE_PENDING_MAIL",
+			SynchronousEvent = true,
 		},
 	},
 

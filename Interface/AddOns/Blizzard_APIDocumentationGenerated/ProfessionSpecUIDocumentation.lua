@@ -395,11 +395,13 @@ local ProfessionSpecUI =
 			Name = "SkillLineSpecsRanksChanged",
 			Type = "Event",
 			LiteralName = "SKILL_LINE_SPECS_RANKS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SkillLineSpecsUnlocked",
 			Type = "Event",
 			LiteralName = "SKILL_LINE_SPECS_UNLOCKED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },

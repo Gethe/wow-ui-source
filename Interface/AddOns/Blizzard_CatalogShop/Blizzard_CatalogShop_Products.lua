@@ -88,9 +88,10 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 		return;
 	end
 
-	local productInfo = CatalogShopFrame:GetProductInfo(productID);
+	local productInfo = CatalogShopUtil.GetProductInfo(productID);
 	if not productInfo then
-		assert(false, "No productInfo for productID " .. productID);
+		-- Return early since nothing else can be done at this point.
+		-- Not worth asserting here because the next time all products are refreshed the data will be correct.
 		return;
 	end
 
@@ -309,7 +310,6 @@ end
 function CatalogShopProductContainerFrameMixin:OnLeave()
 end
 
-CatalogShopProductContainerFrameMixin.INTERVAL_UPDATE_SECONDS_TIME = 15.0;
 local currentInterval = 0.0;
 function CatalogShopProductContainerFrameMixin:OnUpdate(deltaTime)
 	local usesScrollBox = self.usesScrollBox or false;
@@ -318,7 +318,7 @@ function CatalogShopProductContainerFrameMixin:OnUpdate(deltaTime)
 	end
 	-- Scrollbox updates below this point
 	currentInterval = currentInterval + deltaTime;
-	if currentInterval >= CatalogShopProductContainerFrameMixin.INTERVAL_UPDATE_SECONDS_TIME then
+	if currentInterval >= CatalogShopUtil.INTERVAL_UPDATE_SECONDS_TIME then
 		self.ProductsScrollBoxContainer.ScrollBox:ForEachFrame(function(frame)
 			frame:UpdateTimeRemaining();
 		end);
@@ -385,7 +385,7 @@ function ProductContainerFrameMixin:InitProductContainer()
 	end
 
 	local function addProductToDataProvider(dataProvider, categoryID, sectionID, productID)
-		local productInfo = CatalogShopFrame:GetProductInfo(productID);
+		local productInfo = CatalogShopUtil.GetProductInfo(productID);
 		if not productInfo then
 			return false;
 		end

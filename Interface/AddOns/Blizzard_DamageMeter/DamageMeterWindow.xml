@@ -1,13 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DamageMeterWindowTemplate" mixin="DamageMeterWindowMixin" virtual="true">
+	<Frame name="DamageMeterWindowTemplate" mixin="DamageMeterWindowMixin" resizable="true" movable="true" clampedToScreen="true" virtual="true">
 		<Size x="400" y="200"/>
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="250" y="120"/>
+			</minResize>
+			<maxResize>
+				<AbsDimension x="800" y="800"/>
+			</maxResize>
+		</ResizeBounds>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Border" atlas="options_frame_child">
+				<Texture parentKey="Border" atlas="damagemeters-background" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" atlas="ui-damagemeters-header-bar">
+					<Size y="32"/> <!-- Provided explicit height so scroll box can be resolved prior to first render. -->
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -15,19 +30,36 @@
 		<Frames>
 			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-35" y="-7"/>
 				</Anchors>
 			</DropdownButton>
-			<DropdownButton parentKey="TrackedStatDropdown" inherits="WowStyle1DropdownTemplate">
+			<DropdownButton parentKey="SegmentDropdown" inherits="WowStyle2DropdownTemplate">
+				<Size x="16" y="16"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-5"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="TOPLEFT" x="-5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="TOPLEFT" x="-15" y="0"/>
 				</Anchors>
+			</DropdownButton>
+			<DropdownButton parentKey="TrackedStatDropdown" inherits="WowStyle1ArrowDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="hasShadow" type="boolean" value="false"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-2"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SegmentDropdown" relativePoint="LEFT" x="-15" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="StatName" inherits="GameFontNormalMed1" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="5" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</DropdownButton>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.TrackedStatDropdown" relativePoint="BOTTOMLEFT" y="-5"/>
-					<Anchor point="BOTTOMRIGHT" x="-19"/>
+					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -36,15 +68,37 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
 			</EventFrame>
+			<Button parentKey="ResizeButton" alpha="0">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="-5"/>
+				</Anchors>
+				<NormalTexture atlas="damagemeters-scalehandle"/>
+				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
+				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
+			</Button>
 			<Frame parentKey="UnitBreakdownFrame" inherits="DamageMeterUnitBreakdownTemplate" hidden="true">
 				<!-- Anchored dynamically in lua-->
 			</Frame>
 		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
+				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="HideResizeButton" setToFinalAlpha="true">
+				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
 </Ui>

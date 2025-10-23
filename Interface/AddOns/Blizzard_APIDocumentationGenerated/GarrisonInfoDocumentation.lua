@@ -568,11 +568,13 @@ local GarrisonInfo =
 			Name = "GarrisonArchitectClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_ARCHITECT_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonArchitectOpened",
 			Type = "Event",
 			LiteralName = "GARRISON_ARCHITECT_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -582,6 +584,7 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingActivatable",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_ACTIVATABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "buildingName", Type = "cstring", Nilable = false },
@@ -592,6 +595,7 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingActivated",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonPlotInstanceID", Type = "number", Nilable = false },
@@ -602,11 +606,13 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingError",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonBuildingListUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_LIST_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "categoryID", Type = "number", Nilable = false },
@@ -616,6 +622,7 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingPlaced",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_PLACED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonPlotInstanceID", Type = "number", Nilable = false },
@@ -626,6 +633,7 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingRemoved",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrPlotInstanceID", Type = "number", Nilable = false },
@@ -636,6 +644,7 @@ local GarrisonInfo =
 			Name = "GarrisonBuildingUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_BUILDING_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonBuildingID", Type = "number", Nilable = false },
@@ -646,6 +655,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerAdded",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
@@ -662,11 +672,13 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerCategoriesUpdated",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_CATEGORIES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonFollowerDurabilityChanged",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_DURABILITY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
@@ -678,6 +690,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerHealed",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_HEALED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerID", Type = "GarrisonFollower", Nilable = false },
@@ -687,6 +700,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerListUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_LIST_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -696,6 +710,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerRemoved",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -705,6 +720,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerUpgraded",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_UPGRADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerDbID", Type = "GarrisonFollower", Nilable = false },
@@ -714,6 +730,7 @@ local GarrisonInfo =
 			Name = "GarrisonFollowerXpChanged",
 			Type = "Event",
 			LiteralName = "GARRISON_FOLLOWER_XP_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
@@ -728,26 +745,32 @@ local GarrisonInfo =
 			Name = "GarrisonHideLandingPage",
 			Type = "Event",
 			LiteralName = "GARRISON_HIDE_LANDING_PAGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonInvasionAvailable",
 			Type = "Event",
 			LiteralName = "GARRISON_INVASION_AVAILABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonInvasionUnavailable",
 			Type = "Event",
 			LiteralName = "GARRISON_INVASION_UNAVAILABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonLandingpageShipments",
 			Type = "Event",
 			LiteralName = "GARRISON_LANDINGPAGE_SHIPMENTS",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "GarrisonMissionAreaBonusAdded",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_AREA_BONUS_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonMissonBonusAbilityID", Type = "number", Nilable = false },
@@ -757,6 +780,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionBonusRollComplete",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_BONUS_ROLL_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
@@ -767,6 +791,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionCompleteResponse",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_COMPLETE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
@@ -781,6 +806,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionFinished",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -791,6 +817,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionListUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_LIST_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
@@ -800,11 +827,13 @@ local GarrisonInfo =
 			Name = "GarrisonMissionNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonMissionNpcOpened",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_NPC_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -814,6 +843,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionRewardInfo",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_REWARD_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "missionID", Type = "number", Nilable = false },
@@ -824,6 +854,7 @@ local GarrisonInfo =
 			Name = "GarrisonMissionStarted",
 			Type = "Event",
 			LiteralName = "GARRISON_MISSION_STARTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrFollowerTypeID", Type = "number", Nilable = false },
@@ -834,11 +865,13 @@ local GarrisonInfo =
 			Name = "GarrisonMonumentCloseUi",
 			Type = "Event",
 			LiteralName = "GARRISON_MONUMENT_CLOSE_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonMonumentListLoaded",
 			Type = "Event",
 			LiteralName = "GARRISON_MONUMENT_LIST_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -848,6 +881,7 @@ local GarrisonInfo =
 			Name = "GarrisonMonumentReplaced",
 			Type = "Event",
 			LiteralName = "GARRISON_MONUMENT_REPLACED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -857,6 +891,7 @@ local GarrisonInfo =
 			Name = "GarrisonMonumentSelectedTrophyIdLoaded",
 			Type = "Event",
 			LiteralName = "GARRISON_MONUMENT_SELECTED_TROPHY_ID_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -866,11 +901,13 @@ local GarrisonInfo =
 			Name = "GarrisonMonumentShowUi",
 			Type = "Event",
 			LiteralName = "GARRISON_MONUMENT_SHOW_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonRandomMissionAdded",
 			Type = "Event",
 			LiteralName = "GARRISON_RANDOM_MISSION_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -881,6 +918,7 @@ local GarrisonInfo =
 			Name = "GarrisonRecallPortalLastUsedTime",
 			Type = "Event",
 			LiteralName = "GARRISON_RECALL_PORTAL_LAST_USED_TIME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -891,6 +929,7 @@ local GarrisonInfo =
 			Name = "GarrisonRecallPortalUsed",
 			Type = "Event",
 			LiteralName = "GARRISON_RECALL_PORTAL_USED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -900,21 +939,25 @@ local GarrisonInfo =
 			Name = "GarrisonRecruitFollowerResult",
 			Type = "Event",
 			LiteralName = "GARRISON_RECRUIT_FOLLOWER_RESULT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonRecruitmentFollowersGenerated",
 			Type = "Event",
 			LiteralName = "GARRISON_RECRUITMENT_FOLLOWERS_GENERATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonRecruitmentNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_RECRUITMENT_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonRecruitmentNpcOpened",
 			Type = "Event",
 			LiteralName = "GARRISON_RECRUITMENT_NPC_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -924,21 +967,25 @@ local GarrisonInfo =
 			Name = "GarrisonRecruitmentReady",
 			Type = "Event",
 			LiteralName = "GARRISON_RECRUITMENT_READY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonShipmentReceived",
 			Type = "Event",
 			LiteralName = "GARRISON_SHIPMENT_RECEIVED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "GarrisonShipyardNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_SHIPYARD_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonShipyardNpcOpened",
 			Type = "Event",
 			LiteralName = "GARRISON_SHIPYARD_NPC_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "followerTypeID", Type = "number", Nilable = false },
@@ -948,11 +995,13 @@ local GarrisonInfo =
 			Name = "GarrisonShowLandingPage",
 			Type = "Event",
 			LiteralName = "GARRISON_SHOW_LANDING_PAGE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonSpecGroupUpdated",
 			Type = "Event",
 			LiteralName = "GARRISON_SPEC_GROUP_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrTypeID", Type = "number", Nilable = false },
@@ -963,6 +1012,7 @@ local GarrisonInfo =
 			Name = "GarrisonSpecGroupsCleared",
 			Type = "Event",
 			LiteralName = "GARRISON_SPEC_GROUPS_CLEARED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrTypeID", Type = "number", Nilable = false },
@@ -972,6 +1022,7 @@ local GarrisonInfo =
 			Name = "GarrisonTalentComplete",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrTypeID", Type = "number", Nilable = false },
@@ -982,6 +1033,7 @@ local GarrisonInfo =
 			Name = "GarrisonTalentEventUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_EVENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "eventType", Type = "number", Nilable = false },
@@ -992,11 +1044,13 @@ local GarrisonInfo =
 			Name = "GarrisonTalentNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonTalentNpcOpened",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_NPC_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonTypeID", Type = "number", Nilable = false },
@@ -1007,6 +1061,7 @@ local GarrisonInfo =
 			Name = "GarrisonTalentResearchStarted",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_RESEARCH_STARTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrTypeID", Type = "number", Nilable = false },
@@ -1018,11 +1073,13 @@ local GarrisonInfo =
 			Name = "GarrisonTalentUnlocksResult",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_UNLOCKS_RESULT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonTalentUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_TALENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrTypeID", Type = "number", Nilable = false },
@@ -1032,16 +1089,19 @@ local GarrisonInfo =
 			Name = "GarrisonTradeskillNpcClosed",
 			Type = "Event",
 			LiteralName = "GARRISON_TRADESKILL_NPC_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonUpdate",
 			Type = "Event",
 			LiteralName = "GARRISON_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GarrisonUpgradeableResult",
 			Type = "Event",
 			LiteralName = "GARRISON_UPGRADEABLE_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "garrisonUpgradeable", Type = "bool", Nilable = false },
@@ -1051,16 +1111,19 @@ local GarrisonInfo =
 			Name = "GarrisonUsePartyGarrisonChanged",
 			Type = "Event",
 			LiteralName = "GARRISON_USE_PARTY_GARRISON_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShipmentCrafterClosed",
 			Type = "Event",
 			LiteralName = "SHIPMENT_CRAFTER_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShipmentCrafterInfo",
 			Type = "Event",
 			LiteralName = "SHIPMENT_CRAFTER_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "number", Nilable = false },
@@ -1074,6 +1137,7 @@ local GarrisonInfo =
 			Name = "ShipmentCrafterOpened",
 			Type = "Event",
 			LiteralName = "SHIPMENT_CRAFTER_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "charShipmentContainerID", Type = "number", Nilable = false },
@@ -1083,11 +1147,13 @@ local GarrisonInfo =
 			Name = "ShipmentCrafterReagentUpdate",
 			Type = "Event",
 			LiteralName = "SHIPMENT_CRAFTER_REAGENT_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShipmentUpdate",
 			Type = "Event",
 			LiteralName = "SHIPMENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shipmentStarted", Type = "bool", Nilable = true },

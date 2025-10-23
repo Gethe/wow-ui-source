@@ -117,6 +117,16 @@ function BaseHouseEditorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
 	return nil;
 end
 
+function BaseHouseEditorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)
+	-- Optional
+	return nil;
+end
+
+function BaseHouseEditorModeMixin:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo)
+	-- Optional
+	return nil;
+end
+
 function BaseHouseEditorModeMixin:ShowRoomComponentTooltip(componentInfo)
 	-- Optional
 	return nil;
@@ -268,13 +278,17 @@ HouseEditorDecorCountMixin = {};
 
 function HouseEditorDecorCountMixin:OnLoad()
 	self.updateEvents = {"HOUSING_NUM_DECOR_PLACED_CHANGED", "HOUSE_LEVEL_CHANGED"};
-	self.tooltipText = HOUSING_DECOR_BUDGET_TOOLTIP;
+	-- Start with the safe, neutral, fallback tooltip
+	self.tooltipText =  HOUSING_DECOR_BUDGET_TOOLTIP;
 end
 
 function HouseEditorDecorCountMixin:UpdateCount()
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
 	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
 	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
+	-- Update tooltip text with context-appropriate base and populate with updated count info
+	local baseTooltip = C_Housing.IsInsideHouse() and HOUSING_DECOR_BUDGET_TOOLTIP_INDOOR or HOUSING_DECOR_BUDGET_TOOLTIP_OUTDOOR;
+	self.tooltipText =  baseTooltip:format(decorPlaced, maxDecor);
 end
 
 HouseEditorRoomCountMixin = {};

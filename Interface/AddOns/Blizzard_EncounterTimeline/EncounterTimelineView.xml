@@ -9,36 +9,12 @@
 				<Texture parentKey="LineEnd" atlas="combattimeline-line-right" useAtlasSize="true"/>
 				<Texture parentKey="LineStart" atlas="combattimeline-line-left" useAtlasSize="true"/>
 				<Texture parentKey="Divider" atlas="combattimeline-cooldown-divider" useAtlasSize="true"/>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="1" type="number"/>
-					</KeyValues>
-				</MaskTexture>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="3" type="number"/>
-					</KeyValues>
-				</MaskTexture>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="5" type="number"/>
-					</KeyValues>
-				</MaskTexture>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="7" type="number"/>
-					</KeyValues>
-				</MaskTexture>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="9" type="number"/>
-					</KeyValues>
-				</MaskTexture>
-				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true">
-					<KeyValues>
-						<KeyValue key="seconds" value="11" type="number"/>
-					</KeyValues>
-				</MaskTexture>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="PipText" font="SystemFont_Shadow_Large"/>

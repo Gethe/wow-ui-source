@@ -1144,24 +1144,26 @@ function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeActionBarSetting.Orientation and self:HasSetting(Enum.EditModeActionBarSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
-	elseif setting == Enum.EditModeActionBarSetting.NumRows and self:HasSetting(Enum.EditModeActionBarSetting.NumRows) then
-		self:UpdateSystemSettingNumRows();
-	elseif setting == Enum.EditModeActionBarSetting.NumIcons and self:HasSetting(Enum.EditModeActionBarSetting.NumIcons) then
-		self:UpdateSystemSettingNumIcons();
-	elseif setting == Enum.EditModeActionBarSetting.IconSize and self:HasSetting(Enum.EditModeActionBarSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeActionBarSetting.IconPadding and self:HasSetting(Enum.EditModeActionBarSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarArt and self:HasSetting(Enum.EditModeActionBarSetting.HideBarArt) then
-		self:UpdateSystemSettingHideBarArt();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarScrolling and self:HasSetting(Enum.EditModeActionBarSetting.HideBarScrolling) then
-		self:UpdateSystemSettingHideBarScrolling();
-	elseif setting == Enum.EditModeActionBarSetting.VisibleSetting and self:HasSetting(Enum.EditModeActionBarSetting.VisibleSetting) then
-		self:UpdateSystemSettingVisibleSetting();
-	elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons and self:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		self:UpdateSystemSettingAlwaysShowButtons();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeActionBarSetting.Orientation then
+			self:UpdateSystemSettingOrientation();
+		elseif setting == Enum.EditModeActionBarSetting.NumRows then
+			self:UpdateSystemSettingNumRows();
+		elseif setting == Enum.EditModeActionBarSetting.NumIcons then
+			self:UpdateSystemSettingNumIcons();
+		elseif setting == Enum.EditModeActionBarSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeActionBarSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeActionBarSetting.HideBarArt then
+			self:UpdateSystemSettingHideBarArt();
+		elseif setting == Enum.EditModeActionBarSetting.HideBarScrolling then
+			self:UpdateSystemSettingHideBarScrolling();
+		elseif setting == Enum.EditModeActionBarSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons then
+			self:UpdateSystemSettingAlwaysShowButtons();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -1598,6 +1600,11 @@ function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
 			ccRemoverFrame:SetIsInEditMode(isInEditMode);
 		end
 
+		local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
+		if spellDiminishStatusTray then
+			spellDiminishStatusTray:SetIsInEditMode(isInEditMode);
+		end
+
 		local debuffFrame = memberUnitFrame.DebuffFrame;
 		if debuffFrame then
 			debuffFrame:SetIsInEditMode(isInEditMode);
@@ -1809,8 +1816,8 @@ EditModeAuraFrameSystemMixin = {};
 function EditModeAuraFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
-	self.isInEditMode = false;
-	self:UpdateAuraButtons();
+	self:SetIsEditing(false);
+	self:Update();
 end
 
 function EditModeAuraFrameSystemMixin:AnchorSelectionFrame()
@@ -1952,8 +1959,7 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconDirection()
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconLimit()
-	local setting = self == BuffFrame and Enum.EditModeAuraFrameSetting.IconLimitBuffFrame or Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
-	self.AuraContainer.iconStride = self:GetSettingValue(setting);
+	self.AuraContainer.iconStride = self:GetSettingValue(self:GetIconLimitSettingEnum());
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconSize()
@@ -1965,6 +1971,16 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconPadding()
 	self.AuraContainer.iconPadding = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconPadding);
 end
 
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingVisibleSetting()
+	self.visibleSetting = self:GetSettingValue(Enum.EditModeAuraFrameSetting.VisibleSetting);
+	self:UpdateShownState();
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingOpacity()
+	local opacitySetting = self:GetSettingValue(Enum.EditModeAuraFrameSetting.Opacity);
+	self:SetAlpha(opacitySetting / 100);
+end
+
 function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -1973,19 +1989,24 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeAuraFrameSetting.Orientation and self:HasSetting(Enum.EditModeAuraFrameSetting.Orientation) then
-		self:UpdateSystemSettingOrientation(entireSystemUpdate);
-	elseif setting == Enum.EditModeAuraFrameSetting.IconWrap and self:HasSetting(Enum.EditModeAuraFrameSetting.IconWrap) then
-		self:UpdateSystemSettingIconWrap();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconDirection and self:HasSetting(Enum.EditModeAuraFrameSetting.IconDirection) then
-		self:UpdateSystemSettingIconDirection();
-	elseif (setting == Enum.EditModeAuraFrameSetting.IconLimitBuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitBuffFrame))
-		or (setting == Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame)) then
-		self:UpdateSystemSettingIconLimit();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconSize and self:HasSetting(Enum.EditModeAuraFrameSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconPadding and self:HasSetting(Enum.EditModeAuraFrameSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeAuraFrameSetting.Orientation then
+			self:UpdateSystemSettingOrientation(entireSystemUpdate);
+		elseif setting == Enum.EditModeAuraFrameSetting.IconWrap then
+			self:UpdateSystemSettingIconWrap();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconDirection then
+			self:UpdateSystemSettingIconDirection();
+		elseif (setting == Enum.EditModeAuraFrameSetting.IconLimitBuffFrame) or (setting == Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame) then
+			self:UpdateSystemSettingIconLimit();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeAuraFrameSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeAuraFrameSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -2734,30 +2755,32 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSy
 		return;
 	end
 
-	if setting == Enum.EditModeCooldownViewerSetting.Orientation and self:HasSetting(Enum.EditModeCooldownViewerSetting.Orientation) then
-		self:UpdateSystemSettingOrientation(entireSystemUpdate);
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconLimit and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconLimit) then
-		self:UpdateSystemSettingIconLimit();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconDirection and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconDirection) then
-		self:UpdateSystemSettingIconDirection();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconSize and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconPadding and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeCooldownViewerSetting.Opacity and self:HasSetting(Enum.EditModeCooldownViewerSetting.Opacity) then
-		self:UpdateSystemSettingOpacity();
-	elseif setting == Enum.EditModeCooldownViewerSetting.VisibleSetting and self:HasSetting(Enum.EditModeCooldownViewerSetting.VisibleSetting) then
-		self:UpdateSystemSettingVisibleSetting();
-	elseif setting == Enum.EditModeCooldownViewerSetting.BarContent and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarContent) then
-		self:UpdateSystemSettingBarContent();
-	elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive and self:HasSetting(Enum.EditModeCooldownViewerSetting.HideWhenInactive) then
-		self:UpdateSystemSettingHideWhenInactive();
-	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTimer) then
-		self:UpdateSystemSettingShowTimer();
-	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTooltips) then
-		self:UpdateSystemSettingShowTooltips();
-	elseif setting == Enum.EditModeCooldownViewerSetting.BarWidthScale and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarWidthScale) then
-		self:UpdateSystemSettingBarWidthScale();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeCooldownViewerSetting.Orientation then
+			self:UpdateSystemSettingOrientation(entireSystemUpdate);
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconLimit then
+			self:UpdateSystemSettingIconLimit();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconDirection then
+			self:UpdateSystemSettingIconDirection();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeCooldownViewerSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeCooldownViewerSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeCooldownViewerSetting.BarContent then
+			self:UpdateSystemSettingBarContent();
+		elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive then
+			self:UpdateSystemSettingHideWhenInactive();
+		elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer then
+			self:UpdateSystemSettingShowTimer();
+		elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips then
+			self:UpdateSystemSettingShowTooltips();
+		elseif setting == Enum.EditModeCooldownViewerSetting.BarWidthScale then
+			self:UpdateSystemSettingBarWidthScale();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -3077,20 +3100,6 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingShowFrien
 	self:UpdateFriendlyBuffs();
 end
 
-function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingShowResourceOnTarget()
-	local shouldShowResourceOnTarget = 0;
-
-	if self:GetSettingValue(Enum.EditModePersonalResourceDisplaySetting.ShowResourceOnTarget) > 0 then
-		shouldShowResourceOnTarget = 1;
-	end
-
-	-- Requires use of cvar still, since this affects more than the PRD
-	SetCVar("nameplateResourceOnTarget", shouldShowResourceOnTarget);
-
-	local shownState = not GetCVarBool("nameplateResourceOnTarget");
-	self.ClassFrameContainer:SetShown(shownState);
-end
-
 function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHideHealthAndPower()
 	self.hideHealthAndPower = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower)
 	self:SetupHealthBar();
@@ -3117,8 +3126,6 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting,
 
 	if setting == Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs) then
 		self:UpdateSystemSettingShowFriendlyBuffs();
-	elseif setting == Enum.EditModePersonalResourceDisplaySetting.ShowResourceOnTarget and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.ShowResourceOnTarget) then
-		self:UpdateSystemSettingShowResourceOnTarget();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower) then
 		self:UpdateSystemSettingHideHealthAndPower();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat) then

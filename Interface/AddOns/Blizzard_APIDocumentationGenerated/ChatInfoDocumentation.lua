@@ -593,11 +593,13 @@ local ChatInfo =
 			Name = "AlternativeDefaultLanguageChanged",
 			Type = "Event",
 			LiteralName = "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnChatMsgAddon",
 			Type = "Event",
 			LiteralName = "BN_CHAT_MSG_ADDON",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prefix", Type = "cstring", Nilable = false },
@@ -610,6 +612,7 @@ local ChatInfo =
 			Name = "CanLocalWhisperTargetResponse",
 			Type = "Event",
 			LiteralName = "CAN_LOCAL_WHISPER_TARGET_RESPONSE",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "whisperTarget", Type = "WOWGUID", Nilable = false },
@@ -620,6 +623,7 @@ local ChatInfo =
 			Name = "CanPlayerSpeakLanguageChanged",
 			Type = "Event",
 			LiteralName = "CAN_PLAYER_SPEAK_LANGUAGE_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "languageId", Type = "number", Nilable = false },
@@ -630,6 +634,7 @@ local ChatInfo =
 			Name = "CautionaryChannelMessage",
 			Type = "Event",
 			LiteralName = "CAUTIONARY_CHANNEL_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "confirmNumber", Type = "number", Nilable = false },
@@ -639,6 +644,7 @@ local ChatInfo =
 			Name = "CautionaryChatMessage",
 			Type = "Event",
 			LiteralName = "CAUTIONARY_CHAT_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "chatLineID", Type = "number", Nilable = false },
@@ -649,6 +655,7 @@ local ChatInfo =
 			Name = "ChannelCountUpdate",
 			Type = "Event",
 			LiteralName = "CHANNEL_COUNT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "displayIndex", Type = "number", Nilable = false },
@@ -659,6 +666,7 @@ local ChatInfo =
 			Name = "ChannelFlagsUpdated",
 			Type = "Event",
 			LiteralName = "CHANNEL_FLAGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "displayIndex", Type = "number", Nilable = false },
@@ -668,6 +676,7 @@ local ChatInfo =
 			Name = "ChannelInviteRequest",
 			Type = "Event",
 			LiteralName = "CHANNEL_INVITE_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "cstring", Nilable = false },
@@ -678,6 +687,7 @@ local ChatInfo =
 			Name = "ChannelLeft",
 			Type = "Event",
 			LiteralName = "CHANNEL_LEFT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "chatChannelID", Type = "number", Nilable = false },
@@ -688,6 +698,7 @@ local ChatInfo =
 			Name = "ChannelPasswordRequest",
 			Type = "Event",
 			LiteralName = "CHANNEL_PASSWORD_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "cstring", Nilable = false },
@@ -697,6 +708,7 @@ local ChatInfo =
 			Name = "ChannelRosterUpdate",
 			Type = "Event",
 			LiteralName = "CHANNEL_ROSTER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "displayIndex", Type = "number", Nilable = false },
@@ -707,11 +719,13 @@ local ChatInfo =
 			Name = "ChannelUiUpdate",
 			Type = "Event",
 			LiteralName = "CHANNEL_UI_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChatCombatMsgArenaPointsGain",
 			Type = "Event",
 			LiteralName = "CHAT_COMBAT_MSG_ARENA_POINTS_GAIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -737,6 +751,7 @@ local ChatInfo =
 			Name = "ChatLoggingChanged",
 			Type = "Event",
 			LiteralName = "CHAT_LOGGING_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "whichLog", Type = "number", Nilable = false },
@@ -747,6 +762,7 @@ local ChatInfo =
 			Name = "ChatMsgAchievement",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_ACHIEVEMENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -772,6 +788,7 @@ local ChatInfo =
 			Name = "ChatMsgAddon",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_ADDON",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prefix", Type = "cstring", Nilable = false },
@@ -789,6 +806,7 @@ local ChatInfo =
 			Name = "ChatMsgAddonLogged",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_ADDON_LOGGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prefix", Type = "cstring", Nilable = false },
@@ -806,6 +824,7 @@ local ChatInfo =
 			Name = "ChatMsgAfk",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_AFK",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -831,6 +850,7 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemAlliance",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_ALLIANCE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -856,6 +876,7 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemHorde",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_HORDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -881,6 +902,7 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemNeutral",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_NEUTRAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -906,6 +928,7 @@ local ChatInfo =
 			Name = "ChatMsgBn",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -931,6 +954,7 @@ local ChatInfo =
 			Name = "ChatMsgBnInlineToastAlert",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_INLINE_TOAST_ALERT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -956,6 +980,7 @@ local ChatInfo =
 			Name = "ChatMsgBnInlineToastBroadcast",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -981,6 +1006,7 @@ local ChatInfo =
 			Name = "ChatMsgBnInlineToastBroadcastInform",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1006,6 +1032,7 @@ local ChatInfo =
 			Name = "ChatMsgBnInlineToastConversation",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_INLINE_TOAST_CONVERSATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1031,6 +1058,7 @@ local ChatInfo =
 			Name = "ChatMsgBnWhisper",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_WHISPER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1056,6 +1084,7 @@ local ChatInfo =
 			Name = "ChatMsgBnWhisperInform",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_WHISPER_INFORM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1081,6 +1110,7 @@ local ChatInfo =
 			Name = "ChatMsgBnWhisperPlayerOffline",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1106,6 +1136,7 @@ local ChatInfo =
 			Name = "ChatMsgChannel",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1131,6 +1162,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelJoin",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_JOIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1156,6 +1188,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelLeave",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_LEAVE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1181,6 +1214,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelLeavePrevented",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_LEAVE_PREVENTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelName", Type = "cstring", Nilable = false },
@@ -1190,6 +1224,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelList",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_LIST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1215,6 +1250,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelNotice",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_NOTICE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1240,6 +1276,7 @@ local ChatInfo =
 			Name = "ChatMsgChannelNoticeUser",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CHANNEL_NOTICE_USER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1265,6 +1302,7 @@ local ChatInfo =
 			Name = "ChatMsgCombatFactionChange",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_FACTION_CHANGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1290,6 +1328,7 @@ local ChatInfo =
 			Name = "ChatMsgCombatHonorGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_HONOR_GAIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1315,6 +1354,7 @@ local ChatInfo =
 			Name = "ChatMsgCombatMiscInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_MISC_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1340,6 +1380,7 @@ local ChatInfo =
 			Name = "ChatMsgCombatXpGain",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMBAT_XP_GAIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1365,6 +1406,7 @@ local ChatInfo =
 			Name = "ChatMsgCommunitiesChannel",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COMMUNITIES_CHANNEL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1390,6 +1432,7 @@ local ChatInfo =
 			Name = "ChatMsgCurrency",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_CURRENCY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1415,6 +1458,7 @@ local ChatInfo =
 			Name = "ChatMsgDnd",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_DND",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1440,6 +1484,7 @@ local ChatInfo =
 			Name = "ChatMsgEmote",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1465,6 +1510,7 @@ local ChatInfo =
 			Name = "ChatMsgEncounterEvent",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_ENCOUNTER_EVENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1490,6 +1536,7 @@ local ChatInfo =
 			Name = "ChatMsgFiltered",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_FILTERED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1515,6 +1562,7 @@ local ChatInfo =
 			Name = "ChatMsgGuild",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_GUILD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1540,6 +1588,7 @@ local ChatInfo =
 			Name = "ChatMsgGuildAchievement",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_GUILD_ACHIEVEMENT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1565,6 +1614,7 @@ local ChatInfo =
 			Name = "ChatMsgGuildItemLooted",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_GUILD_ITEM_LOOTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1590,6 +1640,7 @@ local ChatInfo =
 			Name = "ChatMsgIgnored",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_IGNORED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1615,6 +1666,7 @@ local ChatInfo =
 			Name = "ChatMsgInstanceChat",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_INSTANCE_CHAT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1640,6 +1692,7 @@ local ChatInfo =
 			Name = "ChatMsgInstanceChatLeader",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_INSTANCE_CHAT_LEADER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1665,6 +1718,7 @@ local ChatInfo =
 			Name = "ChatMsgLoot",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_LOOT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1690,6 +1744,7 @@ local ChatInfo =
 			Name = "ChatMsgMoney",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONEY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1715,6 +1770,7 @@ local ChatInfo =
 			Name = "ChatMsgMonsterEmote",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONSTER_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1740,6 +1796,7 @@ local ChatInfo =
 			Name = "ChatMsgMonsterParty",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONSTER_PARTY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1765,6 +1822,7 @@ local ChatInfo =
 			Name = "ChatMsgMonsterSay",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONSTER_SAY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1790,6 +1848,7 @@ local ChatInfo =
 			Name = "ChatMsgMonsterWhisper",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONSTER_WHISPER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1815,6 +1874,7 @@ local ChatInfo =
 			Name = "ChatMsgMonsterYell",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_MONSTER_YELL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1840,6 +1900,7 @@ local ChatInfo =
 			Name = "ChatMsgOfficer",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_OFFICER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1865,6 +1926,7 @@ local ChatInfo =
 			Name = "ChatMsgOpening",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_OPENING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1890,6 +1952,7 @@ local ChatInfo =
 			Name = "ChatMsgParty",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PARTY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1915,6 +1978,7 @@ local ChatInfo =
 			Name = "ChatMsgPartyLeader",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PARTY_LEADER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1940,6 +2004,7 @@ local ChatInfo =
 			Name = "ChatMsgPetBattleCombatLog",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_BATTLE_COMBAT_LOG",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1965,6 +2030,7 @@ local ChatInfo =
 			Name = "ChatMsgPetBattleInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_BATTLE_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -1990,6 +2056,7 @@ local ChatInfo =
 			Name = "ChatMsgPetInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2015,6 +2082,7 @@ local ChatInfo =
 			Name = "ChatMsgPing",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2040,6 +2108,7 @@ local ChatInfo =
 			Name = "ChatMsgRaid",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RAID",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2065,6 +2134,7 @@ local ChatInfo =
 			Name = "ChatMsgRaidBossEmote",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RAID_BOSS_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2090,6 +2160,7 @@ local ChatInfo =
 			Name = "ChatMsgRaidBossWhisper",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RAID_BOSS_WHISPER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2115,6 +2186,7 @@ local ChatInfo =
 			Name = "ChatMsgRaidLeader",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RAID_LEADER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2140,6 +2212,7 @@ local ChatInfo =
 			Name = "ChatMsgRaidWarning",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RAID_WARNING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2165,6 +2238,7 @@ local ChatInfo =
 			Name = "ChatMsgRestricted",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_RESTRICTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2190,6 +2264,7 @@ local ChatInfo =
 			Name = "ChatMsgSay",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_SAY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2215,6 +2290,7 @@ local ChatInfo =
 			Name = "ChatMsgSkill",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_SKILL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2240,6 +2316,7 @@ local ChatInfo =
 			Name = "ChatMsgSystem",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_SYSTEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2265,6 +2342,7 @@ local ChatInfo =
 			Name = "ChatMsgTargeticons",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_TARGETICONS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2290,6 +2368,7 @@ local ChatInfo =
 			Name = "ChatMsgTextEmote",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_TEXT_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2315,6 +2394,7 @@ local ChatInfo =
 			Name = "ChatMsgTradeskills",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_TRADESKILLS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2340,6 +2420,7 @@ local ChatInfo =
 			Name = "ChatMsgVoiceText",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_VOICE_TEXT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2365,6 +2446,7 @@ local ChatInfo =
 			Name = "ChatMsgWhisper",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_WHISPER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2390,6 +2472,7 @@ local ChatInfo =
 			Name = "ChatMsgWhisperInform",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_WHISPER_INFORM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2415,6 +2498,7 @@ local ChatInfo =
 			Name = "ChatMsgYell",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_YELL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false, ConditionalSecret = true },
@@ -2440,11 +2524,13 @@ local ChatInfo =
 			Name = "ChatRegionalSendFailed",
 			Type = "Event",
 			LiteralName = "CHAT_REGIONAL_SEND_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChatRegionalStatusChanged",
 			Type = "Event",
 			LiteralName = "CHAT_REGIONAL_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isServiceAvailable", Type = "bool", Nilable = false },
@@ -2454,6 +2540,7 @@ local ChatInfo =
 			Name = "ChatServerDisconnected",
 			Type = "Event",
 			LiteralName = "CHAT_SERVER_DISCONNECTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isInitialMessage", Type = "bool", Nilable = true },
@@ -2463,16 +2550,19 @@ local ChatInfo =
 			Name = "ChatServerReconnected",
 			Type = "Event",
 			LiteralName = "CHAT_SERVER_RECONNECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ClearBossEmotes",
 			Type = "Event",
 			LiteralName = "CLEAR_BOSS_EMOTES",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DailyResetInstanceWelcome",
 			Type = "Event",
 			LiteralName = "DAILY_RESET_INSTANCE_WELCOME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapname", Type = "cstring", Nilable = false },
@@ -2483,6 +2573,7 @@ local ChatInfo =
 			Name = "InstanceResetWarning",
 			Type = "Event",
 			LiteralName = "INSTANCE_RESET_WARNING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warningMessage", Type = "cstring", Nilable = false },
@@ -2493,16 +2584,19 @@ local ChatInfo =
 			Name = "LanguageListChanged",
 			Type = "Event",
 			LiteralName = "LANGUAGE_LIST_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NotifyChatSuppressed",
 			Type = "Event",
 			LiteralName = "NOTIFY_CHAT_SUPPRESSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestBossEmote",
 			Type = "Event",
 			LiteralName = "QUEST_BOSS_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false },
@@ -2515,6 +2609,7 @@ local ChatInfo =
 			Name = "RaidBossEmote",
 			Type = "Event",
 			LiteralName = "RAID_BOSS_EMOTE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false },
@@ -2527,6 +2622,7 @@ local ChatInfo =
 			Name = "RaidBossWhisper",
 			Type = "Event",
 			LiteralName = "RAID_BOSS_WHISPER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "text", Type = "cstring", Nilable = false },
@@ -2539,6 +2635,7 @@ local ChatInfo =
 			Name = "RaidInstanceWelcome",
 			Type = "Event",
 			LiteralName = "RAID_INSTANCE_WELCOME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapname", Type = "cstring", Nilable = false },
@@ -2551,6 +2648,7 @@ local ChatInfo =
 			Name = "UpdateChatColor",
 			Type = "Event",
 			LiteralName = "UPDATE_CHAT_COLOR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -2563,6 +2661,7 @@ local ChatInfo =
 			Name = "UpdateChatColorNameByClass",
 			Type = "Event",
 			LiteralName = "UPDATE_CHAT_COLOR_NAME_BY_CLASS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -2573,11 +2672,13 @@ local ChatInfo =
 			Name = "UpdateChatWindows",
 			Type = "Event",
 			LiteralName = "UPDATE_CHAT_WINDOWS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateFloatingChatWindows",
 			Type = "Event",
 			LiteralName = "UPDATE_FLOATING_CHAT_WINDOWS",
+			SynchronousEvent = true,
 		},
 	},
 

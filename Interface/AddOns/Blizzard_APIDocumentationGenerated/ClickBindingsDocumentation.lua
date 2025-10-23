@@ -136,6 +136,7 @@ local ClickBindings =
 			Name = "ClickbindingsSetHighlightsShown",
 			Type = "Event",
 			LiteralName = "CLICKBINDINGS_SET_HIGHLIGHTS_SHOWN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "showHighlights", Type = "bool", Nilable = false },

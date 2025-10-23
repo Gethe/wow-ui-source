@@ -305,11 +305,13 @@ local EquipmentManager =
 			Name = "EquipmentSetsChanged",
 			Type = "Event",
 			LiteralName = "EQUIPMENT_SETS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EquipmentSwapFinished",
 			Type = "Event",
 			LiteralName = "EQUIPMENT_SWAP_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
@@ -320,11 +322,13 @@ local EquipmentManager =
 			Name = "EquipmentSwapPending",
 			Type = "Event",
 			LiteralName = "EQUIPMENT_SWAP_PENDING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TransmogOutfitsChanged",
 			Type = "Event",
 			LiteralName = "TRANSMOG_OUTFITS_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 

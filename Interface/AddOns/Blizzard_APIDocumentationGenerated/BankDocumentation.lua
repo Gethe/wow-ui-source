@@ -319,6 +319,7 @@ local Bank =
 			Name = "BankBagSlotFlagsUpdated",
 			Type = "Event",
 			LiteralName = "BANK_BAG_SLOT_FLAGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -328,6 +329,7 @@ local Bank =
 			Name = "BankTabSettingsUpdated",
 			Type = "Event",
 			LiteralName = "BANK_TAB_SETTINGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
@@ -337,6 +339,7 @@ local Bank =
 			Name = "BankTabsChanged",
 			Type = "Event",
 			LiteralName = "BANK_TABS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
@@ -346,16 +349,19 @@ local Bank =
 			Name = "BankframeClosed",
 			Type = "Event",
 			LiteralName = "BANKFRAME_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BankframeOpened",
 			Type = "Event",
 			LiteralName = "BANKFRAME_OPENED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerAccountBankTabSlotsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_ACCOUNT_BANK_TAB_SLOTS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -365,6 +371,7 @@ local Bank =
 			Name = "PlayerbankslotsChanged",
 			Type = "Event",
 			LiteralName = "PLAYERBANKSLOTS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },

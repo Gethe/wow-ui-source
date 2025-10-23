@@ -244,16 +244,19 @@ local Expansion =
 			Name = "MaxExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MAX_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MinExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MIN_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowSubscriptionInterstitial",
 			Type = "Event",
 			LiteralName = "SHOW_SUBSCRIPTION_INTERSTITIAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "SubscriptionInterstitialType", Nilable = false },

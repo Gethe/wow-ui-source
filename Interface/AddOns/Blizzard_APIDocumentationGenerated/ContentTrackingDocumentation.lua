@@ -297,6 +297,7 @@ local ContentTracking =
 			Name = "ContentTrackingIsEnabledUpdate",
 			Type = "Event",
 			LiteralName = "CONTENT_TRACKING_IS_ENABLED_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
@@ -306,11 +307,13 @@ local ContentTracking =
 			Name = "ContentTrackingListUpdate",
 			Type = "Event",
 			LiteralName = "CONTENT_TRACKING_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ContentTrackingUpdate",
 			Type = "Event",
 			LiteralName = "CONTENT_TRACKING_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
@@ -322,6 +325,7 @@ local ContentTracking =
 			Name = "TrackableInfoUpdate",
 			Type = "Event",
 			LiteralName = "TRACKABLE_INFO_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "ContentTrackingType", Nilable = false },
@@ -332,6 +336,7 @@ local ContentTracking =
 			Name = "TrackingTargetInfoUpdate",
 			Type = "Event",
 			LiteralName = "TRACKING_TARGET_INFO_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "targetType", Type = "ContentTrackingTargetType", Nilable = false },

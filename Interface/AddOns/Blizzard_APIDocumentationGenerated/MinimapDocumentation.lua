@@ -275,6 +275,7 @@ local Minimap =
 			Name = "MinimapPing",
 			Type = "Event",
 			LiteralName = "MINIMAP_PING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
@@ -286,16 +287,19 @@ local Minimap =
 			Name = "MinimapUpdateTracking",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_TRACKING",
+			UniqueEvent = true,
 		},
 		{
 			Name = "MinimapUpdateZoom",
 			Type = "Event",
 			LiteralName = "MINIMAP_UPDATE_ZOOM",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PlayerInsideQuestBlobStateChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_INSIDE_QUEST_BLOB_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },

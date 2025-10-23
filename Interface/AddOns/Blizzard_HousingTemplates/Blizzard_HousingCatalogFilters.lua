@@ -79,7 +79,7 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_INDOORS, getAllowedIndoors, toggleAllowedIndoors);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_OUTDOORS, getAllowedOutdoors, toggleAllowedOutdoors);
 
-		if self.housingMarketFiltersAvailable then
+		if self.collectionFiltersAvailable then
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_COLLECTED, getCollected, toggleCollected);
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_UNCOLLECTED, getUncollected, toggleUncollected);
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_FIRST_ACQUISITION, getFirstAcquisitionBonusOnly, toggleFirstAcquisitionBonusOnly);
@@ -156,7 +156,7 @@ function HousingCatalogFiltersMixin:ResetFiltersToDefault()
 	self.catalogSearcher:SetCustomizableOnly(false);
 	self.catalogSearcher:SetAllowedIndoors(true);
 	self.catalogSearcher:SetAllowedOutdoors(true);
-	self:ResetHousingMarketFilters();
+	self:ResetCollectionFilters();
 	for _, tagGroup in ipairs(self.filterTagGroups) do
 		self.catalogSearcher:SetAllInFilterTagGroup(tagGroup.groupID, true);
 	end
@@ -168,17 +168,17 @@ function HousingCatalogFiltersMixin:SetEnabled(enabled)
 	self.FilterDropdown:ValidateResetState();
 end
 
-function HousingCatalogFiltersMixin:ResetHousingMarketFilters()
+function HousingCatalogFiltersMixin:ResetCollectionFilters()
 	self.catalogSearcher:SetCollected(true);
 	self.catalogSearcher:SetUncollected(true);
 	self.catalogSearcher:SetFirstAcquisitionBonusOnly(false);
 end
 
-function HousingCatalogFiltersMixin:SetHousingMarketFiltersAvailable(available)
-	self.housingMarketFiltersAvailable = available;
+function HousingCatalogFiltersMixin:SetCollectionFiltersAvailable(available)
+	self.collectionFiltersAvailable = available;
 
 	if not available then
-		self:ResetHousingMarketFilters();
+		self:ResetCollectionFilters();
 	end
 
 	self.FilterDropdown:ValidateResetState();

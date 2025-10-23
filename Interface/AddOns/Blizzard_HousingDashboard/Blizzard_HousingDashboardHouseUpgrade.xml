@@ -439,9 +439,10 @@
 				</Layers>
 				<KeyValues>
 					<KeyValue key="elementTemplate" value="HouseUpgradeLevelFrameTemplate" type="string"/>
-					<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START" type="global"/>
-					<KeyValue key="scrollStopSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_STOP" type="global"/>
-					<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_COVENANT_RENOWN_SLIDE_START" type="global"/>
+					<KeyValue key="scrollStartSound" value="SOUNDKIT.HOUSING_HOUSE_UPGRADES_SCROLL_START" type="global"/>
+					<KeyValue key="scrollLoopSound" value="SOUNDKIT.HOUSING_HOUSE_UPGRADES_SCROLL_LOOP" type="global"/>
+					<KeyValue key="scrollStopSound" value="SOUNDKIT.HOUSING_HOUSE_UPGRADES_SCROLL_STOP" type="global"/>
+					<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.HOUSING_HOUSE_UPGRADES_SCROLL_CENTER_CHANGED" type="global"/>
 				</KeyValues>
 			</Frame>
 

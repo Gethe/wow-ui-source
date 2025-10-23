@@ -612,11 +612,13 @@ local Map =
 			Name = "NewWmoChunk",
 			Type = "Event",
 			LiteralName = "NEW_WMO_CHUNK",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerMapChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_MAP_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldMapID", Type = "number", Nilable = false },
@@ -627,11 +629,13 @@ local Map =
 			Name = "UserWaypointUpdated",
 			Type = "Event",
 			LiteralName = "USER_WAYPOINT_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WorldMapOpen",
 			Type = "Event",
 			LiteralName = "WORLD_MAP_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "uiMapID", Type = "number", Nilable = true },
@@ -641,16 +645,19 @@ local Map =
 			Name = "ZoneChanged",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedIndoors",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_INDOORS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ZoneChangedNewArea",
 			Type = "Event",
 			LiteralName = "ZONE_CHANGED_NEW_AREA",
+			SynchronousEvent = true,
 		},
 	},
 

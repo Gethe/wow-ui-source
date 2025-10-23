@@ -210,11 +210,13 @@ local SuperTrackManager =
 			Name = "SuperTrackingChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SuperTrackingPathUpdated",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_PATH_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

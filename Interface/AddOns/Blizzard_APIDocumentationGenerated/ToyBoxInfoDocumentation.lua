@@ -67,6 +67,7 @@ local ToyBoxInfo =
 			Name = "NewToyAdded",
 			Type = "Event",
 			LiteralName = "NEW_TOY_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -76,6 +77,8 @@ local ToyBoxInfo =
 			Name = "ToysUpdated",
 			Type = "Event",
 			LiteralName = "TOYS_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },

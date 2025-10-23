@@ -11,6 +11,22 @@ local alertWhenText =
 	[Enum.CooldownViewerAlertEventType.ChargeGained] = COOLDOWN_VIEWER_SETTINGS_ALERT_WHEN_CHARGE_GAINED,
 };
 
+function CooldownViewerAlert_GetTypeAtlas(alertType)
+	if alertType == Enum.CooldownViewerAlertType.Sound then
+		return "common-icon-sound";
+	end
+end
+
+function CooldownViewerAlert_SetupTypeButton(button, alertType)
+	if alertType == Enum.CooldownViewerAlertType.Sound then
+		button:SetNormalTexture("common-icon-sound");
+		button:SetPushedTexture("common-icon-sound-pressed");
+		button:SetDisabledTexture("common-icon-sound-disabled");
+		button:SetHighlightTexture("common-icon-sound", "ADD");
+		button:GetHighlightTexture():SetAlpha(0.4);
+	end
+end
+
 local COOLDOWN_ALERT_FIELD_TYPE = 1;
 local COOLDOWN_ALERT_FIELD_EVENT = 2;
 local COOLDOWN_ALERT_FIELD_PAYLOAD = 3;
@@ -148,7 +164,8 @@ local function CooldownViewerAlert_PlayTTSAlert(spellName, alert)
 	local alertEvent = CooldownViewerAlert_GetEvent(alert);
 	local formatter = ttsAlertFormatters[alertEvent];
 	if formatter and spellName then
-		TextToSpeechFrame_PlayCooldownAlertMessage(alert, formatter:format(spellName));
+		local allowOverlappedSpeech = true;
+		TextToSpeechFrame_PlayCooldownAlertMessage(alert, formatter:format(spellName), allowOverlappedSpeech);
 	end
 end
 

@@ -349,22 +349,22 @@
 	</Binding>
 
 	<Binding name="ACTIONPAGE1" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(1);
+		C_ActionBar.SetActionBarPage(1);
 	</Binding>
 	<Binding name="ACTIONPAGE2" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(2);
+		C_ActionBar.SetActionBarPage(2);
 	</Binding>
 	<Binding name="ACTIONPAGE3" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(3);
+		C_ActionBar.SetActionBarPage(3);
 	</Binding>
 	<Binding name="ACTIONPAGE4" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(4);
+		C_ActionBar.SetActionBarPage(4);
 	</Binding>
 	<Binding name="ACTIONPAGE5" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(5);
+		C_ActionBar.SetActionBarPage(5);
 	</Binding>
 	<Binding name="ACTIONPAGE6" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(6);
+		C_ActionBar.SetActionBarPage(6);
 	</Binding>
 	<Binding name="PREVIOUSACTIONPAGE" category="BINDING_HEADER_ACTIONBAR">
 		ActionBar_PageDown();

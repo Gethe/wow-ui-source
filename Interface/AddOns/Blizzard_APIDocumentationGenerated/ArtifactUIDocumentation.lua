@@ -826,11 +826,13 @@ local ArtifactUI =
 			Name = "ArtifactClose",
 			Type = "Event",
 			LiteralName = "ARTIFACT_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactEndgameRefund",
 			Type = "Event",
 			LiteralName = "ARTIFACT_ENDGAME_REFUND",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "numRefundedPowers", Type = "number", Nilable = false },
@@ -843,31 +845,37 @@ local ArtifactUI =
 			Name = "ArtifactRelicForgeClose",
 			Type = "Event",
 			LiteralName = "ARTIFACT_RELIC_FORGE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactRelicForgePreviewRelicChanged",
 			Type = "Event",
 			LiteralName = "ARTIFACT_RELIC_FORGE_PREVIEW_RELIC_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactRelicForgeUpdate",
 			Type = "Event",
 			LiteralName = "ARTIFACT_RELIC_FORGE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactRelicInfoReceived",
 			Type = "Event",
 			LiteralName = "ARTIFACT_RELIC_INFO_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactRespecPrompt",
 			Type = "Event",
 			LiteralName = "ARTIFACT_RESPEC_PROMPT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactTierChanged",
 			Type = "Event",
 			LiteralName = "ARTIFACT_TIER_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newTier", Type = "luaIndex", Nilable = false },
@@ -879,6 +887,7 @@ local ArtifactUI =
 			Name = "ArtifactUpdate",
 			Type = "Event",
 			LiteralName = "ARTIFACT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newItem", Type = "bool", Nilable = false },
@@ -888,6 +897,7 @@ local ArtifactUI =
 			Name = "ArtifactXpUpdate",
 			Type = "Event",
 			LiteralName = "ARTIFACT_XP_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

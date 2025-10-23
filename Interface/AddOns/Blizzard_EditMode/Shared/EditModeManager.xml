@@ -178,7 +178,7 @@
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 												</KeyValues>
 											</Frame>
-		
+
 											<!-- Combat -->
 											<Frame parentKey="CombatTitle">
 												<Size x="225" y="32"/>
@@ -200,7 +200,7 @@
 													<KeyValue key="layoutIndex" value="4" type="number"/>
 												</KeyValues>
 											</Frame>
-		
+
 											<!-- Misc -->
 											<Frame parentKey="MiscTitle">
 												<Size x="225" y="32"/>
@@ -300,6 +300,13 @@
 									<KeyValue key="isBasicOption" value="true" type="boolean"/>
 									<KeyValue key="basicLayoutIndex" value="5" type="number"/>
 									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="ExternalDefensives" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="12" type="number"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="CastBar" inherits="EditModeManagerSettingCheckButtonTemplate">

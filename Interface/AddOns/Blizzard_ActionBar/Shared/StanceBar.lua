@@ -20,7 +20,7 @@ end
 
 function StanceBarMixin:ShouldShow()
 	return self.numForms > 0
-		and not IsPossessBarVisible()
+		and not C_ActionBar.IsPossessBarVisible()
 		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE;
 end
 

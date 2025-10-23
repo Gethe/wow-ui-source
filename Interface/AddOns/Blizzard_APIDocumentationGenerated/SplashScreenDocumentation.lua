@@ -47,6 +47,7 @@ local SplashScreen =
 			Name = "OpenSplashScreen",
 			Type = "Event",
 			LiteralName = "OPEN_SPLASH_SCREEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "info", Type = "SplashScreenInfo", Nilable = true },

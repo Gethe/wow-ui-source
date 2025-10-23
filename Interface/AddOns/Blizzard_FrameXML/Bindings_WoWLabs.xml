@@ -51,7 +51,7 @@
 	<Binding name="WOWLABS_SWAP_OFFENSIVES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
 		if ( keystate == "up" ) then
 			ClearCursor();
-			if not HasAction(61) then
+			if not C_ActionBar.HasAction(61) then
 				PickupInventoryItem(INVSLOT_OFFENSIVE_2);
 				PickupInventoryItem(INVSLOT_OFFENSIVE_1);
 			else
@@ -63,7 +63,7 @@
 	<Binding name="WOWLABS_SWAP_UTLITIES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
 		if ( keystate == "up" ) then
 			ClearCursor();
-			if not HasAction(49) then
+			if not C_ActionBar.HasAction(49) then
 				PickupInventoryItem(INVSLOT_UTILITY_2);
 				PickupInventoryItem(INVSLOT_UTILITY_1);
 			else

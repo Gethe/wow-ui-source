@@ -10,14 +10,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture parentKey="PreviewBackground" atlas="catalog-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="TOP" x="46" y="-55"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 		</Layers>
 
 		<Frames>
@@ -67,36 +59,10 @@
 				</Layers>
 			</Frame>
 
-			<Frame parentKey="OverlayDecorations" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY" textureSubLevel="2">
-						<Texture parentKey="Divider" atlas="catalog-main-divider" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-							<Size x="48"/>
-							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.$parent.PreviewBackground" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOM" relativeKey="$parent.$parent.PreviewBackground" relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="PreviewCornerLeft" atlas="catalog-corbel-bottom-left" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-							<Size x="66" y="50"/>
-							<Anchors>
-								<Anchor point="BOTTOMLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="-2" y="-2"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="PreviewCornerRight" atlas="catalog-corbel-bottom-right" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
-							<Size x="66" y="50"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.PreviewBackground" x="2" y="-2"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-
-			<Frame parentKey="PreviewFrame" inherits="HousingModelPreviewTemplate">
+			<Frame parentKey="PreviewFrame" inherits="HousingModelPreviewTemplate" useParentLevel="true">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.PreviewBackground" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PreviewBackground" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="46" y="-55"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 
@@ -104,9 +70,9 @@
 			<Frame parentKey="TempDisclaimer" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="DisclaimerText" inherits="GameFontHighlightHuge" text="Catalog UI is a work in progress" degrees="45">
+						<FontString parentKey="DisclaimerText" inherits="GameFontHighlightHuge" text="Catalog UI is a work in progress">
 							<Anchors>
-								<Anchor point="CENTER" x="40"/>
+								<Anchor point="TOPLEFT" x="80" y="-30"/>
 							</Anchors>
 							<Color r="1.0" g="0.0" b="1.0" />
 						</FontString>
@@ -114,6 +80,17 @@
 				</Layers>
 			</Frame>
 		</Frames>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="Divider" atlas="catalog-main-divider" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="48"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PreviewFrame" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.PreviewFrame" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

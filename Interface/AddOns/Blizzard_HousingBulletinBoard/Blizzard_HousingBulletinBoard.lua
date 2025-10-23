@@ -16,11 +16,13 @@ function HousingBulletinBoardFrameMixin:OnShow()
     self.GearDropdown:Hide(); --Wait to show settings until we have neighborhood info
     C_HousingNeighborhood.RequestNeighborhoodInfo();
     self.ResidentsTab:Show();
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_OPEN);
 end
 
 function HousingBulletinBoardFrameMixin:OnHide()
     C_HousingNeighborhood.OnBulletinBoardClosed();
     FrameUtil.UnregisterFrameForEvents(self, BULLETIN_BOARD_SHOWING_EVENTS);
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_CLOSE);
 end
 
 function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
@@ -267,6 +269,7 @@ end
 
 function NeighborhoodRosterMixin:InviteResidentClicked()
     ShowUIPanel(HousingInviteResidentFrame);
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_BUTTONS);
 end
 
 StaticPopupDialogs["HOUSING_BULLETIN_EVICT_CONFIRMATION"] = {
@@ -519,16 +522,14 @@ function HousingInviteResidentFrameMixin:OnEvent(event, ...)
 		local neighborhoodInviteResult, playerName = ...;
 		if neighborhoodInviteResult == Enum.NeighborhoodInviteResult.Success then
 			self:RemovePendingInvite(playerName);
+		else
+			self:CancelRemovePendingInvite(playerName);
 		end
 
 	elseif event == "PENDING_NEIGHBORHOOD_INVITES_RECIEVED" then
 		local neighborhoodInviteResult, playerNames = ...;
 		if neighborhoodInviteResult == Enum.NeighborhoodInviteResult.Success then
 			self:UpdatePendingInvitesList(playerNames);
-		else
-			--TODO: temporary error for testing when / why fetching pending invites fails
-			self.ErrorText:SetText("Couldnt fetch pending invites: "..neighborhoodInviteResult);
-			self.ErrorText:Show();
 		end
 		self.PendingListLoadingSpinner:Hide();
 	end
@@ -579,6 +580,15 @@ function HousingInviteResidentFrameMixin:RemovePendingInvite(playerName)
 	end
 end
 
+function HousingInviteResidentFrameMixin:CancelRemovePendingInvite(playerName)
+	for inviteFrame in self.pendingInvitesPool:EnumerateActive() do
+		if strcmputf8i(inviteFrame.RemoveButton.playerName, playerName) == 0 then
+			inviteFrame.LoadingSpinner:Hide();
+			inviteFrame.RemoveButton:Enable();
+		end
+	end
+end
+
 function HousingInviteResidentFrameMixin:SetInviteEnabled(enabled)
 	if self.pendingInvite then
 
@@ -593,6 +603,7 @@ function HousingInviteResidentFrameMixin:OnSendInviteClicked()
 	self.pendingInvite = true;
 	self.pendingInviteName = self.PlayerSearchBox:GetText();
 	C_HousingNeighborhood.InvitePlayerToNeighborhood(self.pendingInviteName);
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
 end
 
 StaticPopupDialogs["HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE"] = {
@@ -605,6 +616,7 @@ StaticPopupDialogs["HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE"] = {
 
 function HousingInviteResidentFrameMixin:CancelInviteClicked(pendingInviteFrame)
 	self.pendingCancelInvite = pendingInviteFrame;
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
 	local dialog = StaticPopup_Show("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE", self.pendingCancelInvite.RemoveButton.playerName);
 	local acceptButton = dialog:GetButton1();
 	acceptButton:SetScript("OnClick", GenerateClosure(self.CancelInviteConfirmed, self));
@@ -676,7 +688,7 @@ function NeighborhoodChangeNameDialogMixin:OnEvent(event, ...)
 		if approved == false then
 			NeighborhoodChangeNameDialog.NameError:Show();
 		else
-			C_HousingNeighborhood.TryRenameNeighborhood(NeighborhoodChangeNameDialog.NameEditBox:GetText());
+			C_Housing.TryRenameNeighborhood(NeighborhoodChangeNameDialog.NameEditBox:GetText());
 			StaticPopupSpecial_Hide(NeighborhoodChangeNameDialog);
 		end
     end
@@ -692,7 +704,7 @@ function NeighborhoodChangeNameDialogMixin:OnLoad()
 end
 
 function NeighborhoodChangeNameDialogMixin:OnConfirmClicked()
-	C_HousingNeighborhood.ValidateNeighborhoodName(NeighborhoodChangeNameDialog.NameEditBox:GetText());
+	C_Housing.ValidateNeighborhoodName(NeighborhoodChangeNameDialog.NameEditBox:GetText());
 end
 
 --//////////////////////////////////////////////////////////////////////

@@ -370,6 +370,7 @@ local SpecializationInfo =
 			Name = "ActiveTalentGroupChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_TALENT_GROUP_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "curr", Type = "number", Nilable = false },
@@ -380,6 +381,7 @@ local SpecializationInfo =
 			Name = "ConfirmPetUnlearn",
 			Type = "Event",
 			LiteralName = "CONFIRM_PET_UNLEARN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
@@ -389,6 +391,7 @@ local SpecializationInfo =
 			Name = "ConfirmTalentWipe",
 			Type = "Event",
 			LiteralName = "CONFIRM_TALENT_WIPE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cost", Type = "number", Nilable = false },
@@ -399,31 +402,37 @@ local SpecializationInfo =
 			Name = "PetSpecializationChanged",
 			Type = "Event",
 			LiteralName = "PET_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLearnPvpTalentFailed",
 			Type = "Event",
 			LiteralName = "PLAYER_LEARN_PVP_TALENT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLearnTalentFailed",
 			Type = "Event",
 			LiteralName = "PLAYER_LEARN_TALENT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerPvpTalentUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_PVP_TALENT_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTalentUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TALENT_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpecInvoluntarilyChanged",
 			Type = "Event",
 			LiteralName = "SPEC_INVOLUNTARILY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPet", Type = "bool", Nilable = false },
@@ -433,6 +442,7 @@ local SpecializationInfo =
 			Name = "TalentsInvoluntarilyReset",
 			Type = "Event",
 			LiteralName = "TALENTS_INVOLUNTARILY_RESET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPetTalents", Type = "bool", Nilable = false },

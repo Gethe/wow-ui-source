@@ -206,14 +206,8 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="HousingCornerstoneVisitorFrame" mixin="HousingCornerstoneVisitorFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Frame name="HousingCornerstoneVisitorTemplate" virtual="true">
 		<Size x="340" y="240"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEvent method="OnEvent"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-		</Scripts>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
@@ -287,6 +281,34 @@
 				</Anchors>
 			</DropdownButton>
 		</Frames>
+	</Frame>
+
+	<Frame name="HousingCornerstoneVisitorFrame" mixin="HousingCornerstoneVisitorFrameMixin" inherits="HousingCornerstoneVisitorTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="340" y="240"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingCornerstoneHouseInfoFrame" mixin="HousingCornerstoneHouseInfoFrameMixin" inherits="HousingCornerstoneVisitorTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="340" y="240"/>
+		<Frames>
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="MoveHouseConfirmationDialog" mixin="MoveHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">

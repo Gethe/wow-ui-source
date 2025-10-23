@@ -195,16 +195,19 @@ local ItemUpgrade =
 			Name = "ItemUpgradeFailed",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterUpdate",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

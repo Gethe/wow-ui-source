@@ -146,22 +146,22 @@ function ActionBarController_UpdateAll(force)
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;
 
 	-- If we have a skinned vehicle bar or skinned override bar, display the OverrideActionBar
-	if ((HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
-		or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= 0)) then
+	if ((C_ActionBar.HasVehicleActionBar() and UnitVehicleSkin("player") and UnitVehicleSkin("player") ~= "")
+		or (C_ActionBar.HasOverrideActionBar() and C_ActionBar.GetOverrideBarSkin() and C_ActionBar.GetOverrideBarSkin() ~= 0)) then
 		OverrideActionBar:UpdateSkin();
 		CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_OVERRIDE;
 	-- If we have a non-skinned override bar of some sort, use the MainActionBar
-	elseif ( HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar() or C_PetBattles.IsInBattle() ) then
-		if (HasVehicleActionBar()) then
-			MainActionBar:SetAttribute("actionpage", GetVehicleBarIndex());
-		elseif (HasOverrideActionBar()) then
-			MainActionBar:SetAttribute("actionpage", GetOverrideBarIndex());
-		elseif (HasTempShapeshiftActionBar()) then
-			MainActionBar:SetAttribute("actionpage", GetTempShapeshiftBarIndex());
-		elseif (HasBonusActionBar() and GetActionBarPage() == 1) then
-			MainActionBar:SetAttribute("actionpage", GetBonusBarIndex());
+	elseif ( C_ActionBar.HasBonusActionBar() or C_ActionBar.HasOverrideActionBar() or C_ActionBar.HasVehicleActionBar() or C_ActionBar.HasTempShapeshiftActionBar() or C_PetBattles.IsInBattle() ) then
+		if (C_ActionBar.HasVehicleActionBar()) then
+			MainActionBar:SetAttribute("actionpage", C_ActionBar.GetVehicleBarIndex());
+		elseif (C_ActionBar.HasOverrideActionBar()) then
+			MainActionBar:SetAttribute("actionpage", C_ActionBar.GetOverrideBarIndex());
+		elseif (C_ActionBar.HasTempShapeshiftActionBar()) then
+			MainActionBar:SetAttribute("actionpage", C_ActionBar.GetTempShapeshiftBarIndex());
+		elseif (C_ActionBar.HasBonusActionBar() and C_ActionBar.GetActionBarPage() == 1) then
+			MainActionBar:SetAttribute("actionpage", C_ActionBar.GetBonusBarIndex());
 		else
-			MainActionBar:SetAttribute("actionpage", GetActionBarPage());
+			MainActionBar:SetAttribute("actionpage", C_ActionBar.GetActionBarPage());
 		end
 
 		for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
@@ -182,7 +182,7 @@ function ActionBarController_UpdateAllSpellHighlights()
 end
 
 function ActionBarController_ResetToDefault(force)
-	MainActionBar:SetAttribute("actionpage", GetActionBarPage());
+	MainActionBar:SetAttribute("actionpage", C_ActionBar.GetActionBarPage());
 	for k, frame in pairs(ActionBarButtonEventsFrame.frames) do
 		frame:UpdateAction(force);
 	end

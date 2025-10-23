@@ -103,6 +103,7 @@ local VignetteInfo =
 			Name = "VignetteMinimapUpdated",
 			Type = "Event",
 			LiteralName = "VIGNETTE_MINIMAP_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
@@ -113,6 +114,7 @@ local VignetteInfo =
 			Name = "VignettesUpdated",
 			Type = "Event",
 			LiteralName = "VIGNETTES_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

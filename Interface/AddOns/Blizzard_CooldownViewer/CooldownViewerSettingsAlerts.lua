@@ -28,6 +28,7 @@ function CooldownViewerSettingsEditAlertMixin:SetCooldown(cooldownItem)
 	-- the CooldownViewerSettings frame needs to update the relevant cooldownItem that was modified
 	-- if it's still visible by calling item:RefreshAlertTypeOverlay();
 	self.cooldownID = cooldownItem:GetCooldownID();
+	self.cooldownName = cooldownItem:GetNameText();
 
 	self.Icon:SetTexture(cooldownItem:GetSpellTexture());
 	self.CooldownName:SetText(cooldownItem:GetNameText());
@@ -35,6 +36,10 @@ end
 
 function CooldownViewerSettingsEditAlertMixin:GetCooldownID()
 	return self.cooldownID;
+end
+
+function CooldownViewerSettingsEditAlertMixin:GetCooldownName()
+	return self.cooldownName;
 end
 
 function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
@@ -145,10 +150,26 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 		return CooldownViewerAlert_GetPayloadText(self.workingCopyOfAlert);
 	end);
 
+	local function AddSoundAlertButton(description, buttonText, alertPayload)
+		local selectPayloadButton = description:CreateButton(buttonText, SetAlertPayload, alertPayload);
+		selectPayloadButton:AddInitializer(function(button, description, menu)
+			local playSampleButton = MenuTemplates.AttachUtilityButton(button);
+			playSampleButton.Texture:Hide();
+			CooldownViewerAlert_SetupTypeButton(playSampleButton, Enum.CooldownViewerAlertType.Sound);
+
+			MenuTemplates.SetUtilityButtonTooltipText(playSampleButton, COOLDOWN_VIEWER_SETTINGS_ALERT_MENU_PLAY_SAMPLE);
+			MenuTemplates.SetUtilityButtonAnchor(playSampleButton, MenuVariants.GearButtonAnchor, button); -- gear means throw on the right
+			MenuTemplates.SetUtilityButtonClickHandler(playSampleButton, function()
+				local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, alertPayload);
+				CooldownViewerAlert_PlayAlert(self:GetCooldownName(), alert);
+			end);
+		end);
+	end
+
 	local function BuildSoundMenus(description, currentTable)
 		for key, value in pairs (currentTable) do
 			if value.soundEnum and value.text then
-				description:CreateButton(value.text, SetAlertPayload, value.soundEnum);
+				AddSoundAlertButton(description, value.text, value.soundEnum);
 			elseif type(value) == "table" then
 				local nestedDescription = description:CreateButton(soundCategoryKeyToText[key], nop, -1);
 				BuildSoundMenus(nestedDescription, value);
@@ -159,7 +180,6 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 	self.PayloadDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_PAYLOAD");
 		BuildSoundMenus(rootDescription, CooldownViewerSoundData);
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, SetAlertPayload, CooldownViewerSound.TextToSpeech);
-
+		AddSoundAlertButton(rootDescription, COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, CooldownViewerSound.TextToSpeech);
 	end);
 end

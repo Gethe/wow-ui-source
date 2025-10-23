@@ -5,9 +5,9 @@ local SecretAspectConstants =
 		{
 			Name = "SecretAspect",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 22,
 			MinValue = 1,
-			MaxValue = 32768,
+			MaxValue = 65536,
 			Fields =
 			{
 				{ Name = "ObjectDebug", Type = "SecretAspect", EnumValue = 1 },
@@ -31,6 +31,7 @@ local SecretAspectConstants =
 				{ Name = "TexCoords", Type = "SecretAspect", EnumValue = 8192 },
 				{ Name = "BarValue", Type = "SecretAspect", EnumValue = 16384 },
 				{ Name = "Cooldown", Type = "SecretAspect", EnumValue = 32768 },
+				{ Name = "Rotation", Type = "SecretAspect", EnumValue = 65536 },
 			},
 		},
 	},

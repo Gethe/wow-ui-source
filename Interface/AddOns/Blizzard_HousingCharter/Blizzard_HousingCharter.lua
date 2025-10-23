@@ -17,7 +17,8 @@ function HousingCharterMixin:OnLoad()
 end
 
 function HousingCharterMixin:OnRequestClicked()
-	C_HousingNeighborhood.OnRequestSignatureClicked();
+	C_Housing.OnRequestSignatureClicked();
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_BUTTON);
 end
 
 function HousingCharterMixin:OnSettingsClicked()
@@ -26,10 +27,12 @@ function HousingCharterMixin:OnSettingsClicked()
 	end
 	HousingCreateNeighborhoodCharterFrame:SetCharterInfo(self.neighborhoodInfo.neighborhoodName);
 	ShowUIPanel(HousingCreateNeighborhoodCharterFrame);
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_BUTTON);
 end
 
 function HousingCharterMixin:OnCloseClicked()
 	HideUIPanel(self);
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_BUTTON);
 end
 
 function HousingCharterMixin:OnEvent(event, ...)
@@ -50,10 +53,12 @@ function HousingCharterMixin:OnShow()
 	self:UpdateRequestButton();
 	self:UpdateSettingsButton();
 	FrameUtil.RegisterFrameForEvents(self, HousingCharterFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_OPEN);
 end
 
 function HousingCharterMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HousingCharterFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_CLOSE);
 end
 
 function HousingCharterMixin:UpdateRequestButton()
@@ -74,7 +79,7 @@ function HousingCharterMixin:AddSignature(signature)
 end
 
 function HousingCharterMixin:UpdateSettingsButton()
-	self.SettingsButton:SetEnabled(C_HousingNeighborhood.CanEditCharter());
+	self.SettingsButton:SetEnabled(C_Housing.CanEditCharter());
 end
 
 function HousingCharterMixin:SetCharterInfo(neighborhoodInfo, signatures, numSignaturesRequired)
@@ -114,11 +119,13 @@ function HousingCharterRequestSignatureFrameMixin:OnLoad()
 	self:SetTitle(HOUSING_CREATENEIGHBORHOOD_CHARTER);
 
 	self.ConfirmButton:SetScript("OnClick", function()
-		C_HousingNeighborhood.OnSignCharterClicked(self.neighborhoodInfo.ownerGUID);
+		C_Housing.OnSignCharterClicked(self.neighborhoodInfo.ownerGUID);
 		StaticPopupSpecial_Hide(HousingCharterRequestSignatureDialog);
+		PlaySound(SOUNDKIT.HOUSING_CHARTER_REQUEST_SIGN);
 	end);
 	self.CancelButton:SetScript("OnClick", function()
 		StaticPopupSpecial_Hide(HousingCharterRequestSignatureDialog);
+		PlaySound(SOUNDKIT.HOUSING_CHARTER_REQUEST_DECLINE);
 	end);
 end
 

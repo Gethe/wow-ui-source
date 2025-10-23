@@ -791,6 +791,7 @@ function EncounterJournal_OnShow(self)
 		{ self.dungeonsTab, GameRulesUtil.EJShouldShowDungeons },
 		{ self.raidsTab, GameRulesUtil.EJShouldShowRaids },
 		{ self.LootJournalTab, GameRulesUtil.EJShouldShowItemSets },
+		{ self.TutorialsTab, GameRulesUtil.EJShouldShowTutorials },
 	};
 
 	local previousTab = nil;
@@ -2322,15 +2323,74 @@ function EncounterJournal_SetTooltipWithCompare(tooltip, link, useSpec)
 	tooltip:ProcessInfo(tooltipInfo);
 end
 
+local function GetIconFlagIndices()
+	local flagIndices = {};
+	local flag = Enum.JournalEncounterIconFlagsMeta.MinValue;
+
+	for flagIndex = 1, Enum.JournalEncounterIconFlagsMeta.NumValues do
+		flagIndices[flag] = flagIndex - 1;
+		flag = bit.lshift(flag, 1);
+	end
+
+	return flagIndices;
+end
+
+local iconFlagsToIndex = GetIconFlagIndices();
+local iconIndexToFlags = tInvert(iconFlagsToIndex);
+
+function EncounterJournal_GetIconFlagFromIndex(index)
+	return iconIndexToFlags[index];
+end
+
+function EncounterJournal_GetIconIndexFromFlag(flag)
+	return iconFlagsToIndex[flag];
+end
+
+EncounterJournalFlagIconAtlases = {
+	[Enum.JournalEncounterIconFlags.Tank] = "icons_16x16_tank";
+	[Enum.JournalEncounterIconFlags.Dps] = "icons_16x16_damage";
+	[Enum.JournalEncounterIconFlags.Healer] = "icons_16x16_heal";
+	[Enum.JournalEncounterIconFlags.Heroic] = "icons_16x16_heroic";
+	[Enum.JournalEncounterIconFlags.Deadly] = "icons_16x16_deadly";
+	[Enum.JournalEncounterIconFlags.Important] = "icons_16x16_important";
+	[Enum.JournalEncounterIconFlags.Interruptible] = "icons_16x16_interrupt";
+	[Enum.JournalEncounterIconFlags.Magic] = "icons_16x16_magic";
+	[Enum.JournalEncounterIconFlags.Curse] = "icons_16x16_curse";
+	[Enum.JournalEncounterIconFlags.Poison] = "icons_16x16_poison";
+	[Enum.JournalEncounterIconFlags.Disease] = "icons_16x16_disease";
+	[Enum.JournalEncounterIconFlags.Enrage] = "icons_16x16_enrage";
+	[Enum.JournalEncounterIconFlags.Mythic] = "icons_16x16_mythic";
+	[Enum.JournalEncounterIconFlags.Bleed] = "icons_16x16_bleed";
+};
+
+function EncounterJournal_GetIconAtlasFromFlag(flag)
+	return EncounterJournalFlagIconAtlases[flag];
+end
+
 function EncounterJournal_SetFlagIcon(texture, index)
-	local iconSize = 32;
-	local columns = 256/iconSize;
-	local rows = 64/iconSize;
-	local l = mod(index, columns) / columns;
-	local r = l + (1/columns);
-	local t = floor(index/columns) / rows;
-	local b = t + (1/rows);
-	texture:SetTexCoord(l,r,t,b);
+	local iconFlag = EncounterJournal_GetIconFlagFromIndex(index);
+	local atlasName = EncounterJournal_GetIconAtlasFromFlag(iconFlag);
+
+	-- The atlas mapping table contains some speculative entries for icons that
+	-- don't actually exist, but for which we want to allow art to produce new
+	-- icons for and have it "just work" if they pick the correct atlas names;
+	-- so we need to support both modern and legacy codepaths.
+
+	if atlasName ~= nil and C_Texture.GetAtlasExists(atlasName) then
+		local useAtlasSize = true;
+		texture:SetAtlas(atlasName, useAtlasSize);
+	else
+		local iconSize = 32;
+		local columns = 256/iconSize;
+		local rows = 64/iconSize;
+		local l = mod(index, columns) / columns;
+		local r = l + (1/columns);
+		local t = floor(index/columns) / rows;
+		local b = t + (1/rows);
+		texture:SetTexture([[Interface\EncounterJournal\UI-EJ-ICONS]]);
+		texture:SetTexCoord(l,r,t,b);
+		texture:SetSize(iconSize, iconSize);
+	end
 end
 
 function EncounterJournal_Refresh(self)

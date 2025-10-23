@@ -247,11 +247,13 @@ local PerksProgram =
 			Name = "ChestRewardsUpdatedFromServer",
 			Type = "Event",
 			LiteralName = "CHEST_REWARDS_UPDATED_FROM_SERVER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramAddPendingShopItem",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_ADD_PENDING_SHOP_ITEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },
@@ -261,11 +263,13 @@ local PerksProgram =
 			Name = "PerksProgramClose",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramCurrencyAwarded",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_CURRENCY_AWARDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
@@ -275,6 +279,7 @@ local PerksProgram =
 			Name = "PerksProgramCurrencyRefresh",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_CURRENCY_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldValue", Type = "number", Nilable = false },
@@ -285,11 +290,13 @@ local PerksProgram =
 			Name = "PerksProgramDataRefresh",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_DATA_REFRESH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramDataSpecificItemRefresh",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_DATA_SPECIFIC_ITEM_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },
@@ -299,16 +306,19 @@ local PerksProgram =
 			Name = "PerksProgramDisabled",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramOpen",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramPurchaseCartSuccess",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_PURCHASE_CART_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemIDs", Type = "table", InnerType = "number", Nilable = false },
@@ -318,6 +328,7 @@ local PerksProgram =
 			Name = "PerksProgramPurchaseSuccess",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_PURCHASE_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },
@@ -327,6 +338,7 @@ local PerksProgram =
 			Name = "PerksProgramRefundSuccess",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_REFUND_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },
@@ -336,6 +348,7 @@ local PerksProgram =
 			Name = "PerksProgramRemovePendingShopItem",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_REMOVE_PENDING_SHOP_ITEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },
@@ -345,11 +358,13 @@ local PerksProgram =
 			Name = "PerksProgramResultError",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_RESULT_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PerksProgramSetFrozenItem",
 			Type = "Event",
 			LiteralName = "PERKS_PROGRAM_SET_FROZEN_ITEM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "vendorItemID", Type = "number", Nilable = false },

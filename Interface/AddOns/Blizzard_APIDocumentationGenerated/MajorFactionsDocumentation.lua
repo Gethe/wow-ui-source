@@ -174,16 +174,19 @@ local MajorFactions =
 			Name = "MajorFactionInteractionEnded",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_ENDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MajorFactionInteractionStarted",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MajorFactionRenownLevelChanged",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "majorFactionID", Type = "number", Nilable = false },
@@ -195,6 +198,7 @@ local MajorFactions =
 			Name = "MajorFactionUnlocked",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_UNLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "majorFactionID", Type = "number", Nilable = false },

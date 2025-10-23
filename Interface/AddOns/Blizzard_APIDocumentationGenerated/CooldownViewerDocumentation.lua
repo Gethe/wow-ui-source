@@ -75,11 +75,13 @@ local CooldownViewer =
 			Name = "CooldownViewerDataLoaded",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_DATA_LOADED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CooldownViewerSpellOverrideUpdated",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "baseSpellID", Type = "number", Nilable = false, Documentation = { "The base spell that is either being overridden or losing its override spell." } },
@@ -90,6 +92,7 @@ local CooldownViewer =
 			Name = "CooldownViewerTableHotfixed",
 			Type = "Event",
 			LiteralName = "COOLDOWN_VIEWER_TABLE_HOTFIXED",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -61,6 +61,21 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetBasicDecorInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -191,6 +206,7 @@ local HousingCatalogUI =
 			Name = "HousingCatalogCategoryUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_CATALOG_CATEGORY_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "categoryID", Type = "number", Nilable = false },
@@ -200,6 +216,7 @@ local HousingCatalogUI =
 			Name = "HousingCatalogSearcherReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_CATALOG_SEARCHER_RELEASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "searcher", Type = "HousingCatalogSearcher", Nilable = false },
@@ -209,6 +226,7 @@ local HousingCatalogUI =
 			Name = "HousingCatalogSubcategoryUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_CATALOG_SUBCATEGORY_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "subcategoryID", Type = "number", Nilable = false },
@@ -218,6 +236,7 @@ local HousingCatalogUI =
 			Name = "HousingDecorAddToPreviewList",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_ADD_TO_PREVIEW_LIST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "previewItemData", Type = "HousingPreviewItemData", Nilable = false },
@@ -227,6 +246,7 @@ local HousingCatalogUI =
 			Name = "HousingDecorPreviewListRemoveFromWorld",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -236,11 +256,13 @@ local HousingCatalogUI =
 			Name = "HousingDecorPreviewListUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PREVIEW_LIST_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingStorageEntryUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_STORAGE_ENTRY_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "entryID", Type = "HousingCatalogEntryID", Nilable = false },
@@ -250,6 +272,7 @@ local HousingCatalogUI =
 			Name = "HousingStorageUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_STORAGE_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 
@@ -311,10 +334,13 @@ local HousingCatalogUI =
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false },
 				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false },
 				{ Name = "canCustomize", Type = "bool", Nilable = false },
+				{ Name = "isPrefab", Type = "bool", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false },
 				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "remainingRedeemable", Type = "number", Nilable = false },
 				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false },
+				{ Name = "sourceText", Type = "cstring", Nilable = false },
 			},
 		},
 		{

@@ -23,7 +23,7 @@ local function ErrorIfInvalidSettingArguments(name, variable, variableType, defa
 		error(string.format("'variableType' for '%s', '%s' requires string type.", name, variable));
 	end
 
-	if (defaultValue ~= nil) and not MatchesVariableType(defaultValue, variableType) then
+	if (defaultValue ~= nil) and type(defaultValue) ~= "function" and not MatchesVariableType(defaultValue, variableType) then
 		error(string.format("'defaultValue' argument for '%s', '%s' required '%s' type.", name, variable, variableType));
 	end
 end
@@ -119,7 +119,12 @@ function SettingMixin:SetValueToDefault()
 	if defaultValue == nil then
 		return false;
 	end
-	
+
+	if type(defaultValue) == "function" then
+		self:ApplyValue(defaultValue());
+		return true;
+	end
+
 	self:ApplyValue(defaultValue);
 
 	return true;

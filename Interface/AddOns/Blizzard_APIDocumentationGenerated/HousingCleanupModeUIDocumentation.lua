@@ -7,10 +7,6 @@ local HousingCleanupModeUI =
 	Functions =
 	{
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
 
@@ -28,6 +24,10 @@ local HousingCleanupModeUI =
 				{ Name = "isHoveringDecor", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
+		},
 	},
 
 	Events =
@@ -36,6 +36,7 @@ local HousingCleanupModeUI =
 			Name = "HousingCleanupModeHoveredTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CLEANUP_MODE_HOVERED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
@@ -45,6 +46,7 @@ local HousingCleanupModeUI =
 			Name = "HousingCleanupModeTargetSelected",
 			Type = "Event",
 			LiteralName = "HOUSING_CLEANUP_MODE_TARGET_SELECTED",
+			SynchronousEvent = true,
 		},
 	},
 

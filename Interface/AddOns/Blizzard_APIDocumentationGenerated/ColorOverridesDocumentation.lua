@@ -84,6 +84,7 @@ local ColorOverrides =
 			Name = "ColorOverrideUpdated",
 			Type = "Event",
 			LiteralName = "COLOR_OVERRIDE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "overrideType", Type = "ColorOverride", Nilable = false },
@@ -93,6 +94,7 @@ local ColorOverrides =
 			Name = "ColorOverridesReset",
 			Type = "Event",
 			LiteralName = "COLOR_OVERRIDES_RESET",
+			SynchronousEvent = true,
 		},
 	},
 

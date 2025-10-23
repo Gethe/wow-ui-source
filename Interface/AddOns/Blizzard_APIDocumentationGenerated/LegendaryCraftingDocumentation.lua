@@ -291,6 +291,7 @@ local LegendaryCrafting =
 			Name = "NewRuneforgePowerAdded",
 			Type = "Event",
 			LiteralName = "NEW_RUNEFORGE_POWER_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "powerID", Type = "number", Nilable = false },
@@ -300,11 +301,13 @@ local LegendaryCrafting =
 			Name = "RuneforgeLegendaryCraftingClosed",
 			Type = "Event",
 			LiteralName = "RUNEFORGE_LEGENDARY_CRAFTING_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RuneforgeLegendaryCraftingOpened",
 			Type = "Event",
 			LiteralName = "RUNEFORGE_LEGENDARY_CRAFTING_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isUpgrade", Type = "bool", Nilable = false },
@@ -314,6 +317,7 @@ local LegendaryCrafting =
 			Name = "RuneforgePowerInfoUpdated",
 			Type = "Event",
 			LiteralName = "RUNEFORGE_POWER_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "powerID", Type = "number", Nilable = false },

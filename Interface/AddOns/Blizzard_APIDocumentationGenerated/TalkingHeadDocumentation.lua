@@ -14,11 +14,13 @@ local TalkingHead =
 			Name = "TalkingheadClose",
 			Type = "Event",
 			LiteralName = "TALKINGHEAD_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TalkingheadRequested",
 			Type = "Event",
 			LiteralName = "TALKINGHEAD_REQUESTED",
+			SynchronousEvent = true,
 		},
 	},
 

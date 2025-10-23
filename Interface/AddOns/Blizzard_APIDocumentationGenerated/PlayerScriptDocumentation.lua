@@ -1596,6 +1596,7 @@ local PlayerScript =
 			Name = "PlayerInCombatChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inCombat", Type = "bool", Nilable = false },

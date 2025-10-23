@@ -29,6 +29,7 @@ local WowSurvey =
 			Name = "SurveyDelivered",
 			Type = "Event",
 			LiteralName = "SURVEY_DELIVERED",
+			SynchronousEvent = true,
 		},
 	},
 

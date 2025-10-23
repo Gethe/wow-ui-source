@@ -1230,11 +1230,13 @@ local TradeSkillUI =
 			Name = "CraftingDetailsUpdate",
 			Type = "Event",
 			LiteralName = "CRAFTING_DETAILS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NewRecipeLearned",
 			Type = "Event",
 			LiteralName = "NEW_RECIPE_LEARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
@@ -1246,11 +1248,13 @@ local TradeSkillUI =
 			Name = "ObliterumForgePendingItemChanged",
 			Type = "Event",
 			LiteralName = "OBLITERUM_FORGE_PENDING_ITEM_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "OpenRecipeResponse",
 			Type = "Event",
 			LiteralName = "OPEN_RECIPE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
@@ -1262,6 +1266,7 @@ local TradeSkillUI =
 			Name = "ProfessionRespecConfirmation",
 			Type = "Event",
 			LiteralName = "PROFESSION_RESPEC_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "skillName", Type = "cstring", Nilable = false },
@@ -1271,6 +1276,7 @@ local TradeSkillUI =
 			Name = "TrackedRecipeUpdate",
 			Type = "Event",
 			LiteralName = "TRACKED_RECIPE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
@@ -1281,11 +1287,13 @@ local TradeSkillUI =
 			Name = "TradeSkillClose",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TradeSkillCraftBegin",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_CRAFT_BEGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "recipeSpellID", Type = "number", Nilable = false },
@@ -1295,6 +1303,7 @@ local TradeSkillUI =
 			Name = "TradeSkillCraftingReagentBonusTextUpdated",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_CRAFTING_REAGENT_BONUS_TEXT_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1304,6 +1313,7 @@ local TradeSkillUI =
 			Name = "TradeSkillCurrencyRewardResult",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_CURRENCY_REWARD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "data", Type = "CraftingCurrencyResultData", Nilable = false },
@@ -1313,21 +1323,25 @@ local TradeSkillUI =
 			Name = "TradeSkillDataSourceChanged",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_DATA_SOURCE_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TradeSkillDataSourceChanging",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_DATA_SOURCE_CHANGING",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TradeSkillDetailsUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_DETAILS_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TradeSkillFavoritesChanged",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_FAVORITES_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
@@ -1338,6 +1352,7 @@ local TradeSkillUI =
 			Name = "TradeSkillItemCraftedResult",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_ITEM_CRAFTED_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "data", Type = "CraftingItemResultData", Nilable = false },
@@ -1347,6 +1362,7 @@ local TradeSkillUI =
 			Name = "TradeSkillItemUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_ITEM_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
@@ -1356,21 +1372,25 @@ local TradeSkillUI =
 			Name = "TradeSkillListUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_LIST_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "TradeSkillNameUpdate",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_NAME_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TradeSkillShow",
 			Type = "Event",
 			LiteralName = "TRADE_SKILL_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateTradeskillCastStopped",
 			Type = "Event",
 			LiteralName = "UPDATE_TRADESKILL_CAST_STOPPED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "isScrapping", Type = "bool", Nilable = false },

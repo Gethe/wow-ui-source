@@ -127,6 +127,7 @@ local UIModelInfo =
 			Name = "UiModelSceneInfoUpdated",
 			Type = "Event",
 			LiteralName = "UI_MODEL_SCENE_INFO_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

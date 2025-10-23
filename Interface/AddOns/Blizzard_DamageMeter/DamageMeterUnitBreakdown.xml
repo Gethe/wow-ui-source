@@ -4,20 +4,30 @@
 		<Size x="400" y="200"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Border" atlas="options_frame_child">
+				<Texture parentKey="Header" atlas="ui-damagemeters-header-bar">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPRIGHT"/>
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" text="PH - Header">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Header"  x="20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-20" y="-2"/>
+				</Anchors>
+			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-19"/>
+					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

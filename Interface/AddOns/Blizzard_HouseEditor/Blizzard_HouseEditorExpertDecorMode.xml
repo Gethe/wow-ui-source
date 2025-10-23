@@ -12,25 +12,116 @@
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="MoveForwardInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_FORWARD" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_FORWARD"/>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveBackInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_BACK" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_BACK"/>
+							<KeyValue key="layoutIndex" value="3" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_LEFT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_LEFT"/>
+							<KeyValue key="layoutIndex" value="4" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_RIGHT" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_RIGHT"/>
+							<KeyValue key="layoutIndex" value="5" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveUpInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_UP" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_UP"/>
+							<KeyValue key="layoutIndex" value="6" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="MoveDownInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndMoveSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_DOWN" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_DOWN"/>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndRotateSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_LEFT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_ROTATELEFT"/>
+							<KeyValue key="layoutIndex" value="8" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RotateRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndRotateSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_RIGHT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_ROTATERIGHT"/>
+							<KeyValue key="layoutIndex" value="9" type="number"/>
+						</KeyValues>
+					</Frame>
+
+					<!--<Frame parentKey="RotateChangeSelectedAxisInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndRotateSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="10" type="number"/>
+						</KeyValues>
+					</Frame>-->
+
+
+					<Frame parentKey="ScaleUpInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndScaleSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_SCALEUP" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_SCALEUP"/>
+							<KeyValue key="layoutIndex" value="11" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="ScaleDownInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedAndScaleSubmodeInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_EXPERTDECORINCREMENT_SCALEDOWN" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_EXPERTDECORINCREMENT_SCALEDOWN"/>
+							<KeyValue key="layoutIndex" value="12" type="number"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
 						<KeyValues>
 							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
-							<KeyValue key="keybindName" type="string" value="HOUSING_DELETEDECOR"/>
-							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_REMOVEDECOR"/>
+							<KeyValue key="layoutIndex" value="13" type="number"/>
+						</KeyValues>
+					</Frame>
+
+					<!--<Frame parentKey="ResetInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="14" type="number"/>
+						</KeyValues>
+					</Frame>-->
+
+					<!--<Frame parentKey="ResetAllInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">						<KeyValues>
+							<KeyValue key="layoutIndex" value="15" type="number"/>
+						</KeyValues>
+					</Frame>-->
+
+
+					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
+							<KeyValue key="layoutIndex" value="16" type="number"/>
 						</KeyValues>
 					</Frame>
 					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
 						<KeyValues>
 							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
 							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
-							<KeyValue key="layoutIndex" value="3" type="number"/>
-						</KeyValues>
-					</Frame>
-					<Frame parentKey="ToggleGridInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedOrManipulatingInstructions">
-						<KeyValues>
-							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
-							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
-							<KeyValue key="layoutIndex" value="4" type="number"/>
+							<KeyValue key="layoutIndex" value="17" type="number"/>
 						</KeyValues>
 					</Frame>
 				</Frames>
@@ -98,8 +189,21 @@
 					</Button>
 				</Frames>
 			</Frame>
+
+			<Button parentKey="PlacedDecorListButton" inherits="HouseEditorPlacedDecorListButtonTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.DecorCount" relativePoint="LEFT" x="-20" y="0"/>
+				</Anchors>
+			</Button>
+			
+			<Frame parentKey="PlacedDecorList" inherits="HouseEditorPlacedDecorListTemplate" frameLevel="50" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-50" y="-150"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent" inherit="prepend"/>
 			<OnShow method="OnShow" inherit="prepend"/>
 			<OnHide method="OnHide" inherit="prepend"/>

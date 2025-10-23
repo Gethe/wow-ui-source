@@ -115,6 +115,10 @@ function HousingCatalogCategoriesMixin:GetCategorySearchParams()
 end
 
 function HousingCatalogCategoriesMixin:GetFocusedCategoryString()
+	if not self.categories then
+		return nil;
+	end
+
 	local categoryID = self.focusedCategoryID;
 	local subcategoryID = self.focusedSubcategoryID;
 	if not categoryID then
@@ -157,7 +161,7 @@ function HousingCatalogCategoriesMixin:ClearFocus(forceRebuild)
 	self:SetFocus(nil, nil, forceRebuild);
 end
 
-function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcategoryID, forceRebuild)
+function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcategoryID, forceRebuild, forceFocusChanged)
 	-- Default to the "All" category if no category specified
 	focusedCategoryID = focusedCategoryID or Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID;
 
@@ -189,10 +193,29 @@ function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcat
 
 	self:UpdateDisplayedCategories();
 
-	if didAnyFocusChange then
+	if didAnyFocusChange or forceFocusChanged then
 		if self.onFocusChangedCallback then
 			self.onFocusChangedCallback(self.focusedCategoryID, self.focusedSubcategoryID);
 		end
+	end
+end
+
+function HousingCatalogCategoriesMixin:SetCustomFocus()
+	self.customFocus = true;
+	self:BuildDisplayedCategories();
+end
+
+function HousingCatalogCategoriesMixin:HasCustomFocus()
+	return self.customFocus;
+end
+
+function HousingCatalogCategoriesMixin:ClearCustomFocus()
+	if self.customFocus then
+		self.customFocus = false;
+
+		local forceRebuild = true;
+		local forceFocusChanged = true;
+		self:SetFocus(self.focusedCategoryID, self.focusedSubcategoryID, forceRebuild, forceFocusChanged);
 	end
 end
 
@@ -212,7 +235,14 @@ function HousingCatalogCategoriesMixin:SetCategoryNotification(categoryID, shown
 end
 
 function HousingCatalogCategoriesMixin:BuildDisplayedCategories()
-	if self:DoesFocusedCategoryShowSubcategories() then
+	if self:HasCustomFocus() then
+		self:ClearCategoryFrames();
+		self.BackButton.layoutIndex = 1;
+		self.BackButton:Show();
+		self.SubcategoriesDivider.layoutIndex = 2;
+		self.SubcategoriesDivider:Show();
+		self:Layout();
+	elseif self:DoesFocusedCategoryShowSubcategories() then
 		local focusedCategory = self.categories[self.focusedCategoryID];
 		self:DisplaySubcategoriesUnderCategory(focusedCategory);
 	else
@@ -439,7 +469,11 @@ function HousingCatalogCategoriesMixin:OnCategoryClicked(categoryFrame)
 		soundToPlay = SOUNDKIT.HOUSING_CATALOG_SUBCATEGORY_SELECT;
 	-- Clicked back button -> return to top-level categories
 	elseif categoryFrame == self.BackButton then
-		self:ClearFocus(forceRebuild);
+		if self:HasCustomFocus() then
+			self:ClearCustomFocus();
+		else
+			self:ClearFocus(forceRebuild);
+		end
 		soundToPlay = SOUNDKIT.HOUSING_CATALOG_CATEGORY_DESELECT;
 	-- Clicked subcategory -> focus subcategory
 	elseif categoryFrame.isSubcategory then

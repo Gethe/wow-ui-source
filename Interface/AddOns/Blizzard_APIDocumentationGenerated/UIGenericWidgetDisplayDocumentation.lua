@@ -22,6 +22,7 @@ local UIGenericWidgetDisplay =
 			Name = "GenericWidgetDisplayShow",
 			Type = "Event",
 			LiteralName = "GENERIC_WIDGET_DISPLAY_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "info", Type = "GenericWidgetDisplayFrameInfo", Nilable = false },

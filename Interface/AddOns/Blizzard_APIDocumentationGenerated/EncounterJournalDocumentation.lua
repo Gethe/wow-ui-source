@@ -244,6 +244,7 @@ local EncounterJournal =
 			Name = "EjDifficultyUpdate",
 			Type = "Event",
 			LiteralName = "EJ_DIFFICULTY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "difficultyID", Type = "number", Nilable = false },
@@ -253,6 +254,8 @@ local EncounterJournal =
 			Name = "EjLootDataRecieved",
 			Type = "Event",
 			LiteralName = "EJ_LOOT_DATA_RECIEVED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },

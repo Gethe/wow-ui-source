@@ -126,6 +126,7 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 	self:CheckMoveCooldown();
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_OPEN);
+	self.boughtHouse = false;
 end
 
 local moveCooldownTimeFormatter = CreateFromMixins(SecondsFormatterMixin);
@@ -181,7 +182,9 @@ local CantPurchaseReasonStrings = {
 function HousingCornerstonePurchaseFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CornerstonePurchaseFrameShowingEvents);
 
-	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_CLOSE);
+	if self.boughtHouse == false then
+		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_CLOSE);
+	end
 end
 
 function HousingCornerstonePurchaseFrameMixin:CheckPurchaseEligibility()
@@ -243,6 +246,7 @@ function HousingCornerstonePurchaseFrameMixin:OnConfirmPurchase()
 	else
 		C_HousingNeighborhood.TryPurchasePlot();
 	end
+	self.boughtHouse = true;
 	HideUIPanel(HousingCornerstonePurchaseFrame);
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CONFIRM);
@@ -254,19 +258,29 @@ function HousingCornerstonePurchaseFrameMixin:OnNeighborhoodInfoUpdated(neighbor
 	self:CheckPurchaseEligibility();
 end
 
+--//////////////////////////////Shared Visitor Frame//////////////////////////////////////////
+HousingCornerstoneVisitorFrameSharedMixin = {};
+
+function HousingCornerstoneVisitorFrameSharedMixin:OnLoad()
+	self.GearDropdown:SetupMenu(function(_dropdown, rootDescription)
+		rootDescription:CreateButton(HOUSING_CORNERSTONE_REPORT, GenerateClosure(self.OnReportClicked, self));
+	end);
+end
+
+function HousingCornerstoneVisitorFrameSharedMixin:OnReportClicked()
+	if self.houseInfo then
+		local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID);
+		ReportFrame:InitiateReport(reportInfo, self.houseInfo.ownerName, nil, --[[isBnetReport]] false, --[[sendReportWithoutDialog]] false);
+	end
+end
+
 --//////////////////////////////Visitor Frame//////////////////////////////////////////
-HousingCornerstoneVisitorFrameMixin = {}
+HousingCornerstoneVisitorFrameMixin = CreateFromMixins(HousingCornerstoneVisitorFrameSharedMixin);
 
 local CornerstoneVisitorFrameShowingEvents =
 {
 	"CLOSE_PLOT_CORNERSTONE",
 };
-
-function HousingCornerstoneVisitorFrameMixin:OnLoad()
-	self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:CreateButton(HOUSING_CORNERSTONE_REPORT, GenerateClosure(self.OnReportClicked, self));
-	end);
-end
 
 function HousingCornerstoneVisitorFrameMixin:OnEvent(event, ...)
 	if event == "CLOSE_PLOT_CORNERSTONE" then
@@ -292,9 +306,80 @@ function HousingCornerstoneVisitorFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
 end
 
-function HousingCornerstoneVisitorFrameMixin:OnReportClicked()
-	local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID);
-	ReportFrame:InitiateReport(reportInfo, self.houseInfo.ownerName, nil, --[[isBnetReport]] false, --[[sendReportWithoutDialog]] false);
+--//////////////////////////////House Info Frame//////////////////////////////////////////
+HousingCornerstoneHouseInfoFrameMixin = CreateFromMixins(HousingCornerstoneVisitorFrameSharedMixin);
+
+local CornerstoneHouseInfoFrameEvents =
+{
+	"CURRENT_HOUSE_INFO_RECIEVED",
+	"CURRENT_HOUSE_INFO_UPDATED",
+};
+
+function HousingCornerstoneHouseInfoFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, CornerstoneHouseInfoFrameEvents);
+	C_Housing.RequestCurrentHouseInfo();
+	self:UpdateHouseInfo();
+end
+
+function HousingCornerstoneHouseInfoFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, CornerstoneHouseInfoFrameEvents);
+	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_CLOSE);
+end
+
+function HousingCornerstoneHouseInfoFrameMixin:OnEvent(event, ...)
+	if (event == "CURRENT_HOUSE_INFO_RECIEVED") or (event == "CURRENT_HOUSE_INFO_UPDATED") then
+		self:UpdateHouseInfo();
+	end
+end
+
+local function HasData(houseInfo)
+	if not houseInfo then
+		return false;
+	end
+
+	if not houseInfo.houseName or houseInfo.houseName == "" then
+		return false;
+	end
+
+	if not houseInfo.ownerName or houseInfo.ownerName == "" then
+		return false;
+	end
+
+	if houseInfo.plotID < 0 then
+		return false;
+	end
+
+	if not houseInfo.neighborhoodName or houseInfo.neighborhoodName == "" then
+		return false;
+	end
+
+	return true;
+end
+
+function HousingCornerstoneHouseInfoFrameMixin:UpdateHouseInfo()
+	local houseInfo = C_Housing.GetCurrentHouseInfo();
+	self.houseInfo = houseInfo;
+
+	local hasData = HasData(houseInfo);
+	self.LoadingSpinner:SetShown(not hasData);
+	self.GearDropdown:SetShown(hasData);
+	self.Header:SetShown(hasData);
+	self.HouseNameText:SetShown(hasData);
+	self.OwnerLabel:SetShown(hasData);
+	self.OwnerText:SetShown(hasData);
+	self.LocationLabel:SetShown(hasData);
+	self.PlotText:SetShown(hasData);
+	self.NeighborhoodLabel:SetShown(hasData);
+	self.NeighborhoodText:SetShown(hasData);
+
+	if hasData then
+		self.HouseNameText:SetText(houseInfo.houseName);
+		self.OwnerText:SetText(houseInfo.ownerName);
+		self.PlotText:SetText(string.format(HOUSING_PLOT_NUMBER, houseInfo.plotID));
+		self.NeighborhoodText:SetText(houseInfo.neighborhoodName);
+	end
+
+	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_OWNED_OPEN);
 end
 
 --//////////////////////////////moving confirmation dialog//////////////////////////////////////////

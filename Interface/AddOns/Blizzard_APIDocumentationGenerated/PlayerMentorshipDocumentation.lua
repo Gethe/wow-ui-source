@@ -67,11 +67,13 @@ local PlayerMentorship =
 			Name = "MentorshipStatusChanged",
 			Type = "Event",
 			LiteralName = "MENTORSHIP_STATUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NewcomerGraduation",
 			Type = "Event",
 			LiteralName = "NEWCOMER_GRADUATION",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -1,7 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="CooldownViewerEssentialItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
+	<Frame name="CooldownViewerBaseItemTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerEssentialItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
 		<Size x="50" y="50"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightHugeOutline" type="string"/>
@@ -74,14 +82,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerUtilityItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
+	<Frame name="CooldownViewerUtilityItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightOutline" type="string"/>
@@ -145,14 +148,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerBuffIconItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
+	<Frame name="CooldownViewerBuffIconItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<KeyValues>
 			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
@@ -195,14 +193,9 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerBuffBarItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
+	<Frame name="CooldownViewerBuffBarItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
 		<Size x="220" y="30"/>
 		<KeyValues>
 			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
@@ -260,10 +253,10 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Pip" atlas="UI-HUD-CoolDownManager-Bar-Pip" useAtlasSize="true"/>
-						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" justifyV="MIDDLE">
 							<Anchors>
-								<Anchor point="LEFT" x="5"/>
-								<Anchor point="RIGHT" x="-25"/>
+								<Anchor point="TOPLEFT" x="5" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-25" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Duration" inherits="NumberFontNormal" justifyH="LEFT">
@@ -275,11 +268,6 @@
 				</Layers>
 			</StatusBar>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
 	<Frame name="CooldownViewerTemplate" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" mixin="CooldownViewerMixin" parent="UIParent" virtual="true">

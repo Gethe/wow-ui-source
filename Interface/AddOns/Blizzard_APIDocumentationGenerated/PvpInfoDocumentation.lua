@@ -1153,6 +1153,7 @@ local PvpInfo =
 			Name = "ArenaOpponentUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_OPPONENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
@@ -1163,36 +1164,43 @@ local PvpInfo =
 			Name = "ArenaPrepOpponentSpecializations",
 			Type = "Event",
 			LiteralName = "ARENA_PREP_OPPONENT_SPECIALIZATIONS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArenaSeasonWorldState",
 			Type = "Event",
 			LiteralName = "ARENA_SEASON_WORLD_STATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldAutoQueue",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_AUTO_QUEUE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldAutoQueueEject",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_AUTO_QUEUE_EJECT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldQueueTimeout",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_QUEUE_TIMEOUT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldsClosed",
 			Type = "Event",
 			LiteralName = "BATTLEFIELDS_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldsShow",
 			Type = "Event",
 			LiteralName = "BATTLEFIELDS_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isArena", Type = "bool", Nilable = true },
@@ -1203,21 +1211,25 @@ local PvpInfo =
 			Name = "BattlegroundObjectivesUpdate",
 			Type = "Event",
 			LiteralName = "BATTLEGROUND_OBJECTIVES_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlegroundPointsUpdate",
 			Type = "Event",
 			LiteralName = "BATTLEGROUND_POINTS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GdfSimComplete",
 			Type = "Event",
 			LiteralName = "GDF_SIM_COMPLETE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HonorLevelUpdate",
 			Type = "Event",
 			LiteralName = "HONOR_LEVEL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isHigherLevel", Type = "bool", Nilable = false },
@@ -1227,6 +1239,7 @@ local PvpInfo =
 			Name = "NotifyPvpAfkResult",
 			Type = "Event",
 			LiteralName = "NOTIFY_PVP_AFK_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "offender", Type = "cstring", Nilable = false },
@@ -1238,16 +1251,19 @@ local PvpInfo =
 			Name = "PlayerEnteringBattleground",
 			Type = "Event",
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerJoinedPvpMatch",
 			Type = "Event",
 			LiteralName = "PLAYER_JOINED_PVP_MATCH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PostMatchCurrencyRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_CURRENCY_REWARD_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reward", Type = "PVPPostMatchCurrencyReward", Nilable = false },
@@ -1257,21 +1273,25 @@ local PvpInfo =
 			Name = "PostMatchItemRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_ITEM_REWARD_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpBrawlInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_BRAWL_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchActive",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_ACTIVE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchComplete",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "winner", Type = "number", Nilable = false },
@@ -1282,26 +1302,31 @@ local PvpInfo =
 			Name = "PvpMatchInactive",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_INACTIVE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchStateChanged",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_STATE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRatedStatsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_RATED_STATS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRewardsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_REWARDS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRolePopupHide",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_POPUP_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = true },
@@ -1311,6 +1336,7 @@ local PvpInfo =
 			Name = "PvpRolePopupShow",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_POPUP_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
@@ -1320,16 +1346,19 @@ local PvpInfo =
 			Name = "PvpRoleUpdate",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpSpecialEventInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_SPECIAL_EVENT_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpTypesEnabled",
 			Type = "Event",
 			LiteralName = "PVP_TYPES_ENABLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "wargameBattlegrounds", Type = "bool", Nilable = false },
@@ -1343,36 +1372,43 @@ local PvpInfo =
 			Name = "PvpVehicleInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpqueueAnywhereShow",
 			Type = "Event",
 			LiteralName = "PVPQUEUE_ANYWHERE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpqueueAnywhereUpdateAvailable",
 			Type = "Event",
 			LiteralName = "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateActiveBattlefield",
 			Type = "Event",
 			LiteralName = "UPDATE_ACTIVE_BATTLEFIELD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBattlefieldScore",
 			Type = "Event",
 			LiteralName = "UPDATE_BATTLEFIELD_SCORE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBattlefieldStatus",
 			Type = "Event",
 			LiteralName = "UPDATE_BATTLEFIELD_STATUS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "battleFieldIndex", Type = "number", Nilable = false },
@@ -1382,6 +1418,7 @@ local PvpInfo =
 			Name = "WarModeStatusUpdate",
 			Type = "Event",
 			LiteralName = "WAR_MODE_STATUS_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warModeEnabled", Type = "bool", Nilable = false },
@@ -1391,11 +1428,13 @@ local PvpInfo =
 			Name = "WargameInviteSent",
 			Type = "Event",
 			LiteralName = "WARGAME_INVITE_SENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WargameRequestResponse",
 			Type = "Event",
 			LiteralName = "WARGAME_REQUEST_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "responderGUID", Type = "WOWGUID", Nilable = false },
@@ -1407,6 +1446,7 @@ local PvpInfo =
 			Name = "WargameRequested",
 			Type = "Event",
 			LiteralName = "WARGAME_REQUESTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "opposingPartyMemberName", Type = "cstring", Nilable = false },
@@ -1419,6 +1459,7 @@ local PvpInfo =
 			Name = "WorldPvpQueue",
 			Type = "Event",
 			LiteralName = "WORLD_PVP_QUEUE",
+			SynchronousEvent = true,
 		},
 	},
 

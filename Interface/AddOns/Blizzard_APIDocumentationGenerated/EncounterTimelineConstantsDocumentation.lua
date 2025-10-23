@@ -3,18 +3,20 @@ local EncounterTimelineConstants =
 	Tables =
 	{
 		{
-			Name = "EncounterTimelineEventDispelType",
+			Name = "EncounterTimelineEventEffectType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 6,
 			Fields =
 			{
-				{ Name = "None", Type = "EncounterTimelineEventDispelType", EnumValue = 0 },
-				{ Name = "Poison", Type = "EncounterTimelineEventDispelType", EnumValue = 1 },
-				{ Name = "Magic", Type = "EncounterTimelineEventDispelType", EnumValue = 2 },
-				{ Name = "Curse", Type = "EncounterTimelineEventDispelType", EnumValue = 3 },
-				{ Name = "Disease", Type = "EncounterTimelineEventDispelType", EnumValue = 4 },
+				{ Name = "None", Type = "EncounterTimelineEventEffectType", EnumValue = 0 },
+				{ Name = "Poison", Type = "EncounterTimelineEventEffectType", EnumValue = 1 },
+				{ Name = "Magic", Type = "EncounterTimelineEventEffectType", EnumValue = 2 },
+				{ Name = "Curse", Type = "EncounterTimelineEventEffectType", EnumValue = 3 },
+				{ Name = "Disease", Type = "EncounterTimelineEventEffectType", EnumValue = 4 },
+				{ Name = "Enrage", Type = "EncounterTimelineEventEffectType", EnumValue = 5 },
+				{ Name = "Bleed", Type = "EncounterTimelineEventEffectType", EnumValue = 6 },
 			},
 		},
 		{

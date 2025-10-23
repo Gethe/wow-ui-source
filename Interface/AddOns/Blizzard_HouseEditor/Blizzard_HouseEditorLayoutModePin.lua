@@ -88,7 +88,7 @@ function HousingLayoutDoorPinMixin:Update()
 
 	local pin = self:GetPin();
 	local isOccupied = pin:IsOccupiedDoor();
-	local isAtBudgetMax = C_HousingLayout.GetNumActiveRooms() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
 	local isEnabled = not isOccupied and not isAtBudgetMax;
 	self:SetEnabled(isEnabled);
 	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;
@@ -301,6 +301,17 @@ function HousingLayoutRoomPinMixin:UpdateVisuals()
 	end
 
 	self.RoomName:SetTextColor(textColor:GetRGB());
+
+	if self.iconAtlas then
+		if isEnabled then
+			self.Icon:SetAtlas(self.iconAtlas);
+		else
+			local disableAtlas = self.iconAtlas .. "-disable";
+			if C_Texture.GetAtlasInfo(disableAtlas) then
+				self.Icon:SetAtlas(disableAtlas);
+			end
+		end
+	end
 end
 
 function HousingLayoutRoomPinMixin:OnClick()
@@ -414,24 +425,9 @@ end
 HousingLayoutRoomOptionMixin = {};
 
 function HousingLayoutRoomOptionMixin:OnLoad()
-	if self.iconTexture and self.iconTexture ~= "" then
-		self.Icon:SetTexture(self.iconTexture);
-		self.HoverIcon:SetTexture(self.iconTexture);
-	elseif self.iconAtlas and self.iconAtlas ~= "" then
+	if self.iconAtlas and self.iconAtlas ~= "" then
 		self.Icon:SetAtlas(self.iconAtlas, TextureKitConstants.IgnoreAtlasSize);
 		self.HoverIcon:SetAtlas(self.iconAtlas, TextureKitConstants.IgnoreAtlasSize);
-	end
-
-	self.Icon:SetVertexColor(DARKYELLOW_FONT_COLOR:GetRGB());
-	self.HoverIcon:SetVertexColor(DARKYELLOW_FONT_COLOR:GetRGB());
-
-	-- HOUSING_TODO: Can remove this flip once we've got real art assets
-	if self.flipIcon then
-		self.Icon:SetTexCoord(1, 0, 0, 1);
-		self.HoverIcon:SetTexCoord(1, 0, 0, 1);
-	else
-		self.Icon:SetTexCoord(0, 1, 0, 1);
-		self.HoverIcon:SetTexCoord(0, 1, 0, 1);
 	end
 end
 
@@ -472,8 +468,6 @@ function HousingLayoutRoomOptionMixin:Update()
 
 	if enabled ~= self:IsEnabled() then
 		self:SetEnabled(enabled);
-
-		local color = enabled and DARKYELLOW_FONT_COLOR or GRAY_FONT_COLOR;
-		self.Icon:SetVertexColor(color:GetRGB());
+		self.Icon:SetDesaturated(not enabled);
 	end
 end

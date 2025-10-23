@@ -313,13 +313,13 @@ SECURE_ACTIONS.actionbar =
         elseif ( action == "decrement" ) then
             ActionBar_PageDown();
         elseif ( tonumber(action) ) then
-            ChangeActionBarPage(action);
+            C_ActionBar.SetActionBarPage(action);
         else
             local a, b = strmatch(action, "^(%d+),%s*(%d+)$");
-            if ( GetActionBarPage() == tonumber(a) ) then
-                ChangeActionBarPage(b);
+            if ( C_ActionBar.GetActionBarPage() == tonumber(a) ) then
+                C_ActionBar.SetActionBarPage(b);
             else
-                ChangeActionBarPage(a);
+                C_ActionBar.SetActionBarPage(a);
             end
         end
     end;
@@ -596,11 +596,11 @@ function SecureActionButtonMixin:CalculateAction(button)
     if ( self:GetID() > 0 ) then
         local page = SecureButton_GetModifiedAttribute(self, "actionpage", button);
         if ( not page ) then
-            page = GetActionBarPage();
+            page = C_ActionBar.GetActionBarPage();
             if ( self.isExtra ) then
-                page = GetExtraBarIndex();
+                page = C_ActionBar.GetExtraBarIndex();
             elseif ( self.buttonType == "MULTICASTACTIONBUTTON" ) then
-                page = GetMultiCastBarIndex();
+                page = C_ActionBar.GetMultiCastBarIndex();
             end
         end
         return (self:GetID() + ((page - 1) * NUM_ACTIONBAR_BUTTONS));

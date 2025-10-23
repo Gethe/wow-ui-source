@@ -580,16 +580,19 @@ local CurrencyInfo =
 			Name = "AccountCharacterCurrencyDataReceived",
 			Type = "Event",
 			LiteralName = "ACCOUNT_CHARACTER_CURRENCY_DATA_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AccountMoney",
 			Type = "Event",
 			LiteralName = "ACCOUNT_MONEY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CurrencyDisplayUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_DISPLAY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currencyType", Type = "number", Nilable = true },
@@ -603,6 +606,7 @@ local CurrencyInfo =
 			Name = "CurrencyTransferFailed",
 			Type = "Event",
 			LiteralName = "CURRENCY_TRANSFER_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "failureReason", Type = "AccountCurrencyTransferResult", Nilable = false },
@@ -612,21 +616,25 @@ local CurrencyInfo =
 			Name = "CurrencyTransferInitiated",
 			Type = "Event",
 			LiteralName = "CURRENCY_TRANSFER_INITIATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CurrencyTransferLogUpdate",
 			Type = "Event",
 			LiteralName = "CURRENCY_TRANSFER_LOG_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CurrencyTransferSuccess",
 			Type = "Event",
 			LiteralName = "CURRENCY_TRANSFER_SUCCESS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerMoney",
 			Type = "Event",
 			LiteralName = "PLAYER_MONEY",
+			SynchronousEvent = true,
 		},
 	},
 

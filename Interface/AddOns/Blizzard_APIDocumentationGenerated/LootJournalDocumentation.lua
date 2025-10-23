@@ -47,6 +47,7 @@ local LootJournal =
 			Name = "LootJournalItemUpdate",
 			Type = "Event",
 			LiteralName = "LOOT_JOURNAL_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 	},
 

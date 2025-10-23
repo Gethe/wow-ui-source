@@ -133,6 +133,7 @@ local WorldLootObject =
 			Name = "WorldLootObjectInfoUpdated",
 			Type = "Event",
 			LiteralName = "WORLD_LOOT_OBJECT_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },

@@ -22,6 +22,8 @@ local CombatLogInternal =
 			Name = "CombatLogEventInternalUnfiltered",
 			Type = "Event",
 			LiteralName = "COMBAT_LOG_EVENT_INTERNAL_UNFILTERED",
+			SynchronousEvent = true,
+			CallbackEvent = true,
 		},
 	},
 

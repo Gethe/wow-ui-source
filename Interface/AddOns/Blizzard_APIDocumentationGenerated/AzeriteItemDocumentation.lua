@@ -143,6 +143,7 @@ local AzeriteItem =
 			Name = "AzeriteItemEnabledStateChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_ENABLED_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -152,6 +153,7 @@ local AzeriteItem =
 			Name = "AzeriteItemExperienceChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_EXPERIENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteItemLocation", Type = "AzeriteItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
@@ -163,6 +165,7 @@ local AzeriteItem =
 			Name = "AzeriteItemPowerLevelChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_POWER_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteItemLocation", Type = "AzeriteItemLocation", Mixin = "ItemLocationMixin", Nilable = false },

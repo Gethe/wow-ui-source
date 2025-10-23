@@ -186,36 +186,43 @@ local ItemSocketInfo =
 			Name = "SocketInfoAccept",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_ACCEPT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoBindConfirm",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_BIND_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoClose",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoFailure",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_FAILURE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoRefundableConfirm",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_REFUNDABLE_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoSuccess",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_SUCCESS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocketInfoUiEventRegistrationUpdate",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_UI_EVENT_REGISTRATION_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "uiType", Type = "ItemSocketInfoUIType", Nilable = false },
@@ -225,6 +232,7 @@ local ItemSocketInfo =
 			Name = "SocketInfoUpdate",
 			Type = "Event",
 			LiteralName = "SOCKET_INFO_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

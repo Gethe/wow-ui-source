@@ -3,7 +3,32 @@ CVarCallbackRegistry:SetCVarCachable(DAMAGE_METER_ENABLED_CVAR);
 
 local MAX_DAMAGE_METER_WINDOW_FRAMES = 3;
 
-DamageMeterMixin = {};
+-- Saved Variable. Stores which windows were previously shown and what stat they were tracking.
+do
+	if not DamageMeterPerCharacterSettings then
+		DamageMeterPerCharacterSettings = {
+			windowDataList = {};
+		};
+	end
+end
+
+local function HasSavedWindowDataList()
+	return DamageMeterPerCharacterSettings and DamageMeterPerCharacterSettings.windowDataList and #DamageMeterPerCharacterSettings.windowDataList > 0;
+end
+
+local function AddToSavedWindowDataList(windowData)
+	-- Saved window data and actual window data aren't identical structures.
+	local savedWindowData = {
+		trackedStat = windowData.trackedStat;
+		shown = true;
+	};
+
+	table.insert(DamageMeterPerCharacterSettings.windowDataList, savedWindowData);
+end
+
+DamageMeterMixin = {
+	windowDataList = {};
+};
 
 function DamageMeterMixin:OnLoad()
 	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
@@ -11,21 +36,23 @@ function DamageMeterMixin:OnLoad()
 	EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
 	CVarCallbackRegistry:RegisterCallback(DAMAGE_METER_ENABLED_CVAR, self.OnEnabledCVarChanged, self);
 
-	self:RegisterEvent("PLAYER_REGEN_ENABLED");
-	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 
-	local windowResetCallback = function(pool, windowFrame)
-		Pool_HideAndClearAnchors(pool, windowFrame);
-	end;
-	self.windowPool = CreateFramePool("FRAME", self, "DamageMeterWindowTemplate", windowResetCallback);
+	-- Recreate all previously open windows and their respective tracked stats.
+	-- Any windows that were previously moved or resized will be positioned when the
+	-- SavedFramePositionCache is loaded.
+	self:LoadSavedWindowDataList();
 
-	-- Create the Primary Window Frame, which much always exist and can't be deleted.
-	self:CreateNewWindowFrame();
+	-- If it doesn't exist, create the primary window frame, which much always exist and can't be hidden.
+	-- This can happen if the saved window data doesn't exist or has been corrupted.
+	if self:GetPrimaryWindowFrame() == nil then
+		self:ShowNewWindowFrame();
+	end
 end
 
 function DamageMeterMixin:OnEvent(event, ...)
-	if event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_LEVEL_CHANGED" then
+	if event == "PLAYER_IN_COMBAT_CHANGED" or event == "PLAYER_LEVEL_CHANGED" then
 		self:UpdateShownState();
 	end
 end
@@ -38,32 +65,8 @@ function DamageMeterMixin:OnEnabledCVarChanged()
 	self:UpdateShownState();
 end
 
-function DamageMeterMixin:GetWindowList()
-	return self.windowList;
-end
-
-function DamageMeterMixin:RefreshWindows()
-	self.windowPool:ReleaseAll();
-	self.windowFrames = {};
-
-	local relativePoint = "TOPLEFT";
-	local relativeFrame = self;
-	local windowFrameIndex = 1;
-
-	local windowList = self:GetWindowList();
-	for i, windowData in ipairs(windowList) do
-		local windowFrame = self.windowPool:Acquire();
-		windowFrame:SetDamageMeterOwner(self, windowFrameIndex);
-		windowFrame:SetTrackedStat(windowData.trackedStat);
-		windowFrame:SetPoint("TOPLEFT", relativeFrame, relativePoint);
-		windowFrame:Show();
-
-		relativePoint = "BOTTOMLEFT";
-		relativeFrame = windowFrame;
-
-		windowFrameIndex = windowFrameIndex + 1;
-		table.insert(self.windowFrames, windowFrame );
-	end
+function DamageMeterMixin:GetWindowDataList()
+	return self.windowDataList;
 end
 
 function DamageMeterMixin:SetIsEditing(isEditing)
@@ -116,13 +119,16 @@ function DamageMeterMixin:UpdateShownState()
 end
 
 function DamageMeterMixin:RefreshLayout()
-	for windowFrame in self.windowPool:EnumerateActive() do
-		windowFrame:RefreshLayout();
+	local windowDataList = self:GetWindowDataList();
+	for i, windowData in ipairs(windowDataList) do
+		if windowData.frame then
+			windowData.frame:RefreshLayout();
+		end
 	end
 end
 
 function DamageMeterMixin:GetWindowFrame(index)
-	return self.windowFrames and self.windowFrames[index] or nil;
+	return self.windowDataList and self.windowDataList[index] and self.windowDataList[index].frame or nil;
 end
 
 function DamageMeterMixin:GetPrimaryWindowFrame()
@@ -134,37 +140,144 @@ function DamageMeterMixin:GetMaxWindowFrameCount()
 end
 
 function DamageMeterMixin:GetCurrentWindowFrameCount()
-	return self.windowFrames and #self.windowFrames or 0;
+	local currentCount = 0;
+
+	local windowDataList = self:GetWindowDataList();
+	for i, windowData in ipairs(windowDataList) do
+		if windowData.frame and windowData.frame:IsShown() then
+			currentCount = currentCount + 1;
+		end
+	end
+
+	return currentCount;
 end
 
-function DamageMeterMixin:CanCreateNewWindowFrame()
+function DamageMeterMixin:CanShowNewWindowFrame()
 	return self:GetCurrentWindowFrameCount() < self:GetMaxWindowFrameCount();
 end
 
-function DamageMeterMixin:CreateNewWindowFrame()
-	if self:CanCreateNewWindowFrame() ~= true then
+function DamageMeterMixin:GetAvailableWindowIndex()
+	local windowDataList = self:GetWindowDataList();
+	for i, windowData in ipairs(windowDataList) do
+		if windowData.frame == nil or windowData.frame:IsShown() == false then
+			return i;
+		end
+	end
+
+	return nil;
+end
+
+function DamageMeterMixin:SetupWindowFrame(windowData, windowIndex)
+	local windowFrame = windowData.frame or CreateFrame("FRAME", "DamageMeterWindow" .. windowIndex, self, "DamageMeterWindowTemplate");
+	windowFrame:SetDamageMeterOwner(self, windowIndex);
+	windowFrame:SetTrackedStat(windowData.trackedStat);
+
+	-- Give the window initial positioning that may be overwritten by the saved frame position cache when it's loaded.
+	windowFrame:ClearAllPoints();
+	windowFrame:SetPoint("TOPLEFT");
+
+	-- Ensure that the window frame's position won't be saved out until it's restored from the frame
+	-- position cache, or if the player moves it. Important for the case when the player hides a
+	-- window and shows a new one that's reusing a name already in the cache.
+	windowFrame:SetUserPlaced(false);
+
+	windowFrame:Show();
+
+	windowData.frame = windowFrame;
+end
+
+function DamageMeterMixin:LoadSavedWindowDataList()
+	if HasSavedWindowDataList() ~= true then
 		return;
 	end
 
-	if not self.windowList then
-		self.windowList = {};
+	local savedWindowDataList = DamageMeterPerCharacterSettings.windowDataList;
+
+	local maxWindowFrameCount = self:GetMaxWindowFrameCount();
+	for i = 1, maxWindowFrameCount do
+		local savedWindowData = savedWindowDataList[i];
+		if savedWindowData == nil then
+			break;
+		end
+
+		local windowData = {
+			trackedStat = savedWindowData.trackedStat;
+		};
+		table.insert(self.windowDataList, windowData);
+
+		if savedWindowData.shown then
+			self:SetupWindowFrame(windowData, i);
+		end
 	end
-
-	table.insert(self.windowList, {trackedStat = "Damage Done"} );
-
-	self:RefreshWindows();
 end
 
-function DamageMeterMixin:CanDeleteWindowFrame(windowFrame)
+function DamageMeterMixin:ShowNewWindowFrame()
+	if self:CanShowNewWindowFrame() ~= true then
+		return;
+	end
+
+	local windowData;
+
+	local windowIndex = self:GetAvailableWindowIndex();
+	if windowIndex then
+		windowData = self.windowDataList[windowIndex];
+		DamageMeterPerCharacterSettings.windowDataList[windowIndex].shown = true;
+	else
+		windowData = {
+			trackedStat = "Damage Done";
+		};
+		table.insert(self.windowDataList, windowData );
+
+		windowIndex = #self.windowDataList;
+
+		AddToSavedWindowDataList(windowData);
+	end
+
+	self:SetupWindowFrame(windowData, windowIndex);
+end
+
+function DamageMeterMixin:CanHideWindowFrame(windowFrame)
+	if windowFrame == nil then
+		return false;
+	end
+
 	return self:GetPrimaryWindowFrame() ~= windowFrame;
 end
 
-function DamageMeterMixin:DeleteWindowFrame(windowFrame)
-	if self:CanDeleteWindowFrame(windowFrame) ~= true then
+function DamageMeterMixin:HideWindowFrame(windowFrame)
+	if self:CanHideWindowFrame(windowFrame) ~= true then
 		return;
 	end
 
-	table.remove(self.windowList, windowFrame:GetWindowFrameIndex());
+	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
 
-	self:RefreshWindows();
+	self.windowDataList[windowFrameIndex].frame:Hide();
+
+	DamageMeterPerCharacterSettings.windowDataList[windowFrameIndex].shown = false;
+end
+
+function DamageMeterMixin:HideAllWindowFrames()
+	-- Hides all window frames except for the primary one, which can't be hidden.
+	local windowDataList = self:GetWindowDataList();
+	for i, windowData in ipairs(windowDataList) do
+		if windowDataList[i] and windowDataList[i].frame then
+			self:HideWindowFrame(windowDataList[i].frame);
+		end
+	end
+end
+
+function DamageMeterMixin:SetWindowFrameTrackedStat(windowFrame, trackedStat)
+	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
+
+	self.windowDataList[windowFrameIndex].trackedStat = trackedStat;
+
+	DamageMeterPerCharacterSettings.windowDataList[windowFrameIndex].trackedStat = trackedStat;
+
+	windowFrame:SetTrackedStat(trackedStat);
+end
+
+function DamageMeterMixin:GetWindowFrameTrackedStat(windowFrame)
+	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
+
+	return self.windowDataList[windowFrameIndex].trackedStat;
 end

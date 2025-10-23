@@ -28,7 +28,7 @@ end
 function NeighborhoodMapDataProviderMixin:RefreshAllData(fromOnShow)
 	self:RemoveAllData();
 
-	if C_Housing.IsOnNeighborhoodMap() then
+	if C_Housing.IsOnNeighborhoodMap() and self:GetMap():GetMapID() == C_Map.GetBestMapForUnit("player") then
 		local houseMapData = C_HousingNeighborhood.GetNeighborhoodMapData();
 		for _index, plotInfo in ipairs(houseMapData) do
 			local template = OWNER_TYPE_TO_TEMPLATE[plotInfo.ownerType];

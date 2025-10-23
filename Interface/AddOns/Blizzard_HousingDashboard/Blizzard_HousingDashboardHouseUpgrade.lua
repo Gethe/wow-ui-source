@@ -145,7 +145,10 @@ function HousingUpgradeFrameMixin:RefreshSelectedElement()
 	frame:Refresh(self.actualLevel, self.displayLevel, selected, self.houseFavor);
 
 	local neededFavor = C_Housing.GetHouseLevelFavorForLevel(self.displayLevel);
-	self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel)
+	self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel);
+	if self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_FILLED);
+	end
 end
 
 function HousingUpgradeFrameMixin:OnTrackUpdate(leftIndex, centerIndex, rightIndex, isMoving)
@@ -260,7 +263,7 @@ function HousingUpgradeFrameMixin:SetRewards(selectedLevel)
 				portrait:SetTexture(QuestionMarkIconFileDataID);
 				portrait:Show();
 			end
-			rewardFrame.tooltipText = HOUSING_DASHBOARD_REWARD_OBJECT_TOOLTIP;
+			rewardFrame.tooltipText = rewardInfo.tooltipText or HOUSING_DASHBOARD_REWARD_OBJECT_TOOLTIP;
 		end
 
 		rewardFrame:Show();
@@ -334,11 +337,12 @@ end
 function HousingTeleportToHouseMixin:OnClick()
 	if self.houseInfo then
 		if self.teleportToPlot then
-			C_HousingNeighborhood.TeleportHome(self.houseInfo.neighborhoodGUID, self.houseInfo.houseGUID, self.houseInfo.plotID);
+			C_Housing.TeleportHome(self.houseInfo.neighborhoodGUID, self.houseInfo.houseGUID, self.houseInfo.plotID);
 		else
-			C_HousingNeighborhood.ReturnAfterVisitingHouse();
+			C_Housing.ReturnAfterVisitingHouse();
 		end
 	end
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_TELEPORT_HOME);
 end
 
 function HousingTeleportToHouseMixin:OnMouseDown()
@@ -355,7 +359,7 @@ function HousingTeleportToHouseMixin:SetHouseInfo(houseInfo)
 end
 
 function HousingTeleportToHouseMixin:UpdateCooldown()
-	local cooldownInfo = C_HousingNeighborhood.GetVisitCooldownInfo();
+	local cooldownInfo = C_Housing.GetVisitCooldownInfo();
 	self.cooldownInfo = cooldownInfo;
 	if cooldownInfo and cooldownInfo.isEnabled and self.teleportToPlot then
 		self.Cooldown:SetCooldown(cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.modRate);
@@ -365,7 +369,13 @@ function HousingTeleportToHouseMixin:UpdateCooldown()
 end
 
 function HousingTeleportToHouseMixin:UpdateState()
-	self.teleportToPlot = not C_Housing.IsInsidePlot();
+	self.teleportToPlot = true;
+	if C_HousingNeighborhood.CanReturnAfterVisitingHouse() then
+		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
+		if currentNeighborhoodGUID and currentNeighborhoodGUID == self.houseInfo.neighborhoodGUID then
+			self.teleportToPlot = false;
+		end
+	end
 	if self.teleportToPlot then
 		self.Icon:SetAtlas("dashboard-panel-homestone-teleport-button");
 		self.Icon:SetDesaturated(not self.houseInfo);
@@ -443,6 +453,7 @@ function HouseWatchFavorButtonMixin:OnClick()
 		C_Housing.SetTrackedHouseGuid(self.houseGUID);
 	end
 	self:UpdateState();
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_TOGGLE_EXPERIENCE);
 end
 
 function HouseWatchFavorButtonMixin:SetHouse(houseGUID)
@@ -500,8 +511,18 @@ function HouseUpgradeProgressBarMixin:OnUpdate()
 		UpdateGivenPercentage(newPercentage);
 	end
 
-	ScriptAnimationUtil.StartScriptAnimation(self, UpdateBar, BAR_ANIM_TIME, self.finishAnimCallback);
+	ScriptAnimationUtil.StartScriptAnimation(self, UpdateBar, BAR_ANIM_TIME, GenerateClosure(self.OnAnimationFinished, self));
 	self.BarAnimation:Restart();
+end
+
+function HouseUpgradeProgressBarMixin:OnAnimationFinished()
+
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+	if self.loopSoundHandle then
+		StopSound(self.loopSoundHandle);
+		self.loopSoundHandle = nil;
+	end
+	self.finishAnimCallback();
 end
 
 function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
@@ -519,6 +540,12 @@ function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
 	local finalDisplayPercentage = ((basePercentage * barDegreesVisible) + (barDegreesCovered / 2)) / 360;
 
 	self.targetPercentage = finalDisplayPercentage;
+
+	if self.targetPercentage ~= self.currentPercentage then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_START);
+		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_LOOP);
+		self.loopSoundHandle = soundHandle;
+	end
 end
 
 

@@ -5,6 +5,7 @@ function EncounterWarningsSystemFrameMixin:OnLoad()
 
 	self:RegisterEvent("ENCOUNTER_WARNING");
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
+	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 
 	for _, cvarName in ipairs(EncounterWarningsVisibilityCVars) do
 		CVarCallbackRegistry:SetCVarCachable(cvarName);
@@ -21,7 +22,9 @@ function EncounterWarningsSystemFrameMixin:OnEvent(event, ...)
 		local encounterWarningInfo = ...;
 		self:OnEncounterWarning(encounterWarningInfo);
 	elseif event == "CLEAR_BOSS_EMOTES" then
-		self:OnClearBossEmotes();
+		self:HideWarning();
+	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
+		self:UpdateVisibility();
 	end
 end
 
@@ -47,14 +50,6 @@ function EncounterWarningsSystemFrameMixin:OnEncounterWarning(encounterWarningIn
 
 	if encounterWarningInfo.iconFileID == 0 then
 		encounterWarningInfo.iconFileID = iconFileAsset;
-	end
-
-	-- EETODO: Bindings generator needs to properly support conditional
-	-- secret + nilable; right now it just gives you a conditional secret
-	-- with no nilable wrapper - so, force it to nil if zero here.
-
-	if encounterWarningInfo.tooltipSpellID == 0 then
-		encounterWarningInfo.tooltipSpellID = nil;
 	end
 
 	-- The message sent down with the event may require formatting to include

@@ -5,6 +5,7 @@ local HouseSettingsFrameShownEvents =
 	"NEIGHBORHOOD_LIST_UPDATED",
 	"HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED",
 	"B_NET_NEIGHBORHOOD_LIST_UPDATED",
+	"DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
 };
 
 local SELECTED_NEIGHBORHOOD_ATLAS_PREFIX = "housefinder_list-item-active-";
@@ -101,6 +102,22 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 		self.LoadingSpinnerMap:Show();
 		self.HouseFinderMapCanvasFrame:Hide();
 	end
+
+	if button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_CHARTER_INVITE);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
+		self.HouseFinderNotificationBanner:Show();
+	elseif button.neighborhoodInfo.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.None and not C_Housing.DoesFactionMatchNeighborhood(button.neighborhoodInfo.neighborhoodGUID) then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_WRONG_FACTION);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-red");
+		self.HouseFinderNotificationBanner:Show();
+	elseif button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.PartySync then
+		self.HouseFinderNotificationBanner.NotificationText:SetText(HOUSING_HOUSEFINDER_PARTY_LEADER);
+		self.HouseFinderNotificationBanner.background:SetAtlas("housefinder-messaging-gold");
+		self.HouseFinderNotificationBanner:Show();
+	else
+		self.HouseFinderNotificationBanner:Hide();
+	end
 end
 
 function HouseFinderFrameMixin:OnEvent(event, ...)
@@ -110,6 +127,8 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 			self:PopulateNeighborhoodList(neighborhoodInfos);
 		else
 			UIErrorsFrame:AddExternalErrorMessage(HOUSING_NEIGHBORHOOD_SEARCH_ERROR);
+			self.NeighborhoodListFrame.LoadingSpinnerList:Hide();
+			self.LoadingSpinnerMap:Hide();
 		end
 	elseif event == "B_NET_NEIGHBORHOOD_LIST_UPDATED" then
 		local result, neighborhoodInfos = ...
@@ -117,6 +136,8 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 			self:PopulateBNetNeighborhoodList(neighborhoodInfos);
 		else
 			UIErrorsFrame:AddExternalErrorMessage(HOUSING_NEIGHBORHOOD_SEARCH_ERROR);
+			self.NeighborhoodListFrame.LoadingSpinnerList:Hide();
+			self.LoadingSpinnerMap:Hide();
 		end
 	elseif event == "HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED" then
 		local mapPlotData = ...;
@@ -133,11 +154,23 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 		if self.HouseFinderMapCanvasFrame:HasZoomLevels() then
 			self.HouseFinderMapCanvasFrame:ResetZoom();
 		end
+	elseif event == "DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE" then
+		local success = ...;
+		if success then
+			local nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(self.pendingDeclineInviteNeighborhoodButton);
+			self.neighborhoodButtonPool:Release(self.pendingDeclineInviteNeighborhoodButton);
+			self:SelectNeighborhood(nextNeighborhood, true); --select new first button and request data for map
+			self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
+		else
+			self.pendingDeclineInviteNeighborhoodButton:FailCancelInvite();
+		end
+		self.pendingDeclineInviteNeighborhoodButton = nil;
 	end
 end
 
 function HouseFinderFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, HouseSettingsFrameShownEvents);
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_OPEN);
 
 	if not self.hasNeighborhoodList then
 		C_Housing.HouseFinderRequestNeighborhoods();
@@ -149,8 +182,9 @@ function HouseFinderFrameMixin:OnHide()
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.OpenHouseFinder);
 
 	self:ShowNeighborhoodList();
-
-	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_CLOSE);
+	if not HousingDashboardFrame or not HousingDashboardFrame:IsShown() then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_CLOSE);
+	end
 end
 
 function HouseFinderFrameMixin:SelectPlot(mapPin, plotInfo)
@@ -216,6 +250,10 @@ function HouseFinderFrameMixin:ClearBnetFriendSearch()
 			end;
 		end
 	end
+end
+
+function HouseFinderFrameMixin:SetPendingNeighborhoodInviteToDecline(neighborhoodButton)
+	self.pendingDeclineInviteNeighborhoodButton = neighborhoodButton;
 end
 
 HouseFinderBNetFriendSearchBoxMixin = {};
@@ -413,14 +451,37 @@ function HouseFinderNeighborhoodButtonMixin:Init(neighborhoodInfo, houseFinderFr
 	self.NeighborhoodName:SetText(neighborhoodInfo.neighborhoodName);
 	self.NeighborhoodType:SetText(NeighborhoodTypeStrings[neighborhoodInfo.neighborhoodOwnerType]);
 	if neighborhoodInfo.ownerName then
+		self.TypeSpacer:Show();
 		self.NeighborhoodOwner:SetText(neighborhoodInfo.ownerName);
 	else
+		self.TypeSpacer:Hide();
 		self.NeighborhoodOwner:SetText("");
 	end
 	self.houseFinderFrame = houseFinderFrame;
-	self.SuggestionIcon:Hide();
+	self.LoadingSpinner:Hide();
 	if self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
 		self.SuggestionIcon:Show();
+		self.SuggestionIcon:SetAtlas("housing-neighborhood-invite-icon");
+		self.NeighborhoodName:SetPoint("LEFT", 30, 7);
+		self.DeclineInviteButton:SetNeighborhoodButton(self);
+		self.DeclineInviteButton:Show();
+		self.GuildIcon:Hide();
+	elseif self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.PartySync then
+		self.SuggestionIcon:Show();
+		self.SuggestionIcon:SetAtlas("housefinder_neighborhood-party-sync-icon");
+		self.NeighborhoodName:SetPoint("LEFT", 30, 7);
+		self.DeclineInviteButton:Hide();
+		self.GuildIcon:Hide();
+	elseif self.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild and self:UpdateGuildIcon() then
+		self.GuildIcon:Show();
+		self.NeighborhoodName:SetPoint("LEFT", 30, 7);
+		self.DeclineInviteButton:Hide();
+		self.SuggestionIcon:Hide();
+	else
+		self.NeighborhoodName:SetPoint("LEFT", 15, 7);
+		self.DeclineInviteButton:Hide();
+		self.SuggestionIcon:Hide();
+		self.GuildIcon:Hide();
 	end
 	self:Deselect();
 	self:Show();
@@ -456,4 +517,69 @@ function HouseFinderNeighborhoodButtonMixin:Deselect()
 	else
 		self.ButtonBackground:SetAtlas(NEIGHBORHOOD_RECCOMENDED_BG_ATLAS);
 	end
+end
+
+function HouseFinderNeighborhoodButtonMixin:TryCancelInvite()
+	HouseFinderFrame:SetPendingNeighborhoodInviteToDecline(self);
+	self.LoadingSpinner:Show();
+	self.DeclineInviteButton:Hide();
+	C_Housing.HouseFinderDeclineNeighborhoodInvitation();
+end
+
+function HouseFinderNeighborhoodButtonMixin:FailCancelInvite()
+	self.LoadingSpinner:Hide();
+	self.DeclineInviteButton:Show();
+end
+
+function HouseFinderNeighborhoodButtonMixin:UpdateGuildIcon()
+	local emblemFilename = select(10, GetGuildLogoInfo());
+	local tabardInfo = C_GuildInfo.GetGuildTabardInfo("player");
+	local hasTabard = emblemFilename and tabardInfo;
+
+	if hasTabard then
+		local color = tabardInfo.backgroundColor;
+		self.GuildIcon.TabardBG:SetVertexColor(color.r, color.g, color.b);
+		SetSmallGuildTabardTextures("player", self.GuildIcon.Emblem);
+		SetSmallGuildTabardTextures("player", self.GuildIcon.HighlightEmblem);
+	end
+
+	return hasTabard;
+end
+
+DeclineInviteButtonMixin = {}
+
+function DeclineInviteButtonMixin:SetNeighborhoodButton(neighborhoodButton)
+	self.neighborhoodButton = neighborhoodButton;
+end
+
+function DeclineInviteButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip_AddNormalLine(GameTooltip, HOUSING_HOUSEFINDER_CANCEL_INVITATION_CONFIRM);
+	GameTooltip:Show();
+end
+
+function DeclineInviteButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+StaticPopupDialogs["HOUSING_HOUSEFINDER_CANCEL_INVITATION"] = {
+	text = HOUSING_HOUSEFINDER_CANCEL_INVITATION,
+	button1 = HOUSING_HOUSEFINDER_CANCEL_INVITATION_CONFIRM,
+	button2 = HOUSING_HOUSEFINDER_CANCEL_INVITATION_CANCEL,
+	OnAccept = function(self, neighborhoodButton)
+		neighborhoodButton:TryCancelInvite();
+	end,
+	hideOnEscape = 1
+};
+
+function DeclineInviteButtonMixin:OnClick()
+	StaticPopup_Show("HOUSING_HOUSEFINDER_CANCEL_INVITATION", nil, nil, self.neighborhoodButton);
+end
+
+function DeclineInviteButtonMixin:OnMouseDown()
+	self:SetPoint("TOPRIGHT", -9, -11);
+end
+
+function DeclineInviteButtonMixin:OnMouseUp()
+	self:SetPoint("TOPRIGHT", -10, -10);
 end

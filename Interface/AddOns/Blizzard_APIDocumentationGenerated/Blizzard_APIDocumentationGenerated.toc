@@ -79,6 +79,7 @@ CreatureInfoDocumentation.lua
 CurrencyInfoDocumentation.lua
 CursorDocumentation.lua
 CursorUtilDocumentation.lua
+CurveUtilDocumentation.lua
 DamageMeterDocumentation.lua
 DateAndTimeDocumentation.lua
 DeathAlertDocumentation.lua
@@ -185,6 +186,8 @@ LootHistoryDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
 LossOfControlDocumentation.lua
+LuaColorCurveObjectAPIDocumentation.lua
+LuaCurveObjectAPIDocumentation.lua
 LuaTableUtilDocumentation.lua
 MacOptionsDocumentation.lua
 MailInfoDocumentation.lua
@@ -304,6 +307,7 @@ SpecializationSharedDocumentation.lua
 SpellDocumentation.lua
 SpellActivationOverlayDocumentation.lua
 SpellBookDocumentation.lua
+SpellDiminishUIDocumentation.lua
 SplashScreenDocumentation.lua
 StableInfoDocumentation.lua
 StorePublicUIDocumentation.lua
@@ -448,6 +452,7 @@ LevelConstantsDocumentation.lua
 LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+LuaCurveObjectConstantsDocumentation.lua
 MajorFactionsConstantsDocumentation.lua
 MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
@@ -503,6 +508,7 @@ SoftTargetConstantsDocumentation.lua
 SoulbindsConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
 SpellConstantsDocumentation.lua
+SpellDiminishConstantsDocumentation.lua
 SpellIDDocumentation.lua
 SpellSharedDocumentation.lua
 SplashScreenConstantsDocumentation.lua

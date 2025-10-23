@@ -388,6 +388,7 @@ local AddOns =
 			Name = "AddonLoaded",
 			Type = "Event",
 			LiteralName = "ADDON_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "addOnName", Type = "cstring", Nilable = false },
@@ -398,6 +399,7 @@ local AddOns =
 			Name = "AddonsUnloading",
 			Type = "Event",
 			LiteralName = "ADDONS_UNLOADING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "closingClient", Type = "bool", Nilable = false },
@@ -407,6 +409,7 @@ local AddOns =
 			Name = "SavedVariablesTooLarge",
 			Type = "Event",
 			LiteralName = "SAVED_VARIABLES_TOO_LARGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "addOnName", Type = "cstring", Nilable = false },

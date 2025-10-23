@@ -113,6 +113,7 @@ local PerksActivities =
 			Name = "PerksActivitiesTrackedListChanged",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_TRACKED_LIST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "perksActivityID", Type = "number", Nilable = false },
@@ -123,16 +124,19 @@ local PerksActivities =
 			Name = "PerksActivitiesTrackedUpdated",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_TRACKED_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PerksActivitiesUpdated",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITIES_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PerksActivityCompleted",
 			Type = "Event",
 			LiteralName = "PERKS_ACTIVITY_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "perksActivityID", Type = "number", Nilable = false },

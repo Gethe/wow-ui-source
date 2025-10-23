@@ -563,7 +563,7 @@ local BOOST_BUTTON_ACTION = 205;
 
 function PlayerPowerBarAltMixin:EvaluateTutorials()
 	local showedTutorial = false;
-	if self.barInfo and self.barInfo.ID == TURBO_METER_BAR_ID and IsUsableAction(BOOST_BUTTON_ACTION) then
+	if self.barInfo and self.barInfo.ID == TURBO_METER_BAR_ID and C_ActionBar.IsUsableAction(BOOST_BUTTON_ACTION) then
 		local barHelpTipInfo = {
 			text = DRIVE_TURBO_METER_HELP_TIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,

@@ -23,6 +23,7 @@ local TimerunningUI =
 			Name = "RemixEndOfEvent",
 			Type = "Event",
 			LiteralName = "REMIX_END_OF_EVENT",
+			SynchronousEvent = true,
 		},
 	},
 

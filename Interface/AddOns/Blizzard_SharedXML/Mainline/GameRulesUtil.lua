@@ -27,3 +27,8 @@ end
 function GameRulesUtil.GarrisonLandingPageAllowed()
 	return not PlayerIsTimerunning();
 end
+
+function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	return (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+end

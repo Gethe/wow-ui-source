@@ -521,6 +521,7 @@ do
 		SetMinimapMouseover = "GetMinimapMouseover",
 		SetUnitBuffByAuraInstanceID = "GetUnitBuffByAuraInstanceID",
 		SetUnitDebuffByAuraInstanceID = "GetUnitDebuffByAuraInstanceID",
+		SetUnitAuraByAuraInstanceID = "GetUnitAuraByAuraInstanceID",
 		SetTraitEntry = "GetTraitEntry",
 		SetSlottedKeystone = "GetSlottedKeystone",
 		SetItemInteractionItem = "GetItemInteractionItem",

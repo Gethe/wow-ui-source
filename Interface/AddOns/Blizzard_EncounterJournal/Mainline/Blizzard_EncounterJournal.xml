@@ -687,7 +687,8 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIcon" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon">
-					<Size x="32" y="32"/>
+					<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -1594,7 +1595,8 @@
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
 								<Texture name="$parentDifficultyIcon" parentKey="difficultyIcon" file="Interface\EncounterJournal\UI-EJ-Icons">
-									<Size x="32" y="32"/>
+									<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
+									<Size x="16" y="16"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="55" y="-10"/>
 									</Anchors>

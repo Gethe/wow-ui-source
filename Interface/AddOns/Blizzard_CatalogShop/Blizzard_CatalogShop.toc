@@ -1,16 +1,13 @@
 ## Title: Blizzard_CatalogShop
 ## AllowLoad: Both
 ## LoadFirst: 1
-## RequiredDep: Blizzard_SharedXML
+## RequiredDep: Blizzard_SharedXML, Blizzard_CatalogShopSharedUtil, Blizzard_CatalogShopSharedTemplates
 ## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_GlueDialogs, Blizzard_Shared_SimpleCheckout
 ## UseSecureEnvironment: 1
-
-Blizzard_CatalogShop_Constants.lua
 
 DialogPopup.xml
 DialogPopup.lua
 
-Blizzard_CatalogShop_Util.lua
 Blizzard_CatalogShop_Elements.lua
 Blizzard_CatalogShop_ProductCards.lua
 Blizzard_CatalogShop_Header.lua

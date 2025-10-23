@@ -37,7 +37,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="HouseEditorStorageFrameTemplate" mixin="HouseEditorStorageFrameMixin" inherits="TabSystemOwnerTemplate" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
+	<Frame name="HouseEditorStorageFrameTemplate" mixin="HouseEditorStorageFrameMixin" inherits="TabSystemOwnerTemplate, CallbackRegistrantTemplate" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
 		<Size x="600" y="651"/>
 		<KeyValues>
 			<KeyValue key="minWidth" value="415" type="number"/>
@@ -116,9 +116,6 @@
 			</Frame>
 
 			<Frame parentKey="OptionsContainer" inherits="ScrollingHousingCatalogTemplate">
-				<KeyValues>
-					<KeyValue key="scrollBoxTopOffset" value="-20" type="number"/>
-				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="85" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>

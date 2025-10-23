@@ -19,7 +19,7 @@ local s_spellIDToHelpTipInfo = {
 };
 
 
---AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon.. 
+--AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon..
 --Which just seems wrong, so I still have to talk to designers and see if we want to invest in a system to show temp enchants other than weapon
 local textureMapping = {
 	[1] = 16,	--Main hand
@@ -105,7 +105,7 @@ function AuraContainerMixin:UpdateGridLayout(auras, doNotAnchorDisabledFrames)
 					or self.currentGridLayoutInfo.iconPadding ~= newLayoutInfo.iconPadding;
 
 	if updateLayout then
-		-- Multipliers determine the direction the bar grows for grid layouts 
+		-- Multipliers determine the direction the bar grows for grid layouts
 		-- Positive means right/up
 		-- Negative means left/down
 		local xMultiplier = newLayoutInfo.addIconsToRight and 1 or -1;
@@ -230,7 +230,7 @@ function AuraFrameMixin:UpdateAuraButtons()
 					end
 				end
 
-				-- If we found a showable aura then set the button to that aura and show it, otherwise hide the button 
+				-- If we found a showable aura then set the button to that aura and show it, otherwise hide the button
 				auraFrame:SetShown(auraInfo ~= nil);
 				if auraInfo then
 					auraFrame.hasValidInfo = true;
@@ -253,6 +253,7 @@ end
 
 function AuraFrameMixin:UpdateAuraContainerAnchor()
 	-- Override this as necessary
+	self.AuraContainer:ClearAllPoints();
 end
 
 function AuraFrameMixin:UpdateSize(auraWidth, auraHeight, perRow, iconPadding, scale, isHorizontal, numEnabledAuras)
@@ -284,6 +285,7 @@ function AuraFrameEventListenerMixin:AuraFrameEventListener_OnLoad()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 end
 
 function AuraFrameEventListenerMixin:AuraFrameEventListener_OnEvent(event, ...)
@@ -302,10 +304,23 @@ function AuraFrameEventListenerMixin:AuraFrameEventListener_OnEvent(event, ...)
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:Update();
+	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
+		self:UpdateShownState();
 	end
 end
 
 AuraFrameEditModeMixin = CreateFromMixins(AuraFrameMixin);
+
+function AuraFrameEditModeMixin:SetIsEditing(isEditing)
+	if self.isInEditMode ~= isEditing then
+		self.isInEditMode = isEditing;
+		self:UpdateShownState();
+	end
+end
+
+function AuraFrameEditModeMixin:IsEditing()
+	return self.isInEditMode;
+end
 
 function AuraFrameEditModeMixin:UpdateAuraButtons()
 	if self:TryEditModeUpdateAuraButtons() then
@@ -315,8 +330,41 @@ function AuraFrameEditModeMixin:UpdateAuraButtons()
 	AuraFrameMixin.UpdateAuraButtons(self);
 end
 
+function AuraFrameEditModeMixin:ShouldBeShown()
+	-- Override as needed
+	if self:IsEditing() then
+		return true;
+	end
+
+	if self.visibleSetting then
+		if self.visibleSetting == Enum.CooldownViewerVisibleSetting.Always then
+			return true;
+		elseif self.visibleSetting == Enum.CooldownViewerVisibleSetting.InCombat then
+			local isInCombat = UnitAffectingCombat("player");
+			return isInCombat;
+		elseif self.visibleSetting == Enum.CooldownViewerVisibleSetting.Hidden then
+			return false;
+		else
+			assertsafe(false, "Unknown value for visible setting: %s", tostring(self.visibleSetting));
+		end
+	end
+
+	return true;
+end
+
+function AuraFrameEditModeMixin:UpdateShownState()
+	-- Override as needed
+	local shouldBeShown = self:ShouldBeShown();
+	if shouldBeShown ~= self:IsShown() then
+		self:SetShown(shouldBeShown);
+		if shouldBeShown then
+			self:Update();
+		end
+	end
+end
+
 function AuraFrameEditModeMixin:TryEditModeUpdateAuraButtons()
-	if self.isInEditMode then
+	if self:IsEditing() then
 		if not self.hasInitializedForEditMode then
 			if not self.iconDataProvider then
 				local spellIconsOnly = true;
@@ -352,7 +400,37 @@ function AuraFrameEditModeMixin:TryEditModeUpdateAuraButtons()
 	return self.hasInitializedForEditMode;
 end
 
-BuffFrameMixin = { };
+BaseAuraFrameMixin = {};
+
+function BaseAuraFrameMixin:GetIconLimitSettingEnum()
+	return Enum.EditModeAuraFrameSetting.IconLimitBuffFrame;
+end
+
+function BaseAuraFrameMixin:UpdateAuraContainerAnchor()
+	AuraFrameMixin.UpdateAuraContainerAnchor(self);
+
+	if self.AuraContainer.addIconsToRight then
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMLEFT");
+		else
+			self.AuraContainer:SetPoint("TOPLEFT");
+		end
+	else
+		if self.AuraContainer.addIconsToTop then
+			self.AuraContainer:SetPoint("BOTTOMRIGHT");
+		else
+			self.AuraContainer:SetPoint("TOPRIGHT");
+		end
+	end
+end
+
+function BaseAuraFrameMixin:UpdateGridLayout(icons)
+	icons = icons or self.auraFrames;
+	self.AuraContainer:UpdateGridLayout(icons, self.doNotAnchorDisabledFrames);
+	self:UpdateAuraContainerAnchor();
+end
+
+BuffFrameMixin = CreateFromMixins(BaseAuraFrameMixin);
 
 function BuffFrameMixin:OnLoad()
 	self:RegisterEvent("WEAPON_ENCHANT_CHANGED");
@@ -429,12 +507,12 @@ function BuffFrameMixin:UpdateGridLayout()
 		tAppendAll(layoutAuraIcons, self.auraFrames);
 	end
 
-	self.AuraContainer:UpdateGridLayout(layoutAuraIcons, self.doNotAnchorDisabledFrames);
-	self:UpdateAuraContainerAnchor();
+	BaseAuraFrameMixin.UpdateGridLayout(self, layoutAuraIcons);
 end
 
 function BuffFrameMixin:UpdateAuraContainerAnchor()
-	self.AuraContainer:ClearAllPoints();
+	AuraFrameMixin.UpdateAuraContainerAnchor(self);
+
 	self.CollapseAndExpandButton:ClearAllPoints();
 
 	if self.AuraContainer.isHorizontal then
@@ -532,7 +610,7 @@ end
 function BuffFrameMixin:UpdateAuraButtons()
 	AuraFrameEditModeMixin.UpdateAuraButtons(self);
 
-	if self.isInEditMode then
+	if self:IsEditing() then
 		self.CollapseAndExpandButton:SetShown(self.CollapseAndExpandButton:IsEnabled());
 		self.CollapseAndExpandButton:SetChecked(true);
 		self.CollapseAndExpandButton:UpdateOrientation();
@@ -709,7 +787,7 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 		if info.criticalStacks and info.criticalStacks <= info.count then
 			return true;
 		end
-				
+
 		return false;
 	end
 
@@ -748,22 +826,8 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 	end
 end
 
-function DebuffFrameMixin:UpdateAuraContainerAnchor()
-	self.AuraContainer:ClearAllPoints();
-
-	if self.AuraContainer.addIconsToRight then
-		if self.AuraContainer.addIconsToTop then
-			self.AuraContainer:SetPoint("BOTTOMLEFT", self.AuraContainer:GetParent(), "BOTTOMLEFT");
-		else
-			self.AuraContainer:SetPoint("TOPLEFT", self.AuraContainer:GetParent(), "TOPLEFT");
-		end
-	else
-		if self.AuraContainer.addIconsToTop then
-			self.AuraContainer:SetPoint("BOTTOMRIGHT", self.AuraContainer:GetParent(), "BOTTOMRIGHT");
-		else
-			self.AuraContainer:SetPoint("TOPRIGHT", self.AuraContainer:GetParent(), "TOPRIGHT");
-		end
-	end
+function DebuffFrameMixin:GetIconLimitSettingEnum()
+	return Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
 end
 
 -- If you make changes to this, consider making the same changes to PrivateAuraMixin
@@ -789,7 +853,7 @@ function AuraButtonMixin:OnClick(button)
 		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
 	elseif self.auraType == "TempEnchant" then
 		if button == "RightButton" then
-			--AubrieTODO: Figure out what we want to do with temp item enchants. 
+			--AubrieTODO: Figure out what we want to do with temp item enchants.
 			if self:GetID() == 16 then
 				CancelItemTempEnchantment(1);
 			elseif self:GetID() == 17 then
@@ -861,7 +925,7 @@ function AuraButtonMixin:OnUpdate(elapsed)
 	end
 
 	-- Update duration
-	securecall(self.UpdateDuration, self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev 
+	securecall(self.UpdateDuration, self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev
 
 	-- Update our timeLeft
 	local timeLeft = self.buttonInfo.expirationTime - GetTime();

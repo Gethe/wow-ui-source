@@ -95,6 +95,7 @@ local WarbandSceneInfo =
 			Name = "NewWarbandSceneAdded",
 			Type = "Event",
 			LiteralName = "NEW_WARBAND_SCENE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warbandScenID", Type = "number", Nilable = false },
@@ -104,6 +105,7 @@ local WarbandSceneInfo =
 			Name = "WarbandSceneFavoritesUpdated",
 			Type = "Event",
 			LiteralName = "WARBAND_SCENE_FAVORITES_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

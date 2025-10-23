@@ -48,6 +48,7 @@ local EventUtils =
 			Name = "SettingsLoaded",
 			Type = "Event",
 			LiteralName = "SETTINGS_LOADED",
+			SynchronousEvent = true,
 		},
 	},
 

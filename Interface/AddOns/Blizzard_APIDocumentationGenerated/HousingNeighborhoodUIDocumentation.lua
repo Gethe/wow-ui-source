@@ -7,18 +7,19 @@ local HousingNeighborhoodUI =
 	Functions =
 	{
 		{
-			Name = "CanEditCharter",
+			Name = "CanReturnAfterVisitingHouse",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "canEditCharter", Type = "bool", Nilable = false },
+				{ Name = "canReturn", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "CancelInviteToNeighborhood",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -26,29 +27,10 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "CreateGuildNeighborhood",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "CreateNeighborhoodCharter",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "DemoteToResident",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -56,18 +38,9 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "EditNeighborhoodCharter",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "GetCornerstoneHouseInfo",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -77,6 +50,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetCornerstoneNeighborhoodInfo",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -86,6 +60,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetCornerstonePurchaseMode",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -104,6 +79,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetDiscountedMovePrice",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -113,6 +89,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetMoveCooldownTime",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -155,6 +132,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetPreviousHouseIdentifier",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -162,18 +140,9 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "GetVisitCooldownInfo",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Returns =
-			{
-				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "HasPermissionToPurchase",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -184,6 +153,7 @@ local HousingNeighborhoodUI =
 			Name = "InvitePlayerToNeighborhood",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -211,6 +181,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "IsPlotAvailableForPurchase",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -220,6 +191,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "IsPlotOwnedByPlayer",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 
 			Returns =
 			{
@@ -227,47 +199,14 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "LeaveHouse",
-			Type = "Function",
-		},
-		{
 			Name = "OnBulletinBoardClosed",
 			Type = "Function",
-		},
-		{
-			Name = "OnCharterConfirmationAccepted",
-			Type = "Function",
-		},
-		{
-			Name = "OnCharterConfirmationClosed",
-			Type = "Function",
-		},
-		{
-			Name = "OnCreateCharterNeighborhoodClosed",
-			Type = "Function",
-		},
-		{
-			Name = "OnCreateGuildNeighborhoodClosed",
-			Type = "Function",
-		},
-		{
-			Name = "OnRequestSignatureClicked",
-			Type = "Function",
-		},
-		{
-			Name = "OnSignCharterClicked",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "charterOwnerGUID", Type = "WOWGUID", Nilable = false },
-			},
 		},
 		{
 			Name = "PromoteToManager",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -281,31 +220,18 @@ local HousingNeighborhoodUI =
 		{
 			Name = "RequestNeighborhoodRoster",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 		},
 		{
 			Name = "RequestPendingNeighborhoodInvites",
 			Type = "Function",
-		},
-		{
-			Name = "ReturnAfterVisitingHouse",
-			Type = "Function",
-		},
-		{
-			Name = "TeleportHome",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "houseGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "plotID", Type = "number", Nilable = false },
-			},
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 		},
 		{
 			Name = "TransferNeighborhoodOwnership",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -316,6 +242,7 @@ local HousingNeighborhoodUI =
 			Name = "TryEvictPlayer",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
 			{
@@ -325,64 +252,22 @@ local HousingNeighborhoodUI =
 		{
 			Name = "TryMoveHouse",
 			Type = "Function",
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 		},
 		{
 			Name = "TryPurchasePlot",
 			Type = "Function",
-		},
-		{
-			Name = "TryRenameNeighborhood",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "ValidateCreateGuildNeighborhoodSize",
-			Type = "Function",
-		},
-		{
-			Name = "ValidateNeighborhoodName",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "VisitHouse",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "houseGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "plotID", Type = "number", Nilable = false },
-			},
+			Documentation = { "Only available when interacting with a cornerstone game object" },
 		},
 	},
 
 	Events =
 	{
 		{
-			Name = "AddNeighborhoodCharterSignature",
-			Type = "Event",
-			LiteralName = "ADD_NEIGHBORHOOD_CHARTER_SIGNATURE",
-			Payload =
-			{
-				{ Name = "signature", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "CancelNeighborhoodInviteResponse",
 			Type = "Event",
 			LiteralName = "CANCEL_NEIGHBORHOOD_INVITE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -390,48 +275,16 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "CloseCharterConfirmationUI",
-			Type = "Event",
-			LiteralName = "CLOSE_CHARTER_CONFIRMATION_UI",
-		},
-		{
-			Name = "CloseCreateCharterNeighborhoodUI",
-			Type = "Event",
-			LiteralName = "CLOSE_CREATE_CHARTER_NEIGHBORHOOD_UI",
-		},
-		{
-			Name = "CloseCreateGuildNeighborhoodUI",
-			Type = "Event",
-			LiteralName = "CLOSE_CREATE_GUILD_NEIGHBORHOOD_UI",
-		},
-		{
 			Name = "ClosePlotCornerstone",
 			Type = "Event",
 			LiteralName = "CLOSE_PLOT_CORNERSTONE",
-		},
-		{
-			Name = "CreateNeighborhoodResult",
-			Type = "Event",
-			LiteralName = "CREATE_NEIGHBORHOOD_RESULT",
-			Payload =
-			{
-				{ Name = "result", Type = "HousingResult", Nilable = false },
-				{ Name = "neighborhoodName", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "NeighborhoodGuildSizeValidated",
-			Type = "Event",
-			LiteralName = "NEIGHBORHOOD_GUILD_SIZE_VALIDATED",
-			Payload =
-			{
-				{ Name = "approved", Type = "bool", Nilable = false },
-			},
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NeighborhoodInfoUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -441,6 +294,7 @@ local HousingNeighborhoodUI =
 			Name = "NeighborhoodInviteResponse",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_INVITE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -450,11 +304,13 @@ local HousingNeighborhoodUI =
 			Name = "NeighborhoodMapDataUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_MAP_DATA_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NeighborhoodNameUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_NAME_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
@@ -462,80 +318,16 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
-			Name = "NeighborhoodNameValidated",
-			Type = "Event",
-			LiteralName = "NEIGHBORHOOD_NAME_VALIDATED",
-			Payload =
-			{
-				{ Name = "approved", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "NeighborhoodTypeChanged",
-			Type = "Event",
-			LiteralName = "NEIGHBORHOOD_TYPE_CHANGED",
-			Payload =
-			{
-				{ Name = "result", Type = "HousingResult", Nilable = false },
-			},
-		},
-		{
-			Name = "OpenCharterConfirmationUI",
-			Type = "Event",
-			LiteralName = "OPEN_CHARTER_CONFIRMATION_UI",
-			Payload =
-			{
-				{ Name = "neighborhoodName", Type = "string", Nilable = false },
-				{ Name = "locationName", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "OpenCreateCharterNeighborhoodUI",
-			Type = "Event",
-			LiteralName = "OPEN_CREATE_CHARTER_NEIGHBORHOOD_UI",
-			Payload =
-			{
-				{ Name = "locationName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "OpenCreateGuildNeighborhoodUI",
-			Type = "Event",
-			LiteralName = "OPEN_CREATE_GUILD_NEIGHBORHOOD_UI",
-			Payload =
-			{
-				{ Name = "locationName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "OpenNeighborhoodCharter",
-			Type = "Event",
-			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER",
-			Payload =
-			{
-				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
-				{ Name = "signatures", Type = "table", InnerType = "string", Nilable = false },
-				{ Name = "requiredSignatures", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "OpenNeighborhoodCharterSignatureRequest",
-			Type = "Event",
-			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER_SIGNATURE_REQUEST",
-			Payload =
-			{
-				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
-			},
-		},
-		{
 			Name = "OpenPlotCornerstone",
 			Type = "Event",
 			LiteralName = "OPEN_PLOT_CORNERSTONE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PendingNeighborhoodInvitesRecieved",
 			Type = "Event",
 			LiteralName = "PENDING_NEIGHBORHOOD_INVITES_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -546,6 +338,7 @@ local HousingNeighborhoodUI =
 			Name = "PurchasePlotResult",
 			Type = "Event",
 			LiteralName = "PURCHASE_PLOT_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -555,11 +348,13 @@ local HousingNeighborhoodUI =
 			Name = "ShowPlayerEvictedDialog",
 			Type = "Event",
 			LiteralName = "SHOW_PLAYER_EVICTED_DIALOG",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBulletinBoardRoster",
 			Type = "Event",
 			LiteralName = "UPDATE_BULLETIN_BOARD_ROSTER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -570,6 +365,7 @@ local HousingNeighborhoodUI =
 			Name = "UpdateBulletinBoardRosterStatuses",
 			Type = "Event",
 			LiteralName = "UPDATE_BULLETIN_BOARD_ROSTER_STATUSES",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rosterMemberList", Type = "table", InnerType = "NeighborhoodRosterMemberUpdateInfo", Nilable = false },
@@ -590,20 +386,6 @@ local HousingNeighborhoodUI =
 				{ Name = "Basic", Type = "CornerstonePurchaseMode", EnumValue = 0 },
 				{ Name = "Import", Type = "CornerstonePurchaseMode", EnumValue = 1 },
 				{ Name = "Move", Type = "CornerstonePurchaseMode", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "CreateNeighborhoodErrorType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "None", Type = "CreateNeighborhoodErrorType", EnumValue = 0 },
-				{ Name = "Profanity", Type = "CreateNeighborhoodErrorType", EnumValue = 1 },
-				{ Name = "UndersizedGuild", Type = "CreateNeighborhoodErrorType", EnumValue = 2 },
-				{ Name = "OversizedGuild", Type = "CreateNeighborhoodErrorType", EnumValue = 3 },
 			},
 		},
 	},

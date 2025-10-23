@@ -352,7 +352,7 @@ local Spell =
 			Name = "GetSpellMaxCumulativeAuraApplications",
 			Type = "Function",
 			SecretWhenAurasRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -498,7 +498,7 @@ local Spell =
 		{
 			Name = "IsAutoAttackSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is the player's melee Auto Attack spell" },
 
 			Arguments =
@@ -514,7 +514,7 @@ local Spell =
 		{
 			Name = "IsAutoRepeatSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is an auto repeat player spell" },
 
 			Arguments =
@@ -530,7 +530,7 @@ local Spell =
 		{
 			Name = "IsClassTalentSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell comes from a Class Talent" },
 
 			Arguments =
@@ -546,7 +546,7 @@ local Spell =
 		{
 			Name = "IsCurrentSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is currently being cast or is queued to be cast" },
 
 			Arguments =
@@ -560,9 +560,25 @@ local Spell =
 			},
 		},
 		{
-			Name = "IsPressHoldReleaseSpell",
+			Name = "IsExternalDefensive",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura is considered an external defensive." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isExternalDefensive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsPressHoldReleaseSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is an 'empower' type spell that is cast by pressing and holding, with the on-release cast typically being affected by time held" },
 
 			Arguments =
@@ -594,7 +610,7 @@ local Spell =
 		{
 			Name = "IsPvPTalentSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell comes from a PvP Talent" },
 
 			Arguments =
@@ -610,7 +626,7 @@ local Spell =
 		{
 			Name = "IsRangedAutoAttackSpell",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
 
 			Arguments =
@@ -642,7 +658,7 @@ local Spell =
 		{
 			Name = "IsSpellCrowdControl",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell causes a crowd control effect when cast on a valid target." },
 
 			Arguments =
@@ -674,7 +690,7 @@ local Spell =
 		{
 			Name = "IsSpellDisabled",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -689,7 +705,7 @@ local Spell =
 		{
 			Name = "IsSpellHarmful",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell can be cast on hostile targets" },
 
 			Arguments =
@@ -705,7 +721,7 @@ local Spell =
 		{
 			Name = "IsSpellHelpful",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell can be cast on the player or other friendly targets" },
 
 			Arguments =
@@ -721,7 +737,7 @@ local Spell =
 		{
 			Name = "IsSpellImportant",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is considered important. For example a spell that's lethal if not interrupted would be considered important." },
 
 			Arguments =
@@ -737,7 +753,7 @@ local Spell =
 		{
 			Name = "IsSpellInRange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the current target is within range of the spell; False if out of range; Nil if range check was invalid" },
 
 			Arguments =
@@ -754,7 +770,7 @@ local Spell =
 		{
 			Name = "IsSpellPassive",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -769,7 +785,7 @@ local Spell =
 		{
 			Name = "IsSpellUsable",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns whether the spell is currently castable; Typically based on things like learned status, required resources, etc" },
 
 			Arguments =
@@ -818,7 +834,7 @@ local Spell =
 		{
 			Name = "SpellHasRange",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell has a min and/or max range greater than 0" },
 
 			Arguments =
@@ -877,6 +893,7 @@ local Spell =
 			Name = "EnchantSpellCompleted",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "successful", Type = "bool", Nilable = false },
@@ -887,11 +904,13 @@ local Spell =
 			Name = "EnchantSpellSelected",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_SELECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellDataLoadResult",
 			Type = "Event",
 			LiteralName = "SPELL_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -902,6 +921,7 @@ local Spell =
 			Name = "SpellRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
 			Payload =
 			{
@@ -914,6 +934,7 @@ local Spell =
 			Name = "SpellTextUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_TEXT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -923,6 +944,7 @@ local Spell =
 			Name = "UpdateSpellTargetItemContext",
 			Type = "Event",
 			LiteralName = "UPDATE_SPELL_TARGET_ITEM_CONTEXT",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -46,11 +46,13 @@ local AlliedRacesFrame =
 			Name = "AlliedRaceClose",
 			Type = "Event",
 			LiteralName = "ALLIED_RACE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AlliedRaceOpen",
 			Type = "Event",
 			LiteralName = "ALLIED_RACE_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "raceID", Type = "number", Nilable = false },

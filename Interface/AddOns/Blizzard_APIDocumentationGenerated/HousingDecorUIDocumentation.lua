@@ -15,16 +15,37 @@ local HousingDecorUI =
 			Type = "Function",
 		},
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "EnterPreviewState",
 			Type = "Function",
 		},
 		{
 			Name = "ExitPreviewState",
 			Type = "Function",
+		},
+		{
+			Name = "GetAllPlacedDecor",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "placedDecor", Type = "table", InnerType = "HousingDecorInstanceListEntry", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDecorInstanceInfoForGUID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingDecorInstanceInfo", Nilable = true },
+			},
 		},
 		{
 			Name = "GetHoveredDecorInfo",
@@ -117,15 +138,6 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "IsIncludeTargetDecorChildrenEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "includeChildrenEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsModeDisabledForPreviewState",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -150,6 +162,21 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "RemovePlacedDecorEntry",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
+		},
+		{
 			Name = "SetGridVisible",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -160,13 +187,27 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "SetIncludeTargetDecorChildrenEnabled",
+			Name = "SetPlacedDecorEntryHovered",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "includeChildren", Type = "bool", Nilable = false },
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "hovered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPlacedDecorEntrySelected",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "selected", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -177,6 +218,7 @@ local HousingDecorUI =
 			Name = "HouseDecorAddedToChest",
 			Type = "Event",
 			LiteralName = "HOUSE_DECOR_ADDED_TO_CHEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
@@ -186,6 +228,7 @@ local HousingDecorUI =
 			Name = "HouseExteriorPositionFailure",
 			Type = "Event",
 			LiteralName = "HOUSE_EXTERIOR_POSITION_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
@@ -195,11 +238,13 @@ local HousingDecorUI =
 			Name = "HouseExteriorPositionSuccess",
 			Type = "Event",
 			LiteralName = "HOUSE_EXTERIOR_POSITION_SUCCESS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HouseLevelChanged",
 			Type = "Event",
 			LiteralName = "HOUSE_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newHouseLevelInfo", Type = "HousingLevelInfo", Nilable = true },
@@ -209,6 +254,7 @@ local HousingDecorUI =
 			Name = "HousingDecorGridVisibilityStatusChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_GRID_VISIBILITY_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isGridVisible", Type = "bool", Nilable = false },
@@ -218,6 +264,7 @@ local HousingDecorUI =
 			Name = "HousingDecorPlaceFailure",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PLACE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
@@ -227,15 +274,19 @@ local HousingDecorUI =
 			Name = "HousingDecorPlaceSuccess",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PLACE_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
+				{ Name = "isNew", Type = "bool", Nilable = false, Documentation = { "Will be true if the decor is newly placed from storage, false if it was already placed and just moved" } },
 			},
 		},
 		{
 			Name = "HousingDecorPreviewStateChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_PREVIEW_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPreviewState", Type = "bool", Nilable = false },
@@ -245,11 +296,17 @@ local HousingDecorUI =
 			Name = "HousingDecorRemoved",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_REMOVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+			},
 		},
 		{
 			Name = "HousingDecorSelectResponse",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_SELECT_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -259,6 +316,7 @@ local HousingDecorUI =
 			Name = "HousingNumDecorPlacedChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_NUM_DECOR_PLACED_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -267,9 +325,9 @@ local HousingDecorUI =
 		{
 			Name = "HousingDecorActionFlags",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 13,
 			MinValue = 0,
-			MaxValue = 1024,
+			MaxValue = 2048,
 			Fields =
 			{
 				{ Name = "None", Type = "HousingDecorActionFlags", EnumValue = 0 },
@@ -283,7 +341,18 @@ local HousingDecorUI =
 				{ Name = "TargetHouseExterior", Type = "HousingDecorActionFlags", EnumValue = 128 },
 				{ Name = "MaintainLastTarget", Type = "HousingDecorActionFlags", EnumValue = 256 },
 				{ Name = "IncludeTargetChildren", Type = "HousingDecorActionFlags", EnumValue = 512 },
-				{ Name = "PreviewDecor", Type = "HousingDecorActionFlags", EnumValue = 1024 },
+				{ Name = "UsePlacedDecorList", Type = "HousingDecorActionFlags", EnumValue = 1024 },
+				{ Name = "PreviewDecor", Type = "HousingDecorActionFlags", EnumValue = 2048 },
+			},
+		},
+		{
+			Name = "HousingDecorInstanceListEntry",
+			Type = "Structure",
+			Documentation = { "Smaller structs with the minimum fields from HousingDecorInstanceInfo needed to identify/display a slim list of placed decor" },
+			Fields =
+			{
+				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{

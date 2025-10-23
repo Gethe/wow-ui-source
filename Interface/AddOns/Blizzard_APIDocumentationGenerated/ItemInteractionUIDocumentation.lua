@@ -92,11 +92,13 @@ local ItemInteractionUI =
 			Name = "ItemInteractionChargeInfoUpdated",
 			Type = "Event",
 			LiteralName = "ITEM_INTERACTION_CHARGE_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemInteractionItemSelectionUpdated",
 			Type = "Event",
 			LiteralName = "ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
