@@ -114,6 +114,11 @@ function QuestLogOwnerMixin:SetDisplayState(displayState)
 	else
 		ShowUIPanel(self);
 
+		if not self:IsShown() then
+			-- If we failed to show we bail out.
+			return;
+		end
+
 		if displayState == DISPLAY_STATE_OPEN_MAXIMIZED then
 			if not self:IsMaximized() then
 				self:SetQuestLogPanelShown(false);

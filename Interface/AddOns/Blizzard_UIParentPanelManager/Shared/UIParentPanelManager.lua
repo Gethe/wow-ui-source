@@ -792,6 +792,14 @@ local function CheckProtectedFunctionsAllowed()
 	return true;
 end
 
+function ToggleUIPanel(frame)
+	if frame:IsShown() then
+		HideUIPanel(frame);
+	else
+		ShowUIPanel(frame);
+	end
+end
+
 function ShowUIPanel(frame, force, contextKey)
 	if ( CanAutoSetGamePadCursorControl(true) ) then
 		SetGamePadCursorControl(true);

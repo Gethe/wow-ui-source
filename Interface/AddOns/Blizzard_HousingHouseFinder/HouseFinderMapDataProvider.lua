@@ -86,6 +86,7 @@ function HouseFinderPlotForSalePinMixin:OnMouseClickAction()
 	self.SelectedUnderlay:Show();
 	HouseFinderFrame:SelectPlot(self, self.plotInfo);
 	self.dataProvider:SetSelectedPin(self);
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_SELECT_PLOT);
 end
 
 function HouseFinderPlotForSalePinMixin:StartGlow(glowLoopCount)

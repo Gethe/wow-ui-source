@@ -112,6 +112,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "GetSortType",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "sortType", Type = "HousingCatalogSortType", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAllowedIndoorsActive",
 			Type = "Function",
 
@@ -174,6 +187,19 @@ local HousingCatalogSearcherAPI =
 			Returns =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsIncludingMarketEntries",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isIncludingMarketEntries", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -315,6 +341,15 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "SetIncludeMarketEntries",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "includeMarketEntries", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetOwnedOnly",
 			Type = "Function",
 
@@ -340,6 +375,15 @@ local HousingCatalogSearcherAPI =
 			Arguments =
 			{
 				{ Name = "searchText", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "SetSortType",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "sortType", Type = "HousingCatalogSortType", Nilable = false },
 			},
 		},
 		{

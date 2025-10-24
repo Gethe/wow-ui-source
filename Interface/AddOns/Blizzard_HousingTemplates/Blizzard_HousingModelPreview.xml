@@ -2,22 +2,101 @@
 ..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="HousingModelPreviewTemplate" mixin="HousingModelPreviewMixin" virtual="true">
 		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="PreviewBackground" atlas="catalog-list-preview-bg" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontHighlightLarge" justifyH="LEFT">
+				<FontString parentKey="PreviewUnavailableText" inherits="GameFontHighlight" text="HOUSING_CATALOG_MODEL_PREVIEW_UNAVAILABLE" justifyH="CENTER" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="20" y="-24"/>
-						<Anchor point="TOPRIGHT" x="-20" y="-24"/>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PreviewCornerLeft" atlas="catalog-corbel-bottom-left" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PreviewCornerRight" atlas="catalog-corbel-bottom-right" texelSnappingBias="0.0" snapToPixelGrid="false" useAtlasSize="false">
+					<Size x="66" y="50"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 		</Layers>
 		<Frames>
-			<ModelScene parentKey="ModelScene" inherits="NoZoomModelSceneMixinTemplate" useParentLevel="true">
+			<Frame parentKey="NameContainer" inherits="ResizeLayoutFrame">
+				<Size x="0" y="0"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="20" y="-24"/>
+					<Anchor point="TOPRIGHT" x="-20" y="-24"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="PlacementCost" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="RIGHT" enableMouseMotion="true">
+							<Size x="0" y="15"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Name" inherits="GameFontHighlightLarge" justifyH="LEFT" enableMouseMotion="true">
+							<Size x="0" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.PlacementCost" relativePoint="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TextContainer" inherits="VerticalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="spacing" value="5" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NameContainer" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.NameContainer" relativePoint="BOTTOMRIGHT" x="0" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="SourceInfo" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="CollectionBonus" inherits="GameFontNormal" justifyH="LEFT">
+							<Size y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="NumOwned" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size y="0"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+								<KeyValue key="expand" value="true" type="boolean"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="30" y="-100"/>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="55"/>
 				</Anchors>
 			</ModelScene>
+			<Frame parentKey="ModelSceneControls" inherits="ModelSceneControlFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="10"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

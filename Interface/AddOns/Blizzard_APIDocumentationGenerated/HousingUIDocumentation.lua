@@ -11,8 +11,67 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "CanEditCharter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canEditCharter", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateGuildNeighborhood",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "CreateNeighborhoodCharter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "DeclineNeighborhoodOwnership",
 			Type = "Function",
+		},
+		{
+			Name = "DoesFactionMatchNeighborhood",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionMatches", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "EditNeighborhoodCharter",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentHouseInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "houseInfo", Type = "HouseInfo", Nilable = true },
+			},
 		},
 		{
 			Name = "GetCurrentHouseLevelFavor",
@@ -21,6 +80,15 @@ local HousingUI =
 			Arguments =
 			{
 				{ Name = "houseGuid", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentNeighborhoodGUID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = true },
 			},
 		},
 		{
@@ -117,6 +185,16 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "GetVisitCooldownInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HasHousingExpansionAccess",
 			Type = "Function",
 
@@ -124,6 +202,10 @@ local HousingUI =
 			{
 				{ Name = "hasAccess", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "HouseFinderDeclineNeighborhoodInvitation",
+			Type = "Function",
 		},
 		{
 			Name = "HouseFinderRequestNeighborhoods",
@@ -194,6 +276,39 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "LeaveHouse",
+			Type = "Function",
+		},
+		{
+			Name = "OnCharterConfirmationAccepted",
+			Type = "Function",
+		},
+		{
+			Name = "OnCharterConfirmationClosed",
+			Type = "Function",
+		},
+		{
+			Name = "OnCreateCharterNeighborhoodClosed",
+			Type = "Function",
+		},
+		{
+			Name = "OnCreateGuildNeighborhoodClosed",
+			Type = "Function",
+		},
+		{
+			Name = "OnRequestSignatureClicked",
+			Type = "Function",
+		},
+		{
+			Name = "OnSignCharterClicked",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "charterOwnerGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "RelinquishHouse",
 			Type = "Function",
 
@@ -217,6 +332,10 @@ local HousingUI =
 		},
 		{
 			Name = "RequestPlayerCharacterList",
+			Type = "Function",
+		},
+		{
+			Name = "ReturnAfterVisitingHouse",
 			Type = "Function",
 		},
 		{
@@ -271,6 +390,39 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "TeleportHome",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "houseGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "plotID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "TryRenameNeighborhood",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "ValidateCreateGuildNeighborhoodSize",
+			Type = "Function",
+		},
+		{
+			Name = "ValidateNeighborhoodName",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "ValidateReportScreenshot",
 			Type = "Function",
 
@@ -284,10 +436,30 @@ local HousingUI =
 				{ Name = "isValid", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "VisitHouse",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "houseGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "plotID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "AddNeighborhoodCharterSignature",
+			Type = "Event",
+			LiteralName = "ADD_NEIGHBORHOOD_CHARTER_SIGNATURE",
+			Payload =
+			{
+				{ Name = "signature", Type = "cstring", Nilable = false },
+			},
+		},
 		{
 			Name = "BNetNeighborhoodListUpdated",
 			Type = "Event",
@@ -296,6 +468,31 @@ local HousingUI =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
 				{ Name = "neighborhoodInfos", Type = "table", InnerType = "NeighborhoodInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "CloseCharterConfirmationUI",
+			Type = "Event",
+			LiteralName = "CLOSE_CHARTER_CONFIRMATION_UI",
+		},
+		{
+			Name = "CloseCreateCharterNeighborhoodUI",
+			Type = "Event",
+			LiteralName = "CLOSE_CREATE_CHARTER_NEIGHBORHOOD_UI",
+		},
+		{
+			Name = "CloseCreateGuildNeighborhoodUI",
+			Type = "Event",
+			LiteralName = "CLOSE_CREATE_GUILD_NEIGHBORHOOD_UI",
+		},
+		{
+			Name = "CreateNeighborhoodResult",
+			Type = "Event",
+			LiteralName = "CREATE_NEIGHBORHOOD_RESULT",
+			Payload =
+			{
+				{ Name = "result", Type = "HousingResult", Nilable = false },
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = true },
 			},
 		},
 		{
@@ -314,6 +511,15 @@ local HousingUI =
 			Payload =
 			{
 				{ Name = "houseInfo", Type = "HouseInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "DeclineNeighborhoodInvitationResponse",
+			Type = "Event",
+			LiteralName = "DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -374,6 +580,15 @@ local HousingUI =
 			LiteralName = "MOVE_OUT_RESERVATION_UPDATED",
 		},
 		{
+			Name = "NeighborhoodGuildSizeValidated",
+			Type = "Event",
+			LiteralName = "NEIGHBORHOOD_GUILD_SIZE_VALIDATED",
+			Payload =
+			{
+				{ Name = "approved", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "NeighborhoodListUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_LIST_UPDATED",
@@ -381,6 +596,74 @@ local HousingUI =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
 				{ Name = "neighborhoodInfos", Type = "table", InnerType = "NeighborhoodInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "NeighborhoodNameValidated",
+			Type = "Event",
+			LiteralName = "NEIGHBORHOOD_NAME_VALIDATED",
+			Payload =
+			{
+				{ Name = "approved", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "NewHousingItemAcquired",
+			Type = "Event",
+			LiteralName = "NEW_HOUSING_ITEM_ACQUIRED",
+			Payload =
+			{
+				{ Name = "itemType", Type = "HousingItemToastType", Nilable = false },
+				{ Name = "itemName", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = true },
+			},
+		},
+		{
+			Name = "OpenCharterConfirmationUI",
+			Type = "Event",
+			LiteralName = "OPEN_CHARTER_CONFIRMATION_UI",
+			Payload =
+			{
+				{ Name = "neighborhoodName", Type = "string", Nilable = false },
+				{ Name = "locationName", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenCreateCharterNeighborhoodUI",
+			Type = "Event",
+			LiteralName = "OPEN_CREATE_CHARTER_NEIGHBORHOOD_UI",
+			Payload =
+			{
+				{ Name = "locationName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenCreateGuildNeighborhoodUI",
+			Type = "Event",
+			LiteralName = "OPEN_CREATE_GUILD_NEIGHBORHOOD_UI",
+			Payload =
+			{
+				{ Name = "locationName", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenNeighborhoodCharter",
+			Type = "Event",
+			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER",
+			Payload =
+			{
+				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
+				{ Name = "signatures", Type = "table", InnerType = "string", Nilable = false },
+				{ Name = "requiredSignatures", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenNeighborhoodCharterSignatureRequest",
+			Type = "Event",
+			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER_SIGNATURE_REQUEST",
+			Payload =
+			{
+				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
 			},
 		},
 		{
@@ -444,6 +727,34 @@ local HousingUI =
 
 	Tables =
 	{
+		{
+			Name = "CreateNeighborhoodErrorType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "CreateNeighborhoodErrorType", EnumValue = 0 },
+				{ Name = "Profanity", Type = "CreateNeighborhoodErrorType", EnumValue = 1 },
+				{ Name = "UndersizedGuild", Type = "CreateNeighborhoodErrorType", EnumValue = 2 },
+				{ Name = "OversizedGuild", Type = "CreateNeighborhoodErrorType", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "HousingItemToastType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Room", Type = "HousingItemToastType", EnumValue = 0 },
+				{ Name = "Fixture", Type = "HousingItemToastType", EnumValue = 1 },
+				{ Name = "Customization", Type = "HousingItemToastType", EnumValue = 2 },
+				{ Name = "Decor", Type = "HousingItemToastType", EnumValue = 3 },
+			},
+		},
 	},
 };
 

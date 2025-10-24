@@ -58,6 +58,7 @@ function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
 		end
 		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbIneligibleMapID, not IsCharacterInTutorialMap(playerguid));
 		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_TIMERUNNER_NOT_ALLOWED, not IsCharacterTimerunning(playerguid));
 
 		local canTransfer = #errors == 0;
 		return canTransfer, errors, playerguid, characterInfo.characterServiceRequiresLogin;

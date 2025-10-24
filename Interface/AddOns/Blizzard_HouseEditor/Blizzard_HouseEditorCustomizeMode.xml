@@ -4,7 +4,15 @@
 		<Frames>
 			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
 			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
-				<!-- intentionally left blank -->
+				<Frames>
+					<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_SELECT_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
 			</Frame>
 
 			<Frame parentKey="DecorCustomizationsPane" inherits="HousingDyePaneTemplate" hidden="true">
@@ -23,7 +31,7 @@
 
 			<Frame parentKey="RoomComponentCustomizationsPane" inherits="HousingRoomComponentPaneTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="RIGHT" x="-125" y="135"/>
+					<Anchor point="TOPRIGHT" relativePoint="RIGHT" x="-125" y="200"/>
 				</Anchors>
 			</Frame>
 		</Frames>

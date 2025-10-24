@@ -19,10 +19,6 @@ local HousingBasicModeUI =
 			Type = "Function",
 		},
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "FinishPlacingNewDecor",
 			Type = "Function",
 		},
@@ -117,6 +113,10 @@ local HousingBasicModeUI =
 			},
 		},
 		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
+		},
+		{
 			Name = "RotateDecor",
 			Type = "Function",
 
@@ -185,6 +185,16 @@ local HousingBasicModeUI =
 			},
 		},
 		{
+			Name = "HousingBasicModePlacementFlagsUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_BASIC_MODE_PLACEMENT_FLAGS_UPDATED",
+			Payload =
+			{
+				{ Name = "targetType", Type = "HousingBasicModeTargetType", Nilable = false },
+				{ Name = "placementInfo", Type = "InvalidPlacementInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingBasicModeSelectedTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED",
@@ -232,6 +242,18 @@ local HousingBasicModeUI =
 				{ Name = "None", Type = "HousingBasicModeTargetType", EnumValue = 0 },
 				{ Name = "Decor", Type = "HousingBasicModeTargetType", EnumValue = 1 },
 				{ Name = "House", Type = "HousingBasicModeTargetType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "InvalidPlacementInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "anyRestrictions", Type = "bool", Nilable = false },
+				{ Name = "invalidCollision", Type = "bool", Nilable = false },
+				{ Name = "invalidTarget", Type = "bool", Nilable = false },
+				{ Name = "tooFar", Type = "bool", Nilable = false },
+				{ Name = "notInRoom", Type = "bool", Nilable = false },
 			},
 		},
 	},

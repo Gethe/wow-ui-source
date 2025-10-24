@@ -47,11 +47,13 @@ function BaseHouseEditorModeMixin:PlaySelectedSoundForDecorInfo(decorInfo)
 end
 
 function BaseHouseEditorModeMixin:PlaySelectedSoundForHouse()
-	self:PlaySelectedSoundForSize(Enum.HousingCatalogEntrySize.Huge);
+	local houseExteriorSize = C_HouseExterior.GetCurrentHouseExteriorSize();
+	self:PlaySelectedHouseSoundForSize(houseExteriorSize);
 end
 
 function BaseHouseEditorModeMixin:PlayPlacementSoundForHouse()
-	self:PlayPlacedSoundForSize(Enum.HousingCatalogEntrySize.Huge);
+	local houseExteriorSize = C_HouseExterior.GetCurrentHouseExteriorSize();
+	self:PlayPlacedHouseSoundForSize(houseExteriorSize);
 end
 
 function BaseHouseEditorModeMixin:PlaySoundForSize(size, small, medium, large)
@@ -59,6 +61,18 @@ function BaseHouseEditorModeMixin:PlaySoundForSize(size, small, medium, large)
 	if size == Enum.HousingCatalogEntrySize.Tiny or size == Enum.HousingCatalogEntrySize.Small then
 		sound = small;
 	elseif size == Enum.HousingCatalogEntrySize.Medium or size == Enum.HousingCatalogEntrySize.None then
+		sound = medium;
+	else
+		sound = large;
+	end
+	PlaySound(sound);
+end
+
+function BaseHouseEditorModeMixin:PlaySoundForHouseSize(size, small, medium, large)
+	local sound;
+	if size == Enum.HousingFixtureSize.Small or size == Enum.HousingFixtureSize.Any then
+		sound = small;
+	elseif size == Enum.HousingFixtureSize.Medium or size == Enum.HousingFixtureSize.None then
 		sound = medium;
 	else
 		sound = large;
@@ -82,7 +96,33 @@ function BaseHouseEditorModeMixin:PlayPlacedSoundForSize(size)
 	);
 end
 
+function BaseHouseEditorModeMixin:PlaySelectedHouseSoundForSize(size)
+	self:PlaySoundForHouseSize(size,
+		SOUNDKIT.HOUSING_SELECT_HOUSE_SMALL,
+		SOUNDKIT.HOUSING_SELECT_HOUSE_MEDIUM,
+		SOUNDKIT.HOUSING_SELECT_HOUSE_LARGE
+	);
+end
+
+function BaseHouseEditorModeMixin:PlayPlacedHouseSoundForSize(size)
+	self:PlaySoundForHouseSize(size,
+		SOUNDKIT.HOUSING_PLACE_HOUSE_SMALL,
+		SOUNDKIT.HOUSING_PLACE_HOUSE_MEDIUM,
+		SOUNDKIT.HOUSING_PLACE_HOUSE_LARGE
+	);
+end
+
 function BaseHouseEditorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	-- Optional
+	return nil;
+end
+
+function BaseHouseEditorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)
+	-- Optional
+	return nil;
+end
+
+function BaseHouseEditorModeMixin:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo)
 	-- Optional
 	return nil;
 end
@@ -238,13 +278,17 @@ HouseEditorDecorCountMixin = {};
 
 function HouseEditorDecorCountMixin:OnLoad()
 	self.updateEvents = {"HOUSING_NUM_DECOR_PLACED_CHANGED", "HOUSE_LEVEL_CHANGED"};
-	self.tooltipText = HOUSING_DECOR_BUDGET_TOOLTIP;
+	-- Start with the safe, neutral, fallback tooltip
+	self.tooltipText =  HOUSING_DECOR_BUDGET_TOOLTIP;
 end
 
 function HouseEditorDecorCountMixin:UpdateCount()
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
 	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
 	self.Text:SetText(HOUSING_DECOR_PLACED_COUNT_FMT:format(decorPlaced, maxDecor));
+	-- Update tooltip text with context-appropriate base and populate with updated count info
+	local baseTooltip = C_Housing.IsInsideHouse() and HOUSING_DECOR_BUDGET_TOOLTIP_INDOOR or HOUSING_DECOR_BUDGET_TOOLTIP_OUTDOOR;
+	self.tooltipText =  baseTooltip:format(decorPlaced, maxDecor);
 end
 
 HouseEditorRoomCountMixin = {};

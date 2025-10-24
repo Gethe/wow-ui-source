@@ -16,6 +16,8 @@ function MovePadMixin:OnLoad()
 	self:SetPressAndHoldMode(CVarCallbackRegistry:GetCVarValueBool("movePadInPressAndHoldMode"));
 
 	self:SetupDropdownMenu();
+
+	FrameUtil.RegisterForTopLevelParentChanged(self);
 end
 
 function MovePadMixin:SetLockedMode(locked)

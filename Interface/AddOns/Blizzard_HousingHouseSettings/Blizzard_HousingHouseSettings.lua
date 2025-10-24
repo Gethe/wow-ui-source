@@ -39,12 +39,23 @@ function HousingHouseSettingsFrameMixin:OnLoad()
 end
 
 function HousingHouseSettingsFrameMixin:SetHouseInfo(houseInfo)
-	--TODO: handle error state when houseInfo.plotID = -1
+	--If the plotID is -1 we failed to fetch the info for this house from the server
+	--disable house settings until we get current house settings
+	if houseInfo.plotID == -1 then
+		self.HouseNameText:SetText("");
+		self.PlotAccess:DisableSettings();
+		self.HouseAccess:DisableSettings();
+		self.AbandonHouseButton:Disable();
+		self.SaveButton:Disable();
+		return;
+	end
 	self.houseInfo = houseInfo;
 	self.HouseNameText:SetText(houseInfo.houseName);
 	local selectedSettings = C_Housing.GetHousingAccessFlags();
 	self.PlotAccess:SetSelectedSettings(selectedSettings);
 	self.HouseAccess:SetSelectedSettings(selectedSettings);
+	self.AbandonHouseButton:Enable();
+	self.SaveButton:Enable();
 end
 
 function HousingHouseSettingsFrameMixin:OnEvent(event, ...)
@@ -106,9 +117,19 @@ function HousingHouseSettingsFrameMixin:SetupOwnerDropdown(characterList, curren
 	local text, color = self:GetSelectedOwnerText();
 	self.HouseOwnerDropdown:OverrideText(text);
 	self.HouseOwnerDropdown.Text:SetTextColor(color.r, color.g, color.b);
+
+	--If the selected index is -1 we failed to fetch the player's list of characters from the server
+	if self.selectedOwnerID == -1 then
+		self.HouseOwnerDropdown:Disable();
+	else
+		self.HouseOwnerDropdown:Enable();
+	end
 end
 
 function HousingHouseSettingsFrameMixin:GetSelectedOwnerText()
+	if self.selectedOwnerID == -1 then
+		return "", RED_FONT_COLOR;
+	end
 	local charInfo = self.characterList[self.selectedOwnerID];
 	local classInfo = C_CreatureInfo.GetClassInfo(charInfo.classID);
 	local color = (classInfo and RAID_CLASS_COLORS[classInfo.classFile]) or NORMAL_FONT_COLOR;
@@ -134,11 +155,13 @@ function HousingHouseSettingsFrameMixin:OnIgnoreListClicked()
 end
 
 function HousingHouseSettingsFrameMixin:OnAbandonHouseClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON);
 	AbandonHouseConfirmationDialog:SetHouseInfo(self.houseInfo);
 	StaticPopupSpecial_Show(AbandonHouseConfirmationDialog);
 end
 
 function HousingHouseSettingsFrameMixin:OnSaveClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_SAVE_BUTTON);
 	local newOwnerGUID = self.characterList[self.selectedOwnerID].playerGUID;
 	local accessSettings = FlagsUtil.Combine(self.PlotAccess.selectedOptions, self.HouseAccess.selectedOptions, true);
 	C_Housing.SaveHouseSettings(newOwnerGUID, accessSettings);
@@ -154,7 +177,7 @@ function HouseSettingsAccessOptionsMixin:SetSelectedSettings(currentlySelectedSe
 		self:OnAccessTypeSelected(HOUSING_HOUSE_SETTINGS_ANYONE);
 	else
 		local noneSelected = true;
-		for i, accessOption in pairs(self.accessOptions) do
+		for _i, accessOption in pairs(self.accessOptions) do
 			if FlagsUtil.IsSet(currentlySelectedSettings, accessOption.Checkbox.accessType) then
 				local isSet = true;
 				local shouldCallback = false;
@@ -165,6 +188,13 @@ function HouseSettingsAccessOptionsMixin:SetSelectedSettings(currentlySelectedSe
 		if noneSelected then
 			self:OnAccessTypeSelected(HOUSING_HOUSE_SETTINGS_NOONE);
 		end
+	end
+end
+
+function HouseSettingsAccessOptionsMixin:DisableSettings()
+	for _i, accessOption in pairs(self.accessOptions) do
+		accessOption.Checkbox:Disable();
+		accessOption.OptionLabel:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 	end
 end
 
@@ -187,7 +217,7 @@ function HouseSettingsAccessOptionsMixin:OnAccessTypeSelected(accessType)
 	if accessType == HOUSING_HOUSE_SETTINGS_ANYONE then
 		self.selectedOptions = 0;
 		self.selectedOptions = FlagsUtil.Combine(self.selectedOptions, self.anyoneAccessFlag, true);
-		for i, accessOption in pairs(self.accessOptions) do
+		for _i, accessOption in pairs(self.accessOptions) do
 			accessOption.Checkbox:SetChecked(true);
 			self.selectedOptions = FlagsUtil.Combine(self.selectedOptions, accessOption.Checkbox.accessType, true);
 			accessOption.Checkbox:Disable();
@@ -195,7 +225,7 @@ function HouseSettingsAccessOptionsMixin:OnAccessTypeSelected(accessType)
 		end
 	elseif accessType == HOUSING_HOUSE_SETTINGS_NOONE then
 		self.selectedOptions = 0;
-		for i, accessOption in pairs(self.accessOptions) do
+		for _i, accessOption in pairs(self.accessOptions) do
 			accessOption.Checkbox:SetChecked(false);
 			self.selectedOptions = FlagsUtil.Combine(self.selectedOptions, accessOption.Checkbox.accessType, false);
 			accessOption.Checkbox:Disable();
@@ -203,7 +233,7 @@ function HouseSettingsAccessOptionsMixin:OnAccessTypeSelected(accessType)
 		end
 	elseif accessType == HOUSING_HOUSE_SETTINGS_LIMITED then
 		self.selectedOptions = FlagsUtil.Combine(self.selectedOptions, self.anyoneAccessFlag, false);
-		for i, accessOption in pairs(self.accessOptions) do
+		for _i, accessOption in pairs(self.accessOptions) do
 			accessOption.Checkbox:Enable();
 			accessOption.OptionLabel:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 		end
@@ -224,6 +254,7 @@ function HouseSettingsAccessOptionsMixin:SetupOptions(label, accessTypes, anyone
 		option.Checkbox.accessOptionsMixin = self;
 		option.Checkbox:SetScript("OnClick", function(self)
 			self.accessOptionsMixin:OptionSelected(self.accessType, self:GetChecked(), true);
+			PlaySound(SOUNDKIT.HOUSING_SETTINGS_TOGGLE_CHECKBOX);
 		end);
 		--option.Checkbox:SetChecked(FlagsUtil.IsSet(selectedAccessTypes, accessType));
 		table.insert(self.accessOptions, option);
@@ -237,7 +268,7 @@ end
 
 function HouseSettingsAccessOptionsMixin:OptionSelected(accessType, isChecked, shouldCallback)
 	self.selectedOptions = FlagsUtil.Combine(self.selectedOptions, accessType, isChecked);
-	for i, accessOption in ipairs(self.accessOptions) do
+	for _i, accessOption in ipairs(self.accessOptions) do
 		accessOption.Checkbox:SetChecked(FlagsUtil.IsSet(self.selectedOptions, accessOption.Checkbox.accessType));
 	end
 
@@ -253,6 +284,7 @@ function AbandonHouseConfirmationDialogMixin:OnLoad()
 	self.CancelButton:SetText(HOUSING_HOUSE_SETTINGS_ABANDON_CANCEL);
 	self.ConfirmButton:SetScript("OnClick", GenerateClosure(self.OnConfirmClicked, self));
 	self.CancelButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CANCEL);
 		StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	end);
 end
@@ -266,6 +298,8 @@ function AbandonHouseConfirmationDialogMixin:SetHouseInfo(houseInfo)
 end
 
 function AbandonHouseConfirmationDialogMixin:OnConfirmClicked()
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CONFIRMATION);
+
 	C_Housing.RelinquishHouse(self.houseInfo.houseGUID);
 	StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	HideUIPanel(HousingHouseSettingsFrame);

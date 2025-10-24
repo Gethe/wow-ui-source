@@ -1095,18 +1095,18 @@ function AccountUpgradePanel_GetDisplayExpansionLevel()
 		return nil, LE_EXPANSION_CLASSIC;
 	end
 
+	local minExpansionLevel = GetMinimumExpansionLevel();
+
 	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
 	if IsExpansionTrial() then
 		currentExpansionLevel = currentExpansionLevel - 1;
 	end
-	local upgradeExpansionLevel = math.min(currentExpansionLevel + 1, GetMaximumExpansionLevel());
-
-	local minExpansionLevel = GetMinimumExpansionLevel();
 
 	if currentExpansionLevel <= minExpansionLevel then
 		currentExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
 
+	local upgradeExpansionLevel = math.min(currentExpansionLevel + 1, GetUpgradeExpansionLevel());
 	if upgradeExpansionLevel <= minExpansionLevel then
 		upgradeExpansionLevel = LE_EXPANSION_CLASSIC;
 	end
@@ -1151,12 +1151,8 @@ function AccountUpgradePanel_GetBannerInfo()
 		return currentExpansionLevel, shouldShowBanner, ACCOUNT_UPGRADE_BANNER_RESUBSCRIBE, features, expansionDisplayInfo.textureKit;
 	else
 		local currentExpansionLevel, upgradeLevel = AccountUpgradePanel_GetDisplayExpansionLevel();
-		local shouldShowBanner = GameLimitedMode_IsActive() or CanUpgradeExpansion();
+		local shouldShowBanner = ShouldShowExpansionUpgradeBanner();
 		if shouldShowBanner then
-			-- TEMP CHANGE FOR 11.2.5: Show 12.0.0 expansion info for players with Brown Box
-			upgradeLevel = 11;
-			-- END TEMP CHANGE
-			
 			local expansionDisplayInfo = GetExpansionDisplayInfo(upgradeLevel);
 			if not expansionDisplayInfo then
 				return currentExpansionLevel, false;
@@ -1486,7 +1482,7 @@ function IsRPEBoostEligible(charID)
 	if not guid then
 		return false;
 	end
-	return GetServiceCharacterInfo(guid).rpeResetAvailable;
+	return GetServiceCharacterInfo(guid).rpeArathiAvailable;
 end
 
 -- CHARACTER BOOST (SERVICES)

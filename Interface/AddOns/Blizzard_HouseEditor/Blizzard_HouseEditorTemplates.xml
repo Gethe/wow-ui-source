@@ -26,7 +26,7 @@
 			iconAtlas: Atlas to use as this instruction's icon; Typically indicates a certain mouse control type
 			controlText: Text to display instead of an icon; Typically indicates a certain control key
 			keybindName: The name of the keybinding for instruction; Will display the key bound to it (if there is one)
-			instructionText: Text displayed to the right of the icon or control text; Typically explains what a control does
+			instructionText: Text displayed to the left of the icon or control text; Typically explains what a control does
 
 			<KeyValue key="iconAtlas" value="" type="string"/>
 			<KeyValue key="controlText" value="" type="global"/>
@@ -86,14 +86,14 @@
 	<Frame name="HouseEditorBudgetCountTemplate" mixin="HouseEditorBudgetCountMixin" inherits="ResizeLayoutFrame" enableMouseMotion="true" virtual="true">
 		<Size x="1" y="1"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-40" y="-53"/>
+			<Anchor point="TOPRIGHT" x="-40" y="-40"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlightHuge">
-					<Size x="0" y="0"/>
+				<FontString parentKey="Text" inherits="GameFontHighlightHuge" justifyV="MIDDLE">
+					<Size x="0" y="20"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
 			</Layer>

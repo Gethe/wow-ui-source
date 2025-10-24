@@ -14,7 +14,7 @@ HousingControlsMixin = {};
 
 function HousingControlsMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, HousingControlsEvents);
-	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", self.UpdateParent, self);
+	FrameUtil.RegisterForTopLevelParentChanged(self);
 
 	self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
 end
@@ -49,14 +49,6 @@ end
 
 function HousingControlsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HousingControlsShownEvents);
-end
-
-function HousingControlsMixin:UpdateParent()
-	local oldParent = self:GetParent();
-	local newParent = GetAppropriateTopLevelParent();
-	if newParent and newParent ~= oldParent then
-		FrameUtil.SetParentMaintainRenderLayering(self, newParent);
-	end
 end
 
 function HousingControlsMixin:UpdateButtons()

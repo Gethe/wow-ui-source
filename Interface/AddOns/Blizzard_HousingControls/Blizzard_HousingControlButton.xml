@@ -43,24 +43,6 @@
 			<KeyValue key="keybindIconDefault" type="string" value="keybind-bg"/>
 			<KeyValue key="keybindIconActive" type="string" value="keybind-bg_active"/>
 		</KeyValues>
-		<Layers>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="KeybindBackground" atlas="keybind-bg" texelSnappingBias="0.0" snapToPixelGrid="false">
-					<Size x="24" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<FontString parentKey="ControlText" inherits="NumberFontNormalSmall" justifyH="CENTER" justifyV="MIDDLE">
-					<Size y="10"/>
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.KeybindBackground"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
 	</Button>
 	
 	<Button name="HouseSettingsButtonTemplate" inherits="HousingControlModeButtonTemplate" mixin="HouseSettingsButtonMixin" virtual="true">
@@ -85,16 +67,16 @@
 		</Scripts>
 	</Button>
 
-	<Button name="HouseInfoButtonTemplate" inherits="HousingControlModeButtonTemplate" virtual="true">
+	<Button name="HouseInfoButtonTemplate" inherits="HousingControlModeButtonTemplate" mixin="HouseInfoButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="iconDefault" type="string" value="decor-controls-houseinfo-default"/>
 			<KeyValue key="iconActive" type="string" value="decor-controls-houseinfo-active"/>
 			<KeyValue key="iconPressed" type="string" value="decor-controls-houseinfo-pressed"/>
-			<!-- TODO: Remove this once implemented -->
-			<KeyValue key="notYetImplemented" value="true" type="boolean"/>
-			<KeyValue key="nyiLabel" value="House Info" type="string"/>
 			<KeyValue key="clickSoundKit" value="SOUNDKIT.HOUSING_MINOR_TOP_ACTION_BAR_INTERACT" type="global"/>
 		</KeyValues>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
 	</Button>
 
 	<Button name="HouseInspectorButtonTemplate" inherits="HousingControlModeButtonTemplate" virtual="true">
@@ -104,7 +86,7 @@
 			<KeyValue key="iconPressed" type="string" value="decor-controls-inspect-pressed"/>
 			<!-- TODO: Remove this once implemented -->
 			<KeyValue key="notYetImplemented" value="true" type="boolean"/>
-			<KeyValue key="nyiLabel" value="House Inspector" type="string"/>
+			<KeyValue key="nyiLabel" value="HOUSING_CONTROLS_COMING_SOON" type="global"/>
 			<KeyValue key="clickSoundKit" value="SOUNDKIT.HOUSING_MINOR_TOP_ACTION_BAR_INTERACT" type="global"/>
 		</KeyValues>
 	</Button>

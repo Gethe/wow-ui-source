@@ -1629,11 +1629,6 @@
 	HousingFramesUtil.ToggleHouseEditor();
 </Binding>
 
-<!-- Housing Editor General Bindings -->
-<Binding name="HOUSING_TOGGLEINCLUDETARGETDECORCHILDREN" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" header="BLANK16" preface="HOUSING_DECOR_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	C_HousingDecor.SetIncludeTargetDecorChildrenEnabled(not C_HousingDecor.IsIncludeTargetDecorChildrenEnabled())
-</Binding>
-
 <!-- Housing Editor Submode Bindings -->
 <Binding name="HOUSING_TOGGLEBASICDECORMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" header="BLANK17" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
@@ -1658,8 +1653,8 @@
 <Binding name="HOUSING_TOGGLEDECORGRIDVISIBILITY" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicAndExpertDecorMode" header="BLANK18" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.SetGridVisible(not C_HousingBasicMode.IsGridVisible());
 </Binding>
-<Binding name="HOUSING_DELETEDECOR" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicAndExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	HousingFramesUtil.DeleteDecor();
+<Binding name="HOUSING_REMOVEDECOR" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicAndExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RemoveSelectedDecor();
 </Binding>
 
 <!-- Housing Basic Decor Edit Mode keybindings -->
@@ -1668,6 +1663,12 @@
 </Binding>
 <Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
+</Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATELEFT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RotateBasicDecorSelection(1);
+</Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATERIGHT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RotateBasicDecorSelection(-1);
 </Binding>
 
 <!-- Housing Expert Decor Edit Mode keybindings -->

@@ -1464,6 +1464,10 @@ function UnitPopupDungeonDifficulty1ButtonMixin:GetDifficultyID()
 	return 1;
 end
 
+function UnitPopupDungeonDifficulty1ButtonMixin:IsSupported()
+	return select(1, GetDifficultyInfo(self:GetDifficultyID()));
+end
+
 function UnitPopupDungeonDifficulty1ButtonMixin:IsChecked(contextData)
 	return GetDungeonDifficultyID() == self:GetDifficultyID();
 end
@@ -3635,7 +3639,7 @@ function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:GetText(contextData)
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:CanShow(contextData)
-	return contextData.recentAllyData ~= nil;
+	return false;
 end
 
 function UnitPopupAddRecentAllyBattleTagFriendButtonMixin:IsDisabledInKioskMode()

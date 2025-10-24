@@ -53,5 +53,6 @@ function HousingTutorialUtil.IsModeValidForTutorial(mode)
 	return mode ~= Enum.HouseEditorMode.ExpertDecor and
 		mode ~= Enum.HouseEditorMode.Customize and
 		mode ~= Enum.HouseEditorMode.Cleanup and
-		mode ~= Enum.HouseEditorMode.Layout;
+		mode ~= Enum.HouseEditorMode.Layout and
+		mode ~= Enum.HouseEditorMode.ExteriorCustomization;
 end

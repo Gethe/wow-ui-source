@@ -27,22 +27,19 @@
 					</Texture>
 				</Layer>
 				<Layer level="ARTWORK">
-					<!-- HOUSING_TODO: Remove all these arbitrary temp icon desaturations once we have final art -->
-					<Texture parentKey="Icon" desaturated="true" >
+					<Texture parentKey="Icon">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="3" y="-3"/>
 							<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
 						</Anchors>
-						<Color color="DARKYELLOW_FONT_COLOR"/>
 					</Texture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<Texture parentKey="HoverIcon" desaturated="true" setAllPoints="true" alphaMode="ADD" hidden="true">
+					<Texture parentKey="HoverIcon" setAllPoints="true" alphaMode="ADD" alpha="0.4" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 						</Anchors>
-						<Color color="DARKYELLOW_FONT_COLOR"/>
 					</Texture>
 				</Layer>
 			</Layers>
@@ -137,29 +134,28 @@
 					<Frames>
 						<Button parentKey="RotateButtonLeft" inherits="HousingLayoutRoomOptionTemplate">
 							<KeyValues>
-								<KeyValue key="iconAtlas" value="common-icon-undo" type="string"/>
+								<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
 								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_ROTATE_ROOM_LEFT_TOOLTIP" type="global"/>
 								<KeyValue key="layoutIndex" value="1" type="number"/>
 							</KeyValues>
 						</Button>
 						<Button parentKey="RotateButtonRight" inherits="HousingLayoutRoomOptionTemplate">
 							<KeyValues>
-								<KeyValue key="iconAtlas" value="common-icon-undo" type="string"/>
-								<KeyValue key="flipIcon" value="true" type="boolean"/>
+								<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
 								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_ROTATE_ROOM_RIGHT_TOOLTIP" type="global"/>
 								<KeyValue key="layoutIndex" value="2" type="number"/>
 							</KeyValues>
 						</Button>
 						<Button parentKey="MoveButton" inherits="HousingLayoutRoomOptionTemplate">
 							<KeyValues>
-								<KeyValue key="iconTexture" value="Interface\CURSOR\UI-Cursor-Move" type="string"/>
+								<KeyValue key="iconAtlas" value="common-icon-move" type="string"/>
 								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_MOVE_ROOM_TOOLTIP" type="global"/>
 								<KeyValue key="layoutIndex" value="3" type="number"/>
 							</KeyValues>
 						</Button>
 						<Button parentKey="RemoveButton" inherits="HousingLayoutRoomOptionTemplate">
 							<KeyValues>
-								<KeyValue key="iconAtlas" value="common-icon-yellowx" type="string"/>
+								<KeyValue key="iconAtlas" value="common-icon-delete" type="string"/>
 								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_REMOVE_ROOM_TOOLTIP" type="global"/>
 								<KeyValue key="layoutIndex" value="4" type="number"/>
 							</KeyValues>

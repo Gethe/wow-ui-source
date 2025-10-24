@@ -7,7 +7,6 @@ function HousingDyePaneMixin:OnLoad()
 	local function CloseDyePane()
 		-- This will clear the preview dyes and close this pane by deselecting the decor
 		C_HousingCustomizeMode.CancelActiveEditing();
-		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
 	end
 
 	self.ButtonFrame.ApplyButton:SetScript("OnClick", function()
@@ -35,6 +34,7 @@ end
 
 function HousingDyePaneMixin:OnHide()
 	DyeSelectionPopout:Hide();
+	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_CANCEL);
 end
 
 function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
@@ -62,6 +62,10 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 		local function onClickCallback()
 			DyeSelectionPopout:SetDyeSlotInfo(dyeSlotEntry);
 			DyeSelectionPopout:Show();
+			if self.currentChannel ~= dyeSlotEntry.channel then
+				PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_OPEN_COLOR_PALETTE);
+			end
+
 			if self.currentChannel then
 				self.dyeSlotFramesByChannel[self.currentChannel].CurrentSwatch:UpdateSelected(false);
 			end
@@ -164,11 +168,9 @@ function HousingDecorDyeSlotPopoutMixin:OnLoad()
 		if self.dyeSlotInfo then
 			self:SetDyeSlotInfo(self.dyeSlotInfo);
 		end
-	end);
-end
 
-function HousingDecorDyeSlotPopoutMixin:OnShow()
-	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_OPEN_COLOR_PALETTE);
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_SHOW_ONLY_OWNED_CLICK);
+	end);
 end
 
 function HousingDecorDyeSlotPopoutMixin:ReinitScrollBox()
@@ -364,257 +366,6 @@ function HousingDecorDyeSwatchMixin:OnClick()
 			PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_DYE_SELECT);
 		end
 	end
-end
-
-HousingRoomComponentOptionMixin = {};
-
-function HousingRoomComponentOptionMixin:SetRoomComponentInfo(roomComponentInfo)
-	self.roomComponentInfo = roomComponentInfo;
-	self.roomGUID = roomComponentInfo.roomGUID;
-	self.componentID = roomComponentInfo.componentID;
-	self:UpdateDropdown();
-end
-
-function HousingRoomComponentOptionMixin:UpdateRoomComponentInfo(roomComponentInfo)
-	self.roomComponentInfo = roomComponentInfo;
-	self:UpdateDropdown();
-end
-
-function HousingRoomComponentOptionMixin:AddRecents(rootDescription, AddButton, IDs)
-	if #IDs > 0 then
-		rootDescription:CreateTitle(HOUSING_DECOR_CUSTOMIZATION_RECENTLY_USED_SHORT);
-		for _, ID in ipairs_reverse(IDs) do
-			AddButton(ID);
-		end
-		rootDescription:CreateDivider();
-	end
-end
-
-function HousingRoomComponentOptionMixin:PlaySelectedSound()
-	PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_APPLY_ROOM_CHANGE);
-end
-
-HousingRoomComponentThemeMixin = CreateFromMixins(HousingRoomComponentOptionMixin);
-
-function HousingRoomComponentThemeMixin:UpdateDropdown()
-	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		local function IsSelected(theme)
-			return theme.id == self.roomComponentInfo.currentThemeSet;
-		end
-
-		local function SetSelected(theme)
-			if not IsSelected(theme) then
-				self:PlaySelectedSound();
-			end
-
-			C_HousingCustomizeMode.ApplyThemeToSelectedRoomComponent(theme.id);
-		end
-
-		local function ThemeFromID(themeSetID)
-			local name = C_HousingCustomizeMode.GetThemeSetInfo(themeSetID);
-			if name then
-				return {id = themeSetID, name = name};
-			end
-		end
-
-		local themeSets = {};
-		for _, themeSetID in ipairs(self.roomComponentInfo.availableThemeSets) do
-			local theme = ThemeFromID(themeSetID);
-			if theme then
-				table.insert(themeSets, theme);
-			end
-		end
-
-		--TODO: incporporate ownership when ownership is implemented.
-		table.sort(themeSets, function(a, b) return a.name < b.name end);
-
-		local function AddButton(theme)
-			if theme then
-				rootDescription:CreateHighlightRadio(theme.name, IsSelected, SetSelected, theme);
-			end
-		end
-
-		self:AddRecents(rootDescription, function(themeSetID) AddButton(ThemeFromID(themeSetID)) end, C_HousingCustomizeMode.GetRecentlyUsedThemeSets());
-
-		for _, theme in ipairs(themeSets) do
-			AddButton(theme)
-		end
-	end);
-end
-
-HousingRoomComponentWallpaperMixin = CreateFromMixins(HousingRoomComponentOptionMixin);
-
-function HousingRoomComponentWallpaperMixin:UpdateDropdown()
-	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		local function IsSelected(wallpaper)
-			return wallpaper.roomComponentTextureRecID == self.roomComponentInfo.currentRoomComponentTextureRecID;
-		end
-
-		local function SetSelected(wallpaper)
-			if not IsSelected(wallpaper) then
-				self:PlaySelectedSound();
-			end
-
-			C_HousingCustomizeMode.ApplyWallpaperToSelectedRoomComponent(wallpaper.roomComponentTextureRecID);
-		end
-
-		local type = self.roomComponentInfo.type;
-		local wallpapers = C_HousingCustomizeMode.GetWallpapersForRoomComponentType(type);
-
-		local wallpapersByID = {};
-		for _, wallpaper in ipairs(wallpapers) do
-			wallpapersByID[wallpaper.roomComponentTextureRecID] = wallpaper;
-		end
-
-		--TODO: incporporate ownership when ownership is implemented.
-		table.sort(wallpapers, function(a, b) return a.name < b.name end);
-
-		local function AddButton(wallpaper)
-			if wallpaper then
-				rootDescription:CreateHighlightRadio(wallpaper.name, IsSelected, SetSelected, wallpaper);
-			end
-		end
-		
-		local function AddFromID(wallpaperID)
-			AddButton(wallpapersByID[wallpaperID]);
-		end
-
-		self:AddRecents(rootDescription, AddFromID, C_HousingCustomizeMode.GetRecentlyUsedWallpapers());
-
-		for _, wallpaper in ipairs(wallpapers) do
-			AddButton(wallpaper);
-		end
-	end);
-end
-
-HousingRoomComponentCeilingTypeMixin = CreateFromMixins(HousingRoomComponentOptionMixin);
-
-function HousingRoomComponentCeilingTypeMixin:UpdateDropdown()
-	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		local function IsSelected(ceilingType)
-			return ceilingType == self.roomComponentInfo.ceilingType;
-		end
-
-		local function SetSelected(ceilingType)
-			if not IsSelected(ceilingType) then
-				self:PlaySelectedSound();
-			end
-
-			C_HousingCustomizeMode.SetRoomComponentCeilingType(self.roomComponentInfo.roomGUID, self.roomComponentInfo.componentID, ceilingType);
-		end
-
-		rootDescription:CreateHighlightRadio(HOUSING_DECOR_CUSTOMIZATION_NOT_VAULTED_LABEL, IsSelected, SetSelected, Enum.HousingRoomComponentCeilingType.Flat);
-		rootDescription:CreateHighlightRadio(HOUSING_DECOR_CUSTOMIZATION_VAULTED_LABEL, IsSelected, SetSelected, Enum.HousingRoomComponentCeilingType.Vaulted);
-	end);
-end
-
-HousingRoomComponentDoorTypeMixin = CreateFromMixins(HousingRoomComponentOptionMixin);
-
-function HousingRoomComponentDoorTypeMixin:UpdateDropdown()
-	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		local function IsSelected(doorType)
-			return doorType == self.roomComponentInfo.doorType;
-		end
-
-		local function SetSelected(doorType)
-			if not IsSelected(doorType) then
-				self:PlaySelectedSound();
-			end
-
-			C_HousingCustomizeMode.SetRoomComponentDoorType(self.roomComponentInfo.roomGUID, self.roomComponentInfo.componentID, doorType);
-		end
-
-		rootDescription:CreateHighlightRadio(HOUSING_DECOR_CUSTOMIZATION_NORMAL_DOOR_LABEL, IsSelected, SetSelected, Enum.HousingRoomComponentDoorType.Doorway);
-		rootDescription:CreateHighlightRadio(HOUSING_DECOR_CUSTOMIZATION_WIDE_DOOR_LABEL, IsSelected, SetSelected, Enum.HousingRoomComponentDoorType.Threshold);
-	end);
-end
-
-
-RoomComponentPaneMixin = {};
-
-function RoomComponentPaneMixin:OnLoad()
-	self.CloseButton:SetScript("OnClick", function() 
-		self:Hide();
-	end);
-
-	self.ApplyThemeToRoomButton:SetScript("OnClick", function()
-		C_HousingCustomizeMode.ApplyThemeToRoom(self.roomComponentInfo.currentThemeSet);
-	end);
-
-	self.ApplyWallpaperToAllWallsButton:SetScript("OnClick", function()
-		C_HousingCustomizeMode.ApplyWallpaperToAllWalls(self.roomComponentInfo.currentRoomComponentTextureRecID);
-	end);
-end
-
-function RoomComponentPaneMixin:OnHide()
-	C_HousingCustomizeMode.ClearTargetRoomComponent();
-end
-
-function RoomComponentPaneMixin:SetRoomComponentInfo(roomComponentInfo)
-	self.roomComponentInfo = roomComponentInfo;
-	self.roomGUID = roomComponentInfo.roomGUID;
-	self.componentID = roomComponentInfo.componentID;
-	self.appliedTheme = roomComponentInfo.currentTheme;
-
-	local type = roomComponentInfo.type;
-	if type == Enum.HousingRoomComponentType.Ceiling then
-		self.WallWarning:Hide();
-		self.CeilingTypeDropdown:Show();
-		self.ThemeDropdown:Show();
-		self.ApplyThemeToRoomButton:Show();
-		self.WallpaperDropdown:Show();
-		self.ApplyWallpaperToAllWallsButton:Hide();
-		self.DoorTypeDropdown:Hide();
-	elseif type == Enum.HousingRoomComponentType.Wall then
-		self.WallWarning:Show();
-		self.CeilingTypeDropdown:Hide();
-		self.ThemeDropdown:Show();
-		self.ApplyThemeToRoomButton:Show();
-		self.WallpaperDropdown:Show();
-		self.ApplyWallpaperToAllWallsButton:Show();
-		self.DoorTypeDropdown:SetShown(roomComponentInfo.doorType ~= Enum.HousingRoomComponentDoorType.None);
-	elseif type == Enum.HousingRoomComponentType.Floor then
-		self.WallWarning:Hide();
-		self.CeilingTypeDropdown:Hide();
-		self.ThemeDropdown:Hide();
-		self.ApplyThemeToRoomButton:Hide();
-		self.WallpaperDropdown:Show();
-		self.ApplyWallpaperToAllWallsButton:Hide();
-		self.DoorTypeDropdown:Hide();
-	else
-		self:Hide();
-		return;
-	end
-
-	self:ForEachDropdown(function(dropdown)
-		dropdown:SetRoomComponentInfo(roomComponentInfo);
-		local textKey =
-			type == Enum.HousingRoomComponentType.Ceiling and "LabelText_Ceiling" or
-			type == Enum.HousingRoomComponentType.Wall and "LabelText_Wall" or
-			"LabelText_Floor";
-		dropdown.SwitchLabel:SetText(dropdown[textKey]);
-	end);
-end
-
-function RoomComponentPaneMixin:UpdateRoomComponentInfo(roomComponentInfo)
-	self.roomComponentInfo = roomComponentInfo;
-	self:ForEachDropdown(function(dropdown)
-		dropdown:UpdateRoomComponentInfo(roomComponentInfo);
-	end);
-end
-
-function RoomComponentPaneMixin:ForEachDropdown(fn)
-	for _,dropdown in ipairs(self.dropdowns) do
-		if dropdown:IsShown() then
-			fn(dropdown);
-		end
-	end
-end
-
-function RoomComponentPaneMixin:ClearRoomComponentInfo()
-	self.roomComponentInfo = nil;
-	self.roomGUID = nil;
-	self.componentID = nil;
 end
 
 HousingDyeCostIconMixin = {};

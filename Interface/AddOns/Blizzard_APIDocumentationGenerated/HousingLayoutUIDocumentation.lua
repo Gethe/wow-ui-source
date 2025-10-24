@@ -242,15 +242,6 @@ local HousingLayoutUI =
 			},
 		},
 		{
-			Name = "RotateDraggedRoom",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "isLeft", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
 			Documentation = { "Rotates either the currently dragged or currently selected room, if either exist" },

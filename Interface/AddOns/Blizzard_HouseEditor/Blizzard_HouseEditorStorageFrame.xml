@@ -37,7 +37,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Frame name="HouseEditorStorageFrameTemplate" mixin="HouseEditorStorageFrameMixin" inherits="TabSystemOwnerTemplate" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
+	<Frame name="HouseEditorStorageFrameTemplate" mixin="HouseEditorStorageFrameMixin" inherits="TabSystemOwnerTemplate, CallbackRegistrantTemplate" frameStrata="HIGH" movable="false" resizable="true" clampedToScreen="true" virtual="true">
 		<Size x="600" y="651"/>
 		<KeyValues>
 			<KeyValue key="minWidth" value="415" type="number"/>
@@ -120,6 +120,15 @@
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeKey="$parent.HeaderBackground" x="85" y="-5"/>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="10"/>
 				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<FontString parentKey="CategoryText" inherits="GameFontNormal">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</Frame>
 
 			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">

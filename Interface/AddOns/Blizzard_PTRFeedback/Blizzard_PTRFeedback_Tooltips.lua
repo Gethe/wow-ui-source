@@ -304,7 +304,7 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 
 		if (tooltip) then
 			PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.housingComponent, componentInfo.componentID, componentInfo.name, false, nil, componentInfo)
-		else
+		elseif (C_HouseEditor.GetActiveHouseEditorMode() == Enum.HouseEditorMode.Customize) then
 			GameTooltip:ClearAllPoints()
 			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.housingComponent, componentInfo.componentID, componentInfo.name, true, nil, componentInfo)

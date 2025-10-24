@@ -5,6 +5,13 @@
 			<Frame parentKey="DecorCount" inherits="HouseEditorDecorCountTemplate"/>
 			<Frame parentKey="Instructions" inherits="HouseEditorInstructionsContainerTemplate">
 				<Frames>
+					<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
+						<KeyValues>
+							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_SELECT_INSTRUCTION" type="global"/>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="PlaceInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
 							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
@@ -12,24 +19,24 @@
 							<KeyValue key="layoutIndex" value="2" type="number"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+					<Frame parentKey="RotateLeftInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
-							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
-							<KeyValue key="keybindName" type="string" value="HOUSING_DELETEDECOR"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_LEFT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_BASICDECOR_ROTATELEFT"/>
 							<KeyValue key="layoutIndex" value="3" type="number"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="RotateInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+					<Frame parentKey="RotateRightInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
-							<KeyValue key="iconAtlas" value="newplayertutorial-icon-mouse-middlebutton" type="string"/>
-							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_INSTRUCTION" type="global"/>
+							<KeyValue key="instructionText" value="HOUSING_BASIC_DECOR_ROTATE_RIGHT_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_BASICDECOR_ROTATERIGHT"/>
 							<KeyValue key="layoutIndex" value="4" type="number"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+					<Frame parentKey="RemoveInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
 						<KeyValues>
-							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
-							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_REMOVE_INSTRUCTION" type="global"/>
+							<KeyValue key="keybindName" type="string" value="HOUSING_REMOVEDECOR"/>
 							<KeyValue key="layoutIndex" value="5" type="number"/>
 						</KeyValues>
 					</Frame>
@@ -38,6 +45,13 @@
 							<KeyValue key="instructionText" value="HOUSING_DECOR_TOGGLE_GRID_INSTRUCTION" type="global"/>
 							<KeyValue key="keybindName" type="string" value="HOUSING_TOGGLEDECORGRIDVISIBILITY"/>
 							<KeyValue key="layoutIndex" value="6" type="number"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="CancelInstruction" inherits="HouseEditorInstructionTemplate" parentArray="SelectedInstructions">
+						<KeyValues>
+							<KeyValue key="instructionText" value="HOUSING_DECOR_CANCEL_INSTRUCTION" type="global"/>
+							<KeyValue key="controlText" value="KEY_ESCAPE" type="global"/>
+							<KeyValue key="layoutIndex" value="7" type="number"/>
 						</KeyValues>
 					</Frame>
 				</Frames>
@@ -59,7 +73,6 @@
 							<KeyValue key="iconDefault" type="string" value="decor-ability-snap-default"/>
 							<KeyValue key="iconActive" type="string" value="decor-ability-snap-active"/>
 							<KeyValue key="iconPressed" type="string" value="decor-ability-snap-pressed"/>
-
 							<KeyValue key="enterTooltip" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_ACTIVATE" type="global"/>
 							<KeyValue key="enterTooltipKeybind" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_ACTIVATE_FMT" type="global"/>
 							<KeyValue key="exitTooltip" value="HOUSING_BASIC_DECOR_SNAP_INSTRUCTION_DEACTIVATE" type="global"/>
@@ -75,7 +88,6 @@
 							<KeyValue key="iconDefault" type="string" value="decor-ability-freeplacement-default"/>
 							<KeyValue key="iconActive" type="string" value="decor-ability-freeplacement-active"/>
 							<KeyValue key="iconPressed" type="string" value="decor-ability-freeplacement-pressed"/>
-
 							<KeyValue key="enterTooltip" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_ACTIVATE" type="global"/>
 							<KeyValue key="enterTooltipKeybind" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_ACTIVATE_FMT" type="global"/>
 							<KeyValue key="exitTooltip" value="HOUSING_BASIC_DECOR_NUDGE_INSTRUCTION_DEACTIVATE" type="global"/>

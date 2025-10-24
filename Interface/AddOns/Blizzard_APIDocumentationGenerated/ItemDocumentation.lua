@@ -1159,6 +1159,21 @@ local Item =
 			},
 		},
 		{
+			Name = "IsDecorItem",
+			Type = "Function",
+			Documentation = { "Returns whether the item is a consumable decor item." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDecor", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsDressableItemByID",
 			Type = "Function",
 

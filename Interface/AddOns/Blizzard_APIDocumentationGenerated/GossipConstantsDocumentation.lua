@@ -5,9 +5,9 @@ local GossipConstants =
 		{
 			Name = "GossipNpcOption",
 			Type = "Enumeration",
-			NumValues = 66,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 65,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "None", Type = "GossipNpcOption", EnumValue = 0 },
@@ -76,6 +76,7 @@ local GossipConstants =
 				{ Name = "HousingOpenCharterConfirmation", Type = "GossipNpcOption", EnumValue = 63 },
 				{ Name = "ItemUpgrade", Type = "GossipNpcOption", EnumValue = 64 },
 				{ Name = "HouseFinder", Type = "GossipNpcOption", EnumValue = 65 },
+				{ Name = "Placeholder_6", Type = "GossipNpcOption", EnumValue = 66 },
 			},
 		},
 		{

@@ -6,7 +6,7 @@ local Expansion =
 	Functions =
 	{
 		{
-			Name = "CanUpgradeExpansion",
+			Name = "CanUpgradeToCurrentExpansion",
 			Type = "Function",
 
 			Returns =
@@ -57,6 +57,7 @@ local Expansion =
 			Arguments =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
+				{ Name = "desiredReleaseType", Type = "ReleaseType", Nilable = true },
 			},
 
 			Returns =
@@ -168,6 +169,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetUpgradeExpansionLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "upgradeExpansionLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDemonHunterAvailable",
 			Type = "Function",
 
@@ -211,6 +221,15 @@ local Expansion =
 			Arguments =
 			{
 				{ Name = "response", Type = "SubscriptionInterstitialResponseType", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowExpansionUpgradeBanner",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showUpgradeBanner", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -431,7 +431,7 @@
 		</Scripts>
 	</Button>
 
-	<Button name="TimerunningConversionButtonTemplate" mixin="TimerunningConversionButtonMixin" virtual="true">
+	<Button name="TimerunningConversionButtonTemplate" mixin="TimerunningConversionButtonMixin" motionScriptsWhileDisabled="true" virtual="true" >
 		<Size x="58" y="58"/>
 		<Scripts>
 			<OnClick method="OnClick"/>

@@ -411,7 +411,7 @@ end
 
 function StaticPopup_ResizeShownDialogs()
 	for _, dialog in ipairs(shownDialogFrames) do
-		dialog:Resize(dialog.which);
+		FunctionUtil.SafeInvokeMethod(dialog, "Resize", dialog.which);
 	end
 end
 

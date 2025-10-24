@@ -228,6 +228,21 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "RoomComponentSupportsVariant",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "variant", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "variantSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetRoomComponentCeilingType",
 			Type = "Function",
 
@@ -293,6 +308,17 @@ local HousingCustomizeModeUI =
 			},
 		},
 		{
+			Name = "HousingRoomComponentCustomizationChangeFailed",
+			Type = "Event",
+			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGE_FAILED",
+			Payload =
+			{
+				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "componentID", Type = "number", Nilable = false },
+				{ Name = "housingResult", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingRoomComponentCustomizationChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED",
@@ -327,7 +353,6 @@ local HousingCustomizeModeUI =
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "type", Type = "HousingRoomComponentType", Nilable = false },
 				{ Name = "componentID", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "canBeCustomized", Type = "bool", Nilable = false },
 				{ Name = "currentThemeSet", Type = "number", Nilable = true },
 				{ Name = "availableThemeSets", Type = "table", InnerType = "number", Nilable = false },

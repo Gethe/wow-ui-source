@@ -8,11 +8,11 @@ HouseEditorCleanupModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
 
 function HouseEditorCleanupModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_CLEANUP_MODE_TARGET_SELECTED" then
-		C_HousingDecor.DeleteDecor();
+		C_HousingDecor.RemoveSelectedDecor();
 	elseif event == "HOUSING_CLEANUP_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			self:OnDecorHovered();
 		else
 			GameTooltip:Hide();

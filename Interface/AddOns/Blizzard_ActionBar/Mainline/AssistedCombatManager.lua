@@ -14,17 +14,36 @@ function AssistedCombatManager:Init()
 end
 
 function AssistedCombatManager:OnSpellsChanged()
-	-- update the rotation spells before anything else
-	wipe(self.rotationSpells);
+	-- mark existing spells unused with 0
+	local hasChanges = false;
+	for k in pairs(self.rotationSpells) do
+		self.rotationSpells[k] = 0;
+	end
+	-- mark current spells with 1
 	local rotationSpells = C_AssistedCombat.GetRotationSpells();
 	for i, spellID in ipairs(rotationSpells) do
-		self.rotationSpells[spellID] = true;
+		if not hasChanges and not self.rotationSpells[spellID] then
+			hasChanges = true;
+		end
+		self.rotationSpells[spellID] = 1;
+	end
+	-- remove unused spells
+	for k, v in pairs(self.rotationSpells) do
+		if v == 0 then
+			hasChanges = true;
+			self.rotationSpells[k] = nil;
+		end
 	end
 
 	local actionSpellID = C_AssistedCombat.GetActionSpell();
 	self:SetActionSpell(actionSpellID);
 
+	local hadShapeshiftForms = self.hasShapeshiftForms;
 	self.hasShapeshiftForms = GetNumShapeshiftForms() > 0;
+
+	if not hasChanges and self.hasShapeshiftForms == hadShapeshiftForms then
+		return;
+	end
 
 	-- OnSpellsChanged will fire after VARIABLES_LOADED and PLAYER_ENTERING_WORLD
 	if not self.init then

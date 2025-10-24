@@ -146,11 +146,17 @@ function BaseHousingActionButtonMixin:UpdateKeybind()
 	if self.keybindName then
 		local abbreviated = true;
 
-		self.bindingKey = GetBindingText(GetBindingKey(self.keybindName));
+		local bindingKey = GetBindingText(GetBindingKey(self.keybindName));
+		if bindingKey and bindingKey ~= "" then
+			self.bindingKey = bindingKey;
+		end
 		bindingKeyAbbr = GetBindingText(GetBindingKey(self.keybindName), abbreviated);
 	end
 	if self.altKeybindName then
-		self.altBindingKey = GetBindingText(GetBindingKey(self.altKeybindName));
+		local altBindingKey = GetBindingText(GetBindingKey(self.altKeybindName));
+		if altBindingKey and altBindingKey ~= "" then
+			self.altBindingKey = altBindingKey;
+		end
 	end
 
 	if self.ControlText then

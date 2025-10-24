@@ -8,7 +8,7 @@ BagTutorialUtil.lua
 Blizzard_Tutorials_Classes.lua
 Blizzard_Tutorials_Dracthyr.lua
 Blizzard_Tutorials_Dragonriding.lua
-Blizzard_Tutorials_AssistedHighlight.lua
+Blizzard_Tutorials_RPE.lua
 Blizzard_TutorialReagentBag.lua
 Blizzard_Tutorials_Professions.lua
 Blizzard_Tutorials_Frame_Tutorials.lua

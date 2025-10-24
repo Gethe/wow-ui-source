@@ -26,7 +26,6 @@ function BaseHousingControlButtonMixin:GetIconColorForState(state)
 end
 
 function BaseHousingControlButtonMixin:IsActive()
-	-- TODO: Remove temp NYI handlers once all controls have been implemented
 	if self.notYetImplemented then
 		return false;
 	end
@@ -39,16 +38,14 @@ function BaseHousingControlButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
-	-- TODO: Remove temp NYI handlers once all controls have been implemented
 	if self.notYetImplemented then
-		return false, self.nyiLabel.." not yet implemented";
+		return false, self.nyiLabel;
 	end
 	-- If implemented, this should be overriden
 	assert(false);
 end
 
 function BaseHousingControlButtonMixin:OnClick()
-	-- TODO: Remove temp NYI handlers once all controls have been implemented
 	if self.notYetImplemented then
 		return;
 	end
@@ -62,21 +59,6 @@ end
 
 -- Inherits BaseHousingControlButtonMixin
 HouseEditorButtonMixin = {};
-
-function HouseEditorButtonMixin:UpdateVisuals(isPressed)
-	BaseHousingActionButtonMixin.UpdateVisuals(self, isPressed);
-	local state = self:GetState(isPressed);
-	local keybindBG = self.keybindIconDefault;
-	if state.isEnabled and state.isActive then
-		keybindBG = self.keybindIconActive;
-	end
-	self.KeybindBackground:SetAtlas(keybindBG);
-end
-
-function HouseEditorButtonMixin:UpdateKeybind()
-	BaseHousingActionButtonMixin.UpdateKeybind(self);
-	self.KeybindBackground:SetShown(self.bindingKey and self.bindingKey ~= "");
-end
 
 function HouseEditorButtonMixin:CheckEnabled()
 	local disabledTooltip = nil;
@@ -123,7 +105,7 @@ function HouseExitButtonMixin:OnClick()
 		PlaySound(self.clickSoundKit);
 	end
 
-	C_HousingNeighborhood.LeaveHouse();
+	C_Housing.LeaveHouse();
 end
 
 function HouseExitButtonMixin:IsActive()
@@ -136,6 +118,27 @@ function HouseExitButtonMixin:CheckEnabled()
 	end
 
 	return C_Housing.IsInsideHouse();
+end
+
+-- Inherits BaseHousingControlButtonMixin
+HouseInfoButtonMixin = {};
+
+function HouseInfoButtonMixin:OnClick()
+	C_AddOns.LoadAddOn("Blizzard_HousingCornerstone");
+
+	if self:IsEnabled() and self.clickSoundKit then
+		PlaySound(self.clickSoundKit);
+	end
+
+	ToggleUIPanel(HousingCornerstoneHouseInfoFrame);
+end
+
+function HouseInfoButtonMixin:CheckEnabled()
+	return true;
+end
+
+function HouseInfoButtonMixin:IsActive()
+	return HousingCornerstoneHouseInfoFrame and HousingCornerstoneHouseInfoFrame:IsShown();
 end
 
 -- Inherits HousingControlModeButtonMixin

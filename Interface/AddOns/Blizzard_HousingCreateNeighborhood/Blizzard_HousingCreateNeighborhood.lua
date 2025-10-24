@@ -11,6 +11,7 @@ HousingCreateNeighborhoodMixin = {}
 
 function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnLoad()
     self:RegisterEvent("CREATE_NEIGHBORHOOD_RESULT");
+	self.NeighborhoodNameEditBox:SetMaxLetters(50);
 end
 
 function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnEvent(event, ...)
@@ -50,7 +51,7 @@ function HousingCreateCharterNeighborhoodConfirmationMixin:OnLoad()
 	self.Title:SetText(HOUSING_CREATENEIGHBORHOOD_CREATECHARTER);
     self.ConfirmButton:SetText(HOUSING_CREATENEIGHBORHOOD_GUILD_CONFIRMBUTTON);
     self.ConfirmButton:SetScript("OnClick", function()
-        C_HousingNeighborhood.OnCharterConfirmationAccepted();
+        C_Housing.OnCharterConfirmationAccepted();
         HideUIPanel(HousingCreateCharterNeighborhoodConfirmationFrame);
     end);
     self.CancelButton:SetScript("OnClick", function()
@@ -68,7 +69,7 @@ function HousingCreateCharterNeighborhoodConfirmationMixin:OnShow()
 end
 
 function HousingCreateCharterNeighborhoodConfirmationMixin:OnHide()
-    C_HousingNeighborhood.OnCharterConfirmationClosed();
+    C_Housing.OnCharterConfirmationClosed();
     FrameUtil.UnregisterFrameForEvents(self, CharterConfirmationFrameShowingEvents);
 end
 
@@ -87,12 +88,14 @@ function HousingCreateGuildNeighborhoodConfirmationMixin:OnLoad()
 	self.Title:SetText(HOUSING_CREATENEIGHBORHOOD_CREATEGUILD);
 
     self.ConfirmButton:SetScript("OnClick", function()
-        C_HousingNeighborhood.CreateGuildNeighborhood(HousingCreateGuildNeighborhoodFrame.NeighborhoodNameEditBox:GetText());
+        C_Housing.CreateGuildNeighborhood(HousingCreateGuildNeighborhoodFrame.NeighborhoodNameEditBox:GetText());
         HousingCreateGuildNeighborhoodFrame.ConfirmationFrame:Hide();
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_BUTTON);
         HideUIPanel(HousingCreateGuildNeighborhoodFrame);
     end);
     self.CancelButton:SetScript("OnClick", function()
         HousingCreateGuildNeighborhoodFrame.ConfirmationFrame:Hide();
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_BUTTON);
     end);
 end
 
@@ -108,7 +111,8 @@ HousingCreateGuildNeighborhoodMixin = {}
 function HousingCreateGuildNeighborhoodMixin:OnCreateNeighborhoodClicked()
 	self.NeighborhoodNameError:Hide();
 	self.NeighborhoodRequirementsError:Hide();
-	C_HousingNeighborhood.ValidateNeighborhoodName(self.NeighborhoodNameEditBox:GetText());
+	C_Housing.ValidateNeighborhoodName(self.NeighborhoodNameEditBox:GetText());
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_BUTTON);
 end
 
 function HousingCreateGuildNeighborhoodMixin:OnLoad()
@@ -118,6 +122,7 @@ function HousingCreateGuildNeighborhoodMixin:OnLoad()
     self.ConfirmButton:SetScript("OnClick", GenerateClosure(self.OnCreateNeighborhoodClicked, self));
     self.CancelButton:SetScript("OnClick", function()
         HideUIPanel(HousingCreateGuildNeighborhoodFrame);
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_BUTTON);
     end);
 end
 
@@ -130,7 +135,8 @@ local CreateGuildNeighborhoodFrameShowingEvents =
 
 function HousingCreateGuildNeighborhoodMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, CreateGuildNeighborhoodFrameShowingEvents);
-	C_HousingNeighborhood.ValidateCreateGuildNeighborhoodSize();
+	C_Housing.ValidateCreateGuildNeighborhoodSize();
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_OPEN);
 end
 
 function HousingCreateGuildNeighborhoodMixin:OnEvent(event, ...)
@@ -155,8 +161,9 @@ function HousingCreateGuildNeighborhoodMixin:OnEvent(event, ...)
 end
 
 function HousingCreateGuildNeighborhoodMixin:OnHide()
-    C_HousingNeighborhood.OnCreateGuildNeighborhoodClosed();
+    C_Housing.OnCreateGuildNeighborhoodClosed();
     FrameUtil.UnregisterFrameForEvents(self, CreateGuildNeighborhoodFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_CLOSE);
 end
 
 function HousingCreateGuildNeighborhoodMixin:SetActiveLocationAndGuild(locationName)
@@ -185,7 +192,8 @@ end
 
 function HousingCreateNeighborhoodCharterMixin:OnConfirmClicked()
     self.NeighborhoodNameError:Hide();
-	C_HousingNeighborhood.ValidateNeighborhoodName(self.NeighborhoodNameEditBox:GetText());
+	C_Housing.ValidateNeighborhoodName(self.NeighborhoodNameEditBox:GetText());
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_PURCHASE);
 end
 
 function HousingCreateNeighborhoodCharterMixin:OnLoad()
@@ -195,6 +203,7 @@ function HousingCreateNeighborhoodCharterMixin:OnLoad()
     self.ConfirmButton:SetScript("OnClick", GenerateClosure(self.OnConfirmClicked, self));
     self.CancelButton:SetScript("OnClick", function()
         HideUIPanel(HousingCreateNeighborhoodCharterFrame);
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_CANCEL);
         self:SetCharterInfo(); --clear out any set info from editing existing charters
     end);
 end
@@ -207,6 +216,7 @@ local CreateCharterNeighborhoodFrameShowingEvents =
 
 function HousingCreateNeighborhoodCharterMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, CreateCharterNeighborhoodFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_OPEN);
 end
 
 function HousingCreateNeighborhoodCharterMixin:OnEvent(event, ...)
@@ -218,9 +228,9 @@ function HousingCreateNeighborhoodCharterMixin:OnEvent(event, ...)
 			self.NeighborhoodNameError:Show();
 		else	
 			if self.isEditingCharter then
-				C_HousingNeighborhood.EditNeighborhoodCharter(self.NeighborhoodNameEditBox:GetText());
+				C_Housing.EditNeighborhoodCharter(self.NeighborhoodNameEditBox:GetText());
 			else
-				C_HousingNeighborhood.CreateNeighborhoodCharter(self.NeighborhoodNameEditBox:GetText());
+				C_Housing.CreateNeighborhoodCharter(self.NeighborhoodNameEditBox:GetText());
 			end
 			HideUIPanel(HousingCreateNeighborhoodCharterFrame);
 			self:SetCharterInfo(); --clear out any set info from editing existing charters
@@ -229,8 +239,9 @@ function HousingCreateNeighborhoodCharterMixin:OnEvent(event, ...)
 end
 
 function HousingCreateNeighborhoodCharterMixin:OnHide()
-    C_HousingNeighborhood.OnCreateCharterNeighborhoodClosed();
+    C_Housing.OnCreateCharterNeighborhoodClosed();
     FrameUtil.UnregisterFrameForEvents(self, CreateCharterNeighborhoodFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_CLOSE);
 end
 
 function HousingCreateNeighborhoodCharterMixin:SetActiveLocation(locationName)

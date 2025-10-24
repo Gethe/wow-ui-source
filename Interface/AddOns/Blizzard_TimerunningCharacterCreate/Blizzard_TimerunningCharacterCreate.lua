@@ -397,7 +397,10 @@ end
 
 function TimerunningConversionButtonMixin:OnEnter()
 	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
-	GlueTooltip:SetText(TIMERUNNING_CONVERSION_ENABLED_TOOLTIP, 1.0, 1.0, 1.0);
+	local enabled = self:IsEnabled();
+	local fontColor = enabled and HIGHLIGHT_FONT_COLOR or RED_FONT_COLOR;
+	local r, g, b, _a = fontColor:GetRGBA();
+	GlueTooltip:SetText(enabled and TIMERUNNING_CONVERSION_ENABLED_TOOLTIP or TIMERUNNING_CONVERSION_DISABLED_TOOLTIP, r, g, b);
 
 	self.hovered = true;
 	self:UpdateTextureStates();
@@ -411,8 +414,9 @@ function TimerunningConversionButtonMixin:OnLeave()
 end
 
 function TimerunningConversionButtonMixin:UpdateTextureStates()
-	self.HighlightIcon:SetShown(self.hovered and not self.pushed);
-	self.HighlightBorder:SetShown(self.hovered);
+	local enabled = self:IsEnabled();
+	self.HighlightIcon:SetShown(self.hovered and not self.pushed and enabled);
+	self.HighlightBorder:SetShown(self.hovered and enabled);
 
-	self.Icon:SetPoint("CENTER", self, "CENTER", self.pushed and 2 or 0, self.pushed and -2 or 0);
+	self.Icon:SetPoint("CENTER", self, "CENTER", (self.pushed and enabled) and 2 or 0, (self.pushed and enabled) and -2 or 0);
 end

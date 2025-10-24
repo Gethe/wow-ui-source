@@ -103,6 +103,12 @@ function HousingLayoutDoorPinMixin:Update()
 		self:Show();
 	end
 
+	local selected = self:GetPin():IsSelected();
+	if not selected and self.selectedLoopSound then
+		StopSound(self.selectedLoopSound);
+		self.selectedLoopSound = nil;
+	end
+
 	self:UpdateVisuals();
 end
 
@@ -166,6 +172,13 @@ function HousingLayoutDoorPinMixin:OnClick()
 	end
 
 	self:GetPin():Select();
+
+	PlaySound(SOUNDKIT.HOUSING_LAYOUT_SELECT_ADD_ROOM_NODE);
+	if self.selectedLoopSound then
+		StopSound(self.selectedLoopSound);
+		self.selectedLoopSound = nil;
+	end
+	self.selectedLoopSound = select(2, PlaySound(SOUNDKIT.HOUSING_LAYOUT_SELECT_ADD_ROOM_NODE_LOOP));
 end
 
 function HousingLayoutDoorPinMixin:GetDebugName()
@@ -288,6 +301,17 @@ function HousingLayoutRoomPinMixin:UpdateVisuals()
 	end
 
 	self.RoomName:SetTextColor(textColor:GetRGB());
+
+	if self.iconAtlas then
+		if isEnabled then
+			self.Icon:SetAtlas(self.iconAtlas);
+		else
+			local disableAtlas = self.iconAtlas .. "-disable";
+			if C_Texture.GetAtlasInfo(disableAtlas) then
+				self.Icon:SetAtlas(disableAtlas);
+			end
+		end
+	end
 end
 
 function HousingLayoutRoomPinMixin:OnClick()
@@ -401,24 +425,9 @@ end
 HousingLayoutRoomOptionMixin = {};
 
 function HousingLayoutRoomOptionMixin:OnLoad()
-	if self.iconTexture and self.iconTexture ~= "" then
-		self.Icon:SetTexture(self.iconTexture);
-		self.HoverIcon:SetTexture(self.iconTexture);
-	elseif self.iconAtlas and self.iconAtlas ~= "" then
+	if self.iconAtlas and self.iconAtlas ~= "" then
 		self.Icon:SetAtlas(self.iconAtlas, TextureKitConstants.IgnoreAtlasSize);
 		self.HoverIcon:SetAtlas(self.iconAtlas, TextureKitConstants.IgnoreAtlasSize);
-	end
-
-	self.Icon:SetVertexColor(DARKYELLOW_FONT_COLOR:GetRGB());
-	self.HoverIcon:SetVertexColor(DARKYELLOW_FONT_COLOR:GetRGB());
-
-	-- HOUSING_TODO: Can remove this flip once we've got real art assets
-	if self.flipIcon then
-		self.Icon:SetTexCoord(1, 0, 0, 1);
-		self.HoverIcon:SetTexCoord(1, 0, 0, 1);
-	else
-		self.Icon:SetTexCoord(0, 1, 0, 1);
-		self.HoverIcon:SetTexCoord(0, 1, 0, 1);
 	end
 end
 
@@ -459,8 +468,6 @@ function HousingLayoutRoomOptionMixin:Update()
 
 	if enabled ~= self:IsEnabled() then
 		self:SetEnabled(enabled);
-
-		local color = enabled and DARKYELLOW_FONT_COLOR or GRAY_FONT_COLOR;
-		self.Icon:SetVertexColor(color:GetRGB());
+		self.Icon:SetDesaturated(not enabled);
 	end
 end

@@ -769,22 +769,22 @@ function PTR_IssueReporter.CreateReports()
 		return themeSet
 	end
 
-	local getComponentWallpaper = function(dataPackage)
-		local wallpaper = 0
-		if dataPackage and dataPackage.Additional and dataPackage.Additional.currentWallpaper then
-			wallpaper = dataPackage.Additional.currentWallpaper
+	local getComponentMaterial = function(dataPackage)
+		local material = 0
+		if dataPackage and dataPackage.Additional and dataPackage.Additional.currentRoomComponentTextureRecID then
+			material = dataPackage.Additional.currentRoomComponentTextureRecID
 		end
 
-		return wallpaper
+		return material
 	end
 
 	local getComponentCeilingType = function(dataPackage)
-		local isVaultedCeiling = false
-		if dataPackage and dataPackage.Additional and dataPackage.Additional.isVaultedCeiling then
-			isVaultedCeiling = dataPackage.Additional.isVaultedCeiling
+		local ceilingType = 0
+		if dataPackage and dataPackage.Additional and dataPackage.Additional.ceilingType then
+			ceilingType = dataPackage.Additional.ceilingType
 		end
 
-		return tostring(isVaultedCeiling)
+		return ceilingType
 	end
 
 	local getComponentDoorType = function(dataPackage)
@@ -817,7 +817,7 @@ function PTR_IssueReporter.CreateReports()
 	componentReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this Component?")
 	componentReport:AddDataCollection(collector.RunFunction, getComponentType)
 	componentReport:AddDataCollection(collector.RunFunction, getComponentThemeSet)
-	componentReport:AddDataCollection(collector.RunFunction, getComponentWallpaper)
+	componentReport:AddDataCollection(collector.RunFunction, getComponentMaterial)
 	componentReport:AddDataCollection(collector.RunFunction, getComponentCeilingType)
 	componentReport:AddDataCollection(collector.RunFunction, getComponentDoorType)
 	componentReport:RegisterPopEvent(event.Tooltip, tooltips.housingComponent)

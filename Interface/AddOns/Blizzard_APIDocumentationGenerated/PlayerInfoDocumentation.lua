@@ -345,6 +345,15 @@ local PlayerInfo =
 				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsTutorialsTabAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

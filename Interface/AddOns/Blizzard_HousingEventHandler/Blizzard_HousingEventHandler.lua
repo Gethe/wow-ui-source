@@ -75,12 +75,11 @@ function HousingFramesUtil.SetGridVisible(gridVisible)
 	C_HousingDecor.SetGridVisible(gridVisible);
 end
 
-function HousingFramesUtil.DeleteDecor()
+function HousingFramesUtil.RemoveSelectedDecor()
 	if C_HousingDecor.IsDecorSelected() then
 		PlaySound(SOUNDKIT.HOUSING_DECOR_EDIT_OPTION_REMOVE_ITEM);
+		C_HousingDecor.RemoveSelectedDecor();
 	end
-
-	C_HousingDecor.DeleteDecor();
 end
 
 function HousingFramesUtil.SetGridSnapEnabled(gridSnapEnabled)
@@ -96,6 +95,19 @@ end
 function HousingFramesUtil.ZoomLayoutCamera(zoom)
 	PlaySound(zoom and SOUNDKIT.HOUSING_LAYOUT_ZOOM_IN or SOUNDKIT.HOUSING_LAYOUT_ZOOM_OUT);
 	C_HousingLayout.ZoomLayoutCamera(zoom);
+end
+
+function HousingFramesUtil.RotateBasicDecorSelection(direction)
+	if C_HousingBasicMode.IsDecorSelected() then
+		C_HousingBasicMode.RotateDecor(direction);
+	elseif C_HousingBasicMode.IsHouseExteriorSelected() then
+		C_HousingBasicMode.RotateHouseExterior(direction);
+	else
+		-- Nothing selected, early out & avoid playing sound
+		return;
+	end
+
+	PlaySound(SOUNDKIT.HOUSING_ROTATE_ITEM);
 end
 
 -- Handler for events that may fire while relevant Housing addons may not be loaded
@@ -244,6 +256,15 @@ function HousingEventHandlerMixin:ShowStairDirectionConfirmation()
 	StaticPopup_Show("HOUSING_LAYOUT_STAIRS_DIRECTION_CONFIRM");
 end
 
+function HousingEventHandlerMixin:ShowHousingItemAcquiredAlert(itemType, itemName, icon)
+	local rewardData = {};
+	rewardData.itemType = itemType;
+	rewardData.itemName = itemName;
+	rewardData.icon = icon;
+
+	HousingItemEarnedAlertFrameSystem:AddAlert(rewardData);
+end
+
 local HousingEventHandler = CreateAndInitFromMixin(HousingEventHandlerMixin);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_PLOT_ENTERED", HousingEventHandler.OnPlotEntered, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("HOUSE_EDITOR_MODE_CHANGED", HousingEventHandler.OnEditorModeChanged, HousingEventHandler);
@@ -257,3 +278,4 @@ EventRegistry:RegisterFrameEventAndCallback("OPEN_CHARTER_CONFIRMATION_UI", Hous
 EventRegistry:RegisterFrameEventAndCallback("SHOW_PLAYER_EVICTED_DIALOG", HousingEventHandler.ShowPlayerEvictedConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG", HousingEventHandler.ShowOwnershipTransferRequestConfirmation, HousingEventHandler);
 EventRegistry:RegisterFrameEventAndCallback("SHOW_STAIR_DIRECTION_CONFIRMATION", HousingEventHandler.ShowStairDirectionConfirmation, HousingEventHandler);
+EventRegistry:RegisterFrameEventAndCallback("NEW_HOUSING_ITEM_ACQUIRED", HousingEventHandler.ShowHousingItemAcquiredAlert, HousingEventHandler);

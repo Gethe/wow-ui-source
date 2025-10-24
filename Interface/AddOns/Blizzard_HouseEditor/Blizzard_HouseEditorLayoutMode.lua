@@ -121,10 +121,6 @@ function HouseEditorLayoutModeMixin:OnHide()
 	PlaySound(SOUNDKIT.HOUSING_EXIT_LAYOUT_MODE);
 end
 
-function HouseEditorLayoutModeMixin:OnMouseWheel(delta)
-	C_HousingLayout.RotateDraggedRoom(delta > 0);
-end
-
 function HouseEditorLayoutModeMixin:TryHandleEscape()
 	if C_HousingLayout.HasAnySelections() then
 		C_HousingLayout.CancelActiveLayoutEditing();

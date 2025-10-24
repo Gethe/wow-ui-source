@@ -755,6 +755,7 @@ function EncounterJournal_OnShow(self)
 		{ self.dungeonsTab, GameRulesUtil.EJShouldShowDungeons },
 		{ self.raidsTab, GameRulesUtil.EJShouldShowRaids },
 		{ self.LootJournalTab, GameRulesUtil.EJShouldShowItemSets },
+		{ self.TutorialsTab, GameRulesUtil.EJShouldShowTutorials },
 	};
 
 	local previousTab = nil;

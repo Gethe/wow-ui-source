@@ -62,7 +62,7 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 	local function GetDetailContainerDataProvider()
 		local dataProvider = CreateDataProvider();
 		for _, childInfo in ipairs(self.bundleChildInfo) do
-			local productInfo = CatalogShopFrame:GetProductInfo(childInfo.childProductID);
+			local productInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
 			if productInfo and (not productInfo.isHidden) then
 				productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
 				productInfo.isBundleChild = true;
@@ -154,4 +154,8 @@ function DetailsProductContainerFrameMixin:UpdateProductInfo(productInfo)
 	self.ProductsScrollBoxContainer:SetShown(self.usesScrollBox);
 	self.ShadowLayer:SetShown(self.usesScrollBox);
 	self:AllDataRefresh(true);
+
+	-- Adding an Update to the scroll box with forceLayout set to true so the child elements will refresh after a product is selected.
+	local forceLayout = true;
+	self.ProductsScrollBoxContainer.ScrollBox:Update(forceLayout);
 end

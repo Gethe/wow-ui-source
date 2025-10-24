@@ -219,6 +219,10 @@ function TabSystemMixin:SetTabEnabled(tabID, enabled, errorReason)
 	self:MarkDirty();
 end
 
+function TabSystemMixin:IsTabEnabled(tabID)
+	return not self.tabs[tabID]:IsEnabled();
+end
+
 function TabSystemMixin:GetTabWidthConstraints()
 	return self.minTabWidth, self.maxTabWidth;
 end

@@ -355,6 +355,18 @@ local ChallengeModeInfo =
 			},
 		},
 		{
+			Name = "ChallengeModeLeaderboardResult",
+			Type = "Event",
+			LiteralName = "CHALLENGE_MODE_LEADERBOARD_RESULT",
+			Payload =
+			{
+				{ Name = "mapID", Type = "number", Nilable = false },
+				{ Name = "challengeModeID", Type = "number", Nilable = false },
+				{ Name = "page", Type = "number", Nilable = false },
+				{ Name = "results", Type = "table", InnerType = "MythicPlusLeaderboardResult", Nilable = false },
+			},
+		},
+		{
 			Name = "ChallengeModeLeadersUpdate",
 			Type = "Event",
 			LiteralName = "CHALLENGE_MODE_LEADERS_UPDATE",

@@ -49,6 +49,20 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetBasicDecorInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 
@@ -231,6 +245,7 @@ local HousingCatalogUI =
 				{ Name = "asset", Type = "ModelAsset", Nilable = true },
 				{ Name = "iconTexture", Type = "FileAsset", Nilable = true },
 				{ Name = "iconAtlas", Type = "textureAtlas", Nilable = true },
+				{ Name = "uiModelSceneID", Type = "number", Nilable = true },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "showQuantity", Type = "bool", Nilable = false },
 				{ Name = "categoryIDs", Type = "table", InnerType = "number", Nilable = false },
@@ -243,10 +258,13 @@ local HousingCatalogUI =
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false },
 				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false },
 				{ Name = "canCustomize", Type = "bool", Nilable = false },
+				{ Name = "isPrefab", Type = "bool", Nilable = false },
+				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false },
 				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "remainingRedeemable", Type = "number", Nilable = false },
 				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false },
+				{ Name = "sourceText", Type = "cstring", Nilable = false },
 			},
 		},
 		{

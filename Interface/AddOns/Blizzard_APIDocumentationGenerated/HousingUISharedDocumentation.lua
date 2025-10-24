@@ -64,6 +64,7 @@ local HousingUIShared =
 				{ Name = "iconTexture", Type = "FileAsset", Nilable = true },
 				{ Name = "iconAtlas", Type = "textureAtlas", Nilable = true },
 				{ Name = "objectName", Type = "string", Nilable = true },
+				{ Name = "tooltipText", Type = "string", Nilable = true },
 				{ Name = "valueType", Type = "HouseLevelRewardValueType", Nilable = true },
 				{ Name = "oldValue", Type = "number", Nilable = true },
 				{ Name = "newValue", Type = "number", Nilable = true },

@@ -967,8 +967,10 @@ function Class_TabTargetingWatcher:QUEST_LOG_UPDATE()
 end
 
 function Class_TabTargetingWatcher:PLAYER_TARGET_CHANGED()
-	self:HideSingleKeyTutorial();
-	self:Complete();
+	if UnitCanAttack("player", "target") and not UnitIsDeadOrGhost("target") then
+		self:HideSingleKeyTutorial();
+		self:Complete();
+	end
 end
 
 function Class_TabTargetingWatcher:OnComplete()

@@ -5,9 +5,9 @@ local PlayerInteractionManagerConstants =
 		{
 			Name = "PlayerInteractionType",
 			Type = "Enumeration",
-			NumValues = 79,
+			NumValues = 80,
 			MinValue = 0,
-			MaxValue = 78,
+			MaxValue = 79,
 			Fields =
 			{
 				{ Name = "None", Type = "PlayerInteractionType", EnumValue = 0 },
@@ -89,6 +89,7 @@ local PlayerInteractionManagerConstants =
 				{ Name = "GuildRename", Type = "PlayerInteractionType", EnumValue = 76 },
 				{ Name = "OpenNeighborhoodCharterConfirmation", Type = "PlayerInteractionType", EnumValue = 77 },
 				{ Name = "OpenHouseFinder", Type = "PlayerInteractionType", EnumValue = 78 },
+				{ Name = "PlaceholderType79", Type = "PlayerInteractionType", EnumValue = 79 },
 			},
 		},
 	},

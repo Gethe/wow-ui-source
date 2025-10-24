@@ -66,16 +66,28 @@ function HousingCatalogFiltersMixin:Initialize(catalogSearcher)
 		self:TryCallSearcherFunc("ToggleFilterTag", data.groupID, data.tagID);
 	end
 
+	local function IsSortTypeChecked(parameter)
+		return self:TryCallSearcherFunc("GetSortType") == parameter;
+	end
+
+	local function SetSortTypeChecked(parameter)
+		self:TryCallSearcherFunc("SetSortType", parameter);
+	end
+
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_DYEABLE, getCustomizableOnly, toggleCustomizableOnly);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_INDOORS, getAllowedIndoors, toggleAllowedIndoors);
 		rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_OUTDOORS, getAllowedOutdoors, toggleAllowedOutdoors);
 
-		if self.housingMarketFiltersAvailable then
+		if self.collectionFiltersAvailable then
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_COLLECTED, getCollected, toggleCollected);
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_UNCOLLECTED, getUncollected, toggleUncollected);
 			rootDescription:CreateCheckbox(HOUSING_CATALOG_FILTERS_FIRST_ACQUISITION, getFirstAcquisitionBonusOnly, toggleFirstAcquisitionBonusOnly);
 		end
+
+		local sortBySubmenu = rootDescription:CreateButton(RAID_FRAME_SORT_LABEL);
+		sortBySubmenu:CreateRadio(HOUSING_CHEST_SORT_TYPE_DATE_ADDED, IsSortTypeChecked, SetSortTypeChecked, Enum.HousingCatalogSortType.DateAdded);
+		sortBySubmenu:CreateRadio(HOUSING_CHEST_SORT_TYPE_ALPHABETICAL, IsSortTypeChecked, SetSortTypeChecked, Enum.HousingCatalogSortType.Alphabetical);
 
 		for groupIndex, tagGroup in ipairs(self.filterTagGroups) do
 			if tagGroup.tags and TableHasAnyEntries(tagGroup.tags) then
@@ -144,7 +156,7 @@ function HousingCatalogFiltersMixin:ResetFiltersToDefault()
 	self.catalogSearcher:SetCustomizableOnly(false);
 	self.catalogSearcher:SetAllowedIndoors(true);
 	self.catalogSearcher:SetAllowedOutdoors(true);
-	self:ResetHousingMarketFilters();
+	self:ResetCollectionFilters();
 	for _, tagGroup in ipairs(self.filterTagGroups) do
 		self.catalogSearcher:SetAllInFilterTagGroup(tagGroup.groupID, true);
 	end
@@ -156,17 +168,17 @@ function HousingCatalogFiltersMixin:SetEnabled(enabled)
 	self.FilterDropdown:ValidateResetState();
 end
 
-function HousingCatalogFiltersMixin:ResetHousingMarketFilters()
+function HousingCatalogFiltersMixin:ResetCollectionFilters()
 	self.catalogSearcher:SetCollected(true);
 	self.catalogSearcher:SetUncollected(true);
 	self.catalogSearcher:SetFirstAcquisitionBonusOnly(false);
 end
 
-function HousingCatalogFiltersMixin:SetHousingMarketFiltersAvailable(available)
-	self.housingMarketFiltersAvailable = available;
+function HousingCatalogFiltersMixin:SetCollectionFiltersAvailable(available)
+	self.collectionFiltersAvailable = available;
 
 	if not available then
-		self:ResetHousingMarketFilters();
+		self:ResetCollectionFilters();
 	end
 
 	self.FilterDropdown:ValidateResetState();

@@ -1417,6 +1417,7 @@ end
 
 function PanelDragBarMixin:SetTarget(target)
 	self.target = target;
+	self.isMovingTarget = false;
 end
 
 function PanelDragBarMixin:OnDragStart()
@@ -1432,12 +1433,11 @@ function PanelDragBarMixin:OnDragStart()
 	end
 
 	if continueDragStart then
+		self.isMovingTarget = true;
 		target:StartMoving();
 	end
 
-	if SetCursor then
-		SetCursor("UI_MOVE_CURSOR");
-	end
+	self:UpdateCursor();
 end
 
 function PanelDragBarMixin:OnDragStop()
@@ -1453,12 +1453,11 @@ function PanelDragBarMixin:OnDragStop()
 	end
 
 	if continueDragStop then
+		self.isMovingTarget = false;
 		target:StopMovingOrSizing();
 	end
 
-	if SetCursor then
-		SetCursor(nil);
-	end
+	self:UpdateCursor();
 end
 
 function PanelDragBarMixin:SetOnDragStartCallback(onDragStartCallback)
@@ -1467,6 +1466,26 @@ end
 
 function PanelDragBarMixin:SetOnDragStopCallback(onDragStopCallback)
 	self.onDragStopCallback = onDragStopCallback;
+end
+
+function PanelDragBarMixin:OnEnter()
+	if self.showCursorOnHover then
+		self:UpdateCursor();
+	end
+end
+
+function PanelDragBarMixin:OnLeave()
+	if self.showCursorOnHover then
+		self:UpdateCursor();
+	end
+end
+
+function PanelDragBarMixin:UpdateCursor()
+	if SetCursor then
+		local showCursor = self.isMovingTarget or (self.showCursorOnHover and self:IsMouseMotionFocus());
+		local cursorStr = showCursor and "UI_MOVE_CURSOR" or nil;
+		SetCursor(cursorStr);
+	end
 end
 
 PanelResizeButtonMixin = {};
@@ -2297,10 +2316,16 @@ end
 
 BarDividerMixin = {};
 
-function BarDividerMixin:SetHeaderText(text)
+function BarDividerMixin:SetHeaderText(text, color)
+	local textColor = color or LIGHTGRAY_FONT_COLOR;
+	local textureColor = color or HIGHLIGHT_FONT_COLOR;
+
 	self.Text:SetText(text);
+	self.Text:SetTextColor(textColor:GetRGB());
 
 	local hasText = text ~= "";
 	self.Text:SetShown(hasText);
 	self.BarMask:SetShown(hasText);
+
+	self.BarTexture:SetVertexColor(textureColor:GetRGB());
 end

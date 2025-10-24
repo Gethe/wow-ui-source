@@ -11,6 +11,17 @@ local CatalogWhileVisibleEvents = {
 HousingCatalogFrameMixin = {};
 
 function HousingCatalogFrameMixin:OnLoad()
+	FrameUtil.RegisterFrameForEvents(self, CatalogLifetimeEvents);
+end
+
+function HousingCatalogFrameMixin:OneTimeInit()
+	if self.didOneTimeInitialize then
+		return;
+	end
+
+	-- Delaying the first time we initialize all this so that we don't load up all catalog data in CPP if it's never needed or shown
+	self.didOneTimeInitialize = true;
+
 	-- TODO: A better way to filter out rooms category
 	local displayContext = Enum.HouseEditorMode.BasicDecor;
 
@@ -18,15 +29,13 @@ function HousingCatalogFrameMixin:OnLoad()
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	self.catalogSearcher:SetOwnedOnly(false);
+	self.catalogSearcher:SetIncludeMarketEntries(false);
 	self.catalogSearcher:SetEditorModeContext(displayContext);
 
 	self.Filters:Initialize(self.catalogSearcher);
+	self.Filters:SetCollectionFiltersAvailable(true);
 	self.Categories:Initialize(GenerateClosure(self.OnCategoryFocusChanged, self), { withOwnedEntriesOnly = false, editorModeContext = displayContext });
 	self.SearchBox:Initialize(GenerateClosure(self.OnSearchTextUpdated, self));
-
-	self.OptionsContainer.ScrollBox:SetEdgeFadeLength(50);
-
-	FrameUtil.RegisterFrameForEvents(self, CatalogLifetimeEvents);
 end
 
 function HousingCatalogFrameMixin:OnEvent(event, ...)
@@ -43,14 +52,18 @@ function HousingCatalogFrameMixin:OnEvent(event, ...)
 			-- and after other receiving while-shown cleanup events that will lead this UI to attempt to reference it
 			self.catalogSearcher = nil;
 			self.Filters:ClearSearcherReference();
+			self.OptionsContainer:ClearCatalogData();
 		end
 	end
 end
 
 function HousingCatalogFrameMixin:OnShow()
+	self:OneTimeInit();
+
 	FrameUtil.RegisterFrameForEvents(self, CatalogWhileVisibleEvents);
 	EventRegistry:RegisterCallback("HousingCatalogEntry.OnInteract", function(owner, catalogEntry, button, isDrag)
 		if button == "LeftButton" and not isDrag then
+			PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
 			self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo);
 			self.PreviewFrame:Show();
 		end
@@ -84,8 +97,32 @@ function HousingCatalogFrameMixin:UpdateCatalogData()
 	end
 
 	local entries = self.catalogSearcher:GetCatalogSearchResults();
+
+	-- If not currently showing anything in the preview pane, show the first entry in the list
+	if not self.PreviewFrame:IsShown() and entries and #entries > 0 then
+		local firstEntry = entries[1];
+		local firstEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(firstEntry);
+		self.PreviewFrame:PreviewCatalogEntryInfo(firstEntryInfo);
+		self.PreviewFrame:Show();
+	end
+
 	local retainCurrentPosition = true;
 	self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition);
+end
+
+function HousingCatalogFrameMixin:UpdateCategoryText()
+	local categoryString = self.Categories:GetFocusedCategoryString();
+	if not categoryString then
+		self.OptionsContainer.CategoryText:SetText("");
+		return;
+	end
+
+	self.OptionsContainer.CategoryText:SetText(categoryString);
+	if self.catalogSearcher:GetFilteredCategoryID() == Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID then
+		self.OptionsContainer.CategoryText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	else
+		self.OptionsContainer.CategoryText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
 end
 
 function HousingCatalogFrameMixin:OnCatalogEntryUpdated(entryID)
@@ -119,6 +156,8 @@ function HousingCatalogFrameMixin:OnSearchTextUpdated(newSearchText)
 			self.catalogSearcher:SetFilteredCategoryID(nil);
 			self.catalogSearcher:SetFilteredSubcategoryID(nil);
 			self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID);
+
+			self:UpdateCategoryText();
 		end
 	end
 end
@@ -135,6 +174,8 @@ function HousingCatalogFrameMixin:OnCategoryFocusChanged(focusedCategoryID, focu
 
 	self.catalogSearcher:SetFilteredCategoryID(focusedCategoryID);
 	self.catalogSearcher:SetFilteredSubcategoryID(focusedSubcategoryID);
+
+	self:UpdateCategoryText();
 
 	-- On focusing categories, clear out any previous search text
 	if (focusedCategoryID or focusedSubcategoryID) and self.catalogSearcher:GetSearchText() then

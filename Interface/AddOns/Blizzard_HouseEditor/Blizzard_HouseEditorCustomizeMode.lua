@@ -6,6 +6,7 @@ local CustomizeModeShownEvents = {
 	"DYE_COLOR_UPDATED",
 	"DYE_COLOR_CATEGORY_UPDATED",
 	"HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGED",
+	"UPDATE_BINDINGS",
 };
 
 HouseEditorCustomizeModeMixin = CreateFromMixins(BaseHouseEditorModeMixin);
@@ -14,6 +15,7 @@ function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_CUSTOMIZE_MODE_SELECTED_TARGET_CHANGED" then
 		local hasTarget, targetType = ...;
 		if hasTarget  then
+			self:OnTargetSelected();
 			if targetType == Enum.HousingCustomizeModeTargetType.Decor then
 				self:ShowSelectedDecorInfo();
 			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then
@@ -22,13 +24,14 @@ function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 
 			PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_SELECT);
 		else
+			self:OnTargetUnselected();
 			self:HideSelectedDecorInfo();
 			self:HideSelectedRoomComponentInfo();
 		end
 	elseif event == "HOUSING_CUSTOMIZE_MODE_HOVERED_TARGET_CHANGED" then
 		local isHovering, targetType = ...;
 		if isHovering then
-			PlaySound(SOUNDKIT.HOUSING_ITEM_HOVER);
+			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
 			if targetType == Enum.HousingCustomizeModeTargetType.Decor then
 				self:OnDecorHovered();
 			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then
@@ -51,11 +54,34 @@ function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 		local componentPane = self.RoomComponentCustomizationsPane;
 		if componentPane.roomGUID == roomGUID and componentPane.componentID == componentID then
 			local info = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
-			componentPane:UpdateRoomComponentInfo(info);
+			componentPane:SetRoomComponentInfo(info);
+		end
+	elseif event == "HOUSING_ROOM_COMPONENT_CUSTOMIZATION_CHANGE_FAILED" then
+		local roomGUID, componentID, result = ...;
+		local componentPane = self.RoomComponentCustomizationsPane;
+		if componentPane.roomGUID == roomGUID and componentPane.componentID == componentID then
+			local errStr = HousingResultToErrorText[result];
+			if errStr then
+				UIErrorsFrame:AddExternalErrorMessage(errStr);
+			end
 		end
 	elseif event == "HOUSING_DECOR_DYE_FAILURE" then
 		UIErrorsFrame:AddExternalErrorMessage(HOUSING_DECOR_MISSING_DYE_ERROR_TEXT);
+	elseif event == "UPDATE_BINDINGS" then
+		self.Instructions:UpdateAllControls();
 	end
+end
+
+function HouseEditorCustomizeModeMixin:OnTargetSelected()
+	local isSelected = true;
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isSelected);
+	self.Instructions:UpdateLayout();
+end
+
+function HouseEditorCustomizeModeMixin:OnTargetUnselected()
+	local isSelected = false;
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isSelected);
+	self.Instructions:UpdateLayout();
 end
 
 function HouseEditorCustomizeModeMixin:UpdateSelectedDecorInfo()
@@ -90,13 +116,26 @@ function HouseEditorCustomizeModeMixin:HideSelectedDecorInfo()
 	end
 end
 
+function HouseEditorCustomizeModeMixin:SetInstructionShown(instructionSet, shouldShow)
+	for _, instruction in ipairs(instructionSet) do
+		instruction:SetShown(shouldShow);
+	end
+end
+
 function HouseEditorCustomizeModeMixin:OnShow()
+	self.Instructions:UpdateAllVisuals();
+	local hasSelection = C_HousingCustomizeMode.IsDecorSelected() or C_HousingCustomizeMode.IsRoomComponentSelected();
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not hasSelection);
+	self.Instructions:UpdateLayout();
+
 	FrameUtil.RegisterFrameForEvents(self, CustomizeModeShownEvents);
 	EventRegistry:TriggerEvent("HouseEditor.HouseStorageSetShown", false);
 	C_KeyBindings.ActivateBindingContext(Enum.BindingContext.HousingEditorCustomizeMode);
 
 	if C_HousingCustomizeMode.IsDecorSelected() then
 		self:ShowSelectedDecorInfo();
+	elseif C_HousingCustomizeMode.IsRoomComponentSelected() then
+		self:ShowSelectedRoomComponentInfo();
 	end
 
 	self.Instructions:UpdateLayout();
@@ -130,15 +169,14 @@ function HouseEditorCustomizeModeMixin:ShowDecorInstanceTooltip(decorInstanceInf
 	return GameTooltip;
 end
 
-local function GetComponentTypeName(type)
-	return type == Enum.HousingRoomComponentType.Ceiling and HOUSING_DECOR_CUSTOMIZATION_LABEL_CEILING or
-			type == Enum.HousingRoomComponentType.Wall and HOUSING_DECOR_CUSTOMIZATION_LABEL_WALL or
-			HOUSING_DECOR_CUSTOMIZATION_LABEL_FLOOR;
-end
-
 function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)
+	local supportedComponentName = self.RoomComponentCustomizationsPane:TryGetRoomComponentTooltipLabel(componentInfo);
+	if not supportedComponentName then
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, GetComponentTypeName(componentInfo.type));
+	GameTooltip_SetTitle(GameTooltip, supportedComponentName);
 	if componentInfo.canBeCustomized then	
 		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_HOVER_TOOLTIP);
 	else
@@ -150,7 +188,7 @@ end
 
 function HouseEditorCustomizeModeMixin:ShowSelectedRoomComponentInfo()
 	local info = C_HousingCustomizeMode.GetSelectedRoomComponentInfo();
-	if info and info.canBeCustomized then
+	if info and info.canBeCustomized and self.RoomComponentCustomizationsPane:SupportsRoomComponent(info) then
 		self:HideSelectedDecorInfo();
 
 		if self.RoomComponentCustomizationsPane:IsShown() then

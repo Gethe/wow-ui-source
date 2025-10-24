@@ -7,10 +7,6 @@ local HousingCleanupModeUI =
 	Functions =
 	{
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
 
@@ -27,6 +23,10 @@ local HousingCleanupModeUI =
 			{
 				{ Name = "isHoveringDecor", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
 		},
 	},
 

@@ -1,0 +1,184 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingRoomComponentOptionTemplate" mixin="HousingRoomComponentOptionMixin" parentArray="dropdowns" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="SwitchLabel" inherits="GameFontHighlight">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate">
+				<KeyValues>
+					<KeyValue key="dontConcatenateText" value="true" type="boolean"/>
+				</KeyValues>
+				<Size y="30"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.SwitchLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="LEFT" x="5" y="0"/>
+					<Anchor point="RIGHT" x="-5" y="0"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="HousingRoomComponentApplyToAllButtonTemplate" mixin="HousingRoomComponentApplyToAllButtonMixin" virtual="true">
+		<Size x="50" y="50"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Icon" atlas="housing-apply-to-all-icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="HoverIcon" atlas="housing-apply-to-all-icon" alphaMode="ADD" alpha="0.5" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="common-dropdown-c-button"/>
+		<HighlightTexture atlas="common-dropdown-c-button-hover-1" alphaMode="ADD"/>
+		<PushedTexture atlas="common-dropdown-c-button-pressed-1"/>
+		<DisabledTexture atlas="common-dropdown-c-button-disabled"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HousingRoomComponentPaneTemplate" mixin="RoomComponentPaneMixin" inherits="VerticalLayoutFrame" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="340" type="number"/>
+			<KeyValue key="leftPadding" value="40" type="number"/>
+			<KeyValue key="rightPadding" value="40" type="number"/>
+			<KeyValue key="topPadding" value="50" type="number"/>
+			<KeyValue key="bottomPadding" value="30" type="number"/>
+			<KeyValue key="spacing" value="20" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" atlas="housing-basic-container-woodheader">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderLabel" inherits="GameFontHighlightMed2">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="WallWarning" inherits="GameFontDisableSmall" text="HOUSING_DECOR_CUSTOMIZATION_WALL_WARNING">
+					<KeyValues>
+						<KeyValue key="topPadding" value="10" type="number"/>
+						<KeyValue key="bottomPadding" value="-10" type="number"/>
+						<KeyValue key="layoutIndex" value="10" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+					</KeyValues>
+					<Size y="30"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button inherits="UIPanelCloseButton" parentKey="CloseButton">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			
+			<Frame parentKey="ThemeDropdown" inherits="HousingRoomComponentOptionTemplate" mixin="HousingRoomComponentThemeMixin">
+				<Size y="50"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Button parentKey="ApplyThemeToRoomButton" inherits="HousingRoomComponentApplyToAllButtonTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="HOUSING_DECOR_CUSTOMIZATION_THEME_APPLY_ALL_TOOLTIP" type="global" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.ThemeDropdown.Dropdown" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="WallpaperDropdown" inherits="HousingRoomComponentOptionTemplate" mixin="HousingRoomComponentWallpaperMixin">
+				<Size y="50"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+
+			<Button parentKey="ApplyWallpaperToAllWallsButton" inherits="HousingRoomComponentApplyToAllButtonTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="tooltipText" value="HOUSING_DECOR_CUSTOMIZATION_WALLPAPER_APPLY_ALL_TOOLTIP" type="global" />
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.WallpaperDropdown.Dropdown" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="CeilingTypeDropdown" inherits="HousingRoomComponentOptionTemplate" mixin="HousingRoomComponentCeilingTypeMixin">
+				<Size y="50"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="labelText" type="global" value="HOUSING_DECOR_CUSTOMIZATION_CEILING_TYPE_LABEL"/>
+				</KeyValues>
+			</Frame>
+			
+			<Frame parentKey="DoorTypeDropdown" inherits="HousingRoomComponentOptionTemplate" mixin="HousingRoomComponentDoorTypeMixin">
+				<Size y="50"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="expand" value="true" type="boolean"/>
+					<KeyValue key="labelText" type="global" value="HOUSING_DECOR_CUSTOMIZATION_DOOR_TYPE_LABEL"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -65,7 +65,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "GarrisonBuildingRefund", Type = "CurrencySource", EnumValue = 26 },
 				{ Name = "GarrisonMissionReward", Type = "CurrencySource", EnumValue = 27 },
 				{ Name = "GarrisonResourceOverTime", Type = "CurrencySource", EnumValue = 28 },
-				{ Name = "QuestRewardIgnoreCapsDeprecated", Type = "CurrencySource", EnumValue = 29 },
+				{ Name = "CurrencyWalletClaim", Type = "CurrencySource", EnumValue = 29 },
 				{ Name = "GarrisonTalent", Type = "CurrencySource", EnumValue = 30 },
 				{ Name = "GarrisonWorldQuestBonus", Type = "CurrencySource", EnumValue = 31 },
 				{ Name = "PvPHonorReward", Type = "CurrencySource", EnumValue = 32 },

@@ -535,3 +535,19 @@ function FrameUtil.SetParentMaintainRenderLayering(frame, parent)
 	frame:SetFrameStrata(origStrata);
 	frame:SetFrameLevel(origFrameLevel);
 end
+
+-- Sets a frame to the appropriate top level parent.
+function FrameUtil.RegisterForTopLevelParentChanged(frame)
+	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function (callbackFrame)
+		FrameUtil.UpdateTopLevelParent(frame);
+	end, frame);
+end
+
+-- Sets a frame to the appropriate top level parent.
+function FrameUtil.UpdateTopLevelParent(frame)
+	local oldParent = frame:GetParent();
+	local newParent = GetAppropriateTopLevelParent();
+	if newParent and newParent ~= oldParent then
+		FrameUtil.SetParentMaintainRenderLayering(frame, newParent);
+	end
+end

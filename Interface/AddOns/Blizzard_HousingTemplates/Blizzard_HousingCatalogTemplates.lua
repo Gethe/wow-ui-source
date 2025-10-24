@@ -1,14 +1,25 @@
+
+local function SetHeaderText(barDivider, elementData)
+	barDivider:SetHeaderText(elementData.text, HOUSING_HEADER_COLOR);
+end
+
 local Templates = {
 	["CATALOG_ENTRY_DECOR"] = { template = "HousingCatalogDecorEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
 	["CATALOG_ENTRY_ROOM"] = { template = "HousingCatalogRoomEntryTemplate", initFunc = HousingCatalogEntryMixin.Init, resetFunc = HousingCatalogEntryMixin.Reset },
 	["CATALOG_ENTRY_BUNDLE"] = { template = "HousingCatalogBundleDisplayTemplate", initFunc = HousingCatalogBundleDisplayMixin.Init, resetFunc = HousingCatalogBundleDisplayMixin.Reset },
 	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = { template = "BarDividerTemplate", initFunc = nop, resetFunc = Pool_HideAndClearAnchors },
+	["CATALOG_ENTRY_HEADER"] = { template = "BarDividerTemplate", initFunc = SetHeaderText, resetFunc = Pool_HideAndClearAnchors },
+};
+
+local FullWidthTemplateKeySet = {
+	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = true,
+	["CATALOG_ENTRY_HEADER"] = true,
 };
 
 -- Base Mixin
 BaseHousingCatalogMixin = {};
 
-function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition)
+function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition, headerText)
 	if not catalogEntries or #catalogEntries == 0 then
 		self:ClearCatalogData();
 		return;
@@ -16,6 +27,11 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 
 	local lastTemplate = nil;
 	local catalogElements = {};
+
+	if headerText then
+		table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_HEADER", text = headerText });
+	end
+
 	for _, catalogEntry in ipairs(catalogEntries) do
 		local elementData = catalogEntry;
 
@@ -28,17 +44,21 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 				table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_BUNDLE_DIVIDER" });
 			end
 
-			elementData = {
-				entryID = catalogEntry,
-			};
+			if catalogEntry.decorID then
+				elementData = { bundleEntryInfo = catalogEntry, };
 
-			local entryType = catalogEntry.entryType;
-			if entryType == Enum.HousingCatalogEntryType.Decor then
 				elementData.templateKey = "CATALOG_ENTRY_DECOR";
-			elseif entryType == Enum.HousingCatalogEntryType.Room then
-				elementData.templateKey = "CATALOG_ENTRY_ROOM";
 			else
-				assertsafe(false, ("Unexpected catalog entry type: %s"):format(entryType));
+				elementData = { entryID = catalogEntry, };
+
+				local entryType = catalogEntry.entryType;
+				if entryType == Enum.HousingCatalogEntryType.Decor then
+					elementData.templateKey = "CATALOG_ENTRY_DECOR";
+				elseif entryType == Enum.HousingCatalogEntryType.Room then
+					elementData.templateKey = "CATALOG_ENTRY_ROOM";
+				else
+					assertsafe(false, ("Unexpected catalog entry type: %s"):format(entryType));
+				end
 			end
 		end
 
@@ -113,7 +133,7 @@ function ScrollingHousingCatalogMixin:OnLoad()
 		local templateKey = elementData.templateKey;
 
 		-- The divider should fill the whole width of the scroll box.
-		if templateKey == "CATALOG_ENTRY_BUNDLE_DIVIDER" then
+		if FullWidthTemplateKeySet[templateKey] then
 			local template = Templates[elementData.templateKey].template;
 			local templateInfo = C_XMLUtil.GetTemplateInfo(template);
 			return 0, templateInfo.height;
@@ -134,8 +154,13 @@ function ScrollingHousingCatalogMixin:OnLoad()
 	end);
 	
 	self.ScrollBox:SetEdgeFadeLength(75);
+	self:SetScrollBoxTopOffset(self.scrollBoxTopOffset);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function ScrollingHousingCatalogMixin:SetScrollBoxTopOffset(offset)
+	self.ScrollBox:SetPoint("TOPLEFT", 0, offset);
 end
 
 function ScrollingHousingCatalogMixin:SetCatalogElements(catalogElements, retainCurrentPosition)

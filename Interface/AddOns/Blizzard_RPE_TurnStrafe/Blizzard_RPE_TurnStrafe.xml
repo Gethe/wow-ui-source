@@ -30,7 +30,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ActivateButton" inherits="StaticPopupButtonTemplate" text="RPE_TURNSTRAFE_ACTIVATE">
+			<Button parentKey="ActivateButton" inherits="UIPanelButtonTemplate" text="RPE_TURNSTRAFE_ACTIVATE">
 				<Size x="113" y="22"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ActiveLabel"/>

@@ -19,10 +19,6 @@ local HousingExpertModeUI =
 			Type = "Function",
 		},
 		{
-			Name = "DeleteDecor",
-			Type = "Function",
-		},
-		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
 
@@ -38,6 +34,21 @@ local HousingExpertModeUI =
 			Returns =
 			{
 				{ Name = "activeSubMode", Type = "HousingPrecisionSubmode", Nilable = true },
+			},
+		},
+		{
+			Name = "GetPrecisionSubmodeRestriction",
+			Type = "Function",
+			Documentation = { "Returns the type of restriction currently active on the submode; Will return HousingExpertSubmodeRestriction:None if submode is not currently restricted" },
+
+			Arguments =
+			{
+				{ Name = "subMode", Type = "HousingPrecisionSubmode", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "restriction", Type = "HousingExpertSubmodeRestriction", Nilable = false },
 			},
 		},
 		{
@@ -93,6 +104,10 @@ local HousingExpertModeUI =
 			{
 				{ Name = "isHoveringDecor", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "RemoveSelectedDecor",
+			Type = "Function",
 		},
 		{
 			Name = "ResetPrecisionChanges",
@@ -207,6 +222,20 @@ local HousingExpertModeUI =
 				{ Name = "None", Type = "HousingExpertModeTargetType", EnumValue = 0 },
 				{ Name = "Decor", Type = "HousingExpertModeTargetType", EnumValue = 1 },
 				{ Name = "House", Type = "HousingExpertModeTargetType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "HousingExpertSubmodeRestriction",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "HousingExpertSubmodeRestriction", EnumValue = 0 },
+				{ Name = "NotInExpertMode", Type = "HousingExpertSubmodeRestriction", EnumValue = 1 },
+				{ Name = "NoHouseExteriorScale", Type = "HousingExpertSubmodeRestriction", EnumValue = 2 },
+				{ Name = "NoWMOScale", Type = "HousingExpertSubmodeRestriction", EnumValue = 3 },
 			},
 		},
 		{

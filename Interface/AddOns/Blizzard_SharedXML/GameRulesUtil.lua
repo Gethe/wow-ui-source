@@ -122,6 +122,10 @@ function GameRulesUtil.EJShouldShowItemSets()
 	return not C_GameRules.IsGameRuleActive(Enum.GameRule.EjItemSetsDisabled);
 end
 
+function GameRulesUtil.EJShouldShowTutorials()
+	return C_PlayerInfo.IsTutorialsTabAvailable();
+end
+
 function GameRulesUtil.CanShowExperienceBar()
 	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled() and not C_GameRules.IsGameRuleActive(Enum.GameRule.ExperienceBarDisabled);
 end
