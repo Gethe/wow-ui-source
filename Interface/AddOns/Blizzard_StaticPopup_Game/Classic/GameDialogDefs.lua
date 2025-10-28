@@ -570,11 +570,8 @@ StaticPopupDialogs["CAMP"] = {
 	OnAccept = function(dialog, data)
 		CancelLogout();
 	end,
-	OnHide = function(dialog, data)
-		if ( dialog.timeleft > 0 ) then
-			CancelLogout();
-			dialog:Hide();
-		end
+	OnCancel = function(dialog, data)
+		CancelLogout();
 	end,
 	timeout = 20,
 	whileDead = 1,

@@ -364,10 +364,11 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	
 		for index = 1, C_Minimap.GetNumTrackingTypes() do
 			local trackingInfo = C_Minimap.GetTrackingInfo(index);
-			trackingInfo.index = index;
-
-			local tbl = (trackingInfo.subType == HUNTER_TRACKING) and hunterInfo or regularInfo;
-			table.insert(tbl, trackingInfo);
+			if trackingInfo then
+				trackingInfo.index = index;
+				local tbl = (trackingInfo.subType == HUNTER_TRACKING) and hunterInfo or regularInfo;
+				table.insert(tbl, trackingInfo);
+			end
 		end
 
 		local function CreateCheckboxWithIcon(parentDescription, trackingInfo)

@@ -716,6 +716,10 @@ function UpgradeAccount()
 	end
 end
 
+function GetGameReleaseType()
+	return Enum.ReleaseType.Classic;
+end
+
 function MinutesToTime(mins, hideDays)
 	local time = "";
 	local count = 0;

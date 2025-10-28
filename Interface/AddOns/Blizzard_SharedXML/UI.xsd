@@ -1192,6 +1192,7 @@
 				<xs:attributeGroup ref="FrameAttributes"/>
 				<xs:attribute name="reverse" type="xs:boolean" default="false"/>
 				<xs:attribute name="hideCountdownNumbers" type="xs:boolean" default="false"/>
+				<xs:attribute name="minimumCountdownDuration" type="xs:unsignedInt" default="2000"/>
 				<xs:attribute name="drawEdge" type="xs:boolean" default="false"/>
 				<xs:attribute name="drawBling" type="xs:boolean" default="false"/>
 				<xs:attribute name="drawSwipe" type="xs:boolean" default="false"/>

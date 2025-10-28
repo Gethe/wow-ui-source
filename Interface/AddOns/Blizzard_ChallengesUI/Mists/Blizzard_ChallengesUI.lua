@@ -1,8 +1,4 @@
 local NUM_REWARDS_PER_MEDAL = 2;
-local CHALLENGE_BRONZE_MEDAL_COLOR = CreateColor(0.859, 0.545, 0.204);				-- bronze
-local CHALLENGE_SILVER_MEDAL_COLOR = CreateColor(0.780, 0.722, 0.741);				-- silver
-local CHALLENGE_GOLD_MEDAL_COLOR = CreateColor(0.945, 0.882, 0.337);				-- gold
-
 
 -- STUBS
 
@@ -54,12 +50,14 @@ function ChallengesFrame_OnLoad(self)
 	end
 
 	-- reward row colors
-	self.RewardRow1.Bg:SetColorTexture(CHALLENGE_BRONZE_MEDAL_COLOR:GetRGB());				-- bronze
+	self.RewardRow1.Bg:SetColorTexture(CHALLENGE_BRONZE_MEDAL_COLOR:GetRGB());
 	self.RewardRow1.MedalName:SetTextColor(CHALLENGE_BRONZE_MEDAL_COLOR:GetRGB());
-	self.RewardRow2.Bg:SetColorTexture(CHALLENGE_SILVER_MEDAL_COLOR:GetRGB());				-- silver
+	self.RewardRow2.Bg:SetColorTexture(CHALLENGE_SILVER_MEDAL_COLOR:GetRGB());
 	self.RewardRow2.MedalName:SetTextColor(CHALLENGE_SILVER_MEDAL_COLOR:GetRGB());
-	self.RewardRow3.Bg:SetColorTexture(CHALLENGE_GOLD_MEDAL_COLOR:GetRGB());				-- gold
+	self.RewardRow3.Bg:SetColorTexture(CHALLENGE_GOLD_MEDAL_COLOR:GetRGB());
 	self.RewardRow3.MedalName:SetTextColor(CHALLENGE_GOLD_MEDAL_COLOR:GetRGB());
+	self.RewardRow4.Bg:SetColorTexture(CHALLENGE_PLATINUM_MEDAL_COLOR:GetRGB());
+	self.RewardRow4.MedalName:SetTextColor(CHALLENGE_PLATINUM_MEDAL_COLOR:GetRGB());
 end
 
 function ChallengesFrame_OnEvent(self, event)
@@ -117,9 +115,11 @@ function ChallengesFrame_Update(self, mapID)
 				details.LastRunTime:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 			end
 			local times = C_ChallengeMode.GetChallengeModeMapTimes(mapID);
+			local numMedals = C_ChallengeMode.GetNumMedals(mapID);
 			local rewardRowIndex = 0;
-			for n = NUM_CHALLENGE_MEDALS, 1, -1 do
+			for n = numMedals, 1, -1 do
 				local rewardsRow = ChallengesFrame["RewardRow"..n];
+				rewardsRow:Show();
 				rewardsRow.MedalIcon:SetTexture(CHALLENGE_MEDAL_TEXTURES_SMALL[n]);
 				rewardsRow.MedalName:SetText(_G["CHALLENGE_MODE_MEDAL"..n]);
 				rewardsRow.TimeLimit:SetText(GetTimeStringFromSeconds(times[n]));
@@ -148,6 +148,24 @@ function ChallengesFrame_Update(self, mapID)
 					end
 				end
 			end
+
+			-- Hide unused medals
+			for n = NUM_CHALLENGE_MEDALS, 1, -1 do
+				local lastRewardsRow = ChallengesFrame["RewardRow"..(n+1)];
+				local rewardsRow = ChallengesFrame["RewardRow"..n];
+
+				if n > numMedals  then
+					rewardsRow:Hide();
+				elseif n == numMedals then
+					local detailsPanel = rewardsRow:GetParent().details
+					rewardsRow:SetPoint("TOPLEFT", detailsPanel, 0, -246);
+				else
+					rewardsRow:SetPoint("TOPLEFT", lastRewardsRow, "BOTTOMLEFT", 0, -12);
+				end
+
+			end
+
+
 		else
 			button.selectedTex:Hide();
 			button.text:SetFontObject("GameFontNormal");

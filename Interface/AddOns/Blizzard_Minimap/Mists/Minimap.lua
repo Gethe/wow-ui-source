@@ -401,14 +401,15 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	
 		for index = 1, C_Minimap.GetNumTrackingTypes() do
 			local trackingInfo = C_Minimap.GetTrackingInfo(index);
-			trackingInfo.index = index;
-
-			if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
-				table.insert(hunterInfo, trackingInfo);
-			elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
-				table.insert(townfolkInfo, trackingInfo);
-			else
-				table.insert(regularInfo, trackingInfo);
+			if trackingInfo then
+				trackingInfo.index = index;
+				if isHunterClass and (trackingInfo.subType == HUNTER_TRACKING) then
+					table.insert(hunterInfo, trackingInfo);
+				elseif trackingInfo.subType == TOWNSFOLK_TRACKING then
+					table.insert(townfolkInfo, trackingInfo);
+				else
+					table.insert(regularInfo, trackingInfo);
+				end
 			end
 		end
 

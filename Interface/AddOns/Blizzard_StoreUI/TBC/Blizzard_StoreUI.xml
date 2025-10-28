@@ -1724,7 +1724,7 @@
 			</Scripts>
 		</Frame>
 		<Frame name="StoreFrame" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="PortraitFrameTemplateNoCloseButton" enableMouse="true" hidden="true">
-			<Size x="800" y="537" />
+			<Size x="822" y="537" />
 			<!--Anchored to the screen as a whole in Lua-->
 			<Layers>
 				<Layer level="ARTWORK">
@@ -1754,7 +1754,7 @@
 				<Frame parentKey="RightInset" useParentLevel="true" inherits="StoreInsetFrameTemplate">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-6" y="-40" />
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="2" y="0" />
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.LeftInset" relativePoint="BOTTOMRIGHT" x="24" y="0" />
 					</Anchors>
 				</Frame>
 				<Frame parentKey="LeftDisplay" useParentLevel="true">
@@ -2077,27 +2077,18 @@
 						<KeyValue key="isSplash" value="true" type="boolean"/>
 					</KeyValues>
 				</Button>
-				<Button parentArray="CategoryFrames" inherits="StoreCategoryTemplate">
+				<Frame parentKey="CategoryScrollBox" inherits="WowScrollBoxList">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" relativePoint="TOPLEFT" x="9" y="-20" />
+						<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="10" y="-20" />
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.LeftInset" x="-5" y="3"/>
 					</Anchors>
-					<Scripts>
-						<!--
-									WARNING: ScopeModifiers don't work for templates!
-						These functions will fail to load properly if this template is instantiated outside
-						of the initial C_AddOns.LoadAddon call becuase we'll have lost the scoped modifiers and the
-						reference to the addon environment if we instantiate them later.
-
-						Except for the first category, which is declared in .xml, we have to manually set these
-						scripts after the frame has been instantiated in Lua for them to work properly.
-
-						-->
-
-						<OnEnter function="StoreCategory_OnEnter" />
-						<OnLeave function="StoreCategory_OnLeave" />
-						<OnClick function="StoreCategory_OnClick" />
-					</Scripts>
-				</Button>
+				</Frame>
+				<EventFrame parentKey="CategoryScrollBar" inherits="WowTrimScrollBar">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CategoryScrollBox" relativePoint="TOPRIGHT" x="5" y="18"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.CategoryScrollBox" relativePoint="BOTTOMRIGHT" x="3" y="-5"/>
+					</Anchors>
+				</EventFrame>
 				<Button parentArray="ProductCards" inherits="StoreProductCardTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.RightInset" relativePoint="TOPLEFT" x="6" y="-6" />
