@@ -189,6 +189,22 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetUnitAuraBySpellID",
+			Type = "Function",
+			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
 			Name = "IsAuraFilteredOutByInstanceID",
 			Type = "Function",
 
