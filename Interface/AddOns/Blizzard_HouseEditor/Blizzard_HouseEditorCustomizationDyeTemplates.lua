@@ -195,38 +195,9 @@ function HousingDecorDyeSlotPopoutMixin:UpdateDyeSlotInfo(dyeSlotInfo)
 	self:ReinitScrollBox();
 end
 
-local function sortDyesBy(channel)
+local function sortDyesBySortOrder()
 	return function(a, b)
-		local aHSV = {a.swatchColorStart:GetHSL()};
-		local bHSV = {b.swatchColorStart:GetHSL()};
-
-		return aHSV[channel] > bHSV[channel];
-	end
-end
-
---not used but we may use something like this in the future.
---sortDyesByChunks({0.3, 0.7}, 2, 1) will sort into 3 chunks based on saturation, and within each chunk by hue.
-local function sortDyesByChunks(chunks, chunkChannel, elseChannel)
-	local function getChunk(v)
-		for i, thresh in ipairs(chunks) do
-			if v < thresh then
-				return i;
-			end
-		end
-		return #chunks + 1;
-	end
-	return function(a, b)
-		local aHSV = {a.swatchColorStart:GetHSL()};
-		local bHSV = {b.swatchColorStart:GetHSL()};
-
-		local aChunk = getChunk(aHSV[chunkChannel]);
-		local bChunk = getChunk(bHSV[chunkChannel]);
-
-		if aChunk == bChunk then
-			return aHSV[elseChannel] > bHSV[elseChannel];
-		else
-			return aChunk > bChunk;
-		end
+		return a.sortOrder < b.sortOrder;
 	end
 end
 
@@ -265,7 +236,7 @@ function HousingDecorDyeSlotPopoutMixin:SetDyeSlotInfo(dyeSlotInfo)
 			end
 		end
 
-		table.sort(dyeColorInfos, sortDyesBy(1)); --sort by hue
+		table.sort(dyeColorInfos, sortDyesBySortOrder());
 
 		for dyeColorIndex, dyeColorInfo in ipairs(dyeColorInfos) do
 			local dyeSwatchFrame = self.dyeSwatchPool:Acquire();

@@ -4,6 +4,7 @@
 ## Dependencies: Blizzard_HousingTemplates
 ## AllowLoadGameType: standard
 
+Blizzard_HousingControlsUtil.lua
 Blizzard_HousingControlButton.lua
 Blizzard_HousingControlButton.xml
 Blizzard_HousingControls.lua

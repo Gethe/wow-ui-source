@@ -283,15 +283,31 @@ function CooldownViewerDataStoreSerializationMixin:ReadData()
 	layoutManager:UnlockNotifications();
 end
 
-function CooldownViewerDataStoreSerializationMixin:WriteData()
+function CooldownViewerDataStoreSerializationMixin:CreateEncodeOutput(output)
+	local encodingVersion = self:GetCurrentEncodingVersion();
+	local encoder = versionedEncoders[encodingVersion];
+	assertsafe(encoder ~= nil, "Encoder missing for data version %s", tostring(encodingVersion));
+
+	local encodedOutput = encoder.Write(output);
+	assertsafe(type(encodedOutput) == "string", "Unable to serialize output");
+
+	return tostring(encodingVersion)..ENCODING_VERSION_PAYLOAD_DELIMITER..encodedOutput;
+end
+
+function CooldownViewerDataStoreSerializationMixin:SerializeLayouts(singleLayoutID)
+	local needsPreviouslyActiveLayouts = singleLayoutID == nil;
+
 	local layoutManager = self:GetLayoutManager();
 	local output = {};
 	output[SAVE_FIELD_ID_VERSION] = self:GetCurrentSaveFormatVersion();
 
 	local activeLayouts = {};
 	output[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES] = activeLayouts;
-	for specTag, layoutID in layoutManager:EnumeratePreviouslyActiveLayoutIDs() do
-		activeLayouts[specTag] = layoutID;
+
+	if needsPreviouslyActiveLayouts then
+		for specTag, layoutID in layoutManager:EnumeratePreviouslyActiveLayoutIDs() do
+			activeLayouts[specTag] = layoutID;
+		end
 	end
 
 	local layouts;
@@ -308,22 +324,30 @@ function CooldownViewerDataStoreSerializationMixin:WriteData()
 		return layouts[tag];
 	end
 
-	-- TODO: Make this varargs...
-	local function AddCooldownOverrideToLayout(layoutContainer, containerStorageIndex, storageKey, storageValue)
-		assertsafe(type(containerStorageIndex) ~= "table", "AddCooldownOverrideToLayout: containerStorageIndex must not be a table");
-		assertsafe(type(storageKey) ~= "table", "AddCooldownOverrideToLayout: storageKey must not be a table");
+	local function AddCooldownOverrideToLayout(layoutContainer, ...)
+		local argCount = select("#", ...);
+		local lastKeyIndex = argCount - 1;
 
-		if storageKey and storageValue then
-			if not layoutContainer[containerStorageIndex] then
-				layoutContainer[containerStorageIndex] = {};
+		-- First pass to validate all keys
+		for key = 1, lastKeyIndex do
+			local currentKey = select(key, ...);
+			if currentKey == nil then
+				return; -- nil is totally fine, it just means we don't need to write anything to layoutContainer.
 			end
 
-			if not layoutContainer[containerStorageIndex][storageKey] then
-				layoutContainer[containerStorageIndex][storageKey] = {};
+			local currentKeyType = type(currentKey);
+			if currentKeyType ~= "number" then
+				assertsafe(false, "AddCooldownOverrideToLayout: All keys must be numbers (found %s)", currentKeyType);
 			end
-
-			table.insert(layoutContainer[containerStorageIndex][storageKey], storageValue);
 		end
+
+		for key = 1, lastKeyIndex do
+			local currentKey = select(key, ...);
+			layoutContainer = GetOrCreateTableEntry(layoutContainer, currentKey);
+		end
+
+		local value = select(argCount, ...);
+		table.insert(layoutContainer, value);
 	end
 
 	local layoutIDToName = {};
@@ -359,7 +383,10 @@ function CooldownViewerDataStoreSerializationMixin:WriteData()
 	end
 
 	for layoutID, layout in layoutManager:EnumerateLayouts() do
-		AddLayoutToContainer(layoutID, layout);
+		local addLayout = not singleLayoutID or layoutID == singleLayoutID;
+		if addLayout then
+			AddLayoutToContainer(layoutID, layout);
+		end
 	end
 
 	if layouts then
@@ -367,12 +394,9 @@ function CooldownViewerDataStoreSerializationMixin:WriteData()
 		output[SAVE_FIELD_ID_LAYOUT_ID_DATA] = layoutIDToName;
 	end
 
-	local encodingVersion = self:GetCurrentEncodingVersion();
-	local encoder = versionedEncoders[encodingVersion];
-	assertsafe(encoder ~= nil, "Encoder missing for data version %s", tostring(encodingVersion));
+	return self:CreateEncodeOutput(output);
+end
 
-	local encodedOutput = encoder.Write(output);
-	assertsafe(type(encodedOutput) == "string", "Unable to serialize output");
-
-	self:SetSerializedData(tostring(encodingVersion)..ENCODING_VERSION_PAYLOAD_DELIMITER..encodedOutput);
+function CooldownViewerDataStoreSerializationMixin:WriteData()
+	self:SetSerializedData(self:SerializeLayouts());
 end

@@ -28,7 +28,7 @@
 					<KeyValue key="expand" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" x="-75" y="50"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-75" y="-300"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">

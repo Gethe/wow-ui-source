@@ -34,6 +34,12 @@ local hideButtonHitRectInsets = {
 		top = 40,
 		bottom = 30,
 	},
+	["midnight-score"] = {
+		left = 50,
+		right = 50,
+		top = 40,
+		bottom = 30,
+	},
 };
 
 local scenarioTextureKitOffsets = {
@@ -63,6 +69,15 @@ local scenarioTextureKitOffsets = {
 		backgroundXPadding = -50,
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
+	},
+	["midnight-score"] = {
+		topperXOffset = 0,
+		topperYOffset = 44,
+		footerXOffset = 0,
+		footerYOffset = -58,
+		backgroundXPadding = -24.5,
+		topperBackgroundYPadding = 27,
+		footerBackgroundYPadding = 13,
 	},
 	["default"] = {
 		topperXOffset = 0,
@@ -461,6 +476,11 @@ end
 
 EventToastScenarioBaseToastMixin = { };
 
+function EventToastScenarioBaseToastMixin:OnLoad()
+	EventToastAnimationsMixin.OnLoad(self);
+	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
+end
+
 function EventToastScenarioBaseToastMixin:SetupTextureKitOffsets(uiTextureKit)
 	local textureKitOffsets = scenarioTextureKitOffsets[uiTextureKit] or scenarioTextureKitOffsets["default"];
 	self.Topper:ClearAllPoints();
@@ -560,14 +580,10 @@ local scenarioExpandSoundKitIDs = {
 };
 
 EventToastScenarioExpandToastMixin = { };
-function EventToastScenarioBaseToastMixin:OnLoad()
-	EventToastAnimationsMixin.OnLoad(self);
-	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
-end
 
 function EventToastScenarioExpandToastMixin:Setup(toastInfo)
 	EventToastScenarioBaseToastMixin.Setup(self, toastInfo);
-	self.Title:SetFontObject("Fancy24Font");
+	self.Title:SetFontObject("GameFontNormalHuge");
 	self.Title:ClearAllPoints();
 	self.Title:SetPoint("TOP", self.PaddingFrame, "BOTTOM");
 	self.SubTitle:ClearAllPoints();

@@ -9,7 +9,9 @@ local HouseSettingsFrameShownEvents =
 };
 
 local SELECTED_NEIGHBORHOOD_ATLAS_PREFIX = "housefinder_list-item-active-";
+local SELECTED_NEIGHBORHOOD_HIGHLIGHT_ATLAS_PREFIX = "housefinder_neighborhood-list-item-highlight-";
 local NEIGHBORHOOD_BG_ATLAS = "housefinder_neighborhood-list-item-default";
+local NEIGHBORHOOD_HIGHLIGHT_ATLAS = "housefinder_neighborhood-list-item-highlight";
 local NEIGHBORHOOD_RECCOMENDED_BG_ATLAS = "housefinder_neighborhood-list-item-invite";
 
 function HouseFinderFrameMixin:OnLoad()
@@ -132,6 +134,7 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 		end
 	elseif event == "B_NET_NEIGHBORHOOD_LIST_UPDATED" then
 		local result, neighborhoodInfos = ...
+		self.pendingFriendSearch = false;
 		if result == Enum.HousingResult.Success then
 			self:PopulateBNetNeighborhoodList(neighborhoodInfos);
 		else
@@ -188,6 +191,11 @@ function HouseFinderFrameMixin:OnHide()
 end
 
 function HouseFinderFrameMixin:SelectPlot(mapPin, plotInfo)
+	-- We want the tooltip to clip in the map frame but not scale with the map pin/canvas.
+	self.SelectedPlotTooltip:SetIgnoreParentScale(true);
+	self.SelectedPlotTooltip:SetScale(self:GetEffectiveScale());
+	self.SelectedPlotTooltip:SetParent(mapPin);
+
 	self.SelectedPlotTooltip:SetPoint("BOTTOM", mapPin, "TOP", 0, -8);
 	self.SelectedPlotTooltip:SetPlotInfo(plotInfo);
 	self.SelectedPlotTooltip:Show();
@@ -217,6 +225,10 @@ end
 
 function HouseFinderFrameMixin:SearchBnetFriendNeighborhoods()
 	if self:TryBnetFriendSearch() then
+		if self.pendingFriendSearch then
+			return;
+		end
+		self.pendingFriendSearch = true;
 		self.NeighborhoodListFrame.LoadingSpinnerList:Show();
 		self.LoadingSpinnerMap:Show();
 		self.HouseFinderMapCanvasFrame:Hide();
@@ -231,9 +243,14 @@ function HouseFinderFrameMixin:SearchBnetFriendNeighborhoods()
 		self.HouseFinderMapCanvasFrame:Hide();
 		self:PopulateBNetNeighborhoodList({});
 	end
+	self.NeighborhoodListFrame.BNetFriendSearchBox:UpdateState();
 end
 
 function HouseFinderFrameMixin:ClearBnetFriendSearch()
+	if self.pendingFriendSearch then
+		return false;
+	end
+
 	local wasSearchShown = self.NeighborhoodListFrame.BNetScrollFrame:IsShown();
 	self.NeighborhoodListFrame.BNetScrollFrame:Hide();
 	self.NeighborhoodListFrame.ScrollFrame:Show();
@@ -280,8 +297,8 @@ end
 function HouseFinderBNetFriendSearchBoxMixin:OnClearButtonClicked()
 	self.autoCompleteBnetID = nil;
 	self:SetText("");
-	self:UpdateState();
 	HouseFinderFrame:ClearBnetFriendSearch();
+	self:UpdateState();
 end
 
 function HouseFinderBNetFriendSearchBoxMixin:OnEnterPressed()
@@ -323,7 +340,7 @@ function HouseFinderBNetFriendSearchBoxMixin:UpdateState()
 
 	local hasText = self:GetText() ~= "";
 	self.FillText:SetShown(not hasText and not showBnetAutoComplete);
-	self.ClearButton:SetShown(hasText or hasBnetAutoComplete);
+	self.ClearButton:SetShown(not HouseFinderFrame.NeighborhoodListFrame.ScrollFrame:IsShown());
 end
 
 function HouseFinderBNetFriendSearchBoxMixin:HasStickyFocus()
@@ -417,33 +434,6 @@ function HouseFinderPlotInfoFrameMixin:OnVisitClicked()
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_VISIT_HOUSE_BUTTON);
 end
 
-SelectedPlotTooltipMixin = {}
-
-function SelectedPlotTooltipMixin:OnLoad()
-	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
-	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
-end
-
-function SelectedPlotTooltipMixin:SetPlotInfo(plotInfo)
-	if plotInfo.ownerType == Enum.HousingPlotOwnerType.None then
-		self.CornerIcon:SetAtlas("housefinder_forsale-icon-circle");
-		self.HeaderText:SetText(string.format(HOUSING_PLOT_NUMBER, plotInfo.plotID));
-		self.SubText:Hide();
-		self.FooterText:SetText("Available"); --TODO: global string
-		self.FooterText:SetTextColor(0,1,0);
-		MoneyFrame_Update(self.PriceMoneyFrame, plotInfo.plotCost);
-		self.PriceMoneyFrame:Show();
-	elseif plotInfo.ownerType == Enum.HousingPlotOwnerType.Friend then
-		self.CornerIcon:SetAtlas("housefinder_friend-icon-circle");
-		self.HeaderText:SetText(plotInfo.ownerName);
-		self.SubText:SetText("Friend"); --TODO: global string
-		self.SubText:Show();
-		self.FooterText:SetText(string.format(HOUSING_PLOT_NUMBER, plotInfo.plotID));
-		self.FooterText:SetTextColor(1,0.82,0);
-		self.PriceMoneyFrame:Hide();
-	end
-end
-
 HouseFinderNeighborhoodButtonMixin = {}
 
 function HouseFinderNeighborhoodButtonMixin:Init(neighborhoodInfo, houseFinderFrame)
@@ -508,6 +498,7 @@ function HouseFinderNeighborhoodButtonMixin:Select()
 	local selectedAtlasSuffix = C_Housing.GetNeighborhoodTextureSuffix(self.neighborhoodInfo.neighborhoodGUID);
 	if selectedAtlasSuffix then
 		self.ButtonBackground:SetAtlas(SELECTED_NEIGHBORHOOD_ATLAS_PREFIX .. selectedAtlasSuffix);
+		self:SetHighlightAtlas(SELECTED_NEIGHBORHOOD_HIGHLIGHT_ATLAS_PREFIX .. selectedAtlasSuffix);
 	end
 end
 
@@ -517,6 +508,7 @@ function HouseFinderNeighborhoodButtonMixin:Deselect()
 	else
 		self.ButtonBackground:SetAtlas(NEIGHBORHOOD_RECCOMENDED_BG_ATLAS);
 	end
+	self:SetHighlightAtlas(NEIGHBORHOOD_HIGHLIGHT_ATLAS);
 end
 
 function HouseFinderNeighborhoodButtonMixin:TryCancelInvite()

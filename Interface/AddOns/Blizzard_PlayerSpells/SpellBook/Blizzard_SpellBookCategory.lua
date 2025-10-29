@@ -262,6 +262,10 @@ end
 
 function SpellBookGeneralCategoryMixin:UpdateSpellGroups()
 	local skillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo(Enum.SpellBookSkillLineIndex.General);
+	if not skillLineInfo then
+		return false;
+	end
+
 	local newSpellGroups = {
 		{
 			slotIndexOffset = skillLineInfo.itemIndexOffset,

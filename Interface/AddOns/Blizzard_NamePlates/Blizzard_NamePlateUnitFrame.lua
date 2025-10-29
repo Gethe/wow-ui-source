@@ -593,9 +593,10 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMRIGHT", self.castBar, "TOPRIGHT", 0, 2);
 		PixelUtil.SetHeight(self.HealthBarsContainer, setupOptions.healthBarHeight);
 
-		local healthBarText = self.HealthBarsContainer.healthBar.Text;
-		local healthBarLeftText = self.HealthBarsContainer.healthBar.LeftText;
-		local healthBarRightText = self.HealthBarsContainer.healthBar.RightText;
+		local healthBar = self.HealthBarsContainer.healthBar;
+		local healthBarText = healthBar.Text;
+		local healthBarLeftText = healthBar.LeftText;
+		local healthBarRightText = healthBar.RightText;
 
 		self.name:ClearAllPoints();
 		healthBarText:ClearAllPoints();
@@ -633,6 +634,10 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 			PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
 			PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
 		end
+
+		local bgTexture = healthBar.bgTexture;
+		PixelUtil.SetPoint(bgTexture, "TOPLEFT", healthBar, "TOPLEFT", -2, 3);
+		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 5, -6);
 	end
 
 	-- Auras Frame

@@ -7,11 +7,6 @@ local CombatLog =
 	Functions =
 	{
 		{
-			Name = "AddEventFilter",
-			Type = "Function",
-			HasRestrictions = true,
-		},
-		{
 			Name = "ApplyFilterSettings",
 			Type = "Function",
 			HasRestrictions = true,
@@ -36,11 +31,6 @@ local CombatLog =
 			Type = "Function",
 		},
 		{
-			Name = "ClearEventFilters",
-			Type = "Function",
-			HasRestrictions = true,
-		},
-		{
 			Name = "DoesObjectMatchFilter",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -54,40 +44,6 @@ local CombatLog =
 			Returns =
 			{
 				{ Name = "matches", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "GetCurrentEntryInfo",
-			Type = "Function",
-			HasRestrictions = true,
-
-			Returns =
-			{
-			},
-		},
-		{
-			Name = "GetCurrentEventInfo",
-			Type = "Function",
-			HasRestrictions = true,
-
-			Returns =
-			{
-			},
-		},
-		{
-			Name = "GetEntryCount",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "ignoreFilter", Type = "bool", Nilable = false, Default = false },
-			},
-
-			Returns =
-			{
-				{ Name = "count", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -122,38 +78,6 @@ local CombatLog =
 			Type = "Function",
 		},
 		{
-			Name = "SeekToNewestEntry",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "ignoreFilter", Type = "bool", Nilable = false, Default = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isValidEntry", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SeekToPreviousEntry",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "ignoreFilter", Type = "bool", Nilable = false, Default = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isValidEntry", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetEntryRetentionTime",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -181,16 +105,6 @@ local CombatLog =
 			Arguments =
 			{
 				{ Name = "messageLimit", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "ShouldShowCurrentEntry",
-			Type = "Function",
-			HasRestrictions = true,
-
-			Returns =
-			{
-				{ Name = "shouldShow", Type = "bool", Nilable = false },
 			},
 		},
 	},

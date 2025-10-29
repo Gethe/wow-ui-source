@@ -82,22 +82,24 @@ function HouseEditorExteriorCustomizationModeMixin:TryHandleEscape()
 	return false;
 end
 
-function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureDropdown(dropdown, selectedOption, options)
+function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureDropdown(dropdown, selectedOption, options, useColorNames)
 	if options and #options > 1 then
-		dropdown:ShowCoreFixtureInfo(selectedOption, options);
+		dropdown:ShowCoreFixtureInfo(selectedOption, options, useColorNames);
 	else
 		dropdown:ClearAndHide();
 	end
 end
 
 function HouseEditorExteriorCustomizationModeMixin:UpdateCoreFixtureOptions()
+	local stylesUseColorNames = false;
+	local variantsUseColorNames = true;
 	local baseFixtureInfo = C_HouseExterior.GetCoreFixtureOptionsInfo(Enum.HousingFixtureType.Base);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseStyleOption, baseFixtureInfo and baseFixtureInfo.selectedStyleFixtureID or nil, baseFixtureInfo and baseFixtureInfo.styleOptions or nil)
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseVariantOption, baseFixtureInfo and baseFixtureInfo.selectedVariantFixtureID or nil, baseFixtureInfo and baseFixtureInfo.currentStyleVariantOptions or nil)
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseStyleOption, baseFixtureInfo and baseFixtureInfo.selectedStyleFixtureID or nil, baseFixtureInfo and baseFixtureInfo.styleOptions or nil, stylesUseColorNames);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.BaseVariantOption, baseFixtureInfo and baseFixtureInfo.selectedVariantFixtureID or nil, baseFixtureInfo and baseFixtureInfo.currentStyleVariantOptions or nil, variantsUseColorNames);
 
 	local roofFixtureInfo = C_HouseExterior.GetCoreFixtureOptionsInfo(Enum.HousingFixtureType.Roof);
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofStyleOption, roofFixtureInfo and roofFixtureInfo.selectedStyleFixtureID or nil, roofFixtureInfo and roofFixtureInfo.styleOptions or nil)
-	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofVariantOption, roofFixtureInfo and roofFixtureInfo.selectedVariantFixtureID or nil, roofFixtureInfo and roofFixtureInfo.currentStyleVariantOptions or nil)
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofStyleOption, roofFixtureInfo and roofFixtureInfo.selectedStyleFixtureID or nil, roofFixtureInfo and roofFixtureInfo.styleOptions or nil, stylesUseColorNames);
+	self:UpdateCoreFixtureDropdown(self.CoreOptionsPanel.RoofVariantOption, roofFixtureInfo and roofFixtureInfo.selectedVariantFixtureID or nil, roofFixtureInfo and roofFixtureInfo.currentStyleVariantOptions or nil, variantsUseColorNames);
 
 	self.CoreOptionsPanel:Layout();
 end
@@ -123,8 +125,10 @@ function HouseEditorExteriorCustomizationModeMixin:ReleasePoint(pointFrame)
 		self.selectedPointFrame = nil;
 	end
 	
-	self.fixturePointPool:Release(pointFrame.boundPoint);
-	pointFrame.boundPoint = nil;
+	if pointFrame.boundPoint then
+		self.fixturePointPool:Release(pointFrame.boundPoint);
+		pointFrame.boundPoint = nil;
+	end
 end
 
 function HouseEditorExteriorCustomizationModeMixin:ReleaseAllPoints()
@@ -143,21 +147,19 @@ function HouseEditorExteriorCustomizationModeMixin:UpdatetSelectedPoint()
 		return;
 	end
 
-	-- Clear old options
-	if oldInfo then
-		self.FixtureOptionList:ClearAndHide();
-	end
-
 	if self.selectLoopSound then
 		StopSound(self.selectLoopSound);
 		self.selectLoopSound = nil;
 	end
 
-	-- Set up new options
 	if selectedFixturePointInfo then
+		-- Set up new options
 		self.FixtureOptionList:ShowFixturePointInfo(selectedFixturePointInfo);
 		PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_NODE_SELECT);
 		self.selectLoopSound = select(2, PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_NODE_SELECT_LOOP));
+	elseif oldInfo then
+		-- Clear old options
+		self.FixtureOptionList:ClearAndHide();
 	end
 
 	self:UpdateAllPointVisuals();

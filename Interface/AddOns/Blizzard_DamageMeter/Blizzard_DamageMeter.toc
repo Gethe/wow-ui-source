@@ -3,6 +3,7 @@
 ## LoadSavedVariablesFirst: 1
 ## SavedVariablesPerCharacter: DamageMeterPerCharacterSettings
 ## Dependencies: Blizzard_EditMode
+DamageMeterConstants.lua
 DamageMeterEntry.lua
 DamageMeterEntry.xml
 DamageMeterUnitBreakdown.lua

@@ -4,7 +4,15 @@
 		<Size x="400" y="200"/>
 		<Layers>
 			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" atlas="damagemeters-background" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Header" atlas="ui-damagemeters-header-bar">
+					<Size y="32"/>
+					<!-- Provided explicit height so scroll box can be resolved prior to first render. -->
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 						<Anchor point="TOPRIGHT"/>
@@ -12,7 +20,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" text="PH - Header">
+				<FontString parentKey="Name" inherits="GameFontNormalMed1" justifyH="LEFT">
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Header"  x="20"/>
 					</Anchors>
@@ -42,6 +50,7 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

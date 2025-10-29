@@ -76,6 +76,21 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetBundleInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "bundleInfo", Type = "HousingBundleInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -293,6 +308,7 @@ local HousingCatalogUI =
 			Fields =
 			{
 				{ Name = "price", Type = "number", Nilable = false },
+				{ Name = "originalPrice", Type = "number", Nilable = true },
 				{ Name = "productID", Type = "number", Nilable = false },
 				{ Name = "decorEntries", Type = "table", InnerType = "HousingBundleDecorEntryInfo", Nilable = false },
 			},
@@ -391,10 +407,11 @@ local HousingCatalogUI =
 			Fields =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = true },
 				{ Name = "isBundleParent", Type = "bool", Nilable = false },
 				{ Name = "isBundleChild", Type = "bool", Nilable = false },
 				{ Name = "id", Type = "number", Nilable = false },
-				{ Name = "decorEntryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "decorID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "icon", Type = "number", Nilable = false },
 				{ Name = "price", Type = "number", Nilable = false },

@@ -103,14 +103,14 @@
 			<Frame parentKey="HealthBarsContainer" useParentLevel="true">
 				<Frames>
 					<StatusBar parentKey="healthBar" mixin="NamePlateHealthBarMixin" inherits="TextStatusBar" useParentLevel="true">
-						<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
+						<BarTexture parentKey="barTexture" atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
+								<Texture parentKey="bgTexture" atlas="UI-HUD-CoolDownManager-Bar-BG">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="-2" y="3"/>
 										<Anchor point="BOTTOMRIGHT" x="5" y="-6"/>
@@ -134,17 +134,17 @@
 								<Texture parentKey="totalAbsorbOverlay"/>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="1">
-								<FontString parentKey="Text" inherits="SystemFont_NamePlate" ignoreParentScale="true">
+								<FontString parentKey="Text" inherits="SystemFont_NamePlate" smoothScaling="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="-5" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="RightText" inherits="SystemFont_NamePlate" ignoreParentScale="true">
+								<FontString parentKey="RightText" inherits="SystemFont_NamePlate" smoothScaling="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="-5" y="0"/>
 									</Anchors>
 								</FontString>
-								<FontString parentKey="LeftText" inherits="SystemFont_NamePlate" ignoreParentScale="true">
+								<FontString parentKey="LeftText" inherits="SystemFont_NamePlate" smoothScaling="true">
 									<Anchors>
 										<Anchor point="RIGHT" x="0" y="0" relativeKey="$parent.RightText" relativePoint="LEFT"/>
 									</Anchors>
@@ -200,12 +200,12 @@
 						<Texture parentKey="Icon" hidden="true">
 							<!-- Anchoring and size handled dynamically in lua.-->
 						</Texture>
-						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" ignoreParentScale="true">
+						<FontString parentKey="Text" inherits="SystemFont_NamePlateCastBar" smoothScaling="true">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" ignoreParentScale="true">
+						<FontString parentKey="CastTargetNameText" inherits="SystemFont_NamePlateCastBar" justifyH="RIGHT" smoothScaling="true">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="0"/>
 								<Anchor point="RIGHT" x="-4" y="0"/>
@@ -383,7 +383,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="LEFT" ignoreParentScale="true">
+				<FontString parentKey="name" inherits="SystemFont_NamePlate" wordwrap="false" justifyH="LEFT" smoothScaling="true">
 					<!-- Anchoring and size handled dynamically in lua.-->
 				</FontString>
 			</Layer>

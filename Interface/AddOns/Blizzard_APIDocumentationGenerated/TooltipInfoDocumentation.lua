@@ -871,7 +871,7 @@ local TooltipInfo =
 			Arguments =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
-				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "reagentInfos", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "recraftItemGUID", Type = "WOWGUID", Nilable = true },
 				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "overrideQualityID", Type = "number", Nilable = true },
@@ -891,7 +891,7 @@ local TooltipInfo =
 			Arguments =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
-				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
+				{ Name = "reagentInfos", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 				{ Name = "orderID", Type = "BigUInteger", Nilable = true },
 				{ Name = "recipeLevel", Type = "luaIndex", Nilable = true },
 				{ Name = "overrideQualityID", Type = "number", Nilable = true },

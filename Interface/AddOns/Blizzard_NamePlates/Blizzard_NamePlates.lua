@@ -342,7 +342,7 @@ local function GetAuraFrameHeight(namePlateScale)
 end
 
 local function GetHealthBarHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.Default or namePlateStyle == Enum.NamePlateStyle.Block then
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
 		local largeHealthBarHeight = NamePlateConstants.LARGE_HEALTH_BAR_HEIGHT;
 		return largeHealthBarHeight * namePlateScale.vertical;
 	end
@@ -374,7 +374,7 @@ local function GetCastBarIconHeight(namePlateScale)
 end
 
 local function IsUnitNameInsideHealthBar(namePlateStyle)
-	if namePlateStyle == Enum.NamePlateStyle.Default or namePlateStyle == Enum.NamePlateStyle.Block then
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
 		return true;
 	end
 
@@ -382,7 +382,7 @@ local function IsUnitNameInsideHealthBar(namePlateStyle)
 end
 
 local function IsUnitNameColored(namePlateStyle)
-	if namePlateStyle == Enum.NamePlateStyle.Legacy then
+	if namePlateStyle == Enum.NamePlateStyle.Default then
 		return true;
 	end
 

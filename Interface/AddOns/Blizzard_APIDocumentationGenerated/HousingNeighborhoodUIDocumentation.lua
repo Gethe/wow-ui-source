@@ -304,7 +304,7 @@ local HousingNeighborhoodUI =
 			Name = "NeighborhoodMapDataUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_MAP_DATA_UPDATED",
-			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "NeighborhoodNameUpdated",

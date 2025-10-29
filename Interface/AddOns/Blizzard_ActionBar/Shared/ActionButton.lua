@@ -818,8 +818,8 @@ function ActionBarActionButtonMixin:UpdateCount()
 		end
 	else
 		local chargeInfo = C_ActionBar.GetActionCharges(action);
-		if (chargeInfo.maxCharges > 0) then
-			text:SetText(charges);
+		if (chargeInfo.maxCharges > 1) then
+			text:SetText(chargeInfo.currentCharges);
 		else
 			text:SetText("");
 		end

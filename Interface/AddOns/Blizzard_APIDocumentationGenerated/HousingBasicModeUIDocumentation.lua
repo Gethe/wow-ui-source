@@ -183,7 +183,8 @@ local HousingBasicModeUI =
 
 			Arguments =
 			{
-				{ Name = "catalogEntryID", Type = "HousingCatalogEntryID", Nilable = false },
+				{ Name = "decorRecordID", Type = "number", Nilable = false },
+				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = true },
 			},
 		},
 	},

@@ -79,9 +79,6 @@ function CooldownViewerSettingsDataProviderMixin:CheckBuildDisplayData()
 		for cooldownIndex, cooldownID in ipairs(cooldownIDs) do
 			local info = C_CooldownViewer.GetCooldownViewerCooldownInfo(cooldownID);
 			if info then
-				info.category = cooldownCategory;
-				info.cooldownID = cooldownID;
-
 				-- Experimental, this should disable the cooldown and put it into the right display bucket
 				-- It should also allow the saved data to completely override whatever gets set here.
 				-- The thing to test, even before moving this into an API somewhere is whether or not marking the provider dirty will overwrite saved data...

@@ -76,6 +76,6 @@ function TooltipUtil.DebugCopyGameTooltip()
 			end
 		end
 		CopyToClipboard(output);
-		DEFAULT_CHAT_FRAME:AddMessage("GameTooltip copied to clipboard", YELLOW_FONT_COLOR:GetRGB());
+		ChatFrameUtil.DisplaySystemMessageInPrimary("GameTooltip copied to clipboard");
 	end
 end

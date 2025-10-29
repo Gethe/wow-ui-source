@@ -105,6 +105,7 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	self.hasMarketData = false;
 
 	self:AddDynamicEventMethod(EventRegistry, "HousingMarket.BundleSelected", self.OnHousingMarketBundleSelected);
+	self:AddDynamicEventMethod(EventRegistry, "HousingMarketEvents.CartUpdated", self.OnHousingMarketCartUpdated);
 
 	FrameUtil.RegisterFrameForEvents(self, StorageLifetimeEvents);
 end
@@ -313,9 +314,19 @@ function HouseEditorStorageFrameMixin:ShouldShowAllCategoryNotification()
 end
 
 function HouseEditorStorageFrameMixin:OnHousingMarketBundleSelected(bundleData)
-	local productData = C_CatalogShop.GetProductInfo(bundleData.productID);
+	local bundleCatalogShopProductID = bundleData.productID;
+	local productData = C_CatalogShop.GetProductInfo(bundleCatalogShopProductID);
 	local name = productData and productData.name or nil;
+
+	for _i, decorEntry in ipairs(bundleData.decorEntries) do
+		decorEntry.bundleCatalogShopProductID = bundleCatalogShopProductID;
+	end
+
 	self:SetCustomCatalogData(bundleData.decorEntries, name);
+end
+
+function HouseEditorStorageFrameMixin:OnHousingMarketCartUpdated()
+	self.OptionsContainer:RefreshFrames();
 end
 
 function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText)

@@ -63,7 +63,12 @@ function HouseFinderPlotForSalePinMixin:OnMouseEnter()
 		self.HighlightTexture:Show();
 	end
 
-	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_HOVER);
+	if not self.SelectedUnderlay:IsShown() then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_HOVER);
+		HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, -8);
+		HouseFinderHighlightedPlotTooltip:SetPlotInfo(self.plotInfo);
+		HouseFinderHighlightedPlotTooltip:Show();
+	end
 end
 
 function HouseFinderPlotForSalePinMixin:OnMouseLeave()
@@ -72,6 +77,8 @@ function HouseFinderPlotForSalePinMixin:OnMouseLeave()
 	if not self.isGlowing then
 		self.HighlightTexture:Hide();
 	end
+
+	HouseFinderHighlightedPlotTooltip:Hide();
 end
 
 function HouseFinderPlotForSalePinMixin:OnMouseDownAction(button)
@@ -87,6 +94,7 @@ function HouseFinderPlotForSalePinMixin:OnMouseClickAction()
 	HouseFinderFrame:SelectPlot(self, self.plotInfo);
 	self.dataProvider:SetSelectedPin(self);
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_SELECT_PLOT);
+	HouseFinderHighlightedPlotTooltip:Hide();
 end
 
 function HouseFinderPlotForSalePinMixin:StartGlow(glowLoopCount)
@@ -138,22 +146,40 @@ end
 function HouseFinderFriendsPlotPinMixin:OnMouseEnter()
 	self.HighlightTexture:Show();
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_HOVER);
+	HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, -8);
+	HouseFinderHighlightedPlotTooltip:SetPlotInfo(self.plotInfo);
+	HouseFinderHighlightedPlotTooltip:Show();
 end
 
 function HouseFinderFriendsPlotPinMixin:OnMouseLeave()
 	self.HighlightTexture:Hide();
+	HouseFinderHighlightedPlotTooltip:Hide();
 end
 
-function HouseFinderFriendsPlotPinMixin:OnMouseDownAction(button)
-	self:AdjustPointsOffset(1, -1);
+SelectedPlotTooltipMixin = {}
+
+function SelectedPlotTooltipMixin:OnLoad()
+	TooltipBackdropTemplateMixin.TooltipBackdropOnLoad(self);
+	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
+	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
 end
 
-function HouseFinderFriendsPlotPinMixin:OnMouseUpAction(button, upInside)
-	self:AdjustPointsOffset(-1, 1);
-end
-
-function HouseFinderFriendsPlotPinMixin:OnMouseClickAction()
-	self.SelectedUnderlay:Show();
-	HouseFinderFrame:SelectPlot(self, self.plotInfo);
-	self.dataProvider:SetSelectedPin(self);
+function SelectedPlotTooltipMixin:SetPlotInfo(plotInfo)
+	if plotInfo.ownerType == Enum.HousingPlotOwnerType.None then
+		self.CornerIcon:SetAtlas("housefinder_forsale-icon-circle");
+		self.HeaderText:SetText(string.format(HOUSING_PLOT_NUMBER, plotInfo.plotID));
+		self.SubText:Hide();
+		self.FooterText:SetText(HOUSEFINDER_AVAILABLE);
+		self.FooterText:SetTextColor(0,1,0);
+		MoneyFrame_Update(self.PriceMoneyFrame, plotInfo.plotCost);
+		self.PriceMoneyFrame:Show();
+	elseif plotInfo.ownerType == Enum.HousingPlotOwnerType.Friend then
+		self.CornerIcon:SetAtlas("housefinder_friend-icon-circle");
+		self.HeaderText:SetText(plotInfo.ownerName);
+		self.SubText:SetText(HOUSEFINDER_FRIEND);
+		self.SubText:Show();
+		self.FooterText:SetText(string.format(HOUSING_PLOT_NUMBER, plotInfo.plotID));
+		self.FooterText:SetTextColor(1,0.82,0);
+		self.PriceMoneyFrame:Hide();
+	end
 end

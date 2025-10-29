@@ -23,6 +23,8 @@ local HouseExteriorConstants =
 				{ Name = "typeID", Type = "number", Nilable = false },
 				{ Name = "typeName", Type = "cstring", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false },
+				{ Name = "lockReasonString", Type = "cstring", Nilable = false },
+				{ Name = "colorID", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -21,7 +21,7 @@ function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras()
 end
 
 function CooldownViewerItemDataMixin:OnCooldownIDSet()
-	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self.cooldownID);
+	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self:GetCooldownID());
 
 	self:ClearEditModeData();
 
@@ -46,6 +46,7 @@ end
 
 function CooldownViewerItemDataMixin:OnCooldownIDCleared()
 	self.cooldownInfo = nil;
+	self.validAlertTypes = nil;
 	self:ClearAuraInstanceInfo();
 	self:ClearTotemData();
 
@@ -434,12 +435,18 @@ function CooldownViewerItemDataMixin:IsActivelyCast()
 	return false;
 end
 
-function CooldownViewerItemDataMixin:CanTriggerAlertType(alertType)
-	if alertType == Enum.CooldownViewerAlertEventType.ChargeGained then
-		local chargeInfo = self:GetSpellChargeInfo();
-		return chargeInfo and chargeInfo.maxCharges > 0;
+local function CheckCreateValidAlertTypes(cooldownItem)
+	if not cooldownItem.validAlertTypes then
+		cooldownItem.validAlertTypes = tInvert(C_CooldownViewer.GetValidAlertTypes(cooldownItem:GetCooldownID()));
 	end
+end
 
-	-- All other alert types depend on the cooldown item referring to something that is actively cast.
-	return self:IsActivelyCast();
+function CooldownViewerItemDataMixin:CanTriggerAlertType(alertType)
+	CheckCreateValidAlertTypes(self);
+	return self.validAlertTypes[alertType] ~= nil;
+end
+
+function CooldownViewerItemDataMixin:CanTriggerAnyAlertType()
+	CheckCreateValidAlertTypes(self);
+	return next(self.validAlertTypes) ~= nil;
 end

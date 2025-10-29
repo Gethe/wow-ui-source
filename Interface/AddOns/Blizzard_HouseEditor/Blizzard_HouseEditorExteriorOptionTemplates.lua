@@ -1,35 +1,4 @@
--- Base choice entry for non-menu-system use
--- Inherits CustomizationElementTemplate
-HouseExteriorOptionElementMixin = {};
-
---[[
-Expected choiceData members
-	Standard/required: id, name, choiceIndex
-	Optional: isLocked, lockedText, isNew, ineligibleChoice, disabled, swatchColor1, swatchColor2, soundKit
-]]--
-function HouseExteriorOptionElementMixin:Init(choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice)
-	self.choiceData = choiceData;
-	self.isSelected = selected;
-	if self.overrideDetailsWidth then
-		self.SelectionDetails:SetOverrideWidth(self.overrideDetailsWidth);
-	end
-	self.SelectionDetails:SetSkipLockedTextFormat(true);
-	CustomizationElementMixin.Init(self, choiceData, choiceIndex, selected, hasAFailedReq, hasALockedChoice);
-end
-
-function HouseExteriorOptionElementMixin:GetChoiceData()
-	return self.choiceData;
-end
-
-function HouseExteriorOptionElementMixin:IsSelected()
-	return self.isSelected;
-end
-
-function HouseExteriorOptionElementMixin:GetAppropriateTooltip()
-	return GameTooltip;
-end
-
--- Base choice entry for dropdown menu use
+----------------- Base choice entry for dropdown use -----------------
 -- Inherits CustomizationElementTemplate
 HouseExteriorOptionDropdownElementMixin = {};
 
@@ -56,7 +25,7 @@ function HouseExteriorOptionDropdownElementMixin:GetAppropriateTooltip()
 end
 
 
--- Base dropdown containing multiple dropdown elements
+----------------- Base Dropdown -----------------
 HouseExteriorOptionDropdownMixin = {};
 
 function HouseExteriorOptionDropdownMixin:OnLoad()
@@ -69,6 +38,7 @@ function HouseExteriorOptionDropdownMixin:ClearAndHide()
 	self:MarkDirty();
 end
 
+----------------- Placeholder Dropdown -----------------
 -- TODO: Remove this whole mixin & template once we no longer need these static placeholder dropdowns for house type & size
 HouseExteriorPlaceholderDropdownMixin = {};
 
@@ -96,7 +66,7 @@ function HouseExteriorPlaceholderDropdownMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
--- Dropdown specifically for Core Fixture options
+----------------- Core Fixture Dropdown -----------------
 -- Inherits HouseExteriorOptionDropdownTemplate
 HouseExteriorCoreFixtureDropdownMixin = {};
 
@@ -115,7 +85,7 @@ function HouseExteriorCoreFixtureDropdownMixin:HasAnyLockedChoices()
 	return false;
 end
 
-function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions)
+function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions, useColorNames)
 	self.selectedFixtureID = selectedFixtureID;
 	self.fixtureOptions = fixtureOptions;
 
@@ -159,6 +129,14 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 		end
 
 		for choiceIndex, choiceData in ipairs(fixtureOptions) do
+			if useColorNames then
+				-- TODO: If/when we can redo the data setup for exterior color definitions, ideally color name is part of the choice struct, rather than the color ID
+				local colorName = HousingExteriorColorStrings[choiceData.colorID];
+				if colorName then
+					choiceData.name = colorName;
+				end
+			end
+
 			choiceData.ineligibleChoice = choiceData.isLocked;
 			if choiceData.isLocked then
 				choiceData.lockedText = HOUSING_EXTERIOR_CUSTOMIZATION_LOCKED_TOOLTIP;
@@ -200,20 +178,91 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 	self:Show();
 end
 
--- List of non-core fixture options
+----------------- Base choice entry for non-dropdown use -----------------
+-- Inherits CustomizationElementTemplate
+HouseExteriorOptionElementMixin = {};
+
+function HouseExteriorOptionElementMixin:ExteriorEntryOnLoad()
+	self.SelectionDetails:ClearAllPoints();
+	self.SelectionDetails:SetPoint("LEFT", 15, 0);
+	self.SelectionDetails:SetPoint("RIGHT");
+end
+
+-- Expected values
+--	choiceData: choiceIndex, isNoneOption, fixtureID, typeName, name, ineligibleChoice, isLocked, lockedText
+--	listStateData: isSelected, hasAFailedReq, hasALockedChoice
+function HouseExteriorOptionElementMixin:Init(choiceData, listStateData)
+	self.choiceData = choiceData;
+	self.listStateData = listStateData;
+	self.isSelected = listStateData.isSelected;
+	self.SelectionDetails:SetSkipLockedTextFormat(true);
+	CustomizationElementMixin.Init(self, choiceData, choiceData.choiceIndex, listStateData.isSelected, listStateData.hasAFailedReq, listStateData.hasALockedChoice);
+
+	self:Layout();
+	self:FinalizeLayout(false, listStateData.hasALockedChoice);
+end
+
+function HouseExteriorOptionElementMixin:Reset()
+	self.choiceData = nil;
+	self.isSelected = false;
+end
+
+local FixtureTypeToSoundKit = {
+	["Door"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_DOOR,
+	["Roof Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_ROOF_WINDOW,
+	["Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_WINDOW,
+	["Tower"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_TOWER,
+	["Chimney"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_CHIMNEY,
+};
+
+function HouseExteriorOptionElementMixin:OnClick()
+	if self.choiceData and not self.isSelected and not self.choiceData.isLocked then
+		if self.choiceData.isNoneOption then
+			C_HouseExterior.RemoveFixtureFromSelectedPoint();
+			PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_NONE);
+		else
+			C_HouseExterior.SelectFixtureOption(self.choiceData.fixtureID);
+			local soundKit = FixtureTypeToSoundKit[self.choiceData.typeName] or SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION;
+			PlaySound(soundKit);
+		end
+	end
+end
+
+function HouseExteriorOptionElementMixin:GetChoiceData()
+	return self.choiceData or {};
+end
+
+function HouseExteriorOptionElementMixin:IsSelected()
+	return self.isSelected;
+end
+
+function HouseExteriorOptionElementMixin:GetAppropriateTooltip()
+	return GameTooltip;
+end
+
+----------------- Non-dropdown Choice List Mixin -----------------
 HouseExteriorFixtureOptionListMixin = {};
 
 function HouseExteriorFixtureOptionListMixin:OnLoad()
-	self.RemoveButton:SetScript("OnClick", function ()
-		if self.fixturePointInfo and self.fixturePointInfo.canSelectionBeRemoved then
-			C_HouseExterior.RemoveFixtureFromSelectedPoint();
-			C_HouseExterior.CancelActiveExteriorEditing();
-
-			PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_NONE);
-		end
+	self.CloseButton:SetScript("OnClick", function() 
+		C_HouseExterior.CancelActiveExteriorEditing();
 	end);
 
-	self.optionElementPool = CreateFramePool("BUTTON", self, "HouseExteriorOptionElementTemplate");
+	local view = CreateScrollBoxListLinearView(self.topPadding, self.bottomPadding, self.leftPadding, self.rightPadding, self.horizontalSpacing, self.verticalSpacing);
+	local function Initializer(frame, elementData)
+		frame:Init(elementData.choiceData, elementData.listStateData);
+	end
+	local function Resetter(frame, elementData)
+		frame:Reset();
+	end
+	view:SetElementInitializer("HouseExteriorOptionElementTemplate", Initializer);
+	view:SetElementResetter(Resetter);
+
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+end
+
+function HouseExteriorFixtureOptionListMixin:OnHide()
+	PlaySound(SOUNDKIT.HOUSING_PLACE_HOUSE_CANCEL);
 end
 
 function HouseExteriorFixtureOptionListMixin:GetFixturePointInfo()
@@ -229,16 +278,13 @@ function HouseExteriorFixtureOptionListMixin:HasAnyLockedChoices()
 	return false;
 end
 
-local FixtureTypeToSoundKit = {
-	["Door"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_DOOR,
-	["Roof Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_ROOF_WINDOW,
-	["Window"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_WINDOW,
-	["Tower"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_TOWER,
-	["Chimney"] = SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION_CHIMNEY,
-};
-
 function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointInfo)
 	self.fixturePointInfo = fixturePointInfo;
+
+	local isAnythingSelected = self.fixturePointInfo.selectedFixtureID ~= nil;
+
+	local headerText = isAnythingSelected and HOUSING_EXTERIOR_CUSTOMIZATION_HOOKPOINT_OCCUPIED_TOOLTIP or HOUSING_EXTERIOR_CUSTOMIZATION_HOOKPOINT_EMPTY_TOOLTIP;
+	self.HeaderText:SetText(headerText);
 
 	-- Sort by type to group options of the same type together
 	table.sort (self.fixturePointInfo.fixtureOptions, function (o1, o2)
@@ -250,54 +296,58 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 
 	local hasAnyLockedChoices = self:HasAnyLockedChoices();
 	local hasAnyFailedReqs = hasAnyLockedChoices; -- Right now we have no ineligible choices that aren't also just locked
-
-	local isNothingSelected = not self.fixturePointInfo.selectedFixtureID;
-	local isRemoveDisabled = not isNothingSelected and not self.fixturePointInfo.canSelectionBeRemoved;
-
-	local removeButtonData = {
-		name = HOUSING_EXTERIOR_CUSTOMIZATION_FIXTURE_NONE_OPTION, choiceIndex = 1,
-		ineligibleChoice = isRemoveDisabled, isLocked = isRemoveDisabled,
-		lockedText = isRemoveDisabled and HOUSING_EXTERIOR_CUSTOMIZATION_CANT_REMOVE or nil,
-	};
 	
-	self.RemoveButton:Init(removeButtonData, 1, isNothingSelected, hasAnyFailedReqs, hasAnyLockedChoices);
-	self.RemoveButton:Show();
-	self.RemoveButton:Layout();
+	local optionElements = {};
+
+	local isRemoveDisabled = isAnythingSelected and not self.fixturePointInfo.canSelectionBeRemoved;
+	local removeButtonData = {
+		choiceData = {
+			name = HOUSING_EXTERIOR_CUSTOMIZATION_FIXTURE_NONE_OPTION,
+			choiceIndex = 1,
+			ineligibleChoice = isRemoveDisabled,
+			isLocked = isRemoveDisabled,
+			lockedText = isRemoveDisabled and HOUSING_EXTERIOR_CUSTOMIZATION_CANT_REMOVE or nil,
+			isNoneOption = true,
+		},
+		listStateData = {
+			isSelected = not isAnythingSelected,
+			hasAnyFailedReqs = hasAnyFailedReqs,
+			hasAnyLockedChoices = hasAnyLockedChoices,
+		}
+	};
+	table.insert(optionElements, removeButtonData);
 
 	for index, fixtureOption in ipairs(self.fixturePointInfo.fixtureOptions) do
-		fixtureOption.ineligibleChoice = fixtureOption.isLocked;
-		if fixtureOption.isLocked then
-			fixtureOption.lockedText = HOUSING_EXTERIOR_CUSTOMIZATION_LOCKED_TOOLTIP;
+		local elementData = {};
+		elementData.choiceData = fixtureOption;
+		elementData.choiceData.choiceIndex = index + 1;
+		elementData.choiceData.ineligibleChoice = elementData.choiceData.isLocked;
+		if elementData.choiceData.isLocked and elementData.choiceData.lockReasonString then
+			elementData.choiceData.lockedText = elementData.choiceData.lockReasonString;
 		end
 
-		local isSelected = fixtureOption.fixtureID == self.fixturePointInfo.selectedFixtureID;
-		local elementButton = self.optionElementPool:Acquire();
-		elementButton.layoutIndex = index + 1; -- Offset layout indices by 1 for the "None" remove button entry
-		elementButton:SetScript("OnClick", function(button, buttonName)
-			if not isSelected and not fixtureOption.isLocked then
-				C_HouseExterior.SelectFixtureOption(fixtureOption.fixtureID);
+		elementData.listStateData = {
+			isSelected = elementData.choiceData.fixtureID == self.fixturePointInfo.selectedFixtureID,
+			hasAnyFailedReqs = hasAnyFailedReqs,
+			hasAnyLockedChoices = hasAnyLockedChoices,
+		};
 
-				local soundKit = FixtureTypeToSoundKit[fixtureOption.typeName] or SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION;
-				PlaySound(soundKit);
-			end
-		end);
-		elementButton:Init(fixtureOption, index + 1, isSelected, hasAnyFailedReqs, hasAnyLockedChoices);
-		elementButton:Show();
-		elementButton:Layout();
+		table.insert(optionElements, elementData);
 	end
 
-	local hasMultipleColumns = false;
-	self.RemoveButton:FinalizeLayout(hasMultipleColumns, hasAnyLockedChoices)
-	for elementButton in self.optionElementPool:EnumerateActive() do
-		elementButton:FinalizeLayout(hasMultipleColumns, hasAnyLockedChoices);
-	end
+	local dataProvider = CreateDataProvider(optionElements);
 
-	self:Layout();
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+
 	self:Show();
 end
 
-function HouseExteriorFixtureOptionListMixin:ClearAndHide()
+function HouseExteriorFixtureOptionListMixin:ClearData()
 	self.fixturePointInfo = nil;
-	self.optionElementPool:ReleaseAll();
+	self.ScrollBox:RemoveDataProvider();
+end
+
+function HouseExteriorFixtureOptionListMixin:ClearAndHide()
+	self:ClearData();
 	self:Hide();
 end

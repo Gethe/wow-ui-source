@@ -59,6 +59,19 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "GetCountdownFontString",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "countdownString", Type = "SimpleFontString", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDrawBling",
 			Type = "Function",
 

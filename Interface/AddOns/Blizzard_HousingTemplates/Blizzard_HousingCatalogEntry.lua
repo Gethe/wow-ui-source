@@ -1,6 +1,7 @@
 local ModelSceneID = 691;
 local ActorTag = "decor";
 local QuestionMarkIconFileDataID = 134400;
+local ContentTrackingAtlasMarkup = CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0);
 
 HousingCatalogEntryMixin = {};
 
@@ -26,6 +27,14 @@ end
 
 function HousingCatalogEntryMixin:IsBundleEntry()
 	return self.bundleEntryInfo ~= nil;
+end
+
+function HousingCatalogEntryMixin:GetNumDecorPlaced()
+	if not self:IsBundleEntry() then
+		return 0;
+	end
+
+	return HouseEditorFrame.MarketShoppingCartFrame:GetNumDecorPlaced(self.bundleEntryInfo.bundleCatalogShopProductID, self.bundleEntryInfo.decorID);
 end
 
 function HousingCatalogEntryMixin.Reset(framePool, self)
@@ -65,7 +74,7 @@ function HousingCatalogEntryMixin:UpdateEntryData(forceUpdate)
 		return;
 	end
 
-	local entryInfo = self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
+	local entryInfo = self:GetEntryData();
 	if not entryInfo then
 		self:ClearEntryData();
 		return;
@@ -190,11 +199,16 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 
 	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
 
+	self.InfoText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	if self:IsBundleEntry() then
 		self.InfoText:Show();
 
-		-- TODO:: Eventually this should update based on the number that have been preview-placed.
-		self.InfoText:SetText(self.bundleEntryInfo.quantity);
+		local numPlaced = self:GetNumDecorPlaced();
+		local quantity = self.bundleEntryInfo.quantity - numPlaced;
+		self.InfoText:SetText(quantity);
+		if quantity <= 0 then
+			self.InfoText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
 	elseif C_HousingDecor.IsPreviewState() then
 		local marketInfo = self.entryInfo.marketInfo;
 		local price = marketInfo and marketInfo.price or 0;
@@ -240,6 +254,7 @@ function HousingCatalogEntryMixin:OnEnter()
 
 	self:AddTooltipTitle(GameTooltip);
 	self:AddTooltipLines(GameTooltip);
+	self:AddTooltipTrackingLines(GameTooltip);
 
 	EventRegistry:TriggerEvent("HousingCatalogEntry.TooltipCreated", self, GameTooltip);
 
@@ -344,13 +359,17 @@ function HousingCatalogEntryMixin:AddTooltipLines(tooltip)
 	assert(false);
 end
 
+function HousingCatalogEntryMixin:AddTooltipTrackingLines(tooltip)
+	-- Optional override
+end
+
 
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
-function HousingCatalogDecorEntryMixin:GetEntryInfo()
+function HousingCatalogDecorEntryMixin:GetEntryData()
 	-- Overrides HousingCatalogEntryMixin.
 
-	return self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or HousingCatalogEntryMixin.GetEntryInfo(self);
+	return self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or HousingCatalogEntryMixin.GetEntryData(self);
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
@@ -400,6 +419,24 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	end
 end
 
+function HousingCatalogDecorEntryMixin:AddTooltipTrackingLines(tooltip)
+	if not ContentTrackingUtil.IsContentTrackingEnabled() then	
+		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+		return;
+	end
+
+	if C_ContentTracking.IsTrackable(Enum.ContentTrackingType.Decor, self.entryInfo.entryID.recordID) then
+		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, self.entryInfo.entryID.recordID) then
+			GameTooltip_AddColoredLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACK_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		else
+			GameTooltip_AddInstructionLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_TRACKABLE_TOOLTIP_PROMPT, GREEN_FONT_COLOR);
+		end
+	else
+		GameTooltip_AddDisabledLine(tooltip, ContentTrackingAtlasMarkup..CONTENT_TRACKING_UNTRACKABLE_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
+	end
+end
+
+
 StaticPopupDialogs["HOUSING_MAX_DECOR_REACHED"] = {
 	text = ERR_PLACED_DECOR_LIMIT_REACHED,
 	button1 = OKAY,
@@ -410,10 +447,16 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	if not C_HouseEditor.IsHouseEditorActive() then
 		return;
 	end
-	
-	-- TODO:: Support preview placement for bundles based on :IsBundleEntry()
+
 	if not self:HasValidData() or (not C_HousingDecor.IsPreviewState() and self.entryInfo.quantity + self.entryInfo.remainingRedeemable <= 0) then
 		return;
+	end
+
+	if self:IsBundleEntry() then
+		local numPlaced = self:GetNumDecorPlaced();
+		if numPlaced >= self.bundleEntryInfo.quantity then
+			return;
+		end
 	end
 
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
@@ -434,7 +477,11 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 
 	local StartPlacing;
 	if C_HousingDecor.IsPreviewState() then
-		StartPlacing = function() C_HousingBasicMode.StartPlacingPreviewDecor(self.entryID); end
+		local bundleCatalogShopProductID = self.bundleEntryInfo and self.bundleEntryInfo.bundleCatalogShopProductID or nil;
+		StartPlacing = function()
+			local decorID = self:IsBundleEntry() and self.bundleEntryInfo.decorID or self.entryID.recordID;
+			C_HousingBasicMode.StartPlacingPreviewDecor(decorID, bundleCatalogShopProductID);
+		end;
 	else
 		-- Bundle entries should all be in the market view and can't be previewed otherwise.
 		if self:IsBundleEntry() then
@@ -580,7 +627,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				
 					id = self.entryInfo.itemID,
 					name = self.entryInfo.name,
-					decorEntryID = self.entryID,
+					decorID = self.entryID.recordID,
 					icon = self.entryInfo.iconTexture,
 					price = self.entryInfo.marketInfo.originalPrice or self.entryInfo.marketInfo.price,
 					salePrice = self.entryInfo.marketInfo.originalPrice and self.entryInfo.marketInfo.price or nil,
@@ -625,7 +672,7 @@ end
 function HousingCatalogRoomEntryMixin:GetTypeSpecificIsValid()
 	local isValid, invalidTooltip, invalidError = true, nil, nil;
 
-	local isAtBudgetMax = C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = C_HousingLayout.HasRoomPlacementBudget() and C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
 	if isAtBudgetMax then
 		isValid = false;
 		invalidTooltip = ERR_PLACED_ROOM_LIMIT_REACHED;

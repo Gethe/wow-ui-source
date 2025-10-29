@@ -68,10 +68,6 @@ function EncounterWarningsSystemFrameMixin:OnEncounterWarning(encounterWarningIn
 	local formattedText = string.format(unformattedText, formattedCasterName, formattedTargetName);
 	encounterWarningInfo.text = formattedText;
 
-	if encounterWarningInfo.duration == 0 then
-		encounterWarningInfo.duration = EncounterWarningsConstants.DefaultMessageHoldTime;
-	end
-
 	self:ShowWarning(encounterWarningInfo);
 
 	-- EETODO: Investigate TTS routing.

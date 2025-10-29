@@ -403,21 +403,23 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeDamageMeterSetting",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "Visibility", Type = "EditModeDamageMeterSetting", EnumValue = 0 },
 				{ Name = "Style", Type = "EditModeDamageMeterSetting", EnumValue = 1 },
 				{ Name = "Numbers", Type = "EditModeDamageMeterSetting", EnumValue = 2 },
-				{ Name = "FrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
-				{ Name = "FrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
+				{ Name = "DeprecatedFrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
+				{ Name = "DeprecatedFrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
 				{ Name = "Padding", Type = "EditModeDamageMeterSetting", EnumValue = 5 },
 				{ Name = "Transparency", Type = "EditModeDamageMeterSetting", EnumValue = 6 },
 				{ Name = "LockScroll", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
 				{ Name = "ShowSpecIcon", Type = "EditModeDamageMeterSetting", EnumValue = 8 },
 				{ Name = "ShowClassColor", Type = "EditModeDamageMeterSetting", EnumValue = 9 },
+				{ Name = "BarHeight", Type = "EditModeDamageMeterSetting", EnumValue = 10 },
+				{ Name = "TextSize", Type = "EditModeDamageMeterSetting", EnumValue = 11 },
 			},
 		},
 		{

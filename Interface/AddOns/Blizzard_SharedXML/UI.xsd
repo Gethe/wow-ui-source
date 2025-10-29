@@ -659,6 +659,7 @@
 				<xs:attribute name="ignoreParentScale" type="xs:boolean" default="false"/>
 				<xs:attribute name="degrees" type="xs:float" default="0"/>
 				<xs:attribute name="scaleAnimationMode" type="FontStringScaleAnimationMode" default="FontSize"/>
+				<xs:attribute name="smoothScaling" type="xs:boolean" default="false"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

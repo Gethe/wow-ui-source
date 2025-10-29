@@ -4,8 +4,8 @@
 ## Dependencies: Blizzard_HousingTemplates, Blizzard_MapCanvas
 ## AllowLoadGameType: standard
 
-HouseFinderMapDataProvider.xml
 HouseFinderMapDataProvider.lua
+HouseFinderMapDataProvider.xml
 Blizzard_HousingHouseFinder.lua
 Blizzard_HousingHouseFinder.xml
 Blizzard_HousingHouseFinderRegistration.lua

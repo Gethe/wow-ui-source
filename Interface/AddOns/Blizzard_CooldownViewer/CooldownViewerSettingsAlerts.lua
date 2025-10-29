@@ -44,11 +44,8 @@ end
 
 function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
 	local cooldownID = self:GetCooldownID();
-
-	-- TODO: Add query API for valid events from cooldownID; something like C_CooldownViewer.GetValidAlertTypes...
-	-- note: also requires that the event types be moved to tag
 	if cooldownID then
-		return { Enum.CooldownViewerAlertEventType.Available, Enum.CooldownViewerAlertEventType.PandemicTime, Enum.CooldownViewerAlertEventType.OnCooldown, Enum.CooldownViewerAlertEventType.ChargeGained };
+		return C_CooldownViewer.GetValidAlertTypes(cooldownID);
 	end
 
 	return nil;

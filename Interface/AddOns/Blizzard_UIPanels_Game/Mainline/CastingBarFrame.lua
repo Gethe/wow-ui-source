@@ -98,6 +98,7 @@ end
 function CastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 	if self.unit ~= unit then
 		self.unit = unit;
+		self.spellID = nil;
 		self.showTradeSkills = showTradeSkills;
 		self.showShield = showShield;
 

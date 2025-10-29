@@ -152,7 +152,7 @@ local TradeSkillUITypes =
 			Fields =
 			{
 				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
-				{ Name = "itemID", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 			},
 		},
 		{
@@ -224,7 +224,7 @@ local TradeSkillUITypes =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
@@ -246,6 +246,7 @@ local TradeSkillUITypes =
 			{
 				{ Name = "reagents", Type = "table", InnerType = "CraftingReagent", Nilable = false },
 				{ Name = "reagentType", Type = "CraftingReagentType", Nilable = false },
+				{ Name = "variableQuantities", Type = "table", InnerType = "CraftingVariableQuantities", Nilable = false },
 				{ Name = "quantityRequired", Type = "number", Nilable = false },
 				{ Name = "slotInfo", Type = "CraftingReagentSlotInfo", Nilable = true },
 				{ Name = "dataSlotType", Type = "TradeskillSlotDataType", Nilable = false, Default = "Reagent" },
@@ -308,7 +309,7 @@ local TradeSkillUITypes =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
@@ -320,6 +321,15 @@ local TradeSkillUITypes =
 				{ Name = "itemID", Type = "number", Nilable = false },
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "hyperlink", Type = "string", Nilable = true },
+				{ Name = "quantity", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CraftingVariableQuantities",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},
@@ -370,7 +380,7 @@ local TradeSkillUITypes =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 			},
 		},

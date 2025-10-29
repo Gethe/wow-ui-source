@@ -126,7 +126,7 @@ local NamePlateConstants =
 			Fields =
 			{
 				{ Name = "Default", Type = "NamePlateStyle", EnumValue = 0 },
-				{ Name = "Legacy", Type = "NamePlateStyle", EnumValue = 1 },
+				{ Name = "Modern", Type = "NamePlateStyle", EnumValue = 1 },
 				{ Name = "Thin", Type = "NamePlateStyle", EnumValue = 2 },
 				{ Name = "Block", Type = "NamePlateStyle", EnumValue = 3 },
 				{ Name = "CastFocus", Type = "NamePlateStyle", EnumValue = 4 },

@@ -3494,12 +3494,15 @@ function UnitPopupViewHousesButtonMixin:OnClick(contextData)
 	local name = UnitPopupSharedUtil.GetFullPlayerName(contextData);
 	local guid = UnitPopupSharedUtil.GetGUID(contextData);
 	local bnetID = contextData.bnetIDAccount;
+	local isFriend = UnitPopupSharedUtil.IsBNetFriend(contextData);
+	local isGrouped = UnitInParty(name) or UnitInRaid(name);
 
 	if not HouseListFrame then
 		C_AddOns.LoadAddOn("Blizzard_HouseList");
 	end
+
 	ShowUIPanel(HouseListFrame);
-	HouseListFrame:InitWithContextData(name, guid, bnetID, isGuildMember)
+	HouseListFrame:InitWithContextData(name, guid, bnetID, isGuildMember);
 end
 
 function UnitPopupViewHousesButtonMixin:GetText(contextData)

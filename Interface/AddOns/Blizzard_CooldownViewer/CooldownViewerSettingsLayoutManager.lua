@@ -812,7 +812,15 @@ function CooldownViewerLayoutManagerMixin:GetMaxLayoutsErrorText()
 end
 
 function CooldownViewerLayoutManagerMixin:CopyActiveLayoutToClipboard()
-	print("NYI: Copy active layout to clipboard");
+	local activeLayout = self:GetActiveLayout(Enum.CDMLayoutMode.AccessOnly);
+	if activeLayout then
+		local layoutID = CooldownManagerLayout_GetID(activeLayout);
+		local layoutData = self:GetSerializer():SerializeLayouts(layoutID);
+		CopyToClipboard(layoutData);
+
+		local layoutName = CooldownManagerLayout_GetName(activeLayout);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(layoutName)); -- TODO: Add real string, this isn't edit mode
+	end
 end
 
 function CooldownViewerLayoutManagerMixin:IsCharacterSpecificLayout(layout)

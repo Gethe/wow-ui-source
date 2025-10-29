@@ -184,3 +184,11 @@ function ScrollingHousingCatalogMixin:TryGetElementAndFrame(entryID)
 	end
 	return focusedElementData, frame;
 end
+
+function ScrollingHousingCatalogMixin:RefreshFrames()
+	for _, frame in self.ScrollBox:EnumerateFrames() do
+		if frame.UpdateVisuals then
+			frame:UpdateVisuals();
+		end
+	end
+end

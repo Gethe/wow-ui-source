@@ -43,7 +43,7 @@ function HousingMarketCartItemMixin:OnLoad()
 	end;
 
 	self.PlaceInWorldButton.GetEventData = function (_btn)
-		return { cartID = self.elementData.cartID, decorEntryID = self.elementData.decorEntryID };
+		return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
 	end
 
 	self.selected = false;
@@ -176,6 +176,10 @@ end
 HousingMarketCartBundleItemMixin = CreateFromMixins(HousingMarketCartBundleRegistrant);
 
 function HousingMarketCartBundleItemMixin:OnLoad()
+	self.PlaceInWorldButton.GetEventData = function (_btn)
+		return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
+	end
+
 	-- These items don't have the remove button on them
 	self.selected = false;
 	self:Refresh();
@@ -190,6 +194,8 @@ function HousingMarketCartBundleItemMixin:Refresh()
 	if not self.elementData then
 		return;
 	end
+
+	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID);
 
 	self.VisualContainer.ItemName:SetText(self.elementData.name or "");
 	self.VisualContainer.Icon:SetTexture(self.elementData.icon or nil);

@@ -899,9 +899,4 @@ SOUNDKIT = {
 	
 	HOUSING_PLACED_DECOR_LIST_OPEN = 320137,
 	HOUSING_PLACED_DECOR_LIST_CLOSE = 320138,
-	
-	-- Encounter Warnings -- Temp until actual recordings exist
-	UI_ENCOUNTEREVENT_SEVERITY_LOW		= 297258,-- Copy of Flag Returned
-	UI_ENCOUNTEREVENT_SEVERITY_MEDIUM	= 297255,-- Copy of Flag Taken
-	UI_ENCOUNTEREVENT_SEVERITY_HIGH		= 297253,-- Copy of Boss Whisper/Fixates
 };

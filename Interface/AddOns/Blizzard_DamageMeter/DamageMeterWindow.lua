@@ -1,3 +1,15 @@
+
+local DAMAGE_METER_TYPE_NAMES = {
+	[Enum.DamageMeterType.DamageDone] = "Damage Done",
+	[Enum.DamageMeterType.Dps] = "DPS",
+	[Enum.DamageMeterType.HealingDone] = "Healing Done",
+	[Enum.DamageMeterType.Hps] = "HPS",
+};
+
+local function GetDamageMeterTypeName(damageMeterType)
+	return DAMAGE_METER_TYPE_NAMES[damageMeterType] or "Unknown";
+end
+
 DamageMeterWindowMixin = {};
 
 local DamageMeterWindowListEvents = {
@@ -22,6 +34,8 @@ end
 
 function DamageMeterWindowMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, DamageMeterWindowListEvents);
+
+	self:HideBreakdownFrame();
 end
 
 function DamageMeterWindowMixin:OnEvent(event, ...)
@@ -39,7 +53,7 @@ function DamageMeterWindowMixin:OnEnter()
 			self.HideResizeButton:Stop();
 			self.ShowResizeButton:Play();
 		elseif not shouldResizeButtonBeShown and self.ResizeButton:GetAlpha() > 0 then
-			self:SetScript("OnUpdate", nil);
+			self:SetScript("OnUpdate", self.OnUpdate);
 			self.ShowResizeButton:Stop();
 			self.HideResizeButton:Play();
 		end
@@ -54,10 +68,18 @@ function DamageMeterWindowMixin:OnDragStop()
 	self:StopMovingOrSizing();
 end
 
+function DamageMeterWindowMixin:OnUpdate()
+	local retainScrollPosition = true;
+	self:Refresh(retainScrollPosition);
+end
+
 function DamageMeterWindowMixin:InitializeScrollBox()
 	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("DamageMeterEntryTemplate", function(frame, elementData)
+	view:SetElementInitializer("DamageMeterSourceEntryTemplate", function(frame, elementData)
 		frame:Init(elementData);
+		frame:SetUseClassColor(self:ShouldUseClassColor());
+		frame:SetBarHeight(self:GetBarHeight());
+		frame:SetTextScale(self:GetTextScale());
 
 		frame:SetScript("OnClick", function(button, mouseButtonName)
 			if mouseButtonName == "LeftButton" then
@@ -90,8 +112,8 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 	local function GetCategories()
 		local categoryList =
 		{
-			{ name = "Damage"; types = {"Damage Done", "DPS"}; },
-			{ name = "Healing"; types = {"Healing Done", "HPS"}; },
+			{ name = "Damage"; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps}; },
+			{ name = "Healing"; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps}; },
 		};
 		return categoryList;
 	end
@@ -114,7 +136,7 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 			local categorySubmenu = rootDescription:CreateButton(categoryData.name);
 
 			for _j, typeData in ipairs(categoryData.types) do
-				categorySubmenu:CreateRadio(typeData, IsSelected, SetSelected, typeData);
+				categorySubmenu:CreateRadio(GetDamageMeterTypeName(typeData), IsSelected, SetSelected, typeData);
 			end
 		end
 	end);
@@ -189,22 +211,18 @@ function DamageMeterWindowMixin:InitializeResizeButton()
 		end);
 end
 
-function DamageMeterWindowMixin:GetEntryList()
-	local entryList =
-	{
-		{texture = 135987; maxValue = 100; value = 100; },
-		{texture = 132864; maxValue = 100; value = 80; }
-	};
-	return entryList;
-end
-
 function DamageMeterWindowMixin:BuildDataProvider()
-	local entryList = self:GetEntryList();
-
 	local dataProvider = CreateDataProvider();
-	for i, entryData in ipairs(entryList) do
-		entryData.index = i;
-		dataProvider:Insert(entryData);
+
+	local combatSession = C_DamageMeter.GetCurrentCombatSession(Enum.DamageMeterType.DamageDone);
+	local combatSources = combatSession and combatSession.combatSources or {};
+	local maxAmount = combatSession and combatSession.maxAmount or 0;
+
+	for i, combatSource in ipairs(combatSources) do
+		combatSource.maxAmount = maxAmount;
+		combatSource.index = i;
+
+		dataProvider:Insert(combatSource);
 	end
 
 	return dataProvider;
@@ -212,6 +230,20 @@ end
 
 function DamageMeterWindowMixin:Refresh(retainScrollPosition)
 	self.ScrollBox:SetDataProvider(self:BuildDataProvider(), retainScrollPosition);
+end
+
+function DamageMeterWindowMixin:EnumerateEntryFrames()
+	return self.ScrollBox:EnumerateFrames();
+end
+
+function DamageMeterWindowMixin:ForEachEntryFrame(func, ...)
+	for _index, frame in self:EnumerateEntryFrames() do
+		func(frame, ...);
+	end
+end
+
+function DamageMeterWindowMixin:GetEntryFrameCount()
+	return self.ScrollBox:GetFrameCount();
 end
 
 function DamageMeterWindowMixin:SetDamageMeterOwner(damageMeterOwner, windowFrameIndex)
@@ -231,7 +263,7 @@ end
 -- any code other than DamageMeterMixin:SetWindowFrameTrackedStat
 function DamageMeterWindowMixin:SetTrackedStat(trackedStat)
 	self.trackedStat = trackedStat;
-	self.TrackedStatDropdown.StatName:SetText(trackedStat);
+	self.TrackedStatDropdown.StatName:SetText(GetDamageMeterTypeName(trackedStat));
 end
 
 function DamageMeterWindowMixin:GetTrackedStat()
@@ -247,7 +279,63 @@ function DamageMeterWindowMixin:RefreshLayout()
 end
 
 function DamageMeterWindowMixin:ShowBreakdownFrame(elementData)
-	self.UnitBreakdownFrame:SetTrackedData(self:GetTrackedStat(), elementData.unit);
+	self.UnitBreakdownFrame:SetTrackedData(self:GetTrackedStat(), elementData.unitToken);
 	self.UnitBreakdownFrame:AnchorToWindow(self);
 	self.UnitBreakdownFrame:Show();
+end
+
+function DamageMeterWindowMixin:HideBreakdownFrame()
+	self.UnitBreakdownFrame:Hide();
+end
+
+function DamageMeterWindowMixin:OnUseClassColorChanged(useClassColor)
+	self.ScrollBox:ForEachFrame(function(frame) frame:SetUseClassColor(useClassColor); end);
+	self.UnitBreakdownFrame:SetUseClassColor(useClassColor);
+end
+
+function DamageMeterWindowMixin:ShouldUseClassColor()
+	return self.useClassColor == true;
+end
+
+function DamageMeterWindowMixin:SetUseClassColor(useClassColor)
+	useClassColor = (useClassColor == true);
+
+	if self.useClassColor ~= useClassColor then
+		self.useClassColor = useClassColor;
+		self:OnUseClassColorChanged(useClassColor);
+	end
+end
+
+function DamageMeterWindowMixin:OnBarHeightChanged(barHeight)
+	local retainScrollPosition = true;
+	self.ScrollBox:GetView():SetElementExtent(barHeight);
+	self.UnitBreakdownFrame:SetBarHeight(barHeight);
+	self:Refresh(retainScrollPosition);
+end
+
+function DamageMeterWindowMixin:GetBarHeight()
+	return self.barHeight or DAMAGE_METER_DEFAULT_BAR_HEIGHT;
+end
+
+function DamageMeterWindowMixin:SetBarHeight(barHeight)
+	if not ApproximatelyEqual(self:GetBarHeight(), barHeight) then
+		self.barHeight = barHeight;
+		self:OnBarHeightChanged(barHeight);
+	end
+end
+
+function DamageMeterWindowMixin:OnTextScaleChanged(textScale)
+	self.ScrollBox:ForEachFrame(function(frame) frame:SetTextScale(textScale); end);
+	self.UnitBreakdownFrame:SetTextScale(textScale);
+end
+
+function DamageMeterWindowMixin:GetTextScale()
+	return self.textScale or 1;
+end
+
+function DamageMeterWindowMixin:SetTextScale(textScale)
+	if not ApproximatelyEqual(self:GetTextScale(), textScale) then
+		self.textScale = textScale;
+		self:OnTextScaleChanged(textScale);
+	end
 end

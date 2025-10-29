@@ -3164,12 +3164,9 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumbers()
 	-- NYI
 end
 
-function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameWidth()
-	-- NYI
-end
-
-function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameHeight()
-	-- NYI
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingBarHeight()
+	local barHeight = self:GetSettingValue(Enum.EditModeDamageMeterSetting.BarHeight);
+	self:SetBarHeight(barHeight);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingPadding()
@@ -3189,7 +3186,13 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowSpecIcon()
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowClassColor()
-	-- NYI
+	local useClassColor = self:GetSettingValueBool(Enum.EditModeDamageMeterSetting.ShowClassColor);
+	self:SetUseClassColor(useClassColor);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingTextSize()
+	local textSize = self:GetSettingValue(Enum.EditModeDamageMeterSetting.TextSize);
+	self:SetTextSize(textSize);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
@@ -3205,10 +3208,8 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 		self:UpdateSystemSettingStyle();
 	elseif setting == Enum.EditModeDamageMeterSetting.Numbers and self:HasSetting(Enum.EditModeDamageMeterSetting.Numbers) then
 		self:UpdateSystemSettingNumbers();
-	elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameWidth) then
-		self:UpdateSystemSettingFrameWidth();
-	elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameHeight) then
-		self:UpdateSystemSettingFrameHeight();
+	elseif setting == Enum.EditModeDamageMeterSetting.BarHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.BarHeight) then
+		self:UpdateSystemSettingBarHeight();
 	elseif setting == Enum.EditModeDamageMeterSetting.Padding and self:HasSetting(Enum.EditModeDamageMeterSetting.Padding) then
 		self:UpdateSystemSettingPadding();
 	elseif setting == Enum.EditModeDamageMeterSetting.Transparency and self:HasSetting(Enum.EditModeDamageMeterSetting.Transparency) then
@@ -3219,6 +3220,8 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 		self:UpdateSystemSettingShowSpecIcon();
 	elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowClassColor) then
 		self:UpdateSystemSettingShowClassColor();
+	elseif setting == Enum.EditModeDamageMeterSetting.TextSize and self:HasSetting(Enum.EditModeDamageMeterSetting.TextSize) then
+		self:UpdateSystemSettingTextSize();
 	end
 
 	if not entireSystemUpdate then

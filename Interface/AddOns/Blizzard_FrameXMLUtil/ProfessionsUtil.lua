@@ -46,7 +46,7 @@ end
 function ProfessionsUtil.CreateRecipeReagentListByPredicate(recipeID, predicate)
 	local reagents = {};
 	local isRecraft = false;
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
+	local recipeSchematic = Professions.GetRecipeSchematic(recipeID, isRecraft);
 	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		if predicate(reagentSlotSchematic) then
 			tAppendAll(reagents, reagentSlotSchematic.reagents);
@@ -93,11 +93,11 @@ function ProfessionsUtil.AccumulateReagentsInPossession(reagents, characterInven
 end
 
 function ProfessionsUtil.CreateProfessionsRecipeTransactionFromCraftingOrder(order)
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(order.spellID, order.isRecraft);
+	local recipeSchematic = Professions.GetRecipeSchematic(order.spellID, order.isRecraft);
 	local transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
 	for _, reagentInfo in ipairs(order.reagents) do
 		local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
-		allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+		allocations:Allocate(reagentInfo.reagentInfo.reagent, reagentInfo.reagentInfo.quantity);
 	end
 	return transaction;
 end

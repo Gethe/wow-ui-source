@@ -25,6 +25,7 @@ Enum.CooldownLayoutStatus =
 	AttemptToModifyDefaultLayoutWouldCreateTooManyLayouts = 3,
 	TooManyAlerts = 4,
 	InvalidOrderChange = 5,
+	NoValidAlerts = 6,
 };
 
 Enum.CooldownLayoutAction =

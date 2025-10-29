@@ -350,8 +350,9 @@ function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
 	return compact and 786 or 942;
 end
 
-function ProfessionsCraftingPageMixin:OnReagentClicked(reagentName)
-	self.RecipeList.SearchBox:SetText(reagentName);
+function ProfessionsCraftingPageMixin:OnReagentClicked(reagent)
+	local displayData = Professions.GetReagentDisplayData(reagent);
+	self.RecipeList.SearchBox:SetText(displayData.name);
 end
 
 function ProfessionsCraftingPageMixin:OnProfessionSelected(professionInfo)
@@ -421,6 +422,7 @@ end
 
 function ProfessionsCraftingPageMixin:GetCraftableCount()
 	local transaction = self.SchematicForm:GetTransaction();
+	local useCharacterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
 	local intervals = math.huge;
 
 	local function ClampInvervals(quantity, quantityMax)
@@ -429,31 +431,32 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 
 	local function ClampAllocations(allocations)
 		for slotIndex, allocation in allocations:Enumerate() do
-			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent(), transaction:ShouldUseCharacterInventoryOnly());
+			local quantity = ProfessionsUtil.GetReagentQuantityInPossession(allocation:GetReagent(), useCharacterInventoryOnly);
 			local quantityMax = allocation:GetQuantity();
 			ClampInvervals(quantity, quantityMax);
 		end
 	end
 
 	if transaction:IsManuallyAllocated() then
-		-- If manually allocated, we can only accumulate the reagents currently allocated.
+		-- If manually allocated, we can only accumulate the allocated reagents.
 		for slotIndex, allocations in transaction:EnumerateAllAllocations() do
+			-- If we're recrafting, we should not process the slot when the modification is unchanged.
 			if transaction:IsSlotRequired(slotIndex) and ShouldProcessReagentSlotAllocation(transaction, slotIndex) then
-				--[[ This is correct for both basic and modified-required because this
-				accumulates allocated reagents only, which is correct for the case of
-				modifying-required slots. Note that if we're recrafting, we should not
-				process the slot when the modification is unchanged.]]--
+				-- Accumulate allocated reagents only. 
 				ClampAllocations(allocations);
 			end
 		end
 	else
-		--[[ If automatically allocated, we can accumulate every compatible reagent regardless of what
-		is currently allocated. Note, this is not the case for modifying-required slots; those
-		need to only account for what is allocated, which is accounted for below.]]--
+		--[[
+		If automatically allocated:
+		1) With basic reagent slots, all reagents compatible with the slot can be accumulated together.
+		2) With modifying reagent slots, only allocated reagents can be accumulated together.
+		]]--
+
 		for slotIndex, reagents in transaction:EnumerateAllSlotReagents() do
 			if transaction:IsSlotBasicReagentType(slotIndex) then
 				local quantity = AccumulateOp(reagents, function(reagent)
-					return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
+					return ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
 				end);
 
 				local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
@@ -463,15 +466,13 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 				and the item's current modification is unchanged, then we do not need to require that any item exists
 				in inventory because the existing modification will be unchanged.]]--
 				if ShouldProcessReagentSlotAllocation(transaction, slotIndex) then
-					local quantity = AccumulateOp(reagents, function(reagent)
-						-- Only include the allocated reagents for modifying-required slots.
+					for index, reagent in ipairs(reagents) do
 						if transaction:IsReagentAllocated(slotIndex, reagent) then
-							return ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
-						end
-						return 0;
-					end);
-					local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex);
-					ClampInvervals(quantity, quantityMax);
+							local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
+							local quantityMax = transaction:GetQuantityRequiredInSlot(slotIndex, reagent);
+							ClampInvervals(quantity, quantityMax);
+						end	
+					end
 				end
 			end
 		end
@@ -481,13 +482,13 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 	-- a recrafting modification.
 	for slotIndex, allocations in transaction:EnumerateAllAllocations() do
 		if not transaction:IsSlotRequired(slotIndex) then
-			local allocs = allocations:SelectFirst();
-			if allocs then
+			local allocation = allocations:GetFirstAllocation();
+			if allocation then
 				local clamp = true;
 				local modification = transaction:GetModificationAtSlotIndex(slotIndex);
-				if modification then
-					local reagent = allocs:GetReagent();
-					if modification.itemID == reagent.itemID then
+				if Professions.IsValidModification(modification) then
+					local reagent = allocation:GetReagent();
+					if Professions.DoesModificationContainReagent(modification, reagent) then
 						clamp = false;
 					end
 				end
@@ -529,7 +530,7 @@ function ProfessionsCraftingPageMixin:GetCraftableCount()
 		local enchantItem = transaction:GetEnchantAllocation();
 		if enchantItem then
 			if enchantItem:IsStackable() then
-				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID(), transaction:ShouldUseCharacterInventoryOnly())
+				local quantity = ItemUtil.GetCraftingReagentCount(enchantItem:GetItemID(), useCharacterInventoryOnly)
 				local quantityMax = 1;
 				ClampInvervals(quantity, quantityMax); 
 			else
@@ -554,12 +555,12 @@ function ProfessionsCraftingPageMixin:SetCreateButtonTooltipText(tooltipText)
 	self.CreateAllButton.tooltipText = tooltipText;
 end
 
-local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "PrerequisiteReagents", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
+local FailValidationReason = EnumUtil.MakeEnum("Cooldown", "InsufficientReagents", "DependentReagentMissing", "Disabled", "Requirement", "LockedReagentSlot", "RecraftOptionalReagentLimit");
 
 local FailValidationTooltips = {
 	[FailValidationReason.Cooldown] = PROFESSIONS_RECIPE_COOLDOWN,
 	[FailValidationReason.InsufficientReagents] = PROFESSIONS_INSUFFICIENT_REAGENTS,
-	[FailValidationReason.PrerequisiteReagents] = PROFESSIONS_PREREQUISITE_REAGENTS,
+	[FailValidationReason.DependentReagentMissing] = PROFESSIONS_PREREQUISITE_REAGENTS,
 	[FailValidationReason.Requirement] = PROFESSIONS_MISSING_REQUIREMENT,
 	[FailValidationReason.LockedReagentSlot] = PROFESSIONS_INSUFFICIENT_REAGENT_SLOTS,
 	[FailValidationReason.RecraftOptionalReagentLimit] = PROFESSIONS_UNIQUE_EQUIP_LIMITATION_DISC,
@@ -582,8 +583,8 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 		return FailValidationReason.Requirement;
 	end
 	
-	if not transaction:HasMetPrerequisiteRequirements() then
-		return FailValidationReason.PrerequisiteReagents;
+	if transaction:HasMissingDependentReagents() then
+		return FailValidationReason.DependentReagentMissing;
 	end
 
 	if not isRuneforging and countMax <= 0 then
@@ -608,11 +609,13 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 	if recraftingEquipped then
 		for _, slot in ipairs(optionalReagentSlots or {}) do
 			local reagentSlotSchematic = slot:GetReagentSlotSchematic();
-			local allocation = transaction:GetAllocations(reagentSlotSchematic.slotIndex);
-			local allocs = allocation and allocation:SelectFirst();
-			local reagent = allocs and allocs:GetReagent();
-			if reagent and not C_TradeSkillUI.RecraftLimitCategoryValid(reagent.itemID) then
-				return FailValidationReason.RecraftOptionalReagentLimit;
+			local allocations = transaction:GetAllocations(reagentSlotSchematic.slotIndex);
+			local firstAllocation = allocations:GetFirstAllocation();
+			if firstAllocation then
+				local reagent = firstAllocation:GetReagent();
+				if reagent and not C_TradeSkillUI.RecraftLimitCategoryValid(reagent) then
+					return FailValidationReason.RecraftOptionalReagentLimit;
+				end
 			end
 		end
 	end
@@ -966,42 +969,19 @@ function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLeve
 	local transaction = self.SchematicForm:GetTransaction();
 	local applyConcentration = transaction:IsApplyingConcentration();
 	if transaction:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		local salvageItem = transaction:GetSalvageAllocation();
-		if salvageItem then
-			local itemLocation = C_Item.GetItemLocation(salvageItem:GetItemGUID());
-			if itemLocation then
-				local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-				C_TradeSkillUI.CraftSalvage(recipeID, count, itemLocation, craftingReagentTbl, applyConcentration);
-			end
-		end
+		transaction:CraftSalvage(count);
 	else
 		if transaction:HasRecraftAllocation() then
-			local craftingReagentTbl = transaction:CreateCraftingReagentInfoTbl();
-			local removedModifications = Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl);
-			
-			local result = C_TradeSkillUI.RecraftRecipe(transaction:GetRecraftAllocation(), craftingReagentTbl, removedModifications, applyConcentration);
-			if result then
-				-- Create an expected table of item modifications so that we don't incorrectly deallocate
-				-- an item modification slot on form refresh that has just been installed but hasn't been stamped
-				-- with the item modification yet.
-				transaction:GenerateExpectedItemModifications();
-			end
+			transaction:RecraftRecipe();
 		else
-			local craftingReagentInfos;
-			if transaction:IsManuallyAllocated() then
-				craftingReagentInfos = transaction:CreateCraftingReagentInfoTbl();
-			else
-				craftingReagentInfos = transaction:CreateOptionalOrFinishingCraftingReagentInfoTbl();
-			end
-
 			local enchantItem = transaction:GetEnchantAllocation();
 			if enchantItem then
 				if count > 1 and C_TradeSkillUI.CanStoreEnchantInItem(enchantItem:GetItemGUID()) then
 					self.vellumItemID = enchantItem:GetItemID();
 				end
-				C_TradeSkillUI.CraftEnchant(recipeID, count, craftingReagentInfos, enchantItem:GetItemLocation(), applyConcentration);
+				transaction:CraftEnchant(recipeID, count);
 			else
-				C_TradeSkillUI.CraftRecipe(recipeID, count, craftingReagentInfos, recipeLevel, nil, applyConcentration);
+				transaction:CraftRecipe(recipeID, count, recipeLevel);
 			end
 		end
 	end
@@ -1043,11 +1023,15 @@ function ProfessionsCraftingPageMixin:Create()
 	local canContinue = true;
 	local transaction = self.SchematicForm:GetTransaction();
 	if transaction:IsRecraft() then
-		local itemIDs = TableUtil.Transform(transaction:CreateCraftingReagentInfoTbl(), function(craftingReagentInfo)
-			return craftingReagentInfo.itemID;
-		end);
+		local reagents = {};
+		for index, reagentInfo in ipairs(transaction:CreateCraftingReagentInfoTbl()) do
+			local reagent = reagentInfo.reagent;
+			if Professions.IsValidReagent(reagent) then
+				table.insert(reagents, reagent);
+			end
+		end
 
-		local warnings = C_TradeSkillUI.GetRecraftRemovalWarnings(transaction:GetRecraftAllocation(), itemIDs);
+		local warnings = C_TradeSkillUI.GetRecraftRemovalWarnings(transaction:GetRecraftAllocation(), reagents);
 		canContinue = #warnings == 0;
 		if not canContinue then
 			local referenceKey = self;

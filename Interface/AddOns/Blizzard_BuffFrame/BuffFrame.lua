@@ -881,6 +881,8 @@ function AuraButtonMixin:OnEnter()
 
 	if self.deadlyInstanceID then
 		GameTooltip:SetUnitDebuffByAuraInstanceID(PlayerFrame.unit, self.deadlyInstanceID, self:GetFilter());
+	elseif self.buttonInfo.auraInstanceID then
+		GameTooltip:SetUnitAuraByAuraInstanceID(PlayerFrame.unit, self.buttonInfo.auraInstanceID);
 	else
 		GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
 	end
@@ -949,6 +951,8 @@ function AuraButtonMixin:OnUpdate(elapsed)
 		if GameTooltip:IsOwned(self) then
 			if self.deadlyInstanceID then
 				GameTooltip:SetUnitDebuffByAuraInstanceID(PlayerFrame.unit, self.deadlyInstanceID, self:GetFilter());
+			elseif self.buttonInfo.auraInstanceID then
+				GameTooltip:SetUnitAuraByAuraInstanceID(PlayerFrame.unit, self.buttonInfo.auraInstanceID);
 			else
 				GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
 			end
@@ -1076,6 +1080,8 @@ function AuraButtonMixin:Update(buttonInfo)
 	if GameTooltip:IsOwned(self) then
 		if self.deadlyInstanceID then
 			GameTooltip:SetUnitDebuffByAuraInstanceID(self.unit, self.deadlyInstanceID, self:GetFilter());
+		elseif buttonInfo.auraInstanceID then
+			GameTooltip:SetUnitAuraByAuraInstanceID(PlayerFrame.unit, buttonInfo.auraInstanceID);
 		else
 			GameTooltip:SetUnitAura(self.unit, buttonInfo.index, self:GetFilter());
 		end

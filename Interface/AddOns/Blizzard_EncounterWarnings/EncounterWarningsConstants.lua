@@ -1,7 +1,3 @@
-EncounterWarningsConstants = {
-	DefaultMessageHoldTime = 10,
-};
-
 EncounterWarningsSystemSeverity = {
 	[Enum.EditModeEncounterEventsSystemIndices.CriticalWarnings] = Enum.EncounterEventSeverity.High,
 	[Enum.EditModeEncounterEventsSystemIndices.MediumWarnings] = Enum.EncounterEventSeverity.Medium,

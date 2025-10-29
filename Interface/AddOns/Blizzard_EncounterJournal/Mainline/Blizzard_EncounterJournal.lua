@@ -2379,6 +2379,7 @@ function EncounterJournal_SetFlagIcon(texture, index)
 	if atlasName ~= nil and C_Texture.GetAtlasExists(atlasName) then
 		local useAtlasSize = true;
 		texture:SetAtlas(atlasName, useAtlasSize);
+		texture:SetTexCoord(0, 1, 0, 1);
 	else
 		local iconSize = 32;
 		local columns = 256/iconSize;

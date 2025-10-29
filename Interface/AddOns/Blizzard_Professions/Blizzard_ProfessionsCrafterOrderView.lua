@@ -543,16 +543,17 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 
     local transaction = self.OrderDetails.SchematicForm.transaction;
     local recipeInfo = C_TradeSkillUI.GetRecipeInfo(self.order.spellID);
-    local reagentSlotToItemID = {};
+    local reagentSlotToReagent = {};
 
     if self:IsRecrafting() then
         local function AllocateModification(slotIndex, reagentSlotSchematic)
             local modification = transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-            if modification and modification.itemID > 0 then
-                local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-                transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+			if Professions.IsValidModification(modification) then
+				local reagent = modification.reagent;
+				local quantityRequired = reagentSlotSchematic:GetQuantityRequired(reagent);
+				transaction:OverwriteAllocation(slotIndex, reagent, quantityRequired);
 				self.reagentSlotProvidedByCustomer[slotIndex] = true;
-				reagentSlotToItemID[slotIndex] = modification.itemID;
+				reagentSlotToReagent[slotIndex] = reagent;
             end
         end
     
@@ -566,23 +567,24 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 	-- Don't re-use reagents for subsequent recrafts. When viewing the form after creating the item once,
 	-- the full reagent information will come from the modifications above, because we'll be looking at the
 	-- actual item.
-    if not self.order.isFulfillable then
-        for _, reagentInfo in ipairs(self.order.reagents) do
-            local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
+	if not self.order.isFulfillable then
+		for _, reagentInfo in ipairs(self.order.reagents) do
+			local slotIndex = reagentInfo.slotIndex;
+			local allocations = transaction:GetAllocations(slotIndex);
 			if allocations then
 				-- isBasicReagent check here to handle multiple allocations within the same slot (qualities)
-				if not self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] or not reagentInfo.isBasicReagent then
+				if not self.reagentSlotProvidedByCustomer[slotIndex] or not reagentInfo.isBasicReagent then
 					allocations:Clear();
-					self.reagentSlotProvidedByCustomer[reagentInfo.slotIndex] = true;
+					self.reagentSlotProvidedByCustomer[slotIndex] = true;
 				end
 				-- These allocations get cleared before sending the craft, but we allocate them for craft readiness validation
-				allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
-				reagentSlotToItemID[reagentInfo.slotIndex] = reagentInfo.reagent.itemID;
+				allocations:Allocate(reagentInfo.reagentInfo.reagent, reagentInfo.reagentInfo.quantity);
+				reagentSlotToReagent[slotIndex] = reagentInfo.reagentInfo.reagent;
 			else
 				assertsafe(false, "Crafting order reagents do not match recipe for spellID=%d", self.order.spellID);
 			end
-        end
-    end
+		end
+	end
 
 	if self:IsRecrafting() then
 		-- After the allocations above, strip any reagents that fail to meet prerequisites. This is a workaround for
@@ -592,17 +594,13 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 		for slotIndex, reagentSlotSchematic in ipairs(self.OrderDetails.SchematicForm.recipeSchematic.reagentSlotSchematics) do
             if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
 				-- Skip any slots where the existing modification was replaced by another customer provided slot.
-				local allocs = transaction:GetAllocations(slotIndex);
-				local alloc = allocs:SelectFirst();
-				if alloc then
-					local reagent = alloc:GetReagent();
-					local itemID = reagent.itemID;
-					if itemID and itemID > 0 and not transaction:AreAllRequirementsAllocatedByItemID(itemID) then
-						transaction:ClearAllocations(slotIndex);
-						transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
-						self.reagentSlotProvidedByCustomer[slotIndex] = nil;
-						reagentSlotToItemID[slotIndex] = nil;
-					end
+				local allocations = transaction:GetAllocations(slotIndex);
+				local allocation = allocations:GetFirstAllocation();
+				if allocation and (not transaction:AreDependentReagentsAllocated(allocation:GetReagent())) then
+					transaction:ClearAllocations(slotIndex);
+					transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
+					self.reagentSlotProvidedByCustomer[slotIndex] = nil;
+					reagentSlotToReagent[slotIndex] = nil;
 				end
             end
         end
@@ -640,26 +638,32 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
 
             if reagentType == Enum.CraftingReagentType.Modifying then
 				local modification = transaction:GetModification(slot:GetReagentSlotSchematic().dataSlotIndex);
-				if modification and modification.itemID > 0 then
-					slot:SetItem(Item:CreateFromItemID(modification.itemID));
+				if Professions.IsValidModification(modification) then
+					slot:SetReagent(modification.reagent);
 				end
+
                 local locked, lockedReason = Professions.GetReagentSlotStatus(slot:GetReagentSlotSchematic(), recipeInfo);
 
                 if providedByCustomer then
                     local continuableContainer = ContinuableContainer:Create();
-                    local item = Item:CreateFromItemID(reagentSlotToItemID[slot:GetSlotIndex()]);
-                    continuableContainer:AddContinuable(item);
-                    continuableContainer:ContinueOnLoad(function()
-                        slot:SetItem(item);
-                    end);
-					table.insert(self.asyncContainers, continuableContainer);
+					local reagent = reagentSlotToReagent[slot:GetSlotIndex()];
+					if reagent.itemID ~= nil then
+						local item = Item:CreateFromItemID(reagent.itemID);
+						continuableContainer:AddContinuable(item);
+						continuableContainer:ContinueOnLoad(function()
+							slot:SetReagent(reagent);
+						end);
+						table.insert(self.asyncContainers, continuableContainer);
+					elseif reagent.currencyID ~= nil then
+						slot:SetReagent(reagent);
+					end
 
-                    if locked then
-                        slot:SetOverrideNameColor(ERROR_COLOR);
-                        slot:SetColorOverlay(ERROR_COLOR);
-                        slot.Button.InputOverlay.LockedIcon:Show();
-                        self.hasOptionalReagentSlots = false;
-                    end
+					if locked then
+						slot:SetOverrideNameColor(ERROR_COLOR);
+						slot:SetColorOverlay(ERROR_COLOR);
+						slot.Button.InputOverlay.LockedIcon:Show();
+						self.hasOptionalReagentSlots = false;
+					end
                 end
 
                 if (not providedByCustomer) and (not locked) and slot:GetReagentSlotSchematic().orderSource == Enum.CraftingOrderReagentSource.Customer and not self:IsRecrafting() then
@@ -694,8 +698,8 @@ function ProfessionsCrafterOrderViewMixin:SchematicPostInit()
         end);
         self.OrderDetails.SchematicForm.recraftSlot.OutputSlot:SetScript("OnEnter", function(slot)
             GameTooltip:SetOwner(slot, "ANCHOR_RIGHT");
-            local reagents = transaction:CreateCraftingReagentInfoTbl();
-            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagents, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel(), self.OrderDetails.SchematicForm:GetOutputOverrideQualityID());
+            local reagentInfos = transaction:CreateCraftingReagentInfoTbl();
+            GameTooltip:SetRecipeResultItemForOrder(self.order.spellID, reagentInfos, self.order.orderID, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel(), self.OrderDetails.SchematicForm:GetOutputOverrideQualityID());
         end);
         self.OrderDetails.SchematicForm.recraftSlot.InputSlot:SetScript("OnMouseDown", nil);
     end
@@ -900,7 +904,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 	self.DeclineOrderDialog.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
 
     local isRecraft = self:IsRecrafting();
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, isRecraft);
+	local recipeSchematic = Professions.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
@@ -927,7 +931,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
             self.OrderDetails.FulfillmentForm.OrderCompleteText:SetPoint("LEFT", self.OrderDetails.FulfillmentForm.RecraftSlot, "RIGHT", -55, 10);
         else
             self.OrderDetails.FulfillmentForm.RecraftSlot:StopAnimations();
-            local schematic = C_TradeSkillUI.GetRecipeSchematic(order.spellID, isRecraft, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
+            local schematic = Professions.GetRecipeSchematic(order.spellID, isRecraft, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
             local icon = craftedItem:GetItemIcon();
             local itemLink = craftedItem:GetItemLink();
             local quality = craftedItem:GetItemQuality();

@@ -33,6 +33,22 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "GetDecorIcon",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "icon", Type = "fileID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDecorInstanceInfoForGUID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -45,6 +61,22 @@ local HousingDecorUI =
 			Returns =
 			{
 				{ Name = "info", Type = "HousingDecorInstanceInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDecorName",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -222,6 +254,7 @@ local HousingDecorUI =
 			Payload =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "decorID", Type = "number", Nilable = false },
 			},
 		},
 		{

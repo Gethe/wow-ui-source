@@ -1472,7 +1472,7 @@ end
 function EditModeManagerFrameMixin:CopyActiveLayoutToClipboard()
 	local activeLayoutInfo = self:GetActiveLayoutInfo();
 	CopyToClipboard(C_EditMode.ConvertLayoutInfoToString(activeLayoutInfo));
-	DEFAULT_CHAT_FRAME:AddMessage(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName), YELLOW_FONT_COLOR:GetRGB());
+	ChatFrameUtil.DisplaySystemMessageInPrimary(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName));
 end
 
 --[[

@@ -4,10 +4,8 @@
 		<Size y ="24"/>
 		<Frames>
 			<Frame parentKey="Icon">
-				<Size x="24"/>
+				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOP"/>
-					<Anchor point="BOTTOM"/>
 					<Anchor point="LEFT"/>
 				</Anchors>
 				<Layers>
@@ -42,12 +40,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString parentKey="Value" inherits="NumberFontNormal" justifyH="LEFT" text="PH - Value">
+						<FontString parentKey="Value" inherits="NumberFontNormal" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="RIGHT" x="-8"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" text="PH - Name">
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="LEFT" x="5"/>
 								<Anchor point="RIGHT" relativeKey="$parent.Value" x="-25"/>
@@ -57,5 +55,16 @@
 				</Layers>
 			</StatusBar>
 		</Frames>
+	</Button>
+
+	<Button name="DamageMeterSourceEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSourceEntryMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconUsesAtlas" value="true" type="boolean"/>
+		</KeyValues>
+	</Button>
+	<Button name="DamageMeterSpellEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSpellEntryMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconUsesAtlas" value="false" type="boolean"/>
+		</KeyValues>
 	</Button>
 </Ui>

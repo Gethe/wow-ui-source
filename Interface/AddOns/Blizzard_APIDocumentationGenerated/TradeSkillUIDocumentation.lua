@@ -238,6 +238,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "GetDependentReagents",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reagents", Type = "table", InnerType = "CraftingReagent", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEnchantItems",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -245,6 +260,7 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "recipeID", Type = "number", Nilable = false },
+				{ Name = "craftingReagents", Type = "table", InnerType = "CraftingReagentInfo", Nilable = true },
 			},
 
 			Returns =
@@ -569,21 +585,6 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "GetReagentRequirementItemIDs",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "itemID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetReagentSlotStatus",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -616,22 +617,6 @@ local TradeSkillUI =
 			Returns =
 			{
 				{ Name = "description", Type = "string", Nilable = false },
-			},
-		},
-		{
-			Name = "GetRecipeFixedReagentItemLink",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "recipeID", Type = "number", Nilable = false },
-				{ Name = "dataSlotIndex", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "link", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -717,7 +702,7 @@ local TradeSkillUI =
 			},
 		},
 		{
-			Name = "GetRecipeQualityReagentItemLink",
+			Name = "GetRecipeQualityReagentLink",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -803,7 +788,7 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "replacedItemIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "replacedReagents", Type = "table", InnerType = "CraftingReagent", Nilable = false },
 			},
 
 			Returns =
@@ -1066,7 +1051,7 @@ local TradeSkillUI =
 			Arguments =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "itemID", Type = "number", Nilable = false },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 			},
 
 			Returns =
@@ -1115,7 +1100,7 @@ local TradeSkillUI =
 
 			Arguments =
 			{
-				{ Name = "reagentItemID", Type = "number", Nilable = false },
+				{ Name = "reagent", Type = "CraftingReagent", Nilable = false },
 			},
 
 			Returns =

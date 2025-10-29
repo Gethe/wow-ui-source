@@ -131,6 +131,15 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "HasRoomPlacementBudget",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasBudget", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSelectedDoor",
 			Type = "Function",
 			Documentation = { "Returns true if a door component is currently selected" },

@@ -9,9 +9,11 @@ local OWNER_TYPE_TO_TEMPLATE = {
 NeighborhoodMapDataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin);
 
 function NeighborhoodMapDataProviderMixin:OnShow()
+	self:RegisterEvent("NEIGHBORHOOD_MAP_DATA_UPDATED");
 end
 
 function NeighborhoodMapDataProviderMixin:OnHide()
+	self:UnregisterEvent("NEIGHBORHOOD_MAP_DATA_UPDATED");
 
 end
 

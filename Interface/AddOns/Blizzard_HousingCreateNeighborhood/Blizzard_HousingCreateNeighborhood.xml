@@ -82,6 +82,7 @@
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 				<FontString parentKey="NeighborhoodInfoText" inherits="Game15Font_Shadow" justifyH="LEFT" text="">
+					<Size x="450"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodInfoLabel" relativePoint="BOTTOMLEFT" y="-8" x="5"/>
 					</Anchors>
@@ -189,6 +190,7 @@
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 				<FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="250"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodNameLabel" relativePoint="RIGHT" x="2"/>
 					</Anchors>

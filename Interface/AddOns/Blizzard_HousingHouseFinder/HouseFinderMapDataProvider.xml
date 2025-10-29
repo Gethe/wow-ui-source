@@ -1,5 +1,58 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="SelectedPlotTooltipTemplate" inherits="TooltipBorderedFrameTemplate" mixin="SelectedPlotTooltipMixin" virtual="true">
+		<Size x="150" y="74"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BORDER" textureSubLevel="3">
+				<Texture parentKey="Arrow" atlas="Tooltip-NineSlice-BottomArrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CornerIcon" atlas="housefinder_forsale-icon-circle">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOPLEFT" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="SystemFont_Shadow_Large" text="">
+					<Size y="15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-14"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="Game13FontShadow" text="">
+					<Size y="15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="FooterText" inherits="Game13FontShadow" text="">
+					<Size y="15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SubText" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SubText"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HouseFinderHighlightedPlotTooltip" inherits="SelectedPlotTooltipTemplate" frameStrata="TOOLTIP" parent="UIParent" hidden="true"/>
 	
 	<Button name="HouseFinderPlotForSalePinTemplate" hidden="true" enableMouse="true" mixin="HouseFinderPlotForSalePinMixin" virtual="true">
 		<Size x="42" y="42"/>

@@ -1010,27 +1010,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
-		-- Frame Width
+		-- Bar Height
 		{
-			setting = Enum.EditModeDamageMeterSetting.FrameWidth,
-			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_WIDTH,
+			setting = Enum.EditModeDamageMeterSetting.BarHeight,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_BAR_HEIGHT,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 300,
-			maxValue = 600,
-			stepSize = 1,
-			ConvertValue = ConvertValueDiffFromMin,
-			hideValue = true,
-			minText = NARROW,
-			maxText = WIDE,
-		},
-
-		-- Frame Height
-		{
-			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
-			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
-			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 150,
-			maxValue = 400,
+			minValue = 15,
+			maxValue = 40,
 			stepSize = 1,
 			ConvertValue = ConvertValueDiffFromMin,
 			hideValue = true,
@@ -1057,6 +1043,18 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			minValue = 50,
 			maxValue = 100,
 			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Text Size
+		{
+			setting = Enum.EditModeDamageMeterSetting.TextSize,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_TEXT_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 		},

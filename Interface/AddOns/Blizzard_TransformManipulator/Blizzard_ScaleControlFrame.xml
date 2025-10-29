@@ -1,23 +1,114 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Slider name="ScaleControlFrameTemplate" mixin="ScaleControlFrameMixin" inherits="MinimalSliderTemplate" ignoreParentScale="true" virtual="true">
-		<Size x="200" y="19"/>
+	<Button name="ScaleControlArrowButtonTemplate" mixin="ScaleControlArrowButtonMixin" virtual="true">
+		<!-- Expected keyValues:
+		<KeyValues>
+			<KeyValue key="incrementType" value="" type="global"/>
+			<KeyValue key="atlas" value="" type="string"/>
+		</KeyValues> -->
+		<Size x="13" y="13"/>
 		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true" alpha="0.5" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Text" inherits="SystemFont16_Shadow_ThickOutline">
-					<Size y="20"/>
-					<Anchors>
-						<Anchor point="TOP" relativePoint="BOTTOM" y="3"/>
-					</Anchors>
-				</FontString>
+				<Texture parentKey="HoverIcon" setAllPoints="true" alpha="0.8" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
+				<Texture parentKey="PushedIcon" setAllPoints="true" alpha="0.4" alphaMode="ADD" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false"/>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnMouseDown method="OnMouseDown"/>
+		</Scripts>
+	</Button>
+
+	<Slider name="ScaleControlFrameTemplate" mixin="ScaleControlFrameMixin" orientation="HORIZONTAL" enableMouse="true" ignoreParentScale="true" virtual="true">
+		<Size x="200" y="19"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="housing-advancedmode-scale-bar-bg" useAtlasSize="false" setAllPoints="true">
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Fill" atlas="housing-advancedmode-scale-bar-fill" useAtlasSize="false" setAllPoints="true" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				</Texture>
+				<MaskTexture parentKey="FillMask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" atlas="SquareMask">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Fill"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="FrameEdges" atlas="housing-advancedmode-scale-bar-frame" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="ThumbActive" atlas="housing-advancedmode-scale-handle-active" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<ThumbTexture parentKey="Thumb" atlas="housing-advancedmode-scale-handle-default">
+			<Size x="32" y="32"/>
+		</ThumbTexture>
+		<Frames>
+			<Frame parentKey="AmountFrame" enableMouseMotion="true">
+				<Size x="80" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<FontString parentKey="Text" inherits="Game13FontShadow">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color color="HOUSING_EXPERT_CONTROL_TEXT_COLOR" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="LeftButton" inherits="ScaleControlArrowButtonTemplate">
+						<KeyValues>
+							<KeyValue key="incrementType" value="Enum.HousingIncrementType.ScaleDown" type="global"/>
+							<KeyValue key="atlas" value="common-icon-backarrow" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="RightButton" inherits="ScaleControlArrowButtonTemplate">
+						<KeyValues>
+							<KeyValue key="incrementType" value="Enum.HousingIncrementType.ScaleUp" type="global"/>
+							<KeyValue key="atlas" value="common-icon-forwardarrow" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnValueChanged method="OnValueChanged"/>
+			<OnMinMaxChanged method="OnMinMaxChanged"/>
 		</Scripts>
 	</Slider>
 </Ui>

@@ -23,7 +23,7 @@ function NamePlatePreviewMixin:OnShow()
 			self.name:SetText(UNIT_NAMEPLATES_TARGET_NAME_PREVIEW);
 			self.name:SetShown(not self:IsSimplified());
 
-			if CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Legacy then
+			if CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Default then
 				self.name:SetVertexColor(1.0, 0.0, 0.0);
 			else
 				self.name:SetVertexColor(1.0, 1.0, 1.0);
@@ -514,7 +514,7 @@ local function Register()
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(Enum.NamePlateStyle.Default, UNIT_NAMEPLATES_STYLE_DEFAULT);
-			container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
+			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
 			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
 			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
 			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);

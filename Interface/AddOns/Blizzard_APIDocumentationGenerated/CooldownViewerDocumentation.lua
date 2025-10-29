@@ -48,6 +48,21 @@ local CooldownViewer =
 			},
 		},
 		{
+			Name = "GetValidAlertTypes",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "cooldownID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "validAlertTypes", Type = "table", InnerType = "CooldownViewerAlertEventType", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCooldownViewerAvailable",
 			Type = "Function",
 
@@ -103,6 +118,7 @@ local CooldownViewer =
 			Type = "Structure",
 			Fields =
 			{
+				{ Name = "cooldownID", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "overrideSpellID", Type = "number", Nilable = true },
 				{ Name = "overrideTooltipSpellID", Type = "number", Nilable = true },
@@ -112,6 +128,7 @@ local CooldownViewer =
 				{ Name = "charges", Type = "bool", Nilable = false },
 				{ Name = "isKnown", Type = "bool", Nilable = false },
 				{ Name = "flags", Type = "CooldownSetSpellFlags", Nilable = false },
+				{ Name = "category", Type = "CooldownViewerCategory", Nilable = false },
 			},
 		},
 	},

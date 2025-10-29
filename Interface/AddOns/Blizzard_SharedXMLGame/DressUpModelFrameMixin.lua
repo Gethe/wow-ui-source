@@ -50,7 +50,7 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 		rootDescription:CreateButton(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD, function()
 			local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
 			CopyToClipboard(slashCommand);
-			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE, YELLOW_FONT_COLOR:GetRGB());
+			ChatFrameUtil.DisplaySystemMessageInPrimary(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE);
 		end);
 	end);
 
@@ -357,7 +357,7 @@ local function ConvertInvTypeToSelectionKey(invType, invSlot)
 	if invType == "INVTYPE_2HWEAPON" or invType == "INVTYPE_RANGED" or invType == "INVTYPE_RANGEDRIGHT" then
 		return "SELECTIONTYPE_TWOHAND";
 	end
-	
+
 	if invType == "INVTYPE_WEAPONMAINHAND" then
 		return "SELECTIONTYPE_MAINHAND";
 	end
@@ -503,7 +503,7 @@ function DressUpFrameTransmogSetMixin:UpdateTransmogSlot(itemModifiedAppearanceI
 				DeselectItemByType(self.selectedItems, "SELECTIONTYPE_TWOHAND");
 			end
 
-			-- Needed for if the player ctrl click previews another one hander that is put into the offhand slot. 
+			-- Needed for if the player ctrl click previews another one hander that is put into the offhand slot.
 			-- I.e. on a rogue when the preview a new dagger outside of the set with this frame open
 			if selectionType == "SELECTIONTYPE_MAINHAND" and invSlot == INVSLOT_OFFHAND then
 				DeselectItemByType(self.selectedItems, "SELECTIONTYPE_OFFHAND");
@@ -540,7 +540,7 @@ function DressUpFrameTransmogSetMixin:UpdateTransmogSlot(itemModifiedAppearanceI
 					if isTwoHandWeapon and invSlot == INVSLOT_MAINHAND then
 						DeselectItemByType(self.selectedItems, "SELECTIONTYPE_MAINHAND");
 						DeselectItemByType(self.selectedItems, "SELECTIONTYPE_OFFHAND");
-						
+
 						if actor then
 							actor:UndressSlot(INVSLOT_OFFHAND);
 						end
@@ -572,7 +572,7 @@ function DressUpFrameTransmogSetMixin:Init()
 	end
 
 	self.modelScene = self:GetParent().ModelScene;
-	
+
 	self:Show();
 
 	self.selectedItems = {};
@@ -597,11 +597,11 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 	local tooltipLineTypes = { Enum.TooltipDataLineType.EquipSlot, };
 
 	local result = TooltipUtil.FindLinesFromGetter(tooltipLineTypes, "GetItemByID", setItem.itemID);
-	
+
 	setItem.name = C_Item.GetItemNameByID(setItem.itemID);
 	setItem.quality = C_Item.GetItemQualityByID(setItem.itemID);
 
-	-- These values might not be properly loaded at the first time this is called. 
+	-- These values might not be properly loaded at the first time this is called.
 	if setItem.name and setItem.quality and result and #result ~= 0 then
 		local itemIcon = C_Item.GetItemIconByID(setItem.itemID);
 		local selectionType = ConvertInvTypeToSelectionKey(setItem.invType, setItem.invSlot);
@@ -609,7 +609,7 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 		local _, canCollect = C_TransmogCollection.PlayerCanCollectSource(setItem.itemModifiedAppearanceID);
 		local elementData = {
 			 selected = false,
-			 itemName = setItem.name, 
+			 itemName = setItem.name,
 			 itemSlot = result[1],
 			 itemUsable = canCollect,
 			 itemSlotID = setItem.invSlot,
@@ -623,7 +623,7 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 		dataProvider:Insert(elementData);
 
 		local shouldUpdate = not self.selectedItems[selectionType];
-		if selectionType == "SELECTIONTYPE_TWOHAND" then 
+		if selectionType == "SELECTIONTYPE_TWOHAND" then
 			shouldUpdate = not self.selectedItems["SELECTIONTYPE_TWOHAND"] and not self.selectedItems["SELECTIONTYPE_MAINHAND"] and not self.selectedItems["SELECTIONTYPE_OFFHAND"];
 		end
 
@@ -677,7 +677,7 @@ function DressUpFrameTransmogSetMixin:UpdateSelectedAppearance(elementData)
 					actor:DressPlayerSlot(INVSLOT_MAINHAND);
 				end
 			end
-			
+
 			if isTwoHandWeapon then
 				actor:DressPlayerSlot(INVSLOT_OFFHAND);
 			end

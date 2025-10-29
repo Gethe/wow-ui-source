@@ -133,3 +133,15 @@ HousingExpertSubmodeRestrictionStrings = {
 	[Enum.HousingExpertSubmodeRestriction.NoHouseExteriorScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_HOUSE_EXTERIOR_SCALE,
 	[Enum.HousingExpertSubmodeRestriction.NoWMOScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_WMO_SCALE,
 };
+
+-- TODO: Add better static data definitions for these "exterior colors" so we have a bespoke source of localized string names
+-- Currently they just map to values in a loose ESS with dozens of unused entries
+HousingExteriorColorStrings = {
+	[8] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLUE, --Blue
+	[9] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BROWN, --Brown
+	[21] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_GREEN, --Green
+	[32] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_ORANGE, --Orange
+	[36] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_PURPLE, --Purple
+	[37] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_RED, --Red
+	[44] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_YELLOW, --Yellow
+};

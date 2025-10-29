@@ -63,9 +63,17 @@ function HousingCatalogFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CatalogWhileVisibleEvents);
 	EventRegistry:RegisterCallback("HousingCatalogEntry.OnInteract", function(owner, catalogEntry, button, isDrag)
 		if button == "LeftButton" and not isDrag then
-			PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
-			self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo);
-			self.PreviewFrame:Show();
+			if ContentTrackingUtil.IsTrackingModifierDown() then
+				if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID) then
+					C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID, Enum.ContentTrackingStopType.Manual);
+				else
+					C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID);
+				end
+			else
+				PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);
+				self.PreviewFrame:PreviewCatalogEntryInfo(catalogEntry.entryInfo);
+				self.PreviewFrame:Show();	
+			end
 		end
 	end, self);
 

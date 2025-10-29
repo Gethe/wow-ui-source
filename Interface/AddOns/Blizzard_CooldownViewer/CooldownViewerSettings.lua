@@ -317,6 +317,14 @@ do
 		local maxAlerts = layoutManager:GetMaxNumAlertsPerItem();
 		local status = layoutManager:GetAddAlertStatus(cooldownItem:GetCooldownID());
 
+		-- The layout manager doesn't really care about spellcasting info, so it doesn't
+		-- check which alert types can be added, that has to be checked by the UI that's about to add them
+		if status == Enum.CooldownLayoutStatus.Success then
+			if not cooldownItem:CanTriggerAnyAlertType() then
+				status = Enum.CooldownLayoutStatus.NoValidAlerts;
+			end
+		end
+
 		return numAlerts, maxAlerts, status;
 	end
 
@@ -1079,12 +1087,6 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 		local shareButton = rootDescription:CreateButton(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, function()
 			layoutManager:CopyActiveLayoutToClipboard();
 		end);
-		shareButton:SetEnabled(false);
-		shareButton:SetTooltip(function(tooltip, elementDescription)
-			GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_TO_CLIPBOARD);
-			GameTooltip_AddErrorLine(tooltip, "NYI: Copy layout to clipboard");
-		end);
-
 	end);
 end
 
@@ -1589,6 +1591,7 @@ local statusCodeToText =
 	[Enum.CooldownLayoutStatus.TooManyLayouts] = COOLDOWN_VIEWER_SETTINGS_ADD_ALERT_TOOLTIP_DISABLED_MAXED_LAYOUTS,
 	[Enum.CooldownLayoutStatus.AttemptToModifyDefaultLayoutWouldCreateTooManyLayouts] = COOLDOWN_VIEWER_SETTINGS_ERROR_TOO_MANY_LAYOUTS_TO_AUTO_MAKE_NEW_LAYOUT,
 	[Enum.CooldownLayoutStatus.TooManyAlerts] = COOLDOWN_VIEWER_SETTINGS_ADD_ALERT_TOOLTIP_DISABLED_TOO_MANY,
+	[Enum.CooldownLayoutStatus.NoValidAlerts] = COOLDOWN_VIEWER_SETTINGS_ADD_ALERT_TOOLTIP_DISABLED_NO_VALID,
 }
 
 local actionCodeToText =

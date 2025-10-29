@@ -16,6 +16,22 @@ local function HasSavedWindowDataList()
 	return DamageMeterPerCharacterSettings and DamageMeterPerCharacterSettings.windowDataList and #DamageMeterPerCharacterSettings.windowDataList > 0;
 end
 
+local function IsSavedWindowDataValid(savedWindowData)
+	if savedWindowData == nil then
+		return false;
+	end
+
+	if savedWindowData.trackedStat == nil then
+		return false;
+	end
+
+	if type(savedWindowData.trackedStat) ~= "number" then
+		return false;
+	end
+
+	return true;
+end
+
 local function AddToSavedWindowDataList(windowData)
 	-- Saved window data and actual window data aren't identical structures.
 	local savedWindowData = {
@@ -26,9 +42,7 @@ local function AddToSavedWindowDataList(windowData)
 	table.insert(DamageMeterPerCharacterSettings.windowDataList, savedWindowData);
 end
 
-DamageMeterMixin = {
-	windowDataList = {};
-};
+DamageMeterMixin = {};
 
 function DamageMeterMixin:OnLoad()
 	EditModeCooldownViewerSystemMixin.OnSystemLoad(self);
@@ -38,6 +52,8 @@ function DamageMeterMixin:OnLoad()
 
 	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
+
+	self.windowDataList = {};
 
 	-- Recreate all previously open windows and their respective tracked stats.
 	-- Any windows that were previously moved or resized will be positioned when the
@@ -119,16 +135,33 @@ function DamageMeterMixin:UpdateShownState()
 end
 
 function DamageMeterMixin:RefreshLayout()
-	local windowDataList = self:GetWindowDataList();
-	for i, windowData in ipairs(windowDataList) do
-		if windowData.frame then
-			windowData.frame:RefreshLayout();
-		end
-	end
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:RefreshLayout(); end);
 end
 
 function DamageMeterMixin:GetWindowFrame(index)
 	return self.windowDataList and self.windowDataList[index] and self.windowDataList[index].frame or nil;
+end
+
+function DamageMeterMixin:EnumerateWindowFrames()
+	local function GetNextWindowFrame(self_, index)
+		while index < #self.windowDataList do
+			index = index + 1;
+			local window = self_:GetWindowFrame(index);
+
+			if window ~= nil then
+				return index, window;
+			end
+		end
+	end;
+
+	local initialIndex = 0;
+	return GetNextWindowFrame, self, initialIndex;
+end
+
+function DamageMeterMixin:ForEachWindowFrame(func, ...)
+	for _index, windowFrame in self:EnumerateWindowFrames() do
+		func(windowFrame, ...);
+	end
 end
 
 function DamageMeterMixin:GetPrimaryWindowFrame()
@@ -142,12 +175,11 @@ end
 function DamageMeterMixin:GetCurrentWindowFrameCount()
 	local currentCount = 0;
 
-	local windowDataList = self:GetWindowDataList();
-	for i, windowData in ipairs(windowDataList) do
-		if windowData.frame and windowData.frame:IsShown() then
+	self:ForEachWindowFrame(function(windowFrame)
+		if windowFrame:IsShown() then
 			currentCount = currentCount + 1;
 		end
-	end
+	end);
 
 	return currentCount;
 end
@@ -171,6 +203,7 @@ function DamageMeterMixin:SetupWindowFrame(windowData, windowIndex)
 	local windowFrame = windowData.frame or CreateFrame("FRAME", "DamageMeterWindow" .. windowIndex, self, "DamageMeterWindowTemplate");
 	windowFrame:SetDamageMeterOwner(self, windowIndex);
 	windowFrame:SetTrackedStat(windowData.trackedStat);
+	windowFrame:SetUseClassColor(self:ShouldUseClassColor());
 
 	-- Give the window initial positioning that may be overwritten by the saved frame position cache when it's loaded.
 	windowFrame:ClearAllPoints();
@@ -196,17 +229,17 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 	local maxWindowFrameCount = self:GetMaxWindowFrameCount();
 	for i = 1, maxWindowFrameCount do
 		local savedWindowData = savedWindowDataList[i];
-		if savedWindowData == nil then
-			break;
-		end
 
-		local windowData = {
-			trackedStat = savedWindowData.trackedStat;
-		};
-		table.insert(self.windowDataList, windowData);
+		if IsSavedWindowDataValid(savedWindowData) == true then
+			local windowData = {
+				trackedStat = savedWindowData.trackedStat;
+			};
 
-		if savedWindowData.shown then
-			self:SetupWindowFrame(windowData, i);
+			table.insert(self.windowDataList, windowData);
+
+			if savedWindowData.shown then
+				self:SetupWindowFrame(windowData, i);
+			end
 		end
 	end
 end
@@ -224,7 +257,7 @@ function DamageMeterMixin:ShowNewWindowFrame()
 		DamageMeterPerCharacterSettings.windowDataList[windowIndex].shown = true;
 	else
 		windowData = {
-			trackedStat = "Damage Done";
+			trackedStat = Enum.DamageMeterType.DamageDone;
 		};
 		table.insert(self.windowDataList, windowData );
 
@@ -258,12 +291,7 @@ end
 
 function DamageMeterMixin:HideAllWindowFrames()
 	-- Hides all window frames except for the primary one, which can't be hidden.
-	local windowDataList = self:GetWindowDataList();
-	for i, windowData in ipairs(windowDataList) do
-		if windowDataList[i] and windowDataList[i].frame then
-			self:HideWindowFrame(windowDataList[i].frame);
-		end
-	end
+	self:ForEachWindowFrame(function(windowFrame) self:HideWindowFrame(windowFrame); end);
 end
 
 function DamageMeterMixin:SetWindowFrameTrackedStat(windowFrame, trackedStat)
@@ -280,4 +308,59 @@ function DamageMeterMixin:GetWindowFrameTrackedStat(windowFrame)
 	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
 
 	return self.windowDataList[windowFrameIndex].trackedStat;
+end
+
+function DamageMeterMixin:OnUseClassColorChanged(useClassColor)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetUseClassColor(useClassColor); end);
+end
+
+function DamageMeterMixin:ShouldUseClassColor()
+	return self.useClassColor == true;
+end
+
+function DamageMeterMixin:SetUseClassColor(useClassColor)
+	useClassColor = (useClassColor == true);
+
+	if self.useClassColor ~= useClassColor then
+		self.useClassColor = useClassColor;
+		self:OnUseClassColorChanged(useClassColor);
+	end
+end
+
+function DamageMeterMixin:OnBarHeightChanged(barHeight)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetBarHeight(barHeight); end);
+end
+
+function DamageMeterMixin:GetBarHeight()
+	return self.barHeight or DAMAGE_METER_DEFAULT_BAR_HEIGHT;
+end
+
+function DamageMeterMixin:SetBarHeight(barHeight)
+	if not ApproximatelyEqual(self:GetBarHeight(), barHeight) then
+		self.barHeight = barHeight;
+		self:OnBarHeightChanged(barHeight);
+	end
+end
+
+function DamageMeterMixin:OnTextScaleChanged(textScale)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetTextScale(textScale); end);
+end
+
+function DamageMeterMixin:GetTextScale()
+	return self.textScale or 1;
+end
+
+function DamageMeterMixin:SetTextScale(textScale)
+	if not ApproximatelyEqual(self:GetTextScale(), textScale) then
+		self.textScale = textScale;
+		self:OnTextScaleChanged(textScale);
+	end
+end
+
+function DamageMeterMixin:GetTextSize()
+	return self:GetTextScale() / DAMAGE_METER_TEXT_SIZE_TO_SCALE_MULTIPLIER;
+end
+
+function DamageMeterMixin:SetTextSize(textSize)
+	self:SetTextScale(textSize * DAMAGE_METER_TEXT_SIZE_TO_SCALE_MULTIPLIER);
 end
