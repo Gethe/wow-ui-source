@@ -69,7 +69,7 @@
 								<KeyValue key="expand" value="true" type="boolean"/>
 							</KeyValues>
 						</FontString>
-						<FontString parentKey="CollectionBonus" inherits="GameFontNormal" justifyH="LEFT">
+						<FontString parentKey="CollectionBonus" inherits="GameFontHighlight" text="HOUSING_DECOR_FIRST_ACQUISITION_AVAILABLE" justifyH="LEFT" enableMouseMotion="true">
 							<Size y="0"/>
 							<KeyValues>
 								<KeyValue key="layoutIndex" value="2" type="number"/>

@@ -61,18 +61,17 @@ end
 HouseEditorButtonMixin = {};
 
 function HouseEditorButtonMixin:CheckEnabled()
-	local disabledTooltip = nil;
 	local availabilityResult = C_HouseEditor.GetHouseEditorAvailability();
-	local canActivate = availabilityResult == Enum.HousingResult.Success;
+	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
 	if not canActivate then
-		local errorText = HousingResultToErrorText[availabilityResult];
 		if errorText then
-			disabledTooltip = HOUSING_CONTROLS_EDITOR_UNAVAILABLE_FMT:format(errorText);
+			errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE_FMT:format(errorText);
 		else
-			disabledTooltip = HOUSING_CONTROLS_EDITOR_UNAVAILABLE;
+			errorText = HOUSING_CONTROLS_EDITOR_UNAVAILABLE;
 		end
 	end
-	return canActivate, disabledTooltip;
+
+	return canActivate, errorText;
 end
 
 function HouseEditorButtonMixin:IsActive()
@@ -164,6 +163,17 @@ function HouseSettingsButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
-	return true; --whenever house controls are shown this should be enabled?
-    --TODO: in the future when non-owners can edit a house, we need to check for ownership
+	-- TODO: in the future when non-owners can edit a house, we need to check for ownership properly.
+	-- For now we're just going to assume the same availability applies.
+	local availabilityResult = C_HouseEditor.GetHouseEditorAvailability();
+	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
+	if not canActivate then
+		if errorText then
+			errorText = HOUSING_CONTROLS_SETTINGS_UNAVAILABLE_FMT:format(errorText);
+		else
+			errorText = HOUSING_CONTROLS_SETTINGS_UNAVAILABLE;
+		end
+	end
+
+	return canActivate, errorText;
 end

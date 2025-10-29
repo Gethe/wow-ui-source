@@ -8,40 +8,28 @@ function HousingModelPreviewMixin:OnLoad()
 	self.ModelSceneControls:SetModelScene(self.ModelScene);
 	self.TextContainer.fixedWidth = self.TextContainer:GetWidth();
 
-	self.NameContainer.Name:SetScript("OnEnter", function()
-		-- If name text is truncated, show the full name on hovering it
-		if self.NameContainer.Name:IsTruncated() then
-			GameTooltip:SetOwner(self.NameContainer.Name, "ANCHOR_CURSOR", 0, 0);
-			local wrap = false;
-			GameTooltip_SetTitle(GameTooltip, self.catalogEntryInfo.name, nil, wrap);
-			GameTooltip:Show();
-		end
-	end);
-	self.NameContainer.Name:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	self:SetupTextTooltip(self.NameContainer.Name, 
+		function(tooltip) 
+			local wrap = false; 
+			GameTooltip_SetTitle(tooltip, self.catalogEntryInfo.name, nil, wrap); 
+		end,
+		function() return self.NameContainer.Name:IsTruncated(); end,
+		"ANCHOR_CURSOR");
 
-	self.NameContainer.PlacementCost:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self.NameContainer.PlacementCost, "ANCHOR_RIGHT", 0, 0);
-		GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DECOR_PLACEMENT_COST_TOOLTIP);
-		GameTooltip:Show();
-	end);
-	self.NameContainer.PlacementCost:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	self:SetupTextTooltip(self.NameContainer.PlacementCost, 
+		function(tooltip) 
+			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PLACEMENT_COST_TOOLTIP);
+		end);
 
-	self.TextContainer.NumOwned:SetScript("OnEnter", function()
-		if self.catalogEntryInfo then
-			local ownedText = HOUSING_DECOR_OWNED_ICON_TOOLTIP:format(self.catalogEntryInfo.numPlaced, self.catalogEntryInfo.numStored);
-			GameTooltip:SetOwner(self.TextContainer.NumOwned, "ANCHOR_RIGHT", 0, 0);
-			GameTooltip_AddHighlightLine(GameTooltip, ownedText);
-			GameTooltip:Show();
-		end
-		
-	end);
-	self.TextContainer.NumOwned:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	self:SetupTextTooltip(self.TextContainer.CollectionBonus, 
+		function(tooltip) 
+			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_FIRST_ACQUISITION_FORMAT:format(self.catalogEntryInfo.firstAcquisitionBonus));
+		end);
+
+	self:SetupTextTooltip(self.TextContainer.NumOwned, 
+		function(tooltip) 
+			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_OWNED_ICON_TOOLTIP:format(self.catalogEntryInfo.numPlaced, self.catalogEntryInfo.numStored));
+		end);
 end
 
 function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
@@ -68,15 +56,14 @@ function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
 		self.ModelSceneControls:Hide();
 		self.PreviewUnavailableText:Show();
 	end
-		
+	
 	self.NameContainer.Name:SetText(catalogEntryInfo.name);
 	self.NameContainer.PlacementCost:SetText(HOUSING_DECOR_PLACEMENT_COST_FORMAT:format(catalogEntryInfo.placementCost));
 	self.NameContainer:MarkDirty();
 
 	self:SetTextOrHide(self.TextContainer.SourceInfo, catalogEntryInfo.sourceText);
 
-	local bonusText = catalogEntryInfo.firstAcquisitionBonus > 0 and HOUSING_DECOR_FIRST_ACQUISITION_FORMAT:format(catalogEntryInfo.firstAcquisitionBonus) or nil;
-	self:SetTextOrHide(self.TextContainer.CollectionBonus, bonusText);
+	self.TextContainer.CollectionBonus:SetShown(catalogEntryInfo.firstAcquisitionBonus > 0);
 
 	local totalOwned = catalogEntryInfo.numPlaced + catalogEntryInfo.numStored;
 	local totalOwnedText = totalOwned > 0 and HOUSING_DECOR_OWNED_ICON_FMT:format(totalOwned) or nil;
@@ -94,6 +81,24 @@ function HousingModelPreviewMixin:ClearPreviewData()
 	end
 end
 
+function HousingModelPreviewMixin:HasValidData()
+	return self.catalogEntryInfo ~= nil;
+end
+
+function HousingModelPreviewMixin:SetupTextTooltip(fontString, textSetFunc, shouldShowFunc, overrideAnchor)
+	fontString:SetScript("OnEnter", function()
+		-- If have data, and conditional check is nil or passing
+		if self:HasValidData() and ((not shouldShowFunc) or (shouldShowFunc())) then
+			GameTooltip:SetOwner(fontString, overrideAnchor or "ANCHOR_RIGHT", 0, 0);
+			textSetFunc(GameTooltip);
+			GameTooltip:Show();
+		end
+	end);
+	fontString:SetScript("OnLeave", function()
+		GameTooltip:Hide();
+	end);
+end
+
 function HousingModelPreviewMixin:SetTextOrHide(fontString, text)
 	if text and text ~= "" then
 		fontString:SetText(text);
@@ -102,3 +107,4 @@ function HousingModelPreviewMixin:SetTextOrHide(fontString, text)
 		fontString:Hide();
 	end
 end
+

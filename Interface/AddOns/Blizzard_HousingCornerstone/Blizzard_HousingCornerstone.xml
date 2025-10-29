@@ -103,7 +103,8 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" text="neighborhood name here">
+				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="200"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="5"/>
 					</Anchors>
@@ -114,7 +115,8 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="BOTTOMLEFT" x="10" y="-8"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NeighborhoodLocationText" inherits="Game13FontShadow" text="neighborhood map here">
+				<FontString parentKey="NeighborhoodLocationText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood map here">
+					<Size x="220"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLocationLabel" relativePoint="RIGHT" x="5"/>
 					</Anchors>
@@ -136,7 +138,8 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodTypeLabel" relativePoint="BOTTOMLEFT" y="-8"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NeighborhoodOwnerText" inherits="Game13FontShadow" text="neighborhood owner here">
+				<FontString parentKey="NeighborhoodOwnerText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood owner here">
+					<Size x="210"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodOwnerLabel" relativePoint="RIGHT" x="5"/>
 					</Anchors>
@@ -144,6 +147,7 @@
 				</FontString>
 				
 				<FontString parentKey="ErrorText" inherits="Game13FontShadow" text="">
+					<Size x="300"/>
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="94"/>
 					</Anchors>
@@ -230,6 +234,7 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<FontString parentKey="HouseNameText" inherits="Game22Font" text="House Name">
+					<Size x="300" y="22"/>
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.Header" x="0" y="6"/>
 					</Anchors>
@@ -261,7 +266,8 @@
 						<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" text="neighborhood name here">
+				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="180"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="5"/>
 					</Anchors>

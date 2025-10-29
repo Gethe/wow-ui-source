@@ -33,7 +33,7 @@
 					</Anchors>
 					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
-				<Texture parentKey="SuggestionIcon" atlas="housing-invite-icon" hidden="true">
+				<Texture parentKey="SuggestionIcon" atlas="housing-neighborhood-invite-icon" hidden="true">
 					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.NeighborhoodName" relativePoint="TOPLEFT" x="-3" y="2"/>
@@ -96,11 +96,11 @@
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
-		<HighlightTexture atlas="Options_List_Active" alphaMode="ADD"/>
+		<HighlightTexture atlas="housefinder_neighborhood-list-item-highlight"/>
 	</Button>
 
 	<Frame name="HouseFinderFrame" mixin="HouseFinderFrameMixin" inherits="PortraitFrameTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
-		<Size x="976" y="496"/>
+		<Size x="954" y="490"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
@@ -109,7 +109,7 @@
 		</Scripts>
 		<Frames>
 			<Frame parentKey="NeighborhoodListFrame" >
-				<Size x="256" y="479"/>
+				<Size x="256" y="470"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="1" y="-16"/>
 				</Anchors>
@@ -390,8 +390,8 @@
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
-						<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
+						<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+							<Size x="120"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="3"/>
 							</Anchors>
@@ -403,8 +403,8 @@
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
-						<FontString parentKey="LocationText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
+						<FontString parentKey="LocationText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+							<Size x="150"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="3"/>
 							</Anchors>
@@ -429,8 +429,8 @@
 							</Anchors>
 							<Color r="1.0" g="0.82" b="0"/>
 						</FontString>
-						<FontString parentKey="OwnerText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
+						<FontString parentKey="OwnerText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+							<Size x="130"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.OwnerLabel" relativePoint="RIGHT" x="3"/>
 							</Anchors>
@@ -493,9 +493,9 @@
 			</Frame>
 			
 			<Frame parentKey="HouseFinderMapCanvasFrame" inherits="MapCanvasFrameTemplate" enableMouse="true">
+				<Size x="698" y="465"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodListFrame" relativePoint="TOPRIGHT" x="4" y="-9"/>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodListFrame" relativePoint="TOPRIGHT" x="-4" y="-6"/>
 				</Anchors>
 				<Frames>
 					<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">
@@ -545,62 +545,14 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+						<Texture parentKey="Border" atlas="housing-simple-wood-frame" setAllPoints="true"/>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="SelectedPlotTooltip" inherits="TooltipBorderedFrameTemplate" mixin="SelectedPlotTooltipMixin" hidden="true">
-				<Size x="150" y="60"/>
+			<Frame parentKey="SelectedPlotTooltip" frameStrata="TOOLTIP" inherits="SelectedPlotTooltipTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-8"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-				<Layers>
-					<Layer level="BORDER" textureSubLevel="3">
-						<Texture parentKey="Arrow" atlas="Tooltip-NineSlice-BottomArrow" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" y="7"/>
-							</Anchors>
-						</Texture>
-						<Texture parentKey="CornerIcon" atlas="housefinder_forsale-icon-circle">
-							<Size x="32" y="32"/>
-							<Anchors>
-								<Anchor point="CENTER" relativePoint="TOPLEFT" x="2" y="-2"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="HeaderText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="10" y="-10"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="SubText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.HeaderText"  relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="FooterText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.SubText"  relativePoint="BOTTOMLEFT"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.SubText"/>
-						</Anchors>
-					</Frame>
-				</Frames>
 			</Frame>
 			<Frame parentKey="LoadingSpinnerMap" inherits="SpinnerTemplate" frameLevel="2000">
 				<Size x="60" y="60"/>

@@ -3,12 +3,9 @@
 
 	<!-- Base choice entry for non-menu-system use -->
 	<Button name="HouseExteriorOptionElementTemplate" mixin="HouseExteriorOptionElementMixin" inherits="CustomizationElementTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="expand" value="true" type="boolean"/>
-			<KeyValue key="widthPadding" value="14" type="number"/>
-			<KeyValue key="overrideDetailsWidth" value="180" type="number"/>
-		</KeyValues>
 		<Scripts>
+			<OnLoad method="ExteriorEntryOnLoad" inherit="prepend"/>
+			<OnClick method="OnClick"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 		</Scripts>
@@ -64,38 +61,80 @@
 	</Frame>
 
 	<!-- List of non-core fixture options -->
-	<Frame name="HouseExteriorFixtureOptionListTemplate" mixin="HouseExteriorFixtureOptionListMixin" inherits="VerticalLayoutFrame" virtual="true">
+	<Frame name="HouseExteriorFixtureOptionListTemplate" mixin="HouseExteriorFixtureOptionListMixin" virtual="true">
 		<KeyValues>
-			<KeyValue key="minimumWidth" value="230" type="number"/>
-			<KeyValue key="leftPadding" value="20" type="number"/>
-			<KeyValue key="rightPadding" value="20" type="number"/>
-			<KeyValue key="topPadding" value="10" type="number"/>
-			<KeyValue key="bottomPadding" value="20" type="number"/>
-			<KeyValue key="spacing" value="3" type="number"/>
-			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="horizontalSpacing" value="5" type="number"/>
+			<KeyValue key="verticalSpacing" value="10" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
 		</KeyValues>
+		<Size x="400" y="400"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="common-dropdown-bg" setAllPoints="true" alpha="0.6">
-					<KeyValues>
-						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-					</KeyValues>
+				<Texture parentKey="Background" atlas="housing-basic-container">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-10" y="10"/>
 						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Header" atlas="housing-basic-container-woodheader">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header" x="0" y="0"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="RemoveButton" inherits="HouseExteriorOptionElementTemplate" virtual="true">
-				<KeyValues>
-					<KeyValue key="layoutIndex" value="1" type="number"/>
-				</KeyValues>
+			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the frame -->
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
 			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<KeyValues>
+					<!-- How many rows are scrolled past at once via scroll wheel -->
+					<KeyValue key="wheelPanScalar" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="10"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+				</Anchors>
+			</EventFrame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

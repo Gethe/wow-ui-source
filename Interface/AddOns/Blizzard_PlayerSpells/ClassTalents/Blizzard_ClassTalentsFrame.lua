@@ -728,13 +728,18 @@ end
 
 function ClassTalentsFrameMixin:RefreshCurrencyDisplay()
 	local classCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
-	local className = self:GetClassName();
-	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
 	self.ClassCurrencyDisplay:SetAmount(classCurrencyInfo and classCurrencyInfo.quantity or 0);
+	local className = self:GetClassName();
+	if className then
+		self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
+	end
 
 	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
-	self.SpecCurrencyDisplay:SetPointTypeText(string.upper(self:GetSpecName()));
 	self.SpecCurrencyDisplay:SetAmount(specCurrencyInfo and specCurrencyInfo.quantity or 0);
+	local specName = self:GetSpecName();
+	if specName then
+		self.SpecCurrencyDisplay:SetPointTypeText(string.upper(specName));
+	end
 
 	self.HeroTalentsContainer:UpdateHeroTalentCurrency();
 end

@@ -88,7 +88,7 @@ function HousingLayoutDoorPinMixin:Update()
 
 	local pin = self:GetPin();
 	local isOccupied = pin:IsOccupiedDoor();
-	local isAtBudgetMax = C_HousingLayout.GetNumActiveRooms() >= C_HousingLayout.GetRoomPlacementBudget();
+	local isAtBudgetMax = C_HousingLayout.HasRoomPlacementBudget() and C_HousingLayout.GetSpentPlacementBudget() >= C_HousingLayout.GetRoomPlacementBudget();
 	local isEnabled = not isOccupied and not isAtBudgetMax;
 	self:SetEnabled(isEnabled);
 	self.disabledTooltip = isOccupied and HOUSING_LAYOUT_OCCUPIED_DOOR_TOOLTIP or isAtBudgetMax and ERR_PLACED_ROOM_LIMIT_REACHED or nil;

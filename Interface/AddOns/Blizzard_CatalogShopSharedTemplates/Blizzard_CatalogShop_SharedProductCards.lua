@@ -147,7 +147,7 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 	elseif productType == CatalogShopConstants.ProductType.Pet then
 		CatalogShopUtil.SetupModelSceneForPets(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 		mainActor = self.ModelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Pet);
-	elseif productType == CatalogShopConstants.ProductType.Transmog then		
+	elseif productType == CatalogShopConstants.ProductType.Transmog then
 		CatalogShopUtil.SetupModelSceneForTransmogs(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 	elseif productType == CatalogShopConstants.ProductType.Decor then
 		CatalogShopUtil.SetupModelSceneForDecor(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
@@ -231,8 +231,9 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	container.Name:SetText(self.productInfo.name);
 	local isFullyOwned = self.productInfo.isFullyOwned;
 	container.PurchasedIcon:SetShown(isFullyOwned);
-	container.DiscountSaleTag:SetShown(not isFullyOwned);
-	container.DiscountAmount:SetShown(not isFullyOwned);
+	local discountPercentage = self.productInfo.discountPercentage or 0;
+	container.DiscountSaleTag:SetShown(not isFullyOwned and discountPercentage > 0);
+	container.DiscountAmount:SetShown(not isFullyOwned and discountPercentage > 0);
 end
 
 --------------------------------------------------
@@ -293,7 +294,6 @@ function WideCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetText(self.productInfo.price);
 
 		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
-
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
 		container.Strikethrough:Show();
@@ -312,7 +312,7 @@ function WideCatalogShopProductCardMixin:Layout()
 
 		container.DiscountPrice:Hide();
 		container.OriginalPrice:Hide();
-		container.Strikethrough:Hide();				
+		container.Strikethrough:Hide();
 	end
 
 	local background = self.BackgroundContainer.Background;

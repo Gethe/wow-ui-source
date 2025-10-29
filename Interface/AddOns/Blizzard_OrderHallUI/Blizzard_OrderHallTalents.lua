@@ -526,7 +526,17 @@ function OrderHallTalentFrameMixin:OnEvent(event, ...)
 	elseif (event == "GARRISON_TALENT_NPC_CLOSED") then
 		self.CloseButton:Click();
 	elseif event == "SPELL_TEXT_UPDATE" then
-		self:RefreshAllData();
+		local spellID = ...;
+		for talentFrame in self.buttonPool:EnumerateActive() do
+			if talentFrame.talent and talentFrame.talent.perkSpellID == spellID then
+				if talentFrame.tooltip then
+					talentFrame:Refresh();
+				else
+					talentFrame.needsDataRefresh = true;
+				end
+				break;
+			end
+		end
 	end
 end
 
@@ -1077,6 +1087,11 @@ function GarrisonTalentButtonMixin:SetBorder(borderAtlas)
 end
 
 function GarrisonTalentButtonMixin:OnEnter()
+	if self.needsDataRefresh then
+		self.needsDataRefresh = false;
+		self.talent = C_Garrison.GetTalentInfo(self.talent.id);
+	end
+
 	local researchingTalentID = self:GetParent():GetResearchingTalentID();
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -1237,6 +1252,7 @@ function GarrisonTalentButtonMixin:OnFramePoolReset()
 	self.Icon:SetDesaturated(false);
 	self.wasDesaturated = false;
 	self.talent = nil;
+	self.needsDataRefresh = nil;
 	self.tooltip = nil;
 	if (self.timer) then
 		self.timer:Cancel();

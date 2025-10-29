@@ -109,18 +109,17 @@ function HouseEditorModeButtonMixin:CheckEnabled()
 		return false;
 	end
 
-	local disabledTooltip = nil;
 	local availabilityResult = C_HouseEditor.GetHouseEditorModeAvailability(self.editorMode);
-	local canActivate = availabilityResult == Enum.HousingResult.Success;
+	local canActivate, errorText = HousingControlsUtil.CanActivateHousingControls(availabilityResult);
 	if not canActivate then
-		local errorText = HousingResultToErrorText[availabilityResult];
 		if errorText then
-			disabledTooltip = HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, errorText);
+			errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_ERROR_FMT:format(self.modeName, errorText);
 		else
-			disabledTooltip = HOUSE_EDITOR_MODE_UNAVAILABLE_FMT:format(self.modeName);
+			errorText = HOUSE_EDITOR_MODE_UNAVAILABLE_FMT:format(self.modeName);
 		end
 	end
-	return canActivate, disabledTooltip;
+
+	return canActivate, errorText;
 end
 
 function HouseEditorModeButtonMixin:EnterMode()

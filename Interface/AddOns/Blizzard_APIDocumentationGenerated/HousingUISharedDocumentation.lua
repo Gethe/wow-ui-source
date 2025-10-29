@@ -29,6 +29,20 @@ local HousingUIShared =
 			},
 		},
 		{
+			Name = "HouseVisitType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Unknown", Type = "HouseVisitType", EnumValue = 0 },
+				{ Name = "Friend", Type = "HouseVisitType", EnumValue = 1 },
+				{ Name = "Guild", Type = "HouseVisitType", EnumValue = 2 },
+				{ Name = "Party", Type = "HouseVisitType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "HouseInfo",
 			Type = "Structure",
 			Fields =

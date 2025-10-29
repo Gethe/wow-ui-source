@@ -4280,7 +4280,8 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			if memberInfo.isLeaver then
 				leaverString = " "..CreateAtlasMarkup("groupfinder-icon-leaver", 12, 12, 0, 0);
 			end
-			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
+			local specName = memberInfo.specLocalized or "";
+			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, specName)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));

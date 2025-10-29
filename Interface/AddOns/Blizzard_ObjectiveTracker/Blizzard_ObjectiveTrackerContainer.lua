@@ -20,7 +20,7 @@ function ObjectiveTrackerContainerMixin:OnLoad()
 end
 
 function ObjectiveTrackerContainerMixin:OnSizeChanged()
-	self:Update();
+	self:MarkDirty();
 end
 
 function ObjectiveTrackerContainerMixin:OnShow()

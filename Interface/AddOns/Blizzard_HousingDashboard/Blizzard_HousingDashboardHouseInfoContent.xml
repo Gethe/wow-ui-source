@@ -11,13 +11,14 @@
 			</Frame>
 
 			<DropdownButton parentKey="HouseDropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
+				<Size x="200" y="25"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x= "-20" y="-30"/>
+					<Anchor point="TOPRIGHT" x="-10" y="-28"/>
 				</Anchors>
 			</DropdownButton>
 
 			<Button parentKey="HouseFinderButton" hidden="true" inherits="UIPanelButtonTemplate">
-				<Size x="116" y="32"/>
+				<Size x="116" y="22"/>
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.HouseDropdown" relativePoint="LEFT" x="-10"/>
 				</Anchors>

@@ -3,6 +3,25 @@ local HousingCatalogConstants =
 	Tables =
 	{
 		{
+			Name = "HousingCatalogEntryModelScenePresets",
+			Type = "Enumeration",
+			NumValues = 9,
+			MinValue = 1317,
+			MaxValue = 1339,
+			Fields =
+			{
+				{ Name = "DecorDefault", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1317 },
+				{ Name = "DecorTiny", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1333 },
+				{ Name = "DecorSmall", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1334 },
+				{ Name = "DecorMedium", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1335 },
+				{ Name = "DecorLarge", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1336 },
+				{ Name = "DecorHuge", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1337 },
+				{ Name = "DecorCeiling", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1338 },
+				{ Name = "DecorWall", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1339 },
+				{ Name = "DecorFlat", Type = "HousingCatalogEntryModelScenePresets", EnumValue = 1318 },
+			},
+		},
+		{
 			Name = "HousingCatalogEntrySize",
 			Type = "Enumeration",
 			NumValues = 6,
@@ -82,7 +101,6 @@ local HousingCatalogConstants =
 				{ Name = "HOUSING_CATALOG_SIZE_DATAGROUP_ID", Type = "number", Value = 2 },
 				{ Name = "HOUSING_CATALOG_NONE_TAG_ID", Type = "number", Value = -33 },
 				{ Name = "HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT", Type = "number", Value = 1317 },
-				{ Name = "HOUSING_CATALOG_DECOR_MODELSCENEID_FLAT", Type = "number", Value = 1318 },
 			},
 		},
 		{

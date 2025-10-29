@@ -13,7 +13,7 @@ function HousingDashboardHouseInfoMixin:OnLoad()
 
 	self:UpdateNoHousesDashboard();
 
-	self.HouseFinderButton:SetText(HOUSING_DASHBOARD_HOUSEFINDERBUTTON);
+	self.HouseFinderButton:SetTextToFit(HOUSING_DASHBOARD_HOUSEFINDERBUTTON);
 	self.HouseFinderButton:SetScript("OnClick", self.OnHouseFinderButtonClicked);
 end
 

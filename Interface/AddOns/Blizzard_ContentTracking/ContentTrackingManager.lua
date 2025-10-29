@@ -30,7 +30,7 @@ function ContentTrackingManagerMixin:OnContentTrackingUpdate(trackableType, id, 
 		if AchievementFrameAchievements_UpdateTrackedAchievements then
 			AchievementFrameAchievements_UpdateTrackedAchievements();
 		end
-	elseif (trackableType == Enum.ContentTrackingType.Appearance) or (trackableType == Enum.ContentTrackingType.Mount) then
+	else -- Assume other types don't need bespoke behavior (Enum.ContentTrackingType.Appearance, Enum.ContentTrackingType.Mount, Enum.ContentTrackingType.Decor)
 		AdventureObjectiveTracker:MarkDirty();
 	end
 

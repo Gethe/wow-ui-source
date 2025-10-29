@@ -70,7 +70,7 @@ function HousingRoomComponentThemeMixin:GetSupportsComponent(roomComponentInfo)
 	};
 	
 	local labelForType = labelByType[roomComponentInfo.type];
-	if labelForType then
+	if labelForType and TableHasAnyEntries(roomComponentInfo.availableThemeSets) then
 		return true, labelForType;
 	end
 
@@ -137,11 +137,15 @@ function HousingRoomComponentWallpaperMixin:GetSupportsComponent(roomComponentIn
 		[Enum.HousingRoomComponentType.Ceiling] = HOUSING_DECOR_CUSTOMIZATION_WALLPAPER_LABEL_CEILING,
 		[Enum.HousingRoomComponentType.Wall] = HOUSING_DECOR_CUSTOMIZATION_WALLPAPER_LABEL_WALL,
 		[Enum.HousingRoomComponentType.Floor] = HOUSING_DECOR_CUSTOMIZATION_WALLPAPER_LABEL_FLOOR,
+		[Enum.HousingRoomComponentType.Stairs] = HOUSING_DECOR_CUSTOMIZATION_WALLPAPER_LABEL_STAIRS
 	};
 	
 	local labelForType = labelByType[roomComponentInfo.type];
 	if labelForType then
-		return true, labelForType;
+		local wallpapers = C_HousingCustomizeMode.GetWallpapersForRoomComponentType(roomComponentInfo.type);
+		if wallpapers and #wallpapers > 0 then
+			return true, labelForType;
+		end
 	end
 
 	return false, nil;
