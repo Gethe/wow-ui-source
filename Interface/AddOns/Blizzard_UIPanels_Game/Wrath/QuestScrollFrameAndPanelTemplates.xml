@@ -3,40 +3,14 @@
 	<Frame name="QuestFramePanelTemplate" virtual="true">
 		<Size x="384" y="512"/>
 		<Anchors>
-			<Anchor point="TOPLEFT"/>
+			<Anchor point="TOPLEFT" x="-16" y="20"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="514" y="505"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" x="23" y="-83"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -89,7 +63,7 @@
 	<ScrollFrame name="QuestScrollFrameTemplate" inherits="UIPanelScrollFrameTemplate" virtual="true">
 		<Size x="300" y="334"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="23" y="-81"/>
+			<Anchor point="TOPLEFT" relativeTo="QuestFrame" x="6" y="-61"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">

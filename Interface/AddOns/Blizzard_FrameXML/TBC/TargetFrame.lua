@@ -95,11 +95,11 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 
-	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+	CVarCallbackRegistry:RegisterCallback("showTargetOfTarget", TargetFrame_OnCVarChanged, self);
 end
 
 function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
-	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+	if( self.totFrame ) then
 		TargetofTarget_Update(self.totFrame);
 	end
 end

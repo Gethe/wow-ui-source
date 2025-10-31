@@ -1008,13 +1008,23 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 	local displayMaxLarge = BreakUpLargeNumbers(displayMax);
 
 	-- calculate base damage
-	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
-	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	if (percent == 0) then
+		minDamage = 0;
+		maxDamage = 0;
+	else
+		minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
+		maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	end
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 	local totalBonus = (fullDamage - baseDamage);
-	local damagePerSecond = (max(fullDamage,1) / speed);
+	local damagePerSecond;
+	if speed == 0 then
+		damagePerSecond = 0;
+	else
+		damagePerSecond = (max(fullDamage,1) / speed);
+	end
 	-- set tooltip text with base damage
 	local damageTooltip;
 	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
@@ -1079,7 +1089,12 @@ function PaperDollFrame_SetDamage(statFrame, unit)
 
 		local offhandBaseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
 		local offhandFullDamage = (offhandBaseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
+		local offhandDamagePerSecond;
+		if offhandSpeed == 0 then
+			offhandDamagePerSecond = 0;
+		else
+			offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
+		end
 		local offhandDamageTooltip = BreakUpLargeNumbers(max(floor(minOffHandDamage),1)).." - "..BreakUpLargeNumbers(max(ceil(maxOffHandDamage),1));
 		if ( physicalBonusPos > 0 ) then
 			offhandDamageTooltip = offhandDamageTooltip..colorPos.." +"..physicalBonusPos.."|r";

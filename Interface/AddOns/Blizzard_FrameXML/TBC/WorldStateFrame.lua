@@ -654,7 +654,7 @@ function WorldStateChallengeMode_CheckTimers(...)
 	for i = 1, select("#", ...) do
 		local timerID = select(i, ...);
 		local _, elapsedTime, type = GetWorldElapsedTime(timerID);
-		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_CHALLENGE_MODE) then
+		if ( type == Enum.WorldElapsedTimerTypes.ChallengeMode) then
 			local _, _, _, _, _, _, _, mapID = GetInstanceInfo();
 			if ( mapID ) then
 				WorldStateChallengeMode_ShowTimer(timerID, elapsedTime, C_ChallengeMode.GetChallengeModeMapTimes(mapID));
@@ -823,7 +823,7 @@ function WorldStateProvingGrounds_CheckTimers(...)
 	for i = 1, select("#", ...) do
 		local timerID = select(i, ...);
 		local _, elapsedTime, type = GetWorldElapsedTime(timerID);
-		if ( type == LE_WORLD_ELAPSED_TIMER_TYPE_PROVING_GROUND) then
+		if ( type == Enum.WorldElapsedTimerTypes.ProvingGround) then
 			local diffID, currWave, maxWave, duration = C_Scenario.GetProvingGroundsInfo()
 			if (duration > 0) then
 				WorldStateProvingGrounds_ShowTimer(timerID, elapsedTime, duration, diffID, currWave, maxWave);

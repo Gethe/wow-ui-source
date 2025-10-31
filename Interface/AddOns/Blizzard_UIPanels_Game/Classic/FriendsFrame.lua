@@ -2824,6 +2824,14 @@ function GuildEventLog_Update()
 	local buffer = "";
 	local max = GuildEventMessage:GetFieldSize()
 	local length = 0;
+
+	local timeFormatStr = nil;
+	if(C_CVar.GetCVarBool("useClassicGuildUI")) then
+		timeFormatStr = GUILD_BANK_LOG_TIME_CLASSIC;
+	else
+		timeFormatStr = GUILD_BANK_LOG_TIME;
+	end
+
 	for i=numEvents, 1, -1 do
 		type, player1, player2, rank, year, month, day, hour = GetGuildEventInfo(i);
 		if ( not player1 ) then
@@ -2846,7 +2854,7 @@ function GuildEventLog_Update()
 			msg = format(GUILDEVENT_TYPE_QUIT, player1);
 		end
 		if ( msg ) then
-			msg = msg.."|cff009999   "..format(GUILD_BANK_LOG_TIME, RecentTimeDate(year, month, day, hour)).."|r|n";
+			msg = msg..timeFormatStr:format(RecentTimeDate(year, month, day, hour)).."|n";
 			length = length + msg:len();
 			if(length>max) then
 				i=0

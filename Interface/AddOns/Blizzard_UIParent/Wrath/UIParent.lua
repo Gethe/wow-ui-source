@@ -264,6 +264,10 @@ function TimeManager_LoadUI()
 	UIParentLoadAddOn("Blizzard_TimeManager");
 end
 
+function Arena_LoadUI()
+	UIParentLoadAddOn("Blizzard_ArenaUI");
+end
+
 function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
@@ -466,32 +470,6 @@ function ToggleToyCollection(autoPageToCollectedToyID)
 	CollectionsJournal_LoadUI();
 	ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
-end
-
-function ToggleStoreUI()
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(not wasShown);
-end
-
-function SetStoreUIShown(shown)
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown and shown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(shown);
 end
 
 function OpenDeathRecapUI(id)
@@ -709,7 +687,7 @@ function UIParent_OnEvent(self, event, ...)
 			local isSkippingStartingArea = C_SummonInfo.IsSummonSkippingStartExperience();
 			if ( isSkippingStartingArea ) then -- check if skiping start experience
 				StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
-			elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+			elseif (summonType == Enum.SummonReason.Scenario) then
 				StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
 			else
 				StaticPopup_Show("CONFIRM_SUMMON");
@@ -919,7 +897,7 @@ function UIParent_OnEvent(self, event, ...)
 		local summonType, skipStartingArea = arg1, arg2;
 		if ( skipStartingArea ) then -- check if skiping start experience
 			StaticPopup_Show("CONFIRM_SUMMON_STARTING_AREA");
-		elseif (summonType == LE_SUMMON_REASON_SCENARIO) then
+		elseif (summonType == Enum.SummonReason.Scenario) then
 			StaticPopup_Show("CONFIRM_SUMMON_SCENARIO");
 		else
 			StaticPopup_Show("CONFIRM_SUMMON");
@@ -938,8 +916,8 @@ function UIParent_OnEvent(self, event, ...)
 		else
 			StaticPopupDialogs["GOSSIP_CONFIRM"].hasMoneyFrame = nil;
 		end
-		StaticPopup_Show("GOSSIP_CONFIRM", arg2, nil, arg1);
-		if ( dialog and arg3 > 0) then
+		local dialog = StaticPopup_Show("GOSSIP_CONFIRM", arg2, nil, arg1);
+		if ( dialog and arg3 > 0 ) then
 			MoneyFrame_Update(dialog.MoneyFrame, arg3);
 		end
 	elseif ( event == "GOSSIP_ENTER_CODE" ) then
@@ -1317,8 +1295,6 @@ function UIParent_OnEvent(self, event, ...)
 			ChallengeModeCompleteBanner:OnEvent(event, ...);
 		end
 		self:UnregisterEvent("CHALLENGE_MODE_COMPLETED");
-	elseif (event == "UNIT_AURA") then
-		OrderHall_CheckCommandBar();
 	elseif (event == "TAXIMAP_OPENED") then
 		local uiMapSystem = ...;
 		if (uiMapSystem == Enum.UIMapSystem.Taxi) then

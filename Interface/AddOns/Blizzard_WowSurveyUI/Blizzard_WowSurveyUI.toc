@@ -1,0 +1,5 @@
+## Title: Blizzard_WowSurveyUI
+## LoadOnDemand: 1
+## Dependencies: Blizzard_StatusUI
+Blizzard_WowSurveyUI.lua
+Blizzard_WowSurveyUI.xml

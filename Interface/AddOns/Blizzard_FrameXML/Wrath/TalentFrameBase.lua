@@ -16,10 +16,6 @@ INITIAL_TALENT_OFFSET_Y = 20;
 
 TALENT_HYBRID_ICON = "Interface\\Icons\\Ability_DualWieldSpecialization";
 
-
-
-
-
 function TalentFrame_Update(TalentFrame)
 	if ( not TalentFrame ) then
 		return;
@@ -108,16 +104,10 @@ function TalentFrame_Update(TalentFrame)
 				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
 			
 				-- If player has no talent points or this is the inactive talent group then show only talents with points in them
-				if ( (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0 ) then
-					forceDesaturated = 1;
-				end
+				forceDesaturated = (unspentPoints <= 0 or not isActiveTalentGroup) and displayRank == 0;
 
 				-- is this talent's tier unlocked?
-				if ( ((talentInfo.tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent) ) then
-					tierUnlocked = 1;
-				else
-					tierUnlocked = nil;
-				end
+				tierUnlocked = (talentInfo.tier - 1) * (TalentFrame.pet and PET_TALENTS_PER_TIER or PLAYER_TALENTS_PER_TIER) <= tabPointsSpent;
 
 				SetItemButtonTexture(button, talentInfo.icon);
 

@@ -4,11 +4,5 @@
 ## Dependencies: Blizzard_SharedXML
 ## AllowLoad: Game
 ## AllowLoadGameType: tbc, wrath, cata, mists
-LoopingSoundEffect.lua
-ScriptedAnimations\ScriptedAnimationEffects.lua
-ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
-ScriptedAnimations\ScriptAnimatedEffectController.lua
-ScriptedAnimations\ScriptAnimatedModelScene.lua
-ScriptedAnimations\ScriptAnimatedModelScene.xml
 Shared\Localization.lua
 Tooltip\TooltipDataHandler.lua

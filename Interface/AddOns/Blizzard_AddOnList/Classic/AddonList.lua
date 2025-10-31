@@ -130,11 +130,6 @@ if ( InGlue() ) then
 				AddonDialog_Show("ADDONS_OUT_OF_DATE");
 				HasShownAddonOutOfDateDialog = true;
 			end
-			if ( AddonList_HasNewVersion() ) then
-				CharacterSelectAddonsButtonGlow:Show();
-			else
-				CharacterSelectAddonsButtonGlow:Hide();
-			end
 			CharacterSelectAddonsButton:Show();
 		else
 			CharacterSelectAddonsButton:Hide();
@@ -164,18 +159,6 @@ function AddonList_HasAnyChanged()
 		end
 	end
 	return false
-end
-
-function AddonList_HasNewVersion()
-	local hasNewVersion = false;
-	for i = 1, C_AddOns.GetNumAddOns() do
-		local name, title, notes, loadable, reason, security, newVersion = C_AddOns.GetAddOnInfo(i);
-		if ( newVersion ) then
-			hasNewVersion = true;
-			break;
-		end
-	end
-	return hasNewVersion;
 end
 
 function AddonList_Show()

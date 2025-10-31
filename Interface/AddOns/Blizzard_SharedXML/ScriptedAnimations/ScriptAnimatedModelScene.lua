@@ -20,6 +20,10 @@ function ScriptAnimatedModelSceneMixin:OnLoad()
 	self.effectControllers = {};
 	self.pixelsPerSceneUnit = math.huge;
 	self.delayedActions = {};
+
+	-- Automatically allow overlapped models for these types of scenes.
+	-- Could be optimized to only enable when there are multiple models.
+	self:SetAllowOverlappedModels(true);
 end
 
 function ScriptAnimatedModelSceneMixin:OnShow()

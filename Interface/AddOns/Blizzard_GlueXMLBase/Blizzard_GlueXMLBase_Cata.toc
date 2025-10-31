@@ -10,7 +10,6 @@ Classic\Localization.lua
 Wrath\Localization.lua
 Classic\GlueTemplates.lua
 Classic\GlueTemplates.xml
-Classic\GlueButtons.lua
 Classic\GlueButtons.xml
 Shared\GlueContextMenu.lua
 Shared\GlueContextMenu.xml

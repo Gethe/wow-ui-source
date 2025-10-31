@@ -104,11 +104,11 @@ function TargetFrame_OnLoad(self, unit, menuFunc)
 
 	SecureUnitButton_OnLoad(self, self.unit, menuFunc);
 
-	CVarCallbackRegistry:RegisterCVarChangedCallback(TargetFrame_OnCVarChanged, self);
+	CVarCallbackRegistry:RegisterCallback("showTargetOfTarget", TargetFrame_OnCVarChanged, self);
 end
 
 function TargetFrame_OnCVarChanged (self, cvar, cvarValue)
-	if( cvar == "showTargetOfTarget" and self.totFrame ) then
+	if( self.totFrame ) then
 		TargetofTarget_Update(self.totFrame);
 	end
 end
@@ -1254,10 +1254,8 @@ function FocusFrame_OnDragStop(self)
 	end
 end
 
-function FocusFrameMixin:SetSmallSize(smallSize, onChange)
+function FocusFrameMixin:SetSmallSize(smallSize)
 	if ( smallSize and not FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = true;
 		FocusFrame.maxBuffs = 0;
 		FocusFrame.maxDebuffs = 8;
@@ -1270,11 +1268,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarTextLarge);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 4);
 		FocusFrameTextureFrameName:SetWidth(120);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", x * SMALL_FOCUS_UPSCALE + 29, (y - GetScreenHeight()) * SMALL_FOCUS_UPSCALE - 13);
-		end
 		FocusFrame:UnregisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:UnregisterEvent("PLAYER_FLAGS_CHANGED");
@@ -1288,8 +1281,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 --		TargetFrame_CheckClassification(FocusFrame, true);
 		TargetFrame_Update(FocusFrame);
 	elseif ( not smallSize and FocusFrame.smallSize ) then
-		local x = FocusFrame:GetLeft();
-		local y = FocusFrame:GetTop();
 		FocusFrame.smallSize = false;
 		FocusFrame.maxBuffs = nil;
 		FocusFrame.maxDebuffs = nil;
@@ -1302,11 +1293,6 @@ function FocusFrameMixin:SetSmallSize(smallSize, onChange)
 		FocusFrameHealthBar.TextString:SetFontObject(TextStatusBarText);
 		FocusFrameHealthBar.TextString:SetPoint("CENTER", -50, 3);
 		FocusFrameTextureFrameName:SetWidth(100);
-		if ( onChange ) then
-			-- the frame needs to be repositioned because anchor offsets get adjusted with scale
-			FocusFrame:ClearAllPoints();
-			FocusFrame:SetPoint("TOPLEFT", (x - 29) / SMALL_FOCUS_UPSCALE, (y + 13) / SMALL_FOCUS_UPSCALE - GetScreenHeight());
-		end
 		FocusFrame:RegisterEvent("UNIT_CLASSIFICATION_CHANGED");
 		FocusFrame.showClassification = true;
 		FocusFrame:RegisterEvent("PLAYER_FLAGS_CHANGED");

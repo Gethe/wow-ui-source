@@ -474,3 +474,33 @@ function UnitPopupMenuGluePartyMember:GetEntries()
 		UnitPopupGlueRemovePartyButton, 
 	}
 end
+
+UnitPopupMenuRecentAlly = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("RECENT_ALLY", UnitPopupMenuRecentAlly);
+function UnitPopupMenuRecentAlly:GetEntries()
+	return {
+		UnitPopupAddRecentAllyBattleTagFriendButtonMixin,
+		UnitPopupTargetButtonMixin,
+		UnitPopupRecentAllyNoteButtonMixin,
+		UnitPopupInteractSubsectionTitle,
+		UnitPopupWhisperButtonMixin,
+		UnitPopupInviteButtonMixin,
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupRecentAllyPinButtonMixin,
+		UnitPopupIgnoreButtonMixin,
+		UnitPopupReportRecentAllyButtonMixin,
+		UnitPopupCopyCharacterNameButtonMixin,
+	}
+end
+
+UnitPopupMenuRecentAllyOffline = CreateFromMixins(UnitPopupTopLevelMenuMixin)
+UnitPopupManager:RegisterMenu("RECENT_ALLY_OFFLINE", UnitPopupMenuRecentAllyOffline);
+function UnitPopupMenuRecentAllyOffline:GetEntries()
+	return { 
+		UnitPopupRecentAllyNoteButtonMixin, 
+		UnitPopupOtherSubsectionTitle,
+		UnitPopupRecentAllyPinButtonMixin,
+		UnitPopupIgnoreButtonMixin,
+		UnitPopupCopyCharacterNameButtonMixin,
+	}
+end  

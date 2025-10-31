@@ -406,6 +406,7 @@ local FrameAPIModelSceneFrameActorBase =
 				{ Name = "hideWeapons", Type = "bool", Nilable = false, Default = false },
 				{ Name = "usePlayerNativeForm", Type = "bool", Nilable = false, Default = true },
 				{ Name = "holdBowString", Type = "bool", Nilable = false, Default = false },
+				{ Name = "customRaceID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -442,6 +443,7 @@ local FrameAPIModelSceneFrameActorBase =
 				{ Name = "autoDress", Type = "bool", Nilable = false, Default = true },
 				{ Name = "hideWeapons", Type = "bool", Nilable = false, Default = false },
 				{ Name = "usePlayerNativeForm", Type = "bool", Nilable = false, Default = true },
+				{ Name = "customRaceID", Type = "number", Nilable = true },
 			},
 
 			Returns =

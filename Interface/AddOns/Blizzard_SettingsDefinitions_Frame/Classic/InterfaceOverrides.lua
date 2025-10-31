@@ -94,7 +94,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 
 		-- Show Free Bag Space
 		Settings.SetupCVarCheckbox(category, "displayFreeBagSlots", DISPLAY_FREE_BAG_SLOTS, OPTION_TOOLTIP_DISPLAY_FREE_BAG_SLOTS);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+		CVarCallbackRegistry:RegisterCallback("displayFreeBagSlots", CVarChangedCB, nil);
 	end
 
 	do
@@ -104,7 +104,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		end
 
 		Settings.SetupCVarCheckbox(category, "consolidateBuffs", CONSOLIDATE_BUFFS_TEXT, OPTION_TOOLTIP_CONSOLIDATE_BUFFS);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+		CVarCallbackRegistry:RegisterCallback("consolidateBuffs", CVarChangedCB, nil);
 	end
 
 	-- Hide Zone Objective Tracker
@@ -117,7 +117,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		end
 
 		Settings.SetupCVarCheckbox(category, "rotateMinimap", ROTATE_MINIMAP, OPTION_TOOLTIP_ROTATE_MINIMAP);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+		CVarCallbackRegistry:RegisterCallback("rotateMinimap", CVarChangedCB, nil);
 	end
 
 	do
@@ -129,7 +129,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 		end
 
 		Settings.SetupCVarCheckbox(category, "showMinimapClock", SHOW_MINIMAP_CLOCK, OPTION_TOOLTIP_SHOW_MINIMAP_CLOCK);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+		CVarCallbackRegistry:RegisterCallback("showMinimapClock", CVarChangedCB, nil);
 	end
 
 	-- Beginner Tooltips
@@ -193,7 +193,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 				end 
 			end
 			
-			CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+			CVarCallbackRegistry:RegisterCallback("equipmentManager", CVarChangedCB, nil);
 		end
 
 		-- Preview Talent Changes
@@ -332,7 +332,7 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 		end
 
 		Settings.SetupCVarCheckbox(category, "useCompactPartyFrames", USE_RAID_STYLE_PARTY_FRAMES, OPTION_TOOLTIP_USE_RAID_STYLE_PARTY_FRAMES);
-		CVarCallbackRegistry:RegisterCVarChangedCallback(CVarChangedCB, nil);
+		CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(CVarChangedCB, nil);
 	end
 
 	do

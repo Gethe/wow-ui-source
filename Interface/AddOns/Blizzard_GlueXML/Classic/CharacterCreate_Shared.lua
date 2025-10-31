@@ -384,7 +384,7 @@ function CharacterCreateMixin:BeginVASTransaction()
 end
 
 function CharacterCreateMixin:IsVASErrorUserFixable(errorID)
-	return errorID == Enum.VasError.NameNotAvailable or errorID == Enum.VasError.DuplicateCharacterName;
+	return errorID == Enum.VasTransactionPurchaseResult.DbNameNotAvailable or errorID == Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName;
 end
 
 function CharacterCreateMixin:OnStoreVASPurchaseError()

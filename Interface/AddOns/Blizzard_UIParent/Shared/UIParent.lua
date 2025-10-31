@@ -1,5 +1,6 @@
 function UIParent_Shared_OnLoad(self)
 	self:RegisterEvent("REPORT_PLAYER_RESULT");
+	self:RegisterEvent("SURVEY_DELIVERED");
 end
 
 local sendReportResultToErrorString = {
@@ -31,6 +32,14 @@ function UIParent_Shared_OnEvent(self, event, ...)
 		local result = ...;
 		UIErrorsFrame:AddExternalErrorMessage(GetErrorMessageFromSendReportResult(result));
 		DEFAULT_CHAT_FRAME:AddMessage(GetChatMessageFromSendReportResult(result));
+	elseif event == "SURVEY_DELIVERED" then
+		if (not C_AddOns.IsAddOnLoaded("Blizzard_WowSurveyUI")) then
+			WowSurvey_LoadUI();
+			if WowSurveyStatusFrame then
+				WowSurveyStatusFrame:OnEvent(event);
+			end
+		end
+		self:UnregisterEvent("SURVEY_DELIVERED");
 	end
 end
 
@@ -286,6 +295,10 @@ function GMChatFrame_LoadUI(...)
 	end
 end
 
+function WowSurvey_LoadUI()
+	UIParentLoadAddOn("Blizzard_WowSurveyUI");
+end
+
 function APIDocumentation_LoadUI()
 	UIParentLoadAddOn("Blizzard_APIDocumentationGenerated");
 end
@@ -488,7 +501,7 @@ function GetScaledCursorPosition()
 end
 
 function GetScaledCursorDelta()
-	local uiScale = GetAppropriateTopLevelParent():GetEffectiveScale();
+	local uiScale = UIParent:GetEffectiveScale();
 	local x, y = GetCursorDelta();
 	return x / uiScale, y / uiScale;
 end
@@ -647,73 +660,11 @@ function GetDungeonNameWithDifficulty(name, difficultyName)
 	return name;
 end
 
-
 -- Animated shine stuff --
 
-function AnimatedShine_Start(shine, r, g, b)
-	if ( not tContains(SHINES_TO_ANIMATE, shine) ) then
-		shine.timer = 0;
-		tinsert(SHINES_TO_ANIMATE, shine);
-	end
-	local shineName = shine:GetName();
-	_G[shineName.."Shine1"]:Show();
-	_G[shineName.."Shine2"]:Show();
-	_G[shineName.."Shine3"]:Show();
-	_G[shineName.."Shine4"]:Show();
-	if ( r ) then
-		_G[shineName.."Shine1"]:SetVertexColor(r, g, b);
-		_G[shineName.."Shine2"]:SetVertexColor(r, g, b);
-		_G[shineName.."Shine3"]:SetVertexColor(r, g, b);
-		_G[shineName.."Shine4"]:SetVertexColor(r, g, b);
-	end
-
-end
-
-function AnimatedShine_Stop(shine)
-	tDeleteItem(SHINES_TO_ANIMATE, shine);
-	local shineName = shine:GetName();
-	_G[shineName.."Shine1"]:Hide();
-	_G[shineName.."Shine2"]:Hide();
-	_G[shineName.."Shine3"]:Hide();
-	_G[shineName.."Shine4"]:Hide();
-end
-
 function AnimatedShine_OnUpdate(elapsed)
-	local shine1, shine2, shine3, shine4;
-	local speed = 2.5;
-	local parent, distance;
 	for index, value in pairs(SHINES_TO_ANIMATE) do
-		shine1 = _G[value:GetName().."Shine1"];
-		shine2 = _G[value:GetName().."Shine2"];
-		shine3 = _G[value:GetName().."Shine3"];
-		shine4 = _G[value:GetName().."Shine4"];
-		value.timer = value.timer+elapsed;
-		if ( value.timer > speed*4 ) then
-			value.timer = 0;
-		end
-		parent = _G[value:GetName().."Shine"];
-		distance = parent:GetWidth();
-		if ( value.timer <= speed  ) then
-			shine1:SetPoint("CENTER", parent, "TOPLEFT", value.timer/speed*distance, 0);
-			shine2:SetPoint("CENTER", parent, "BOTTOMRIGHT", -value.timer/speed*distance, 0);
-			shine3:SetPoint("CENTER", parent, "TOPRIGHT", 0, -value.timer/speed*distance);
-			shine4:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, value.timer/speed*distance);
-		elseif ( value.timer <= speed*2 ) then
-			shine1:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed)/speed*distance);
-			shine2:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed)/speed*distance);
-			shine3:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed)/speed*distance, 0);
-			shine4:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed)/speed*distance, 0);
-		elseif ( value.timer <= speed*3 ) then
-			shine1:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*2)/speed*distance, 0);
-			shine2:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed*2)/speed*distance, 0);
-			shine3:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed*2)/speed*distance);
-			shine4:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed*2)/speed*distance);
-		else
-			shine1:SetPoint("CENTER", parent, "BOTTOMLEFT", 0, (value.timer-speed*3)/speed*distance);
-			shine2:SetPoint("CENTER", parent, "TOPRIGHT", 0, -(value.timer-speed*3)/speed*distance);
-			shine3:SetPoint("CENTER", parent, "TOPLEFT", (value.timer-speed*3)/speed*distance, 0);
-			shine4:SetPoint("CENTER", parent, "BOTTOMRIGHT", -(value.timer-speed*3)/speed*distance, 0);
-		end
+		value:Update(elapsed);
 	end
 end
 

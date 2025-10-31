@@ -101,6 +101,33 @@ local function Register()
 	-- Broadcast Updates
 	Settings.SetupCVarCheckbox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
 
+	-- Location visibility
+	-- Friends and Guildmates can always see your location, so right now this only controls Recent Ally visibility
+	do
+		local function ShouldAddLocationVisibilitySetting()
+			local getterSetterExist = GetAllowRecentAlliesSeeLocation and SetAllowRecentAlliesSeeLocation;
+			return getterSetterExist;
+		end
+
+		if ShouldAddLocationVisibilitySetting() then
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(false, SOCIAL_LOCATION_VISIBILITY_FRIEND_GUILD);
+				container:Add(true, SOCIAL_LOCATION_VISIBILITY_FRIEND_GUILD_ALLIES);
+				return container:GetData();
+			end
+
+			local defaultValue = true;
+			local setting = Settings.RegisterProxySetting(category, "PROXY_SOCIAL_LOCATION_VISIBILITY",
+				Settings.VarType.Boolean, SOCIAL_LOCATION_VISIBILITY_SETTING, defaultValue, GetAllowRecentAlliesSeeLocation, SetAllowRecentAlliesSeeLocation);
+			Settings.CreateDropdown(category, setting, GetOptions, SOCIAL_LOCATION_VISIBILITY_SETTING_TOOLTIP);
+
+			EventRegistry:RegisterFrameEventAndCallback("LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED", function()
+				setting:SetValue(GetAllowRecentAlliesSeeLocation());
+			end);
+		end
+	end
+
 	-- Real ID and BattleTag Friend Requests
 	Settings.SetupCVarCheckbox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);
 

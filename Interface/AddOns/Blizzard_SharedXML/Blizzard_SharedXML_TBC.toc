@@ -20,6 +20,7 @@ LinkUtil.lua
 InterfaceUtil.lua
 FormattingUtil.lua
 AccountUtil.lua
+GameRulesUtil.lua
 TabGroup.lua
 SmoothStatusBar.lua
 PredictedSetting.lua
@@ -39,7 +40,7 @@ BindingUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
-
+LoopingSoundEffect.lua
 TBC\SoundKitConstants.lua
 
 CircularBuffer.lua
@@ -48,6 +49,14 @@ StringUtil.lua
 TypeUtil.lua
 SelectableButton.xml
 NewFeatureLabel.xml
+
+Shared\Button\UIButtonTemplate.lua
+Shared\Button\UIButtonTemplate.xml
+Shared\Button\ThreeSliceButtonTemplate.lua
+Shared\Button\ThreeSliceButtonTemplate.xml
+Shared\Button\IconButtonTemplate.lua
+Shared\Button\IconButtonTemplate.xml
+
 Shared\Frame\EventFrame.lua
 Shared\Frame\EventFrame.xml
 Shared\Frame\EventButton.lua
@@ -56,6 +65,15 @@ Shared\Frame\EventScrollFrame.lua
 Shared\Frame\EventScrollFrame.xml
 Shared\Frame\EventEditBox.lua
 Shared\Frame\EventEditBox.xml
+
+Shared\FrameTemplate\RingedFrameTemplate.lua
+Shared\FrameTemplate\RingedFrameTemplate.xml
+
+ScriptedAnimations\ScriptedAnimationEffects.lua
+ScriptedAnimations\ScriptAnimatedModelSceneActor.lua
+ScriptedAnimations\ScriptAnimatedEffectController.lua
+ScriptedAnimations\ScriptAnimatedModelScene.lua
+ScriptedAnimations\ScriptAnimatedModelScene.xml
 DataProviders.xml
 Interpolator.lua
 Shared\Slider\MinimalSlider.lua

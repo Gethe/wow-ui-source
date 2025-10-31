@@ -5,6 +5,7 @@ PET_ACHIEVEMENT_CATEGORY = 15117;
 local MAX_PET_LEVEL = 25;
 local HEAL_PET_SPELL = 125439;
 local SUMMON_RANDOM_FAVORITE_PET_SPELL = 243819;
+local BATTLEPETS_SUPPORTED = GetClassicExpansionLevel() >= LE_EXPANSION_MISTS_OF_PANDARIA;
 
 function PetJournalUtil_GetDisplayName(petID)
 	local _, customName, _, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID);
@@ -435,12 +436,11 @@ function PetJournalListItem_OnClick(self, button)
 		local id = self.petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
-		elseif (id) then
+		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
 			ChatEdit_InsertLink(petLink);
 		else
-			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
-			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);
 		end
 	elseif button == "RightButton" then
@@ -472,12 +472,11 @@ function PetJournalDragButton_OnClick(self, button)
 		local id = self:GetParent().petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
-		elseif (id) then
+		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
 			ChatEdit_InsertLink(petLink);
 		else
-			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
-			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);
 		end
 	elseif ( button == "RightButton" ) then
@@ -596,12 +595,11 @@ function PetJournalPetCard_OnClick(self, button)
 		local id = PetJournalPetCard.petID;
 		if ( id and MacroFrame and MacroFrame:IsShown() ) then
 			-- Macros are not yet supported
-		elseif (id) then
+		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
 			ChatEdit_InsertLink(petLink);
 		else
-			local _, species  = C_PetJournal.GetPetInfoByIndex(self.index)
-			local petLink = C_PetJournal.GetBattlePetLinkFromSpecies(species);
+			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);
 		end
 	elseif button == "RightButton" then

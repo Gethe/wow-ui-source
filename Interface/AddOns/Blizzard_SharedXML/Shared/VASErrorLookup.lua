@@ -65,69 +65,69 @@ end
 
 --VAS Error message data
 local vasErrorData = {
-	[Enum.VasError.CharacterHasVasPending] = {
+	[Enum.VasTransactionPurchaseResult.OnlyOneVasAtATime] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_HAS_VAS_PENDING,
 		notUserFixable = true,
 	},
-	[Enum.VasError.InvalidDestinationAccount] = {
+	[Enum.VasTransactionPurchaseResult.InvalidDestinationAccount] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_DESTINATION_ACCOUNT,
 	},
-	[Enum.VasError.InvalidSourceAccount] = {
+	[Enum.VasTransactionPurchaseResult.InvalidSourceAccount] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INVALID_SOURCE_ACCOUNT,
 	},
-	[Enum.VasError.DisallowedSourceAccount] = {
+	[Enum.VasTransactionPurchaseResult.DisallowedSourceAccount] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_SOURCE_ACCOUNT,
 	},
-	[Enum.VasError.DisallowedDestinationAccount] = {
+	[Enum.VasTransactionPurchaseResult.DisallowedDestinationAccount] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DISALLOWED_DESTINATION_ACCOUNT,
 	},
-	[Enum.VasError.LowerBoxLevel] = {
+	[Enum.VasTransactionPurchaseResult.LowerBoxLevel] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LOWER_BOX_LEVEL,
 	},
-	[Enum.VasError.OperationAlreadyInProgress] = {
+	[Enum.VasTransactionPurchaseResult.ProxyBadRequestContained] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_OPERATION_ALREADY_IN_PROGRESS,
 	},
-	[Enum.VasError.LockedForVas] = {
+	[Enum.VasTransactionPurchaseResult.ProxyCharacterTransferredNoBoostInProgress] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LOCKED_FOR_VAS,
 	},
-	[Enum.VasError.RealmNotEligible] = {
+	[Enum.VasTransactionPurchaseResult.DbRealmNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_REALM_NOT_ELIGIBLE,
 	},
-	[Enum.VasError.CannotMoveGuildMaster] = {
+	[Enum.VasTransactionPurchaseResult.DbCannotMoveGuildmaster] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CANNOT_MOVE_GUILDMASTER,
 	},
-	[Enum.VasError.MaxCharactersOnServer] = {
+	[Enum.VasTransactionPurchaseResult.DbMaxCharactersOnServer] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
 	},
-	[Enum.VasError.NoMixedAlliance] = {
+	[Enum.VasTransactionPurchaseResult.DbNoMixedAlliance] = {
 		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
 	},
-	[Enum.VasError.DuplicateCharacterName] = {
+	[Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,
 	},
-	[Enum.VasError.HasMail] = {
+	[Enum.VasTransactionPurchaseResult.DbHasMail] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_MAIL,
 	},
-	[Enum.VasError.MoveInProgress] = {
+	[Enum.VasTransactionPurchaseResult.DbMoveInProgress] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_MOVE_IN_PROGRESS,
 	},
-	[Enum.VasError.UnderMinLevelReq] = {
+	[Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_UNDER_MIN_LEVEL_REQ,
 	},
-	[Enum.VasError.IneligibleTargetRealm] = {
+	[Enum.VasTransactionPurchaseResult.DbIneligibleTargetRealm] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_TARGET_REALM,
 	},
-	[Enum.VasError.CharacterTransferTooSoon] = {
+	[Enum.VasTransactionPurchaseResult.DbTransferDateTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
 	},
-	[Enum.VasError.CharLocked] = {
+	[Enum.VasTransactionPurchaseResult.DbCharLocked] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CHARACTER_LOCKED,
 		notUserFixable = true,
 	},
-	[Enum.VasError.AllianceNotEligible] = {
+	[Enum.VasTransactionPurchaseResult.DbAllianceNotEligible] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_ALLIANCE_NOT_ELIGIBLE,
 	},
-	[Enum.VasError.TooMuchMoneyForLevel] = {
+	[Enum.VasTransactionPurchaseResult.DbTooMuchMoneyForLevel] = {
 		msg = function(character)
 			-- If you update these gold thresholds, be sure to also update:
 			--   - TRANSFER_GOLD_LIMIT_BASE and related
@@ -169,62 +169,62 @@ local vasErrorData = {
 			return string.format(BLIZZARD_STORE_VAS_ERROR_TOO_MUCH_MONEY_FOR_LEVEL, str);
 		end
 	},
-	[Enum.VasError.HasAuctions] = {
+	[Enum.VasTransactionPurchaseResult.DbHasAuctions] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_AUCTIONS,
 	},
-	[Enum.VasError.LastSaveTooRecent] = {
+	[Enum.VasTransactionPurchaseResult.DbLastSaveTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_RECENT,
 		notUserFixable = true,
 	},
-	[Enum.VasError.NameNotAvailable] = {
+	[Enum.VasTransactionPurchaseResult.DbNameNotAvailable] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NAME_NOT_AVAILABLE,
 	},
-	[Enum.VasError.LastRenameTooRecent] = {
+	[Enum.VasTransactionPurchaseResult.DbLastRenameTooRecent] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_RENAME_TOO_RECENT,
 	},
-	[Enum.VasError.AlreadyRenameFlagged] = {
+	[Enum.VasTransactionPurchaseResult.DbAlreadyRenameFlagged] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_ALREADY_RENAME_FLAGGED,
 	},
-	[Enum.VasError.CustomizeAlreadyRequested] = {
+	[Enum.VasTransactionPurchaseResult.DbCustomizeAlreadyRequested] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_CUSTOMIZE_ALREADY_REQUESTED,
 	},
-	[Enum.VasError.LastCustomizeTooRecent] = {
+	[Enum.VasTransactionPurchaseResult.DbLastCustomizeTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_CUSTOMIZE_TOO_SOON,
 	},
-	[Enum.VasError.FactionChangeTooSoon] = {
+	[Enum.VasTransactionPurchaseResult.DbFactionChangeTooSoon] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_FACTION_CHANGE_TOO_SOON,
 	},
-	[Enum.VasError.RaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
+	[Enum.VasTransactionPurchaseResult.DbRaceClassComboIneligible] = { --We should still handle this one even though we shortcut it in case something slips through
 		msg = BLIZZARD_STORE_VAS_ERROR_RACE_CLASS_COMBO_INELIGIBLE,
 	},
-	[Enum.VasError.PendingItemAudit] = {
+	[Enum.VasTransactionPurchaseResult.DbPendingItemAudit] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PENDING_ITEM_AUDIT,
 	},
-	[Enum.VasError.GuildRankInsufficient] = {
+	[Enum.VasTransactionPurchaseResult.DbGuildRankInsufficient] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NOT_GUILD_MASTER,
 	},
-	[Enum.VasError.CharacterWithoutGuild] = {
+	[Enum.VasTransactionPurchaseResult.DbCharacterWithoutGuild] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NOT_IN_GUILD,
 	},
-	[Enum.VasError.GmSeniorityInsufficient] = {
+	[Enum.VasTransactionPurchaseResult.DbGmSenorityInsufficient] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_GM_SENORITY_INSUFFICIENT,
 	},
-	[Enum.VasError.AuthenticatorInsufficient] = {
+	[Enum.VasTransactionPurchaseResult.DbAuthenticatorInsufficient] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_AUTHENTICATOR_INSUFFICIENT,
 	},
-	[Enum.VasError.IneligibleMapID] = {
+	[Enum.VasTransactionPurchaseResult.DbIneligibleMapID] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_INELIGIBLE_MAP_ID,
 	},
-	[Enum.VasError.BattlepayDeliveryPending] = {
+	[Enum.VasTransactionPurchaseResult.DbBpayDeliveryPending] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BATTLEPAY_DELIVERY_PENDING,
 	},
-	[Enum.VasError.HasWoWToken] = {
+	[Enum.VasTransactionPurchaseResult.DbHasBpayToken] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_WOW_TOKEN,
 	},
-	[Enum.VasError.HasHeirloom] = {
+	[Enum.VasTransactionPurchaseResult.DbHasHeirloomItem] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_HEIRLOOM,
 	},
-	[Enum.VasError.AccountRestricted] = {
+	[Enum.VasTransactionPurchaseResult.DbResultAccountRestricted] = {
 		msg = function(character)
 			if character and character.guid and IsCharacterNPERestricted(character.guid) then
 				return BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE;
@@ -233,38 +233,38 @@ local vasErrorData = {
 			return BLIZZARD_STORE_VAS_ERROR_OTHER;
 		end,
 	},
-	[Enum.VasError.LastSaveTooDistant] = {
+	[Enum.VasTransactionPurchaseResult.DbLastSaveTooDistant] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
 	},
-	[Enum.VasError.HasCagedBattlePet] = {
+	[Enum.VasTransactionPurchaseResult.DbCagedPetInInventory] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CAGED_BATTLE_PET,
 	},
-	[Enum.VasError.BoostedTooRecently] = {
+	[Enum.VasTransactionPurchaseResult.DbOnBoostCooldown] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_BOOSTED_TOO_RECENTLY,
 		notUserFixable = true,
 	},
-	[Enum.VasError.PvEToPvPTransferNotAllowed] = {
+	[Enum.VasTransactionPurchaseResult.DbPvEPvPTransferNotAllowed] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_PVE_TO_PVP_TRANSFER_NOT_ALLOWED,
 	},
-	[Enum.VasError.NewLeaderInvalid] = {
+	[Enum.VasTransactionPurchaseResult.DbNewLeaderInvalid] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEW_LEADER_INVALID,
 	},
-	[Enum.VasError.NeedsLevelSquish] = {
+	[Enum.VasTransactionPurchaseResult.DbNeedsLevelSquish] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_LAST_SAVE_TOO_DISTANT,
 	},
-	[Enum.VasError.IsNpeRestricted] = {
+	[Enum.VasTransactionPurchaseResult.DbHasNewPlayerExperienceRestriction] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEW_PLAYER_EXPERIENCE,
 	},
-	[Enum.VasError.HasCraftingOrders] = {
+	[Enum.VasTransactionPurchaseResult.DbHasCraftingOrders] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_HAS_CRAFTING_ORDERS,
 	},
-	[Enum.VasError.InvalidName] = {
+	[Enum.VasTransactionPurchaseResult.DbInvalidName] = {
 		msg = BLIZZARD_STORE_VAS_INVALID_NAME,
 	},
-	[Enum.VasError.NeedsEraChoice] = {
+	[Enum.VasTransactionPurchaseResult.DbNeedsEraChoice] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_NEEDS_ERA_CHOICE;
 	},
-	[Enum.VasError.ArenaTeamCaptain] = {
+	[Enum.VasTransactionPurchaseResult.DbCannotMoveArenaCaptn] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN;
 	}
 };

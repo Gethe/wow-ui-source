@@ -491,7 +491,7 @@ StaticPopupDialogs["CONFIRM_ACCEPT_SOCKETS"] = {
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function(dialog, data)
-		AcceptSockets();
+		C_ItemSocketInfo.AcceptSockets();
 		PlaySound(SOUNDKIT.JEWEL_CRAFTING_FINALIZE);
 	end,
 	timeout = 0,
@@ -1578,6 +1578,40 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	exclusive = 1,
 	whileDead = 1,
 	hideOnEscape = 1
+};
+
+StaticPopupDialogs["SET_RECENT_ALLY_NOTE"] = {
+	text = SET_FRIENDNOTE_LABEL,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	hasEditBox = 1,
+	maxLetters = 127,
+	countInvisibleLetters = true,
+	editBoxWidth = 350,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1,
+
+	OnAccept = function(dialog, data)
+		C_RecentAllies.SetRecentAllyNote(data.characterData.guid, dialog:GetEditBox():GetText());
+	end,
+	OnShow = function(dialog, data)
+		local currentNote = data.interactionData.note;
+		dialog:GetEditBox():SetText(currentNote or "");
+		
+		dialog:GetEditBox():SetFocus();
+	end,
+	OnHide = function(dialog, data)
+		ChatEdit_FocusActiveWindow();
+		dialog:GetEditBox():SetText("");
+	end,
+	EditBoxOnEnterPressed = function(editBox, data)
+		local dialog = editBox:GetParent();
+		C_RecentAllies.SetRecentAllyNote(data.characterData.guid, dialog:GetEditBox():GetText());
+		dialog:Hide();
+	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
 StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {

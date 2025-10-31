@@ -111,7 +111,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.BattlePet, function(link, text, linkData,
 		if(GetClassicExpansionLevel() >= LE_EXPANSION_MISTS_OF_PANDARIA) then
 			FloatingBattlePet_Toggle(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed), string.gsub(string.gsub(text, "^(.*)%[", ""), "%](.*)$", ""), battlePetID);
 		else
-			-- No tooltip for pre-mop
+			return LinkProcessorResponse.Unhandled;
 		end
 	end
 end);

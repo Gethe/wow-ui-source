@@ -17,14 +17,15 @@ local UiModelSceneConstants =
 		{
 			Name = "UIModelSceneFlags",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "SheatheWeapon", Type = "UIModelSceneFlags", EnumValue = 1 },
 				{ Name = "HideWeapon", Type = "UIModelSceneFlags", EnumValue = 2 },
 				{ Name = "Autodress", Type = "UIModelSceneFlags", EnumValue = 4 },
+				{ Name = "NoCameraSpin", Type = "UIModelSceneFlags", EnumValue = 8 },
 			},
 		},
 	},

@@ -60,11 +60,11 @@ function DoesClientThinkTheCharacterIsEligibleForPNC(characterID)
 		return false, errors, playerGuid, false;
 	end
 
-	CheckAddVASErrorCode(errors, Enum.VasError.UnderMinLevelReq, basicInfo.experienceLevel >= 10);
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq, basicInfo.experienceLevel >= 10);
 	if IsCharacterNPERestricted then
-		CheckAddVASErrorCode(errors, Enum.VasError.IsNpeRestricted, not IsCharacterNPERestricted(playerguid));
+		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasNewPlayerExperienceRestriction, not IsCharacterNPERestricted(playerguid));
 	end
-	CheckAddVASErrorCode(errors, Enum.VasError.IneligibleMapID, not IsCharacterInTutorialMap(playerguid));
+	CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbIneligibleMapID, not IsCharacterInTutorialMap(playerguid));
 	CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(playerguid, Enum.ValueAddedServiceType.PaidNameChange));
 
 	local canTransfer = #errors == 0;

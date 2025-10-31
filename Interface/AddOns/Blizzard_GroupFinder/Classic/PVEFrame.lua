@@ -8,8 +8,8 @@ PVE_FRAME_BASE_WIDTH = 563;
 -- Note: These need to be uncommented out from PVEFrame.xml as well.
 local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
-	{ name = "PVPQueueFrame", addon = "Blizzard_PVPUI" },
-	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForExpansionLevel(GetExpansionLevel()) and C_ChallengeMode.IsChallengeModeEnabled(); end, },
+	{ name = "PVPQueueFrame", addon = "Blizzard_PVPUI", check = function() return ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA); end },
+	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForExpansionLevel(GetExpansionLevel()) and C_ChallengeMode.IsChallengeModeEnabled(); end },
 }
 
 function PVEFrame_OnLoad(self)

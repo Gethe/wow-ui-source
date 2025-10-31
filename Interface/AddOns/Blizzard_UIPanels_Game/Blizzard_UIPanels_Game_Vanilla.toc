@@ -19,6 +19,7 @@ Classic\HonorFrame_Shared.lua
 Classic\HonorFrameTemplates.xml
 Vanilla\HonorFrame.xml
 Vanilla\QuestFrameTemplates.xml
+Classic\QuestFrame.lua
 Vanilla\QuestFrame.lua
 Vanilla\QuestFrame.xml
 Vanilla\QuestLogFrame.lua

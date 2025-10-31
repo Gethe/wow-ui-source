@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Button name="TalentButtonChoiceTemplate" mixin="TalentButtonSplitIconMixin" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="GetEdgeDiameterOffset" value="TalentButtonArtMixin.GetChoiceEdgeDiameterOffset" type="global"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.Choice" type="global"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+		<HitRectInsets left="-10" right="-10" top="0" bottom="0" />
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon2" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<MaskTexture parentKey="IconSplitMask" atlas="talents-node-choice-mask-half" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+
+				<MaskTexture parentKey="Icon2Mask" atlas="talents-node-choice-mask" rotation="180" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon2"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+	</Button>
+</Ui>
