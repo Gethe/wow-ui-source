@@ -22,7 +22,7 @@
     Specifies the CDN region to use for the export. Defaults to "us".
 
 .EXAMPLE
-    PS> WowUiSourceExporter.ps1 -Product wow
+    PS> ExportInterfaceFiles.ps1 -Product wow
 #>
 
 [CmdletBinding(PositionalBinding=$false)]
