@@ -2663,6 +2663,7 @@ local TrainingGroundsFrameEvents = {
 	"GROUP_ROSTER_UPDATE",
 	"LFG_LIST_ACTIVE_ENTRY_UPDATE",
 	"LFG_LIST_SEARCH_RESULT_UPDATED",
+	"TRAINING_GROUNDS_ENABLED_STATUS_UPDATED",
 };
 
 local TrainingGroundPVPType = EnumUtil.MakeEnum(
@@ -2716,7 +2717,7 @@ function TrainingGroundsFrameMixin:OnHide()
 end
 
 function TrainingGroundsFrameMixin:OnEvent(event, ...)
-	if event == "GROUP_ROSTER_UPDATE" or event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
+	if event == "GROUP_ROSTER_UPDATE" or event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" or event == "TRAINING_GROUNDS_ENABLED_STATUS_UPDATED" then
 		self:RefreshQueueButton();
 	end
 end
@@ -2770,6 +2771,10 @@ function TrainingGroundsFrameMixin:RefreshQueueButton()
 end
 
 function TrainingGroundsFrameMixin:GetQueueButtonDisabledReason()
+	if not C_PvP.AreTrainingGroundsEnabled() then
+		return ERR_PVP_TRAINING_GROUNDS_DISABLED;
+	end
+
 	local isPartyLeader = not IsInGroup(LE_PARTY_CATEGORY_HOME) or UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
 	if not isPartyLeader then
 		return ERR_NOT_LEADER;

@@ -552,6 +552,42 @@ function CooldownViewerItemMixin:OnNewTarget()
 	self:SetPandemicAlertTriggerTime(GetTime(), nil, nil);
 end
 
+function CooldownViewerItemMixin:IsUsingVisualDataSource_Spell()
+	return self.wasSetFromCharges or self.wasSetFromCooldown or self.wasSetFromAura;
+end
+
+function CooldownViewerItemMixin:IsUsingVisualDataSource_Any()
+	return self:IsUsingVisualDataSource_Spell() or self.wasSetFromEditMode;
+end
+
+function CooldownViewerItemMixin:ClearVisualDataSource()
+	self.wasSetFromCharges = false;
+	self.wasSetFromCooldown = false;
+	self.wasSetFromAura = false;
+	self.wasSetFromEditMode = false;
+end
+
+function CooldownViewerItemMixin:AddVisualDataSource_Charges()
+	self.wasSetFromCharges = true;
+end
+
+function CooldownViewerItemMixin:HasVisualDataSource_Charges()
+	return self.wasSetFromCharges;
+end
+
+function CooldownViewerItemMixin:AddVisualDataSource_Cooldown()
+	self.wasSetFromCooldown = true;
+end
+
+function CooldownViewerItemMixin:AddVisualDataSource_Aura()
+	self.wasSetFromAura = true;
+end
+
+function CooldownViewerItemMixin:AddVisualDataSource_EditMode()
+	assertsafe(not self:IsUsingVisualDataSource_Spell(), "Cooldown %s shouldn't use edit mode when it was already set from a spell", tostring(self:GetCooldownID()));
+	self.wasSetFromEditMode = true;
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for Essential and Utility cooldown items.
 CooldownViewerCooldownItemMixin = CreateFromMixins(CooldownViewerItemMixin);
@@ -692,6 +728,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 	if self:CanUseAuraForCooldown() then
 		local totemData = self:GetTotemData();
 		if totemData then
+			self:AddVisualDataSource_Aura();
 			self.cooldownEnabled = true;
 			self.cooldownStartTime = totemData.expirationTime - totemData.duration;
 			self.cooldownDuration = totemData.duration;
@@ -703,11 +740,14 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 			self.cooldownUseAuraDisplayTime = true;
 			self.cooldownPlayFlash = false;
 			self.cooldownPaused = false;
-			return true;
+			return; -- Early return because totems take precedence and we can avoid aura lookup
 		end
 
 		local auraData = self:GetAuraData();
 		if auraData then
+			-- NOTE: Auras are in a priority class where we want to show their cooldown info, but keep the charge count display, but not the charge cooldown display.
+			-- This is why auras don't check to see if HasVisualDataSource_Charges is true, but it means that the charge radial swipe will not display.
+			self:AddVisualDataSource_Aura();
 			self.cooldownEnabled = true;
 			self.cooldownStartTime = auraData.expirationTime - auraData.duration;
 			self.cooldownDuration = auraData.duration;
@@ -727,23 +767,17 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 			if self:CheckSetPandemicAlertTiggerTime(auraData, timeNow) then
 				self.cooldownUseAuraDisplayTime = false;
 			end
-
-			return true;
 		end
 	end
-
-	return false;
 end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges(timeNow)
-	-- TODO: Determine whether or not spells that have charges should ever check the target to see if it has related auras.
-	-- I want to think that would be impossible, but if it's not which one should take precedence? Or is this the kind of thing
-	-- where both the charge state and the aura state need to both contribute to the visual state for the item?
 	local spellChargeInfo = self:GetSpellChargeInfo();
 	local displayChargeCooldown = spellChargeInfo and (spellChargeInfo.cooldownStartTime or 0) > 0 and (spellChargeInfo.currentCharges or 0) > 0;
 
 	-- If the spell has multiple charges, give those values precedence over the spell's cooldown until the charges are spent.
 	if displayChargeCooldown then
+		self:AddVisualDataSource_Charges();
 		self.cooldownEnabled = true;
 		self.cooldownStartTime = spellChargeInfo.cooldownStartTime;
 		self.cooldownDuration = spellChargeInfo.cooldownDuration;
@@ -762,11 +796,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges(tim
 				self:AddChargeGainedAlertTime(predictedChargeGainTime);
 			end
 		end
-
-		return true;
 	end
-
-	return false;
 end
 
 local wasOnGCDLookup = {};
@@ -781,7 +811,8 @@ end
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldown(timeNow)
 	local spellID = self:GetSpellID();
 	local spellCooldownInfo = spellID and C_Spell.GetSpellCooldown(spellID);
-	if spellCooldownInfo then
+	if spellCooldownInfo and not self:HasVisualDataSource_Charges() then
+		self:AddVisualDataSource_Cooldown();
 		CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
 
 		local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
@@ -805,15 +836,12 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 		self.cooldownPlayFlash = self.isOnActualCooldown;
 
 		LogCooldown(spellID, "CheckCacheCooldownValuesFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
-
-		return true;
 	end
-
-	return false;
 end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEditMode()
-	if self:HasEditModeData() then
+	if self:HasEditModeData() and not self:IsUsingVisualDataSource_Spell() then
+		self:AddVisualDataSource_EditMode();
 		self.cooldownEnabled = true;
 		self.cooldownStartTime = GetTime() - GetEditModeElapsedTime(self.editModeIndex);
 		self.cooldownDuration = GetEditModeDuration(self.editModeIndex);
@@ -825,49 +853,37 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEditMode()
 		self.cooldownUseAuraDisplayTime = false;
 		self.cooldownPlayFlash = false;
 		self.cooldownPaused = true;
-		return true;
 	end
-
-	return false;
 end
 
 function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 	local timeNow = GetTime();
 
-	if self:CheckCacheCooldownValuesFromCharges(timeNow) then
-		return true;
+	-- Cooldowns can be influenced by multiple sources, so check them all
+	-- But if any source performed an update, those functions might return early.
+	-- The state updates are in "rough" priority order and the call order here actually matters.
+	self:CheckCacheCooldownValuesFromCharges(timeNow);
+	self:CheckCacheCooldownValuesFromSpellCooldown(timeNow);
+	self:CheckCacheCooldownValuesFromAura(timeNow);
+	self:CheckCacheCooldownValuesFromEditMode();
+
+	if not self:IsUsingVisualDataSource_Any() then
+		self.cooldownEnabled = false;
+		self.cooldownStartTime = 0;
+		self.cooldownDuration = 0;
+		self.cooldownModRate = 1;
+		self.cooldownSwipeColor = CooldownViewerConstants.ITEM_COOLDOWN_COLOR;
+		self.cooldownDesaturated = false;
+		self.cooldownShowDrawEdge = false;
+		self.cooldownShowSwipe = false;
+		self.cooldownUseAuraDisplayTime = false;
+		self.cooldownPlayFlash = false;
+		self.cooldownPaused = false;
+		self.isOnGCD = false;
+		self.cooldownIsActive = false;
+		self.allowOnCooldownAlert = false;
+		self.isOnActualCooldown = false;
 	end
-
-	-- Need to run both of these because auras can modify cooldowns but still need to be checked independently
-	local wasSetFromSpell = self:CheckCacheCooldownValuesFromSpellCooldown(timeNow);
-	local wasSetFromAura = self:CheckCacheCooldownValuesFromAura(timeNow);
-
-	if wasSetFromSpell or wasSetFromAura then
-		return true;
-	end
-
-	if self:CheckCacheCooldownValuesFromEditMode() then
-		return true;
-	end
-
-	-- Otherwise there was no cooldown happening, reset state.
-	self.cooldownEnabled = false;
-	self.cooldownStartTime = 0;
-	self.cooldownDuration = 0;
-	self.cooldownModRate = 1;
-	self.cooldownSwipeColor = CooldownViewerConstants.ITEM_COOLDOWN_COLOR;
-	self.cooldownDesaturated = false;
-	self.cooldownShowDrawEdge = false;
-	self.cooldownShowSwipe = false;
-	self.cooldownUseAuraDisplayTime = false;
-	self.cooldownPlayFlash = false;
-	self.cooldownPaused = false;
-	self.isOnGCD = false;
-	self.cooldownIsActive = false;
-	self.allowOnCooldownAlert = false;
-	self.isOnActualCooldown = false;
-
-	return false;
 end
 
 function CooldownViewerCooldownItemMixin:CacheChargeValues()
@@ -1000,6 +1016,7 @@ function CooldownViewerCooldownItemMixin:RefreshOverlayGlow()
 end
 
 function CooldownViewerCooldownItemMixin:RefreshData()
+	self:ClearVisualDataSource();
 	self:RefreshAuraInstance();
 	self:RefreshSpellCooldownInfo();
 	self:RefreshSpellChargeInfo();
@@ -1123,6 +1140,11 @@ function CooldownViewerBuffIconItemMixin:OnCooldownDone()
 	self:RefreshActive();
 end
 
+function CooldownViewerBuffIconItemMixin:GetCooldownSwipeColor()
+	-- Adding API for this, but still using the standard cooldown colors even though this is an aura
+	return CooldownViewerConstants.ITEM_COOLDOWN_COLOR;
+end
+
 function CooldownViewerBuffIconItemMixin:RefreshCooldownInfo()
 	local cooldownFrame = self:GetCooldownFrame();
 
@@ -1130,6 +1152,9 @@ function CooldownViewerBuffIconItemMixin:RefreshCooldownInfo()
 	local currentTime = expirationTime - GetTime();
 
 	if currentTime > 0 then
+		local swipeColor = self:GetCooldownSwipeColor();
+		cooldownFrame:SetSwipeColor(swipeColor.r, swipeColor.g, swipeColor.b, swipeColor.a);
+
 		local startTime = expirationTime - duration;
 		local isEnabled = 1;
 		local forceShowDrawEdge = false;
@@ -1153,6 +1178,7 @@ function CooldownViewerBuffIconItemMixin:RefreshApplications()
 end
 
 function CooldownViewerBuffIconItemMixin:RefreshData()
+	self:ClearVisualDataSource();
 	self:RefreshAuraInstance();
 	self:RefreshCooldownInfo();
 	self:RefreshSpellTexture();
@@ -1509,7 +1535,7 @@ function CooldownViewerMixin:ShouldBeShown()
 		return true;
 	end
 
-	if CVarCallbackRegistry:GetCVarValueBool(cooldownViewerEnabledCVar) ~= true then
+	if not CVarCallbackRegistry:GetCVarValueBool(cooldownViewerEnabledCVar) then
 		return false;
 	end
 

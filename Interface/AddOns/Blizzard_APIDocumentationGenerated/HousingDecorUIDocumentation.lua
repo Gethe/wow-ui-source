@@ -161,6 +161,24 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "IsHouseExteriorDoorHovered",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHouseExteriorDoorHovered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHouseExteriorHovered",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHouseExteriorHovered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
 

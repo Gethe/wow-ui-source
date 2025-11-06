@@ -41,8 +41,8 @@ end
 function HousingTutorialsItemAcquisitionMixin:IsValidItem(itemHyperlink)
 	local _name, _enchantLink, _displayQuality, _itemLevel, _requiredLevel, _className, _subclassName, _isStackable, _inventoryType, _iconFile, _sellPrice, itemClassID, itemSubclassID, _boundState, _expansionID, _itemSetID, _isTradeskill = C_Item.GetItemInfo(itemHyperlink);
 
-	local housingItemClass = 20;
-	local decorItemSubClass = 0; 
+	local housingItemClass = Enum.ItemClass.Housing;
+	local decorItemSubClass = Enum.ItemHousingSubclass.Decor; 
 	return itemClassID == housingItemClass and itemSubclassID == decorItemSubClass;
 end
 
@@ -108,7 +108,7 @@ function HousingTutorialsHouseTeleportWatcherMixin:PLAYER_HOUSE_LIST_UPDATED(...
 end
 
 function HousingTutorialsHouseTeleportWatcherMixin:InitTutorial()
-	if not C_CVar.GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingTeleportButton) then
+	if HousingMicroButton and HousingMicroButton:IsEnabled() and HousingMicroButton:IsShown() and not C_CVar.GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingTeleportButton) then
 		if not self.teleportTutorial then
 			self.teleportTutorial = CreateAndInitFromMixin(HousingTutorialsHouseTeleportMixin);
 		end

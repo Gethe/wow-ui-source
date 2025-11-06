@@ -8,3 +8,6 @@ DAMAGE_METER_DEFAULT_BAR_HEIGHT = 25;
 -- we allow oversizing the text). Internally, damage meter converts this to
 -- a text scale that we want to represent on a range of 0 to 1.
 DAMAGE_METER_TEXT_SIZE_TO_SCALE_MULTIPLIER = 0.01;
+
+-- Edit Mode also stores transparency in 0 to 100 units.
+DAMAGE_METER_TRANSPARENCY_TO_ALPHA_MULTIPLIER = 0.01;

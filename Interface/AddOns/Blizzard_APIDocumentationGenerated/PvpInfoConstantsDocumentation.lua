@@ -45,7 +45,7 @@ local PvpInfoConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID", Type = "number", Value = 0 },
+				{ Name = "RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID", Type = "number", Value = 3178 },
 			},
 		},
 	},

@@ -226,10 +226,8 @@ local function Register()
 	end);
 
 	InterfaceOverrides.RunSettingsCallback(function()
-		local addSearchTags = false;
-
 		-- External Defensives enable checkbox
-		-- Settings.SetupCVarCheckbox(category, "cooldownViewerEnabled", ENABLE_COOLDOWN_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "externalDefensivesEnabled", ENABLE_EXTERNAL_DEFENSIVES_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
 	end);
 
 	--[[ Disabled until real functionality exists

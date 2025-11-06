@@ -1,27 +1,72 @@
+local DAMAGE_METER_CATEGORIES = {
+	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps}; },
+	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps}; },
+	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels}; },
+};
 
 local DAMAGE_METER_TYPE_NAMES = {
-	[Enum.DamageMeterType.DamageDone] = "Damage Done",
-	[Enum.DamageMeterType.Dps] = "DPS",
-	[Enum.DamageMeterType.HealingDone] = "Healing Done",
-	[Enum.DamageMeterType.Hps] = "HPS",
+	[Enum.DamageMeterType.DamageDone] = DAMAGE_METER_TYPE_DAMAGE_DONE,
+	[Enum.DamageMeterType.Dps] = DAMAGE_METER_TYPE_DPS,
+	[Enum.DamageMeterType.HealingDone] = DAMAGE_METER_TYPE_HEALING_DONE,
+	[Enum.DamageMeterType.Hps] = DAMAGE_METER_TYPE_HPS,
+	[Enum.DamageMeterType.Interrupts] = DAMAGE_METER_TYPE_INTERRUPTS,
+	[Enum.DamageMeterType.Dispels] = DAMAGE_METER_TYPE_DISPELS,
 };
 
 local function GetDamageMeterTypeName(damageMeterType)
 	return DAMAGE_METER_TYPE_NAMES[damageMeterType] or "Unknown";
 end
 
+local DAMAGE_METER_SESSION_TYPE_SHORT_NAMES = {
+	[Enum.DamageMeterSessionType.Overall] = DAMAGE_METER_OVERALL_SESSION_SHORT,
+	[Enum.DamageMeterSessionType.Current] = DAMAGE_METER_CURRENT_SESSION_SHORT,
+};
+
+local function GetDamageMeterSessionShortName(sessionType, sessionID)
+	if sessionType then
+		return DAMAGE_METER_SESSION_TYPE_SHORT_NAMES[sessionType] or "?";
+	end
+
+	return sessionID or "?";
+end
+
 DamageMeterWindowMixin = {};
 
 local DamageMeterWindowListEvents = {
-	--"DAMAGE_METER_LIST_UPDATE",
+	"DAMAGE_METER_COMBAT_SESSION_UPDATED",
+	"DAMAGE_METER_RESET",
 };
+
+function DamageMeterWindowMixin:GetTrackedStatDropdown()
+	return self.TrackedStatDropdown;
+end
+
+function DamageMeterWindowMixin:GetTrackedStatName()
+	return self:GetTrackedStatDropdown().StatName;
+end
+
+function DamageMeterWindowMixin:GetSessionDropdown()
+	return self.SessionDropdown;
+end
+
+function DamageMeterWindowMixin:GetSessionName()
+	return self:GetSessionDropdown().SessionName;
+end
+
+function DamageMeterWindowMixin:GetSettingsDropdown()
+	return self.SettingsDropdown;
+end
+
+function DamageMeterWindowMixin:GetUnitBreakdownFrame()
+	return self.UnitBreakdownFrame;
+end
 
 function DamageMeterWindowMixin:OnLoad()
 	self:RegisterForDrag("LeftButton");
 
 	self:InitializeScrollBox();
 	self:InitializeTrackedStatDropdown();
-	self:InitializeSegmentDropdown();
+	self:InitializeSessionDropdown();
 	self:InitializeSettingsDropdown();
 	self:InitializeResizeButton();
 end
@@ -39,8 +84,15 @@ function DamageMeterWindowMixin:OnHide()
 end
 
 function DamageMeterWindowMixin:OnEvent(event, ...)
-	if event == "DAMAGE_METER_LIST_UPDATE" then
-		self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	if event == "DAMAGE_METER_COMBAT_SESSION_UPDATED" then
+		local type, sessionID = ...;
+		if self:GetTrackedStat() == type then
+			if self:GetSessionID() == sessionID or self:GetSessionType() ~= nil then
+				self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+			end
+		end
+	elseif event == "DAMAGE_METER_RESET" then
+		self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 	end
 end
 
@@ -53,7 +105,6 @@ function DamageMeterWindowMixin:OnEnter()
 			self.HideResizeButton:Stop();
 			self.ShowResizeButton:Play();
 		elseif not shouldResizeButtonBeShown and self.ResizeButton:GetAlpha() > 0 then
-			self:SetScript("OnUpdate", self.OnUpdate);
 			self.ShowResizeButton:Stop();
 			self.HideResizeButton:Play();
 		end
@@ -68,11 +119,6 @@ function DamageMeterWindowMixin:OnDragStop()
 	self:StopMovingOrSizing();
 end
 
-function DamageMeterWindowMixin:OnUpdate()
-	local retainScrollPosition = true;
-	self:Refresh(retainScrollPosition);
-end
-
 function DamageMeterWindowMixin:InitializeScrollBox()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("DamageMeterSourceEntryTemplate", function(frame, elementData)
@@ -80,9 +126,12 @@ function DamageMeterWindowMixin:InitializeScrollBox()
 		frame:SetUseClassColor(self:ShouldUseClassColor());
 		frame:SetBarHeight(self:GetBarHeight());
 		frame:SetTextScale(self:GetTextScale());
+		frame:SetShowBarIcons(self:ShouldShowBarIcons());
+		frame:SetStyle(self:GetStyle());
+		frame:RegisterForClicks("RightButtonUp");
 
 		frame:SetScript("OnClick", function(button, mouseButtonName)
-			if mouseButtonName == "LeftButton" then
+			if mouseButtonName == "RightButton" then
 				self:ShowBreakdownFrame(elementData);
 			end
 		end);
@@ -95,7 +144,7 @@ function DamageMeterWindowMixin:InitializeScrollBox()
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local topLeftX, topLeftY = 20, -5;
-	local bottomRightX, bottomRightY = -20, 0;
+	local bottomRightX, bottomRightY = -22, 6;
 	local withBarXOffset = 20;
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
@@ -109,17 +158,6 @@ function DamageMeterWindowMixin:InitializeScrollBox()
 end
 
 function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
-	local function GetCategories()
-		local categoryList =
-		{
-			{ name = "Damage"; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps}; },
-			{ name = "Healing"; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps}; },
-		};
-		return categoryList;
-	end
-
-	local categoryList = GetCategories();
-
 	local function IsSelected(option)
 		return self:GetTrackedStat() == option;
 	end
@@ -129,10 +167,10 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 		self:GetDamageMeterOwner():SetWindowFrameTrackedStat(self, option);
 	end
 
-	self.TrackedStatDropdown:SetupMenu(function(owner, rootDescription)
+	self:GetTrackedStatDropdown():SetupMenu(function(owner, rootDescription)
 		rootDescription:SetTag("MENU_DAMAGE_METER_WINDOW_TRACKED_TYPE");
 
-		for _i, categoryData in ipairs(categoryList) do
+		for _i, categoryData in ipairs(DAMAGE_METER_CATEGORIES) do
 			local categorySubmenu = rootDescription:CreateButton(categoryData.name);
 
 			for _j, typeData in ipairs(categoryData.types) do
@@ -146,10 +184,33 @@ function DamageMeterWindowMixin:InitializeTrackedStatDropdown()
 	self.TrackedStatDropdown.Arrow:SetPoint("LEFT", self.TrackedStatDropdown, "LEFT", 0, -2);
 end
 
-function DamageMeterWindowMixin:InitializeSegmentDropdown()
-	self.SegmentDropdown:SetupMenu(function(owner, rootDescription)
-		rootDescription:SetTag("MENU_DAMAGE_METER_SEGMENTS");
+function DamageMeterWindowMixin:InitializeSessionDropdown()
+	local function IsSelected(option)
+		return self:GetSessionType() == option.type and self:GetSessionID() == option.sessionID;
+	end
 
+	local function SetSelected(option)
+		-- Session changes need to go through the owner.
+		self:GetDamageMeterOwner():SetWindowFrameSession(self, option.type, option.sessionID);
+	end
+
+	self:GetSessionDropdown():SetupMenu(function(owner, rootDescription)
+		rootDescription:SetTag("MENU_DAMAGE_METER_SESSIONS");
+
+		local availableCombatSessions = C_DamageMeter.GetAvailableCombatSessions();
+		for _i, availableCombatSession in ipairs(availableCombatSessions) do
+			local sessionData = {type = nil; sessionID = availableCombatSession.sessionID; };
+
+			rootDescription:CreateRadio("PH - Unnamed Segment", IsSelected, SetSelected, sessionData);
+		end
+
+		rootDescription:CreateDivider();
+
+		local currentSessionData = {type = Enum.DamageMeterSessionType.Current; sessionID = nil; };
+		rootDescription:CreateRadio(DAMAGE_METER_CURRENT_SESSION, IsSelected, SetSelected, currentSessionData);
+
+		local overallSessionData = {type = Enum.DamageMeterSessionType.Overall; sessionID = nil; };
+		rootDescription:CreateRadio(DAMAGE_METER_OVERALL_SESSION, IsSelected, SetSelected, overallSessionData);
 	end);
 end
 
@@ -162,28 +223,36 @@ function DamageMeterWindowMixin:InitializeSettingsDropdown()
 		return self:GetDamageMeterOwner():CanHideWindowFrame(self);
 	end
 
-	self.SettingsDropdown:SetupMenu(function(dropdown, rootDescription)
+	self:GetSettingsDropdown():SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_DAMAGE_METER_WINDOW_SETTINGS");
 
-		rootDescription:CreateButton("PH - Settings", function(...)
+		rootDescription:CreateButton(DAMAGE_METER_OPEN_SETTINGS, function(...)
 			Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID);
 		end);
 
-		rootDescription:CreateButton("PH - Edit Mode", function(...)
+		rootDescription:CreateButton(DAMAGE_METER_OPEN_EDIT_MODE, function(...)
 			local skipTransitionBackToOpeningPanel = true;
 			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
 			ShowUIPanel(EditModeManagerFrame);
 		end);
 
-		local createNewWindowFrameButton = rootDescription:CreateButton("PH - Create New Window", function(...)
-			self:GetDamageMeterOwner():ShowNewWindowFrame();
-		end);
-		createNewWindowFrameButton:SetEnabled(IsCreateNewWindowFrameEnabled);
+		rootDescription:CreateSpacer();
 
-		local deleteWindowFrameButton = rootDescription:CreateButton("PH - Delete Window", function(...)
+		rootDescription:CreateButton(DAMAGE_METER_RESET_ALL_SESSIONS, function(...)
+			C_DamageMeter.ResetAllCombatSessions();
+		end);
+
+		local deleteWindowFrameButton = rootDescription:CreateButton(DAMAGE_METER_HIDE_WINDOW, function(...)
 			self:GetDamageMeterOwner():HideWindowFrame(self);
 		end);
 		deleteWindowFrameButton:SetEnabled(IsDeleteWindowFrameEnabled)
+
+		rootDescription:CreateSpacer();
+
+		local createNewWindowFrameButton = rootDescription:CreateButton(DAMAGE_METER_SHOW_NEW_WINDOW, function(...)
+			self:GetDamageMeterOwner():ShowNewWindowFrame();
+		end);
+		createNewWindowFrameButton:SetEnabled(IsCreateNewWindowFrameEnabled);
 	end);
 end
 
@@ -211,10 +280,26 @@ function DamageMeterWindowMixin:InitializeResizeButton()
 		end);
 end
 
+function DamageMeterWindowMixin:GetCombatSession()
+	local trackedStat = self:GetTrackedStat();
+
+	local sessionType = self:GetSessionType();
+	if sessionType then
+		return C_DamageMeter.GetCombatSessionFromType(sessionType, trackedStat);
+	end
+
+	local sessionID = self:GetSessionID();
+	if sessionID then
+		return C_DamageMeter.GetCombatSessionFromID(sessionID, trackedStat);
+	end
+
+	return nil;
+end
+
 function DamageMeterWindowMixin:BuildDataProvider()
 	local dataProvider = CreateDataProvider();
 
-	local combatSession = C_DamageMeter.GetCurrentCombatSession(Enum.DamageMeterType.DamageDone);
+	local combatSession = self:GetCombatSession();
 	local combatSources = combatSession and combatSession.combatSources or {};
 	local maxAmount = combatSession and combatSession.maxAmount or 0;
 
@@ -263,11 +348,40 @@ end
 -- any code other than DamageMeterMixin:SetWindowFrameTrackedStat
 function DamageMeterWindowMixin:SetTrackedStat(trackedStat)
 	self.trackedStat = trackedStat;
-	self.TrackedStatDropdown.StatName:SetText(GetDamageMeterTypeName(trackedStat));
+
+	self:GetTrackedStatName():SetText(GetDamageMeterTypeName(trackedStat));
+
+	self:GetUnitBreakdownFrame():SetTrackedStat(trackedStat);
+
+	-- Changes to the tracked stat should always hide the breakdown frame.
+	self:HideBreakdownFrame();
+
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 end
 
 function DamageMeterWindowMixin:GetTrackedStat()
 	return self.trackedStat;
+end
+
+-- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
+-- any code other than DamageMeterMixin:SetWindowFrameSession
+function DamageMeterWindowMixin:SetSession(sessionType, sessionID)
+	self.sessionType = sessionType;
+	self.sessionID = sessionID;
+
+	self:GetSessionName():SetText(GetDamageMeterSessionShortName(sessionType, sessionID));
+
+	self:GetUnitBreakdownFrame():SetSession(sessionType, sessionID);
+
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+end
+
+function DamageMeterWindowMixin:GetSessionType()
+	return self.sessionType;
+end
+
+function DamageMeterWindowMixin:GetSessionID()
+	return self.sessionID;
 end
 
 function DamageMeterWindowMixin:IsResizing()
@@ -278,19 +392,21 @@ function DamageMeterWindowMixin:RefreshLayout()
 
 end
 
-function DamageMeterWindowMixin:ShowBreakdownFrame(elementData)
-	self.UnitBreakdownFrame:SetTrackedData(self:GetTrackedStat(), elementData.unitToken);
-	self.UnitBreakdownFrame:AnchorToWindow(self);
-	self.UnitBreakdownFrame:Show();
+function DamageMeterWindowMixin:ShowBreakdownFrame(source)
+	local unitBreakdownFrame = self:GetUnitBreakdownFrame();
+	unitBreakdownFrame:SetSource(source);
+	unitBreakdownFrame:AnchorToWindow(self);
+	unitBreakdownFrame:Show();
 end
 
 function DamageMeterWindowMixin:HideBreakdownFrame()
-	self.UnitBreakdownFrame:Hide();
+	self:GetUnitBreakdownFrame():Hide();
 end
 
 function DamageMeterWindowMixin:OnUseClassColorChanged(useClassColor)
 	self.ScrollBox:ForEachFrame(function(frame) frame:SetUseClassColor(useClassColor); end);
-	self.UnitBreakdownFrame:SetUseClassColor(useClassColor);
+
+	self:GetUnitBreakdownFrame():SetUseClassColor(useClassColor);
 end
 
 function DamageMeterWindowMixin:ShouldUseClassColor()
@@ -307,10 +423,9 @@ function DamageMeterWindowMixin:SetUseClassColor(useClassColor)
 end
 
 function DamageMeterWindowMixin:OnBarHeightChanged(barHeight)
-	local retainScrollPosition = true;
 	self.ScrollBox:GetView():SetElementExtent(barHeight);
-	self.UnitBreakdownFrame:SetBarHeight(barHeight);
-	self:Refresh(retainScrollPosition);
+	self:GetUnitBreakdownFrame():SetBarHeight(barHeight);
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 end
 
 function DamageMeterWindowMixin:GetBarHeight()
@@ -337,5 +452,39 @@ function DamageMeterWindowMixin:SetTextScale(textScale)
 	if not ApproximatelyEqual(self:GetTextScale(), textScale) then
 		self.textScale = textScale;
 		self:OnTextScaleChanged(textScale);
+	end
+end
+
+function DamageMeterWindowMixin:OnShowBarIconsChanged(showBarIcons)
+	self:ForEachEntryFrame(function(frame) frame:SetShowBarIcons(showBarIcons); end);
+	self:GetUnitBreakdownFrame():SetShowBarIcons(showBarIcons);
+end
+
+function DamageMeterWindowMixin:ShouldShowBarIcons()
+	return self.showBarIcons == true;
+end
+
+function DamageMeterWindowMixin:SetShowBarIcons(showBarIcons)
+	showBarIcons = (showBarIcons == true);
+
+	if self.showBarIcons ~= showBarIcons then
+		self.showBarIcons = showBarIcons;
+		self:OnShowBarIconsChanged(showBarIcons);
+	end
+end
+
+function DamageMeterWindowMixin:OnStyleChanged(style)
+	self:ForEachEntryFrame(function(frame) frame:SetStyle(style); end);
+	self:GetUnitBreakdownFrame():SetStyle(style);
+end
+
+function DamageMeterWindowMixin:GetStyle()
+	return self.style or Enum.DamageMeterStyle.Default;
+end
+
+function DamageMeterWindowMixin:SetStyle(style)
+	if self.style ~= style then
+		self.style = style;
+		self:OnStyleChanged(style);
 	end
 end

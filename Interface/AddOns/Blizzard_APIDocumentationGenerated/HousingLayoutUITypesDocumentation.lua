@@ -48,6 +48,7 @@ local HousingLayoutUITypes =
 			{
 				{ Name = "doorID", Type = "number", Nilable = false },
 				{ Name = "connectionType", Type = "HousingRoomComponentType", Nilable = false },
+				{ Name = "doorFacing", Type = "number", Nilable = false },
 			},
 		},
 		{

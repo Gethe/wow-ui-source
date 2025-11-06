@@ -52,7 +52,7 @@
 	</Button>
 
 	<!-- If you make changes to this, consider making the same changes to PrivateAuraTemplate -->
-	<Button name="AuraButtonTemplate" inherits="AuraButtonCodeTemplate" virtual="true">
+	<Button name="AuraButtonTemplate" inherits="AuraButtonCodeTemplate" hidden="true" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>

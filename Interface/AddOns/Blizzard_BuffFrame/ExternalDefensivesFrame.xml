@@ -3,12 +3,15 @@
 	<Frame name="ExternalDefensivesFrame" parent="UIParent" inherits="BaseAuraFrameTemplate" mixin="ExternalDefensivesFrameMixin" frameStrata="LOW">
 		<KeyValues>
 			<KeyValue key="exampleAuraType" value="Buff" type="string"/>
-			<KeyValue key="maxAuras" value="BUFF_MAX_DISPLAY" type="global"/>
+			<KeyValue key="maxAuras" value="5" type="number"/>
 			<KeyValue key="systemIndex" value="Enum.EditModeAuraFrameSystemIndices.ExternalDefensivesFrame" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_FRAME_LABEL" type="global"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-25" />
 		</Anchors>
+		<Scripts>
+			<OnLoad method="ExternalDefensives_OnLoad" inherit="prepend"/>
+		</Scripts>
 	</Frame>
 </Ui>

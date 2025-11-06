@@ -1120,8 +1120,16 @@ function EditModeManagerFrameMixin:SetupEditModeDialogs()
 	EditModeImportLayoutDialog:SetLayoutManager(self);
 	EditModeImportLayoutDialog:SetModeData({
 		importLayout = {
+			title = HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE,
+			importEditBoxLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL,
+			nameEditBoxLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL,
+			instructionsLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS,
+			acceptText = HUD_EDIT_MODE_IMPORT_LAYOUT,
+			cancelText = CANCEL,
+			disabledAcceptTooltip = HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME,
 			onAcceptCallback = self.ImportLayoutFromDialog,
 			updateAcceptCallback = self.CanImportFromDialog,
+			needsCharacterSpecific = true,
 		},
 	});
 end
@@ -2246,7 +2254,7 @@ function EditModeAccountSettingsMixin:RefreshBuffsAndDebuffs()
 end
 
 function EditModeAccountSettingsMixin:RefreshExternalDefensives()
-	RefreshAuraFrame(ExternalDefensivesFrame, self.settingsCheckButtons.ExternalDefensives:IsControlChecked());
+	RefreshAuraFrame(ExternalDefensivesFrame, self.settingsCheckButtons.ExternalDefensives:IsControlChecked() and self.settingsCheckButtons.ExternalDefensives:ShouldEnable());
 end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
@@ -2569,18 +2577,13 @@ function EditModeAccountSettingsMixin:SetPersonalResourceDisplayShown(shown, isU
 end
 
 function EditModeAccountSettingsMixin:RefreshCooldownViewer()
-	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked();
+	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked() and self.settingsCheckButtons.CooldownViewer:ShouldEnable();
 
-	local cooldownViewerFrames = self:GetCooldownViewerFrames();
-
-	if showCooldownViewer then
-		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
-			cooldownViewer:SetIsEditing(true);
+	for _, cooldownViewer in ipairs(self:GetCooldownViewerFrames()) do
+		cooldownViewer:SetIsEditing(showCooldownViewer);
+		if showCooldownViewer then
 			cooldownViewer:HighlightSystem();
-		end
-	else
-		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
-			cooldownViewer:SetIsEditing(false);
+		else
 			cooldownViewer:ClearHighlight();
 		end
 	end
@@ -2703,8 +2706,12 @@ function EditModeManagerTutorialMixin:OnLoad()
 	end
 end
 
+function EditModeManagerTutorialMixin:HasHelptipsToShow()
+	return HelpTip:AreHelpTipsEnabled() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager);
+end
+
 function EditModeManagerTutorialMixin:OnShow()
-	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager) then
+	if self:HasHelptipsToShow() then
 		self:BeginHelpTips();
 	end
 end
@@ -2749,11 +2756,4 @@ function EditModeManagerTutorialMixin:ProgressHelpTips()
 	end
 
 	self:ShowHelpTip();
-end
-
-EditModeLootFrameCheckButtonMixin = {};
-
--- Override
-function EditModeLootFrameCheckButtonMixin:ShouldEnable()
-	return GetCVar("lootUnderMouse") ~= "1";
 end

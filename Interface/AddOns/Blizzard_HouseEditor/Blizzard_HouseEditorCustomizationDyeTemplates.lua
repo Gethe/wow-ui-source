@@ -123,7 +123,8 @@ function HousingDyePaneMixin:GetPreviewDyeInfos()
 	local iconString = "";
 	local currentDyes = {};
 	local currPreviewDyes = C_HousingCustomizeMode.GetPreviewDyesOnSelectedDecor();
-	for _i, dyeColorID in ipairs(currPreviewDyes) do
+	for _i, dyeSlotInfo in ipairs(currPreviewDyes) do
+		local dyeColorID = dyeSlotInfo.dyeColorID;
 		local dyeColorInfo = C_DyeColor.GetDyeColorInfo(dyeColorID);
 		if dyeColorInfo and dyeColorInfo.itemID then
 			local itemID = dyeColorInfo.itemID;
@@ -152,7 +153,15 @@ function HousingDecorDyeSlotMixin:SetDyeSlotInfo(dyeSlotInfo, onClickCallback)
 	
 	local dyeColorInfo = dyeSlotInfo.dyeColorID and C_DyeColor.GetDyeColorInfo(dyeSlotInfo.dyeColorID);
 	local isSelected = false;
-	self.CurrentSwatch:SetDyeColorInfo(dyeColorInfo, isSelected, onClickCallback);
+	local currPreviewDyes = C_HousingCustomizeMode.GetPreviewDyesOnSelectedDecor();
+	local isClearing = false;
+	for _i, previewSlot in ipairs(currPreviewDyes) do
+		if self.dyeSlotInfo and self.dyeSlotInfo.channel == previewSlot.dyeSlotID and previewSlot.dyeColorID == 0 then
+			isClearing = true;
+			break;
+		end
+	end
+	self.CurrentSwatch:SetDyeColorInfo(dyeColorInfo, isSelected, onClickCallback, isClearing);
 end
 
 HousingDecorDyeSlotPopoutMixin = {};
@@ -276,11 +285,12 @@ end
 
 HousingDecorDyeSwatchMixin = {};
 
-function HousingDecorDyeSwatchMixin:SetDyeColorInfo(dyeColorInfo, isSelected, onClickCallback)
+function HousingDecorDyeSwatchMixin:SetDyeColorInfo(dyeColorInfo, isSelected, onClickCallback, isClearing)
 	self.dyeColorInfo = dyeColorInfo;
 	self.onClickCallback = onClickCallback;
 	if dyeColorInfo and dyeColorInfo.swatchColorStart and dyeColorInfo.swatchColorEnd then
 		self.SwatchEmpty:Hide();
+		self.SwatchClear:Hide();
 		self.SwatchStart:SetVertexColor(dyeColorInfo.swatchColorStart:GetRGB());
 		self.SwatchEnd:SetVertexColor(dyeColorInfo.swatchColorEnd:GetRGB());
 		self.SwatchStart:Show();
@@ -290,7 +300,14 @@ function HousingDecorDyeSwatchMixin:SetDyeColorInfo(dyeColorInfo, isSelected, on
 		self.SwatchStart:Hide();
 		self.SwatchEnd:Hide();
 		self.Highlight:Hide();
-		self.SwatchEmpty:Show();
+
+		if self.isCurrentSwatch then
+			self.SwatchEmpty:SetShown(not isClearing);
+			self.SwatchClear:SetShown(not not isClearing);
+		else
+			self.SwatchEmpty:Hide();
+			self.SwatchClear:Show();
+		end
 	end
 
 	self:UpdateSelected(isSelected);

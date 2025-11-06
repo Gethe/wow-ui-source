@@ -1,11 +1,16 @@
 HouseFinderFrameMixin = {}
 
-local HouseSettingsFrameShownEvents =
+local HouseFinderFrameShownEvents =
 {
 	"NEIGHBORHOOD_LIST_UPDATED",
 	"HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED",
 	"B_NET_NEIGHBORHOOD_LIST_UPDATED",
 	"DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
+};
+
+local HouseFinderLoadedEvents = 
+{
+	"FORCE_REFRESH_HOUSE_FINDER",
 };
 
 local SELECTED_NEIGHBORHOOD_ATLAS_PREFIX = "housefinder_list-item-active-";
@@ -28,6 +33,7 @@ function HouseFinderFrameMixin:OnLoad()
 	self.HouseFinderMapCanvasFrame:SetShouldZoomInstantly(true);
 
 	self.NeighborhoodListFrame:SetScript("OnShow", function() EventRegistry:TriggerEvent("HouseFinder.NeighborhoodListShown"); end);
+	FrameUtil.RegisterFrameForEvents(self, HouseFinderLoadedEvents);
 end
 
 function HouseFinderFrameMixin:OnRefreshClicked()
@@ -45,17 +51,33 @@ end
 
 function HouseFinderFrameMixin:PopulateNeighborhoodList(neighborhoodInfoVector)
 	self.neighborhoodButtonPool:ReleaseAll();
+	self.guildSubdivisions = {};
 
 	for i, neighborhoodInfo in ipairs(neighborhoodInfoVector) do
-		local button = self.neighborhoodButtonPool:Acquire();
-		button.layoutIndex = i;
-		button:Init(neighborhoodInfo, self);
-		
-		if i == 1 then
-			--we do not need to request the first selected neighborhood data, the server provides the data with the neighborhood list
-			local shouldRequestNeighborhoodData = false;
-			self:SelectNeighborhood(button, shouldRequestNeighborhoodData);
+		local skipNeighborhood = false;
+		if neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild  then
+			table.insert(self.guildSubdivisions, neighborhoodInfo);
+			--if this isn't the first guild neighborhood, skip adding a button to the neighborhood list
+			if #self.guildSubdivisions > 1 then
+				skipNeighborhood = true;
+			end
 		end
+		if not skipNeighborhood then
+			local button = self.neighborhoodButtonPool:Acquire();
+			button.layoutIndex = i;
+			button:Init(neighborhoodInfo, self);
+			
+			if i == 1 then
+				--we do not need to request the first selected neighborhood data, the server provides the data with the neighborhood list
+				local shouldRequestNeighborhoodData = false;
+				self:SelectNeighborhood(button, shouldRequestNeighborhoodData);
+			end
+		end
+	end
+	self:UpdateSubdivisionDropdown();
+	if self.selectedNeighborhoodButton.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild and #self.guildSubdivisions > 1 then
+		--if the first suggested neighborhood is a guild neighborhood, SelectNeighborhood() happened before #self.guildSubdivisions > 1
+		self.GuildSubdivisionDropdown:Show();
 	end
 	self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 	self.NeighborhoodListFrame.ScrollFrame:UpdateScrollChildRect();
@@ -87,6 +109,40 @@ function HouseFinderFrameMixin:PopulateBNetNeighborhoodList(neighborhoodInfoVect
 	self.NeighborhoodListFrame.BNetScrollFrame:Show();
 end
 
+function HouseFinderFrameMixin:UpdateSubdivisionDropdown()
+	self.GuildSubdivisionDropdown:SetWidth(140);
+	self.selectedSubdivision = 1;
+	if #self.guildSubdivisions > 1 then
+		local function IsSelected(index)
+			return self.selectedSubdivision == index;
+		end
+
+		local function SetSelected(index)
+			self:SelectSubdivision(index);
+		end
+
+		self.GuildSubdivisionDropdown:SetupMenu(function(dropdown, rootDescription)
+			local extent = 20;
+			local maxSubdivisionsShown = 8;
+			local maxScrollExtent = extent * maxSubdivisionsShown;
+			rootDescription:SetScrollMode(maxScrollExtent);
+
+			for index = 1, #self.guildSubdivisions do
+				rootDescription:CreateRadio(string.format(HOUSING_SUBDIVISION_FORMAT, index), IsSelected, SetSelected, index);
+			end
+		end);
+	end
+end
+
+function HouseFinderFrameMixin:SelectSubdivision(index)
+	self.selectedSubdivision = index;
+	self:ShowNeighborhoodList();
+	local neighborhoodInfo = self.guildSubdivisions[index];
+	C_Housing.RequestHouseFinderNeighborhoodData(neighborhoodInfo.neighborhoodGUID);
+	self.LoadingSpinnerMap:Show();
+	self.HouseFinderMapCanvasFrame:Hide();
+end
+
 function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 	if self.selectedNeighborhoodButton then
 		self.selectedNeighborhoodButton:Deselect();
@@ -103,6 +159,13 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 		C_Housing.RequestHouseFinderNeighborhoodData(button.neighborhoodInfo.neighborhoodGUID);
 		self.LoadingSpinnerMap:Show();
 		self.HouseFinderMapCanvasFrame:Hide();
+	end
+
+	if  button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild and #self.guildSubdivisions > 1 then
+		self:UpdateSubdivisionDropdown();
+		self.GuildSubdivisionDropdown:Show();
+	else
+		self.GuildSubdivisionDropdown:Hide();
 	end
 
 	if button.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.CharterInvite then
@@ -168,11 +231,20 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 			self.pendingDeclineInviteNeighborhoodButton:FailCancelInvite();
 		end
 		self.pendingDeclineInviteNeighborhoodButton = nil;
+	elseif event == "FORCE_REFRESH_HOUSE_FINDER" then
+		if self:IsShown() then
+			self:OnRefreshClicked();
+		else
+			--clear saved data and set flag to request new info on show
+			local emptyList = {};
+			self:PopulateNeighborhoodList(emptyList);
+			self.hasNeighborhoodList = nil;
+		end
 	end
 end
 
 function HouseFinderFrameMixin:OnShow()
-	FrameUtil.RegisterFrameForEvents(self, HouseSettingsFrameShownEvents);
+	FrameUtil.RegisterFrameForEvents(self, HouseFinderFrameShownEvents);
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_OPEN);
 
 	if not self.hasNeighborhoodList then
@@ -181,7 +253,7 @@ function HouseFinderFrameMixin:OnShow()
 end
 
 function HouseFinderFrameMixin:OnHide()
-	FrameUtil.UnregisterFrameForEvents(self, HouseSettingsFrameShownEvents);
+	FrameUtil.UnregisterFrameForEvents(self, HouseFinderFrameShownEvents);
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.OpenHouseFinder);
 
 	self:ShowNeighborhoodList();
@@ -196,10 +268,14 @@ function HouseFinderFrameMixin:SelectPlot(mapPin, plotInfo)
 	self.SelectedPlotTooltip:SetScale(self:GetEffectiveScale());
 	self.SelectedPlotTooltip:SetParent(mapPin);
 
-	self.SelectedPlotTooltip:SetPoint("BOTTOM", mapPin, "TOP", 0, -8);
+	self.SelectedPlotTooltip:SetPoint("BOTTOM", mapPin, "TOP", 0, -4);
 	self.SelectedPlotTooltip:SetPlotInfo(plotInfo);
 	self.SelectedPlotTooltip:Show();
-	self.PlotInfoFrame:Init(plotInfo, self.selectedNeighborhoodButton.neighborhoodInfo);
+	if self.selectedNeighborhoodButton.neighborhoodInfo.suggestionReason == Enum.HouseFinderSuggestionReason.Guild and #self.guildSubdivisions > 1 then
+		self.PlotInfoFrame:Init(plotInfo, self.guildSubdivisions[self.selectedSubdivision]);
+	else
+		self.PlotInfoFrame:Init(plotInfo, self.selectedNeighborhoodButton.neighborhoodInfo);
+	end
 	self.PlotInfoFrame:Show();
 	self.NeighborhoodListFrame:Hide();
 
@@ -355,6 +431,28 @@ function HouseFinderBNetFriendSearchBoxMixin:GetBnetID()
 	return self.autoCompleteBnetID;
 end
 
+PlotInfoFrameBackButtonMixin = {}
+
+function PlotInfoFrameBackButtonMixin:OnEnter()
+	self.IconHighlight:Show();
+	self.ButtonLabel:SetTextColor(1, 1, 1, 1);
+end
+
+function PlotInfoFrameBackButtonMixin:OnLeave()
+	self.IconHighlight:Hide();
+	self.ButtonLabel:SetTextColor(0.8, 0.8, 0.8, 1);
+end
+
+function PlotInfoFrameBackButtonMixin:OnClick()
+	HouseFinderFrame:ShowNeighborhoodList();
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_BACK_WHILE_PLOT_SELECTED);
+end
+
+function PlotInfoFrameBackButtonMixin:UpdateSize()
+	local newWidth = self.ButtonLabel:GetWidth() + 32; --32 is the button icon width
+	self:SetWidth(newWidth);
+end
+
 HouseFinderPlotInfoFrameMixin = {}
 
 local HouseFinderPlotInfoShownEvents =
@@ -363,7 +461,7 @@ local HouseFinderPlotInfoShownEvents =
 };
 
 function HouseFinderPlotInfoFrameMixin:OnLoad()
-	self.BackButton:SetScript("OnClick", self.OnBackClicked);
+	self.BackButton:UpdateSize();
 	self.VisitHouseButton:SetScript("OnClick", GenerateClosure(self.OnVisitClicked, self));
 	SmallMoneyFrame_OnLoad(self.PriceMoneyFrame);
 	MoneyFrame_SetType(self.PriceMoneyFrame, "STATIC");
@@ -420,11 +518,6 @@ function HouseFinderPlotInfoFrameMixin:Init(plotInfo, neighborhoodInfo)
 		self.OwnerLabel:Show();
 	end
 	self.LocationText:SetText(neighborhoodInfo.locationName);
-end
-
-function HouseFinderPlotInfoFrameMixin:OnBackClicked()
-	HouseFinderFrame:ShowNeighborhoodList();
-	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_BACK_WHILE_PLOT_SELECTED);
 end
 
 function HouseFinderPlotInfoFrameMixin:OnVisitClicked()

@@ -7,6 +7,10 @@ function ModelSceneMixin:OnLoad()
 	self.actorTemplate = "ModelSceneActorTemplate";
 	self.tagToActor = {};
 	self.tagToCamera = {};
+
+	if self.allowOverlappedModels then
+		self:SetAllowOverlappedModels(true);
+	end
 end
 
 function ModelSceneMixin:ClearScene()

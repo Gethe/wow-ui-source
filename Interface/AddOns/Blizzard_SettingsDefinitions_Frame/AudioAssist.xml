@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="TextToSpeech.lua"/>
-
 	<Frame name="STTTemplate" inherits="SettingsCheckboxControlTemplate" mixin="SpeechToTextMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="SubTextContainer" setAllPoints="true" hyperlinksEnabled="true" enableMouse="true">

@@ -3,6 +3,9 @@
 
 	<Frame name="NameplateAuraItemTemplate" virtual="true" enableMouse="true" hidden="true" mixin="NamePlateAuraItemMixin">
 		<!-- Size handled dynamically in lua.-->
+		<KeyValues>
+			<KeyValue key="useAuraDisplayTime" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>

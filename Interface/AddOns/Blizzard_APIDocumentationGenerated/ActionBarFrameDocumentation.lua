@@ -703,6 +703,22 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsInterruptAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the given action button contains a spell that can interrupt spellcasting." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInterruptAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,

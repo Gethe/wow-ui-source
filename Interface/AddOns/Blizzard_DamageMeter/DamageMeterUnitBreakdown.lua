@@ -1,7 +1,9 @@
 DamageMeterUnitBreakdownMixin = {};
 
 local DamageMeterUnitBreakdownEvents = {
-	--"DAMAGE_METER_UNIT_LIST_UPDATE",
+	"DAMAGE_METER_COMBAT_SESSION_SOURCE_UPDATED",
+	"DAMAGE_METER_RESET",
+	"GLOBAL_MOUSE_DOWN",
 };
 
 function DamageMeterUnitBreakdownMixin:GetName()
@@ -23,14 +25,22 @@ function DamageMeterUnitBreakdownMixin:OnHide()
 end
 
 function DamageMeterUnitBreakdownMixin:OnEvent(event, ...)
-	if event == "DAMAGE_METER_UNIT_LIST_UPDATE" then
-		self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	if event == "DAMAGE_METER_COMBAT_SESSION_SOURCE_UPDATED" then
+		local type, sessionID, sourceGUID = ...;
+		if self:GetTrackedStat() == type then
+			if self:GetSessionID() == sessionID or self:GetSessionType() ~= nil then
+				if self:GetSourceGUID() == sourceGUID then
+					self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+				end
+			end
+		end
+	elseif event == "DAMAGE_METER_RESET" then
+		self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
+	elseif event == "GLOBAL_MOUSE_DOWN" then
+		if not DoesAncestryIncludeAny(self, GetMouseFoci()) then
+			self:Hide();
+		end
 	end
-end
-
-function DamageMeterUnitBreakdownMixin:OnUpdate()
-	local retainScrollPosition = true;
-	self:Refresh(retainScrollPosition);
 end
 
 function DamageMeterUnitBreakdownMixin:InitializeScrollBox()
@@ -40,6 +50,8 @@ function DamageMeterUnitBreakdownMixin:InitializeScrollBox()
 		frame:SetUseClassColor(self:ShouldUseClassColor());
 		frame:SetBarHeight(self:GetBarHeight());
 		frame:SetTextScale(self:GetTextScale());
+		frame:SetShowBarIcons(self:ShouldShowBarIcons());
+		frame:SetStyle(self:GetStyle());
 	end);
 
 	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
@@ -49,7 +61,7 @@ function DamageMeterUnitBreakdownMixin:InitializeScrollBox()
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local topLeftX, topLeftY = 20, -5;
-	local bottomRightX, bottomRightY = -20, 0;
+	local bottomRightX, bottomRightY = -22, 6;
 	local withBarXOffset = 20;
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", topLeftX, topLeftY),
@@ -62,14 +74,35 @@ function DamageMeterUnitBreakdownMixin:InitializeScrollBox()
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 end
 
+function DamageMeterUnitBreakdownMixin:GetCombatSessionSource()
+	if not self.sourceGUID then
+		return nil;
+	end
+
+	local trackedStat = self:GetTrackedStat();
+
+	local sessionType = self:GetSessionType();
+	if sessionType then
+		return C_DamageMeter.GetCombatSessionSourceFromType(sessionType, trackedStat, self.sourceGUID);
+	end
+
+	local sessionID = self:GetSessionID();
+	if sessionID then
+		return C_DamageMeter.GetCombatSessionSourceFromID(sessionID, trackedStat, self.sourceGUID);
+	end
+
+	return nil;
+end
+
 function DamageMeterUnitBreakdownMixin:BuildDataProvider()
-	local combatSessionSource = self.unitToken and C_DamageMeter.GetCurrentCombatSessionSource(Enum.DamageMeterType.DamageDone, self.unitToken) or nil;
+	local combatSessionSource = self:GetCombatSessionSource();
 	local combatSpells = combatSessionSource and combatSessionSource.combatSpells or {};
 	local maxAmount = combatSessionSource and combatSessionSource.maxAmount or 0;
 
 	local dataProvider = CreateDataProvider();
 	for i, combatSpell in ipairs(combatSpells) do
-		combatSpell.unitToken = self.unitToken;
+		combatSpell.sourceGUID = self.sourceGUID;
+		combatSpell.classFilename = self.classFilename;
 		combatSpell.maxAmount = maxAmount;
 		combatSpell.index = i;
 
@@ -97,11 +130,39 @@ function DamageMeterUnitBreakdownMixin:GetEntryFrameCount()
 	return self.ScrollBox:GetFrameCount();
 end
 
-function DamageMeterUnitBreakdownMixin:SetTrackedData(trackedStat, unitToken)
-	self.trackedStat = trackedStat;
-	self.unitToken = unitToken;
+function DamageMeterUnitBreakdownMixin:SetSource(source)
+	self.sourceGUID = source.sourceGUID;
+	self.sourceName = source.name;
+	self.classFilename = source.classFilename;
 
 	self:UpdateName();
+end
+
+function DamageMeterUnitBreakdownMixin:GetSourceGUID()
+	return self.sourceGUID;
+end
+
+function DamageMeterUnitBreakdownMixin:SetTrackedStat(trackedStat)
+	self.trackedStat = trackedStat;
+end
+
+function DamageMeterUnitBreakdownMixin:GetTrackedStat()
+	return self.trackedStat;
+end
+
+function DamageMeterUnitBreakdownMixin:SetSession(sessionType, sessionID)
+	self.sessionType = sessionType;
+	self.sessionID = sessionID;
+
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+end
+
+function DamageMeterUnitBreakdownMixin:GetSessionType()
+	return self.sessionType;
+end
+
+function DamageMeterUnitBreakdownMixin:GetSessionID()
+	return self.sessionID;
 end
 
 function DamageMeterUnitBreakdownMixin:AnchorToWindow(windowFrame)
@@ -112,18 +173,14 @@ function DamageMeterUnitBreakdownMixin:AnchorToWindow(windowFrame)
 
 	-- Anchor in whatever direction has more room.
 	if windowCenterX < screenCenterX then
-		self:SetPoint("LEFT", windowFrame, "RIGHT");
+		self:SetPoint("TOPLEFT", windowFrame, "TOPRIGHT");
 	else
-		self:SetPoint("RIGHT", windowFrame, "LEFT");
+		self:SetPoint("TOPRIGHT", windowFrame, "TOPLEFT");
 	end
 end
 
 function DamageMeterUnitBreakdownMixin:GetNameText()
-	if not self.unitToken then
-		return nil;
-	end
-
-	return UnitName(self.unitToken);
+	return self.sourceName;
 end
 
 function DamageMeterUnitBreakdownMixin:UpdateName()
@@ -177,5 +234,37 @@ function DamageMeterUnitBreakdownMixin:SetTextScale(textScale)
 	if not ApproximatelyEqual(self:GetTextScale(), textScale) then
 		self.textScale = textScale;
 		self:OnTextScaleChanged(textScale);
+	end
+end
+
+function DamageMeterUnitBreakdownMixin:OnShowBarIconsChanged(showBarIcons)
+	self:ForEachEntryFrame(function(frame) frame:SetShowBarIcons(showBarIcons); end);
+end
+
+function DamageMeterUnitBreakdownMixin:ShouldShowBarIcons()
+	return self.showBarIcons == true;
+end
+
+function DamageMeterUnitBreakdownMixin:SetShowBarIcons(showBarIcons)
+	showBarIcons = (showBarIcons == true);
+
+	if self.showBarIcons ~= showBarIcons then
+		self.showBarIcons = showBarIcons;
+		self:OnShowBarIconsChanged(showBarIcons);
+	end
+end
+
+function DamageMeterUnitBreakdownMixin:OnStyleChanged(style)
+	self:ForEachEntryFrame(function(frame) frame:SetStyle(style); end);
+end
+
+function DamageMeterUnitBreakdownMixin:GetStyle()
+	return self.style or Enum.DamageMeterStyle.Default;
+end
+
+function DamageMeterUnitBreakdownMixin:SetStyle(style)
+	if self.style ~= style then
+		self.style = style;
+		self:OnStyleChanged(style);
 	end
 end

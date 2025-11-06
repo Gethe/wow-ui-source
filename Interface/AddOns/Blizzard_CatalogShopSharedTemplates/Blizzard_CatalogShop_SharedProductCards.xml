@@ -35,7 +35,7 @@
 						<Texture parentKey="FrameBackground" setAllPoints="true" />
 					</Layer>
 				</Layers>
-			</Frame>			
+			</Frame>
 
 			<Frame parentKey="ForegroundContainer" frameLevel="1000" setAllPoints="true" >
 				<Layers>
@@ -148,6 +148,46 @@
 			<OnMouseUp method="OnMouseUp" />
 		</Scripts>
 	</Button>
+
+	<!--
+		Small Card Templates are used in the main catalog view.
+
+		Generic Small Product Card Templates -->
+	<Button name="SmallCatalogShopProductCardTemplate" mixin="SmallCatalogShopProductCardMixin" inherits="DefaultCatalogShopCardTemplate" virtual="true" >
+		<Size x="195" y="267"/>
+		<KeyValues>
+			<KeyValue key="defaultBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="defaultFrameTexture" value="shop-card-small-frame-default" type="string"/>
+			<KeyValue key="selectedFrameTexture" value="shop-card-small-frame-selected" type="string"/>
+			<KeyValue key="hoverFrameTexture" value="shop-card-small-frame-hover" type="string"/>
+			<KeyValue key="discountedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="ownedBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="expiringBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="newBackground" value="shop-card-bg" type="string"/>
+			<KeyValue key="classicTexture" value="shop-card-bg" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<!-- Small Card w/Buy Button Template -->
+	<Button name="SmallCatalogShopProductWithBuyButtonCardTemplate" mixin="SmallCatalogShopProductWithBuyButtonCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" >
+		<Frames>
+			<Button parentKey="PurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="EmbeddedPurchaseButtonMixin" frameLevel="2000" >
+				<Size x="141" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="embeddedPurchaseButtonOnClickMethod" value="PurchaseProduct" type="string"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+						<Size x="18" y="18"/>
+					</Frame>
+				</Frames>
+			</Button>			
+		</Frames>
+	</Button>
+
 
 	<!--
 		Large Card Templates are used in the main catalog view, frequently in the Featured section of the catalog, or other important sections.

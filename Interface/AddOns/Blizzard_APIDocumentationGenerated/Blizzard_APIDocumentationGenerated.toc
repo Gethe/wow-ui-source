@@ -19,7 +19,6 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 AreaPoiInfoDocumentation.lua
-ArenaTeamDocumentation.lua
 ArtifactUIDocumentation.lua
 AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
@@ -56,6 +55,7 @@ ClientSceneDocumentation.lua
 ClubDocumentation.lua
 ClubFinderDocumentation.lua
 ColorOverridesDocumentation.lua
+CombatAudioAlertDocumentation.lua
 CombatLogDocumentation.lua
 CombatLogInternalDocumentation.lua
 CombatLogSecureDocumentation.lua
@@ -396,6 +396,7 @@ ClientSettingsDocumentation.lua
 ClubSharedDocumentation.lua
 ColorDocumentation.lua
 ColorOverrideConstantsDocumentation.lua
+CombatAudioAlertConstantsDocumentation.lua
 CombatLogConstantsDocumentation.lua
 CombatLogSharedDocumentation.lua
 CombatTextSharedDocumentation.lua
@@ -412,6 +413,7 @@ CurrencyConstantsDocumentation.lua
 CurrencyConstants_MainlineDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
+DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
 DyeColorInfoSharedDocumentation.lua

@@ -34,7 +34,6 @@ local CollapseAndExpandButton_ExpandDirection_Right = 1;
 local CollapseAndExpandButton_ExpandDirection_Down = CollapseAndExpandButton_ExpandDirection_Left;
 local CollapseAndExpandButton_ExpandDirection_Up = CollapseAndExpandButton_ExpandDirection_Right;
 
-
 AuraContainerWarningFaderMixin = {};
 
 function AuraContainerWarningFaderMixin:Init(period, minAlpha, maxAlpha)
@@ -181,14 +180,16 @@ AuraFrameMixin = {};
 function AuraFrameMixin:AuraFrame_OnLoad()
 	-- Create aura buttons
 	self.auraFrames = {};
-	for i = 1, self.maxAuras, 1 do
+
+	for i = 1, self.maxAuras do
 		local auraFrame = CreateFrame("BUTTON", nil, self.AuraContainer, "AuraButtonTemplate");
-		auraFrame:Hide(); -- default hidden until shown with valid aura info in UpdateAuraButtons
 		table.insert(self.auraFrames, auraFrame);
 	end
+
 	for _, anchorframe in ipairs(self.PrivateAuraAnchors or {}) do
 		table.insert(self.auraFrames, anchorframe);
 	end
+
 	self:UpdateGridLayout();
 end
 
@@ -896,6 +897,18 @@ function AuraButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+function AuraButtonMixin:CalculateTimeLeft(elapsed)
+	local expirationTime = self.buttonInfo.expirationTime or 0;
+	local timeMod = self.buttonInfo.timeMod or 0;
+	local timeLeft = expirationTime - GetTime();
+
+	if timeMod > 0 then
+		timeLeft = timeLeft / timeMod;
+	end
+
+	self.timeLeft = math.max(timeLeft, 0);
+end
+
 function AuraButtonMixin:OnUpdate(elapsed)
 	if self.isExample then
 		return;
@@ -927,14 +940,9 @@ function AuraButtonMixin:OnUpdate(elapsed)
 	end
 
 	-- Update duration
+	self:CalculateTimeLeft();
 	securecall(self.UpdateDuration, self, self.timeLeft); -- Taint issue with SecondsToTimeAbbrev
 
-	-- Update our timeLeft
-	local timeLeft = self.buttonInfo.expirationTime - GetTime();
-	if self.buttonInfo.timeMod and self.buttonInfo.timeMod > 0 then
-		timeLeft = timeLeft / self.buttonInfo.timeMod;
-	end
-	self.timeLeft = max( timeLeft, 0 );
 	if SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD then
 		local aboveMinThreshold = self.timeLeft > SMALLER_AURA_DURATION_FONT_MIN_THRESHOLD;
 		local belowMaxThreshold = not SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD or self.timeLeft < SMALLER_AURA_DURATION_FONT_MAX_THRESHOLD;
@@ -1101,16 +1109,14 @@ function AuraButtonMixin:UpdateDuration(timeLeft)
 		return;
 	end
 
-	if timeLeft and CVarCallbackRegistry:GetCVarValueBool("buffDurations") then
+	local show = timeLeft and CVarCallbackRegistry:GetCVarValueBool("buffDurations");
+	self.Duration:SetShown(show);
+
+	if show then
 		self.Duration:SetFormattedText(SecondsToTimeAbbrev(timeLeft));
-		if timeLeft < BUFF_DURATION_WARNING_TIME then
-			self.Duration:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-		else
-			self.Duration:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
-		end
-		self.Duration:Show();
-	else
-		self.Duration:Hide();
+
+		local color = (timeLeft < BUFF_DURATION_WARNING_TIME) and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR;
+		self.Duration:SetVertexColor(color.r, color.g, color.b);
 	end
 end
 

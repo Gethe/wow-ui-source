@@ -154,6 +154,10 @@ function HelpTip:SetHelpTipsEnabled(flag, enabled)
 end
 
 function HelpTip:AreHelpTipsEnabled()
+	if Kiosk.IsEnabled() then
+		return false;
+	end
+
 	if GetCVarBool("hideHelptips") then
 		return false;
 	end
@@ -188,10 +192,6 @@ function HelpTip:Show(parent, info, relativeRegion)
 end
 
 function HelpTip:CanShow(info)
-	if Kiosk.IsEnabled() then
-		return false;
-	end
-
 	if not self:AreHelpTipsEnabled() then
 		return false;
 	end

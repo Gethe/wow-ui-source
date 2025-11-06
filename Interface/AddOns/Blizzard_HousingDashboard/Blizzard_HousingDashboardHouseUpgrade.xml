@@ -365,6 +365,7 @@
 													</Anchors>
 													<MaskedTextures>
 														<MaskedTexture childKey="Threshold"/>
+														<MaskedTexture childKey="Flipbook"/>
 														<MaskedTexture childKey="LeadEdge"/>
 													</MaskedTextures>
 												</MaskTexture>
@@ -382,8 +383,7 @@
 						</Frames>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" texelSnappingBias="0.0" snapToPixelGrid="false">
-									<Size x="234" y="152"/>
+								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>

@@ -98,8 +98,18 @@ function AdventureMap_QuestOfferDataProviderMixin:OnQuestOfferPinClicked(pin)
 		self:GetMap():ReleaseAreaTriggers("AdventureMap_QuestOffer");
 
 		self.offerAreaTrigger = nil;
-		self.currentOfferPin = nil;
+		if pin == self.currentOfferPin then
+			self.currentOfferPin = nil;
+			self:GetMap():ZoomOut();
+		end
 	end
+
+	if self.currentOfferPin then
+		pin:PanTo();
+	else
+		pin:PanAndZoomTo();
+	end
+	self.currentOfferPin = pin;
 
 	AdventureMapQuestChoiceDialog:ShowWithQuest(self:GetMap(), pin, pin.questID, OnClosedCallback, 0);
 	local textureKit = C_AdventureMap.GetAdventureMapTextureKit();
@@ -121,8 +131,6 @@ function AdventureMap_QuestOfferDataProviderMixin:OnQuestOfferPinClicked(pin)
 	self.offerAreaTrigger:Stretch(.1, .1);
 
 	self.offerAreaTrigger.pin = pin;
-
-	self.currentOfferPin = pin;
 end
 
 function AdventureMap_QuestOfferDataProviderMixin:OnCanvasScaleChanged()
@@ -147,7 +155,7 @@ end
 
 function AdventureMap_QuestOfferPinMixin:OnClick(button)
 	if button == "LeftButton" then
-		self:PanAndZoomTo();
+		PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 		self.dataProvider:OnQuestOfferPinClicked(self);
 	end
 end

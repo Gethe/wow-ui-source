@@ -770,7 +770,7 @@ local Unit =
 		{
 			Name = "UnitCastingInfo",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitSpellCastsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -794,12 +794,12 @@ local Unit =
 		{
 			Name = "UnitChannelInfo",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitSpellCastsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -899,7 +899,7 @@ local Unit =
 		{
 			Name = "UnitCreatureFamily",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -916,7 +916,7 @@ local Unit =
 		{
 			Name = "UnitCreatureID",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -932,7 +932,7 @@ local Unit =
 		{
 			Name = "UnitCreatureType",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1054,7 +1054,7 @@ local Unit =
 		{
 			Name = "UnitFullName",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1071,7 +1071,7 @@ local Unit =
 		{
 			Name = "UnitGUID",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1226,7 +1226,7 @@ local Unit =
 		{
 			Name = "UnitHealthMax",
 			Type = "Function",
-			SecretReturns = true,
+			SecretForAttackableUnits = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2202,7 +2202,7 @@ local Unit =
 		{
 			Name = "UnitName",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2219,7 +2219,7 @@ local Unit =
 		{
 			Name = "UnitNameUnmodified",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2281,7 +2281,7 @@ local Unit =
 		{
 			Name = "UnitOwnerGUID",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2297,7 +2297,7 @@ local Unit =
 		{
 			Name = "UnitPVPName",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2496,7 +2496,7 @@ local Unit =
 		{
 			Name = "UnitPowerMax",
 			Type = "Function",
-			SecretReturns = true,
+			SecretForAttackableUnits = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2785,7 +2785,6 @@ local Unit =
 		{
 			Name = "UnitShouldDisplaySpellTargetName",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns whether the target's name should be displayed. Returns false if the unit is not casting a spell or the spell has no target." },
 
@@ -2961,7 +2960,7 @@ local Unit =
 		{
 			Name = "UnitTokenFromGUID",
 			Type = "Function",
-			SecretNonPlayerUnitOrMinionWhileInCombat = true,
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -3976,6 +3975,7 @@ local Unit =
 			Name = "UnitMaxHealthModifiersChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
+			SecretPayloads = true,
 			SynchronousEvent = true,
 			UniqueEvent = true,
 			Payload =
@@ -4194,7 +4194,7 @@ local Unit =
 			Name = "UnitSpellcastChannelStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4207,7 +4207,7 @@ local Unit =
 			Name = "UnitSpellcastChannelStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4220,7 +4220,7 @@ local Unit =
 			Name = "UnitSpellcastChannelUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4233,7 +4233,7 @@ local Unit =
 			Name = "UnitSpellcastDelayed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4246,7 +4246,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4259,7 +4259,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4273,7 +4273,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4286,7 +4286,7 @@ local Unit =
 			Name = "UnitSpellcastFailed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4299,7 +4299,7 @@ local Unit =
 			Name = "UnitSpellcastFailedQuiet",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4312,7 +4312,7 @@ local Unit =
 			Name = "UnitSpellcastInterrupted",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4345,7 +4345,7 @@ local Unit =
 			Name = "UnitSpellcastReticleClear",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4358,7 +4358,7 @@ local Unit =
 			Name = "UnitSpellcastReticleTarget",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4371,7 +4371,7 @@ local Unit =
 			Name = "UnitSpellcastStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4384,7 +4384,7 @@ local Unit =
 			Name = "UnitSpellcastStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_STOP",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4397,7 +4397,7 @@ local Unit =
 			Name = "UnitSpellcastSucceeded",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			CallbackEvent = true,
 			Payload =

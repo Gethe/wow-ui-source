@@ -15,13 +15,8 @@
 				</Layers>
 			</Frame>
 			<StatusBar parentKey="StatusBar">
+				<!-- Anchoring dynamically managed in Lua. -->
 				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
-				<Anchors>
-					<Anchor point="TOP"/>
-					<Anchor point="BOTTOM"/>
-					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT"/>
-					<Anchor point="RIGHT"/>
-				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture atlas="ui-damagemeters-bar-shadowbg">
@@ -41,15 +36,10 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Value" inherits="NumberFontNormal" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="RIGHT" x="-8"/>
-							</Anchors>
+							<!-- Anchoring dynamically managed in Lua. -->
 						</FontString>
 						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="LEFT" x="5"/>
-								<Anchor point="RIGHT" relativeKey="$parent.Value" x="-25"/>
-							</Anchors>
+							<!-- Anchoring dynamically managed in Lua. -->
 						</FontString>
 					</Layer>
 				</Layers>

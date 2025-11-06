@@ -33,7 +33,7 @@ function HouseEditorExteriorCustomizationModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_FIXTURE_POINT_FRAMES_RELEASED" then
 		self:ReleaseAllPoints();
 	elseif event == "HOUSING_FIXTURE_POINT_SELECTION_CHANGED" then
-		self:UpdatetSelectedPoint();
+		self:UpdateSelectedPoint();
 	elseif event == "HOUSING_FIXTURE_HOVER_CHANGED" then
 		local isHoveringFixture = ...;
 		self:UpdateHoveredFixture(isHoveringFixture);
@@ -56,7 +56,7 @@ function HouseEditorExteriorCustomizationModeMixin:OnShow()
 	end
 
 	if C_HouseExterior.HasSelectedFixturePoint() then
-		self:UpdatetSelectedPoint();
+		self:UpdateSelectedPoint();
 	end
 	if C_HouseExterior.HasHoveredFixture() then
 		self:UpdateHoveredFixture(true);
@@ -136,7 +136,7 @@ function HouseEditorExteriorCustomizationModeMixin:ReleaseAllPoints()
 	self.fixturePointPool:ReleaseAll();
 end
 
-function HouseEditorExteriorCustomizationModeMixin:UpdatetSelectedPoint()
+function HouseEditorExteriorCustomizationModeMixin:UpdateSelectedPoint()
 	local selectedFixturePointInfo = C_HouseExterior.GetSelectedFixturePointInfo();
 
 	local oldInfo = self.FixtureOptionList:GetFixturePointInfo();

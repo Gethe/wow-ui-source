@@ -116,23 +116,6 @@ function ReverseQuestObjective(text, objectiveType)
   end
 end
 
--- Note: Numeric abbreviation data is presently defined in game-specific files.
-NUMBER_ABBREVIATION_DATA = {};
-
-function GetLocalizedNumberAbbreviationData()
-	return NUMBER_ABBREVIATION_DATA;
-end
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(GetLocalizedNumberAbbreviationData()) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
-end
-
 UIParentManagedFrameMixin = { };
 function UIParentManagedFrameMixin:OnShow()
 	self.layoutParent:AddManagedFrame(self);
@@ -804,19 +787,6 @@ function TrialAccountCapReached_Inform(capType)
 		DEFAULT_CHAT_FRAME:AddMessage(CAPPED_MONEY_TRIAL, info.r, info.g, info.b);
 	end
 	displayedCapMessage = true;
-end
-
-function AbbreviateLargeNumbers(value)
-	local strLen = strlen(value);
-	local retString = value;
-	if ( strLen > 8 ) then
-		retString = string.sub(value, 1, -7)..SECOND_NUMBER_CAP;
-	elseif ( strLen > 5 ) then
-		retString = string.sub(value, 1, -4)..FIRST_NUMBER_CAP;
-	elseif (strLen > 3 ) then
-		retString = BreakUpLargeNumbers(value);
-	end
-	return retString;
 end
 
 function ConfirmOrLeaveLFGParty()

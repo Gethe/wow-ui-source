@@ -106,12 +106,12 @@ local function CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, alerts)
 	end
 end
 
-local function ReadDataVersion1(dataTable, layoutManager)
+local function ReadDataVersion1(dataTable, layoutManager, serializer)
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutName, layout in pairs(classAndSpecLayouts) do
-				local layoutObject = layoutManager:AddLayout(layoutName, classAndSpecTag);
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag);
 				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
 				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
 
@@ -121,12 +121,12 @@ local function ReadDataVersion1(dataTable, layoutManager)
 	end
 end
 
-local function ReadDataVersion2(dataTable, layoutManager)
+local function ReadDataVersion2(dataTable, layoutManager, serializer)
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutName, layout in pairs(classAndSpecLayouts) do
-				local layoutObject = layoutManager:AddLayout(layoutName, classAndSpecTag);
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag);
 				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
 				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
 			end
@@ -141,8 +141,8 @@ local function ReadDataVersion2(dataTable, layoutManager)
 	end
 end
 
-local function ReadDataVersion3(dataTable, layoutManager)
-	ReadDataVersion2(dataTable, layoutManager);
+local function ReadDataVersion3(dataTable, layoutManager, serializer)
+	ReadDataVersion2(dataTable, layoutManager, serializer);
 
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	if layouts then
@@ -158,14 +158,24 @@ local function ReadDataVersion3(dataTable, layoutManager)
 	end
 end
 
-local function ReadDataVersion4(dataTable, layoutManager)
+local function ReadDataVersion4(dataTable, layoutManager, serializer)
+	--[[
+	For importing...the imported layoutID will likely be different from what's in the saved data
+	because when we import it, we might need to make a new id, so there now needs to be a temp map
+	maintained so that the saved data layout id can be mapped to the actually created layout id
+	--]]
+	local layoutIDLookup = {};
+
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	local layoutIDToName = dataTable[SAVE_FIELD_ID_LAYOUT_ID_DATA];
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutID, layout in pairs(classAndSpecLayouts) do
 				local layoutName = layoutIDToName[layoutID];
-				local layoutObject = layoutManager:AddLayout(layoutName, classAndSpecTag, layoutID);
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag, layoutID);
+				local newLayoutID = CooldownManagerLayout_GetID(layoutObject);
+				layoutIDLookup[layoutID] = newLayoutID;
+
 				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
 				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
 			end
@@ -175,9 +185,9 @@ local function ReadDataVersion4(dataTable, layoutManager)
 	local activeLayouts = dataTable[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES];
 	if activeLayouts then
 		for specTag, layoutID in pairs(activeLayouts) do
-			local layout = layoutManager:GetLayout(layoutID);
-			local isDefaultLayoutID = layoutManager:IsDefaultLayoutID(layoutID);
-			assertsafe(isDefaultLayoutID or layout ~= nil, "Cannot update previously active layout[%s]: didn't exist", tostring(layoutID));
+			local layout = layoutManager:GetLayout(layoutIDLookup[layoutID]);
+			local isDefaultLayoutID = layoutManager:IsDefaultLayoutID(layoutIDLookup[layoutID]);
+			assertsafe(isDefaultLayoutID or layout ~= nil, "Cannot update previously active layout[%s]: didn't exist", tostring(layoutIDLookup[layoutID]));
 			if layout then
 				local layoutSpecTag = CooldownManagerLayout_GetClassAndSpecTag(layout);
 				assertsafe(layoutSpecTag == specTag, "Cannot update previously active layout[%s], specTag[%s] didn't match layoutSpec[%s]", tostring(specTag), tostring(layoutSpecTag));
@@ -193,8 +203,8 @@ local function ReadDataVersion4(dataTable, layoutManager)
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutID, layout in pairs(classAndSpecLayouts) do
-				local layoutObject = layoutManager:GetLayout(layoutID);
-				assertsafe(layoutObject ~= nil, "Unable to find layout[%s] that should have been added", tostring(layoutID));
+				local layoutObject = layoutManager:GetLayout(layoutIDLookup[layoutID]);
+				assertsafe(layoutObject ~= nil, "Unable to find layout[%s] that should have been added", tostring(layoutIDLookup[layoutID]));
 				if layoutObject then
 					CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, layout[SAVE_FIELD_ID_ALERT_OVERRIDES]);
 				end
@@ -244,43 +254,70 @@ function CooldownViewerDataStoreSerializationMixin:GetCurrentEncodingVersion()
 end
 
 function CooldownViewerDataStoreSerializationMixin:ReadData()
+	self:DeserializeLayouts(self:GetSerializedData());
+end
+
+function CooldownViewerDataStoreSerializationMixin:AddLayout(layoutManager, ...)
+	local layoutObject = layoutManager:AddLayout(...);
+	if layoutObject then
+		local layoutID = CooldownManagerLayout_GetID(layoutObject);
+		table.insert(GetOrCreateTableEntry(self, "newLayoutIDs"), layoutID);
+	end
+
+	return layoutObject;
+end
+
+local function IsFailCondition(isUserInput, condition, ...)
+	-- NOTE: If this is user input, errors should be handled gracefully, if it's from saved data, then assert.
+	if not isUserInput then
+		assertsafe(condition, ...);
+	end
+
+	return not condition;
+end
+
+function CooldownViewerDataStoreSerializationMixin:DeserializeLayouts(serializedData, isUserInput)
 	local layoutManager = self:GetLayoutManager();
 
-	local serializedData = self:GetSerializedData();
-	assertsafe(type(serializedData) == "string", "Incorrect serialized data format");
+	if IsFailCondition(isUserInput, type(serializedData) == "string", "Incorrect serialized data format") then return; end
 
 	if #serializedData == 0 then
-		return;
+		return nil;
 	end
 
 	-- Format: <version string><pipe delimiter><encoded data, custom format depending on version>
 	local delimiterIndex = string.find(serializedData, ENCODING_VERSION_PAYLOAD_DELIMITER, 1, true);
-	assert(delimiterIndex ~= nil, "Unable to find version for serialized data")
+	if IsFailCondition(isUserInput, delimiterIndex ~= nil, "Unable to find version for serialized data") then return; end
 
 	local versionString = string.sub(serializedData, 1, delimiterIndex - 1);
-	assert(versionString ~= nil, "Unable to find version for serialized data")
+	if IsFailCondition(isUserInput, versionString ~= nil, "Unable to find version for serialized data") then return; end
+
 	local dataVersion = tonumber(versionString);
 
 	local dataPayload = string.sub(serializedData, delimiterIndex + 1);
-	assertsafe(dataPayload ~= nil, "Serialized data missing payload");
+	if IsFailCondition(isUserInput, dataPayload ~= nil, "Serialized data missing payload") then return; end
 
 	local decoder = versionedEncoders[dataVersion];
-	assertsafe(decoder ~= nil, "Decoder missing for data version %s", tostring(dataVersion));
+	if IsFailCondition(isUserInput, decoder ~= nil, "Decoder missing for data version %s", tostring(dataVersion)) then return; end
 
 	local deserializedTable = decoder.Read(dataPayload);
-	assertsafe(type(deserializedTable) == "table", "Serialized data didn't decode to a table");
+	if IsFailCondition(isUserInput, type(deserializedTable) == "table", "Serialized data didn't decode to a table") then return; end
 
 	local settingsDataVersion = deserializedTable[SAVE_FIELD_ID_VERSION];
-	assertsafe(type(settingsDataVersion) == "number", "Deserialized table did not contain version in expected location, or there was no reader for version %s", tostring(settingsDataVersion));
+	if IsFailCondition(isUserInput, type(settingsDataVersion) == "number", "Deserialized table did not contain version in expected location, or there was no reader for version %s", tostring(settingsDataVersion)) then return; end
 
 	local reader = versionedDataReaders[settingsDataVersion];
-	assertsafe(type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion));
+	if IsFailCondition(isUserInput, type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion)) then return; end
 
 	layoutManager:LockNotifications();
 	layoutManager:SetShouldCheckAddLayoutStatus(false);
-	reader(deserializedTable, layoutManager);
+	reader(deserializedTable, layoutManager, self);
 	layoutManager:SetShouldCheckAddLayoutStatus(true);
 	layoutManager:UnlockNotifications();
+
+	local newLayoutIDs = self.newLayoutIDs;
+	self.newLayoutIDs = nil;
+	return newLayoutIDs;
 end
 
 function CooldownViewerDataStoreSerializationMixin:CreateEncodeOutput(output)

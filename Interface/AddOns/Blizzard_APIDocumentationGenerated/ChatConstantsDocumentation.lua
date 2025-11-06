@@ -226,6 +226,19 @@ local ChatConstants =
 				{ Name = "MaxCharacterNameBytes", Type = "number", Value = FULLNAME_MAX_CHAR },
 			},
 		},
+		{
+			Name = "TTSConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "TTSRateMin", Type = "number", Value = -10 },
+				{ Name = "TTSRateMax", Type = "number", Value = 10 },
+				{ Name = "TTSRateDefault", Type = "number", Value = 0 },
+				{ Name = "TTSVolumeMin", Type = "number", Value = 0 },
+				{ Name = "TTSVolumeMax", Type = "number", Value = 100 },
+				{ Name = "TTSVolumeDefault", Type = "number", Value = 100 },
+			},
+		},
 	},
 };
 

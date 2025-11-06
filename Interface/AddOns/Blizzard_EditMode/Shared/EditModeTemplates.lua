@@ -278,6 +278,16 @@ end
 
 -- Override this to change whether we are enabled on show
 function EditModeCheckButtonMixin:ShouldEnable()
+	if self.shouldEnableCVarName then
+		local cvarValue = CVarCallbackRegistry:GetCVarValueBool(self.shouldEnableCVarName);
+		if self.shouldEnableCVarInverted then
+			return not cvarValue;
+		else
+			return cvarValue;
+		end
+	end
+
+	-- Default behavior
 	return true;
 end
 

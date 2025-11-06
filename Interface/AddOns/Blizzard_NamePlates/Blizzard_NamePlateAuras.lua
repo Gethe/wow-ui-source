@@ -3,6 +3,7 @@ NamePlateAuraItemMixin = {};
 
 function NamePlateAuraItemMixin:OnLoad()
 	self:SetSize(NamePlateConstants.AURA_ITEM_HEIGHT, NamePlateConstants.AURA_ITEM_HEIGHT);
+	self.Cooldown:SetUseAuraDisplayTime(self.useAuraDisplayTime);
 end
 
 function NamePlateAuraItemMixin:OnEnter()
@@ -168,13 +169,8 @@ function NamePlateAurasMixin:AddAura(aura, checkFilters)
 	local auraInstanceID = aura.auraInstanceID;
 
 	if aura.isHarmful == false then
-		-- Avoid filling up the list of enemy NPC buffs with information not relevant to the player.
-		if self:IsFriend() == false and self:IsPlayer() == false and aura.isStealable == false and C_Spell.IsSpellImportant(aura.spellId) == false then
-			return false;
-		end
-
-		-- Avoid filling up the list of player buffs with information not relevant to the player.
-		if self:IsPlayer() == true and not aura.dispelName and aura.duration == 0 then
+		-- Avoid filling up the list of enemy unit buffs with information not relevant to the player.
+		if self:IsFriend() == false and aura.isStealable == false and C_Spell.IsSpellImportant(aura.spellId) == false then
 			return false;
 		end
 

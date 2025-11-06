@@ -235,7 +235,7 @@ function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 		self.Details:Show();
 
 		local portraitInfo = C_AdventureMap.GetQuestPortraitInfo(self.questID);
-		if portraitInfo then
+		if portraitInfo and portraitInfo.portraitDisplayID ~= 0 then
 			QuestFrame_ShowQuestPortrait(self, portraitInfo.portraitDisplayID, portraitInfo.mountPortraitDisplayID, portraitInfo.modelSceneID, portraitInfo.text, portraitInfo.name, -0, -27, true);
 			local xOffset = QuestModelScene:GetWidth() / 2;
 			self:SetPoint("CENTER", self.anchorRegion, -xOffset , 0);

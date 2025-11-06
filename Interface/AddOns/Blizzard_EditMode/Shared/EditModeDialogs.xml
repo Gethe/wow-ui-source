@@ -29,7 +29,7 @@
 		<Size x="320" y="150"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
 					<Size x="250"/>
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
@@ -49,15 +49,12 @@
 					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="SAVE">
-				<KeyValues>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_NAME" type="global"/>
-				</KeyValues>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
 				</Anchors>
 			</Button>
-			<Button parentKey="CancelButton" inherits="EditModeDialogButton" text="CANCEL">
+			<Button parentKey="CancelButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-25" y="25"/>
 				</Anchors>
@@ -72,25 +69,22 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="EditModeImportLayoutDialog" inherits="EditModeBaseDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100">
+	<Frame name="EditModeImportLayoutDialogTemplate" inherits="EditModeBaseDialogTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="EditModeImportLayoutDialogMixin" frameLevel="100" virtual="true">
 		<Size x="320" y="370"/>
-		<Anchors>
-			<Anchor point="CENTER"/>
-		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE">
+				<FontString parentKey="Title" inherits="GameFontHighlight">
 					<Size x="250"/>
 					<Anchors>
 						<Anchor point="TOP" y="-20"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="EditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL">
+				<FontString parentKey="EditBoxLabel" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="22" y="-40"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal" text="HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL">
+				<FontString parentKey="NameEditBoxLabel" inherits="GameFontNormal">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="22" y="-250"/>
 					</Anchors>
@@ -106,8 +100,8 @@
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="maxLetters" value="3000" type="number"/>
-					<KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/>
 					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+					<!-- <KeyValue key="instructions" value="HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS" type="global"/> Set in SetModeData -->
 				</KeyValues>
 			</ScrollFrame>
 			<EditBox parentKey="LayoutNameEditBox" inherits="EditModeDialogLayoutNameEditBoxTemplate">
@@ -120,10 +114,7 @@
 					<Anchor point="TOP" relativeKey="$parent.LayoutNameEditBox" relativePoint="BOTTOM" y="-2"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="AcceptButton" inherits="EditModeDialogButton" text="HUD_EDIT_MODE_IMPORT_LAYOUT">
-				<KeyValues>
-					<KeyValue key="disabledTooltip" value="HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME" type="global"/>
-				</KeyValues>
+			<Button parentKey="AcceptButton" inherits="EditModeDialogButton">
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="25" y="25"/>
 				</Anchors>
@@ -137,6 +128,13 @@
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
 		</Scripts>
+	</Frame>
+
+	<!-- NOTE: Instance of a generic edit mode import layout dialog that only the EditModeManagerFrame will use -->
+	<Frame name="EditModeImportLayoutDialog" inherits="EditModeImportLayoutDialogTemplate">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
 	</Frame>
 
 <!--

@@ -863,7 +863,7 @@ local SpellBook =
 			Name = "UnitSpellcastSent",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SENT",
-			SecretPayloads = true,
+			SecretWhenSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{

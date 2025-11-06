@@ -24,7 +24,8 @@ Keybindings.xml
 Accessibility.lua
 Accessibility.xml
 Mainline\Colorblind.xml
-TextToSpeech.xml
+AudioAssist.lua
+AudioAssist.xml
 Mounts.lua
 Subtitles.xml
 AdvancedOptions.lua

@@ -18,17 +18,18 @@ local TransformManipulatorConstants =
 		{
 			Name = "TransformManipulatorControlState",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Default", Type = "TransformManipulatorControlState", EnumValue = 0 },
 				{ Name = "Hidden", Type = "TransformManipulatorControlState", EnumValue = 1 },
-				{ Name = "ExternallyHighlighted", Type = "TransformManipulatorControlState", EnumValue = 2 },
-				{ Name = "Hovered", Type = "TransformManipulatorControlState", EnumValue = 3 },
-				{ Name = "Selected", Type = "TransformManipulatorControlState", EnumValue = 4 },
-				{ Name = "Moving", Type = "TransformManipulatorControlState", EnumValue = 5 },
+				{ Name = "Dimmed", Type = "TransformManipulatorControlState", EnumValue = 2 },
+				{ Name = "ExternallyHighlighted", Type = "TransformManipulatorControlState", EnumValue = 3 },
+				{ Name = "Hovered", Type = "TransformManipulatorControlState", EnumValue = 4 },
+				{ Name = "Selected", Type = "TransformManipulatorControlState", EnumValue = 5 },
+				{ Name = "Moving", Type = "TransformManipulatorControlState", EnumValue = 6 },
 			},
 		},
 		{

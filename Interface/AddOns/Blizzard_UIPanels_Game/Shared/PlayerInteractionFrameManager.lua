@@ -55,6 +55,8 @@ local InteractionManagerFrameInfo = {
 			if not HousingBulletinBoardFrame then
 				C_AddOns.LoadAddOn("Blizzard_HousingBulletinBoard");
 			end
+		end,
+		showFunc = function()
 			StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
 			NeighborhoodChangeNameDialog.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
 		end,

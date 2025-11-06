@@ -463,6 +463,8 @@ function ProductContainerFrameMixin:InitProductContainer()
 		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 		end);
+
+		EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", frame.OnProductInfoChanged, frame);
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)

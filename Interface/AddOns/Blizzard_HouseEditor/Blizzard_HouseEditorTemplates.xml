@@ -53,8 +53,8 @@
 				<Size x="45" y="45"/>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" useAtlasSize="false" atlas="plunderstorm-icon-key" texelSnappingBias="0.0" snapToPixelGrid="false">
-							<Size x="54" y="48"/>
+						<Texture parentKey="Background" useAtlasSize="false" atlas="housing-hotkey-icon-key-9slice" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="54" y="40"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="0" y="0"/>
 							</Anchors>
@@ -62,7 +62,7 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon" useAtlasSize="false">
-							<Size x="45" y="45"/>
+							<Size x="32" y="32"/>
 							<Anchors>
 								<Anchor point="RIGHT" x="0" y="0"/>
 							</Anchors>

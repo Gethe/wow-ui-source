@@ -28,11 +28,6 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-20" y="-2"/>
-				</Anchors>
-			</Button>
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Anchors>
 					<!-- Anchored dynamically in lua-->
@@ -50,7 +45,6 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

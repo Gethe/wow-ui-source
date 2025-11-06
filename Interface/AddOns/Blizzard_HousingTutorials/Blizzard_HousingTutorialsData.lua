@@ -15,13 +15,14 @@ HousingTutorialStates = {
 	},
 
 	CustomizationTutorial = {
-		ActionButton = "CustomizationActionButton";
-		ClickDecor = "ClickDecor";
+		ActionButton = "CustomizationActionButton",
+		ClickDecor = "ClickDecor",
 	},
 
 	LayoutTutorial = {
-		ActionButton = "LayoutActionButton";
-		Chest = "LayoutChest";
+		ActionButton = "LayoutActionButton",
+		Chest = "LayoutChest",
+		Floors = "LayoutFloors",
 	},
 
 	HouseFinderTutorial = {
@@ -40,6 +41,9 @@ HousingTutorialHelpTipSystems = {
 	Decorate = "DecorateHouseHelpTips",
 	Customize = "CustomizeHouseHelpTips",
 	ClippingGrid = "ClippingGridHouseHelpTips",
+	ModesUnlocked = "ModesUnlockedHelpTips",
+	ExpertMode = "ExpertModeHelpTips",
+	CleanupMode = "CleanupModeHelpTips",
 	MarketTab = "MarketTabHouseHelpTips",
 	Layout = "LayoutHouseHelpTips",
 	HouseFinderMap = "HouseFinderMapHelptips",
@@ -93,12 +97,16 @@ HousingTutorialData = {
 	},
 
 	HouseDecorTutorial = {
-		EnterDecorModeButton = "HousingControlsFrame.HouseEditorButton",
+		EnterDecorModeButton = "HousingControlsFrame.OwnerControlFrame.HouseEditorButton",
 		DecorPlacementSubButtonBar = "HouseEditorFrame.BasicDecorModeFrame.SubButtonBar",
+		DecorExpertPlacementSubButtonBar = "HouseEditorFrame.ExpertDecorModeFrame.SubmodeBar",
+		CleanupModeButton = "HouseEditorFrame.ModeBar.CleanupModeButton",
 		DecorCustomizationButton = "HouseEditorFrame.ModeBar.CustomizeModeButton",
 		DecorLayoutButton = "HouseEditorFrame.ModeBar.LayoutModeButton",
 		LayoutStorageFrame = "HouseEditorFrame.StoragePanel",
+		LayoutFloorsFrame = "HouseEditorFrame.LayoutModeFrame.FloorSelect",
 		HouseChestTabSystem = "HouseEditorFrame.StoragePanel.TabSystem",
+		ModesBar = "HouseEditorFrame.ModeBar",
 
 		QuestTutorials = {
 			[HousingTutorialQuestIDs.CleanupQuest] = {
@@ -219,11 +227,21 @@ HousingTutorialData = {
 			},
 			[HousingTutorialStates.LayoutTutorial.Chest] = {
 				text = HOUSING_LAYOUT_CHEST_TUTORIAL_TEXT,
-				buttonStyle = HelpTip.ButtonStyle.Exit,
+				buttonStyle = HelpTip.ButtonStyle.Next,
 				targetPoint = HelpTip.Point.RightEdgeTop,
 				alignment = HelpTip.Alignment.Center,
 				offsetX = 0,
 				offsetY = -30,
+				autoHideWhenTargetHides = true,
+				system = HousingTutorialHelpTipSystems.Layout,
+			},
+			[HousingTutorialStates.LayoutTutorial.Floors] = {
+				text = HOUSING_LAYOUT_MODE_STAIRS_TUTORIAL_TEXT,
+				buttonStyle = HelpTip.ButtonStyle.Exit,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				alignment = HelpTip.Alignment.Center,
+				offsetX = 0,
+				offsetY = 0,
 				autoHideWhenTargetHides = true,
 				system = HousingTutorialHelpTipSystems.Layout,
 			},

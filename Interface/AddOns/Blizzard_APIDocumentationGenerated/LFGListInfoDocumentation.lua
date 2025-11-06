@@ -106,6 +106,7 @@ local LFGListInfo =
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "groupID", Type = "number", Nilable = false },
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = true },
 			},
 
 			Returns =
@@ -348,6 +349,7 @@ local LFGListInfo =
 			Arguments =
 			{
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = false },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = false },
 				{ Name = "activityInfo", Type = "GroupFinderActivityInfo", Nilable = false },
 			},
 
@@ -521,6 +523,7 @@ local LFGListInfo =
 				{ Name = "activityID", Type = "number", Nilable = false },
 				{ Name = "groupID", Type = "number", Nilable = false },
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = true },
 			},
 		},
 		{
@@ -747,6 +750,10 @@ local LFGListInfo =
 				{ Name = "difficultyHeroic", Type = "bool", Nilable = false, Default = false },
 				{ Name = "difficultyMythic", Type = "bool", Nilable = false, Default = false },
 				{ Name = "difficultyMythicPlus", Type = "bool", Nilable = false, Default = false },
+				{ Name = "generalPlaystyle1", Type = "bool", Nilable = false, Default = false },
+				{ Name = "generalPlaystyle2", Type = "bool", Nilable = false, Default = false },
+				{ Name = "generalPlaystyle3", Type = "bool", Nilable = false, Default = false },
+				{ Name = "generalPlaystyle4", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -841,6 +848,7 @@ local LFGListInfo =
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = true },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = true },
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = true },
 				{ Name = "isCrossFactionListing", Type = "bool", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = false },
 			},
@@ -857,6 +865,7 @@ local LFGListInfo =
 				{ Name = "isPrivateGroup", Type = "bool", Nilable = false, Default = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = false, Default = false },
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = false, Default = "None" },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = false, Default = "None" },
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = false, Default = 0 },
@@ -892,6 +901,7 @@ local LFGListInfo =
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = true },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = true },
 				{ Name = "playstyle", Type = "LFGEntryPlaystyle", Nilable = true },
+				{ Name = "generalPlaystyle", Type = "LFGEntryGeneralPlaystyle", Nilable = true },
 				{ Name = "crossFactionListing", Type = "bool", Nilable = true },
 				{ Name = "leaderFactionGroup", Type = "number", Nilable = false },
 				{ Name = "newPlayerFriendly", Type = "bool", Nilable = true },

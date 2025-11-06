@@ -3157,7 +3157,8 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingVisibility()
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingStyle()
-	-- NYI
+	local style = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Style);
+	self:SetStyle(style);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumbers()
@@ -3174,7 +3175,8 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingPadding()
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingTransparency()
-	-- NYI
+	local transparency = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Transparency);
+	self:SetWindowTransparency(transparency);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingLockScroll()
@@ -3182,7 +3184,8 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingLockScroll()
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowSpecIcon()
-	-- NYI
+	local showBarIcons = self:GetSettingValueBool(Enum.EditModeDamageMeterSetting.ShowSpecIcon);
+	self:SetShowBarIcons(showBarIcons);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowClassColor()

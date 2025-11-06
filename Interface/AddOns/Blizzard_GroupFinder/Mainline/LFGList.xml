@@ -798,7 +798,7 @@
 		</Scripts>
 	</Button>
 	<Button name="LFGListSearchEntryTemplate" virtual="true">
-		<Size x="312" y="36"/>
+		<Size x="312" y="54"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="ResultBG">
@@ -825,7 +825,13 @@
 				<FontString parentKey="ActivityName" inherits="GameFontDisableSmallLeft">
 					<Size x="0" y="15"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="2"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Playstyle" inherits="GameFontGreenSmall">
+					<Size x="0" y="15"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ActivityName" relativePoint="BOTTOMLEFT"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="ExpirationTime" inherits="GameFontGreenSmall" text="(1:77)" justifyH="LEFT">
@@ -1578,12 +1584,6 @@
 								<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" x="0" y="-50"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="PlayStyleLabel" justifyH="LEFT" inherits="GameFontHighlightSmall">
-							<Size x="125" y="0"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" x="0" y="-95"/>
-							</Anchors>
-						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -1794,7 +1794,8 @@
 					</ScrollFrame>
 					<DropdownButton parentKey="PlayStyleDropdown" name="LFGListEntryCreationPlayStyleDropdown" inherits="WowStyle1DropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="RIGHT" x="22" y="-2"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="-5" y="-20"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Description" relativePoint="BOTTOMRIGHT" x="5" y="-20"/>
 						</Anchors>
 					</DropdownButton>
 					<Frame parentKey="ItemLevel" inherits="LFGListRequirementTemplate">
@@ -1823,7 +1824,7 @@
 					</Frame>
 					<Frame parentKey="PVPRating" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-1" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleDropdown" relativePoint="BOTTOMLEFT" x="-1" y="-8"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="label" value="GROUP_FINDER_PVP_RATING_REQ_LABEL" type="global"/>
@@ -1834,7 +1835,7 @@
 					</Frame>
 					<Frame parentKey="MythicPlusRating" inherits="LFGListRequirementTemplate">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleLabel" relativePoint="BOTTOMLEFT" x="-1" y="-15"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlayStyleDropdown" relativePoint="BOTTOMLEFT" x="-1" y="-8"/>
 						</Anchors>
 						<KeyValues>
 							<KeyValue key="label" value="GROUP_FINDER_MYTHIC_RATING_REQ_LABEL" type="global"/>

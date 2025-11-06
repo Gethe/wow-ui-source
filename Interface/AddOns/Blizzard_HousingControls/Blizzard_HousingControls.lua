@@ -13,10 +13,10 @@ local HousingControlsShownEvents = {
 HousingControlsMixin = {};
 
 function HousingControlsMixin:OnLoad()
+	self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
+
 	FrameUtil.RegisterFrameForEvents(self, HousingControlsEvents);
 	FrameUtil.RegisterForTopLevelParentChanged(self);
-
-	self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
 end
 
 function HousingControlsMixin:OnEvent(event, ...)
@@ -29,7 +29,6 @@ function HousingControlsMixin:OnEvent(event, ...)
 	elseif event == "UPDATE_BINDINGS" or event == "HOUSE_EDITOR_MODE_CHANGED" then
 		self:UpdateButtons();
 	end
-	
 end
 
 function HousingControlsMixin:UpdateControlVisibility(isInsideHouseOrPlot)
@@ -39,6 +38,8 @@ function HousingControlsMixin:UpdateControlVisibility(isInsideHouseOrPlot)
 	else
 		self:Hide();
 	end
+
+	self:UpdateActiveFrame();
 	self:UpdateButtons();
 end
 
@@ -51,8 +52,34 @@ function HousingControlsMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HousingControlsShownEvents);
 end
 
+function HousingControlsMixin:UpdateActiveFrame()
+	local isVisitor = C_HousingNeighborhood.IsPlayerInOtherPlayersPlot() or (C_Housing.IsInsideHouse() and not C_Housing.IsInsideOwnHouse());
+	self.activeFrame = isVisitor and self.VisitorControlFrame or self.OwnerControlFrame;
+	self.VisitorControlFrame:SetShown(isVisitor);
+	self.VisitorControlFrame:UpdateOwnerInfomation();
+	self.OwnerControlFrame:SetShown(not isVisitor);
+end
+
+function HousingControlsMixin:GetActiveFrame()
+	return self.activeFrame;
+end
+
 function HousingControlsMixin:UpdateButtons()
-	for _, button in ipairs(self.Buttons) do
+	local activeFrame = self:GetActiveFrame();
+	for _, button in ipairs(activeFrame.Buttons) do
 		button:UpdateState();
 	end
+end
+
+VisitorControlFrameMixin = {}
+
+function VisitorControlFrameMixin:UpdateOwnerInfomation()
+	local houseInfo = C_Housing.GetCurrentHouseInfo();
+	if not houseInfo then
+		self.OwnerNameText:SetText("");
+		return;
+	end
+
+	self.ownerName = houseInfo.ownerName or "";
+	self.OwnerNameText:SetText(string.format(HOUSING_DASHBOARD_OWNERS_HOUSE, self.ownerName));
 end

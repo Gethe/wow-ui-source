@@ -63,4 +63,5 @@ NewSettings["12.0.0"] = {
 	"COMBAT_WARNINGS_LABEL", -- entire section is new
 	"damageMeterEnabled",
 	"spellDiminishPVPEnemiesEnabled",
+	"externalDefensivesEnabled",
 };

@@ -7,14 +7,25 @@ local DamageMeter =
 	Functions =
 	{
 		{
-			Name = "GetCurrentCombatSession",
+			Name = "GetAvailableCombatSessions",
+			Type = "Function",
+			Documentation = { "Returns a list of combat sessions currently being tracked." },
+
+			Returns =
+			{
+				{ Name = "availableSessions", Type = "table", InnerType = "DamageMeterAvailableCombatSession", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatSessionFromID",
 			Type = "Function",
 			SecretWhenInCombat = true,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns the data for the player's current combat session." },
+			Documentation = { "Returns the data for the player's combat session with the specified ID." },
 
 			Arguments =
 			{
+				{ Name = "sessionID", Type = "number", Nilable = false },
 				{ Name = "type", Type = "DamageMeterType", Nilable = false },
 			},
 
@@ -24,17 +35,54 @@ local DamageMeter =
 			},
 		},
 		{
-			Name = "GetCurrentCombatSessionSource",
+			Name = "GetCombatSessionFromType",
 			Type = "Function",
-			MayReturnNothing = true,
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the data for the player's current combat session." },
+
+			Arguments =
+			{
+				{ Name = "sessionType", Type = "DamageMeterSessionType", Nilable = false },
+				{ Name = "type", Type = "DamageMeterType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "session", Type = "DamageMeterCombatSession", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatSessionSourceFromID",
+			Type = "Function",
+			SecretWhenInCombat = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the data for a single source (unit) in the player's current combat session with the specified ID." },
+
+			Arguments =
+			{
+				{ Name = "sessionID", Type = "number", Nilable = false },
+				{ Name = "type", Type = "DamageMeterType", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sessionSource", Type = "DamageMeterCombatSessionSource", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCombatSessionSourceFromType",
+			Type = "Function",
 			SecretWhenInCombat = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the data for a single source (unit) in the player's current combat session." },
 
 			Arguments =
 			{
+				{ Name = "sessionType", Type = "DamageMeterSessionType", Nilable = false },
 				{ Name = "type", Type = "DamageMeterType", Nilable = false },
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -53,26 +101,56 @@ local DamageMeter =
 				{ Name = "failureReason", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "ResetAllCombatSessions",
+			Type = "Function",
+			Documentation = { "Clears the data for all the player's combat sessions." },
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "DamageMeterCombatSessionSourceUpdated",
+			Type = "Event",
+			LiteralName = "DAMAGE_METER_COMBAT_SESSION_SOURCE_UPDATED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "type", Type = "DamageMeterType", Nilable = false },
+				{ Name = "sessionID", Type = "number", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "DamageMeterCombatSessionUpdated",
+			Type = "Event",
+			LiteralName = "DAMAGE_METER_COMBAT_SESSION_UPDATED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "type", Type = "DamageMeterType", Nilable = false },
+				{ Name = "sessionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "DamageMeterReset",
+			Type = "Event",
+			LiteralName = "DAMAGE_METER_RESET",
+			UniqueEvent = true,
+		},
 	},
 
 	Tables =
 	{
 		{
-			Name = "DamageMeterType",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
+			Name = "DamageMeterAvailableCombatSession",
+			Type = "Structure",
+			Documentation = { "Data for a combat session currently being tracked." },
 			Fields =
 			{
-				{ Name = "DamageDone", Type = "DamageMeterType", EnumValue = 0 },
-				{ Name = "Dps", Type = "DamageMeterType", EnumValue = 1 },
-				{ Name = "HealingDone", Type = "DamageMeterType", EnumValue = 2 },
-				{ Name = "Hps", Type = "DamageMeterType", EnumValue = 3 },
+				{ Name = "sessionID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -101,7 +179,9 @@ local DamageMeter =
 			Documentation = { "Aggregated data for a single source (unit) in a damage meter combat session." },
 			Fields =
 			{
-				{ Name = "unitToken", Type = "WOWGUID", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 			},
 		},

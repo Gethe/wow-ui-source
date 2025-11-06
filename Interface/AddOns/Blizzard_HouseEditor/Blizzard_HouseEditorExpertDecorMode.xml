@@ -7,7 +7,7 @@
 				<Frames>
 					<Frame parentKey="SelectInstruction" inherits="HouseEditorInstructionTemplate" parentArray="UnselectedInstructions">
 						<KeyValues>
-							<KeyValue key="iconAtlas" value="plunderstorm-pickup-mouseclick-left" type="string"/>
+							<KeyValue key="iconAtlas" value="housing-hotkey-icon-leftclick" type="string"/>
 							<KeyValue key="instructionText" value="HOUSING_DECOR_SELECT_INSTRUCTION" type="global"/>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>

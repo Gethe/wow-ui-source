@@ -769,12 +769,6 @@ function EncounterJournal_OnShow(self)
 		EncounterJournal_UpdatePortraits();
 	end
 
-	local tierData = GetEJTierData(EJ_GetCurrentTier());
-	if ( not EncounterJournal.suggestTab:IsEnabled() or EncounterJournal.suggestFrame:IsShown() ) then
-		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
-	end
-	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
-
 	local shouldShowPowerTab, powerID = EJMicroButton:ShouldShowPowerTab();
 	if shouldShowPowerTab then
 		self.LootJournal:SetPendingPowerID(powerID);
@@ -2729,14 +2723,6 @@ function EJ_ContentTab_Select(id)
 
 	local instanceSelect = EncounterJournal.instanceSelect;
 
-	-- Setup background
-	local tierData;
-	if ( id == EncounterJournal.suggestTab:GetID() or id == EncounterJournal.MonthlyActivitiesTab:GetID()) then
-		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
-	else
-		tierData = GetEJTierData(EJ_GetCurrentTier());
-	end
-	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 	EncounterJournal.encounter:Hide();
 	instanceSelect:Show();
 
@@ -2748,6 +2734,7 @@ function EJ_ContentTab_Select(id)
 	local showJourneys = id == EncounterJournal.JourneysTab:GetID();
 	local showTutorials = id == EncounterJournal.TutorialsTab:GetID();
 
+	local tierData;
 	if showMonthlyActivities then
 		EJ_HideSuggestPanel();
 		EJ_HideLootJournalPanel();
@@ -2771,6 +2758,7 @@ function EJ_ContentTab_Select(id)
 		EncounterJournal_ListInstances();
 		EncounterJournal_EnableExpansionDropdown();
 		EncounterJournal_HideGreatVaultButton();
+		tierData = GetEJTierData(EJ_GetCurrentTier());
 	elseif showJourneys then
 		EJ_HideNonInstancePanels();
 		EncounterJournal_EnableExpansionDropdown(-40, -30, EncounterJournal);
@@ -2794,7 +2782,17 @@ function EJ_ContentTab_Select(id)
 	EncounterJournal.searchBox:SetShown(showSearchBox);
 
 	instanceSelect.ExpansionDropdown:SetShown(showDungeons or showRaid or showLoot or showJourneys);
-	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid or showTutorials);
+
+	-- Setup background
+	if tierData then
+		instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+		instanceSelect.bg:Show();
+		instanceSelect.evergreenBg:Hide();
+	else
+		instanceSelect.bg:Hide();
+		instanceSelect.evergreenBg:Show();
+	end
+
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
@@ -2832,8 +2830,6 @@ function EJ_HideSuggestPanel()
 
 		EncounterJournal_EnableExpansionDropdown();
 
-		local tierData = GetEJTierData(EJ_GetCurrentTier());
-		instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 		instanceSelect.ScrollBox:Show();
 		instanceSelect.ScrollBar:Show();
 
@@ -2852,9 +2848,6 @@ end
 
 function EJ_ShowLootJournalPanel()
 	EncounterJournal_DisableExpansionDropdown();
-
-	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
-	EncounterJournal.instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
 
 	local activeLootPanel = EncounterJournal_GetLootJournalPanels();
 	activeLootPanel:Show();
@@ -3081,10 +3074,6 @@ function EJSuggestFrame_GetDisplayFrame(suggestionIndex)
 end
 
 function EJSuggestFrame_RefreshDisplay()
-	local instanceSelect = EncounterJournal.instanceSelect;
-	local tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
-	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
-
 	local self = EncounterJournal.suggestFrame;
 	C_AdventureJournal.GetSuggestions(self.suggestions);
 

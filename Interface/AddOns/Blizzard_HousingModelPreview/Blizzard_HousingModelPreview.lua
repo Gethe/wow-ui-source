@@ -1,3 +1,4 @@
+----------------- Embedded Model Preview Mixin -----------------
 local ActorTag = "decor";
 
 HousingModelPreviewMixin = {};
@@ -108,3 +109,28 @@ function HousingModelPreviewMixin:SetTextOrHide(fontString, text)
 	end
 end
 
+----------------- Standalone Container Mixin -----------------
+
+HousingModelPreviewFrameMixin = {};
+
+function HousingModelPreviewFrameMixin:OnLoad()
+	self:SetParent(GetAppropriateTopLevelParent());
+	ButtonFrameTemplate_HidePortrait(self);
+	ButtonFrameTemplate_HideAttic(self);
+	self:SetTitle(PREVIEW);
+end
+
+function HousingModelPreviewFrameMixin:ShowCatalogEntryInfo(catalogEntryInfo)
+	self.ModelPreview:PreviewCatalogEntryInfo(catalogEntryInfo);
+	if not self:IsShown() then
+		ShowUIPanel(self);
+	end
+end
+
+function HousingModelPreviewFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
+end
+
+function HousingModelPreviewFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+end

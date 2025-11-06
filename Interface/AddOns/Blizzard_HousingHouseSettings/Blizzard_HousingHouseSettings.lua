@@ -139,10 +139,13 @@ end
 function HousingHouseSettingsFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, HouseSettingsFrameShownEvents);
 	C_Housing.RequestCurrentHouseInfo();
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_OPEN_MENU);
 end
 
 function HousingHouseSettingsFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, HouseSettingsFrameShownEvents);
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_CLOSE_MENU);
+	StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 end
 
 function HousingHouseSettingsFrameMixin:OnAccessChanged()
@@ -150,8 +153,11 @@ function HousingHouseSettingsFrameMixin:OnAccessChanged()
 end
 
 function HousingHouseSettingsFrameMixin:OnIgnoreListClicked()
+	--friends frame can't open while house settings is showing
+	HideUIPanel(HousingHouseSettingsFrame);
 	ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	ToggleIgnorePanel();
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_BUTTONS);
 end
 
 function HousingHouseSettingsFrameMixin:OnAbandonHouseClicked()
@@ -287,20 +293,27 @@ function AbandonHouseConfirmationDialogMixin:OnLoad()
 		PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CANCEL);
 		StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	end);
+	SmallMoneyFrame_OnLoad(self.RefundContainer.RefundMoneyFrame);
+	MoneyFrame_SetType(self.RefundContainer.RefundMoneyFrame, "STATIC");
 end
 
 function AbandonHouseConfirmationDialogMixin:SetHouseInfo(houseInfo)
 	self.houseInfo = houseInfo;
 	self.HouseName:SetText(houseInfo.houseName);
-	self.PlotNumber:SetText(string.format(HOUSING_PLOT_NUMBER, houseInfo.plotID));
-	self.NameNeighborhoodName:SetText(houseInfo.neighborhoodName);
-	MoneyFrame_Update("AbandonHouseRefundMoneyFrame", 0); --TODO: Include refund amount in house info to display here
+
+	--Money frame STATIC info does not force show when set to 0, swap to using GUILD_REPAIR which is identical to STATIC except it shows 0 values
+	local refundAmount =  C_Housing.GetCurrentHouseRefundAmount();
+	if refundAmount == 0 then
+		MoneyFrame_SetType(self.RefundContainer.RefundMoneyFrame, "GUILD_REPAIR");
+	else
+		MoneyFrame_SetType(self.RefundContainer.RefundMoneyFrame, "STATIC");
+	end
+	MoneyFrame_Update("AbandonHouseRefundMoneyFrame", refundAmount);
 end
 
 function AbandonHouseConfirmationDialogMixin:OnConfirmClicked()
 	PlaySound(SOUNDKIT.HOUSING_SETTINGS_RELINQUISH_BUTTON_CONFIRMATION);
 
 	C_Housing.RelinquishHouse(self.houseInfo.houseGUID);
-	StaticPopupSpecial_Hide(AbandonHouseConfirmationDialog);
 	HideUIPanel(HousingHouseSettingsFrame);
 end

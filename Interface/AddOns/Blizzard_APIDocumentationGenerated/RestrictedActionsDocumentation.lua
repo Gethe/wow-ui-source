@@ -84,15 +84,16 @@ local RestrictedActions =
 		{
 			Name = "RestrictedActionReason",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "InCombat", Type = "RestrictedActionReason", EnumValue = 0 },
 				{ Name = "ActiveEncounter", Type = "RestrictedActionReason", EnumValue = 1 },
 				{ Name = "ActiveMythicKeystoneOrChallengeMode", Type = "RestrictedActionReason", EnumValue = 2 },
 				{ Name = "ActivePvPMatch", Type = "RestrictedActionReason", EnumValue = 3 },
+				{ Name = "RestrictedMap", Type = "RestrictedActionReason", EnumValue = 4 },
 			},
 		},
 		{

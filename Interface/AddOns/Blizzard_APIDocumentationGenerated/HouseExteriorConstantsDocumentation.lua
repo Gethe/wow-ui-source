@@ -3,6 +3,19 @@ local HouseExteriorConstants =
 	Tables =
 	{
 		{
+			Name = "WMOExteriorID",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = -1,
+			MaxValue = 87,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "WMOExteriorID", EnumValue = -1 },
+				{ Name = "DefaultAlliance", Type = "WMOExteriorID", EnumValue = 9 },
+				{ Name = "DefaultHorde", Type = "WMOExteriorID", EnumValue = 87 },
+			},
+		},
+		{
 			Name = "HousingCoreFixtureInfo",
 			Type = "Structure",
 			Fields =

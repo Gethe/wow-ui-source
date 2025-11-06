@@ -251,7 +251,7 @@
 									</Anchors>
 								</FontString>
 								<Texture parentKey="Icon" atlas="housefinder_neighborhood-battlenet-friends-icon">
-									<Size x="14" y="10"/>
+									<Size x="14" y="14"/>
 									<Anchors>
 										<Anchor point="LEFT" x="-20" y="0"/>
 									</Anchors>
@@ -374,7 +374,7 @@
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.VisitDescriptionBG"/>
 							</Anchors>
-							<Color r="0.5" g="0.5" b="0.5"/>
+							<Color r="0.8" g="0.8" b="0.8"/>
 						</FontString>
 						<FontString parentKey="PriceLabel" inherits="Game13FontShadow" text="HOUSEFINDER_PRICE_LABEL">
 							<Size y="15"/>
@@ -445,7 +445,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button parentKey="BackButton">
+					<Button parentKey="BackButton" mixin="PlotInfoFrameBackButtonMixin">
 						<Size x="32" y="32"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="56" y="-3"/>
@@ -455,7 +455,13 @@
 								<Texture parentKey="Icon" atlas="housefinder_back-arrow">
 									<Size x="32" y="32"/>
 									<Anchors>
-										<Anchor point="CENTER"/>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="IconHighlight" atlas="housefinder_back-arrow" alpha="0.4" alphaMode="ADD" hidden="true">
+									<Size x="32" y="32"/>
+									<Anchors>
+										<Anchor point="LEFT"/>
 									</Anchors>
 								</Texture>
 								<FontString parentKey="ButtonLabel" inherits="Game13FontShadow" text="HOUSEFINDER_BACK_BUTTON">
@@ -463,10 +469,15 @@
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3" y="0"/>
 									</Anchors>
+									<Color r="0.8" g="0.8" b="0.8"/>
 								</FontString>
 							</Layer>
 						</Layers>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+							<OnClick method="OnClick"/>
+						</Scripts>
 					</Button>
 					<Button parentKey="VisitHouseButton" inherits="UIPanelButtonHeightScaledTemplate" text="HOUSEFINDER_VISIT_BUTTON">
 						<Size x="100" y="30"/>
@@ -537,6 +548,12 @@
 					</Layer>
 				</Layers>
 			</Frame>
+
+			<DropdownButton parentKey="GuildSubdivisionDropdown" frameLevel="2000" inherits="WowStyle1DropdownTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-20" y="-40"/>
+				</Anchors>
+			</DropdownButton>
 
 			<Frame parentKey="WoodBorderFrame" frameLevel="510">
 				<Anchors>

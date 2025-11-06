@@ -191,12 +191,15 @@ function MenuTemplates.SetHierarchyEnabled(frame, enabled)
 				return;
 			end
 
-			local objType = region:GetObjectType();
-			if objType == "FontString" and region.autoEnableTextColors then
+			if frame.lockedEnabledState ~= nil then
+				enabled = frame.lockedEnabledState;
+			end
+
+			if region:IsObjectType("FontString") and region.autoEnableTextColors then
 				local fontString = region;
 				local textColor = fontString.autoEnableTextColors[enabled];
 				fontString:SetTextColor(textColor:GetRGBA());
-			elseif objType == "Texture" then
+			elseif region:IsObjectType("Texture") then
 				region:SetDesaturation(enabled and 0 or 1);
 			end
 		end
@@ -466,6 +469,10 @@ function MenuTemplates.SetUtilityButtonTooltipText(button, tooltipText)
 	end);
 end
 
+function MenuTemplates.SetUtilityButtonLockedEnabledState(button, value)
+	button.lockedEnabledState = value;
+end
+
 function MenuTemplates.SetUtilityButtonAnchor(button, anchor, relativeTo)
 	local point, _, relativePoint, x, y = anchor:Get();
 	button:SetPoint(point, relativeTo, relativePoint, x, y);
@@ -680,6 +687,8 @@ function WowDropdownFilterBehaviorMixin:OnLoad()
 		end
 
 		self.ResetButton:Hide();
+
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end);
 end
 

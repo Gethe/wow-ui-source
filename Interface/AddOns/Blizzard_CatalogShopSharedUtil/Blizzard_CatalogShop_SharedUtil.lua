@@ -187,10 +187,9 @@ local function ConvertActorInfoToDisplayData(actorInfo, modelSceneFlags)
 	displayData.readableTag = "";
 
 	displayData.modelActorDisplayID = actorInfo.modelActorDisplayID;
-	if C_Glue.IsOnGlueScreen() then
-		displayData.actorDisplayInfoData = GetDefaultActorDisplayInfoDisplayData();
-	else
-		local actorDisplayInfoData = actorInfo.modelActorDisplayID and C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+
+	local actorDisplayInfoData = actorInfo.modelActorDisplayID and C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+	if actorDisplayInfoData then
 		local actorDisplayData = {};
 		actorDisplayData.animationKitID = actorDisplayInfoData.animationKitID;
 		actorDisplayData.animation = actorDisplayInfoData.animation;
@@ -200,6 +199,8 @@ local function ConvertActorInfoToDisplayData(actorInfo, modelSceneFlags)
 		actorDisplayData.alpha = actorDisplayInfoData.alpha;
 		actorDisplayData.scale = actorDisplayInfoData.scale;
 		displayData.actorDisplayInfoData = actorDisplayData;
+	else
+		displayData.actorDisplayInfoData = GetDefaultActorDisplayInfoDisplayData();
 	end
 	return displayData;
 end

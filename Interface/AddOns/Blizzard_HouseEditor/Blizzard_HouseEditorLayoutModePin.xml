@@ -90,6 +90,144 @@
 					</Texture>
 				</Layer>
 			</Layers>
+			<Frames>
+				<Frame parentKey="Rays1">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Rays1" alpha="0.8" alphaMode="ADD" atlas="housing-layout-room-orb-ring-rays1" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+							<MaskTexture parentKey="RaysMask" atlas="housing-layout-room-orb-ring-rays-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<MaskedTextures>
+									<MaskedTexture childKey="Rays1"/>
+								</MaskedTextures>
+							</MaskTexture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Rays1" duration="16" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+							<Rotation childKey="RaysMask" duration="16" order="1" degrees="360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="Spinner">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Spinner" alphaMode="ADD" atlas="housing-layout-room-orb-ring-spinner" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Spinner" duration="3" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="Glow">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-layout-room-orb-ring-outerglow" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="Rays2">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Rays2" alpha="1" alphaMode="BLEND" atlas="housing-layout-room-orb-ring-rays2" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Rays2" duration="16" order="1" degrees="360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="NodeAvailable" hidden="true" inherits="EasyFrameAnimationsTemplate" passThroughButtons="LeftButton, RightButton">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Size x="128" y="128"/>
+					<Frames>
+						<Frame parentKey="Base">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture parentKey="NodeBase" atlas="housing-layout-room-orb-ring-default" useAtlasSize="true">
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						<Frame parentKey="InteriorNodeAvailable">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-layout-room-orb-ring-highlight">
+										<Size x="60" y="60"/>
+										<Anchors>
+											<Anchor point="CENTER" x="0" y="0"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="BOUNCE" setToFinalAlpha="true">
+									<Alpha childKey="Glow" duration="1" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.2"/>
+								</AnimationGroup>
+							</Animations>
+						</Frame>
+					</Frames>
+				</Frame>
+			</Frames>
 			<Scripts>
 				<OnEnter method="OnEnter"/>
 				<OnLeave method="OnLeave"/>

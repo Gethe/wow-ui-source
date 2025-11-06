@@ -68,14 +68,6 @@ function HouseDecorQuestWatcherMixin:InitHouseDecorTutorial(questID, questTutori
 	questTutorialData.helpTipInfos[HousingTutorialStates.QuestTutorials.ObjectivesComplete].parent = houseEditorButton;
 
 	self.houseDecorTutorial = CreateAndInitFromMixin(HouseDecorQuestTutorialMixin, questID, questTutorialData.helpTipInfos, questTutorialData.helpTipSystemName, questTutorialData.bitfieldFlag);
-
-	if questID == HousingTutorialQuestIDs.DecorateQuest then
-		-- if the decorate portion is finished, we want to progress the tutorial
-		local _objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(questID, 1, false);
-		if finished then
-			self.houseDecorTutorial.earlyFinished = true;
-		end
-	end
 end
 
 function HouseDecorQuestWatcherMixin:Quest_Accepted(questData)
@@ -104,24 +96,10 @@ function HouseDecorQuestWatcherMixin:Quest_Updated(questData)
 		elseif helpTipShowing then
 			HelpTip:Hide(self.houseDecorTutorial.helpTipParent, helpTipInfo.text);
 		end
-
-		if questID == HousingTutorialQuestIDs.DecorateQuest then
-			-- if the decorate portion is finished, we want to progress the tutorial
-			local _objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(questID, 1, false);
-			if finished and not self.houseDecorTutorial.earlyFinished then
-				self.houseDecorTutorial.earlyFinished = true;
-				self:ObjectivesCompleteInternal(questData);
-			end
-		end
 	end
 end
 
 function HouseDecorQuestWatcherMixin:Quest_ObjectivesComplete(questData)
-	local questID = questData.QuestID;
-	if questData.QuestID == HousingTutorialQuestIDs.DecorateQuest then
-		return;
-	end
-
 	self:ObjectivesCompleteInternal(questData);
 end
 
@@ -216,6 +194,17 @@ function HouseDecorWatcherMixin:StartWatching()
 	for _i, event in ipairs(HOUSE_DECOR_PLACEMENT_WATCHER_EVENTS) do
 		Dispatcher:RegisterEvent(event, self);
 	end
+
+	if not self.housingModesUnlocked then
+		self.housingModesUnlocked = CreateFromMixins(HouseModesUnlockedTutorialMixin);
+		self.housingModesUnlocked:UpdateHelpTip();
+
+		self.housingModesUnlocked.OnAcknowledgeCallback = function()
+			self:HOUSE_EDITOR_MODE_CHANGED(C_HouseEditor.GetActiveHouseEditorMode());
+		end
+	end
+
+	EventRegistry:RegisterCallback("HousingMarketTab.VisibilityUpdated", self.OnMarketTabVisibilityUpdated, self);
 end
 
 function HouseDecorWatcherMixin:StopWatching()
@@ -228,9 +217,21 @@ function HouseDecorWatcherMixin:StopWatching()
 	for _i, event in ipairs(HOUSE_DECOR_PLACEMENT_WATCHER_EVENTS) do
 		Dispatcher:UnregisterEvent(event, self);
 	end
+
+	self.HousingModesUnlocked = nil;
+	EventRegistry:UnregisterCallback("HousingMarketTab.VisibilityUpdated", self.OnMarketTabVisibilityUpdated, self);
+end
+
+function HouseDecorWatcherMixin:OnMarketTabVisibilityUpdated()
+	self:HOUSE_EDITOR_MODE_CHANGED(C_HouseEditor.GetActiveHouseEditorMode());
 end
 
 function HouseDecorWatcherMixin:HOUSE_EDITOR_MODE_CHANGED(activeHouseMode)
+	if self.housingModesUnlocked and self.housingModesUnlocked:CanBegin() then
+		self.housingModesUnlocked:UpdateHelpTip();
+		return;
+	end
+
 	if activeHouseMode == Enum.HouseEditorMode.BasicDecor then
 		if not self.clippingAndGridTutorial then
 			self.clippingAndGridTutorial = CreateFromMixins(HouseClippingAndGridTutorialMixin);
@@ -245,6 +246,26 @@ function HouseDecorWatcherMixin:HOUSE_EDITOR_MODE_CHANGED(activeHouseMode)
 		self.houseMarketTabTutorial:UpdateHelpTip();
 	end
 
+	if activeHouseMode == Enum.HouseEditorMode.ExpertDecor then
+		if not self.expertModeTutorial then
+			self.expertModeTutorial = CreateFromMixins(HouseExpertModeTutorialMixin);
+		end
+
+		self.expertModeTutorial:UpdateHelpTip();
+	end
+
+	if activeHouseMode == Enum.HouseEditorMode.Cleanup then
+		if not self.cleanupModeTutorial then
+			self.cleanupModeTutorial = CreateFromMixins(HouseCleanupModeTutorialMixin);
+		end
+
+		self.cleanupModeTutorial:UpdateHelpTip();
+	else
+		if self.cleanupModeTutorial then
+			HelpTip:HideAllSystem(HousingTutorialHelpTipSystems.CleanupMode);
+		end
+	end
+
 	if activeHouseMode == Enum.HouseEditorMode.Customize and not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorCustomization) then
 		if not self.customizationTutorial then
 			self.customizationTutorial = CreateAndInitFromMixin(HouseDecorCustomizationsTutorialMixin);
@@ -256,12 +277,16 @@ function HouseDecorWatcherMixin:HOUSE_EDITOR_MODE_CHANGED(activeHouseMode)
 		HelpTip:HideAllSystem(self.customizationTutorial:GetSystem());
 	end
 
-	if activeHouseMode == Enum.HouseEditorMode.Layout and not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorLayout) then
-		if not self.layoutTutorial then
-			self.layoutTutorial = CreateAndInitFromMixin(HouseLayoutTutorialMixin);
+	if activeHouseMode == Enum.HouseEditorMode.Layout then
+		if not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingDecorLayout) then
+			if not self.layoutTutorial then
+				self.layoutTutorial = CreateAndInitFromMixin(HouseLayoutTutorialMixin);
+			end
+
+			self.layoutTutorial:BeginInitialState();
 		end
 
-		self.layoutTutorial:BeginInitialState();
+		HelpTip:HideAllSystem(HousingTutorialHelpTipSystems.MarketTab);
 	elseif self.layoutTutorial then
 		self.layoutTutorial:Deactivate();
 		HelpTip:HideAllSystem(self.layoutTutorial:GetSystem());
@@ -294,6 +319,111 @@ function HouseClippingAndGridTutorialMixin:UpdateHelpTip()
 			autoHideWhenTargetHides = true,
 			cvarBitfield = HOUSING_TUTORIAL_CVAR_BITFIELD,
 			bitfieldFlag = Enum.FrameTutorialAccount.HousingDecorClippingGrid,
+		};
+
+		HelpTip:Show(self.helpTipParent, helpTipInfo);
+	end
+end
+
+local function ShouldShowModesUnlockedTutorial()
+	return not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingModesUnlocked);
+end
+
+HouseModesUnlockedTutorialMixin = {};
+
+function HouseModesUnlockedTutorialMixin:CanBegin()
+	return ShouldShowModesUnlockedTutorial();
+end
+
+function HouseModesUnlockedTutorialMixin:UpdateHelpTip()
+	if self:CanBegin() then
+		local modesBar = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.ModesBar);
+		self.helpTipParent = modesBar;
+
+		if not self.helpTipParent then
+			return;
+		end
+
+		local helpTipInfo = {
+			text = HOUSING_MODES_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Exit,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Center,
+			offsetX = 0,
+			offsetY = 32,
+			system = HousingTutorialHelpTipSystems.ModesUnlocked,
+			autoHideWhenTargetHides = true,
+			cvarBitfield = HOUSING_TUTORIAL_CVAR_BITFIELD,
+			bitfieldFlag = Enum.FrameTutorialAccount.HousingModesUnlocked,
+			hideArrow = true,
+		};
+
+		if self.OnAcknowledgeCallback then
+			helpTipInfo.onAcknowledgeCallback = self.OnAcknowledgeCallback;
+		end
+
+		HelpTip:Show(self.helpTipParent, helpTipInfo);
+	end
+end
+
+local function ShouldShowExpertModeTutorial()
+	return not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingExpertMode);
+end
+
+HouseExpertModeTutorialMixin = {};
+
+function HouseExpertModeTutorialMixin:CanBegin()
+	return ShouldShowExpertModeTutorial();
+end
+
+function HouseExpertModeTutorialMixin:UpdateHelpTip()
+	if self:CanBegin() then
+		local subButtonBar = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.DecorExpertPlacementSubButtonBar);
+		self.helpTipParent = subButtonBar;
+
+		local helpTipInfo = {
+			text = HOUSING_ADVANCED_MODE_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Center,
+			offsetX = 0,
+			offsetY = 0,
+			system = HousingTutorialHelpTipSystems.ExpertMode,
+			autoHideWhenTargetHides = true,
+			cvarBitfield = HOUSING_TUTORIAL_CVAR_BITFIELD,
+			bitfieldFlag = Enum.FrameTutorialAccount.HousingExpertMode,
+		};
+
+		HelpTip:Show(self.helpTipParent, helpTipInfo);
+	end
+end
+
+local function ShouldShowCleanupModeTutorial()
+	return not GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingCleanupMode);
+end
+
+HouseCleanupModeTutorialMixin = {};
+
+function HouseCleanupModeTutorialMixin:CanBegin()
+	return ShouldShowCleanupModeTutorial();
+end
+
+function HouseCleanupModeTutorialMixin:UpdateHelpTip()
+	if self:CanBegin() then
+		local cleanupButton = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.CleanupModeButton);
+		self.helpTipParent = cleanupButton;
+
+		local helpTipInfo = {
+			text = HOUSING_CLEANUP_MODE_TUTORIAL_TEXT,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.TopEdgeCenter,
+			alignment = HelpTip.Alignment.Center,
+			offsetX = 0,
+			offsetY = 0,
+			system = HousingTutorialHelpTipSystems.CleanupMode,
+			autoHideWhenTargetHides = true,
+			cvarBitfield = HOUSING_TUTORIAL_CVAR_BITFIELD,
+			bitfieldFlag = Enum.FrameTutorialAccount.HousingCleanupMode,
 		};
 
 		HelpTip:Show(self.helpTipParent, helpTipInfo);
@@ -377,6 +507,12 @@ function HouseLayoutTutorialMixin:Init()
 	local layoutChestHelpTipInfo = self.helpTipInfos[HousingTutorialStates.LayoutTutorial.Chest];
 	layoutChestHelpTipInfo.parent = storagePanel.OptionsContainer;
 	layoutChestHelpTipInfo.onAcknowledgeCallback = function()
+		self:BeginState(HousingTutorialStates.LayoutTutorial.Floors);
+	end
+
+	local layoutFloorsHelpTipInfo = self.helpTipInfos[HousingTutorialStates.LayoutTutorial.Floors];
+	layoutFloorsHelpTipInfo.parent = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.LayoutFloorsFrame);
+	layoutFloorsHelpTipInfo.onAcknowledgeCallback = function()
 		self:AcknowledgeTutorial();
 	end
 

@@ -307,6 +307,8 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="12" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="externalDefensivesEnabled" type="string"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="CastBar" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -358,6 +360,8 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="cooldownViewerEnabled" type="string"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="PersonalResourceDisplay" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -441,12 +445,14 @@
 									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
 								</KeyValues>
 							</Frame>
-							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
+							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
 									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="lootUnderMouse" type="string"/>
+									<KeyValue key="shouldEnableCVarInverted" value="true" type="boolean"/>
 								</KeyValues>
 							</Frame>
 						</Frames>

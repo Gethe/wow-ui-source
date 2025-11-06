@@ -144,6 +144,17 @@ function SettingsElementHierarchyMixin:AddEvaluateStateFrameEvent(event)
 	table.insert(self.evaluateStateFrameEvents, event);
 end
 
+function SettingsElementHierarchyMixin:GetEvaluateStateCVars()
+	return self.evaluateStateCVars;
+end
+
+function SettingsElementHierarchyMixin:AddEvaluateStateCVar(cvar)
+	if not self.evaluateStateCVars then
+		self.evaluateStateCVars = {};
+	end
+	table.insert(self.evaluateStateCVars, cvar);
+end
+
 SettingsListPanelInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin, SettingsNewTagMixin);
 
 SettingsListElementInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsElementHierarchyMixin, SettingsSearchableElementMixin);
@@ -348,6 +359,13 @@ function SettingsControlMixin:Init(initializer)
 	if evaluateStateFrameEvents then
 		for index, event in ipairs(evaluateStateFrameEvents) do
 			self.cbrHandles:AddHandle(EventRegistry:RegisterFrameEventAndCallbackWithHandle(event, self.EvaluateState, self));
+		end
+	end
+
+	local evaluateStateCVars = initializer:GetEvaluateStateCVars();
+	if evaluateStateCVars then
+		for index, cvar in ipairs(evaluateStateCVars) do
+			self.cbrHandles:SetOnValueChangedCallback(cvar, self.EvaluateState, self);
 		end
 	end
 end

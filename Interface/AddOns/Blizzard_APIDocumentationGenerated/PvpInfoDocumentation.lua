@@ -16,6 +16,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "AreTrainingGroundsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areTrainingGroundsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanDisplayDamage",
 			Type = "Function",
 
@@ -1390,6 +1399,12 @@ local PvpInfo =
 			Name = "PvpqueueAnywhereUpdateAvailable",
 			Type = "Event",
 			LiteralName = "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "TrainingGroundsEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "TRAINING_GROUNDS_ENABLED_STATUS_UPDATED",
 			SynchronousEvent = true,
 		},
 		{

@@ -5,4 +5,10 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 	</Frame>
+
+	<Frame name="CooldownViewerImportLayoutDialog" inherits="EditModeImportLayoutDialogTemplate" mixin="CooldownViewerBaseDialogMixin, CooldownViewerImportLayoutDialogMixin">
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
 </Ui>

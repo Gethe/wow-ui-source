@@ -53,18 +53,25 @@ end
 	Each sub-table contains the following data:
 
 	{
-		title = string,						-- Set with varargs, whatever args you pass when you show the dialog
+		title = string,						-- Set with varargs, whatever args you pass when you show the dialog (NOTE: Layout name: Except for Import, could add that if needed, but it's not supported)
 		acceptText = string,				-- String for accept/confirm
 		cancelText = string,				-- String for close/cancel
 		disabledAcceptTooltip = opt string,	-- String for tooltip when accept button is disabled
 		needsEditbox = bool,				-- Whether the layout name edit box is needed
 		useLayoutNameForEditBox = bool,		-- Use the layout name as the initial edit box text and select it
 		needsCharacterSpecific = bool,		-- Whether the layout is character-specific
+											-- TODO: If other systems use this setting then HUD_EDIT_MODE_CHARACTER_SPECIFIC_LAYOUT used for the label needs to be configurable
 		onCancelEvent = string,				-- Event name to fire when the dialog is canceled
 
 		-- NOTE: All callbacks are passed the layoutManager and the dialog
+		onCancelCallback = function,		-- Called when the Cancel is clicked
 		onAcceptCallback = function,		-- Called when Accept is clicked
 		updateAcceptCallback = function,	-- Called when various attributes about the dialog change and things need to be verified
+
+		-- The following apply to the import dialog
+		importEditBoxLabel = string,		-- Label shown above the large edit box that contains the import data
+		nameEditBoxLabel = string,			-- Label shown above the layout name edit box
+		instructionsLabel = string,			-- Label shown in the import edit box that say what to enter
 	},
 --]]
 function EditModeBaseDialogMixin:SetModeData(modes)
@@ -139,6 +146,7 @@ function EditModeBaseDialogMixin:GetOnCancelEvent()
 end
 
 function EditModeBaseDialogMixin:OnCancel()
+	RunLayoutDialogCallback(self, "onCancelCallback");
 	StaticPopupSpecial_Hide(self);
 
 	local onCancelEvent = self:GetOnCancelEvent();
@@ -223,7 +231,7 @@ EditModeLayoutDialogMixin = {};
 function EditModeLayoutDialogMixin:SetupControlsForMode(modeData, layoutName, ...)
 	self.Title:SetText(modeData.title:format(layoutName, ...));
 	self:GetAcceptButton():SetText(modeData.acceptText);
-	self:GetAcceptButton().disabledTooltip = modeData.disabledAcceptTooltip;
+	self:GetAcceptButton():SetDisabledTooltip(modeData.disabledAcceptTooltip);
 	self:GetCancelButton():SetText(modeData.cancelText);
 	self:GetEditBox():SetShown(modeData.needsEditbox);
 
@@ -272,8 +280,27 @@ end
 
 EditModeImportLayoutDialogMixin = {};
 
+function EditModeImportLayoutDialogMixin:GetImportEditBox()
+	return self.ImportBox.EditBox;
+end
+
+function EditModeImportLayoutDialogMixin:GetImportBox()
+	return self.ImportBox;
+end
+
+function EditModeImportLayoutDialogMixin:GetImportBoxLabel()
+	return self.EditBoxLabel;
+end
+
+function EditModeImportLayoutDialogMixin:GetEditBoxLabel()
+	return self.NameEditBoxLabel;
+end
+
 function EditModeImportLayoutDialogMixin:OnLoad()
-	self:SetupEditBoxHandlers(self.ImportBox.EditBox, self.OnImportTextChanged, self.OnAccept, self.OnCancel);
+	self:SetupEditBoxHandlers(self:GetImportEditBox(), self.OnImportTextChanged, self.OnAccept, self.OnCancel);
+
+	-- TODO: Setup the callbacks for the name edit box to update the layoutInfo as needed? This is optional and can be handled in OnAccept as well.
+	-- One reason to do setup these callbacks here would be to verify that the name is valid as the user changes it.
 end
 
 function EditModeImportLayoutDialogMixin:ShowImportLayoutDialog()
@@ -281,20 +308,55 @@ function EditModeImportLayoutDialogMixin:ShowImportLayoutDialog()
 end
 
 function EditModeImportLayoutDialogMixin:SetupControlsForMode(modeData, ...)
+	-- NOTE: Do not call anything except the base SetupControlsForMode, in this case all the setup needs to be custom
+
 	self:SetLayoutInfo();
-	self:GetEditBox():SetText("");
-	self.ImportBox.EditBox:SetText("");
-	self.ImportBox.EditBox:SetFocus();
-	self.CharacterSpecificLayoutCheckButton:SetControlChecked(false);
+	self.Title:SetText(modeData.title); -- See Above: layout name is not formatted in here.
+	self:GetAcceptButton():SetText(modeData.acceptText);
+	self:GetAcceptButton():SetDisabledTooltip(modeData.disabledAcceptTooltip);
+	self:GetCancelButton():SetText(modeData.cancelText);
+	self:GetEditBox():SetShown(true); -- The layout always needs a way to name it
+	self:GetEditBox():SetText(""); -- Force the user to name the imported layout, we don't trust external text.
+	self:GetEditBoxLabel():SetText(modeData.nameEditBoxLabel);
+	self:GetImportEditBox():SetText("");
+	InputScrollFrame_SetInstructions(self:GetImportBox(), modeData.instructionsLabel);
+	self:GetImportBoxLabel():SetText(modeData.importEditBoxLabel);
+	self:GetImportEditBox():SetFocus();
+	self:GetCharacterSpecificButton():SetControlChecked(false);
+	self:GetCharacterSpecificButton():SetShown(modeData.needsCharacterSpecific);
+
+	if modeData.needsCharacterSpecific then
+		self:SetHeight(370);
+	else
+		self:SetHeight(345);
+	end
 
 	EditModeBaseDialogMixin.SetupControlsForMode(self, modeData, ...);
 end
 
-function EditModeImportLayoutDialogMixin:OnImportTextChanged(text)
-	self:SetLayoutInfo(C_EditMode.ConvertStringToLayoutInfo(self.ImportBox.EditBox:GetText()));
+function EditModeImportLayoutDialogMixin:OnImportTextChanged(editBox, isUserChange)
+	-- HACK: Cache text to avoid duplicate ProcessText calls
+	-- Required because this is getting called twice for certain editbox types (usually after initial show or pasting of text).
+	local importText = editBox:GetText();
+	if self.importText == importText then
+		return;
+	end
+
+	self.importText = importText;
+	-- END HACK
+
+	InputScrollFrame_OnTextChanged(editBox, isUserChange);
+
+	self:ProcessImportText(editBox:GetText());
+	self:GetEditBox():SetText(""); -- Force the user to name the layout, do not use imported name
 	self:GetEditBox():SetEnabled(self:GetLayoutInfo() ~= nil);
-	self:GetEditBox():SetText("");
+
 	self:UpdateAcceptButtonEnabledState();
+end
+
+function EditModeImportLayoutDialogMixin:ProcessImportText(text)
+	-- Override as needed
+	self:SetLayoutInfo(C_EditMode.ConvertStringToLayoutInfo(text));
 end
 
 --[[

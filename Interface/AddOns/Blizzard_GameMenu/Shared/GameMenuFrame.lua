@@ -126,9 +126,8 @@ function GameMenuFrameMixin:InitButtons()
 		self:AddButton(GAMEMENU_NEW_BUTTON, GenerateMenuCallback(GenerateFlatClosure(C_SplashScreen.RequestLatestSplashScreen, true)), isKioskDisabled);
 	end
 
-	local editModeDisabled = not EditModeManagerFrame:CanEnterEditMode();
-	local editModeButton = self:AddButton(HUD_EDIT_MODE_MENU, GenerateMenuCallback(GenerateFlatClosure(ShowUIPanel, EditModeManagerFrame, force)), editModeDisabled);
-	if not editModeDisabled and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager) then
+	if EditModeManagerFrame:CanEnterEditMode() and EditModeManagerFrame.Tutorial:HasHelptipsToShow() then
+		local editModeButton = self:AddButton(HUD_EDIT_MODE_MENU, GenerateMenuCallback(GenerateFlatClosure(ShowUIPanel, EditModeManagerFrame, force)), editModeDisabled);
 		self.EditModeNotification:SetPoint("TOPLEFT", editModeButton, "TOPLEFT", -5, 5);
 		self.EditModeNotification:Show();
 	else

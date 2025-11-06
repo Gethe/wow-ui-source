@@ -1606,7 +1606,7 @@ function UIParent_OnEvent(self, event, ...)
 		if PlayerIsTimerunning() then
 			RemixArtifactTutorialUI_LoadUI();
 		end
-		
+
 		if C_Housing.IsInsideHouseOrPlot() then
 			C_AddOns.LoadAddOn("Blizzard_HousingControls");
 		end
@@ -2322,6 +2322,8 @@ function ToggleGameMenu()
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
+	elseif ( CatalogShopTopUpFlowInboundInterface.EscapePressed and CatalogShopTopUpFlowInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopRefundFlowInboundInterface.EscapePressed and CatalogShopRefundFlowInboundInterface.EscapePressed() ) then
 	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
@@ -2686,31 +2688,6 @@ function ShouldShowRaidFrames()
 	return not ShouldShowArenaParty() and IsInRaid() or EditModeManagerFrame:AreRaidFramesForcedShown();
 end
 
-NUMBER_ABBREVIATION_DATA = {
-	-- Order these from largest to smallest.
-	--
-	-- significandDivisor and fractionDivisor should multiply such that they
-	-- become equal to a named order of magnitude, such as thousands or
-	-- millions.
-	--
-	-- Breakpoints should generally be specified as pairs, with one at the
-	-- named order (1,000) with fractionDivisor = 10, and one a single order
-	-- higher (eg. 10,000) with fractionDivisor = 1.
-	--
-	-- This ruleset means numbers like "1234" will be abbreviated to "1.2k"
-	-- and numbers like "12345" to "12k".
-	--
-	-- Note that this table may be overridden in Localization!
-
-	{ breakpoint = 10000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000000,	fractionDivisor = 10 },
-	{ breakpoint = 10000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000,		fractionDivisor = 10 },
-	{ breakpoint = 10000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000,		fractionDivisor = 1 },
-	{ breakpoint = 1000000,			abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,			fractionDivisor = 1 },
-	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,			fractionDivisor = 10 },
-};
 
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);

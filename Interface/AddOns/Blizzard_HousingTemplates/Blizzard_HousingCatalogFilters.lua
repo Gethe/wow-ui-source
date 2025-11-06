@@ -168,6 +168,10 @@ function HousingCatalogFiltersMixin:SetEnabled(enabled)
 	self.FilterDropdown:ValidateResetState();
 end
 
+function HousingCatalogFiltersMixin:IsEnabled()
+	return self.FilterDropdown:IsEnabled();
+end
+
 function HousingCatalogFiltersMixin:ResetCollectionFilters()
 	self.catalogSearcher:SetCollected(true);
 	self.catalogSearcher:SetUncollected(true);

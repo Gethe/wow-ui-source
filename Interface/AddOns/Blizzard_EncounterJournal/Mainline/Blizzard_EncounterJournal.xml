@@ -1407,6 +1407,11 @@
 								<Anchor point="TOPLEFT" x="3" y="-1"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="evergreenBg" atlas="activities-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">

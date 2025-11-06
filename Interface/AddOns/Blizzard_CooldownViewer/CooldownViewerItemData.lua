@@ -204,9 +204,11 @@ function CooldownViewerItemDataMixin:SpellIDMatchesAnyAssociatedSpellIDs(spellID
 			return true;
 		end
 
-		for _, linkedSpellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
-			if linkedSpellID == spellID then
-				return true;
+		if cooldownInfo.linkedSpellIDs then
+			for _, linkedSpellID in ipairs(cooldownInfo.linkedSpellIDs) do
+				if linkedSpellID == spellID then
+					return true;
+				end
 			end
 		end
 	end
@@ -260,12 +262,18 @@ function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
 end
 
 function CooldownViewerItemDataMixin:GetSpellChargeInfo()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
+	-- To ensure that charges work correctly for cooldown items that are actively cast, apply auras, and have charges
+	-- only check the override or base spell ids.
+	-- NOTE: This uses internal data instead of the spellID API for perf reasons
+	local info = self:GetCooldownInfo();
+	if info then
+		local chargeSpellID = info.overrideSpellID or info.spellID;
+		if chargeSpellID then
+			return C_Spell.GetSpellCharges(chargeSpellID);
+		end
 	end
 
-	return C_Spell.GetSpellCharges(spellID);
+	return nil;
 end
 
 function CooldownViewerItemDataMixin:GetFallbackSpellTexture()

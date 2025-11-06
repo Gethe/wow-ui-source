@@ -1,5 +1,3 @@
-local tooltipButton;
-
 QuestLogButtonTypes = EnumUtil.MakeEnum("None", "Any", "Header", "HeaderCampaign", "HeaderCampaignMinimal", "HeaderCallings", "StoryHeader", "Quest");
 
 QuestLogDisplayMode = EnumUtil.MakeEnum("Quests", "Events", "MapLegend");
@@ -518,10 +516,6 @@ local function QuestMapFrame_DoFullUpdate()
 
 	QuestMapFrame_UpdateAll();
 	QuestMapFrame_UpdateAllQuestCriteria();
-
-	if ( tooltipButton ) then
-		QuestMapLogTitleButton_OnEnter(tooltipButton);
-	end
 end
 
 function QuestMapFrame_OnEvent(self, event, ...)
@@ -2097,7 +2091,7 @@ end
 
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
-	local info = C_QuestLog.GetInfo(self.questLogIndex);
+	local info = self.info;
 	assert(info and not info.isHeader);
 	local isComplete = C_QuestLog.IsComplete(info.questID);
 	local questID = info.questID;
@@ -2204,7 +2198,6 @@ function QuestMapLogTitleButton_OnEnter(self)
 	end
 
 	GameTooltip:Show();
-	tooltipButton = self;
 	EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
 	POIButtonHighlightManager:SetHighlight(questID);
 end
@@ -2228,7 +2221,6 @@ function QuestMapLogTitleButton_OnLeave(self)
 
 	QuestMapFrame:GetParent():ClearHighlightedQuestID();
 	GameTooltip:Hide();
-	tooltipButton = nil;
 
 	POIButtonHighlightManager:ClearHighlight();
 end

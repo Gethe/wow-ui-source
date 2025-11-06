@@ -3520,9 +3520,14 @@ function UnitPopupNeighborhoodEvictButtonMixin:GetText(contextData)
 end
 
 function UnitPopupNeighborhoodEvictButtonMixin:CanShow(contextData)
+	if contextData.targetResidentType == Enum.ResidentType.Owner then
+		return false
+	end
+
 	if not contextData.canBeManaged then
 		return false
 	end
+
 	if contextData.playerIsOwner then
 		return true;
 	else

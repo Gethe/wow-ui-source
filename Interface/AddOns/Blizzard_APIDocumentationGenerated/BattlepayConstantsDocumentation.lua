@@ -5,23 +5,29 @@ local BattlepayConstants =
 		{
 			Name = "BulkPurchaseResult",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 0,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "ResultOk", Type = "BulkPurchaseResult", EnumValue = 0 },
+				{ Name = "ResultInProgress", Type = "BulkPurchaseResult", EnumValue = 1 },
+				{ Name = "ResultSuccess", Type = "BulkPurchaseResult", EnumValue = 2 },
+				{ Name = "ResultFailed", Type = "BulkPurchaseResult", EnumValue = 3 },
 			},
 		},
 		{
 			Name = "BulkRefundResult",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 0,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "ResultOk", Type = "BulkRefundResult", EnumValue = 0 },
+				{ Name = "ResultFailed", Type = "BulkRefundResult", EnumValue = 1 },
+				{ Name = "ResultInvalidRequest", Type = "BulkRefundResult", EnumValue = 2 },
+				{ Name = "ResultRefundWindowExpired", Type = "BulkRefundResult", EnumValue = 3 },
 			},
 		},
 		{
@@ -34,6 +40,20 @@ local BattlepayConstants =
 			{
 				{ Name = "Ok", Type = "CanRedeemTokenForBalanceResult", EnumValue = 0 },
 				{ Name = "FailureCap", Type = "CanRedeemTokenForBalanceResult", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "SimpleOrderStatus",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SimpleOrderStatus", EnumValue = 0 },
+				{ Name = "InProgress", Type = "SimpleOrderStatus", EnumValue = 1 },
+				{ Name = "Success", Type = "SimpleOrderStatus", EnumValue = 2 },
+				{ Name = "Failed", Type = "SimpleOrderStatus", EnumValue = 3 },
 			},
 		},
 		{

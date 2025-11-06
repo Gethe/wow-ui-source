@@ -116,7 +116,7 @@ function HouseExitButtonMixin:CheckEnabled()
 		return false, ERR_SYSTEM_DISABLED;
 	end
 
-	return C_Housing.IsInsideHouse();
+	return C_Housing.IsInsideHouse() and C_HouseEditor.GetActiveHouseEditorMode() == Enum.HouseEditorMode.None;
 end
 
 -- Inherits BaseHousingControlButtonMixin

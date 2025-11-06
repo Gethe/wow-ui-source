@@ -87,14 +87,14 @@ end
 
 function InstanceDifficultyMixin:Update()
 	local instanceDifficultyBannerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceDifficultyBannerDisabled);
-	if instanceDifficultyBannerDisabled then
+	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
+	if instanceDifficultyBannerDisabled or instanceType == "interior" or instanceType == "neighborhood" then
 		for _, frame in ipairs(self.ContentModes) do
 			frame:Hide();
 		end
 		return;
 	end
 
-	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize = GetInstanceInfo();
 	local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic = GetDifficultyInfo(difficulty);
 
 	-- The frames for the different modes of content the player can engage in.

@@ -3,6 +3,21 @@ local LFGConstants =
 	Tables =
 	{
 		{
+			Name = "LFGEntryGeneralPlaystyle",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "LFGEntryGeneralPlaystyle", EnumValue = 0 },
+				{ Name = "Learning", Type = "LFGEntryGeneralPlaystyle", EnumValue = 1 },
+				{ Name = "FunRelaxed", Type = "LFGEntryGeneralPlaystyle", EnumValue = 2 },
+				{ Name = "FunSerious", Type = "LFGEntryGeneralPlaystyle", EnumValue = 3 },
+				{ Name = "Expert", Type = "LFGEntryGeneralPlaystyle", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "LFGEntryPlaystyle",
 			Type = "Enumeration",
 			NumValues = 4,

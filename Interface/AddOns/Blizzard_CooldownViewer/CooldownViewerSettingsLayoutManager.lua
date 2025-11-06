@@ -17,9 +17,18 @@ function CooldownManagerLayout_GetType(layout)
 	return Enum.CooldownLayoutType.Character;
 end
 
-function CooldownManagerLayout_GetName(layout)
+function CooldownManagerLayout_GetNameExplicit(layout)
 	if layout.layoutName and layout.layoutName ~= "" then
 		return layout.layoutName;
+	end
+
+	return nil;
+end
+
+function CooldownManagerLayout_GetName(layout)
+	local explicitName = CooldownManagerLayout_GetNameExplicit(layout);
+	if explicitName then
+		return explicitName;
 	end
 
 	return CooldownViewerUtil.GetClassAndSpecTagText(layout.classAndSpecTag) or UNKNOWN;
@@ -347,7 +356,15 @@ function CooldownViewerLayoutManagerMixin:AddLayout(layoutName, classAndSpecTag,
 
 	local layoutID = self:CheckGetLayoutID(desiredLayoutID);
 	local newLayout = CooldownManagerLayout_Create(layoutID, layoutName, classAndSpecTag);
-	self.layouts[layoutID] = newLayout;
+	return self:CheckAddFullLayout(newLayout, desiredLayoutID);
+end
+
+function CooldownViewerLayoutManagerMixin:CheckAddFullLayout(layout, desiredLayoutID)
+	-- TODO: Check maxed out layouts, this was never really done before.
+
+	local layoutID = CooldownManagerLayout_GetID(layout);
+	assertsafe(self:GetLayout(layoutID) == nil, "LayoutID %s already exists", tostring(layoutID));
+	self.layouts[layoutID] = layout;
 
 	local isVerboseChange = false;
 	self:SetHasPendingChanges(true, isVerboseChange);
@@ -356,10 +373,41 @@ function CooldownViewerLayoutManagerMixin:AddLayout(layoutName, classAndSpecTag,
 	-- If the caller supplied no name or id, it means this layout was a modification from a default state and should be considered
 	-- a "default"/"starter" layout until the user can supply a name. The layout name can be auto-picked at this point, it just needs to
 	-- be marked as a "default" layout.
-	local isDefaultLayoutModification = (not layoutName and not desiredLayoutID);
-	CooldownManagerLayout_SetIsDefault(newLayout, isDefaultLayoutModification);
+	local explicitName = CooldownManagerLayout_GetNameExplicit(layout);
+	local isDefaultLayoutModification = (not explicitName and not desiredLayoutID);
+	CooldownManagerLayout_SetIsDefault(layout, isDefaultLayoutModification);
 
-	return newLayout, Enum.CooldownLayoutStatus.Success;
+	return layout, Enum.CooldownLayoutStatus.Success;
+end
+
+function CooldownViewerLayoutManagerMixin:ImportLayout(layoutName, layout)
+	-- This is copying an existing layout, the layoutInfo on the dialog has already been copied, just need to defer updating the id
+	-- in case the user took some other action to add/delete other layouts while this dialog was shown.
+	if self:IsValidLayoutName(layoutName) then
+		layout = self:EnsureLayoutHasUniqueID(layout);
+		CooldownManagerLayout_SetName(layout, layoutName);
+		local layoutID = CooldownManagerLayout_GetID(layout);
+		return self:CheckAddFullLayout(layout, layoutID);
+	end
+
+	return nil, Enum.CooldownLayoutStatus.InvalidLayoutName;
+end
+
+function CooldownViewerLayoutManagerMixin:CopyLayout(layout)
+	local copy = CopyTable(layout);
+	copy.layoutID = self:CheckGetLayoutID(); -- NOTE: Internal detail, maintain parity with CooldownManagerLayout_GetID, ids should ideally be immutable
+	return copy;
+end
+
+function CooldownViewerLayoutManagerMixin:EnsureLayoutHasUniqueID(layout)
+	-- Double check that this layout isn't already managed, otherwise there's more book-keeping to do.
+	-- If this layout seems to exist, then copy it so that it's forced to have a unique id.
+	local currentLayoutID = CooldownManagerLayout_GetID(layout);
+	if self:GetLayout(currentLayoutID) then
+		return self:CopyLayout(layout);
+	end
+
+	return layout;
 end
 
 function CooldownViewerLayoutManagerMixin:SetLayout(layoutID, layout)
@@ -811,16 +859,26 @@ function CooldownViewerLayoutManagerMixin:GetMaxLayoutsErrorText()
 	return COOLDOWN_VIEWER_SETTINGS_ADD_ALERT_TOOLTIP_DISABLED_MAXED_LAYOUTS;
 end
 
-function CooldownViewerLayoutManagerMixin:CopyActiveLayoutToClipboard()
-	local activeLayout = self:GetActiveLayout(Enum.CDMLayoutMode.AccessOnly);
-	if activeLayout then
-		local layoutID = CooldownManagerLayout_GetID(activeLayout);
+function CooldownViewerLayoutManagerMixin:CopyLayoutToClipboard(layout)
+	if layout then
+		local layoutID = CooldownManagerLayout_GetID(layout);
 		local layoutData = self:GetSerializer():SerializeLayouts(layoutID);
-		CopyToClipboard(layoutData);
-
-		local layoutName = CooldownManagerLayout_GetName(activeLayout);
-		ChatFrameUtil.DisplaySystemMessageInPrimary(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(layoutName)); -- TODO: Add real string, this isn't edit mode
+		if layoutData then
+			CopyToClipboard(layoutData);
+			return true;
+		end
 	end
+
+	return false;
+end
+
+function CooldownViewerLayoutManagerMixin:CreateLayoutsFromSerializedData(text)
+	if type(text) == "string" and #text > 0 then
+		local isUserInput = true;
+		return self:GetSerializer():DeserializeLayouts(text, isUserInput);
+	end
+
+	return nil;
 end
 
 function CooldownViewerLayoutManagerMixin:IsCharacterSpecificLayout(layout)

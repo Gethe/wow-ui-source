@@ -28,24 +28,34 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+			<DropdownButton parentKey="SettingsDropdown" inherits="DamageMeterSettingsDropdownButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-35" y="-7"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Header" x="-20" y="-3"/>
 				</Anchors>
 			</DropdownButton>
-			<DropdownButton parentKey="SegmentDropdown" inherits="WowStyle2DropdownTemplate">
-				<Size x="16" y="16"/>
+			<DropdownButton parentKey="SessionDropdown" inherits="WowStyle2DropdownTemplate">
+				<Size x="18" y="18"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="TOPLEFT" x="-15" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-8" y="3"/>
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="SessionName" inherits="GameFontNormalMed1" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</DropdownButton>
 			<DropdownButton parentKey="TrackedStatDropdown" inherits="WowStyle1ArrowDropdownTemplate">
 				<KeyValues>
 					<KeyValue key="hasShadow" type="boolean" value="false"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-2"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SegmentDropdown" relativePoint="LEFT" x="-15" y="5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-3"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.SessionDropdown" relativePoint="LEFT" x="-15" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
@@ -62,16 +72,16 @@
 					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
-			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" alpha="0.3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
 			</EventFrame>
 			<Button parentKey="ResizeButton" alpha="0">
-				<Size x="16" y="16"/>
+				<Size x="60" y="60"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-10" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="-8"/>
 				</Anchors>
 				<NormalTexture atlas="damagemeters-scalehandle"/>
 				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
@@ -85,10 +95,12 @@
 			<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
 				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
 				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
+				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />
 			</AnimationGroup>
 			<AnimationGroup parentKey="HideResizeButton" setToFinalAlpha="true">
 				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
 				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="1" toAlpha="0.3"/>
 			</AnimationGroup>
 		</Animations>
 		<Scripts>
@@ -99,7 +111,6 @@
 			<OnEnter method="OnEnter"/>
 			<OnDragStart method="OnDragStart"/>
 			<OnDragStop method="OnDragStop"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

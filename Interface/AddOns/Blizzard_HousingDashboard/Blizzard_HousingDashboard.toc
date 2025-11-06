@@ -1,7 +1,7 @@
 ## Title: Blizzard Housing Dashboard
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HousingTemplates
+## Dependencies: Blizzard_HousingTemplates, Blizzard_HousingModelPreview
 ## AllowLoadGameType: standard
 
 ## Temporary test data file for prototyping. To be removed once data APIs provided.

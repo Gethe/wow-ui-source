@@ -116,9 +116,7 @@ function HouseEditorExpertDecorModeMixin:HandleManipulatorEvent(manipulatorEvent
 		elseif manipulatorEvent == Enum.TransformManipulatorEvent.Start then
 			PlaySound(SOUNDKIT.HOUSING_EXPERTMODE_AXIS_SELECT_KEYDOWN);
 			self:StartLoopingSound();
-		elseif manipulatorEvent == Enum.TransformManipulatorEvent.Complete or
-				manipulatorEvent == Enum.TransformManipulatorEvent.Cancel
-		then
+		elseif manipulatorEvent == Enum.TransformManipulatorEvent.Complete or manipulatorEvent == Enum.TransformManipulatorEvent.Cancel	then
 			PlaySound(SOUNDKIT.HOUSING_EXPERTMODE_AXIS_SELECT_KEYUP);
 			self:StopLoopingSound();
 		end
@@ -269,6 +267,12 @@ end
 ExpertDecorResetButtonMixin = {};
 
 function ExpertDecorResetButtonMixin:CheckEnabled()
+	local activeSubmode = C_HousingExpertMode.GetPrecisionSubmode();
+	-- Translation submode does not currently allow resetting
+	if activeSubmode == Enum.HousingPrecisionSubmode.Translate then
+		return false;
+	end
+
 	return C_HousingExpertMode.IsDecorSelected() or C_HousingExpertMode.IsHouseExteriorSelected();
 end
 

@@ -146,7 +146,7 @@ function HousingUpgradeFrameMixin:RefreshSelectedElement()
 
 	local neededFavor = C_Housing.GetHouseLevelFavorForLevel(self.displayLevel);
 	self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel);
-	if self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
+	if self:IsShown() and self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
 		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_FILLED);
 	end
 end
@@ -372,7 +372,7 @@ function HousingTeleportToHouseMixin:UpdateState()
 	self.teleportToPlot = true;
 	if C_HousingNeighborhood.CanReturnAfterVisitingHouse() then
 		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
-		if currentNeighborhoodGUID and currentNeighborhoodGUID == self.houseInfo.neighborhoodGUID then
+		if currentNeighborhoodGUID and self.houseInfo and currentNeighborhoodGUID == self.houseInfo.neighborhoodGUID then
 			self.teleportToPlot = false;
 		end
 	end
@@ -428,10 +428,15 @@ end
 HouseUpgradeCurrentLevelFrameMixin = {}
 
 function HouseUpgradeCurrentLevelFrameMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 	local parent = self:GetParent();
+	if not parent.actualLevel or not parent.houseFavorNeeded then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DASHBOARD_HOUSE_LEVEL, parent.actualLevel));
 	GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR_TOOLTIP);
 	GameTooltip:Show();
 end
 
@@ -517,7 +522,9 @@ end
 
 function HouseUpgradeProgressBarMixin:OnAnimationFinished()
 
-	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+	if self:IsShown() then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+	end
 	if self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
 		self.loopSoundHandle = nil;
@@ -541,8 +548,14 @@ function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
 
 	self.targetPercentage = finalDisplayPercentage;
 
-	if self.targetPercentage ~= self.currentPercentage then
+	if self:IsShown() and self.targetPercentage ~= self.currentPercentage then
 		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_START);
+
+		if self.loopSoundHandle then
+			StopSound(self.loopSoundHandle);
+			self.loopSoundHandle = nil;
+		end
+
 		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_LOOP);
 		self.loopSoundHandle = soundHandle;
 	end

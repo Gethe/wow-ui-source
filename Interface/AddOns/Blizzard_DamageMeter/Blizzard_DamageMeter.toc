@@ -6,6 +6,8 @@
 DamageMeterConstants.lua
 DamageMeterEntry.lua
 DamageMeterEntry.xml
+DamageMeterSettingsDropdownButton.lua
+DamageMeterSettingsDropdownButton.xml
 DamageMeterUnitBreakdown.lua
 DamageMeterUnitBreakdown.xml
 DamageMeterWindow.lua

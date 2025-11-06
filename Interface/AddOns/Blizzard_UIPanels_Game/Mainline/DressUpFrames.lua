@@ -8,6 +8,13 @@ function DressUpItemLink(link, forcedFrame)
 	if( link ) then 
 		if ( C_Item.IsDressableItemByID(link) ) then
 			return DressUpVisualLink(forcedFrame, link);
+		elseif ( HousingFramesUtil ) then
+			local handled = HousingFramesUtil.PreviewHousingItem(link);
+			-- For now this is superfluous because there aren't other elseifs after this one, but if one is ever added, I don't want
+			-- this not ending up being handled by PreviewHousingItem to inadvertently prevent the function from continuing on to them
+			if ( handled ) then
+				return handled;
+			end
 		end
 	end
 	return false;

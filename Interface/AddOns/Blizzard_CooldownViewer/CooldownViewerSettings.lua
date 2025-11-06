@@ -763,9 +763,9 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self.categoryPool:CreatePool("Frame", self.CooldownScroll.Content, "CooldownViewerSettingsCategoryTemplate");
 	self.categoryPool:CreatePool("Frame", self.CooldownScroll.Content, "CooldownViewerSettingsBarCategoryTemplate");
 
-	self.layoutManager = CreateFromMixins(CooldownViewerLayoutManagerMixin);
-	self.dataSerialization = CreateFromMixins(CooldownViewerDataStoreSerializationMixin);
-	self.dataProvider = CreateFromMixins(CooldownViewerSettingsDataProviderMixin);
+	self:SetLayoutManager(CreateFromMixins(CooldownViewerLayoutManagerMixin));
+	self:SetDataProvider(CreateFromMixins(CooldownViewerSettingsDataProviderMixin));
+	self:SetSerializer(CreateFromMixins(CooldownViewerDataStoreSerializationMixin));
 
 	self:SetupTabs();
 	self:SetupEventHandlers();
@@ -774,10 +774,6 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetupScrollFrame();
 	self:SetupEventEditFrame();
 	self:SetupLayoutManagerDialog();
-
-	self:SetLayoutManager(CreateFromMixins(CooldownViewerLayoutManagerMixin));
-	self:SetDataProvider(CreateFromMixins(CooldownViewerSettingsDataProviderMixin));
-	self:SetSerializer(CreateFromMixins(CooldownViewerDataStoreSerializationMixin));
 
 	local function LoadCooldownSettings()
 		local manager = self:GetLayoutManager();
@@ -861,11 +857,17 @@ function CooldownViewerSettingsMixin:CreateNewLayoutFromDialog(dialog)
 	self:SaveCurrentLayout(); -- Auto-save the current layout if the user makes a new layout
 
 	local layoutName = dialog:GetEditBoxText();
-	local newLayout, status = self:GetLayoutManager():AddLayout(layoutName, CooldownViewerUtil.GetCurrentClassAndSpecTag());
-	self:CheckDisplayActionStatus(Enum.CooldownLayoutAction.AddLayout, status, layoutName);
+	local layoutInfo = dialog:GetLayoutInfo();
 
-	if newLayout then
-		self:SetActiveLayoutByID(CooldownManagerLayout_GetID(newLayout));
+	if layoutInfo then
+		self:ImportLayoutFromDialog(dialog);
+	else
+		local newLayout, status = self:GetLayoutManager():AddLayout(layoutName, CooldownViewerUtil.GetCurrentClassAndSpecTag());
+		self:CheckDisplayActionStatus(Enum.CooldownLayoutAction.AddLayout, status, layoutName);
+
+		if newLayout then
+			self:SetActiveLayoutByID(CooldownManagerLayout_GetID(newLayout));
+		end
 	end
 end
 
@@ -881,8 +883,16 @@ function CooldownViewerSettingsMixin:DeleteLayoutFromDialog(dialog)
 end
 
 function CooldownViewerSettingsMixin:ImportLayoutFromDialog(dialog)
-	-- self:ImportLayout(dialog:GetLayoutInfo(), dialog:GetDesiredLayoutType(), dialog:GetEditBoxText());
-	print("NYI: Actually import layout...");
+	self:GetLayoutManager():ImportLayout(dialog:GetEditBoxText(), dialog:GetLayoutInfo());
+end
+
+function CooldownViewerSettingsMixin:CopyLayoutToClipboard(layout)
+	if layout then
+		local layoutName = CooldownManagerLayout_GetName(layout);
+		if self:GetLayoutManager():CopyLayoutToClipboard(layout) then
+			ChatFrameUtil.DisplaySystemMessageInPrimary(COOLDOWN_VIEWER_SETTINGS_COPY_TO_CLIPBOARD_NOTICE:format(layoutName));
+		end
+	end
 end
 
 function CooldownViewerSettingsMixin:IsCharacterSpecificLayout(layout)
@@ -898,11 +908,11 @@ function CooldownViewerSettingsMixin:ValidateLayoutNameFromDialog(dialog)
 
 	local hasValidInput = UserInputNonEmpty(editBoxText);
 	if not hasValidInput then
-		return false, HUD_EDIT_MODE_ERROR_ENTER_NAME;
+		return false, COOLDOWN_VIEWER_SETTINGS_ERROR_ENTER_NAME;
 	end
 
 	if not self:GetLayoutManager():IsValidLayoutName(editBoxText) then
-		return false, HUD_EDIT_MODE_ERROR_ENTER_NAME; -- TODO: Add custom string for this?
+		return false, COOLDOWN_VIEWER_SETTINGS_ERROR_ENTER_NAME; -- TODO: Add custom string for this?
 	end
 
 	return true;
@@ -911,18 +921,18 @@ end
 function CooldownViewerSettingsMixin:CanCreateNewLayoutFromDialog(dialog)
 	local manager = self:GetLayoutManager();
 	if manager:AreLayoutsFullyMaxed() then
-		local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(manager:GetMaxLayoutsForType(Enum.CooldownLayoutType.Character), manager:GetMaxLayoutsForType(Enum.CooldownLayoutType.Account));
+		local maxLayoutsErrorText = COOLDOWN_VIEWER_SETTINGS_ERROR_MAX_LAYOUTS:format(manager:GetMaxLayoutsForType(Enum.CooldownLayoutType.Character), manager:GetMaxLayoutsForType(Enum.CooldownLayoutType.Account));
 		return false, maxLayoutsErrorText;
 	end
 
 	local layoutType = dialog:GetDesiredLayoutType();
 	if manager:AreLayoutsOfTypeMaxed(layoutType) then
 		if layoutType == Enum.CooldownLayoutType.Character then
-			local maxCharLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_CHAR_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+			local maxCharLayoutsErrorText = COOLDOWN_VIEWER_SETTINGS_ERROR_MAX_CHAR_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 
 			return false, maxCharLayoutsErrorText;
 		else
-			local maxAccountLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_ACCOUNT_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+			local maxAccountLayoutsErrorText = COOLDOWN_VIEWER_SETTINGS_ERROR_MAX_ACCOUNT_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 			return false, maxAccountLayoutsErrorText;
 		end
 	end
@@ -941,7 +951,7 @@ function CooldownViewerSettingsMixin:CanImportFromDialog(dialog)
 	end
 
 	if not dialog:GetLayoutInfo() then
-		return false, HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME;
+		return false, COOLDOWN_VIEWER_SETTINGS_ERROR_ENTER_IMPORT_STRING_AND_NAME;
 	end
 
 	return true;
@@ -981,7 +991,7 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 
 			if layoutType == Enum.CooldownLayoutType.Character and not addedCharacterSpecificHeader then
 				addedCharacterSpecificHeader = true;
-				local characterName = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
+				local characterName = GetClassColoredTextForUnit("player", COOLDOWN_VIEWER_SETTINGS_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
 				rootDescription:CreateTitle(characterName);
 			end
 
@@ -998,54 +1008,46 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 			layoutButton:SetEnabled(canActivateLayout);
 			if not canActivateLayout then
 				layoutButton:SetTooltip(function(tooltip, elementDescription)
-					--- TODO: Localize and make utility to show spec name.
-					GameTooltip_SetTitle(tooltip, "[PH] Cannot switch to layout");
-					GameTooltip_AddErrorLine(tooltip, "[PH] " .. layoutName .. " is for spec: " .. CooldownManagerLayout_GetClassAndSpecTag(layoutInfo));
+					GameTooltip_SetTitle(tooltip, COOLDOWN_VIEWER_SETTINGS_ERROR_CANNOT_SWITCH_TO_LAYOUT);
+
+					local whoIsItFor = CooldownViewerUtil.GetClassAndSpecTagText(CooldownManagerLayout_GetClassAndSpecTag(layoutInfo)) or UNKNOWN;
+					if whoIsItFor then
+						GameTooltip_AddErrorLine(tooltip, COOLDOWN_VIEWER_SETTINGS_ERROR_CANNOT_SWITCH_TO_LAYOUT_TOOLTIP_LINE:format(layoutName, whoIsItFor));
+					end
 				end);
 			end
 
 			if isUserLayout then
-				local copyButton = layoutButton:CreateButton(HUD_EDIT_MODE_COPY_LAYOUT, function()
-					print("NYI: Copy cooldown layout" .. layoutName);
-				end);
-				copyButton:SetEnabled(false);
-				copyButton:SetTooltip(function(tooltip, elementDescription)
-					GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
-					GameTooltip_AddErrorLine(tooltip, "NYI: Copy cooldown layout" .. layoutName);
+				-- Copy layout
+				local copyLayoutButton = layoutButton:CreateButton(COOLDOWN_VIEWER_SETTINGS_COPY_LAYOUT, function()
+					CooldownViewerLayoutDialog:ShowNewLayoutDialog(layoutManager:CopyLayout(layoutInfo));
 				end);
 
-				--[[ Copy button functionality coming soon...
-				local layoutsMaxed = layoutManager:AreLayoutsFullyMaxed();
-				if layoutsMaxed or layoutManager:HasPendingChanges() then
-					copyButton:SetEnabled(false);
+				local copyLayoutDisableOnMaxLayouts = true;
+				local copyLayoutDisableOnActiveChanges = false;
+				EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(copyLayoutButton, copyLayoutDisableOnMaxLayouts, copyLayoutDisableOnActiveChanges, layoutManager);
 
-					local maxLayoutsPerType = layoutManager:GetMaxLayoutsForType(); -- todo: it's always the same for now.
-					local tooltipText = layoutsMaxed and HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(maxLayoutsPerType, maxLayoutsPerType) or HUD_EDIT_MODE_ERROR_COPY;
-					copyButton:SetTooltip(function(tooltip, elementDescription)
-						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
-						GameTooltip_AddErrorLine(tooltip, "NYI: Copy cooldown layout" .. layoutName);
-					end);
-				end
-				--]]
-
-				layoutButton:CreateButton(HUD_EDIT_MODE_RENAME_LAYOUT, function()
+				-- Rename layout
+				layoutButton:CreateButton(COOLDOWN_VIEWER_SETTINGS_RENAME_LAYOUT, function()
 					CooldownViewerLayoutDialog:ShowRenameLayoutDialog(layoutID, layoutInfo);
 				end);
 
 				layoutButton:DeactivateSubmenu();
 
 				layoutButton:AddInitializer(function(button, description, menu)
-					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
-					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
-					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+					local settingsButton = MenuTemplates.AttachAutoHideGearButton(button);
+					MenuTemplates.SetUtilityButtonLockedEnabledState(settingsButton, true);
+					MenuTemplates.SetUtilityButtonTooltipText(settingsButton, COOLDOWN_VIEWER_SETTINGS_RENAME_OR_COPY_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(settingsButton, MenuVariants.GearButtonAnchor, button);
+					MenuTemplates.SetUtilityButtonClickHandler(settingsButton, function()
 						description:ForceOpenSubmenu();
 					end);
 
-					local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-					MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
-					MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
-					MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
+					local deleteLayoutButton = MenuTemplates.AttachAutoHideCancelButton(button);
+					MenuTemplates.SetUtilityButtonLockedEnabledState(deleteLayoutButton, true);
+					MenuTemplates.SetUtilityButtonTooltipText(deleteLayoutButton, COOLDOWN_VIEWER_SETTINGS_DELETE_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(deleteLayoutButton, MenuVariants.CancelButtonAnchor, settingsButton);
+					MenuTemplates.SetUtilityButtonClickHandler(deleteLayoutButton, function()
 						CooldownViewerLayoutDialog:ShowDeleteLayoutDialog(layoutID, layoutInfo);
 						menu:Close();
 					end);
@@ -1066,26 +1068,21 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 		local newLayoutDisableOnActiveChanges = false;
 		local disabled = EditModeLayoutManagerUtil.GetDisableReason(newLayoutDisableOnMaxLayouts, newLayoutDisableOnActiveChanges, layoutManager) ~= nil;
 		local newLayoutButton = rootDescription:CreateButton(EditModeLayoutManagerUtil.GetNewLayoutText(disabled), function()
-			CooldownViewerLayoutDialog:ShowNewLayoutDialog(); -- TODO: Copy from active layout?? maybe not...ask design, "starter" will be default, but new could be copied from active
+			CooldownViewerLayoutDialog:ShowNewLayoutDialog();
 		end);
 		EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(newLayoutButton, newLayoutDisableOnMaxLayouts, newLayoutDisableOnActiveChanges, layoutManager);
 
 		-- import layout
 		local importLayoutDisableOnMaxLayouts = true;
-		local importLayoutDisableOnActiveChanges = true;
-		local importLayoutButton = rootDescription:CreateButton(HUD_EDIT_MODE_IMPORT_LAYOUT, function()
-			print("NYI: Showing import layout dialog");
+		local importLayoutDisableOnActiveChanges = false;
+		local importLayoutButton = rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT, function()
+			CooldownViewerImportLayoutDialog:ShowImportLayoutDialog();
 		end);
 		EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(importLayoutButton, importLayoutDisableOnMaxLayouts, importLayoutDisableOnActiveChanges, layoutManager);
-		importLayoutButton:SetEnabled(false);
-		importLayoutButton:SetTooltip(function(tooltip, elementDescription)
-			GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_IMPORT_LAYOUT);
-			GameTooltip_AddErrorLine(tooltip, "NYI: Import cooldown layout");
-		end);
 
 		-- share
-		local shareButton = rootDescription:CreateButton(HUD_EDIT_MODE_COPY_TO_CLIPBOARD, function()
-			layoutManager:CopyActiveLayoutToClipboard();
+		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_COPY_TO_CLIPBOARD, function()
+			self:CopyLayoutToClipboard(layoutManager:GetActiveLayout());
 		end);
 	end);
 end
@@ -1119,10 +1116,10 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 	CooldownViewerLayoutDialog:SetLayoutManager(self:GetLayoutManager());
 	CooldownViewerLayoutDialog:SetModeData({
 		newLayout = {
-			title = HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE,
+			title = COOLDOWN_VIEWER_SETTINGS_NAME_LAYOUT_DIALOG_TITLE,
 			acceptText = SAVE,
 			cancelText = CANCEL,
-			disabledAcceptTooltip = HUD_EDIT_MODE_ERROR_ENTER_NAME,
+			disabledAcceptTooltip = COOLDOWN_VIEWER_SETTINGS_ERROR_ENTER_NAME,
 			needsEditbox = true,
 			needsCharacterSpecific = false, -- TODO: Will enable account layouts later
 			onCancelEvent = nil,
@@ -1135,7 +1132,7 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 		},
 
 		renameLayout = {
-			title = HUD_EDIT_MODE_RENAME_LAYOUT_DIALOG_TITLE,
+			title = COOLDOWN_VIEWER_SETTINGS_RENAME_LAYOUT_DIALOG_TITLE,
 			acceptText = SAVE,
 			cancelText = CANCEL,
 			disabledAcceptTooltip = nil,
@@ -1151,7 +1148,7 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 		},
 
 		deleteLayout = {
-			title = HUD_EDIT_MODE_DELETE_LAYOUT_DIALOG_TITLE,
+			title = COOLDOWN_VIEWER_SETTINGS_DELETE_LAYOUT_DIALOG_TITLE,
 			acceptText = YES,
 			cancelText = NO,
 			disabledAcceptTooltip = nil,
@@ -1161,6 +1158,32 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 				return self:DeleteLayoutFromDialog(dialog);
 			end,
 			updateAcceptCallback = function() return true; end,
+		},
+	});
+
+	CooldownViewerImportLayoutDialog:SetLayoutManager(self:GetLayoutManager());
+	CooldownViewerImportLayoutDialog:SetModeData({
+		importLayout = {
+			title = COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT_DIALOG_TITLE,
+			importEditBoxLabel = COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL,
+			nameEditBoxLabel = COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL,
+			instructionsLabel = COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT_INSTRUCTIONS,
+			acceptText = COOLDOWN_VIEWER_SETTINGS_IMPORT_LAYOUT,
+			cancelText = CANCEL,
+			disabledAcceptTooltip = COOLDOWN_VIEWER_SETTINGS_ERROR_ENTER_IMPORT_STRING_AND_NAME,
+			needsCharacterSpecific = false, -- TODO: Will enable account layouts later
+
+			onAcceptCallback = function(_layoutManager, dialog)
+				self:ImportLayoutFromDialog(dialog);
+			end,
+
+			onCancelCallback = function(_layoutManager, dialog)
+				dialog:DeleteImportedLayouts();
+			end,
+
+			updateAcceptCallback = function(_layoutManager, dialog)
+				return self:CanImportFromDialog(dialog);
+			end,
 		},
 	});
 end

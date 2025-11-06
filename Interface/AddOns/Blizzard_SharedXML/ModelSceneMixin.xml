@@ -15,6 +15,12 @@ UI.xsd">
 			<OnMouseWheel method="OnMouseWheel" />
 		</Scripts>
 	</ModelScene>
+	<ModelScene name="StoreModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" virtual="true">
+		<KeyValues>
+			<!-- CLASS-44103: Automatically allow overlapped models for shop scenes -->
+			<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+		</KeyValues>
+	</ModelScene>
 	<ModelScene name="NoZoomModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoZoomModelSceneMixin" virtual="true"/>
 	<ModelScene name="PanningModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="PanningModelSceneMixin" virtual="true" />
 	<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />

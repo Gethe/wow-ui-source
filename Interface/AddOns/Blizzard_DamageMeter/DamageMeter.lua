@@ -29,6 +29,14 @@ local function IsSavedWindowDataValid(savedWindowData)
 		return false;
 	end
 
+	if savedWindowData.sessionType == nil then
+		return false;
+	end
+
+	if type(savedWindowData.sessionType) ~= "number" then
+		return false;
+	end
+
 	return true;
 end
 
@@ -36,6 +44,7 @@ local function AddToSavedWindowDataList(windowData)
 	-- Saved window data and actual window data aren't identical structures.
 	local savedWindowData = {
 		trackedStat = windowData.trackedStat;
+		sessionType = windowData.sessionType;
 		shown = true;
 	};
 
@@ -203,6 +212,7 @@ function DamageMeterMixin:SetupWindowFrame(windowData, windowIndex)
 	local windowFrame = windowData.frame or CreateFrame("FRAME", "DamageMeterWindow" .. windowIndex, self, "DamageMeterWindowTemplate");
 	windowFrame:SetDamageMeterOwner(self, windowIndex);
 	windowFrame:SetTrackedStat(windowData.trackedStat);
+	windowFrame:SetSession(windowData.sessionType, windowData.sessionID);
 	windowFrame:SetUseClassColor(self:ShouldUseClassColor());
 
 	-- Give the window initial positioning that may be overwritten by the saved frame position cache when it's loaded.
@@ -233,6 +243,7 @@ function DamageMeterMixin:LoadSavedWindowDataList()
 		if IsSavedWindowDataValid(savedWindowData) == true then
 			local windowData = {
 				trackedStat = savedWindowData.trackedStat;
+				sessionType = savedWindowData.sessionType;
 			};
 
 			table.insert(self.windowDataList, windowData);
@@ -258,6 +269,7 @@ function DamageMeterMixin:ShowNewWindowFrame()
 	else
 		windowData = {
 			trackedStat = Enum.DamageMeterType.DamageDone;
+			sessionType = Enum.DamageMeterSessionType.Overall;
 		};
 		table.insert(self.windowDataList, windowData );
 
@@ -308,6 +320,18 @@ function DamageMeterMixin:GetWindowFrameTrackedStat(windowFrame)
 	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
 
 	return self.windowDataList[windowFrameIndex].trackedStat;
+end
+
+function DamageMeterMixin:SetWindowFrameSession(windowFrame, sessionType, sessionID)
+	local windowFrameIndex = windowFrame:GetWindowFrameIndex();
+
+	self.windowDataList[windowFrameIndex].sessionType = sessionType;
+	self.windowDataList[windowFrameIndex].sessionID = sessionID;
+
+	DamageMeterPerCharacterSettings.windowDataList[windowFrameIndex].sessionType = sessionType;
+	-- sessionID is intentionally not preserved in saved data as it's specific to the player's recent encounters.
+
+	windowFrame:SetSession(sessionType, sessionID);
 end
 
 function DamageMeterMixin:OnUseClassColorChanged(useClassColor)
@@ -363,4 +387,59 @@ end
 
 function DamageMeterMixin:SetTextSize(textSize)
 	self:SetTextScale(textSize * DAMAGE_METER_TEXT_SIZE_TO_SCALE_MULTIPLIER);
+end
+
+function DamageMeterMixin:OnWindowAlphaChanged(alpha)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetAlpha(alpha); end);
+end
+
+function DamageMeterMixin:GetWindowAlpha()
+	return self.windowAlpha or 1;
+end
+
+function DamageMeterMixin:SetWindowAlpha(alpha)
+	if not ApproximatelyEqual(self:GetWindowAlpha(), alpha) then
+		self.windowAlpha = alpha;
+		self:OnWindowAlphaChanged(alpha);
+	end
+end
+
+function DamageMeterMixin:GetWindowTransparency()
+	return self:GetWindowAlpha() / DAMAGE_METER_TRANSPARENCY_TO_ALPHA_MULTIPLIER;
+end
+
+function DamageMeterMixin:SetWindowTransparency(transparency)
+	return self:SetWindowAlpha(transparency * DAMAGE_METER_TRANSPARENCY_TO_ALPHA_MULTIPLIER);
+end
+
+function DamageMeterMixin:OnShowBarIconsChanged(showBarIcons)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetShowBarIcons(showBarIcons); end);
+end
+
+function DamageMeterMixin:ShouldShowBarIcons()
+	return self.showBarIcons == true;
+end
+
+function DamageMeterMixin:SetShowBarIcons(showBarIcons)
+	showBarIcons = (showBarIcons == true);
+
+	if self.showBarIcons ~= showBarIcons then
+		self.showBarIcons = showBarIcons;
+		self:OnShowBarIconsChanged(showBarIcons);
+	end
+end
+
+function DamageMeterMixin:OnStyleChanged(style)
+	self:ForEachWindowFrame(function(windowFrame) windowFrame:SetStyle(style); end);
+end
+
+function DamageMeterMixin:GetStyle()
+	return self.style or Enum.DamageMeterStyle.Default;
+end
+
+function DamageMeterMixin:SetStyle(style)
+	if self.style ~= style then
+		self.style = style;
+		self:OnStyleChanged(style);
+	end
 end
