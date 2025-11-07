@@ -2024,13 +2024,12 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI()
+	if not CharacterSelect_IsStoreAvailable() then
+		return;
+	end
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 	if useNewCashShop then
 		local wasShown = CatalogShopInboundInterface.IsShown();
-		if ( not wasShown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			securecall("CloseAllWindows");
-		end
 		local contextKey = nil;	-- contextKey is for Mainline only
 		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
 	else

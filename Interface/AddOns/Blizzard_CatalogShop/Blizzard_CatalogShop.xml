@@ -129,6 +129,9 @@
 						</Anchors>
 					</CheckButton>
 					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
+						<KeyValues>
+							<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
