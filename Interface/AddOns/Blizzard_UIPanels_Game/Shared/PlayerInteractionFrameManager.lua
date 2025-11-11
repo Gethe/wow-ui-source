@@ -110,8 +110,8 @@ local InteractionManagerFrameInfo = {
 	},
 	[Enum.PlayerInteractionType.Transmogrifier] =
 	{
-		frame = "WardrobeFrame",
-		loadFunc = CollectionsJournal_LoadUI
+		frame = "TransmogFrame",
+		loadFunc = Transmog_LoadUI,
 	},
 	[Enum.PlayerInteractionType.BlackMarketAuctioneer] = {
 		frame = "BlackMarketFrame",

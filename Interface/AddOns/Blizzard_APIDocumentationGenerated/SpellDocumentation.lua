@@ -351,7 +351,7 @@ local Spell =
 		{
 			Name = "GetSpellMaxCumulativeAuraApplications",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =

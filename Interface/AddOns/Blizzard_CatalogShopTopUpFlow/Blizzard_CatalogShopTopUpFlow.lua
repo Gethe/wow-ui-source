@@ -41,6 +41,7 @@ function CatalogShopTopUpFrameMixin:OnShow()
 	else
 
 	end
+	self:ShowCoverFrame();
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + ScreenPadding.Horizontal, self:GetHeight() + ScreenPadding.Vertical);
 end
 
@@ -58,8 +59,20 @@ function CatalogShopTopUpFrameMixin:OnHide()
 		scrollBox:FlushDataProvider();
 		self.TopUpProductContainerFrame:SetSelectedProductInfo(nil);
 	end
-
+	self:HideCoverFrame();
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
+end
+
+function CatalogShopTopUpFrameMixin:ShowCoverFrame()
+	local coverFrameParent = GetAppropriateTopLevelParent();
+	self.CoverFrame:ClearAllPoints();
+	self.CoverFrame:SetPoint("TOPLEFT", coverFrameParent, "TOPLEFT");
+	self.CoverFrame:SetPoint("BOTTOMRIGHT", coverFrameParent, "BOTTOMRIGHT");
+	self.CoverFrame:SetShown(true);
+end
+
+function CatalogShopTopUpFrameMixin:HideCoverFrame()
+	self.CoverFrame:SetShown(false);
 end
 
 function CatalogShopTopUpFrameMixin:SetContextKey(contextKey)

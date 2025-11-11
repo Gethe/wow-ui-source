@@ -95,8 +95,6 @@ local HEAL_PREDICTION_COLOR = { r = 0.0, g = 0.659, b = 0.608 };
 local MANA_BAR_COLOR = {
 	["MANA"] = { r = 0.1, g = 0.25, b = 1.00, predictionColor = POWERBAR_PREDICTION_COLOR_MANA }
 };
-local FRIENDLY_BUFF_MAX_DISPLAY = 32;
-
 
 local function ClassFrameInfoForClassID(classID)
 	return CLASS_FRAME_INFO_MAP[classID];
@@ -111,7 +109,6 @@ PersonalResourceDisplayMixin = {};
 function PersonalResourceDisplayMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, PERSONAL_RESOURCE_DISPLAY_ON_LOAD_EVENTS);
 	self.classID = select(3, UnitClass("player"));
-	self.friendlyBuffPool = CreateFramePool("FRAME", self.FriendlyBuffsContainer, "NameplateAuraItemTemplate");
 
 	CVarCallbackRegistry:RegisterCallback(PRD_ENABLED_CVAR, self.UpdateShownState, self);
 
@@ -127,7 +124,6 @@ function PersonalResourceDisplayMixin:OnShow()
 	self:SetupHealthBar();
 	self:SetupPowerBar();
 	self:SetupAlternatePowerBar();
-	self:UpdateFriendlyBuffs();
 end
 
 function PersonalResourceDisplayMixin:OnHide()
@@ -199,12 +195,11 @@ function PersonalResourceDisplayMixin:OnEvent(event, ...)
 		if self.AlternatePowerBar and self.AlternatePowerBar.UpdateAuraState then
 			self.AlternatePowerBar:UpdateAuraState();
 		end
-		self:UpdateFriendlyBuffs();
 	elseif event == "PLAYER_ENTER_COMBAT" or event == "UNIT_COMBAT" or event == "PLAYER_REGEN_DISABLED" then
 		self:UpdateShownState();
 	elseif event == "PLAYER_LEAVE_COMBAT" or event == "PLAYER_REGEN_ENABLED" then
 		self:UpdateShownState();
-    end
+	end
 end
 
 function PersonalResourceDisplayMixin:OnUpdate()
@@ -593,100 +588,12 @@ function PersonalResourceDisplayMixin:UpdateAdditionalBarAnchors()
 	local alternatePowerBarShown = self.AlternatePowerBar:IsShown();
 	local classFrameContainerShown = prdClassFrame and prdClassFrame:IsShown();
 	
-	self.FriendlyBuffsContainer:Hide();
-
 	if alternatePowerBarShown and classFrameContainerShown then
 		self.AlternatePowerBar:SetPoint("TOP", self.PowerBar, "BOTTOM");
 		self.ClassFrameContainer:SetPoint("TOP", self.AlternatePowerBar, "BOTTOM", 0, self.ClassFrameContainer.yOffset);
-		self.FriendlyBuffsContainer:SetPoint("TOP", self.ClassFrameContainer, "BOTTOM", 0, -10);
 	elseif alternatePowerBarShown and not classFrameContainerShown then
 		self.AlternatePowerBar:SetPoint("TOP", self.PowerBar, "BOTTOM");
-		self.FriendlyBuffsContainer:SetPoint("TOP", self.AlternatePowerBar, "BOTTOM", 0, -10);
 	elseif classFrameContainerShown and not alternatePowerBarShown then
 		self.ClassFrameContainer:SetPoint("TOP", self.PowerBar, "BOTTOM", 0, self.ClassFrameContainer.yOffset);
-		self.FriendlyBuffsContainer:SetPoint("TOP", self.ClassFrameContainer, "BOTTOM", 0, -10);
-	else
-		self.FriendlyBuffsContainer:SetPoint("TOP", self.PowerBar, "BOTTOM", 0, -10);
 	end
-
-	self.FriendlyBuffsContainer:Layout();
-	self.FriendlyBuffsContainer:Show();
-end
-
-function PersonalResourceDisplayMixin:UpdateFriendlyBuffs()
-	if not self.showFriendlyBuffs then
-		self.FriendlyBuffsContainer:Hide();
-		return;
-	end
-	
-	self.friendlyBuffs = {};
-
-	local filters = {
-		AuraUtil.AuraFilters.Helpful,
-		AuraUtil.AuraFilters.IncludeNameplateOnly,
-	};
-	local filterString = AuraUtil.CreateFilterString(unpack(filters));
-
-	local function ProcessAura(aura)
-		if self:ShouldShowFriendlyBuff(aura) then
-			self.friendlyBuffs[aura.auraInstanceID] = aura;
-		end
-
-		return false;
-	end
-
-	local batchCount = nil;
-	local usePackedAura = true;
-	AuraUtil.ForEachAura("player", filterString, batchCount, ProcessAura, usePackedAura);
-
-	self.FriendlyBuffsContainer:Hide();
-	self.friendlyBuffPool:ReleaseAll();
-
-	local buffIndex = 1;
-	for auraInstanceID, aura in pairs(self.friendlyBuffs) do
-		if buffIndex < FRIENDLY_BUFF_MAX_DISPLAY then
-			local buff = self.friendlyBuffPool:Acquire();
-			buff:SetUnit("player");
-			buff.auraInstanceID = auraInstanceID;
-			buff.layoutIndex = buffIndex;
-	
-			buff.Icon:SetTexture(aura.icon);
-			if (aura.applications > 1) then
-				buff.CountFrame.Count:SetText(aura.applications);
-				buff.CountFrame.Count:Show();
-			else
-				buff.CountFrame.Count:Hide();
-			end
-			CooldownFrame_Set(buff.Cooldown, aura.expirationTime - aura.duration, aura.duration, aura.duration > 0, true);
-
-			buff:SetScript("OnEnter", function() 
-				GameTooltip:SetOwner(buff, "ANCHOR_LEFT");
-				GameTooltip:SetUnitBuffByAuraInstanceID("player", buff.auraInstanceID, filterString);
-				GameTooltip:Show();
-			end);
-
-			buff:SetScript("OnLeave", function()
-				if GameTooltip:GetOwner() == buff then
-					GameTooltip:Hide();
-				end
-			end);
-	
-			buff:SetScale(1.4);
-			buff:Show();
-	
-			buffIndex = buffIndex + 1;
-		end
-	end
-
-	self.FriendlyBuffsContainer:Layout();
-	self:UpdateAdditionalBarAnchors();
-	self.FriendlyBuffsContainer:Show();
-end
-
-function PersonalResourceDisplayMixin:ShouldShowFriendlyBuff(aura)
-	if not aura or not aura.name then
-		return false;
-	end
-
-	return aura.nameplateShowAll or (aura.isHelpful and aura.sourceUnit ~= "player");
 end

@@ -296,7 +296,8 @@ function HousingMarketCartDataManagerMixin:AddToCart(item)
 
 			for _i, decorEntry in ipairs(bundleInfo.decorEntries) do
 				local decorID = decorEntry.decorID;
-				local decorInfo = C_HousingCatalog.GetBasicDecorInfo(decorID);
+				local tryGetOwnedInfo = false;
+				local decorInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID, tryGetOwnedInfo);
 				if decorInfo then
 					local itemID = decorInfo.itemID;
 
@@ -383,7 +384,14 @@ function HousingMarketCartDataManagerMixin:RemoveFromCartInternal(index, currCar
 	return index, currCartItem;
 end
 
-function HousingMarketCartDataManagerMixin:ClearCart()
+StaticPopupDialogs["HOUSING_MARKET_CLEAR_CART_CONFIRMATION"] = {
+	text = HOUSING_CATALOG_CART_WARNING,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	--OnAccept set in ClearCart,
+};
+
+function HousingMarketCartDataManagerMixin:ClearCartInternal()
 	for _i, cartItem in ipairs(self.cartList) do
 		if cartItem.decorGUID then
 			C_HousingCatalog.DeletePreviewCartDecor(cartItem.decorGUID);
@@ -391,6 +399,23 @@ function HousingMarketCartDataManagerMixin:ClearCart()
 	end
 
 	ShoppingCartDataManagerMixin.ClearCart(self);
+end
+
+function HousingMarketCartDataManagerMixin:ClearCart(requiresConfirmation)
+	if #self.cartList < 1 then
+		return;
+	end
+
+	if requiresConfirmation then
+		local function ClearCartCB(_dialog, _data)
+			self:ClearCartInternal();
+		end
+
+		StaticPopupDialogs["HOUSING_MARKET_CLEAR_CART_CONFIRMATION"].OnAccept = ClearCartCB;
+		StaticPopup_Show("HOUSING_MARKET_CLEAR_CART_CONFIRMATION");
+	else
+		self:ClearCartInternal();
+	end
 end
 
 function HousingMarketCartDataManagerMixin:HOUSING_DECOR_PREVIEW_LIST_UPDATED()

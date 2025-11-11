@@ -88,6 +88,10 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.INVITE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if(msg == "") then
+		if not UnitIsPlayer("target") then
+			return;
+		end
+
 		msg = GetUnitName("target", true)
 	end
 	if( msg and (strlen(msg) > Constants.ChatFrameConstants.MaxCharacterNameBytes) ) then
@@ -249,11 +253,11 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.GUILDFINDER, SLASH_COMMAND_C
 	end
 end);
 
-SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
-	local itemTransmogInfoList = TransmogUtil.ParseOutfitSlashCommand(msg);
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_CUSTOM_SET, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
+	local itemTransmogInfoList = TransmogUtil.ParseCustomSetSlashCommand(msg);
 	if itemTransmogInfoList then
-		local showOutfitDetails = true;
-		DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+		local showCustomSetDetails = true;
+		DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails);
 	end
 end);
 

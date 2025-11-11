@@ -216,7 +216,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="ClearCartButton" inherits="UIButtonTemplate, ShoppingCartServiceButtonTemplate">
+							<Button parentKey="ClearCartButton" inherits="UIButtonTemplate, ShoppingCartServiceButtonTemplate" mixin="ShoppingCartClearCartServiceMixin">
 								<Size x="64" y="64"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.BottomDivider" relativePoint="BOTTOMLEFT" x="-16" y="-12"/>

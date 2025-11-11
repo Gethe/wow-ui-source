@@ -1,6 +1,11 @@
 
 local function SetHeaderText(barDivider, elementData)
 	barDivider:SetHeaderText(elementData.text, HOUSING_HEADER_COLOR);
+	barDivider:SetMarginSpacing(4);
+end
+
+local function SetInstructionText(scrollBoxText, elementData)
+	scrollBoxText:SetElementText(elementData.text, HOUSING_HEADER_COLOR);
 end
 
 local Templates = {
@@ -9,17 +14,19 @@ local Templates = {
 	["CATALOG_ENTRY_BUNDLE"] = { template = "HousingCatalogBundleDisplayTemplate", initFunc = HousingCatalogBundleDisplayMixin.Init, resetFunc = HousingCatalogBundleDisplayMixin.Reset },
 	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = { template = "BarDividerTemplate", initFunc = nop, resetFunc = Pool_HideAndClearAnchors },
 	["CATALOG_ENTRY_HEADER"] = { template = "BarDividerTemplate", initFunc = SetHeaderText, resetFunc = Pool_HideAndClearAnchors },
+	["CATALOG_ENTRY_INSTRUCTIONS"] = { template = "ScrollBoxTextContainerTemplate", initFunc = SetInstructionText, resetFunc = Pool_HideAndClearAnchors },
 };
 
 local FullWidthTemplateKeySet = {
 	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = true,
 	["CATALOG_ENTRY_HEADER"] = true,
+	["CATALOG_ENTRY_INSTRUCTIONS"] = true,
 };
 
 -- Base Mixin
 BaseHousingCatalogMixin = {};
 
-function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition, headerText)
+function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPosition, headerText, instructionText)
 	if not catalogEntries or #catalogEntries == 0 then
 		self:ClearCatalogData();
 		return;
@@ -45,7 +52,7 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 			end
 
 			if catalogEntry.decorID then
-				elementData = { bundleEntryInfo = catalogEntry, };
+				elementData = { bundleItemInfo = catalogEntry, };
 
 				elementData.templateKey = "CATALOG_ENTRY_DECOR";
 			else
@@ -66,6 +73,10 @@ function BaseHousingCatalogMixin:SetCatalogData(catalogEntries, retainCurrentPos
 			lastTemplate = elementData.templateKey;
 			table.insert(catalogElements, elementData);
 		end
+	end
+
+	if instructionText then
+		table.insert(catalogElements, { templateKey = "CATALOG_ENTRY_INSTRUCTIONS", text = instructionText });
 	end
 
 	self:SetCatalogElements(catalogElements, retainCurrentPosition);

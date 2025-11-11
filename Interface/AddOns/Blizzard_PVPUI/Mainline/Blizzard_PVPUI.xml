@@ -1117,7 +1117,7 @@
 					</Button>
 					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4" parentArray="CategoryButtons">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.CategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton3" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1132,7 +1132,7 @@
 					</Button>
 					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton5" id="5" parentArray="CategoryButtons">
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.CategoryButton3" relativePoint="BOTTOM" y="-30"/>
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton4" relativePoint="BOTTOM" y="-30"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

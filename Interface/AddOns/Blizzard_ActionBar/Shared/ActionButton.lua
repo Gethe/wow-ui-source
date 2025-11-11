@@ -1390,10 +1390,11 @@ end
 
 function ActionBarActionButtonMixin:UpdateFlash()
 	local action = self.action;
+	local actionType, actionID, actionSubtype = GetActionInfo(action);
+
 	if ( (C_ActionBar.IsAttackAction(action) and C_ActionBar.IsCurrentAction(action)) or C_ActionBar.IsAutoRepeatAction(action) ) then
 		self:StartFlash();
-		
-		local actionType, actionID, actionSubtype = GetActionInfo(action);
+
 		if ( actionSubtype == "pet" ) then
 			self:GetCheckedTexture():SetAlpha(0.5);
 		else
@@ -1402,10 +1403,18 @@ function ActionBarActionButtonMixin:UpdateFlash()
 	else
 		self:StopFlash();
 	end
-	
+
 	if ( self.AutoCastOverlay ) then
-		self.AutoCastOverlay:SetShown(C_ActionBar.IsAutoCastPetAction(action));
-		self.AutoCastOverlay:ShowAutoCastEnabled(C_ActionBar.IsEnabledAutoCastPetAction(action));
+		-- Outfit actions.
+		local isLockedOutfit = actionType == "outfit" and C_TransmogOutfitInfo.IsLockedOutfit(actionID);
+		local isLockedEquippedGear = C_ActionBar.IsEquippedGearOutfitAction(action) and C_TransmogOutfitInfo.IsEquippedGearOutfitLocked();
+
+		-- Pet actions.
+		local isAutoCastPetAction = C_ActionBar.IsAutoCastPetAction(action);
+		local isEnabledAutoCastPetAction = C_ActionBar.IsEnabledAutoCastPetAction(action);
+
+		self.AutoCastOverlay:SetShown(isLockedOutfit or isLockedEquippedGear or isAutoCastPetAction);
+		self.AutoCastOverlay:ShowAutoCastEnabled(isLockedOutfit or isLockedEquippedGear or isEnabledAutoCastPetAction);
 	end
 end
 

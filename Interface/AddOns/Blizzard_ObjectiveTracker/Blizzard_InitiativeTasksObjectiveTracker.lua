@@ -24,6 +24,8 @@ function InitiativeTasksObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseBut
 	elseif mouseButton ~= "RightButton" then
 		if IsModifiedClick("QUESTWATCHTOGGLE") then
 			self:UntrackInitiativeTask(block.id);
+		else
+			HousingFramesUtil.OpenFrameToTaskID(block.id)
 		end
 
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -32,6 +34,9 @@ function InitiativeTasksObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseBut
 			rootDescription:SetTag("MENU_MONTHLY_ACTVITIES_TRACKER");
 
 			rootDescription:CreateTitle(block.name);
+			rootDescription:CreateButton(OBJECTIVES_VIEW_IN_QUESTLOG, function()
+				HousingFramesUtil.OpenFrameToTaskID(block.id)
+			end);
 			rootDescription:CreateButton(OBJECTIVES_STOP_TRACKING, function()
 				self:UntrackInitiativeTask(block.id);
 			end);

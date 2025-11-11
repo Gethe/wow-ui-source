@@ -241,14 +241,18 @@ function SettingsControlTextContainerMixin:GetData()
 	return self.data;
 end
 
+local function CreateTextContainerData(value, label, tooltip, controlType)
+	return {text = label, label = label, tooltip = tooltip, value = value, controlType = controlType };
+end
+
 function SettingsControlTextContainerMixin:Add(value, label, tooltip)
-	local data = {text = label, label = label, tooltip = tooltip, value = value, controlType = Settings.ControlType.Radio };
+	local data = CreateTextContainerData(value, label, tooltip, Settings.ControlType.Radio);
 	table.insert(self.data, data);
 	return data;
 end
 
-function SettingsControlTextContainerMixin:AddCheckbox(value, label, tooltip, isChecked, setChecked)
-	local data = {text = label, label = label, tooltip = tooltip, value = value, isChecked = isChecked, setChecked = setChecked, controlType = Settings.ControlType.Checkbox };
+function SettingsControlTextContainerMixin:AddCheckbox(value, label, tooltip)
+	local data = CreateTextContainerData(value, label, tooltip, Settings.ControlType.Checkbox);
 	table.insert(self.data, data);
 	return data;
 end
@@ -257,6 +261,17 @@ function Settings.CreateControlTextContainer()
 	local container = CreateFromMixins(SettingsControlTextContainerMixin);
 	container:Init();
 	return container;
+end
+
+function Settings.GetCVarMask(cvar, enumGroup, enumValueOffset)
+	local bitOffset = enumValueOffset or 1;
+	local mask = 0;
+	for _, enumValue in pairs(enumGroup) do
+		if enumValue > 0 and GetCVarBitfield(cvar, enumValue) then
+			mask = bit.bor(mask, bit.lshift(1, enumValue - bitOffset));
+		end
+	end
+	return mask;
 end
 
 function Settings.WrapTooltipWithBinding(tooltipString, action)
@@ -456,8 +471,8 @@ function Settings.CreateDropdownButton(rootDescription, optionData, isSelected, 
 	return optionDescription;
 end
 
-function Settings.CreateDropdownCheckbox(rootDescription, optionData)
-	local optionsDescription = rootDescription:CreateCheckbox(optionData.label, optionData.isChecked, optionData.setChecked, optionData);
+function Settings.CreateDropdownCheckbox(rootDescription, optionData, isSelected, setSelected)
+	local optionsDescription = rootDescription:CreateCheckbox(optionData.label, isSelected, setSelected, optionData);
 	MenuUtil.SetElementText(optionsDescription, optionData.text);
 
 	-- Move checkboxes in options dropdowns a bit further from the left side of the dropdown than normal.
@@ -469,13 +484,33 @@ function Settings.CreateDropdownCheckbox(rootDescription, optionData)
 	return optionDescription;
 end
 
-function Settings.CreateDropdownOptionInserter(optionsFunc)
-	local function Inserter(rootDescription, isSelected, setSelected)
+function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
+	local function Inserter(setting, rootDescription)
 		for index, optionData in ipairs(optionsFunc()) do
 			if optionData.controlType == Settings.ControlType.Radio then
-				Settings.CreateDropdownButton(rootDescription, optionData, isSelected, setSelected);
+				local function IsSelected(optionData)
+					return setting:GetValue() == optionData.value;
+				end
+				
+				local function SetSelected(optionData)
+					return setting:SetValue(optionData.value);
+				end
+				Settings.CreateDropdownButton(rootDescription, optionData, IsSelected, SetSelected);
 			elseif optionData.controlType == Settings.ControlType.Checkbox then
-				Settings.CreateDropdownCheckbox(rootDescription, optionData);
+				local function IsSelected(optionData)
+					local settingMask = setting:GetValue();
+					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
+					return bit.band(settingMask, optionMask) ~= 0;
+				end
+				
+				local function SetSelected(optionData)
+					local settingMask = setting:GetValue();
+					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
+					local newMask = bit.bxor(settingMask, optionMask);
+					setting:SetValue(newMask);
+				end
+
+				Settings.CreateDropdownCheckbox(rootDescription, optionData, IsSelected, SetSelected);
 			else
 				assertsafe(false, "Unhandled control type %s for optionData.", tostring(optionData.controlType));
 			end
@@ -493,20 +528,10 @@ function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
 	end
 	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
 	
-	local function IsSelected(optionData)
-		return setting:GetValue() == optionData.value;
-	end
-	
-	local function OnSelect(optionData)
-		return setting:SetValue(optionData.value);
-	end
-
 	dropdown:SetDefaultText(CUSTOM);
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
-
-		-- Settings.CreateDropdownOptionInserter
-		elementInserter(rootDescription, IsSelected, OnSelect);
+		elementInserter(setting, rootDescription);
 	end);
 	
 	dropdown:SetTooltipFunc(initTooltip);

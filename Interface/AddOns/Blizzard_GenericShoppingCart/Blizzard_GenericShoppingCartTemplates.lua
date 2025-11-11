@@ -189,8 +189,8 @@ function ShoppingCartVisualsFrameMixin:UpdateScrollBar()
 	end
 end
 
-function ShoppingCartVisualsFrameMixin:SetCartFrameShown(isShown)
-	if not self:IsShown() and isShown then
+function ShoppingCartVisualsFrameMixin:SetCartFrameShown(isShown, preserveCartState)
+	if not preserveCartState and not self:IsShown() and isShown then
 		self:SetCartShown(false);
 	end
 

@@ -20,12 +20,12 @@ end
 -- DRESS UP MODEL FRAME LINK BUTTON MIXIN
 DressUpModelFrameLinkButtonMixin = {};
 function DressUpModelFrameLinkButtonMixin:OnShow()
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT) then
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET) then
 		local helpTipInfo = {
-			text = LINK_TRANSMOG_OUTFIT_HELPTIP,
+			text = LINK_TRANSMOG_CUSTOM_SET_HELPTIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT,
+			bitfieldFlag = LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			alignment = HelpTip.Alignment.Left,
 			offsetY = 5,
@@ -42,17 +42,17 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 			return;
 		end
 
-		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
-			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
+		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_POST_IN_CHAT, function()
+			local hyperlink = C_TransmogCollection.GetCustomSetHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
 			if not ChatFrameUtil.InsertLink(hyperlink) then
 				ChatFrameUtil.OpenChat(hyperlink);
 			end
 		end);
 
-		rootDescription:CreateButton(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD, function()
-			local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
+		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_COPY_TO_CLIPBOARD, function()
+			local slashCommand = TransmogUtil.CreateCustomSetSlashCommand(itemTransmogInfoList);
 			CopyToClipboard(slashCommand);
-			ChatFrameUtil.DisplaySystemMessageInPrimary(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(TRANSMOG_CUSTOM_SET_COPY_TO_CLIPBOARD_NOTICE);
 		end);
 	end);
 
@@ -64,8 +64,8 @@ function DressUpModelFrameLinkButtonMixin:OnHide()
 end
 
 function DressUpModelFrameLinkButtonMixin:OnClick()
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT, true);
-	HelpTip:Hide(self, LINK_TRANSMOG_OUTFIT_HELPTIP);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET, true);
+	HelpTip:Hide(self, LINK_TRANSMOG_CUSTOM_SET_HELPTIP);
 end
 
 --------------------------------------------------
@@ -128,16 +128,16 @@ end
 
 function DressUpModelFrameBaseMixin:SetMode(mode)
 	self.mode = mode;
-	if self.hasOutfitControls then
+	if self.hasCustomSetControls then
 		local inPlayerMode = mode == "player";
 		self.ResetButton:SetShown(inPlayerMode);
 		self.LinkButton:SetShown(inPlayerMode);
-		self.ToggleOutfitDetailsButton:SetShown(inPlayerMode);
-		self.OutfitDropdown:SetShown(inPlayerMode);
+		self.ToggleCustomSetDetailsButton:SetShown(inPlayerMode);
+		self.CustomSetDropdown:SetShown(inPlayerMode);
 		if not inPlayerMode then
-			self:SetShownOutfitDetailsPanel(false);
+			self:SetShownCustomSetDetailsPanel(false);
 		else
-			self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
+			self:SetShownCustomSetDetailsPanel(GetCVarBool("showCustomSetDetails"));
 		end
 
 		if self.SetSelectionPanel then
@@ -182,13 +182,13 @@ function DressUpModelFrameMixin:OnHide()
 end
 
 function DressUpModelFrameMixin:OnDressModel(itemModifiedAppearanceID, invSlot, removed)
-	if self.OutfitDropdown then
+	if self.CustomSetDropdown then
 		if not self.gotDressed then
 			self.gotDressed = true;
 			C_Timer.After(0, function()
 				self.gotDressed = nil;
-				self.OutfitDropdown:UpdateSaveButton();
-				self.OutfitDetailsPanel:OnAppearanceChange();
+				self.CustomSetDropdown:UpdateSaveButton();
+				self.CustomSetDetailsPanel:OnAppearanceChange();
 			end);
 		end
 	end
@@ -205,51 +205,57 @@ function DressUpModelFrameMixin:InitSetSelectionPanel(setID, setLink)
 	end
 end
 
-function DressUpModelFrameMixin:ToggleOutfitDetails()
-	local show = not self.OutfitDetailsPanel:IsShown();
-	self:SetShownOutfitDetailsPanel(show);
-	SetCVar("showOutfitDetails", show);
+function DressUpModelFrameMixin:ToggleCustomSetDetails()
+	local show = not self.CustomSetDetailsPanel:IsShown();
+	self:SetShownCustomSetDetailsPanel(show);
+	SetCVar("showCustomSetDetails", show);
 end
 
 function DressUpModelFrameMixin:ConfigureSize(isMinimized)
 	if isMinimized then
 		self:SetSize(334, 423);
-		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
+		self.CustomSetDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
 
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -1);
 
-		self.OutfitDropdown:SetPoint("TOP", -37, -31);
-		self.OutfitDropdown:SetWidth(130);
+		self.CustomSetDropdown:SetPoint("TOP", -37, -31);
+		self.CustomSetDropdown:SetWidth(130);
 	else
 		self:SetSize(450, 545);
-		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
+		self.CustomSetDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
 
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -30);
 
-		self.OutfitDropdown:SetPoint("TOP", -39, -31);
-		self.OutfitDropdown:SetWidth(203);
+		self.CustomSetDropdown:SetPoint("TOP", -39, -31);
+		self.CustomSetDropdown:SetWidth(203);
 	end
 	UpdateUIPanelPositions(self);
 end
 
-function DressUpModelFrameMixin:SetShownOutfitDetailsPanel(show)
+function DressUpModelFrameMixin:SetShownCustomSetDetailsPanel(show)
 	if self.SetSelectionPanel:IsShown() then
-		self.OutfitDetailsPanel:Hide();
+		self.CustomSetDetailsPanel:Hide();
 		return;
 	end
 
-	self.OutfitDetailsPanel:SetShown(show);
-	local outfitDetailsPanelWidth = 307;
-	local extrawidth = show and outfitDetailsPanelWidth or 0;
+	self.CustomSetDetailsPanel:SetShown(show);
+	local customSetDetailsPanelWidth = 307;
+	local extrawidth = show and customSetDetailsPanelWidth or 0;
 	SetUIPanelAttribute(self, "extraWidth", extrawidth);
 	UpdateUIPanelPositions(self);
 end
 
-function DressUpModelFrameMixin:ForceOutfitDetailsOn()
+function DressUpModelFrameMixin:ForceCustomSetDetailsOn()
 	self.forcedMaximized = true;
 	local isAutomaticAction = true;
 	self.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
-	self:SetShownOutfitDetailsPanel(true);
+	self:SetShownCustomSetDetailsPanel(true);
+end
+
+function DressUpModelFrameMixin:ShowCustomSet(customSetID)
+	-- We do not want this cleared from the dropdown when the frame shows.
+	local persistSelectedCustomSet = true;
+	self.CustomSetDropdown:SelectCustomSet(customSetID, persistSelectedCustomSet);
 end
 
 --------------------------------------------------
@@ -426,15 +432,15 @@ function DressUpFrameTransmogSetMixin:OnShow()
 	end
 
 	local parent = self:GetParent();
-	parent.OutfitDetailsPanel:Hide();
-	parent.ToggleOutfitDetailsButton:Hide();
+	parent.CustomSetDetailsPanel:Hide();
+	parent.ToggleCustomSetDetailsButton:Hide();
 end
 
 function DressUpFrameTransmogSetMixin:OnHide()
 	local parent = self:GetParent();
 	if parent.mode == "player" then
-		parent.OutfitDetailsPanel:Show();
-		parent.ToggleOutfitDetailsButton:Show();
+		parent.CustomSetDetailsPanel:Show();
+		parent.ToggleCustomSetDetailsButton:Show();
 	end
 
 	if self.continuableContainer then

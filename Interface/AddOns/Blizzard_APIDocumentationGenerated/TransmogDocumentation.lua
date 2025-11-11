@@ -283,15 +283,7 @@ local Transmog =
 
 			Returns =
 			{
-				{ Name = "baseSourceID", Type = "number", Nilable = false },
-				{ Name = "baseVisualID", Type = "number", Nilable = false },
-				{ Name = "appliedSourceID", Type = "number", Nilable = false },
-				{ Name = "appliedVisualID", Type = "number", Nilable = false },
-				{ Name = "pendingSourceID", Type = "number", Nilable = false },
-				{ Name = "pendingVisualID", Type = "number", Nilable = false },
-				{ Name = "hasUndo", Type = "bool", Nilable = false },
-				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "itemSubclass", Type = "number", Nilable = false },
+				{ Name = "slotVisualInfo", Type = "TransmogSlotVisualInfo", Nilable = false },
 			},
 		},
 		{
@@ -329,13 +321,13 @@ local Transmog =
 			},
 		},
 		{
-			Name = "LoadOutfit",
+			Name = "LoadCustomSet",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "outfitID", Type = "number", Nilable = false },
+				{ Name = "customSetID", Type = "number", Nilable = false },
 			},
 		},
 		{

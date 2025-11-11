@@ -39,6 +39,7 @@ function CatalogShopRefundFrameMixin:OnShow()
 	else
 		
 	end
+	self:ShowCoverFrame();
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + ScreenPadding.Horizontal, self:GetHeight() + ScreenPadding.Vertical);
 end
 
@@ -50,12 +51,24 @@ function CatalogShopRefundFrameMixin:OnHide()
 	else
 
 	end
-
+	self:HideCoverFrame();
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
 function CatalogShopRefundFrameMixin:SetContextKey(contextKey)
 	self.contextKey = contextKey;
+end
+
+function CatalogShopRefundFrameMixin:ShowCoverFrame()
+	local coverFrameParent = GetAppropriateTopLevelParent();
+	self.CoverFrame:ClearAllPoints();
+	self.CoverFrame:SetPoint("TOPLEFT", coverFrameParent, "TOPLEFT");
+	self.CoverFrame:SetPoint("BOTTOMRIGHT", coverFrameParent, "BOTTOMRIGHT");
+	self.CoverFrame:SetShown(true);
+end
+
+function CatalogShopRefundFrameMixin:HideCoverFrame()
+	self.CoverFrame:SetShown(false);
 end
 
 function CatalogShopRefundFrameMixin:OnAttributeChanged(name, value)

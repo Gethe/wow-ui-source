@@ -1,10 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DamageMeterUnitBreakdownTemplate" mixin="DamageMeterUnitBreakdownMixin" virtual="true">
+	<Frame name="DamageMeterSourceWindowTemplate" mixin="DamageMeterSourceWindowMixin" virtual="true">
 		<Size x="400" y="200"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Border" atlas="damagemeters-background" alpha="0">
+				<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10"/>
 						<Anchor point="BOTTOMRIGHT" x="-10"/>

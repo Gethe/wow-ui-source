@@ -34,7 +34,6 @@ local Totem =
 			Name = "GetTotemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -56,7 +55,6 @@ local Totem =
 		{
 			Name = "GetTotemTimeLeft",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -66,7 +64,7 @@ local Totem =
 
 			Returns =
 			{
-				{ Name = "timeLeft", Type = "number", Nilable = true },
+				{ Name = "timeLeft", Type = "number", Nilable = true, ConditionalSecret = true },
 			},
 		},
 		{

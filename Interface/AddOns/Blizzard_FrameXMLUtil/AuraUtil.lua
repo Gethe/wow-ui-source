@@ -18,6 +18,23 @@ DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
 
 AuraUtil = {};
 
+local AuraUtilDataProvider = C_UnitAuras;
+function AuraUtil.SetDataProvider(dataProvider)
+	AuraUtilDataProvider = dataProvider;
+end
+
+function AuraUtil.ClearDataProvider()
+	AuraUtil.SetDataProvider(C_UnitAuras);
+end
+
+local function CallDataProviderMethod(methodName, ...)
+	return AuraUtilDataProvider[methodName](...);
+end
+
+function AuraUtil.GetAuraDataByAuraInstanceID(...)
+	return CallDataProviderMethod("GetAuraDataByAuraInstanceID", ...);
+end
+
 -- For backwards compatibility with old APIs, this helper function returns aura data values unpacked in the same order as before.
 function AuraUtil.UnpackAuraData(auraData)
 	if not auraData then
@@ -50,14 +67,14 @@ local function FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1
 		return ...;
 	end
 	auraIndex = auraIndex + 1;
-	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(unit, auraIndex, filter)));
+	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataByIndex", unit, auraIndex, filter)));
 end
 
 -- Find an aura by any predicate, you can pass in up to 3 predicate specific parameters
 -- The predicate will also receive all aura params, if the aura data matches return true
 function AuraUtil.FindAura(predicate, unit, filter, predicateArg1, predicateArg2, predicateArg3)
 	local auraIndex = 1;
-	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(unit, auraIndex, filter)));
+	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataByIndex", unit, auraIndex, filter)));
 end
 
 -- Finds the first aura that matches the name
@@ -67,7 +84,7 @@ end
 --			consider that in English two auras might have different names, but once localized they have the same name, so even using the localized aura name in a search it could result in different behavior
 --		the unit could have multiple auras with the same name, this will only find the first
 function AuraUtil.FindAuraByName(auraName, unit, filter)
-	return AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataBySpellName(unit, auraName, filter));
+	return AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataBySpellName", unit, auraName, filter));
 end
 
 do
@@ -77,7 +94,7 @@ do
 		for i=1, n do
 			local slot = select(i, ...);
 			local done;
-			local auraInfo = C_UnitAuras.GetAuraDataBySlot(unit, slot);
+			local auraInfo = CallDataProviderMethod("GetAuraDataBySlot", unit, slot);
 
 			-- Protect against GetAuraDataBySlot desyncing with GetAuraSlots
 			if auraInfo then
@@ -101,8 +118,8 @@ do
 		end
 		local continuationToken;
 		repeat
-			-- continuationToken is the first return value of UnitAuraSltos
-			continuationToken = ForEachAuraHelper(unit, filter, func, usePackedAura, C_UnitAuras.GetAuraSlots(unit, filter, batchSize, continuationToken));
+			-- continuationToken is the first return value of UnitAuraSlots
+			continuationToken = ForEachAuraHelper(unit, filter, func, usePackedAura, CallDataProviderMethod("GetAuraSlots", unit, filter, batchSize, continuationToken));
 		until continuationToken == nil;
 	end
 end
@@ -131,6 +148,7 @@ AuraUtil.AuraFilters =
 	Cancelable = "CANCELABLE",
 	NotCancelable = "NOT_CANCELABLE",
 	Maw = "MAW",
+	ExternalDefensive = "EXTERNAL_DEFENSIVE",
 };
 
 function AuraUtil.CreateFilterString(...)

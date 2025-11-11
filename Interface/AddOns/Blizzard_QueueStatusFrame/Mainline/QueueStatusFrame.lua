@@ -831,8 +831,26 @@ local function QueueStatus_GetAllRelevantLFG(category, queuedList)
 	return queuedList;
 end
 
+local function GetFirstVisibleInstanceNameForLFGCategory(category)
+	local entryIDs = C_LFGInfo.GetAllEntriesForCategory(category);
+	for _index, entryID in ipairs(entryIDs) do
+		if not C_LFGInfo.HideNameFromUI(entryID) then
+			local instanceName = GetLFGDungeonInfo(entryID);
+			if instanceName then
+				return instanceName;
+			end
+		end
+	end
+end
+
 local function GetDisplayNameFromCategory(category)
 	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
+		end
+
+		-- We should be able to get the name from the LFG record, but use the brawl name as a fallback
 		local brawlInfo;
 		if (C_PvP.IsInBrawl()) then
 			brawlInfo = C_PvP.GetActiveBrawlInfo();
@@ -845,14 +863,9 @@ local function GetDisplayNameFromCategory(category)
 	end
 
 	if (category == LE_LFG_CATEGORY_SCENARIO) then
-		local scenarioIDs = C_LFGInfo.GetAllEntriesForCategory(category)
-		for i, scenID in ipairs(scenarioIDs) do
-			if (not C_LFGInfo.HideNameFromUI(scenID)) then
-				local instanceName = GetLFGDungeonInfo(scenID);
-				if(instanceName) then
-					return instanceName;
-				end
-			end
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
 		end
 	end
 

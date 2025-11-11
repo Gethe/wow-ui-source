@@ -1501,7 +1501,7 @@ do
 			if unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil then
 				for _, auraInstanceID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs) do
 					if frame.debuffs[auraInstanceID] ~= nil then
-						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+						local newAura = AuraUtil.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
 						local oldDebuffType = frame.debuffs[auraInstanceID].debuffType;
 						if newAura ~= nil then
 							newAura.debuffType = oldDebuffType;
@@ -1518,7 +1518,7 @@ do
 							end
 						end
 					elseif frame.buffs[auraInstanceID] ~= nil then
-						local newAura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
+						local newAura = AuraUtil.GetAuraDataByAuraInstanceID(frame.displayedUnit, auraInstanceID);
 						if newAura ~= nil then
 							newAura.isBuff = true;
 						end

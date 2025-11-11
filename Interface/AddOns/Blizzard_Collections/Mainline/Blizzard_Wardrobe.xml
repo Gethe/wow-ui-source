@@ -2,7 +2,7 @@
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_Wardrobe.lua"/>
 
-	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemsModelMixin" inherits="ContentTrackingElementTemplate" virtual="true">
+	<DressUpModel name="WardrobeItemsModelTemplate" mixin="WardrobeItemModelMixin" inherits="ContentTrackingElementTemplate" virtual="true">
 		<Size x="78" y="104"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -100,7 +100,7 @@
 	<Button name="WardrobeSlotButtonTemplate" parentArray="Buttons" mixin="WardrobeItemsCollectionSlotButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
+			<KeyValue key="isSecondary" value="false" type="boolean"/>
 		</KeyValues>
 		<Size x="31" y="31"/>
 		<NormalTexture parentKey="NormalTexture">
@@ -129,6 +129,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
+
 	<Button name="WardrobeSmallSlotButtonTemplate" parentArray="Buttons" mixin="WardrobeItemsCollectionSlotButtonMixin" frameLevel="10" virtual="true">
 		<KeyValues>
 			<KeyValue key="isSmallButton" value="true" type="boolean"/>
@@ -386,9 +387,6 @@
 										</Texture>
 									</Layer>
 								</Layers>
-								<Scripts>
-
-								</Scripts>
 								<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 							</StatusBar>
 						</Frames>
@@ -544,11 +542,6 @@
 					<DressUpModel parentArray="Models" parentKey="ModelR3C6" inherits="WardrobeItemsModelTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.ModelR3C5" relativePoint="TOPRIGHT" x="16" y="0"/>
-						</Anchors>
-					</DressUpModel>
-					<DressUpModel parentKey="HiddenModel" inherits="WardrobeItemsModelTemplate" hidden="true">
-						<Anchors>
-							<Anchor point="BOTTOMLEFT"/>
 						</Anchors>
 					</DressUpModel>
 					<Frame parentKey="PendingTransmogFrame" hidden="true">
@@ -1152,7 +1145,7 @@
 	<Button name="WardrobeTransmogButtonTemplate" motionScriptsWhileDisabled="true" mixin="TransmogSlotButtonMixin" frameLevel="10" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
+			<KeyValue key="isSecondary" value="false" type="boolean"/>
 		</KeyValues>
 		<Size x="43" y="43"/>
 		<Layers>
@@ -1339,7 +1332,7 @@
 	<Button name="WardrobeTransmogEnchantButtonTemplate" motionScriptsWhileDisabled="true" mixin="TransmogSlotButtonMixin" frameLevel="20" virtual="true">
 		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Illusion" type="global"/>
-			<KeyValue key="modification" value="Enum.TransmogModification.Main" type="global"/>
+			<KeyValue key="isSecondary" value="false" type="boolean"/>
 		</KeyValues>
 		<Size x="27" y="27"/>
 		<Layers>
@@ -1491,7 +1484,7 @@
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<Frame name="WardrobeTransmogFrame" mixin="TransmogFrameMixin">
+			<Frame name="WardrobeTransmogFrame" mixin="WardrobeTransmogFrameMixin">
 				<Size x="300" y="495"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-86"/>
@@ -1557,8 +1550,8 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<!--WardrobeOutfitDropdownOverrideMixin provides implementation overrides of functions in WardrobeOutfitDropdownMixin-->
-					<DropdownButton parentKey="OutfitDropdown" inherits="WardrobeOutfitDropdownTemplate" mixin="WardrobeOutfitDropdownOverrideMixin">
+					<!--WardrobeCustomSetDropdownOverrideMixin provides implementation overrides of functions in WardrobeCustomSetDropdownMixin-->
+					<DropdownButton parentKey="CustomSetDropdown" inherits="WardrobeCustomSetDropdownTemplate" mixin="WardrobeCustomSetDropdownOverrideMixin">
 						<KeyValues>
 							<KeyValue key="width" value="207" type="number"/>
 							<KeyValue key="minMenuStringWidth" value="152" type="number"/>
@@ -1630,7 +1623,7 @@
 					<Button parentKey="SecondaryShoulderButton" parentArray="SlotButtons" inherits="WardrobeTransmogButtonTemplate" hidden="true">
 						<KeyValues>
 							<KeyValue key="slot" value="SHOULDERSLOT" type="string"/>
-							<KeyValue key="modification" value="Enum.TransmogModification.Secondary" type="global"/>
+							<KeyValue key="isSecondary" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.ShoulderButton"/>

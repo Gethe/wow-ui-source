@@ -61,11 +61,15 @@ function HouseEditorModesBarMixin:OnShow()
 	
 	BaseHouseEditorModesBarMixin.OnShow(self);
 	FrameUtil.RegisterFrameForEvents(self, HouseEditorModesBarShownEvents);
+
+	EventRegistry:RegisterCallback("HouseEditorStorage.TabChanged", self.UpdateButtonStates, self);
 end
 
 function HouseEditorModesBarMixin:OnHide()
 	BaseHouseEditorModesBarMixin.OnHide(self);
 	FrameUtil.UnregisterFrameForEvents(self, HouseEditorModesBarShownEvents);
+
+	EventRegistry:UnregisterCallback("HouseEditorStorage.TabChanged", self.UpdateButtonStates);
 end
 
 HouseEditorSubmodesBarMixin = CreateFromMixins(BaseHouseEditorModesBarMixin);

@@ -293,6 +293,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetStringHeight",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -306,6 +307,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetStringWidth",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -364,6 +366,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetUnboundedStringWidth",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{

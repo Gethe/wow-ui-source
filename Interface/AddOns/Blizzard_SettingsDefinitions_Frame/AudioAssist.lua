@@ -9,7 +9,7 @@ end
 
 function RTTSMixin:Init(initializer)
 	SettingsDropdownControlMixin.Init(self, initializer);
-	
+
 	local options = initializer.data.options();
 	if #options == 0 then
 		local function OnVoiceUpdate()
@@ -87,7 +87,7 @@ local function Register()
 			end
 			rtttInitializer:AddShownPredicate(IsSpeakForMeAllowed);
 			rtttInitializer:AddEvaluateStateFrameEvent("VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED");
-			
+
 			-- Voices
 			do
 				local function GetVoiceOptions()
@@ -201,6 +201,32 @@ local function Register()
 				InitCAAOption(initializer);
 			end
 
+			-- Say Combat Start
+			do
+				local sayCombatStartSetting = Settings.RegisterCVarSetting(category, "CAASayCombatStart", Settings.VarType.Number, CAA_SAY_COMBAT_START_LABEL);
+				local function GetCombatStartOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(0, LOC_OPTION_OFF);
+					container:Add(1, CAA_SAY_COMBAT_START_TEXT);
+					return container:GetData();
+				end
+				local sayCombatStartInitializer = Settings.CreateDropdown(category, sayCombatStartSetting, GetCombatStartOptions, CAA_SAY_COMBAT_START_TOOLTIP);
+				InitCAAOption(sayCombatStartInitializer);
+			end
+
+			-- Say Combat End
+			do
+				local sayCombatEndSetting = Settings.RegisterCVarSetting(category, "CAASayCombatEnd", Settings.VarType.Number, CAA_SAY_COMBAT_END_LABEL);
+				local function GetCombatEndOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(0, LOC_OPTION_OFF);
+					container:Add(1, CAA_SAY_COMBAT_END_TEXT);
+					return container:GetData();
+				end
+				local sayCombatEndInitializer = Settings.CreateDropdown(category, sayCombatEndSetting, GetCombatEndOptions, CAA_SAY_COMBAT_END_TOOLTIP);
+				InitCAAOption(sayCombatEndInitializer);
+			end
+
 			local function GetPercentOptionString(percent)
 				return EVERY_X_PERCENT:format(percent);
 			end
@@ -279,6 +305,12 @@ local function Register()
 				initializer:SetParentInitializer(sayPlayerHealthInitializer, SayPlayerHealthOptionsModifiable);
 			end
 
+			-- Say Target Name
+			do
+				local sayTargetNameSetting, sayTargetNameInitializer = Settings.SetupCVarCheckbox(category, "CAASayTargetName", CAA_SAY_TARGET_NAME_LABEL, CAA_SAY_TARGET_NAME_TOOLTIP);
+				InitCAAOption(sayTargetNameInitializer);
+			end
+
 			-- Say Target Health
 			local sayTargetHealthSetting = Settings.RegisterCVarSetting(category, "CAATargetHealthPercent", Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_LABEL);
 			local sayTargetHealthInitializer = Settings.CreateDropdown(category, sayTargetHealthSetting, GetUnitHealthPercentOptions, CAA_SAY_TARGET_HEALTH_TOOLTIP);
@@ -312,6 +344,20 @@ local function Register()
 				local initializer = Settings.CreateDropdown(category, setting, GetFormatOptions, CAA_SAY_PLAYER_HEALTH_FORMAT_TOOLTIP);
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
+			end
+
+			-- When Target Dies Behavior
+			do
+				local sayTargetDeathSetting = Settings.RegisterCVarSetting(category, "CAATargetDeathBehavior", Settings.VarType.Number, CAA_WHEN_TARGET_DIES_LABEL);
+				local function GetTargetDeathOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(Enum.CombatAudioAlertTargetDeathBehavior.Default, CAA_WHEN_TARGET_DIES_USE_FORMAT);
+					container:Add(Enum.CombatAudioAlertTargetDeathBehavior.SayTargetDead, CAA_WHEN_TARGET_DIES_VOICE_TARGET_DEAD);
+					return container:GetData();
+				end
+				local sayTargetDeathInitializer = Settings.CreateDropdown(category, sayTargetDeathSetting, GetTargetDeathOptions, CAA_WHEN_TARGET_DIES_TOOLTIP);
+				InitCAAOption(sayTargetDeathInitializer);
+				sayTargetDeathInitializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
 			end
 
 			-- Say Target Throttle

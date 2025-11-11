@@ -156,7 +156,7 @@
 				<Anchor point="BOTTOMLEFT" x="46" y="34" />
 			</Anchors>
 		</Button>
-		<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="Save">
+		<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 			<Size x="152" y="28"/>
 			<Anchors>
 				<Anchor point="BOTTOMRIGHT" x="-46" y="34" />

@@ -1074,8 +1074,6 @@ function CooldownViewerBuffItemMixin:OnActiveStateChanged()
 	local active = self:IsActive();
 	if active then
 		self:CheckSetPandemicAlertTiggerTime(self:GetAuraData());
-	else
-		self:ClearTotemData();
 	end
 end
 

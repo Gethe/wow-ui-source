@@ -188,7 +188,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="HousingMarketCartBundleTemplate" inherits="HousingMarketCartBraceTemplate" mixin="HousingMarketCartBundleMixin" virtual="true">
+	<Frame name="HousingMarketCartBundleTemplate" inherits="HousingMarketCartBraceTemplate, CallbackRegistrantTemplate" mixin="HousingMarketCartBundleMixin" virtual="true">
 		<Size x="300" y="60"/>
 		<Frames>
 			<Button parentKey="RemoveFromCartButtonContainer" inherits="ShoppingCartRemoveFromCartButtonTemplate">

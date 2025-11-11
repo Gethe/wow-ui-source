@@ -195,6 +195,7 @@ function DamageMeterEntryMixin:Init(source)
 	self.value = source.totalAmount;
 	self.maxValue = source.maxAmount;
 	self.classFilename = source.classFilename;
+	self.index = source.index;
 
 	self:UpdateIcon();
 	self:UpdateName();
@@ -207,6 +208,7 @@ DamageMeterSourceEntryMixin = {}
 
 function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.sourceName = combatSource.name;
+	self.isLocalPlayer = combatSource.isLocalPlayer;
 
 	DamageMeterEntryMixin.Init(self, combatSource);
 end
@@ -220,13 +222,20 @@ function DamageMeterSourceEntryMixin:GetIconAtlasElement()
 end
 
 function DamageMeterSourceEntryMixin:GetNameText()
-	return self.sourceName;
+	return DAMAGE_METER_SOURCE_NAME:format(self.index, self.sourceName);
 end
 
 DamageMeterSpellEntryMixin = {}
 
 function DamageMeterSpellEntryMixin:Init(combatSpell)
 	self.spellID = combatSpell.spellID;
+	self.creatureName = combatSpell.creatureName;
+
+	-- TODO: temp UI for playtest
+	if combatSpell.combatSpellDetails and combatSpell.combatSpellDetails.unitName then
+		self.unitName = combatSpell.combatSpellDetails.unitName;
+	end
+	-- TODO END
 
 	DamageMeterEntryMixin.Init(self, combatSpell);
 
@@ -247,6 +256,10 @@ function DamageMeterSpellEntryMixin:Init(combatSpell)
 	end);
 end
 
+function DamageMeterSpellEntryMixin:GetSpellID()
+	return self.spellID;
+end
+
 function DamageMeterSpellEntryMixin:GetIconTexture()
 	if not self.spellID then
 		return nil;
@@ -259,6 +272,16 @@ function DamageMeterSpellEntryMixin:GetNameText()
 	if not self.spellID then
 		return nil;
 	end
+
+	if self.creatureName and #self.creatureName > 0 then
+		return DAMAGE_METER_SPELL_ENTRY_CREATURE:format(C_Spell.GetSpellName(self.spellID), self.creatureName);
+	end
+
+	-- TODO: temp UI for playtest
+	if self.unitName and #self.unitName > 0 then
+		return C_Spell.GetSpellName(self.spellID) .. " - " .. self.unitName;
+	end
+	-- TODO END
 
 	return C_Spell.GetSpellName(self.spellID);
 end

@@ -1,17 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<!-- Personal Resource Display -->
-    <Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin">
-        <Size x="200" y="75"/>
-        <Frames>
+	<Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin">
+		<Size x="200" y="75"/>
+		<Frames>
 			<!-- Health -->
-            <Frame parentKey="HealthBarsContainer">
-                <Size y="15"/>
-                <Anchors>
-                    <Anchor point="LEFT"/>
-                    <Anchor point="CENTER"/>
-                    <Anchor point="RIGHT"/>
-                </Anchors>
+			<Frame parentKey="HealthBarsContainer">
+				<Size y="15"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="TOP"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="background">
@@ -112,25 +112,13 @@
 			<Frame parentKey="ClassFrameContainer" hidden="true">
 				<Size x="200" y="15"/>
 			</Frame>
-
-			<!-- Friendly Buffs -->
-			<Frame parentKey="FriendlyBuffsContainer" inherits="HorizontalLayoutFrame" hidden="true">
-				<Size x="200" y="15"/>
-				<KeyValues>
-					<KeyValue key="spacing" value="4" type="number"/>
-					<KeyValue key="fixedHeight" value="15" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="LEFT" x="2"/>
-				</Anchors>
-			</Frame>
-        </Frames>
-        <Scripts>
-            <OnLoad method="OnLoad"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
-            <OnEvent method="OnEvent"/>
+			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
-        </Scripts>
-    </Frame>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -226,7 +226,7 @@ function HouseEditorInstructionMixin:UpdateControl()
 		self.Control.Background:Show();
 		self.Control.Icon:Hide();
 
-		local textWidth = (self.Control.Text:GetStringWidth()) + 40;
+		local textWidth = (self.Control.Text:GetStringWidth()) + 26;
 		self.Control.Background:SetWidth(textWidth);
 		self.Control:SetWidth(textWidth);
 	else

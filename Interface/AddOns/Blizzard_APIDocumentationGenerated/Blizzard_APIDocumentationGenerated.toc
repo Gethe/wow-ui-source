@@ -333,6 +333,7 @@ TradeInfoDocumentation.lua
 TradeSkillUIDocumentation.lua
 TrainerDocumentation.lua
 TraitConfigDocumentation.lua
+TransmogOutfitInfoDocumentation.lua
 TransmogDocumentation.lua
 TransmogItemsDocumentation.lua
 TransmogSetsDocumentation.lua
@@ -500,8 +501,8 @@ RolodexConstantsDocumentation.lua
 ScreenLocationConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
 SeasonsConstantsDocumentation.lua
-SecretDocumentation.lua
 SecretAspectConstantsDocumentation.lua
+SecretPredicatesDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
@@ -528,6 +529,7 @@ TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
 TransformManipulatorConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
+TransmogOutfitConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
 UIActionConstantsDocumentation.lua
 UIButtonSharedDocumentation.lua

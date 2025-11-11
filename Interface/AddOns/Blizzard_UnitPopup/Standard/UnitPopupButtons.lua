@@ -303,7 +303,11 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		if UnitIsUnit(unit, "player") then
 			return false; 
 		end
-		
+
+		if not UnitIsPlayer(unit) then
+			return false;
+		end
+
 		if not UnitInBattleground(unit) and not IsInActiveWorldPVP(unit) then
 			return false; 
 		end
@@ -311,13 +315,13 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		local name = contextData.name;
 		if name then
 			if name == UnitNameUnmodified("player") then
-			return false; 
+				return false; 
 			end
 			
 			if not UnitInBattleground(name) and not IsInActiveWorldPVP(name) then
-			return false; 
+				return false; 
+			end
 		end
-	end
 	end
 
 	return true;

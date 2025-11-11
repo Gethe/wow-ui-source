@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DamageMeterWindowTemplate" mixin="DamageMeterWindowMixin" resizable="true" movable="true" clampedToScreen="true" virtual="true">
+	<Frame name="DamageMeterSessionWindowTemplate" mixin="DamageMeterSessionWindowMixin" resizable="true" movable="true" clampedToScreen="true" virtual="true">
 		<Size x="400" y="200"/>
 		<ResizeBounds>
 			<minResize>
@@ -12,7 +12,7 @@
 		</ResizeBounds>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Border" atlas="damagemeters-background" alpha="0">
+				<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="10"/>
 						<Anchor point="BOTTOMRIGHT" x="-10"/>
@@ -49,19 +49,19 @@
 					</Layer>
 				</Layers>
 			</DropdownButton>
-			<DropdownButton parentKey="TrackedStatDropdown" inherits="WowStyle1ArrowDropdownTemplate">
+			<DropdownButton parentKey="DamageMeterTypeDropdown" inherits="WowStyle1ArrowDropdownTemplate">
 				<KeyValues>
 					<KeyValue key="hasShadow" type="boolean" value="false"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="20" y="-3"/>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.SessionDropdown" relativePoint="LEFT" x="-15" y="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString parentKey="StatName" inherits="GameFontNormalMed1" justifyH="LEFT">
+						<FontString parentKey="TypeName" inherits="GameFontNormalMed1" justifyH="LEFT">
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.Arrow" relativePoint="RIGHT" x="5" y="2"/>
+								<Anchor point="RIGHT" relativeKey="$parent.$parent.SessionDropdown" relativePoint="LEFT" x="-15" y="0"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -72,6 +72,11 @@
 					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
+			<Button parentKey="LocalPlayerEntry" inherits="DamageMeterSourceEntryTemplate" hidden="true">
+				<Anchors>
+					<!-- Anchored dynamically in lua-->
+				</Anchors>
+			</Button>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" alpha="0.3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
@@ -87,20 +92,19 @@
 				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
 				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
 			</Button>
-			<Frame parentKey="UnitBreakdownFrame" inherits="DamageMeterUnitBreakdownTemplate" hidden="true">
+			<Frame parentKey="SourceWindow" inherits="DamageMeterSourceWindowTemplate" hidden="true">
 				<!-- Anchored dynamically in lua-->
 			</Frame>
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
 				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
-				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
-				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />
 			</AnimationGroup>
-			<AnimationGroup parentKey="HideResizeButton" setToFinalAlpha="true">
-				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="Border" duration="0.25" order="1" fromAlpha="1" toAlpha="0"/>
-				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="1" toAlpha="0.3"/>
+			<AnimationGroup parentKey="ShowBackground" setToFinalAlpha="true">
+				<Alpha childKey="Background" duration="0.25" order="1" fromAlpha="0" toAlpha="0.5" />
+			</AnimationGroup>
+			<AnimationGroup parentKey="EmphasizeScrollBar" setToFinalAlpha="true">
+				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />
 			</AnimationGroup>
 		</Animations>
 		<Scripts>

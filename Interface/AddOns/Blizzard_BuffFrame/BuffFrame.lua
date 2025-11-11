@@ -465,7 +465,7 @@ function BuffFrameMixin:OnUpdate(elapsed)
 	-- Loop over our auraInfos and check if they should still be hideUnlessExpanded.
 	local needsAuraUpdate = false;
 	for _, auraInfo in ipairs(self.auraInfo) do
-		if (auraInfo.hideUnlessExpanded and auraInfo.expirationTime > 0) then
+		if (auraInfo.hideUnlessExpanded and (auraInfo.expirationTime and auraInfo.expirationTime > 0)) then
 			local timeLeft = (auraInfo.expirationTime - GetTime());
 			if (timeLeft <= BUFF_DURATION_WARNING_TIME) then
 				auraInfo.hideUnlessExpanded = false;
@@ -635,14 +635,25 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 		local auraInfoIndex = #self.auraInfo + 1; -- Note that if we started with auras in self.auraInfo (e.g., Weapon Enchants), this may be offset from auraIndex.
 		auraIndex = auraIndex + 1;
 
-		self.auraInfo[auraInfoIndex] = {index = auraIndex, texture = auraData.icon, count = auraData.applications, debuffType = auraData.dispelName, duration = auraData.duration,  expirationTime = auraData.expirationTime, timeMod = auraData.timeMod, hideUnlessExpanded = hideUnlessExpanded, auraType = "Buff", helpTipInfo = helpTipInfo };
+		self.auraInfo[auraInfoIndex] = {
+			auraType = "Buff",
+			debuffType = auraData.dispelName,
+			index = auraIndex,
+			texture = auraData.icon,
+			count = auraData.applications,
+			hideUnlessExpanded = hideUnlessExpanded,
+			duration = auraData.duration,
+			expirationTime = auraData.expirationTime,
+			timeMod = auraData.timeMod,
+			helpTipInfo = helpTipInfo
+		};
 
 		return #self.auraInfo > self.maxAuras;
 	end, usePackedAura);
 end
 
 --AubrieTODO: Figure out how we want to refactor this function to include non-weapon enchants..
-function BuffFrameMixin:UpdateTemporaryEnchantments(...)
+function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs(...)
 	local RETURNS_PER_ITEM = 4;
 	local numVals = select("#", ...);
 	local numItems = numVals / RETURNS_PER_ITEM;
@@ -670,7 +681,14 @@ function BuffFrameMixin:UpdateTemporaryEnchantments(...)
 				self.numHideableBuffs = self.numHideableBuffs + 1;
 			end
 
-			local aura = { isTempEnchant = true, textureName = GetInventoryItemTexture("player", textureMapping[itemIndex]), ID = textureMapping[itemIndex], count = enchantCharges, expirationTime = expirationTime, hideUnlessExpanded = hideUnlessExpanded, auraType = "TempEnchant" };
+			local aura = {
+				auraType = "TempEnchant",
+				texture = GetInventoryItemTexture("player", textureMapping[itemIndex]),
+				count = enchantCharges,
+				hideUnlessExpanded = hideUnlessExpanded,
+				expirationTime = expirationTime,
+				ID = textureMapping[itemIndex]
+			};
 			table.insert(self.auraInfo, aura);
 		end
 	end
@@ -681,7 +699,7 @@ function BuffFrameMixin:UpdateAuras()
 
 	-- Update our auraInfo.
 	self.numHideableBuffs = 0;
-	self:UpdateTemporaryEnchantments(GetWeaponEnchantInfo());
+	self:UpdateTemporaryEnchantmentBuffs(GetWeaponEnchantInfo());
 	self:UpdatePlayerBuffs();
 
 	-- Sync to ConsolidatedBuffs frame, if needed.
@@ -738,25 +756,34 @@ function DebuffFrameMixin:UpdateAuras()
 	AuraUtil.ForEachAura(PlayerFrame.unit, "HARMFUL", self.maxAuras, function(auraData)
 		local index = #self.auraInfo + 1;
 		-- TODO:: Rename usages in this file to match packed auraData names, then just use packed aura everywhere
-		self.auraInfo[index] = {index = index, texture = auraData.icon, count = auraData.applications, debuffType = auraData.dispelName, duration =  auraData.duration, expirationTime =  auraData.expirationTime, timeMod =  auraData.timeMod, auraType = "Debuff" };
+		self.auraInfo[index] = {
+			auraType = "Debuff",
+			debuffType = auraData.dispelName,
+			index = index,
+			texture = auraData.icon,
+			count = auraData.applications,
+			duration = auraData.duration,
+			expirationTime = auraData.expirationTime,
+			timeMod = auraData.timeMod,
+		};
 
 		local deadlyDebuffInfo = C_Spell.GetDeadlyDebuffInfo and C_Spell.GetDeadlyDebuffInfo(auraData.spellId);
 		if(deadlyDebuffInfo) then
 			local deadlyDebuff = {
-				spellID = auraData.spellId,
 				auraType = "DeadlyDebuff",
+				debuffType = auraData.dispelName,
 				texture = auraData.icon,
 				count = auraData.applications,
-				debuffType = auraData.dispelName,
 				duration = auraData.duration,
 				expirationTime = auraData.expirationTime,
 				timeMod = auraData.timeMod,
-				warningText = deadlyDebuffInfo.warningText,
+				spellID = auraData.spellId,
 				soundKitID = deadlyDebuffInfo.soundKitID,
+				auraInstanceID = auraData.auraInstanceID,
+				warningText = deadlyDebuffInfo.warningText,
 				priority = deadlyDebuffInfo.priority,
 				criticalTimeRemainingMs = deadlyDebuffInfo.criticalTimeRemainingMs,
-				criticalStacks = deadlyDebuffInfo.criticalStacks,
-				auraInstanceID =  auraData.auraInstanceID,
+				criticalStacks = deadlyDebuffInfo.criticalStacks
 			};
 			table.insert(self.deadlyDebuffInfo, deadlyDebuff);
 		end
@@ -930,8 +957,6 @@ function AuraButtonMixin:OnUpdate(elapsed)
 		end
 	end
 
-	local index = self.buttonInfo.index;
-
 	-- Update the warning flash alpha.
 	local containerFrame = self:GetParent();
 	if (containerFrame and containerFrame.GetAuraWarningAlphaForDuration) then
@@ -962,7 +987,7 @@ function AuraButtonMixin:OnUpdate(elapsed)
 			elseif self.buttonInfo.auraInstanceID then
 				GameTooltip:SetUnitAuraByAuraInstanceID(PlayerFrame.unit, self.buttonInfo.auraInstanceID);
 			else
-				GameTooltip:SetUnitAura(PlayerFrame.unit, index, self:GetFilter());
+				GameTooltip:SetUnitAura(PlayerFrame.unit, self.buttonInfo.index, self:GetFilter());
 			end
 		end
 	end
@@ -1040,7 +1065,7 @@ function AuraButtonMixin:Update(buttonInfo)
 	self.unit = PlayerFrame.unit;
 
 	if self.auraType == "TempEnchant" then
-		self.Icon:SetTexture(self.buttonInfo.textureName);
+		self.Icon:SetTexture(self.buttonInfo.texture);
 		self:UpdateExpirationTime(buttonInfo);
 
 		if buttonInfo.count > 1 then

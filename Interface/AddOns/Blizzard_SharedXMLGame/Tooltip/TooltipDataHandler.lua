@@ -465,7 +465,6 @@ do
 		SetGuildBankItem = "GetGuildBankItem",
 		SetHeirloomByItemID = "GetHeirloomByItemID",
 		SetRuneforgeResultItem = "GetRuneforgeResultItem",
-		SetTransmogrifyItem = "GetTransmogrifyItem",
 		SetArtifactItem = "GetArtifactItem",
 		SetBagItem = "GetBagItem",
 		SetBagItemChild = "GetBagItemChild",

@@ -2,10 +2,25 @@
 ..\..\UI.xsd">
 	<Button name="TabSystemButtonArtTemplate" mixin="TabSystemButtonArtMixin" virtual="true">
 		<KeyValues>
+			<!--
+			selectedFontObject: override normal font object when tab is selected, GameFontHighlightSmall if not set.
+			unselectedFontObject: override normal font object when tab is unselected, GameFontNormalSmall if not set.
+			isTabOnTop: is the tab visual hanging off the top or bottom of the associated frame.
+			tooltipAnchor: tooltip anchor.
+			tooltipAnchorX: tooltip anchor x position.
+			tooltipAnchorY: tooltip anchor y position.
+			textOffsetY: any initial anchoring offset of text height.
+			textPadding: any additional horizontal padding of the text to take into account when setting tab width.
+
+			<KeyValue key="selectedFontObject" value="GameFontHighlight" type="string"/>
+			<KeyValue key="unselectedFontObject" value="GameFontNormal" type="string"/>
+			<KeyValue key="textOffsetY" value="3" type="number"/>
+			<KeyValue key="textPadding" value="10" type="number"/>
+			-->
 			<KeyValue key="isTabOnTop" value="false" type="boolean"/>
-			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_RIGHT"/>
-			<KeyValue key="tooltipAnchorX" type="number" value="-12"/>
-			<KeyValue key="tooltipAnchorY" type="number" value="-6"/>
+			<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+			<KeyValue key="tooltipAnchorX" value="-12" type="number"/>
+			<KeyValue key="tooltipAnchorY" value="-6" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">

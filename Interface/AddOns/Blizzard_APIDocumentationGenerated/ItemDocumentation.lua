@@ -42,7 +42,7 @@ local Item =
 			Returns =
 			{
 				{ Name = "canTransmog", Type = "bool", Nilable = false },
-				{ Name = "errorCode", Type = "number", Nilable = false },
+				{ Name = "errorCode", Type = "TransmogOutfitSlotError", Nilable = false },
 			},
 		},
 		{

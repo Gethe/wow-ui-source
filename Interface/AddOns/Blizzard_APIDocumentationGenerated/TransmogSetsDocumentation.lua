@@ -57,6 +57,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetAvailableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseSetID",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -218,6 +227,22 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetSetsFilter",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -374,6 +399,15 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "IsUsingDefaultSetsFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultSetsFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -386,6 +420,10 @@ local TransmogSets =
 		},
 		{
 			Name = "SetDefaultBaseSetsFilters",
+			Type = "Function",
+		},
+		{
+			Name = "SetDefaultSetsFilters",
 			Type = "Function",
 		},
 		{
@@ -428,6 +466,17 @@ local TransmogSets =
 			{
 				{ Name = "transmogSetID", Type = "number", Nilable = false },
 				{ Name = "isFavorite", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSetsFilter",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -3095,11 +3095,6 @@ function EditModePersonalResourceDisplaySystemMixin:OnEditModeExit()
 	self:SetIsInEditMode(false);
 end
 
-function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingShowFriendlyBuffs()
-	self.showFriendlyBuffs = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs);
-	self:UpdateFriendlyBuffs();
-end
-
 function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHideHealthAndPower()
 	self.hideHealthAndPower = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower)
 	self:SetupHealthBar();
@@ -3124,9 +3119,7 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting,
 		return;
 	end
 
-	if setting == Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs) then
-		self:UpdateSystemSettingShowFriendlyBuffs();
-	elseif setting == Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower) then
+	if setting == Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower) then
 		self:UpdateSystemSettingHideHealthAndPower();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat) then
 		self:UpdateSystemSettingOnlyShowInCombat();

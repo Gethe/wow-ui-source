@@ -472,6 +472,10 @@ function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 
+function Transmog_LoadUI()
+	UIParentLoadAddOn("Blizzard_Transmog");
+end
+
 function BlackMarket_LoadUI()
 	UIParentLoadAddOn("Blizzard_BlackMarketUI");
 end
@@ -515,6 +519,7 @@ end
 function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
+
 
 function WeeklyRewards_ShowUI()
 	if not WeeklyRewardsFrame then
@@ -2697,7 +2702,8 @@ function LeaveInstanceParty()
 	if ( IsInLFDBattlefield() ) then
 		local currentMapID, _, lfgID = select(8, GetInstanceInfo());
 		local _, typeID, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, lfgMapID = GetLFGDungeonInfo(lfgID);
-		if currentMapID == lfgMapID and subtypeID == LE_LFG_CATEGORY_BATTLEFIELD then
+		local subtypeUsesLFGTeleport = (subtypeID == LFG_SUBTYPEID_BATTLEFIELD) or (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS);
+		if currentMapID == lfgMapID and subtypeUsesLFGTeleport then
 			LFGTeleport(true);
 			return;
 		end
@@ -2815,12 +2821,6 @@ function GetDisplayedInviteType(guid)
 			return "INVITE";
 		end
 	end
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	-- Timerunners levels can go above the purchased max level to the max current expansion level
-	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
-	return level >= maxLevel;
 end
 
 local INTERFACE_ACTION_BLOCKED_COUNT = 0;

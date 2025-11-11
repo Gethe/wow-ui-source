@@ -17,9 +17,9 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterType",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "DamageDone", Type = "DamageMeterType", EnumValue = 0 },
@@ -28,6 +28,7 @@ local DamageMeterConstants =
 				{ Name = "Hps", Type = "DamageMeterType", EnumValue = 3 },
 				{ Name = "Interrupts", Type = "DamageMeterType", EnumValue = 4 },
 				{ Name = "Dispels", Type = "DamageMeterType", EnumValue = 5 },
+				{ Name = "DamageTaken", Type = "DamageMeterType", EnumValue = 6 },
 			},
 		},
 	},

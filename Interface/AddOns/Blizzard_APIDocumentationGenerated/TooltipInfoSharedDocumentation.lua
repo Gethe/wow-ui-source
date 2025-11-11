@@ -79,9 +79,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataType",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "Item", Type = "TooltipDataType", EnumValue = 0 },
@@ -111,6 +111,7 @@ local TooltipInfoShared =
 				{ Name = "QuestPartyProgress", Type = "TooltipDataType", EnumValue = 24 },
 				{ Name = "Macro", Type = "TooltipDataType", EnumValue = 25 },
 				{ Name = "Debug", Type = "TooltipDataType", EnumValue = 26 },
+				{ Name = "Outfit", Type = "TooltipDataType", EnumValue = 27 },
 			},
 		},
 		{

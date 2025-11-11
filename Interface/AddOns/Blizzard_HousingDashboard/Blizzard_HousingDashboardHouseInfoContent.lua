@@ -6,7 +6,7 @@ local HouseInfoLifetimeEvents =
 	"INITIATIVE_TASK_COMPLETED",
 	"INITIATIVE_TASKS_TRACKED_UPDATED",
 	"INITIATIVE_TASKS_TRACKED_LIST_CHANGED",
-	--"INITIATIVE_ACTIVITY_LOG_UPDATED", --! Task history / activity still WIP
+	"INITIATIVE_ACTIVITY_LOG_UPDATED",
 };
 
 local HOUSE_DROPDOWN_WIDTH = 200;
@@ -111,10 +111,13 @@ function HousingDashboardHouseInfoMixin:OnEvent(event, ...)
 			C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
 		end
 		self.LoadingSpinner:Hide();
-	elseif event == "NEIGHBORHOOD_INITIATIVE_UPDATED" or event == "INITIATIVE_ACTIVITY_LOG_UPDATED" or event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" then
-		-- TODO: should separate out activity log from initiative
+	elseif event == "NEIGHBORHOOD_INITIATIVE_UPDATED" or event == "INITIATIVE_TASKS_TRACKED_LIST_CHANGED" then
 		if self.ContentFrame:GetTab() == self.ContentFrame.endeavorTabID then
 			self.ContentFrame.InitiativesFrame:RefreshInitiativeTab();
+		end
+	elseif event == "INITIATIVE_ACTIVITY_LOG_UPDATED" then
+		if self.ContentFrame:GetTab() == self.ContentFrame.endeavorTabID then
+			self.ContentFrame.InitiativesFrame:RefreshActivityLog();
 		end
 	elseif ( event == "INITIATIVE_TASKS_TRACKED_UPDATED" ) then
 		if self.ContentFrame:GetTab() == self.ContentFrame.endeavorTabID then
@@ -157,6 +160,8 @@ function HousingDashboardHouseInfoMixin:OnHouseListUpdated(houseInfoList)
 		self.HouseFinderButton:Hide();
 		self.ContentFrame:Hide();
 	end
+
+	self:GetParent():UpdateSizeToContent(self);
 end
 
 function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
@@ -286,7 +291,6 @@ end
 
 function InitiativesTabMixin:RefreshInitiativeTab()
 	self.currentInitiative = C_NeighborhoodInitiative.GetNeighborhoodInitiativeInfo();
-	self.initiativeActivityLog = C_NeighborhoodInitiative.GetInitiativeActivityLogInfo();
 	self.isViewingActiveNeighborhood = C_NeighborhoodInitiative.IsViewingActiveNeighborhood();
 
 	if self.currentInitiative then
@@ -298,7 +302,7 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 
 				if self.isViewingActiveNeighborhood then
 					self:RefreshTaskList();
-					self:RefreshActivityLog();
+					C_NeighborhoodInitiative.RequestInitiativeActivityLog();
 					self.InitiativeSetFrame.InitiativeTasks:Show();
 					self.InitiativeSetFrame.InitiativeActivity:Show();
 					self.InitiativeSetFrame.InitiativeActiveNeighborhoodSwitcher:Hide();
@@ -456,13 +460,14 @@ function InitiativesTabMixin:SetupTaskList()
 				button.CollapseIconAlphaAdd:Hide();
 			end
 
-			if data.completed and data.timesCompleted and data.timesCompleted > 0 then
+			if data.timesCompleted and data.timesCompleted > 0 and data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 				button.Title:SetText(HOUSING_DASHBOARD_REPEATABLE_TASK_TITLE_FORMAT:format(data.taskName, data.timesCompleted));
 			else
 				button.Title:SetText(data.taskName);
 			end
 
-			if data.completed then
+			-- TODO: fix supercede (repeatableFinite) 
+			if data.completed and data.taskType ~= Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 				button.ActivityXP:Hide();
 				button.Checkmark:Show();
 			else
@@ -572,6 +577,14 @@ function InitiativesTabMixin:RefreshTaskList()
 end
 
 function InitiativesTabMixin:RefreshActivityLog()
+	if not self.isViewingActiveNeighborhood then
+		self.InitiativeSetFrame.InitiativeActivity:Hide();
+		return;
+	end
+
+	self.InitiativeSetFrame.InitiativeActivity:Show();
+	self.initiativeActivityLog = C_NeighborhoodInitiative.GetInitiativeActivityLogInfo();
+
 	if self.initiativeActivityLog and self.initiativeActivityLog.taskActivity then
 		local dataProvider = CreateDataProvider();
 
@@ -583,6 +596,24 @@ function InitiativesTabMixin:RefreshActivityLog()
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end
 end
+
+function InitiativesTabMixin:ScrollToInitiativeTaskID(taskID)
+	local scrollBox = self.InitiativeSetFrame.InitiativeTasks.TaskList;
+	local function FindNode(ID)
+		local dataProvider = scrollBox:GetDataProvider();
+		if dataProvider then
+			return dataProvider:FindElementDataByPredicate(function(node)
+				local data = node:GetData();
+				return data.ID == ID;
+			end, TreeDataProviderConstants.IncludeCollapsed);
+		end
+	end
+	local selectedNode = FindNode(taskID);
+	if selectedNode then
+		scrollBox:ScrollToElementData(selectedNode, ScrollBoxConstants.AlignCenter);
+	end
+end
+
 
 ---------------------Initiatives Tab: Task Button-------------------------------
 InitiativeTaskButtonMixin = {};

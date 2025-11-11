@@ -278,10 +278,10 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "uiUnit", Nilable = false },
-				{ Name = "bottom", Type = "uiUnit", Nilable = false },
-				{ Name = "width", Type = "uiUnit", Nilable = false },
-				{ Name = "height", Type = "uiUnit", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "width", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "height", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
 			},
 		},
 		{

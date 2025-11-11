@@ -333,7 +333,7 @@ end
 -- CATEGORY FRAME
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "PlunderstormFrame", "TrainingGroundsFrame" }
+local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "TrainingGroundsFrame", "PlunderstormFrame" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
@@ -346,11 +346,11 @@ function PVPQueueFrame_OnLoad(self)
 	self.CategoryButton3.Icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
-	self.CategoryButton4.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
-	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
+	self.CategoryButton4.Icon:SetTexture("Interface\\Icons\\ability_hunter_focusedaim");
+	self.CategoryButton4.Name:SetText(PVP_TAB_TRAINING_GROUNDS);
 
-	self.CategoryButton5.Icon:SetTexture("Interface\\Icons\\ability_hunter_focusedaim");
-	self.CategoryButton5.Name:SetText(PVP_TAB_TRAINING_GROUNDS);
+	self.CategoryButton5.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
+	self.CategoryButton5.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
 
 	PVPQueueFrame_UpdateAnchoringForAvailableModes(self);
 
@@ -396,11 +396,9 @@ function PVPQueueFrame_UpdateAnchoringForAvailableModes(self)
 	-- First, we set the topmost button
 	self.CategoryButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, -66);
 
-	-- Next, we reanchor the Premade Group button to the Plunderstorm button if we need to show it
+	-- Next we hide/show the Plunderstorm button
 	local plunderstormAvailable = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
-	local overrideAnchoringParent = plunderstormAvailable and self.CategoryButton4 or self.CategoryButton2;
-	self.CategoryButton3:SetPoint("TOP", overrideAnchoringParent, "BOTTOM", 0, -23);
-	self.CategoryButton4:SetShown(plunderstormAvailable);
+	self.CategoryButton5:SetShown(plunderstormAvailable);
 
 	-- Finally, update the art size and button spacing for the number of elements we're showing
 	local shouldShrinkButtons = plunderstormAvailable;
@@ -491,8 +489,8 @@ function PVPQueueFrame_OnShow(self)
 	local canUsePlunderButton = not (IsTrialAccount() or IsVeteranTrialAccount());
 	local failureReason = WOWLABS_SUB_REQUIRED;
 	if not canUsePlunderButton then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, false);
+		self.CategoryButton5.tooltip = failureReason;
 
 		return;
 	end
@@ -500,14 +498,14 @@ function PVPQueueFrame_OnShow(self)
 	canUsePlunderButton = not C_PlayerInfo.IsPlayerNPERestricted();
 	failureReason = FEATURE_NOT_YET_AVAILABLE;
 	if not canUsePlunderButton then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, false);
+		self.CategoryButton5.tooltip = failureReason;
 
 		return;
 	end
 
-	self.CategoryButton4.tooltip = nil;
-	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
+	self.CategoryButton5.tooltip = nil;
+	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, true);
 end
 
 function PVPQueueFrame_UpdateTitle()

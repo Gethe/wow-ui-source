@@ -397,7 +397,17 @@ function SettingsPanelMixin:CancelPendingRevertTimer()
 	end
 end
 
+function SettingsPanelMixin:SetIsSettingDefaults(isSettingDefaults)
+	self.isSettingDefaults = isSettingDefaults;
+end
+
+function SettingsPanelMixin:CheckIsSettingDefaults()
+	return self.isSettingDefaults;
+end
+
 function SettingsPanelMixin:SetAllSettingsToDefaults()
+	self:SetIsSettingDefaults(true);
+
 	local keys = {GetCVarDefault("VoicePushToTalkKeybind")}
 	C_VoiceChat.SetPushToTalkBinding(keys);
 
@@ -431,9 +441,11 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	Settings.SafeLoadBindings(Enum.BindingSet.Default);
 
 	EventRegistry:TriggerEvent("Settings.Defaulted");
+	self:SetIsSettingDefaults(false);
 end
 
 function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
+	self:SetIsSettingDefaults(true);
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
@@ -481,6 +493,7 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 	end
 
 	EventRegistry:TriggerEvent("Settings.CategoryDefaulted", currentCategory);
+	self:SetIsSettingDefaults(false);
 end
 
 function SettingsPanelMixin:HasUnappliedSettings()

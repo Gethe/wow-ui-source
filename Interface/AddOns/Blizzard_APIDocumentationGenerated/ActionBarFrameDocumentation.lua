@@ -671,6 +671,21 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsEquippedGearOutfitAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEquippedGearOutfitAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHarmfulAction",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -20,7 +20,7 @@
 						<Anchor point="RIGHT" relativePoint="RIGHT" x="-1" y="0"/>
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontHighlight" wordwrap="false" justifyH="LEFT">
+				<FontString parentKey="Text" inherits="GameFontHighlightSmall" wordwrap="false" justifyH="RIGHT">
 					<Size x="0" y="10"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Arrow" relativePoint="LEFT"/>
@@ -40,6 +40,12 @@
 			<OnDisable method="OnDisable"/>
 			<OnSizeChanged method="OnSizeChanged"/>
 		</Scripts>
+	</DropdownButton>
+
+	<DropdownButton name="WowStyle1ThinDropdownTemplate" inherits="WowStyle1DropdownTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="menuMixin" value="MenuStyle1ThinMixin" type="global"/>
+		</KeyValues>
 	</DropdownButton>
 
 	<DropdownButton name="WowStyle1ArrowDropdownTemplate" mixin="WowStyle1ArrowDropdownMixin" virtual="true">

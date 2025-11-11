@@ -102,6 +102,10 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "RequestInitiativeActivityLog",
+			Type = "Function",
+		},
+		{
 			Name = "RequestNeighborhoodInitiativeInfo",
 			Type = "Function",
 		},
@@ -191,6 +195,7 @@ local NeighborhoodInitiative =
 			{
 				{ Name = "isLoaded", Type = "bool", Nilable = false },
 				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "nextUpdateTime", Type = "time_t", Nilable = false },
 				{ Name = "taskActivity", Type = "table", InnerType = "InitiativeActivityLogEntry", Nilable = false },
 			},
 		},

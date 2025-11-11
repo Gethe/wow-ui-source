@@ -635,9 +635,8 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
 
-	if initializer.hideSteppers then
-		self.Control:HideSteppers();
-	end
+	local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
+	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
 
 	if initializer.getSelectionTextFunc then
 		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);
@@ -646,7 +645,7 @@ function SettingsDropdownControlMixin:InitDropdown()
 end
 
 function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
-	local inserter = Settings.CreateDropdownOptionInserter(options);
+	local inserter = Settings.CreateDropdownOptionInserter(setting, options);
 	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip);
 end
 
@@ -1018,7 +1017,7 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	self.Checkbox:Init(cbSetting:GetValue(), initCheckboxTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
-	local inserter = Settings.CreateDropdownOptionInserter(dropdownOptions);
+	local inserter = Settings.CreateDropdownOptionInserter(dropdownSetting, dropdownOptions);
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 

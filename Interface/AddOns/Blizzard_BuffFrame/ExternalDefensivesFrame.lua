@@ -24,7 +24,8 @@ function ExternalDefensivesFrameMixin:UpdateAuras()
 
 	local usePackedAura = true;
 	local auraIndex = 0;
-	AuraUtil.ForEachAura(PlayerFrame.unit, "HELPFUL|EXTERNAL_DEFENSIVE", self.maxAuras, function(auraData)
+	local filter = AuraUtil.CreateFilterString(AuraUtil.AuraFilters.Helpful, AuraUtil.AuraFilters.ExternalDefensive);
+	AuraUtil.ForEachAura(PlayerFrame.unit, filter, self.maxAuras, function(auraData)
 		local auraInfoIndex = #self.auraInfo + 1; -- Note that if we started with auras in self.auraInfo (e.g., Weapon Enchants), this may be offset from auraIndex.
 		auraIndex = auraIndex + 1;
 

@@ -29,6 +29,7 @@ function CooldownViewerSettingsEditAlertMixin:SetCooldown(cooldownItem)
 	-- if it's still visible by calling item:RefreshAlertTypeOverlay();
 	self.cooldownID = cooldownItem:GetCooldownID();
 	self.cooldownName = cooldownItem:GetNameText();
+	self.validCooldownAlertTypes  = cooldownItem:GetValidAlertTypes();
 
 	self.Icon:SetTexture(cooldownItem:GetSpellTexture());
 	self.CooldownName:SetText(cooldownItem:GetNameText());
@@ -43,16 +44,16 @@ function CooldownViewerSettingsEditAlertMixin:GetCooldownName()
 end
 
 function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
-	local cooldownID = self:GetCooldownID();
-	if cooldownID then
-		return C_CooldownViewer.GetValidAlertTypes(cooldownID);
-	end
-
-	return nil;
+	return self.validCooldownAlertTypes;
 end
 
+
 function CooldownViewerSettingsEditAlertMixin:DisplayForCooldown(cooldownItem)
-	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, CooldownViewerSound.ImpactsLowThud);
+	-- Only pick an initial default from the set of valid events for this cooldownItem.
+	local firstEvent = cooldownItem:GetFirstValidAlertType();
+	assertsafe(firstEvent ~= nil, "DisplayForCooldown invoked when cooldown %d doesn't support events", tostring(cooldownItem:GetCooldownID()));
+
+	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, firstEvent, CooldownViewerSound.ImpactsLowThud);
 	local isNewAlert = true;
 	self:DisplayForAlert(cooldownItem, alert, isNewAlert);
 end
@@ -130,7 +131,7 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_EVENT");
 
 		if validEventTypes then
-			for _, eventType in ipairs(validEventTypes) do
+			for eventType in pairs(validEventTypes) do
 				rootDescription:CreateButton(eventTypeDropdownData[eventType], SetAlertEvent, eventType);
 			end
 		else

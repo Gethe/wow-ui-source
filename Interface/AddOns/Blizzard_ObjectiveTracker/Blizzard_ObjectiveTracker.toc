@@ -1,6 +1,6 @@
 ## Title: Blizzard Objective Tracker UI
 ## LoadOnDemand: 0
-## RequiredDep: Blizzard_MawBuffs
+## RequiredDep: Blizzard_MawBuffs, Blizzard_TransmogShared
 ## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
 
 Blizzard_ObjectiveTrackerFonts.xml

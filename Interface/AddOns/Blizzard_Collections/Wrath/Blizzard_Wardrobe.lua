@@ -71,10 +71,13 @@ function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
 		local sourceID = tonumber(id);
 		self:SetTab(WARDROBE_TAB_ITEMS);
 		-- For links a base appearance is fine
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
-		local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(categoryID);
-		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-		self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(appearanceSourceInfo.category);
+			local isSecondary = false;
+			local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, isSecondary);
+			self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+		end
 	elseif ( linkType == "transmogset") then
 		local setID = tonumber(id);
 		self:SetTab(WARDROBE_TAB_SETS);
@@ -152,7 +155,8 @@ function WardrobeItemsCollectionMixin:OnShow()
 		-- The model got reset from OnShow, which restored all equipment.
 		-- But ChangeModelsSlot tries to be smart and only change the difference from the previous slot to the current slot, so some equipment will remain left on.
 		-- This is only set for new apperances, base transmogLocation is fine
-		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		local isSecondary = false;
+		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, isSecondary);
 		local ignorePreviousSlot = true;
 		self:SetActiveSlot(transmogLocation, self.jumpToLatestCategoryID, ignorePreviousSlot);
 		self.jumpToLatestCategoryID = nil;
@@ -161,7 +165,8 @@ function WardrobeItemsCollectionMixin:OnShow()
 		self:ChangeModelsSlot(self.transmogLocation);
 		needsUpdate = true;
 	else
-		local transmogLocation = C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:GetSelectedTransmogLocation() or TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		local isSecondary = false;
+		local transmogLocation = C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:GetSelectedTransmogLocation() or TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, isSecondary);
 		self:SetActiveSlot(transmogLocation);
 	end
 

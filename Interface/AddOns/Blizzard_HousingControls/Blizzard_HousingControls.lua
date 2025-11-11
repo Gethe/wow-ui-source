@@ -2,6 +2,7 @@ local HousingControlsEvents = {
 	"HOUSE_PLOT_ENTERED",
 	"HOUSE_PLOT_EXITED",
 	"HOUSE_EDITOR_AVAILABILITY_CHANGED",
+	"CURRENT_HOUSE_INFO_RECIEVED",
 };
 
 local HousingControlsShownEvents = {
@@ -24,7 +25,7 @@ function HousingControlsMixin:OnEvent(event, ...)
 		self:UpdateControlVisibility(true);
 	elseif event == "HOUSE_PLOT_EXITED" then
 		self:UpdateControlVisibility(false);
-	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" then
+	elseif event == "HOUSE_EDITOR_AVAILABILITY_CHANGED" or event == "HOUSE_INFO_UPDATED" or "CURRENT_HOUSE_INFO_RECIEVED" then
 		self:UpdateControlVisibility(C_Housing.IsInsideHouseOrPlot());
 	elseif event == "UPDATE_BINDINGS" or event == "HOUSE_EDITOR_MODE_CHANGED" then
 		self:UpdateButtons();

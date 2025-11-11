@@ -1098,8 +1098,12 @@ end
 
 function UnitFrame_ShouldReplacePortrait(self)
 	if UnitIsPlayer(self.unit) then
-		local cvarName = UnitIsUnit(self.unit, "player") and "ReplaceMyPlayerPortrait" or "ReplaceOtherPlayerPortraits";
-		return GetCVarBool(cvarName);
+		local isMyPlayer = UnitIsUnit(self.unit, "player");
+		if isMyPlayer then
+			return GetCVarBool("ReplaceMyPlayerPortrait");
+		else
+			return GetCVarBool("ReplaceOtherPlayerPortraits");
+		end
 	end
 
 	return false;

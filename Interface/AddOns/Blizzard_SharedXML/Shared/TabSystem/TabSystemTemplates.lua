@@ -28,11 +28,14 @@ function TabSystemButtonArtMixin:HandleRotation()
 end
 
 function TabSystemButtonArtMixin:GetTextYOffset(isSelected)
+	local offset = self.textOffsetY or 0;
 	if self.isTabOnTop then
-		return isSelected and 0 or -3;
+		offset = offset + (isSelected and 0 or -3);
 	else
-		return isSelected and -3 or 2;
+		offset = offset + (isSelected and -3 or 2);
 	end
+
+	return offset;
 end
 
 function TabSystemButtonArtMixin:SetTabSelected(isSelected)
@@ -139,7 +142,11 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	local sidesWidth = self.Left:GetWidth() + self.Right:GetWidth();
 	local width = sidesWidth + TabSideExtraSpacing;
 	local minTabWidth, maxTabWidth = self:GetTabSystem():GetTabWidthConstraints();
-	local textWidth;
+	local textWidth = self.Text:GetWidth() + (self.textPadding or 0);
+
+	if width < textWidth then
+		width = textWidth + 10;
+	end
 
 	if maxTabWidth and width > maxTabWidth then
 		width = maxTabWidth;

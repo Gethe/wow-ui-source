@@ -96,7 +96,7 @@ function ShoppingCartDataManagerMixin:RemoveFromCart(cartItemToRemove)
 	return nil, nil;
 end
 
-function ShoppingCartDataManagerMixin:ClearCart()
+function ShoppingCartDataManagerMixin:ClearCart(_requiresConfirmation)
 	self.cartList = {};
 
 	if self.ClearCartCallback then
@@ -120,4 +120,11 @@ end
 
 function ShoppingCartDataManagerMixin:GetNumItemsInCart()
 	return #self.cartList;
+end
+
+ShoppingCartClearCartServiceMixin = {};
+
+function ShoppingCartClearCartServiceMixin:GetEventData()
+	local clearRequiresConfimation = true;
+	return clearRequiresConfimation;
 end

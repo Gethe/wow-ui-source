@@ -8,9 +8,9 @@ DamageMeterEntry.lua
 DamageMeterEntry.xml
 DamageMeterSettingsDropdownButton.lua
 DamageMeterSettingsDropdownButton.xml
-DamageMeterUnitBreakdown.lua
-DamageMeterUnitBreakdown.xml
-DamageMeterWindow.lua
-DamageMeterWindow.xml
+DamageMeterSourceWindow.lua
+DamageMeterSourceWindow.xml
+DamageMeterSessionWindow.lua
+DamageMeterSessionWindow.xml
 DamageMeter.lua
 DamageMeter.xml

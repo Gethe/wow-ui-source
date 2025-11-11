@@ -111,18 +111,6 @@ local DamageMeter =
 	Events =
 	{
 		{
-			Name = "DamageMeterCombatSessionSourceUpdated",
-			Type = "Event",
-			LiteralName = "DAMAGE_METER_COMBAT_SESSION_SOURCE_UPDATED",
-			UniqueEvent = true,
-			Payload =
-			{
-				{ Name = "type", Type = "DamageMeterType", Nilable = false },
-				{ Name = "sessionID", Type = "number", Nilable = false },
-				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
-			},
-		},
-		{
 			Name = "DamageMeterCombatSessionUpdated",
 			Type = "Event",
 			LiteralName = "DAMAGE_METER_COMBAT_SESSION_UPDATED",
@@ -183,6 +171,7 @@ local DamageMeter =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
+				{ Name = "isLocalPlayer", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -193,6 +182,20 @@ local DamageMeter =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
+				{ Name = "creatureName", Type = "cstring", Nilable = false },
+				{ Name = "combatSpellDetails", Type = "DamageMeterCombatSpellUnitDetails", Nilable = false },
+			},
+		},
+		{
+			Name = "DamageMeterCombatSpellUnitDetails",
+			Type = "Structure",
+			Documentation = { "Amount for a single target for all casts of the same spellID by a single source (unit) in a combat session." },
+			Fields =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitClassName", Type = "cstring", Nilable = false },
+				{ Name = "classification", Type = "CreatureClassification", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
 	},

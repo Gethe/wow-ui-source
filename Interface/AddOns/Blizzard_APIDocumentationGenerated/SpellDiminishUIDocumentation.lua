@@ -39,6 +39,15 @@ local SpellDiminishUI =
 			},
 		},
 		{
+			Name = "IsSystemSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSystemSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldTrackSpellDiminishCategory",
 			Type = "Function",
 			RequiresSpellDiminishUI = true,

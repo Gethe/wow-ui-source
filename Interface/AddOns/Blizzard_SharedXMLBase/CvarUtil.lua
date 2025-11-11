@@ -188,6 +188,82 @@ function CVarCallbackRegistry:ClearCache(cvar)
 	self.cvarValueCache[cvar] = nil;
 end
 
+function CVarCallbackRegistry:GetCVarBitfieldDefault(cvar)
+	local value = GetCVarDefault(cvar);
+
+	local bitmask = 0;
+	local bitsPerByte = 6; -- CVAR_ARRAY_BITS_STORED_PER_BYTE
+	
+	-- Process each data byte (skip version byte at index 1)
+	for byteIndex = 2, #value do
+		local byte = value:byte(byteIndex);
+		if not byte then
+			break;
+		end
+		
+		-- Each byte stores 6 bits of data
+		for bitIndex = 0, bitsPerByte - 1 do
+			if bit.band(byte, bit.lshift(1, bitIndex)) ~= 0 then
+				local overallBitIndex = (byteIndex - 2) * bitsPerByte + bitIndex;
+				bitmask = bit.bor(bitmask, bit.lshift(1, overallBitIndex));
+			end
+		end
+	end
+	
+	return bitmask;
+end
+
+function CVarCallbackRegistry:SetCVarBitfieldMask(cvar, mask)
+	local value = self:GetCVarValue(cvar);
+
+	local bitsPerByte = 6; -- CVAR_ARRAY_BITS_STORED_PER_BYTE
+	local maxStringSize = 256;
+	
+	-- Extract the version from the existing value.
+	local version = value:byte(1);
+	
+	-- Start with version byte from existing value
+	local buffer = string.char(version);
+	
+	-- Convert mask to individual bits and pack them into bytes
+	local currentMask = mask;
+	local byteIndex = 2; -- Start after version byte
+	
+	while currentMask > 0 and byteIndex < maxStringSize do
+		local dataByte = 0;
+		
+		-- Extract up to 6 bits for this byte
+		for bitIndex = 0, bitsPerByte - 1 do
+			if currentMask > 0 and bit.band(currentMask, 1) ~= 0 then
+				dataByte = bit.bor(dataByte, bit.lshift(1, bitIndex));
+			end
+			currentMask = bit.rshift(currentMask, 1);
+		end
+		
+		-- Set bit 6 to maintain the format 0b01xxxxxx (bit 6 = 1, bit 7 = 0)
+		dataByte = bit.bor(dataByte, 0x40); -- 0x40 = 64 = 2^6
+		
+		-- Make sure bit 7 is not set (should never happen with our logic)
+		dataByte = bit.band(dataByte, 0x7F); -- 0x7F = 127 = 2^7 - 1
+		
+		buffer = buffer .. string.char(dataByte);
+		byteIndex = byteIndex + 1;
+	end
+	
+	-- Remove trailing bytes that are just the padding value (0x40)
+	-- This matches the C++ logic that shortens the string by removing trailing padding
+	while #buffer > 1 do
+		local lastByte = buffer:byte(-1);
+		if lastByte == 0x40 then -- 64 = padding byte with no data bits set
+			buffer = buffer:sub(1, -2);
+		else
+			break;
+		end
+	end
+	
+	SetCVar(cvar, buffer);
+end
+
 -- NOTE: This will invoke the supplied callback for **ALL** CVar changes, as
 -- if listening directly for the CVAR_UPDATE event.
 --

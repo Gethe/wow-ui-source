@@ -115,11 +115,15 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, linkData, contextData)
 	local sourceID = string.split(":", linkData.options);
 	if ( IsModifiedClick("CHATLINK") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		HandleModifiedItemClick(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);			
+		end
 	elseif ( IsModifiedClick("DRESSUP") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		DressUpItemLink(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			DressUpItemLink(appearanceSourceInfo.itemLink);
+		end
 	else
 		TransmogUtil.OpenCollectionToItem(sourceID);
 	end
@@ -130,13 +134,13 @@ LinkUtil.RegisterLinkHandler(LinkTypes.TransmogSet, function(link, text, linkDat
 	TransmogUtil.OpenCollectionToSet(setID);
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.TransmogOutfit, function(link, text, linkData, contextData)
+LinkUtil.RegisterLinkHandler(LinkTypes.TransmogCustomSet, function(link, text, linkData, contextData)
 	local fixedLink = GetFixedLink(text);
 	if not HandleModifiedItemClick(fixedLink) then
-		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
+		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromCustomSetHyperlink(text);
 		if itemTransmogInfoList then
-			local showOutfitDetails = true;
-			DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+			local showCustomSetDetails = true;
+			DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails);
 		end
 	end
 end);

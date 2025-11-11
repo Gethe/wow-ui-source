@@ -251,17 +251,18 @@ local function Register()
 	end);
 	]]
 
-	InterfaceOverrides.RunSettingsCallback(function()
-		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SPELL_DIMINISH_SECTION_HEADER_LABEL));
-	end);
-
 	-- Spell Diminishing Returns
-	InterfaceOverrides.RunSettingsCallback(function()
-		local spellDiminishCVarsExist = C_CVar.GetCVar("spellDiminishPVPEnemiesEnabled") ~= nil and C_CVar.GetCVar("spellDiminishPVPEnemiesEnabled") ~= nil;
-		if spellDiminishCVarsExist then
-			local _pvpEnemiesEnabledSetting, _pvpEnemiesEnabledInitializer = Settings.SetupCVarCheckbox(category, "spellDiminishPVPEnemiesEnabled", SPELL_DIMINISH_PVP_ENABLE_SETTING_LABEL, SPELL_DIMINISH_PVP_ENABLE_SETTING_TOOLTIP);
+	if C_SpellDiminish.IsSystemSupported() then
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SPELL_DIMINISH_SECTION_HEADER_LABEL));
+
+		local _pvpEnemiesEnabledSetting, pvpEnemiesEnabledInitializer = Settings.SetupCVarCheckbox(category, "spellDiminishPVPEnemiesEnabled", SPELL_DIMINISH_PVP_ENABLE_SETTING_LABEL, SPELL_DIMINISH_PVP_ENABLE_SETTING_TOOLTIP);
+
+		local _onlyTriggerableByMeSetting, onlyTriggerableByMeInitializer = Settings.SetupCVarCheckbox(category, "spellDiminishPVPOnlyTriggerableByMe", SPELL_DIMINISH_PVP_ONLY_CAST_BY_ME_LABEL, SPELL_DIMINISH_PVP_ONLY_CAST_BY_ME_TOOLTIP);
+		local function CanUpdateOnlyTriggerableByMe()
+			return C_CVar.GetCVarBool("spellDiminishPVPEnemiesEnabled");
 		end
-	end);
+		onlyTriggerableByMeInitializer:SetParentInitializer(pvpEnemiesEnabledInitializer, CanUpdateOnlyTriggerableByMe);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

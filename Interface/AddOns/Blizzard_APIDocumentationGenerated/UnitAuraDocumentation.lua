@@ -54,7 +54,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraDataRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -71,7 +71,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataByIndex",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraDataRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -89,7 +89,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySlot",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraDataRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -106,8 +106,8 @@ local UnitAura =
 		{
 			Name = "GetAuraDataBySpellName",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
-			HasRestrictions = true,
+			SecretWhenAuraDataRestricted = true,
+			RequiresNonSecretAuraSpellName = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -125,7 +125,7 @@ local UnitAura =
 		{
 			Name = "GetAuraDurationRemainingByAuraInstanceID",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -161,7 +161,7 @@ local UnitAura =
 		{
 			Name = "GetBuffDataByIndex",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraDataRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -194,7 +194,7 @@ local UnitAura =
 		{
 			Name = "GetDebuffDataByIndex",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraDataRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -212,8 +212,8 @@ local UnitAura =
 		{
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
-			HasRestrictions = true,
+			SecretWhenAuraDataRestricted = true,
+			RequiresNonSecretAuraSpellID = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -229,7 +229,7 @@ local UnitAura =
 		{
 			Name = "GetRefreshExtendedDuration",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
+			SecretWhenAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the client-predicted new duration of this aura if it were cast again right now. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
 
@@ -248,8 +248,8 @@ local UnitAura =
 		{
 			Name = "GetUnitAuraBySpellID",
 			Type = "Function",
-			SecretWhenAurasRestricted = true,
-			HasRestrictions = true,
+			SecretWhenAuraDataRestricted = true,
+			RequiresNonSecretAuraSpellID = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
 
@@ -268,7 +268,6 @@ local UnitAura =
 			Name = "GetUnitAuras",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAurasRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -280,7 +279,7 @@ local UnitAura =
 
 			Returns =
 			{
-				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false },
+				{ Name = "auras", Type = "table", InnerType = "AuraData", Nilable = false, ConditionalSecretContents = true },
 			},
 		},
 		{
@@ -354,7 +353,6 @@ local UnitAura =
 			Name = "UnitAura",
 			Type = "Event",
 			LiteralName = "UNIT_AURA",
-			SecretWhenAurasRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{

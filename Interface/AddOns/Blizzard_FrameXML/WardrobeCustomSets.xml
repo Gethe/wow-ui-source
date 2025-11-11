@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="WardrobeOutfits.lua"/>
+	<Script file="WardrobeCustomSets.lua"/>
 
-	<Button name="WardrobeOutfitButtonButtonTemplate" virtual="true">
+	<Button name="WardrobeCustomSetButtonButtonTemplate" virtual="true">
 		<Scripts>
 			<OnEnter>
 				self:GetParent():GetParent():StopHideCountDown();
@@ -26,8 +26,8 @@
 			</OnShow>
 		</Scripts>
 	</Button>
-	
-	<DropdownButton name="WardrobeOutfitDropdownTemplate" inherits="WowStyle1DropdownTemplate" virtual="true" mixin="WardrobeOutfitDropdownMixin">
+
+	<DropdownButton name="WardrobeCustomSetDropdownTemplate" inherits="WowStyle1DropdownTemplate" virtual="true" mixin="WardrobeCustomSetDropdownMixin">
 		<Frames>
 			<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 				<Size x="88" y="22"/>
@@ -44,14 +44,14 @@
 		</Scripts>
 	</DropdownButton>
 
-	<Frame name="WardrobeOutfitEditFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="WardrobeOutfitEditFrameMixin">
+	<Frame name="WardrobeCustomSetEditFrame" parent="UIParent" hidden="true" frameStrata="DIALOG" mixin="WardrobeCustomSetEditFrameMixin">
 		<Size x="320" y="174"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Title" inherits="GameFontHighlight" text="TRANSMOG_OUTFIT_NAME">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="TRANSMOG_CUSTOM_SET_NAME">
 					<Anchors>
 						<Anchor point="TOP" x="0" y="-20"/>
 					</Anchors>
@@ -135,7 +135,7 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button parentKey="DeleteButton" inherits="UIPanelButtonTemplate" text="TRANSMOG_OUTFIT_DELETE">
+			<Button parentKey="DeleteButton" inherits="UIPanelButtonTemplate" text="TRANSMOG_CUSTOM_SET_EDIT_DELETE">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="17"/>
@@ -160,7 +160,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="WardrobeOutfitCheckAppearancesFrame" hidden="true" mixin="WardrobeOutfitCheckAppearancesMixin">
+	<Frame name="WardrobeCustomSetCheckAppearancesFrame" hidden="true" mixin="WardrobeCustomSetCheckAppearancesMixin">
 		<Size x="40" y="40"/>
 		<Frames>
 			<Frame parentKey="Spinner" inherits="SpinnerTemplate">

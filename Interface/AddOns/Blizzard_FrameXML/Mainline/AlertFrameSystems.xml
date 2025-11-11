@@ -2931,7 +2931,7 @@
 		</Scripts>
 	</ContainedAlertFrame>
 
-	<ContainedAlertFrame name="HousingItemEarnedAlertFrameTemplate" parent="UIParent" hidden="false" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+	<ContainedAlertFrame name="HousingItemEarnedAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
 		<Size x="304" y="105"/>
 		<Animations>
 			<AnimationGroup parentKey="animIn">

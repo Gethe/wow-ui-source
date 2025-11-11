@@ -190,286 +190,9 @@ end
 -- **** SETS LIST *********************************************************************************************************************************************
 -- ************************************************************************************************************************************************************
 
-local BASE_SET_BUTTON_HEIGHT = 46;
-local VARIANT_SET_BUTTON_HEIGHT = 20;
 local SET_PROGRESS_BAR_MAX_WIDTH = 204;
 local IN_PROGRESS_FONT_COLOR = CreateColor(0.251, 0.753, 0.251);
 local IN_PROGRESS_FONT_COLOR_CODE = "|cff40c040";
-
-WardrobeSetsDataProviderMixin = {};
-
-function WardrobeSetsDataProviderMixin:SortSets(sets, reverseUIOrder, ignorePatchID)
-	local comparison = function(set1, set2)
-		local groupFavorite1 = set1.favoriteSetID and true;
-		local groupFavorite2 = set2.favoriteSetID and true;
-		if ( groupFavorite1 ~= groupFavorite2 ) then
-			return groupFavorite1;
-		end
-		if ( set1.favorite ~= set2.favorite ) then
-			return set1.favorite;
-		end
-		if ( set1.expansionID ~= set2.expansionID ) then
-			return set1.expansionID > set2.expansionID;
-		end
-		if not ignorePatchID then
-			if ( set1.patchID ~= set2.patchID ) then
-				return set1.patchID > set2.patchID;
-			end
-		end
-		if ( set1.uiOrder ~= set2.uiOrder ) then
-			if ( reverseUIOrder ) then
-				return set1.uiOrder < set2.uiOrder;
-			else
-				return set1.uiOrder > set2.uiOrder;
-			end
-		end
-		if reverseUIOrder then
-			return set1.setID < set2.setID;
-		else
-			return set1.setID > set2.setID;
-		end
-	end
-
-	table.sort(sets, comparison);
-end
-
-function WardrobeSetsDataProviderMixin:GetBaseSets()
-	if ( not self.baseSets ) then
-		self.baseSets = C_TransmogSets.GetBaseSets();
-		self:DetermineFavorites();
-		self:SortSets(self.baseSets);
-	end
-	return self.baseSets;
-end
-
-function WardrobeSetsDataProviderMixin:GetBaseSetByID(baseSetID)
-	local baseSets = self:GetBaseSets();
-	for i = 1, #baseSets do
-		if ( baseSets[i].setID == baseSetID ) then
-			return baseSets[i], i;
-		end
-	end
-	return nil, nil;
-end
-
-function WardrobeSetsDataProviderMixin:GetUsableSets()
-	if ( not self.usableSets ) then
-		self.usableSets = C_TransmogSets.GetUsableSets();
-		self:SortSets(self.usableSets);
-		-- group sets by baseSetID, except for favorited sets since those are to remain bucketed to the front
-		for i, set in ipairs(self.usableSets) do
-			if ( not set.favorite ) then
-				local baseSetID = set.baseSetID or set.setID;
-				local numRelatedSets = 0;
-				for j = i + 1, #self.usableSets do
-					if ( self.usableSets[j].baseSetID == baseSetID or self.usableSets[j].setID == baseSetID ) then
-						numRelatedSets = numRelatedSets + 1;
-						-- no need to do anything if already contiguous
-						if ( j ~= i + numRelatedSets ) then
-							local relatedSet = self.usableSets[j];
-							tremove(self.usableSets, j);
-							tinsert(self.usableSets, i + numRelatedSets, relatedSet);
-						end
-					end
-				end
-			end
-		end
-	end
-	return self.usableSets;
-end
-
-function WardrobeSetsDataProviderMixin:GetVariantSets(baseSetID)
-	if ( not self.variantSets ) then
-		self.variantSets = { };
-	end
-
-	local variantSets = self.variantSets[baseSetID];
-	if ( not variantSets ) then
-		variantSets = C_TransmogSets.GetVariantSets(baseSetID) or { };
-		self.variantSets[baseSetID] = variantSets;
-		if ( #variantSets > 0 ) then
-			-- add base to variants and sort
-			local baseSet = self:GetBaseSetByID(baseSetID);
-			if ( baseSet ) then
-				tinsert(variantSets, baseSet);
-			end
-			local reverseUIOrder = true;
-			local ignorePatchID = true;
-			self:SortSets(variantSets, reverseUIOrder, ignorePatchID);
-		end
-	end
-	return variantSets;
-end
-
-function WardrobeSetsDataProviderMixin:GetSetSourceData(setID)
-	if ( not self.sourceData ) then
-		self.sourceData = { };
-	end
-
-	local sourceData = self.sourceData[setID];
-	if ( not sourceData ) then
-		local primaryAppearances = C_TransmogSets.GetSetPrimaryAppearances(setID);
-		local numCollected = 0;
-		local numTotal = 0;
-		for i, primaryAppearance in ipairs(primaryAppearances) do
-			if primaryAppearance.collected then
-				numCollected = numCollected + 1;
-			end
-			numTotal = numTotal + 1;
-		end
-		sourceData = { numCollected = numCollected, numTotal = numTotal, primaryAppearances = primaryAppearances };
-		self.sourceData[setID] = sourceData;
-	end
-	return sourceData;
-end
-
-function WardrobeSetsDataProviderMixin:GetSetSourceCounts(setID)
-	local sourceData = self:GetSetSourceData(setID);
-	return sourceData.numCollected, sourceData.numTotal;
-end
-
-function WardrobeSetsDataProviderMixin:GetBaseSetData(setID)
-	if ( not self.baseSetsData ) then
-		self.baseSetsData = { };
-	end
-	if ( not self.baseSetsData[setID] ) then
-		local baseSetID = C_TransmogSets.GetBaseSetID(setID);
-		if ( baseSetID ~= setID ) then
-			return;
-		end
-		local topCollected, topTotal = self:GetSetSourceCounts(setID);
-		local variantSets = self:GetVariantSets(setID);
-		for i = 1, #variantSets do
-			local numCollected, numTotal = self:GetSetSourceCounts(variantSets[i].setID);
-			if ( numCollected > topCollected ) then
-				topCollected = numCollected;
-				topTotal = numTotal;
-			end
-		end
-		local setInfo = { topCollected = topCollected, topTotal = topTotal, completed = (topCollected == topTotal) };
-		self.baseSetsData[setID] = setInfo;
-	end
-	return self.baseSetsData[setID];
-end
-
-function WardrobeSetsDataProviderMixin:GetSetSourceTopCounts(setID)
-	local baseSetData = self:GetBaseSetData(setID);
-	if ( baseSetData ) then
-		return baseSetData.topCollected, baseSetData.topTotal;
-	else
-		return self:GetSetSourceCounts(setID);
-	end
-end
-
-function WardrobeSetsDataProviderMixin:IsBaseSetNew(baseSetID)
-	local baseSetData = self:GetBaseSetData(baseSetID)
-	if ( not baseSetData.newStatus ) then
-		local newStatus = C_TransmogSets.SetHasNewSources(baseSetID);
-		if ( not newStatus ) then
-			-- check variants
-			local variantSets = self:GetVariantSets(baseSetID);
-			for i, variantSet in ipairs(variantSets) do
-				if ( C_TransmogSets.SetHasNewSources(variantSet.setID) ) then
-					newStatus = true;
-					break;
-				end
-			end
-		end
-		baseSetData.newStatus = newStatus;
-	end
-	return baseSetData.newStatus;
-end
-
-function WardrobeSetsDataProviderMixin:ResetBaseSetNewStatus(baseSetID)
-	local baseSetData = self:GetBaseSetData(baseSetID)
-	if ( baseSetData ) then
-		baseSetData.newStatus = nil;
-	end
-end
-
-function WardrobeSetsDataProviderMixin:GetSortedSetSources(setID)
-	local returnTable = { };
-	local sourceData = self:GetSetSourceData(setID);
-	for i, primaryAppearance in ipairs(sourceData.primaryAppearances) do
-		local sourceID = primaryAppearance.appearanceID;
-		local sourceInfo = C_TransmogCollection.GetSourceInfo(sourceID);
-		if ( sourceInfo ) then
-			local sortOrder = EJ_GetInvTypeSortOrder(sourceInfo.invType);
-			tinsert(returnTable, { sourceID = sourceID, collected = primaryAppearance.collected, sortOrder = sortOrder, itemID = sourceInfo.itemID, invType = sourceInfo.invType });
-		end
-	end
-
-	local comparison = function(entry1, entry2)
-		if ( entry1.sortOrder == entry2.sortOrder ) then
-			return entry1.itemID < entry2.itemID;
-		else
-			return entry1.sortOrder < entry2.sortOrder;
-		end
-	end
-	table.sort(returnTable, comparison);
-	return returnTable;
-end
-
-function WardrobeSetsDataProviderMixin:ClearSets()
-	self.baseSets = nil;
-	self.baseSetsData = nil;
-	self.variantSets = nil;
-	self.usableSets = nil;
-	self.sourceData = nil;
-end
-
-function WardrobeSetsDataProviderMixin:ClearBaseSets()
-	self.baseSets = nil;
-end
-
-function WardrobeSetsDataProviderMixin:ClearVariantSets()
-	self.variantSets = nil;
-end
-
-function WardrobeSetsDataProviderMixin:ClearUsableSets()
-	self.usableSets = nil;
-end
-
-function WardrobeSetsDataProviderMixin:GetIconForSet(setID)
-	local sourceData = self:GetSetSourceData(setID);
-	if ( not sourceData.icon ) then
-		local sortedSources = self:GetSortedSetSources(setID);
-		if ( sortedSources[1] ) then
-			local _, _, _, _, icon = C_Item.GetItemInfoInstant(sortedSources[1].itemID);
-			sourceData.icon = icon;
-		else
-			sourceData.icon = QUESTION_MARK_ICON;
-		end
-	end
-	return sourceData.icon;
-end
-
-function WardrobeSetsDataProviderMixin:DetermineFavorites()
-	-- if a variant is favorited, so is the base set
-	-- keep track of which set is favorited
-	local baseSets = self:GetBaseSets();
-	for i = 1, #baseSets do
-		local baseSet = baseSets[i];
-		baseSet.favoriteSetID = nil;
-		if ( baseSet.favorite ) then
-			baseSet.favoriteSetID = baseSet.setID;
-		else
-			local variantSets = self:GetVariantSets(baseSet.setID);
-			for j = 1, #variantSets do
-				if ( variantSets[j].favorite ) then
-					baseSet.favoriteSetID = variantSets[j].setID;
-					break;
-				end
-			end
-		end
-	end
-end
-
-function WardrobeSetsDataProviderMixin:RefreshFavorites()
-	self.baseSets = nil;
-	self.variantSets = nil;
-	self:DetermineFavorites();
-end
 
 local SetsDataProvider = CreateFromMixins(WardrobeSetsDataProviderMixin);
 
@@ -1334,9 +1057,10 @@ function WardrobeSetsDetailsItemMixin:OnMouseDown(button)
 		CollectionWardrobeUtil.SortSources(sources, sourceInfo.visualID, self.sourceID);
 		if ( WardrobeCollectionFrame.tooltipSourceIndex ) then
 			local index = CollectionWardrobeUtil.GetValidIndexForNumSources(WardrobeCollectionFrame.tooltipSourceIndex, #sources);
-			local link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID));
-			if ( link ) then
-				HandleModifiedItemClick(link);
+			local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sources[index].sourceID);
+
+			if ( appearanceSourceInfo and appearanceSourceInfo.itemLink ) then
+				HandleModifiedItemClick(appearanceSourceInfo.itemLink);
 			end
 		end
 	elseif ( IsModifiedClick("DRESSUP") ) then
@@ -1561,23 +1285,25 @@ function WardrobeSetsTransmogMixin:LoadSet(setID)
 			if transmogLocation then
 				transmogLocation.slotID = slotID;
 			else
-				transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+				local isSecondary = false;
+				transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, isSecondary);
 			end
 			if pendingInfo then
 				pendingInfo.transmogID = appearanceID;
 			else
 				pendingInfo = TransmogUtil.CreateTransmogPendingInfo(Enum.TransmogPendingType.Apply, appearanceID);
 			end
-			C_Transmog.SetPending(transmogLocation, pendingInfo);
+			C_Transmog.SetPending(transmogLocation:GetData(), pendingInfo);
 			-- for slots that are be split, undo it
 			if C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
-				local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, Enum.TransmogModification.Secondary);
+				local isSecondary = true;
+				local secondaryTransmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, isSecondary);
 				local itemLocation = ItemLocation:CreateFromEquipmentSlot(slotID);
 				if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
 					local secondaryPendingInfo = TransmogUtil.CreateTransmogPendingInfo(Enum.TransmogPendingType.ToggleOff);
-					C_Transmog.SetPending(secondaryTransmogLocation, secondaryPendingInfo);
+					C_Transmog.SetPending(secondaryTransmogLocation:GetData(), secondaryPendingInfo);
 				else
-					C_Transmog.ClearPending(secondaryTransmogLocation);
+					C_Transmog.ClearPending(secondaryTransmogLocation:GetData());
 				end
 			end
 		end
@@ -1588,9 +1314,11 @@ function WardrobeSetsTransmogMixin:GetFirstMatchingSetID(sourceIndex)
 	local transmogSourceIDs = { };
 	for _, button in ipairs(WardrobeTransmogFrame.SlotButtons) do
 		if not button.transmogLocation:IsSecondary() then
-			local sourceID = select(sourceIndex, TransmogUtil.GetInfoForEquippedSlot(button.transmogLocation));
-			if ( sourceID ~= Constants.Transmog.NoTransmogID ) then
-				transmogSourceIDs[button.transmogLocation:GetSlotID()] = sourceID;
+			local equippedSlotInfo = TransmogUtil.GetInfoForEquippedSlot(button.transmogLocation);
+			if ( sourceIndex == self.APPLIED_SOURCE_INDEX and equippedSlotInfo.appliedSourceID ~= Constants.Transmog.NoTransmogID ) then
+				transmogSourceIDs[button.transmogLocation:GetSlotID()] = equippedSlotInfo.appliedSourceID;
+			elseif ( sourceIndex == self.SELECTED_SOURCE_INDEX and equippedSlotInfo.selectedSourceID ~= Constants.Transmog.NoTransmogID ) then
+				transmogSourceIDs[button.transmogLocation:GetSlotID()] = equippedSlotInfo.selectedSourceID;
 			end
 		end
 	end

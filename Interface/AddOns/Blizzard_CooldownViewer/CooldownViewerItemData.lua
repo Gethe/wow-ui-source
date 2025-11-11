@@ -22,6 +22,7 @@ end
 
 function CooldownViewerItemDataMixin:OnCooldownIDSet()
 	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self:GetCooldownID());
+	self.validAlertTypes = nil;
 
 	self:ClearEditModeData();
 
@@ -443,18 +444,28 @@ function CooldownViewerItemDataMixin:IsActivelyCast()
 	return false;
 end
 
-local function CheckCreateValidAlertTypes(cooldownItem)
-	if not cooldownItem.validAlertTypes then
-		cooldownItem.validAlertTypes = tInvert(C_CooldownViewer.GetValidAlertTypes(cooldownItem:GetCooldownID()));
+function CooldownViewerItemDataMixin:CheckCreateValidAlertTypes()
+	if not self.validAlertTypes then
+		self.validAlertTypes = tInvert(C_CooldownViewer.GetValidAlertTypes(self:GetCooldownID()));
 	end
 end
 
+function CooldownViewerItemDataMixin:GetValidAlertTypes()
+	self:CheckCreateValidAlertTypes();
+	return self.validAlertTypes;
+end
+
 function CooldownViewerItemDataMixin:CanTriggerAlertType(alertType)
-	CheckCreateValidAlertTypes(self);
-	return self.validAlertTypes[alertType] ~= nil;
+	local validAlertTypes = self:GetValidAlertTypes();
+	return validAlertTypes[alertType] ~= nil;
+end
+
+function CooldownViewerItemDataMixin:GetFirstValidAlertType()
+	local validAlertTypes = self:GetValidAlertTypes();
+	local alertType = next(validAlertTypes);
+	return alertType;
 end
 
 function CooldownViewerItemDataMixin:CanTriggerAnyAlertType()
-	CheckCreateValidAlertTypes(self);
-	return next(self.validAlertTypes) ~= nil;
+	return self:GetFirstValidAlertType() ~= nil;
 end

@@ -311,6 +311,8 @@ Interface\AddOns\Blizzard_TorghastLevelPicker\Blizzard_TorghastLevelPicker.toc
 Interface\AddOns\Blizzard_TrainerUI\Blizzard_TrainerUI.toc
 Interface\AddOns\Blizzard_TransformManipulator\Blizzard_TransformManipulator.toc
 Interface\AddOns\Blizzard_TransformTree\Blizzard_TransformTree.toc
+Interface\AddOns\Blizzard_TransmogShared\Blizzard_TransmogShared.toc
+Interface\AddOns\Blizzard_Transmog\Blizzard_Transmog.toc
 Interface\AddOns\Blizzard_TutorialManager\Blizzard_TutorialManager.toc
 Interface\AddOns\Blizzard_Tutorials\Blizzard_Tutorials.toc
 Interface\AddOns\Blizzard_UIFrameManager\Blizzard_UIFrameManager.toc

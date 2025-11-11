@@ -153,6 +153,21 @@ function HousingMarketCartBundleMixin:OnLoad()
 	end;
 
 	self.selected = false;
+
+	self:AddDynamicEventMethod(EventRegistry, "HousingMarketCart.BundleHovered", self.OnBundleHovered);
+	self:AddDynamicEventMethod(EventRegistry, "HousingMarketCart.BundleLeft", self.OnBundleLeft);
+end
+
+function HousingMarketCartBundleMixin:OnBundleHovered(catalogShopProductID)
+	if catalogShopProductID == self.elementData.bundleCatalogShopProductID then
+		self.RemoveFromCartButtonContainer.RemoveFromListButton:Show();
+	end
+end
+
+function HousingMarketCartBundleMixin:OnBundleLeft(catalogShopProductID)
+	if catalogShopProductID == self.elementData.bundleCatalogShopProductID then
+		self.RemoveFromCartButtonContainer.RemoveFromListButton:Hide();
+	end
 end
 
 function HousingMarketCartBundleMixin:InitItem(elementData)
@@ -210,12 +225,14 @@ function HousingMarketCartBundleItemMixin:SetSelection(selected)
 end
 
 function HousingMarketCartBundleItemMixin:OnEnter()
+	EventRegistry:TriggerEvent("HousingMarketCart.BundleHovered", self.elementData.bundleCatalogShopProductID);
 	self.VisualContainer.HighlightTexture:Show();
 	self.mouseHovered = true;
 	self:UpdatePreviewStatusIcon();
 end
 
 function HousingMarketCartBundleItemMixin:OnLeave()
+	EventRegistry:TriggerEvent("HousingMarketCart.BundleLeft", self.elementData.bundleCatalogShopProductID);
 	self.VisualContainer.HighlightTexture:Hide();
 	self.mouseHovered = false;
 	self:UpdatePreviewStatusIcon();

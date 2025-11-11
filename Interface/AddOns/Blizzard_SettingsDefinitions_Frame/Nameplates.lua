@@ -253,6 +253,12 @@ local function TogglePreviewNamePlateSimplifiedType(simplifiedType)
 	namePlate:ToggleSimplifiedType(simplifiedType);
 end
 
+-- Used to clear all explicit values used by interacting with an individual setting any time a dropdown is closed/hidden.
+local function OnDropdownHidden()
+	local explicitValues = {};
+	SetPreviewNamePlateExplicitValues(explicitValues);
+end
+
 local function CreateSelectionTextFunction(text)
 	return function(selections)
 		if #selections == 0 then
@@ -380,23 +386,7 @@ local function Register()
 	end);
 
 	-- NamePlates
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL, "", "NAMEPLATES_LABEL"));
-
-	-- Needed but unused for all dropdowns with checkboxes.
-	local function GetValue()
-		return true;
-	end
-
-	-- Needed but unused for all dropdowns with checkboxes.
-	local function SetValue(value)
-
-	end
-
-	-- Used to clear all explicit values used by interacting with an individual setting any time a dropdown is closed/hidden.
-	local function OnDropdownHidden()
-		local explicitValues = {};
-		SetPreviewNamePlateExplicitValues(explicitValues);
-	end
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
 
 	-- Always Show NamePlates
 	InterfaceOverrides.RunSettingsCallback(function()
@@ -443,39 +433,28 @@ local function Register()
 	InterfaceOverrides.RunSettingsCallback(function()
 		Settings.SetupCVarCheckbox(category, "nameplateShowOffscreen", UNIT_NAMEPLATES_SHOW_OFFSCREEN, UNIT_NAMEPLATES_SHOW_OFFSCREEN_TOOLTIP);
 	end);
-
+	
 	-- Stacking NamePlates
 	local namePlateStackingTypesCVar = "nameplateStackingTypes";
 	if C_CVar.GetCVar(namePlateStackingTypesCVar) then
-		local function IsEnemyChecked()
-			return GetCVarBitfield(namePlateStackingTypesCVar, Enum.NamePlateStackType.Enemy);
+		local function GetValue()
+			return Settings.GetCVarMask(namePlateStackingTypesCVar, Enum.NamePlateStackType);
 		end
 
-		local function IsFriendlyChecked()
-			return GetCVarBitfield(namePlateStackingTypesCVar, Enum.NamePlateStackType.Friendly);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(namePlateStackingTypesCVar, value.value);
-			SetCVarBitfield(namePlateStackingTypesCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(namePlateStackingTypesCVar, mask);
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateStackType.Enemy, UNIT_NAMEPLATES_STACK_ENEMY_UNITS, UNIT_NAMEPLATES_STACK_ENEMY_UNITS_TOOLTIP, IsEnemyChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateStackType.Friendly, UNIT_NAMEPLATES_STACK_FRIENDLY_UNITS, UNIT_NAMEPLATES_STACK_FRIENDLY_UNITS_TOOLTIP, IsFriendlyChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateStackType.Enemy, UNIT_NAMEPLATES_STACK_ENEMY_UNITS, UNIT_NAMEPLATES_STACK_ENEMY_UNITS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateStackType.Friendly, UNIT_NAMEPLATES_STACK_FRIENDLY_UNITS, UNIT_NAMEPLATES_STACK_FRIENDLY_UNITS_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(namePlateStackingTypesCVar);
-			return 0;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENABLE_STACKING", Settings.VarType.Number, UNIT_NAMEPLATES_ENABLE_STACKING, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(namePlateStackingTypesCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENABLE_STACKING", Settings.VarType.Number, UNIT_NAMEPLATES_ENABLE_STACKING, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENABLE_STACKING_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_STACK_NONE);
 		initializer.OnHide = OnDropdownHidden;
 	end
@@ -529,286 +508,169 @@ local function Register()
 
 	local nameplateInfoDisplayCVar = "nameplateInfoDisplay";
 	if C_CVar.GetCVar(nameplateInfoDisplayCVar) then
-		local function IsCurrentHealthPercentChecked()
-			return GetCVarBitfield(nameplateInfoDisplayCVar, Enum.NamePlateInfoDisplay.CurrentHealthPercent);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateInfoDisplayCVar, Enum.NamePlateInfoDisplay);
 		end
 
-		local function IsCurrentHealthValueChecked()
-			return GetCVarBitfield(nameplateInfoDisplayCVar, Enum.NamePlateInfoDisplay.CurrentHealthValue);
-		end
-
-		local function IsRarityIconChecked()
-			return GetCVarBitfield(nameplateInfoDisplayCVar, Enum.NamePlateInfoDisplay.RarityIcon);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateInfoDisplayCVar, value.value);
-			SetCVarBitfield(nameplateInfoDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateInfoDisplayCVar, mask);
 
 			OnPreviewNamePlateInfoChanged();
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthPercent, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT_TOOLTIP, IsCurrentHealthPercentChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthValue, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE_TOOLTIP, IsCurrentHealthValueChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP, IsRarityIconChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthPercent, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthValue, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateInfoDisplayCVar);
-			return 0;
-		end
 
-		local function OnDropdownShow()
-			OnPreviewNamePlateInfoChanged();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_INFO_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_INFO_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateInfoDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_INFO_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_INFO_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_INFO_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_INFO_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = OnPreviewNamePlateInfoChanged;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
 	local nameplateCastBarDisplayCVar = "nameplateCastBarDisplay";
 	if C_CVar.GetCVar(nameplateCastBarDisplayCVar) then
-		local function IsSpellNameChecked()
-			return GetCVarBitfield(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay.SpellName);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay);
 		end
 
-		local function IsSpellIconChecked()
-			return GetCVarBitfield(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay.SpellIcon);
-		end
-
-		local function IsSpellTargetChecked()
-			return GetCVarBitfield(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay.SpellTarget);
-		end
-
-		local function IsHighlightImportantCastsChecked()
-			return GetCVarBitfield(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay.HighlightImportantCasts);
-		end
-
-		local function IsHighlightWhenCastTargetChecked()
-			return GetCVarBitfield(nameplateCastBarDisplayCVar, Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateCastBarDisplayCVar, value.value);
-			SetCVarBitfield(nameplateCastBarDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateCastBarDisplayCVar, mask);
 
 			ShowPreviewNamePlateCastBar();
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellName, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME_TOOLTIP, IsSpellNameChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellIcon, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON_TOOLTIP, IsSpellIconChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET_TOOLTIP, IsSpellTargetChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP, IsHighlightImportantCastsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET_TOOLTIP, IsHighlightWhenCastTargetChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellName, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_NAME_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellIcon, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_ICON_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateCastBarDisplay.SpellTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_SPELL_TARGET_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightImportantCasts, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_IMPORTANT_CASTS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateCastBarDisplay.HighlightWhenCastTarget, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_HIGHLIGHT_WHEN_CAST_TARGET_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateCastBarDisplayCVar);
-			return 0;
-		end
-
-		local function OnDropdownShow()
-			ShowPreviewNamePlateCastBar();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CAST_BAR_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_CAST_BAR_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateCastBarDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CAST_BAR_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_CAST_BAR_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_CAST_BAR_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = ShowPreviewNamePlateCastBar;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
 	local nameplateThreatDisplayCVar = "nameplateThreatDisplay";
 	if C_CVar.GetCVar(nameplateThreatDisplayCVar) then
-		local function IsFlashChecked()
-			return GetCVarBitfield(nameplateThreatDisplayCVar, Enum.NamePlateThreatDisplay.Progressive);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateThreatDisplayCVar, Enum.NamePlateThreatDisplay);
 		end
 
-		local function IsProgressiveChecked()
-			return GetCVarBitfield(nameplateThreatDisplayCVar, Enum.NamePlateThreatDisplay.Flash);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateThreatDisplayCVar, value.value);
-			SetCVarBitfield(nameplateThreatDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateThreatDisplayCVar, mask);
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateThreatDisplay.Progressive, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE_TOOLTIP, IsFlashChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateThreatDisplay.Flash, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH_TOOLTIP, IsProgressiveChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateThreatDisplay.Progressive, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateThreatDisplay.Flash, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateThreatDisplayCVar);
-			return 0;
-		end
-
-		local function OnDropdownShow()
-			OnPreviewNamePlateThreatDisplayChanged();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateThreatDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_THREAT_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_THREAT_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = OnPreviewNamePlateThreatDisplayChanged;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
 	local nameplateEnemyNpcAuraDisplayCVar = "nameplateEnemyNpcAuraDisplay";
 	if C_CVar.GetCVar(nameplateEnemyNpcAuraDisplayCVar) then
-		local function IsBuffsChecked()
-			return GetCVarBitfield(nameplateEnemyNpcAuraDisplayCVar, Enum.NamePlateEnemyNpcAuraDisplay.Buffs);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateEnemyNpcAuraDisplayCVar, Enum.NamePlateEnemyNpcAuraDisplay);
 		end
 
-		local function IsDebuffsChecked()
-			return GetCVarBitfield(nameplateEnemyNpcAuraDisplayCVar, Enum.NamePlateEnemyNpcAuraDisplay.Debuffs);
-		end
-
-		local function IsCrowdControlChecked()
-			return GetCVarBitfield(nameplateEnemyNpcAuraDisplayCVar, Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateEnemyNpcAuraDisplayCVar, value.value);
-			SetCVarBitfield(nameplateEnemyNpcAuraDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateEnemyNpcAuraDisplayCVar, mask);
 
 			TogglePreviewNamePlateEnemyNPCAuraDisplay();
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.Buffs, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_BUFFS_TOOLTIP, IsBuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_DEBUFFS_TOOLTIP, IsDebuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_CROWD_CONTROL, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_CROWD_CONTROL_TOOLTIP, IsCrowdControlChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.Buffs, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_BUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.Debuffs, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_DEBUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_CROWD_CONTROL, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_CROWD_CONTROL_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateEnemyNpcAuraDisplayCVar);
-			return 0;
-		end
-
-		local function OnDropdownShow()
-			TogglePreviewNamePlateEnemyNPCAuraDisplay();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateEnemyNpcAuraDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = TogglePreviewNamePlateEnemyNPCAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
 	local nameplateEnemyPlayerAuraDisplayCVar = "nameplateEnemyPlayerAuraDisplay";
 	if C_CVar.GetCVar(nameplateEnemyPlayerAuraDisplayCVar) then
-		local function IsBuffsChecked()
-			return GetCVarBitfield(nameplateEnemyPlayerAuraDisplayCVar, Enum.NamePlateEnemyPlayerAuraDisplay.Buffs);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateEnemyPlayerAuraDisplayCVar, Enum.NamePlateEnemyPlayerAuraDisplay);
 		end
 
-		local function IsDebuffsChecked()
-			return GetCVarBitfield(nameplateEnemyPlayerAuraDisplayCVar, Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs);
-		end
-
-		local function IsLossOfControlChecked()
-			return GetCVarBitfield(nameplateEnemyPlayerAuraDisplayCVar, Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateEnemyPlayerAuraDisplayCVar, value.value);
-			SetCVarBitfield(nameplateEnemyPlayerAuraDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateEnemyPlayerAuraDisplayCVar, mask);
 
 			TogglePreviewNamePlateEnemyPlayerAuraDisplay();
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BUFFS_TOOLTIP, IsBuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_DEBUFFS_TOOLTIP, IsDebuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BIG_DEBUFF, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BIG_DEBUFF_TOOLTIP, IsLossOfControlChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.Buffs, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.Debuffs, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_DEBUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BIG_DEBUFF, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_BIG_DEBUFF_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateEnemyPlayerAuraDisplayCVar);
-			return 0;
-		end
-
-		local function OnDropdownShow()
-			TogglePreviewNamePlateEnemyPlayerAuraDisplay();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateEnemyPlayerAuraDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = TogglePreviewNamePlateEnemyPlayerAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
 	local nameplateFriendlyPlayerAuraDisplayCVar = "nameplateFriendlyPlayerAuraDisplay";
 	if C_CVar.GetCVar(nameplateFriendlyPlayerAuraDisplayCVar) then
-		local function IsBuffsChecked()
-			return GetCVarBitfield(nameplateFriendlyPlayerAuraDisplayCVar, Enum.NamePlateFriendlyPlayerAuraDisplay.Buffs);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplateFriendlyPlayerAuraDisplayCVar, Enum.NamePlateFriendlyPlayerAuraDisplay);
 		end
 
-		local function IsDebuffsChecked()
-			return GetCVarBitfield(nameplateFriendlyPlayerAuraDisplayCVar, Enum.NamePlateFriendlyPlayerAuraDisplay.Debuffs);
-		end
-
-		local function IsLossOfControlChecked()
-			return GetCVarBitfield(nameplateFriendlyPlayerAuraDisplayCVar, Enum.NamePlateFriendlyPlayerAuraDisplay.LossOfControl);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplateFriendlyPlayerAuraDisplayCVar, value.value);
-			SetCVarBitfield(nameplateFriendlyPlayerAuraDisplayCVar, value.value, not bitIsSet);
+		local function SetValue(mask)
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplateFriendlyPlayerAuraDisplayCVar, mask);
 
 			TogglePreviewNamePlateFriendlyPlayerAuraDisplay();
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.Buffs, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BUFFS_TOOLTIP, IsBuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.Debuffs, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_DEBUFFS_TOOLTIP, IsDebuffsChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.LossOfControl, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BIG_DEBUFF, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BIG_DEBUFF_TOOLTIP, IsLossOfControlChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.Buffs, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BUFFS, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.Debuffs, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_DEBUFFS, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_DEBUFFS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateFriendlyPlayerAuraDisplay.LossOfControl, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BIG_DEBUFF, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_BIG_DEBUFF_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplateFriendlyPlayerAuraDisplayCVar);
-			return 0;
-		end
-
-		local function OnDropdownShow()
-			TogglePreviewNamePlateFriendlyPlayerAuraDisplay();
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateFriendlyPlayerAuraDisplayCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_NONE);
-		initializer.OnShow = OnDropdownShow;
+		initializer.OnShow = TogglePreviewNamePlateFriendlyPlayerAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
 	end
 
@@ -825,47 +687,36 @@ local function Register()
 
 	local nameplatesSimplifiedTypesCVar = "nameplateSimplifiedTypes";
 	if C_CVar.GetCVar(nameplatesSimplifiedTypesCVar) then
-		local function IsMinionChecked()
-			return GetCVarBitfield(nameplatesSimplifiedTypesCVar, Enum.NamePlateSimplifiedType.Minion);
+		local function GetValue()
+			return Settings.GetCVarMask(nameplatesSimplifiedTypesCVar, Enum.NamePlateSimplifiedType);
 		end
 
-		local function IsMinusMobChecked()
-			return GetCVarBitfield(nameplatesSimplifiedTypesCVar, Enum.NamePlateSimplifiedType.MinusMob);
-		end
+		local function SetValue(mask)
+			local currentMask = GetValue();
+			CVarCallbackRegistry:SetCVarBitfieldMask(nameplatesSimplifiedTypesCVar, mask);
 
-		local function IsFriendlyPlayerChecked()
-			return GetCVarBitfield(nameplatesSimplifiedTypesCVar, Enum.NamePlateSimplifiedType.FriendlyPlayer);
-		end
-
-		local function IsFriendlyNpcChecked()
-			return GetCVarBitfield(nameplatesSimplifiedTypesCVar, Enum.NamePlateSimplifiedType.FriendlyNpc);
-		end
-
-		local function ToggleChecked(value)
-			local bitIsSet = GetCVarBitfield(nameplatesSimplifiedTypesCVar, value.value);
-			SetCVarBitfield(nameplatesSimplifiedTypesCVar, value.value, not bitIsSet);
-
-			TogglePreviewNamePlateSimplifiedType(value.value);
+			-- If the difference between the old and current mask is a single bit,
+			-- that indicates an option was toggled, and we need to invoke the preview.
+			local changedMask = bit.bxor(currentMask, mask);
+			if changedMask ~= 0 and (bit.band(changedMask, changedMask - 1) == 0) then
+				local changedBitIndex = (math.log(changedMask) / math.log(2)) + 1;
+				TogglePreviewNamePlateSimplifiedType(changedBitIndex);
+			end
 		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:AddCheckbox(Enum.NamePlateSimplifiedType.Minion, UNIT_NAMEPLATES_SIMPLIFIED_MINIONS, UNIT_NAMEPLATES_SIMPLIFIED_MINIONS_TOOLTIP, IsMinionChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateSimplifiedType.MinusMob, UNIT_NAMEPLATES_SIMPLIFIED_MINUS_MOBS, UNIT_NAMEPLATES_SIMPLIFIED_MINUS_MOBS_TOOLTIP, IsMinusMobChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateSimplifiedType.FriendlyPlayer, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_PLAYERS, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_PLAYERS_TOOLTIP, IsFriendlyPlayerChecked, ToggleChecked);
-			container:AddCheckbox(Enum.NamePlateSimplifiedType.FriendlyNpc, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_NPCS, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_NPCS_TOOLTIP, IsFriendlyNpcChecked, ToggleChecked);
-
+			container:AddCheckbox(Enum.NamePlateSimplifiedType.Minion, UNIT_NAMEPLATES_SIMPLIFIED_MINIONS, UNIT_NAMEPLATES_SIMPLIFIED_MINIONS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateSimplifiedType.MinusMob, UNIT_NAMEPLATES_SIMPLIFIED_MINUS_MOBS, UNIT_NAMEPLATES_SIMPLIFIED_MINUS_MOBS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateSimplifiedType.FriendlyPlayer, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_PLAYERS, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_PLAYERS_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateSimplifiedType.FriendlyNpc, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_NPCS, UNIT_NAMEPLATES_SIMPLIFIED_FRIENDLY_NPCS_TOOLTIP);
 			return container:GetData();
 		end
 
-		local function ResetToDefault()
-			SetCVarToDefault(nameplatesSimplifiedTypesCVar);
-			return 0;
-		end
-
-		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_SIMPLIFIED", Settings.VarType.Number, UNIT_NAMEPLATES_SIMPLIFIED, ResetToDefault, GetValue, SetValue);
+		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplatesSimplifiedTypesCVar);
+		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_SIMPLIFIED",
+			Settings.VarType.Number, UNIT_NAMEPLATES_SIMPLIFIED, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_SIMPLIFIED_TOOLTIP);
-		initializer.hideSteppers = true
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_SIMPLIFIED_NONE);
 	end
 end

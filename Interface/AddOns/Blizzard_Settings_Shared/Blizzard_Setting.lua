@@ -1,13 +1,20 @@
+local function GetOrCallDefaultValue(defaultValue)
+	if type(defaultValue) == "function" then
+		return defaultValue();
+	end
+	return defaultValue;
+end
+
+local function GetDefaultValueType(defaultValue)
+	return type(GetOrCallDefaultValue(defaultValue));
+end
+
 local function EnsureVariableTypeIsValid(variableType, defaultValue)
 	if variableType == nil then
 		assert(defaultValue ~= nil);
-		variableType = type(defaultValue);
+		variableType = GetDefaultValueType(defaultValue);
 	end
 	return variableType;
-end
-
-local function MatchesVariableType(arg1, arg2VariableType)
-	return type(arg1) == arg2VariableType;
 end
 
 local function ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue)
@@ -23,13 +30,16 @@ local function ErrorIfInvalidSettingArguments(name, variable, variableType, defa
 		error(string.format("'variableType' for '%s', '%s' requires string type.", name, variable));
 	end
 
-	if (defaultValue ~= nil) and type(defaultValue) ~= "function" and not MatchesVariableType(defaultValue, variableType) then
-		error(string.format("'defaultValue' argument for '%s', '%s' required '%s' type.", name, variable, variableType));
+	if (defaultValue ~= nil) then
+		local defaultVariableType = GetDefaultValueType(defaultValue);
+		if defaultVariableType ~= variableType then
+			error(string.format("'defaultValue' argument for '%s', '%s' variable type '%s' doesn't match default value type '%s'.", name, variable, variableType, defaultVariableType));
+		end
 	end
 end
 
 local function ErrorIfInvalidVariableType(name, value, variableType)
-	if not MatchesVariableType(value, variableType) then
+	if type(value) ~= variableType then
 		error(string.format("SetValue '%s' requires '%s' type, not '%s' type.", name, variableType, type(value)));
 	end
 end
@@ -119,12 +129,7 @@ function SettingMixin:SetValueToDefault()
 	if defaultValue == nil then
 		return false;
 	end
-
-	if type(defaultValue) == "function" then
-		self:ApplyValue(defaultValue());
-		return true;
-	end
-
+	
 	self:ApplyValue(defaultValue);
 
 	return true;
@@ -331,7 +336,7 @@ do
 		end;
 	
 		self.GetDefaultValueDerived = function(self)
-			return defaultValue;
+			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;
 	end
 end
@@ -350,7 +355,7 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 	end;
 
 	self.GetDefaultValueDerived = function(self)
-		return defaultValue;
+		return securecallfunction(GetOrCallDefaultValue, defaultValue);
 	end;
 
 	self:SetCommitFlags(Settings.CommitFlag.SaveBindings);
@@ -406,7 +411,7 @@ do
 		end;
 	
 		self.GetDefaultValueDerived = function(self)
-			return defaultValue;
+			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;
 	end
 end

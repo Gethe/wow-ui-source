@@ -736,7 +736,6 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 
 	[Enum.EditModeSystem.PersonalResourceDisplay] = {
 		settings = {
-			[Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs] = 0,
 			[Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower] = 0,
 			[Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat] = 0,
 		},

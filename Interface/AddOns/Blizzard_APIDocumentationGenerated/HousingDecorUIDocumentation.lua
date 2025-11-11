@@ -143,6 +143,15 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "HasMaxPlacementBudget",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasMaxBudget", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDecorSelected",
 			Type = "Function",
 

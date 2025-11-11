@@ -81,6 +81,7 @@ end
 
 function EditModeManagerFrameMixin:EnterEditMode()
 	self.editModeActive = true;
+	AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
 	self:ClearActiveChangesFlags();
 	self:UpdateDropdownOptions();
 	self:ShowSystemSelections();
@@ -98,6 +99,7 @@ end
 
 function EditModeManagerFrameMixin:ExitEditMode()
 	self.editModeActive = false;
+	AuraUtil.ClearDataProvider();
 	self:RevertAllChanges();
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();

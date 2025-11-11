@@ -64,6 +64,7 @@ local SimpleScriptRegionResizingAPI =
 			Name = "GetPoint",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -86,6 +87,7 @@ local SimpleScriptRegionResizingAPI =
 			Name = "GetPointByName",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 

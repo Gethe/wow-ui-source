@@ -208,8 +208,15 @@ function HouseEditorStorageFrameMixin:OnShow()
 
 	self:UpdateCategoryTotal();
 
-	if C_HousingDecor.IsPreviewState() then
+	if C_HousingDecor.IsPreviewState() or self:IsInMarketTab() then
 		SetCartFrameShown(true, true);
+	end
+
+	-- Forces an update upon showing, reselecting the tab
+	if self:IsInMarketTab() then
+		self:SetTab(self.marketTabID);
+	else
+		self:SetTab(self.storageTabID);
 	end
 end
 
@@ -263,6 +270,8 @@ function HouseEditorStorageFrameMixin:OnTabChanged()
 	self:UpdateMarketTabNotification();
 	self:UpdateCategoryText();
 	self:UpdateCategoryTotal();
+
+	EventRegistry:TriggerEvent("HouseEditorStorage.TabChanged");
 end
 
 function HouseEditorStorageFrameMixin:OnStorageTabSelected()
@@ -273,12 +282,14 @@ function HouseEditorStorageFrameMixin:OnStorageTabSelected()
 	categorySearchParams.includeFeaturedCategory = false;
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_primary");
-	self.Categories:ClearCustomFocus();
+	self.Categories:SetManualFocusState(false);
 	self.Filters:SetCollectionFiltersAvailable(false);
+	C_HousingDecor.ExitPreviewState();
 	self:OnTabChanged();
 
-	local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
-	EventRegistry:TriggerEvent(cartShownEvent);
+	local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
+	local requiresConfirmation = false;
+	EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabSelected()
@@ -292,13 +303,14 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected()
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
 	self.Filters:SetCollectionFiltersAvailable(true);
 	self:CheckStartMarketInteraction();
-	self:OnTabChanged();
 	C_HousingDecor.EnterPreviewState();
+	self:OnTabChanged();
 
 	SetCartFrameShown(true);
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabDeselected()
+	C_HousingDecor.ExitPreviewState();
 	SetCartFrameShown(false);
 end
 
@@ -365,23 +377,23 @@ function HouseEditorStorageFrameMixin:OnHousingMarketBundleSelected(bundleData)
 		decorEntry.bundleCatalogShopProductID = bundleCatalogShopProductID;
 	end
 
-	self:SetCustomCatalogData(bundleData.decorEntries, name);
+	self:SetCustomCatalogData(bundleData.decorEntries, name, HOUSING_MARKET_BUNDLE_PREVIEW_DETAILS);
 end
 
 function HouseEditorStorageFrameMixin:OnHousingMarketCartUpdated()
 	self.OptionsContainer:RefreshFrames();
 end
 
-function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText)
+function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText, instructionText)
 	self.customCatalogData = entries;
 
 	if self.customCatalogData then
 		local retainCurrentPosition = false;
-		self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition, headerText);
-		self.Categories:SetCustomFocus();
+		self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition, headerText, instructionText);
+		self.Categories:SetManualFocusState(true);
 		self:RestoreWidth();
 	else
-		self.Categories:ClearCustomFocus();
+		self.Categories:SetManualFocusState(false);
 	end
 
 	self:UpdateCategoryText();
@@ -529,8 +541,11 @@ function HouseEditorStorageFrameMixin:UpdateLoadingSpinner()
 end
 
 function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
-	if newEditorMode == Enum.HouseEditorMode.None then
+	if newEditorMode ~= Enum.HouseEditorMode.BasicDecor then
 		self:CheckCloseMarketInteraction();
+	end
+
+	if newEditorMode == Enum.HouseEditorMode.None then
 		self:SetCustomCatalogData(nil);
 
 		if not self:IsVisible() then
@@ -585,7 +600,7 @@ function HouseEditorStorageFrameMixin:UpdateCategoryText()
 		return;
 	end
 
-	self.OptionsContainer:SetScrollBoxTopOffset(-20);
+	self.OptionsContainer:SetScrollBoxTopOffset(-28);
 	self.OptionsContainer.CategoryText:SetText(categoryString);
 	if self.catalogSearcher:GetFilteredCategoryID() == Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID then
 		self.OptionsContainer.CategoryText:SetTextColor(HOUSING_STORAGE_HEADER_COLOR:GetRGB());

@@ -160,7 +160,7 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "slotIgnored", Type = "table", InnerType = "bool", Nilable = false },
+				{ Name = "slotIgnored", Type = "table", InnerType = "bool", Nilable = false, NilableContents = true },
 			},
 		},
 		{
@@ -176,7 +176,7 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "itemIDs", Type = "table", InnerType = "number", Nilable = false, NilableContents = true },
 			},
 		},
 		{
@@ -192,7 +192,7 @@ local EquipmentManager =
 
 			Returns =
 			{
-				{ Name = "locations", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "locations", Type = "table", InnerType = "number", Nilable = false, NilableContents = true },
 			},
 		},
 		{
@@ -325,9 +325,9 @@ local EquipmentManager =
 			SynchronousEvent = true,
 		},
 		{
-			Name = "TransmogOutfitsChanged",
+			Name = "TransmogCustomSetsChanged",
 			Type = "Event",
-			LiteralName = "TRANSMOG_OUTFITS_CHANGED",
+			LiteralName = "TRANSMOG_CUSTOM_SETS_CHANGED",
 			SynchronousEvent = true,
 		},
 	},

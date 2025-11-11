@@ -358,6 +358,12 @@ function DropdownButtonMixin:Rotate(forward)
 	end
 end
 
+function DropdownButtonMixin:HasAnyRadioDescriptions()
+	return MenuUtil.TraverseMenu(self:GetMenuDescription(), function(description)
+		return description:IsRadio();
+	end);
+end
+
 function DropdownButtonMixin:Increment()
 	local previousRadio, nextRadio, selections = CollectSelectionData(self:GetMenuDescription());
 	self:Pick(nextRadio, MenuInputContext.MouseWheel);

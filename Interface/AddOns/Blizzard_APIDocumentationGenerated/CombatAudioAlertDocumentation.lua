@@ -105,6 +105,18 @@ local CombatAudioAlert =
 	Tables =
 	{
 		{
+			Name = "CombatAudioAlertTargetDeathBehavior",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Default", Type = "CombatAudioAlertTargetDeathBehavior", EnumValue = 0 },
+				{ Name = "SayTargetDead", Type = "CombatAudioAlertTargetDeathBehavior", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "CombatAudioAlertUnit",
 			Type = "Enumeration",
 			NumValues = 2,

@@ -853,13 +853,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 	},
 
 	[Enum.EditModeSystem.PersonalResourceDisplay] = {
-		-- Show Friendly Buffs
-		{
-			setting = Enum.EditModePersonalResourceDisplaySetting.ShowFriendlyBuffs,
-			name = DISPLAY_PERSONAL_FRIENDLY_BUFFS,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
-		},
-
 		-- Hide Health and Power
 		{
 			setting = Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower,

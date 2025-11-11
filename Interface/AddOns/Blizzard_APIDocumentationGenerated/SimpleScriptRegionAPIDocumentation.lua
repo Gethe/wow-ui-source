@@ -103,6 +103,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetBottom",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -117,6 +118,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetCenter",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -131,6 +133,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetHeight",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -148,6 +151,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetLeft",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -162,6 +166,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetRect",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -179,6 +184,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetRight",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -193,6 +199,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetScaledRect",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -226,6 +233,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetSize",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -257,6 +265,7 @@ local SimpleScriptRegionAPI =
 			Name = "GetTop",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -270,6 +279,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "GetWidth",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -321,6 +331,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "Intersects",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -440,6 +451,7 @@ local SimpleScriptRegionAPI =
 		{
 			Name = "IsMouseOver",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
