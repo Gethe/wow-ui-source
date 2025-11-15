@@ -102,4 +102,24 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="HousingModelPreviewFrame" mixin="HousingModelPreviewFrameMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" frameLevel="5" inherits="ButtonFrameTemplate" hidden="true">
+		<Size x="450" y="545"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="70" y="-104"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="ModelPreview" inherits="HousingModelPreviewTemplate" setAllPoints="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-23"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
 </Ui>

@@ -53,9 +53,11 @@ function HousingCreateCharterNeighborhoodConfirmationMixin:OnLoad()
     self.ConfirmButton:SetScript("OnClick", function()
         C_Housing.OnCharterConfirmationAccepted();
         HideUIPanel(HousingCreateCharterNeighborhoodConfirmationFrame);
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_BUTTONS);
     end);
     self.CancelButton:SetScript("OnClick", function()
         HideUIPanel(HousingCreateCharterNeighborhoodConfirmationFrame);
+		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_BUTTONS);
     end);
 end
 
@@ -66,11 +68,13 @@ end
 
 function HousingCreateCharterNeighborhoodConfirmationMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, CharterConfirmationFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_OPEN);
 end
 
 function HousingCreateCharterNeighborhoodConfirmationMixin:OnHide()
     C_Housing.OnCharterConfirmationClosed();
     FrameUtil.UnregisterFrameForEvents(self, CharterConfirmationFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_CLOSE);
 end
 
 function HousingCreateCharterNeighborhoodConfirmationMixin:OnEvent(event, ...)

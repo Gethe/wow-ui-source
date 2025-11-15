@@ -66,7 +66,8 @@ function HousingCatalogEntryMixin:UpdateEntryData(forceUpdate)
 		return;
 	end
 
-	local entryInfo = self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
+	local tryGetOwnedInfo = false;
+	local entryInfo = self:IsBundleEntry() and C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, self.bundleEntryInfo.decorID, tryGetOwnedInfo) or C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
 	if not entryInfo then
 		self:ClearEntryData();
 		return;
@@ -225,7 +226,7 @@ function HousingCatalogEntryMixin:UpdateBackground(isPressed)
 end
 
 function HousingCatalogEntryMixin:HasValidData()
-	return self.elementData and (self.entryID or self.bundleEntryInfo);
+	return self.elementData and (self.entryID or self.bundleEntryInfo) and self.entryInfo;
 end
 
 function HousingCatalogEntryMixin:GetElementData()
@@ -361,7 +362,8 @@ HousingCatalogDecorEntryMixin = {};
 function HousingCatalogDecorEntryMixin:GetEntryInfo()
 	-- Overrides HousingCatalogEntryMixin.
 
-	return self:IsBundleEntry() and C_HousingCatalog.GetBasicDecorInfo(self.bundleEntryInfo.decorID) or HousingCatalogEntryMixin.GetEntryInfo(self);
+	local tryGetOwnedInfo = false;
+	return self:IsBundleEntry() and C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, self.bundleEntryInfo.decorID, tryGetOwnedInfo) or HousingCatalogEntryMixin.GetEntryInfo(self);
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
@@ -371,7 +373,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
 	local isDyed = dyeNames and #dyeNames > 0;
 	local name = isDyed and HOUSING_DECOR_DYED_NAME_FORMAT:format(self.entryInfo.name) or self.entryInfo.name;
 	local placementCost = HOUSING_DECOR_PLACEMENT_COST_FORMAT:format(self.entryInfo.placementCost);
-	local itemQualityColor = ITEM_QUALITY_COLORS[self.entryInfo.quality or Enum.ItemQuality.Common].color;
+	local itemQualityColor = ColorManager.GetColorDataForItemQuality(self.entryInfo.quality or Enum.ItemQuality.Common).color;
 	local wrap = false;
 	GameTooltip_AddColoredDoubleLine(tooltip, name, placementCost, itemQualityColor, HIGHLIGHT_FONT_COLOR, wrap);
 end
@@ -412,7 +414,12 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipTrackingLines(tooltip)
-	if not ContentTrackingUtil.IsContentTrackingEnabled() then	
+	if self:IsInStorageView() then
+		-- No tracking in storage view
+		return;
+	end
+
+	if not ContentTrackingUtil.IsContentTrackingEnabled() then
 		GameTooltip_AddColoredLine(tooltip, CONTENT_TRACKING_DISABLED_TOOLTIP_PROMPT, GRAY_FONT_COLOR);
 		return;
 	end
@@ -434,6 +441,11 @@ StaticPopupDialogs["HOUSING_MAX_DECOR_REACHED"] = {
 	button1 = OKAY,
 	button2 = nil
 };
+
+function HousingCatalogDecorEntryMixin:IsInStorageView()
+	-- TODO:: Replace this global access hack.
+	return HouseEditorFrame and HouseEditorFrame.StoragePanel and DoesAncestryInclude(HouseEditorFrame.StoragePanel, self);
+end
 
 function HousingCatalogDecorEntryMixin:IsInMarketView()
 	-- TODO:: Replace this hack. For now I'm not sure how preview placement will work so I'm disabling it.
@@ -458,7 +470,9 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
 	local maxDecor = C_HousingDecor.GetMaxPlacementBudget();
-	if decorPlaced >= maxDecor then
+	local hasMaxDecor = C_HousingDecor.HasMaxPlacementBudget();
+
+	if hasMaxDecor and decorPlaced >= maxDecor then
 		StaticPopup_Show("HOUSING_MAX_DECOR_REACHED");
 		return;
 	end
@@ -562,8 +576,8 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 	-- If any other catalog entry type is added that can also be destroyed, we can move all this to be shared
 	-- with some kind of conditional flag - for now, it's only for decor
 
-	-- For now there's no context menu for recordID-based entries since they can't be destroyed.
-	if self:IsBundleEntry() then
+	-- For now there's no context menu for bundle or market entries since they can't be destroyed.
+	if self:IsBundleEntry() or self:IsInMarketView() then
 		return;
 	end
 
@@ -685,7 +699,7 @@ end
 
 function HousingCatalogRoomEntryMixin:AddTooltipTitle(tooltip)
 	local placementCost = HOUSING_ROOM_PLACEMENT_COST_FORMAT:format(self.entryInfo.placementCost);
-	local itemQualityColor = ITEM_QUALITY_COLORS[self.entryInfo.quality or Enum.ItemQuality.Common].color;
+	local itemQualityColor = ColorManager.GetColorDataForItemQuality(self.entryInfo.quality or Enum.ItemQuality.Common).color;
 	local wrap = false;
 	GameTooltip_AddColoredDoubleLine(tooltip, self.entryInfo.name, placementCost, itemQualityColor, HIGHLIGHT_FONT_COLOR, wrap);
 end
@@ -699,7 +713,13 @@ function HousingCatalogRoomEntryMixin:AddTooltipLines(tooltip)
 end
 
 function HousingCatalogRoomEntryMixin:TypeSpecificOnInteract(button, isDrag)
-	if not C_HouseEditor.IsHouseEditorActive() or isDrag then
+	if not C_HouseEditor.IsHouseEditorActive() then
+		return;
+	end
+
+	if isDrag then
+		local isPressed = false;
+		self:UpdateBackground(isPressed);
 		return;
 	end
 

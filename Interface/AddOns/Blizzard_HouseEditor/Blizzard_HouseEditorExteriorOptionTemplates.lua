@@ -149,7 +149,9 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 				button:SetScript("OnClick", function(button, buttonName)
 					if not selected then
 						description:Pick(MenuInputContext.MouseButton, buttonName);
-						PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION);
+						if not choiceData.isNoneOption then
+							PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION);
+						end
 					end
 				end);
 				
@@ -337,7 +339,7 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 
 	local dataProvider = CreateDataProvider(optionElements);
 
-	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
 
 	self:Show();
 end

@@ -1284,6 +1284,17 @@ function UnitPopupReportInWorldButtonMixin:GetReportType()
 	return Enum.ReportType.InWorld;
 end
 
+UnitPopupReportNeighborhoodRosterMixin = CreateFromMixins(UnitPopupReportButtonMixin);
+
+function UnitPopupReportNeighborhoodRosterMixin:GetText(contextData)
+	return REPORT_IN_WORLD_PLAYER;
+end
+
+function UnitPopupReportNeighborhoodRosterMixin:GetReportType()
+	return Enum.ReportType.NeighborhoodRoster;
+end
+
+
 UnitPopupPvpReportGroupMemberButtonMixin = CreateFromMixins(UnitPopupReportButtonMixin);
 
 function UnitPopupPvpReportGroupMemberButtonMixin:GetText(contextData)
@@ -3552,9 +3563,14 @@ function UnitPopupNeighborhoodEvictButtonMixin:GetText(contextData)
 end
 
 function UnitPopupNeighborhoodEvictButtonMixin:CanShow(contextData)
+	if contextData.targetResidentType == Enum.ResidentType.Owner then
+		return false
+	end
+
 	if not contextData.canBeManaged then
 		return false
 	end
+
 	if contextData.playerIsOwner then
 		return true;
 	else

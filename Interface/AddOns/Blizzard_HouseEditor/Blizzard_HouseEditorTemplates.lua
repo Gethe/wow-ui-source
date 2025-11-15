@@ -3,6 +3,8 @@ BaseHouseEditorModeMixin = {};
 function BaseHouseEditorModeMixin:BaseOnShow()
 	if C_HousingDecor.IsHoveringDecor() then
 		self:OnDecorHovered();
+	elseif C_HousingDecor.IsHouseExteriorHovered() then
+		self:OnHouseHovered();
 	elseif C_HousingCustomizeMode.IsHoveringRoomComponent() then
 		self:OnRoomComponentHovered();
 	end
@@ -27,6 +29,10 @@ function BaseHouseEditorModeMixin:OnDecorHovered()
 	local tooltip = self:ShowDecorInstanceTooltip(decorInstanceInfo);
 
 	EventRegistry:TriggerEvent("HousingDecorInstance.MouseOver", self, tooltip);
+end
+
+function BaseHouseEditorModeMixin:OnHouseHovered()
+	local tooltip = self:ShowHouseTooltip(decorInstanceInfo);
 end
 
 function BaseHouseEditorModeMixin:OnRoomComponentHovered()
@@ -113,6 +119,11 @@ function BaseHouseEditorModeMixin:PlayPlacedHouseSoundForSize(size)
 end
 
 function BaseHouseEditorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	-- Optional
+	return nil;
+end
+
+function BaseHouseEditorModeMixin:ShowHouseTooltip()
 	-- Optional
 	return nil;
 end
@@ -215,7 +226,7 @@ function HouseEditorInstructionMixin:UpdateControl()
 		self.Control.Background:Show();
 		self.Control.Icon:Hide();
 
-		local textWidth = (self.Control.Text:GetStringWidth()*1.5) + 20;
+		local textWidth = (self.Control.Text:GetStringWidth()) + 26;
 		self.Control.Background:SetWidth(textWidth);
 		self.Control:SetWidth(textWidth);
 	else

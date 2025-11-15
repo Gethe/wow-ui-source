@@ -308,6 +308,11 @@ local HousingLayoutUI =
 			{
 				{ Name = "zoomIn", Type = "bool", Nilable = false },
 			},
+
+			Returns =
+			{
+				{ Name = "zoomChanged", Type = "bool", Nilable = false },
+			},
 		},
 	},
 

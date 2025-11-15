@@ -2483,8 +2483,12 @@ function EditModeManagerTutorialMixin:OnLoad()
 	end
 end
 
+function EditModeManagerTutorialMixin:HasHelptipsToShow()
+	return HelpTip:AreHelpTipsEnabled() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager);
+end
+
 function EditModeManagerTutorialMixin:OnShow()
-	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager) then
+	if self:HasHelptipsToShow() then
 		self:BeginHelpTips();
 	end
 end

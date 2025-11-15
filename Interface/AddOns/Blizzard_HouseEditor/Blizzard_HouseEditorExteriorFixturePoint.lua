@@ -6,6 +6,10 @@ function HousingExteriorFixturePointMixin:Initialize(pointFrame)
 	self:SetPoint("CENTER", pointFrame, "CENTER", 0, 0);
 	pointFrame:SetUpdateCallback(function() self:OnPointFrameUpdated(); end);
 
+	self.Rays1.Anim:Play();
+	self.Rays2.Anim:Play();
+	self.Spinner.Anim:Play();
+
 	self:OnPointFrameUpdated();
 	self:Show();
 end
@@ -45,9 +49,11 @@ function HousingExteriorFixturePointMixin:UpdateVisuals()
 	local isHovered = self:IsMouseMotionFocus();
 	local isSelected = self.pointFrame:IsSelected();
 	local isFocused = isHovered or isSelected;
-	self.Icon:SetShown(not isHovered and not isSelected);
 	self.HoveredIcon:SetShown(isHovered and not isSelected);
-	self.SelectedIcon:SetShown(isSelected);
+	self.Rays1:SetShown(isSelected);
+	self.Spinner:SetShown(isSelected);
+	self.Glow:SetShown(isSelected);
+	self.Rays2:SetShown(isSelected);
 end
 
 function HousingExteriorFixturePointMixin:OnEnter()

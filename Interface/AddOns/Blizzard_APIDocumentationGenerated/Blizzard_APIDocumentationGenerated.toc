@@ -19,7 +19,6 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 AreaPoiInfoDocumentation.lua
-ArenaTeamDocumentation.lua
 ArtifactUIDocumentation.lua
 AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua

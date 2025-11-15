@@ -78,6 +78,14 @@ function HousingLayoutDoorPinMixin:Init()
 		self.ArrowIcon:Hide();
 	end
 
+	self.Rays1.Anim:Play();
+	self.Rays2.Anim:Play();
+	self.Spinner.Anim:Play();
+
+	local rot = doorInfo and doorInfo.doorFacing or 0;
+	self.NodeAvailable.Base.NodeBase:SetRotation(rot);
+	self.NodeAvailable.InteriorNodeAvailable.Glow:SetRotation(rot);
+
 	self:Update();
 end
 
@@ -96,11 +104,15 @@ function HousingLayoutDoorPinMixin:Update()
 	if (isOccupied) then
 		self:Hide();
 	elseif C_HousingLayout.HasSelectedRoom() then
+		self.NodeAvailable:Hide();
 		self:SetShown(pin:IsAnyPartOfRoomSelected());
 	elseif C_HousingLayout.HasSelectedFloorplan() then
-		self:SetShown(pin:IsValidForSelectedFloorplan());
+		local showWithAvailableAnim = pin:IsValidForSelectedFloorplan();
+		self:SetShown(showWithAvailableAnim);
+		self.NodeAvailable:SetShown(showWithAvailableAnim);
 	else
 		self:Show();
+		self.NodeAvailable:Hide();
 	end
 
 	local selected = self:GetPin():IsSelected();
@@ -127,6 +139,10 @@ function HousingLayoutDoorPinMixin:UpdateVisuals()
 	self.Icon:SetShown(not isFocused);
 	self.ActiveIcon:SetShown(isFocused);
 	self.SelectedGlow:SetShown(isSelected);
+	self.Rays1:SetShown(isSelected);
+	self.Spinner:SetShown(isSelected);
+	self.Glow:SetShown(isSelected);
+	self.Rays2:SetShown(isSelected);
 end
 
 function HousingLayoutDoorPinMixin:OnEnter()
@@ -199,18 +215,6 @@ function HousingLayoutDoorPinMixin:GetPinDebugName()
 	return pinName;
 end
 
-StaticPopupDialogs["HOUSING_LAYOUT_REMOVE_CONFIRM"] = {
-	text = HOUSING_LAYOUT_REMOVE_ROOM_CONFIRMATION,
-	button1 = YES,
-	button2 = CANCEL,
-	OnAccept =	function(self, pin)
-					C_HousingLayout.RemoveRoom(pin:GetRoomGUID());
-					PlaySound(SOUNDKIT.HOUSING_ROOM_DELETE);
-				end,
-	hideOnEscape = 1,
-};
-
-
 ----------------- Room Pin Mixin -----------------
 HousingLayoutRoomPinMixin = CreateFromMixins(HousingLayoutBasePinMixin);
 
@@ -248,7 +252,20 @@ function HousingLayoutRoomPinMixin:OnLoad()
 
 		self.OptionsContainer.RemoveButton:SetScript("OnClick", function()
 			if self:HasActivePin() then
-				StaticPopup_Show("HOUSING_LAYOUT_REMOVE_CONFIRM", nil, nil, self:GetPin());
+				if StaticPopup_IsCustomGenericConfirmationShown(HouseEditorFrame.LayoutModeFrame) then
+					return;
+				end
+				local roomGUID = self:GetPin():GetRoomGUID();
+				StaticPopup_ShowCustomGenericConfirmation({
+					text = HOUSING_LAYOUT_REMOVE_ROOM_CONFIRMATION,
+					acceptText = YES,
+					cancelText = CANCEL,
+					callback = function()
+						C_HousingLayout.RemoveRoom(roomGUID);
+						PlaySound(SOUNDKIT.HOUSING_ROOM_DELETE);
+					end,
+					referenceKey = HouseEditorFrame.LayoutModeFrame, --will cause it to be closed on HouseEditorLayoutModeMixin:OnHide.
+				});
 			end
 		end);
 	end

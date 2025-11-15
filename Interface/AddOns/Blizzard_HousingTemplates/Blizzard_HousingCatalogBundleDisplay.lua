@@ -12,9 +12,10 @@ function HousingCatalogBundleDisplayMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip_SetTitle(GameTooltip, self.Contents:GetProductInfo().name);
 
+	local tryGetOwnedInfo = false;
 	local decorListString = "";
 	for index, decorEntry in ipairs(self.elementData.decorEntries) do
-		local decorInfo = C_HousingCatalog.GetBasicDecorInfo(decorEntry.decorID);
+		local decorInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorEntry.decorID, tryGetOwnedInfo);
 		if decorInfo then
 			local entryString = HOUSING_BUNDLE_DECOR_ENTRY_FORMAT:format(decorInfo.name, decorEntry.quantity);
 			if index == 1 then

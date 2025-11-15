@@ -55,16 +55,16 @@
 	<Frame name="HouseFinderHighlightedPlotTooltip" inherits="SelectedPlotTooltipTemplate" frameStrata="TOOLTIP" parent="UIParent" hidden="true"/>
 	
 	<Button name="HouseFinderPlotForSalePinTemplate" hidden="true" enableMouse="true" mixin="HouseFinderPlotForSalePinMixin" virtual="true">
-		<Size x="42" y="42"/>
+		<Size x="28" y="28"/>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="HighlightTexture" atlas="housefinder_forsale-plot-icon-highlight" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="-1">
 				<Texture parentKey="SelectedUnderlay" atlas="housefinder_plot-selected-map-highlight" hidden="true">
-					<Size x="42" y="42"/>
+					<Size x="40" y="40"/>
 					<Anchors>
-						<Anchor point="CENTER" x="1" y="-12"/>
+						<Anchor point="CENTER" x="1" y="-8"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -81,26 +81,8 @@
 	</Button>
 
 	<Button name="HouseFinderFriendsPlotPinTemplate" hidden="true" enableMouse="true" mixin="HouseFinderFriendsPlotPinMixin" virtual="true">
-		<Size x="24" y="32"/>
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="HighlightTexture" file="Interface\WorldMap\UI-QuestPoi-NumberIcons" alphaMode="ADD" hidden="true">
-					<Size x="42" y="42"/>
-					<Anchors>
-						<Anchor point="CENTER"  y="4"/>
-					</Anchors>
-					<TexCoords left="0.625" right=".750" top="0.375" bottom="0.5"/>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="SelectedUnderlay" atlas="housefinder_plot-selected-map-highlight" hidden="true">
-					<Size x="42" y="42"/>
-					<Anchors>
-						<Anchor point="CENTER" y="-10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<NormalTexture atlas="housefinder_friend-plot-icon"/>
+		<Size x="20" y="20"/>
+		<NormalTexture atlas="housing-map-plot-occupied-friend"/>
+		<HighlightTexture atlas="housing-map-plot-occupied-friend-highlight"/>
 	</Button>
 </Ui>

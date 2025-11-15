@@ -11,7 +11,9 @@ function DressUpModelFrameResetButtonMixin:OnClick()
 	local parent = self:GetParent();
 	DressUpFrame_Show(parent, itemModifiedAppearanceIDs, forcePlayerRefresh, parent:GetLastLink())
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-	parent.SetSelectionPanel:Hide();
+	if parent.SetSelectionPanel then
+		parent.SetSelectionPanel:Hide();
+	end
 end
 
 --------------------------------------------------
@@ -138,7 +140,9 @@ function DressUpModelFrameBaseMixin:SetMode(mode)
 			self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
 		end
 
-		self.SetSelectionPanel:SetShown(inPlayerMode and self.SetSelectionPanel.setID);
+		if self.SetSelectionPanel then
+			self.SetSelectionPanel:SetShown(inPlayerMode and self.SetSelectionPanel.setID);
+		end
 	end
 end
 

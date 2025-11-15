@@ -180,4 +180,9 @@ function GameRulesUtil.OnActiveGameModeUpdated()
 	end
 end
 
+function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	return (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+end
+
 EventRegistry:RegisterFrameEventAndCallback("ACTIVE_GAME_MODE_UPDATED", GameRulesUtil.OnActiveGameModeUpdated, GameRulesUtil);

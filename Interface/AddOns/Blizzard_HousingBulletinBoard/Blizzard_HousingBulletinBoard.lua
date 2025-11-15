@@ -253,6 +253,7 @@ end
 
 function NeighborhoodRosterMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, BULLETIN_BOARD_ROSTER_SHOWING_EVENTS);
+	HideUIPanel(HousingInviteResidentFrame);
 end
 
 function NeighborhoodRosterMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
@@ -497,10 +498,12 @@ function HousingInviteResidentFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, INVITE_RESIDENT_SHOWING_EVENTS);
 	C_HousingNeighborhood.RequestPendingNeighborhoodInvites();
 	self.PendingListLoadingSpinner:Show();
+	self.ErrorText:Hide();
 end
 
 function HousingInviteResidentFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, INVITE_RESIDENT_SHOWING_EVENTS);
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_BUTTONS);
 end
 
 function HousingInviteResidentFrameMixin:OnEvent(event, ...)
@@ -545,6 +548,16 @@ function HousingInviteResidentFrameMixin:UpdatePendingInvitesList(pendingInvites
 end
 
 function HousingInviteResidentFrameMixin:AddPendingInvite(playerName)
+
+	-- Check if the invited player is already in the list. If they are in the list, early out.
+	-- Note: the invitation service responds with success for duplicate invites
+	for inviteFrame in self.pendingInvitesPool:EnumerateActive() do
+		if strcmputf8i(inviteFrame.RemoveButton.playerName, playerName) == 0 then
+			inviteFrame.LoadingSpinner:Hide();
+			return
+		end
+	end
+
 	local pendingInviteFrame = self.pendingInvitesPool:Acquire();
 		pendingInviteFrame.RemoveButton.playerName = playerName;
 		pendingInviteFrame.RemoveButton.loadingSpinner = pendingInviteFrame.LoadingSpinner;
@@ -675,11 +688,13 @@ local NAME_CHANGE_DIALOG_SHOWING_EVENTS = {
 
 function NeighborhoodChangeNameDialogMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, NAME_CHANGE_DIALOG_SHOWING_EVENTS);
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_OPEN_MENU);
 end
 
 function NeighborhoodChangeNameDialogMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, NAME_CHANGE_DIALOG_SHOWING_EVENTS);
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.RenameNeighborhood);
+	PlaySound(SOUNDKIT.HOUSING_SETTINGS_CLOSE_MENU);
 end
 
 function NeighborhoodChangeNameDialogMixin:OnEvent(event, ...)
@@ -700,10 +715,12 @@ function NeighborhoodChangeNameDialogMixin:OnLoad()
     self.ConfirmButton:SetScript("OnClick", self.OnConfirmClicked);
     self.CancelButton:SetScript("OnClick", function()
         StaticPopupSpecial_Hide(NeighborhoodChangeNameDialog);
+		PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_BUTTONS);
     end);
 end
 
 function NeighborhoodChangeNameDialogMixin:OnConfirmClicked()
+	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_BUTTONS);
 	C_Housing.ValidateNeighborhoodName(NeighborhoodChangeNameDialog.NameEditBox:GetText());
 end
 

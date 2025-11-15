@@ -806,6 +806,12 @@ function TrialAccountCapReached_Inform(capType)
 	displayedCapMessage = true;
 end
 
+function IsLevelAtEffectiveMaxLevel(level)
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
+	return level >= maxLevel;
+end
+
 function AbbreviateLargeNumbers(value)
 	local strLen = strlen(value);
 	local retString = value;

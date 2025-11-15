@@ -119,22 +119,16 @@ local HousingExpertModeUI =
 			},
 		},
 		{
+			Name = "SelectNextRotationAxis",
+			Type = "Function",
+		},
+		{
 			Name = "SetGridVisible",
 			Type = "Function",
 
 			Arguments =
 			{
 				{ Name = "gridVisible", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPrecisionIncrementRotationAxisActive",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "axis", Type = "HousingPrecisionAxis", Nilable = false },
-				{ Name = "active", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -256,19 +250,6 @@ local HousingExpertModeUI =
 				{ Name = "RotateRight", Type = "HousingIncrementType", EnumValue = 128 },
 				{ Name = "ScaleUp", Type = "HousingIncrementType", EnumValue = 256 },
 				{ Name = "ScaleDown", Type = "HousingIncrementType", EnumValue = 512 },
-			},
-		},
-		{
-			Name = "HousingPrecisionAxis",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 1,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "X", Type = "HousingPrecisionAxis", EnumValue = 1 },
-				{ Name = "Y", Type = "HousingPrecisionAxis", EnumValue = 2 },
-				{ Name = "Z", Type = "HousingPrecisionAxis", EnumValue = 4 },
 			},
 		},
 		{

@@ -92,14 +92,17 @@ function HousingRoomComponentThemeMixin:UpdateDropdown()
 	end
 	--TODO: incporporate ownership when ownership is implemented.
 	table.sort(themeSets, function(a, b) return a.name < b.name end);
-
+	
 	local recentThemeSets = {};
+	--may want 'recently used' functionality in the future when there are more themesets.
+	--[[
 	for _, recentThemeSetID in ipairs_reverse(C_HousingCustomizeMode.GetRecentlyUsedThemeSets()) do
 		local recentTheme = ThemeFromID(recentThemeSetID);
 		if recentTheme then
 			table.insert(recentThemeSets, recentTheme);
 		end
 	end
+	]]
 
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
 		local function IsSelected(theme)
@@ -154,17 +157,23 @@ end
 function HousingRoomComponentWallpaperMixin:UpdateDropdown()
 	local wallpapers = C_HousingCustomizeMode.GetWallpapersForRoomComponentType(self.roomComponentInfo.type);
 
+	--may want 'recently used' in the future when there are more wallpapers
+	--[[
 	local wallpapersByID = {};
 	for _, wallpaper in ipairs(wallpapers) do
 		wallpapersByID[wallpaper.roomComponentTextureRecID] = wallpaper;
 	end
+	]]
+
 	--TODO: incporporate ownership when ownership is implemented.
 	table.sort(wallpapers, function(a, b) return a.name < b.name end);
 
 	local recentWallpapers = {};
+	--[[
 	for _, recentWallpaperID in ipairs_reverse(C_HousingCustomizeMode.GetRecentlyUsedWallpapers()) do
 		table.insert(recentWallpapers, wallpapersByID[recentWallpaperID]);
 	end
+	]]
 
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
 		local function IsSelected(wallpaper)
@@ -281,10 +290,12 @@ function RoomComponentPaneMixin:OnLoad()
 
 	self.ApplyThemeToRoomButton:SetOnClickHandler(function()
 		C_HousingCustomizeMode.ApplyThemeToRoom(self.roomComponentInfo.currentThemeSet);
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_APPLY_ROOM_CHANGE);
 	end);
 
 	self.ApplyWallpaperToAllWallsButton:SetOnClickHandler(function()
 		C_HousingCustomizeMode.ApplyWallpaperToAllWalls(self.roomComponentInfo.currentRoomComponentTextureRecID);
+		PlaySound(SOUNDKIT.HOUSING_CUSTOMIZE_APPLY_ROOM_CHANGE);
 	end);
 end
 

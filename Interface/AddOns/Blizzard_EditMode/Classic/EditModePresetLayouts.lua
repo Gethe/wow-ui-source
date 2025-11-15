@@ -340,6 +340,22 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.ChatFrame] = {
+		settings = {
+			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
+			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
+			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMLEFT",
+			offsetX = 35,
+			offsetY = 140, -- Avoids clipping unit frame.
+		},
+	},
+
 	[Enum.EditModeSystem.MicroMenu] = {
 		settings = {
 			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
@@ -740,6 +756,22 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				offsetX = -202,
 				offsetY = -152,
 			},
+		},
+	},
+
+	[Enum.EditModeSystem.ChatFrame] = {
+		settings = {
+			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
+			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
+			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMLEFT",
+			offsetX = 35,
+			offsetY = 150,
 		},
 	},
 

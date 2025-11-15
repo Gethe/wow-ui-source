@@ -1,5 +1,22 @@
 
 local MINIMUM_BUNDLE_WIDTH = 521;
+local STORAGE_ICON_STRING = CreateAtlasMarkup("house-chest-icon", 16, 16);
+local STORAGE_COUNT_FORMAT = STORAGE_ICON_STRING .. " %s / %d";
+
+local function GetTotalOwnedDecorStorageString()
+	local totalOwnedCount, exemptOwnedCount = C_HousingCatalog.GetDecorTotalOwnedCount();
+	local nonExemptOwnedCount = totalOwnedCount - exemptOwnedCount;
+	local maxOwnedCount = C_HousingCatalog.GetDecorMaxOwnedCount();
+	if maxOwnedCount == 0 then
+		return "";
+	end
+
+	if nonExemptOwnedCount >= maxOwnedCount then
+		nonExemptOwnedCount = RED_FONT_COLOR:WrapTextInColorCode(nonExemptOwnedCount);
+	end
+
+	return STORAGE_COUNT_FORMAT:format(nonExemptOwnedCount, maxOwnedCount);
+end
 
 HouseEditorStorageButtonMixin = {};
 
@@ -51,6 +68,27 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	end);
 	self.CollapseButton:SetScript("OnLeave", function()
 		self.CollapseButton.OverlayIcon:Hide();
+	end);
+
+	self.OptionsContainer.CategoryTotal:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(self.OptionsContainer.CategoryTotal, "ANCHOR_RIGHT", 0, 0);
+
+		local totalOwnedCount, exemptOwnedCount = C_HousingCatalog.GetDecorTotalOwnedCount();
+		local nonExemptOwnedCount = totalOwnedCount - exemptOwnedCount;
+		local maxOwnedCount = C_HousingCatalog.GetDecorMaxOwnedCount();
+		if nonExemptOwnedCount > maxOwnedCount then
+			GameTooltip_AddHighlightLine(GameTooltip, HOUSING_CATALOG_STORAGE_LIMIT_TOOLTIP_TITLE_OVER_LIMIT:format(nonExemptOwnedCount, maxOwnedCount));
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, HOUSING_CATALOG_STORAGE_LIMIT_TOOLTIP_TITLE:format(nonExemptOwnedCount, maxOwnedCount));
+		end
+
+		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CATALOG_STORAGE_LIMIT_TOOLTIP_DETAILS);
+		GameTooltip_AddHighlightLine(GameTooltip, HOUSING_CATALOG_STORAGE_LIMIT_TOOLTIP_TOTALOWNED:format(totalOwnedCount));
+		GameTooltip:Show();
+	end);
+
+	self.OptionsContainer.CategoryTotal:SetScript("OnLeave", function()
+		GameTooltip_Hide();
 	end);
 
 	local initialWidth = Clamp(GetCVarNumberOrDefault("housingStoragePanelWidth"), self.minWidth, self.maxWidth);
@@ -148,6 +186,8 @@ function HouseEditorStorageFrameMixin:OnShow()
 		self:UpdateMarketTabNotification();
 		self:CheckShowMarketAllCategoryNotification();
 	end);
+
+	self:UpdateCategoryTotal();
 end
 
 function HouseEditorStorageFrameMixin:OnHide()
@@ -197,6 +237,7 @@ end
 function HouseEditorStorageFrameMixin:OnTabChanged()
 	self:UpdateMarketTabNotification();
 	self:UpdateCategoryText();
+	self:UpdateCategoryTotal();
 end
 
 function HouseEditorStorageFrameMixin:OnStorageTabSelected()
@@ -264,6 +305,8 @@ function HouseEditorStorageFrameMixin:UpdateMarketTabVisibility()
 		-- We shouldn't be showing the market tab any more but we're in it, so switch to storage.
 		self:SetTab(self.storageTabID);
 	end
+
+	EventRegistry:TriggerEvent("HousingMarketTab.VisibilityUpdated");
 end
 
 function HouseEditorStorageFrameMixin:IsMarketTabShown()
@@ -297,6 +340,7 @@ function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText)
 	end
 
 	self:UpdateCategoryText();
+	self:UpdateCategoryTotal();
 end
 
 function HouseEditorStorageFrameMixin:HasUnseenDecor()
@@ -426,6 +470,7 @@ function HouseEditorStorageFrameMixin:UpdateCatalogData()
 	end
 
 	self:UpdateLoadingSpinner();
+	self:UpdateCategoryTotal();
 end
 
 function HouseEditorStorageFrameMixin:UpdateLoadingSpinner()
@@ -461,18 +506,30 @@ function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
 
 	if self.lastEditorMode ~= newEditorMode then
 		if newEditorMode == Enum.HouseEditorMode.Layout then
+			self.savedSortType = self.catalogSearcher:GetSortType();
+			self.catalogSearcher:SetSortType(Enum.HousingCatalogSortType.Alphabetical);
 			self.Filters:ResetFiltersToDefault();
 			self.Filters:SetEnabled(false);
 			self:ClearSearchText();
-		elseif self.lastEditorMode == Enum.HouseEditorMode.Layout then
-			self.Filters:SetEnabled(true);
-			self:ClearSearchText();
+		else
+			self.catalogSearcher:SetSortType(self.savedSortType or Enum.HousingCatalogSortType.DateAdded);
+
+			if self.lastEditorMode == Enum.HouseEditorMode.Layout then
+				self.Filters:SetEnabled(true);
+				self:ClearSearchText();
+			end
 		end
 
 		self:UpdateMarketTabVisibility();
 
 		self.lastEditorMode = newEditorMode;
 	end
+
+	self:UpdateCategoryTotal();
+end
+
+function HouseEditorStorageFrameMixin:IsInLayoutMode()
+	return self.lastEditorMode == Enum.HouseEditorMode.Layout;
 end
 
 function HouseEditorStorageFrameMixin:UpdateCategoryText()
@@ -486,9 +543,28 @@ function HouseEditorStorageFrameMixin:UpdateCategoryText()
 	self.OptionsContainer:SetScrollBoxTopOffset(-20);
 	self.OptionsContainer.CategoryText:SetText(categoryString);
 	if self.catalogSearcher:GetFilteredCategoryID() == Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID then
-		self.OptionsContainer.CategoryText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		self.OptionsContainer.CategoryText:SetTextColor(HOUSING_STORAGE_HEADER_COLOR:GetRGB());
 	else
 		self.OptionsContainer.CategoryText:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+	end
+end
+
+function HouseEditorStorageFrameMixin:UpdateCategoryTotal()
+	local categoryTotal = self.OptionsContainer.CategoryTotal;
+	categoryTotal:Hide();
+
+	if self:IsInMarketTab() or self:IsInLayoutMode() then
+		return;
+	end
+
+	if self.Categories:IsAllCategoryFocused() then
+		categoryTotal:Show();
+		self.OptionsContainer.CategoryTotal:SetText(GetTotalOwnedDecorStorageString());
+	elseif (not self.Filters:IsEnabled() or self.Filters:AreFiltersAtDefault()) and
+			(self.catalogSearcher and not self.catalogSearcher:IsSearchInProgress()) and
+			not self.customCatalogData then
+		categoryTotal:Show();
+		self.OptionsContainer.CategoryTotal:SetText(STORAGE_ICON_STRING .. " " .. self.catalogSearcher:GetSearchCount());
 	end
 end
 
@@ -543,6 +619,7 @@ function HouseEditorStorageFrameMixin:OnSearchTextUpdated(newSearchText)
 			self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID);
 
 			self:UpdateCategoryText();
+			self:UpdateCategoryTotal();
 		end
 	end
 end
@@ -583,6 +660,7 @@ function HouseEditorStorageFrameMixin:OnCategoryFocusChanged(focusedCategoryID, 
 	end
 
 	self:UpdateCategoryText();
+	self:UpdateCategoryTotal();
 end
 
 function HouseEditorStorageFrameMixin:ClearSearchText()

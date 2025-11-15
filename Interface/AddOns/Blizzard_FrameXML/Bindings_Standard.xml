@@ -1372,6 +1372,9 @@
 		Sound_MasterVolumeDown();
 	</Binding>
 	<Binding name="TOGGLEUI" ignoreInKioskMode="true" category="BINDING_HEADER_MISC">
+		if (GetAppropriateTopLevelParent() ~= UIParent ) then
+			return;
+		end
 		if ( UIParent:IsShown() ) then
 			securecall("CloseMenus");
 			securecall("CloseAllWindows");
@@ -1664,11 +1667,11 @@
 <Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
 </Binding>
-<Binding name="HOUSING_BASICDECOR_ROTATELEFT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	HousingFramesUtil.RotateBasicDecorSelection(1);
+<Binding name="HOUSING_BASICDECOR_ROTATELEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.HandleRotateBasicDecorSelectionLeftKeybind(keystate);
 </Binding>
-<Binding name="HOUSING_BASICDECOR_ROTATERIGHT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	HousingFramesUtil.RotateBasicDecorSelection(-1);
+<Binding name="HOUSING_BASICDECOR_ROTATERIGHT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.HandleRotateBasicDecorSelectionRightKeybind(keystate);
 </Binding>
 
 <!-- Housing Expert Decor Edit Mode keybindings -->
@@ -1715,15 +1718,8 @@
 <Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATERIGHT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.RotateRight, keystate == "down");
 </Binding>
-
-<Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATEX" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	C_HousingExpertMode.SetPrecisionIncrementRotationAxisActive(Enum.HousingPrecisionAxis.X, keystate == "down");
-</Binding>
-<Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATEY" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	C_HousingExpertMode.SetPrecisionIncrementRotationAxisActive(Enum.HousingPrecisionAxis.Y, keystate == "down");
-</Binding>
-<Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATEZ" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	C_HousingExpertMode.SetPrecisionIncrementRotationAxisActive(Enum.HousingPrecisionAxis.Z, keystate == "down");
+<Binding name="HOUSING_EXPERTDECORROTATION_NEXTAXIS" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SelectNextRotationAxis();
 </Binding>
 
 <!-- Housing Layout Edit Mode keybindings -->

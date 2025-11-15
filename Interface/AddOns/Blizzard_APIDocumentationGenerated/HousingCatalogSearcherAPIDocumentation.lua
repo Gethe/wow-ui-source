@@ -99,6 +99,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "GetSearchCount",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "searchCount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSearchText",
 			Type = "Function",
 
@@ -213,6 +226,19 @@ local HousingCatalogSearcherAPI =
 			Returns =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSearchInProgress",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isSearchInProgress", Type = "bool", Nilable = false },
 			},
 		},
 		{

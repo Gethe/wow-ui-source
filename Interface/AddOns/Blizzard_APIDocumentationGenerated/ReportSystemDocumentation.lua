@@ -106,6 +106,7 @@ local ReportSystem =
 			Arguments =
 			{
 				{ Name = "reportType", Type = "ReportType", Nilable = false },
+				{ Name = "majorCategory", Type = "ReportMajorCategory", Nilable = false },
 			},
 
 			Returns =

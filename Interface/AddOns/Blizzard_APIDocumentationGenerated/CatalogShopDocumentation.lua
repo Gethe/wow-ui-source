@@ -464,6 +464,8 @@ local CatalogShop =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
+				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
+				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
 			},
 		},
 		{

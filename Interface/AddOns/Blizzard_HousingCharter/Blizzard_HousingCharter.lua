@@ -116,8 +116,6 @@ end
 HousingCharterRequestSignatureFrameMixin = {}
 
 function HousingCharterRequestSignatureFrameMixin:OnLoad()
-	self:SetTitle(HOUSING_CREATENEIGHBORHOOD_CHARTER);
-
 	self.ConfirmButton:SetScript("OnClick", function()
 		C_Housing.OnSignCharterClicked(self.neighborhoodInfo.ownerGUID);
 		StaticPopupSpecial_Hide(HousingCharterRequestSignatureDialog);
@@ -129,14 +127,23 @@ function HousingCharterRequestSignatureFrameMixin:OnLoad()
 	end);
 end
 
+function HousingCharterRequestSignatureFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_REQUEST_OPEN);
+end
+
+function HousingCharterRequestSignatureFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.HOUSING_CHARTER_REQUEST_CLOSED);
+end
+
 function HousingCharterRequestSignatureFrameMixin:SetNeighborhoodInfo(neighborhoodInfo)
 	self.neighborhoodInfo = neighborhoodInfo;
+	local whiteTextColor = HIGHLIGHT_FONT_COLOR;
 	if neighborhoodInfo.ownerName then
 		self.DescriptionText:SetText(string.format(HOUSING_CHARTER_REQUEST_DESCRIPTION, neighborhoodInfo.ownerName, neighborhoodInfo.ownerName));
 	end
 	if neighborhoodInfo.locationName then
-		self.LocationText:SetText(string.format(HOUSING_CHARTER_REQUEST_LOCATION, neighborhoodInfo.locationName));
+		self.LocationText:SetText(string.format(HOUSING_CHARTER_REQUEST_LOCATION, whiteTextColor:WrapTextInColorCode(neighborhoodInfo.locationName)));
 	end
 
-	self.NeighborhoodNameText:SetText(string.format(HOUSING_CHARTER_REQUEST_NAME, neighborhoodInfo.neighborhoodName));
+	self.NeighborhoodNameText:SetText(string.format(HOUSING_CHARTER_REQUEST_NAME, whiteTextColor:WrapTextInColorCode(neighborhoodInfo.neighborhoodName)));
 end

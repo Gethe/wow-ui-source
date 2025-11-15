@@ -1885,16 +1885,6 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 	end);
 end
 
- -- takes into account the current expansion
- -- NOTE: it's not safe to cache this value as it could change in the middle of the session
-function GetEffectivePlayerMaxLevel()
-	return GetMaxPlayerLevel();
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	return level >= GetEffectivePlayerMaxLevel();
-end
-
 -- From SocialQueue.lua
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	local hasFocus, characterName, client, realmName, realmID, faction, race, class, _, zoneName, level, gameText, broadcast, broadcastTime, online, bnetIDGameAccount, bnetIDAccount = BNGetGameAccountInfoByGUID(guid);

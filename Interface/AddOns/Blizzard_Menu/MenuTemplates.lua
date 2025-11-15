@@ -640,6 +640,8 @@ function WowDropdownFilterBehaviorMixin:OnLoad()
 		end
 
 		self.ResetButton:Hide();
+
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end);
 end
 

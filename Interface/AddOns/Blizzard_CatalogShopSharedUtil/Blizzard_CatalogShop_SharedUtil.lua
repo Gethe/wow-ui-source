@@ -187,10 +187,9 @@ local function ConvertActorInfoToDisplayData(actorInfo, modelSceneFlags)
 	displayData.readableTag = "";
 
 	displayData.modelActorDisplayID = actorInfo.modelActorDisplayID;
-	if C_Glue.IsOnGlueScreen() then
-		displayData.actorDisplayInfoData = GetDefaultActorDisplayInfoDisplayData();
-	else
-		local actorDisplayInfoData = actorInfo.modelActorDisplayID and C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+
+	local actorDisplayInfoData = actorInfo.modelActorDisplayID and C_ModelInfo.GetModelSceneActorDisplayInfoByID(actorInfo.modelActorDisplayID);
+	if actorDisplayInfoData then
 		local actorDisplayData = {};
 		actorDisplayData.animationKitID = actorDisplayInfoData.animationKitID;
 		actorDisplayData.animation = actorDisplayInfoData.animation;
@@ -200,6 +199,8 @@ local function ConvertActorInfoToDisplayData(actorInfo, modelSceneFlags)
 		actorDisplayData.alpha = actorDisplayInfoData.alpha;
 		actorDisplayData.scale = actorDisplayInfoData.scale;
 		displayData.actorDisplayInfoData = actorDisplayData;
+	else
+		displayData.actorDisplayInfoData = GetDefaultActorDisplayInfoDisplayData();
 	end
 	return displayData;
 end
@@ -1275,8 +1276,8 @@ function CatalogShopUtil.GetProductInfo(productID)
 		end
 		for _, childData in ipairs(childrenProductData) do
 			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-			-- If this product has an otherProductGameType then we can't use this product in our model scene (it's from another game)
-			if childProductDisplayInfo.otherProductGameType == nil then
+			-- If this product has a missing license (unknown to server) then we can't use this product in our model scene (it's from another game)
+			if not childProductDisplayInfo.hasUnknownLicense then
 				if productInfo.sceneDisplayData then
 					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
 					childProductData.displayOrder = childData.displayOrder or 999;

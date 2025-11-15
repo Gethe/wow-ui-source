@@ -28,8 +28,6 @@ function CatalogShopDefaultProductCardMixin:OnLoad()
 
 	self.ModelScene:SetScript("OnMouseWheel", nil);
 
-	EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", self.OnProductInfoChanged, self);
-
 	local container = self.ForegroundContainer;
 	local texture = self.hoverFrameTexture;
 	container.HoverTexture:SetAtlas(texture);
@@ -234,6 +232,137 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	local discountPercentage = self.productInfo.discountPercentage or 0;
 	container.DiscountSaleTag:SetShown(not isFullyOwned and discountPercentage > 0);
 	container.DiscountAmount:SetShown(not isFullyOwned and discountPercentage > 0);
+	container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+end
+
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP PRODUCT CARD MIXIN
+SmallCatalogShopProductCardMixin = {};
+function SmallCatalogShopProductCardMixin:OnLoad()
+	CatalogShopDefaultProductCardMixin.OnLoad(self);
+end
+
+function SmallCatalogShopProductCardMixin:Layout()
+	CatalogShopDefaultProductCardMixin.Layout(self);
+
+	local container = self.ForegroundContainer;
+
+	local divider = container.DividerTop;
+	divider:SetShown(true);
+	divider:ClearAllPoints();
+	divider:SetPoint("TOP", container, "BOTTOM", 0, 82);
+	divider:SetPoint("LEFT", 0, 0);
+	divider:SetPoint("RIGHT", 0, 0);
+
+	local nameElement = container.Name;
+	nameElement:ClearAllPoints();
+	nameElement:SetJustifyH("CENTER");
+	nameElement:SetJustifyV("MIDDLE");
+	nameElement:SetPoint("TOP", divider, "TOP", 0, -3);
+	nameElement:SetPoint("LEFT", 15, 0);
+	nameElement:SetPoint("RIGHT", -15, 0);
+	nameElement:SetPoint("BOTTOM", 0, 42);
+
+	local timeRemaining = container.TimeRemaining;
+	timeRemaining:ClearAllPoints();
+	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
+	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
+
+	if self.productInfo.shouldShowOriginalPrice then
+		local priceElement = container.OriginalPrice;
+		priceElement:ClearAllPoints();
+		priceElement:SetPoint("TOP", container, "BOTTOM", 0, 27);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetPoint("BOTTOM", 0, 13);
+		priceElement:SetText(self.productInfo.originalPrice);
+
+		local strikeThrough = container.Strikethrough;
+		local strikeThroughLength = priceElement:GetStringWidth() * 0.5;
+		strikeThrough:ClearAllPoints();
+		strikeThrough:SetPoint("LEFT", priceElement, "CENTER", -strikeThroughLength, 0);
+		strikeThrough:SetPoint("RIGHT", priceElement, "CENTER", strikeThroughLength, 0);
+		strikeThrough:Show();
+
+		local discountPriceElement = container.DiscountPrice;
+		discountPriceElement:ClearAllPoints();
+		discountPriceElement:SetPoint("BOTTOM", priceElement, "TOP", 0, 1);
+		discountPriceElement:SetPoint("TOP", priceElement, "TOP", 0, 15);
+		discountPriceElement:SetPoint("LEFT", 15, 0);
+		discountPriceElement:SetPoint("RIGHT", -15, 0);
+		discountPriceElement:SetText(self.productInfo.price);
+
+		container.DiscountPrice:Show();
+		container.OriginalPrice:Show();
+		container.Strikethrough:Show();
+		container.Price:Hide();
+	else
+		local priceElement = container.Price;
+		priceElement:ClearAllPoints();
+		priceElement:SetSize(0, 20);
+		priceElement:SetJustifyH("CENTER");
+		priceElement:SetPoint("BOTTOM", 0, 17);
+		priceElement:SetPoint("LEFT", 15, 0);
+		priceElement:SetPoint("RIGHT", -15, 0);
+		priceElement:SetText(self.productInfo.price);
+		priceElement:Show();
+
+		container.DiscountPrice:Hide();
+		container.OriginalPrice:Hide();
+		container.Strikethrough:Hide();
+	end
+
+	local background = self.BackgroundContainer.Background;
+	background:ClearAllPoints();
+	background:SetPoint("TOPLEFT", 12, -12);
+	background:SetPoint("BOTTOMRIGHT", -13, 11);
+
+	self:UpdateTimeRemaining();
+end
+
+
+--------------------------------------------------
+-- SMALL CATALOG SHOP BUY BUTTON CARD MIXIN
+SmallCatalogShopProductWithBuyButtonCardMixin = {};
+function SmallCatalogShopProductWithBuyButtonCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+local function BuyButtonCardLayout(card)
+	local container = card.ForegroundContainer;
+	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
+
+	-- Skip access-specific display for unknown (cross-game) licenses
+	if displayInfo.hasUnknownLicense then
+		container.RectIcon:Hide();
+		return;
+	end
+
+	local atlasWidth = 140;
+	local atlasHeight = 140;
+
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+	container.RectIcon:SetSize(atlasWidth, atlasHeight);
+
+	if card.productInfo.previewIconTexture then
+		container.RectIcon:Show();
+		container.RectIcon:SetAtlas(card.productInfo.previewIconTexture);
+	else
+		container.RectIcon:Hide();
+	end
+end
+
+function SmallCatalogShopProductWithBuyButtonCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+	BuyButtonCardLayout(self);
+end
+
+
+EmbeddedPurchaseButtonMixin = {};
+function EmbeddedPurchaseButtonMixin:OnLoad()
+--embeddedPurchaseButtonOnClickMethod
 end
 
 --------------------------------------------------
@@ -268,8 +397,7 @@ function WideCatalogShopProductCardMixin:Layout()
 	timeRemaining:SetPoint("CENTER", container.TimeRemainingIcon, "CENTER", 0, 0);
 	timeRemaining:SetPoint("LEFT", container.TimeRemainingIcon, "RIGHT", 3, 0);
 
-	local discountPercentage = self.productInfo.discountPercentage or 0;
-	if discountPercentage > 0 then
+	if self.productInfo.shouldShowOriginalPrice then
 		local priceElement = container.OriginalPrice;
 		priceElement:ClearAllPoints();
 		priceElement:SetSize(175, 20);
@@ -293,7 +421,6 @@ function WideCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetJustifyH("LEFT");
 		discountPriceElement:SetText(self.productInfo.price);
 
-		container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
 		container.Strikethrough:Show();

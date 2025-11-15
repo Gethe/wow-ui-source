@@ -15,53 +15,56 @@
     </Layers>
 </Frame>
 
-<Frame name="HousingCharterRequestSignatureDialog" mixin="HousingCharterRequestSignatureFrameMixin" inherits="DefaultPanelTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
-    <Size x="400" y="300"/>
-    <Scripts>
-        <OnLoad method="OnLoad"/>
-    </Scripts>
-    <Layers>
-        <Layer level="ARTWORK">
-            <FontString parentKey="DescriptionText" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_REQUEST_DESCRIPTION">
-                <Size x="350"/>
-                <Anchors>
-                    <Anchor point="TOP" x="0" y="-30"/>
-                </Anchors>
-            </FontString>
-            <FontString parentKey="LocationText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_LOCATION">
-                <Anchors>
-                    <Anchor point="CENTER"/>
-                </Anchors>
-            </FontString>
-            <FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_NAME">
-                <Anchors>
-                    <Anchor point="TOP" relativeKey="$parent.LocationText" relativePoint="BOTTOM" y="-8"/>
-                </Anchors>
-            </FontString>
-        </Layer>
-    </Layers>
-    <Frames>
-        <Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_SIGN_BUTTON">
-            <Size x="152" y="42"/>
-            <Anchors>
-                <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
-            </Anchors>
-            <NormalFont style="GameFontNormalSmall"/>
-            <HighlightFont style="GameFontNormalSmall"/>
-            <DisabledFont style="GameFontDisableSmall"/>
-            <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-        </Button>
-        <Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_DECLINE_BUTTON">
-            <Size x="152" y="42"/>
-            <Anchors>
-                <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
-            </Anchors>
-            <NormalFont style="GameFontNormalSmall"/>
-            <HighlightFont style="GameFontNormalSmall"/>
-            <DisabledFont style="GameFontDisableSmall"/>
-            <HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-        </Button>
-    </Frames>
+<Frame name="HousingCharterRequestSignatureDialog" mixin="HousingCharterRequestSignatureFrameMixin" inherits="TranslucentFrameTemplate" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent">
+	<Size x="400" y="250"/>
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
+	</Scripts>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString parentKey="TitleText" inherits="Game12Font" text="HOUSING_CREATENEIGHBORHOOD_CHARTER">
+				<Size x="350"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-22"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="DescriptionText" inherits="Game15Font_Shadow" text="HOUSING_CHARTER_REQUEST_DESCRIPTION">
+				<Size x="350"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TitleText" relativePoint="BOTTOM" y="-20"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="LocationText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_LOCATION">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.DescriptionText" relativePoint="BOTTOM" y="-20"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" justifyH="RIGHT" text="HOUSING_CHARTER_REQUEST_NAME">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.LocationText" relativePoint="BOTTOM" y="-8"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_SIGN_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+			</Anchors>
+		</Button>
+		<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="HOUSING_CHARTER_REQUEST_DECLINE_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+			</Anchors>
+		</Button>
+	</Frames>
 </Frame>
 
 <Frame name="HousingCharterFrame" mixin="HousingCharterMixin" parent="UIParent" movable="true" enableMouse="true" hidden="true">

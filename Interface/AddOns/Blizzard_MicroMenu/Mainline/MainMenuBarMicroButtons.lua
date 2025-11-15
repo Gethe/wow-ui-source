@@ -1896,6 +1896,6 @@ function MainMenuMicroButtonMixin:OnLeave()
 end
 
 function MainMenuMicroButtonMixin:UpdateNotificationIcon()
-	local needEditModeNotification = EditModeManagerFrame:CanEnterEditMode() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EditModeManager);
+	local needEditModeNotification = EditModeManagerFrame:CanEnterEditMode() and EditModeManagerFrame.Tutorial:HasHelptipsToShow();
 	self.NotificationOverlay:SetShown(needEditModeNotification or CurrentVersionHasNewUnseenSettings());
 end

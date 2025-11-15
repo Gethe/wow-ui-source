@@ -119,9 +119,9 @@ function RewardTrackFrameMixin:SetSelection(index, forceRefresh, skipSound, over
 	self:RefreshView();
 end
 
-function RewardTrackFrameMixin:RefreshView()
+function RewardTrackFrameMixin:RefreshView(forceRefresh)
 	local centerIndex = self:GetClosestIndexToCenter();
-	if self.centerIndex ~= centerIndex then
+	if forceRefresh or (self.centerIndex ~= centerIndex) then
 		self.centerIndex = centerIndex;
 		local leftIndex = math.max(1, centerIndex - self.numElementsPerHalf);
 		local rightIndex = math.min(centerIndex + self.numElementsPerHalf, self.numElements);
@@ -178,7 +178,7 @@ end
 
 function RewardTrackFrameMixin:StopScroll(direction)
 	self.scrollTime = nil;
-	if not self.moving and self.direction then
+	if not self.moving and self.selectedIndex and self.direction then
 		self:SetSelection(self.selectedIndex + self.direction);
 	end
 	self.moving = false;

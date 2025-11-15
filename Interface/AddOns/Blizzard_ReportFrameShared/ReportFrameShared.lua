@@ -154,7 +154,7 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	local minorCategories = C_ReportSystem.GetMinorCategoriesForReportTypeAndMajorCategory(reportType, majorType);
 	self.selectedMajorType = majorType;
 	self.minorCategoryFlags:ClearAll();
-	self.requiresScreenshot = C_ReportSystem.RequiresScreenshotForReportType(reportType);
+	self.requiresScreenshot = C_ReportSystem.RequiresScreenshotForReportType(reportType, majorType);
 	if(not minorCategories and not self.requiresScreenshot) then
 		return;
 	end
@@ -174,6 +174,8 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 	end
 	if(self.lastCategory) then
 		self.MinorReportDescription:Show();
+	else
+		self.MinorReportDescription:Hide();
 	end
 	if(self.requiresScreenshot) then
 		self.ScreenshotReportingFrame:ClearAllPoints();
@@ -184,6 +186,8 @@ function SharedReportFrameMixin:MajorTypeSelected(reportType, majorType)
 		end
 		self.ScreenshotReportingFrame:Show();
 		self.lastCategory = self.ScreenshotReportingFrame;
+	else
+		self.ScreenshotReportingFrame:Hide();
 	end
 	self.Comment:ClearAllPoints();
 	self.Comment:SetPoint("TOP", self.lastCategory, "BOTTOM", 0, -10);
@@ -413,9 +417,10 @@ function ReportInfo:CreateNeighborhoodReportInfo(reportType)
 	return reportInfo;
 end
 
-function ReportInfo:CreateDecorReportInfo(reportType, plotIndex)
+function ReportInfo:CreateDecorReportInfo(reportType, plotIndex, neighborhoodGUID)
 	local reportInfo = self:CreateReportInfoFromType(reportType);
 	reportInfo:SetPlotIndex(plotIndex);
+	reportInfo:SetNeighborhoodGUID(neighborhoodGUID);
 	return reportInfo;
 end
 
@@ -485,6 +490,10 @@ end
 
 function ReportInfoMixin:SetPlotIndex(plotIndex)
 	self.plotIndex = plotIndex;
+end
+
+function ReportInfoMixin:SetNeighborhoodGUID(neighborhoodGUID)
+	self.neighborhoodGUID = neighborhoodGUID;
 end
 
 function ReportInfoMixin:SetBasicReportInfo(reportType, majorCategory, minorCategoryFlags)

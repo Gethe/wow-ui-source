@@ -65,20 +65,6 @@
 					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
-
-			<!-- TODO: Remove once majority of core expected Catalog functionality has been implemented -->
-			<Frame parentKey="TempDisclaimer" setAllPoints="true">
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="DisclaimerText" inherits="GameFontHighlightHuge" text="Catalog UI is a work in progress">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="80" y="-30"/>
-							</Anchors>
-							<Color r="1.0" g="0.0" b="1.0" />
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">

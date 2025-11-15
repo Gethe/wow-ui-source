@@ -77,8 +77,7 @@ function HousingCornerstonePurchaseFrameMixin:OnEvent(event, ...)
 	if event == "PURCHASE_PLOT_RESULT" then
 		local result = ...;
 		if result ~= 0 then
-			HousingTopBannerFrame:SetBannerText(HOUSING_CORNERSTONE_HOUSE_PURCHASED_TOAST, self.neighborhoodName);
-			TopBannerManager_Show(HousingTopBannerFrame);
+			EventRegistry:RegisterCallback("CinematicFrame.CinematicStopped", self.OnCinematicStopped, self);
 		else
 			UIErrorsFrame:AddExternalErrorMessage(HOUSING_PURCHASE_PLOT_ERROR);
 		end
@@ -87,6 +86,12 @@ function HousingCornerstonePurchaseFrameMixin:OnEvent(event, ...)
 	elseif event == "CLOSE_PLOT_CORNERSTONE" then
 		HideUIPanel(HousingCornerstonePurchaseFrame);
 	end
+end
+
+function HousingCornerstonePurchaseFrameMixin:OnCinematicStopped()
+	HousingTopBannerFrame:SetBannerText(HOUSING_CORNERSTONE_HOUSE_PURCHASED_TOAST, self.neighborhoodName);
+	TopBannerManager_Show(HousingTopBannerFrame);
+	EventRegistry:UnregisterCallback("CinematicFrame.CinematicStopped", self);
 end
 
 function HousingCornerstonePurchaseFrameMixin:OnShow()
@@ -173,10 +178,11 @@ local CantPurchaseReasonStrings = {
 	[Enum.PurchaseHouseDisabledReason.WrongGuild] = HOUSING_CORNERSTONE_NOT_IN_GUILD,
 	[Enum.PurchaseHouseDisabledReason.NotInvited] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.NoExpansion] = HOUSING_CORNERSTONE_MIDNIGHT_PERMISSION,
-	[Enum.PurchaseHouseDisabledReason.Reserved] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
+	[Enum.PurchaseHouseDisabledReason.Reserved] = ERR_HOUSING_RESULT_PLOT_RESERVED,
 	[Enum.PurchaseHouseDisabledReason.GuildLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.CharterLockout] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 	[Enum.PurchaseHouseDisabledReason.MaxHouses] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
+	[Enum.PurchaseHouseDisabledReason.NoGameTimeRemaining] = HOUSING_CORNERSTONE_GENERIC_PERMISSION,
 };
 
 function HousingCornerstonePurchaseFrameMixin:OnHide()
@@ -234,6 +240,7 @@ function HousingCornerstonePurchaseFrameMixin:OnPurchaseClicked()
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY);
 	elseif self.purchaseMode == Enum.CornerstonePurchaseMode.Import then
 		StaticPopupSpecial_Show(ImportHouseConfirmationDialog);
+		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_BUTTONS);
 	elseif self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
 		StaticPopupSpecial_Show(MoveHouseConfirmationDialog);
 		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_MOVE);
@@ -269,7 +276,7 @@ end
 
 function HousingCornerstoneVisitorFrameSharedMixin:OnReportClicked()
 	if self.houseInfo then
-		local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID);
+		local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID, self.houseInfo.neighborhoodGUID);
 		ReportFrame:InitiateReport(reportInfo, self.houseInfo.ownerName, nil, --[[isBnetReport]] false, --[[sendReportWithoutDialog]] false);
 	end
 end
@@ -398,7 +405,6 @@ function MoveHouseConfirmationDialogMixin:OnLoad()
 	self.ConfirmButton:SetScript("OnClick", function()
 		HousingCornerstonePurchaseFrame:OnConfirmPurchase();
 		StaticPopupSpecial_Hide(self);
-		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_MOVE_CONFIRM);
 	end);
 
 	self.CancelButton:SetScript("OnClick", function()
@@ -449,6 +455,7 @@ function ImportHouseConfirmationDialogMixin:OnLoad()
 
 	self.CancelButton:SetScript("OnClick", function()
 		StaticPopupSpecial_Hide(self);
+		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_BUTTONS);
 	end);
 end
 

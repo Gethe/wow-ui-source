@@ -123,6 +123,15 @@ local HousingDecorUI =
 			},
 		},
 		{
+			Name = "HasMaxPlacementBudget",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasMaxBudget", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDecorSelected",
 			Type = "Function",
 
@@ -138,6 +147,24 @@ local HousingDecorUI =
 			Returns =
 			{
 				{ Name = "gridVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHouseExteriorDoorHovered",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHouseExteriorDoorHovered", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHouseExteriorHovered",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHouseExteriorHovered", Type = "bool", Nilable = false },
 			},
 		},
 		{

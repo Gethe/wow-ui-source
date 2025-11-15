@@ -36,6 +36,8 @@ function HouseEditorCustomizeModeMixin:OnEvent(event, ...)
 				self:OnDecorHovered();
 			elseif targetType == Enum.HousingCustomizeModeTargetType.RoomComponent then
 				self:OnRoomComponentHovered();
+			elseif targetType == Enum.HousingCustomizeModeTargetType.ExteriorHouse then
+				self:ShowHouseTooltip();
 			end
 		else
 			GameTooltip:Hide();
@@ -167,6 +169,10 @@ function HouseEditorCustomizeModeMixin:ShowDecorInstanceTooltip(decorInstanceInf
 	end
 	GameTooltip:Show();
 	return GameTooltip;
+end
+
+function HouseEditorCustomizeModeMixin:ShowHouseTooltip()
+	-- TODO: Error tooltip can go here in the future, existing string references decor (and the house is not decor).
 end
 
 function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)

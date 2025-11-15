@@ -1324,6 +1324,7 @@ function EventToastHouseUpgradeAvailableMixin:Setup(toastInfo)
 	self.Border:SetWidth((self.Border:GetHeight() / borderAtlasInfo.height) * borderAtlasInfo.width);
 
 	self:Show();
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_UPGRADE_READY_TOAST);
 	self:SetSkipParentAnim(true);
 	self:AnimIn();
 end

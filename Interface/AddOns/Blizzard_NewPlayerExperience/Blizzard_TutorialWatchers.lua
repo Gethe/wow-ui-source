@@ -490,6 +490,7 @@ end
 function Class_XPBarWatcher:QUEST_TURNED_IN(completedQuestID)
 	Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
+	Dispatcher:RegisterEvent("TALKINGHEAD_REQUESTED", self);
 
 	local watcher = TutorialManager:GetWatcher("UI_Watcher");
 	if watcher then
@@ -503,6 +504,11 @@ end
 
 function Class_XPBarWatcher:QUEST_DETAIL()
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+	self:Complete();
+end
+
+function Class_XPBarWatcher:TALKINGHEAD_REQUESTED()
+	Dispatcher:UnregisterEvent("TALKINGHEAD_REQUESTED", self);
 	self:Complete();
 end
 

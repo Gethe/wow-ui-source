@@ -93,8 +93,11 @@ function HousingFramesUtil.SetNudgeEnabled(nudgeEnabled)
 end
 
 function HousingFramesUtil.ZoomLayoutCamera(zoom)
-	PlaySound(zoom and SOUNDKIT.HOUSING_LAYOUT_ZOOM_IN or SOUNDKIT.HOUSING_LAYOUT_ZOOM_OUT);
-	C_HousingLayout.ZoomLayoutCamera(zoom);
+	local zoomChanged = C_HousingLayout.ZoomLayoutCamera(zoom);
+
+	if zoomChanged then
+		PlaySound(zoom and SOUNDKIT.HOUSING_LAYOUT_ZOOM_IN or SOUNDKIT.HOUSING_LAYOUT_ZOOM_OUT);
+	end
 end
 
 function HousingFramesUtil.RotateBasicDecorSelection(direction)
@@ -108,6 +111,80 @@ function HousingFramesUtil.RotateBasicDecorSelection(direction)
 	end
 
 	PlaySound(SOUNDKIT.HOUSING_ROTATE_ITEM);
+end
+
+function HousingFramesUtil.PreviewHousingCatalogEntryInfo(entryInfo)
+	if not entryInfo then
+		return false;
+	end
+	if not HousingModelPreviewFrame then
+		C_AddOns.LoadAddOn("Blizzard_HousingModelPreview");
+	end
+	if HousingModelPreviewFrame then
+		HousingModelPreviewFrame:ShowCatalogEntryInfo(entryInfo);
+		return true;
+	end
+
+	return false;
+end
+
+function HousingFramesUtil.PreviewHousingCatalogEntryID(entryID)
+	if not C_HousingCatalog or not entryID then
+		return false;
+	end
+
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
+	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
+end
+
+function HousingFramesUtil.PreviewHousingDecorID(decorID)
+	if not C_HousingCatalog or not decorID then
+		return false;
+	end
+
+	local tryGetOwnedInfo = true;
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, decorID, tryGetOwnedInfo);
+	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
+end
+
+-- Preview the model for a catalog entry by its corresponding Item
+-- itemIdentifier can be an item id, name, or link
+function HousingFramesUtil.PreviewHousingItem(itemIdentifier)
+	if not C_HousingCatalog or not itemIdentifier then
+		return false;
+	end
+
+	local tryGetOwnedInfo = true;
+	local catalogEntryInfo = C_HousingCatalog.GetCatalogEntryInfoByItem(itemIdentifier, tryGetOwnedInfo);
+	return HousingFramesUtil.PreviewHousingCatalogEntryInfo(catalogEntryInfo);
+end
+
+function HousingFramesUtil.HandleRotateBasicDecorSelectionLeftKeybind(keystate)
+	if C_HousingBasicMode.IsDecorSelected() or C_HousingBasicMode.IsHouseExteriorSelected() then
+		if keystate == "down" then
+			HousingFramesUtil.RotateBasicDecorSelection(1);
+		end
+	else
+		local key = GetBindingKey("HOUSING_BASICDECOR_ROTATELEFT");
+		local baseBinding = C_KeyBindings.GetBindingByKey(key, Enum.BindingContext.None);
+		if baseBinding ~= "NONE" then
+			RunBinding(baseBinding, keystate);
+		end
+	end
+end
+
+function HousingFramesUtil.HandleRotateBasicDecorSelectionRightKeybind(keystate)
+	if C_HousingBasicMode.IsDecorSelected() or C_HousingBasicMode.IsHouseExteriorSelected() then
+		if keystate == "down" then
+			HousingFramesUtil.RotateBasicDecorSelection(-1);
+		end
+	else
+		local key = GetBindingKey("HOUSING_BASICDECOR_ROTATERIGHT");
+		local baseBinding = C_KeyBindings.GetBindingByKey(key, Enum.BindingContext.None);
+		if baseBinding ~= "NONE" then
+			RunBinding(baseBinding, keystate);
+		end
+	end
 end
 
 -- Handler for events that may fire while relevant Housing addons may not be loaded

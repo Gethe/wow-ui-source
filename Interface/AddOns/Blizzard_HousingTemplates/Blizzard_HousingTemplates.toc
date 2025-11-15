@@ -20,5 +20,3 @@ Blizzard_HousingActionButton.lua
 Blizzard_HousingActionButton.xml
 Blizzard_HousingTopBanner.lua
 Blizzard_HousingTopBanner.xml
-Blizzard_HousingModelPreview.lua
-Blizzard_HousingModelPreview.xml

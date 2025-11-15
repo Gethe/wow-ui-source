@@ -318,7 +318,7 @@
 	</Frame>
 
 	<Frame name="MoveHouseConfirmationDialog" mixin="MoveHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
-		<Size x="400" y="350"/>
+		<Size x="400" y="230"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -328,26 +328,28 @@
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="ConfirmationText" inherits="Game20Font" text="HOUSING_CORNERSTONE_MOVE_DIALOG">
+				<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_MOVE_DIALOG">
+					<Size x="350"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-15"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" x="-15" y="15"/>
+						<Anchor point="TOP" y="-20"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="HouseToMoveLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_HOUSE_TO_MOVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="LEFT" x="25"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOMLEFT" y="-20"/>
 					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 				<FontString parentKey="HouseToMoveText" inherits="Game15Font_Shadow" text="house name here">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToMoveLabel" relativePoint="BOTTOMLEFT" x="5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToMoveLabel" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="PriceLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_PRICE">
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToMoveLabel" relativePoint="BOTTOMLEFT" y="-30"/>
 					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -374,30 +376,22 @@
 				</Anchors>
 			</Frame>
 			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="42"/>
+				<Size x="152" y="28"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalMed2"/>
-				<HighlightFont style="GameFontNormalMed2"/>
-				<DisabledFont style="GameFontDisableMed2"/>
-				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="42"/>
+				<Size x="152" y="28"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalMed2"/>
-				<HighlightFont style="GameFontNormalMed2"/>
-				<DisabledFont style="GameFontDisableMed2"/>
-				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
 		</Frames>
 	</Frame>
 
 	<Frame name="ImportHouseConfirmationDialog" mixin="ImportHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
-		<Size x="400" y="300"/>
+		<Size x="400" y="200"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
 		</Anchors>
@@ -407,44 +401,37 @@
 		</Scripts>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="ConfirmationText" inherits="Game20Font" text="HOUSING_CORNERSTONE_IMPORT_DIALOG">
+				<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_IMPORT_DIALOG">
+					<Size x="350"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="15" y="-15"/>
-						<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" x="-15" y="15"/>
+						<Anchor point="TOP" y="-20"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="HouseToImportLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_HOUSE_TO_IMPORT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="LEFT" x="25"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOMLEFT" y="-20"/>
 					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
 				</FontString>
 				<FontString parentKey="HouseToImportText" inherits="Game15Font_Shadow" text="house name here">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToImportLabel" relativePoint="BOTTOMLEFT" x="5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToImportLabel" relativePoint="BOTTOMLEFT" y="-5"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="42"/>
+				<Size x="152" y="28"/>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalMed2"/>
-				<HighlightFont style="GameFontNormalMed2"/>
-				<DisabledFont style="GameFontDisableMed2"/>
-				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
 			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
-				<Size x="152" y="42"/>
+				<Size x="152" y="28"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalMed2"/>
-				<HighlightFont style="GameFontNormalMed2"/>
-				<DisabledFont style="GameFontDisableMed2"/>
-				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 			</Button>
 		</Frames>
 	</Frame>

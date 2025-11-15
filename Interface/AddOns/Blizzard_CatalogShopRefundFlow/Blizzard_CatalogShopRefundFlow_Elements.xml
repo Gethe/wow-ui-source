@@ -1,0 +1,29 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+
+	<Button name="CatalogShopRefundButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
+		<Size x="180" y="30"/>
+		<NormalFont style="GameFontWhiteLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>
+		<Scripts>
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
+
+	<Button name="CatalogShopRedGoldRefundButtonTemplate" inherits="SharedGoldRedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
+		<Size x="180" y="30"/>
+		<NormalFont style="GameFontNormalLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<DisabledFont style="GameFontDisableLarge"/>		
+		<Scripts>
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
+
+</Ui>

@@ -16,14 +16,13 @@ function HousingUpgradeFrameMixin:OnLoad()
 
 	self.maxLevel = C_Housing.GetMaxHouseLevel() + 1; --+1 for the "coming soon" level
 	self.houseLevelRewardInfos = {};
-
+	table.insert(self.houseLevelRewardInfos, {level = self.maxLevel, rewards = "no rewards"});
 	for i = 1, self.maxLevel - 1 do
-		table.insert(self.houseLevelRewardInfos, {
+		table.insert(self.houseLevelRewardInfos, i, {
 			level = i;
 		});
 		C_Housing.GetHouseLevelRewardsForLevel(i); --will respond with RECEIVED_HOUSE_LEVEL_REWARDS
 	end
-	table.insert(self.houseLevelRewardInfos, {level = self.maxLevel, rewards = "no rewards"});
 
 	self.CurrentLevelFrame.HouseBarFrame.Bar.BarFill:SetFinishAnimCallback(GenerateClosure(self.RefreshSelectedElement, self));
 
@@ -96,20 +95,25 @@ function HousingUpgradeFrameMixin:SelectHouseLevel(houseLevelFavor)
 	self.houseFavorNeeded = C_Housing.GetHouseLevelFavorForLevel(self.actualLevel + 1);
 
 	self.CurrentLevelFrame.HouseLevelText:SetText(self.actualLevel);
-	self.CurrentLevelFrame.HouseLevelText:ClearAllPoints()
+	self.CurrentLevelFrame.HouseLevelText:ClearAllPoints();
 	-- The FRIZQT font has a problemm with rendering 1 (or numbers starting with 1), which causes it to be off center
 	-- So, we have to detect that and manually bump it back into the center
 	local levelString = tostring(self.actualLevel);
 	local indexOf1 = string.find(levelString, "1");
 	if indexOf1 == 1 then
-		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", -2, -10);
+		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", 4, -10);
 	else
-		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", 0, -10);
+		self.CurrentLevelFrame.HouseLevelText:SetPoint("CENTER", 6, -10);
 	end
 
-	if not self.hasSelectedLevel and self:AllRewardsLoaded() then
-		local fromOnShow, forceRefresh = false, true;
-		self:SelectLevel(self.displayLevel, fromOnShow, forceRefresh);
+	if self:AllRewardsLoaded() then
+		if self.hasSelectedLevel then
+			local forceRefresh = true;
+			self.TrackFrame:RefreshView(forceRefresh);
+		else
+			local fromOnShow, forceRefresh = false, true;
+			self:SelectLevel(self.displayLevel, fromOnShow, forceRefresh);
+		end
 	end
 	local BarFill = self.CurrentLevelFrame.HouseBarFrame.Bar.BarFill;
 	BarFill:SetHouseLevelFavor(self.actualLevel, houseLevelFavor);
@@ -141,13 +145,15 @@ end
 function HousingUpgradeFrameMixin:RefreshSelectedElement()
 	local elements = self.TrackFrame:GetElements();
 	local frame = elements[self.displayLevel];
-	local selected = true;
-	frame:Refresh(self.actualLevel, self.displayLevel, selected, self.houseFavor);
+	if frame then
+		local selected = true;
+		frame:Refresh(self.actualLevel, self.displayLevel, selected, self.houseFavor);
 
-	local neededFavor = C_Housing.GetHouseLevelFavorForLevel(self.displayLevel);
-	self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel);
-	if self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
-		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_FILLED);
+		local neededFavor = C_Housing.GetHouseLevelFavorForLevel(self.displayLevel);
+		self.TrackFrame.ReminderText:SetShown(self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel);
+		if self:IsShown() and self.houseFavor >= neededFavor and self.actualLevel < self.displayLevel then
+			PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_FILLED);
+		end
 	end
 end
 
@@ -372,7 +378,7 @@ function HousingTeleportToHouseMixin:UpdateState()
 	self.teleportToPlot = true;
 	if C_HousingNeighborhood.CanReturnAfterVisitingHouse() then
 		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
-		if currentNeighborhoodGUID and currentNeighborhoodGUID == self.houseInfo.neighborhoodGUID then
+		if currentNeighborhoodGUID and self.houseInfo and currentNeighborhoodGUID == self.houseInfo.neighborhoodGUID then
 			self.teleportToPlot = false;
 		end
 	end
@@ -428,10 +434,15 @@ end
 HouseUpgradeCurrentLevelFrameMixin = {}
 
 function HouseUpgradeCurrentLevelFrameMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 	local parent = self:GetParent();
+	if not parent.actualLevel or not parent.houseFavorNeeded then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 	GameTooltip_AddNormalLine(GameTooltip, string.format(HOUSING_DASHBOARD_HOUSE_LEVEL, parent.actualLevel));
 	GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR, parent.houseFavor, parent.houseFavorNeeded));
+	GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DASHBOARD_NEIGHBORHOOD_FAVOR_TOOLTIP);
 	GameTooltip:Show();
 end
 
@@ -515,12 +526,21 @@ function HouseUpgradeProgressBarMixin:OnUpdate()
 	self.BarAnimation:Restart();
 end
 
-function HouseUpgradeProgressBarMixin:OnAnimationFinished()
-
-	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+function HouseUpgradeProgressBarMixin:OnHide()
 	if self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
 		self.loopSoundHandle = nil;
+	end
+end
+
+function HouseUpgradeProgressBarMixin:OnAnimationFinished()
+
+	if self.loopSoundHandle then
+		StopSound(self.loopSoundHandle);
+		self.loopSoundHandle = nil;
+		if self:IsVisible() then
+			PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+		end
 	end
 	self.finishAnimCallback();
 end
@@ -541,8 +561,14 @@ function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
 
 	self.targetPercentage = finalDisplayPercentage;
 
-	if self.targetPercentage ~= self.currentPercentage then
+	if self:IsVisible() and self.targetPercentage ~= self.currentPercentage then
 		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_START);
+
+		if self.loopSoundHandle then
+			StopSound(self.loopSoundHandle);
+			self.loopSoundHandle = nil;
+		end
+
 		local _, soundHandle = PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_LOOP);
 		self.loopSoundHandle = soundHandle;
 	end

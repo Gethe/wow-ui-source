@@ -60,9 +60,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 37,
+			NumValues = 40,
 			MinValue = 1,
-			MaxValue = 37,
+			MaxValue = 40,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -102,6 +102,9 @@ local Tutorial =
 				{ Name = "HousingTeleportButton", Type = "FrameTutorialAccount", EnumValue = 35 },
 				{ Name = "RPETalentStarterBuild", Type = "FrameTutorialAccount", EnumValue = 36 },
 				{ Name = "HousingInvalidCollision", Type = "FrameTutorialAccount", EnumValue = 37 },
+				{ Name = "HousingModesUnlocked", Type = "FrameTutorialAccount", EnumValue = 38 },
+				{ Name = "HousingExpertMode", Type = "FrameTutorialAccount", EnumValue = 39 },
+				{ Name = "HousingCleanupMode", Type = "FrameTutorialAccount", EnumValue = 40 },
 			},
 		},
 	},

@@ -29,6 +29,8 @@ function HousingDashboardFrameMixin:OnLoad()
 	table.insert(self.tabs, self.catalogTab);
 
 	self.activeTab = self.houseInfoTab;
+	self.baseWidth = self:GetWidth();
+	self.baseHeight = self:GetHeight();
 end
 
 function HousingDashboardFrameMixin:OnShow()
@@ -61,6 +63,7 @@ function HousingDashboardFrameMixin:SetTab(activeTab)
 		tab.contentFrame:SetShown(isActive);
 		if isActive then
 			activeTabInfo = tab;
+			self:UpdateSizeToContent(tab.contentFrame);
 		end
 	end
 
@@ -70,4 +73,14 @@ end
 function HousingDashboardFrameMixin:GetPanelExtraWidth()
 	local frame = self.TabButtons[1];
 	return frame:GetWidth();
+end
+
+function HousingDashboardFrameMixin:UpdateSizeToContent(contentFrame)
+	if contentFrame.DashboardNoHousesFrame and contentFrame.DashboardNoHousesFrame:IsShown() then
+		local noHousesDashWidth = 800;
+		local noHousesDashHeight = 498;
+		self:SetSize(noHousesDashWidth, noHousesDashHeight);
+	else
+		self:SetSize(self.baseWidth, self.baseHeight);
+	end
 end

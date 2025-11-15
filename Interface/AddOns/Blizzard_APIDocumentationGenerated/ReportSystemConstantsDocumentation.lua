@@ -61,6 +61,19 @@ local ReportSystemConstants =
 			},
 		},
 		{
+			Name = "ReportStorageProvider",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Aws", Type = "ReportStorageProvider", EnumValue = 0 },
+				{ Name = "Alibaba", Type = "ReportStorageProvider", EnumValue = 1 },
+				{ Name = "Gcp", Type = "ReportStorageProvider", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "ReportSubComplaintTypes",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -88,9 +101,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -113,6 +126,20 @@ local ReportSystemConstants =
 				{ Name = "RecentAlly", Type = "ReportType", EnumValue = 17 },
 				{ Name = "HousingDecor", Type = "ReportType", EnumValue = 18 },
 				{ Name = "Neighborhood", Type = "ReportType", EnumValue = 19 },
+				{ Name = "NeighborhoodRoster", Type = "ReportType", EnumValue = 20 },
+			},
+		},
+		{
+			Name = "ScreenshotSource",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Automatic", Type = "ScreenshotSource", EnumValue = 0 },
+				{ Name = "PlayerReport", Type = "ScreenshotSource", EnumValue = 1 },
+				{ Name = "Cheat", Type = "ScreenshotSource", EnumValue = 2 },
 			},
 		},
 		{

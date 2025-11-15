@@ -203,9 +203,9 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="PerformanceIndicator" atlas="ui-mainmenubar-performancebar-screen">
-					<Size x="14" y="7"/>
+					<Size x="14" y="9"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT" x="10" y="-34"/>
+						<Anchor point="TOPLEFT" relativeTo="MainMenuMicroButton" relativePoint="TOPLEFT" x="10" y="-13"/>
 					</Anchors>
 				</Texture>
 			</Layer>

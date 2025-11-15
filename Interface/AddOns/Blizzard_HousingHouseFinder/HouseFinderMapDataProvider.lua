@@ -65,7 +65,7 @@ function HouseFinderPlotForSalePinMixin:OnMouseEnter()
 
 	if not self.SelectedUnderlay:IsShown() then
 		PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_HOVER);
-		HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, -8);
+		HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, -4);
 		HouseFinderHighlightedPlotTooltip:SetPlotInfo(self.plotInfo);
 		HouseFinderHighlightedPlotTooltip:Show();
 	end
@@ -140,19 +140,17 @@ function HouseFinderFriendsPlotPinMixin:OnAcquired(mapPlotInfo, dataProvider)
 end
 
 function HouseFinderFriendsPlotPinMixin:Refresh()
-	self.SelectedUnderlay:Hide();
+
 end
 
 function HouseFinderFriendsPlotPinMixin:OnMouseEnter()
-	self.HighlightTexture:Show();
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_HOVER);
-	HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, -8);
+	HouseFinderHighlightedPlotTooltip:SetPoint("BOTTOM", self, "TOP", 0, 0);
 	HouseFinderHighlightedPlotTooltip:SetPlotInfo(self.plotInfo);
 	HouseFinderHighlightedPlotTooltip:Show();
 end
 
 function HouseFinderFriendsPlotPinMixin:OnMouseLeave()
-	self.HighlightTexture:Hide();
 	HouseFinderHighlightedPlotTooltip:Hide();
 end
 
@@ -174,7 +172,7 @@ function SelectedPlotTooltipMixin:SetPlotInfo(plotInfo)
 		MoneyFrame_Update(self.PriceMoneyFrame, plotInfo.plotCost);
 		self.PriceMoneyFrame:Show();
 	elseif plotInfo.ownerType == Enum.HousingPlotOwnerType.Friend then
-		self.CornerIcon:SetAtlas("housefinder_friend-icon-circle");
+		self.CornerIcon:SetAtlas("housefinder_bnet-friend-icon-circle");
 		self.HeaderText:SetText(plotInfo.ownerName);
 		self.SubText:SetText(HOUSEFINDER_FRIEND);
 		self.SubText:Show();

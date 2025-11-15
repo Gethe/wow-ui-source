@@ -14,6 +14,9 @@
 	</Layers>
 	<Frames>
 		<DropdownButton parentKey="AccessTypeDropdown" inherits="WowStyle2DropdownTemplate">
+			<KeyValues>
+				<KeyValue key="menuMixin" value="MenuStyle1Mixin" type="global"/>
+			</KeyValues>
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" y="-5"/>
 			</Anchors>
@@ -70,20 +73,12 @@
 				<Anchors>
 					<Anchor point="TOP" y="-15"/>
 				</Anchors>
-			</FontString>
-			<FontString parentKey="PlotNumber" inherits="Game15Font_Shadow" text="plot number here">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.HouseName" relativePoint="BOTTOM" y="-5"/>
-				</Anchors>
-			</FontString>
-			<FontString parentKey="NameNeighborhoodName" inherits="Game15Font_Shadow" text="neighborhood name here">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.PlotNumber" relativePoint="BOTTOM" y="-5"/>
-				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
 			</FontString>
 			<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_ABANDON_CONFIRMATION">
+				<Size x="250"/>
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.NameNeighborhoodName" relativePoint="BOTTOM" y="-25"/>
+					<Anchor point="TOP" relativeKey="$parent.HouseName" relativePoint="BOTTOM" y="-25"/>
 				</Anchors>
 			</FontString>
 			<FontString parentKey="ConfirmationDescription" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_ABANDON_DESCRIPTION">
@@ -108,6 +103,7 @@
 						<Anchors>
 							<Anchor point="LEFT"/>
 						</Anchors>
+						<Color r="1.0" g="0.82" b="0"/>
 					</FontString>
 				</Layer>
 			</Layers>
@@ -120,24 +116,16 @@
 			</Frames>
 		</Frame>
 		<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
-			<Size x="152" y="42"/>
+			<Size x="152" y="28"/>
 			<Anchors>
 				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
 			</Anchors>
-			<NormalFont style="GameFontNormalMed2"/>
-			<HighlightFont style="GameFontNormalMed2"/>
-			<DisabledFont style="GameFontDisableMed2"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
 		<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
-			<Size x="152" y="42"/>
+			<Size x="152" y="28"/>
 			<Anchors>
 				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
 			</Anchors>
-			<NormalFont style="GameFontNormalMed2"/>
-			<HighlightFont style="GameFontNormalMed2"/>
-			<DisabledFont style="GameFontDisableMed2"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
 	</Frames>
 </Frame>
@@ -148,6 +136,7 @@
 		<OnLoad method="OnLoad"/>
 		<OnEvent method="OnEvent"/>
 		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
 	</Scripts>
 	<Frames>
 		<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
@@ -166,20 +155,12 @@
 			<Anchors>
 				<Anchor point="BOTTOMLEFT" x="46" y="34" />
 			</Anchors>
-			<NormalFont style="GameFontNormalSmall"/>
-			<HighlightFont style="GameFontNormalSmall"/>
-			<DisabledFont style="GameFontDisableSmall"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
-		<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="Save">
+		<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
 			<Size x="152" y="28"/>
 			<Anchors>
 				<Anchor point="BOTTOMRIGHT" x="-46" y="34" />
 			</Anchors>
-			<NormalFont style="GameFontNormalSmall"/>
-			<HighlightFont style="GameFontNormalSmall"/>
-			<DisabledFont style="GameFontDisableSmall"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
 
 		<DropdownButton parentKey="HouseOwnerDropdown" inherits="WowStyle1DropdownTemplate">
@@ -193,10 +174,6 @@
 			<Anchors>
 				<Anchor point="TOPRIGHT" x="-36" y="-110"/>
 			</Anchors>
-			<NormalFont style="GameFontNormalSmall"/>
-			<HighlightFont style="GameFontNormalSmall"/>
-			<DisabledFont style="GameFontDisableSmall"/>
-			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
 		</Button>
 	</Frames>
 	<Layers>
@@ -206,8 +183,8 @@
 		<Layer level="BACKGROUND">
 			<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="8" y="-8"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-10" y="-45"/>
+					<Anchor point="TOPLEFT" x="6" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-6" y="-45"/>
 				</Anchors>
 			</Texture>
 			<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">

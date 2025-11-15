@@ -5,50 +5,99 @@
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-30"/>
 		</Anchors>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="controls-frame">
-					<Size x="310" y="39"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button parentKey="HouseEditorButton" inherits="HouseEditorButtonTemplate">
-				<Size x="68" y="68"/>
-				<Anchors>
-					<Anchor point="CENTER" x="0" y="-12"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="SettingsButton" inherits="HouseSettingsButtonTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.HouseEditorButton" relativePoint="RIGHT" x="10" y="3"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="ExitButton" inherits="HousingExitButtonTemplate">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.SettingsButton" relativePoint="RIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
 
-			<Button parentKey="HouseInfoButton" inherits="HouseInfoButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HouseEditorButton" relativePoint="LEFT" x="-10" y="3"/>
-				</Anchors>
-			</Button>
-			<Button parentKey="InspectorButton" inherits="HouseInspectorButtonTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HouseInfoButton" relativePoint="LEFT" x="0" y="0"/>
-				</Anchors>
-			</Button>
+		<Frames>
+			<Frame parentKey="OwnerControlFrame" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="controls-frame">
+							<Size x="310" y="39"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="HouseEditorButton" inherits="HouseEditorButtonTemplate">
+						<Size x="68" y="68"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-12"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="SettingsButton" inherits="HouseSettingsButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.HouseEditorButton" relativePoint="RIGHT" x="10" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ExitButton" inherits="HousingExitButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.SettingsButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="HouseInfoButton" inherits="HouseInfoButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.HouseEditorButton" relativePoint="LEFT" x="-10" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="InspectorButton" inherits="HouseInspectorButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.HouseInfoButton" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="VisitorControlFrame" mixin="VisitorControlFrameMixin" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="OwnerNameText" inherits="GameFontNormalHuge">
+							<Size x="250"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+							<Color color="HOUSING_CONTROL_PANEL_TITLE"/>
+						</FontString>
+						
+						<Texture parentKey="Divider" atlas="controls-frame-guest" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.OwnerNameText" relativePoint="BOTTOM" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="VisitorHouseInfoButton" inherits="HouseInfoButtonTemplate">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" x="0" y="-5"/>
+						</Anchors>
+					</Button>
+					
+					<Button parentKey="VisitorExitButton" inherits="HousingExitButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.VisitorHouseInfoButton" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+
+					<Button parentKey="VisitorInspectorButton" inherits="HouseInspectorButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.VisitorHouseInfoButton" relativePoint="LEFT" x="0" y="0"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
 		</Frames>
+		
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
+	</Frame>
+
+	<Frame name="HousingVisitorControlsFrame">
+		
 	</Frame>
 </Ui>

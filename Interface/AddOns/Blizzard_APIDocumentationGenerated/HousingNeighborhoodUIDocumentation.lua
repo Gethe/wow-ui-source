@@ -175,6 +175,16 @@ local HousingNeighborhoodUI =
 			},
 		},
 		{
+			Name = "IsPlayerInOtherPlayersPlot",
+			Type = "Function",
+			Documentation = { "This returns true if the player is in a plot that is owned by another player" },
+
+			Returns =
+			{
+				{ Name = "isInUnownedPlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlotAvailableForPurchase",
 			Type = "Function",
 			Documentation = { "Only available when interacting with a cornerstone game object" },

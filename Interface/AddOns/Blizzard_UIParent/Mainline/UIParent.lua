@@ -14,6 +14,8 @@ MAX_CHARACTER_MACROS = 30;
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
 
+ERR_CHARTER_NEIGHBORHOOD_RENAME = LOGIN_STATE_AUTHENTICATED;
+
 -- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
 UIChildWindows = {
 	"OpenMailFrame",
@@ -2322,6 +2324,8 @@ function ToggleGameMenu()
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
 	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
+	elseif ( CatalogShopTopUpFlowInboundInterface.EscapePressed and CatalogShopTopUpFlowInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopRefundFlowInboundInterface.EscapePressed and CatalogShopRefundFlowInboundInterface.EscapePressed() ) then
 	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
@@ -2838,12 +2842,6 @@ function GetDisplayedInviteType(guid)
 			return "INVITE";
 		end
 	end
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	-- Timerunners levels can go above the purchased max level to the max current expansion level
-	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
-	return level >= maxLevel;
 end
 
 local INTERFACE_ACTION_BLOCKED_COUNT = 0;

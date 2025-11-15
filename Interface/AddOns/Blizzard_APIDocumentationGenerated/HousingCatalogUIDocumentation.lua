@@ -49,20 +49,6 @@ local HousingCatalogUI =
 			},
 		},
 		{
-			Name = "GetBasicDecorInfo",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "decorID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
-			},
-		},
-		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 
@@ -91,6 +77,37 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetCatalogEntryInfoByItem",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false, Documentation = { "ItemID, name, or link of an item that grants/corresponds to a particular type of housing catalog object (ex: decor)" } },
+				{ Name = "tryGetOwnedInfo", Type = "bool", Nilable = false, Documentation = { "If true and player owns this entry, will return an 'Owned' subtype, with owned quantity info; Otherwise, will be an Unowned subtype with only basic static info" } },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCatalogEntryInfoByRecordID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "recordID", Type = "number", Nilable = false },
+				{ Name = "tryGetOwnedInfo", Type = "bool", Nilable = false, Documentation = { "If true and player owns this entry, will return an 'Owned' subtype, with owned quantity info; Otherwise, will be an Unowned subtype with only basic static info" } },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "HousingCatalogEntryInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCatalogSubcategoryInfo",
 			Type = "Function",
 
@@ -102,6 +119,25 @@ local HousingCatalogUI =
 			Returns =
 			{
 				{ Name = "info", Type = "HousingCatalogSubcategoryInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetDecorMaxOwnedCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "maxOwnedCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetDecorTotalOwnedCount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "totalOwnedCount", Type = "number", Nilable = false, Documentation = { "The total owned count does not include exempt decor that does not count against the max owned count." } },
+				{ Name = "exemptDecorCount", Type = "number", Nilable = false },
 			},
 		},
 		{

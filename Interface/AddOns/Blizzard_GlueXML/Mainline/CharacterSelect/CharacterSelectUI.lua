@@ -461,7 +461,7 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 	local characterGuid = GetCharacterGUID(characterID);
 	local headersToRelease = {};
 	for _, header in ipairs(self.headerFrames) do
-		if header.basicCharacterInfo.guid == characterGuid then
+		if not header.basicCharacterInfo or header.basicCharacterInfo.guid == characterGuid then
 			table.insert(headersToRelease, header);
 		end
 	end

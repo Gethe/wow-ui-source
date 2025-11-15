@@ -231,7 +231,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="HouseLevelText" inherits="Game48Font" text="0">
 							<Anchors>
-								<Anchor point="CENTER" y="-10"/>
+								<Anchor point="CENTER" x="6" y="-10"/>
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -246,7 +246,7 @@
 							<Frame parentKey="HouseBarFrame" propagateMouseInput="Motion">
 								<Size x="128" y="128"/>
 								<Anchors>
-									<Anchor point="CENTER"/>
+									<Anchor point="CENTER" x="-4"/>
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
@@ -330,13 +330,14 @@
 								</Anchors>
 								<Frames>
 									<Cooldown parentKey="BarFill" reverse="true" hideCountdownNumbers="true" rotation="180"  mixin="HouseUpgradeProgressBarMixin" propagateMouseInput="Motion">
-										<Size x="128" y="128"/>
+										<Size x="130" y="130"/>
 										<Anchors>
-											<Anchor point="CENTER" x="1" y="-7"/>
+											<Anchor point="CENTER" x="8" y="-8"/>
 										</Anchors>
 										<SwipeTexture file="Interface\Housing\house-upgrade-radial-bar-fill"/>
 										<Scripts>
 											<OnLoad method="OnLoad"/>
+											<OnHide method="OnHide"/>
 										</Scripts>
 										<Layers>
 											<Layer level="ARTWORK">
@@ -365,6 +366,7 @@
 													</Anchors>
 													<MaskedTextures>
 														<MaskedTexture childKey="Threshold"/>
+														<MaskedTexture childKey="Flipbook"/>
 														<MaskedTexture childKey="LeadEdge"/>
 													</MaskedTextures>
 												</MaskTexture>
@@ -382,8 +384,7 @@
 						</Frames>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" texelSnappingBias="0.0" snapToPixelGrid="false">
-									<Size x="234" y="152"/>
+								<Texture parentKey="frame" atlas="house-upgrade-radial-windowframe" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
 									<Anchors>
 										<Anchor point="CENTER"/>
 									</Anchors>

@@ -9,12 +9,14 @@ local HouseInfoLifetimeEvents =
 function HousingDashboardHouseInfoMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, HouseInfoLifetimeEvents);
 
-	self:LoadHouses();
-
 	self:UpdateNoHousesDashboard();
 
 	self.HouseFinderButton:SetTextToFit(HOUSING_DASHBOARD_HOUSEFINDERBUTTON);
 	self.HouseFinderButton:SetScript("OnClick", self.OnHouseFinderButtonClicked);
+end
+
+function HousingDashboardHouseInfoMixin:OnShow()
+	self:LoadHouses();
 end
 
 function HousingDashboardHouseInfoMixin:UpdateNoHousesDashboard()
@@ -113,6 +115,8 @@ function HousingDashboardHouseInfoMixin:OnHouseListUpdated(houseInfoList)
 		self.HouseFinderButton:Hide();
 		self.ContentFrame:Hide();
 	end
+
+	self:GetParent():UpdateSizeToContent(self);
 end
 
 function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)

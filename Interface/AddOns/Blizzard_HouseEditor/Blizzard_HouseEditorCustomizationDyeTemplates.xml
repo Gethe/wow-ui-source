@@ -7,8 +7,17 @@
 			<KeyValue key="isCurrentSwatch" value="false" type="boolean"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="Housing_Customize_Dye_Frame_Default" setAllPoints="true"/>
+			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="0">
-				<Texture parentKey="SwatchEmpty" atlas="dye-drop-no-dye_32" hidden="true" useAtlasSize="true">
+				<Texture parentKey="SwatchEmpty" atlas="housing_customize_dye_swatch_empty" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SwatchClear" atlas="dye-drop-no-dye_32" hidden="true" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -22,9 +31,6 @@
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="0">
 				<Texture parentKey="Highlight" atlas="Housing_Customize_Dye_Swatch_Highlight" alphaMode="ADD" setAllPoints="true" alpha="0.05"/>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture parentKey="Border" atlas="Housing_Customize_Dye_Frame_Default" setAllPoints="true"/>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="SelectedBorder" atlas="Housing_Customize_Dye_Frame_Selected" setAllPoints="true"/>
@@ -188,7 +194,7 @@
 				<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
 					<Size y="40"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="6" y="-5"/>
 						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
 					</Anchors>
 				</Texture>

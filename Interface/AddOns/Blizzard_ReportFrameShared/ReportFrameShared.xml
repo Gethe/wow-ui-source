@@ -125,7 +125,7 @@
 			<Frame parentKey="ScreenshotReportingFrame" hidden="true">
 				<Size x="350" y="210"/>
 				<Frames>
-					<Button parentKey="TakeScreenshotButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="Take Screenshot">
+					<Button parentKey="TakeScreenshotButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="REPORTING_REPORT_SCREENSHOT_BUTTON">
 						<Size x="140" y="21"/>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>

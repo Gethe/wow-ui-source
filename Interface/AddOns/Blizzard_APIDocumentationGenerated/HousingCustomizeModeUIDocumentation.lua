@@ -115,7 +115,7 @@ local HousingCustomizeModeUI =
 
 			Returns =
 			{
-				{ Name = "previewDyes", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "previewDyes", Type = "table", InnerType = "PreviewDyeSlotInfo", Nilable = false },
 			},
 		},
 		{
@@ -335,14 +335,15 @@ local HousingCustomizeModeUI =
 		{
 			Name = "HousingCustomizeModeTargetType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "None", Type = "HousingCustomizeModeTargetType", EnumValue = 0 },
 				{ Name = "Decor", Type = "HousingCustomizeModeTargetType", EnumValue = 1 },
 				{ Name = "RoomComponent", Type = "HousingCustomizeModeTargetType", EnumValue = 2 },
+				{ Name = "ExteriorHouse", Type = "HousingCustomizeModeTargetType", EnumValue = 3 },
 			},
 		},
 		{
@@ -360,6 +361,15 @@ local HousingCustomizeModeUI =
 				{ Name = "currentRoomComponentTextureRecID", Type = "number", Nilable = true },
 				{ Name = "ceilingType", Type = "HousingRoomComponentCeilingType", Nilable = false },
 				{ Name = "doorType", Type = "HousingRoomComponentDoorType", Nilable = false },
+			},
+		},
+		{
+			Name = "PreviewDyeSlotInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "dyeColorID", Type = "number", Nilable = false },
+				{ Name = "dyeSlotID", Type = "number", Nilable = false },
 			},
 		},
 		{

@@ -83,6 +83,15 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "GetCurrentHouseRefundAmount",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "refundAmount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentNeighborhoodGUID",
 			Type = "Function",
 
@@ -255,6 +264,15 @@ local HousingUI =
 			Returns =
 			{
 				{ Name = "isInside", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInsideOwnHouse",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInsideOwnHouse", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -521,6 +539,11 @@ local HousingUI =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "ForceRefreshHouseFinder",
+			Type = "Event",
+			LiteralName = "FORCE_REFRESH_HOUSE_FINDER",
 		},
 		{
 			Name = "HouseFinderNeighborhoodDataRecieved",
