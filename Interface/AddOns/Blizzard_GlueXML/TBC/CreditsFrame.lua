@@ -4,8 +4,8 @@ function CreditsFrameMixin:OnShow()
 	StopGlueAmbience();
 	self.expansion = GetClientDisplayExpansionLevel();
 	self.maxExpansion = LE_EXPANSION_LEVEL_CURRENT;
-	self.releaseType = LE_RELEASE_TYPE_CLASSIC;
-	self.maxReleaseType = LE_RELEASE_TYPE_CLASSIC;
+	self.releaseType = Enum.ReleaseType.Classic;
+	self.maxReleaseType = Enum.ReleaseType.Classic;
 	self:Update();
 end
 

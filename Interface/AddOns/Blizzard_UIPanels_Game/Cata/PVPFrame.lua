@@ -360,8 +360,9 @@ function PVPFrame_JoinClicked(self, isParty, wargame)
 		else
 			if PVPHonorFrame.selectedIsWorldPvp then
 				JoinWorldPVPQueue(false, isParty, PVPHonorFrame.bgTypeScrollBox.selectionID);
-			else 
-				JoinBattlefield(0, isParty);
+			else
+				local bgListID = select(5, GetBattlegroundInfo(PVPHonorFrame.selectedPvpID));
+				C_PvP.JoinBattlefield(bgListID, isParty);
 			end
 		end
 	elseif tabID == 2 then
