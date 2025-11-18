@@ -2024,44 +2024,22 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI()
-	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
-	if useNewCashShop then
-		local wasShown = CatalogShopInboundInterface.IsShown();
-		if ( not wasShown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			securecall("CloseAllWindows");
-		end
-		local contextKey = nil;	-- contextKey is for Mainline only
-		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
-	else
-		local wasShown = StoreFrame_IsShown();
-		if ( not wasShown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			-- not sure if anything is needed here at the gluescreen
-		end
-		StoreFrame_SetShown(not wasShown);
-	end
+	local wasShown = StoreFrame_IsShown();
+    if ( not wasShown ) then
+        --We weren't showing, now we are. We should hide all other panels.
+        -- not sure if anything is needed here at the gluescreen
+    end
+    StoreFrame_SetShown(not wasShown);
 end
 
 function SetStoreUIShown(shown)
-	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
-	if useNewCashShop then
-		local wasShown = CatalogShopInboundInterface.IsShown();
-		if ( not wasShown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			securecall("CloseAllWindows");
-		end
-		local contextKey = nil;	-- contextKey is for Mainline only
-		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
-	else
-		local wasShown = StoreFrame_IsShown();
-		if ( not wasShown and shown ) then
-			--We weren't showing, now we are. We should hide all other panels.
-			-- not sure if anything is needed here at the gluescreen
-		end
-
-		StoreFrame_SetShown(shown);
+	local wasShown = StoreFrame_IsShown();
+	if ( not wasShown and shown ) then
+		--We weren't showing, now we are. We should hide all other panels.
+		-- not sure if anything is needed here at the gluescreen
 	end
+
+	StoreFrame_SetShown(shown);
 end
 
 function PlayersOnServer_Update()

@@ -685,13 +685,14 @@ function WideCatalogShopProductCardMixin:Layout()
 		local priceElement = container.OriginalPrice;
 		priceElement:ClearAllPoints();
 		priceElement:SetSize(175, 20);
-		priceElement:SetPoint("BOTTOM", 0, 30);
+		priceElement:SetPoint("BOTTOM", 0, 20);
 		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
 		priceElement:SetJustifyH("RIGHT");
 		priceElement:SetText(self.productInfo.originalPrice);
 
 		local strikeThrough = container.Strikethrough;
 		local strikeThroughLength = priceElement:GetStringWidth();
+		print(strikeThroughLength);
 		strikeThrough:ClearAllPoints();
 		strikeThrough:SetPoint("LEFT", priceElement, "RIGHT", -strikeThroughLength, 0);
 		strikeThrough:SetPoint("RIGHT", priceElement, "RIGHT", 0, 0);
@@ -700,7 +701,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		local discountPriceElement = container.DiscountPrice;
 		discountPriceElement:ClearAllPoints();
 		discountPriceElement:SetSize(175, 20);
-		discountPriceElement:SetPoint("BOTTOM", 0, 30);
+		discountPriceElement:SetPoint("BOTTOM", 0, 20);
 		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
 		discountPriceElement:SetJustifyH("LEFT");
 		discountPriceElement:SetText(self.productInfo.price);
@@ -718,8 +719,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:ClearAllPoints();
 		priceElement:SetSize(0, 20);
 		priceElement:SetJustifyH("CENTER");
-		priceElement:SetPoint("TOP", nameElement, "BOTTOM", 0, 0);
-		priceElement:SetPoint("BOTTOM", 0, 30);
+		priceElement:SetPoint("BOTTOM", 0, 17);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
 		priceElement:SetText(self.productInfo.price);

@@ -169,35 +169,6 @@ local ChallengeModeInfo =
 			},
 		},
 		{
-			Name = "GetNumMedals",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "numMedals", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSpecificDungeonOverallScoreRarityColor",
-			Type = "Function",
-			Documentation = { "Returns a color value from the passed in mythic+ rating from the combined affix scores for a specific dungeon" },
-
-			Arguments =
-			{
-				{ Name = "specificDungeonOverallScore", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "specificDungeonOverallScoreColor", Type = "colorRGB", Mixin = "ColorMixin", Nilable = false },
-			},
-		},
-		{
 			Name = "IsChallengeModeActive",
 			Type = "Function",
 
@@ -222,18 +193,6 @@ local ChallengeModeInfo =
 			Returns =
 			{
 				{ Name = "canReset", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "RequestChallengeModeLeaderboard",
-			Type = "Function",
-			Documentation = { "Request a page of challenge mode leaderboards that will be returned in a 'CHALLENGE_MODE_LEADERBOARD_RESULT' event" },
-
-			Arguments =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "challengeModeID", Type = "number", Nilable = false },
-				{ Name = "page", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -288,18 +247,6 @@ local ChallengeModeInfo =
 			Payload =
 			{
 				{ Name = "keystoneID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "ChallengeModeLeaderboardResult",
-			Type = "Event",
-			LiteralName = "CHALLENGE_MODE_LEADERBOARD_RESULT",
-			Payload =
-			{
-				{ Name = "mapID", Type = "number", Nilable = false },
-				{ Name = "challengeModeID", Type = "number", Nilable = false },
-				{ Name = "page", Type = "number", Nilable = false },
-				{ Name = "results", Type = "table", InnerType = "MythicPlusLeaderboardResult", Nilable = false },
 			},
 		},
 		{

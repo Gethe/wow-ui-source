@@ -659,7 +659,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="StoreModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8"/>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -861,7 +861,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="StoreModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1020,7 +1020,7 @@
 						<OnShow function="StoreCardDetail_SetLayerAboveModelScene"/>
 					</Scripts>
 				</Button>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="StoreModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1212,7 +1212,7 @@
 						</AnimationGroup>
 					</Animations>
 				</Frame>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="StoreModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
@@ -1388,7 +1388,7 @@
 				</Layer>
 			</Layers>
 			<Frames>
-				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="StoreModelSceneMixinTemplate">
+				<ModelScene parentKey="ModelScene" useParentLevel="true" hidden="true" inherits="ModelSceneMixinTemplate">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="8" y="-8" />
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />

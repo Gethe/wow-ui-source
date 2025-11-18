@@ -137,7 +137,7 @@ CACHE_WAIT_TIME = 0.5;
 
 CREDITS_ART_INFO = {
 	[LE_EXPANSION_CLASSIC] = {
-		[Enum.ReleaseType.Original] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
 			{ file="Acrest", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5, maxTexIndex=4 },
 			{ file="Tauren", w=640, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Centaur", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
@@ -178,13 +178,13 @@ CREDITS_ART_INFO = {
 			{ file="Fellwood", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="OrcShield", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5 },
 		},
-		[Enum.ReleaseType.Classic] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="ClassicGryphon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
 	},
 
 	[LE_EXPANSION_BURNING_CRUSADE] = {
-		[Enum.ReleaseType.Original] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
 			{ file="BD", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Wrathguard", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="WOW_BloodElves", w=512, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
@@ -246,13 +246,13 @@ CREDITS_ART_INFO = {
 			{ file="The_Broken", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Photos", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
-		[Enum.ReleaseType.Classic] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
 	},
 	
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
-		[Enum.ReleaseType.Original] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
 			{ file="Azol0", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="BoreanTun", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="GrizzlemawTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
@@ -305,13 +305,13 @@ CREDITS_ART_INFO = {
 			{ file="Zombie", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="ZulDrak", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
-		[Enum.ReleaseType.Classic] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="LichKingTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},
 	
 	[LE_EXPANSION_CATACLYSM] = {
-		[Enum.ReleaseType.Original] = {
+		[LE_RELEASE_TYPE_ORIGINAL] = {
 			{ file="Goblin_Physique_M03", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="Greymane City Block01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="Greymane City Damage01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
@@ -370,7 +370,7 @@ CREDITS_ART_INFO = {
 			{ file="Tol Barad Details01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="Tol Barad Gun01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
-		[Enum.ReleaseType.Classic] = {
+		[LE_RELEASE_TYPE_CLASSIC] = {
 			{ file="CAMEL_01", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},

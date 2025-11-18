@@ -471,20 +471,11 @@ function UnitPopupVoteToKickButtonMixin:IsEnabled(contextData)
 end
 
 function UnitPopupDungeonDifficultyButtonMixin:GetEntries()
-	local difficultyEntries = { 
+	return { 
 		UnitPopupDungeonDifficulty1ButtonMixin, 
 		UnitPopupDungeonDifficulty2ButtonMixin,
 		UnitPopupDungeonDifficulty3ButtonMixin,
-	};
-
-	local supportedDifficultyEntries = {};
-	for i, buttonMixin in ipairs(difficultyEntries) do
-		if buttonMixin:IsSupported() then
-			table.insert(supportedDifficultyEntries, buttonMixin);
-		end
-	end
-
-	return supportedDifficultyEntries;
+	}
 end 
 
 function UnitPopupPartyInstanceLeaveButtonMixin:CanShow(contextData)

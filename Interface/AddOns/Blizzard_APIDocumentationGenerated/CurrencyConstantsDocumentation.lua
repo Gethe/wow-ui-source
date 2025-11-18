@@ -68,9 +68,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 10,
 			MinValue = 1,
-			MaxValue = 1024,
+			MaxValue = 512,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -83,7 +83,6 @@ local CurrencyConstants =
 				{ Name = "CurrencyBScaleMaxQuantityByWeeksSinceStart", Type = "CurrencyFlagsB", EnumValue = 128 },
 				{ Name = "CurrencyBForceMaxQuantityOnConversion", Type = "CurrencyFlagsB", EnumValue = 256 },
 				{ Name = "CurrencyBUnearnableBeforeMaxQuantityStart", Type = "CurrencyFlagsB", EnumValue = 512 },
-				{ Name = "CurrencyBAllowReductionByResourcefulness", Type = "CurrencyFlagsB", EnumValue = 1024 },
 			},
 		},
 		{

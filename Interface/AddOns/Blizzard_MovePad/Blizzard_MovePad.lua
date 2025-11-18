@@ -16,15 +16,6 @@ function MovePadMixin:OnLoad()
 	self:SetPressAndHoldMode(CVarCallbackRegistry:GetCVarValueBool("movePadInPressAndHoldMode"));
 
 	self:SetupDropdownMenu();
-
-	MovePadForward.opposingMoveButton = MovePadBackward;
-	MovePadBackward.opposingMoveButton = MovePadForward;
-
-	MovePadRotateLeft.opposingMoveButton = MovePadRotateRight;
-	MovePadRotateRight.opposingMoveButton = MovePadRotateLeft;
-
-	MovePadStrafeLeft.opposingMoveButton = MovePadStrafeRight;
-	MovePadStrafeRight.opposingMoveButton = MovePadStrafeLeft;
 end
 
 function MovePadMixin:SetLockedMode(locked)
@@ -96,24 +87,17 @@ end
 function MovePadMixin:ResetMoveButtons(exemptButton)
 	for _, button in ipairs(self.MoveButtons) do
 		if button ~= exemptButton then
-			button:ResetButton();
+			button:SetChecked(false);
+			button.stopAction();
 		end
 	end
 end
 
 MovePadCheckboxMixin = {};
 
-function MovePadCheckboxMixin:ResetButton()
-	self:SetChecked(false);
-	self.stopAction();
-end
-
 function MovePadCheckboxMixin:OnMovePadCheckboxClick()
 	if not self.pressAndHoldMode then
-		if self.opposingMoveButton then
-			self.opposingMoveButton:ResetButton();
-		end
-
+		MovePadFrame:ResetMoveButtons(self);
 		if self:GetChecked() then
 			self.startAction();
 		else

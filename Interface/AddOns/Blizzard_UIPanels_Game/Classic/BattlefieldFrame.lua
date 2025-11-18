@@ -29,7 +29,7 @@ function BattlefieldFrame_OnEvent(self, event, ...)
 		ShowUIPanel(BattlefieldFrame);
 		
 		-- Default to first available
-		C_PvP.SetSelectedBattlefieldByIndex(1);
+		SetSelectedBattlefield(0);
 
 		UpdateMicroButtons();
 		BattlefieldFrame_Update();
@@ -92,9 +92,8 @@ function BattlefieldFrame_Update()
 	local playerLevel = UnitLevel("player");
 	local button, buttonStatus;
 	local instanceID;
-	local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(BattlefieldFrame.selectedBG);
-	local selectedBattlefield = C_PvP.GetSelectedBattlefieldIndex();
-
+	local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo();
+	
 	-- Set title text
 	BattlefieldFrameFrameLabel:SetText(mapName);
 
@@ -143,7 +142,9 @@ function BattlefieldFrame_Update()
 		end
 		
 		-- Set selected instance
-		if ( zoneIndex == selectedBattlefield ) then
+		if ( zoneIndex == 1 and GetSelectedBattlefield() == 0 ) then
+			button:LockHighlight();
+		elseif ( zoneIndex - 1 == GetSelectedBattlefield() ) then
 			button:LockHighlight();
 		else
 			button:UnlockHighlight();
@@ -164,18 +165,24 @@ function BattlefieldFrame_Update()
 	else
 		BattlefieldFrameGroupJoinButton:Hide();
 	end
+	
+	
 
 	FauxScrollFrame_Update(BattlefieldListScrollFrame, numBattlefields, BATTLEFIELD_ZONES_DISPLAYED, BATTLEFIELD_ZONES_HEIGHT, "BattlefieldZone", 293, 315);
 end
 
 function BattlefieldButton_OnClick(id)
-	C_PvP.SetSelectedBattlefieldByIndex(FauxScrollFrame_GetOffset(BattlefieldListScrollFrame) + id);
+	SetSelectedBattlefield(FauxScrollFrame_GetOffset(BattlefieldListScrollFrame) + id - 1);
 	BattlefieldFrame_Update();
 end
 
 function BattlefieldFrameJoinButton_OnClick(joinAsGroup)
-	local bgListID = select(5, GetBattlegroundInfo(BattlefieldFrame.selectedBG));
-	C_PvP.JoinBattlefield(bgListID, joinAsGroup, C_PvP.GetSelectedBattlefieldIndex());
+	if ( joinAsGroup ) then
+		JoinBattlefield(GetSelectedBattlefield(), 1);
+	else
+		JoinBattlefield(GetSelectedBattlefield());
+	end
+	
 	HideUIPanel(BattlefieldFrame);
 end
 

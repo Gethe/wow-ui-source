@@ -66,7 +66,7 @@ local l10nTable = {
 			end
 
 			GetCNLogoReleaseType = function()
-				return Enum.ReleaseType.Classic;
+				return LE_RELEASE_TYPE_CLASSIC;
 			end
 		end,
 

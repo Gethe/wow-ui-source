@@ -102,9 +102,7 @@ local l10nTable = {
 
 			-- Quest Log
 			QuestLogQuestCount:SetPoint("TOPRIGHT", QuestLogCountTopRight, "BOTTOMLEFT", 1, 6); -- +0, +3
-			if (QuestLogDailyQuestCount) then
-				QuestLogDailyQuestCount:SetPoint("TOPRIGHT", QuestLogQuestCount, "BOTTOMRIGHT", 0, 1); -- +0, +3
-			end
+			QuestLogDailyQuestCount:SetPoint("TOPRIGHT", QuestLogQuestCount, "BOTTOMRIGHT", 0, 1); -- +0, +3
 		end,
 	},
 
@@ -129,9 +127,7 @@ local l10nTable = {
 
 			-- Quest Log
 			QuestLogQuestCount:SetPoint("TOPRIGHT", QuestLogCountTopRight, "BOTTOMLEFT", 1, 6); -- +0, +3
-			if (QuestLogDailyQuestCount) then
-				QuestLogDailyQuestCount:SetPoint("TOPRIGHT", QuestLogQuestCount, "BOTTOMRIGHT", 0, 1); -- +0, +3、游戏中有用户实名认证系统，认证为未成年人的用户将接受以下管理：
-			end
+			QuestLogDailyQuestCount:SetPoint("TOPRIGHT", QuestLogQuestCount, "BOTTOMRIGHT", 0, 1); -- +0, +3、游戏中有用户实名认证系统，认证为未成年人的用户将接受以下管理：
 		end,
 	},
 };

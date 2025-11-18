@@ -781,7 +781,7 @@ end
 function HonorFrame_Queue()
 	local HonorFrame = HonorFrame;
 	if ( HonorFrame.type == "specific" and HonorFrame.SpecificScrollBox.selectionID ) then
-		C_PvP.JoinBattlefield(HonorFrame.SpecificScrollBox.selectionID);
+		JoinBattlefield(HonorFrame.SpecificScrollBox.selectionID);
 	elseif ( HonorFrame.type == "bonus" and HonorFrame.BonusFrame.selectedButton ) then
 		if ( HonorFrame.BonusFrame.selectedButton.arenaID ) then
 			JoinSkirmish(HonorFrame.BonusFrame.selectedButton.arenaID);
@@ -793,7 +793,7 @@ function HonorFrame_Queue()
 		elseif (HonorFrame.BonusFrame.selectedButton.isSpecialBrawl) then
 			C_PvP.JoinBrawl(true);
 		else
-			C_PvP.JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
+			JoinBattlefield(HonorFrame.BonusFrame.selectedButton.bgID);
 		end
 	end
 end

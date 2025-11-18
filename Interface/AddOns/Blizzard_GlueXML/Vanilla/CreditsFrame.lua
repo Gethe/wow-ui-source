@@ -18,9 +18,9 @@ function CreditsFrame_Update(self)
 	PlayCreditsMusic(GLUE_CREDITS_SOUND_KITS[CreditsFrame.creditsType]);
 	self.GameLogo:SetExpansion(LE_EXPANSION_CLASSIC);
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		self.GameLogo:SetReleaseType(Enum.ReleaseType.Classic);
+		self.GameLogo:SetReleaseType(LE_RELEASE_TYPE_CLASSIC);
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
-		self.GameLogo:SetReleaseType(Enum.ReleaseType.Original);
+		self.GameLogo:SetReleaseType(LE_RELEASE_TYPE_ORIGINAL);
 	end
 	self.GameLogo:SetGameMode(0);
 	
@@ -50,9 +50,9 @@ function CreditsFrame_Update(self)
 	-- Set Credits Text
 	-- TODO: This would be better if it was driven by data in Constants.lua.
 	if (CreditsFrame.creditsType == CREDITS_TYPE_CLASSIC) then
-		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, Enum.ReleaseType.Classic));
+		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_CLASSIC));
 	elseif (CreditsFrame.creditsType == CREDITS_TYPE_VANILLA) then
-		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, Enum.ReleaseType.Original));
+		CreditsText:SetText(GetCreditsText(LE_EXPANSION_CLASSIC, LE_RELEASE_TYPE_ORIGINAL));
 	end
 
 	-- Set Switch Button Text

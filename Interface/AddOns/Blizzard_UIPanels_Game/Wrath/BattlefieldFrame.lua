@@ -458,9 +458,8 @@ function BattlefieldFrameJoinButton_OnClick(self)
 	if ( self == BattlefieldFrameGroupJoinButton ) then
 		joinAsGroup = true;
 	end
-
-	local bgListID = select(5, GetBattlegroundInfo(BattlefieldFrame.selectedBG));
-	C_PvP.JoinBattlefield(bgListID, joinAsGroup);
+	
+	JoinBattlefield(0, joinAsGroup);
 end
 
 function BattlefieldFrame_UpdateGroupAvailable()
