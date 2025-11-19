@@ -8,10 +8,10 @@ local ccRemoverFrameInitialAnchor =
 
 local debuffFrameInitialAnchor =
 {
-	point = "TOPRIGHT";
-	relativePoint = "TOPLEFT";
+	point = "RIGHT";
+	relativePoint = "LEFT";
 	xOffset = -3;
-	yOffset = -2;
+	yOffset = 0;
 }
 
 local useClassColorsCvarName = "pvpFramesDisplayClassColor";
@@ -116,11 +116,6 @@ function CompactArenaFrameMixin:OnLoad()
 		memberUnitFrame.CcRemoverFrame = ccRemoverFrame;
 		ccRemoverFrame:SetPoint(ccRemoverFrameInitialAnchor.point, memberUnitFrame, ccRemoverFrameInitialAnchor.relativePoint, ccRemoverFrameInitialAnchor.xOffset, ccRemoverFrameInitialAnchor.yOffset);
 
-		-- Create Spell Diminish status tray
-		local spellDiminishStatusTray = CreateFrame("Frame", nil, memberUnitFrame, "SpellDiminishStatusTrayTemplate");
-		memberUnitFrame.SpellDiminishStatusTray = spellDiminishStatusTray;
-		spellDiminishStatusTray:SetPoint("TOPLEFT", memberUnitFrame.CcRemoverFrame, "TOPRIGHT", 5, 0);
-
 		-- Create debuff frame
 		local debuffFrame = CreateFrame("Frame", nil, memberUnitFrame, "ArenaUnitFrameDebuffTemplate");
 		memberUnitFrame.DebuffFrame = debuffFrame;
@@ -129,7 +124,13 @@ function CompactArenaFrameMixin:OnLoad()
 		-- Create casting bar
 		local castingBarFrame = CreateFrame("StatusBar", nil, memberUnitFrame, "ArenaUnitFrameCastingBarTemplate");
 		memberUnitFrame.CastingBarFrame = castingBarFrame;
-		castingBarFrame:SetPoint("TOPRIGHT", debuffFrame, "TOPLEFT", -5, -2);
+		castingBarFrame:SetPoint("TOPRIGHT", debuffFrame, "LEFT", -5, -5);
+
+		-- Create Spell Diminish status tray
+		local spellDiminishStatusTray = CreateFrame("Frame", nil, memberUnitFrame, "SpellDiminishStatusTrayTemplate");
+		memberUnitFrame.SpellDiminishStatusTray = spellDiminishStatusTray;
+		spellDiminishStatusTray:SetPoint("BOTTOMRIGHT", memberUnitFrame.CastingBarFrame, "TOPRIGHT", 0, 2);
+
 
 		-- Create stealthed unit frames
 		local stealthedUnitFrame = CreateFrame("Frame", nil, self, "StealthedArenaUnitFrameTemplate");
@@ -161,7 +162,14 @@ function CompactArenaFrameMixin:UpdateLayout()
 
 	local width, height = self:GetSize();
 
+
+	-- Keep track of how many frames we're showing to calculate the height later
+	local totalMemberFramesShown = 0;
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		if memberUnitFrame:IsShown() then
+			totalMemberFramesShown = totalMemberFramesShown + 1;
+		end
+
 		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
 		local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
 		local debuffFrame = memberUnitFrame.DebuffFrame;
@@ -179,21 +187,35 @@ function CompactArenaFrameMixin:UpdateLayout()
 			debuffFrame:ClearAllPoints();
 			debuffFrame:SetPoint(debuffFrameInitialAnchor.point, memberUnitFrame, debuffFrameInitialAnchor.relativePoint, debuffFrameXOffset, debuffFrameInitialAnchor.yOffset);
 
-			-- Adjust frame width to fit various frames
+			-- Adjust frame width and height to fit various frames
 			-- Only need to adjust if this is the first frame since all subsequent frames will be the same size/layout
 			local isFirstMemberFrame = i == 1;
 			if isFirstMemberFrame then
 				local ccRemoverWidth = ccRemoverFrame:GetWidth() + math.abs(ccRemoverFrameXOffset) - frameBorderOffset;
-				local spellDiminishStatusTrayWidth = spellDiminishStatusTray:GetWidth() + 10;
 				local debuffFrameWidth = debuffFrame:GetWidth() + math.abs(debuffFrameXOffset) - frameBorderOffset;
 				local castingBarXOffset = math.abs(select(4, castingBarFrame:GetPoint(1)));
 				local castingBarFrameWidth = castingBarFrame:GetWidth() + castingBarFrame.BorderShield:GetWidth() + castingBarXOffset;
 
-				width = width + ccRemoverWidth + debuffFrameWidth + castingBarFrameWidth + spellDiminishStatusTrayWidth;
-				unitFrameXOffset = unitFrameXOffset - ccRemoverWidth - spellDiminishStatusTrayWidth;
+				width = width + ccRemoverWidth + debuffFrameWidth + castingBarFrameWidth;
+				unitFrameXOffset = unitFrameXOffset - ccRemoverWidth;
 			end
 		end
 	end
+
+	-- Arena Frames are anchored under each other with an offset
+	-- We take these offsets into account to calculate our final height
+	if totalMemberFramesShown > 1 then
+		-- Use the second frame for reference since the rest should be anchored with the same offset
+		local _point, relativeTo, _relativePoint, _xOffset, yOffset = self.memberUnitFrames[2]:GetPoint(1);
+		if yOffset then
+			local arenaFrameVerticalOffsetsCombined = math.abs(yOffset) * (totalMemberFramesShown - 1);
+			height = height + arenaFrameVerticalOffsetsCombined;
+		end
+	end
+	-- Let's also add a little padding for the edit mode border
+	local heightPadding = 7;
+	height = height + heightPadding;
+
 	firstMemberUnitFrame:ClearAllPoints();
 	firstMemberUnitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", unitFrameXOffset, -14);
 	self:SetSize(width, height);

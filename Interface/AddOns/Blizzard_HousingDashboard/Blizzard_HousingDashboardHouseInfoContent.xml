@@ -47,7 +47,7 @@
 			</Texture>
 
 			<FontString parentKey="ActivityMessage" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
-				<Size x="235" y="60"/>
+				<Size x="180" y="60"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.EntryFlag" relativePoint="RIGHT" x="8" y="-15"/>
 				</Anchors>
@@ -57,12 +57,19 @@
 </Frame>
 
 <!-- Initiative Task Template -->
-<Button name="HousingDashboard_InitiativeTaskTemplate" mixin="InitiativeTaskButtonMixin" virtual="true">
-	<Size x="430" y="95"/>
+<Button name="HousingDashboard_InitiativeTaskTemplate" mixin="InitiativeTaskButtonMixin" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+	<Size x="430" y="57"/>
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture parentKey="BG" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false">
-				<Size x="430" y="95"/>
+				<Size x="430" y="57"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+			
+			<Texture parentKey="BGAlphaAdd" alphaMode="ADD" alpha="0.7" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false" hidden="true">
+				<Size x="430" y="57"/>
 				<Anchors>
 					<Anchor point="CENTER" x="10"/>
 				</Anchors>
@@ -73,14 +80,14 @@
 			<Texture parentKey="RepeatableIcon" atlas="UI-RefreshButton" useAtlasSize="false" hidden="true">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" x="25" y="29"/>
+					<Anchor point="LEFT" x="45" y="10"/>
 				</Anchors>
 			</Texture>
 
 			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">
-				<Size x="315" y="35"/>
+				<Size x="330" y="35"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RepeatableIcon" relativePoint="RIGHT" x="4" y="-12"/>
+					<Anchor point="LEFT" relativeKey="$parent.RepeatableIcon" relativePoint="RIGHT" x="4" y="-9"/>
 				</Anchors>
 			</FontString>
 
@@ -92,9 +99,9 @@
 			</Texture>
 
 			<Texture parentKey="EntryFlag" atlas="housing-dashboard-tasks-listitem-flag" useAtlasSize="false">
-				<Size x="60" y="69"/>
+				<Size x="55" y="55"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-8" y="1"/>
+					<Anchor point="TOPRIGHT" x="-25" y="1"/>
 				</Anchors>
 			</Texture>
 
@@ -110,55 +117,6 @@
 					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" x="-3" y="8"/>
 				</Anchors>
 			</Texture>
-
-			<FontString parentKey="RewardsText" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP" text="HOUSING_DASHBOARD_ADDITIONAL_REWARDS_LABEL">
-				<Size x="150" y="12"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" y="-2"/>
-					<Anchor point="LEFT" x="30"/>
-				</Anchors>
-			</FontString>
-
-			<Texture parentKey="RewardsDivider" atlas="housing-dashboard-activity-listitem-divider" useAtlasSize="false">
-				<Size x="150" y="2"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.RewardsText" relativePoint="BOTTOM"/>
-					<Anchor point="LEFT" x="30"/>
-				</Anchors>
-			</Texture>
-
-			<Texture parentKey="EstateXPIcon" atlas="housing-dashboard-estatexp-icon" useAtlasSize="true">
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.RewardsDivider" relativePoint="BOTTOM" y="-5"/>
-					<Anchor point="LEFT" x="30"/>
-				</Anchors>
-			</Texture>
-
-			<FontString parentKey="EstateXPTitle" inherits="GameFontHighlightSmall2" justifyH="LEFT" text="HOUSING_DASHBOARD_REWARD_ESTATE_XP">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EstateXPIcon" relativePoint="RIGHT" x="3" y="-1"/>
-				</Anchors>
-			</FontString>
-
-			<Texture parentKey="RewardDividerVert" file="Interface\Housing\HousingDashboardInitiativesDividerVert">
-				<Size x="2" y="12"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EstateXPTitle" relativePoint="RIGHT" x="8"/>
-				</Anchors>
-			</Texture>
-
-			<Texture parentKey="CurrencyIcon" atlas="Coin-Gold" useAtlasSize="false">
-				<Size x="10" y="10"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RewardDividerVert" relativePoint="RIGHT" x="7" y="1"/>
-				</Anchors>
-			</Texture>
-
-			<FontString parentKey="CurrencyTitle" inherits="GameFontHighlightSmall2" justifyH="LEFT" text="HOUSING_DASHBOARD_REWARD_CURRENCY">
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.CurrencyIcon" relativePoint="RIGHT" x="3" y="-1"/>
-				</Anchors>
-			</FontString>
 		</Layer>
 
 		<Layer level="HIGHLIGHT">
@@ -194,13 +152,13 @@
 			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="MIDDLE" justifyH="LEFT">
 				<Size x="335" y="30"/>
 				<Anchors>
-					<Anchor point="LEFT" x="40"/>
+					<Anchor point="LEFT" x="55" y="5"/>
 				</Anchors>
 			</FontString>
 
 			<FontString parentKey="ActivityXP" inherits="GameFontNormalMed2" justifyV="MIDDLE">
 				<Anchors>
-					<Anchor point="RIGHT" x="-20"/>
+					<Anchor point="RIGHT" x="-40"/>
 				</Anchors>
 			</FontString>
 		</Layer>
@@ -246,8 +204,7 @@
 					</MaskTexture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<!-- TODO: atlas link broken <Texture parentKey="IconBorder" hidden="true" atlas="housing-dashboard-fillbar-pip-incomplete" useAtlasSize="true"> -->
-					<Texture parentKey="IconBorder" hidden="true" useAtlasSize="true">
+					<Texture parentKey="IconBorder" hidden="true" atlas="housing-dashboard-fillbar-pip-complete" useAtlasSize="true">
 					<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
@@ -396,7 +353,7 @@
 						<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
 					</KeyValues>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="60"/>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="60" y="-1"/>
 					</Anchors>
 				</Frame>
 
@@ -464,17 +421,15 @@
 												</Anchors>
 											</Texture>
 
-											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="false">
-												<Size x="82" y="55"/>
+											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-2"/>
+													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-5" y="-2"/>
 												</Anchors>
 											</Texture>
 
-											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="false">
-												<Size x="82" y="55"/>
+											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="2"/>
+													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="5" y="-2"/>
 												</Anchors>
 											</Texture>
 										</Layer>
@@ -631,9 +586,10 @@
 
 								<!-- Initiative Tasks -->
 								<Frame parentKey="InitiativeTasks" useParentLevel="true">
-									<Size x="470" y="285"/>
+									<Size x="510"/>
 									<Anchors>
-										<Anchor point="LEFT" y="-71"/>
+										<Anchor point="LEFT" y="-85"/>
+										<Anchor point="BOTTOM"/>
 									</Anchors>
 									<Layers>
 										<Layer level="BACKGROUND" textureSubLevel="1">
@@ -709,7 +665,7 @@
 													<Texture parentKey="TitleCornerBR" atlas="housing-dashboard-filigree-wood-small-br" useAtlasSize="false">
 														<Size x="23" y="23"/>
 														<Anchors>
-															<Anchor point="BOTTOMRIGHT" x="-3"/>
+															<Anchor point="BOTTOMRIGHT"  y="3"/>
 														</Anchors>
 													</Texture>
 												</Layer>
@@ -721,6 +677,9 @@
 												<Anchor point="TOPLEFT" relativeKey="$parent.TaskListTitleContainer.Title" relativePoint="BOTTOMLEFT" x="5" y="30"/>
 												<Anchor point="BOTTOMRIGHT" x="-20"/>
 											</Anchors>
+											<KeyValues>
+												<KeyValue key="wheelPanScalar" value="1" type="number"/>
+											</KeyValues>
 										</Frame>
 
 										<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
@@ -811,7 +770,7 @@
 													<Texture parentKey="TitleCornerBL" atlas="housing-dashboard-filigree-wood-small-bl" useAtlasSize="false">
 														<Size x="23" y="23"/>
 														<Anchors>
-															<Anchor point="BOTTOMLEFT" y="1"/>
+															<Anchor point="BOTTOMLEFT" y="3"/>
 														</Anchors>
 													</Texture>
 												</Layer>
@@ -823,6 +782,9 @@
 												<Anchor point="TOPLEFT" relativeKey="$parent.ActivityLogTitleContainer.Title" relativePoint="BOTTOMLEFT" x="5" y="30"/>
 												<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
 											</Anchors>
+											<KeyValues>
+												<KeyValue key="wheelPanScalar" value="1" type="number"/>
+											</KeyValues>
 										</Frame>
 
 										<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">

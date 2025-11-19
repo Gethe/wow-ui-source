@@ -158,21 +158,12 @@ end
 function HouseEditorExpertDecorModeMixin:UpdateShownInstructions()
 	local isTargetSelected = C_HousingExpertMode.IsDecorSelected() or C_HousingExpertMode.IsHouseExteriorSelected();
 	local isManipulating = self.isManipulating;
-	local subMode = C_HousingExpertMode.GetPrecisionSubmode();
+	local activeSubmode = C_HousingExpertMode.GetPrecisionSubmode();
 
-	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isTargetSelected and not isManipulating);
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, isTargetSelected and not isManipulating);
-	self:SetInstructionShown(self.Instructions.ManipulatingInstructions, isManipulating);
-	self:SetInstructionShown(self.Instructions.SelectedOrManipulatingInstructions, isTargetSelected or isManipulating);
-
-	local showMoveInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Translate;
-	self:SetInstructionShown(self.Instructions.SelectedAndMoveSubmodeInstructions, showMoveInstructions);
-
-	local showRotateInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Rotate;
-	self:SetInstructionShown(self.Instructions.SelectedAndRotateSubmodeInstructions, showRotateInstructions);
-
-	local showScaleInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Scale;
-	self:SetInstructionShown(self.Instructions.SelectedAndScaleSubmodeInstructions, showScaleInstructions);
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isTargetSelected and not isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, isTargetSelected and not isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.ManipulatingInstructions, isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.SelectedOrManipulatingInstructions, isTargetSelected or isManipulating, activeSubmode);
 
 	if self.Instructions.RemoveInstruction then
 		local shouldShowRemove = false;
@@ -186,10 +177,10 @@ function HouseEditorExpertDecorModeMixin:UpdateShownInstructions()
 	self.Instructions:UpdateLayout();
 end
 
-function HouseEditorExpertDecorModeMixin:SetInstructionShown(instructionSet, shouldShow)
+function HouseEditorExpertDecorModeMixin:SetInstructionShown(instructionSet, shouldShow, activeSubmode)
 	if instructionSet then
 		for _, instruction in ipairs(instructionSet) do
-			instruction:SetShown(shouldShow);
+			instruction:SetShown(shouldShow and ((not instruction.submode) or (instruction.submode == activeSubmode)));
 		end
 	end
 end

@@ -640,6 +640,22 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetOutfit",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "outfitID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOwnedItemByID",
 			Type = "Function",
 			MayReturnNothing = true,

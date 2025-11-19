@@ -775,7 +775,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
-		RaidOptionsFrame_UpdatePartyFrames();
+		UpdateRaidAndPartyFrames();
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
@@ -1751,19 +1751,6 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 				emblemTexture:SetTexture("");
 			end
 		end
-	end
-end
-
-function GetDisplayedAllyFrames()
-	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
-		return "party";
-	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
-		return "raid";
-	elseif ( IsInGroup() ) then
-		return "party";
-	else
-		return nil;
 	end
 end
 

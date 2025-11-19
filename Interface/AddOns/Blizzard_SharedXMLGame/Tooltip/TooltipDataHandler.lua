@@ -526,6 +526,7 @@ do
 		SetItemInteractionItem = "GetItemInteractionItem",
 		SetItemByGUID = "GetItemByGUID",
 		SetWorldLootObject = "GetWorldLootObject",
+		SetOutfit = "GetOutfit",
 	};
 
 	local handler = TooltipDataHandlerMixin;

@@ -252,6 +252,9 @@ function HousingLayoutRoomPinMixin:OnLoad()
 
 		self.OptionsContainer.RemoveButton:SetScript("OnClick", function()
 			if self:HasActivePin() then
+				if StaticPopup_IsCustomGenericConfirmationShown(HouseEditorFrame.LayoutModeFrame) then
+					return;
+				end
 				local roomGUID = self:GetPin():GetRoomGUID();
 				StaticPopup_ShowCustomGenericConfirmation({
 					text = HOUSING_LAYOUT_REMOVE_ROOM_CONFIRMATION,

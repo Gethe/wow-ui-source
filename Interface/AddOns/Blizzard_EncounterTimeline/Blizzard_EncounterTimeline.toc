@@ -4,11 +4,13 @@
 
 EncounterTimelineConstants.lua
 EncounterTimelineUtil.lua
-EncounterTimelineViewSettings.lua
-EncounterTimelineViewTracks.lua
+EncounterTimelineSettings.lua
+EncounterTimelineController.lua
 EncounterTimelineView.lua
 EncounterTimelineView.xml
-EncounterTimelineViewElement.lua
-EncounterTimelineViewElement.xml
+EncounterTimelineTemplates.lua
+EncounterTimelineTemplates.xml
+EncounterTimelineEventTemplates.lua
+EncounterTimelineEventTemplates.xml
 EncounterTimeline.lua
 EncounterTimeline.xml

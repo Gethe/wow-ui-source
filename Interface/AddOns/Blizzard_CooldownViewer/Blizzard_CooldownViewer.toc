@@ -16,4 +16,5 @@ CooldownViewerSettingsDialogs.xml
 CooldownViewerSettings.lua
 CooldownViewerSettings.xml
 CooldownViewer.lua
+PandemicAlertAnimation.xml
 CooldownViewer.xml

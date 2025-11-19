@@ -2681,18 +2681,6 @@ function LFD_IsEmpowered()
 	return false;
 end
 
-function ShouldShowArenaParty()
-	return IsActiveBattlefieldArena() and not C_PvP.IsInBrawl();
-end
-
-function ShouldShowPartyFrames()
-	return ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
-end
-
-function ShouldShowRaidFrames()
-	return not ShouldShowArenaParty() and IsInRaid() or EditModeManagerFrame:AreRaidFramesForcedShown();
-end
-
 
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);

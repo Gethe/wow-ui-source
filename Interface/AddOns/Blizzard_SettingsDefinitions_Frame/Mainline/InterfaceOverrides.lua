@@ -35,7 +35,51 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	end
 
 	-- Class Colors
-	Settings.SetupCVarCheckbox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+	do
+		local displayClassColorsSetting = Settings.RegisterCVarSetting(category, "raidFramesDisplayClassColor", Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+		local function GetCVarHealthBarColor()
+			local healthColorString = CVarCallbackRegistry:GetCVarValue("raidFramesHealthBarColor");
+			local color = CreateColorFromHexString(healthColorString);
+			return color or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+		end
+
+		local function OpenHealthBarColorPicker(swatch, button, isDown)
+			local info = {};
+			info.swatch = swatch;
+
+			local healthColor = GetCVarHealthBarColor();
+			info.r, info.g, info.b = healthColor:GetRGB();
+
+			local currentColor = CreateColor(0, 0, 0, 0); -- Making this here to avoid churn
+			info.swatchFunc = function()
+				local r,g,b = ColorPickerFrame:GetColorRGB();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			info.cancelFunc = function()
+				local r,g,b = ColorPickerFrame:GetPreviousValues();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			ColorPickerFrame:SetupColorPickerAndShow(info);
+		end
+
+		local clickRequiresSet = true;
+		local invertClickRequiresSet = true;
+		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
+			displayClassColorsSetting,
+			OpenHealthBarColorPicker,
+			clickRequiresSet,
+			invertClickRequiresSet,
+			COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
+			GetCVarHealthBarColor
+		);
+
+		layout:AddInitializer(displayClassColorsInitializer);
+	end
 
 	-- Pets
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
@@ -57,7 +101,7 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	end
 
 	-- Health Text
-	do 
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);

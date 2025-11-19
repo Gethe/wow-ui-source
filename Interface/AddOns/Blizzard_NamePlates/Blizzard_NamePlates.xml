@@ -120,8 +120,14 @@
 							<Layer level="OVERLAY">
 								<Texture parentKey="selectedBorder" atlas="UI-HUD-Nameplates-Selected">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-4" y="4"/>
-										<Anchor point="BOTTOMRIGHT" x="4" y="-3"/>
+										<Anchor point="TOPLEFT" x="-2" y="3"/>
+										<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="deselectedOverlay" atlas="ui-hud-nameplates-deselected-overlay">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-2" y="3"/>
+										<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
 									</Anchors>
 								</Texture>
 							</Layer>

@@ -49,7 +49,15 @@ function DamageMeterEntryMixin:UpdateName()
 	self:GetName():SetText(text);
 end
 
+function DamageMeterEntryMixin:ShowsValuePerSecondAsPrimary()
+	return self.showsValuePerSecondAsPrimary == true;
+end
+
 function DamageMeterEntryMixin:GetValueText()
+	if self.valuePerSecond and self:ShowsValuePerSecondAsPrimary() then
+		return AbbreviateLargeNumbers(self.valuePerSecond);
+	end
+
 	if not self.value then
 		return 0;
 	end
@@ -139,7 +147,7 @@ function DamageMeterEntryMixin:SetUseClassColor(useClassColor)
 	local color;
 
 	if self.classFilename and useClassColor == true then
-		color = C_ClassColor.GetClassColor(self.classFilename);
+		color = RAID_CLASS_COLORS[self.classFilename];
 	end
 
 	if color == nil then
@@ -193,9 +201,10 @@ end
 
 function DamageMeterEntryMixin:Init(source)
 	self.value = source.totalAmount;
+	self.valuePerSecond = source.amountPerSecond;
 	self.maxValue = source.maxAmount;
-	self.classFilename = source.classFilename;
 	self.index = source.index;
+	self.showsValuePerSecondAsPrimary = source.showsValuePerSecondAsPrimary;
 
 	self:UpdateIcon();
 	self:UpdateName();
@@ -209,6 +218,7 @@ DamageMeterSourceEntryMixin = {}
 function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.sourceName = combatSource.name;
 	self.isLocalPlayer = combatSource.isLocalPlayer;
+	self.classFilename = combatSource.classFilename;
 
 	DamageMeterEntryMixin.Init(self, combatSource);
 end
@@ -230,12 +240,9 @@ DamageMeterSpellEntryMixin = {}
 function DamageMeterSpellEntryMixin:Init(combatSpell)
 	self.spellID = combatSpell.spellID;
 	self.creatureName = combatSpell.creatureName;
-
-	-- TODO: temp UI for playtest
-	if combatSpell.combatSpellDetails and combatSpell.combatSpellDetails.unitName then
-		self.unitName = combatSpell.combatSpellDetails.unitName;
-	end
-	-- TODO END
+	self.unitName = combatSpell.combatSpellDetails.unitName;
+	self.classification = combatSpell.combatSpellDetails.classification;
+	self.unitClassFilename = combatSpell.combatSpellDetails.unitClassFilename;
 
 	DamageMeterEntryMixin.Init(self, combatSpell);
 
@@ -268,20 +275,59 @@ function DamageMeterSpellEntryMixin:GetIconTexture()
 	return C_Spell.GetSpellTexture(self.spellID);
 end
 
+function DamageMeterSpellEntryMixin:GetUnitNameText()
+	-- Color the text by class color if its provided.
+	if self.unitClassFilename and #self.unitClassFilename then
+		local classColor = RAID_CLASS_COLORS[self.unitClassFilename];
+		return classColor:WrapTextInColorCode(self.unitName);
+	end
+
+	return self.unitName;
+end
+
+function DamageMeterSpellEntryMixin:GetClassificationAtlasElement()
+	-- Using same logic as NamePlateClassificationFrameMixin
+	if self.classification == "elite" or self.classification == "worldboss" then
+		return "nameplates-icon-elite-gold";
+	elseif self.classification == "rare" then
+		return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star";
+	elseif self.classification == "rareelite" then
+		return "nameplates-icon-elite-silver";
+	end
+
+	return nil;
+end
+
+function DamageMeterSpellEntryMixin:GetFormattedUnitNameText()
+	local unitNameText = self:GetUnitNameText();
+
+	-- Insert the classification image if its provided.
+	local classificationAtlasElement = self:GetClassificationAtlasElement();
+	if classificationAtlasElement then
+		local atlasMarkup = CreateAtlasMarkup(classificationAtlasElement);
+		return string.format("%s %s", atlasMarkup, unitNameText);
+	end
+
+	return unitNameText;
+end
+
 function DamageMeterSpellEntryMixin:GetNameText()
 	if not self.spellID then
 		return nil;
 	end
 
+	local spellName = C_Spell.GetSpellName(self.spellID);
+
+	-- Special formatting for pets.
 	if self.creatureName and #self.creatureName > 0 then
-		return DAMAGE_METER_SPELL_ENTRY_CREATURE:format(C_Spell.GetSpellName(self.spellID), self.creatureName);
+		return DAMAGE_METER_SPELL_ENTRY_CREATURE:format(spellName, self.creatureName);
 	end
 
-	-- TODO: temp UI for playtest
+	-- Special formatting for when another unit is the subject and the player is the object (e.g. damage taken)
 	if self.unitName and #self.unitName > 0 then
-		return C_Spell.GetSpellName(self.spellID) .. " - " .. self.unitName;
+		local formattedUnitName = self:GetFormattedUnitNameText();
+		return DAMAGE_METER_SPELL_ENTRY_UNIT:format(spellName, formattedUnitName);
 	end
-	-- TODO END
 
-	return C_Spell.GetSpellName(self.spellID);
+	return spellName;
 end

@@ -7,7 +7,7 @@ PrivateAuraMixin = {};
 function PrivateAuraMixin:OnLoad()
 	self.Symbol:Hide();
 	local color = DebuffTypeColor["none"];
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
 	self.DebuffBorder:ClearAllPoints();
 	self.DebuffBorder:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", -1, 0);
 	self.DebuffBorder:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, 0);
@@ -93,7 +93,7 @@ function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 		self.Symbol:Hide();
 		color = DebuffTypeColor["none"];
 	end
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
 
 	self:UpdateExpirationTime(auraInfo);
 	self.Icon:SetTexture(auraInfo.icon);
@@ -329,7 +329,7 @@ function RaidBossEmoteFrame_OnLoad(self) -- Private version override
 	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 30.0;
 	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
 	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
-	
+
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
 
 	C_UnitAurasPrivate.SetPrivateWarningTextFrame(self);

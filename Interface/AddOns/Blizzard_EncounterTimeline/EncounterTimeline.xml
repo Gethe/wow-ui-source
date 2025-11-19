@@ -7,7 +7,7 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_TIMELINE" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="TimelineView" inherits="EncounterTimelineViewTemplate">
+			<Frame parentKey="View" inherits="EncounterTimelineViewTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>

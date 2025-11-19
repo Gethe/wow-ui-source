@@ -172,7 +172,6 @@ local Unit =
 		{
 			Name = "GetUnitHealthModifier",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -188,7 +187,6 @@ local Unit =
 		{
 			Name = "GetUnitMaxHealthModifier",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -311,7 +309,6 @@ local Unit =
 		{
 			Name = "GetUnitPowerModifier",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -345,7 +342,6 @@ local Unit =
 		{
 			Name = "GetUnitTotalModifiedMaxHealthPercent",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

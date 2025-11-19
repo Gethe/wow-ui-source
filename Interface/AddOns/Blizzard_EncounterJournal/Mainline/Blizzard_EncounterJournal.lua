@@ -93,6 +93,15 @@ local function GetEJDifficultyString(difficultyID)
 	end
 end
 
+local function GetServerTier()
+	-- GetServerExpansionLevel returns a 0 based expansion level. Adjust it to map to EJ_TIER_DATA.
+	return GetServerExpansionLevel() + 1;
+end
+
+local function GetJourneysDefaultTier()
+	return GetServerTier();
+end
+
 local EJ_TIER_DATA =
 {
 	[1] = { backgroundAtlas = "UI-EJ-Classic", expansionLevel = LE_EXPANSION_CLASSIC},
@@ -111,9 +120,7 @@ local EJ_TIER_DATA =
 
 function GetEJTierData(tier)
 	if tier > #EJ_TIER_DATA then
-		-- GetServerExpansionLevel returns a 0 based expansion level. Adjust it to map to EJ_TIER_DATA.
-		local serverExpansionLevel = GetServerExpansionLevel() + 1;
-		return EJ_TIER_DATA[serverExpansionLevel] or EJ_TIER_DATA[1];
+		tier = GetServerTier();
 	end
 	return EJ_TIER_DATA[tier] or EJ_TIER_DATA[1];
 end
@@ -423,8 +430,7 @@ function EncounterJournal_OnLoad(self)
 				EJ_ContentTab_Select(self.selectedTab);
 			else
 				EJ_ContentTab_Select(self.JourneysTab:GetID());
-				EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
-				EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+				EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
 			end
 		end,
 	}
@@ -466,8 +472,7 @@ function EncounterJournal_OnLoad(self)
 			EJTutorialsFrame_OpenFrame();
 		else
 			EJ_ContentTab_Select(self.JourneysTab:GetID());
-			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
-			EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
 		end
 	end);
 
@@ -624,7 +629,7 @@ local function ExpansionDropdown_SelectInternal(self, tier)
 	end
 end
 
-function EncounterJournal_SetupExpansionDropdown(self, minTier)
+function EncounterJournal_SetupExpansionDropdown(self)
 	local function IsSelected(tier)
 		return tier == EJ_GetCurrentTier();
 	end
@@ -635,8 +640,8 @@ function EncounterJournal_SetupExpansionDropdown(self, minTier)
 
 	self.instanceSelect.ExpansionDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_EJ_EXPANSION");
-
-		for tier = minTier or 1, EJ_GetNumTiers() do
+		local startTier = EncounterJournal_IsJourneysTabSelected(EncounterJournal) and EJ_JOURNEYS_MIN_TIER or 1;
+		for tier = startTier or 1, EJ_GetNumTiers() do
 			local text = EJ_GetTierInfo(tier);
 			rootDescription:CreateRadio(text, IsSelected, SetSelected, tier);
 		end
@@ -705,8 +710,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 		EncounterJournal.lastInstance = nil;
 		EncounterJournal.lastDifficulty = nil;
 		EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
-		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
-		EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+		EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
 	else
 		EJ_ContentTab_SelectAppropriateInstanceTab(instanceID);
 
@@ -814,7 +818,7 @@ function EncounterJournal_OnShow(self)
 	RequestRaidInfo();
 
 	EncounterJournal_SetupLootJournalViewDropdown(self);
-	EncounterJournal_SetupExpansionDropdown(self, EJ_JOURNEYS_MIN_TIER);
+	EncounterJournal_SetupExpansionDropdown(self);
 	EncounterJournal_SetupLootFilterDropdown(self);
 	EncounterJournal_SetupLootSlotFilterDropdown(self);
 	EncounterJournal_SetupDifficultyDropdown(self);
@@ -2354,7 +2358,7 @@ EncounterJournalFlagIconAtlases = {
 	[Enum.JournalEncounterIconFlags.Disease] = "icons_16x16_disease";
 	[Enum.JournalEncounterIconFlags.Enrage] = "icons_16x16_enrage";
 	[Enum.JournalEncounterIconFlags.Mythic] = "icons_16x16_mythic";
-	[Enum.JournalEncounterIconFlags.Bleed] = "icons_16x16_bleed";
+	[Enum.JournalEncounterIconFlags.Bleed] = "icons_16x16_blood";
 };
 
 function EncounterJournal_GetIconAtlasFromFlag(flag)
@@ -2762,7 +2766,11 @@ function EJ_ContentTab_Select(id)
 	elseif showJourneys then
 		EJ_HideNonInstancePanels();
 		EncounterJournal_EnableExpansionDropdown(-40, -30, EncounterJournal);
-		EncounterJournal_SetupExpansionDropdown(EncounterJournal, EJ_JOURNEYS_MIN_TIER);
+		if EJ_GetCurrentTier() < EJ_JOURNEYS_MIN_TIER then
+			EncounterJournal_ExpansionDropdown_Select(EncounterJournal, GetJourneysDefaultTier());
+		else
+			EncounterJournal_SetupExpansionDropdown(EncounterJournal);
+		end
 		EncounterJournal_ShowGreatVaultButton();
 	elseif showTutorials then
 		EJ_HideNonInstancePanels();

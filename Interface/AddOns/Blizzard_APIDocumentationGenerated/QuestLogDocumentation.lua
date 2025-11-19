@@ -92,6 +92,16 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetActivePreyQuest",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveThreatMaps",
 			Type = "Function",
 			MayReturnNothing = true,

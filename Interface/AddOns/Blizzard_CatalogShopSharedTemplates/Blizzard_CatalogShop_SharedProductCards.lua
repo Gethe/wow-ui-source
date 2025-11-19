@@ -227,12 +227,21 @@ function CatalogShopDefaultProductCardMixin:Layout()
 		self:SetModelScene(self.productInfo, true, displayInfo, productType);
 	end
 	container.Name:SetText(self.productInfo.name);
+
 	local isFullyOwned = self.productInfo.isFullyOwned;
 	container.PurchasedIcon:SetShown(isFullyOwned);
+
 	local discountPercentage = self.productInfo.discountPercentage or 0;
-	container.DiscountSaleTag:SetShown(not isFullyOwned and discountPercentage > 0);
-	container.DiscountAmount:SetShown(not isFullyOwned and discountPercentage > 0);
+	local shouldShowDiscountPercentage = (not isFullyOwned) and discountPercentage > 0;
+	container.DiscountSaleTag:SetShown(shouldShowDiscountPercentage);
+	container.DiscountAmount:SetShown(shouldShowDiscountPercentage);
 	container.DiscountAmount:SetText(string.format(CATALOG_SHOP_DISCOUNT_FORMAT, discountPercentage));
+
+	local consumableQuantity = self.productInfo.consumableQuantity;
+	local shouldShowConsumableQuantity = (not shouldShowDiscountPercentage) and consumableQuantity;
+	container.ConsumableQuantityBackground:SetShown(shouldShowConsumableQuantity);
+	container.ConsumableQuantityText:SetShown(shouldShowConsumableQuantity);
+	container.ConsumableQuantityText:SetText(consumableQuantity);
 end
 
 

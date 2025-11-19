@@ -120,16 +120,17 @@ local NamePlateConstants =
 		{
 			Name = "NamePlateStyle",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Default", Type = "NamePlateStyle", EnumValue = 0 },
 				{ Name = "Modern", Type = "NamePlateStyle", EnumValue = 1 },
 				{ Name = "Thin", Type = "NamePlateStyle", EnumValue = 2 },
 				{ Name = "Block", Type = "NamePlateStyle", EnumValue = 3 },
-				{ Name = "CastFocus", Type = "NamePlateStyle", EnumValue = 4 },
+				{ Name = "HealthFocus", Type = "NamePlateStyle", EnumValue = 4 },
+				{ Name = "CastFocus", Type = "NamePlateStyle", EnumValue = 5 },
 			},
 		},
 		{

@@ -1,160 +1,96 @@
-EncounterTimelineViewSetting = {
-	BackgroundTransparency = "backgroundTransparency",
-	CrossAxisExtent = "crossAxisExtent",
-	CrossAxisOffset = "crossAxisOffset",
-	DividerOffset = "dividerOffset",
-	EventIntroDuration = "eventIntroDuration",
-	EventIntroOffsetStart = "eventIntroOffsetStart",
-	EventOutroDuration = "eventOutroDuration",
-	EventOutroOffsetEnd = "eventOutroOffsetEnd",
-	IconDirection = "iconDirection",
-	IconSize = "iconSize",
-	IconScale = "iconScale",
-	LongTrackEventExtent = "longTrackEventExtent",
-	LongTrackEventLimit = "longTrackEventLimit",
-	LongTrackEventSpacing = "longTrackEventSpacing",
-	LongTrackMinimumDurationOverride = "longTrackMinimumDurationOverride",
-	LongTrackOrderDuration = "longTrackOrderDuration",
-	LongTrackStartPadding = "longTrackStartPadding",
-	MediumTrackExtent = "mediumTrackExtent",
-	PipDuration = "pipDuration",
-	PipShown = "pipShown",
-	PipTextHorizontalAnchorPoint = "pipTextHorizontalAnchorPoint",
-	PipTextHorizontalOffsetX = "pipTextHorizontalOffsetX",
-	PipTextHorizontalOffsetY = "pipTextHorizontalOffsetY",
-	PipTextHorizontalRelativePoint = "pipTextHorizontalRelativePoint",
-	PipTextShown = "pipTextShown",
-	PipTextVerticalAnchorPoint = "pipTextVerticalAnchorPoint",
-	PipTextVerticalOffsetX = "pipTextVerticalOffsetX",
-	PipTextVerticalOffsetY = "pipTextVerticalOffsetY",
-	PipTextVerticalRelativePoint = "pipTextVerticalRelativePoint",
-	PrimaryAxisEndPadding = "primaryAxisEndPadding",
-	PrimaryAxisStartPadding = "primaryAxisStartPadding",
-	ShortTrackEndPadding = "shortTrackEndPadding",
-	ShortTrackExtent = "shortTrackExtent",
-	SpellNamesEnabled = "spellNamesEnabled",
-	SpellTimersEnabled = "spellTimersEnabled",
-	SpellTooltipsEnabled = "spellTooltipsEnabled",
-	ViewOrientation = "viewOrientation",
+EncounterTimelineConstants = {
+	-- Scaling multiplier used to convert Edit Mode size settings to scale values.
+	SizeToScaleMultiplier = 0.01,
+	-- Scaling multiplier used to convert Edit Mode size transparency to alpha values.
+	TransparencyToAlphaMultiplier = 0.01,
+
+	-- Durations of various animations applied by the timeline view when
+	-- moving event frames around. For sorted tracks the duration is a bit
+	-- longer to prevent issues where events too-eagerly chase events moving
+	-- from the Long track to the Medium track and visually overlap.
+
+	CrossAxisIntroDuration = 0.35;
+	CrossAxisIntroDistance = 25;
+	CrossAxisOutroDuration = 0.35;
+	CrossAxisOutroDistance = 25;
+	SortedTrackTranslationDuration = 0.45;
+
+	-- Art constants used to offset the divider textures from tracks on the
+	-- timeline.
+	LongTrackDividerOffsetTrack = Enum.EncounterTimelineTrack.Medium;
+	LongTrackDividerOffsetExtra = -22;
+	QueuedTrackDividerOffsetTrack = Enum.EncounterTimelineTrack.Short;
+	QueuedTrackDividerOffsetExtra = 18;
+
+	-- 'amount' parameter passed to FrameDeltaLerp to fade out the trail texture
+	-- that follows timeline events when it's no longer needed.
+	TrailAlphaFadeRate = 0.4;
+
+	-- Alpha value used for paused events on the timeline. Separate from the alpha
+	-- applied per-track with curve madness.
+	PausedEventAlpha = 0.6;
 };
 
--- This map also defines what settings attributes are valid, so nil values are not allowed.
-EncounterTimelineDefaultViewSettings = {
-	-- The following settings correspond to Edit Mode configuration.
+-- Anchor definitions for timeline pip text. These can't be trivially handled
+-- with our orientation mixin as the offsets need adjusting a little bit with
+-- different orientations.
+--
+-- The 'relativeTo' parameter is ignored and will always evaluate to the
+-- timeline view frame.
+EncounterTimelinePipTextAnchors = {
+	Horizontal = AnchorUtil.CreateAnchor("TOP", nil, "BOTTOM", 0, -19);
+	Vertical = AnchorUtil.CreateAnchor("LEFT", nil, "RIGHT", 20, 0);
+	VerticalFlipped = AnchorUtil.CreateAnchor("RIGHT", nil, "LEFT", -20, 0);
+};
 
-	[EncounterTimelineViewSetting.BackgroundTransparency] = 0,
-	[EncounterTimelineViewSetting.IconDirection] = Enum.EncounterEventsIconDirection.Right,
-	[EncounterTimelineViewSetting.IconScale] = 1,
-	[EncounterTimelineViewSetting.ViewOrientation] = Enum.EncounterEventsOrientation.Horizontal,
-	[EncounterTimelineViewSetting.SpellTooltipsEnabled] = true,
-	[EncounterTimelineViewSetting.SpellTimersEnabled] = true,
-	[EncounterTimelineViewSetting.SpellNamesEnabled] = true,
+EncounterTimelineSettingDefaults = {
+	EventCountdownEnabled = true;
+	EventIconScale = 1.0;
+	EventTextEnabled = true;
+	EventTooltipsEnabled = true;
+	EventIndicatorIconMask = Constants.EncounterTimelineIconMasks.EncounterTimelineAllIcons;
+	ViewBackgroundAlpha = 1.0;
+	ViewDirection = Enum.EncounterEventsIconDirection.Right;
+	ViewOrientation = Enum.EncounterEventsOrientation.Horizontal;
 
-	-- For the below settings we'll describe them in terms of their effects
-	-- on a default left-to-right horizontal bar.
-	--
-	-- These settings are not exposed in the UI but are made available for
-	-- design tweaks. Addons can adjust these via the SetViewSetting APIs
-	-- on the EncounterTimeline frame.
+	-- The following settings aren't edit mode exposed, but are made available
+	-- for small tweaks.
 
-	-- Base extent of event frames.
-	[EncounterTimelineViewSetting.IconSize] = 44,
-
-	-- Amount of padding to apply to the start of the timeline.
-	[EncounterTimelineViewSetting.PrimaryAxisStartPadding] = 30,
-
-	-- Amount of padding to apply to the end of the timeline.
-	[EncounterTimelineViewSetting.PrimaryAxisEndPadding] = 30,
+	PipDuration = 5.0;
+	PipIconShown = true;
+	PipTextAnchor = EncounterTimelinePipTextAnchors.Horizontal;
+	PipTextShown = true;
 
 	-- Offsets the timeline bar and all events up or down along the timeline.
-	[EncounterTimelineViewSetting.CrossAxisOffset] = 0,
-
-	-- Controls the height of the timeline.
-	[EncounterTimelineViewSetting.CrossAxisExtent] = 55,
-
-	-- Amount of padding to apply to the start of the long event track.
-	[EncounterTimelineViewSetting.LongTrackStartPadding] = 0,
-
-	-- Controls the size allocated to events in the long event track.
-	[EncounterTimelineViewSetting.LongTrackEventExtent] = 50,
-
-	-- Controls the maximum number of events we'll show in the long track.
-	[EncounterTimelineViewSetting.LongTrackEventLimit] = 2,
-
-	-- Controls the minimum duration that a newly added event to the Long
-	-- timeline track must have in order to be made visible. Events under
-	-- this duration will remain hidden until they transition to the Short
-	-- track.
-	[EncounterTimelineViewSetting.LongTrackMinimumDurationOverride] = 13,
-
-	-- Controls the duration that events will spend moving from one spot in
-	-- the long track to another. This is intentionally a bit longer than
-	-- other transitions because if it's too fast, they "chase" events moving
-	-- through the medium track a bit too eagerly and overlap.
-	[EncounterTimelineViewSetting.LongTrackOrderDuration] = 0.45,
-
-	-- Amount of spacing to apply between events in the long track.
-	[EncounterTimelineViewSetting.LongTrackEventSpacing] = 0,
-
-	-- Controls the total width of the medium track. The medium track is a
-	-- short transitionary linear segment of the bar between the long and
-	-- short tracks that basically makes the events go real fast.
-	[EncounterTimelineViewSetting.MediumTrackExtent] = 55,
-
-	-- Controls the total width of the short track. The short track comes
-	-- after the medium track is used until the end of the timeline when
-	-- events reach a zero duration.
-	[EncounterTimelineViewSetting.ShortTrackExtent] = 386,
-
-	-- Amount of padding to apply to the end of the short track.
-	[EncounterTimelineViewSetting.ShortTrackEndPadding] = 0,
-
-	-- Controls the offset of the long-to-short track divider art asset. This
-	-- must be adjusted if any padding or extent values above are adjusted,
-	-- as it represents an absolute position on the timeline frame.
-	[EncounterTimelineViewSetting.DividerOffset] = 163,
-
-	-- Controls what duration the timeline pip will be shown at.
-
-	[EncounterTimelineViewSetting.PipDuration] = 5,
-	[EncounterTimelineViewSetting.PipShown] = true,
-
-	-- Anchor points and offsets for the text shown underneath the pip.
-	-- These can be configured independent of the timeline orientation.
-
-	[EncounterTimelineViewSetting.PipTextHorizontalAnchorPoint] = "TOP",
-	[EncounterTimelineViewSetting.PipTextHorizontalRelativePoint] = "BOTTOM",
-	[EncounterTimelineViewSetting.PipTextHorizontalOffsetX] = 0,
-	[EncounterTimelineViewSetting.PipTextHorizontalOffsetY] = -19,
-
-	[EncounterTimelineViewSetting.PipTextVerticalAnchorPoint] = "LEFT",
-	[EncounterTimelineViewSetting.PipTextVerticalRelativePoint] = "RIGHT",
-	[EncounterTimelineViewSetting.PipTextVerticalOffsetX] = 20,
-	[EncounterTimelineViewSetting.PipTextVerticalOffsetY] = 0,
-	[EncounterTimelineViewSetting.PipTextShown] = true,
-
-	-- Controls the duration and offsets of various timeline event transitions.
-	[EncounterTimelineViewSetting.EventIntroOffsetStart] = -25,
-	[EncounterTimelineViewSetting.EventIntroDuration] = 0.35,
-	[EncounterTimelineViewSetting.EventOutroOffsetEnd] = -25,
-	[EncounterTimelineViewSetting.EventOutroDuration] = 0.35,
+	CrossAxisOffset = 0;
+	-- The height of the timeline.
+	CrossAxisExtent = 55;
 };
 
-EncounterTimelineViewOrientations = {
+EncounterTimelineLayoutDefaults = {
+	-- Amount of padding to apply to the start of the timeline.
+	PrimaryAxisStartPadding = 30;
+	-- Amount of padding to apply to the end of the timeline.
+	PrimaryAxisEndPadding = 30;
+	-- Controls the size allocated to events in sorted tracks (eg. long or queued).
+	SortedEventExtent = 40;
+};
+
+EncounterEventOrientationSetup = {
 	[Enum.EncounterEventsOrientation.Horizontal] = {
 		[Enum.EncounterEventsIconDirection.Right] = {
-			pointMappings = { START = "LEFT", END = "RIGHT", CROSS_START = "TOP", CROSS_END = "BOTTOM" },
-			primaryAxisVertical = false,
-			primaryAxisDirection = 1,
-			crossAxisDirection = -1,
-			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x1, y1, x2, y2, x3, y3, x4, y4; end,
+			primaryAxisOffsetMultiplier = 1;
+			primaryAxisStartPoint = "LEFT";
+			primaryAxisEndPoint = "RIGHT";
+			primaryAxisIsVertical = false;
+			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x1, y1, x2, y2, x3, y3, x4, y4; end;
 		};
 
 		[Enum.EncounterEventsIconDirection.Left] = {
-			pointMappings = { START = "RIGHT", END = "LEFT", CROSS_START = "TOP", CROSS_END = "BOTTOM" },
-			primaryAxisVertical = false,
-			primaryAxisDirection = -1,
-			crossAxisDirection = -1,
+			primaryAxisOffsetMultiplier = -1;
+			primaryAxisStartPoint = "RIGHT";
+			primaryAxisEndPoint = "LEFT";
+			primaryAxisIsVertical = false;
 			-- Rotated such that the shadow of the timeline bar is on the bottom edge.
 			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x3, y3, x4, y4, x1, y1, x2, y2; end,
 		};
@@ -162,33 +98,24 @@ EncounterTimelineViewOrientations = {
 
 	[Enum.EncounterEventsOrientation.Vertical] = {
 		[Enum.EncounterEventsIconDirection.Bottom] = {
-			pointMappings = { START = "TOP", END = "BOTTOM", CROSS_START = "RIGHT", CROSS_END = "LEFT" },
-			primaryAxisVertical = true,
-			primaryAxisDirection = -1,
-			crossAxisDirection = -1,
+			primaryAxisOffsetMultiplier = -1;
+			primaryAxisStartPoint = "TOP";
+			primaryAxisEndPoint = "BOTTOM";
+			primaryAxisIsVertical = true;
 			-- Rotated such that the shadow of the timeline bar is on the right edge.
-			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x2, y3, x4, y1, x1, y4, x3, y2; end,
+			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x2, y3, x4, y1, x1, y4, x3, y2; end;
 		};
 
 		[Enum.EncounterEventsIconDirection.Top] = {
-			pointMappings = { START = "BOTTOM", END = "TOP", CROSS_START = "RIGHT", CROSS_END = "LEFT" },
-			primaryAxisVertical = true,
-			primaryAxisDirection = 1,
-			crossAxisDirection = -1,
+			primaryAxisOffsetMultiplier = 1;
+			primaryAxisStartPoint = "BOTTOM";
+			primaryAxisEndPoint = "TOP";
+			primaryAxisIsVertical = true;
 			-- Rotated such that the shadow of the timeline bar is on the right edge.
-			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x3, y3, x1, y1, x4, y4, x2, y2; end,
+			texCoordTranslator = function(x1, y1, x2, y2, x3, y3, x4, y4) return x3, y3, x1, y1, x4, y4, x2, y2; end;
 		};
 	};
 };
-
-EncounterTimelineViewNormalizedOffsets = {
-	PrimaryAxisStart = -math.huge,
-	PrimaryAxisStartMedium = -1,
-	PrimaryAxisStartShort = 0,
-	PrimaryAxisEnd = 1,
-};
-
-EncounterTimelineViewDirtyFlag = FlagsUtil.MakeFlags("LayoutInvalidated");
 
 -- All CVars in the following list are imported into the CVarCallbackRegistry
 -- cache on load and if changed will result in visibility of the encounter
@@ -197,3 +124,53 @@ EncounterTimelineVisibilityCVars = {
 	"combatWarningsEnabled",
 	"encounterTimelineEnabled",
 };
+
+EncounterTimelineIndicatorIconCVars = {
+	Enabled = "encounterTimelineIconographyEnabled";
+	HiddenIconMask = "encounterTimelineIconographyHiddenMask";
+};
+
+EncounterTimelineIconSetMasks = {
+	[Enum.EncounterTimelineIconSet.TankAlert] = Constants.EncounterTimelineIconMasks.EncounterTimelineTankAlertIcons;
+	[Enum.EncounterTimelineIconSet.HealerAlert] = Constants.EncounterTimelineIconMasks.EncounterTimelineHealerAlertIcons;
+	[Enum.EncounterTimelineIconSet.DamageAlert] = Constants.EncounterTimelineIconMasks.EncounterTimelineDamageAlertIcons;
+	[Enum.EncounterTimelineIconSet.Deadly] = Constants.EncounterTimelineIconMasks.EncounterTimelineDeadlyIcons;
+	[Enum.EncounterTimelineIconSet.Dispel] = Constants.EncounterTimelineIconMasks.EncounterTimelineDispelIcons;
+	[Enum.EncounterTimelineIconSet.Enrage] = Constants.EncounterTimelineIconMasks.EncounterTimelineEnrageIcons;
+};
+
+-- Curve to apply alpha changes to encounter event icons based on their
+-- current track. The 'x' coordinate is a track enum.
+
+EncounterTimelineIconAlphaCurve = C_CurveUtil.CreateCurve();
+EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Long, 0.6);
+EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Medium, 1.0);
+EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Short, 1.0);
+EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Queued, 1.0);
+EncounterTimelineIconAlphaCurve:AddPoint(Enum.EncounterTimelineTrack.Indeterminate, 1.0);
+
+-- Curve used to animate alpha changes to the trail highlight behind event
+-- icons as they move through linear timeline tracks. The 'x' coordinate is
+-- the progress percentage of the current primary axis interpolation (which is
+-- why this isn't just an animation - because that makes things harder).
+
+EncounterTimelineTrailAlphaCurve = C_CurveUtil.CreateCurve();
+EncounterTimelineTrailAlphaCurve:AddPoint(0.0, 0);
+EncounterTimelineTrailAlphaCurve:AddPoint(0.1, 1);
+
+-- Curve used to bump frame levels of overlapping events based upon their
+-- established severity; the 'x' coordinate is a severity enum and the 'y'
+-- coordinate a relative adjustment to make to the frame level.
+--
+-- Note that this adjustment is relative to the frame level of the parent
+-- timeline view frame; so it's recommended to ensure that the minimum floor
+-- in this curve is an adjustment of 1. Further, we may want to do extra
+-- adjustments within event logic - so, make them multiples of 10.
+--
+-- Ideally, this curve will rarely ever be used - it's just to deal with
+-- scenarios where event overlap in an encounter is unavoidable.
+
+EncounterTimelineSeverityFrameLevelCurve = C_CurveUtil.CreateCurve();
+EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.Low, 10);
+EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.Medium, 20);
+EncounterTimelineSeverityFrameLevelCurve:AddPoint(Enum.EncounterEventSeverity.High, 30);

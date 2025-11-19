@@ -17,20 +17,9 @@ function Professions.CreateCraftingReagent(itemID, currencyID)
 	return {itemID = itemID, currencyID = currencyID};
 end
 
-do
-	local function Matches(lhs, rhs)
-		return lhs and (lhs ~= 0) and (lhs == rhs);
-	end
-	
-	function Professions.CraftingReagentMatches(reagent1, reagent2)
-		return Matches(reagent1.itemID, reagent2.itemID) or 
-			Matches(reagent1.currencyID, reagent2.currencyID);
-	end
-end
-
 function Professions.FindReagentInTable(reagents, findReagent)
 	return FindInTableIf(reagents, function(reagent)
-		return Professions.CraftingReagentMatches(reagent, findReagent);
+		return ProfessionsUtil.CraftingReagentMatches(reagent, findReagent);
 	end);
 end
 
@@ -56,7 +45,7 @@ end
 function Professions.DoesModificationContainReagent(modification, reagent)
 	assert(modification.reagent ~= nil);
 	assert(reagent ~= nil);
-	return Professions.CraftingReagentMatches(modification.reagent, reagent);
+	return ProfessionsUtil.CraftingReagentMatches(modification.reagent, reagent);
 end
 
 function Professions.GetReagentQualityInfo(reagent)
@@ -87,57 +76,6 @@ function Professions.CreateCraftingReagentInfoBonusTbl(...)
 	end
 	return tbls;
 end
-
-do
-	-- Returns the quantity required by the slot, or a variable quantity determined by
-	-- the reagent.
-	local function GetQuantityRequired(reagentSlotSchematic, reagent)
-		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
-			if Professions.CraftingReagentMatches(reagent, variableQuantity.reagent) then
-				return variableQuantity.quantity;
-			end
-		end
-
-		return reagentSlotSchematic.quantityRequired;
-	end
-
-	local function HasVariableQuantities(reagentSlotSchematic)
-		return #reagentSlotSchematic.variableQuantities > 0;
-	end
-
-	local function IsVariableQuantityReagent(reagentSlotSchematic, reagent)
-		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
-			if Professions.CraftingReagentMatches(reagent, reagent) then
-				return true;
-			end
-		end
-		return false;
-	end
-
-	local function GetVariableQuantityRange(reagentSlotSchematic, reagent)
-		local min, max = math.huge, 0;
-		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
-			local quantity = variableQuantity.quantity;
-			min = math.min(min, quantity);
-			max = math.max(max, quantity)
-		end
-		return min, max;
-	end
-
-	function Professions.GetRecipeSchematic(...)
-		local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(...);
-	
-		for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-			reagentSlotSchematic.GetQuantityRequired = GetQuantityRequired;
-			reagentSlotSchematic.HasVariableQuantities = HasVariableQuantities;
-			reagentSlotSchematic.IsVariableQuantityReagent = IsVariableQuantityReagent;
-			reagentSlotSchematic.GetVariableQuantityRange = GetVariableQuantityRange;
-		end
-	
-		return recipeSchematic;
-	end
-end
-
 
 function Professions.AddTooltipInfo(reagent, tooltip, transaction)
 	if reagent.currencyID then
@@ -176,7 +114,8 @@ function Professions.AddTooltipInfo(reagent, tooltip, transaction)
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 	end
 	
-	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
+	-- If this item is a flyout item, then the dependent reagents will have already been loaded when the
+	-- flyout loaded all of its item options.
 	local requirements = C_TradeSkillUI.GetDependentReagents(reagent);
 	for index, requiredReagent in ipairs(requirements) do
 		local name = Professions.GetReagentName(requiredReagent);
@@ -490,7 +429,7 @@ function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local slotIndex = reagentSlotSchematic.slotIndex;
 	for allocationIndex, allocation in transaction:EnumerateAllocations(slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
-			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
+			return ProfessionsUtil.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
 
 		if not index or quantities[index] == nil then

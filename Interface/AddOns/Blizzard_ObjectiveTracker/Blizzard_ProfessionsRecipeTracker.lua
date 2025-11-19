@@ -126,7 +126,7 @@ function ProfessionsRecipeTrackerMixin:AddRecipes(isRecraft)
 end
 
 function ProfessionsRecipeTrackerMixin:AddRecipe(recipeID, isRecraft)
-	local recipeSchematic = Professions.GetRecipeSchematic(recipeID, isRecraft);
+	local recipeSchematic = ProfessionsUtil.GetRecipeSchematic(recipeID, isRecraft);
 	local blockID = NegateIf(recipeID, isRecraft);
 	local block = self:GetBlock(blockID);
 	local blockName = isRecraft and PROFESSIONS_CRAFTING_FORM_RECRAFTING_HEADER:format(recipeSchematic.name) or recipeSchematic.name;

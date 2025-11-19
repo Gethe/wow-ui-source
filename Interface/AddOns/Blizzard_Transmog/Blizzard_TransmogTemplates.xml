@@ -38,6 +38,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
 					<Frame parentKey="OverlayLocked" inherits="AutoCastOverlayTemplate" hidden="true">
 						<Size x="36" y="36"/>
 						<Anchors>
@@ -57,6 +58,27 @@
 						<Texture parentKey="Selected" atlas="transmog-outfit-card-selected" useAtlasSize="true" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="SelectedPurple" alpha="0" atlas="transmog-outfit-card-selected-purple" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="2">
+						<Texture parentKey="Glow" alpha="0" atlas="transmog-outfit-card-lineGlw">
+							<Size x="215" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="GlowPurple" alpha="0" atlas="transmog-outfit-card-lineGlw-purple">
+							<Size x="215" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -108,10 +130,27 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</HighlightTexture>
+				<Animations>
+					<AnimationGroup parentKey="AnimSaved" setToFinalAlpha="true">
+						<Alpha childKey="GlowPurple" duration="1.2" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="GlowPurple" duration="0.3" order="1" startDelay="1.2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="SelectedPurple" duration="1.2" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="SelectedPurple" duration="0.3" order="1" startDelay="1.2" fromAlpha="1" toAlpha="0"/>
+						<Alpha childKey="Selected" duration="1.2" order="1" fromAlpha="0" toAlpha="0"/>
+						<Alpha childKey="Selected" duration="0.3" order="1" startDelay="1.2" fromAlpha="0" toAlpha="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="AnimNew" setToFinalAlpha="true">
+						<Alpha childKey="Glow" duration="0.24" order="1" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.3" order="1" startDelay="0.24" fromAlpha="1" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
 			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 

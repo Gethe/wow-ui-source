@@ -16,15 +16,6 @@
 			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="PandemicIcon" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-					<Color r="1" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
@@ -91,15 +82,6 @@
 			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="PandemicIcon" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-					<Color r="1" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
@@ -166,15 +148,6 @@
 			<KeyValue key="includeAsLayoutChildWhenHidden" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="ARTWORK" textureSubLevel="-1">
-				<Texture parentKey="PandemicIcon" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-2" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-					</Anchors>
-					<Color r="1" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
 				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
@@ -226,15 +199,6 @@
 				</Anchors>
 				<Size x="30" y="30"/>
 				<Layers>
-					<Layer level="ARTWORK" textureSubLevel="-1">
-						<Texture parentKey="PandemicIcon" hidden="true">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-2" y="2"/>
-								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-							</Anchors>
-							<Color r="1" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon" setAllPoints="true"/>
 						<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">

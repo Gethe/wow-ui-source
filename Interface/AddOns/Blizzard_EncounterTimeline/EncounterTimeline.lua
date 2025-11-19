@@ -1,48 +1,78 @@
+EncounterTimelineDirtyFlags = {
+	Visibility = bit.lshift(1, 0),
+};
+
 EncounterTimelineMixin = CreateFromMixins(EditModeEncounterEventsSystemMixin);
 
 function EncounterTimelineMixin:OnLoad()
 	EditModeEncounterEventsSystemMixin.OnSystemLoad(self);
 
+	self.dirtyFlags = CreateFlags();
+	self.dirtyUpdateTimer = nil;
 	self.editModeEventTimer = nil;
-	self.eventFrameCount = 0;
 
 	self:RegisterEvent("ENCOUNTER_STATE_CHANGED");
 	self:RegisterEvent("ENCOUNTER_TIMELINE_STATE_UPDATED");
+	self:RegisterEvent("SETTINGS_LOADED");
 
 	self:GetView():SetScript("OnSizeChanged", function() self:UpdateSize(); end);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameAcquired", self.OnEventFrameAcquired, self);
 	EventRegistry:RegisterCallback("EncounterTimeline.OnEventFrameReleased", self.OnEventFrameReleased, self);
 
-	for _, cvarName in ipairs(EncounterTimelineVisibilityCVars) do
+	for _, cvarName in pairs(EncounterTimelineVisibilityCVars) do
 		CVarCallbackRegistry:SetCVarCachable(cvarName);
-		CVarCallbackRegistry:RegisterCallback(cvarName, function() self:UpdateVisibility(); end, self);
+		CVarCallbackRegistry:RegisterCallback(cvarName, function() self:OnVisibilityCVarChanged(cvarName); end, self);
+	end
+
+	for _, cvarName in pairs(EncounterTimelineIndicatorIconCVars) do
+		CVarCallbackRegistry:SetCVarCachable(cvarName);
+		CVarCallbackRegistry:RegisterCallback(cvarName, function() self:OnIndicatorIconCVarChanged(cvarName); end, self);
 	end
 end
 
 function EncounterTimelineMixin:OnEvent(event, ...)
 	if event == "ENCOUNTER_STATE_CHANGED" then
-		self:UpdateVisibility();
+		self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
 	elseif event == "ENCOUNTER_TIMELINE_STATE_UPDATED" then
-		self:UpdateVisibility();
+		self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
+	elseif event == "SETTINGS_LOADED" then
+		self:UpdateEventIndicatorIconMask();
 	end
 end
 
-function EncounterTimelineMixin:OnEventFrameAcquired(eventView)
-	if self:HasView(eventView) then
-		self.eventFrameCount = self.eventFrameCount + 1;
+function EncounterTimelineMixin:OnDirtyUpdate()
+	if self:IsDirty(EncounterTimelineDirtyFlags.Visibility) then
 		self:UpdateVisibility();
+	end
+
+	if not self:IsDirty() and self.dirtyUpdateTimer ~= nil then
+		self.dirtyUpdateTimer:Cancel();
+		self.dirtyUpdateTimer = nil;
 	end
 end
 
-function EncounterTimelineMixin:OnEventFrameReleased(eventView)
+function EncounterTimelineMixin:OnIndicatorIconCVarChanged(_cvarName)
+	self:UpdateEventIndicatorIconMask();
+end
+
+function EncounterTimelineMixin:OnVisibilityCVarChanged(_cvarName)
+	self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
+end
+
+function EncounterTimelineMixin:OnEventFrameAcquired(eventView, _eventFrame, _isNewObject)
 	if self:HasView(eventView) then
-		self.eventFrameCount = self.eventFrameCount - 1;
-		self:UpdateVisibility();
+		self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
+	end
+end
+
+function EncounterTimelineMixin:OnEventFrameReleased(eventView, _eventFrame)
+	if self:HasView(eventView) then
+		self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
 	end
 end
 
 function EncounterTimelineMixin:OnEditingChanged(isEditing)
-	self:UpdateVisibility();
+	self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
 
 	if isEditing then
 		self:StartEditModeEvents();
@@ -51,16 +81,36 @@ function EncounterTimelineMixin:OnEditingChanged(isEditing)
 	end
 end
 
+function EncounterTimelineMixin:MarkDirty(flag)
+	self.dirtyFlags:Set(flag);
+
+	if self.dirtyUpdateTimer == nil then
+		self.dirtyUpdateTimer = C_Timer.NewTimer(0, function() self:OnDirtyUpdate(); end);
+	end
+end
+
+function EncounterTimelineMixin:MarkClean(flag)
+	self.dirtyFlags:Clear(flag);
+end
+
+function EncounterTimelineMixin:IsDirty(flag)
+	if flag ~= nil then
+		return self.dirtyFlags:IsSet(flag);
+	else
+		return self.dirtyFlags:IsAnySet();
+	end
+end
+
 function EncounterTimelineMixin:HasEventFrames()
-	return self.eventFrameCount > 0;
+	return self.View:HasAnyActiveEventFrames();
 end
 
 function EncounterTimelineMixin:GetView()
-	return self.TimelineView;
+	return self.View;
 end
 
 function EncounterTimelineMixin:HasView(view)
-	return self.TimelineView == view;
+	return self.View == view;
 end
 
 function EncounterTimelineMixin:IsExplicitlyShown()
@@ -73,7 +123,7 @@ function EncounterTimelineMixin:SetExplicitlyShown(explicitlyShown)
 	end
 
 	self.isExplicitlyShown = explicitlyShown;
-	self:UpdateVisibility();
+	self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
 end
 
 function EncounterTimelineMixin:IsEditing()
@@ -106,9 +156,7 @@ function EncounterTimelineMixin:EvaluateVisibility()
 
 	if visibility == Enum.EncounterEventsVisibility.Always then
 		return true;
-	elseif visibility == Enum.EncounterEventsVisibility.Hidden then
-		return false;
-	elseif visibility == Enum.EncounterEventsVisibility.InCombat then
+	elseif visibility == Enum.EncounterEventsVisibility.InEncounter then
 		if C_InstanceEncounter.IsEncounterInProgress() and C_InstanceEncounter.ShouldShowTimelineForEncounter() then
 			return true;
 		elseif C_EncounterTimeline.HasAnyEvents() or self:HasEventFrames() then
@@ -129,6 +177,8 @@ function EncounterTimelineMixin:UpdateVisibility()
 	else
 		self:BeginHide();
 	end
+
+	self:MarkClean(EncounterTimelineDirtyFlags.Visibility);
 end
 
 function EncounterTimelineMixin:CancelEditModeEvents()
@@ -192,51 +242,72 @@ function EncounterTimelineMixin:BeginHide()
 	self.HideAnimation:Play();
 end
 
-function EncounterTimelineMixin:UpdateSystemSettingOrientation()
-	local orientation = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
+function EncounterTimelineMixin:UpdateEventIndicatorIconMask()
+	local visibleIconMask = EncounterTimelineUtil.GetEventIndicatorIconMask();
+	self:GetView():SetEventIndicatorIconMask(visibleIconMask);
+end
+
+function EncounterTimelineMixin:UpdateViewOrientation()
+	local orientationSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
+	local iconDirectionSetting = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection);
+
+	local orientation = EncounterTimelineUtil.CreateOrientation(orientationSetting, iconDirectionSetting);
 	self:GetView():SetViewOrientation(orientation);
+
+	local pipTextAnchor;
+
+	if orientationSetting == Enum.EncounterEventsOrientation.Horizontal then
+		pipTextAnchor = EncounterTimelinePipTextAnchors.Horizontal;
+	elseif orientationSetting == Enum.EncounterEventsOrientation.Vertical then
+		pipTextAnchor = EncounterTimelinePipTextAnchors.Vertical;
+	end
+
+	self:GetView():SetPipTextAnchor(pipTextAnchor);
+end
+
+function EncounterTimelineMixin:UpdateSystemSettingOrientation()
+	self:UpdateViewOrientation();
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingIconDirection()
-	local iconDirection = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconDirection);
-	self:GetView():SetIconDirection(iconDirection);
+	self:UpdateViewOrientation();
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingIconSize()
-	local iconScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize) / 100;
-	self:GetView():SetIconScale(iconScale);
+	local iconScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize) * EncounterTimelineConstants.SizeToScaleMultiplier;
+	self:GetView():SetEventIconScale(iconScale);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingOverallSize()
-	local frameScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize) / 100;
+	local frameScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize) * EncounterTimelineConstants.SizeToScaleMultiplier;
 	self:SetScale(frameScale);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingBackground()
-	local backgroundAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Background) / 100;
-	self:GetView():SetBackgroundTransparency(backgroundAlpha);
+	local backgroundAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Background) * EncounterTimelineConstants.TransparencyToAlphaMultiplier;
+	self:GetView():SetViewBackgroundAlpha(backgroundAlpha);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingTransparency()
-	local frameAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency) / 100;
-	self:SetAlpha(frameAlpha);
+	local frameAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency) * EncounterTimelineConstants.TransparencyToAlphaMultiplier;
+	self:GetView():SetAlpha(frameAlpha);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingVisibility()
-	self:UpdateVisibility();
+	self:MarkDirty(EncounterTimelineDirtyFlags.Visibility);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingShowSpellName()
-	local spellNamesEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowSpellName);
-	self:GetView():SetSpellNamesEnabled(spellNamesEnabled);
+	local textEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowSpellName);
+	self:GetView():SetEventTextEnabled(textEnabled);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingShowTooltips()
 	local tooltipsEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTooltips);
-	self:GetView():SetSpellTooltipsEnabled(tooltipsEnabled);
+	self:GetView():SetEventTooltipsEnabled(tooltipsEnabled);
 end
 
 function EncounterTimelineMixin:UpdateSystemSettingShowTimer()
-	local timersEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTimer);
-	self:GetView():SetSpellTimersEnabled(timersEnabled);
+	local countdownEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTimer);
+	self:GetView():SetEventCountdownEnabled(countdownEnabled);
 end

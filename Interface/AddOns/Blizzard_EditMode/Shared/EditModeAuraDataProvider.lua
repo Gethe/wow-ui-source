@@ -17,9 +17,9 @@ local nextInstanceID = 1;
 local function CreateAura(spellID, name, dispelName, sourceUnit, isHelpful, isHarmful, isRaid, isBoss)
 	local aura =
 	{
-		auraInstanceID = nextInstanceID, name = name, icon = 0, applications = 1, dispelName = dispelName, duration = 10, expirationTime = 0, sourceUnit = sourceUnit,
+		auraInstanceID = nextInstanceID, name = name, icon = GetSampleAuraIcon(), applications = 1, dispelName = dispelName, duration = 0, expirationTime = 0, sourceUnit = sourceUnit,
 		isStealable = false, nameplateShowPersonal = false, spellId = spellID, canApplyAura = true, isBossAura = isBoss, isHarmful = isHarmful, isHelpful = isHelpful, isRaid = isRaid,
-		isFromPlayerOrPlayerPet = true, nameplateShowAll = false, timeMod = 1,
+		isFromPlayerOrPlayerPet = true, nameplateShowAll = false, timeMod = 1, points = {},
 	};
 
 	nextInstanceID = nextInstanceID + 1;
@@ -43,7 +43,7 @@ local function CreateAuras()
 	editModeAuraSlots = {};
 
 	--		spellID		name			dispelName		sourceUnit		isHelpful		isHarmful		isRaid		isBoss
-	AddAura(500, 		"SampleAura1", 	"Poison", 		"player", 		false, 			true, 			true, 		false);
+	AddAura(500, 		"SampleAura1", 	"Poison", 		"player", 		false, 			true, 			true, 		true);
 	AddAura(501, 		"SampleAura2", 	"Magic", 		"player", 		false, 			true, 			true, 		false);
 	AddAura(502, 		"SampleAura3", 	"Curse", 		"player", 		false, 			true, 			true, 		false);
 	AddAura(500, 		"SampleAura4", 	nil, 			"player", 		true, 			false, 			false, 		false);
@@ -82,11 +82,6 @@ local editModeAuraDataProvider =
 		CreateAuras();
 		local auraData = editModeAurasBySlot[slot];
 		assertsafe(auraData ~= nil, "EditMode SampleAura indexed by invalid slot: %s", tostring(slot));
-		if auraData then
-			auraData.icon = GetSampleAuraIcon();
-			auraData.expirationTime = GetTime() + auraData.duration;
-		end
-
 		return auraData;
 	end,
 

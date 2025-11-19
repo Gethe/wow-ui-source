@@ -1276,8 +1276,8 @@ function CatalogShopUtil.GetProductInfo(productID)
 		end
 		for _, childData in ipairs(childrenProductData) do
 			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-			-- If this product has an otherProductGameType then we can't use this product in our model scene (it's from another game)
-			if childProductDisplayInfo.otherProductGameType == nil then
+			-- If this product has a missing license (unknown to server) then we can't use this product in our model scene (it's from another game)
+			if not childProductDisplayInfo.hasUnknownLicense then
 				if productInfo.sceneDisplayData then
 					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
 					childProductData.displayOrder = childData.displayOrder or 999;

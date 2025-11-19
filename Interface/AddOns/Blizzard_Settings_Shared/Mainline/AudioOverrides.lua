@@ -59,7 +59,7 @@ function AudioOverrides.CreateEncounterWarningsSoundSettings(category, layout)
 
 		-- Button which links to Boss Warnings Settings
 		local function onButtonClick()
-			Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID, COMBAT_WARNINGS_ENABLE_LABEL);
+			Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID, COMBAT_WARNINGS_LABEL);
 		end
 		local addSearchTags = false;
 		initializer = CreateSettingsButtonInitializer("", COMBAT_WARNINGS_SETTINGS, onButtonClick, nil, addSearchTags);

@@ -193,6 +193,21 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetVirtualCurrencyBalance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "balance", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "IsShop2Enabled",
 			Type = "Function",
 
@@ -264,6 +279,16 @@ local CatalogShop =
 			Returns =
 			{
 				{ Name = "canPurchase", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "RefreshVirtualCurrencyBalance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -376,6 +401,17 @@ local CatalogShop =
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CatalogShopVirtualCurrencyBalanceUpdate",
+			Type = "Event",
+			LiteralName = "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
+				{ Name = "balance", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -493,6 +529,7 @@ local CatalogShop =
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
 				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
+				{ Name = "consumableQuantity", Type = "number", Nilable = true },
 			},
 		},
 		{

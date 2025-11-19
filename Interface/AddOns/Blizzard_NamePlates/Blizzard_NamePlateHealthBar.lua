@@ -100,6 +100,10 @@ function NamePlateHealthBarMixin:UpdateSelectionBorder()
 	if borderColor then
 		self.selectedBorder:SetVertexColor(borderColor.r, borderColor.g, borderColor.b);
 	end
+
+	-- Slightly darken the health bar of any unit that's not the target or focus to make it easier to
+	-- distinguish those states.
+	self.deselectedOverlay:SetShown(not isTarget and not isFocus);
 end
 
 function NamePlateHealthBarMixin:IsPlayer()

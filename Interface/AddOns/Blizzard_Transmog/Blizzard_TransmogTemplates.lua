@@ -1,7 +1,23 @@
-TransmogOutfitEntryMixin = {};
+TransmogOutfitEntryMixin = {
+	DYNAMIC_EVENTS = {
+		"SPELL_UPDATE_COOLDOWN"
+	};
+};
 
 function TransmogOutfitEntryMixin:OnLoad()
 	self.OutfitIcon:RegisterForDrag("LeftButton");
+
+	self.OutfitIcon:SetScript("OnEnter", function()
+		local elementData = self:GetElementData();
+		if not elementData then
+			return;
+		end
+
+		GameTooltip:SetOwner(self.OutfitIcon, "ANCHOR_RIGHT");
+		GameTooltip:SetOutfit(elementData.outfitID);
+	end);
+
+	self.OutfitIcon:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.OutfitIcon:SetScript("OnDragStart", function()
 		self:PickupOutfit();
@@ -20,6 +36,27 @@ function TransmogOutfitEntryMixin:OnLoad()
 			end);
 		end
 	end);
+
+	local hideCountdownNumbers = true;
+	self.OutfitIcon.Cooldown:SetHideCountdownNumbers(hideCountdownNumbers);
+
+	local drawBling = false;
+	self.OutfitIcon.Cooldown:SetDrawBling(drawBling);
+end
+
+function TransmogOutfitEntryMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
+	self:UpdateCooldown();
+end
+
+function TransmogOutfitEntryMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, self.DYNAMIC_EVENTS);
+end
+
+function TransmogOutfitEntryMixin:OnEvent(event, ...)
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		self:UpdateCooldown();
+	end
 end
 
 function TransmogOutfitEntryMixin:Init(elementData)
@@ -95,6 +132,15 @@ function TransmogOutfitEntryMixin:OpenEditPopup()
 	end
 
 	elementData.onEditCallback();
+end
+
+function TransmogOutfitEntryMixin:UpdateCooldown()
+	local cooldownInfo = C_Spell.GetSpellCooldown(Constants.TransmogOutfitDataConsts.EQUIP_TRANSMOG_OUTFIT_MANUAL_SPELL_ID);
+	if cooldownInfo then
+		CooldownFrame_Set(self.OutfitIcon.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+	else
+		CooldownFrame_Clear(self.OutfitIcon.Cooldown);
+	end
 end
 
 

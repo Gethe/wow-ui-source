@@ -21,16 +21,16 @@
 					<Layer level="BACKGROUND">
 						<Texture atlas="ui-damagemeters-bar-shadowbg">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture atlas="ui-damagemeters-bar-shadowedge">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -38,7 +38,7 @@
 						<FontString parentKey="Value" inherits="NumberFontNormal" justifyH="LEFT">
 							<!-- Anchoring dynamically managed in Lua. -->
 						</FontString>
-						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" wordwrap="false">
 							<!-- Anchoring dynamically managed in Lua. -->
 						</FontString>
 					</Layer>

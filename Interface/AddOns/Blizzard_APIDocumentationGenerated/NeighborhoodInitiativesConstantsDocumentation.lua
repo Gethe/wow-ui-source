@@ -14,6 +14,22 @@ local NeighborhoodInitiativesConstants =
 			},
 		},
 		{
+			Name = "NeighborhoodInitiativeChestResult",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "NiSuccess", Type = "NeighborhoodInitiativeChestResult", EnumValue = 0 },
+				{ Name = "NiUnspecifiedFailure", Type = "NeighborhoodInitiativeChestResult", EnumValue = 1 },
+				{ Name = "NiNoHouseFound", Type = "NeighborhoodInitiativeChestResult", EnumValue = 2 },
+				{ Name = "NiNoRewards", Type = "NeighborhoodInitiativeChestResult", EnumValue = 3 },
+				{ Name = "NiThrottled", Type = "NeighborhoodInitiativeChestResult", EnumValue = 4 },
+				{ Name = "NiServiceDisabled", Type = "NeighborhoodInitiativeChestResult", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "NeighborhoodInitiativeFlags",
 			Type = "Enumeration",
 			NumValues = 3,

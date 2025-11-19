@@ -9,10 +9,12 @@ local HousingDecorUI =
 		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unsaved changes and deselect the active target" },
 		},
 		{
 			Name = "CommitDecorMovement",
 			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the currently selected decor instance" },
 		},
 		{
 			Name = "EnterPreviewState",
@@ -26,6 +28,7 @@ local HousingDecorUI =
 			Name = "GetAllPlacedDecor",
 			Type = "Function",
 			HasRestrictions = true,
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Returns =
 			{
@@ -52,6 +55,7 @@ local HousingDecorUI =
 			Name = "GetDecorInstanceInfoForGUID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns info for the placed decor instance associated with the passed Decor GUID, if there is one" },
 
 			Arguments =
 			{
@@ -82,6 +86,7 @@ local HousingDecorUI =
 		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -89,17 +94,9 @@ local HousingDecorUI =
 			},
 		},
 		{
-			Name = "GetMaxDecorPlaced",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "numPlaced", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMaxPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns the max decor placement budget for the current house interior or plot; Can be increased via house level" },
 
 			Returns =
 			{
@@ -109,6 +106,7 @@ local HousingDecorUI =
 		{
 			Name = "GetNumDecorPlaced",
 			Type = "Function",
+			Documentation = { "Returns the number of individual decor objects placed in the current house or plot; This is NOT the value used in placement budget calculations, see GetSpentPlacementBudget for that" },
 
 			Returns =
 			{
@@ -127,6 +125,7 @@ local HousingDecorUI =
 		{
 			Name = "GetSelectedDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance that's currently selected, if there is one" },
 
 			Returns =
 			{
@@ -136,6 +135,7 @@ local HousingDecorUI =
 		{
 			Name = "GetSpentPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns how much of the current house interior or plot's decor placement budget has been spent; Different kinds of decor take up different budget amounts, so this value isn't an individual decor count, see GetNumDecorPlaced for that" },
 
 			Returns =
 			{
@@ -145,6 +145,7 @@ local HousingDecorUI =
 		{
 			Name = "HasMaxPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns whether there's a max decor placement budget available and active for the current player, in the current house interior or plot" },
 
 			Returns =
 			{
@@ -154,6 +155,7 @@ local HousingDecorUI =
 		{
 			Name = "IsDecorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently selected" },
 
 			Returns =
 			{
@@ -172,6 +174,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHouseExteriorDoorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the entry door of the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -181,6 +184,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHouseExteriorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -190,6 +194,7 @@ local HousingDecorUI =
 		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently being hovered" },
 
 			Returns =
 			{
@@ -225,6 +230,7 @@ local HousingDecorUI =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -234,6 +240,7 @@ local HousingDecorUI =
 		{
 			Name = "RemoveSelectedDecor",
 			Type = "Function",
+			Documentation = { "Attempt to return the currently selected decor instance back to the house chest" },
 		},
 		{
 			Name = "SetGridVisible",
@@ -250,6 +257,7 @@ local HousingDecorUI =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -262,6 +270,7 @@ local HousingDecorUI =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Placed Decor List APIs currently restricted due to being potentially very expensive operations, may be reworked & opened up in the future" },
 
 			Arguments =
 			{
@@ -383,29 +392,6 @@ local HousingDecorUI =
 	Tables =
 	{
 		{
-			Name = "HousingDecorActionFlags",
-			Type = "Enumeration",
-			NumValues = 13,
-			MinValue = 0,
-			MaxValue = 2048,
-			Fields =
-			{
-				{ Name = "None", Type = "HousingDecorActionFlags", EnumValue = 0 },
-				{ Name = "Add", Type = "HousingDecorActionFlags", EnumValue = 1 },
-				{ Name = "Remove", Type = "HousingDecorActionFlags", EnumValue = 2 },
-				{ Name = "DragMove", Type = "HousingDecorActionFlags", EnumValue = 4 },
-				{ Name = "PrecisionMove", Type = "HousingDecorActionFlags", EnumValue = 8 },
-				{ Name = "ClickTarget", Type = "HousingDecorActionFlags", EnumValue = 16 },
-				{ Name = "HoverTarget", Type = "HousingDecorActionFlags", EnumValue = 32 },
-				{ Name = "TargetRoomComponents", Type = "HousingDecorActionFlags", EnumValue = 64 },
-				{ Name = "TargetHouseExterior", Type = "HousingDecorActionFlags", EnumValue = 128 },
-				{ Name = "MaintainLastTarget", Type = "HousingDecorActionFlags", EnumValue = 256 },
-				{ Name = "IncludeTargetChildren", Type = "HousingDecorActionFlags", EnumValue = 512 },
-				{ Name = "UsePlacedDecorList", Type = "HousingDecorActionFlags", EnumValue = 1024 },
-				{ Name = "PreviewDecor", Type = "HousingDecorActionFlags", EnumValue = 2048 },
-			},
-		},
-		{
 			Name = "HousingDecorInstanceListEntry",
 			Type = "Structure",
 			Documentation = { "Smaller structs with the minimum fields from HousingDecorInstanceInfo needed to identify/display a slim list of placed decor" },
@@ -420,10 +406,10 @@ local HousingDecorUI =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "level", Type = "number", Nilable = false },
-				{ Name = "interiorDecorPlacementBudget", Type = "number", Nilable = false },
-				{ Name = "exteriorDecorPlacementBudget", Type = "number", Nilable = false },
-				{ Name = "roomPlacementBudget", Type = "number", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false, Documentation = { "This specific house's current level, determined/increasesd by earning house xp" } },
+				{ Name = "interiorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for inside the house; Can be increased via house level" } },
+				{ Name = "exteriorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for the house exterior/in the house's plot; Can be increased via house level" } },
+				{ Name = "roomPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max room placement budget for the house; Can be increased via house level" } },
 				{ Name = "exteriorFixtureBudget", Type = "number", Nilable = false },
 			},
 		},

@@ -378,6 +378,15 @@
 		</KeyValues>
 		<Frames>
 			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Button parentKey="EditModeResizeButton" frameStrata="HIGH" toplevel="true" hidden="true">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+				</Anchors>
+				<NormalTexture atlas="damagemeters-scalehandle"/>
+				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
+				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
+			</Button>
 		</Frames>
 	</Frame>
 </Ui>

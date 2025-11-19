@@ -127,9 +127,9 @@ function HousingFramesUtil.SetGridSnapEnabled(gridSnapEnabled)
 	C_HousingBasicMode.SetGridSnapEnabled(gridSnapEnabled);
 end
 
-function HousingFramesUtil.SetNudgeEnabled(nudgeEnabled)
+function HousingFramesUtil.SetFreePlaceEnabled(freeplaceEnabled)
 	PlaySound(SOUNDKIT.HOUSING_PRIMARY_SUB_MENU_BUTTON_TOGGLE_SHORTCUT);
-	C_HousingBasicMode.SetNudgeEnabled(nudgeEnabled);
+	C_HousingBasicMode.SetFreePlaceEnabled(freeplaceEnabled);
 end
 
 function HousingFramesUtil.ZoomLayoutCamera(zoom)

@@ -342,7 +342,7 @@ local function GetAuraFrameHeight(namePlateScale)
 end
 
 local function GetHealthBarHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block or Enum.NamePlateStyle.HealthFocus then
 		local largeHealthBarHeight = NamePlateConstants.LARGE_HEALTH_BAR_HEIGHT;
 		return largeHealthBarHeight * namePlateScale.vertical;
 	end

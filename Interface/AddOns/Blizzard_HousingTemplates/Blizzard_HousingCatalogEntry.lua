@@ -391,9 +391,10 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local entryInfo = self.entryInfo;
 	local marketInfo = entryInfo.marketInfo;
 
-	local total = entryInfo.numPlaced + entryInfo.numStored;
+	local stored = entryInfo.quantity + entryInfo.remainingRedeemable;
+	local total = entryInfo.numPlaced + stored;
 	if total ~= 0 then
-		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, entryInfo.numStored));
+		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, stored));
 	end
 
 	if entryInfo.firstAcquisitionBonus > 0 then

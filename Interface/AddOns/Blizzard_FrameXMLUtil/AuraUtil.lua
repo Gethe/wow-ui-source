@@ -3,11 +3,12 @@ BUFF_DURATION_WARNING_TIME = 90;
 
 --Aubrie TODO move these.. to something else
 DebuffTypeColor = { };
-DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
-DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
-DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
-DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
-DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
+DebuffTypeColor["none"]	=		{ r = 0.8000, g = 0.0000, b = 0.0000, a = 0 };
+DebuffTypeColor["Magic"] = 		{ r = 0.0000, g = 0.5059, b = 1.0000, a = 1 };
+DebuffTypeColor["Curse"] = 		{ r = 0.6235, g = 0.0235, b = 0.8941, a = 1 };
+DebuffTypeColor["Disease"] =	{ r = 0.9451, g = 0.4157, b = 0.0353, a = 1 };
+DebuffTypeColor["Poison"] = 	{ r = 0.4824, g = 0.7804, b = 0.0000, a = 1 };
+DebuffTypeColor["Bleed"] =		{ r = 0.7216, g = 0.0000, b = 0.0588, a = 1 };
 DebuffTypeColor[""]	= DebuffTypeColor["none"];
 
 DebuffTypeSymbol = { };
@@ -15,6 +16,7 @@ DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
 DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
 DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
 DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
+DebuffTypeSymbol["Bleed"] = DEBUFF_SYMBOL_BLEED;
 
 AuraUtil = {};
 
@@ -160,7 +162,8 @@ AuraUtil.DispellableDebuffTypes =
 	Magic = true,
 	Curse = true,
 	Disease = true,
-	Poison = true
+	Poison = true,
+	Bleed = true,
 };
 
 AuraUtil.AuraUpdateChangedType = EnumUtil.MakeEnum(
@@ -432,4 +435,9 @@ end
 
 function AuraUtil.IsRoleAura(aura)
 	return aura.isTankRoleAura or aura.isHealerRoleAura or aura.isDPSRoleAura;
+end
+
+function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+	local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"];
+	borderRegion:SetVertexColor(color.r, color.g, color.b, color.a);
 end

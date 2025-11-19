@@ -351,6 +351,50 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 		},
+
+		-- Aura Organization (how the auras, role icons, name, and dispel types are organized and anchored within the frame)
+		{
+			setting = Enum.EditModeUnitFrameSetting.AuraOrganizationType,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.RaidAuraOrganizationType.Legacy, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_LEGACY },
+				{value = Enum.RaidAuraOrganizationType.BuffsTopDebuffsBottom, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_TOP },
+				{value = Enum.RaidAuraOrganizationType.BuffsRightDebuffsLeft, text = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ORGANIZATION_BUFFS_RIGHT },
+
+		Legacy,
+	BuffsTopDebuffsBottom,
+	BuffsRightDebuffsLeft,
+			},
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeUnitFrameSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_CONTAINER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- IconSize (controls the scale of the aura icons)
+		{
+			setting = Enum.EditModeUnitFrameSetting.IconSize,
+			name = HUD_EDIT_MODE_SETTING_UNIT_FRAME_AURA_ICON_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
 	},
 
 	[Enum.EditModeSystem.EncounterBar] =
@@ -951,8 +995,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			options =
 			{
 				{value = Enum.EncounterEventsVisibility.Always, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_ALWAYS},
-				{value = Enum.EncounterEventsVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_IN_COMBAT},
-				{value = Enum.EncounterEventsVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_HIDDEN},
+				{value = Enum.EncounterEventsVisibility.InEncounter, text = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_VISIBILITY_IN_ENCOUNTER},
 			},
 		},
 
@@ -1003,6 +1046,34 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			},
 		},
 
+		-- Frame Width
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameWidth,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 300,
+			maxValue = 600,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Frame Height
+		{
+			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 150,
+			maxValue = 400,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
 		-- Bar Height
 		{
 			setting = Enum.EditModeDamageMeterSetting.BarHeight,
@@ -1038,6 +1109,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 1,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
 		},
 
 		-- Text Size

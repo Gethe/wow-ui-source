@@ -4,7 +4,7 @@
 ## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors, Blizzard_StaticPopup
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
-Mainline\ArenaUtil.lua
+ArenaUtil.lua
 PartyUtil.lua
 Mainline\QuestUtils.lua
 AchievementUtil.lua

@@ -30,6 +30,17 @@ local DelvesConstants =
 			},
 		},
 		{
+			Name = "PlayerCompanionInfoFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IgnoreSeasonInScenarios", Type = "PlayerCompanionInfoFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "DelveAssistActionData",
 			Type = "Structure",
 			Fields =

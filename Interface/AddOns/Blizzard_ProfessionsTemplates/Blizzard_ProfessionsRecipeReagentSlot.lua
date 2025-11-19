@@ -329,7 +329,7 @@ function ProfessionsReagentSlotMixin:IsOriginalReagentSet()
 		return false;
 	end
 
-	return Professions.CraftingReagentMatches(self.originalReagent, self:GetReagent());
+	return ProfessionsUtil.CraftingReagentMatches(self.originalReagent, self:GetReagent());
 end
 
 function ProfessionsReagentSlotMixin:SetOriginalReagent(reagent)

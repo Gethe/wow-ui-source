@@ -20,8 +20,13 @@ function DamageMeterSourceWindowMixin:GetHeader()
 	return self.Header;
 end
 
+function DamageMeterSourceWindowMixin:GetResizeButton()
+	return self.ResizeButton;
+end
+
 function DamageMeterSourceWindowMixin:OnLoad()
 	self:InitializeScrollBox();
+	self:InitializeResizeButton();
 end
 
 function DamageMeterSourceWindowMixin:OnShow()
@@ -42,6 +47,34 @@ function DamageMeterSourceWindowMixin:OnEvent(event, ...)
 			self:Hide();
 		end
 	end
+end
+
+function DamageMeterSourceWindowMixin:OnEnter()
+	-- Handle showing the ResizeButton under the correct conditions.
+	self:SetScript("OnUpdate", function()
+		local resizeButton = self:GetResizeButton();
+		local shouldResizeButtonBeShown = (self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing());
+		local shouldChangeBackgroundOpacity = true;
+
+		if shouldResizeButtonBeShown and resizeButton:GetAlpha() == 0 then
+			self.ShowResizeButton:Play();
+			self.EmphasizeScrollBar:Play();
+
+			if shouldChangeBackgroundOpacity then
+				self.ShowBackground:Play();
+			end
+		elseif not shouldResizeButtonBeShown and resizeButton:GetAlpha() > 0 then
+			self:SetScript("OnUpdate", nil);
+
+			local reverse = true;
+			self.ShowResizeButton:Play(reverse);
+			self.EmphasizeScrollBar:Play(reverse);
+
+			if shouldChangeBackgroundOpacity then
+				self.ShowBackground:Play(reverse);
+			end
+		end
+	end);
 end
 
 function DamageMeterSourceWindowMixin:InitializeScrollBox()
@@ -75,6 +108,39 @@ function DamageMeterSourceWindowMixin:InitializeScrollBox()
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self:GetScrollBox(), self:GetScrollBar(), scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 end
 
+function DamageMeterSourceWindowMixin:InitializeResizeButton()
+	local resizeButton = self:GetResizeButton();
+
+	resizeButton:SetScript("OnMouseDown", function(button, mouseButtonName, _down)
+		if mouseButtonName == "LeftButton" then
+			button:SetButtonState("PUSHED", true);
+			button:GetHighlightTexture():Hide();
+
+			if self:IsRightSide() then
+				self:StartSizing("BOTTOMRIGHT");
+			else
+				self:StartSizing("BOTTOMLEFT");
+			end
+
+			self.isResizing = true;
+		end
+	end);
+
+	resizeButton:SetScript("OnMouseUp", function(button, mouseButtonName, _down)
+		if mouseButtonName == "LeftButton" then
+			button:SetButtonState("NORMAL", false);
+			button:GetHighlightTexture():Show();
+			self:StopMovingOrSizing();
+			self:SetUserPlaced(false);
+			self.isResizing = false;
+		end
+	end);
+
+	resizeButton:SetScript("OnEnter", function()
+		self:OnEnter();
+	end);
+end
+
 function DamageMeterSourceWindowMixin:GetCombatSessionSource()
 	if not self.sourceGUID then
 		return nil;
@@ -95,10 +161,15 @@ function DamageMeterSourceWindowMixin:GetCombatSessionSource()
 	return nil;
 end
 
+function DamageMeterSourceWindowMixin:ShowsValuePerSecondAsPrimary()
+	return self.showsValuePerSecondAsPrimary == true;
+end
+
 function DamageMeterSourceWindowMixin:BuildDataProvider()
 	local combatSessionSource = self:GetCombatSessionSource();
 	local combatSpells = combatSessionSource and combatSessionSource.combatSpells or {};
 	local maxAmount = combatSessionSource and combatSessionSource.maxAmount or 0;
+	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
 
 	local dataProvider = CreateDataProvider();
 	for i, combatSpell in ipairs(combatSpells) do
@@ -106,6 +177,7 @@ function DamageMeterSourceWindowMixin:BuildDataProvider()
 		combatSpell.classFilename = self.classFilename;
 		combatSpell.maxAmount = maxAmount;
 		combatSpell.index = i;
+		combatSpell.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
 
 		dataProvider:Insert(combatSpell);
 	end
@@ -136,6 +208,7 @@ function DamageMeterSourceWindowMixin:SetSource(source)
 	self.totalAmount = source.totalAmount;
 	self.sourceName = source.name;
 	self.classFilename = source.classFilename;
+	self.showsValuePerSecondAsPrimary = source.showsValuePerSecondAsPrimary;
 
 	self:UpdateName();
 end
@@ -145,6 +218,7 @@ function DamageMeterSourceWindowMixin:ClearSource()
 	self.totalAmount = nil;
 	self.sourceName = nil;
 	self.classFilename = nil;
+	self.showsValuePerSecondAsPrimary = nil;
 end
 
 function DamageMeterSourceWindowMixin:GetSourceGUID()
@@ -178,18 +252,45 @@ function DamageMeterSourceWindowMixin:GetSessionID()
 	return self.sessionID;
 end
 
+function DamageMeterSourceWindowMixin:IsResizing()
+	return self.isResizing == true;
+end
+
+function DamageMeterSourceWindowMixin:IsRightSide()
+	return self.isRightSide == true;
+end
+
 function DamageMeterSourceWindowMixin:AnchorToSessionWindow(sessionWindow)
 	self:ClearAllPoints();
+
+	local resizeButton = self:GetResizeButton();
+	resizeButton:ClearAllPoints();
 
 	local sessionWindowCenterX, _sessionWindowCenterY = sessionWindow:GetCenter();
 	local screenCenterX, _screenCenterY = UIParent:GetCenter();
 
 	-- Anchor in whatever direction has more room.
 	if sessionWindowCenterX < screenCenterX then
+		self.isRightSide = true;
 		self:SetPoint("TOPLEFT", sessionWindow, "TOPRIGHT");
+		self:SetPoint("BOTTOMLEFT", sessionWindow, "BOTTOMRIGHT");
+
+		resizeButton:SetPoint("BOTTOMRIGHT", -1, -8);
+		resizeButton:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
+		resizeButton:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
+		resizeButton:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
 	else
+		self.isRightSide = false;
 		self:SetPoint("TOPRIGHT", sessionWindow, "TOPLEFT");
+		self:SetPoint("BOTTOMRIGHT", sessionWindow, "BOTTOMLEFT");
+
+		resizeButton:SetPoint("BOTTOMLEFT", 1, -8);
+		resizeButton:GetNormalTexture():SetTexCoord(1, 0, 0, 1);
+		resizeButton:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
+		resizeButton:GetPushedTexture():SetTexCoord(1, 0, 0, 1);
 	end
+
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSourceWindowMixin:GetNameText()

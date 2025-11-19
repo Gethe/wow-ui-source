@@ -8,6 +8,10 @@ function ColorPickerFrameMixin:OnLoad()
             self.swatchFunc();
         end
 
+		if self.swatch then
+			self.swatch:SetColorRGB(r, g, b);
+		end
+
         if self.opacityFunc then
             self.opacityFunc();
         end
@@ -84,6 +88,7 @@ function ColorPickerFrameMixin:SetupColorPickerAndShow(info)
     self.previousValues = {r = info.r, g = info.g, b = info.b, a = info.opacity};
     self.cancelFunc = info.cancelFunc;
     self.extraInfo = info.extraInfo;
+	self.swatch = info.swatch;
 
     self.Content.ColorSwatchOriginal:SetColorTexture(info.r, info.g, info.b);
     self.Content.HexBox:OnColorSelect(info.r, info.g, info.b);

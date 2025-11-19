@@ -17,7 +17,7 @@
 	</Cooldown>
 
 	<Frame name="ArenaUnitFrameDebuffTemplate" ignoreParentAlpha="true" hidden="true" mixin="ArenaUnitFrameDebuffMixin" virtual="true">
-		<Size x="27" y="27"/>
+		<Size x="34" y="34"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" file="Interface\ICONS\INV_Misc_QuestionMark.blp" setAllPoints="true"/>

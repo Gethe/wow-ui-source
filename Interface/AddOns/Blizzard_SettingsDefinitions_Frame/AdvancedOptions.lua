@@ -82,6 +82,10 @@ local function Register()
 
 	-- Combat Warnings
 	InterfaceOverrides.RunSettingsCallback(function()
+		local COMBAT_WARNINGS_ENABLED_CVAR = "combatWarningsEnabled";
+		local ENCOUNTER_WARNINGS_ENABLED_CVAR = "encounterWarningsEnabled";
+		local ENCOUNTER_TIMELINE_ENABLED_CVAR = "encounterTimelineEnabled";
+
 		local subsectionInitializer;
 
 		local _sectionTooltip = nil;
@@ -99,8 +103,20 @@ local function Register()
 				end
 			end
 
-			local _setting, initializer = Settings.SetupCVarCheckbox(category, "combatWarningsEnabled", COMBAT_WARNINGS_ENABLE_LABEL, GenerateTooltipText);
-			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, COMBAT_WARNINGS_ENABLED_CVAR, COMBAT_WARNINGS_ENABLE_LABEL, GenerateTooltipText);
+			initializer:AddModifyPredicate(function() return C_EncounterWarnings.IsFeatureAvailable() or C_EncounterTimeline.IsFeatureAvailable(); end);
+		end
+
+		local function CanEnableBossWarningFeatures()
+			return C_EncounterTimeline.IsFeatureAvailable() and C_CVar.GetCVarBool(COMBAT_WARNINGS_ENABLED_CVAR);
+		end
+
+		local function CanModifyTextWarningSettings()
+			return CanEnableBossWarningFeatures() and C_EncounterWarnings.IsFeatureEnabled();
+		end
+
+		local function CanModifyBossTimelineSettings()
+			return CanEnableBossWarningFeatures() and C_EncounterTimeline.IsFeatureEnabled();
 		end
 
 		-- Enable Text Warnings
@@ -133,7 +149,7 @@ local function Register()
 				return severitySelectionTexts[selectedValue] or UNKNOWN;
 			end
 
-			local checkboxSetting = Settings.RegisterCVarSetting(category, "encounterWarningsEnabled", Settings.VarType.Boolean, COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
+			local checkboxSetting = Settings.RegisterCVarSetting(category, ENCOUNTER_WARNINGS_ENABLED_CVAR, Settings.VarType.Boolean, COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
 			local checkboxLabel = COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL;
 			local checkboxTooltip = GenerateTooltipText;
 
@@ -144,7 +160,8 @@ local function Register()
 
 			local initializer = CreateSettingsCheckboxDropdownInitializer(checkboxSetting, checkboxLabel, checkboxTooltip, dropdownSetting, dropdownOptions, dropdownLabel, dropdownTooltip);
 			initializer.getSelectionTextFunc = GetSelectionText;
-			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+			initializer:AddModifyPredicate(CanEnableBossWarningFeatures);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
 			initializer:AddSearchTags(COMBAT_WARNINGS_ENABLE_ENCOUNTER_WARNINGS_LABEL);
 			layout:AddInitializer(initializer);
 			subsectionInitializer = initializer;
@@ -152,7 +169,9 @@ local function Register()
 
 		do
 			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterWarningsHideIfNotTargetingPlayer", COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_LABEL, COMBAT_WARNINGS_HIDE_IF_NOT_TARGETING_PLAYER_TOOLTIP);
-			initializer:SetParentInitializer(subsectionInitializer);
+			initializer:SetParentInitializer(subsectionInitializer, CanModifyTextWarningSettings);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
+			initializer:AddEvaluateStateCVar(ENCOUNTER_WARNINGS_ENABLED_CVAR);
 		end
 
 		-- Enable Boss Timeline
@@ -166,15 +185,110 @@ local function Register()
 				end
 			end
 
-			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineEnabled", COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_LABEL, GenerateTooltipText);
-			initializer:AddModifyPredicate(C_EncounterWarnings.IsFeatureAvailable);
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, ENCOUNTER_TIMELINE_ENABLED_CVAR, COMBAT_WARNINGS_ENABLE_ENCOUNTER_TIMELINE_LABEL, GenerateTooltipText);
+			initializer:AddModifyPredicate(CanEnableBossWarningFeatures);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
 			subsectionInitializer = initializer;
 		end
 
-		-- Hide Long Countdowns
+		-- Hide long countdowns
 		do
 			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineHideLongCountdowns", COMBAT_WARNINGS_HIDE_LONG_COUNTDOWNS_LABEL, COMBAT_WARNINGS_HIDE_LONG_COUNTDOWNS_TOOLTIP);
 			initializer:SetParentInitializer(subsectionInitializer);
+			initializer:AddModifyPredicate(CanModifyBossTimelineSettings);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
+			initializer:AddEvaluateStateCVar(ENCOUNTER_TIMELINE_ENABLED_CVAR);
+		end
+
+		-- Hide queued countdowns
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineHideQueuedCountdowns", COMBAT_WARNINGS_HIDE_QUEUED_COUNTDOWNS_LABEL, COMBAT_WARNINGS_HIDE_QUEUED_COUNTDOWNS_TOOLTIP);
+			initializer:SetParentInitializer(subsectionInitializer);
+			initializer:AddModifyPredicate(CanModifyBossTimelineSettings);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
+			initializer:AddEvaluateStateCVar(ENCOUNTER_TIMELINE_ENABLED_CVAR);
+		end
+
+		-- Hide countdowns for other roles
+		do
+			local _setting, initializer = Settings.SetupCVarCheckbox(category, "encounterTimelineHideForOtherRoles", COMBAT_WARNINGS_HIDE_FOR_OTHER_ROLES_LABEL, COMBAT_WARNINGS_HIDE_FOR_OTHER_ROLES_TOOLTIP);
+			initializer:SetParentInitializer(subsectionInitializer);
+			initializer:AddModifyPredicate(CanModifyBossTimelineSettings);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
+			initializer:AddEvaluateStateCVar(ENCOUNTER_TIMELINE_ENABLED_CVAR);
+		end
+
+		-- Spell support iconography
+		do
+			local checkboxSetting = Settings.RegisterCVarSetting(category, EncounterTimelineIndicatorIconCVars.Enabled, Settings.VarType.Boolean, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL);
+			local checkboxLabel = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL;
+			local checkboxTooltip = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_TOOLTIP;
+
+			-- The dropdown controls a bitmask CVar that stores the inverted
+			-- state of individual checkboxes; Get/SetValue must pass values
+			-- through TransformValue to correctly translate.
+
+			local function TransformValue(mask)
+				local invertedMask = 0;
+
+				for iconSetIndex in pairs(EncounterTimelineIconSetMasks) do
+					local iconSetBit = bit.lshift(1, (iconSetIndex - 1));
+
+					if not FlagsUtil.IsSet(mask, iconSetBit) then
+						invertedMask = bit.bor(invertedMask, iconSetBit);
+					end
+				end
+
+				return invertedMask;
+			end
+
+			local function GetValue()
+				local disabledIconSets = Settings.GetCVarMask(EncounterTimelineIndicatorIconCVars.HiddenIconMask, Enum.EncounterTimelineIconSet);
+				local enabledIconSets = TransformValue(disabledIconSets);
+				return enabledIconSets;
+			end
+
+			local function SetValue(enabledIconSets)
+				local disabledIconSets = TransformValue(enabledIconSets);
+				CVarCallbackRegistry:SetCVarBitfieldMask(EncounterTimelineIndicatorIconCVars.HiddenIconMask, disabledIconSets);
+			end
+
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.TankAlert, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_TANK_ALERT_LABEL);
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.HealerAlert, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_HEALER_ALERT_LABEL);
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.DamageAlert, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_DAMAGE_ALERT_LABEL);
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.Dispel, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_DISPEL_LABEL);
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.Enrage, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_ENRAGE_LABEL);
+				container:AddCheckbox(Enum.EncounterTimelineIconSet.Deadly, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_DEADLY_LABEL);
+				return container:GetData();
+			end
+
+			local function GetSelectionText(selections)
+				if #selections == Enum.EncounterTimelineIconSetMeta.NumValues then
+					return COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_ALL;
+				elseif #selections == 0 then
+					return COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_OPTION_NONE;
+				else
+					-- Use default text logic based on selections.
+					return nil;
+				end
+			end
+
+			local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(EncounterTimelineIndicatorIconCVars.HiddenIconMask);
+			local dropdownSetting = Settings.RegisterProxySetting(category, "ENCOUNTER_TIMELINE_ICONOGRAPHY_SETS", Settings.VarType.Number, COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL, defaultValue, GetValue, SetValue);
+			local dropdownOptions = GetOptions;
+			local dropdownLabel = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_LABEL;
+			local dropdownTooltip = COMBAT_WARNINGS_SPELL_SUPPORT_ICONOGRAPHY_TOOLTIP;
+
+			local initializer = CreateSettingsCheckboxDropdownInitializer(checkboxSetting, checkboxLabel, checkboxTooltip, dropdownSetting, dropdownOptions, dropdownLabel, dropdownTooltip);
+			initializer.getSelectionTextFunc = GetSelectionText;
+			initializer:SetParentInitializer(subsectionInitializer);
+			initializer:AddModifyPredicate(CanModifyBossTimelineSettings);
+			initializer:AddEvaluateStateCVar(COMBAT_WARNINGS_ENABLED_CVAR);
+			initializer:AddEvaluateStateCVar(ENCOUNTER_TIMELINE_ENABLED_CVAR);
+			layout:AddInitializer(initializer);
+			subsectionInitializer = initializer;
 		end
 	end);
 
@@ -230,7 +344,6 @@ local function Register()
 		Settings.SetupCVarCheckbox(category, "externalDefensivesEnabled", ENABLE_EXTERNAL_DEFENSIVES_VIEWER, ENABLE_EXTERNAL_DEFENSIVES_TOOLTIP);
 	end);
 
-	--[[ Disabled until real functionality exists
 	-- Damage Meter
 	InterfaceOverrides.RunSettingsCallback(function()
 		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DAMAGE_METER_LABEL));
@@ -249,7 +362,6 @@ local function Register()
 
 		Settings.SetupCVarCheckbox(category, "damageMeterEnabled", ENABLE_DAMAGE_METER, TooltipFn);
 	end);
-	]]
 
 	-- Spell Diminishing Returns
 	if C_SpellDiminish.IsSystemSupported() then

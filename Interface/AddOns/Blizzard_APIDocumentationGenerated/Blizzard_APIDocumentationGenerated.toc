@@ -5,6 +5,7 @@
 ## Dependencies: Blizzard_APIDocumentation
 
 # Start documentation files here
+AbbreviateConfigAPIDocumentation.lua
 AccessibilityOptionsDocumentation.lua
 AccountInfoDocumentation.lua
 AccountStoreDocumentation.lua
@@ -55,6 +56,7 @@ ClientSceneDocumentation.lua
 ClubDocumentation.lua
 ClubFinderDocumentation.lua
 ColorOverridesDocumentation.lua
+ColorUtilDocumentation.lua
 CombatAudioAlertDocumentation.lua
 CombatLogDocumentation.lua
 CombatLogInternalDocumentation.lua
@@ -452,6 +454,7 @@ ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
 LevelConstantsDocumentation.lua
+LocalizationSharedDocumentation.lua
 LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua

@@ -289,7 +289,7 @@ function ProfessionsMixin:UpdateTabs()
 		self.isCraftingOrdersTabEnabled = false;
 	else
 		self.isCraftingOrdersTabEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
-		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, self.isCraftingOrdersTabEnabled and "" or PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
+		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
 		forceAwayFromOrders = not self.isCraftingOrdersTabEnabled;
 		FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
 	end

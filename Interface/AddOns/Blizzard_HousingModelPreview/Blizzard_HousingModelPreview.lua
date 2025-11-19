@@ -29,7 +29,8 @@ function HousingModelPreviewMixin:OnLoad()
 
 	self:SetupTextTooltip(self.TextContainer.NumOwned, 
 		function(tooltip) 
-			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_OWNED_ICON_TOOLTIP:format(self.catalogEntryInfo.numPlaced, self.catalogEntryInfo.numStored));
+			local numOwned = self.catalogEntryInfo.quantity + self.catalogEntryInfo.remainingRedeemable;
+			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_OWNED_ICON_TOOLTIP:format(self.catalogEntryInfo.numPlaced, numOwned));
 		end);
 end
 
@@ -66,7 +67,7 @@ function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
 
 	self.TextContainer.CollectionBonus:SetShown(catalogEntryInfo.firstAcquisitionBonus > 0);
 
-	local totalOwned = catalogEntryInfo.numPlaced + catalogEntryInfo.numStored;
+	local totalOwned = catalogEntryInfo.numPlaced + catalogEntryInfo.quantity + catalogEntryInfo.remainingRedeemable;
 	local totalOwnedText = totalOwned > 0 and HOUSING_DECOR_OWNED_ICON_FMT:format(totalOwned) or nil;
 	self:SetTextOrHide(self.TextContainer.NumOwned, totalOwnedText);
 

@@ -737,6 +737,7 @@
 		<xs:attribute name="frameBuffer" type="xs:boolean" default="false"/>
 		<xs:attribute name="jumpNavigateEnabled" type="xs:boolean" default="false"/>
 		<xs:attribute name="jumpNavigateStart" type="xs:string" default="false"/>
+		<xs:attribute name="ignoreChildrenForBounds" type="xs:boolean" default="false"/>
 	</xs:attributeGroup>
 
 	<xs:complexType name="FrameType">

@@ -52,7 +52,7 @@ end
 function AllocationMixin:MatchesReagent(reagent)
 	AssertReagentArgumentNonNil(reagent);
 
-	return Professions.CraftingReagentMatches(self.reagent, reagent);
+	return ProfessionsUtil.CraftingReagentMatches(self.reagent, reagent);
 end
 
 function CreateAllocation(reagent, quantity)

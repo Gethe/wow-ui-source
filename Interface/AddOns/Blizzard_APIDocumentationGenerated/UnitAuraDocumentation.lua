@@ -52,6 +52,25 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "GetAuraBaseDuration",
+			Type = "Function",
+			SecretWhenAuraInstanceRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the base duration of the given spell (or aura). Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "newDuration", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAuraDataByAuraInstanceID",
 			Type = "Function",
 			SecretWhenAuraDataRestricted = true,

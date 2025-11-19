@@ -115,6 +115,18 @@
 								<Anchor point="TOPRIGHT" x="-22" y="-22" />
 							</Anchors>
 						</Texture>
+						<Texture parentKey="ConsumableQuantityBackground" atlas="tokens-counterbg-large" hidden="true" >
+							<Size x="38" y="38" />
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-22" y="-22" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ConsumableQuantityText" inherits="Game22Font" justifyV="TOP" justifyH="CENTER" hidden="true" >
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.ConsumableQuantityBackground" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
 						<Texture parentKey="DiscountSaleTag" atlas="shop-saletag" useAtlasSize="true" hidden="true" >
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-3" y="-11" />

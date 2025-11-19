@@ -740,7 +740,7 @@
 							</Frame>
 							<CheckButton name="SendMailSendMoneyButton" inherits="SendMailRadioButtonTemplate" id="1">
 								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="SendMailMoney" relativePoint="TOPRIGHT" x="0" y="12"/>
+									<Anchor point="TOPLEFT" relativeTo="SendMailMoney" relativePoint="TOPRIGHT" x="20" y="12"/>
 								</Anchors>
 								<Scripts>
 									<OnLoad>

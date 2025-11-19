@@ -12,7 +12,7 @@ local HouseInfoLifetimeEvents =
 local HOUSE_DROPDOWN_WIDTH = 200;
 local HOUSE_DROPDOWN_MAX_HOUSES_SHOWN = 8;
 local HOUSE_DROPDOWN_EXTENT = 20;
-local SCROLL_BOX_EDGE_FADE_LENGTH = 50;
+local SCROLL_BOX_EDGE_FADE_LENGTH = 30;
 
 ---------------------Dashboard Frame-------------------------------
 local function GetPlayerHouseList()
@@ -310,7 +310,6 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 					self.InitiativeSetFrame.InitiativeTasks:Hide();
 					self.InitiativeSetFrame.InitiativeActivity:Hide();
 					self.InitiativeSetFrame.InitiativeActiveNeighborhoodSwitcher:Show();
-					--! TODO Will need to set the info for the active initiative, once API provided by GP (CurrentlyActive, ActiveName, ActiveNeighborhoodName)
 				end
 
 				self:SetProgressBarThresholds();
@@ -346,12 +345,14 @@ function InitiativesTabMixin:RefreshInitiativeTab()
 	end
 end
 
---! TODO still using fake data, GP/Server/Rewards work still WIP
 function InitiativesTabMixin:SetProgressBarThresholds()
-	self.InitiativeSetFrame.ProgressBar:SetMinMaxValues(PROGRESS_BAR_MIN, self.currentInitiative.progressRequired);
+	local maxNumRewards = self.currentInitiative.milestones and #self.currentInitiative.milestones or 1;
+	local maxProgressValue = self.currentInitiative.milestones and self.currentInitiative.milestones[maxNumRewards].requiredContributionAmount or 1;
+
+	self.InitiativeSetFrame.ProgressBar:SetMinMaxValues(0, maxProgressValue);
 	self.InitiativeSetFrame.ProgressBar:SetValue(self.currentInitiative.currentProgress);
 
-	if self.InitiativeSetFrame.ProgressBar:GetValue() > PROGRESS_BAR_MIN then
+	if self.InitiativeSetFrame.ProgressBar:GetValue() > 0 then
 		self.InitiativeSetFrame.ProgressBar.BarEnd:Show();
 		self.InitiativeSetFrame.ProgressBar.BarEnd:SetPoint("LEFT", self.InitiativeSetFrame.ProgressBar.BarFill, "LEFT", 0, 0);
 		self.InitiativeSetFrame.ProgressBar.BarEnd:SetPoint("RIGHT", self.InitiativeSetFrame.ProgressBar.BarFill, "RIGHT", 0, 0);
@@ -364,13 +365,13 @@ function InitiativesTabMixin:SetProgressBarThresholds()
 		self.thresholdFrames = {};
 	end
 
-	local currentThreshold = PROGRESS_BAR_FIRST_THRESHOLD;
-	for i, thresholdInfo in pairs(PROGRESS_BAR_REWARDS) do
+	local currentThreshold = 1;
+	for i, thresholdInfo in pairs(self.currentInitiative.milestones) do
 		local thresholdName = "Threshold" .. currentThreshold;
 		local thresholdFrame = self.InitiativeSetFrame.ProgressBar[thresholdName];
 
 		local template = "ProgressThresholdTemplate";
-		if i == PROGRESS_BAR_MAX_NUM_REWARDS then
+		if i == maxNumRewards then
 			template = "ProgressThresholdLargeTemplate";
 		end
 
@@ -380,16 +381,16 @@ function InitiativesTabMixin:SetProgressBarThresholds()
 			table.insert(self.thresholdFrames, thresholdFrame);
 		end
 
-		local xOffset = i * self.InitiativeSetFrame.ProgressBar:GetWidth() / PROGRESS_BAR_MAX_NUM_REWARDS;
+		local xOffset = i * self.InitiativeSetFrame.ProgressBar:GetWidth() / maxNumRewards;
 
-		if i < PROGRESS_BAR_MAX_NUM_REWARDS then
+		if i < maxNumRewards then
 			thresholdFrame:SetPoint("CENTER", self.InitiativeSetFrame.ProgressBar, "BOTTOMLEFT", xOffset, 0);
-		elseif i == PROGRESS_BAR_MAX_NUM_REWARDS then
+		elseif i == maxNumRewards then
 			thresholdFrame:SetPoint("CENTER", self.InitiativeSetFrame.ProgressBar, "BOTTOMRIGHT", 2, 11);
 		end
 
 		local isFinalReward = template == "ProgressThresholdLargeTemplate";
-		thresholdFrame:Setup(thresholdInfo, PROGRESS_BAR_CURR_VAL, currentThreshold, isFinalReward);
+		thresholdFrame:Setup(thresholdInfo, self.currentInitiative.currentProgress or 0, isFinalReward);
 		currentThreshold = currentThreshold + 1;
 	end
 end
@@ -415,12 +416,6 @@ function InitiativesTabMixin:OnHouseSelected(houseInfoID)
 	C_NeighborhoodInitiative.RequestNeighborhoodInitiativeInfo();
 end
 
---! TODO:
---! repeatable finites need a complete state done, but I can't complete init tasks at the moment, pending GP work. should be a dropdown just like the incomplete state.
---! tooltips are going to be needed, but I'm going to wait until data provided by gameplay to implement
---! Tasks need to be trackable, see travelers log for more info, waiting until we have data to impl
---! "Additional Rewards" are still being faked since rewards still WIP
---! Progress, and task completion aren't 100% done from GP yet, so I need to circle back and implement that then verify
 function InitiativesTabMixin:SetupTaskList()
 	local indent = 15;
 	local defaultPadding = 0;
@@ -436,13 +431,13 @@ function InitiativesTabMixin:SetupTaskList()
 			if data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 				button.RepeatableIcon:Show();
 				button.Title:ClearAllPoints();
-				button.Title:SetPoint("LEFT", button.RepeatableIcon, "RIGHT", 4, -12);
+				button.Title:SetPoint("LEFT", button.RepeatableIcon, "RIGHT", 4, -9);
 				button.CollapseIcon:Hide();
 				button.CollapseIconAlphaAdd:Hide();
 			elseif data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableFinite then
 				button.RepeatableIcon:Hide();
 				button.Title:ClearAllPoints();
-				button.Title:SetPoint("LEFT", button, "LEFT", 30, 15);
+				button.Title:SetPoint("LEFT", button, "LEFT", 50, 1);
 
 				if data.topLevel then
 					button.CollapseIcon:Show();
@@ -455,7 +450,7 @@ function InitiativesTabMixin:SetupTaskList()
 			else
 				button.RepeatableIcon:Hide();
 				button.Title:ClearAllPoints();
-				button.Title:SetPoint("LEFT", button, "LEFT", 30, 15);
+				button.Title:SetPoint("LEFT", button, "LEFT", 50, 0);
 				button.CollapseIcon:Hide();
 				button.CollapseIconAlphaAdd:Hide();
 			end
@@ -470,10 +465,12 @@ function InitiativesTabMixin:SetupTaskList()
 			if data.completed and data.taskType ~= Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 				button.ActivityXP:Hide();
 				button.Checkmark:Show();
+				button.BGAlphaAdd:Show();
 			else
 				button.ActivityXP:SetText(data.progressContributionAmount);
 				button.ActivityXP:Show();
 				button.Checkmark:Hide();
+				button.BGAlphaAdd:Hide();
 			end
 		end
 
@@ -516,14 +513,18 @@ function InitiativesTabMixin:RefreshTaskList()
 	for idx, task in ipairs(self.currentInitiative.tasks) do
 		if not task.supersedes or task.supersedes == 0 then
 			-- toplevel task
-			-- task.sortOrder = idx; -- To preserve the original sort order...
 			task.children = {};
 			taskList[task.ID] = task;
 		else
 			-- child task
 			if taskList[task.supersedes] then
-				-- First child, insert into parent's children list
-				tinsert(taskList[task.supersedes].children, task);
+				-- First child, insert into parent's children list if parent incomplete, otherwise make it the new parent
+				if taskList[task.supersedes].completed then
+					task.children = {};
+					taskList[task.ID] = task;
+				else
+					tinsert(taskList[task.supersedes].children, task);
+				end
 			else
 				-- Nth child, gotta find the parent then insert into children list
 				for _, parent in pairs(taskList) do
@@ -542,7 +543,7 @@ function InitiativesTabMixin:RefreshTaskList()
 	-- Now insert data into provider with our tree
 	for _, task in pairs(taskList) do
 		if #task.children > 0 then
-			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked};
+			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked, hasChild = true};
 			local topLevelTask = dataProvider:Insert(topLevelTaskData);
 			for _, child in pairs(task.children) do
 				child.isSubtask = true;
@@ -620,7 +621,6 @@ InitiativeTaskButtonMixin = {};
 
 function InitiativeTaskButtonMixin:Init()
 	self:GetElementData():SetCollapsed(true);
-	self:UpdateButtonState();
 end
 
 function InitiativeTaskButtonMixin:SetCollapseState(isCollapsed)
@@ -649,7 +649,7 @@ end
 
 -- Returns true if this method acted on the click
 -- This may be needed since if the internal method handles the click in a way which leads to the button being released back to the pool then we won't want to continue after
-function InitiativeTaskButtonMixin:OnClick_Internal()
+function InitiativeTaskButtonMixin:OnClick_Internal(button)
 	local data = self:GetData();
 	if not data then
 		return false;
@@ -672,11 +672,26 @@ function InitiativeTaskButtonMixin:OnClick_Internal()
 		return true;
 	end
 
+	if button == "RightButton" and not data.completed then
+		MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+			rootDescription:SetTag("ENDEAVORS_TASK_BTN_TRACKER_MENU");
+
+			rootDescription:CreateButton(data.tracked and HOUSING_DASHBOARD_UNTRACK_ENDEAVOR_LABEL or HOUSING_DASHBOARD_TRACK_ENDEAVOR_LABEL, function()
+				if data.tracked then
+					C_NeighborhoodInitiative.RemoveTrackedInitiativeTask(data.ID);
+				else
+					C_NeighborhoodInitiative.AddTrackedInitiativeTask(data.ID);
+				end
+			end);
+		end);
+		return true;
+	end
+
 	return false;
 end
 
-function InitiativeTaskButtonMixin:OnClick()
-	if self:OnClick_Internal() then
+function InitiativeTaskButtonMixin:OnClick(button)
+	if self:OnClick_Internal(button) then
 		return;
 	end
 
@@ -686,7 +701,6 @@ function InitiativeTaskButtonMixin:OnClick()
 		if data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableFinite then
 			node:ToggleCollapsed();
 			self:SetCollapseState(node:IsCollapsed());
-			self:UpdateButtonState();
 		end
 	end
 end
@@ -712,20 +726,16 @@ function InitiativeTaskButtonMixin:ShowTooltip()
 		GameTooltip_AddColoredLine(GameTooltip, tooltipLine, color);
 	end
 
-	local conditionLines = {};
-	local function AddConditionLine(text, r, g, b)
-		table.insert(conditionLines, {
-			text = text,
-			r = r,
-			g = g,
-			b = b,
-		});
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	local rewardQuestID = data.rewardQuestID;
+	if rewardQuestID then
+		GameTooltip_AddQuestRewardsToTooltip(GameTooltip, data.rewardQuestID, TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK);
 	end
 
-	if data.tracked then
+	if data.tracked and not data.completed then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddInstructionLine(GameTooltip, MONTHLY_ACTIVITIES_UNTRACK);
-	else
+	elseif not data.completed then
 		GameTooltip_AddBlankLineToTooltip(GameTooltip);
 		GameTooltip_AddInstructionLine(GameTooltip, MONTHLY_ACTIVITIES_TRACK);
 	end
@@ -744,19 +754,24 @@ end
 ---------------------Initiatives Tab: ProgressBar Threshold-------------------------------
 ProgressThresholdMixin = {};
 
---! TODO will need to be revised once data provided by gameplay
-function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdLevel, thresholdLevel, isFinalReward)
-	--! TODO - implement once we get rewards data
-	-- self.Reward.name = thresholdInfo.name;
-	-- self.Reward.description = thresholdInfo.description;
+function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, isFinalReward)
+	self.Reward.name = thresholdInfo.rewards[1].title;
+	self.Reward.description = thresholdInfo.rewards[1].description;
 
-	-- self.Reward.Icon:SetTexture(thresholdInfo.icon);
+	local rewardQuestID = thresholdInfo.rewards[1].rewardQuestID;
+	if ( rewardQuestID > 0 ) then
+		local currencyInfo = C_QuestLog.GetQuestRewardCurrencyInfo(rewardQuestID, 1, false);
+		if ( currencyInfo and currencyInfo.texture ) then
+			self.Reward.Icon:SetTexture(currencyInfo.texture);
+		end
+	end
 
-	if currentThresholdLevel >= thresholdLevel then
+	if currentThresholdProgress  >= thresholdInfo.requiredContributionAmount then
 		if not isFinalReward then
 			self.LineIncomplete:Hide();
 			self.LineComplete:Show();
 			self.Reward.IconBorder:SetAtlas("housing-dashboard-fillbar-pip-complete");
+			self.Reward.IconBorder:Show();
 		end
 		self.Reward.EarnedCheckmark:Show();
 	else
@@ -764,6 +779,7 @@ function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdLevel, thre
 			self.LineIncomplete:Show();
 			self.LineComplete:Hide();
 			self.Reward.IconBorder:SetAtlas("housing-dashboard-fillbar-pip-incomplete");
+			self.Reward.IconBorder:Show();
 		end
 		self.Reward.EarnedCheckmark:Hide();
 	end

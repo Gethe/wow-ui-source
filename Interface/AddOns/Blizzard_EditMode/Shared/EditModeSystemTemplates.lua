@@ -1273,6 +1273,23 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
+	elseif setting == Enum.EditModeUnitFrameSetting.AuraOrganizationType then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.Opacity then
+		-- Arena frames not supported for now
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+			return false;
+		end
+
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
 	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder then
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
@@ -1406,39 +1423,63 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingViewRaidSize()
 	CompactRaidFrameContainer:Layout();
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
-	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+function EditModeUnitFrameSystemMixin:UpdateCompactRaidFrameContainerSetting(...)
+	-- args are interleaved "name1", callback1, "name2", callback2, ... format.
+	for i = 1, select("#", ...), 2 do
+		local name = select(i, ...);
+		local callback = select(i + 1, ...);
+		CompactRaidFrameContainer:ApplyToFrames(name, callback);
+	end
 
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
 		PartyFrame:UpdatePaddingAndLayout();
 	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
+	self:UpdateCompactRaidFrameContainerSetting(
+		"normal", DefaultCompactUnitFrameSetup,
+		"mini", DefaultCompactMiniFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll,
+		"group", CompactRaidGroup_UpdateBorder
+	);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
-	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		EditModeManagerFrame:UpdateRaidContainerFlow();
-	else
-		PartyFrame:UpdatePaddingAndLayout();
-	end
+	self:UpdateCompactRaidFrameContainerSetting(
+		"normal", DefaultCompactUnitFrameSetup,
+		"mini", DefaultCompactMiniFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll,
+		"group", CompactRaidGroup_UpdateBorder
+	);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+	self:UpdateCompactRaidFrameContainerSetting("group", CompactRaidGroup_UpdateBorder);
+end
 
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		EditModeManagerFrame:UpdateRaidContainerFlow();
-	else
-		PartyFrame:UpdatePaddingAndLayout();
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingAuraOrganizationType()
+	-- New setting, not sure this one is right...
+	self:UpdateCompactRaidFrameContainerSetting(
+		"normal", DefaultCompactUnitFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll
+	);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingIconSize()
+	-- New setting, not sure this one is right...
+	self:UpdateCompactRaidFrameContainerSetting(
+		"normal", DefaultCompactUnitFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll
+	);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingOpacity()
+	if self:ShouldShowSetting(Enum.EditModeUnitFrameSetting.Opacity) then
+		local alpha = self:GetSettingValue(Enum.EditModeUnitFrameSetting.Opacity) / 100;
+		self:SetAlpha(alpha);
 	end
 end
 
@@ -1508,40 +1549,48 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
-		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame
-	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
-		self:UpdateSystemSettingBuffsOnTop();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
-		self:UpdateSystemSettingUseLargerFrame();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames and self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
-		self:UpdateSystemSettingUseRaidStylePartyFrames();
-	elseif setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground) then
-		self:UpdateSystemSettingShowPartyFrameBackground();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups and self:HasSetting(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
-		self:UpdateSystemSettingUseHorizontalGroups();
-	elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarOnSide) then
-		self:UpdateSystemSettingCastBarOnSide();
-	elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowCastTime) then
-		self:UpdateSystemSettingShowCastTime();
-	elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewRaidSize) then
-		self:UpdateSystemSettingViewRaidSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameWidth) then
-		self:UpdateSystemSettingFrameWidth();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameHeight) then
-		self:UpdateSystemSettingFrameHeight();
-	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder and self:HasSetting(Enum.EditModeUnitFrameSetting.DisplayBorder) then
-		self:UpdateSystemSettingDisplayBorder();
-	elseif setting == Enum.EditModeUnitFrameSetting.RaidGroupDisplayType and self:HasSetting(Enum.EditModeUnitFrameSetting.RaidGroupDisplayType) then
-		self:UpdateSystemSettingRaidGroupDisplayType();
-	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy and self:HasSetting(Enum.EditModeUnitFrameSetting.SortPlayersBy) then
-		self:UpdateSystemSettingSortPlayersBy();
-	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
-		self:UpdateSystemSettingRowSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameSize) then
-		self:UpdateSystemSettingFrameSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewArenaSize) then
-		self:UpdateSystemSettingViewArenaSize();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath then
+			-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame
+		elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop then
+			self:UpdateSystemSettingBuffsOnTop();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame then
+			self:UpdateSystemSettingUseLargerFrame();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames then
+			self:UpdateSystemSettingUseRaidStylePartyFrames();
+		elseif setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground then
+			self:UpdateSystemSettingShowPartyFrameBackground();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups then
+			self:UpdateSystemSettingUseHorizontalGroups();
+		elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide then
+			self:UpdateSystemSettingCastBarOnSide();
+		elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime then
+			self:UpdateSystemSettingShowCastTime();
+		elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize then
+			self:UpdateSystemSettingViewRaidSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth then
+			self:UpdateSystemSettingFrameWidth();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight then
+			self:UpdateSystemSettingFrameHeight();
+		elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder then
+			self:UpdateSystemSettingDisplayBorder();
+		elseif setting == Enum.EditModeUnitFrameSetting.RaidGroupDisplayType then
+			self:UpdateSystemSettingRaidGroupDisplayType();
+		elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy then
+			self:UpdateSystemSettingSortPlayersBy();
+		elseif setting == Enum.EditModeUnitFrameSetting.RowSize then
+			self:UpdateSystemSettingRowSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameSize then
+			self:UpdateSystemSettingFrameSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize then
+			self:UpdateSystemSettingViewArenaSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.AuraOrganizationType then
+			self:UpdateSystemSettingAuraOrganizationType();
+		elseif setting == Enum.EditModeUnitFrameSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		end
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2946,6 +2995,23 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireS
 	self:ClearDirtySetting(setting);
 end
 
+function EditModeEncounterEventsSystemMixin:OpenToBossWarningSettingsCategory()
+	EditModeManagerFrame:CheckHideAndLockEditMode();
+	Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID, COMBAT_WARNINGS_LABEL);
+end
+
+function EditModeEncounterEventsSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	local optionsButton = extraButtonPool:Acquire();
+	optionsButton.layoutIndex = 5;
+	optionsButton:SetText(COMBAT_WARNINGS_SETTINGS);
+	optionsButton:SetOnClickHandler(function() self:OpenToBossWarningSettingsCategory(); end);
+	optionsButton:Show();
+
+	return true;
+end
+
 local EditModeSystemSelectionLayout =
 {
 	["TopRightCorner"] = { atlas = "%s-NineSlice-Corner", mirrorLayout = true, x=8, y=8 },
@@ -3130,8 +3196,49 @@ end
 
 EditModeDamageMeterSystemMixin = CreateFromMixins(EditModeSystemMixin);
 
+function EditModeDamageMeterSystemMixin:OnSystemLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+
+	self.EditModeResizeButton:SetScript("OnMouseDown", function(button, mouseButtonName, _down)
+		button:SetButtonState("PUSHED", true);
+		button:GetHighlightTexture():Hide();
+
+		self:StartSizing("BOTTOMRIGHT");
+	end);
+
+	self.EditModeResizeButton:SetScript("OnMouseUp", function(button, mouseButtonName, _down)
+		button:SetButtonState("NORMAL", false);
+		button:GetHighlightTexture():Show();
+
+		self:StopMovingOrSizing();
+		self:SetUserPlaced(false);
+
+		local width = self:GetWidth();
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeDamageMeterSetting.FrameWidth, width);
+
+		local height =  self:GetHeight();
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeDamageMeterSetting.FrameHeight, height);
+	end);
+
+	local widthSetting = self.settingDisplayInfoMap[Enum.EditModeDamageMeterSetting.FrameWidth];
+	local heightSetting = self.settingDisplayInfoMap[Enum.EditModeDamageMeterSetting.FrameHeight];
+	self:SetResizeBounds(widthSetting.minValue, heightSetting.minValue, widthSetting.maxValue, heightSetting.maxValue);
+end
+
+function EditModeDamageMeterSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	self.EditModeResizeButton:Show();
+
+	self:SetResizable(true);
+end
+
 function EditModeDamageMeterSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.EditModeResizeButton:Hide();
+
+	self:SetResizable(false);
 
 	self:SetIsEditing(false);
 end
@@ -3156,6 +3263,16 @@ end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumbers()
 	-- NYI
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameWidth()
+	local frameWidth = self:GetSettingValue(Enum.EditModeDamageMeterSetting.FrameWidth);
+	self:SetSize(frameWidth, self:GetHeight());
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameHeight()
+	local frameHeight = self:GetSettingValue(Enum.EditModeDamageMeterSetting.FrameHeight);
+	self:SetSize(self:GetWidth(), frameHeight);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingBarHeight()
@@ -3204,6 +3321,10 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 		self:UpdateSystemSettingStyle();
 	elseif setting == Enum.EditModeDamageMeterSetting.Numbers and self:HasSetting(Enum.EditModeDamageMeterSetting.Numbers) then
 		self:UpdateSystemSettingNumbers();
+	elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameWidth) then
+		self:UpdateSystemSettingFrameWidth();
+	elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameHeight) then
+		self:UpdateSystemSettingFrameHeight();
 	elseif setting == Enum.EditModeDamageMeterSetting.BarHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.BarHeight) then
 		self:UpdateSystemSettingBarHeight();
 	elseif setting == Enum.EditModeDamageMeterSetting.Padding and self:HasSetting(Enum.EditModeDamageMeterSetting.Padding) then

@@ -1027,7 +1027,7 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		self.TrackRecipeCheckbox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeID, self.order.isRecraft));
 	end
 
-	local recipeSchematic = self.order.spellID and Professions.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
+	local recipeSchematic = self.order.spellID and ProfessionsUtil.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
 
 	if self.order.isRecraft then
@@ -1405,7 +1405,7 @@ function ProfessionsCustomerOrderFormMixin:AnyModifyingReagentsChanged()
 			local allocations = transaction:GetAllocations(slotIndex);
 			local allocation = allocations:GetFirstAllocation();
 			local allocationReagent = allocation and allocation:GetReagent();
-			if (not allocationReagent) or (not Professions.CraftingReagentMatches(originalModReagent, allocationReagent)) then
+			if (not allocationReagent) or (not ProfessionsUtil.CraftingReagentMatches(originalModReagent, allocationReagent)) then
 				return true;
 			end
 		end
@@ -1491,7 +1491,7 @@ function ProfessionsCustomerOrderFormMixin:ListOrder()
 			if Professions.IsValidModification(modification) then
 				local reagent = modification.reagent;
                 for _, craftingReagentInfo in ipairs(craftingReagentTbl) do
-                    if (Professions.CraftingReagentMatches(craftingReagentInfo.reagent, reagent) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex)) then
+                    if (ProfessionsUtil.CraftingReagentMatches(craftingReagentInfo.reagent, reagent) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex)) then
                         -- If the modification still exists in the same position, set it's quantity to 0 to inform the server
                         -- not to modify this reagent.
                         craftingReagentInfo.quantity = 0;

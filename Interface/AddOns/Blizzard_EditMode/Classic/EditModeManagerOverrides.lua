@@ -9,6 +9,8 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
 
 	-- Classic settings to show.
 	self.settingsCheckButtons.TargetAndFocus.shouldHide = false;
+	self.settingsCheckButtons.PartyFrames.shouldHide = false;
+	self.settingsCheckButtons.RaidFrames.shouldHide = false;
 	self.settingsCheckButtons.StanceBar.shouldHide = false;
 	self.settingsCheckButtons.PetActionBar.shouldHide = false;
 	self.settingsCheckButtons.PossessActionBar.shouldHide = false;
@@ -29,6 +31,8 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:SetupPetFrame();
 
 	self:RefreshTargetAndFocus();
+	self:RefreshPartyFrames();
+	self:RefreshRaidFrames()
 	self:RefreshCastBar();
 	self:RefreshBuffsAndDebuffs();
 	self:RefreshStatusTrackingBar2();
@@ -38,6 +42,8 @@ end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()
 	self:ResetTargetAndFocus();
+	self:ResetPartyFrames();
+	self:ResetRaidFrames();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);

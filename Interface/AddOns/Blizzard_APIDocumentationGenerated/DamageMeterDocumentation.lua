@@ -171,6 +171,7 @@ local DamageMeter =
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
+				{ Name = "amountPerSecond", Type = "number", Nilable = false },
 				{ Name = "isLocalPlayer", Type = "bool", Nilable = false },
 			},
 		},
@@ -182,6 +183,7 @@ local DamageMeter =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
+				{ Name = "amountPerSecond", Type = "number", Nilable = false },
 				{ Name = "creatureName", Type = "cstring", Nilable = false },
 				{ Name = "combatSpellDetails", Type = "DamageMeterCombatSpellUnitDetails", Nilable = false },
 			},
@@ -193,8 +195,8 @@ local DamageMeter =
 			Fields =
 			{
 				{ Name = "unitName", Type = "cstring", Nilable = false },
-				{ Name = "unitClassName", Type = "cstring", Nilable = false },
-				{ Name = "classification", Type = "CreatureClassification", Nilable = false },
+				{ Name = "unitClassFilename", Type = "cstring", Nilable = false },
+				{ Name = "classification", Type = "cstring", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},

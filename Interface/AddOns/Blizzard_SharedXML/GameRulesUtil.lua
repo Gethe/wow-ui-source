@@ -52,7 +52,7 @@ function GameRulesUtil.ShouldShowTargetCastBar()
 end
 
 function GameRulesUtil.ShouldShowNamePlateCastBar()
-	return not C_GameRules.IsGameRuleActive(Enum.GameRule.NameplateCastBarDisabled);
+	return GetCVarBool("nameplateShowCastBars") and not C_GameRules.IsGameRuleActive(Enum.GameRule.NameplateCastBarDisabled);
 end
 
 function GameRulesUtil.ShouldShowAddOns()

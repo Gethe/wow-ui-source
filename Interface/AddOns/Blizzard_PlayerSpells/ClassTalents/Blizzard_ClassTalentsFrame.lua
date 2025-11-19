@@ -16,11 +16,11 @@ function ClassTalentCurrencyDisplayMixin:SetPointTypeText(text)
 end
 
 function ClassTalentCurrencyDisplayMixin:SetAmount(amount)
-	self.CurrencyAmount:SetText(amount);
+	self.CurrentAmountContainer.CurrencyAmount:SetText(amount);
 
 	local enabled = not self:IsInspecting() and (amount > 0);
 	local textColor = enabled and GREEN_FONT_COLOR or GRAY_FONT_COLOR;
-	self.CurrencyAmount:SetTextColor(textColor:GetRGBA());
+	self.CurrentAmountContainer.CurrencyAmount:SetTextColor(textColor:GetRGBA());
 
 	self:MarkDirty();
 end

@@ -86,6 +86,8 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 			EventRegistry:TriggerEvent("CatalogShop.OnBundleChildSelected", productInfo);
 		end);
+
+		EventRegistry:RegisterCallback("CatalogShop.OnProductInfoChanged", frame.OnProductInfoChanged, frame);
 	end
 
 	local function GetDetailContainerElementFactory(factory, elementData)		

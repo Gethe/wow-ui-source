@@ -9,14 +9,17 @@ local HousingBasicModeUI =
 		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unsaved changes and deselect the active target; Un-placed decor will be returned to the house chest" },
 		},
 		{
 			Name = "CommitDecorMovement",
 			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the currently selected decor instance" },
 		},
 		{
 			Name = "CommitHouseExteriorPosition",
 			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the House Exterior's position within the plot" },
 		},
 		{
 			Name = "FinishPlacingNewDecor",
@@ -25,6 +28,7 @@ local HousingBasicModeUI =
 		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -34,6 +38,7 @@ local HousingBasicModeUI =
 		{
 			Name = "GetSelectedDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the decor instance that's currently selected, if there is one" },
 
 			Returns =
 			{
@@ -43,10 +48,21 @@ local HousingBasicModeUI =
 		{
 			Name = "IsDecorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a decor instance is currently selected and being dragged" },
 
 			Returns =
 			{
 				{ Name = "hasSelectedDecor", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFreePlaceEnabled",
+			Type = "Function",
+			Documentation = { "When free place is enabled, collision checks while dragging decor/the house exterior are ignored" },
+
+			Returns =
+			{
+				{ Name = "freePlaceEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -70,6 +86,7 @@ local HousingBasicModeUI =
 		{
 			Name = "IsHouseExteriorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -79,6 +96,7 @@ local HousingBasicModeUI =
 		{
 			Name = "IsHouseExteriorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently selected and being moved" },
 
 			Returns =
 			{
@@ -88,19 +106,11 @@ local HousingBasicModeUI =
 		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently being hovered" },
 
 			Returns =
 			{
 				{ Name = "isHoveringDecor", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsNudgeEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "nudgeEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -115,11 +125,13 @@ local HousingBasicModeUI =
 		{
 			Name = "RemoveSelectedDecor",
 			Type = "Function",
+			Documentation = { "Attempt to return the currently selected decor instance back to the house chest" },
 		},
 		{
 			Name = "RotateDecor",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Rotates the currently selected decor along a single axis; For wall decor, rotates such that the object stays flat against its current wall; For all other decor, rotates around the Z (vertical) axis" },
 
 			Arguments =
 			{
@@ -130,10 +142,22 @@ local HousingBasicModeUI =
 			Name = "RotateHouseExterior",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Rotates the House Exterior around the Z (vertical) axis" },
 
 			Arguments =
 			{
 				{ Name = "rotDegrees", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFreePlaceEnabled",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Set whether free place is enabled; When free place is enabled, collision checks while dragging decor/the house exterior are ignored" },
+
+			Arguments =
+			{
+				{ Name = "freePlaceEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -154,16 +178,6 @@ local HousingBasicModeUI =
 			Arguments =
 			{
 				{ Name = "gridVisible", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SetNudgeEnabled",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "nudgeEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -225,6 +239,16 @@ local HousingBasicModeUI =
 			},
 		},
 		{
+			Name = "HousingDecorFreePlaceStatusChanged",
+			Type = "Event",
+			LiteralName = "HOUSING_DECOR_FREE_PLACE_STATUS_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isFreePlaceEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingDecorGridSnapOccurred",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_GRID_SNAP_OCCURRED",
@@ -238,16 +262,6 @@ local HousingBasicModeUI =
 			Payload =
 			{
 				{ Name = "isGridSnapEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "HousingDecorNudgeStatusChanged",
-			Type = "Event",
-			LiteralName = "HOUSING_DECOR_NUDGE_STATUS_CHANGED",
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "isNudgeEnabled", Type = "bool", Nilable = false },
 			},
 		},
 	},

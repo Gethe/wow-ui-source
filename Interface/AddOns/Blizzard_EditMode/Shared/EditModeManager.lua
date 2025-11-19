@@ -516,14 +516,28 @@ function EditModeManagerFrameMixin:GetNumRaidMembersForcedShown()
 	end
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex)
+-- NOTE: For RaidFrame sizes, the caller provides both a default and lower bound in the form of the default parameter.
+-- This is to avoid coupling between the CUF and EditMode code for constants that are not shared yet and used in several other layout calculations.
+function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex, default)
 	local raidFrameWidth = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameWidth);
-	return (raidFrameWidth and raidFrameWidth > 0) and raidFrameWidth or NATIVE_UNIT_FRAME_WIDTH;
+	return (raidFrameWidth and raidFrameWidth >= default) and raidFrameWidth or default;
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex)
+function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex, default)
 	local raidFrameHeight = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameHeight);
-	return (raidFrameHeight and raidFrameHeight > 0) and raidFrameHeight or NATIVE_UNIT_FRAME_HEIGHT;
+	return (raidFrameHeight and raidFrameHeight >= default) and raidFrameHeight or default;
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameAuraOrganizationType(systemIndex)
+	local auraOrganizationType = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.AuraOrganizationType);
+	return (auraOrganizationType and auraOrganizationType > 0) and auraOrganizationType or Enum.RaidAuraOrganizationType.Legacy;
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameIconScale(systemIndex, default)
+	-- The iconSize setting is not a percentage even though it represents one; convert it here, note that default is expected to be in percentage form
+	-- Because the min/max are setup in EditModeSettingDisplayInfo they're not checked here and the caller needs to verify ranges.
+	local iconSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.IconSize);
+	return (iconSize and iconSize > 0) and (iconSize / 100) or default;
 end
 
 function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(systemIndex)

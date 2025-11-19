@@ -55,6 +55,15 @@ local PingManager =
 			},
 		},
 		{
+			Name = "IsPingSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SendMacroPing",
 			Type = "Function",
 			HasRestrictions = true,

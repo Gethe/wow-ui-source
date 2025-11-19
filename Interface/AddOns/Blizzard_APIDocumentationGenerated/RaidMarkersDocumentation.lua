@@ -63,6 +63,15 @@ local RaidMarkers =
 			},
 		},
 		{
+			Name = "IsRaidMarkerSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlaceRaidMarker",
 			Type = "Function",
 			HasRestrictions = true,

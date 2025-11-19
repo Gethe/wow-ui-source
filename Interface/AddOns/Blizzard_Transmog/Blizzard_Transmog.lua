@@ -101,7 +101,15 @@ function TransmogFrameMixin:OnHide()
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)
-	if event == "TRANSMOG_OUTFITS_CHANGED" or event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" then
+	if event == "TRANSMOG_OUTFITS_CHANGED" then
+		local newOutfitID = ...;
+		local selectActiveOutift = false;
+		self:RefreshOutfits(selectActiveOutift);
+
+		if newOutfitID then
+			self.OutfitCollection:AnimateOutfitAdded(newOutfitID);
+		end
+	elseif event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" then
 		local selectActiveOutift = false;
 		self:RefreshOutfits(selectActiveOutift);
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" then
@@ -184,7 +192,8 @@ end
 
 TransmogOutfitCollectionMixin = {
 	DYNAMIC_EVENTS = {
-		"VIEWED_TRANSMOG_OUTFIT_CHANGED"
+		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS"
 	};
 	HELPTIP_INFO = {
 		text = TRANSMOG_OUTFITS_HELPTIP,
@@ -225,7 +234,7 @@ function TransmogOutfitCollectionMixin:OnLoad()
 
 	self.PurchaseOutfitButton:SetScript("OnEnter", function(button)
 		if not button:IsEnabled() then
-			GameTooltip_ShowDisabledTooltip(GameTooltip, button, TRANSMOG_PURCHASE_OUTFIT_SLOT_TOOLTIP_DISABLED:format(C_TransmogOutfitInfo.GetMaxNumberOfTotalOutfits()), "ANCHOR_RIGHT");
+			GameTooltip_ShowDisabledTooltip(GameTooltip, button, TRANSMOG_PURCHASE_OUTFIT_SLOT_TOOLTIP_DISABLED:format(C_TransmogOutfitInfo.GetMaxNumberOfUsableOutfits()), "ANCHOR_RIGHT");
 		end
 	end);
 
@@ -257,7 +266,6 @@ end
 function TransmogOutfitCollectionMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
-	-- Only scroll to an outfit when initially opening the frame, not as the player clicks around on different outfits.
 	self.canScrollToOutfit = true;
 	self.OutfitList.ScrollBox:ScrollToBegin();
 end
@@ -269,6 +277,15 @@ end
 function TransmogOutfitCollectionMixin:OnEvent(event, ...)
 	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" then
 		self:UpdateSelectedOutfit();
+	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS" then
+		local _slot, _type, _weaponOption = ...;
+
+		-- Already set to true, do not restart animations if multiple slots are changing.
+		if self:GetOutfitSavedState() then
+			return;
+		end
+
+		self:AnimateViewedOutfitSaved();
 	end
 end
 
@@ -287,8 +304,9 @@ function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutift)
 	C_TransmogOutfitInfo.ChangeViewedOutfit(outfitID);
 
 	-- Check to see if we can purchase more outfits (the outfit list might now be at the max number of slots allowed).
-	local unlockedOutfitCount = C_TransmogOutfitInfo.GetNumberOfOutfitsUnlocked();
-	local maxOutfitCount = C_TransmogOutfitInfo.GetMaxNumberOfTotalOutfits();
+	local source = Enum.TransmogOutfitEntrySource.PlayerPurchased;
+	local unlockedOutfitCount = C_TransmogOutfitInfo.GetNumberOfOutfitsUnlockedForSource(source);
+	local maxOutfitCount = C_TransmogOutfitInfo.GetMaxNumberOfTotalOutfitsForSource(source);
 	local enabled = unlockedOutfitCount < maxOutfitCount;
 	self.PurchaseOutfitButton:SetEnabled(enabled);
 	self.PurchaseOutfitButton.Icon:SetDesaturated(not enabled);
@@ -318,7 +336,8 @@ function TransmogOutfitCollectionMixin:UpdateSelectedOutfit()
 	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
 
 	if self.canScrollToOutfit then
-		self:ScrollToOutfit(viewedOutfitID);
+		local alignment = ScrollBoxConstants.AlignNearest;
+		self:ScrollToOutfit(viewedOutfitID, alignment);
 		self.canScrollToOutfit = false;
 	end
 
@@ -330,15 +349,57 @@ function TransmogOutfitCollectionMixin:UpdateSelectedOutfit()
 	end);
 end
 
-function TransmogOutfitCollectionMixin:ScrollToOutfit(outfitID)
+function TransmogOutfitCollectionMixin:ScrollToOutfit(outfitID, alignment)
 	local scrollBox = self.OutfitList.ScrollBox;
 	local elementData = scrollBox:FindElementDataByPredicate(function(elementData)
 		return elementData.outfitID == outfitID;
 	end);
 
 	if elementData then
-		scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignNearest);
+		scrollBox:ScrollToElementData(elementData, alignment);
 	end
+end
+
+function TransmogOutfitCollectionMixin:AnimateViewedOutfitSaved()
+	local outfitSaved = true;
+	self:SetOutfitSavedState(outfitSaved);
+
+	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+	local alignment = ScrollBoxConstants.AlignBegin;
+	self:ScrollToOutfit(viewedOutfitID, alignment);
+
+	self.OutfitList.ScrollBox:ForEachFrame(function(frame)
+		local elementData = frame:GetElementData();
+		if elementData and elementData.outfitID == viewedOutfitID then
+			local animSaved = frame.OutfitButton.AnimSaved;
+			animSaved:SetScript("OnFinished", function()
+				animSaved:SetScript("OnFinished", nil);
+				outfitSaved = false;
+				self:SetOutfitSavedState(outfitSaved);
+			end);
+			animSaved:Restart();
+		end
+	end);
+end
+
+function TransmogOutfitCollectionMixin:AnimateOutfitAdded(outfitID)
+	local alignment = ScrollBoxConstants.AlignBegin;
+	self:ScrollToOutfit(outfitID, alignment);
+
+	self.OutfitList.ScrollBox:ForEachFrame(function(frame)
+		local elementData = frame:GetElementData();
+		if elementData and elementData.outfitID == outfitID then
+			frame.OutfitButton.AnimNew:Restart();
+		end
+	end);
+end
+
+function TransmogOutfitCollectionMixin:GetOutfitSavedState()
+	return self.outfitSaved;
+end
+
+function TransmogOutfitCollectionMixin:SetOutfitSavedState(outfitSaved)
+	self.outfitSaved = outfitSaved;
 end
 
 
@@ -346,6 +407,9 @@ ShowEquippedGearSpellFrameMixin = {};
 
 function ShowEquippedGearSpellFrameMixin:OnLoad()
 	UIPanelSpellButtonFrameMixin.OnLoad(self);
+
+	local drawBling = false;
+	self.Button.Cooldown:SetDrawBling(drawBling);
 
 	self.Button.Icon:ClearAllPoints();
 	self.Button.Icon:SetSize(36, 36);

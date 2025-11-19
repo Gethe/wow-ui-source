@@ -8,7 +8,7 @@ local BasicDecorModeShownEvents =
 	"HOUSING_DECOR_PLACE_FAILURE",
 	"HOUSING_DECOR_PLACE_SUCCESS",
 	"HOUSE_EXTERIOR_POSITION_SUCCESS",
-	"HOUSING_DECOR_NUDGE_STATUS_CHANGED",
+	"HOUSING_DECOR_FREE_PLACE_STATUS_CHANGED",
 	"HOUSING_DECOR_GRID_VISIBILITY_STATUS_CHANGED",
 	"HOUSING_DECOR_GRID_SNAP_STATUS_CHANGED",
 	"HOUSING_DECOR_REMOVED",
@@ -95,7 +95,7 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 				acknowledgeOnHide = true,
 			};
 
-			HelpTip:Show(self.SubButtonBar.NudgeButton, helpTipInfo);
+			HelpTip:Show(self.SubButtonBar.FreePlaceButton, helpTipInfo);
 		end
 
 		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
@@ -106,8 +106,8 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 		self:PlayPlacementSoundForHouse();
 	elseif event == "UPDATE_BINDINGS" then
 		self.Instructions:UpdateAllControls();
-	elseif event == "HOUSING_DECOR_NUDGE_STATUS_CHANGED" then
-		self.SubButtonBar.NudgeButton:UpdateState();
+	elseif event == "HOUSING_DECOR_FREE_PLACE_STATUS_CHANGED" then
+		self.SubButtonBar.FreePlaceButton:UpdateState();
 	elseif event == "HOUSING_DECOR_GRID_SNAP_STATUS_CHANGED" then
 		self.SubButtonBar.SnapButton:UpdateState();
 	elseif event == "HOUSING_DECOR_REMOVED" then
@@ -278,16 +278,16 @@ function HouseEditorGridVisibilityButtonMixin:LeaveMode()
 end
 
 -- Iherits HouseEditorSubmodeButtonMixin
-HouseEditorNudgeButtonMixin = {};
+HouseEditorFreePlaceButtonMixin = {};
 
-function HouseEditorNudgeButtonMixin:IsActive()
-	return C_HousingBasicMode.IsNudgeEnabled();
+function HouseEditorFreePlaceButtonMixin:IsActive()
+	return C_HousingBasicMode.IsFreePlaceEnabled();
 end
 
-function HouseEditorNudgeButtonMixin:EnterMode()
-	C_HousingBasicMode.SetNudgeEnabled(true);
+function HouseEditorFreePlaceButtonMixin:EnterMode()
+	C_HousingBasicMode.SetFreePlaceEnabled(true);
 end
 
-function HouseEditorNudgeButtonMixin:LeaveMode()
-	C_HousingBasicMode.SetNudgeEnabled(false);
+function HouseEditorFreePlaceButtonMixin:LeaveMode()
+	C_HousingBasicMode.SetFreePlaceEnabled(false);
 end

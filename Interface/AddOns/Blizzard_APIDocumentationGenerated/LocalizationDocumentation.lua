@@ -69,6 +69,21 @@ local Localization =
 			},
 		},
 		{
+			Name = "CreateAbbreviateConfig",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = false },
+			},
+		},
+		{
 			Name = "DeclineName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -174,23 +189,13 @@ local Localization =
 	Tables =
 	{
 		{
-			Name = "NumberAbbrevData",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "breakpoint", Type = "number", Nilable = false, Documentation = { "Breakpoints should generally be specified as pairs, with one at the named order (1,000) with fractionDivisor = 10, and one a single order higher (eg. 10,000) with fractionDivisor = 1., This ruleset means numbers like '1234' will be abbreviated to '1.2k' and numbers like '12345' to '12k'." } },
-				{ Name = "abbreviation", Type = "cstring", Nilable = false, Documentation = { "Abbreviation name to be looked up as a global string." } },
-				{ Name = "significandDivisor", Type = "number", Nilable = false, Documentation = { "significandDivisor and fractionDivisor should multiply such that they become equal to a named order of magnitude, such as thousands or  millions." } },
-				{ Name = "fractionDivisor", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "NumberAbbrevOptions",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbrevData", Nilable = true, Documentation = { "Order these from largest to smallest." } },
 				{ Name = "locale", Type = "cstring", Nilable = true, Documentation = { "Locale controls whether standard asian abbreviation data will be used along with a small change in behavior for large number abbreviation when fractionDivisor is greater than zero." } },
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
 			},
 		},
 	},

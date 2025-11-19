@@ -376,6 +376,8 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_EVENTS_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="10" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_ENCOUNTER_EVENTS_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="combatWarningsEnabled" type="string"/>
 								</KeyValues>
 							</Frame>
 							<Frame parentKey="DamageMeter" inherits="EditModeManagerSettingCheckButtonTemplate">
@@ -383,6 +385,8 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_DAMAGE_METER_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="11" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_DAMAGE_METER_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="damageMeterEnabled" type="string"/>
 								</KeyValues>
 							</Frame>
 

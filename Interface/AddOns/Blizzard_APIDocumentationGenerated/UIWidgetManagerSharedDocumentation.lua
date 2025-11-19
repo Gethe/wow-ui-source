@@ -127,9 +127,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 31,
+			NumValues = 32,
 			MinValue = 0,
-			MaxValue = 30,
+			MaxValue = 31,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -163,6 +163,7 @@ local UIWidgetManagerShared =
 				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
 				{ Name = "ScenarioHeaderDelves", Type = "UIWidgetVisualizationType", EnumValue = 29 },
 				{ Name = "ButtonHeader", Type = "UIWidgetVisualizationType", EnumValue = 30 },
+				{ Name = "PreyHuntProgress", Type = "UIWidgetVisualizationType", EnumValue = 31 },
 			},
 		},
 	},

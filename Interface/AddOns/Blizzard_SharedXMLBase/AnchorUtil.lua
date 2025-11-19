@@ -13,6 +13,15 @@ function AnchorMixin:Set(point, relativeTo, relativePoint, x, y)
 	self.y = y;
 end
 
+function AnchorMixin:SetRelativeTo(relativeTo)
+	self.relativeTo = relativeTo;
+end
+
+function AnchorMixin:SetOffsets(x, y)
+	self.x = x;
+	self.y = y;
+end
+
 function AnchorMixin:SetFromPoint(region, pointIndex)
 	-- TODO: Need to check if this has no point set...probably don't want default behavior in some cases, probably
 	-- want to signal something or return an invalid anchor.
@@ -30,7 +39,6 @@ end
 function AnchorMixin:GetRelativeTo()
 	return self.relativeTo;
 end
-
 
 function AnchorMixin:SetPoint(region, clearAllPoints)
 	if clearAllPoints then
@@ -60,16 +68,21 @@ GridLayoutMixin = {};
 -- 1	2							1	3	5
 -- 3	4							2	4	6
 -- 5	6
+--
+-- NOTE: The point/relativePoint fields are used in ChainLayout (which doesn't support wrapping) for subsequent frames anchored in the chain.
 GridLayoutMixin.Direction = {
-	TopLeftToBottomRight = { x = 1, y = -1 },
-	TopRightToBottomLeft = { x = -1, y = -1 },
-	BottomRightToTopLeft = { x = -1, y = 1 },
-	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true },
-	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true },
-	LeftToRight = { x = 1, y = 0 },
-	RightToLeft = { x = -1, y = 0 },
-	TopToBottom = { x = 0, y = 1, isVertical = true },
-	BottomToTop = { x = 0, y = -1, isVertical = true },
+	TopLeftToBottomRight = { x = 1, y = -1, point = "TOPLEFT", relativePoint = "TOPRIGHT", },
+	TopRightToBottomLeft = { x = -1, y = -1, point = "TOPRIGHT", relativePoint = "TOPLEFT", },
+	BottomLeftToTopRight = { x = 1, y = -1, point = "BOTTOMLEFT", relativePoint = "BOTTOMRIGHT", },
+	BottomRightToTopLeft = { x = -1, y = 1, point = "BOTTOMRIGHT", relativePoint = "BOTTOMLEFT", },
+	TopLeftToBottomRightVertical = { x = 1, y = -1, isVertical = true, point = "TOPLEFT", relativePoint = "TOPRIGHT", },
+	TopRightToBottomLeftVertical = { x = -1, y = -1, isVertical = true, point = "TOPRIGHT", relativePoint = "TOPLEFT", },
+	BottomLeftToTopRightVertical = { x = 1, y = 1, isVertical = true, point = "BOTTOMLEFT", relativePoint = "BOTTOMRIGHT" },
+	BottomRightToTopLeftVertical = { x = -1, y = 1, isVertical = true, point = "BOTTOMRIGHT", relativePoint = "BOTTOMLEFT" },
+	LeftToRight = { x = 1, y = 0, point = "LEFT", relativePoint = "RIGHT", },
+	RightToLeft = { x = -1, y = 0, point = "RIGHT", relativePoint = "LEFT", },
+	TopToBottom = { x = 0, y = 1, isVertical = true, point = "TOP", relativePoint = "BOTTOM", },
+	BottomToTop = { x = 0, y = -1, isVertical = true, point = "BOTTOM", relativePoint = "TOP", },
 };
 
 function GridLayoutMixin:Init(direction, stride, paddingX, paddingY, horizontalSpacing, verticalSpacing)
@@ -133,33 +146,29 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 	end
 end
 
-local function UpdateAnchorForChain(previousFrame, anchor, layout)
-	local point, relativeTo, relativePoint, x, y = anchor:Get();
+local function UpdateAnchorForChain(previousFrame, anchor, layout, resetAnchorOffsetsAfterInitialAnchor)
+	local _point, _relativeTo, _relativePoint, x, y = anchor:Get();
+
+	if resetAnchorOffsetsAfterInitialAnchor then
+		x = 0;
+		y = 0;
+	end
+
+	-- Spacing can still be applied to subsequent anchors, when the initial offset may have been reset.
 	if layout then
 		x = layout.horizontalSpacing or x;
 		y = layout.verticalSpacing or y;
 	end
 
 	local direction = (layout and layout.direction) or GridLayoutMixin.Direction.LeftToRight;
-
-	if direction == GridLayoutMixin.Direction.LeftToRight then
-		point, relativeTo, relativePoint = "LEFT", previousFrame, "RIGHT";
-	elseif direction == GridLayoutMixin.Direction.RightToLeft then
-		point, relativeTo, relativePoint = "RIGHT", previousFrame, "LEFT";
-	elseif direction == GridLayoutMixin.Direction.TopToBottom then
-		point, relativeTo, relativePoint = "TOP", previousFrame, "BOTTOM";
-	elseif direction == GridLayoutMixin.Direction.BottomToTop then
-		point, relativeTo, relativePoint = "BOTTOM", previousFrame, "TOP";
-	end
-
-	anchor:Set(point, relativeTo, relativePoint, x, y);
+	anchor:Set(direction.point, previousFrame, direction.relativePoint, x, y);
 end
 
-function AnchorUtil.ChainLayout(frames, initialAnchor, layout)
+function AnchorUtil.ChainLayout(frames, initialAnchor, layout, resetAnchorOffsetsAfterInitialAnchor)
 	local anchor = CreateAnchor(initialAnchor:Get());
 	for i, frame in ipairs(frames) do
 		anchor:SetPoint(frame);
-		UpdateAnchorForChain(frame, anchor, layout);
+		UpdateAnchorForChain(frame, anchor, layout, resetAnchorOffsetsAfterInitialAnchor);
 	end
 end
 

@@ -137,18 +137,20 @@ end
 
 function AccumulatorMixin:Add(count)
 	self.count = self.count + count;
+	return self.count;
 end
 
 function AccumulatorMixin:Subtract(count)
 	self.count = self.count - count;
+	return self.count;
 end
 
 function AccumulatorMixin:Count()
 	return self.count;
 end
 
-function AccumulatorMixin:Reset()
-	self.count = 0;
+function AccumulatorMixin:Reset(resetCount)
+	self.count = resetCount or 0;
 end
 
 function CreateAccumulator(initialCount)

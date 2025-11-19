@@ -106,6 +106,15 @@ TOOLTIP_QUEST_REWARDS_STYLE_NONE = {
 	postHeaderBlankLineCount = 0,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK = {
+	headerText = HOUSING_DASHBOARD_ADDITIONAL_REWARDS_LABEL,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = false,
+	fullItemDescription = true,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -184,7 +193,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		C_QuestInfoSystem.HasQuestRewardSpells(questID)) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) ) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end

@@ -297,7 +297,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected()
 	self.catalogSearcher:SetIncludeMarketEntries(true);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
-	categorySearchParams.includeFeaturedCategory = self:ShouldEnableShopInteraction();
+	categorySearchParams.includeFeaturedCategory = self:ShouldEnableShopInteraction() and self:HasMarketEntries();
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
@@ -316,6 +316,15 @@ end
 
 function HouseEditorStorageFrameMixin:ShouldEnableShopInteraction()
 	return C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls();
+end
+
+function HouseEditorStorageFrameMixin:HasMarketEntries()
+	-- Assume we have entries until we know otherwise.
+	if not self.hasMarketData then
+		return true;
+	end
+
+	return C_HousingCatalog.HasFeaturedEntries();
 end
 
 function HouseEditorStorageFrameMixin:CheckStartMarketInteraction()
@@ -482,6 +491,18 @@ end
 function HouseEditorStorageFrameMixin:RefreshMarketData()
 	C_HousingCatalog.RequestHousingMarketInfoRefresh();
 	self.hasMarketData = true;
+
+	if not self:HasMarketEntries() then
+		local categorySearchParams = self.Categories:GetCategorySearchParams();
+		categorySearchParams.includeFeaturedCategory = false;
+		self.Categories:SetCategorySearchParams(categorySearchParams);
+	elseif self:IsInMarketTab() then
+		-- If we had previously cleared the "includeFeaturedCategory" param, re-check it now.
+		local categorySearchParams = self.Categories:GetCategorySearchParams();
+		categorySearchParams.includeFeaturedCategory = self:ShouldEnableShopInteraction();
+		self.Categories:SetCategorySearchParams(categorySearchParams);
+	end
+
 	self:UpdateCatalogData();
 end
 

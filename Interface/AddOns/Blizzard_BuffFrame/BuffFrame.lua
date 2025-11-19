@@ -1003,7 +1003,7 @@ function AuraButtonMixin:UpdateAuraType(auraType)
 		self.TempEnchantBorder:Hide();
 	elseif self.auraType == "Debuff" or self.auraType == "DeadlyDebuff" then
 		local color = DebuffTypeColor["none"];
-		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
 		self.DebuffBorder:Show();
 		self.TempEnchantBorder:Hide();
 	elseif self.auraType == "TempEnchant" then
@@ -1092,7 +1092,7 @@ function AuraButtonMixin:Update(buttonInfo)
 			self.Symbol:Hide();
 			color = DebuffTypeColor["none"];
 		end
-		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
 	end
 
 	self:UpdateExpirationTime(buttonInfo);

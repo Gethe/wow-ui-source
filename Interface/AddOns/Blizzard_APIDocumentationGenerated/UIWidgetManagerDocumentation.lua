@@ -274,6 +274,21 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetPreyHuntProgressWidgetVisualizationInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "PreyHuntProgressWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -691,6 +706,20 @@ local UIWidgetManager =
 			{
 				{ Name = "None", Type = "MapPinAnimationType", EnumValue = 0 },
 				{ Name = "Pulse", Type = "MapPinAnimationType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "PreyHuntProgressState",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Cold", Type = "PreyHuntProgressState", EnumValue = 0 },
+				{ Name = "Warm", Type = "PreyHuntProgressState", EnumValue = 1 },
+				{ Name = "Hot", Type = "PreyHuntProgressState", EnumValue = 2 },
+				{ Name = "Final", Type = "PreyHuntProgressState", EnumValue = 3 },
 			},
 		},
 		{
@@ -1578,6 +1607,29 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "animType", Type = "MapPinAnimationType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PreyHuntProgressWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "progressState", Type = "PreyHuntProgressState", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },

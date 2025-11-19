@@ -535,12 +535,12 @@ end
 
 function HouseUpgradeProgressBarMixin:OnAnimationFinished()
 
-	if self:IsVisible() then
-		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
-	end
 	if self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
 		self.loopSoundHandle = nil;
+		if self:IsVisible() then
+			PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
+		end
 	end
 	self.finishAnimCallback();
 end

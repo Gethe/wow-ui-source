@@ -9,18 +9,22 @@ local HousingExpertModeUI =
 		{
 			Name = "CancelActiveEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of the selected target, which will reset any unsaved changes and deselect the active target; Will not reset any already-applied changes" },
 		},
 		{
 			Name = "CommitDecorMovement",
 			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the currently selected decor instance" },
 		},
 		{
 			Name = "CommitHouseExteriorPosition",
 			Type = "Function",
+			Documentation = { "Attempt to save the changes made to the House Exterior's position within the plot" },
 		},
 		{
 			Name = "GetHoveredDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance currently being hovered, if there is one" },
 
 			Returns =
 			{
@@ -30,6 +34,7 @@ local HousingExpertModeUI =
 		{
 			Name = "GetPrecisionSubmode",
 			Type = "Function",
+			Documentation = { "Returns the currently active Expert submode, if there is one" },
 
 			Returns =
 			{
@@ -55,6 +60,7 @@ local HousingExpertModeUI =
 		{
 			Name = "GetSelectedDecorInfo",
 			Type = "Function",
+			Documentation = { "Returns info for the placed decor instance that's currently selected, if there is one" },
 
 			Returns =
 			{
@@ -64,6 +70,7 @@ local HousingExpertModeUI =
 		{
 			Name = "IsDecorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently selected" },
 
 			Returns =
 			{
@@ -82,6 +89,7 @@ local HousingExpertModeUI =
 		{
 			Name = "IsHouseExteriorHovered",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently being hovered" },
 
 			Returns =
 			{
@@ -91,6 +99,7 @@ local HousingExpertModeUI =
 		{
 			Name = "IsHouseExteriorSelected",
 			Type = "Function",
+			Documentation = { "Returns true if the house's exterior is currently selected" },
 
 			Returns =
 			{
@@ -100,6 +109,7 @@ local HousingExpertModeUI =
 		{
 			Name = "IsHoveringDecor",
 			Type = "Function",
+			Documentation = { "Returns true if a placed decor instance is currently being hovered" },
 
 			Returns =
 			{
@@ -109,20 +119,23 @@ local HousingExpertModeUI =
 		{
 			Name = "RemoveSelectedDecor",
 			Type = "Function",
+			Documentation = { "Attempt to return the currently selected decor instance back to the house chest" },
 		},
 		{
 			Name = "ResetPrecisionChanges",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Reset the selected target's transform back to default values; This is NOT an undo, meaning it will completely reset the transform value to default, NOT just recently-made changes" },
 
 			Arguments =
 			{
-				{ Name = "activeSubmodeOnly", Type = "bool", Nilable = false },
+				{ Name = "activeSubmodeOnly", Type = "bool", Nilable = false, Documentation = { "If true, only transform values associated with the currently active submode with be reset (ex: in Scale submode, only target's scale will be reset); If false, all transform values will be reset" } },
 			},
 		},
 		{
 			Name = "SelectNextRotationAxis",
 			Type = "Function",
+			Documentation = { "In the rotation submode, swaps the selected axis to the next available one, in order of X -> Y -> Z (wrapping back around to X again, etc); If no axis is selected, selects the first available one, also in that order" },
 		},
 		{
 			Name = "SetGridVisible",
@@ -138,6 +151,7 @@ local HousingExpertModeUI =
 			Name = "SetPrecisionIncrementingActive",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Sets a specific type of incremental change active or inactive; Whilever that type is active and target stays selected, incremental changes of that type will continue to be made every frame" },
 
 			Arguments =
 			{
@@ -149,6 +163,7 @@ local HousingExpertModeUI =
 			Name = "SetPrecisionSubmode",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Activate a specific Expert submode" },
 
 			Arguments =
 			{

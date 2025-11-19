@@ -69,7 +69,8 @@ end
 TabSystemButtonMixin = {};
 
 function TabSystemButtonMixin:OnEnter()
-	if not self:IsEnabled() and self.errorReason ~= nil then
+	local showErrorText = not self:IsEnabled() and self.errorReason ~= nil and self:GetTabID() ~= self:GetTabSystem().selectedTabID;
+	if showErrorText then
 		GameTooltip:SetOwner(self, self.tooltipAnchor, self.tooltipAnchorX, self.tooltipAnchorY);
 		GameTooltip_AddErrorLine(GameTooltip, self.errorReason);
 		if self.tooltipText then

@@ -321,6 +321,14 @@ local TransmogOutfitConstants =
 				{ Name = "DisabledTrigger", Type = "TransmogSituationTriggerFlags", EnumValue = 16 },
 			},
 		},
+		{
+			Name = "TransmogOutfitDataConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "EQUIP_TRANSMOG_OUTFIT_MANUAL_SPELL_ID", Type = "number", Value = 1247613 },
+			},
+		},
 	},
 };
 

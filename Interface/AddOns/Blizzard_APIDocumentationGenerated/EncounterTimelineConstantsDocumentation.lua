@@ -3,46 +3,15 @@ local EncounterTimelineConstants =
 	Tables =
 	{
 		{
-			Name = "EncounterTimelineEventEffectType",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "None", Type = "EncounterTimelineEventEffectType", EnumValue = 0 },
-				{ Name = "Poison", Type = "EncounterTimelineEventEffectType", EnumValue = 1 },
-				{ Name = "Magic", Type = "EncounterTimelineEventEffectType", EnumValue = 2 },
-				{ Name = "Curse", Type = "EncounterTimelineEventEffectType", EnumValue = 3 },
-				{ Name = "Disease", Type = "EncounterTimelineEventEffectType", EnumValue = 4 },
-				{ Name = "Enrage", Type = "EncounterTimelineEventEffectType", EnumValue = 5 },
-				{ Name = "Bleed", Type = "EncounterTimelineEventEffectType", EnumValue = 6 },
-			},
-		},
-		{
-			Name = "EncounterTimelineEventPriority",
+			Name = "EncounterTimelineEventSortDirection",
 			Type = "Enumeration",
 			NumValues = 2,
 			MinValue = 0,
 			MaxValue = 1,
 			Fields =
 			{
-				{ Name = "Normal", Type = "EncounterTimelineEventPriority", EnumValue = 0 },
-				{ Name = "Deadly", Type = "EncounterTimelineEventPriority", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "EncounterTimelineEventRole",
-			Type = "Enumeration",
-			NumValues = 4,
-			MinValue = 0,
-			MaxValue = 3,
-			Fields =
-			{
-				{ Name = "None", Type = "EncounterTimelineEventRole", EnumValue = 0 },
-				{ Name = "Tank", Type = "EncounterTimelineEventRole", EnumValue = 1 },
-				{ Name = "Healer", Type = "EncounterTimelineEventRole", EnumValue = 2 },
-				{ Name = "Damager", Type = "EncounterTimelineEventRole", EnumValue = 3 },
+				{ Name = "Descending", Type = "EncounterTimelineEventSortDirection", EnumValue = 0, Documentation = { "Events are sorted in descending order (longest time remaining to shortest)." } },
+				{ Name = "Ascending", Type = "EncounterTimelineEventSortDirection", EnumValue = 1, Documentation = { "Events are sorted in ascending order (shortest time remaining to longest)." } },
 			},
 		},
 		{
@@ -75,35 +44,35 @@ local EncounterTimelineConstants =
 			},
 		},
 		{
-			Name = "EncounterTimelineSection",
+			Name = "EncounterTimelineIconSet",
 			Type = "Enumeration",
 			NumValues = 6,
-			MinValue = 0,
-			MaxValue = 5,
-			Documentation = { "Enumeration of all encounter timeline track sections. Each track section has its own length and min/max event durations., Sections are not permitted to overlap (but may have a zero duration span), and are contiguously ordered from shortest maximum duration to longest." },
+			MinValue = 1,
+			MaxValue = 6,
 			Fields =
 			{
-				{ Name = "Finishing", Type = "EncounterTimelineSection", EnumValue = 0 },
-				{ Name = "Imminent", Type = "EncounterTimelineSection", EnumValue = 1 },
-				{ Name = "Short", Type = "EncounterTimelineSection", EnumValue = 2 },
-				{ Name = "Medium", Type = "EncounterTimelineSection", EnumValue = 3 },
-				{ Name = "Long", Type = "EncounterTimelineSection", EnumValue = 4 },
-				{ Name = "Indeterminate", Type = "EncounterTimelineSection", EnumValue = 5 },
+				{ Name = "TankAlert", Type = "EncounterTimelineIconSet", EnumValue = 1 },
+				{ Name = "HealerAlert", Type = "EncounterTimelineIconSet", EnumValue = 2 },
+				{ Name = "DamageAlert", Type = "EncounterTimelineIconSet", EnumValue = 3 },
+				{ Name = "Deadly", Type = "EncounterTimelineIconSet", EnumValue = 4 },
+				{ Name = "Dispel", Type = "EncounterTimelineIconSet", EnumValue = 5 },
+				{ Name = "Enrage", Type = "EncounterTimelineIconSet", EnumValue = 6 },
 			},
 		},
 		{
 			Name = "EncounterTimelineTrack",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
-			Documentation = { "Enumeration of all encounter timeline tracks. Each track is a span of zero or more sections with an accumulated length and min/max duration., Tracks are not permitted to overlap (but may have a zero duration span), and are contiguously ordered from shortest maximum duration to longest." },
+			MaxValue = 4,
+			Documentation = { "Enumeration of all encounter timeline tracks., Tracks are not permitted to overlap (but may have a zero duration span), and are contiguously ordered from shortest maximum duration to longest." },
 			Fields =
 			{
-				{ Name = "Short", Type = "EncounterTimelineTrack", EnumValue = 0, Documentation = { "This track always has a zero minimum duration." } },
-				{ Name = "Medium", Type = "EncounterTimelineTrack", EnumValue = 1 },
-				{ Name = "Long", Type = "EncounterTimelineTrack", EnumValue = 2 },
-				{ Name = "Indeterminate", Type = "EncounterTimelineTrack", EnumValue = 3, Documentation = { "This track is used as a placeholder for events whose position is not calculated and shouldn't appear on the timeline." } },
+				{ Name = "Queued", Type = "EncounterTimelineTrack", EnumValue = 0 },
+				{ Name = "Short", Type = "EncounterTimelineTrack", EnumValue = 1, Documentation = { "This track always has a zero minimum duration." } },
+				{ Name = "Medium", Type = "EncounterTimelineTrack", EnumValue = 2 },
+				{ Name = "Long", Type = "EncounterTimelineTrack", EnumValue = 3 },
+				{ Name = "Indeterminate", Type = "EncounterTimelineTrack", EnumValue = 4, Documentation = { "This track is used as a placeholder for events whose position is not calculated and shouldn't appear on the timeline." } },
 			},
 		},
 		{
@@ -127,6 +96,23 @@ local EncounterTimelineConstants =
 			{
 				{ Name = "ENCOUNTER_TIMELINE_INVALID_EVENT", Type = "number", Value = 0, Documentation = { "Constant used for invalid event IDs. Script APIs are guaranteed to always return nil data if supplied this ID, and events will never be added to the timeline with this ID." } },
 				{ Name = "ENCOUNTER_TIMELINE_RESERVED_EVENT_COUNT", Type = "number", Value = 40, Documentation = { "Minimum size of internal arrays that are preallocated for event storage." } },
+			},
+		},
+		{
+			Name = "EncounterTimelineIconMasks",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "EncounterTimelineTankAlertIcons", Type = "EncounterEventIconmask", Value = 128 },
+				{ Name = "EncounterTimelineHealerAlertIcons", Type = "EncounterEventIconmask", Value = 256 },
+				{ Name = "EncounterTimelineDamageAlertIcons", Type = "EncounterEventIconmask", Value = 512 },
+				{ Name = "EncounterTimelineDeadlyIcons", Type = "EncounterEventIconmask", Value = 1 },
+				{ Name = "EncounterTimelineDispelIcons", Type = "EncounterEventIconmask", Value = 124 },
+				{ Name = "EncounterTimelineEnrageIcons", Type = "EncounterEventIconmask", Value = 2 },
+				{ Name = "EncounterTimelineAllIcons", Type = "EncounterEventIconmask", Value = 1023 },
+				{ Name = "EncounterTimelineRoleIcons", Type = "EncounterEventIconmask", Value = 896 },
+				{ Name = "EncounterTimelineOtherIcons", Type = "EncounterEventIconmask", Value = 127 },
+				{ Name = "EncounterTimelineNoIcons", Type = "EncounterEventIconmask", Value = 0 },
 			},
 		},
 	},

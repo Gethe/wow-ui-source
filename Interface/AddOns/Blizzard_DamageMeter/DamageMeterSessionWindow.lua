@@ -1,7 +1,12 @@
 local DAMAGE_METER_CATEGORIES = {
 	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken}; },
-	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps}; },
+	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps, Enum.DamageMeterType.Absorbs}; },
 	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels}; },
+};
+
+local DAMAGE_METER_TYPE_VALUE_PER_SECOND_AS_PRIMARY = {
+	[Enum.DamageMeterType.Dps] = true,
+	[Enum.DamageMeterType.Hps] = true,
 };
 
 local DAMAGE_METER_TYPE_NAMES = {
@@ -9,6 +14,7 @@ local DAMAGE_METER_TYPE_NAMES = {
 	[Enum.DamageMeterType.Dps] = DAMAGE_METER_TYPE_DPS,
 	[Enum.DamageMeterType.HealingDone] = DAMAGE_METER_TYPE_HEALING_DONE,
 	[Enum.DamageMeterType.Hps] = DAMAGE_METER_TYPE_HPS,
+	[Enum.DamageMeterType.Absorbs] = DAMAGE_METER_TYPE_ABSORBS,
 	[Enum.DamageMeterType.Interrupts] = DAMAGE_METER_TYPE_INTERRUPTS,
 	[Enum.DamageMeterType.Dispels] = DAMAGE_METER_TYPE_DISPELS,
 	[Enum.DamageMeterType.DamageTaken] = DAMAGE_METER_TYPE_DAMAGE_TAKEN,
@@ -103,7 +109,6 @@ function DamageMeterSessionWindowMixin:OnLoad()
 	self:InitializeScrollBox();
 	self:InitializeDamageMeterTypeDropdown();
 	self:InitializeSessionDropdown();
-	self:InitializeSettingsDropdown();
 	self:InitializeResizeButton();
 end
 
@@ -136,7 +141,7 @@ function DamageMeterSessionWindowMixin:OnEnter()
 	-- Handle showing the ResizeButton under the correct conditions.
 	self:SetScript("OnUpdate", function()
 		local resizeButton = self:GetResizeButton();
-		local shouldResizeButtonBeShown = self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing();
+		local shouldResizeButtonBeShown = (self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing()) and self:CanMoveOrResize();
 		local shouldChangeBackgroundOpacity = true;
 
 		if shouldResizeButtonBeShown and resizeButton:GetAlpha() == 0 then
@@ -161,6 +166,10 @@ function DamageMeterSessionWindowMixin:OnEnter()
 end
 
 function DamageMeterSessionWindowMixin:OnDragStart()
+	if not self:CanMoveOrResize() then
+		return;
+	end
+
 	self:StartMoving();
 end
 
@@ -276,6 +285,14 @@ function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 		return self:GetDamageMeterOwner():CanHideSessionWindow(self);
 	end
 
+	local function CanLockSessionWindow()
+		return self:GetDamageMeterOwner():CanMoveOrResizeSessionWindow(self) and not self:IsLocked();
+	end
+
+	local function CanUnlockSessionWindow()
+		return self:GetDamageMeterOwner():CanMoveOrResizeSessionWindow(self) and self:IsLocked();
+	end
+
 	self:GetSettingsDropdown():SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_DAMAGE_METER_WINDOW_SETTINGS");
 
@@ -291,14 +308,26 @@ function DamageMeterSessionWindowMixin:InitializeSettingsDropdown()
 
 		rootDescription:CreateSpacer();
 
+		if CanLockSessionWindow() then
+			rootDescription:CreateButton(DAMAGE_METER_LOCK_WINDOW, function(...)
+				self:GetDamageMeterOwner():SetSessionWindowLocked(self, true);
+			end);
+		end
+
+		if CanUnlockSessionWindow() then
+			rootDescription:CreateButton(DAMAGE_METER_UNLOCK_WINDOW, function(...)
+				self:GetDamageMeterOwner():SetSessionWindowLocked(self, false);
+			end);
+		end
+
 		rootDescription:CreateButton(DAMAGE_METER_RESET_ALL_SESSIONS, function(...)
 			C_DamageMeter.ResetAllCombatSessions();
 		end);
 
-		local deletesessionWindowButton = rootDescription:CreateButton(DAMAGE_METER_HIDE_WINDOW, function(...)
+		local deleteSessionWindowButton = rootDescription:CreateButton(DAMAGE_METER_HIDE_WINDOW, function(...)
 			self:GetDamageMeterOwner():HideSessionWindow(self);
 		end);
-		deletesessionWindowButton:SetEnabled(IsDeleteSessionWindowEnabled)
+		deleteSessionWindowButton:SetEnabled(IsDeleteSessionWindowEnabled)
 
 		rootDescription:CreateSpacer();
 
@@ -313,6 +342,10 @@ function DamageMeterSessionWindowMixin:InitializeResizeButton()
 	local resizeButton = self:GetResizeButton();
 
 	resizeButton:SetScript("OnMouseDown", function(button, mouseButtonName, _down)
+		if not self:CanMoveOrResize() then
+			return;
+		end
+
 		if mouseButtonName == "LeftButton" then
 			button:SetButtonState("PUSHED", true);
 			button:GetHighlightTexture():Hide();
@@ -355,6 +388,11 @@ function DamageMeterSessionWindowMixin:GetCombatSession()
 	return nil;
 end
 
+function DamageMeterSessionWindowMixin:ShowsValuePerSecondAsPrimary()
+	local damageMeterType = self:GetDamageMeterType();
+	return DAMAGE_METER_TYPE_VALUE_PER_SECOND_AS_PRIMARY[damageMeterType] == true;
+end
+
 function DamageMeterSessionWindowMixin:BuildDataProvider()
 	local sourceWindow = self:GetSourceWindow();
 	local dataProvider = CreateDataProvider();
@@ -362,6 +400,7 @@ function DamageMeterSessionWindowMixin:BuildDataProvider()
 	local combatSources = combatSession and combatSession.combatSources or {};
 	local maxAmount = combatSession and combatSession.maxAmount or 0;
 	local hadLocalPlayerIndex = self.localPlayerIndex ~= nil;
+	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
 
 	self.localPlayerIndex = nil;
 	self.needsSourceWindowRefresh = false;
@@ -372,12 +411,20 @@ function DamageMeterSessionWindowMixin:BuildDataProvider()
 		end
 
 		-- Determine if the source window is currently showing for this source and if its data is stale.
-		if combatSource.sourceGUID == sourceWindow:GetSourceGUID() and combatSource.totalAmount ~= sourceWindow:GetTotalAmount() then
-			self.needsSourceWindowRefresh = true;
+		if combatSource.sourceGUID == sourceWindow:GetSourceGUID() then
+			-- Changes in the total amount need to be reflected in the source window.
+			if combatSource.totalAmount ~= sourceWindow:GetTotalAmount() then
+				self.needsSourceWindowRefresh = true;
+			-- For the time-bound displays, any changes in overall data need to be reflected in the
+			-- source window so it stays in sync with the source entry in the session window.
+			elseif showsValuePerSecondAsPrimary then
+				self.needsSourceWindowRefresh = true;
+			end
 		end
 
 		combatSource.maxAmount = maxAmount;
 		combatSource.index = i;
+		combatSource.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
 
 		dataProvider:Insert(combatSource);
 	end
@@ -471,6 +518,8 @@ end
 function DamageMeterSessionWindowMixin:SetDamageMeterOwner(damageMeterOwner, sessionWindowIndex)
 	self.damageMeterOwner = damageMeterOwner;
 	self.sessionWindowIndex = sessionWindowIndex;
+
+	self:InitializeSettingsDropdown();
 end
 
 function DamageMeterSessionWindowMixin:GetDamageMeterOwner()
@@ -525,8 +574,32 @@ function DamageMeterSessionWindowMixin:IsResizing()
 	return self.isResizing == true;
 end
 
-function DamageMeterSessionWindowMixin:RefreshLayout()
+-- To keep the window, owner, and persistent data in sync this shouldn't be called directly by
+-- any code other than DamageMeterMixin:SetSessionWindowLocked
+function DamageMeterSessionWindowMixin:SetLocked(locked)
+	self.isLocked = locked;
 
+	self:InitializeSettingsDropdown();
+end
+
+function DamageMeterSessionWindowMixin:IsLocked()
+	return self.isLocked == true;
+end
+
+function DamageMeterSessionWindowMixin:CanMoveOrResize()
+	if not self:GetDamageMeterOwner():CanMoveOrResizeSessionWindow(self) then
+		return false;
+	end
+
+	if self:IsLocked() then
+		return false;
+	end
+
+	return true;
+end
+
+function DamageMeterSessionWindowMixin:RefreshLayout()
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSessionWindowMixin:ShowSourceWindow(source)

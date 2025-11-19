@@ -904,7 +904,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
 	self.DeclineOrderDialog.NoteEditBox:SetShown(not C_CraftingOrders.AreOrderNotesDisabled());
 
     local isRecraft = self:IsRecrafting();
-	local recipeSchematic = Professions.GetRecipeSchematic(self.order.spellID, isRecraft);
+	local recipeSchematic = ProfessionsUtil.GetRecipeSchematic(self.order.spellID, isRecraft);
     self.OrderDetails.SchematicForm.transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
     if isRecraft then
         self.OrderDetails.SchematicForm.transaction:SetRecraftAllocationOrderID(order.orderID);
@@ -931,7 +931,7 @@ function ProfessionsCrafterOrderViewMixin:SetOrder(order)
             self.OrderDetails.FulfillmentForm.OrderCompleteText:SetPoint("LEFT", self.OrderDetails.FulfillmentForm.RecraftSlot, "RIGHT", -55, 10);
         else
             self.OrderDetails.FulfillmentForm.RecraftSlot:StopAnimations();
-            local schematic = Professions.GetRecipeSchematic(order.spellID, isRecraft, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
+            local schematic = ProfessionsUtil.GetRecipeSchematic(order.spellID, isRecraft, self.OrderDetails.SchematicForm:GetCurrentRecipeLevel());
             local icon = craftedItem:GetItemIcon();
             local itemLink = craftedItem:GetItemLink();
             local quality = craftedItem:GetItemQuality();

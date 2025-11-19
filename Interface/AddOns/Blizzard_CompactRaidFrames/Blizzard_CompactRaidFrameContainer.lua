@@ -228,7 +228,7 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 			tinsert(self.frameUpdateList.mini, groupFrame);
 		end
 	elseif id =="ARENA" then
-		if not CompactArenaFrame_Generate and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
+		if not CompactArenaFrame_Generate or (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
 			return;
 		end
 

@@ -422,10 +422,14 @@ function CastingBarMixin:OnEvent(event, ...)
 			self.channeling = true;
 		end
 
+		self.spellID = spellID;
+
 		self:UpdateIconShown();
 		self:StopAnims();
 		self:ApplyAlpha(1.0);
 
+		self:UpdateHighlightImportantCast();
+		self:UpdateHighlightWhenCastTarget();
 		self:UpdateTargetNameText();
 		self:UpdateShownState(self:ShouldShowCastBar());
 

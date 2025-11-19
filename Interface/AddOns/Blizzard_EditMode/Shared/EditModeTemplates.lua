@@ -31,11 +31,35 @@ function EditModeSettingDropdownMixin:SetupSetting(settingData)
 		EditModeSystemSettingsDialog:OnSettingValueChanged(self.setting, value);
 	end
 
+	self.Dropdown:SetScript("OnEnter", function()
+		EditModeSystemSettingsDialog:OnSettingInteractStart(self.setting);
+	end);
+
+	self.Dropdown:SetScript("OnLeave", function()
+		EditModeSystemSettingsDialog:OnSettingInteractEnd(self.setting);
+	end);
+
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
 		for index, option in ipairs(settingData.displayInfo.options) do
-			rootDescription:CreateRadio(option.text, IsSelected, SetSelected, option.value);
+			local radioDescription = rootDescription:CreateRadio(option.text, IsSelected, SetSelected, option.value);
+
+			radioDescription:SetOnEnter(function()
+				EditModeSystemSettingsDialog:OnSettingInteractStart(self.setting);
+			end);
+
+			radioDescription:SetOnLeave(function()
+				EditModeSystemSettingsDialog:OnSettingInteractEnd(self.setting);
+			end);
 		end
 	end);
+end
+
+function EditModeSettingDropdownMixin:EditModeSettingDropdown_OnEnter()
+	EditModeSystemSettingsDialog:OnSettingInteractStart(self.setting);
+end
+
+function EditModeSettingDropdownMixin:EditModeSettingDropdown_OnLeave()
+	EditModeSystemSettingsDialog:OnSettingInteractEnd(self.setting);
 end
 
 EditModeSettingSliderMixin = CreateFromMixins(CallbackRegistryMixin);

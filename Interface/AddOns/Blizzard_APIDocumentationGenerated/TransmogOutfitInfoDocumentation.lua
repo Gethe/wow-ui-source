@@ -176,7 +176,22 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
-			Name = "GetMaxNumberOfTotalOutfits",
+			Name = "GetMaxNumberOfTotalOutfitsForSource",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "TransmogOutfitEntrySource", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxOutfitCount", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaxNumberOfUsableOutfits",
 			Type = "Function",
 
 			Returns =
@@ -194,8 +209,14 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
-			Name = "GetNumberOfOutfitsUnlocked",
+			Name = "GetNumberOfOutfitsUnlockedForSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "source", Type = "TransmogOutfitEntrySource", Nilable = false },
+			},
 
 			Returns =
 			{
@@ -622,6 +643,10 @@ local TransmogOutfitInfo =
 			Type = "Event",
 			LiteralName = "TRANSMOG_OUTFITS_CHANGED",
 			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "newOutfitID", Type = "number", Nilable = true },
+			},
 		},
 		{
 			Name = "ViewedTransmogOutfitChanged",

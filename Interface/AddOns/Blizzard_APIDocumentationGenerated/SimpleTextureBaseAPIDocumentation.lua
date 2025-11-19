@@ -265,6 +265,14 @@ local SimpleTextureBaseAPI =
 			},
 		},
 		{
+			Name = "ResetTexCoord",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetAtlas",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -275,6 +283,8 @@ local SimpleTextureBaseAPI =
 				{ Name = "useAtlasSize", Type = "bool", Nilable = false, Default = false },
 				{ Name = "filterMode", Type = "FilterMode", Nilable = true },
 				{ Name = "resetTexCoords", Type = "bool", Nilable = true },
+				{ Name = "wrapModeHorizontal", Type = "cstring", Nilable = true },
+				{ Name = "wrapModeVertical", Type = "cstring", Nilable = true },
 			},
 		},
 		{

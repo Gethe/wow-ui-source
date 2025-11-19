@@ -238,6 +238,21 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "IsTraitTreeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isForCompanion", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestPartyEligibilityForDelveTiers",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

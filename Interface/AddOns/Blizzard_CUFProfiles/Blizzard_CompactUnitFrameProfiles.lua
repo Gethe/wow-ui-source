@@ -7,6 +7,7 @@ CompactUnitFrameProfiles.CVarOptions = {
 	raidFramesDisplayOnlyHealerPowerBars		= "displayOnlyHealerPowerBars",
 	raidFramesDisplayAggroHighlight				= "displayAggroHighlight",
 	raidFramesDisplayClassColor					= "useClassColors",
+	raidFramesHealthBarColor					= "healthBarColor",
 	raidOptionDisplayPets						= "displayPets",
 	raidOptionDisplayMainTankAndAssist			= "displayMainTankAndAssist",
 	raidFramesDisplayDebuffs					= "displayDebuffs",
@@ -81,10 +82,10 @@ function CompactUnitFrameProfiles:ApplyOptions(options)
 	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
 	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
 	CompactRaidFrameContainer:ApplyToFrames("mini", CompactUnitFrame_UpdateAll);
-	
+
 	--Update the borders on the group frames.
 	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-	
+
 	--Update the container in case sizes and such changed.
 	CompactRaidFrameContainer:TryUpdate();
 
@@ -101,26 +102,25 @@ function CompactUnitFrameProfiles:GenerateRaidManagerSetting(optionName)
 	end
 end
 
-function CompactUnitFrameProfiles:GenerateOptionSetter(optionName, optionTarget)
+local function GenerateOptionSetterInternal(optionName, optionTarget, transformFunc, normalTable, miniTable)
 	return function(value)
-		if ( optionTarget == "normal" or optionTarget == "all" ) then
-			DefaultCompactUnitFrameOptions[optionName] = value;
+		value = transformFunc and transformFunc(value) or value;
+		if optionTarget == "normal" or optionTarget == "all" then
+			normalTable[optionName] = value;
 		end
-		if ( optionTarget == "mini" or optionTarget == "all" ) then
-			DefaultCompactMiniFrameOptions[optionName] = value;
+
+		if optionTarget == "mini" or optionTarget == "all" then
+			miniTable[optionName] = value;
 		end
 	end
 end
 
-function CompactUnitFrameProfiles:GenerateSetUpOptionSetter(optionName, optionTarget)
-	return function(value)
-		if ( optionTarget == "normal" or optionTarget == "all" ) then
-			DefaultCompactUnitFrameSetupOptions[optionName] = value;
-		end
-		if ( optionTarget == "mini" or optionTarget == "all" ) then
-			DefaultCompactMiniFrameSetUpOptions[optionName] = value;
-		end
-	end
+function CompactUnitFrameProfiles:GenerateOptionSetter(optionName, optionTarget, transformFunc)
+	return GenerateOptionSetterInternal(optionName, optionTarget, transformFunc, DefaultCompactUnitFrameOptions, DefaultCompactMiniFrameOptions);
+end
+
+function CompactUnitFrameProfiles:GenerateSetUpOptionSetter(optionName, optionTarget, transformFunc)
+	return GenerateOptionSetterInternal(optionName, optionTarget, transformFunc, DefaultCompactUnitFrameSetupOptions, DefaultCompactMiniFrameSetUpOptions);
 end
 
 CompactUnitFrameProfiles.CUFProfileActionTable = {
@@ -134,6 +134,7 @@ CompactUnitFrameProfiles.CUFProfileActionTable = {
 	displayDebuffs = CompactUnitFrameProfiles:GenerateOptionSetter("displayDebuffs", "normal"),
 	displayOnlyDispellableDebuffs = CompactUnitFrameProfiles:GenerateOptionSetter("displayOnlyDispellableDebuffs", "normal"),
 	useClassColors = CompactUnitFrameProfiles:GenerateOptionSetter("useClassColors", "normal"),
+	healthBarColor = CompactUnitFrameProfiles:GenerateOptionSetter("healthBarColor", "normal", CreateColorFromHexString),
 	healthText = CompactUnitFrameProfiles:GenerateOptionSetter("healthText", "normal"),
 
 	-- Pvp Settings

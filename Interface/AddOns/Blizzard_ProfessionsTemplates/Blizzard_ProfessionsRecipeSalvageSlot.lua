@@ -25,6 +25,8 @@ function ProfessionsSalvageSlotMixin:Update()
 	if not self:UpdateAllocationText() then
 		self:SetNameText(PROFESSIONS_ADD_SALVAGE);
 	end
+
+	self.Button.InputOverlay.AddIcon:SetShown(self.allocationItem == nil);
 end
 
 function ProfessionsSalvageSlotMixin:SetQuantityAvailableCallback(callback)

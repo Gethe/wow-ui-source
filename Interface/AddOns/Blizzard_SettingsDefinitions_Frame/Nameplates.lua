@@ -496,6 +496,7 @@ local function Register()
 			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
 			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
 			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
+			container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
 			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
 			return container:GetData();
 		end

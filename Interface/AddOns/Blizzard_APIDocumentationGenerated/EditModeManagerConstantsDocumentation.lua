@@ -411,8 +411,8 @@ local EditModeManagerConstants =
 				{ Name = "Visibility", Type = "EditModeDamageMeterSetting", EnumValue = 0 },
 				{ Name = "Style", Type = "EditModeDamageMeterSetting", EnumValue = 1 },
 				{ Name = "Numbers", Type = "EditModeDamageMeterSetting", EnumValue = 2 },
-				{ Name = "DeprecatedFrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
-				{ Name = "DeprecatedFrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
+				{ Name = "FrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
+				{ Name = "FrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
 				{ Name = "Padding", Type = "EditModeDamageMeterSetting", EnumValue = 5 },
 				{ Name = "Transparency", Type = "EditModeDamageMeterSetting", EnumValue = 6 },
 				{ Name = "LockScroll", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
@@ -631,9 +631,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 18,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 17,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -654,6 +654,9 @@ local EditModeManagerConstants =
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
 				{ Name = "ViewArenaSize", Type = "EditModeUnitFrameSetting", EnumValue = 17 },
+				{ Name = "AuraOrganizationType", Type = "EditModeUnitFrameSetting", EnumValue = 18 },
+				{ Name = "IconSize", Type = "EditModeUnitFrameSetting", EnumValue = 19 },
+				{ Name = "Opacity", Type = "EditModeUnitFrameSetting", EnumValue = 20 },
 			},
 		},
 		{
@@ -720,8 +723,8 @@ local EditModeManagerConstants =
 			Fields =
 			{
 				{ Name = "Always", Type = "EncounterEventsVisibility", EnumValue = 0 },
-				{ Name = "InCombat", Type = "EncounterEventsVisibility", EnumValue = 1 },
-				{ Name = "Hidden", Type = "EncounterEventsVisibility", EnumValue = 2 },
+				{ Name = "InEncounter", Type = "EncounterEventsVisibility", EnumValue = 1 },
+				{ Name = "DeprecatedHidden", Type = "EncounterEventsVisibility", EnumValue = 2 },
 			},
 		},
 		{
@@ -746,6 +749,19 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Horizontal", Type = "MicroMenuOrientation", EnumValue = 0 },
 				{ Name = "Vertical", Type = "MicroMenuOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "RaidAuraOrganizationType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Legacy", Type = "RaidAuraOrganizationType", EnumValue = 0 },
+				{ Name = "BuffsTopDebuffsBottom", Type = "RaidAuraOrganizationType", EnumValue = 1 },
+				{ Name = "BuffsRightDebuffsLeft", Type = "RaidAuraOrganizationType", EnumValue = 2 },
 			},
 		},
 		{

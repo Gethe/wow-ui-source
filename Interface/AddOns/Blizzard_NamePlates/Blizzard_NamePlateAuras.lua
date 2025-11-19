@@ -266,7 +266,7 @@ function NamePlateAurasMixin:RefreshList(listFrame, auraList)
 	auraList:Iterate(function(auraInstanceID, aura)
 		-- Depending on if the nameplate is for an enemy or friend or player or Npc certain lists have a
 		-- requirement that the aura come from the local player.
-		if listFrame.requireSourceIsLocalPlayer == true and aura.sourceUnit ~= nil and UnitIsUnit("player", aura.sourceUnit) == false then
+		if listFrame.requireSourceIsLocalPlayer == true and (aura.sourceUnit == nil or UnitIsUnit("player", aura.sourceUnit) == false) then
 			local stopIterating = false;
 			return stopIterating;
 		end

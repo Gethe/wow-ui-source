@@ -42,6 +42,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
+	self:RegisterEvent("CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -345,6 +346,9 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
 		--	// Finish implementation when completing [WOW11-144188]
 		--...handle it
+	elseif event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE" then
+		local currencyCode, balance = ...;
+		-- TODO (WOW12-40870): Implement this
 	end
 end
 

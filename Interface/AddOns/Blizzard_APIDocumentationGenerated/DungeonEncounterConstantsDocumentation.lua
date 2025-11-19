@@ -51,6 +51,19 @@ local DungeonEncounterConstants =
 			},
 		},
 		{
+			Name = "EncounterEventCastState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Casting", Type = "EncounterEventCastState", EnumValue = 1 },
+				{ Name = "NotCasting", Type = "EncounterEventCastState", EnumValue = 2 },
+				{ Name = "Expired", Type = "EncounterEventCastState", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "EncounterEventFlags",
 			Type = "Enumeration",
 			NumValues = 1,

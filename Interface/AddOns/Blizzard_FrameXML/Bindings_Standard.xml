@@ -1665,7 +1665,7 @@
 	HousingFramesUtil.SetGridSnapEnabled(not C_HousingBasicMode.IsGridSnapEnabled());
 </Binding>
 <Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
+	HousingFramesUtil.SetFreePlaceEnabled(not C_HousingBasicMode.IsFreePlaceEnabled());
 </Binding>
 <Binding name="HOUSING_BASICDECOR_ROTATELEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.HandleRotateBasicDecorSelectionLeftKeybind(keystate);

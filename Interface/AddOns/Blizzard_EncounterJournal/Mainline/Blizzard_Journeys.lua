@@ -51,15 +51,9 @@ JourneysFrameMixin = {};
 
 function JourneysFrameMixin:OnLoad()
 	self:SetupJourneysList();
-	self.minExpansionLevel = GetEJTierDataTableID(LE_EXPANSION_DRAGONFLIGHT);
 end
 
 function JourneysFrameMixin:OnShow()
-	if not self.expansionFilter or self.expansionFilter < self.minExpansionLevel then
-		EncounterJournal_ExpansionDropdown_Select(self:GetParent(), self.minExpansionLevel);
-		EncounterJournal_SetupExpansionDropdown(self:GetParent(), self.minExpansionLevel);
-	end
-
 	NavBar_Reset(EncounterJournal.navBar);
 	self:ResetView();
 	self:Refresh();

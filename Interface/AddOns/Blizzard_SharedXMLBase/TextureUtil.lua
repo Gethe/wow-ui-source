@@ -406,3 +406,11 @@ function CheckSetAtlas(texture, atlasName, ...)
 
 	return false;
 end
+
+function GetAtlasSize(atlasName)
+	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
+
+	if atlasInfo then
+		return atlasInfo.width, atlasInfo.height;
+	end
+end

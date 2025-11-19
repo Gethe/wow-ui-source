@@ -363,6 +363,16 @@ function ProfessionsFlyoutMixin:InitializeContents()
 			continuableContainer:AddContinuable(item);
 		end
 
+		for index1, item in ipairs(elements.items) do
+			local reagent = Professions.CreateItemReagent(item:GetItemID());
+			for index2, dependentReagent in ipairs(C_TradeSkillUI.GetDependentReagents(reagent)) do
+				if dependentReagent.itemID then
+					local dependentItem = Item:CreateFromItemID(dependentReagent.itemID)
+					continuableContainer:AddContinuable(dependentItem);
+				end
+			end
+		end
+
 		continuableContainer:ContinueOnLoad(function()
 			local dataProvider = CreateDataProvider();
 			behavior:PopulateDataProvider(dataProvider, elements);

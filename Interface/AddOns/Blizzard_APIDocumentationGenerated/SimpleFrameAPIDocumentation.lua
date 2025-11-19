@@ -741,6 +741,19 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "IsIgnoringChildrenForBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsIgnoringParentAlpha",
 			Type = "Function",
 
@@ -1234,6 +1247,16 @@ local SimpleFrameAPI =
 			Type = "Function",
 			IsProtectedFunction = true,
 			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIgnoringChildrenForBounds",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

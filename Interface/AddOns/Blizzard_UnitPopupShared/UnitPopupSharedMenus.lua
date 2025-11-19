@@ -471,6 +471,7 @@ function UnitPopupMenuNeighborhoodRoster:GetEntries()
 		UnitPopupOtherSubsectionTitle,
 		--UnitPopupCopyCharacterNameButtonMixin,
 		UnitPopupNeighborhoodEvictButtonMixin,
+		UnitPopupReportNeighborhoodRosterMixin,
 	}
 end
 

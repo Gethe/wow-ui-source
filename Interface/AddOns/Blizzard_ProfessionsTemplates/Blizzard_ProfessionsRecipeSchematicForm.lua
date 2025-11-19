@@ -468,7 +468,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 		end
 	end
 
-	self.recipeSchematic = Professions.GetRecipeSchematic(recipeID, isRecraft, self:GetCurrentRecipeLevel());
+	self.recipeSchematic = ProfessionsUtil.GetRecipeSchematic(recipeID, isRecraft, self:GetCurrentRecipeLevel());
 	local isSalvage = self.recipeSchematic.recipeType == Enum.TradeskillRecipeType.Salvage;
 
 	if newTransaction then

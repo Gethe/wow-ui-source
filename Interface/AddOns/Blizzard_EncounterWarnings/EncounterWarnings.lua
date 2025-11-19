@@ -159,11 +159,9 @@ function EncounterWarningsSystemFrameMixin:EvaluateVisibility()
 
 	if visibility == Enum.EncounterEventsVisibility.Always then
 		return true;
-	elseif visibility == Enum.EncounterEventsVisibility.Hidden then
-		return false;
-	elseif visibility == Enum.EncounterEventsVisibility.InCombat then
-		local isInCombat = UnitAffectingCombat("player");
-		return isInCombat;
+	elseif visibility == Enum.EncounterEventsVisibility.InEncounter then
+		local isInEncounter = C_InstanceEncounter.IsEncounterInProgress();
+		return isInEncounter;
 	end
 
 	return false;

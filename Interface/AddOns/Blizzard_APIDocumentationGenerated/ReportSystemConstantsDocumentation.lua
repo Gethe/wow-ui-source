@@ -101,9 +101,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 20,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 19,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -126,6 +126,7 @@ local ReportSystemConstants =
 				{ Name = "RecentAlly", Type = "ReportType", EnumValue = 17 },
 				{ Name = "HousingDecor", Type = "ReportType", EnumValue = 18 },
 				{ Name = "Neighborhood", Type = "ReportType", EnumValue = 19 },
+				{ Name = "NeighborhoodRoster", Type = "ReportType", EnumValue = 20 },
 			},
 		},
 		{

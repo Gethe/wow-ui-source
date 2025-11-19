@@ -23,6 +23,8 @@ end
 
 function ProfessionsEnchantSlotMixin:Update()
 	self:UpdateAllocationText();
+
+	self.Button.InputOverlay.AddIcon:SetShown(self.allocationItem == nil);
 end
 
 function ProfessionsEnchantSlotMixin:SetQuantityAvailableCallback(callback)

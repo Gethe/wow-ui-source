@@ -23,6 +23,21 @@ local QuestInfoSystem =
 			},
 		},
 		{
+			Name = "GetQuestLogRewardFavor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetQuestRewardCurrencies",
 			Type = "Function",
 			MayReturnNothing = true,

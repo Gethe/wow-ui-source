@@ -276,7 +276,7 @@ end
 
 function HousingCornerstoneVisitorFrameSharedMixin:OnReportClicked()
 	if self.houseInfo then
-		local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID);
+		local reportInfo = ReportInfo:CreateDecorReportInfo(Enum.ReportType.HousingDecor, self.houseInfo.plotID, self.houseInfo.neighborhoodGUID);
 		ReportFrame:InitiateReport(reportInfo, self.houseInfo.ownerName, nil, --[[isBnetReport]] false, --[[sendReportWithoutDialog]] false);
 	end
 end

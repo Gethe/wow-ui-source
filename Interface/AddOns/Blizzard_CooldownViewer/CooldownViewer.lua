@@ -128,6 +128,10 @@ function CooldownViewerItemMixin:SetViewerFrame(viewerFrame)
 	self.viewerFrame = viewerFrame;
 end
 
+function CooldownViewerItemMixin:GetViewerFrame()
+	return self.viewerFrame;
+end
+
 function CooldownViewerItemMixin:SetIsEditing(isEditing)
 	self.isEditing = isEditing;
 	self:UpdateShownState();
@@ -466,7 +470,8 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeN
 	if self:GetAuraDataUnit() == "target" and isActive then
 		-- If the related spell could be cast again right now, what would the new duration be? This informs the pandemic-time alert.
 		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration("target", auraData.auraInstanceID, self:GetSpellID());
-		local carriedOverToNewCast = extendedDuration and (extendedDuration - auraData.duration) or 0;
+		local baseDuration = C_UnitAuras.GetAuraBaseDuration("target", auraData.auraInstanceID, self:GetSpellID());
+		local carriedOverToNewCast = (extendedDuration and baseDuration) and (extendedDuration - baseDuration) or 0;
 		local allowPandemicAlert = carriedOverToNewCast > 0 and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime);
 
 		if allowPandemicAlert then
@@ -510,15 +515,26 @@ function CooldownViewerItemMixin:TriggerPandemicAlert()
 end
 
 function CooldownViewerItemMixin:CheckPandemicTimeDisplay(timeNow)
-	local stateFrame = self:GetPandemicStateFrame();
-	if stateFrame then
-		local itsTime = self:IsInPandemicTime(timeNow);
-		stateFrame:SetShown(itsTime);
+	if self:IsInPandemicTime(timeNow) then
+		self:ShowPandemicStateFrame();
+	else
+		self:HidePandemicStateFrame();
 	end
 end
 
-function CooldownViewerItemMixin:GetPandemicStateFrame()
-	return self.PandemicIcon;
+function CooldownViewerItemMixin:ShowPandemicStateFrame()
+	if not self.PandemicIcon then
+		self.PandemicIcon = self:GetViewerFrame():SetupPandemicStateFrameForItem(self);
+	end
+
+	self.PandemicIcon:Show();
+end
+
+function CooldownViewerItemMixin:HidePandemicStateFrame()
+	if self.PandemicIcon then
+		self:GetViewerFrame():HidePandemicStateFrame(self.PandemicIcon);
+		self.PandemicIcon = nil;
+	end
 end
 
 function CooldownViewerItemMixin:IsInPandemicTime(timeNow)
@@ -1218,10 +1234,6 @@ function CooldownViewerBuffBarItemMixin:GetApplicationsFontString()
 	return iconFrame.Applications;
 end
 
-function CooldownViewerBuffBarItemMixin:GetPandemicStateFrame()
-	return self.Icon.PandemicIcon;
-end
-
 function CooldownViewerBuffBarItemMixin:OnLoad()
 	CooldownViewerBuffItemMixin.OnLoad(self);
 
@@ -1368,6 +1380,7 @@ function CooldownViewerMixin:OnLoad()
 		itemFrame.layoutIndex = nil;
 	end;
 	self.itemFramePool = CreateFramePool("FRAME", self:GetItemContainerFrame(), self.itemTemplate, itemResetCallback);
+	self.pandemicIconPool = CreateFramePool("FRAME", self, self:GetPandemicStateFrameTemplate());
 
 	self.iconLimit = 1;
 	self.iconDirection = Enum.CooldownViewerIconDirection.Right;
@@ -1732,6 +1745,29 @@ function CooldownViewerMixin:SetBarWidthScale(_barWidthScale)
 	-- override as needed
 end
 
+function CooldownViewerMixin:GetPandemicStateFrameTemplate()
+	-- override as needed
+	return "CooldownPandemicFXTemplate";
+end
+
+function CooldownViewerMixin:SetupPandemicStateFrameForItem(cooldownItem)
+	local frame = self.pandemicIconPool:Acquire();
+	frame:SetParent(cooldownItem);
+
+	self:AnchorPandemicStateFrame(frame, cooldownItem);
+	return frame;
+end
+
+function CooldownViewerMixin:AnchorPandemicStateFrame(frame, cooldownItem)
+	-- Override as needed
+	frame:SetPoint("TOPLEFT", cooldownItem, "TOPLEFT", -6, 6);
+	frame:SetPoint("BOTTOMRIGHT", cooldownItem, "BOTTOMRIGHT", 6, -6);
+end
+
+function CooldownViewerMixin:HidePandemicStateFrame(stateFrame)
+	self.pandemicIconPool:Release(stateFrame);
+end
+
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for Essential and Utility Cooldown Viewers.
 CooldownViewerCooldownMixin = CreateFromMixins(CooldownViewerMixin);
@@ -1932,4 +1968,16 @@ end
 
 function BuffBarCooldownViewerMixin:GetBarWidth()
 	return self.baseBarWidth * self.barWidthScale;
+end
+
+function BuffBarCooldownViewerMixin:GetPandemicStateFrameTemplate()
+	-- override as needed
+	return "CooldownPandemicBarFXTemplate";
+end
+
+function BuffBarCooldownViewerMixin:AnchorPandemicStateFrame(frame, cooldownItem)
+	-- Override as needed
+	frame:SetPoint("TOPLEFT", cooldownItem.Bar, "TOPLEFT", -9, 10);
+	frame:SetPoint("BOTTOMRIGHT", cooldownItem.Bar, "BOTTOMRIGHT", 9, -10);
+	frame:SetFrameLevel(cooldownItem.Bar:GetFrameLevel() + 1);
 end
