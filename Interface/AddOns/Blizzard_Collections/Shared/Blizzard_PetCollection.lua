@@ -37,7 +37,7 @@ StaticPopupDialogs["BATTLE_PET_RENAME"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -962,7 +962,7 @@ function PetJournalListItemMixin:OnClick(button)
 			-- Macros are not yet supported
 		elseif (id) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		end
 	elseif button == "RightButton" then
 		if self.owned then
@@ -1020,7 +1020,7 @@ function PetJournalDragButtonMixin:OnClick(button)
 			-- Macros are not yet supported
 		elseif (id) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		end
 	elseif ( button == "RightButton" ) then
 		local parent = self:GetParent();
@@ -1078,7 +1078,7 @@ function PetJournalLoadoutDragButtonMixin:OnClick(button)
 			-- Macros are not yet supported
 		elseif (id) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		end
 	else
 		PetJournalDragButtonMixin.OnDragStart(self);
@@ -1187,7 +1187,7 @@ function PetJournalPetCard_OnClick(self, button)
 			-- Macros are not yet supported
 		elseif (id) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		end
 	elseif button == "RightButton" then
 		if ( PetJournalPetCard.petID ) then

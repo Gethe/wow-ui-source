@@ -125,7 +125,7 @@ CACHE_WAIT_TIME = 0.5;
 
 CREDITS_ART_INFO = {
 	[LE_EXPANSION_CLASSIC] = {
-		[LE_RELEASE_TYPE_ORIGINAL] = {
+		[Enum.ReleaseType.Original] = {
 			{ file="Acrest", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5, maxTexIndex=4 },
 			{ file="Tauren", w=640, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Centaur", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
@@ -166,13 +166,13 @@ CREDITS_ART_INFO = {
 			{ file="Fellwood", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="OrcShield", w=512, h=512, offsetx=128, offsety=0, maxAlpha=0.5 },
 		},
-		[LE_RELEASE_TYPE_CLASSIC] = {
+		[Enum.ReleaseType.Classic] = {
 			{ file="ClassicGryphon", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
 	},
 
 	[LE_EXPANSION_BURNING_CRUSADE] = {
-		[LE_RELEASE_TYPE_ORIGINAL] = {
+		[Enum.ReleaseType.Original] = {
 			{ file="BD", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Wrathguard", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="WOW_BloodElves", w=512, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
@@ -234,12 +234,12 @@ CREDITS_ART_INFO = {
 			{ file="The_Broken", w=768, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 			{ file="Photos", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
-		[LE_RELEASE_TYPE_CLASSIC] = {
+		[Enum.ReleaseType.Classic] = {
 			{ file="Illidan", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 },
 		},
 	},
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {
-		[LE_RELEASE_TYPE_ORIGINAL] = {
+		[Enum.ReleaseType.Original] = {
 			{ file="Azol0", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="BoreanTun", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="GrizzlemawTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
@@ -292,7 +292,7 @@ CREDITS_ART_INFO = {
 			{ file="Zombie", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 			{ file="ZulDrak", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
-		[LE_RELEASE_TYPE_CLASSIC] = {
+		[Enum.ReleaseType.Classic] = {
 			{ file="LichKingTGA", w=1024, h=512, offsetx=0, offsety=0, maxAlpha=0.7 };
 		},
 	},

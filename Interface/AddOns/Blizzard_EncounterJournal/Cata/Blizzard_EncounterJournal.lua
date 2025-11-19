@@ -1239,9 +1239,9 @@ function EncounterJournal_UpdateButtonState(self)
 end
 
 function EncounterJournal_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -2525,9 +2525,9 @@ function EncounterJournalBossButton_OnHide(self)
 end
 
 function EncounterJournalBossButton_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end

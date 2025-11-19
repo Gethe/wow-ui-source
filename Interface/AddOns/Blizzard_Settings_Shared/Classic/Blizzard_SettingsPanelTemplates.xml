@@ -5,27 +5,27 @@
 		<Frames>
 			<Frame parentKey="Bg" inherits="FlatPanelBackgroundTemplate" frameLevel="0">
 				<Anchors>
-					<Anchor point="TOPLEFT" x="7" y="-18"/>
-					<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					<Anchor point="TOPLEFT" x="6" y="-28"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
 				<KeyValues>
-					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+					<KeyValue key="layoutType" value="Dialog" type="string"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="-6">
 						<Texture name="$parentTitleBg" parentKey="TitleBg" inherits="_UI-Frame-TitleTileBg">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="8" y="-3"/>
-								<Anchor point="TOPRIGHT" x="0" y="-3"/>
+								<Anchor point="TOPLEFT" x="6" y="-12"/>
+								<Anchor point="TOPRIGHT" x="-6" y="-12"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Text" inherits="GameFontNormal" wordwrap="false">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-5"/>
+								<Anchor point="TOP" x="0" y="-13"/>
 								<Anchor point="LEFT" x="60"/>
 								<Anchor point="RIGHT" x="-60"/>
 							</Anchors>
@@ -33,7 +33,11 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-4" y="-4"/>
+				</Anchors>
+			</Button>
 		</Frames>
 	</Frame>
 

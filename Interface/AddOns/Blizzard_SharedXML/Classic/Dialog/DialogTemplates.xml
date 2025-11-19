@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+<!--
+*******************************************************************************
+	Classic Dialog Templates
+
+	Templates for dialogs specifically used by Classic.
+*******************************************************************************
+-->
+	<Frame name="ClassicDialogHeaderTemplate" mixin="DialogHeaderMixin" virtual="true">
+		<Size x="200" y="39"/>
+		<KeyValues>
+			<!-- Override this to change how much padding is on the left & right of the text. Padding is applied evenly on the left and right (headerTextPadding / 2) on each side -->
+			<KeyValue key="headerTextPadding" value="64" type="number"/>
+
+			<!--Optional: Add this to inheriting frames in order to auotmatically set the text when the header loads-->
+			<!--<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>-->
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="0" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" y="11"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

@@ -4,5 +4,9 @@
 ## Dependencies: Blizzard_CharacterFrame
 ## AllowLoadGameType: vanilla
 ## AllowLoad: Game
+
+Shared\MainMenuBarBagManager.lua
 Classic\MainMenuBarBagButtons.lua
+Shared\BagsBar.lua
+Classic\Keyring.lua
 Classic\MainMenuBarBagButtons.xml

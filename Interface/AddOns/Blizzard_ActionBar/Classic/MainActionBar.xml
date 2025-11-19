@@ -1,0 +1,215 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="MainBarActionBarButtonTemplate" inherits="ActionBarButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="showButtonArt" value="true" type="boolean"/>
+		</KeyValues>
+	</CheckButton>
+
+	<Frame name="MainActionBar" inherits="EditModeActionBarTemplate" enableMouse="true" parent="UIParent" frameLevel="50" mixin="MainActionBarMixin">
+		<Size x="454" y="35"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainBarActionBarButtonTemplate" type="string"/>
+			<KeyValue key="commandNamePrefix" value="ACTION" type="string"/>
+			<KeyValue key="isHorizontal" value="true" type="boolean"/>
+			<KeyValue key="numRows" value="1" type="number"/>
+			<KeyValue key="numButtons" value="12" type="number"/>
+			<KeyValue key="addButtonsToTop" value="true" type="boolean"/>
+			<KeyValue key="showGridEventName" value="ACTIONBAR_SHOWGRID" type="string"/>
+			<KeyValue key="hideGridEventName" value="ACTIONBAR_HIDEGRID" type="string"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeActionBarSystemIndices.MainBar" type="global"/>
+			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
+			<KeyValue key="isNormalBar" value="true" type="boolean"/>
+			<KeyValue key="enableDividers" value="false" type="boolean"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="QuickKeybindBottomShadow" atlas="_QuickKeybind_Bottom_Shadow" useAtlasSize="true" horizTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindRightShadow" atlas="!QuickKeybind_Side_Shadow" useAtlasSize="true" vertTile="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="QuickKeybindGlowLarge" atlas="QuickKeybind_BottomBarExtended_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QuickKeybindGlowSmall" atlas="QuickKeybind_BottomBar_Glow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<Frame parentKey="EndCaps" setAllPoints="true" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<!-- Reanchored in script. -->
+						<Texture parentKey="LeftEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="28" y="-3"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size x="128" y="128"/>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-29" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="ActionBarPageNumber" frameLevel="100">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="42" y="36"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER">
+							<!-- Reanchored in script. -->
+							<Size x="17" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER" x="15" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="UpButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarUpButtonMixin, MainActionBarSwappableButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="NEXTACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="19" y="17"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-6" y="10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<!-- These textures swap between two styles based on whether the MainActionBar is in "Main Menu Mode" or not. -->
+						<NormalTexture atlas="hud-MainMenuBar-arrowup-up" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowup-up" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pageuparrow-up" type="string"/>
+							</KeyValues>
+						</NormalTexture>
+						<PushedTexture atlas="hud-MainMenuBar-arrowup-down" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowup-down" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pageuparrow-down" type="string"/>
+							</KeyValues>
+						</PushedTexture>
+						<DisabledTexture atlas="hud-MainMenuBar-arrowup-disabled" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowup-disabled" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pageuparrow-disabled" type="string"/>
+							</KeyValues>
+						</DisabledTexture>
+						<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowup-highlight" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowup-highlight" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pageuparrow-mouseover" type="string"/>
+							</KeyValues>
+						</HighlightTexture>
+					</Button>
+					<Button parentKey="DownButton" inherits="QuickKeybindButtonTemplate" mixin="MainActionBarDownButtonMixin, MainActionBarSwappableButtonMixin">
+						<KeyValues>
+							<KeyValue key="commandName" value="PREVIOUSACTIONPAGE" type="string"/>
+						</KeyValues>
+						<Size x="19" y="17"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-6" y="-10"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick" inherit="append"/>
+							<OnLeave method="OnLeave" inherit="append"/>
+						</Scripts>
+						<!-- These textures swap between two styles based on whether the MainActionBar is in "Main Menu Mode" or not. -->
+						<NormalTexture atlas="hud-MainMenuBar-arrowdown-up" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowdown-up" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pagedownarrow-up" type="string"/>
+							</KeyValues>
+						</NormalTexture>
+						<PushedTexture atlas="hud-MainMenuBar-arrowdown-down" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowdown-down" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pagedownarrow-down" type="string"/>
+							</KeyValues>
+						</PushedTexture>
+						<DisabledTexture atlas="hud-MainMenuBar-arrowdown-disabled" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowdown-disabled" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pagedownarrow-disabled" type="string"/>
+							</KeyValues>
+						</DisabledTexture>
+						<HighlightTexture alphaMode="ADD" atlas="hud-MainMenuBar-arrowdown-highlight" useAtlasSize="true">
+							<KeyValues>
+								<KeyValue key="defaultAtlas" value="hud-MainMenuBar-arrowdown-highlight" type="string"/>
+								<KeyValue key="alternateAtlas" value="ui-hud-actionbar-pagedownarrow-mouseover" type="string"/>
+							</KeyValues>
+						</HighlightTexture>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true"  frameLevel="70" fixedFrameLevel="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent"/>
+					<OnClick method="OnClicked"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
+					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
+				</PushedTexture>
+				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+</Ui>

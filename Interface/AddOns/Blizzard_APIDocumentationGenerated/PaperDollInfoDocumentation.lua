@@ -264,6 +264,11 @@ local PaperDollInfo =
 			Type = "Event",
 			LiteralName = "UPDATE_INVENTORY_DURABILITY",
 		},
+		{
+			Name = "WeaponSlotChanged",
+			Type = "Event",
+			LiteralName = "WEAPON_SLOT_CHANGED",
+		},
 	},
 
 	Tables =

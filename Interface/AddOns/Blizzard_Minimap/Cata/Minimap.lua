@@ -318,18 +318,18 @@ function MiniMapTracking_Update()
 	for id = 1, count do
 		local trackingInfo = C_Minimap.GetTrackingInfo(id);
 		if trackingInfo and trackingInfo.active then
-				if (trackingInfo.type == "spell") then 
-					if (currentTexture == trackingInfo.texture) then
-						return;
-					end
-					MiniMapTrackingIcon:SetTexture(trackingInfo.texture);
-					MiniMapTrackingShineFadeIn();
+			if (trackingInfo.type == "spell") then 
+				if (currentTexture == trackingInfo.texture) then
 					return;
-				else
-					bestTexture = trackingInfo.texture;
 				end
+				MiniMapTrackingIcon:SetTexture(trackingInfo.texture);
+				MiniMapTrackingShineFadeIn();
+				return;
+			else
+				bestTexture = trackingInfo.texture;
 			end
 		end
+	end
 	MiniMapTrackingIcon:SetTexture(bestTexture);
 	MiniMapTrackingShineFadeIn();
 end

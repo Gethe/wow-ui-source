@@ -149,17 +149,17 @@ function WatchFrameLinkButtonTemplate_ShowContextMenu(self, button)
 end
 
 function WatchFrameLinkButtonTemplate_OnClick (self, button, pushed)
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 		if ( self.type == "QUEST" ) then
 			local questIndex = GetQuestIndexForWatch(self.index);
 			local questLink = GetQuestLink(GetQuestIDFromLogIndex(questIndex));
 			if ( questLink ) then
-				ChatEdit_InsertLink(questLink);
+				ChatFrameUtil.InsertLink(questLink);
 			end
 		elseif ( self.type == "ACHIEVEMENT" ) then
 			local achievementLink = GetAchievementLink(self.index);
 			if ( achievementLink ) then
-				ChatEdit_InsertLink(achievementLink);
+				ChatFrameUtil.InsertLink(achievementLink);
 			end
 		end
 	elseif ( button ~= "RightButton" ) then
@@ -1256,10 +1256,10 @@ end
 
 function WatchFrameItem_OnClick (self, button, down)
 	local questIndex = self:GetID();
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 		local link, item, charges, showItemWhenComplete = GetQuestLogSpecialItemInfo(questIndex);
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	else
 		UseQuestLogSpecialItem(questIndex);

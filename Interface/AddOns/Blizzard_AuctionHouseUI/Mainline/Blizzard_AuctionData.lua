@@ -178,6 +178,12 @@ do -- Profession Equipment
 	end
 end
 
+do -- Housing
+	local housingCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_HOUSING);
+	housingCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Housing, Enum.ItemHousingSubclass.Decor);
+	housingCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Housing, Enum.ItemHousingSubclass.Dye);
+end
+
 do -- Battle Pets
 	local battlePetsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_BATTLE_PETS);
 	battlePetsCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_PET_LEVEL);

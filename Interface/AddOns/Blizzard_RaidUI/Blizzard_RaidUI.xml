@@ -421,7 +421,7 @@
 			<StatusBar name="$parentHealthBar" drawLayer="ARTWORK" inherits="TextStatusBar" enableMouse="false" propagateMouseInput="Clicks">
 				<Size x="51" y="5"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="3" y="-12"/>
+					<Anchor point="TOP" x="0" y="-12"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -435,7 +435,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.859375" top="0" bottom="0.21875"/>
+							<TexCoords left="0" right="0.75" top="0" bottom="0.21875"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -465,7 +465,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMLEFT" x="-2" y="-1"/>
 							</Anchors>
-							<TexCoords left="0" right="0.859375" top="0.21875" bottom="0.4375"/>
+							<TexCoords left="0" right="0.75" top="0.21875" bottom="0.4375"/>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -492,6 +492,27 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Button name="$parentClearButton" inherits="SecureUnitButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								RaidPulloutButton_OnLoad(self);
+							</OnLoad>
+							<OnEnter>
+								if ( self.unit ) then
+									UnitFrame_UpdateTooltip(self);
+								end
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
 				<Scripts>
 					<OnLoad>
 						self:SetFrameLevel(self:GetFrameLevel()+2);

@@ -422,7 +422,7 @@ function QuestPOIButton_OnClick(self)
 	local mapID = GetQuestUiMapID(questID);
 	local questLogIndex = GetQuestLogIndexByID(questID);
 
-	if ( ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
+	if ( ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) ) then
 		return;
 	end
 

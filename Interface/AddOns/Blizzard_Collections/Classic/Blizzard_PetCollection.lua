@@ -438,7 +438,7 @@ function PetJournalListItem_OnClick(self, button)
 			-- Macros are not yet supported
 		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		else
 			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);
@@ -474,7 +474,7 @@ function PetJournalDragButton_OnClick(self, button)
 			-- Macros are not yet supported
 		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		else
 			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);
@@ -597,7 +597,7 @@ function PetJournalPetCard_OnClick(self, button)
 			-- Macros are not yet supported
 		elseif (id and BATTLEPETS_SUPPORTED) then
 			local petLink = C_PetJournal.GetBattlePetLink(id);
-			ChatEdit_InsertLink(petLink);
+			ChatFrameUtil.InsertLink(petLink);
 		else
 			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
 			ChatEdit_InsertLink(petLink);

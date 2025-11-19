@@ -433,3 +433,8 @@ end
 function AnchorUtil.PrintAnchorGraph(frame)
 	C_Log.LogMessage(table.concat(DebugAnchorGraph(frame), "\n"));
 end
+
+function AnchorUtil.AdjustPointByName(region, pointName, extraOffsetX, extraOffsetY)
+	local point, relativeTo, relativePoint, offsetX, offsetY = region:GetPointByName(pointName);
+	region:SetPoint(point, relativeTo, relativePoint, offsetX + extraOffsetX, offsetY + extraOffsetY);
+end

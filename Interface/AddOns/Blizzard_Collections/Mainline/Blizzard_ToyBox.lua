@@ -291,7 +291,7 @@ function ToySpellButton_OnModifiedClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local itemLink = C_ToyBox.GetToyLink(self.itemID);
 		if ( itemLink ) then
-			ChatEdit_InsertLink(itemLink);
+			ChatFrameUtil.InsertLink(itemLink);
 		end
 	end
 end

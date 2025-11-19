@@ -117,7 +117,7 @@
 						<ScrollChild>
 							<Frame name="QuestProgressScrollChildFrame">
 								<Size>
-									<AbsDimension x="300" y="403"/>
+									<AbsDimension x="300" y="334"/>
 								</Size>
 								<Layers>
 									<Layer level="BACKGROUND">
@@ -270,7 +270,7 @@
 					<ScrollFrame name="QuestDetailScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestDetailScrollChildFrame">
-								<Size x="300" y="403"/>
+								<Size x="300" y="334"/>
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
@@ -297,7 +297,7 @@
 					<ScrollFrame name="QuestGreetingScrollFrame" inherits="QuestScrollFrameTemplate">
 						<ScrollChild>
 							<Frame name="QuestGreetingScrollChildFrame">
-								<Size x="300" y="403"/>
+								<Size x="300" y="334"/>
 								<Layers>
 									<Layer>
 										<FontString name="GreetingText" inherits="QuestFont" text="Filler Text" justifyH="LEFT">

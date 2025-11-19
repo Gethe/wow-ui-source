@@ -238,6 +238,7 @@ local function InitVoiceSettings(category, layout)
 			local defaultValue = GetDefaultOutputDeviceID();
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_OUTPUT_DEVICE",
 				Settings.VarType.String, VOICE_CHAT_OUTPUT_DEVICE, defaultValue, GetActiveOutputDeviceID, C_VoiceChat.SetOutputDevice);
+			setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 			outputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_OUTPUT);
 		end
@@ -298,6 +299,7 @@ local function InitVoiceSettings(category, layout)
 			local defaultValue = GetDefaultInputDeviceID();
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", 
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
+			setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 			inputInitializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_VOICE_INPUT);
 		end
@@ -397,7 +399,9 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
+		local setting = Settings.SetupCVarDropdown(category, "Sound_OutputDriverIndex", Settings.VarType.Number, GetOptions, AUDIO_OUTPUT_DEVICE, OPTION_TOOLTIP_AUDIO_OUTPUT);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
+
 		Settings.SetOnValueChangedCallback("Sound_OutputDriverIndex", Sound_GameSystem_RestartSoundSystem);
 	end
 
@@ -508,7 +512,8 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
 
-		Settings.SetupCVarSlider(category, "Sound_NumChannels", options, AUDIO_CHANNELS, OPTION_TOOLTIP_AUDIO_CHANNELS);
+		local setting = Settings.SetupCVarSlider(category, "Sound_NumChannels", options, AUDIO_CHANNELS, OPTION_TOOLTIP_AUDIO_CHANNELS);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 	end
 
 	-- Sound Cache Size
@@ -523,7 +528,8 @@ local function Register()
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
+		local setting = Settings.SetupCVarDropdown(category, "Sound_MaxCacheSizeInBytes", Settings.VarType.Number, GetOptions, AUDIO_CACHE_SIZE, OPTION_TOOLTIP_AUDIO_CACHE_SIZE);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 	end
 
 	-- Ping System

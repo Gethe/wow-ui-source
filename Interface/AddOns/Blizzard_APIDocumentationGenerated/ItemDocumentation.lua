@@ -1174,6 +1174,11 @@ local Item =
 			Type = "Event",
 			LiteralName = "USE_NO_REFUND_CONFIRM",
 		},
+		{
+			Name = "WeaponEnchantChanged",
+			Type = "Event",
+			LiteralName = "WEAPON_ENCHANT_CHANGED",
+		},
 	},
 
 	Tables =

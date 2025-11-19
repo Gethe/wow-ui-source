@@ -570,7 +570,7 @@ function WardrobeSetsCollectionMixin:OnShow()
 
 	if HelpTip:IsShowing(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL) then
 		HelpTip:Hide(WardrobeCollectionFrame, TRANSMOG_SETS_TAB_TUTORIAL);
-		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSMOG_SETS_TAB, true);
+		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogSetsTab, true);
 	end
 end
 

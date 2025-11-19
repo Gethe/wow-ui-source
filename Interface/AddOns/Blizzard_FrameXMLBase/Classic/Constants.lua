@@ -1,3 +1,16 @@
+
+FACTION_BAR_COLORS = 
+{
+	FACTION_RED_COLOR,
+	FACTION_RED_COLOR,
+	FACTION_ORANGE_COLOR,
+	FACTION_YELLOW_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
+	FACTION_GREEN_COLOR,
+};
+
 WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[129] = "worldquest-icon-firstaid",
 	[164] = "worldquest-icon-blacksmithing",
@@ -14,13 +27,6 @@ WORLD_QUEST_ICONS_BY_PROFESSION = {
 	[185] = "worldquest-icon-cooking",
 	[197] = "worldquest-icon-tailoring",
 	[393] = "worldquest-icon-skinning",
-};
-
-CHAT_FONT_HEIGHTS = {
-	[1] = 12,
-	[2] = 14,
-	[3] = 16,
-	[4] = 18
 };
 
 HTML_START = "<html><body><p>";
@@ -602,7 +608,7 @@ CHALLENGE_MEDAL_BRONZE = 1;
 CHALLENGE_MEDAL_SILVER = 2;
 CHALLENGE_MEDAL_GOLD = 3;
 CHALLENGE_MEDAL_PLAT = 4; --as of 7/2/2013 only used for endless proving grounds
-NUM_CHALLENGE_MEDALS = 3;
+NUM_CHALLENGE_MEDALS = 4;
 CHALLENGE_MEDAL_TEXTURES = {
 	[CHALLENGE_MEDAL_BRONZE] = "Interface\\Challenges\\challenges-bronze",
 	[CHALLENGE_MEDAL_SILVER] = "Interface\\Challenges\\challenges-silver",

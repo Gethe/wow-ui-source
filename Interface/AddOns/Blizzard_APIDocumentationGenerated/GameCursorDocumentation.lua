@@ -109,6 +109,20 @@ local GameCursor =
 				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "SetCursorByMode",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "mode", Type = "Cursormode", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

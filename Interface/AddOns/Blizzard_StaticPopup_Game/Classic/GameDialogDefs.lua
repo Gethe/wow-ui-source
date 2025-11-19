@@ -88,7 +88,7 @@ StaticPopupDialogs["ADD_TEAMMEMBER"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -219,7 +219,7 @@ StaticPopupDialogs["RENAME_ARENA_TEAM"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -661,7 +661,7 @@ StaticPopupDialogs["DELETE_GOOD_ITEM"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 		MerchantFrame_ResetRefundItem();
 	end,
@@ -713,7 +713,7 @@ StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 		MerchantFrame_ResetRefundItem();
 	end,
@@ -775,17 +775,17 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept = function(dialog, data)
 end;
 
 StaticPopupDialogs["SET_FRIENDNOTE"].OnShow = function(dialog, data)
-	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
-	if ( noteText ) then
-		dialog:GetEditBox():SetText(noteText);
+	local info = C_FriendList.GetFriendInfo(FriendsFrame.NotesID);
+	if info.notes then
+		dialog:GetEditBox():SetText(info.notes);
 	end
 	dialog:GetEditBox():SetFocus();
 end;
 
 StaticPopupDialogs["SET_BNFRIENDNOTE"].OnShow = function(dialog, data)
-	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
-	if ( noteText ) then
-		dialog:GetEditBox():SetText(noteText);
+	local accountInfo = C_BattleNet.GetAccountInfoByID(FriendsFrame.NotesID);
+	if accountInfo and accountInfo.note ~= "" then
+		dialog:GetEditBox():SetText(accountInfo.note);
 	end
 	dialog:GetEditBox():SetFocus();
 end;
@@ -826,7 +826,7 @@ StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 		MerchantFrame_ResetRefundItem();
 	end,
@@ -865,7 +865,7 @@ StaticPopupDialogs["ADD_GUILDMEMBER"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -897,7 +897,7 @@ StaticPopupDialogs["ADD_RAIDMEMBER"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -976,7 +976,7 @@ StaticPopupDialogs["ADD_GUILDRANK"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1008,7 +1008,7 @@ StaticPopupDialogs["SET_GUILDMOTD"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1053,7 +1053,7 @@ StaticPopupDialogs["RENAME_PET"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnUpdate = function(dialog, elapsed)
@@ -1539,7 +1539,7 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 		dialog:GetEditBox().Instructions:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_EDITBOX_INSTRUCTIONS);
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)

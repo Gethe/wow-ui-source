@@ -568,10 +568,10 @@ function MountListDragButton_OnClick(self, button)
 		local id = parent.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = GetSpellInfo(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	else
 		C_MountJournal.Pickup(parent.index);
@@ -588,10 +588,10 @@ function MountListItem_OnClick(self, button)
 		local id = self.spellID;
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName = GetSpellInfo(id);
-			ChatEdit_InsertLink(spellName);
+			ChatFrameUtil.InsertLink(spellName);
 		else
 			local mountLink = C_MountJournal.GetMountLink(id);
-			ChatEdit_InsertLink(mountLink);
+			ChatFrameUtil.InsertLink(mountLink);
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);

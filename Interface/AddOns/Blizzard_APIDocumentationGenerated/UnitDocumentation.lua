@@ -6,6 +6,34 @@ local Unit =
 	Functions =
 	{
 		{
+			Name = "GetUnitHealthModifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitMaxHealthModifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -104,6 +132,34 @@ local Unit =
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
 				{ Name = "colorA", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitPowerModifier",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitTotalModifiedMaxHealthPercent",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -438,6 +494,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPhaseReason",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reason", Type = "PhaseReason", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitPower",
 			Type = "Function",
 
@@ -517,6 +587,20 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPvpClassification",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classification", Type = "PvPUnitClassification", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitSex",
 			Type = "Function",
 
@@ -556,6 +640,34 @@ local Unit =
 			Returns =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitTreatAsPlayerForDisplay",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "treatAsPlayer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "WorldLootObjectExists",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -645,9 +757,27 @@ local Unit =
 			LiteralName = "HEARTHSTONE_BOUND",
 		},
 		{
+			Name = "HonorXpUpdate",
+			Type = "Event",
+			LiteralName = "HONOR_XP_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "IncomingSummonChanged",
+			Type = "Event",
+			LiteralName = "INCOMING_SUMMON_CHANGED",
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
@@ -1106,6 +1236,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCtrOptions",
+			Type = "Event",
+			LiteralName = "UNIT_CTR_OPTIONS",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDamage",
 			Type = "Event",
 			LiteralName = "UNIT_DAMAGE",
@@ -1489,6 +1628,40 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSpellcastEmpowerStart",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastEmpowerStop",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "complete", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastEmpowerUpdate",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSpellcastFailed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
@@ -1537,6 +1710,28 @@ local Unit =
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastReticleClear",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastReticleTarget",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -1646,6 +1841,42 @@ local Unit =
 
 	Tables =
 	{
+		{
+			Name = "PhaseReason",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Phasing", Type = "PhaseReason", EnumValue = 0 },
+				{ Name = "Sharding", Type = "PhaseReason", EnumValue = 1 },
+				{ Name = "WarMode", Type = "PhaseReason", EnumValue = 2 },
+				{ Name = "ChromieTime", Type = "PhaseReason", EnumValue = 3 },
+				{ Name = "TimerunningHwt", Type = "PhaseReason", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "PvPUnitClassification",
+			Type = "Enumeration",
+			NumValues = 11,
+			MinValue = 0,
+			MaxValue = 10,
+			Fields =
+			{
+				{ Name = "FlagCarrierHorde", Type = "PvPUnitClassification", EnumValue = 0 },
+				{ Name = "FlagCarrierAlliance", Type = "PvPUnitClassification", EnumValue = 1 },
+				{ Name = "FlagCarrierNeutral", Type = "PvPUnitClassification", EnumValue = 2 },
+				{ Name = "CartRunnerHorde", Type = "PvPUnitClassification", EnumValue = 3 },
+				{ Name = "CartRunnerAlliance", Type = "PvPUnitClassification", EnumValue = 4 },
+				{ Name = "AssassinHorde", Type = "PvPUnitClassification", EnumValue = 5 },
+				{ Name = "AssassinAlliance", Type = "PvPUnitClassification", EnumValue = 6 },
+				{ Name = "OrbCarrierBlue", Type = "PvPUnitClassification", EnumValue = 7 },
+				{ Name = "OrbCarrierGreen", Type = "PvPUnitClassification", EnumValue = 8 },
+				{ Name = "OrbCarrierOrange", Type = "PvPUnitClassification", EnumValue = 9 },
+				{ Name = "OrbCarrierPurple", Type = "PvPUnitClassification", EnumValue = 10 },
+			},
+		},
 		{
 			Name = "UnitCreatureFamilyResult",
 			Type = "Structure",

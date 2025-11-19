@@ -50,7 +50,7 @@
         </Attributes>
     </Frame>
 
-    <!-- A frame used for managing group pets -->
+    <!-- A frame used for managing auras -->
     <Frame name="SecureAuraHeaderTemplate" inherits="SecureFrameTemplate" hidden="true" virtual="true">
         <Scripts>
             <OnLoad function="SecureAuraHeader_OnLoad"/>

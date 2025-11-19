@@ -1,0 +1,14 @@
+## Title: Blizzard_MicroMenu
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoadGameType: mainline
+## AllowLoad: Game
+
+Shared\MicroMenuUtil.lua
+
+Mainline\MainMenuBarMicroButtons.lua
+Mainline\MainMenuBarMicroButtons.xml
+
+Shared\MicroMenuContainer.lua
+Mainline\MicroMenuContainerOverrides.lua
+Mainline\MicroMenuContainer.xml

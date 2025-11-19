@@ -1,0 +1,18 @@
+## Title: Blizzard_EditMode
+## Dependencies: Blizzard_UIParent, Blizzard_UIPanelTemplates, Blizzard_HelpPlate
+Shared\EditModePresetLayoutSystemUtils.lua [AllowLoadEnvironment Global]
+[Game]\EditModePresetLayouts.lua [AllowLoadGameType standard, wowhack, plunderstorm] [AllowLoadEnvironment Global]
+[Family]\EditModePresetLayouts.lua [AllowLoadGameType classic] [AllowLoadEnvironment Global]
+Shared\EditModePresetLayoutsManager.lua [AllowLoadEnvironment Global]
+Shared\EditModeSettingDisplayInfo.lua [AllowLoadEnvironment Global]
+Shared\EditModeUtil.lua [AllowLoadEnvironment Global]
+Shared\EditModeTemplates.lua [AllowLoadEnvironment Global]
+Shared\EditModeTemplates.xml [AllowLoadEnvironment Global]
+Shared\EditModeSystemTemplates.lua [AllowLoadEnvironment Global]
+Shared\EditModeSystemTemplates.xml [AllowLoadEnvironment Global]
+Shared\EditModeDialogs.lua [AllowLoadEnvironment Global]
+Shared\EditModeDialogs.xml [AllowLoadEnvironment Global]
+Shared\EditModeManager.lua [AllowLoadEnvironment Global]
+Shared\EditModeManagerOverrides.lua [AllowLoadEnvironment Global]
+[Family]\EditModeManagerOverrides.lua [AllowLoadEnvironment Global]
+Shared\EditModeManager.xml [AllowLoadEnvironment Global]

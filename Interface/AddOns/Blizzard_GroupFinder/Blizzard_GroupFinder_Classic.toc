@@ -3,7 +3,7 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
 ## AllowLoad: game
-## AllowLoadGameType: tbc, wrath, cata, mists
+## AllowLoadGameType: wrath, cata, mists
 Classic\Constants.lua
 Classic\QueueUpdater.lua
 Classic\GroupFinderHelpers.lua [AllowLoadGameType  tbc, wrath, cata]

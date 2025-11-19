@@ -18,7 +18,16 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 end
 
 function KeybindingsOverrides.CreateBindingButtonSettings(layout)
-	-- No settings for Classic
+	-- Quick keybind
+	local function OnButtonClick(button, buttonName, down)
+		local skipTransitionBackToOpeningPanel = true;
+		SettingsPanel:Close(skipTransitionBackToOpeningPanel);
+		QuickKeybindFrame:Show();
+	end
+
+	local addSearchTags = true;
+	local initializer = CreateSettingsButtonInitializer("", SETTINGS_QUICK_KEYBIND_BUTTON, OnButtonClick, nil, addSearchTags);
+	layout:AddInitializer(initializer);
 end
 
 function KeybindingsOverrides.RunSettingsCallback(callback)

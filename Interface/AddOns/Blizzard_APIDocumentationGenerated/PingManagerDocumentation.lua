@@ -6,6 +6,15 @@ local PingManager =
 
 	Functions =
 	{
+		{
+			Name = "IsPingSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

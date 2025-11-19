@@ -60,6 +60,10 @@ local function GetAngleForModel(source, target)
 end
 
 function ScriptAnimatedModelSceneActorMixin:SetEffect(effectDescription, source, target, scaleMultiplier)
+	if not effectDescription then
+		return;
+	end
+
 	self:SetModelByFileID(effectDescription.visual);
 	
 	self:SetPitch(effectDescription.pitchRadians);

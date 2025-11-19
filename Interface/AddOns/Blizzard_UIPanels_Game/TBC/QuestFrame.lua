@@ -1,3 +1,6 @@
+
+UIPanelWindows["QuestFrame"] = { area = "left", pushable = 0, whileDead = 1 };
+
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y)
 	QuestModelScene:SetParent(parentFrame);
 	QuestModelScene:SetFrameLevel(600);

@@ -250,7 +250,7 @@ function PlayerTalentFrame_OnLoad(self)
 	self:RegisterEvent("PREVIEW_TALENT_POINTS_CHANGED");
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self:RegisterEvent("PET_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
@@ -398,7 +398,7 @@ function PlayerTalentFrame_OnEvent(self, event, ...)
 					PlayerTalentFrame_Update();
 				end
 			end
-		elseif (event == "LEARNED_SPELL_IN_TAB") then
+		elseif (event == "LEARNED_SPELL_IN_SKILL_LINE") then
 			-- Must update the Mastery bonus if you just learned Mastery
 		elseif (event == "BAG_UPDATE_DELAYED") then
 			PlayerTalentFrame_RefreshClearInfo();
@@ -671,15 +671,15 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 			local spellName, subSpellName = GetSpellInfo(talentName);
 			if ( spellName and not IsPassiveSpell(spellName) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
-					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+					ChatFrameUtil.InsertLink(spellName.."("..subSpellName..")");
 				else
-					ChatEdit_InsertLink(spellName);
+					ChatFrameUtil.InsertLink(spellName);
 				end
 			end
 		else
 			local link = GetTalentLink(self:GetID(), PlayerTalentFrame.inspect, PlayerTalentFrame.talentGroup);
 			if ( link ) then
-				ChatEdit_InsertLink(link);
+				ChatFrameUtil.InsertLink(link);
 			end
 		end
 	elseif ( TalentUIUtil.IsActiveSpecSelected() ) then

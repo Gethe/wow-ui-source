@@ -328,7 +328,7 @@ function PlayerTalentFrameTalent_OnClick(self, button)
 		local link = GetTalentLink(PanelTemplates_GetSelectedTab(PlayerTalentFrame), self:GetID(),
 			PlayerTalentFrame.inspect, PlayerTalentFrame.pet, PlayerTalentFrame.talentGroup, GetCVarBool("previewTalentsOption"));
 		if ( link ) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif ( selectedSpec and (TalentUIUtil.IsActiveSpecSelected() or selectedSpec.pet) ) then
 		-- only allow functionality if an active spec is selected
@@ -502,8 +502,6 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 				end
 				tab:SetText(name);
 				PanelTemplates_TabResize(tab, 0);
-				-- record the text width to see if we need to display a tooltip
-				tab.textWidth = tab:GetTextWidth();
 				-- record the tab widths for resizing later
 				TalentUIUtil.SetCachedWidthForTalentTab(i, PanelTemplates_GetTabWidth(tab));
 				totalTabWidth = totalTabWidth + TalentUIUtil.GetCachedTalentTabWidth(i);
@@ -511,7 +509,6 @@ function PlayerTalentFrame_UpdateTabs(playerLevel)
 				firstShownTab = firstShownTab or tab;
 			else
 				tab:Hide();
-				tab.textWidth = 0;
 			end
 		end
 	end

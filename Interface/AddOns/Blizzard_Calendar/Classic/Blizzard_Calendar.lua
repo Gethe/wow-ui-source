@@ -3225,6 +3225,7 @@ local function InitHourDropdown(self)
 
 	local width = 61;
 	self.HourDropdown:SetWidth(width);
+	self.HourDropdown.Text:SetJustifyH("CENTER");
 	self.HourDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CALENDAR_HOUR");
 
@@ -3249,6 +3250,7 @@ local function InitMinuteDropdown(self)
 
 	local width = 61;
 	self.MinuteDropdown:SetWidth(width);
+	self.MinuteDropdown.Text:SetJustifyH("CENTER");
 	self.MinuteDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CALENDAR_MINUTE");
 

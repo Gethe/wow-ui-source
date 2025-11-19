@@ -476,6 +476,17 @@ function GetOrCreateTableEntryByCallback(table, key, callback)
 	return currentValue, isNewValue;
 end
 
+function GetOrCreateTableEntryByMethod(table, key, method, owner)
+	local currentValue = table[key];
+	local isNewValue = (currentValue == nil);
+	if isNewValue then
+		currentValue = method(owner, key);
+		table[key] = currentValue;
+	end
+
+	return currentValue, isNewValue;
+end
+
 function GetRandomArrayEntry(array)
 	return array[math.random(1, #array)];
 end

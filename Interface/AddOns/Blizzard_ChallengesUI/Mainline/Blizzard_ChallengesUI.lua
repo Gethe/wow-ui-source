@@ -1092,8 +1092,8 @@ function DungeonScoreInfoMixin:OnClick()
 	if( IsModifiedClick("CHATLINK")) then
 		local dungeonScore = C_ChallengeMode.GetOverallDungeonScore();
 		local link = GetDungeonScoreLink(dungeonScore, UnitName("player"));
-		if not ChatEdit_InsertLink(link) then
-			ChatFrame_OpenChat(link);
+		if not ChatFrameUtil.InsertLink(link) then
+			ChatFrameUtil.OpenChat(link);
 		end
 	end
 end

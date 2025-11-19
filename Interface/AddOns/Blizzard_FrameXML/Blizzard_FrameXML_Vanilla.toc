@@ -8,12 +8,11 @@
 Shared\Localization.lua
 CustomBindingManager.lua
 CustomBindingHandler.lua
-Classic\SecureTemplatesBase.xml
-Classic\SecureTemplates.lua
-Classic\SecureTemplates_Shared.lua
+SecureTemplatesBase.xml
+SecureTemplates.lua
 SecureStateDriver.lua
 SecureHoverDriver.lua
-Classic\SecureTemplates.xml
+SecureTemplates.xml
 SecureHandlerTemplates.xml
 SecureGroupHeaders.xml
 Classic\NavigationBar.lua

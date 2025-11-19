@@ -1004,6 +1004,7 @@ function SecureAuraHeader_Update(self)
 	end
 	local sortDirection = self:GetAttribute("sortDirection");
 	local separateOwn = tonumber(self:GetAttribute("separateOwn")) or 0;
+	local maxAuraCount = tonumber(self:GetAttribute("maxAuraCount"));
 	if ( separateOwn > 0 ) then
 		separateOwn = 1;
 	elseif (separateOwn < 0 ) then
@@ -1051,58 +1052,26 @@ function SecureAuraHeader_Update(self)
 			weaponPosition = #sortingTable + 1;
 		end
 
-		local i = 1;
-		if (AuraUtil.ForEachAura) then
-			-- Mainline iteration-style.
-			AuraUtil.ForEachAura(unit, fullFilter, nil, function(...)
-				local aura, _, duration = freshTable();
-				aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _ = ...;
-				aura.filter = fullFilter;
-				aura.index = i;
-				aura.shouldConsolidate = false; -- Deprecated for mainline.
-				local targetList = sortingTable;
-				if ( consolidateTable and aura.shouldConsolidate ) then
-					if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
-						targetList = consolidateTable;
-					end
+		-- Manually counting because indexed iteration over the next table produces secrets,
+		-- which explode when fed into SetAttribute.
+		local index = 1;
+		for _, auraData in ipairs(C_UnitAuras.GetUnitAuras(unit, fullFilter, maxAuraCount)) do
+			local aura, _, duration = freshTable();
+			aura.name = auraData.name;
+			duration = auraData.duration;
+			aura.expires = auraData.expirationTime;
+			aura.caster = auraData.caster;
+			aura.filter = fullFilter;
+			aura.index = index;
+			aura.shouldConsolidate = false; -- Deprecated. Does this mean everything around consolidateTable should be removed...?
+			local targetList = sortingTable;
+			if ( consolidateTable and aura.shouldConsolidate ) then
+				if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
+					targetList = consolidateTable;
 				end
-				tinsert(targetList, aura);
-				i = i + 1;
-				return false;
-			end);
-		else
-			-- Classic iteration-style. (TODO: Unify me!)
-			repeat
-				local aura, _, duration = freshTable();
-				if C_UnitAuras then
-					local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, fullFilter);
-					if(auraData == nil) then 
-						aura.name = nil;
-					else
-						aura.name = auraData.name;
-						duration = auraData.duration;
-						aura.expires = auraData.expirationTime;
-						aura.caster = auraData.sourceUnit;
-						aura.shouldConsolidate = #auraData.points > 0;
-					end
-				else
-					aura.name, _, _, _, duration, aura.expires, aura.caster, _, _, _, _, _, _, _, _, aura.shouldConsolidate = UnitAura(unit, i, fullFilter);
-				end
-				if ( aura.name ) then
-					aura.filter = fullFilter;
-					aura.index = i;
-					local targetList = sortingTable;
-					if ( consolidateTable and aura.shouldConsolidate ) then
-						if ( not aura.expires or duration > consolidateDuration or (aura.expires - time >= max(consolidateThreshold, duration * consolidateFraction)) ) then
-							targetList = consolidateTable;
-						end
-					end
-					tinsert(targetList, aura);
-				else
-					releaseTable(aura);
-				end
-				i = i + 1;
-			until ( not aura.name );
+			end
+			tinsert(targetList, aura);
+			index = index + 1;
 		end
 	end
 	if ( includeWeapons and not weaponPosition ) then

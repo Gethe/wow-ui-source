@@ -143,7 +143,7 @@ end
 function CommunitiesGuildRewardsButton_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementID, itemID = GetGuildRewardInfo(self.index);
-		ChatEdit_LinkItem(itemID);
+		ChatFrameUtil.LinkItem(itemID);
 	elseif (button == "LeftButton" and IsControlKeyDown()) then
 		local achievementID = GetGuildRewardInfo(self.index);
 		if(achievementID and achievementID > 0) then
@@ -157,7 +157,7 @@ function CommunitiesGuildRewardsButton_OnClick(self, button)
 			rootDescription:CreateTitle(itemName);
 
 			rootDescription:CreateButton(GUILD_NEWS_LINK_ITEM, function()
-				ChatEdit_LinkItem(itemID);
+				ChatFrameUtil.LinkItem(itemID);
 			end);
 
 			if achievementID and achievementID > 0 then

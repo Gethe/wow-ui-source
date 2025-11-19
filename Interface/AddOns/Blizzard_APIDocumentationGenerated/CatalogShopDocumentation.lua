@@ -204,6 +204,11 @@ local CatalogShop =
 			Name = "OpenCatalogShopInteraction",
 			Type = "Function",
 
+			Arguments =
+			{
+				{ Name = "shouldAllowMovement", Type = "bool", Nilable = false, Default = false },
+			},
+
 			Returns =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
@@ -459,6 +464,8 @@ local CatalogShop =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
+				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
+				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
 			},
 		},
 		{

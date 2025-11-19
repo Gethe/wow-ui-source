@@ -138,6 +138,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "IsPartyWalkIn",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPartyWalkIn", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetLootMethod",
 			Type = "Function",
 

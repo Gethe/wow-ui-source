@@ -599,8 +599,8 @@ function ScorePlayer_OnMouseUp(self, mouseButton)
 
 			UnitPopup_OpenMenu("WORLD_STATE_SCORE", contextData);
 		end
-	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
-		ChatEdit_InsertLink(self.text:GetText());
+	elseif ( mouseButton == "LeftButton" and IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
+		ChatFrameUtil.InsertLink(self.text:GetText());
 	end
 end
 

@@ -8,11 +8,11 @@ QUESTINFO_FADE_IN = 1;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_ID = 0;
 QUEST_FRAME_AUTO_ACCEPT_QUEST_START_ITEM_ID = 0;
 
-local QUEST_FRAME_MODEL_SCENE_ID = 865;
+QUEST_FRAME_MODEL_SCENE_ID = 865;
 
 local QUEST_FRAME_DIMENSIONS = {
 	[LE_EXPANSION_CLASSIC] = {['width'] = 384, ['height'] = 512},
-	[LE_EXPANSION_BURNING_CRUSADE] = {['width'] = 338, ['height'] = 496},
+	[LE_EXPANSION_BURNING_CRUSADE] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_WRATH_OF_THE_LICH_KING] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_CATACLYSM] = {['width'] = 338, ['height'] = 424},
 	[LE_EXPANSION_MISTS_OF_PANDARIA] = {['width'] = 338, ['height'] = 496},
@@ -37,14 +37,10 @@ function QuestFrame_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");
 	self:RegisterEvent("PORTRAITS_UPDATED");
-	self:RegisterEvent("LEARNED_SPELL_IN_TAB");
+	self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE");
 
 	local dimensions = GetQuestFrameSize();
 	QuestFrame:SetSize(dimensions.width, dimensions.height);
-
-	if(GetClassicExpansionLevel() == LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
-		QuestFramePortrait:GetParent():SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", -4, 8);
-	end
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -106,7 +102,7 @@ function QuestFrame_OnEvent(self, event, ...)
 			QuestFrameGreetingPanel_OnShow(QuestFrameGreetingPanel);
 		end
 		return;
-	elseif ( event == "LEARNED_SPELL_IN_TAB" ) then
+	elseif ( event == "LEARNED_SPELL_IN_SKILL_LINE" ) then
 		if ( QuestInfoFrame.rewardsFrame:IsVisible() ) then
 			QuestInfo_ShowRewards();
 			QuestDetailScrollFrameScrollBar:SetValue(0);

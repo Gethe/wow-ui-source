@@ -92,7 +92,7 @@ function SpellBookFrameMixin:OnShow()
 	end
 
 	-- Show multibar slots
-	MultiActionBar_ShowAllGrids();
+	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 
 	self:PlayOpenSound();
@@ -148,7 +148,7 @@ function SpellBookFrameMixin:OnHide()
 	end
 
 	-- Hide multibar slots
-	MultiActionBar_HideAllGrids();
+	MultiActionBar_HideAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	
 	-- Do this last, it can cause taint.
 	UpdateMicroButtons();
@@ -239,18 +239,18 @@ function SpellButtonMixin:OnModifiedClick(button)
 			local spellName, subSpellName = GetSpellBookItemName(slot, SpellBookFrame.bookType);
 			if ( spellName and not IsPassiveSpell(slot, SpellBookFrame.bookType) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
-					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+					ChatFrameUtil.InsertLink(spellName.."("..subSpellName..")");
 				else
-					ChatEdit_InsertLink(spellName);
+					ChatFrameUtil.InsertLink(spellName);
 				end
 			end
 			return;
 		else
 			local tradeSkillLink, tradeSkillSpellID = GetSpellTradeSkillLink(slot, SpellBookFrame.bookType);
 			if ( tradeSkillSpellID ) then
-				ChatEdit_InsertLink(tradeSkillLink);
+				ChatFrameUtil.InsertLink(tradeSkillLink);
 			else
-				ChatEdit_InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
+				ChatFrameUtil.InsertLink(GetSpellLink(slot, SpellBookFrame.bookType));
 			end
 			return;
 		end
@@ -454,31 +454,6 @@ function SpellBook_GetCurrentPage()
 		maxPages = 1;
 	end
 	return currentPage, maxPages;
-end
-
-local maxShines = 1;
-local shineGet = {}
-function SpellBook_GetAutoCastShine ()
-	local shine = shineGet[1];
-	
-	if ( shine ) then
-		tremove(shineGet, 1);
-	else
-		shine = CreateFrame("FRAME", "AutocastShine" .. maxShines, SpellBookFrame, "SpellBookShineTemplate");
-		maxShines = maxShines + 1;
-	end
-	
-	return shine;
-end
-
-function SpellBook_ReleaseAutoCastShine (shine)
-	if ( not shine ) then
-		return;
-	end
-	
-	shine:Hide();
-	AutoCastShine_AutoCastStop(shine);
-	tinsert(shineGet, shine);
 end
 
 -------------------------------------------------------------------

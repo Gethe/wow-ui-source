@@ -18,6 +18,17 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "FindAssistedCombatActionButtons",
+			Type = "Function",
+			MayReturnNothing = true,
+			Documentation = { "Returns the list of action bar slots that contain the Assisted Combat action spell." },
+
+			Returns =
+			{
+				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "FindPetActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -49,6 +60,20 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetItemActionOnEquipSpellID",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "onEquipSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -61,6 +86,43 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "slots", Type = "table", InnerType = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetProfessionQuality",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "quality", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSpell",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAssistedCombatActionButtons",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasButtons", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -103,6 +165,21 @@ local ActionBarFrame =
 			Returns =
 			{
 				{ Name = "hasSpellActionButtons", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAssistedCombatAction",
+			Type = "Function",
+			Documentation = { "Returns whether the given action button contains the Assisted Combat action spell." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAssistedCombatAction", Type = "bool", Nilable = false },
 			},
 		},
 		{

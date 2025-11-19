@@ -98,25 +98,25 @@
 	</Binding>
 	<!-- Chat frame bindings header="CHAT" -->
 	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("");
+		ChatFrameUtil.OpenChat("");
 	</Binding>
 	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("/");
+		ChatFrameUtil.OpenChat("/");
 	</Binding>
 	<Binding name="CHATPAGEUP" category="BINDING_HEADER_CHAT">
-		ChatFrame_ChatPageUp();
+		ChatFrameUtil.ChatPageUp();
 	</Binding>
 	<Binding name="CHATPAGEDOWN" category="BINDING_HEADER_CHAT">
-		ChatFrame_ChatPageDown();
+		ChatFrameUtil.ChatPageDown();
 	</Binding>
 	<Binding name="CHATBOTTOM" category="BINDING_HEADER_CHAT">
-		ChatFrame_ScrollToBottom();
+		ChatFrameUtil.ScrollToBottom();
 	</Binding>
 	<Binding name="REPLY" category="BINDING_HEADER_CHAT">
-		ChatFrame_ReplyTell();
+		ChatFrameUtil.ReplyTell();
 	</Binding>
 	<Binding name="REPLY2" category="BINDING_HEADER_CHAT">
-		ChatFrame_ReplyTell2();
+		ChatFrameUtil.ReplyTell2();
 	</Binding>
 	<Binding name="COMBATLOGPAGEUP" category="BINDING_HEADER_CHAT">
 		ChatFrame2:PageUp();

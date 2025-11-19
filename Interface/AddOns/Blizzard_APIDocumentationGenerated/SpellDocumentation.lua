@@ -319,6 +319,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsPressHoldReleaseSpell",
+			Type = "Function",
+			Documentation = { "Returns true if the spell is an 'empower' type spell that is cast by pressing and holding, with the on-release cast typically being affected by time held" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPressHoldRelease", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsRangedAutoAttackSpell",
 			Type = "Function",
 			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
@@ -459,6 +474,20 @@ local Spell =
 			},
 		},
 		{
+			Name = "SpellIsPriorityAura",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isPriorityAura", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TargetSpellIsEnchanting",
 			Type = "Function",
 
@@ -544,6 +573,15 @@ local Spell =
 
 	Tables =
 	{
+		{
+			Name = "PowerTypeChange",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "SpellInfo",
 			Type = "Structure",

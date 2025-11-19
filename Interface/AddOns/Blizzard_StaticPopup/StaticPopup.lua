@@ -94,6 +94,7 @@ function StaticPopup_UpdateSubText(dialog, dialogInfo)
 	end
 end
 
+-- If you're considering using this, consider using FrameUtil's SetAlternateTopLevelParent instead
 function StaticPopup_SetFullScreenFrame(frame)
 	if frame then
 		fullscreenFrameOverride = frame;
@@ -410,7 +411,7 @@ end
 
 function StaticPopup_ResizeShownDialogs()
 	for _, dialog in ipairs(shownDialogFrames) do
-		dialog:Resize(dialog.which);
+		FunctionUtil.SafeInvokeMethod(dialog, "Resize", dialog.which);
 	end
 end
 
@@ -989,4 +990,7 @@ end);
 
 EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", function()
 	StaticPopup_ResizeShownDialogs();
+end);
+EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function ()
+	StaticPopup_ReparentDialogs();
 end);

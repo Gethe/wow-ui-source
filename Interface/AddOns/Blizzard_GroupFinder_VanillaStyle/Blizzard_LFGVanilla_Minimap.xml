@@ -15,7 +15,7 @@
 	<Button name="LFGMinimapFrame" parent="MinimapBackdrop" hidden="true" inherits="MiniMapButtonTemplate" mixin="LFGMinimapMixin">
 		<Size x="33" y="33"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" x="33" y="-4"/>
+			<Anchor point="TOPLEFT" x="25" y="-28"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY">

@@ -1,3 +1,6 @@
+
+UIPanelWindows["QuestLogFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 12, bottomClampOverride = 140+12, width = 353, height = 424, whileDead = 1 };
+
 QUESTS_DISPLAYED = 6;
 MAX_OBJECTIVES = 10;
 QUESTLOG_QUEST_HEIGHT = 16;
@@ -472,13 +475,13 @@ end
 function QuestLogTitleButton_OnClick(self, button)
 	local questName = self:GetText();
 	local questIndex = self:GetID() + FauxScrollFrame_GetOffset(QuestLogListScrollFrame);
-	if ( IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() ) then
+	if ( IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() ) then
 		-- If header then return
 		if ( self.isHeader ) then
 			return;
 		end
 		-- Otherwise trim leading whitespace and put it into chat
-		ChatEdit_InsertLink(gsub(self:GetText(), " *(.*)", "%1"));
+		ChatFrameUtil.InsertLink(gsub(self:GetText(), " *(.*)", "%1"));
 	elseif ( IsShiftKeyDown() ) then
 		-- If header then return
 		if ( self.isHeader ) then
@@ -575,7 +578,7 @@ function QuestLogRewardItem_OnClick(self)
 			link = GetSpellLink(self:GetID());
 		end
 
-		if ( ChatEdit_InsertLink(link) ) then
+		if ( ChatFrameUtil.InsertLink(link) ) then
 			return true;
 		elseif ( SocialPostFrame and Social_IsShown() and Social_InsertLink(link) ) then
 			return true;

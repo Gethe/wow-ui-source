@@ -207,7 +207,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local searchResultID, newStatus, oldStatus, kstringGroupName = ...;
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
-			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		if ( not IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
@@ -1814,7 +1814,7 @@ function LFGListApplicantMember_OnMouseDown(self)
 		rootDescription:CreateTitle(name or "");
 
 		local whisperButton = rootDescription:CreateButton(WHISPER, function()
-			ChatFrame_SendTell(name);
+			ChatFrameUtil.SendTell(name);
 		end);
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_PLAYER, function()
@@ -2613,7 +2613,7 @@ function LFGListSearchEntry_CreateContextMenu(self)
 		rootDescription:CreateTitle(searchResultInfo.name);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 
 		if not searchResultInfo.leaderName then

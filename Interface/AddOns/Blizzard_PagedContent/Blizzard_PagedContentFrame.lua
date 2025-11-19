@@ -31,7 +31,7 @@ PagedContentFrameBaseMixin:GenerateCallbackEvents(
 	}
 );
 
-function PagedContentFrameBaseMixin:OnLoad()
+function PagedContentFrameBaseMixin:OnPagedContentFrameLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	self.cachedTemplateInfos = {};
@@ -134,6 +134,11 @@ function PagedContentFrameBaseMixin:SetViewsPerPage(viewsPerPage, retainCurrentP
 	end
 end
 
+function PagedContentFrameBaseMixin:UpdateLayouts()
+	self:UpdateElementViewDistribution();
+	self:DisplayViewsForCurrentPage();
+end
+
 function PagedContentFrameBaseMixin:InternalRemoveDataProvider(skipPageReset)
 	if self.dataProvider then
 		self.dataProvider:UnregisterCallback(DataProviderMixin.Event.OnSizeChanged, self);
@@ -197,6 +202,30 @@ function PagedContentFrameBaseMixin:GoToElementByPredicate(predicateFunc)
 				self.PagingControls:SetCurrentPage(pageForView);
 				local templateInfo = self:InternalGetTemplateInfo(elementData.templateKey);
 				return self:GetElementFrameByPredicateAndTemplate(predicateFunc, templateInfo.template, elementData.templateKey);
+			end
+		end
+	end
+
+	return nil;
+end
+
+-- Returns the elementData that matches the specified predicateFunc(elementData)
+-- If a frame for that elementData is currently visible on the active page, also returns that frame
+function PagedContentFrameBaseMixin:TryGetElementAndFrameByPredicate(predicateFunc)
+	if not self.viewDataList then
+		return nil;
+	end
+
+	for viewDataIndex, viewData in ipairs(self.viewDataList) do
+		for elementIndex, elementData in ipairs(viewData) do
+			if not elementData.isSpacer and predicateFunc(elementData) then
+				local pageForView = self:GetPageForViewDataIndex(viewDataIndex);
+				if self.PagingControls:GetCurrentPage() == pageForView then
+					local templateInfo = self:InternalGetTemplateInfo(elementData.templateKey);
+					return elementData, self:GetElementFrameByPredicateAndTemplate(predicateFunc, templateInfo.template, elementData.templateKey);
+				else
+					return elementData;
+				end
 			end
 		end
 	end

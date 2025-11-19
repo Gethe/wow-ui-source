@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="TimeManagerFrame" toplevel="true" parent="UIParent" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ButtonFrameTemplate">
-		<Size x="220" y="240"/>
+		<Size x="192" y="240"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" x="-10" y="-190"/>
+			<Anchor point="TOPRIGHT" x="-5" y="-183"/>
 		</Anchors>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="-1">
@@ -65,9 +65,9 @@
 				</Frames>
 			</Frame>
 			<Frame parentKey="AlarmTimeFrame" name="TimeManagerAlarmTimeFrame">
-				<Size x="145" y="52"/>
+				<Size x="145" y="46"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="12" y="-65"/>
+					<Anchor point="TOPLEFT" x="12" y="-68"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -79,19 +79,19 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<DropdownButton parentKey="HourDropdown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="HourDropdown" inherits="WowStyle1ThinDropdownTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmTimeLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
 						</Anchors>
 					</DropdownButton>
-					<DropdownButton parentKey="MinuteDropdown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="MinuteDropdown" inherits="WowStyle1ThinDropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.HourDropdown" relativePoint="RIGHT" x="5" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.HourDropdown" relativePoint="RIGHT" x="2" y="0"/>
 						</Anchors>
 					</DropdownButton>
-					<DropdownButton parentKey="AMPMDropdown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="AMPMDropdown" inherits="WowStyle1ThinDropdownTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.MinuteDropdown" relativePoint="RIGHT" x="5" y="0"/>
+							<Anchor point="LEFT" relativeKey="$parent.MinuteDropdown" relativePoint="RIGHT" x="2" y="0"/>
 						</Anchors>
 					</DropdownButton>
 				</Frames>
@@ -99,7 +99,7 @@
 			<Frame name="TimeManagerAlarmMessageFrame">
 				<Size x="160" y="40"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.AlarmTimeFrame.HourDropdown" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AlarmTimeFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -112,7 +112,7 @@
 				</Layers>
 				<Frames>
 					<EditBox name="TimeManagerAlarmMessageEditBox" inherits="InputBoxTemplate" autoFocus="false" letters="32" historyLines="1">
-						<Size x="190" y="20"/>
+						<Size x="160" y="20"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="TimeManagerAlarmMessageLabel" relativePoint="BOTTOMLEFT" x="4" y="-4"/>
 						</Anchors>
@@ -139,7 +139,7 @@
 			<CheckButton name="TimeManagerMilitaryTimeCheck" inherits="UICheckButtonTemplate">
 				<Size x="24" y="24"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="185" y="-190"/>
+					<Anchor point="BOTTOMRIGHT" x="-11" y="26"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
@@ -175,10 +175,10 @@
 		</Scripts>
 	</Frame>
 	<!-- Minimap button to access the TimeManagerButton -->
-	<Button name="TimeManagerClockButton" parent="Minimap">
+	<Button name="TimeManagerClockButton" parent="MinimapBackdrop">
 		<Size x="60" y="28"/>
 		<Anchors>
-			<Anchor point="CENTER" x="0" y="-75"/>
+			<Anchor point="CENTER" x="0" y="-68"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="8" right="5" top="3" bottom="3"/>

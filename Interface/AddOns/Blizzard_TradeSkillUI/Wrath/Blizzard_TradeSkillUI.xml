@@ -178,9 +178,9 @@
 				<Scripts>
 					<OnClick>
 						local link=GetTradeSkillListLink();
-						if (not ChatEdit_InsertLink(link) ) then
-							ChatEdit_GetLastActiveWindow():Show();
-							ChatEdit_InsertLink(link);
+						if (not ChatFrameUtil.InsertLink(link) ) then
+							ChatFrameUtil.GetLastActiveWindow():Show();
+							ChatFrameUtil.InsertLink(link);
 						end
 					</OnClick>
 					<OnEnter>

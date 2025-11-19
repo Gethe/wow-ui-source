@@ -60,7 +60,7 @@
 	<Frame name="BattlefieldMapFrame" parent="UIParent" inherits="MapCanvasFrameTemplate" mixin="BattlefieldMapMixin">
 		<Size x="300" y="200"/>
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="BattlefieldMapTab" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+			<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
 		</Anchors>
 		<Frames>
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">

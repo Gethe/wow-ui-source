@@ -60,6 +60,7 @@ local Instance =
 				{ Name = "isLFR", Type = "bool", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = true },
 				{ Name = "maxPlayers", Type = "number", Nilable = true },
+				{ Name = "isUserSelectable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -225,6 +226,7 @@ local Instance =
 				{ Name = "isLFR", Type = "bool", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = true },
 				{ Name = "maxPlayers", Type = "number", Nilable = true },
+				{ Name = "isUserSelectable", Type = "bool", Nilable = false },
 			},
 		},
 		{

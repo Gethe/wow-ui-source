@@ -1,35 +1,51 @@
 ## Title: Blizzard_ActionBar
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_FrameXML, Blizzard_UnitFrame, Blizzard_ChatFrame, Blizzard_HelpPlate
-## LoadFirst: 1
+## Dependencies: Blizzard_QuickKeybind, Blizzard_UIParent, Blizzard_EditMode, Blizzard_FrameXML, Blizzard_TextStatusBar, Blizzard_Flyout, Blizzard_Minimap, Blizzard_MicroMenu
 ## AllowLoadGameType: mists
 ## AllowLoad: Game
-ActionButtonUtil.lua
-Shared\MainMenuBarMicroButtons.lua
-Classic\MainMenuBarMicroButtons.lua
-Mists\MainMenuBarMicroButtons.lua
-Cata\MainMenuBarMicroButtons.xml
-Mists\MainMenuBarMicroButtons.xml
-Classic\MainMenuBar.lua
-Classic\MainMenuBar.xml
-Classic\ActionButtonTemplate.xml
-Classic\ActionBarFrame.xml
-Classic\MultiActionBars.xml
-TBC\StanceBar.lua
-TBC\StanceBar.xml
-Classic\OverrideActionBar.lua
-Classic\OverrideActionBar.xml
-Classic\PossessActionBar.lua
-Classic\PossessActionBar.xml
-Classic\PetActionBarFrame.lua
-Classic\PetActionBarFrame.xml
-Classic\MultiCastActionBarFrame.lua
-Classic\MultiCastActionBarFrame.xml
-Cata\SpellFlyout.lua
-Cata\SpellFlyout.xml
-Cata\ExtraActionBar.lua
-Cata\ExtraActionBar.xml
+Shared\ActionButtonUtil.lua
+Classic\ActionButtonUtilOverrides.lua
 Shared\ActionButtonSpellAlerts.lua
 Shared\ActionButtonSpellAlerts.xml
-Classic\Localization.lua
+Shared\StatusTrackingBar.lua
+Classic\StatusTrackingBarTemplate.xml
+Shared\ExpBar.lua
+Classic\ExpBarOverrides.lua
+Classic\ExpBar.xml
+Shared\ReputationBar.lua
+Classic\ReputationBarOverrides.lua
+Shared\ReputationBar.xml
+Classic\MainMenuBar.lua
+Classic\MainMenuBar.xml
+Shared\ActionButton.lua
+Shared\ActionButtonComponentTemplate.xml
+Classic\ActionButtonTemplate.xml
+Shared\ActionBar.lua
+Shared\ActionBarTemplate.xml
+Shared\MultiActionBars.lua
+Shared\MultiActionBars.xml
+Shared\MainActionBar.lua
+Classic\MainActionBarOverrides.lua
+Classic\MainActionBar.xml
+Shared\StatusTrackingManager.lua
+Classic\StatusTrackingManagerOverrides.lua
+Classic\StatusTrackingBar.xml
+Shared\StanceBar.lua
+Classic\StanceBarOverrides.lua
+Classic\StanceBar.xml
+Shared\ExtraActionBar.lua
+Shared\ExtraActionBar.xml
+Shared\PossessActionBar.lua
+Classic\PossessActionBar.xml
+Shared\PetActionBar.lua
+Classic\PetActionBar.xml
+Shared\MultiCastActionBarFrame.lua
+Shared\MultiCastActionBarFrame.xml
+Shared\SpellFlyout.lua
+Shared\SpellFlyout.xml
+Shared\ExtraActionBar.lua
+Shared\ExtraActionBar.xml
+Shared\ActionButtonSpellAlerts.lua
+Shared\ActionButtonSpellAlerts.xml
+Shared\Localization.lua

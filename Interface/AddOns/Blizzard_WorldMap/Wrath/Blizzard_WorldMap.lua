@@ -39,7 +39,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 
 		WorldMapFrame:ClearAllPoints();
 		self.WorldMapLevelDropDown:ClearAllPoints();
-		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, 0);
+		WorldMapFrame:SetPoint("TOPLEFT", WorldMapScreenAnchor, 0, -12);
 		WorldMapFrame:SetUserPlaced(true);
 
 		WorldMapFrame_SetOpacity(GetCVar("worldMapOpacity"));

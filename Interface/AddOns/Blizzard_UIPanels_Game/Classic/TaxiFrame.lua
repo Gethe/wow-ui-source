@@ -1,4 +1,6 @@
 
+UIPanelWindows["TaxiFrame"] = { area = "left", pushable = 0, xoffset = -16, yoffset = 12, bottomClampOverride = 140+12, width = 353, height = 424, showFailedFunc = CloseTaxiMap };
+
 TAXI_MAP_WIDTH = 316;
 TAXI_MAP_HEIGHT = 352;
 NUM_TAXI_BUTTONS = 0;

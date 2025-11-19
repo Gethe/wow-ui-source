@@ -426,7 +426,7 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	local inviteType = GetDisplayedInviteType(guid);
 	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
 		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
-			ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 			return;
 		end
 
@@ -556,7 +556,7 @@ function FriendsTabHeaderMixin:OnLoad()
 		radio:SetResponder(SetSelected);
 	end
 
-	self.StatusDropdown:SetWidth(61);
+	self.StatusDropdown:SetWidth(48);
 	self.StatusDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_FRIENDS_STATUS");
 
@@ -995,6 +995,8 @@ function WhoList_Update()
 		WhoFrameDropdown:SetWidth(95);
 	end
 
+	WhoFrameDropdown.Text:SetJustifyH("LEFT");
+
 	-- ScrollFrame update
 	FauxScrollFrame_Update(WhoListScrollFrame, numWhos, WHOS_TO_DISPLAY, FRIENDS_FRAME_WHO_HEIGHT );
 
@@ -1117,10 +1119,10 @@ function FriendsFrameSendMessageButton_OnClick(self)
 	local name;
 	if ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW ) then
 		name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-		ChatFrame_SendTell(name);
+		ChatFrameUtil.SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local bnetIDAccount, tokenizedName = BNGetFriendInfo(FriendsFrame.selectedFriend);
-		ChatFrame_SendBNetTell(tokenizedName);
+		ChatFrameUtil.SendBNetTell(tokenizedName);
 	end
 	if ( name ) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -1173,7 +1175,7 @@ end
 
 function FriendsFrame_SendMessage()
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-	ChatFrame_SendTell(name);
+	ChatFrameUtil.SendTell(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
@@ -2694,6 +2696,7 @@ function GuildControlPopupFrameDropdown_OnLoad(self)
 	WowStyle1DropdownMixin.OnLoad(self);
 
 	self:SetWidth(110);
+	self.Text:SetJustifyH("LEFT");
 
 	local function IsSelected(i)
 		return GuildControlGetRank() == i;

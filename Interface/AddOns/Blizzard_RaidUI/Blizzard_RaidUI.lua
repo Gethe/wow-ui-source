@@ -10,6 +10,8 @@ RAID_PULLOUT_POSITIONS = {};
 RAID_SINGLE_POSITIONS = {};
 MAX_RAID_AURAS = 4;
 
+TARGET_UPDATE_TIMER = 0.1;
+
 RAID_CLASS_BUTTONS = { };
 do
 	-- fill in the table
@@ -678,7 +680,7 @@ function RaidPullout_ReadyCheckFinished(pulloutFrame)
 end
 
 function RaidPullout_ReadyCheckFinishFunc(pulloutButton)
-	RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pulloutButton:GetParent().showBuffs);
+	AuraUtil.RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pulloutButton:GetParent().showBuffs);
 end
 
 function RaidPullout_GeneratePulloutFrame(fileName, class)
@@ -757,14 +759,16 @@ function RaidPullout_UpdateTarget(pullOutFrame, pullOutButton, unit, which)
 				if ( color ) then
 					name:SetVertexColor(color.r, color.g, color.b);
 				end
+
+				statusBar:SetStatusBarColor(0, 1.0, 0);
 			else
 				name:SetVertexColor(1.0, 0.82, 0);
+				statusBar:SetStatusBarColor(UnitSelectionColor(unit));
 			end
 
-			statusBar:SetStatusBarColor(UnitSelectionColor(unit));
 			name:Show();
 
-			if ( which == "TargetTarget" ) then
+			if ( which == "Target" or which == "TargetTarget" ) then
 				local clearButton = _G[pullOutButton..which.."ClearButton"];
 				if (clearButton) then
 					SecureUnitButton_OnLoad(clearButton, unit);
@@ -805,7 +809,7 @@ end
 function RaidPullout_OnUpdate(self, elapsed)
 	if ( _G[self:GetName().."Target"]:IsVisible() ) then
 		if ( not self.timer ) then
-			self.timer = .25;
+			self.timer = TARGET_UPDATE_TIMER;
 		elseif ( self.timer < 0 ) then
 			local parent = self:GetParent():GetName();
 			local frame = self:GetName();
@@ -813,7 +817,7 @@ function RaidPullout_OnUpdate(self, elapsed)
 			if ( self:GetParent().showTargetTarget ) then
 				RaidPullout_UpdateTarget(parent, frame, self.unit.."targettarget", "TargetTarget");
 			end
-			self.timer = .25;
+			self.timer = TARGET_UPDATE_TIMER;
 		else
 			self.timer = self.timer - elapsed;
 		end
@@ -864,7 +868,7 @@ function RaidPullout_Update(pullOutFrame)
 		for i=index, numPulloutEntries do
 			pulloutButton = CreateFrame("Frame", pullOutFrame:GetName().."Button"..i, pullOutFrame, "RaidPulloutButtonTemplate");
 			if ( i == 1 ) then
-				pulloutButton:SetPoint("TOP", pullOutFrame, "TOP", 1, -11);
+				pulloutButton:SetPoint("TOP", pullOutFrame, "TOP", 0, -11);
 			else
 				pulloutButton:SetPoint("TOP", pullOutFrame:GetName().."Button"..(i-1), "BOTTOM", 0, -8);
 			end
@@ -968,7 +972,7 @@ function RaidPullout_Update(pullOutFrame)
 				_G[pulloutButton:GetName().."ReadyCheck"]:Hide();
 
 				-- Handle auras if ready check is hidden
-				RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pullOutFrame.showBuffs);
+				AuraUtil.RefreshAuras(pulloutButton, pulloutButton.unit, MAX_RAID_AURAS, "Aura", true, pullOutFrame.showBuffs);
 			end
 
 			--Handle vehicle indicator
@@ -1018,7 +1022,7 @@ function RaidPulloutButton_OnEvent(self, event, ...)
 		local arg1 = ...;
 		if ( arg1 == self.unit ) then
 			if ( not _G[self:GetName().."ReadyCheck"]:IsShown() ) then
-				RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
+				AuraUtil.RefreshAuras(self, self.unit, MAX_RAID_AURAS, "Aura", true, self:GetParent().showBuffs);
 			end
 		end
 	elseif (( event == "UNIT_ENTERED_VEHICLE" ) or ( event == "UNIT_EXITED_VEHICLE" )) then
@@ -1092,11 +1096,7 @@ function RaidPulloutStopMoving(frame)
 	if ( frame ) then
 		frame:StopMovingOrSizing();
 		frame:SetFrameStrata("BACKGROUND");
-		frame:ClearAllPoints();
 
-		local x, _ = frame:GetCenter();
-		local y = frame:GetTop();
-		frame:SetPoint("TOP", nil, "BOTTOMLEFT", x, y);
 		ValidateFramePosition(frame, 25);
 		-- Save the end positions
 		RaidPullout_SaveFrames(frame);

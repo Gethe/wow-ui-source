@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+<!--
+*******************************************************************************
+	Main Menu Frame Templates
+
+	Used by the "Esc key" GameMenu and GlueMenu.
+*******************************************************************************
+-->
+	<Button name="MainMenuFrameButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+		<Size x="144" y="21"/>
+		<NormalFont style="GameFontHighlight"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
+	</Button>
+	
+	<Frame name="MainMenuFrameTemplate" mixin="MainMenuFrameMixin" inherits="VerticalLayoutFrame" toplevel="true" frameStrata="DIALOG" enableMouse="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="MainMenuFrameButtonTemplate" type="string"/>
+
+			<KeyValue key="topPadding" value="32" type="number"/>
+			<KeyValue key="bottomPadding" value="28" type="number"/>
+			<KeyValue key="leftPadding" value="28" type="number"/>
+			<KeyValue key="rightPadding" value="28" type="number"/>
+			<KeyValue key="spacing" value="0" type="number"/>
+
+			<!-- 
+			dialogHeaderFont: font for the header text
+			<KeyValue key="dialogHeaderFont" value="GameFontNormal" type="string"/>
+			-->
+		</KeyValues>
+		<Size x="260" y="1"/>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderNoCenterTemplate, BackdropTemplate">
+				<Size x="195" y="1"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="Header" inherits="ClassicDialogHeaderTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					<KeyValue key="textString" value="MAINMENU_BUTTON" type="global"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

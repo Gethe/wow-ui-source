@@ -82,13 +82,13 @@ local SpellBook =
 			},
 		},
 		{
-			Name = "LearnedSpellInTab",
+			Name = "LearnedSpellInSkillLine",
 			Type = "Event",
-			LiteralName = "LEARNED_SPELL_IN_TAB",
+			LiteralName = "LEARNED_SPELL_IN_SKILL_LINE",
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "skillInfoIndex", Type = "number", Nilable = false },
+				{ Name = "skillLineIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "isGuildPerkSpell", Type = "bool", Nilable = false },
 			},
 		},

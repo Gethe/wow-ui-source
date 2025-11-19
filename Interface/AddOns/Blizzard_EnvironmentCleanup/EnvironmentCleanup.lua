@@ -276,6 +276,7 @@ C_UnitAurasPrivate = nil;
 C_PingSecure = nil;
 SecureMixin = nil;
 CreateFromSecureMixins = nil;
+CreateSecureDelegate = nil;
 CreateSecureMixinCopy = nil;
 loadstring_untainted = nil;
 Enum.StoreError = nil;

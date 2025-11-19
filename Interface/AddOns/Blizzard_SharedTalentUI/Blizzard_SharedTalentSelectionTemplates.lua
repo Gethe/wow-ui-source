@@ -66,6 +66,10 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 		newSelectionFrame:Init(talentFrame);
 		newSelectionFrame:SetLayoutIndex(i);
 
+		-- Set a default point so that dependent frames can be resolved if they need to be.
+		-- This is required for descendant resize layout frames like TalentFrameStarGridTemplate.
+		newSelectionFrame:SetPoint("CENTER");
+
 		local isCurrentSelection = entryID == currentSelection;
 		newSelectionFrame:SetEntryID(entryID);
 		newSelectionFrame:SetSelectionInfo(entryInfo, canSelectChoice, isCurrentSelection, i);
@@ -74,7 +78,7 @@ function TalentSelectionChoiceFrameMixin:SetSelectionOptions(baseButton, selecti
 		table.insert(self.selectionFrameArray, newSelectionFrame);
 	end
 
-	self:MarkDirty();
+	self:Layout();
 end
 
 function TalentSelectionChoiceFrameMixin:UpdateSelectionOptions(canSelectChoice, currentSelection, baseCost)
@@ -197,7 +201,7 @@ function TalentSelectionChoiceMixin:OnClick(button)
 			end
 		elseif IsModifiedClick("CHATLINK") then
 			local spellLink = C_Spell.GetSpellLink(self:GetSpellID());
-			ChatEdit_InsertLink(spellLink);
+			ChatFrameUtil.InsertLink(spellLink);
 		else
 			if not self:IsChoiceAvailable() then
 				return;
@@ -260,13 +264,15 @@ function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
 	local increasedRanks = nodeInfo.entryIDToRanksIncreased and nodeInfo.entryIDToRanksIncreased[self:GetEntryID()] or 0;
 	local hasIncreasedRanks = increasedRanks and increasedRanks > 0;
 	local rankShown = self.isCurrentSelection and (nodeInfo and nodeInfo.currentRank or 0) or increasedRanks;
+	local rankColor = hasIncreasedRanks and GREEN_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
+	rankShown = rankColor:WrapTextInColorCode(rankShown);
 	
 	local rankLine = TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(rankShown, self.entryInfo.maxRanks);
 	if FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.HideMaxRank) then
 		rankLine = TALENT_BUTTON_TOOLTIP_RANK_NO_MAX_FORMAT:format(rankShown);
 	end
 
-	GameTooltip_AddColoredLine(tooltip, rankLine, hasIncreasedRanks and GREEN_FONT_COLOR or HIGHLIGHT_FONT_COLOR);
+	GameTooltip_AddHighlightLine(tooltip, rankLine);
 
 	if hasIncreasedRanks then
 		local increasedTraitDataList = C_Traits.GetIncreasedTraitData(baseButton:GetNodeID(), self:GetEntryID());
@@ -434,7 +440,9 @@ function TalentSelectionChoiceMixin:CalculateVisualState()
 		if self.entryInfo.isDisplayError then
 			return TalentButtonUtil.BaseVisualState.DisplayError;
 		end
-		if selectionBaseButton.nodeInfo.currentRank < selectionBaseButton.nodeInfo.maxRanks then
+
+		local increasedRanks = selectionBaseButton.nodeInfo.entryIDToRanksIncreased and selectionBaseButton.nodeInfo.entryIDToRanksIncreased[selectionBaseButton:GetEntryID()] or 0;
+		if (selectionBaseButton.nodeInfo.currentRank - increasedRanks) < selectionBaseButton.nodeInfo.maxRanks then
 			return TalentButtonUtil.BaseVisualState.Selectable;
 		end
 		return TalentButtonUtil.BaseVisualState.Maxed;

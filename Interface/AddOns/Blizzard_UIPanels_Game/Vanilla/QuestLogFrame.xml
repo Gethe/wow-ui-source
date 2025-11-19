@@ -948,17 +948,13 @@
 			<AbsDimension x="0" y="13"/>
 		</Size>
 	</FontString>
-	<Frame name="QuestWatchFrame" toplevel="true" parent="UIParent" hidden="false">
+	<Frame name="QuestWatchFrame" inherits="UIParentRightManagedFrameTemplate" toplevel="true" parent="UIParent" hidden="false">
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="50" type="number"/>
+		</KeyValues>
 		<Size>
 			<AbsDimension x="280" y="20"/>
 		</Size>
-		<Anchors>
-			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
-				<Offset>
-					<AbsDimension x="0" y="10"/>
-				</Offset>
-			</Anchor>
-		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="QuestWatchQuestName" inherits="GameFontNormal" justifyH="LEFT">

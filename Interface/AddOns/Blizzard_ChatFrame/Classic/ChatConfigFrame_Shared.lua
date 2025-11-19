@@ -119,7 +119,7 @@ do
 				local chatFrame = FCF_GetCurrentChatFrame();
 				if ( checked ) then
 					chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
-					ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+					ChatFrameUtil.DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
 				else
 					chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
 				end
@@ -770,7 +770,7 @@ function ChatConfig_CreateBoxes(frame, boxTable, boxTemplate, title)
 		box:Show();
 	end
 	
-	for index = #boxTable + 1, MAX_WOW_CHAT_CHANNELS do
+	for index = #boxTable + 1, Constants.ChatFrameConstants.MaxChatChannels do
 		boxName = boxNameString..index;
 		box = _G[boxName];
 		if box then
@@ -846,7 +846,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		end
 	end
 	
-	for index = #checkBoxTable + 1, MAX_WOW_CHAT_CHANNELS do
+	for index = #checkBoxTable + 1, Constants.ChatFrameConstants.MaxChatChannels do
 		checkBoxName = checkBoxNameString..index;
 		checkBox = _G[checkBoxName];
 		if checkBox then
@@ -1282,18 +1282,20 @@ function CombatConfig_SetFilterName(name)
 end
 
 function ToggleChatMessageGroup(checked, group)
+	local chatFrame = FCF_GetCurrentChatFrame();
 	if ( checked ) then
-		ChatFrame_AddMessageGroup(FCF_GetCurrentChatFrame(), group);
+		chatFrame:AddMessageGroup(group);
 	else
-		ChatFrame_RemoveMessageGroup(FCF_GetCurrentChatFrame(), group);
+		chatFrame:RemoveMessageGroup(group);
 	end
 end
 
 function ToggleChatChannel(checked, channel)
+	local chatFrame = FCF_GetCurrentChatFrame();
 	if ( checked ) then
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		chatFrame:AddChannel(channel);
 	else
-		ChatFrame_RemoveChannel(FCF_GetCurrentChatFrame(), channel);
+		chatFrame:RemoveChannel(channel);
 	end
 end
 
@@ -1628,7 +1630,7 @@ function CreateChatChannelList(self, ...)
 		
 		CHAT_CONFIG_CHANNEL_LIST[count] = {};
 		CHAT_CONFIG_CHANNEL_LIST[count].channelID = channelID;
-		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
+		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrameUtil.ResolveChannelName(channel);
 		CHAT_CONFIG_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
@@ -1670,7 +1672,7 @@ function CreateChatTextToSpeechChannelList(self, ...)
 
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count] = {};
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelID = channelID;
-		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = channelID.."."..ChatFrameUtil.ResolveChannelName(channel);
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;

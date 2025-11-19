@@ -73,7 +73,7 @@
 			<OnLoad function="AlternatePowerBar_OnLoad"/>
 			<OnEvent>
 				AlternatePowerBar_OnEvent(self, event, ...);
-				TextStatusBar_OnEvent(self, event, ...);
+				self:TextStatusBarOnEvent(event, ...);
 			</OnEvent>
 			<OnUpdate>
 				AlternatePowerBar_OnUpdate(self, elapsed);

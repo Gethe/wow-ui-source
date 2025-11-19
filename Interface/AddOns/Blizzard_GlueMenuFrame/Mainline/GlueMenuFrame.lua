@@ -12,7 +12,7 @@ function GlueMenuFrameMixin:OnHide()
 end
 
 function GlueMenuFrameMixin:InitButtons()
-	if GlueParent_GetCurrentScreen() == "charselect" then
+	if (GlueParent_GetCurrentScreen() == "charselect") or (GlueParent_GetCurrentScreen() == "wowhack") then
 		self:InitCharacterSelectButtons();
 	else
 		self:InitAccountLoginButtons();
