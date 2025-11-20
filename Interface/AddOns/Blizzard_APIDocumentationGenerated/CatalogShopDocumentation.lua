@@ -459,6 +459,7 @@ local CatalogShop =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
+				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 			},
 		},
 		{

@@ -362,6 +362,10 @@ end
 
 function ProductContainerFrameMixin:InitProductContainer()
 	local function sectionProductSortComparator(lhs, rhs)
+		-- If both elements are the same, just return false (not less-than)
+		if lhs == rhs then
+			return false;
+		end
 		-- If the section IDs aren't the same, then use that as sort orderInPage
 		if lhs.sectionID ~= rhs.sectionID then
 			return lhs.sectionID < rhs.sectionID;
@@ -370,6 +374,12 @@ function ProductContainerFrameMixin:InitProductContainer()
 		if lhs.elementType ~= rhs.elementType then
 			return lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header;
 		end
+		
+		-- If both are headers they are equal. (by this point they are the same section)
+		if lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header and rhs.elementType == CatalogShopConstants.ScrollViewElementType.Header then
+			return false;
+		end
+
 		-- (We have 2 products) Look for the collection sort order
 		local lhsOrder = C_CatalogShop.GetProductSortOrder(lhs.categoryID, lhs.sectionID, lhs.catalogShopProductID) or 999;
 		local rhsOrder = C_CatalogShop.GetProductSortOrder(rhs.categoryID, rhs.sectionID, rhs.catalogShopProductID) or 999;

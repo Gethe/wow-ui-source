@@ -737,10 +737,15 @@ function WideCatalogShopProductCardMixin:Layout()
 	background:SetPoint("TOPLEFT", 12, -12);
 	background:SetPoint("BOTTOMRIGHT", -13, 11);
 
-	-- based on values in productInfo we need to set a correct background
-	local backgroundTexture = self.productInfo and self.productInfo.wideCardBGTexture or self.defaultBackground;
-	if backgroundTexture then
-		self.BackgroundContainer.Background:SetAtlas(backgroundTexture);
+	-- Any product can use the PMT background feature if wideCardBGOverrideProductURL is set
+	if self.productInfo and self.productInfo.wideCardBGOverrideProductURL then
+		C_Texture.SetURLTexture(self.BackgroundContainer.Background, self.productInfo.wideCardBGOverrideProductURL);
+	else
+		-- based on values in productInfo we need to set a correct background
+		local backgroundTexture = self.productInfo and self.productInfo.wideCardBGTexture or self.defaultBackground;
+		if backgroundTexture then
+			self.BackgroundContainer.Background:SetAtlas(backgroundTexture);
+		end
 	end
 
 	self:UpdateTimeRemaining();
