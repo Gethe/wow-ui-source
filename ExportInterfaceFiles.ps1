@@ -122,7 +122,7 @@ function Get-ProductInfo {
     # delimiters. Some junk lines will be picked up, but these are filtered
     # by the region check.
 
-    Invoke-WebRequest "https://$Region.version.battle.net/$Product/versions" `
+    Invoke-WebRequest "https://us.version.battle.net/$Product/versions" `
         | ConvertFrom-Csv -Delimiter "|" -Header "Region", "BuildConfig", "CDNConfig", "Keyring", "Build", "Version", "ProductConfig" `
         | Where-Object { $_.Region -eq $Region } `
         | Select-Object -First 1
