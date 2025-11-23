@@ -28,7 +28,7 @@
 [CmdletBinding(PositionalBinding=$false)]
 param (
     [Parameter(Mandatory)]
-    [ValidateSet("wow", "wow_beta", "wow_classic", "wow_classic_beta", "wow_classic_ptr", "wow_classic_era", "wow_classic_era_ptr", "wowt", "wowxptr")]
+    [ValidateSet("wow", "wow_beta", "wow_classic", "wow_classic_beta", "wow_classic_ptr", "wow_classic_era", "wow_classic_era_ptr", "wow_classic_titan", "wowt", "wowxptr")]
     [string] $Product,
 
     [Parameter(Mandatory)]
@@ -109,7 +109,7 @@ function Get-ProductInfo {
     [CmdletBinding(PositionalBinding=$false)]
     param (
         [Parameter(Mandatory)]
-        [ValidateSet("wow", "wow_beta", "wow_classic", "wow_classic_beta", "wow_classic_ptr", "wow_classic_era", "wow_classic_era_ptr", "wowt", "wowxptr", "wowz")]
+        [ValidateSet("wow", "wow_beta", "wow_classic", "wow_classic_beta", "wow_classic_ptr", "wow_classic_era", "wow_classic_era_ptr", "wow_classic_titan", "wowt", "wowxptr", "wowz")]
         [string] $Product,
 
         [Parameter(Mandatory)]
@@ -147,6 +147,7 @@ $Products = @(
     @{ Product = "wow_classic_beta";    Priority = 20;  BuildConfig = $null; CDNConfig = $null; Build = $null; Schema = $null; Version = $null; }
     @{ Product = "wow_classic_era";     Priority = 1;   BuildConfig = $null; CDNConfig = $null; Build = $null; Schema = $null; Version = $null; }
     @{ Product = "wow_classic_era_ptr"; Priority = 10;  BuildConfig = $null; CDNConfig = $null; Build = $null; Schema = $null; Version = $null; }
+    @{ Product = "wow_classic_titan";   Priority = 1;   BuildConfig = $null; CDNConfig = $null; Build = $null; Schema = $null; Version = $null; }
 )
 
 $Products | ForEach-Object {
