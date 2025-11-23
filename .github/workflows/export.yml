@@ -1,0 +1,16 @@
+name: Extract interface files from CDN
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Export UI source files
+        uses: Gethe/wow-ui-source@automation
+        with:
+          product: wow_classic_titan
+          region: cn
+          token: ${{ secrets.GITHUB_TOKEN }}
