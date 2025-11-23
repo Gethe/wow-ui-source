@@ -1,0 +1,133 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="RatingMenuFrame" inherits="BackdropTemplate" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="288" y="224"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="RatingMenuFrameHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="RATINGS_MENU">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RatingMenuFrameHeader">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="RatingMenuAge">
+					<Size>
+						<AbsDimension x="80" y="80"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="RatingMenuFrame" relativePoint="TOPRIGHT">
+							<Offset x="-10" y="-30"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="RatingMenuFrameText" inherits="GameFontNormal" justifyH="RIGHT" text="RATINGS_TEXT">
+					<Size>
+						<AbsDimension x="150" y="80"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeTo="RatingMenuAge" relativePoint="TOPLEFT">
+							<Offset x="-10" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="RatingMenuDrugs">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="RatingMenuAge" relativePoint="BOTTOM">
+							<Offset x="4" y="-5"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="RatingMenuViolence">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="RatingMenuDrugs" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="RatingMenuCrime">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="RatingMenuViolence" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="RatingMenuButtonOkay" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size>
+					<AbsDimension x="90" y="21"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="16"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
+						HideUIPanel(RatingMenuFrame);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				RatingMenuAge:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-1");
+				RatingMenuViolence:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-2");
+				RatingMenuDrugs:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-3");
+				RatingMenuCrime:SetTexture("Interface\\Glues\\Login\\Glues-KoreanRating-4");
+			</OnShow>
+			<OnHide>
+				ShowUIPanel(GameMenuFrame);
+				UpdateMicroButtons();
+				RatingMenuAge:SetTexture(nil);
+				RatingMenuViolence:SetTexture(nil);
+				RatingMenuDrugs:SetTexture(nil);
+				RatingMenuCrime:SetTexture(nil);
+			</OnHide>
+			<OnKeyDown>
+				if ( GetBindingFromClick(key) == "TOGGLEGAMEMENU" ) then
+					PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT);
+					HideUIPanel(RatingMenuFrame);
+				elseif ( GetBindingFromClick(key) == "SCREENSHOT" ) then
+					RunBinding("SCREENSHOT");
+				end
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+</Ui>

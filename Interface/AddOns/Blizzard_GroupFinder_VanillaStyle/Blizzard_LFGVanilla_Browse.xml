@@ -1,0 +1,469 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_LFGVanilla_Browse.lua"/>
+	<Frame name="LFGListGroupDataDisplayTemplate" virtual="true">
+		<Size x="155" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Comment" setAllPoints="true" inherits="GameFontNormalLeftLightGrey"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Solo" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RolesText" inherits="GameFontHighlightSmall" justifyH="CENTER" text="LFG_TOOLTIP_ROLES">
+							<Size x="0" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-90" y="0"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="Role1" parentArray="Roles">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RolesText" relativePoint="RIGHT" x="4" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Role2" parentArray="Roles">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Role1" relativePoint="CENTER" x="16" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Role3" parentArray="Roles">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="16" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RoleCount" setAllPoints="true" inherits="RoleCountNoScriptsTemplate"/>
+			<Frame parentKey="Enumerate" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon1" relativePoint="CENTER" x="-18" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon3" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER" x="-18" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon4" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon3" relativePoint="CENTER" x="-18" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Icon5" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon4" relativePoint="CENTER" x="-18" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerCount" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" atlas="groupfinder-waitdot">
+							<Size x="14" y="13"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Count" inherits="GameFontHighlightSmall" justifyH="CENTER">
+							<Size x="17" y="14"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT" x="-1" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+	<Button name="LFGBrowseSearchEntryTemplate" virtual="true">
+		<Size x="312" y="36"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ResultBG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.04"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="PartyIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="8" y="-4"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PartyIcon" relativePoint="TOPRIGHT" x="0" y="-2"/>
+						<!-- Reanchored in code. -->
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="GameFontDisableSmallLeft" maxLines="1">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="4" y="-1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ClassIcon" atlas="groupfinder-icon-class-warrior" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Level" relativePoint="BOTTOMRIGHT" x="3" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NewPlayerFriendlyIcon" atlas="newplayerchat-chaticon-newcomer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.ClassIcon" relativePoint="RIGHT" x="2" y="0"/>
+						<!-- Reanchored in code. -->
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ActivityName" inherits="GameFontDisableSmallLeft">
+					<Size x="0" y="15"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="groupfinder-highlightbar-yellow" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DataDisplay" inherits="LFGListGroupDataDisplayTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-2" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFGBrowseSearchEntry_OnLoad"/>
+			<OnEvent function="LFGBrowseSearchEntry_OnEvent"/>
+			<OnClick function="LFGBrowseSearchEntry_OnClick"/>
+			<OnEnter function="LFGBrowseSearchEntry_OnEnter"/>
+			<OnLeave function="LFGBrowseSearchEntry_OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="LFGBrowseSearchEntryTooltipGroupMember" virtual="true">
+		<Size x="174" y="14"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" maxLines="1">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Level" inherits="GameFontDisableSmallLeft" maxLines="1">
+					<Size x="0" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="4" y="-1"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Role" parentArray="Roles">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Level" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="LFGBrowseSearchEntryTooltipGroupLeader" inherits="LFGBrowseSearchEntryTooltipGroupMember" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Role2" parentArray="Roles" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Role" relativePoint="CENTER" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Role3" parentArray="Roles" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="16" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<FontString name="LFGBrowseSearchEntryTooltipActivityNameTemplate" virtual="true" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false"/>
+	<Frame name="LFGBrowseSearchEntryTooltip" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
+		<Size x="200" y="1"/>
+		<!-- Resized in script. -->
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Delisted" inherits="GameFontRed" justifyH="LEFT" text="LFG_LIST_ENTRY_DELISTED">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="NewPlayerFriendlyIcon" atlas="newplayerchat-chaticon-newcomer" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="NewPlayerFriendlyText" inherits="GameFontGreen" justifyH="LEFT" text="LFG_LIST_NEW_PLAYER_FRIENDLY_HEADER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NewPlayerFriendlyIcon" relativePoint="TOPRIGHT" x="1" y="-2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="LeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-10"/>
+						<!-- Reanchored in script. -->
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Comment" inherits="GameFontNormalLeftLightGrey" justifyV="TOP" justifyH="LEFT" wordwrap="true">
+					<Anchors>
+						<Anchor point="LEFT" x="11" y="0"/>
+						<Anchor point="RIGHT" x="-11" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MemberCount" inherits="GameFontNormal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Comment" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+						<!-- Reanchored in script. -->
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Leader" inherits="LFGBrowseSearchEntryTooltipGroupLeader">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeaderIcon" relativePoint="TOPRIGHT" x="0" y="-2"/>
+					<!-- Reanchored in script. -->
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFGBrowseSearchEntryTooltip_Load"/>
+		</Scripts>
+	</Frame>
+	<!-- Start LFG Browse Frame -->
+	<Frame name="LFGBrowseFrame" parent="LFGParentFrame" hidden="false" setAllPoints="true" mixin="LFGBrowseMixin">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture name="$parentFrameBackgroundTop" file="Interface\LFGFrame\UI-LFR-FRAME-MAIN">
+					<Size x="512" y="121"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0" bottom="0.236328125"/>
+				</Texture>
+				<Texture name="$parentFrameBackgroundMiddle" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="135"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-121"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.236328125" bottom="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background-classic">
+					<Size x="324" y="282"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-129"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentFrameBackgroundBottom" file="Interface\LFGFrame\UI-LFG-FRAME">
+					<Size x="512" y="256"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-256"/>
+					</Anchors>
+					<TexCoords left="0" right="1.0" top="0.5" bottom="1.0"/>
+				</Texture>
+				<FontString name="$parentFrameTitle" inherits="GameFontNormal" text="LFG_TITLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NoResultsFound" inherits="GameFontDisable" text="LFG_LIST_NO_RESULTS_FOUND">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BackgroundArt" x="0" y="-40"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCategoryDropDown" parentKey="CategoryDropDown" inherits="LFGDropDownTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-92"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(self, 100);
+						UIDropDownMenu_Initialize(self, LFGBrowseCategoryDropDown_Initialize);
+						UIDropDownMenu_JustifyText(self, "LEFT");
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentActivityDropDown" parentKey="ActivityDropDown" inherits="LFGDropDownTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentCategoryDropDown" relativePoint="RIGHT" x="-30" y="0"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="ResetButton" hidden="true">
+						<Size x="13" y="13"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="21" y="-4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick function="LFGBrowseActivityDropDownResetButton_OnClick"/>
+						</Scripts>
+						<NormalTexture atlas="common-search-clearbutton" useAtlasSize="false" scale="0.65" alpha="0.85">
+							<Size x="13" y="13"/>
+						</NormalTexture>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad>
+						self.selectedValues = {};
+						UIDropDownMenu_SetWidth(self, 150);
+						UIDropDownMenu_Initialize(self, LFGBrowseActivityDropDown_Initialize);
+						UIDropDownMenu_JustifyText(self, "LEFT");
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentRefreshButton" parentKey="RefreshButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentActivityDropDown" relativePoint="RIGHT" x="-16" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="5">
+						<Texture parentKey="Icon" file="Interface\Buttons\UI-RefreshButton">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+				<Scripts>
+					<OnMouseDown>
+						self.Icon:SetPoint("CENTER", self, "CENTER", -2, -1);
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Icon:SetPoint("CENTER", self, "CENTER", -1, 0);
+					</OnMouseUp>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_LIST_SEARCH_AGAIN, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						LFGBrowseSearchButton_OnClick(self, button);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="$parentScrollBox" parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="324" y="282"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-128"/>
+				</Anchors>
+			</Frame>
+			<EventFrame name="$parentScrollBar" parentKey="ScrollBar" inherits="WowClassicScrollBar">
+				<Anchors>
+					<Anchor relativeTo="$parentScrollBox" point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="4"/>
+					<Anchor relativeTo="$parentScrollBox" point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+				</Anchors>
+			</EventFrame>
+			<Frame name = "$parentSearchingSpinner" parentKey="SearchingSpinner" inherits="LoadingSpinnerTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BackgroundArt"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="SEARCHING">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent" relativePoint="TOP" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<DropdownButton name="$parentOptionsButton" parentKey="OptionsButton" inherits="LFGOptionsButton" mixin="LFGBrowseOptionsButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-40" y="-44"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</DropdownButton>
+			<Button name="$parentSendMessageButton" parentKey="SendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE">
+				<Size x="111" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="19" y="79"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGBrowseSendMessageButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentGroupInviteButton" parentKey="GroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE">
+				<Size x="109" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-40" y="79"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGBrowseGroupInviteButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	<!-- End LFG Browse Frame-->
+</Ui>

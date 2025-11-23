@@ -1,0 +1,10 @@
+## Title: Blizzard Raid UI
+## LoadOnDemand: 1
+## SavedVariablesPerCharacter: RAID_PULLOUT_POSITIONS, RAID_SINGLE_POSITIONS
+## AllowLoad: game
+## AllowLoadGameType: classic
+Blizzard_RaidUI.lua
+Blizzard_RaidUI.xml [AllowLoadGameType vanilla, tbc]
+Wrath\Blizzard_RaidUI.xml [AllowLoadGameType wrath, cata]
+Mists\Blizzard_RaidUI.xml [AllowLoadGameType mists]
+Localization.lua

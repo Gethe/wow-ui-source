@@ -1,0 +1,366 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="AddonListEntryTemplate" virtual="true">
+		<Size x="520" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="220" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="32" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="Status">
+					<Size x="220" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="70" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentReload" inherits="GameFontRed" justifyH="LEFT" parentKey="Reload" text="REQUIRES_RELOAD">
+					<Size x="220" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="70" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentSecurity" hidden="true">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="2" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0);
+						AddonTooltip:SetText(self.tooltip);
+						AddonTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						AddonTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture name="$parentIcon" file="Interface\Glues\CharacterSelect\Glues-AddOn-Icons"/>
+			</Button>
+			<CheckButton name="$parentEnabled">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" x="5" y="0"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="8"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnClick>
+						AddonList_Enable(self:GetParent():GetID(), self:GetChecked());
+					</OnClick>
+					<OnEnter>
+						if ( self.tooltip ) then
+							AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
+							AddonTooltip:SetText(self.tooltip);
+							AddonTooltip:Show();
+						end
+					</OnEnter>
+					<OnLeave>
+						AddonTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+			 	<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture name="$parentCheckedTexture" file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+			<Button name="$parentLoad" inherits="UIPanelButtonTemplate" text="LOAD_ADDON" hidden="true" parentKey="LoadAddonButton">
+				<Size x="100" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="70" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AddonList_LoadAddOn(self:GetParent():GetID())
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				AddonTooltip:SetOwner(self, "ANCHOR_RIGHT", -270, 0)
+				AddonTooltip_Update(self);
+				AddonTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				AddonTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+	<Frame name="AddonDialog" toplevel="true" setAllPoints="true" enableMouse="true" enableKeyboard="true" frameStrata="DIALOG" hidden="true">
+		<Frames>
+			<Frame name="AddonDialogBackground" inherits="DialogBorderTemplate">
+				<Size x="512" y="256"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="AddonDialogText" inherits="GameFontNormalLarge">
+							<Size x="440" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="AddonDialogButton1" inherits="UIPanelButtonTemplate" id="1">
+						<Size x="120" y="22"/>
+					</Button>
+					<Button name="AddonDialogButton2" inherits="UIPanelButtonTemplate" id="2">
+						<Size x="120" y="22"/>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				AddonDialogBackground:ClearAllPoints();
+				AddonDialogBackground:SetPoint("CENTER");
+			</OnLoad>
+			<OnShow>
+				self:Raise();
+			</OnShow>
+			<OnKeyDown>
+				AddonDialog_OnKeyDown(key);
+			</OnKeyDown>
+		</Scripts>
+	</Frame>
+	<Frame name="AddonList" enableMouse="true" inherits="ButtonFrameTemplate" hidden="true">
+		<Size x="500" y="478"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="24"/>
+		</Anchors>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="12" y="-30"/>
+				</Anchors>
+			</DropdownButton>
+			<CheckButton name="AddonListForceLoad">
+				<Size>
+					<AbsDimension x="32" y="32"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOP" x="75" y="-30"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontNormalSmall" text="ADDON_FORCE_LOAD">
+							<Anchors>
+								<Anchor point="LEFT" x="36" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow>
+						self:SetChecked(not C_AddOns.IsAddonVersionCheckEnabled());
+					</OnShow>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							C_AddOns.SetAddonVersionCheck(false);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+							C_AddOns.SetAddonVersionCheck(true);
+						end
+						AddonList_Update();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+			<Button name="$parentCancelButton" inherits="MagicButtonTemplate" parentKey="CancelButton" text="CANCEL">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AddonList_OnCancel();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentOkayButton" inherits="MagicButtonTemplate" parentKey="OkayButton" text="OKAY">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCancelButton" relativePoint="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						AddonList_OnOkay();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentEnableAllButton" inherits="MagicButtonTemplate" parentKey="EnableAllButton" text="ENABLE_ALL_ADDONS">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AddonList_EnableAll"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentDisableAllButton" inherits="MagicButtonTemplate" parentKey="DisableAllButton" text="DISABLE_ALL_ADDONS">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentEnableAllButton" relativePoint="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="AddonList_DisableAll"/>
+				</Scripts>
+			</Button>
+			<Button name="AddonListEntry1" inherits="AddonListEntryTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-70"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry2" inherits="AddonListEntryTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry1" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry3" inherits="AddonListEntryTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry2" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry4" inherits="AddonListEntryTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry3" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry5" inherits="AddonListEntryTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry4" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry6" inherits="AddonListEntryTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry5" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry7" inherits="AddonListEntryTemplate" id="7">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry6" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry8" inherits="AddonListEntryTemplate" id="8">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry7" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry9" inherits="AddonListEntryTemplate" id="9">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry8" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry10" inherits="AddonListEntryTemplate" id="10">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry9" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry11" inherits="AddonListEntryTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry10" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry12" inherits="AddonListEntryTemplate" id="12">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry11" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry13" inherits="AddonListEntryTemplate" id="13">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry12" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry14" inherits="AddonListEntryTemplate" id="14">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry13" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry15" inherits="AddonListEntryTemplate" id="15">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry14" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry16" inherits="AddonListEntryTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry15" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry17" inherits="AddonListEntryTemplate" id="17">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry16" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry18" inherits="AddonListEntryTemplate" id="18">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry17" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<Button name="AddonListEntry19" inherits="AddonListEntryTemplate" id="19">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="AddonListEntry18" relativePoint="BOTTOM" x="0" y="-4"/>
+				</Anchors>
+			</Button>
+			<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size x="450" y="382"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="18" y="-66"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentScrollBarTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="256"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-2" y="5"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentScrollBarBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="106"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+						</Texture>
+						<Texture name="$parentScrollBarMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="31" y="60"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentScrollBarTop" relativePoint="BOTTOM"/>
+								<Anchor point="BOTTOM" relativeTo="$parentScrollBarBottom" relativePoint="TOP"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						AddonListScrollFrame_OnVerticalScroll(self, offset);
+					</OnVerticalScroll>
+				</Scripts>
+				<ScrollChild>
+					<Frame name="AddonListScrollFrameScrollChildFrame">
+						<Size x="510" y="395"/>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="AddonList_OnLoad"/>
+			<OnShow function="AddonList_OnShow"/>
+			<OnHide function="AddonList_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

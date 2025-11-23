@@ -1,0 +1,24 @@
+## Title: Blizzard_ChatFrameBase
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_AutoComplete, Blizzard_FrameXML, Blizzard_UIParentPanelManager
+## AllowLoad: game
+## AllowLoadGameType: classic
+## LoadFirst: 1
+Shared\HistoryKeeper.lua
+Shared\SlashCommandsRegistry.lua
+Shared\SlashCommands.lua
+Shared\ChatFrameConstants.lua
+Shared\CastRandomManager.lua
+Shared\CastSequenceManager.lua
+Shared\MacroExecutionManager.lua
+[Family]\ChatEmoteConstants.lua
+[Family]\SlashCommandsOverrides.lua
+[Family]\ChatFrame.lua
+[Family]\ChatFrame.xml
+Shared\ChatAlertFrameMixin.lua
+[Family]\ChannelFrameButtonMixin.lua
+[Family]\FriendFrameButtonMixin.lua [AllowLoadGameType classic]
+Shared\FloatingChatFrame.lua
+[Family]\FloatingChatFrame.lua
+[Family]\FloatingChatFrame.xml

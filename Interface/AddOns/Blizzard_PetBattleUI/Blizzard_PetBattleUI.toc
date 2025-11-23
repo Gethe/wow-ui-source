@@ -1,0 +1,9 @@
+## Title: Blizzard Pet Battle UI
+## LoadOnDemand: 0
+## AllowLoadGameType: standard, mists
+## Dependencies: Blizzard_Colors
+Shared\Blizzard_PetBattleUIPatchwerks.xml
+Shared\Blizzard_PetBattleUI.lua
+[Family]\Blizzard_PetBattleUI.lua
+Shared\Blizzard_PetBattleUI.xml
+Shared\Localization.lua

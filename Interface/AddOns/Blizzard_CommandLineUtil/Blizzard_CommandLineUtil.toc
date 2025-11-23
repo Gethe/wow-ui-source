@@ -1,0 +1,4 @@
+## Title: Blizzard Command Line Util
+## AllowLoad: both
+## DefaultState: enabled
+Blizzard_CommandLineUtil.lua

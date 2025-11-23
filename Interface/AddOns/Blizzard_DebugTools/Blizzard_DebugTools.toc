@@ -1,0 +1,16 @@
+## Title: Blizzard_DebugTools
+## Notes: Tools for developing addons
+## Special Thanks: Iriel, Kirov, Esamynn
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: Both
+DebugObjectUtil.lua
+Blizzard_TextureInfoGenerator.lua
+Blizzard_DebugTools.lua
+Blizzard_DebugTools.xml
+Blizzard_TableInspectorDataProvider.lua
+Blizzard_TableInspectorAnchorDataProvider.xml
+Blizzard_TableInspectorAttributeDataProvider.xml
+Blizzard_TableInspector.xml
+Blizzard_TexelSnappingVisualizer.lua
+Localization.lua

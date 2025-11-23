@@ -1,0 +1,10 @@
+## Title: Blizzard_UIParentPanelManager
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## LoadWith: Blizzard_UIParent
+## AllowLoad: game
+## AllowLoadGameType: wrath
+Classic\UIParentPanelManager.lua
+Wrath\UIParentPanelManager.lua
+Shared\UpdateUIPanelPositions.lua

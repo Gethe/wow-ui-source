@@ -1,0 +1,95 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ComboPointTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="12" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ComboFrame\ComboPoint">
+					<Size>
+						<AbsDimension x="12" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.375" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Highlight" file="Interface\ComboFrame\ComboPoint">
+					<Size>
+						<AbsDimension x="8" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="2" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.375" right="0.5625" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Shine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD">
+					<Size>
+						<AbsDimension x="14" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+					<Color r="1" g="1" b="1" a="0"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" alpha="0">
+		<Size>
+			<AbsDimension x="256" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="TargetFrame">
+				<Offset>
+					<AbsDimension x="-44" y="-9"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="ComboPoint1" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint2" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="7" y="-8"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint3" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="-19"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint4" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="14" y="-30"/>
+				</Anchors>
+			</Frame>
+			<Frame name="ComboPoint5" parentArray="ComboPoints" inherits="ComboPointTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="-41"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ComboFrame_OnLoad"/>
+			<OnEvent function="ComboFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

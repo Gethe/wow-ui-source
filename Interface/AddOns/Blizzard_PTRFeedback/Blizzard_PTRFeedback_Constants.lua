@@ -1,0 +1,1 @@
+PTR_IssueReporter.Data.Message_Key = "[*C&^$#@]"

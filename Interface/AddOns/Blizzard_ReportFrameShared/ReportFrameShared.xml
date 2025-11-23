@@ -1,0 +1,167 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="ReportingFrameMinorCategoryButtonTemplate" mixin="ReportingFrameMinorCategoryButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="350" y="41"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE" text="BEHAVIORAL_DETAILS_TITLE_BAR">
+					<Size x="200" y="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture atlas="ClickCastList-ButtonBackground"/>
+		<HighlightTexture atlas="ClickCastList-ButtonHighlight"/>
+		<CheckedTexture atlas="ReportList-ButtonSelect"/>
+		<Scripts>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</CheckButton>
+	<Frame name="SharedReportFrameTemplate" inherits="ResizeLayoutFrame" hidden="true" toplevel="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="400" type="number"/>
+			<KeyValue key="minimumHeight" value="190" type="number"/>
+			<KeyValue key="bottomPadding" value="30" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOP" y="-70"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="TOPRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInset" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+					<Size y="36"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="6"/>
+					</Anchors>
+					<Color r="0" g="0" b="0" a="0.9"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="TopInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="6" y="-21" relativeKey="$parent.TopInset"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="-21" relativeKey="$parent.TopInset"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BottomInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="7" relativeKey="$parent.BottomInset"/>
+						<Anchor point="TOPRIGHT" x="-6" y="7" relativeKey="$parent.BottomInset"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="ThankYouText" inherits="GameFontHighlightLarge" justifyH="CENTER" text="ERR_REPORT_SUBMITTED_SUCCESSFULLY">
+					<Size x="400" y="270"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString parentKey="TitleText" inherits="Game16Font" text="BEHAVIORAL_DETAILS_TITLE_BAR">
+					<Size x="350" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" y="-10"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="ReportString" inherits="GameFontHighlightLarge" justifyH="LEFT" text="REPORTING_REPORT_PLAYER">
+					<Size x="350" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.TitleText" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Watermark" atlas="gmchat-watermark-blizzard" alpha=".2" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" frameLevel="2" setAllPoints="true"/>
+			<DropdownButton parentKey="ReportingMajorCategoryDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ReportString" relativePoint="BOTTOM" x="-75" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="REPORTING_REPORT_REASON" justifyH="LEFT" inherits="GameFontNormal">
+							<Size x="300" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</DropdownButton>
+			<Button parentKey="ReportButton" inherits="UIPanelButtonTemplate" mixin="ReportButtonMixin" motionScriptsWhileDisabled="true" text="REPORTING_REPORT">
+				<Size x="140" y="21"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="Comment" hidden="true" inherits="InputScrollFrameTemplate">
+				<Size x="350" y="46"/>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="127" type="number"/>
+					<KeyValue key="instructions" value="REPORTING_COMMENT_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+			</ScrollFrame>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-8" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Border" atlas="UI-Frame-Neutral-ExitButtonBorder" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="MinorReportDescription" inherits="GameFontNormal" justifyH="LEFT" text="REPORTING_REPORT_DETAILS" hidden="true">
+					<Size x="350" y="25"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ReportingMajorCategoryDropdown" relativePoint="BOTTOM" x="75" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnAttributeChanged method="OnAttributeChanged"/>
+		</Scripts>
+	</Frame>
+</Ui>

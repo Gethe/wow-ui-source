@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="PlayerSpecTabTemplate" virtual="true" hidden="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\SpellBook\SpellBook-SkillLineTab">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="11"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+				PlayerSpecTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerSpecTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+
+	<Button name="PlayerTalentTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				PlayerTalentTab_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PlayerTalentTab_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				PlayerTalentTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerTalentFrameTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="PlayerGlyphTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				PlayerGlyphTab_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				PlayerGlyphTab_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick>
+				PlayerGlyphTab_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				PlayerTalentFrameTab_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+</Ui>

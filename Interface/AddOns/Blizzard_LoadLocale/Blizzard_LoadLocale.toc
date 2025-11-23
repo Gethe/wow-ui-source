@@ -1,0 +1,5 @@
+## Title: Blizzard_LoadLocale
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Both
+LoadLocale.lua

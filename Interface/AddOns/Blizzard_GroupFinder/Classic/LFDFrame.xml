@@ -1,0 +1,437 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="LFDRoleButtonTemplate" inherits="LFGRoleButtonWithBackgroundAndRewardTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.background:SetAtlas(GetBackgroundForRole(self.role), TextureKitConstants.IgnoreAtlasSize);
+				self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+			<OnEnter function="LFDRoleButton_OnEnter"/>
+		</Scripts>
+	</Button>
+	<Button name="LFDRoleCheckPopupButtonTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.checkButton.onClick = LFDFramePopupRoleCheckButton_OnClick;
+				LFGRoleButtonTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Button>
+	<Frame name="LFDFrameDungeonChoiceTemplate" enableMouse="true" inherits="LFGSpecificChoiceTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				self.enableButton:SetScript("OnClick", LFDQueueFrameDungeonChoiceEnableButton_OnClick);
+				self.expandOrCollapseButton:SetScript("OnClick", LFDQueueFrameExpandOrCollapseButton_OnClick);
+				self:SetScript("OnEnter", LFDQueueFrameDungeonListButton_OnEnter);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+	<Frame name="LFDRoleCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="180"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" text="CONFIRM_YOUR_ROLE">
+					<Size x="266" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentRoleButtonTank" inherits="LFDRoleCheckPopupButtonTemplate" id="1">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-8"/>
+					<Anchor point="LEFT" x="35" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonHealer" inherits="LFDRoleCheckPopupButtonTemplate" id="2">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonDPS" inherits="LFDRoleCheckPopupButtonTemplate" id="3">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter function="LFDPopupRoleCheckButton_OnEnter"/>
+				</Scripts>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFDRoleCheckPopupAccept_OnClick"/>
+					<OnEnter>
+						if ( self.tooltipText ) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, true);
+							GameTooltip:Show();
+						end
+					</OnEnter>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFDRoleCheckPopupDecline_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentDescription">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentText" justifyH="CENTER" wordwrap="true" inherits="GameFontHighlight">
+							<Size x="280" y="0"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="SubText" justifyH="CENTER" wordwrap="true" inherits="Game11Font">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" y="-4"/>
+							</Anchors>
+							<Color color="GREEN_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnShow function="LFDRoleCheckPopup_OnShow"/>
+			<OnHide function="LFDRoleCheckPopup_OnHide"/>
+			<OnEvent function="LFDRoleCheckPopup_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="LFDReadyCheckPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="100"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="-35"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button parentKey="YesButton" inherits="UIPanelButtonTemplate" text="READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativePoint="TOP" x="-7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CompleteLFGReadyCheck(true);
+						LFDReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+				<Size x="119" y="24"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOP" x="7" y="-55"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						CompleteLFGReadyCheck(false);
+						LFDReadyCheckPopup:Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				PlaySound(SOUNDKIT.READY_CHECK);
+				FlashClientIcon();
+			</OnShow>
+		</Scripts>
+	</Frame>
+	<Frame name="LFDParentFrame" hidden="true" parent="GroupFinderFrame" useParentLevel="true">
+		<Size x="338" y="428"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="224" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
+					<Size x="512" y="128"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="2" y="275"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentTopTileStreaks" inherits="_UI-Frame-TopTileStreaks" parentKey="TopTileStreaks">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-21"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentInset" useParentLevel="true" inherits="InsetFrameTemplate" parentKey="Inset">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-60" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="26" />
+				</Anchors>
+			</Frame>
+			<Frame name="LFDQueueFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER">
+							<Size x="512" y="256"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="6" y="26"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="$parentRoleButtonTank" inherits="LFDRoleButtonTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="role" value="TANK" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="50" y="334"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonHealer" inherits="LFDRoleButtonTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="role" value="HEALER" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="25" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonDPS" inherits="LFDRoleButtonTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="role" value="DAMAGER" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="23" y="0"/>
+						</Anchors>
+					</Button>
+					<Button name="$parentRoleButtonLeader" inherits="LFGRoleButtonTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentRoleButtonDPS" relativePoint="RIGHT" x="32" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								local showDisabled = false;
+								self:SetNormalAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
+								showDisabled = true;
+								self:SetDisabledAtlas(GetIconForRole("GUIDE", showDisabled), TextureKitConstants.IgnoreAtlasSize);
+								self.checkButton.onClick = LFDFrameRoleCheckButton_OnClick;
+							</OnLoad>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(GUIDE_TOOLTIP, nil, nil, nil, nil, true);
+								LFGFrameRoleCheckButton_OnEnter(self);
+							</OnEnter>
+						</Scripts>
+					</Button>
+					<DropdownButton name="$parentTypeDropdown" parentKey="TypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="131" y="287"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentName" inherits="GameFontNormal" justifyH="RIGHT" text="CHOOSE_YOUR_DUNGEON">
+									<Size x="115" y="24"/>
+									<Anchors>
+										<Anchor point="RIGHT" relativePoint="LEFT" x="-10" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</DropdownButton>
+					<Frame name="$parentRandom" setAllPoints="true">
+						<Frames>
+							<ScrollFrame name="$parentScrollFrame" inherits="ScrollFrameTemplate">
+								<KeyValues>
+									<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+									<KeyValue key="scrollBarX" value="11" type="number"/>
+									<KeyValue key="scrollBarTopY" value="3" type="number"/>
+									<KeyValue key="scrollBarBottomY" value="-6" type="number"/>
+								</KeyValues>
+								<Size x="303" y="239"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-29" y="35"/>
+								</Anchors>
+								<ScrollChild>
+									<Frame name="$parentChildFrame" inherits="LFGRewardFrameTemplate">
+										<Scripts>
+											<OnLoad>
+												--Move the title to deal with an offset so scrolling doesn't look as bad with the LFD border.
+												self.title:SetPoint("TOPLEFT", 10, -8);
+												LFGRewardsFrame_OnLoad(self);
+											</OnLoad>
+											<OnShow>
+												LFGRewardsFrame_AdjustFont(self);
+												LFDQueueFrameRandom_UpdateFrame();
+											</OnShow>
+										</Scripts>
+									</Frame>
+								</ScrollChild>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
+					<Frame parentKey="Specific" name="$parentSpecific" setAllPoints="true" hidden="true">
+						<Frames>
+							<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="5" y="-146"/>
+									<Anchor point="BOTTOMRIGHT" x="-32" y="26"/>
+								</Anchors>
+							</Frame>
+							<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="14" y="-4"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="4"/>
+								</Anchors>
+							</EventFrame>
+						</Frames>
+						<Scripts>
+							<OnShow function="LFDQueueFrame_Update"/>
+						</Scripts>
+					</Frame>
+					<Button name="$parentFindGroupButton" inherits="MagicButtonTemplate" text="FIND_A_GROUP" motionScriptsWhileDisabled="true">
+						<Size x="135" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								local mode, subMode = GetLFGMode(LE_LFG_CATEGORY_LFD);
+								if ( mode == "queued" or mode == "listed" or mode == "rolecheck" or mode == "suspended" ) then
+									LeaveLFG(LE_LFG_CATEGORY_LFD);
+								else
+									LFDQueueFrame_Join();
+								end
+							</OnClick>
+							<OnEnter>
+								if ( self.tooltip ) then
+									GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+									GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, 1, true);
+									GameTooltip:Show();
+								end
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Button>
+					<Frame name="$parentPartyBackfill" parentKey="PartyBackfill" inherits="LFGBackfillCoverTemplate">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								LFGBackfillCover_SetUp(self, {LFG_SUBTYPEID_DUNGEON, LFG_SUBTYPEID_HEROIC}, LE_LFG_CATEGORY_LFD, LFDQueueFrameFindGroupButton_Update);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentCooldownFrame" parentKey="CooldownFrame" inherits="LFGCooldownCoverTemplate">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								LFGCooldownCover_SetUp(self, self:GetParent().PartyBackfill);
+							</OnLoad>
+							<OnShow>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnShow>
+							<OnHide>
+								LFDQueueFrameFindGroupButton_Update();
+							</OnHide>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentNoLFDWhileLFR" hidden="true" enableMouse="true">
+						<Size x="330" y="257"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-6" y="27"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentBlackFilter" setAllPoints="true">
+									<Color r="0" b="0" g="0" a="0.93"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentDescription" inherits="GameFontNormal" text="NO_LFD_WHILE_LFR" justifyH="CENTER">
+									<Size x="300" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-70"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LIST_ME">
+								<Size x="153" y="22"/>
+								<Anchors>
+									<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
+								</Anchors>
+								<Scripts>
+									<OnClick>
+											LeaveLFG(LE_LFG_CATEGORY_LFR);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self:SetFrameLevel(16);
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="LFDQueueFrame_OnLoad"/>
+					<OnShow function="LFDQueueFrame_OnShow"/>
+					<OnHide function="LFDQueueFrame_OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFDFrame_OnLoad"/>
+			<OnEvent function="LFDFrame_OnEvent"/>
+			<OnShow function="LFDFrame_OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,33 @@
+## Title: Blizzard_UnitFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UnitFrameUtil, Blizzard_UIParentPanelManager
+## AllowLoad: Game
+## AllowLoadGameType: tbc
+Classic\UnitPowerBarAlt.xml
+StatusBarOverlaySegment.lua
+StatusBarOverlaySegment.xml
+Classic\UnitFrame.lua
+UnitFrame.xml
+Shared\PlayerFrameTemplates.xml
+Shared\PlayerFrame.lua
+Classic\PlayerFrame.lua
+Classic\PlayerFrame.xml
+Classic\UnitPowerBarAlt.lua
+Classic\UnitPowerBarAlt.xml
+Classic\PartyFrameTemplates.xml
+Classic\PartyFrame.xml
+Shared\TargetFrame.lua
+Classic\TargetFrame.lua
+Classic\TargetFrame.xml
+Classic\PetFrame.lua
+Classic\PetFrame.xml
+Classic\ComboFrame.lua
+Classic\ComboFrame.xml
+Classic\CompactUnitFrame.lua
+Classic\CompactUnitFrame.xml
+Classic\CompactRaidGroup.lua
+Classic\CompactRaidGroup.xml
+Classic\CompactPartyFrame.lua
+Classic\CompactPartyFrame.xml
+Classic\Localization.lua

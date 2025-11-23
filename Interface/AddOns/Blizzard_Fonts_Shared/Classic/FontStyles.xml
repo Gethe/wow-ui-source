@@ -1,0 +1,36 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Font name="GameFontNormalMed1HSpacing" inherits="SystemFont_Med2_HSpacing" virtual="true">
+		<Shadow x="1" y="-1">
+			<Color r="0" g="0" b="0"/>
+		</Shadow>
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontNormalHugeOutline2" inherits="SystemFont_Shadow_Huge2_Outline" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+	<Font name="GameFontHighlightHugeOutline2" inherits="SystemFont_Shadow_Huge2_Outline" virtual="true">
+		<Color r="1.0" g="1.0" b="1.0"/>
+	</Font>
+	<Font name="QuestFontHighlight" inherits="SystemFont_Large" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontBlackHuge2" inherits="SystemFont_Huge2" virtual="true">
+		<Color r="0" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteShadowLarge" inherits="SystemFont_Shadow_Large" virtual="true">
+		<Color r="1" g="1" b="1"/>
+	</Font>
+	<Font name="GameFontWhiteShadowHuge2" inherits="SystemFont_Shadow_Huge2" virtual="true">
+		<Color r="1" g="1" b="1"/>
+	</Font>
+	<Font name="GameFontOffBlack30" inherits="Game30Font2" virtual="true">
+		<Color r="0.2" g="0" b="0"/>
+	</Font>
+	<Font name="GameFontWhiteOutline30" inherits="Game30Font2Outline" virtual="true">
+		<Color r="1" g="1" b="1"/>
+	</Font>
+	<Font name="GameFontNormalHugeOutline" inherits="SystemFont_Shadow_Huge1" virtual="true">
+		<Color r="1.0" g="0.82" b="0"/>
+	</Font>
+</Ui>

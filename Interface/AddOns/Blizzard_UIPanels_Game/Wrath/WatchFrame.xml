@@ -1,0 +1,488 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	
+	<Texture name="AutoQuest-QuestLogIcon" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="10" y="13"/>	
+		<TexCoords left="0.00195313" right="0.02148438" top="0.01562500" bottom="0.21875000"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.02539063" right="0.05664063" top="0.01562500" bottom="0.26562500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-TopRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.02539063" right="0.05664063" top="0.29687500" bottom="0.54687500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotLeft" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.02539063" right="0.05664063" top="0.57812500" bottom="0.82812500"/>	
+	</Texture>
+	<Texture name="AutoQuestToastBorder-BotRight" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="16" y="16"/>	
+		<TexCoords left="0.06054688" right="0.09179688" top="0.01562500" bottom="0.26562500"/>	
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Up" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="18" y="19"/>	
+		<TexCoords left="0.09570313" right="0.13085938" top="0.01562500" bottom="0.31250000"/>	
+	</Texture>
+	<Texture name="TrackerButton-AutoComplete-Down" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="18" y="19"/>	
+		<TexCoords left="0.09570313" right="0.13085938" top="0.34375000" bottom="0.64062500"/>	
+	</Texture>
+	<Texture name="QuestIcon-Exclamation" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="19" y="33"/>	
+		<TexCoords left="0.13476563" right="0.17187500" top="0.01562500" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="QuestIcon-QuestionMark" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="19" y="33"/>	
+		<TexCoords left="0.17578125" right="0.21289063" top="0.01562500" bottom="0.53125000"/>	
+	</Texture>
+	<Texture name="QuestIcon-WhiteFlash" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="42" y="42"/>	
+		<TexCoords left="0.21679688" right="0.29882813" top="0.01562500" bottom="0.67187500"/>	
+	</Texture>
+	<Texture name="QuestIcon-Large" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="60" y="60"/>	
+		<TexCoords left="0.30273438" right="0.41992188" top="0.01562500" bottom="0.95312500"/>	
+	</Texture>
+	<Texture name="QuestTracker-Shadow" file="Interface\QuestFrame\AutoQuest-Parts" virtual="true" >
+		<Size x="262" y="49"/>	
+		<TexCoords left="0.42382813" right="0.93554688" top="0.01562500" bottom="0.78125000"/>	
+	</Texture>
+	
+	<FontString name="WatchFontTemplate" inherits="GameFontHighlight" virtual="true" justifyH="LEFT" justifyV="MIDDLE">
+		<Size>
+			<AbsDimension x="0" y="16"/>
+		</Size>
+	</FontString>
+
+	<Button name="WatchFrameLinkButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
+			<OnClick> WatchFrameLinkButtonTemplate_OnClick(self, button, down); </OnClick>
+			<OnEnter> WatchFrameLinkButtonTemplate_Highlight(self, true); </OnEnter>
+			<OnLeave> WatchFrameLinkButtonTemplate_Highlight(self, false); </OnLeave>
+		</Scripts>
+	</Button>
+
+	<Button name="WatchFrameItemButtonTemplate" virtual="true">
+		<Size x="26" y="26"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentHotKey" inherits="NumberFontNormalSmallGray" justifyH="LEFT" text="RANGE_INDICATOR">
+					<Size>
+						<AbsDimension x="29" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="16" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture"/>
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				WatchFrameItem_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				WatchFrameItem_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				WatchFrameItem_OnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnShow>
+				WatchFrameItem_OnShow(self);
+			</OnShow>
+			<OnHide>
+				WatchFrameItem_OnHide(self);
+			</OnHide>
+			<OnEnter>
+				WatchFrameItem_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				WatchFrameItem_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size x="42" y="42"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="WatchFrameLineTemplate" virtual="true">
+		<Size x="150" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="Icon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT">
+							<Offset x="-3" y="-1"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentDash" inherits="WatchFontTemplate" justifyV="TOP" parentKey="dash">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="-1"/>
+						</Anchor>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText" inherits="WatchFontTemplate" parentKey="text">
+					<Size x="160" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.dash" relativePoint="RIGHT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBorder" file="Interface\AchievementFrame\UI-Achievement-Progressive-IconBorder" hidden="true">
+					<Size x="26" y="26"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.65625" top="0" bottom="0.65625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				WatchFrameLineTemplate_OnLoad(self);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WatchFrame" parent="UIParent" clampedToScreen="true" hidden="false" frameStrata="LOW">
+		<Size x="204" y="140"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="MinimapCluster" relativePoint="BOTTOMRIGHT">
+				<Offset x="0" y="0"/>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="$parentHeader">
+				<Size>
+					<AbsDimension x="160" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="0" y="-6"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="WatchFrameTitle" inherits="GameFontNormal" text="OBJECTIVES_TRACKER_LABEL">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad> self:RegisterForClicks("RightButtonUp"); </OnLoad>
+					<OnClick function="WatchFrameHeader_OnClick" />
+				</Scripts>
+			</Button>
+			<Button name="$parentCollapseExpandButton">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-12" y="-5"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick function="WatchFrame_CollapseExpandButton_OnClick"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1"/>
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Panel-QuestHideButton">
+					<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+				</PushedTexture>
+				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
+				<DisabledTexture file="Interface\Buttons\UI-Panel-QuestHideButton-disabled" />
+			</Button>
+			<Frame name="WatchFrameLines" hidden="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="WatchFrame" relativePoint="TOPLEFT">
+						<Offset x="0" y="-30"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="WatchFrame" relativePoint="BOTTOMRIGHT">
+						<Offset x="-24" y="12"/>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="WatchFrameLinesAutoQuestShadow" inherits="QuestTracker-Shadow" parentKey="AutoQuestShadow" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-40" y="8"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="WatchFrameLinesAutoQuestShadowFadeIn" parentKey="FadeIn">
+									<Alpha duration="0" order="1"/>
+									<Alpha duration="0.5" order="2"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameStrata("LOW");
+						self.updateFunctions = {};
+						self.numFunctions = 0;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="WatchFrame_OnLoad"/>
+			<OnEvent function="WatchFrame_OnEvent"/>
+			<OnUpdate function="WatchFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+	<ScrollFrame name="WatchFrameAutoQuestPopUpTemplate" enableMouse="true" virtual="true">
+		<Size x="224" y="72"/>
+		<Scripts>
+			<OnMouseUp>
+				if (self.type == "OFFER") then
+					ShowQuestOffer(GetQuestLogIndexByID(self.questID));
+				else
+					ShowQuestComplete(GetQuestLogIndexByID(self.questID));
+				end
+				WatchFrameAutoQuest_ClearPopUp(self.questID);
+			</OnMouseUp>
+			<OnLoad>
+				self:SetHorizontalScroll(-28.5);
+			</OnLoad>
+		</Scripts>
+		<ScrollChild>
+			<Frame name="$parentScrollChild" parentKey="ScrollChild">
+				<Size x="190" y="60"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBg" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture name="$parentBorderTopLeft" inherits="AutoQuestToastBorder-TopLeft">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-4" y="4" />
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderTopRight" inherits="AutoQuestToastBorder-TopRight">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="4" y="4" />
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBotLeft" inherits="AutoQuestToastBorder-BotLeft">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="-4" y="-4" />
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderBotRight" inherits="AutoQuestToastBorder-BotRight">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-4"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBorderLeft" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
+							<Size x="8" y="16"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.5" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="$parentBorderRight" file="Interface\QuestFrame\AutoQuestToastBorder-LeftRight" vertTile="true">
+							<Size x="8" y="16"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0.5" right="1" top="0" bottom="1"/>
+						</Texture>
+						<Texture name="$parentBorderTop" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
+							<Size x="16" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBorderTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="TOPRIGHT" relativeTo="$parentBorderTopRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.5"/>
+						</Texture>
+						<Texture name="$parentBorderBottom" file="Interface\QuestFrame\AutoQuestToastBorder-TopBot" horizTile="true">
+							<Size x="16" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeTo="$parentBorderBotLeft" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBorderBotRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0.5" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture name="$parentQuestIconBg" inherits="QuestIcon-Large">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture name="$parentExclamation" inherits="QuestIcon-Exclamation" parentKey="Exclamation" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentQuestIconBg" x="0.5" />
+							</Anchors>
+						</Texture>
+						<Texture name="$parentQuestionMark" inherits="QuestIcon-QuestionMark" parentKey="QuestionMark" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentQuestIconBg" x="0.5" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString name="$parentQuestName" inherits="QuestFont_Large" parentKey="QuestName">
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentQuestIconBg" relativePoint="RIGHT" x="-6"/>
+								<Anchor point="RIGHT" x="-8"/>
+								<Anchor point="TOP" x="0" y="-24"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+						<FontString name="$parentTopText" inherits="GameFontNormalSmall" parentKey="TopText">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-4"/>
+								<Anchor point="LEFT" relativeTo="$parentQuestIconBg" relativePoint="RIGHT" x="-6"/>
+								<Anchor point="RIGHT" x="-8"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentBottomText" inherits="GameFontDisableSmall" parentKey="BottomText">
+							<Anchors>
+								<Anchor point="BOTTOM" x="0" y="4"/>
+								<Anchor point="LEFT" relativeTo="$parentQuestIconBg" relativePoint="RIGHT" x="-6"/>
+								<Anchor point="RIGHT" x="-8"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture name="$parentShine" alphaMode="ADD" alpha="0" hidden="true" parentKey="Shine">
+							<Animations>
+								<AnimationGroup name="$parentFlash" parentKey="Flash">
+									<Alpha startDelay="0" duration="0.25" order="1"/>
+									<Alpha startDelay="0.05" duration="0.25" order="2"/>
+									<Scripts>
+										<OnStop>
+											self:GetParent():Hide();
+										</OnStop>
+										<OnFinished>
+											self:GetParent():Hide();
+										</OnFinished>
+									</Scripts>
+								</AnimationGroup>
+							</Animations>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentIconShine" alphaMode="ADD" inherits="QuestIcon-WhiteFlash" alpha="0" hidden="true" parentKey="IconShine">
+							<Anchors>
+								<Anchor point="CENTER" relativeTo="$parentQuestIconBg"/>
+							</Anchors>
+							<Animations>
+								<AnimationGroup name="$parentFlash" parentKey="Flash">
+									<Alpha duration="0.25" order="1"/>
+									<Alpha startDelay="0.05" duration="0.25" order="2"/>
+									<Scripts>
+										<OnStop>
+											self:GetParent():Hide();
+										</OnStop>
+										<OnFinished>
+											self:GetParent():Hide();
+											if (self:GetParent():GetParent():GetParent().type=="COMPLETED") then
+											self:GetParent():GetParent().Flash:Show();
+											end
+										</OnFinished>
+									</Scripts>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentFlash" useParentLevel="true" setAllPoints="true" hidden="true" parentKey="Flash">
+						<Layers>
+							<Layer level="BORDER">
+								<Texture name="QuestLogFrameCompleteButtonFlash" inherits="UIPanelButtonHighlightTexture" parentKey="Flash">
+									<Size x="180" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="14" y="-2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentIconFlash" alphaMode="ADD" inherits="QuestIcon-WhiteFlash" alpha="0.5" parentKey="IconFlash">
+									<Anchors>
+										<Anchor point="CENTER" relativePoint="LEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.IconFlash:SetVertexColor(1, 0, 0);
+							</OnLoad>
+							<OnShow>
+								UIFrameFlash(self, 0.75, 0.75, -1, nil);
+							</OnShow>
+							<OnHide>
+								UIFrameFlashStop(self);
+							</OnHide>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+		</ScrollChild>
+	</ScrollFrame>
+</Ui>

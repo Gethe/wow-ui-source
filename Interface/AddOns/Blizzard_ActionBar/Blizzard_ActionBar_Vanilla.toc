@@ -1,0 +1,23 @@
+## Title: Blizzard_ActionBar
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_FrameXML, Blizzard_TextStatusBar, Blizzard_HelpPlate
+## AllowLoadGameType: vanilla
+## AllowLoad: Game
+ActionButtonUtil.lua
+Shared\MainMenuBarMicroButtons.lua
+Classic\MainMenuBarMicroButtons.lua
+Vanilla\MainMenuBarMicroButtons.lua
+Vanilla\MainMenuBarMicroButtons.xml
+Classic\MainMenuBar.lua
+Classic\MainMenuBar.xml
+Classic\ActionButtonTemplate.xml
+Classic\ActionBarFrame.xml
+Classic\MultiActionBars.xml
+Vanilla\StanceBar.lua
+Vanilla\StanceBar.xml
+Classic\PossessActionBar.lua
+Classic\PossessActionBar.xml
+Classic\PetActionBarFrame.lua
+Classic\PetActionBarFrame.xml
+Classic\Localization.lua

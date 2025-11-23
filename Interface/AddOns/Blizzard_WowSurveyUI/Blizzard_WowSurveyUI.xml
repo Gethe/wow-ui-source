@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="WowSurveyStatusFrame" inherits="StatusUIFrame" mixin="WowSurveyStatusMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Button>
+</Ui>

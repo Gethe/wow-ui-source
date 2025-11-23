@@ -1,0 +1,10 @@
+## Interface: 0
+## Title: Blizzard Group Finder (Vanilla Style)
+## Notes: A premade group finder with "Vanilla flavored" functionality.
+## Secure: 1
+## LoadOnDemand: 1
+
+Blizzard_LFGVanilla_Minimap.xml
+Blizzard_LFGVanilla_ParentFrame.xml
+Blizzard_LFGVanilla_Listing.xml
+Blizzard_LFGVanilla_Browse.xml

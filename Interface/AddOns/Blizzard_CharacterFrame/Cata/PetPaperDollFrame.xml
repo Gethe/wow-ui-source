@@ -1,0 +1,203 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="CompanionButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentActiveTexture" file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CompanionButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+				CompanionButton_OnModifiedClick(self, button);
+				else
+				CompanionButton_OnClick(self, button);
+				end
+				PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+			<OnDragStart>
+				CompanionButton_OnDrag(self, button);
+			</OnDragStart>
+			<OnReceiveDrag>
+				CompanionButton_OnDrag(self);
+			</OnReceiveDrag>
+			<OnEnter>
+				CompanionButton_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+		<DisabledTexture file="Interface\PetPaperDollFrame\UI-PetFrame-Slots-Mounts">
+			<TexCoords left="0.203125" right="0.765625" top="0.203125" bottom="0.7625625"/>
+		</DisabledTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-Button-Outline" alphaMode="ADD">
+			<Size>
+				<AbsDimension x="66" y="66"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</CheckedTexture>
+	</CheckButton>
+
+	<Frame name="PetPaperDollFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" id="2" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="PetPaperDollPetModelBg" file="Interface\PetPaperDollFrame\PetStatsBG-Hunter">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="PetLevelText" inherits="GameFontNormalSmall" text="Level level race class">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-26"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="PetPaperDollFrameExpBar" inherits="TextStatusBar">
+				<Size x="280" y="11"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="15" y="14"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="PetPaperDollXPBar1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="140" y="13"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
+							</Anchors>
+							<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
+						</Texture>
+						<Texture file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="140" y="13"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="PetPaperDollXPBar1" relativePoint="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.203125" right="0.8046875" top="0.2890625" bottom="0.33984375"/>
+						</Texture>
+						<FontString name="PetPaperDollFrameExpBarText" inherits="TextStatusBarText">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:SetFrameLevel(self:GetParent():GetFrameLevel()+2);
+						TextStatusBar_Initialize(self);
+						SetTextStatusBarText(self, PetPaperDollFrameExpBarText);
+					</OnLoad>
+					<OnEnter>
+						TextStatusBar_UpdateTextString(self);
+						ShowTextStatusBarText(self);
+					</OnEnter>
+					<OnMinMaxChanged function="TextStatusBar_OnValueChanged"/>
+					<OnLeave function="HideTextStatusBarText"/>
+				</Scripts>
+				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+				<BarColor r="0.58" g="0.0" b="0.55"/>
+			</StatusBar>
+			<PlayerModel name="PetModelFrame" inherits="ModelWithZoomTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameInset" x="4" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameInset" x="-4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						Model_OnLoad(self);
+						self:SetCamDistanceScale(1.3);
+					</OnLoad>
+				</Scripts>
+				<Frames>
+					<Button name="PetModelFrameRotateLeftButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateLeft(PetModelFrame);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationLeft-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationLeft-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+					</Button>
+					<Button name="PetModelFrameRotateRightButton">
+						<Size>
+							<AbsDimension x="35" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="PetModelFrameRotateLeftButton" relativePoint="TOPRIGHT"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonDown", "LeftButtonUp");
+							</OnLoad>
+							<OnClick>
+								Model_RotateRight(PetModelFrame);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-RotationRight-Button-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-RotationRight-Button-Down"/>
+						<HighlightTexture file="Interface\Buttons\ButtonHilight-Round" alphaMode="ADD"/>
+					</Button>
+					<Frame name="PetPaperDollPetInfo" enableMouse="true" hidden="false">
+						<Size x="24" y="23"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="CharacterFrameInset" x="-8" y="-8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\PetPaperDollFrame\PetStable-DietIcon">
+									<Size x="24" y="23"/>
+									<TexCoords left="0" right="0.75" top="0" bottom="0.71875"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(format(PET_DIET_TEMPLATE, BuildListString(GetPetFoodTypes())));
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame name="PetModelFrameShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
+				</Frames>
+			</PlayerModel>
+		</Frames>
+		<Scripts>
+			<OnLoad function="PetPaperDollFrame_OnLoad"/>
+			<OnEvent function="PetPaperDollFrame_OnEvent"/>
+			<OnShow function="PetPaperDollFrame_OnShow"/>
+			<OnHide function="PetPaperDollFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

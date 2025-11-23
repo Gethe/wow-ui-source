@@ -1,0 +1,7 @@
+## Author: Blizzard Entertainment
+## Title: Blizzard Frame Effects
+## AllowLoad: Both
+
+EffectFactory.lua
+GlowEmitter.xml
+PowerSwirl.xml

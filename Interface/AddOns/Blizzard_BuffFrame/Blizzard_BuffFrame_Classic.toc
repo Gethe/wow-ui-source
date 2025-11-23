@@ -1,0 +1,8 @@
+## Title: Blizzard_BuffFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_Minimap, Blizzard_FrameXMLUtil
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\BuffFrame.lua
+Classic\BuffFrame.xml

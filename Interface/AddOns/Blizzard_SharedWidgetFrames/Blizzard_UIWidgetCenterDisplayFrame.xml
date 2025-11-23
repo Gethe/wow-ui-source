@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="UIWidgetCenterDisplayFrame" mixin="WidgetCenterDisplayFrameMixin" parent="UIParent" inherits="ResizeLayoutFrame" frameStrata="DIALOG" hidden="true" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="Dialog" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="96"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Color r="0" g="0" b="0" a=".8"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="-5" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="5" y="-5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TitleContainer" inherits="VerticalLayoutFrame">
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="topPadding" value="80" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="QuestFont_39" justifyH="CENTER" justifyV="TOP">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="WidgetContainer" hidden="true" inherits="UIWidgetContainerTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.TitleContainer" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="ExtraButton" mixin="UIWidgetCenterDisplayFrameExtraButtonMixin" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="100" y="25"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CloseButton" mixin="UIWidgetCenterDisplayFrameButtonMixin" inherits="UIPanelButtonTemplate">
+				<Size x="100" y="25"/>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

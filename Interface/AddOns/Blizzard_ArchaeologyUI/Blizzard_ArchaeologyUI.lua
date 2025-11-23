@@ -1,0 +1,740 @@
+ARCHAEOLOGY_BUTTON_HEIGHT = 59;
+ARCHAEOLOGY_MID_TITLE_YOFFSET = -110;
+
+
+
+ARCHAEOLOGY_MAX_RACES = 12;
+ARCHAEOLOGY_MAX_STONES = 4;
+ARCHAEOLOGY_MAX_COMPLETED_SHOWN = 12;
+
+ARCHAEOLOGY_HELP_TAB = 0;
+ARCHAEOLOGY_SUMMARY_TAB = 1;
+ARCHAEOLOGY_COMPLETED_TAB = 2;
+
+ARCHAEOLOGY_SUMMARY_PAGE = 1;
+ARCHAEOLOGY_COMPLETED_PAGE = 2;
+ARCHAEOLOGY_CURRENT_PAGE = 3;
+
+
+
+local ArcheologyLayoutInfo = {
+	[ARCHAEOLOGY_SUMMARY_PAGE] 	= 		{
+																		--updateFunc = "SpellBook_UpdateProfTab",
+																		bgFileL="Interface\\Archeology\\Arch-BookItemLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookItemRight"
+																	};
+	[ARCHAEOLOGY_COMPLETED_PAGE] 	= 		{
+																		--updateFunc = "SpellBook_UpdateProfTab",
+																		bgFileL="Interface\\Archeology\\Arch-BookCompletedLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookCompletedRight"
+																	};
+	[ARCHAEOLOGY_CURRENT_PAGE] 	= 		{
+																		--updateFunc = "SpellBook_UpdateProfTab",
+																		bgFileL="Interface\\Archeology\\Arch-BookItemLeft",
+																		bgFileR="Interface\\Archeology\\Arch-BookItemRight"
+																	};
+
+
+
+
+};
+
+
+function ArchaeologyFrame_Show()
+	ShowUIPanel(ArchaeologyFrame);
+end
+function ArchaeologyFrame_Hide()
+	HideUIPanel(ArchaeologyFrame);
+end
+
+function ArchaeologyFrame_ShowFailed(self)
+	CloseResearch();
+end
+
+local RaceFilterAllIndex = 0;
+
+local function IsRaceFilterSet(filterIndex)
+		return filterIndex == ArchaeologyFrame.currentFrame.raceFilter;
+	end
+
+local function SetRaceFilter(filterIndex)
+	local currentFrame = ArchaeologyFrame.currentFrame;
+	currentFrame.raceFilter = filterIndex;
+
+	if currentFrame == ArchaeologyFrame.completedPage then
+		local currData = currentFrame.currData;
+		currData.raceIndex = max(1, filterIndex);
+		currData.projectIndex = 1;
+		currData.onRare = true;
+		currentFrame.currentPage = 1;
+	else
+		 ArchaeologyFrame_ShowArtifact(filterIndex);
+	end
+	currentFrame:UpdateFrame();
+end
+
+function ArchaeologyFrame_OnLoad(self)
+	UIPanelWindows["ArchaeologyFrame"] = {area = "left", pushable = 3, showFailedFunc = ArchaeologyFrame_ShowFailed };
+	ButtonFrameTemplate_HideButtonBar(ArchaeologyFrame);
+	ButtonFrameTemplate_HideAttic(ArchaeologyFrame);
+
+	self.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
+	self.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
+	self:RegisterEvent("RESEARCH_ARTIFACT_UPDATE");
+	self:RegisterEvent("RESEARCH_ARTIFACT_COMPLETE");
+	self:RegisterEvent("RESEARCH_ARTIFACT_DIG_SITE_UPDATED");
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE");
+	self:RegisterEvent("SKILL_LINES_CHANGED");
+	self:RegisterEvent("BAG_UPDATE_DELAYED");
+	self:RegisterEvent("GET_ITEM_INFO_RECEIVED");
+
+	local factionGroup = UnitFactionGroup("player");
+	if ( factionGroup and factionGroup ~= "Neutral" ) then
+		if ( factionGroup == "Alliance" ) then
+			self.tab1.factionIcon:SetTexCoord(0.31250000, 0.36914063, 0.79296875, 0.93359375);
+			self.factionIcon:SetTexCoord(0.41992188, 0.47265625, 0.45703125, 0.58593750);
+		else
+			self.tab1.factionIcon:SetTexCoord(0.21484375, 0.27343750, 0.79296875, 0.93750000);
+			self.factionIcon:SetTexCoord(0.41992188, 0.47265625, 0.32031250, 0.44921875);
+		end
+	end
+
+	local name = GetArchaeologyInfo();
+	self:SetTitle(name);
+	self.helpPage.titleText:SetText(name);
+
+
+	self.summaryPage.UpdateFrame = ArchaeologyFrame_UpdateSummary;
+	self.completedPage.UpdateFrame = ArchaeologyFrame_UpdateComplete;
+	self.artifactPage.UpdateFrame = ArchaeologyFrame_CurrentArtifactUpdate;
+
+	self.completedPage.prevData ={ };
+	self.completedPage.currData ={ onRare = false, raceIndex = 0, projectIndex = 0};
+
+
+	self.currentFrame = self.summaryPage;
+	self.currentFrame.currentPage = 1;
+
+	self.RaceFilterDropdown:SetWidth(95);
+	self.RaceFilterDropdown:SetSelectionTranslator(function(selection)
+		if selection.data > RaceFilterAllIndex then
+			local name = GetArchaeologyRaceInfo(selection.data);
+			return name;
+		end
+
+		return selection.text;
+	end);
+
+	self.RaceFilterDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_ARCHAEOLOGY_RACE_FILTER");
+
+		local currentFrame = ArchaeologyFrame.currentFrame;
+		local onCompletedPage = currentFrame == ArchaeologyFrame.completedPage;
+		if onCompletedPage then
+			rootDescription:CreateRadio(ALL, IsRaceFilterSet, SetRaceFilter, RaceFilterAllIndex);
+		end
+	
+		for raceIndex = 1, GetNumArchaeologyRaces() do
+			local numProjects = GetNumArtifactsByRace(raceIndex);
+			if numProjects > 0 then
+				local name, _, _,  currencyAmount, projectAmount =  GetArchaeologyRaceInfo(raceIndex);
+				if currentFrame == ArchaeologyFrame.artifactPage then
+					name = string.format("%s (%d/%d)", name, currencyAmount, projectAmount);
+				end
+	
+				local radio = rootDescription:CreateRadio(name, IsRaceFilterSet, SetRaceFilter, raceIndex);
+				radio:SetEnabled(not (onCompletedPage and numProjects <= 1));
+			end
+		end
+	end);
+
+	self.currentFrame:UpdateFrame();
+	self.artifactPage.glow:SetAlpha(0.0);
+end
+
+
+function ArchaeologyFrame_OnShow(self)
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+	local _, _, arch = GetProfessions();
+	if arch then
+		local name, texture, rank, maxRank = GetProfessionInfo(arch);
+		self:SetPortraitToAsset(texture);
+		self.rankBar:SetMinMaxValues(0, maxRank);
+		self.rankBar:SetValue(rank);
+		self.rankBar.text:SetText(rank.."/"..maxRank);
+	end
+	self.tab1:Click();
+
+	local found = false;
+	local numRaces = GetNumArchaeologyRaces();
+	for i=1,ARCHAEOLOGY_MAX_RACES do
+		if i <= numRaces then
+			if  GetNumArtifactsByRace(i) > 0 then
+				found = true;
+				break;
+			end
+		end
+	end
+
+	if not found then
+		self.helpPage:Hide();
+		self.infoButton:Click();
+	else
+		self.tab1:Click();
+	end
+end
+
+local function ArchaeologyFrame_CancelSpellLoadCallback(control)
+	if control.spellDataLoadedCancelFunc then
+		control.spellDataLoadedCancelFunc();
+		control.spellDataLoadedCancelFunc = nil;
+	end
+end
+
+function ArchaeologyFrame_OnHide(self)
+	ArchaeologyFrame_CancelSpellLoadCallback(self.artifactPage.historyScroll);
+	for i=1,ARCHAEOLOGY_MAX_COMPLETED_SHOWN do
+		local projectButton = self.completedPage["artifact"..i];
+		ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
+	end
+	CloseResearch();
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
+end
+
+
+function ArchaeologyFrame_OnEvent(self, event, ...)
+	if event == "RESEARCH_ARTIFACT_COMPLETE" then
+		local name  = ...;
+		if self.artifactPage:IsShown() and self.artifactPage.currentName == name  then
+			self.artifactPage.glow:SetFrameLevel(self:GetFrameLevel()+3);
+			self.artifactPage.glow.completeAnim:Play();
+		end
+	elseif event == "BAG_UPDATE_DELAYED" then
+		if self:IsShown() and self.artifactPage:IsShown() then
+			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+		end
+	elseif event == "GET_ITEM_INFO_RECEIVED" then
+		if self:IsShown() and self.artifactPage:IsShown() then
+			ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+		end
+	elseif event == "SKILL_LINES_CHANGED" then
+		local _, _, arch = GetProfessions();
+		if arch then
+			local name, texture, rank, maxRank = GetProfessionInfo(arch);
+			self:SetPortraitToAsset(texture);
+			self.rankBar:SetMinMaxValues(0, maxRank);
+			self.rankBar:SetValue(rank);
+			self.rankBar.text:SetText(rank.."/"..maxRank);
+		end
+	else
+		if self.completedPage:IsShown() then
+			self.currentFrame.raceFilter = 0;
+			self.completedPage.currentPage = 1;
+			self.completedPage.currData.raceIndex = 1;
+			self.completedPage.currData.projectIndex = 1;
+			self.completedPage.currData.onRare = true;
+			self.currentFrame:UpdateFrame();
+		else
+			self.currentFrame.currentPage = 1;
+			self.currentFrame:UpdateFrame();
+		end
+	end
+end
+
+function ArchaeologyFrame_OnMouseWheel(self, value)
+	if ( self.currentFrame == self.summaryPage ) then
+		if ( value > 0 ) then
+			if ( self.currentFrame.prevPageButton:IsEnabled() ) then
+				ArchaeologyFrameSummary_PageClick(self.currentFrame.prevPageButton, false);
+			end
+		else
+			if ( self.currentFrame.nextPageButton:IsEnabled() ) then
+				ArchaeologyFrameSummary_PageClick(self.currentFrame.nextPageButton, true);
+			end
+		end
+	elseif ( self.currentFrame == self.completedPage ) then
+		if ( value > 0 ) then
+			if ( self.currentFrame.prevPageButton:IsEnabled() ) then
+				ArchaeologyFrame_PageClick(self.currentFrame.prevPageButton, false);
+			end
+		else
+			if ( self.currentFrame.nextPageButton:IsEnabled() ) then
+				ArchaeologyFrame_PageClick(self.currentFrame.nextPageButton, true);
+			end
+		end
+	end
+end
+
+function ArchaeologyFrame_UpdateSummary(self)
+	local numRaces = GetNumArchaeologyRaces();
+	local raceButton;
+	for i=1,ARCHAEOLOGY_MAX_RACES do
+		raceButton = self["race"..i];
+		local raceIndex = i + (ARCHAEOLOGY_MAX_RACES * (self.currentPage-1));
+		if raceIndex <= numRaces then
+			local name, texture, _, currencyAmount, projectAmount =  GetArchaeologyRaceInfo(raceIndex, false);
+
+			if texture then
+				raceButton:GetNormalTexture():SetTexture(texture);
+				raceButton:GetHighlightTexture():SetTexture(texture);
+				raceButton.glow:SetTexture(texture);
+			end
+
+			local numProjects = GetNumArtifactsByRace(raceIndex);
+			if numProjects==0 then
+				raceButton.readyAnim:Stop();
+				raceButton:Disable();
+			else
+				raceButton:Enable();
+				if currencyAmount >= projectAmount then
+					if not raceButton.readyAnim:IsPlaying() then
+						raceButton.readyAnim:Play();
+					end
+				else
+					raceButton.readyAnim:Stop();
+				end
+				raceButton.raceName:SetText(name.."|n"..currencyAmount.."/"..projectAmount);
+			end
+			raceButton:Show();
+		else
+			raceButton:Hide();
+		end
+	end
+
+	self.pageText:SetFormattedText(PAGE_NUMBER, self.currentPage);
+	if self.currentPage == 1 then
+		self.prevPageButton:SetButtonState("NORMAL");
+		self.prevPageButton:Disable();
+	else
+		self.prevPageButton:Enable();
+	end
+	if (ARCHAEOLOGY_MAX_RACES+ARCHAEOLOGY_MAX_RACES*(self.currentPage-1) >= numRaces) then
+		self.nextPageButton:SetButtonState("NORMAL");
+		self.nextPageButton:Disable();
+	else
+		self.nextPageButton:Enable();
+	end
+end
+
+
+function ArchaeologyFrame_CurrentArtifactUpdate(self)
+	local RaceName, RaceTexture, RaceitemID	= GetArchaeologyRaceInfo(self.raceID, true);
+	local name, description, rarity, icon, spellDescription, numSockets, bgTexture, spellID =  GetSelectedArtifactInfo();
+	self.currentName = name;
+	if 	self.solveFrame:IsShown() then
+		local base, adjust, totalCost = GetArtifactProgress();
+		self.solveFrame.statusBar:SetMinMaxValues(0, totalCost);
+		self.solveFrame.statusBar:SetValue(min(base+adjust, totalCost));
+		if adjust > 0 then
+			self.solveFrame.statusBar.text:SetText((base+adjust).." "..GREEN_FONT_COLOR_CODE.."(+"..adjust.." "..ARCHAEOLOGY_RUNE_STONES..")|r /"..totalCost);
+		else
+			self.solveFrame.statusBar.text:SetText(base.."/"..totalCost);
+		end
+
+		if CanSolveArtifact() then
+			self.solveFrame.solveButton:Enable();
+		else
+			self.solveFrame.solveButton:Disable();
+		end
+	end
+
+	self.artifactName:SetText(name);
+	self.icon:SetTexture(icon);
+	self.historyScroll.child.text:SetText(description);
+
+	self.historyTitle:ClearAllPoints();
+	local runeName, runeStoneIconPath, _;
+	if RaceitemID > 0 then
+		runeName, _, _, _, _, _, _, _, _, runeStoneIconPath = C_Item.GetItemInfo(RaceitemID);
+	end
+	local endFound = false;
+	for i=1,ARCHAEOLOGY_MAX_STONES do
+		if i > numSockets or not runeName then
+			self.solveFrame["keystone"..i]:Hide();
+		else
+			self.solveFrame["keystone"..i].icon:SetTexture(runeStoneIconPath);
+			if ItemAddedToArtifact(i) then
+				self.solveFrame["keystone"..i].icon:Show();
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_REMOVE_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i]:Enable();
+			else
+				self.solveFrame["keystone"..i].icon:Hide();
+				self.solveFrame["keystone"..i].tooltip = string.format(ARCHAEOLOGY_KEYSTONE_ADD_TOOLTIP, runeName);
+				self.solveFrame["keystone"..i]:Enable();
+				if endFound then
+					self.solveFrame["keystone"..i]:Disable();
+				end
+				endFound = true;
+			end
+			self.solveFrame["keystone"..i]:Show();
+		end
+	end
+
+	ArchaeologyFrame_CancelSpellLoadCallback(self.historyScroll);
+	if rarity == 0 then --Common Item
+		self.historyTitle:SetPoint("RIGHT", -110, 126);
+		self.historyScroll:SetSize(190, 200);
+		self.historyScroll.child:SetSize(190, 200);
+		self.historyScroll.child.text:SetWidth(190);
+		self.artifactBG:SetTexture("");
+		self.raceRarity:SetText(RaceName.." - "..ITEM_QUALITY1_DESC);
+		if RaceTexture then
+			self.raceBG:SetTexture(RaceTexture);
+		else
+			self.raceBG:SetTexture("Interface\\Archeology\\Arch-TempLogoBIG");
+		end
+	else
+		if 	self.solveFrame:IsShown() then
+			self.historyTitle:SetPoint("CENTER", 0, -25);
+			self.historyScroll:SetSize(400, 68);
+			self.historyScroll.child:SetSize(400, 68);
+			self.historyScroll.child.text:SetWidth(400);
+		else
+			self.historyTitle:SetPoint("CENTER", 0, -25);
+			self.historyScroll:SetSize(400, 118);
+			self.historyScroll.child:SetSize(400, 118);
+			self.historyScroll.child.text:SetWidth(400);
+
+			self.historyScroll.child.text:SetText(spellDescription);
+			local spell = Spell:CreateFromSpellID(spellID);
+			self.historyScroll.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+				self.historyScroll.child.text:SetText(spell:GetSpellDescription());
+			end);
+		end
+		self.raceBG:SetTexture("");
+		self.raceRarity:SetText(RaceName.." - "..ITEM_QUALITY3_DESC);
+		if bgTexture and bgTexture ~= "" then
+			self.artifactBG:SetTexture(bgTexture);
+		else
+			self.artifactBG:SetTexture("Interface\\Archeology\\Arch-TempRareSketch");
+		end
+	end
+end
+
+
+
+
+function ArchaeologyFrame_UpdateComplete(self)
+	local name, description, rarity, icon, spellDescription, spellID, firstCompletionTime, completionCount;
+	local raceName, _;
+	local numRaces = GetNumArchaeologyRaces();
+	local outOfArtifacts = false;
+	local numRare = 0;
+	local numCommon = 0;
+	local buttonSkip = 0;
+
+
+	if not self.prevData[self.currentPage] then
+		self.prevData[self.currentPage] = {};
+	end
+	self.prevData[self.currentPage].raceIndex = self.currData.raceIndex;
+	self.prevData[self.currentPage].projectIndex = self.currData.projectIndex;
+	self.prevData[self.currentPage].onRare = self.currData.onRare;
+
+
+	if IsArtifactCompletionHistoryAvailable() then
+		local i = 1;
+		local skip = false;
+		while i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN+1 do
+			if outOfArtifacts  or buttonSkip > 0 then
+				if i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
+					self["artifact"..i]:Hide();
+					buttonSkip = buttonSkip-1;
+				end
+			else
+				local done = false;
+				local rareStatus = self.currData.onRare;
+				skip = false;
+
+				name, description, rarity, icon, spellDescription,  _, _, spellID, firstCompletionTime, completionCount = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
+
+				if not name then
+					if self.raceFilter ~= 0 then
+						self.currData.projectIndex = 1;
+						if self.currData.onRare then
+							self.currData.onRare = false;
+						else	-- WE ARE DONE
+							outOfArtifacts = true;
+						end
+					else
+						self.currData.raceIndex = self.currData.raceIndex+1;
+						self.currData.projectIndex = 1;
+						if self.currData.raceIndex > numRaces then
+							if self.currData.onRare then
+								self.currData.raceIndex = 1;
+								self.currData.onRare = false;
+							else	-- WE ARE DONE
+								outOfArtifacts = true;
+							end
+						end
+					end
+					done = true;
+				else
+					if( (self.currData.onRare ~= (rarity == 1)) or (completionCount ==  0) ) then
+						skip = true;
+						self.currData.projectIndex = self.currData.projectIndex+1;
+					end
+				end
+
+				if rareStatus ~= self.currData.onRare and i > 1 then -- we have switched to common
+					local yoffset =  ARCHAEOLOGY_MID_TITLE_YOFFSET - floor(i/2)*ARCHAEOLOGY_BUTTON_HEIGHT;
+					self.titleMid:SetPoint("TOP", 0 , yoffset);
+					buttonSkip = 2 + mod(i+1,2);
+				end
+
+				if not done and not skip and i<=ARCHAEOLOGY_MAX_COMPLETED_SHOWN then
+					raceName = GetArchaeologyRaceInfo(self.currData.raceIndex);
+					local projectButton = self["artifact"..i];
+					projectButton:Show();
+					projectButton.icon:SetTexture(icon);
+					projectButton.artifactName:SetText(name);
+					projectButton.raceIndex =  self.currData.raceIndex;
+					projectButton.projectIndex =  self.currData.projectIndex;
+					ArchaeologyFrame_CancelSpellLoadCallback(projectButton);
+					if rarity == 0 then
+						projectButton.spellDescription = spellDescription;
+						local spell = Spell:CreateFromSpellID(spellID);
+						projectButton.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+							projectButton.spellDescription = spell:GetSpellDescription();
+						end);
+					else
+						projectButton.spellDescription = description;
+					end
+					projectButton.firstCompletionTime = firstCompletionTime;
+					projectButton.completionCount = completionCount;
+
+					if rarity == 0 then
+						numCommon = numCommon +1;
+						projectButton.artifactSubText:SetText(raceName.." - "..ITEM_QUALITY1_DESC);
+						projectButton:Disable();
+					else
+						numRare = numRare +1;
+						projectButton.artifactSubText:SetText(raceName.." - "..ITEM_QUALITY3_DESC);
+						projectButton:Enable();
+					end
+					self.currData.projectIndex = self.currData.projectIndex+1;
+				elseif done then
+					i = i-1; -- Try this loop again with new race and artifact
+				end
+			end
+			
+			if(not skip) then
+				i=i+1;
+			end
+		end
+	else
+		for i=1,ARCHAEOLOGY_MAX_COMPLETED_SHOWN do
+			self["artifact"..i]:Hide();
+		end
+	end
+
+
+	self.pageText:SetFormattedText(PAGE_NUMBER, self.currentPage);
+	if self.currentPage == 1 then
+		self.prevPageButton:SetButtonState("NORMAL");
+		self.prevPageButton:Disable();
+	else
+		self.prevPageButton:Enable();
+	end
+	name = GetArtifactInfoByRace(self.currData.raceIndex, self.currData.projectIndex);
+	if not name then
+		self.nextPageButton:SetButtonState("NORMAL");
+		self.nextPageButton:Disable();
+	else
+		self.nextPageButton:Enable();
+	end
+
+
+	if numRare + numCommon == 0 then
+		self.titleBig:Show();
+		self.titleBigLeft:Show();
+		self.titleBigRight:Show();
+		self.infoText:Show();
+
+		self.titleTop:Hide();
+		self.titleTopLeft:Hide();
+		self.titleTopRight:Hide();
+		self.titleMid:Hide();
+		self.titleMidLeft:Hide();
+		self.titleMidRight:Hide();
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
+	else
+
+		ArchaeologyFrame.RaceFilterDropdown:Show();
+		self.titleBig:Hide();
+		self.titleBigLeft:Hide();
+		self.titleBigRight:Hide();
+		self.infoText:Hide();
+
+		self.titleTop:Show();
+		self.titleTopLeft:Show();
+		self.titleTopRight:Show();
+		if numRare == 0 then
+			self.titleTop:SetText(ARCHAEOLOGY_COMMON_COMPLETED);
+			self.titleMid:Hide();
+			self.titleMidLeft:Hide();
+			self.titleMidRight:Hide();
+		else
+			self.titleTop:SetText(ARCHAEOLOGY_RARE_COMPLETED);
+			if numCommon > 0 then
+				self.titleMid:Show();
+				self.titleMidLeft:Show();
+				self.titleMidRight:Show();
+			else
+				self.titleMid:Hide();
+				self.titleMidLeft:Hide();
+				self.titleMidRight:Hide();
+			end
+		end
+	end
+end
+
+
+
+function ArchaeologyFrame_ShowArtifact(RaceID, ArtifactID)
+	ArchaeologyFrame.summaryPage:Hide();
+	ArchaeologyFrame.completedPage:Hide();
+	if ArtifactID then
+		SetSelectedArtifact(RaceID, ArtifactID);
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
+		ArchaeologyFrame.artifactPage.solveFrame:Hide();
+		ArchaeologyFrame.artifactPage.backButton:Show();
+	else
+		ArchaeologyFrame.RaceFilterDropdown:Show();
+		SetSelectedArtifact(RaceID);
+		ArchaeologyFrame.artifactPage.solveFrame:Show();
+		ArchaeologyFrame.artifactPage.backButton:Hide();
+	end
+
+	ArchaeologyFrame.artifactPage.raceFilter = RaceID;
+	ArchaeologyFrame.artifactPage.raceID = RaceID;
+	ArchaeologyFrame.artifactPage.isFinished = ArtifactID ~= nil;
+	ArchaeologyFrame.currentFrame = ArchaeologyFrame.artifactPage;
+	ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+	ArchaeologyFrame.artifactPage:Show();
+
+	if ArchaeologyFrame.RaceFilterDropdown:IsShown() then
+		ArchaeologyFrame.RaceFilterDropdown:GenerateMenu();
+	end
+end
+
+
+function ArchaeologyFrame_OnTabClick(self)
+	local archFrame = self:GetParent();
+	archFrame.selectedTab = self:GetID()
+
+	archFrame.summaryPage:Hide();
+	archFrame.completedPage:Hide();
+	archFrame.artifactPage:Hide();
+	archFrame.rankBar:Show();
+
+	if archFrame.selectedTab ==  ARCHAEOLOGY_HELP_TAB then
+		if archFrame.helpPage:IsShown() then
+			archFrame.selectedTab = ARCHAEOLOGY_SUMMARY_TAB;
+			archFrame.helpPage:Hide();
+		else
+			archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetSize(63, 57);
+			archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetSize(63, 57);
+			archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+			archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+			archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB].factionIcon:SetPoint("CENTER", -6, 0);
+
+			archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetSize(48, 57);
+			archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetSize(48, 57);
+			archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+			archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+
+			archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
+			archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
+			archFrame.helpPage:Show();
+			archFrame.RaceFilterDropdown:Hide();
+			archFrame.rankBar:Hide();
+			archFrame.factionIcon:Show();
+		end
+	else
+		archFrame.helpPage:Hide();
+	end
+
+
+	if archFrame.selectedTab ==  ARCHAEOLOGY_SUMMARY_TAB then
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetTexCoord(0.85546875, 0.97851563, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB].factionIcon:SetPoint("CENTER", -6, 0);
+
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetTexCoord(0.31250000, 0.40625000, 0.56250000, 0.78515625);
+
+		archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileL);
+		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_SUMMARY_PAGE].bgFileR);
+		archFrame.summaryPage:Show();
+		archFrame.currentFrame = archFrame.summaryPage;
+		archFrame.currentFrame.raceFilter = 0;
+		archFrame.currentFrame.currentPage = 1;
+		ArchaeologyFrame.RaceFilterDropdown:Hide();
+		ArchaeologyFrame.factionIcon:Show();
+		archFrame.currentFrame:UpdateFrame();
+	elseif archFrame.selectedTab ==  ARCHAEOLOGY_COMPLETED_TAB then
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetSize(48, 57);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetNormalTexture():SetTexCoord(0.21484375, 0.30859375, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB]:GetHighlightTexture():SetTexCoord(0.21484375, 0.30859375, 0.56250000, 0.78515625);
+		archFrame["tab"..ARCHAEOLOGY_SUMMARY_TAB].factionIcon:SetPoint("CENTER", -13, 0);
+
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetSize(63, 57);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetNormalTexture():SetTexCoord(0.72851563, 0.85156250, 0.00390625, 0.22656250);
+		archFrame["tab"..ARCHAEOLOGY_COMPLETED_TAB]:GetHighlightTexture():SetTexCoord(0.72851563, 0.85156250, 0.00390625, 0.22656250);
+
+		archFrame.bgLeft:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_COMPLETED_PAGE].bgFileL);
+		archFrame.bgRight:SetTexture(ArcheologyLayoutInfo[ARCHAEOLOGY_COMPLETED_PAGE].bgFileR);
+		archFrame.completedPage:Show();
+		archFrame.completedPage.currentPage = 1;
+		archFrame.completedPage.currData.raceIndex = 1;
+		archFrame.completedPage.currData.projectIndex = 1;
+		archFrame.completedPage.currData.onRare = true;
+		archFrame.currentFrame = archFrame.completedPage;
+		archFrame.currentFrame.raceFilter = 0;
+		ArchaeologyFrame.factionIcon:Hide();
+		ArchaeologyFrame.currentFrame:UpdateFrame();
+	end
+
+	archFrame.RaceFilterDropdown:GenerateMenu();
+end
+
+
+function ArchaeologyFrame_KeyStoneClick(self)
+	if ItemAddedToArtifact(self:GetID()) then
+		RemoveItemFromArtifact();
+	else
+		SocketItemToArtifact();
+	end
+	ArchaeologyFrame_CurrentArtifactUpdate(ArchaeologyFrame.artifactPage);
+end
+
+function ArchaeologyFrame_PageClick(self, nextPage)
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+	if nextPage then
+		ArchaeologyFrame.currentFrame.currentPage = ArchaeologyFrame.currentFrame.currentPage + 1;
+		ArchaeologyFrame.currentFrame:UpdateFrame();
+	else
+		ArchaeologyFrame.completedPage.currentPage = ArchaeologyFrame.completedPage.currentPage - 1;
+		ArchaeologyFrame.completedPage.currData.raceIndex = ArchaeologyFrame.completedPage.prevData[ArchaeologyFrame.completedPage.currentPage].raceIndex;
+		ArchaeologyFrame.completedPage.currData.projectIndex = ArchaeologyFrame.completedPage.prevData[ArchaeologyFrame.completedPage.currentPage].projectIndex;
+		ArchaeologyFrame.completedPage.currData.onRare = ArchaeologyFrame.completedPage.prevData[ArchaeologyFrame.completedPage.currentPage].onRare;
+		ArchaeologyFrame.currentFrame:UpdateFrame();
+	end
+end
+
+function ArchaeologyFrameSummary_PageClick(self, nextPage)
+	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
+	if nextPage then
+		ArchaeologyFrame.currentFrame.currentPage = ArchaeologyFrame.currentFrame.currentPage + 1;
+	else
+		ArchaeologyFrame.currentFrame.currentPage = ArchaeologyFrame.currentFrame.currentPage - 1;
+	end
+	ArchaeologyFrame.currentFrame:UpdateFrame();
+end

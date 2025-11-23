@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_LFGVanilla_Minimap.lua"/>
+	<Frame name="LFGEyeTemplate" virtual="true" hidden="true" mixin="LFGEyeTemplateMixin">
+		<Size x="45" y="45"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture"  parentKey="Texture" setAllPoints="true" file="Interface\LFGFrame\LFG-Eye"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Button name="LFGMinimapFrame" parent="MinimapBackdrop" hidden="true" inherits="MiniMapButtonTemplate" mixin="LFGMinimapMixin">
+		<Size x="33" y="33"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="33" y="-4"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+					<Size x="52" y="52"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIcon" inherits="LFGEyeTemplate" hidden="false" parentKey="eye">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+	</Button>
+</Ui>

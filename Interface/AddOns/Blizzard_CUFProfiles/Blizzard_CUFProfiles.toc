@@ -1,0 +1,4 @@
+## Title: Blizzard_CUFProfiles
+## LoadOnDemand: 0
+
+Blizzard_CompactUnitFrameProfiles.xml

@@ -1,0 +1,9 @@
+## Title: Blizzard_ReadyCheck
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\ReadyCheck.lua
+Classic\ReadyCheck.xml

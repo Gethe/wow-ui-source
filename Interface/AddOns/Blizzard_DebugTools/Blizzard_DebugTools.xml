@@ -1,0 +1,68 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<GameTooltip name="FrameStackTooltip" frameStrata="TOOLTIP" hidden="true" inherits="SharedTooltipTemplate" enableKeyboard="true">
+		<Scripts>
+			<OnLoad function="FrameStackTooltip_OnLoad"/>
+			<OnShow function="FrameStackTooltip_OnShow"/>
+			<OnHide function="FrameStackTooltip_OnHide"/>
+			<OnEnter function="FrameStackTooltip_OnEnter"/>
+			<OnUpdate function="FrameStackTooltip_OnUpdate"/>
+			<OnEvent function="FrameStackTooltip_OnEvent"/>
+			<OnTooltipCleared function="FrameStackTooltip_OnTooltipCleared"/>
+			<OnTooltipSetFramestack function="FrameStackTooltip_OnTooltipSetFrameStack"/>
+		</Scripts>
+	</GameTooltip>
+
+	<Frame name="FrameHighlightTemplate" mixin="AnchorHighlightMixin" frameStrata="TOOLTIP" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture>
+					<Color r="0.0" g="0.8" b="0.0" a=".4"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="FrameStackHighlight" inherits="FrameHighlightTemplate"/>
+
+	<Frame name="FrameStackAnchorHighlightTemplate" parentArray="AnchorHighlights" virtual="true" enableMouse="false" frameStrata="TOOLTIP">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture>
+					<Color r="0.6" g="0.6" b="0.2" a=".4"/>
+				</Texture>
+				<Texture parentKey="AnchorPoint">
+					<Size x="4" y="4"/>
+					<Color r="1.0" g="0.0" b="0.0" a=".4"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="DebugIdentifierFrameNoNameTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="DebugHighlight" setAllPoints="true">
+					<Color r="0.0" g="0.0" b="0.0" a="0.6"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="DebugIdentifierFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="DebugIdentifierFrameTemplate" inherits="DebugIdentifierFrameNoNameTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="DebugName" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

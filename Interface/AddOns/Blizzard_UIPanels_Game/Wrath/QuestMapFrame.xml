@@ -1,0 +1,290 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="QuestLogPathButtonTemplate" frameLevel="10" hidden="true" virtual="true">
+		<Size x="16" y="24"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="16" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightIcon" alphaMode="ADD" alpha="0.3" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self.Icon:SetPoint("CENTER", 1, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Icon:SetPoint("CENTER", 0, 0);
+			</OnMouseUp>
+			<OnClick>
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+				QuestMapFrame_ToggleShowDestination();
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_AddColoredLine(GameTooltip, self.tooltipText, HIGHLIGHT_FONT_COLOR);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuestLogHeaderCodeTemplate" mixin="QuestLogHeaderCodeMixin" registerForClicks="LeftButtonUp" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="QuestLogHeaderTemplate" inherits="QuestLogHeaderCodeTemplate" virtual="true">
+		<Size x="20" y="20"/>
+		<KeyValues>
+			<KeyValue key="leftPadding" value="4" type="number"/>
+		</KeyValues>
+		<ButtonText parentKey="ButtonText" nonspacewrap="true" justifyH="LEFT">
+			<Size x="234" y="10"/>
+			<Anchors>
+				<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalMed3"/>
+		<HighlightFont style="GameFontHighlightMedium"/>
+	</Button>
+
+	<Button name="QuestLogTitleTemplate" mixin="QuestLogTitleMixin" virtual="true">
+		<Size x="286" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormalLeft">
+					<Size x="175" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="31" y="-8"/>
+					</Anchors>
+					<Color r="0.75" g="0.61" b="0"/>
+				</FontString>
+				<Texture parentKey="TaskIcon" atlas="TaskPOI-Icon" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Text" relativePoint="TOPLEFT" x="-5" y="4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Check" file="Interface\Buttons\UI-CheckBox-Check" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-8" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TagTexture" file="Interface\QuestFrame\QuestTypeIcons" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Text" x="0" y="3"/>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				--QuestLogTitleButton_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				--QuestLogTitleButton_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnClick function="QuestMapLogTitleButton_OnClick"/>
+			<OnEnter function="QuestMapLogTitleButton_OnEnter"/>
+			<OnLeave function="QuestMapLogTitleButton_OnLeave"/>
+			<OnMouseDown function="QuestMapLogTitleButton_OnMouseDown"/>
+			<OnMouseUp function="QuestMapLogTitleButton_OnMouseUp"/>
+		</Scripts>
+		<ButtonText nonspacewrap="true" parentKey="ButtonText">
+			<Size x="0" y="10"/>
+			<Anchors>
+				<Anchor point="LEFT" x="20" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormalLeft"/>
+		<HighlightFont style="GameFontHighlightLeft"/>
+		<DisabledFont style="GameFontHighlightLeft"/>
+	</Button>
+	<Frame name="QuestLogObjectiveTemplate" mixin="QuestLogObjectiveMixin" virtual="true">
+		<Size x="220" y="16"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Dash" inherits="ObjectiveFont" text="QUEST_DASH">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Text" inherits="ObjectiveFont">
+					<Size x="205" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Dash" relativePoint="TOPRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="QuestDetailsButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<NormalTexture atlas="UI-SquareButtonBrown-Up"/>
+		<PushedTexture atlas="UI-SquareButtonBrown-Down"/>
+		<Scripts>
+			<OnMouseDown>
+				local anchor, _, _, x, y = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(anchor, x - 1, y - 1);
+			</OnMouseDown>
+			<OnMouseUp>
+				local anchor, _, _, x, y = self.Icon:GetPoint(1);
+				self.Icon:SetPoint(anchor, x + 1, y + 1);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+
+	<Frame name="QuestMapFrame" enableMouse="true" mixin="QuestLogMixin" hidden="true">
+		<Size x="286" y="0"/>
+		<Frames>
+			<ScrollFrame parentKey="QuestsFrame" name="QuestScrollFrame" inherits="ScrollFrameTemplate">
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="0" type="number"/>
+					<KeyValue key="scrollBarTopY" value="7" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="1" type="number"/>
+				</KeyValues>
+				<!-- NOTE: See QuestMapFrame_UpdateQuestSessionState for anchor updates, these are default -->
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-7"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+				<ScrollChild>
+					<Frame parentKey="Contents" inherits="VerticalLayoutFrame">
+						<Size x="286" y="454"/>
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+						</Anchors>
+					</Frame>
+				</ScrollChild>
+				<Frames>
+					<Frame parentKey="DetailFrame">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" />
+							<Anchor point="BOTTOMLEFT" x="65" y="3"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnLoad function="QuestsFrame_OnLoad"/>
+				</Scripts>
+			</ScrollFrame>
+			<Frame parentKey="DetailsFrame" hidden="true">
+				<Size x="300" y="199"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-653" y="4"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="RewardsFrame">
+						<Size x="22" y="201"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="40" y="0"/>
+						</Anchors>
+					</Frame>
+					<EventScrollFrame parentKey="ScrollFrame" name="QuestMapDetailsScrollFrame" inherits="UIPanelScrollFrameTemplate">
+						<Size x="258" y="0"/>
+						<KeyValues>
+							<KeyValue key="scrollBarHideIfUnscrollable" value="true" type="boolean"/>
+							<KeyValue key="scrollBarX" value="0" type="number"/>
+							<KeyValue key="scrollBarTopY" value="0" type="number"/>
+							<KeyValue key="scrollBarBottomY" value="0" type="number"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="BOTTOMRIGHT"  x="-24" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="QuestMapDetailsScrollFrameTrack">
+									<Size>
+										<AbsDimension x="23" y="201"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPRIGHT">
+											<Offset>
+												<AbsDimension x="25" y="4" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0" g="0" b="0" a="0.4" />
+								</Texture>
+							</Layer>
+						</Layers>
+						<ScrollChild>
+							<Frame parentKey="Contents">
+								<Size x="300" y="199"/>
+								<Anchors>
+									<Anchor point="TOPLEFT"  x="-4" y="0"/>
+									<Anchor point="TOPRIGHT"  x="-4" y="0"/>
+								</Anchors>
+								<Frames>
+									<Frame name="QuestMapHighlightFrame" hidden="true">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture name="QuestLogSkillHighlight" file="Interface/Worldmap/UI-QuestPoi-HighlightBar" alphaMode="ADD">
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												self:SetParent(nil);
+											</OnLoad>
+										</Scripts>
+									</Frame>
+									<Frame name="QuestMapSelectFrame" hidden="true">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+										</Anchors>
+										<Layers>
+											<Layer level="ARTWORK">
+												<Texture name="QuestLogSkillHighlight" file="Interface/Worldmap/UI-QuestPoi-SelectionBar" alphaMode="ADD">
+												</Texture>
+											</Layer>
+										</Layers>
+										<Scripts>
+											<OnLoad>
+												self:SetParent(nil);
+											</OnLoad>
+										</Scripts>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</EventScrollFrame>
+				</Frames>
+				<Scripts>
+					<OnShow function="QuestDetailsFrame_OnShow"/>
+					<OnHide function="QuestDetailsFrame_OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="QuestMapFrame_OnLoad"/>
+			<OnEvent function="QuestMapFrame_OnEvent"/>
+			<OnShow function="QuestMapFrame_OnShow"/>
+			<OnHide function="QuestMapFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

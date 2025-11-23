@@ -1,0 +1,4 @@
+## Title: Blizzard CombatText
+## LoadOnDemand: 1
+Blizzard_CombatText.xml
+Localization.lua

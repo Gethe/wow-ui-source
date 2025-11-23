@@ -1,0 +1,8 @@
+## Title: Blizzard Craft UI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: Game
+## AllowLoadGameType: tbc, wrath
+TBC\Blizzard_CraftUI.lua
+TBC\Blizzard_CraftUI.xml
+Localization.lua

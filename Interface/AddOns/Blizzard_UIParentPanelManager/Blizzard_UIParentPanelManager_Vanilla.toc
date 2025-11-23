@@ -1,0 +1,10 @@
+## Title: Blizzard_UIParentPanelManager
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## LoadWith: Blizzard_UIParent
+## AllowLoad: game
+## AllowLoadGameType: vanilla
+Classic\UIParentPanelManager.lua
+Vanilla\UIParentPanelManager.lua
+Shared\UpdateUIPanelPositions.lua

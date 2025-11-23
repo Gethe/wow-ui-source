@@ -1,0 +1,264 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="store-card-splash1" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="576" y="471"/>	
+		<TexCoords left="0.00097656" right="0.56347656" top="0.00097656" bottom="0.46093750"/>	
+	</Texture>
+	<Texture name="store-receipt-parchment-bottom" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="376" y="160"/>	
+		<TexCoords left="0.56542969" right="0.93261719" top="0.00097656" bottom="0.15722656"/>	
+	</Texture>
+	<Texture name="store-item-highlight" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="64" y="64"/>	
+		<TexCoords left="0.93457031" right="0.99707031" top="0.00097656" bottom="0.06347656"/>	
+	</Texture>
+	<Texture name="store-button-goldborder-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="62" y="39"/>	
+		<TexCoords left="0.93457031" right="0.99511719" top="0.06542969" bottom="0.10351563"/>	
+	</Texture>
+	<Texture name="store-goldborder-top-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="53" y="36"/>	
+		<TexCoords left="0.93457031" right="0.98632813" top="0.10546875" bottom="0.14062500"/>	
+	</Texture>
+	<Texture name="store-corner-discount-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="8" y="32"/>	
+		<TexCoords left="0.98828125" right="0.99609375" top="0.10546875" bottom="0.13671875"/>	
+	</Texture>
+	<Texture name="store-strikethrough" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="32" y="10"/>	
+		<TexCoords left="0.93457031" right="0.96582031" top="0.14257813" bottom="0.15234375"/>	
+	</Texture>
+	<Texture name="store-receipt-parchment-top" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="376" y="142"/>	
+		<TexCoords left="0.56542969" right="0.93261719" top="0.15917969" bottom="0.29785156"/>	
+	</Texture>
+	<Texture name="store-button-goldborder-middle" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="47" y="39"/>	
+		<TexCoords left="0.93457031" right="0.98046875" top="0.15917969" bottom="0.19726563"/>	
+	</Texture>
+	<Texture name="store-button-up-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="17" y="32"/>	
+		<TexCoords left="0.98242188" right="0.99902344" top="0.15917969" bottom="0.19042969"/>	
+	</Texture>
+	<Texture name="store-goldborder-bottom-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="53" y="34"/>	
+		<TexCoords left="0.93457031" right="0.98632813" top="0.19921875" bottom="0.23242188"/>	
+	</Texture>
+	<Texture name="store-corner-discount-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="8" y="32"/>	
+		<TexCoords left="0.98828125" right="0.99609375" top="0.19921875" bottom="0.23046875"/>	
+	</Texture>
+	<Texture name="store-corner-hot" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="39" y="44"/>	
+		<TexCoords left="0.93457031" right="0.97265625" top="0.23437500" bottom="0.27734375"/>	
+	</Texture>
+	<Texture name="store-icon-new" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="10" y="18"/>	
+		<TexCoords left="0.93457031" right="0.94433594" top="0.27929688" bottom="0.29687500"/>	
+	</Texture>
+	<Texture name="store-goldborder-top-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="21" y="36"/>	
+		<TexCoords left="0.97460938" right="0.99511719" top="0.23437500" bottom="0.26953125"/>	
+	</Texture>
+	<Texture name="store-icon-wowstore-small" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="21" y="20"/>	
+		<TexCoords left="0.97460938" right="0.99511719" top="0.27148438" bottom="0.29101563"/>	
+	</Texture>
+	<Texture name="store-receipt-blueglow" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="283" y="121"/>	
+		<TexCoords left="0.56542969" right="0.84179688" top="0.29980469" bottom="0.41796875"/>	
+	</Texture>
+	<Texture name="store-category" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="176" y="38"/>	
+		<TexCoords left="0.56542969" right="0.73730469" top="0.41992188" bottom="0.45703125"/>	
+	</Texture>
+	<Texture name="store-button-up-middle" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="74" y="32"/>	
+		<TexCoords left="0.73925781" right="0.81152344" top="0.41992188" bottom="0.45117188"/>	
+	</Texture>
+	<Texture name="store-icon-checkmark" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="27" y="27"/>	
+		<TexCoords left="0.81347656" right="0.83984375" top="0.41992188" bottom="0.44628906"/>	
+	</Texture>
+	<Texture name="store-card-petshadow" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="138" y="72"/>	
+		<TexCoords left="0.84375000" right="0.97851563" top="0.29980469" bottom="0.37011719"/>	
+	</Texture>
+	<Texture name="store-button-disabled-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="17" y="32"/>	
+		<TexCoords left="0.98046875" right="0.99707031" top="0.29980469" bottom="0.33105469"/>	
+	</Texture>
+	<Texture name="store-button-down-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="17" y="32"/>	
+		<TexCoords left="0.98046875" right="0.99707031" top="0.33300781" bottom="0.36425781"/>	
+	</Texture>
+	<Texture name="store-itemicon-border" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="80" y="81"/>	
+		<TexCoords left="0.84375000" right="0.92187500" top="0.37207031" bottom="0.45117188"/>	
+	</Texture>
+	<Texture name="store-icon-purchasesent" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="67" y="67"/>	
+		<TexCoords left="0.92382813" right="0.98925781" top="0.37207031" bottom="0.43750000"/>	
+	</Texture>
+	<Texture name="store-goldborder-bottom" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="32" y="21"/>	
+		<TexCoords left="0.92382813" right="0.95507813" top="0.43945313" bottom="0.45996094"/>	
+	</Texture>
+	<Texture name="store-goldborder-top" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="32" y="21"/>	
+		<TexCoords left="0.95703125" right="0.98828125" top="0.43945313" bottom="0.45996094"/>	
+	</Texture>
+	<Texture name="store-category-bg" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="186" y="485"/>	
+		<TexCoords left="0.00097656" right="0.18261719" top="0.46289063" bottom="0.93652344"/>	
+	</Texture>
+	<Texture name="store-category-hover" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="172" y="34"/>	
+		<TexCoords left="0.00097656" right="0.16894531" top="0.93847656" bottom="0.97167969"/>	
+	</Texture>
+	<Texture name="store-category-subcategory-hover" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="158" y="20"/>	
+		<TexCoords left="0.00097656" right="0.15527344" top="0.97363281" bottom="0.99316406"/>	
+	</Texture>
+	<Texture name="store-icon-upgradearrow" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="26" y="26"/>	
+		<TexCoords left="0.15722656" right="0.18261719" top="0.97363281" bottom="0.99902344"/>	
+	</Texture>
+	<Texture name="store-error-icon" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="188" y="185"/>	
+		<TexCoords left="0.18457031" right="0.36816406" top="0.46289063" bottom="0.64355469"/>	
+	</Texture>
+	<Texture name="store-card" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="146" y="209"/>	
+		<TexCoords left="0.18457031" right="0.32714844" top="0.64550781" bottom="0.84960938"/>	
+	</Texture>
+	<Texture name="store-corner-new" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="39" y="44"/>	
+		<TexCoords left="0.32910156" right="0.36718750" top="0.64550781" bottom="0.68847656"/>	
+	</Texture>
+	<Texture name="store-corner-discount-middle" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="34" y="32"/>	
+		<TexCoords left="0.32910156" right="0.36230469" top="0.69042969" bottom="0.72167969"/>	
+	</Texture>
+	<Texture name="store-icon-magnifyingglass" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="31" y="35"/>	
+		<TexCoords left="0.32910156" right="0.35937500" top="0.72363281" bottom="0.75781250"/>	
+	</Texture>
+	<Texture name="store-goldborder-bottom-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="21" y="34"/>	
+		<TexCoords left="0.32910156" right="0.34960938" top="0.75976563" bottom="0.79296875"/>	
+	</Texture>
+	<Texture name="store-goldborder-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="21" y="32"/>	
+		<TexCoords left="0.32910156" right="0.34960938" top="0.79492188" bottom="0.82617188"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-receipt" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="80" y="80"/>	
+		<TexCoords left="0.18457031" right="0.26269531" top="0.85156250" bottom="0.92968750"/>	
+	</Texture>
+	<Texture name="store-button-down-middle" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="74" y="32"/>	
+		<TexCoords left="0.18457031" right="0.25683594" top="0.93164063" bottom="0.96289063"/>	
+	</Texture>
+	<Texture name="store-button-disabled-middle" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="74" y="32"/>	
+		<TexCoords left="0.18457031" right="0.25683594" top="0.96484375" bottom="0.99609375"/>	
+	</Texture>
+	<Texture name="store-button-goldborder-right" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="43" y="39"/>	
+		<TexCoords left="0.26464844" right="0.30664063" top="0.85156250" bottom="0.88964844"/>	
+	</Texture>
+	<Texture name="store-button-up-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="52" y="32"/>	
+		<TexCoords left="0.30859375" right="0.35937500" top="0.85156250" bottom="0.88281250"/>	
+	</Texture>
+	<Texture name="store-button-disabled-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="52" y="32"/>	
+		<TexCoords left="0.26464844" right="0.31542969" top="0.89160156" bottom="0.92285156"/>	
+	</Texture>
+	<Texture name="store-button-down-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="52" y="32"/>	
+		<TexCoords left="0.31738281" right="0.36816406" top="0.89160156" bottom="0.92285156"/>	
+	</Texture>
+	<Texture name="store-goldborder-left" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="21" y="32"/>	
+		<TexCoords left="0.26464844" right="0.28515625" top="0.92480469" bottom="0.95605469"/>	
+	</Texture>
+	<Texture name="store-card-splash-banner" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="372" y="79"/>	
+		<TexCoords left="0.37011719" right="0.73339844" top="0.46289063" bottom="0.54003906"/>	
+	</Texture>
+	<Texture name="store-category-selected" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="172" y="34"/>	
+		<TexCoords left="0.73535156" right="0.90332031" top="0.46289063" bottom="0.49609375"/>	
+	</Texture>
+	<Texture name="store-category-subcategory" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="172" y="31"/>	
+		<TexCoords left="0.73535156" right="0.90332031" top="0.49804688" bottom="0.52832031"/>	
+	</Texture>
+	<Texture name="store-card-hover" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="140" y="203"/>	
+		<TexCoords left="0.37011719" right="0.50683594" top="0.54199219" bottom="0.74023438"/>	
+	</Texture>
+	<Texture name="store-card-selected" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="140" y="203"/>	
+		<TexCoords left="0.37011719" right="0.50683594" top="0.74218750" bottom="0.94042969"/>	
+	</Texture>
+	<Texture name="store-toast" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="294" y="84"/>	
+		<TexCoords left="0.50878906" right="0.79589844" top="0.54199219" bottom="0.62402344"/>	
+	</Texture>
+	<Texture name="store-category-subcategory-selected" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="158" y="20"/>	
+		<TexCoords left="0.79785156" right="0.95214844" top="0.54199219" bottom="0.56152344"/>	
+	</Texture>
+	<Texture name="store-receipt-line" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="329" y="3"/>	
+		<TexCoords left="0.50878906" right="0.83007813" top="0.62597656" bottom="0.62890625"/>	
+	</Texture>
+	<Texture name="store-error-line" file="Interface\Store\Store-Main" virtual="true" >
+		<Size x="298" y="2"/>	
+		<TexCoords left="0.50878906" right="0.79980469" top="0.63085938" bottom="0.63281250"/>	
+	</Texture>
+
+	<Texture name="store-card-splash3-large" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="576" y="266"/>	
+		<TexCoords left="0.00097656" right="0.56347656" top="0.00097656" bottom="0.26074219"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-glowspin" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="253" y="256"/>	
+		<TexCoords left="0.56542969" right="0.81250000" top="0.00097656" bottom="0.25097656"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-glowpulse" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="145" y="138"/>	
+		<TexCoords left="0.81445313" right="0.95605469" top="0.00097656" bottom="0.13574219"/>	
+	</Texture>
+	<Texture name="store-card-splash3-large-hover" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="570" y="260"/>	
+		<TexCoords left="0.00097656" right="0.55761719" top="0.26269531" bottom="0.51660156"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-splash1" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="242" y="260"/>	
+		<TexCoords left="0.55957031" right="0.79589844" top="0.26269531" bottom="0.51660156"/>	
+	</Texture>
+	<Texture name="store-card-splash3-large-selected" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="570" y="260"/>	
+		<TexCoords left="0.00097656" right="0.55761719" top="0.51855469" bottom="0.77246094"/>	
+	</Texture>
+	<Texture name="store-card-splash3-small" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="286" y="146"/>	
+		<TexCoords left="0.00097656" right="0.28027344" top="0.77441406" bottom="0.91699219"/>	
+	</Texture>
+	<Texture name="store-card-splash3-small-selected" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="280" y="140"/>	
+		<TexCoords left="0.28222656" right="0.55566406" top="0.77441406" bottom="0.91113281"/>	
+	</Texture>
+	<Texture name="store-itemicon-border-splash3" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="242" y="244"/>	
+		<TexCoords left="0.55957031" right="0.79589844" top="0.51855469" bottom="0.75683594"/>	
+	</Texture>
+	<Texture name="store-card-splash3-small-hover" file="Interface\Store\Store-Splash" virtual="true" >
+		<Size x="280" y="140"/>	
+		<TexCoords left="0.55957031" right="0.83300781" top="0.75878906" bottom="0.89550781"/>	
+	</Texture>
+</Ui>

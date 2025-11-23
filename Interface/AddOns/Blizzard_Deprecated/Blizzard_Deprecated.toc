@@ -1,0 +1,15 @@
+## Title: Blizzard_Deprecated
+## Notes: C API functions that are exposed for backwards compatibility. They will be removed at the next expansion. Upgrade your code to the new APIs as soon as possible.
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 0
+
+Deprecated_1_14_2.lua
+Deprecated_1_15_0.lua
+Deprecated_1_15_1.lua
+Deprecated_2_5_1.lua
+Deprecated_2_5_2.lua
+Deprecated_2_5_3.lua
+Deprecated_3_4_2.lua
+Deprecated_4_4_0.lua
+Deprecated_4_4_1.lua

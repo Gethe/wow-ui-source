@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="PagingControlsPrevPageButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Button name="PagingControlsNextPageButtonTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+		<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+	</Button>
+
+	<Frame name="PagingControlsTemplate" mixin="PagingControlsMixin" virtual="true">
+		<!-- 
+			hideWhenSinglePage: Hide controls when maxPages is 1
+			displayMaxPages: Display both current and max page (instead of only current)
+			currentPageOnlyText: Global String for displaying current page only
+			currentPageWithMaxText: Global String for displaying current and max page
+			fontName: Optional override font to use for PageText
+			fontColor: Optional override color to use for PageText
+			prevPageSound: Optional sound to play on navigating to the previous page
+			nextPageSound: Optional sound to play on navigating to the next page
+		 -->
+		<KeyValues>
+			<KeyValue key="hideWhenSinglePage" value="false" type="boolean"/>
+			<KeyValue key="displayMaxPages" value="true" type="boolean"/>
+			<KeyValue key="currentPageOnlyText" value="PAGE_NUMBER" type="global"/>
+			<KeyValue key="currentPageWithMaxText" value="PAGE_NUMBER_WITH_MAX" type="global"/>
+		<!--<KeyValue key="fontName" value="GameFontHighlight" type="string"/>
+			<KeyValue key="fontColor" value="NORMAL_FONT_COLOR" type="global"/>
+			<KeyValue key="prevPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/>
+			<KeyValue key="nextPageSound" value="SOUNDKIT.IG_ABILITY_PAGE_TURN" type="global"/> -->
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseWheel method="OnMouseWheel"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="PagingControlsHorizontalTemplate" inherits="HorizontalLayoutFrame, PagingControlsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="5" type="number"/>
+		</KeyValues>
+		<Size x="100" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" inherits="GameFontHighlight">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="align" value="center" type="string"/>
+					</KeyValues>
+					<Size x="0" y="32"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PrevPageButton" inherits="PagingControlsPrevPageButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="NextPageButton" inherits="PagingControlsNextPageButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

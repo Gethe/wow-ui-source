@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="SpellActivationOverlay.lua"/>
+	<Frame name="SpellActivationOverlayTemplate" mixin="SpellActivationOverlayTextureMixin" virtual="true">
+		<Animations>
+			<AnimationGroup parentKey="animIn" mixin="SpellActivationOverlayFadeInAnimMixin">
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2"/>
+				<Scripts>
+					<OnPlay method="OnPlay"/>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="animOut" mixin="SpellActivationOverlayFadeOutAnimMixin">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.1"/>
+				<Scripts>
+					<OnFinished method="OnFinished"/>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup looping="REPEAT" parentKey="pulse">
+				<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
+				<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="texture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+	<Frame name="SpellActivationOverlayFrame" mixin="SpellActivationOverlayMixin" parent="UIParent">
+		<Size x="256" y="256"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

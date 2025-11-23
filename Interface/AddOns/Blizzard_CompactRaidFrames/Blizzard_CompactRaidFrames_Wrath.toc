@@ -1,0 +1,11 @@
+## Title: Blizzard_CompactRaidFrames
+## LoadOnDemand: 0
+## SavedVariables: Blizzard_CompactRaidFrameManager_FilterOptions
+## AllowLoad: game
+## AllowLoadGameType: wrath
+Blizzard_CompactRaidFrameReservationManager.lua
+Blizzard_CompactRaidFrameContainer.xml
+Wrath\Blizzard_CompactRaidFrameManager.lua
+Blizzard_CompactRaidFrameManager_Shared.lua
+Wrath\Blizzard_CompactRaidFrameManager.xml
+Localization.lua

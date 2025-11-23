@@ -1,0 +1,307 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="PartyMemberFrame1" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="1">
+		<!-- This frame is now anchored by and to the CompactRaidFrameManager.
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="10" y="-160"/>
+				</Offset>
+			</Anchor>
+		</Anchors>-->
+	</Button>
+	<Button name="PartyMemberFrame2" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="2">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1PetFrame" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-23" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="PartyMemberFrame3" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="3">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame2PetFrame" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-23" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Button name="PartyMemberFrame4" inherits="PartyMemberFrameTemplate" parent="UIParent" toplevel="true" id="4">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame3PetFrame" relativePoint="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="-23" y="-10"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+	</Button>
+	<Frame name="PartyMemberBuffTooltip" inherits="TooltipBackdropTemplate" frameStrata="TOOLTIP" hidden="true">
+		<Size>
+			<AbsDimension x="200" y="75"/>
+		</Size>
+		<Frames>
+			<Frame name="$parentBuff1" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="9" y="-9"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff2" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff3" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff4" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff5" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff6" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff7" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff8" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff9" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentBuff1" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff10" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff9" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff11" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff10" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff12" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff11" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff13" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff12" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff14" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff13" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff15" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff14" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBuff16" inherits="PartyBuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentBuff15" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff1" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentBuff9" relativePoint="BOTTOM">
+						<Offset>
+							<AbsDimension x="0" y="-2"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff2" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff3" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff4" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff5" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff4" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff6" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff5" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff7" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff6" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentDebuff8" inherits="PartyDebuffFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentDebuff7" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="2" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend" function="GameTooltip_OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="PartyMemberBackground" inherits="BackdropTemplate" parent="UIParent" frameStrata="LOW" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
+		</KeyValues>
+		<Size>
+			<AbsDimension x="134" y="10"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="PartyMemberFrame1">
+				<Offset>
+					<AbsDimension x="-5" y="6"/>
+				</Offset>
+			</Anchor>
+			<Anchor point="BOTTOMLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self:RegisterEvent("VARIABLES_LOADED");
+			</OnLoad>
+			<OnShow>
+				self:SetFrameLevel(1);
+			</OnShow>
+			<OnEvent>
+				if ( event == "VARIABLES_LOADED" ) then
+					UpdatePartyMemberBackground();
+					OpacityFrameSlider:SetValue(tonumber(GetCVar("partyBackgroundOpacity")));
+					PartyMemberBackground_SetOpacity();
+				end
+			</OnEvent>
+			<OnMouseUp>
+				if ( button == "RightButton" ) then
+					PartyMemberBackground_ToggleOpacity();
+				end
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+</Ui>

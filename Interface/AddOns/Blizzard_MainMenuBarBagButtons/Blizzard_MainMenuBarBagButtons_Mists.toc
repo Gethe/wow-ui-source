@@ -1,0 +1,8 @@
+## Title: Blizzard_MainMenuBarBagButtons
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_CharacterFrame
+## AllowLoadGameType: mists
+## AllowLoad: Game
+Classic\MainMenuBarBagButtons.lua
+Mists\MainMenuBarBagButtons.xml

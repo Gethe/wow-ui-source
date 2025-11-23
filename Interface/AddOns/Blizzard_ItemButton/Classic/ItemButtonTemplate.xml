@@ -1,0 +1,253 @@
+ <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+ 	<Button name="ItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size>
+			<AbsDimension x="37" y="37"/>
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture" parentKey="icon"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true" parentKey="Count">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStock" inherits="NumberFontNormalYellow" justifyH="LEFT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture name="$parentSearchOverlay" parentKey="searchOverlay" setAllPoints="true" hidden="true">
+					<Color r="0" g="0" b="0" a="0.8"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSubIconTexture" parentKey="subicon" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Buttons\UI-Quickslot2">
+			<Size>
+				<AbsDimension x="64" y="64"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+	</Button>
+	<CheckButton name="SimplePopupButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="36" y="36"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontHighlightSmallOutline">
+					<Size>
+						<AbsDimension x="36" y="10"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Buttons\UI-EmptySlot-Disabled">
+					<Size>
+						<AbsDimension x="45" y="45"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="0" y="-1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.140625" right="0.84375" top="0.140625" bottom="0.84375"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</CheckButton>
+	<CheckButton name="PopupButtonTemplate" virtual="true" inherits="SimplePopupButtonTemplate">
+		<NormalTexture name="$parentIcon" parentKey="Icon">
+			<Size>
+				<AbsDimension x="36" y="36"/>
+			</Size>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="-1"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	<Button name="LargeItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size x="147" y="41" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="39" y="39" />
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame" parentKey="NameFrame">
+					<Size x="128" y="64" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-10" y="0" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<FontString name="$parentName" inherits="GameFontHighlight" justifyH="LEFT" parentKey="Name">
+					<Size x="90" y="36" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" x="15" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" parentKey="Count">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-1" y="1" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="SmallItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<Size x="134" y="30"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIconTexture" parentKey="Icon">
+					<Size x="30" y="30"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="NameFrame" atlas="QuestItemBorder" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="92" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" x="4" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="4" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+
+	 <Button name="GiantItemButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		 <Size x="54" y="54"/>
+		 <Layers>
+			 <Layer level="BACKGROUND">
+				 <Texture parentKey="EmptyBackground" atlas="auctionhouse-itemicon-empty"/>
+			 </Layer>
+			 <Layer level="BORDER">
+				 <Texture parentKey="Icon">
+					 <Size x="50" y="50"/>
+					 <Anchors>
+						 <Anchor point="TOPLEFT" x="2" y="-2"/>
+					 </Anchors>
+					 <TexCoords left="0" right="1" top="0" bottom="1"/>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY">
+				 <Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-border-white" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY" textureSubLevel="1">
+				 <Texture parentKey="IconOverlay" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY" textureSubLevel="2">
+				 <Texture parentKey="IconOverlay2" hidden="true">
+					 <Anchors>
+						 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					 </Anchors>
+				 </Texture>
+			 </Layer>
+			 <Layer level="OVERLAY">
+				 <FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+					 <Anchors>
+						 <Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+					 </Anchors>
+				 </FontString>
+			 </Layer>
+		 </Layers>
+		 <PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			 <Anchors>
+				 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			 </Anchors>
+		 </PushedTexture>
+		 <HighlightTexture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			 <Anchors>
+				 <Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				 <Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			 </Anchors>
+		 </HighlightTexture>
+	 </Button>
+	 </Ui>

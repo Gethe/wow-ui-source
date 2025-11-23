@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Frame name="GridSelectorFrameTemplate" mixin="GridSelectorFrameMixin" inherits="DefaultPanelTemplate, SelectorTemplate" toplevel="true" frameStrata="HIGH" parent="UIParent" movable="true" enableMouse="true" virtual="true">
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="6" y="4"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

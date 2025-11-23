@@ -1,0 +1,218 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="AuctionHouseTableEmptyTemplate" mixin="TableBuilderCellMixin" virtual="true"/>
+
+	<Frame name="AuctionHouseTableImageTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellTextTemplate" virtual="true">
+		<Size x="0" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="Number14FontWhite" justifyH="LEFT" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellTextTooltipTemplate" mixin="AuctionHouseTableCellTextTooltipMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableMoneyDisplayTemplate" mixin="AuctionHouseTablePriceDisplayMixin" virtual="true">
+		<Size x="0" y="16"/>
+		<Frames>
+			<Frame parentKey="MoneyDisplay" inherits="MoneyDisplayFrameTemplate" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="useAuctionHouseCopperValue" value="true" type="boolean"/>
+					<KeyValue key="useAuctionHouseIcons" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="AuctionHouseTableMoneyDisplayCheckmarkTemplate" inherits="AuctionHouseTableMoneyDisplayTemplate" virtual="true">
+		<Size x="0" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Checkmark" atlas="auctionhouse-icon-checkmark" useAtlasSize="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.MoneyDisplay" relativePoint="RIGHT" x="6" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellUnitPriceTemplate" mixin="AuctionHouseTableCellUnitPriceMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="leftAlign" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellCommoditiesQuantityTemplate" mixin="AuctionHouseTableCellCommoditiesQuantityMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellFavoriteTemplate" mixin="AuctionHouseTableCellFavoriteMixin" virtual="true">
+		<Frames>
+			<Button parentKey="FavoriteButton" mixin="AuctionHouseTableCellFavoriteButtonMixin" inherits="AuctionHouseFavoriteButtonBaseTemplate">
+				<Size x="13" y="12"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER" y="1"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellBidTemplate" mixin="AuctionHouseTableCellBidMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
+	
+	<Frame name="AuctionHouseTableCellBuyoutTemplate" mixin="AuctionHouseTableCellBuyoutMixin" inherits="AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellOwnedCheckmarkTemplate" mixin="AuctionHouseTableCellOwnedCheckmarkMixin" inherits="AuctionHouseTableImageTemplate" virtual="true"/>
+	
+	<Frame name="AuctionHouseTableCellExtraInfoTemplate" mixin="AuctionHouseTableExtraInfoMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableImageTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellOwnersTemplate" mixin="AuctionHouseTableCellOwnersMixin" inherits="AuctionHouseTableCellTextTooltipTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellTimeLeftTemplate" mixin="AuctionHouseTableCellTimeLeftMixin" inherits="AuctionHouseTableCellTextTooltipTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellTimeLeftBandTemplate" mixin="AuctionHouseTableCellTimeLeftBandMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsBuyoutTemplate" mixin="AuctionHouseTableCellAuctionsBuyoutMixin" inherits="AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
+	
+	<Frame name="AuctionHouseTableCellAllAuctionsPriceTemplate" mixin="AuctionHouseTableCellAllAuctionsPriceMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellAllAuctionsBuyoutTemplate" mixin="AuctionHouseTableCellAllAuctionsBuyoutMixin" inherits="AuctionHouseTableCellBuyoutTemplate, AuctionHouseTableCellAllAuctionsPriceTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsBidTemplate" mixin="AuctionHouseTableCellAuctionsBidMixin" inherits="AuctionHouseTableCellBidTemplate, AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAllAuctionsBidTemplate" mixin="AuctionHouseTableCellAllAuctionsBidMixin" inherits="AuctionHouseTableCellBidTemplate, AuctionHouseTableCellTextTemplate, AuctionHouseTableCellAllAuctionsPriceTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsOwnersTemplate" mixin="AuctionHouseTableCellAuctionsOwnersMixin" inherits="AuctionHouseTableCellOwnersTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsItemLevelTemplate" mixin="AuctionHouseTableCellAuctionsItemLevelMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsCommoditiesQuantityTemplate" mixin="AuctionHouseTableCellAuctionsCommoditiesQuantityMixin" inherits="AuctionHouseTableCellCommoditiesQuantityTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellAuctionsUnitPriceTemplate" mixin="AuctionHouseTableCellAuctionsUnitPriceMixin" inherits="AuctionHouseTableCellUnitPriceTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellItemDisplayTemplate" mixin="AuctionHouseTableCellItemDisplayMixin" virtual="true">
+		<Size x="0" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Icon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-small-border" useAtlasSize="false">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Text" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="4" y="-1"/>
+						<Anchor point="RIGHT" x="1"/>
+					</Anchors>
+				</FontString>
+
+				<!-- Will contain text that should be always displayed, if/when Text truncates -->
+				<FontString parentKey="ExtraInfo" inherits="Number14FontWhite" justifyH="LEFT" maxLines="1" hidden="true">
+					<Size x="0" y="1"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="HandleItemNameTruncation"/>
+			<OnHide method="OnHide"/>
+			<OnSizeChanged method="HandleItemNameTruncation"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellAuctionsItemDisplayTemplate" inherits="AuctionHouseTableCellItemDisplayTemplate" mixin="AuctionHouseTableCellAuctionsItemDisplayMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Prefix" inherits="Number14FontWhite" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellMinPriceTemplate" mixin="AuctionHouseTableCellMinPriceMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableMoneyDisplayCheckmarkTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellQuantityTemplate" mixin="AuctionHouseTableCellQuantityMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellLevelTemplate" mixin="AuctionHouseTableCellLevelMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true">
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="AuctionHouseTableCellItemBuyoutTemplate" inherits="AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
+	
+	<Frame name="AuctionHouseTableCellItemSellBuyoutTemplate" mixin="AuctionHouseTableCellItemSellBuyoutMixin" inherits="AuctionHouseTableCellTextTemplate, AuctionHouseTableCellBuyoutTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellItemQuantityLeftTemplate" mixin="AuctionHouseTableCellItemQuantityMixin" inherits="AuctionHouseTableCellTextTemplate" virtual="true"/>
+
+	<Frame name="AuctionHouseTableCellItemQuantityRightTemplate" inherits="AuctionHouseTableCellItemQuantityLeftTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="justificationH" value="RIGHT" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Button name="AuctionHouseTableHeaderStringTemplate" mixin="AuctionHouseTableHeaderStringMixin" inherits="ColumnDisplayButtonShortTemplate" virtual="true">
+		<Size x="0" y="19"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Arrow" atlas="auctionhouse-ui-sortarrow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

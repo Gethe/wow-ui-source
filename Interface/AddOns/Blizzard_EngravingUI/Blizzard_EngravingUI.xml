@@ -1,0 +1,308 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_EngravingUI.lua"/>
+	
+	<Button name="RuneSpellButtonTemplate" virtual="true">
+		<Size x="160" y="30"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="36" y="36"/>
+					<Anchors>
+						<Anchor point="LEFT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="LEFT" parentKey="name">
+					<Size x="110" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentIcon" relativePoint="TOPRIGHT" x="4" y="-5"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+				<FontString name="$parentTypeName" inherits="GameFontNormalSmall" justifyH="LEFT" parentKey="typeName">
+					<Size x="110" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"  relativeTo="$parentName" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+					</Anchors>
+					<Color r="1" g="1" b="0.6"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="selectedTex" file="Interface\ClassTrainerFrame\TrainerTextures" hidden="true" alphaMode="ADD">
+					<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="disabledBG" hidden="true" alphaMode="MOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<Color r="0.55" g="0.55" b="0.55" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad> self:RegisterForClicks("LeftButtonUp", "RightButtonUp"); </OnLoad>
+			<OnEnter function ="RuneSpellButton_OnEnter"/>
+			<OnLeave>
+				GameTooltip_Hide();
+				self.showingTooltip = false;
+			</OnLeave>
+			<OnClick>
+				EngravingFrameSpell_OnClick(self, button);
+			</OnClick>
+		</Scripts>
+		<NormalTexture file="Interface\ClassTrainerFrame\TrainerTextures">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>
+		</NormalTexture>
+		<HighlightTexture name="$parentHighlight" file="Interface\ClassTrainerFrame\TrainerTextures" alphaMode="ADD">
+			<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>
+		</HighlightTexture>
+	</Button>
+	
+	<Button name="RuneHeaderButtonTemplate" virtual="true">
+		<Size x="160" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture  name="$parentMiddle" file="Interface\Buttons\CollapsibleHeader" parentKey="middle">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="leftEdge">
+					<Size x="76" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentMiddle" relativePoint="LEFT" x="-20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
+				</Texture>
+				<Texture name="$parentRight" file="Interface\Buttons\CollapsibleHeader" parentKey="rightEdge">
+					<Size x="76" y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentMiddle" relativePoint="RIGHT" x="20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentExpandedIcon" parentKey="expandedIcon" inherits="Char-Stat-Minus">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentCollapsedIcon" parentKey="collapsedIcon" inherits="Char-Stat-Plus">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentLeft" x="26" y="0"/>
+					</Anchors>
+					<TexCoords left="0.08" right="0.92" top="0.08" bottom="0.92"/>
+				</Texture>
+				<FontString name="$parentName" inherits="GameFontNormal" parentKey="name">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentMiddle" x="0" y="1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="RuneHeader_OnClick"/>
+			<OnMouseDown>
+				if ( self:IsEnabled() ) then
+					self.middle:SetPoint("LEFT", 22, -2);
+					self.middle:SetPoint("RIGHT", -18, -2);
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				self.middle:SetPoint("LEFT", 20, 0);
+				self.middle:SetPoint("RIGHT", -20, 0);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+
+	<Frame name="EngravingFrame" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="193" y="348"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="CharacterFrame" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-24" y="-70"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Border" inherits="TooltipBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColor" value="GRAY_FONT_COLOR" type="global"/>
+					<KeyValue key="backdropColorAlpha" value="0.8" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-10" y="57"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-21"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad function="LowerFrameLevel"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSideInset" inherits="InsetFrameTemplate" parentKey="sideInset">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="344" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" file="Interface\TalentFrame\glyph-side-bg">
+							<Size x="168" y="344"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0" right="0.6171875" top="0" bottom="0.740234375"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<EditBox name="$parentSearchBox" autoFocus="false" letters="25">
+				<Size>
+					<AbsDimension x="180" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSideInset" x="8" y="54"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="-5" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="8" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="RIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							<Size>
+								<AbsDimension x="0" y="20"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSearchIcon" file="Interface\Common\UI-Searchbox-Icon" parentKey="searchIcon">
+							<Size>
+								<AbsDimension x="14" y="14"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" y="-2"/>
+							</Anchors>
+							<Color r="0.7" g="0.7" b="0.7" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="EngravingFrameSearchBox_OnShow"/>
+					<OnEnterPressed function="EditBox_ClearFocus"/>
+					<OnEscapePressed function="EditBox_ClearFocus"/>
+					<OnTextChanged function="EngravingFrameSearchBox_OnTextChanged"/>
+					<OnEditFocusLost function="EngravingFrameSearchBox_OnEditFocusLost"/>
+					<OnEditFocusGained function="EngravingFrameSearchBox_OnEditFocusGained"/>
+				</Scripts>
+				<FontString inherits="ChatFontSmall"/>
+			</EditBox>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1DropdownTemplate" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"  relativeTo="$parentSearchBox" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+			</DropdownButton>
+			<ScrollFrame name="$parentScrollFrame" inherits="HybridScrollFrameTemplate" parentKey="scrollFrame">
+				<Size x="185" y="348"/>
+					<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSideInset" x="5" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentSideInset" x="-21" y="2"/>
+				</Anchors>
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="13"/>
+						</Anchors>
+					</Slider>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentEmptyLabel" inherits="GameFontNormal" justifyH="LEFT" parentKey="emptyText" text ="NO_RUNES">
+							<Anchors>
+								<Anchor point="TOPLEFT"  x="2" y="-6"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>				
+			</ScrollFrame>
+			<Frame name="$parentCollectedFrame" parentKey="collected">
+				<Size x ="185" y ="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentScrollFrame" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" inherits="GameFontNormal" justifyH="LEFT" parentKey="collectedText" text ="0/15 Runes Collected">
+							<Anchors>
+								<Anchor point="LEFT"  x="0" y="-1"/>
+							</Anchors>
+							<Color r="1" g="1" b="1"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Button name="$parentHeader1" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader2" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader3" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader4" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader5" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader6" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader7" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader8" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader9" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader10" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader11" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader12" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader13" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader14" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+			<Button name="$parentHeader15" inherits="RuneHeaderButtonTemplate" hidden="true"/>
+		</Frames>
+		<Scripts>
+			<OnLoad function="EngravingFrame_OnLoad"/>
+			<OnShow function="EngravingFrame_OnShow"/>
+			<OnHide function="EngravingFrame_OnHide"/>
+			<OnEvent function="EngravingFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

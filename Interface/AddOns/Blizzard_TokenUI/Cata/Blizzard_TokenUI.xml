@@ -1,0 +1,379 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+<Button name="TokenButtonTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="295" y="17"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentStripe">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="0"/>
+					</Anchors>
+					<Color a=".08" r="1" g="1" b="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentIcon">
+					<Size>
+						<AbsDimension x="15" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT" >
+							<Offset x="-20" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentCount" inherits="GameFontHighlightRight" text="100">
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentIcon" relativePoint="LEFT">
+							<Offset x="-5" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName" inherits="GameFontHighlightLeft">
+					<Size>
+						<AbsDimension x="210" y="11"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="11" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentCheck" file="Interface\Buttons\UI-CheckBox-Check">
+					<Size>
+						<AbsDimension x="16" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset x="-3" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+
+				<Texture name="$parentCategoryLeft" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryLeft">
+					<Size x="76" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.29687500" bottom="0.54687500"/>
+				</Texture>
+				<Texture name="$parentCategoryRight" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryRight">
+					<Size x="76" y="16"/>
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.17578125" right="0.47265625" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+				<Texture name="$parentCategoryMiddle" file="Interface\Buttons\CollapsibleHeader" parentKey="categoryMiddle">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCategoryLeft" relativePoint="RIGHT" x="-20" y="0"/>
+						<Anchor point="RIGHT" relativeTo="$parentCategoryRight" relativePoint="LEFT" x="20" y="0"/>
+					</Anchors>
+					<TexCoords left="0.48046875" right="0.98046875" top="0.01562500" bottom="0.26562500"/>
+				</Texture>
+
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentExpandIcon" file="Interface\Buttons\UI-PlusMinus-Buttons">
+					<Size>
+						<AbsDimension x="7" y="7"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset x="8" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button enableMouse="true" parentKey="LinkButton">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentIcon">
+						<Offset x="0" y="0"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyToken(self:GetParent().index);
+					</OnEnter>
+					<OnClick>
+						HandleModifiedItemClick(C_CurrencyInfo.GetCurrencyListLink(self:GetParent().index));
+					</OnClick>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				TokenButton_OnLoad(self);
+			</OnLoad>
+			<OnClick>
+				TokenButton_OnClick(self, button, down);
+			</OnClick>
+		</Scripts>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="CENTER">
+					<Offset>
+						<AbsDimension x="0" y="0"/>
+					</Offset>
+				</Anchor>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontNormal"/>
+		<HighlightTexture name="$parentHighlight" file="Interface\TokenFrame\UI-TokenFrame-CategoryButton" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="3" y="-2"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="-3" y="2"/>
+				</Anchor>
+			</Anchors>
+			<TexCoords left="0" right="1" top="0.609375" bottom="0.796875"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="TokenFrame" setAllPoints="true" parent="CharacterFrame" useParentLevel="true" enableMouse="true" hidden="true" id="4">
+		<Frames>
+			<ScrollFrame name="$parentContainer" inherits="HybridScrollFrameTemplate">
+				<!-- See TokenFrame_OnShow for anchors -->
+				<Frames>
+					<Slider name="$parentScrollBar" inherits="HybridScrollBarTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="-12"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="11"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Slider>
+				</Frames>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="TokenFrame_OnLoad"/>
+			<OnShow function="TokenFrame_OnShow"/>
+			<OnHide>
+				TokenFramePopup:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="TokenFramePopup" parent="TokenFrame" toplevel="true" hidden="true" enableMouse="true">
+		<Size>
+			<AbsDimension x="205" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="TokenFrame" relativePoint="TOPRIGHT">
+				<Offset x="3" y="-28"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="TOKEN_OPTIONS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT">
+							<Offset x="25" y="-17"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-6" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
+			<CheckButton name="$parentInactiveCheckbox" inherits="OptionsSmallCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TokenFramePopup" relativePoint="TOPLEFT">
+						<Offset x="32" y="-32"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(UNUSED);
+						_G[self:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							SetCurrencyUnused(TokenFrame.selectedID, 1);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+							SetCurrencyUnused(TokenFrame.selectedID, 0);
+						end
+						TokenFrame_Update();
+						TokenFramePopup_CloseIfHidden();
+						BackpackTokenFrame_Update();
+						ManageBackpackTokenFrame();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TOKEN_MOVE_TO_UNUSED, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentBackpackCheckbox" inherits="OptionsSmallCheckButtonTemplate">
+				<Size>
+					<AbsDimension x="26" y="26"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TokenFramePopupInactiveCheckbox" relativePoint="BOTTOMLEFT">
+						<Offset x="0" y="4"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."Text"]:SetText(SHOW_ON_BACKPACK);
+						_G[self:GetName().."Text"]:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+					</OnLoad>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							if ( GetNumWatchedTokens() >= MAX_WATCHED_TOKENS ) then
+								UIErrorsFrame:AddMessage(format(TOO_MANY_WATCHED_TOKENS, MAX_WATCHED_TOKENS), 1.0, 0.1, 0.1, 1.0);
+								self:SetChecked(false);
+								return;
+							end
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+							SetCurrencyBackpack(TokenFrame.selectedID, 1);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+							SetCurrencyBackpack(TokenFrame.selectedID, 0);
+						end
+						TokenFrame_Update();
+						BackpackTokenFrame_Update();
+						ManageBackpackTokenFrame();
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TOKEN_SHOW_ON_BACKPACK, nil, nil, nil, nil, 1);
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</CheckButton>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-3" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="BackpackTokenTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="50" y="12"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentCount" inherits="GameFontHighlightSmall" justifyH="RIGHT" parentKey="count">
+					<Size x="38" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentIcon" parentKey="icon">
+					<Size>
+						<AbsDimension x="12" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentCount" relativePoint="RIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetBackpackToken(self:GetID());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnClick>
+				if ( IsModifiedClick("CHATLINK") ) then
+					HandleModifiedItemClick(GetCurrencyLink(self.currencyID));
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="BackpackTokenFrame" parent="UIParent">
+		<Size>
+			<AbsDimension x="183" y="32"/>
+		</Size>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\ContainerFrame\UI-Backpack-TokenFrame">
+					<Size>
+						<AbsDimension x="256" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentToken1" inherits="BackpackTokenTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT">
+						<Offset x="13" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentToken2" inherits="BackpackTokenTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentToken1" relativePoint="RIGHT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentToken3" inherits="BackpackTokenTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentToken2" relativePoint="RIGHT">
+						<Offset x="2" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,8 @@
+## Title: Blizzard_UnitFrameUtil
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## LoadFirst: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\PartyMemberFrame.lua

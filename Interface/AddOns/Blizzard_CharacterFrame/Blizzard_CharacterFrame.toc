@@ -1,0 +1,33 @@
+## Title: Blizzard_CharacterFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_FrameXML, Blizzard_ActionBar, Blizzard_TextStatusBar
+## LoadFirst: 1
+## AllowLoad: game
+[Family]\DressUpFrames.lua      [AllowLoadGameType classic]
+[Family]\DressUpFrames.xml      [AllowLoadGameType classic]
+Vanilla\CharacterFrame.lua      [AllowLoadGameType vanilla]
+TBC\CharacterFrame.lua          [AllowLoadGameType tbc]
+Wrath\CharacterFrame.lua        [AllowLoadGameType wrath]
+Cata\CharacterFrame.lua         [AllowLoadGameType cata, mists]
+Vanilla\CharacterFrame.xml      [AllowLoadGameType vanilla]
+TBC\CharacterFrame.xml          [AllowLoadGameType tbc]
+Wrath\CharacterFrame.xml        [AllowLoadGameType wrath]
+Cata\CharacterFrame.xml         [AllowLoadGameType cata, mists]
+[Game]\PaperDollFrameUtil.lua   [AllowLoadGameType cata, mists]
+Vanilla\PaperDollFrame.lua      [AllowLoadGameType vanilla]
+TBC\PaperDollFrame.lua          [AllowLoadGameType tbc]
+Wrath\PaperDollFrame.lua        [AllowLoadGameType wrath]
+Cata\PaperDollFrame.lua         [AllowLoadGameType cata, mists]
+Vanilla\PaperDollFrame.xml      [AllowLoadGameType vanilla]
+TBC\PaperDollFrame.xml          [AllowLoadGameType tbc]
+Wrath\PaperDollFrame.xml        [AllowLoadGameType wrath]
+Cata\PaperDollFrame.xml         [AllowLoadGameType cata, mists]
+Vanilla\PetPaperDollFrame.lua   [AllowLoadGameType vanilla]
+TBC\PetPaperDollFrame.lua       [AllowLoadGameType tbc]
+Wrath\PetPaperDollFrame.lua     [AllowLoadGameType wrath]
+Cata\PetPaperDollFrame.lua      [AllowLoadGameType cata, mists]
+Vanilla\PetPaperDollFrame.xml   [AllowLoadGameType vanilla]
+TBC\PetPaperDollFrame.xml       [AllowLoadGameType tbc]
+Wrath\PetPaperDollFrame.xml     [AllowLoadGameType wrath]
+Cata\PetPaperDollFrame.xml      [AllowLoadGameType cata, mists]

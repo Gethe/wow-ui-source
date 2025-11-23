@@ -1,0 +1,96 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="ExtraActionBar.lua"/>
+	
+	<CheckButton name="ExtraActionButtonTemplate" inherits="ActionBarButtonCodeTemplate" virtual="true">
+		<Size x="52" y="52"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="icon"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel = "1">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<FontString parentKey="HotKey" inherits="NumberFontNormalGray">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Flash" file="Interface\Buttons\UI-QuickslotRed" hidden="true"/>
+				<Texture file="Interface\UnitPowerBarAlt\SpellPush-Frame" parentKey="style">
+					<Size x="256" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="cooldown" inherits="CooldownFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="5" y="-4"/>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors> 
+			</Cooldown>
+		</Frames>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+		<Scripts>
+			<OnLoad>
+				self.isExtra = true;
+				self.buttonType = "EXTRAACTIONBUTTON";
+				ActionButton_OnLoad(self);
+				self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR");
+			</OnLoad>
+		</Scripts>
+	</CheckButton>
+	
+	<Frame name="ExtraActionBarFrame" frameStrata="LOW" parent="MainMenuBar" enableMouse="true" toplevel="true" hidden="true">
+		<Size x="64" y="64"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="160"/>
+		</Anchors>
+		<Animations>
+			<AnimationGroup parentKey="intro">
+				<Alpha fromAlpha="0.0" toAlpha="1.0" duration="0.3" smoothing="IN" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(1.0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="outro">
+				<Alpha fromAlpha="1.0" toAlpha="0.0" duration="0.3" smoothing="OUT" />
+				<Scripts>
+					<OnFinished>
+						self:GetParent():SetAlpha(0.0);
+						self:GetParent():Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<CheckButton name="ExtraActionButton1" inherits="ExtraActionButtonTemplate" id="1" parentKey="button">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad function="ExtraActionBar_OnLoad"/>
+			<OnShow function="ExtraActionBar_OnShow"/>
+			<OnHide function="ExtraActionBar_OnHide"/>
+			<OnEvent function="ExtraActionBar_OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

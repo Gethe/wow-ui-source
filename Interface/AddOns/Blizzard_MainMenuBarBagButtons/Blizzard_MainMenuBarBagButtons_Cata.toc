@@ -1,0 +1,8 @@
+## Title: Blizzard_MainMenuBarBagButtons
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_CharacterFrame
+## AllowLoadGameType: cata
+## AllowLoad: Game
+Classic\MainMenuBarBagButtons.lua
+Wrath\MainMenuBarBagButtons.xml

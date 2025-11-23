@@ -1,0 +1,10 @@
+## Title: Blizzard_UIParentPanelManager
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## LoadWith: Blizzard_UIParent
+## AllowLoad: game
+## AllowLoadGameType: mists
+Classic\UIParentPanelManager.lua
+Cata\UIParentPanelManager.lua
+Shared\UpdateUIPanelPositions.lua

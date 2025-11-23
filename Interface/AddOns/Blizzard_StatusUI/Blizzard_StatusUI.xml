@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<Button name="StatusUIFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true" frameStrata="FULLSCREEN" mixin="StatusUIMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="GMChatRequest" type="string"/>
+		</KeyValues>
+		<Size x="290" y="72"/>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="TitleText" inherits="Game11Font" justifyH="LEFT">
+					<Size x="170" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10" />
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="SubtitleText" inherits="Game11Font" justifyH="LEFT">
+					<Size x="180" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Icon" atlas="gmchat-icon-blizz" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="NineSlice" useParentLevel="true" inherits="NineSlicePanelTemplate" setAllPoints="true"/>
+			<Frame parentKey="Pulse" frameLevel="50" setAllPoints="true">
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT">
+						<Alpha fromAlpha="1" toAlpha="0" duration=".9" order="1"/>
+						<Alpha fromAlpha="0" toAlpha="1" duration=".9" order="2"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+
+</Ui>

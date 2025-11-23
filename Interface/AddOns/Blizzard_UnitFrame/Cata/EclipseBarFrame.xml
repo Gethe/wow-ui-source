@@ -1,0 +1,231 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+<!--size=256,128
+	<Texture name="EclipseBarActivate_Moon.png" >
+		<Size x="140" y="38"/>
+		<TexCoords left="0.00390625" right="0.55078125" top="0.00781250" bottom="0.30468750"/>
+	</Texture>
+	<Texture name="EclipseBarActivate_Sun.png" >
+		<Size x="140" y="38"/>
+		<TexCoords left="0.00390625" right="0.55078125" top="0.32031250" bottom="0.61718750"/>
+	</Texture>
+	<Texture name="EclipseBarFrame.png" >
+		<Size x="140" y="38"/>	
+		<TexCoords left="0.00390625" right="0.55078125" top="0.63281250" bottom="0.92968750"/>
+	</Texture>
+	<Texture name="Icon_Sun_Large.png" >
+		<Size x="43" y="45"/>
+		<TexCoords left="0.55859375" right="0.72656250" top="0.00781250" bottom="0.35937500"/>
+	</Texture>
+	<Texture name="Icon_Moon_Large.png" >
+		<Size x="43" y="45"/>
+		<TexCoords left="0.73437500" right="0.90234375" top="0.00781250" bottom="0.35937500"/>
+	</Texture>
+	<Texture name="EclipseSlider.png" >
+		<Size x="10" y="20"/>
+		<TexCoords left="0.91015625" right="0.94921875" top="0.00781250" bottom="0.16406250"/>
+	</Texture>
+	<Texture name="Icon_Moon_dark.png" >
+		<Size x="23" y="23"/>
+		<TexCoords left="0.55859375" right="0.64843750" top="0.37500000" bottom="0.55468750"/>
+	</Texture>
+	<Texture name="Icon_Moon_reg.png" >
+		<Size x="23" y="23"/>
+		<TexCoords left="0.55859375" right="0.64843750" top="0.57031250" bottom="0.75000000"/>
+	</Texture>
+	<Texture name="Icon_Sun_dark.png" >
+		<Size x="23" y="23"/>
+		<TexCoords left="0.55859375" right="0.64843750" top="0.76562500" bottom="0.94531250"/>
+	</Texture>
+	<Texture name="Icon_Sun_reg.png" >
+		<Size x="23" y="23"/>
+		<TexCoords left="0.65625000" right="0.74609375" top="0.37500000" bottom="0.55468750"/>
+	</Texture>
+-->
+  
+	<Frame name="EclipseBarFrame" parent="PlayerFrame" frameStrata="LOW" toplevel="true" hidden="true" mixin="EclipseBarFrameMixin">
+		<Animations>
+			<AnimationGroup parentKey="sunActivate">
+				<Alpha target="$parentSunBar" 		fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 		fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkMoon" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().moonBar:SetAlpha(0);
+						self:GetParent().darkSun:SetAlpha(0);
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().sunBar:SetAlpha(1);
+						self:GetParent().glow:SetAlpha(1);
+						self:GetParent().darkMoon:SetAlpha(1);
+						self:GetParent().glow.pulse:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="sunDeactivate">
+				<Alpha target="$parentSunBar" 		fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 		fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkMoon" 	fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().glow.pulse:Stop();
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().sunBar:SetAlpha(0);
+						self:GetParent().glow:SetAlpha(0);
+						self:GetParent().darkMoon:SetAlpha(0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="moonActivate">
+				<Alpha target="$parentMoonBar" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkSun" 	fromAlpha="0" toAlpha="1" duration="0.6" order="1"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().sunBar:SetAlpha(0);
+						self:GetParent().darkMoon:SetAlpha(0);
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().moonBar:SetAlpha(1);
+						self:GetParent().glow:SetAlpha(1);
+						self:GetParent().darkSun:SetAlpha(1);
+						self:GetParent().glow.pulse:Play();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="moonDeactivate">
+				<Alpha target="$parentMoonBar" 	fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Alpha target="$parentGlow" 	fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Alpha target="$parentDarkSun" 	fromAlpha="1" toAlpha="0" duration="0.6" order="1"/>
+				<Scripts>
+					<OnPlay>
+						self:GetParent().glow.pulse:Stop();
+					</OnPlay>
+					<OnFinished>
+						self:GetParent().moonBar:SetAlpha(0);
+						self:GetParent().glow:SetAlpha(0);
+						self:GetParent().darkSun:SetAlpha(0);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Size x="140" y="38"/>
+		<Anchors>
+		  <Anchor point="TOP" relativeTo="PlayerFrame" relativePoint="BOTTOM">
+			<Offset>
+			  <AbsDimension x="48" y="40"/>
+			</Offset>
+		  </Anchor>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="6" bottom="6"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentBar" file="Interface\PlayerFrame\UI-DruidEclipse">
+					<Size x="140" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.55078125" top="0.63281250" bottom="0.92968750"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentSun" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="sun">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBar"  relativePoint="RIGHT" x="-17" y="1"/>
+					</Anchors>
+					<TexCoords left="0.65625000" right="0.74609375" top="0.37500000" bottom="0.55468750"/>
+				</Texture>
+				<Texture name="$parentMoon" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="moon">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentBar" relativePoint="LEFT" x="17" y="1"/>
+					</Anchors>
+					<TexCoords left="0.55859375" right="0.64843750" top="0.57031250" bottom="0.75000000"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentDarkSun" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="darkSun">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentSun"/>
+					</Anchors>
+					<TexCoords left="0.55859375" right="0.64843750" top="0.76562500" bottom="0.94531250"/>
+				</Texture>
+				<Texture name="$parentDarkMoon" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="darkMoon">
+					<Size x="23" y="23"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parentMoon"/>
+					</Anchors>
+					<TexCoords left="0.55859375" right="0.64843750" top="0.37500000" bottom="0.55468750"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentSunBar" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="sunBar">
+					<Size x="140" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.55078125" top="0.32031250" bottom="0.61718750"/>
+				</Texture>
+				<Texture name="$parentMoonBar" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="moonBar">
+					<Size x="140" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.00390625" right="0.55078125" top="0.00781250" bottom="0.30468750"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentMarker" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="marker" alphaMode="ADD">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" y="2"/>
+					</Anchors>
+					<TexCoords left="1.0" right="0.914" top="0.82" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentGlow" file="Interface\PlayerFrame\UI-DruidEclipse" parentKey="glow" >
+					<Animations>
+						<AnimationGroup looping="REPEAT" parentKey="pulse">
+							<Scale scaleX="1.08" scaleY="1.08" duration="0.5" smoothing="IN_OUT" order="1"/>
+							<Scale scaleX="0.9259" scaleY="0.9259" duration="0.5" smoothing="IN_OUT" order="2"/>
+						</AnimationGroup>
+					</Animations>
+					<Size x="43" y="45"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<TexCoords left="0.55859375" right="0.72656250" top="0.00781250" bottom="0.35937500"/>
+				</Texture>
+				<FontString name="$parentPowertext" inherits="TextStatusBarText" parentKey="powerText" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.powerText:Show();
+				GameTooltip_SetDefaultAnchor(GameTooltip, self);
+				GameTooltip:SetText(BALANCE, 1, 1, 1);
+				GameTooltip:AddLine(BALANCE_TOOLTIP, nil, nil, nil, true);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave>
+				if not self.lockShow then
+					self.powerText:Hide();
+				end
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="Update"/>
+		</Scripts>
+	</Frame>
+</Ui>

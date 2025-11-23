@@ -1,0 +1,22 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<StatusBar name="MonkStaggerBar" inherits="AlternatePowerBarTemplate" parent="PlayerFrame" mixin="MonkStaggerBarMixin">	<!--For Brewmaster Monks-->
+		<Size x="104" y="12"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="114" y="23"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent>
+				self:OnEvent(event, ...);
+				TextStatusBar_OnEvent(self, event, ...);
+			</OnEvent>
+			<OnUpdate>
+				self:OnUpdate(elapsed);
+			</OnUpdate>
+			<OnMouseUp>
+				self:GetParent():Click(button);
+			</OnMouseUp>
+		</Scripts>
+	</StatusBar>
+</Ui>

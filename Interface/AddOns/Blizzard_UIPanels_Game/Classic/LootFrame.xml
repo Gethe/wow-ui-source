@@ -1,0 +1,763 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="LootButtonTemplate" inherits="ItemButtonTemplate" virtual="true">
+		<HitRectInsets>
+			<AbsInset left="0" right="-107" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentNameFrame" file="Interface\QuestFrame\UI-QuestItemNameFrame">
+					<Size x="130" y="62"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="93" y="38"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+				self.hasItem = 1;
+			</OnLoad>
+			<OnEnter>
+				LootItem_OnEnter(self, motion);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				if ( GameTooltip:IsOwned(self) ) then
+				LootItem_OnEnter(self);
+				end
+				CursorOnUpdate(self);
+			</OnUpdate>
+			<OnClick>
+				if ( IsModifiedClick() ) then
+				HandleModifiedItemClick(GetLootSlotLink(self.slot));
+				else
+				LootButton_OnClick(self, button);
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Button name="LootRollButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnClick>
+				RollOnLoot(self:GetParent().rollID, self:GetID());
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltipText);
+				if ( not self:IsEnabled() ) then
+				GameTooltip:AddLine(self.reason, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+				GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+	<Frame name="LootFrame" frameStrata="HIGH" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
+		<Size x="170" y="240"/>
+
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="-1">
+				<Texture name="LootFramePortraitOverlay" file="Interface\TargetingFrame\TargetDead">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-5" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" text="ITEMS">
+					<Anchors>
+						<Anchor point="CENTER" x="12" y="108"/>
+					</Anchors>
+				</FontString>
+				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="45" y="18"/>
+
+					</Anchors>
+				</FontString>
+				<FontString name="LootFrameNext" inherits="GameFontNormal" text="NEXT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="127" y="18"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="LootButton1" inherits="LootButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-68"/>
+				</Anchors>
+			</Button>
+			<!-- anchors not relative - see bug 266687 -->
+			<Button name="LootButton2" inherits="LootButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-109"/>
+				</Anchors>
+			</Button>
+			<Button name="LootButton3" inherits="LootButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-150"/>
+				</Anchors>
+			</Button>
+			<Button name="LootButton4" inherits="LootButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="9" y="-193"/>
+				</Anchors>
+			</Button>
+			<Button name="LootFrameUpButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="8" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LootFrame_PageUp"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollUp-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button name="LootFrameDownButton">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="LootFrame" relativePoint="BOTTOMLEFT" x="130" y="6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LootFrame_PageDown"/>
+				</Scripts>
+				<NormalTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Up"/>
+				<PushedTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Down"/>
+				<DisabledTexture file="Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LootFrame_OnLoad"/>
+			<OnEvent function="LootFrame_OnEvent"/>
+			<OnShow function="LootFrame_OnShow"/>
+			<OnHide function="LootFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="BonusRollFrameTemplate" parent="UIParent" frameLevel="5" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="286" y="76"/>	
+		<Animations>
+			<AnimationGroup parentKey="StartRollAnim">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.25" order="1" targetKey="$parent.$parent.PromptFrame"/>
+				<Alpha fromAlpha="0" toAlpha="0" duration="0.25" order="1" targetKey="$parent.$parent.RollingFrame"/>
+				<Scripts>
+					<OnPlay>
+						local parent = self:GetParent();
+						parent.RollingFrame:Show();
+						parent.RollingFrame:SetAlpha(0);
+						parent.PromptFrame:Show();
+						parent.PromptFrame:SetAlpha(1);
+					</OnPlay>
+					<OnFinished>
+						local parent = self:GetParent();
+						parent.RollingFrame:SetAlpha(1);
+						parent.PromptFrame:Hide();
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FinishRollAnim">
+				<!--Scale scaleX="0.5" scaleY="0.5" duration="0" order="1" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.2" order="1" targetKey="$parent.$parent.RollingFrame.Label"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
+				<!--Scale scaleX="3" scaleY="3" duration="5" order="2" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/>
+				<Scale scaleX="0.66" scaleY="0.66" duration="5" order="2" startDelay="5" targetKey="$parent.$parent.RollingFrame.LootSpinnerFinalText"/-->
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.375" order="3" startDelay="0.5" targetKey="$parent.$parent.WhiteFade"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.3" order="4"/>
+				<Scripts>
+					<OnFinished>
+						local parent = self:GetParent();
+						BonusRollFrame_FinishedFading(parent);
+					</OnFinished>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!--BonusRoll-Toast-->
+				<Texture parentKey="Background" file="Interface\LootFrame\LootToast" setAllPoints="true">
+					<TexCoords left="0.28222656" right="0.56152344" top="0.00390625" bottom="0.30078125"/>	
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<!--BonusRoll-LootSpinnerBG-->
+				<Texture parentKey="LootSpinnerBG" file="Interface\LootFrame\LootToast">
+					<Size x="42" y="42"/>	
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="11" y="-12"/>
+					</Anchors>
+					<TexCoords left="0.23828125" right="0.27929688" top="0.74218750" bottom="0.90625000"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<!--ItemBorder-Gold-->
+				<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0.73242188" right="0.78906250" top="0.57421875" bottom="0.80078125"/>	
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SpecIcon">
+					<Size x="24" y="24"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-2" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="SpecRing" file="Interface/Minimap/MiniMap-TrackingBorder">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="4">
+				<Texture parentKey="WhiteFade" alphaMode="ADD" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+					</Anchors>
+					<Color r="1" g="1" b="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="RollingFrame" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="GameFontNormalLarge" text="BONUS_ROLL_ROLLING" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="135" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="60" y="-15"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="LootSpinner" file="Interface\LootFrame\BonusRoll-LootSpinnerAnim">
+							<Size x="64" y="64"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LootSpinnerFinal" file="Interface\LootFrame\LootToast" hidden="true">
+							<Size x="31" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.$parent.LootSpinnerBG" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="LootSpinnerFinalText" inherits="GameFontNormalLarge" text="BONUS_ROLL_ROLLING" justifyH="CENTER" justifyV="MIDDLE" alpha="0">
+							<Size x="135" y="38"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="60" y="-15"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DieIcon" file="Interface\Buttons\UI-GroupLoot-Dice-Up" alpha="0.5">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT" x="-30" y="-15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PromptFrame" useParentLevel="true" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" file="Interface\Icons\INV_Misc_Dice_02">
+							<Size x="36" y="36"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.Background" x="14" y="-15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="InfoFrame">
+						<Size x="135" y="38"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Background" relativePoint="TOPLEFT" x="60" y="-15"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalLarge" justifyH="LEFT" text="BONUS_LOOT_LABEL">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="RIGHT" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="Cost" inherits="GameFontHighlight" justifyH="LEFT">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="LEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(BONUS_ROLL_TOOLTIP_TITLE, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+								GameTooltip:AddLine(BONUS_ROLL_TOOLTIP_TEXT, nil, nil, nil, true);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
+						<Size x="190" y="9"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="6" y="6"/>
+						</Anchors>
+						<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+						<BarColor r="1.0" g="1.0" b="0" />
+					</StatusBar>
+					<Button parentKey="RollButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-48" y="-16"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(ROLL);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick>
+								AcceptSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+						<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+						<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+					</Button>
+					<Button parentKey="PassButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RollButton" relativePoint="RIGHT" x="5" y="3"/>
+						</Anchors>
+						<Scripts>
+							<OnEnter>
+								GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+								GameTooltip:SetText(PASS);
+								GameTooltip:Show();
+							</OnEnter>
+							<OnLeave function="GameTooltip_Hide"/>
+							<OnClick>
+								DeclineSpellConfirmationPrompt(self:GetParent():GetParent().spellID);
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-GroupLoot-Pass-Up"/>
+						<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Pass-Highlight" alphaMode="ADD"/>
+						<PushedTexture file="Interface\Buttons\UI-GroupLoot-Pass-Down"/>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="BlackBackgroundHoist" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PromptFrame.Timer" relativePoint="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.PromptFrame.Timer" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="CurrentCountFrame" useParentLevel="true">
+				<Size x="82" y="18"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-6" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="RIGHT" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetCurrencyByID(self:GetParent().currencyID);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BonusRollFrame_OnLoad"/>
+			<OnEvent function="BonusRollFrame_OnEvent"/>
+			<OnShow function="BonusRollFrame_OnShow"/>
+			<OnHide function="BonusRollFrame_OnHide"/>
+			<OnUpdate function="BonusRollFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootFrameTemplate" inherits="BackdropTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" hidden="true" virtual="true">
+		<Size x="243" y="84"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentSlotTexture" file="Interface\Buttons\UI-EmptySlot">
+					<Size>
+						<AbsDimension x="64" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="3" y="-3"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentNameFrame" file="Interface\MerchantFrame\UI-Merchant-LabelSlots">
+					<Size>
+						<AbsDimension x="128" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-9" y="-10"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" name="$parentName" inherits="GameFontNormalSmall" text="Item Name" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="90" y="30"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentSlotTexture" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="-5" y="5"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentDecoration" file="Interface\DialogFrame\UI-DialogBox-Gold-Dragon" hidden="true">
+					<Size>
+						<AbsDimension x="120" y="120"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-30" y="15"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentCorner" file="Interface\DialogFrame\UI-DialogBox-Corner">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-6" y="-7"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="IconFrame" enableMouse="true">
+				<Size x="34" y="34"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" x="15" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Size x="34" y="34"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT" hidden="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-5" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.hasItem = 1;
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetLootRollItem(self:GetParent().rollID);
+						CursorUpdate(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+					<OnUpdate>
+						if ( GameTooltip:IsOwned(self) ) then
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetLootRollItem(self:GetParent().rollID);
+						end
+						CursorOnUpdate(self);
+					</OnUpdate>
+					<OnClick>
+						HandleModifiedItemClick(GetLootRollItemLink(self:GetParent().rollID));
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button parentKey="NeedButton" inherits="LootRollButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-37" y="-14"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.tooltipText=NEED;
+					</OnLoad>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Dice-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Dice-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Dice-Down"/>
+			</Button>
+			<Button parentKey="PassButton" inherits="UIPanelCloseButton" id="0">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentCorner" relativePoint="TOPRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RollOnLoot(self:GetParent().rollID, self:GetID());
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PASS);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button parentKey="GreedButton" inherits="LootRollButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.NeedButton" relativePoint="BOTTOM" x="-2" y="2"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.tooltipText=GREED;
+					</OnLoad>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-GroupLoot-Coin-Up"/>
+				<HighlightTexture file="Interface\Buttons\UI-GroupLoot-Coin-Highlight" alphaMode="ADD"/>
+				<PushedTexture file="Interface\Buttons\UI-GroupLoot-Coin-Down"/>
+			</Button>
+			<StatusBar parentKey="Timer" drawLayer="ARTWORK" minValue="0" maxValue="60000" defaultValue="0">
+				<Size x="152" y="10"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSlotTexture" relativePoint="BOTTOMLEFT" x="13" y="10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="Background" setAllPoints="true">
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+							<Size x="156" y="20"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:GetStatusBarTexture():SetDrawLayer("BACKGROUND");
+					</OnLoad>
+					<OnUpdate>
+						GroupLootFrame_OnUpdate(self, elapsed);
+					</OnUpdate>
+				</Scripts>
+				<BarTexture parentKey="Bar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" />
+				<BarColor r="1.0" g="1.0" b="0" />
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnLoad inherit="prepend">
+				self:RegisterEvent("CANCEL_LOOT_ROLL");
+			</OnLoad>
+			<OnShow function="GroupLootFrame_OnShow"/>
+			<OnEvent function="GroupLootFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootContainer" parent="UIParent" hidden="true">
+		<Size x="256" y="1"/>
+		<Scripts>
+			<OnLoad function="GroupLootContainer_OnLoad"/>
+		</Scripts>
+	</Frame>
+	<Frame name="GroupLootFrame1" inherits="GroupLootFrameTemplate" id="1"/>
+	<Frame name="GroupLootFrame2" inherits="GroupLootFrameTemplate" id="2"/>
+	<Frame name="GroupLootFrame3" inherits="GroupLootFrameTemplate" id="3"/>
+	<Frame name="GroupLootFrame4" inherits="GroupLootFrameTemplate" id="4"/>
+	<Frame name="BonusRollFrame" inherits="BonusRollFrameTemplate"/>
+
+	<ContainedAlertFrame name="BonusRollLootWonFrame" inherits="LootWonAlertFrameTemplate">
+		<Scripts>
+			<OnLoad inherit="append" function="BonusRollLootWonFrame_OnLoad"/>
+			<OnHide>
+				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+			</OnHide>
+			<OnClick function="LootWonAlertFrame_OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+	<ContainedAlertFrame name="BonusRollMoneyWonFrame" inherits="MoneyWonAlertFrameTemplate">
+		<Scripts>
+			<OnLoad inherit="append" function="BonusRollMoneyWonFrame_OnLoad"/>
+			<OnHide>
+				GroupLootContainer_RemoveFrame(GroupLootContainer, self);
+			</OnHide>
+		</Scripts>
+	</ContainedAlertFrame>
+
+	<Button name="MasterLooterPlayerTemplate" virtual="true">
+		<Size x="98" y="23"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true" parentKey="Bg">
+					<Color r="0.2" g="0.2" b="0.2" a="0.5"/>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Highlight" file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormal" parentKey="Name" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="78" y="12"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				self.Highlight:Show();
+				if (self.tooltip) then
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+				end
+			</OnEnter>
+			<OnLeave>
+				self.Highlight:Hide();
+				GameTooltip_Hide();
+			</OnLeave>
+			<OnMouseDown>
+				self.Name:SetPoint("LEFT", 11, -1);
+			</OnMouseDown>
+			<OnMouseUp>
+				self.Name:SetPoint("LEFT", 10, 0);
+			</OnMouseUp>
+			<OnClick function="MasterLooterPlayerFrame_OnClick"/>
+		</Scripts>
+	</Button>
+	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="UIParent" inherits="TooltipBorderedFrameTemplate" hidden="true" frameStrata="DIALOG">
+		<Size x="10" y="10"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Item">
+				<Size x="0" y="28"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-9" y="-13"/>
+					<Anchor point="RIGHT" x="-30" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon">
+							<Size x="28" y="28"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="23" y="0"/>
+							</Anchors>
+						</Texture>
+						<!--SmallItemNameBorder-Left-->
+						<Texture parentKey="NameBorderLeft" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="3" y="0"/>
+							</Anchors>
+							<TexCoords left="0.79101563" right="0.80664063" top="0.57421875" bottom="0.69921875"/>
+						</Texture>
+						<Texture parentKey="NameBorderRight" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.73242188" right="0.74804688" top="0.80859375" bottom="0.93359375"/>
+						</Texture>
+						<Texture parentKey="NameBorderMid" file="Interface\LootFrame\LootToast">
+							<Size x="16" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<TexCoords left="0.75" right="0.764648438" top="0.80859375" bottom="0.93359375"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<!--SmallItemIcon-Border-->
+						<Texture parentKey="IconBorder" file="Interface\LootFrame\LootToast">
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.62792969" right="0.65722656" top="0.87500000" bottom="0.99218750"/>
+						</Texture>
+						<FontString parentKey="ItemName" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.NameBorderLeft" relativePoint="TOPLEFT" x="2" y="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NameBorderRight" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button inherits="MasterLooterPlayerTemplate" parentKey="player1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-53"/>
+				</Anchors>
+			</Button>
+			<Button inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

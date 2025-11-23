@@ -1,0 +1,139 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="RolePoll.lua"/>
+	<Button name="RolePollRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="48" y="48"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
+					<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="checkButton">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						RolePollPopupRoleButtonCheckButton_OnClick(self, button);
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-RadioButton">
+					<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+				</NormalTexture>
+				<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+					<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+				</HighlightTexture>
+				<CheckedTexture file="Interface\Buttons\UI-RadioButton">
+					<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+				</CheckedTexture>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnEnter>
+				<!--Warning: The Leader button overrides this.-->
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(_G["ROLE_DESCRIPTION"..self:GetID()], nil, nil, nil, nil, true);
+				if ( self.notRecommended ) then
+					GameTooltip:AddLine(CLASS_ROLE_NOT_RECOMMENDED, 1, 0, 0, true);
+				end
+				GameTooltip:Show();
+			</OnEnter>
+			<OnClick>
+				if ( self.checkButton:IsEnabled() ) then
+					self.checkButton:Click();
+				end
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.checkButton:UnlockHighlight();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+	</Button>
+	<Frame name="RolePollPopup" parent="UIParent" hidden="true">
+		<Size x="306" y="160"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontHighlight" justifyH="CENTER" text="SELECT_YOUR_ROLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonTank" inherits="RolePollRoleButtonTemplate" id="2">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-35"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
+						self.role = Enum.LFGRole.Tank;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonHealer" inherits="RolePollRoleButtonTemplate" id="3">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
+						self.role = Enum.LFGRole.Healer;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentRoleButtonDPS" inherits="RolePollRoleButtonTemplate" id="1">
+				<Size x="70" y="70"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
+						self.role = Enum.LFGRole.Damage;
+					</OnLoad>
+				</Scripts>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" parentKey="acceptButton" text="ACCEPT">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="RolePollPopupAccept_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="RolePollPopup_OnLoad"/>
+			<OnEvent function="RolePollPopup_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="RoleChangedFrame" parent="UIParent">
+		<Scripts>
+			<OnLoad function="RoleChangedFrame_OnLoad"/>
+			<OnEvent function="RoleChangedFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

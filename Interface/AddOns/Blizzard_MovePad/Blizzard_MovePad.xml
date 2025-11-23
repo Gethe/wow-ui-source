@@ -1,0 +1,123 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="MovePadCheckboxTemplate" mixin="MovePadCheckboxMixin" inherits="UIPanelSquareButton" parentArray="MoveButtons" virtual="true">
+		<Size x="38" y="38" />
+		<CheckedTexture file="Interface\Buttons\CheckButtonGlow" alphaMode="ADD">
+			<TexCoords left="0.1" right="0.9" top="0.1" bottom="0.9"/>
+		</CheckedTexture>
+		<Scripts>
+			<OnMouseDown method="OnMovePadCheckboxMouseDown" inherit="prepend"/>
+			<OnMouseUp method="OnMovePadCheckboxMouseUp" inherit="prepend"/>
+			<OnClick method="OnMovePadCheckboxClick" inherit="prepend"/>
+		</Scripts>
+	</CheckButton>
+
+	<Frame name="MovePadFrame" mixin="MovePadMixin" parent="UIParent" movable="true" registerForDrag="LeftButton" clampedToScreen="true" toplevel="true" frameStrata="BACKGROUND" inherits="TooltipBackdropTemplate">
+		<Size x="126" y="124" />
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-380" y="-280"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropColorAlpha" value="0.5" type="number"/>
+		</KeyValues>
+		<Frames>
+			<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-10" y="10"/>
+				</Anchors>
+			</DropdownButton>
+			<CheckButton name="MovePadForward" inherits="MovePadCheckboxTemplate" mixin="MovePadForwardMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="MoveForwardStart" type="global"/>
+					<KeyValue key="stopAction" value="MoveForwardStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" y="-5"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<Button name="MovePadJump" inherits="UIPanelSquareButton" mixin="MovePadJumpMixin">
+				<Size x="38" y="38" />
+				<KeyValues>
+					<KeyValue key="startAction" value="JumpOrAscendStart" type="global"/>
+					<KeyValue key="stopAction" value="AscendStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MovePadForward" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnMouseDown method="OnMovePadJumpMouseDown" inherit="prepend"/>
+					<OnMouseUp method="OnMovePadJumpMouseUp" inherit="prepend"/>
+				</Scripts>
+			</Button>
+			<CheckButton name="MovePadBackward" inherits="MovePadCheckboxTemplate" mixin="MovePadBackwardMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="MoveBackwardStart" type="global"/>
+					<KeyValue key="stopAction" value="MoveBackwardStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MovePadJump" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadRotateLeft" inherits="MovePadCheckboxTemplate" mixin="MovePadRotateLeftMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="TurnLeftStart" type="global"/>
+					<KeyValue key="stopAction" value="TurnLeftStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MovePadJump" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadRotateRight" inherits="MovePadCheckboxTemplate" mixin="MovePadRotateRightMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="TurnRightStart" type="global"/>
+					<KeyValue key="stopAction" value="TurnRightStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MovePadJump" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadStrafeLeft" inherits="MovePadCheckboxTemplate" mixin="MovePadStrafeLeftMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="StrafeLeftStart" type="global"/>
+					<KeyValue key="stopAction" value="StrafeLeftStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="MovePadForward" relativePoint="LEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="MovePadStrafeRight" inherits="MovePadCheckboxTemplate" mixin="MovePadStrafeRightMixin">
+				<KeyValues>
+					<KeyValue key="startAction" value="StrafeRightStart" type="global"/>
+					<KeyValue key="stopAction" value="StrafeRightStop" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="MovePadForward" relativePoint="RIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,127 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_Kiosk.lua"/>
+	
+	<Font name="KioskDialogHeaderFont" font="Fonts\FRIZQT__.TTF" height="20"/>
+
+	<Frame name="KioskFrame" mixin="KioskFrameMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name ="KioskSessionStartedDialog" toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" setAllPoints="true" hidden="true">
+		<Size x="900" y="525"/>
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Dialog">
+				<Size x="900" y="525"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="20" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Bg" atlas="ClassTrial-End-Frame">
+							<Size x="1126" y="600" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Content">
+				<Size x ="800" y="525" />
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.Dialog" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="kiosk-start-splash" atlas="classic_blizzcon23_splash" nonBlocking="false" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOP">
+								<Offset x="0" y="-10"/>
+							</Anchor>
+						</Anchors>
+						</Texture>
+						<FontString parentKey="kiosk-start-dialog" inherits="SystemFont_Large" justifyH="LEFT" wordwrap="true" text="KIOSK_SESSION_START_DIALOG_RUNES">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.kiosk-start-splash" relativePoint="BOTTOM" x="0" y="-10" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="ContinueButton" inherits="UIPanelButtonTemplate" mixin="KioskSessionStartedDialogButtonMixin" text="CONTINUE">
+						<Size x="150" y="32"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.kiosk-start-dialog" relativePoint="BOTTOM" x="0" y="-10"/>
+						</Anchors>
+						<NormalFont style="GameFontNormalLarge"/>
+						<HighlightFont style="GameFontHighlightLarge"/>
+						<DisabledFont style="GameFontDisableLarge"/>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="KioskSessionFinishedDialog" mixin="KioskSessionFinishedDialogMixin"  toplevel="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" setAllPoints="true" hidden="true">
+		<Size x="450" y="240"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP" x="0" y="-4"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Dialog">
+				<Size x="450" y="240"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Bg" atlas="ClassTrial-End-Frame">
+							<Size x="450" y="240" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Title" inherits="KioskDialogHeaderFont" text="KIOSK_SESSION_EXPIRED_TITLE">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-84.0" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="SubTitle" inherits="SystemFont_WTF2" text="Season of Discovery">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-10" />
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+						<FontString parentKey="Body" inherits="SystemFont_Large" justifyH="CENTER" justifyV="MIDDLE" wordwrap="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.SubTitle" relativePoint="BOTTOM" y="18"/>
+								<Anchor point="LEFT" relativePoint="LEFT" x="90.0"/>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-90.0"/>
+								<Anchor point="BOTTOM"/>
+							</Anchors>
+							<Color color="BLACK_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

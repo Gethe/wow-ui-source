@@ -1,0 +1,11 @@
+## Title: Blizzard Auction UI
+## LoadOnDemand: 1
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_HelpPlate
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\Blizzard_AuctionData.lua
+Classic\Blizzard_AuctionUI.lua
+Classic\Blizzard_AuctionUITemplates.xml
+Classic\Blizzard_AuctionUI.xml
+Classic\Localization.lua

@@ -1,0 +1,12 @@
+## Title: Blizzard_AccessibilityTemplates
+## RequiredDep: Blizzard_SharedXML, Blizzard_Colors
+## AllowLoad: both
+[Family]\AccessibilityTemplates.lua
+AccessibilityIntrinsics.xml
+QuestTextContrast.lua [AllowLoadGameType mainline]
+TextSizeManager.lua
+TextSizeManagerGlue.lua [AllowLoad glue]
+TextSizeManagerGame.lua [AllowLoad game]
+UserScaledElementTemplates.lua
+UserScaledElementTemplates.xml
+UserScaledSliderTemplates.xml
