@@ -66,8 +66,15 @@ function HousingCatalogFrameMixin:OnShow()
 			if ContentTrackingUtil.IsTrackingModifierDown() then
 				if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID) then
 					C_ContentTracking.StopTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID, Enum.ContentTrackingStopType.Manual);
+					PlaySound(SOUNDKIT.CONTENT_TRACKING_STOP_TRACKING);
 				else
-					C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID);
+					local error = C_ContentTracking.StartTracking(Enum.ContentTrackingType.Decor, catalogEntry.entryInfo.entryID.recordID);
+					if error then
+						ContentTrackingUtil.DisplayTrackingError(error);
+					else 
+						PlaySound(SOUNDKIT.CONTENT_TRACKING_START_TRACKING);
+						PlaySound(SOUNDKIT.CONTENT_TRACKING_OBJECTIVE_TRACKING_START);
+					end
 				end
 			else
 				PlaySound(SOUNDKIT.HOUSING_CATALOG_ENTRY_SELECT);

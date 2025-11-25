@@ -134,10 +134,11 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 	self.overrideCardModelSceneID = useWideCardSettings and displayInfo.overrideWideCardModelSceneID or displayInfo.overrideCardModelSceneID;
 	CatalogShopUtil.ClearSpecialActors(self.ModelScene);
 
+	self.ModelScene:ClearScene(); -- because the Cards are pulled from a pool, clear the model scene because products may not use it
+
 	displayData.modelSceneContext = useWideCardSettings and CatalogShopConstants.ModelSceneContext.WideCard or CatalogShopConstants.ModelSceneContext.SmallCard;
 	if productType == CatalogShopConstants.ProductType.Bundle then
 		local forceHidePlayer = false;
-		self.ModelScene:ClearScene(); -- because the Cards are pulled from a pool, bundles ALWAYS need to clear the model scene because they might not use it
 		CatalogShopUtil.SetupModelSceneForBundle(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceHidePlayer);
 	elseif productType == CatalogShopConstants.ProductType.Mount then
 		local forceHidePlayer = true;
@@ -149,8 +150,6 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 		CatalogShopUtil.SetupModelSceneForTransmogs(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
 	elseif productType == CatalogShopConstants.ProductType.Decor then
 		CatalogShopUtil.SetupModelSceneForDecor(self.ModelScene, defaultCardModelSceneID, displayData, modelLoadedCB, forceSceneChange);
-	else
-		self.ModelScene:ClearScene();
 	end
 
 	if CatalogShopUtil.HasSpecialActors(displayData) then

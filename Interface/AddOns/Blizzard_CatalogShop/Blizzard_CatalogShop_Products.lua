@@ -369,6 +369,12 @@ function ProductContainerFrameMixin:InitProductContainer()
 		if lhs.elementType ~= rhs.elementType then
 			return lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header;
 		end
+		
+		-- If both are headers they are equal. (by this point they are the same section)
+		if lhs.elementType == CatalogShopConstants.ScrollViewElementType.Header and rhs.elementType == CatalogShopConstants.ScrollViewElementType.Header then
+			return false;
+		end
+
 		-- (We have 2 products) Look for the collection sort order
 		local lhsOrder = C_CatalogShop.GetProductSortOrder(lhs.categoryID, lhs.sectionID, lhs.catalogShopProductID) or 999;
 		local rhsOrder = C_CatalogShop.GetProductSortOrder(rhs.categoryID, rhs.sectionID, rhs.catalogShopProductID) or 999;

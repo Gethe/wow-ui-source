@@ -20,6 +20,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.FixtureTypeMismatch] = ERR_HOUSING_RESULT_FIXTURE_TYPE_MISMATCH,
 	[Enum.HousingResult.GenericFailure] = ERR_HOUSING_RESULT_GENERIC_FAILURE,
 	[Enum.HousingResult.GuildNotLoaded] = ERR_HOUSING_RESULT_GUILD_NOT_LOADED,
+	[Enum.HousingResult.HouseEditLockFailed] = ERR_HOUSING_RESULT_LOCKED_BY_OTHER_PLAYER,
 	[Enum.HousingResult.HouseExteriorRootNotFound] = ERR_HOUSING_RESULT_HOUSE_EXTERIOR_ROOT_NOT_FOUND,
 	[Enum.HousingResult.HookNotChildOfFixture] = ERR_HOUSING_RESULT_HOOK_NOT_CHILD_OF_FIXTURE,
 	[Enum.HousingResult.HouseNotFound] = ERR_HOUSING_RESULT_HOUSE_NOT_FOUND,

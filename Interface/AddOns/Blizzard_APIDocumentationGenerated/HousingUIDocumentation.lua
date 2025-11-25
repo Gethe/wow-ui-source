@@ -20,6 +20,20 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "CanTakeReportScreenshot",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "plotIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reason", Type = "InvalidPlotScreenshotReason", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateGuildNeighborhood",
 			Type = "Function",
 
@@ -438,20 +452,6 @@ local HousingUI =
 			Arguments =
 			{
 				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "ValidateReportScreenshot",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "plotIndex", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isValid", Type = "bool", Nilable = false },
 			},
 		},
 		{
