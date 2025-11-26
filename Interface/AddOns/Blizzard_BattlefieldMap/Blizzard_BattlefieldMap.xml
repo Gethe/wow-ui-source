@@ -5,7 +5,7 @@
 	<Button name="BattlefieldMapTab" hidden="false" frameStrata="LOW" parent="UIParent" movable="true" mixin="BattlefieldMapTabMixin">
 		<Size x="64" y="32"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-200" y="200"/>
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-390" y="315"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -60,7 +60,7 @@
 	<Frame name="BattlefieldMapFrame" parent="UIParent" inherits="MapCanvasFrameTemplate" mixin="BattlefieldMapMixin">
 		<Size x="300" y="200"/>
 		<Anchors>
-			<Anchor point="BOTTOMRIGHT" x="-20" y="80"/>
+			<Anchor point="TOPLEFT" relativeTo="BattlefieldMapTab" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 		</Anchors>
 		<Frames>
 			<ScrollFrame parentKey="ScrollContainer" inherits="MapCanvasFrameScrollContainerTemplate">

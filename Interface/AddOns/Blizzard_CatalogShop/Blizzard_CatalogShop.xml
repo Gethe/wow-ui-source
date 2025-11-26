@@ -17,7 +17,7 @@
 		</Anchors>
 		
 		<Frames>
-			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" >
+			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" frameLevel="1">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="1" y="-1"/>
 					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>

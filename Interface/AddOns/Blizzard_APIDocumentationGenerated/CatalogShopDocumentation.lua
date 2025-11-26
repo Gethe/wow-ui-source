@@ -466,6 +466,7 @@ local CatalogShop =
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
 				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
+				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 			},
 		},
 		{

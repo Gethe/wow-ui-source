@@ -8,6 +8,8 @@
 Shared\CastingBarFrame.lua
 Classic\CastingBarFrame.lua
 Classic\CastingBarFrame.xml
+Shared\ExtraAbilityContainer.lua
+Shared\ExtraAbilityContainer.xml
 Classic\SpellBookFrame.lua
 Cata\SpellBookProfessions.lua
 Mists\SpellBookFrame.lua

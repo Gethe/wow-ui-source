@@ -23,6 +23,15 @@
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture parentKey="Background" setAllPoints="true" />
+						<MaskTexture parentKey="BackgroundMask" setAllPoints="true" atlas="shop-card-wide-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="530" y="299"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Background"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 			</Frame>

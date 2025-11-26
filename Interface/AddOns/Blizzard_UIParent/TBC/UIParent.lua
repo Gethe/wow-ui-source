@@ -21,31 +21,6 @@ MAX_CHARACTER_MACROS = 30;
 CVarCallbackRegistry:SetCVarCachable("showCastableBuffs");
 CVarCallbackRegistry:SetCVarCachable("showDispelDebuffs");
 
--- Move this stuff to UIParentPanelManager for TBC when it is created
--- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
-UIChildWindows = {
-	"OpenMailFrame",
-	"GuildControlPopupFrame",
-	"GuildMemberDetailFrame",
-	"GuildInfoFrame",
-	"TokenFramePopup",
-	"GuildBankPopupFrame",
-	"GearManagerDialog",
-};
-
-UISpecialFrames = {
-	"ItemRefTooltip",
-	"ColorPickerFrame",
-	"FloatingPetBattleAbilityTooltip",
-	"FloatingGarrisonFollowerTooltip",
-	"FloatingGarrisonShipyardFollowerTooltip"
-};
-
-UIMenus = {
-	"DropDownList1",
-	"DropDownList2",
-};
-
 ITEM_QUALITY_COLORS = { };
 for i = 0, NUM_LE_ITEM_QUALITYS - 1 do
 	local r, g, b = C_Item.GetItemQualityColor(i);

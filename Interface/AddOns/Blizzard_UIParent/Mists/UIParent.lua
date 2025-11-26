@@ -542,7 +542,6 @@ function UIParent_OnEvent(self, event, ...)
 			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
 			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
 		end
-		TargetFrame_OnVariablesLoaded();
 		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.CheckForFree(self, value);

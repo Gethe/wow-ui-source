@@ -131,6 +131,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPIModelSceneFrameActor
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPIModelSceneFrameDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPIModelSceneFrameSharedDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPIQuestPOIDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPIScenarioPOIDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPISimpleCheckoutDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPITabardModelBaseDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FrameAPITabardModelDocumentation.lua
@@ -1186,6 +1187,7 @@ Interface\AddOns\Blizzard_FrameXML\Blizzard_FrameXML_Wrath.toc
 Interface\AddOns\Blizzard_FrameXML\Cata\ArchaeologyProgressBar.lua
 Interface\AddOns\Blizzard_FrameXML\Cata\ArchaeologyProgressBar.xml
 Interface\AddOns\Blizzard_FrameXML\Cata\Blizzard_TalentUITemplates.xml
+Interface\AddOns\Blizzard_FrameXML\Cata\CharacterFrameTemplates.lua
 Interface\AddOns\Blizzard_FrameXML\Cata\CharacterFrameTemplates.xml
 Interface\AddOns\Blizzard_FrameXML\Cata\TalentFrameBase.lua
 Interface\AddOns\Blizzard_FrameXML\Cata\WorldStateFrame.xml
@@ -1621,6 +1623,7 @@ Interface\AddOns\Blizzard_MicroMenu\Shared\MicroMenuContainer.lua
 Interface\AddOns\Blizzard_MicroMenu\Shared\MicroMenuUtil.lua
 Interface\AddOns\Blizzard_MicroMenu\Vanilla\MainMenuBarMicroButtons.lua
 Interface\AddOns\Blizzard_MicroMenu\Vanilla\MainMenuBarMicroButtons.xml
+Interface\AddOns\Blizzard_MicroMenu\Vanilla\MicroMenuContainerOverrides.lua
 Interface\AddOns\Blizzard_MicroMenu\Wrath\MainMenuBarMicroButtons.lua
 Interface\AddOns\Blizzard_MicroMenu\Wrath\MainMenuBarMicroButtons.xml
 Interface\AddOns\Blizzard_Minimap\Blizzard_Minimap_Cata.toc
@@ -2682,5 +2685,8 @@ Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInbound.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.xml
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIOutbound.lua
+Interface\WorldMap\Azeroth.zmp
+Interface\WorldMap\Expansion01.zmp
+Interface\WorldMap\Kalimdor.zmp
 Interface\ui-gen-addon-list.txt
 Interface\ui-toc-list.txt
