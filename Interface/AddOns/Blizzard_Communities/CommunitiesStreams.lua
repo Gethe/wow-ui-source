@@ -7,11 +7,11 @@ local function GetStreamName(clubId, stream)
 		streamName = stream.name;
 	end
 	
-	local r, g, b = Chat_GetCommunitiesChannelColor(clubId, streamId);
+	local r, g, b = ChatFrameUtil.GetCommunitiesChannelColor(clubId, streamId);
 	local color = CreateColor(r, g, b);
 	streamName = color:WrapTextInColorCode(streamName);
 		
-	local localID = ChatFrame_GetCommunitiesChannelLocalID(clubId, streamId);
+	local localID = ChatFrameUtil.GetCommunitiesChannelLocalID(clubId, streamId);
 	if localID and localID ~= 0 then
 		streamName = streamName.." "..GRAY_FONT_COLOR:WrapTextInColorCode(COMMUNITIES_STREAM0_CHAT_SHORTCUT_FORMAT:format(localID));
 	end
@@ -362,7 +362,7 @@ function CommunitiesAddToChatMixin:OnShow()
 		local clubId = self:GetParent():GetSelectedClubId();
 		local streamId = self:GetParent():GetSelectedStreamId();
 		local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
-		local channelName = Chat_GetCommunitiesChannelName(clubId, streamId);
+		local channelName = ChatFrameUtil.GetCommunitiesChannelName(clubId, streamId);
 		if not streamInfo then
 			return;
 		end
@@ -383,14 +383,14 @@ function CommunitiesAddToChatMixin:OnShow()
 				local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
 				
 				local function IsChecked(chatWindowIndex)
-					return ChatFrame_ContainsMessageGroup(chatWindow, messageGroup);
+					return chatWindow:ContainsMessageGroup(messageGroup);
 				end
 
 				local function SetChecked(chatWindowIndex)
 					if IsChecked(chatWindowIndex) then
-						ChatFrame_RemoveMessageGroup(chatWindow, messageGroup);
+						chatWindow:RemoveMessageGroup(messageGroup);
 					else
-						ChatFrame_AddMessageGroup(chatWindow, messageGroup);
+						chatWindow:AddMessageGroup(messageGroup);
 					end
 					
 					chatTab:Click();
@@ -399,14 +399,14 @@ function CommunitiesAddToChatMixin:OnShow()
 				rootDescription:CreateCheckbox(text, IsChecked, SetChecked, chatWindowIndex);
 			else
 				local function IsChecked()
-					return ChatFrame_ContainsChannel(chatWindow, channelName);
+					return chatWindow:ContainsChannel(channelName);
 				end
 
 				local function SetChecked(chatWindowIndex)
 					if IsChecked() then
-						ChatFrame_RemoveCommunitiesChannel(chatWindow, clubId, streamId);
+						ChatFrameUtil.RemoveCommunitiesChannel(chatWindow, clubId, streamId);
 					else
-						ChatFrame_AddNewCommunitiesChannel(chatWindowIndex, clubId, streamId);
+						ChatFrameUtil.AddNewCommunitiesChannel(chatWindowIndex, clubId, streamId);
 					end
 					
 					chatTab:Click();
@@ -425,19 +425,18 @@ function CommunitiesAddToChatMixin:OnShow()
 					local chatFrameName = streamInfo.name;
 					local frame = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
 					local messageGroup = streamInfo.streamType == Enum.ClubStreamType.Guild and "GUILD" or "OFFICER";
-					ChatFrame_AddMessageGroup(frame, messageGroup);
+					frame:AddMessageGroup(messageGroup);
 				else
 					local clubInfo = C_Club.GetClubInfo(clubId);
 					if clubInfo  then
-						local MAX_COMMUNITY_NAME_LENGTH = 12;
 						local MAX_CHAT_TAB_STREAM_NAME_LENGTH = 50; -- Arbitrarily large, since for now we don't want to truncate the stream part.
-						local communityPart = ChatFrame_TruncateToMaxLength(clubInfo.name, MAX_COMMUNITY_NAME_LENGTH);
-						local streamPart = ChatFrame_TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
+						local communityPart = ChatFrameUtil.TruncateToMaxLength(clubInfo.name, ChatFrameConstants.TruncatedCommunityNameLength);
+						local streamPart = ChatFrameUtil.TruncateToMaxLength(streamInfo.name, MAX_CHAT_TAB_STREAM_NAME_LENGTH);
 						local chatFrameName = COMMUNITIES_NAME_AND_STREAM_NAME:format(communityPart, streamPart);
 						local noDefaultChannels = true;
 						local frame, chatFrameIndex = FCF_OpenNewWindow(chatFrameName, noDefaultChannels);
 						local setEditBoxToChannel = true;
-						ChatFrame_AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel);
+						ChatFrameUtil.AddNewCommunitiesChannel(chatFrameIndex, clubId, streamId, setEditBoxToChannel);
 					end
 				end
 			end);

@@ -65,41 +65,11 @@ CHAT_FRAME_TEXTURES = {
 
 CHAT_FRAMES = {};
 
-PrimaryChatFrameMixin = {};
+FloatingChatFrameMixin = CreateFromMixins(ChatFrameMixin);
 
-function PrimaryChatFrameMixin:OnLoad()
-	-- Edit Mode doesn't exist at glues
-	if EditModeSystemMixin then
-		EditModeSystemMixin.OnSystemLoad(self);
-	end
-
-	tinsert(CHAT_FRAMES, self:GetName());
-	ChatFrame_OnLoad(self);
-	DEFAULT_CHAT_FRAME = ChatFrame1;
-	SELECTED_CHAT_FRAME = ChatFrame1;
-	SELECTED_DOCK_FRAME = ChatFrame1;
-
-	self.isStaticDocked = true;
-	FCFDock_SetPrimary(GENERAL_CHAT_DOCK, self);
-	ChatEdit_SetLastActiveWindow(self.editBox);
-
-	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
-	self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
-
-	FloatingChatFrame_SetupScrolling(self);
-
-	-- Default chat tab remains locked and is controlled via edit mode for position and size
-	FCF_SetLocked(self, true);
-	self.ResizeButton:Hide();
-end
-
-function PrimaryChatFrameMixin:OnEvent(event, ...)
-	ChatFrame_OnEvent(self, event, ...);
-	FloatingChatFrame_OnEvent(self, event, ...);
-end
-
-function FloatingChatFrame_OnLoad(self)
+function FloatingChatFrameMixin:OnLoad()
 	--IMPORTANT NOTE: This function isn't run by ChatFrame1.
+	ChatFrameMixin.OnLoad(self);
 	tinsert(CHAT_FRAMES, self:GetName());
 
 	FCF_SetTabPosition(self, 0);
@@ -152,7 +122,9 @@ function FloatingChatFrame_SetupScrolling(self)
 	FloatingChatFrame_UpdateScroll(self);
 end
 
-function FloatingChatFrame_OnEvent(self, event, ...)
+function FloatingChatFrameMixin:OnEvent(event, ...)
+	ChatFrameMixin.OnEvent(self, event, ...);
+
 	if ( (event == "UPDATE_CHAT_WINDOWS") or (event == "UPDATE_FLOATING_CHAT_WINDOWS") ) then
 		FloatingChatFrame_Update(self:GetID(), 1);
 		self.isInitialized = 1;
@@ -187,8 +159,92 @@ function FloatingChatFrame_UpdateScroll(self)
 	end
 end
 
+PrimaryChatFrameMixin = CreateFromMixins(FloatingChatFrameMixin);
+
+function PrimaryChatFrameMixin:OnLoad()
+	-- Edit Mode doesn't exist at glues
+	if EditModeSystemMixin then
+		EditModeSystemMixin.OnSystemLoad(self);
+	end
+
+	tinsert(CHAT_FRAMES, self:GetName());
+	ChatFrameMixin.OnLoad(self);
+	DEFAULT_CHAT_FRAME = ChatFrame1;
+	SELECTED_CHAT_FRAME = ChatFrame1;
+	SELECTED_DOCK_FRAME = ChatFrame1;
+
+	self.isStaticDocked = true;
+	FCFDock_SetPrimary(GENERAL_CHAT_DOCK, self);
+	ChatFrameUtil.SetLastActiveWindow(self.editBox);
+
+	self:RegisterEvent("UPDATE_CHAT_WINDOWS");
+	self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS");
+
+	FloatingChatFrame_SetupScrolling(self);
+
+	-- Default chat tab remains locked and is controlled via edit mode for position and size
+	FCF_SetLocked(self, true);
+	self.ResizeButton:Hide();
+end
+
+local function SetChatFrameButtonsEnabled(enabled, buttonDisabledTooltip)
+	local chatFrameButtons = 
+	{
+		ChatFrameChannelButton,
+		TextToSpeechButton,
+		QuickJoinToastButton,
+		-- ChatFrameMenuButton can be enabed even when a fullscreen frame is active
+	};
+
+	for _, button in ipairs(chatFrameButtons) do
+		button.disabledTooltip = buttonDisabledTooltip;
+		button:SetEnabled(enabled);
+	end
+end
+
+local FullscreenFrame = UIParent;
+local function ReparentChatFrames(previousFullScreenFrame)
+	local function ReparentFrame(frame)
+		if frame and frame:GetParent() == previousFullScreenFrame then
+			FrameUtil.SetParentMaintainRenderLayering(frame, FullscreenFrame);
+		end
+	end
+
+	for _, chatFrameName in pairs(CHAT_FRAMES) do
+		local frame = _G[chatFrameName];
+		local chatTab = _G[chatFrameName.."Tab"];
+		local frameMinimized = _G[chatFrameName.."Minimized"];
+		local editBox = _G[chatFrameName.."EditBox"];
+		ReparentFrame(frame);
+		ReparentFrame(chatTab);
+		ReparentFrame(frameMinimized);
+		ReparentFrame(editBox);
+	end
+	ReparentFrame(GeneralDockManager);
+	ReparentFrame(ChatMenu);
+	ReparentFrame(TextToSpeechButtonFrame);
+	ReparentFrame(QuickJoinToastButton);
+	ReparentFrame(ColorPickerFrame);
+end
+
+function FCF_SetFullScreenFrame(frame, buttonDisabledTooltip)
+	if frame then
+		local previousFullScreenFrame = FullscreenFrame;
+		FullscreenFrame = frame;
+		ReparentChatFrames(previousFullScreenFrame);
+		SetChatFrameButtonsEnabled(false, buttonDisabledTooltip);
+	end
+end
+
+function FCF_ClearFullScreenFrame()
+	local previousFullScreenFrame = FullscreenFrame;
+	FullscreenFrame = UIParent;
+	ReparentChatFrames(previousFullScreenFrame);
+	SetChatFrameButtonsEnabled(true, nil);
+end
+
 function FCF_GetChatWindowInfo(id)
-	if ( id > NUM_CHAT_WINDOWS ) then
+	if ( id > Constants.ChatFrameConstants.MaxChatWindows ) then
 		local frame = FCF_GetChatFrameByID(id);
 		local tab = _G["ChatFrame"..id.."Tab"];
 		local background = _G["ChatFrame"..id.."Background"];
@@ -285,15 +341,15 @@ function FCF_Tab_SetupMenu(self)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_FCF_TAB");
 
-	-- Window preferences
-	local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
+		-- Window preferences
+		local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 		local currentChatFrame = FCF_GetCurrentChatFrame();
 		local isTemporary = currentChatFrame and currentChatFrame.isTemporary;
 		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		local tabChatFrame = FCF_GetChatFrameByID(self:GetID());
 
-	-- Window options
-	if ( not isOnGlueScreen ) then
+		-- Window options
+		if ( not isOnGlueScreen ) then
 			-- EditModeManagerFrame is not available at glues.
 			if (EditModeManagerFrame and (tabChatFrame == DEFAULT_CHAT_FRAME)) then
 				-- If you are the default chat frame then show the enter edit mode option
@@ -326,59 +382,57 @@ function FCF_Tab_SetupMenu(self)
 				FCF_ToggleUninteractable();
 			end);
 
-		if ( not isTemporary ) then
-			-- Add name button
+			if ( not isTemporary ) then
+				-- Add name button
 				rootDescription:CreateButton(RENAME_CHAT_WINDOW, function(...)
 					FCF_RenameChatWindow_Popup();
 				end);
-		end
+			end
 
 			if ( currentChatFrame == DEFAULT_CHAT_FRAME ) then
-			-- Create new chat window
+				-- Create new chat window
 				local button = rootDescription:CreateButton(NEW_CHAT_WINDOW, function(...)
 					FCF_NewChatWindow();
 				end);
 				if not FCF_CanOpenNewWindow() then
 					button:SetEnabled(false);
+				end
 			end
-		end
 
-		-- Close current chat window
+			-- Close current chat window
 			if ( currentChatFrame and not IsBuiltinChatWindow(currentChatFrame) ) then
 				if ( not currentChatFrame.isTemporary ) then
 					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
 						FCF_PopInWindow(tabChatFrame);
 					end);
-			else
-					if (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER" ) then
-						rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
-							FCF_PopInWindow(tabChatFrame);
-						end);
+				elseif (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER" ) then
+					rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
+						FCF_PopInWindow(tabChatFrame);
+					end);
 				else
-						rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
-							FCF_Close(tabChatFrame);
-						end);
+					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
+						FCF_Close(tabChatFrame);
+					end);
 				end
 			end
 		end
-	end
 
-	-- Display header
+		-- Display header
 		rootDescription:CreateTitle(DISPLAY);
 
 		do
-	-- Font size
+			-- Font size
 			local fontSizeSubmenu = rootDescription:CreateButton(FONT_SIZE);
 
 			local fontFile, fontHeight, fontFlags = currentChatFrame:GetFont();
 			local floorHeight = floor(fontHeight + 0.5);
 			local function IsSelected(height)
 				return height == floorHeight;
-	end
+			end
 
 			local function SetSelected(height)
 				FCF_SetChatWindowFontSize(nil, tabChatFrame, height);
-	end
+			end
 
 			for i=1, #CHAT_FONT_HEIGHTS do
 				local height = CHAT_FONT_HEIGHTS[i];
@@ -399,19 +453,19 @@ function FCF_Tab_SetupMenu(self)
 
 			local function OnClick(...)
 				ColorPickerFrame:SetupColorPickerAndShow(colorInfo);
-end
+			end
 
 			rootDescription:CreateColorSwatch(BACKGROUND, OnClick, colorInfo);
-end
+		end
 
-		if ( not isOnGlueScreen and not isTemporary ) then
+		if ( not isOnGlueScreen and not (isTemporary or Kiosk.IsEnabled()) ) then
 			-- Filter header
 			rootDescription:CreateTitle(FILTERS);
 			-- Configure settings
 			rootDescription:CreateButton(CHAT_CONFIGURATION, function(...)
 				ShowUIPanel(ChatConfigFrame);
 			end);
-	end
+		end
 	end);
 end
 
@@ -447,19 +501,19 @@ function FCF_OpenNewWindow(name, noDefaultChannels)
 	chatFrame:Clear();
 
 	-- Listen to the standard messages
-	ChatFrame_RemoveAllMessageGroups(chatFrame);
-	ChatFrame_RemoveAllChannels(chatFrame);
-	ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+	chatFrame:RemoveAllMessageGroups();
+	chatFrame:RemoveAllChannels();
+	chatFrame:ReceiveAllPrivateMessages();
 
 	if ( not noDefaultChannels ) then
-		ChatFrame_AddMessageGroup(chatFrame, "SAY");
-		ChatFrame_AddMessageGroup(chatFrame, "YELL");
-		ChatFrame_AddMessageGroup(chatFrame, "GUILD");
-		ChatFrame_AddMessageGroup(chatFrame, "WHISPER");
-		ChatFrame_AddMessageGroup(chatFrame, "BN_WHISPER");
-		ChatFrame_AddMessageGroup(chatFrame, "PARTY");
-		ChatFrame_AddMessageGroup(chatFrame, "PARTY_LEADER");
-		ChatFrame_AddMessageGroup(chatFrame, "CHANNEL");
+		chatFrame:AddMessageGroup("SAY");
+		chatFrame:AddMessageGroup("YELL");
+		chatFrame:AddMessageGroup("GUILD");
+		chatFrame:AddMessageGroup("WHISPER");
+		chatFrame:AddMessageGroup("BN_WHISPER");
+		chatFrame:AddMessageGroup("PARTY");
+		chatFrame:AddMessageGroup("PARTY_LEADER");
+		chatFrame:AddMessageGroup("CHANNEL");
 	end
 
 	--Clear the edit box history.
@@ -473,7 +527,7 @@ function FCF_OpenNewWindow(name, noDefaultChannels)
 	-- Dock the frame by default
 	FCF_DockFrame(chatFrame, (#FCFDock_GetChatFrames(GENERAL_CHAT_DOCK)+1), true);
 	FCF_FadeInChatFrame(FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK));
-	ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	ChatFrameUtil.SetLastActiveWindow(chatFrame.editBox);
 	return chatFrame, chatFrameIndex;
 end
 
@@ -529,20 +583,20 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	end
 	FCF_SetWindowName(chatFrame, name);
 
-	ChatFrame_RemoveAllMessageGroups(chatFrame);
-	ChatFrame_RemoveAllChannels(chatFrame);
-	ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+	chatFrame:RemoveAllMessageGroups();
+	chatFrame:RemoveAllChannels();
+	chatFrame:ReceiveAllPrivateMessages();
 
-	ChatFrame_AddMessageGroup(chatFrame, chatType);
+	chatFrame:AddMessageGroup(chatType);
 
 	-- This is to display "friend is online"/"friend is offline" messages
 	if ( chatType == "BN_WHISPER" ) then
-		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_BN_INLINE_TOAST_ALERT");
-		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE");
+		chatFrame:AddSingleMessageType("CHAT_MSG_BN_INLINE_TOAST_ALERT");
+		chatFrame:AddSingleMessageType("CHAT_MSG_BN_WHISPER_PLAYER_OFFLINE");
 	elseif ( chatType == "WHISPER" ) then
-		ChatFrame_AddSingleMessageType(chatFrame, "CHAT_MSG_SYSTEM");
+		chatFrame:AddSingleMessageType("CHAT_MSG_SYSTEM");
 	elseif ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
-		ChatFrame_AddMessageGroup(chatFrame, "PET_BATTLE_INFO");
+		chatFrame:AddMessageGroup("PET_BATTLE_INFO");
 	end
 
 	chatFrame.editBox:SetAttribute("chatType", chatType);
@@ -550,7 +604,7 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
 		chatFrame.editBox:SetAttribute("tellTarget", chatTarget);
-		ChatFrame_AddPrivateMessageTarget(chatFrame, chatTarget);
+		chatFrame:AddPrivateMessageTarget(chatTarget);
 	elseif ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
 		chatFrame.editBox:SetAttribute("chatType", "SAY");
 		chatFrame.editBox:SetAttribute("stickyType", "SAY");
@@ -599,7 +653,7 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 	FCF_DockUpdate();
 end
 
-local maxTempIndex = NUM_CHAT_WINDOWS + 1;
+local maxTempIndex = Constants.ChatFrameConstants.MaxChatWindows + 1;
 function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWindow)
 	local chatFrame, chatTab, conversationIcon;
 	for _, chatFrameName in pairs(CHAT_FRAMES) do
@@ -614,7 +668,7 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 	end
 
 	if ( not chatFrame ) then
-		chatTab = CreateFrame("Button", "ChatFrame"..maxTempIndex.."Tab", UIParent, "ChatTabTemplate", maxTempIndex);
+		chatTab = CreateFrame("Button", "ChatFrame"..maxTempIndex.."Tab", FullscreenFrame, "ChatTabTemplate", maxTempIndex);
 
 		conversationIcon = chatTab:CreateTexture(chatTab:GetName().."ConversationIcon", "ARTWORK", "ChatTabConversationIconTemplate");
 		conversationIcon:ClearAllPoints();
@@ -622,12 +676,12 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		conversationIcon:SetPoint("RIGHT", chatTab:GetFontString(), "LEFT", 0, conversationIcon.iconDisplayInfo.iconYOffset);
 		chatTab.conversationIcon = conversationIcon;
 
-		chatTab.Text:ClearAllPoints();
+		chatTab.Text:ClearAllPoints(); 
 		chatTab.Text:SetPoint("LEFT", chatTab.Left, "RIGHT", 10, -6);
 		chatTab.Text:SetJustifyH("LEFT");
 		chatTab.sizePadding = 10;
 
-		chatFrame = CreateFrame("ScrollingMessageFrame", "ChatFrame"..maxTempIndex, UIParent, "FloatingChatFrameTemplate", maxTempIndex);
+		chatFrame = CreateFrame("ScrollingMessageFrame", "ChatFrame"..maxTempIndex, FullscreenFrame, "FloatingChatFrameTemplate", maxTempIndex);
 
 		maxTempIndex = maxTempIndex + 1;
 	elseif chatTab then
@@ -663,7 +717,7 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 			and not (chatType == "BN_WHISPER" and GetCVar("whisperMode") == "popout_and_inline") ) then
 
 			if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-				ChatFrame_ExcludePrivateMessageTarget(sourceChatFrame, chatTarget);
+				sourceChatFrame:ExcludePrivateMessageTarget(chatTarget);
 			end
 
 			sourceChatFrame:RemoveMessagesByPredicate(function(text, r, g, b, chatTypeID, messageAccessID, lineID) return messageAccessID == accessID; end);
@@ -671,7 +725,7 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 	end
 
 	--Close the Editbox
-	ChatEdit_DeactivateChat(chatFrame.editBox);
+	ChatFrameUtil.DeactivateChat(chatFrame.editBox);
 
 	-- Show the frame and tab
 	FCF_CheckShowChatFrame(chatFrame);
@@ -1431,13 +1485,14 @@ function FCF_Tab_OnClick(self, button)
 		return;
 	end
 
+	local lastChatFrame = SELECTED_CHAT_FRAME;
 	-- If frame is docked assume that a click is to select a chat window, not drag it
 	SELECTED_CHAT_FRAME = chatFrame;
 	if ( chatFrame.isDocked and FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK) ~= chatFrame ) then
 		FCF_SelectDockFrame(chatFrame);
 	end
-	if ( GetCVar("chatStyle") ~= "classic" ) then
-		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+	if ( (IsVoiceTranscription(lastChatFrame) or IsVoiceTranscription(chatFrame)) or GetCVar("chatStyle") ~= "classic" ) then
+		ChatFrameUtil.SetLastActiveWindow(chatFrame.editBox);
 	end
 	chatFrame:ResetAllFadeTimes();
 	FCF_FadeInChatFrame(chatFrame);
@@ -1486,7 +1541,7 @@ function FCF_Close(frame, fallback)
 	HideUIPanel(frame);
 	_G[frame:GetName().."Tab"]:Hide();
 	if ( GetCVar("chatStyle") == "im" and LAST_ACTIVE_CHAT_EDIT_BOX == frame.editBox ) then
-		ChatEdit_SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
+		ChatFrameUtil.SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
 	end
 	FCF_FlagMinimizedPositionReset(frame);
 	if ( frame.minFrame and frame.minFrame:IsShown() ) then
@@ -1499,27 +1554,27 @@ function FCF_Close(frame, fallback)
 	end
 
 	--Reset what this window receives.
-	ChatFrame_RemoveAllMessageGroups(frame);
-	ChatFrame_RemoveAllChannels(frame);
-	ChatFrame_ReceiveAllPrivateMessages(frame);
+	frame:RemoveAllMessageGroups();
+	frame:RemoveAllChannels();
+	frame:ReceiveAllPrivateMessages();
 end
 
 function FCF_RestoreChatsToFrame(targetFrame, sourceFrame)
 	--Restore chat types
 	for _, messageType in pairs(sourceFrame.messageTypeList) do
-		ChatFrame_AddMessageGroup(targetFrame, messageType);
+		targetFrame:AddMessageGroup(messageType);
 	end
 
 	--Restore channels
 	for _, channel in pairs(sourceFrame.channelList) do
-		ChatFrame_AddChannel(targetFrame, channel);
+		targetFrame:AddChannel(channel);
 	end
 
 	--Restore whispers
 	if ( sourceFrame.privateMessageList ) then
 		for name, value in pairs(sourceFrame.privateMessageList) do
 			if ( value ) then
-				ChatFrame_RemoveExcludePrivateMessageTarget(targetFrame, name);
+				targetFrame:RemoveExcludePrivateMessageTarget(name);
 			end
 		end
 	end
@@ -1560,9 +1615,9 @@ function FCF_ResetChatWindow(windowFrame, windowName)
 	FCF_SetWindowName(windowFrame, windowName);
 	FCF_SetWindowColor(windowFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 	FCF_SetWindowAlpha(windowFrame, DEFAULT_CHATFRAME_ALPHA);
-	ChatFrame_RemoveAllMessageGroups(windowFrame);
-	ChatFrame_RemoveAllChannels(windowFrame);
-	ChatFrame_ReceiveAllPrivateMessages(windowFrame);
+	windowFrame:RemoveAllMessageGroups();
+	windowFrame:RemoveAllChannels();
+	windowFrame:ReceiveAllPrivateMessages();
 	FCF_UnDockFrame(windowFrame);
 	windowFrame.isInitialized = 0;
 end
@@ -1589,9 +1644,9 @@ function FCF_ResetChatWindows()
 			FCF_Close(chatFrame);
 			FCF_UnDockFrame(chatFrame);
 			FCF_SetWindowName(chatFrame, "");
-			ChatFrame_RemoveAllMessageGroups(chatFrame);
-			ChatFrame_RemoveAllChannels(chatFrame);
-			ChatFrame_ReceiveAllPrivateMessages(chatFrame);
+			chatFrame:RemoveAllMessageGroups();
+			chatFrame:RemoveAllChannels();
+			chatFrame:ReceiveAllPrivateMessages();
 			FCF_SetChatWindowFontSize(nil, chatFrame, CHAT_FRAME_DEFAULT_FONT_SIZE);
 			FCF_SetWindowColor(chatFrame, DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b);
 			FCF_SetWindowAlpha(chatFrame, DEFAULT_CHATFRAME_ALPHA);
@@ -1683,14 +1738,14 @@ function FCF_MaximizeFrame(chatFrame)
 	FCF_FadeInChatFrame(chatFrame);
 
 	if ( GetCVar("chatStyle") == "im" ) then
-		ChatEdit_SetLastActiveWindow(chatFrame.editBox);
+		ChatFrameUtil.SetLastActiveWindow(chatFrame.editBox);
 	end
 end
 
 function FCF_CreateMinimizedFrame(chatFrame)
 	local chatTab = _G[chatFrame:GetName().."Tab"];
 
-	local minFrame = CreateFrame("Button", chatFrame:GetName().."Minimized", UIParent, "FloatingChatFrameMinimizedTemplate");
+	local minFrame = CreateFrame("Button", chatFrame:GetName().."Minimized", FullscreenFrame, "FloatingChatFrameMinimizedTemplate");
 	minFrame.maxFrame = chatFrame;
 
 	minFrame:SetText(chatFrame.name);
@@ -1881,7 +1936,7 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	tDeleteItem(dock.DOCKED_CHAT_FRAMES, chatFrame);
 	local chatTab = _G[chatFrame:GetName().."Tab"];
 	chatFrame.isDocked = nil;
-	chatTab:SetParent(UIParent);
+	chatTab:SetParent(FullscreenFrame);
 	chatTab:SetFrameStrata("LOW");
 	chatFrame:SetMovable(true);
 	chatFrame:SetResizable(true);
@@ -2409,7 +2464,7 @@ function FloatingChatFrameManager_OnEvent(self, event, ...)
 	local arg1 = ...;
 	if ( strsub(event, 1, 9) == "CHAT_MSG_" ) then
 		local chatType = strsub(event, 10);
-		local chatGroup = Chat_GetChatCategory(chatType);
+		local chatGroup = ChatFrameUtil.GetChatCategory(chatType);
 		local isGM = (select(6, ...) == "GM");
 
 		if ( isGM ) then

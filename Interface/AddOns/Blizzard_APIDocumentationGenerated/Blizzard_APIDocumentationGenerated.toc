@@ -19,13 +19,13 @@ AlliedRacesFrameDocumentation.lua
 AnimaDiversionUIDocumentation.lua
 ArdenwealdGardeningDocumentation.lua
 AreaPoiInfoDocumentation.lua
-ArenaTeamDocumentation.lua
 ArtifactUIDocumentation.lua
 AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
+BNetOutageDocumentation.lua
 BagIndexConstantsDocumentation.lua
 BankDocumentation.lua
 BarberShopDocumentation.lua
@@ -82,6 +82,7 @@ DebugToggleDocumentation.lua
 DelvesUIDocumentation.lua
 Deprecated_11_0_0Documentation.lua
 DuelInfoDocumentation.lua
+DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncodingUtilDocumentation.lua
 EncounterInfoDocumentation.lua
@@ -128,6 +129,20 @@ GossipInfoDocumentation.lua
 GuildBankDocumentation.lua
 GuildInfoDocumentation.lua
 HeirloomInfoDocumentation.lua
+HouseEditorUIDocumentation.lua
+HouseExteriorUIDocumentation.lua
+HousingBasicModeUIDocumentation.lua
+HousingCatalogSearcherAPIDocumentation.lua
+HousingCatalogUIDocumentation.lua
+HousingCleanupModeUIDocumentation.lua
+HousingCustomizeModeUIDocumentation.lua
+HousingDecorUIDocumentation.lua
+HousingExpertModeUIDocumentation.lua
+HousingFixturePointFrameAPIDocumentation.lua
+HousingLayoutPinFrameAPIDocumentation.lua
+HousingLayoutUIDocumentation.lua
+HousingNeighborhoodUIDocumentation.lua
+HousingUIDocumentation.lua
 ImmersiveInteractionManagerDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
@@ -378,10 +393,13 @@ CurrencyConstants_MainlineDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
-EditModeManagerSharedDocumentation.lua
+DyeColorInfoSharedDocumentation.lua
+EditModeManagerConstantsDocumentation.lua
+EditModeManagerConstants_MainlineDocumentation.lua
 EncodingUtilConstantsDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
+ExpansionConstantsDocumentation.lua
 ExpansionLandingPageConstantsDocumentation.lua
 FrameAPIModelSceneFrameSharedDocumentation.lua
 GARRISON_FOLLOWER_TYPEConstantsDocumentation.lua
@@ -395,6 +413,11 @@ GossipConstantsDocumentation.lua
 GroupFinderConstantsDocumentation.lua
 GuildConstantsDocumentation.lua
 GuildInfoSharedDocumentation.lua
+HouseExteriorConstantsDocumentation.lua
+HousingCatalogConstantsDocumentation.lua
+HousingDecorSharedDocumentation.lua
+HousingLayoutUITypesDocumentation.lua
+HousingUISharedDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
@@ -425,6 +448,8 @@ PetConstantsDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PlayerDocumentation.lua
+PlayerDataConstantsDocumentation.lua
+PlayerHousingConstantsDocumentation.lua
 PlayerInfoSharedDocumentation.lua
 PlayerInteractionManagerConstantsDocumentation.lua
 PlayerMentorshipConstantsDocumentation.lua
@@ -468,6 +493,7 @@ TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
 TraitConstantsDocumentation.lua
+TransformManipulatorConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
 TransmogSharedDocumentation.lua
 UIActionConstantsDocumentation.lua
@@ -491,5 +517,6 @@ VignetteConstantsDocumentation.lua
 WarbandSceneInfoConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 WorldElapsedTimerConstantsDocumentation.lua
+WowCSConstantsDocumentation.lua
 WowSurveyConstantsDocumentation.lua
 # End documentation files here

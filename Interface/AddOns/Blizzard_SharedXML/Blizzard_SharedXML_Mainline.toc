@@ -59,6 +59,7 @@ Shared\VASErrorLookup.lua
 SelectableButton.lua
 SelectableButton.xml
 ButtonGroup.lua
+Shared\Button\CheckButtonTemplates.xml
 Shared\Button\UIButtonTemplate.lua
 Shared\Button\UIButtonTemplate.xml
 Shared\Button\ThreeSliceButtonTemplate.lua
@@ -116,9 +117,9 @@ Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
 StringUtil.lua
 TypeUtil.lua
-Dump.lua
+Dump.lua [AllowLoadEnvironment Global]
 MixinUtil.lua
-DebugBarManager.lua
+DebugBarManager.lua [AllowLoadEnvironment Global]
 ScrollableTabsContainer.lua
 ScrollableTabsContainer.xml
 
@@ -175,7 +176,8 @@ Mainline\Selector\Blizzard_ScrollBoxSelector.xml
 TemplatedList.xml
 PagedList.xml
 
-HelpTip.xml
+HelpTip.lua [AllowLoadEnvironment Global]
+HelpTip.xml [AllowLoadEnvironment Global]
 
 Mainline\ScrollDefine.lua
 Mainline\ScrollDefine.xml
@@ -195,13 +197,26 @@ CustomBindingButtonMixin.lua
 CustomBindingButtonTemplate.xml
 Shared\Tabs\MinimalTab.lua
 Shared\Tabs\MinimalTab.xml
-SharedBasicControls.lua
+
+Shared\Button\UIPanelButtonTemplates.lua
+Shared\Button\UIPanelButtonTemplates.xml
+
+Shared\Dialog\DialogTemplates.lua
+Shared\Dialog\DialogTemplates.xml
+DialogUtil.lua
+
+Shared\InputBox\InputBoxTemplates.lua
+Shared\InputBox\InputBoxTemplates.xml
+
+SharedBasicControls.lua [AllowLoadEnvironment Global]
 SharedBasicControls.xml
 Mainline\UIDropDownMenu.lua
 Mainline\UIDropDownMenuTemplates.lua
 Mainline\UIDropDownMenuTemplates.xml
 Mainline\UIDropDownMenu.xml
-DialogUtil.lua
+
+Shared\Frame\MainMenuFrameTemplates.lua
+Mainline\Frame\MainMenuFrameTemplates.xml
 
 Mainline\Sound.lua
 

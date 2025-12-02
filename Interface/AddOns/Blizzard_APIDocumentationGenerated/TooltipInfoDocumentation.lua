@@ -1133,7 +1133,7 @@ local TooltipInfo =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -1150,7 +1150,7 @@ local TooltipInfo =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -1165,9 +1165,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitTokenString", Type = "cstring", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -1184,7 +1184,7 @@ local TooltipInfo =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =
@@ -1199,9 +1199,9 @@ local TooltipInfo =
 
 			Arguments =
 			{
-				{ Name = "unitTokenString", Type = "cstring", Nilable = false },
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
-				{ Name = "filter", Type = "cstring", Nilable = true },
+				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
 
 			Returns =

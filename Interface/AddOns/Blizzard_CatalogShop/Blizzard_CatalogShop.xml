@@ -129,6 +129,9 @@
 						</Anchors>
 					</CheckButton>
 					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
+						<KeyValues>
+							<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
@@ -460,6 +463,13 @@
 								</FontString>
 								<FontString parentKey="PendingPurchasesText" inherits="SystemFont_Small2" wordwrap="true" text="CATALOG_SHOP_PENDING_PURCHASES" justifyH="CENTER" justifyV="MIDDLE" >
 									<Color color="RED_FONT_COLOR"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.PurchaseButton" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="DynamicBundleDiscountText" inherits="SystemFont_Small2" wordwrap="true" text="CATALOG_SHOP_DYNAMIC_BUNDLE_DISCOUNT" justifyH="CENTER" justifyV="MIDDLE" >
+									<Color color="GREEN_FONT_COLOR"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" relativeKey="$parent.PurchaseButton" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
 										<Anchor point="TOPRIGHT" relativeKey="$parent.DetailsButton" relativePoint="BOTTOMRIGHT" x="0" y="-5"/>

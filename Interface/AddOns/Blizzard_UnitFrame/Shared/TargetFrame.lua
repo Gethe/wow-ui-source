@@ -7,5 +7,9 @@ function ShouldShowTargetFrame(targetFrame)
 	-- If updating this logic, please mirror changes to the SecureStateDriver
 	-- unitExistsCache.
 
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.TargetFrameDisabled) then
+		return false;
+	end
+
 	return UnitExists(targetFrame.unit) or UnitIsVisible(targetFrame.unit);
 end

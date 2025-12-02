@@ -205,23 +205,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("NOTCHED_DISPLAY_MODE_CHANGED");
 end
 
-function UIParent_OnShow(self)
-	if ( self.firstTimeLoaded ~= 1 ) then
-		CloseAllWindows();
-		self.firstTimeLoaded = nil;
-	end
-
-	if ( LowHealthFrame ) then
-		LowHealthFrame:EvaluateVisibleState();
-	end
-end
-
-function UIParent_OnHide(self)
-	if ( LowHealthFrame ) then
-		LowHealthFrame:EvaluateVisibleState();
-	end
-end
-
 function UIParent_OnUpdate(self, elapsed)
 	FCF_OnUpdate(elapsed);
 	ButtonPulse_OnUpdate(elapsed);
@@ -319,6 +302,10 @@ function NPETutorial_AttemptToBegin(event)
 end
 
 function ShowMacroFrame()
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
 	MacroFrame_LoadUI();
 	if ( MacroFrame_Show ) then
 		MacroFrame_Show();
@@ -510,32 +497,6 @@ function ToggleToyCollection(autoPageToCollectedToyID)
 	SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 end
 
-function ToggleStoreUI()
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(not wasShown);
-end
-
-function SetStoreUIShown(shown)
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown and shown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(shown);
-end
-
 function OpenDeathRecapUI(id)
 	--[[if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();
@@ -722,12 +683,12 @@ function UIParent_OnEvent(self, event, ...)
 			StaticPopup_Hide("EQUIP_BIND");
 			StaticPopup_Hide("EQUIP_BIND_TRADEABLE");
 		end
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		-- Get multi-actionbar states (before CloseAllWindows() since that may be hooked by AddOns)
+	elseif ( event == "SETTINGS_LOADED" ) then
+		-- Get multi-actionbar states
 		-- We don't want to call this, as the values GetActionBarToggles() returns are incorrect if it's called before the client mirrors SetActionBarToggles values from the server.
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
-
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 
@@ -1355,7 +1316,7 @@ function UIParent_OnEvent(self, event, ...)
 		if useNewCashShop then
 			CatalogShopInboundInterface.CheckForFree(self, value);
 		else
-			StoreFrame_CheckForFree(event);
+		StoreFrame_CheckForFree(event);
 		end
 	elseif ( event == "TOKEN_AUCTION_SOLD" ) then
 		local info = ChatTypeInfo["SYSTEM"];
@@ -1473,6 +1434,8 @@ function ToggleGameMenu()
 		HideUIPanel(GameMenuFrame);
 	elseif ( HelpFrame:IsShown() ) then
 		ToggleHelpFrame();
+	elseif ( EditModeManagerFrame:IsShown() ) then
+		EditModeManagerFrame.CloseButton:Click();
 	elseif ( SocialBrowserFrame and SocialBrowserFrame:IsShown() ) then
 		SocialBrowserFrame:Hide();
 	elseif ( SocialPostFrame and Social_IsShown() ) then
@@ -1600,7 +1563,7 @@ function GetBindingFromClick(input)
 		fullInput = fullInput..input;
 	end
 
-	return GetBindingByKey(fullInput);
+	return C_KeyBindings.GetBindingByKey(fullInput);
 end
 
 
@@ -1634,115 +1597,7 @@ function InviteToGroup(name)
 	end
 end
 
-function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
 
-	frame.hasDispellable = nil;
-
-	numBuffs = numBuffs or MAX_PARTY_BUFFS;
-	suffix = suffix or "Buff";
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime;
-
-	local filter;
-	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showCastableBuffs") and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
-	end
-
-	for i=1, numBuffs do
-		name, icon, count, debuffType, duration, expirationTime = UnitBuff(unit, i, filter);
-
-		local buffName = frameName..suffix..i;
-		if ( icon ) then
-			-- if we have an icon to show then proceed with setting up the aura
-
-			-- set the icon
-			local buffIcon = _G[buffName.."Icon"];
-			buffIcon:SetTexture(icon);
-
-			-- setup the cooldown
-			--[[local coolDown = _G[buffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end]]
-
-			-- show the aura
-			_G[buffName]:Show();
-		else
-			-- no icon, hide the aura
-			_G[buffName]:Hide();
-		end
-	end
-end
-
-function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
-
-	frame.hasDispellable = nil;
-
-	numDebuffs = numDebuffs or MAX_PARTY_DEBUFFS;
-	suffix = suffix or "Debuff";
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-	local name, icon, count, debuffType, duration, expirationTime, caster;
-	local isEnemy = UnitCanAttack("player", unit);
-
-	local filter;
-	if ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) then
-		filter = "RAID";
-	end
-
-	for i=1, numDebuffs do
-		if ( unit == "party"..i ) then
-			unitStatus = _G[frameName.."Status"];
-		end
-
-		name, icon, count, debuffType, duration, expirationTime, caster = UnitDebuff(unit, i, filter);
-
-		local debuffName = frameName..suffix..i;
-		if ( icon and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
-			-- if we have an icon to show then proceed with setting up the aura
-
-			-- set the icon
-			local debuffIcon = _G[debuffName.."Icon"];
-			debuffIcon:SetTexture(icon);
-
-			-- setup the border
-			local debuffBorder = _G[debuffName.."Border"];
-			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
-			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
-
-			-- record interesting data for the aura button
-			statusColor = debuffColor;
-			frame.hasDispellable = 1;
-			debuffTotal = debuffTotal + 1;
-
-			-- setup the cooldown
-			local coolDown = _G[debuffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
-
-			-- show the aura
-			_G[debuffName]:Show();
-		else
-			-- no icon, hide the aura
-			_G[debuffName]:Hide();
-		end
-	end
-
-	frame.debuffTotal = debuffTotal;
-	-- Reset unitStatus overlay graphic timer
-	if ( frame.numDebuffs and debuffTotal >= frame.numDebuffs ) then
-		frame.debuffCountdown = 30;
-	end
-	if ( unitStatus and statusColor ) then
-		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
-	end
-end
 
 function GetQuestDifficultyColor(level, isScaling)
 	if (isScaling) then
@@ -2028,27 +1883,6 @@ function ShakeFrame(frame, shake, maximumDuration, frequency)
 			frame.shakeTicker:Cancel();
 		end
 	end);
-end
-
-function ChatClassColorOverrideShown()
-	local value = GetCVar("chatClassColorOverride");
-	if value == "0" then
-		return true;
-	elseif value == "1" then
-		return false;
-	else
-		return nil;
-	end
-end
-
- -- takes into account the current expansion
- -- NOTE: it's not safe to cache this value as it could change in the middle of the session
-function GetEffectivePlayerMaxLevel()
-	return GetMaxPlayerLevel();
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	return level >= GetEffectivePlayerMaxLevel();
 end
 
 -- From SocialQueue.lua

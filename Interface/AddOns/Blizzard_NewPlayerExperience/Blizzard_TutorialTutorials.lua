@@ -558,7 +558,7 @@ function Class_Intro_Chat:OnBegin()
 		return;
 	end
 
-	local editBox = ChatEdit_GetActiveWindow() or ChatEdit_GetLastActiveWindow();
+	local editBox = ChatFrameUtil.GetActiveWindow() or ChatFrameUtil.GetLastActiveWindow();
 	if (editBox) then
 		self.ShowCount = self.ShowCount + 1;
 		if (self.ShowCount == 1) then
@@ -687,6 +687,11 @@ function Class_UseMinimap:OnAdded()
 	MinimapCluster:Hide();
 end
 
+function Class_UseMinimap:OnRemoved()
+	Minimap:Show();
+	MinimapCluster:Show();
+end
+
 function Class_UseMinimap:CanBegin()
 	if C_QuestLog.IsQuestFlaggedCompleted(self.showAllUIQuestID) then
 		if C_QuestLog.IsQuestFlaggedCompleted(self.showMinimapQuestID) then
@@ -711,8 +716,7 @@ function Class_UseMinimap:ShowMinimapPrompt()
 end
 
 function Class_UseMinimap:OnInterrupt(interruptedBy)
-	Minimap:Show();
-	MinimapCluster:Show();
+	self:OnRemoved();
 	TutorialManager:Finished(self:Name());
 end
 
@@ -3233,4 +3237,20 @@ end
 function Class_LootPointer:OnComplete()
 	Dispatcher:UnregisterEvent("LOOT_OPENED", self);
 	Dispatcher:UnregisterEvent("LOOT_CLOSED", self);
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Housing Skip
+-- If the player chooses the skip to go right to their neighborhood we want to shut down the NPE flow entirely
+-- ------------------------------------------------------------------------------------------------------------
+Class_HousingSkip = class("HousingSkip", Class_TutorialBase);
+function Class_HousingSkip:OnInitialize()
+	Dispatcher:RegisterEvent("PLAYER_ENTERING_WORLD", self);
+end
+
+function Class_HousingSkip:PLAYER_ENTERING_WORLD()
+	local _name, instanceType = GetInstanceInfo();
+	if instanceType == "neighborhood" then
+		TutorialManager:Shutdown();
+	end
 end

@@ -367,7 +367,7 @@
 				self.showingTooltip = false;
 			</OnLeave>
 			<OnClick>
-				if not ChatEdit_TryInsertChatLink(self.link) then
+				if not ChatFrameUtil.TryInsertChatLink(self.link) then
 					EncounterJournal_DisplayInstance(self.instanceID);
 					PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 				end
@@ -2287,6 +2287,56 @@
 					<OnMouseWheel function="EJSuggestFrame_OnMouseWheel"/>
 				</Scripts>
 			</Frame>
+			<Frame parentKey="TutorialsFrame" setAllPoints="true" enableMouse="true" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="-3" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Contents" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture atlas="adventureguide-tutorial-rpe" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="27" y="-10"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Header" inherits="Fancy27Font" text="RPE_TITLE" maxLines="2" justifyH="LEFT">
+									<Size x="380" y="0"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-110" y="-44"/>
+									</Anchors>
+									<Color color="PARCHMENTLARGE_MATERIAL_TITLETEXT_COLOR"/>
+								</FontString>
+								<Texture parentKey="Divider" atlas="adventureguide-tutorial-divider" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Description" inherits="SystemFont_Large" text="RPE_TUTORIAL_TEXT" justifyH="LEFT">
+									<Size x="380" y="0"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Divider" relativePoint="BOTTOMLEFT" x="0" y="-16"/>
+									</Anchors>
+									<Color color="PARCHMENTLARGE_MATERIAL_TEXT_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button parentKey="StartButton" inherits="SharedButtonSmallTemplate" text="RPE_START_EXPERIENCE" mixin="EncounterJournalRPEStartButtonMixin">
+								<Anchors>
+									<Anchor point="BOTTOM" x="100" y="68"/>
+								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
 			<Button name="$parentMonthlyActivitiesTab" inherits="BottomEncounterTierTabTemplate" text="MONTHLY_ACTIVITIES_TAB" id="1" parentKey="MonthlyActivitiesTab" mixin="MonthlyActivitiesTabButtonMixin">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
@@ -2310,6 +2360,11 @@
 			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" id="5" parentKey="LootJournalTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.raidsTab" relativePoint="RIGHT" x="-15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button inherits="BottomEncounterTierTabTemplate" text="EJ_TUTORIALS" id="6" parentKey="TutorialsTab">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.LootJournalTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
 		</Frames>

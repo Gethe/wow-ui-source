@@ -1,0 +1,315 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<ScopedModifier forbidden="true">
+		<Button name="HousingLayoutRoomOptionTemplate" mixin="HousingLayoutRoomOptionMixin" motionScriptsWhileDisabled="true" parentArray="Buttons" virtual="true">
+			<Size x="20" y="20"/>
+			<Scripts>
+				<OnShow method="OnShow"/>
+				<OnLoad method="OnLoad"/>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+			</Scripts>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" atlas="common-dropdown-bg" alpha="0.5">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-5" y="3"/>
+							<Anchor point="BOTTOMRIGHT" x="5" y="-7"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="BACKGROUND" textureSubLevel="1">
+					<Texture parentKey="HoverBackground" atlas="common-dropdown-bg" alpha="0.5" alphaMode="ADD" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Background"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="HoverIcon" setAllPoints="true" alphaMode="ADD" alpha="0.4" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+		</Button>
+		
+		<Button name="HousingLayoutDoorPinTemplate" mixin="HousingLayoutDoorPinMixin" virtual="true" motionScriptsWhileDisabled="true">
+			<KeyValues>
+				<KeyValue key="debugInspectionSystem" value="HousingLayoutPin" type="string"/>
+			</KeyValues>
+			<Size x="30" y="30"/>
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="SelectedGlow" atlas="housing-layout-room-orb-active-glow" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+						<Size x="74" y="74"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon" atlas="housing-layout-room-orb-default" texelSnappingBias="0.0" snapToPixelGrid="false">
+						<Size x="74" y="74"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="ActiveIcon" atlas="housing-layout-room-orb-active" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+						<Size x="74" y="74"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="0">
+					<Texture parentKey="ArrowIcon" atlas="housing-floor-arrow-up" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="0">
+					<Texture parentKey="ArrowIconHover" atlas="housing-floor-arrow-up" texelSnappingBias="0.0" snapToPixelGrid="false" alphaMode="ADD" alpha="0.3" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ArrowIcon"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ArrowIcon"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="Rays1">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Rays1" alpha="0.8" alphaMode="ADD" atlas="housing-layout-room-orb-ring-rays1" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+							<MaskTexture parentKey="RaysMask" atlas="housing-layout-room-orb-ring-rays-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<MaskedTextures>
+									<MaskedTexture childKey="Rays1"/>
+								</MaskedTextures>
+							</MaskTexture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Rays1" duration="16" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+							<Rotation childKey="RaysMask" duration="16" order="1" degrees="360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="Spinner">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Spinner" alphaMode="ADD" atlas="housing-layout-room-orb-ring-spinner" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Spinner" duration="3" order="1" degrees="-360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="Glow">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-layout-room-orb-ring-outerglow" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="Rays2">
+					<Size x="128" y="128"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Layers>
+						<Layer level="ARTWORK">
+							<Texture parentKey="Rays2" alpha="1" alphaMode="BLEND" atlas="housing-layout-room-orb-ring-rays2" useAtlasSize="true">
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Animations>
+						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true">
+							<Rotation childKey="Rays2" duration="16" order="1" degrees="360">
+								<Origin point="CENTER"/>
+							</Rotation>
+						</AnimationGroup>
+					</Animations>
+				</Frame>
+				<Frame parentKey="NodeAvailable" hidden="true" inherits="EasyFrameAnimationsTemplate" passThroughButtons="LeftButton, RightButton">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<Size x="128" y="128"/>
+					<Frames>
+						<Frame parentKey="Base">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture parentKey="NodeBase" atlas="housing-layout-room-orb-ring-default" useAtlasSize="true">
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						<Frame parentKey="InteriorNodeAvailable">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-layout-room-orb-ring-highlight">
+										<Size x="60" y="60"/>
+										<Anchors>
+											<Anchor point="CENTER" x="0" y="0"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Animations>
+								<AnimationGroup parentKey="Anim" looping="BOUNCE" setToFinalAlpha="true">
+									<Alpha childKey="Glow" duration="1" order="1" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.2"/>
+								</AnimationGroup>
+							</Animations>
+						</Frame>
+					</Frames>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnClick method="OnClick"/>
+			</Scripts>
+		</Button>
+
+		<Button name="HousingLayoutRoomPinTemplate" registerForDrag="LeftButton" mixin="HousingLayoutRoomPinMixin" inherits="ResizeLayoutFrame" virtual="true">
+			<KeyValues>
+				<KeyValue key="minimumHeight" value="20" type="number"/>
+				<KeyValue key="debugInspectionSystem" value="HousingLayoutPin" type="string"/>
+			</KeyValues>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="RoomName" inherits="GameFontHighlightLarge">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" atlas="housing-layout-room-label" alpha="1">
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="189" y="75"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.RoomName"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="OptionsContainer" inherits="HorizontalLayoutFrame" ignoreParentScale="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						<KeyValue key="spacing" value="10" type="number"/>
+					</KeyValues>
+					<Frames>
+						<Button parentKey="RotateButtonLeft" inherits="HousingLayoutRoomOptionTemplate">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="common-icon-rotateleft" type="string"/>
+								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_ROTATE_ROOM_LEFT_TOOLTIP" type="global"/>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</Button>
+						<Button parentKey="RotateButtonRight" inherits="HousingLayoutRoomOptionTemplate">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="common-icon-rotateright" type="string"/>
+								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_ROTATE_ROOM_RIGHT_TOOLTIP" type="global"/>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+							</KeyValues>
+						</Button>
+						<Button parentKey="MoveButton" inherits="HousingLayoutRoomOptionTemplate">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="common-icon-move" type="string"/>
+								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_MOVE_ROOM_TOOLTIP" type="global"/>
+								<KeyValue key="layoutIndex" value="3" type="number"/>
+							</KeyValues>
+						</Button>
+						<Button parentKey="RemoveButton" inherits="HousingLayoutRoomOptionTemplate">
+							<KeyValues>
+								<KeyValue key="iconAtlas" value="common-icon-delete" type="string"/>
+								<KeyValue key="tooltipText" value="HOUSING_LAYOUT_REMOVE_ROOM_TOOLTIP" type="global"/>
+								<KeyValue key="layoutIndex" value="4" type="number"/>
+							</KeyValues>
+						</Button>
+					</Frames>
+				</Frame>
+			</Frames>
+			<Scripts>
+				<OnClick method="OnClick"/>
+				<OnShow method="OnShow"/>
+				<OnLoad method="OnLoad"/>
+				<OnEnter method="OnEnter"/>
+				<OnLeave method="OnLeave"/>
+				<OnDragStart method="OnDragStart"/>
+				<OnEvent method="OnEvent"/>
+			</Scripts>
+		</Button>
+	</ScopedModifier>
+</Ui>

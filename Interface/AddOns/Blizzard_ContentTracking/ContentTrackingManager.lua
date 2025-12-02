@@ -30,7 +30,7 @@ function ContentTrackingManagerMixin:OnContentTrackingUpdate(trackableType, id, 
 		if AchievementFrameAchievements_UpdateTrackedAchievements then
 			AchievementFrameAchievements_UpdateTrackedAchievements();
 		end
-	elseif (trackableType == Enum.ContentTrackingType.Appearance) or (trackableType == Enum.ContentTrackingType.Mount) then
+	else -- Assume other types don't need bespoke behavior (Enum.ContentTrackingType.Appearance, Enum.ContentTrackingType.Mount, Enum.ContentTrackingType.Decor)
 		AdventureObjectiveTracker:MarkDirty();
 	end
 
@@ -73,7 +73,7 @@ function ContentTrackingUtil.UnregisterTrackableElement(element, trackableType, 
 end
 
 function ContentTrackingUtil.ProcessChatLink(unused_trackableType, unused_trackableID)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		-- Until we can link trackables, display an error instead.
 		UIErrorsFrame:AddExternalErrorMessage(CONTENT_TRACKING_CHAT_LINK_ERROR_TEXT);
 		return true;

@@ -409,7 +409,7 @@ end
 function TokenFrameMixin:RefreshAccountTransferableCurrenciesTutorial()
 	HelpTip:Hide(self, ACCOUNT_TRANSFERABLE_CURRENCIES_TUTORIAL);
 
-	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_TRANSFERABLE_CURRENCIES);
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransferableCurrencies);
 	if tutorialAcknowledged then
 		return;
 	end
@@ -423,7 +423,7 @@ function TokenFrameMixin:RefreshAccountTransferableCurrenciesTutorial()
 		text = ACCOUNT_TRANSFERABLE_CURRENCIES_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_TRANSFERABLE_CURRENCIES,
+		bitfieldFlag = Enum.FrameTutorialAccount.TransferableCurrencies,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 40,
 		alignment = HelpTip.Alignment.Center,

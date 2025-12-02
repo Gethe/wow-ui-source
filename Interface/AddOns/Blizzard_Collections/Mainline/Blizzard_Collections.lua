@@ -85,6 +85,9 @@ function CollectionsJournal_OnShow(self)
 	UpdateMicroButtons();
 
 	CollectionsJournal_CheckAndDisplayHeirloomsTab();
+
+	-- trigger with selected tab
+	EventRegistry:TriggerEvent("CollectionsJournal.OnShow", CollectionsJournal_GetTab(self));
 end
 
 function CollectionsJournal_OnHide(self)
@@ -92,4 +95,6 @@ function CollectionsJournal_OnHide(self)
 	UpdateMicroButtons();
 
 	CollectionsMicroButton:EvaluateAlertVisibility();
+
+	EventRegistry:TriggerEvent("CollectionsJournal.OnHide", CollectionsJournal_GetTab(self));
 end

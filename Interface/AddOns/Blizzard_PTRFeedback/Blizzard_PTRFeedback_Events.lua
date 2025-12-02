@@ -33,6 +33,13 @@ PTR_IssueReporter.ReportEventTypes = {
     AIBotsLeftParty = "AIBotsLeftParty",
     RadiantChordStarted = "RadiantChordStarted",
     RadiantChordEnded = "RadiantChordEnded",
+	HouseEditModeEntered = "HouseEditModeEntered",
+	HouseEditModeExited = "HouseEditModeExited",
+	HouseDashboardToggled = "HouseDashboardToggled",
+	HouseFinderOpened = "HouseFinderOpened",
+	HouseCornerstoneOpened = "HouseCornerstoneOpened",
+	HouseBulletinBoardOpened = "HouseBulletinBoardOpened"
+
 }
 
 local groupHasAIBots = false
@@ -237,6 +244,28 @@ local function UnitAuraChanged(unit, info)
         end
     end
 end
+
+----------------------------------------------------------------------------------------------------
+local function OnHouseCornerstoneOpened()
+	local waitForCornerstone = function()
+		if HousingCornerstoneVisitorFrame then
+			EventRegistry:TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseCornerstoneOpened, HousingCornerstoneVisitorFrame)
+		end
+
+		if HousingCornerstonePurchaseFrame then
+			EventRegistry:TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseCornerstoneOpened, HousingCornerstonePurchaseFrame)
+		end
+	end
+
+	--Cornerstone frame does not exist yet if this is called without a brief wait
+	C_Timer.After(0.1, waitForCornerstone)
+end
+----------------------------------------------------------------------------------------------------
+local function OnHouseBulletinBoardOpened()
+	if HousingBulletinBoardFrame then
+		EventRegistry:TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseBulletinBoardOpened, HousingBulletinBoardFrame)
+	end
+end
 ----------------------------------------------------------------------------------------------------
 PTR_IssueReporter.Data.RegisteredEvents = 
 {
@@ -255,6 +284,8 @@ PTR_IssueReporter.Data.RegisteredEvents =
     BARBER_SHOP_CLOSE = BarberShopClosedHandler,
     GROUP_ROSTER_UPDATE = GroupRosterChanged,
     UNIT_AURA = UnitAuraChanged,
+	OPEN_PLOT_CORNERSTONE = OnHouseCornerstoneOpened,
+	UPDATE_BULLETIN_BOARD_ROSTER = OnHouseBulletinBoardOpened,
 }
 
 for event, func in pairs (PTR_IssueReporter.Data.RegisteredEvents) do
@@ -290,6 +321,35 @@ end, "PTR_IssueReporter")
 EventRegistry:RegisterCallback("EditMode.Exit", function()
     PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.EditModeExit)
 end, "PTR_IssueReporter")
+----------------------------------------------------------------------------------------------------
+local function OnEditorModeChanged()
+	if C_HouseEditor.IsHouseEditorActive() then
+		PTR_IssueReporter:SetParent(HouseEditorFrame)
+		PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseEditModeEntered)
+	else
+		PTR_IssueReporter:SetParent(UIParent)
+		PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseEditModeExited)
+	end
+end
+
+EventRegistry:RegisterCallback("HouseEditor.StateUpdated", OnEditorModeChanged, "PTR_IssueReporter");
+
+----------------------------------------------------------------------------------------------------
+local function OnHousingDashboardToggled()
+	if HousingDashboardFrame and HousingDashboardFrame:IsShown() then
+		EventRegistry:TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseDashboardToggled, HousingDashboardFrame)
+	end
+end
+
+EventRegistry:RegisterCallback("HousingDashboard.Toggled", OnHousingDashboardToggled, "PTR_IssueReporter");
+----------------------------------------------------------------------------------------------------
+local function OnHouseFinderOpened()
+	if HouseFinderFrame then
+		EventRegistry:TriggerEvent(PTR_IssueReporter.ReportEventTypes.HouseFinderOpened, HouseFinderFrame)
+	end
+end
+
+EventRegistry:RegisterCallback("HouseFinder.NeighborhoodListShown", OnHouseFinderOpened, "PTR_IssueReporter");
 ----------------------------------------------------------------------------------------------------
 local function PTR_Event_Frame_OnEvent(self, event, ...)
     if (PTR_IssueReporter.Data.IsLoaded) or (event == "PLAYER_ENTERING_WORLD") then

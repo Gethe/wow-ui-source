@@ -53,7 +53,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="PlunderstormAttackBarCap" parent="MainMenuBar" frameLevel="500">
+	<Frame name="PlunderstormAttackBarCap" parent="MainActionBar" frameLevel="500">
 		<KeyValues>
 			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 		</KeyValues>
@@ -82,7 +82,7 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="PlunderstormPotionBarCap" parent="MainMenuBar" frameLevel="500">
+	<Frame name="PlunderstormPotionBarCap" parent="MainActionBar" frameLevel="500">
 		<KeyValues>
 			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 		</KeyValues>

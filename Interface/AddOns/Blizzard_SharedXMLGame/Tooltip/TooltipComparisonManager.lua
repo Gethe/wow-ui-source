@@ -1,3 +1,5 @@
+local COMPARE_HEADER_PADDING = 30;
+
 TooltipComparisonManager = { };
 
 --	The only functions that should be called externally are
@@ -117,8 +119,8 @@ function TooltipComparisonManager:AnchorShoppingTooltips(primaryShown, secondary
 	end
 
 	if secondaryShown then
-		primaryTooltip:SetPoint("TOP", self.anchorFrame, 0, -10);
-		secondaryTooltip:SetPoint("TOP", self.anchorFrame, 0, -10);
+		primaryTooltip:SetPoint("TOP", self.anchorFrame, 0, 0);
+		secondaryTooltip:SetPoint("TOP", self.anchorFrame, 0, 0);
 		if side and side == "left" then
 			primaryTooltip:SetPoint("RIGHT", sideAnchorFrame, "LEFT");
 		else
@@ -131,7 +133,7 @@ function TooltipComparisonManager:AnchorShoppingTooltips(primaryShown, secondary
 			primaryTooltip:SetPoint("TOPLEFT", secondaryTooltip, "TOPRIGHT");
 		end
 	else
-		primaryTooltip:SetPoint("TOP", self.anchorFrame, 0, -10);
+		primaryTooltip:SetPoint("TOP", self.anchorFrame, 0, 0);
 		if side and side == "left" then
 			primaryTooltip:SetPoint("RIGHT", sideAnchorFrame, "LEFT");
 		else
@@ -236,12 +238,13 @@ function TooltipComparisonManager:SetItemTooltip(isPrimaryTooltip)
 	local isPairedItem = comparisonMethod == Enum.TooltipComparisonMethod.WithBagMainHandItem or comparisonMethod == Enum.TooltipComparisonMethod.WithBagOffHandItem;
 
 	-- header
-	local header = CURRENTLY_EQUIPPED;
+	local headerText = EQUIPPED;
 	if not isPrimaryTooltip and isPairedItem then
-		header = IF_EQUIPPED_TOGETHER;
+		headerText = IF_EQUIPPED_TOGETHER;
 	end
-	local noWrapText = false;
-	GameTooltip_AddDisabledLine(tooltip, header, noWrapText);
+	tooltip.CompareHeader:Show();
+	tooltip.CompareHeader.Label:SetText(headerText);
+	tooltip.CompareHeader:SetWidth(tooltip.CompareHeader.Label:GetWidth() + COMPARE_HEADER_PADDING);
 
 	-- the item
 	local tooltipInfo = {

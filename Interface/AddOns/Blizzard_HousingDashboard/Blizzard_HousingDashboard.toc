@@ -1,0 +1,15 @@
+## Title: Blizzard Housing Dashboard
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates, Blizzard_HousingModelPreview
+## AllowLoadGameType: standard
+
+Blizzard_HousingDashboardHouseUpgrade.lua
+Blizzard_HousingDashboardHouseUpgrade.xml
+Blizzard_HousingDashboardHouseInfoContent.lua
+Blizzard_HousingDashboardHouseInfoContent.xml
+Blizzard_HousingDashboardCatalog.lua
+Blizzard_HousingDashboardCatalog.xml
+Blizzard_HousingDashboard.lua
+Blizzard_HousingDashboard.xml
+Blizzard_HousingDashboardRegistration.lua

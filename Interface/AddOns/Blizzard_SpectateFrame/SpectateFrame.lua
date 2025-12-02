@@ -101,12 +101,12 @@ function SpectateFrameMixin:IsZoomingFOV(command)
 end
 
 function SpectateFrameMixin:InitializeSpectateMode()
-	if(not self:ShouldBeInSpectateMode()) then 
-		return; 
-	end	
+	if not self:ShouldBeInSpectateMode() then
+		return;
+	end
 
 	SetFrameLock("SPECTATING", true);
-	EditModeManagerFrame:SetOverrideLayout(1); 
+	EditModeManagerFrame:SetOverrideLayout(1);
 	self:Show();
 	self:UpdatePlayerName();
 end

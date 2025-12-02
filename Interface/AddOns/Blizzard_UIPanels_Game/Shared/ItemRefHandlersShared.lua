@@ -14,10 +14,10 @@ local function HandleBNPlayerLink(link, text, linkData, contextData)
 			end
 		else
 			if ( BNIsFriend(bnetIDAccount)) then
-				ChatFrame_SendBNetTell(name);
+				ChatFrameUtil.SendBNetTell(name);
 			else
 				local displayName = BNGetDisplayName(bnetIDAccount);
-				ChatFrame_SendBNetTell(displayName)
+				ChatFrameUtil.SendBNetTell(displayName)
 			end
 		end
 	end
@@ -34,17 +34,17 @@ LinkUtil.RegisterLinkHandler(LinkTypes.Channel, function(link, text, linkData, c
 
 		if ( string.upper(chatType) == "CHANNEL" ) then
 			if ( GetChannelName(tonumber(chatTarget))~=0 ) then
-				ChatFrame_OpenChat("/"..chatTarget, contextData.frame);
+				ChatFrameUtil.OpenChat("/"..chatTarget, contextData.frame);
 			end
 		elseif ( string.upper(chatType) == "PET_BATTLE_COMBAT_LOG" or string.upper(chatType) == "PET_BATTLE_INFO" ) then
 			--Don't do anything
 		else
-			ChatFrame_OpenChat("/"..chatType, contextData.frame);
+			ChatFrameUtil.OpenChat("/"..chatType, contextData.frame);
 		end
 	elseif ( contextData.button == "RightButton" ) then
 		local chatType, chatTarget = string.split(":", linkData.options);
 		if not ( (string.upper(chatType) == "CHANNEL" and GetChannelName(tonumber(chatTarget)) == 0) ) then	--Don't show the dropdown if this is a channel we are no longer in.
-			ChatChannelDropdown_Show(contextData.frame, string.upper(chatType), chatTarget, Chat_GetColoredChatName(string.upper(chatType), chatTarget));
+			ChatFrameUtil.ShowChatChannelContextMenu(contextData.frame, string.upper(chatType), chatTarget, ChatFrameUtil.GetColoredChatName(string.upper(chatType), chatTarget));
 		end
 	end
 end);
@@ -81,7 +81,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.GarrisonFollowerAbility, function(link, t
 	if ( IsModifiedClick("CHATLINK") ) then
 		local _, abilityID = strsplit(":", link);
 		local abilLink = C_Garrison.GetFollowerAbilityLink(abilityID);
-		ChatEdit_InsertLink (abilLink);
+		ChatFrameUtil.InsertLink (abilLink);
 	elseif ( IsModifiedClick() ) then
 		local fixedLink = GetFixedLink(text);
 		HandleModifiedItemClick(fixedLink);
@@ -140,7 +140,7 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.Item, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") and contextData.button == "LeftButton" ) then
 		local name, itemLink = C_Item.GetItemInfo(text);
-		if ChatEdit_InsertLink(itemLink) then
+		if ChatFrameUtil.InsertLink(itemLink) then
 			return;
 		end
 	end
@@ -150,7 +150,7 @@ end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.ClubTicket, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") and contextData.button == "LeftButton" ) then
-		if ChatEdit_InsertLink(text) then
+		if ChatFrameUtil.InsertLink(text) then
 			return;
 		end
 	end
@@ -231,7 +231,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.CensoredMessageRewrite, function(link, te
 	local chatFrame = contextData.frame;
 	if chatFrame then
 		local originalText = C_ChatInfo.GetChatLineText(hyperlinkLineID);
-		ChatFrame_SendTellWithMessage(sendTo, originalText, chatFrame);
+		ChatFrameUtil.SendTellWithMessage(sendTo, originalText, chatFrame);
 	end
 end);
 

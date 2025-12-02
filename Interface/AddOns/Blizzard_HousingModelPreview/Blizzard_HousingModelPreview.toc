@@ -1,0 +1,9 @@
+## Title: Blizzard Housing Model Preview
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoadGameType: standard
+
+Blizzard_HousingModelPreview.lua
+Blizzard_HousingModelPreview.xml
+
+Blizzard_HousingModelPreviewFrameRegistration.lua

@@ -100,19 +100,6 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
-	<Button name="SettingsDropdownButtonTemplate" inherits="DarkMenuElementTemplate" motionScriptsWhileDisabled="true" virtual="true">
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" font="GameFontNormal" justifyH="LEFT" maxLines="1">
-					<Size x="200" y="20"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="14"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Button>
 	
 	<Frame name="SettingsDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsDropdownControlMixin" virtual="true">
 		<Size x="280" y="26"/>

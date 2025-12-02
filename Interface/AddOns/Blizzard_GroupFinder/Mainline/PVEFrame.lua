@@ -305,12 +305,12 @@ function GroupFinderFrame_Update(self, frame)
 end
 
 function GroupFinderFrame_EvaluateHelpTips(self)
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST) and C_LFGInfo.CanPlayerUsePremadeGroup() then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.LFGList) and C_LFGInfo.CanPlayerUsePremadeGroup() then
 		local helpTipInfo = {
 			text = LFG_LIST_TUTORIAL_ALERT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_LFG_LIST,
+			bitfieldFlag = Enum.FrameTutorialAccount.LFGList,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			checkCVars = true,
 		};

@@ -426,8 +426,8 @@ function EncounterJournal_OnLoad(self)
 
 	-- initialize tabs
 	local instanceSelect = self.instanceSelect;
-	PanelTemplates_SetNumTabs(self, 5);
-	EJ_ContentTab_OnClick(self.MonthlyActivitiesTab);
+	PanelTemplates_SetNumTabs(self, 6);
+
 	self.maxTabWidth = self:GetWidth() / #self.Tabs;
 
 	self.LootJournalViewDropdown:SetWidth(180);
@@ -449,8 +449,13 @@ function EncounterJournal_OnLoad(self)
 	if( not raidInstanceID ) then
 		EJ_ContentTab_SetEnabled(self.raidsTab, false);
 	end
-	-- set the monthly activities frame to open by default if available, or default to Suggested Content
-	if C_PlayerInfo.IsTravelersLogAvailable() then
+
+	-- set the monthly activities frame to open by default if available, or default to Suggested Content, unless we need to show the Tutorials frame
+	local showTutorialsFrame = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen);
+	if showTutorialsFrame then
+		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen, true);
+		EJTutorialsFrame_OpenFrame();
+	elseif C_PlayerInfo.IsTravelersLogAvailable() then
 		MonthlyActivitiesFrame_OpenFrame();
 	else
 		EJSuggestFrame_OpenFrame();
@@ -681,7 +686,7 @@ function EncounterJournal_ResetDisplay(instanceID, instanceType, difficultyID)
 end
 
 function EncounterJournal_OnShow(self)
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.EncounterJournalDisabled) then
+	if GameRulesUtil.EJIsDisabled() then
 		return;
 	end
 
@@ -744,7 +749,35 @@ function EncounterJournal_OnShow(self)
 		EJ_ContentTab_Select(self.selectedTab);
 	end
 
-	EncounterJournal_CheckAndDisplayTradingPostTab();
+	local tabInfo = {
+		{ self.MonthlyActivitiesTab, GameRulesUtil.EJShouldShowTravelersLog },
+		{ self.suggestTab, GameRulesUtil.EJShouldShowSuggestedContent },
+		{ self.dungeonsTab, GameRulesUtil.EJShouldShowDungeons },
+		{ self.raidsTab, GameRulesUtil.EJShouldShowRaids },
+		{ self.LootJournalTab, GameRulesUtil.EJShouldShowItemSets },
+		{ self.TutorialsTab, GameRulesUtil.EJShouldShowTutorials },
+	};
+
+	local previousTab = nil;
+	for _i, tabData in ipairs(tabInfo) do
+		local tab, shouldShow = unpack(tabData);
+		if shouldShow() then
+			PanelTemplates_ShowTab(self, tab:GetID());
+
+			tab:ClearAllPoints();
+			if previousTab then
+				tab:SetPoint("LEFT", previousTab, "RIGHT", 3, 0);
+			else
+				tab:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 11, 2);
+			end
+
+			previousTab = tab;
+		else
+			PanelTemplates_HideTab(self, tab:GetID());
+		end
+	end
+
+	PanelTemplates_SetTabEnabled(self, self.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
 	EncounterJournal_CheckAndDisplaySuggestedContentTab();
 
 	-- Request raid locks to show the defeated overlay for bosses the player has killed this week.
@@ -759,12 +792,12 @@ end
 
 function EncounterJournal_CheckAndDisplaySuggestedContentTab()
 	EncounterJournal.dungeonsTab:ClearAllPoints();
-	if PlayerIsTimerunning() then
-		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
-		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT");
-	else
+	if GameRulesUtil.EJShouldShowSuggestedContent() then
 		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
 		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.suggestTab, "RIGHT", 3, 0);
+	else
+		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.suggestTab:GetID());
+		EncounterJournal.dungeonsTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT");
 	end
 end
 
@@ -772,7 +805,7 @@ function EncounterJournal_CheckAndDisplayTradingPostTab()
 	EncounterJournal.suggestTab:ClearAllPoints();
 	if C_PlayerInfo.IsTradingPostAvailable() then
 		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
-		PanelTemplates_SetTabEnabled(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID(), C_PlayerInfo.IsTravelersLogAvailable());
+		
 		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT", 3, 0);
 	else
 		PanelTemplates_HideTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
@@ -1468,9 +1501,9 @@ function EncounterJournal_UpdateButtonState(self)
 end
 
 function EncounterJournal_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -2631,7 +2664,7 @@ function EJ_ContentTab_Select(id)
 
 	-- Setup background
 	local tierData;
-	if ( id == EncounterJournal.suggestTab:GetID() or id == EncounterJournal.MonthlyActivitiesTab:GetID()) then
+	if ( id == EncounterJournal.suggestTab:GetID() or id == EncounterJournal.MonthlyActivitiesTab:GetID() or id == EncounterJournal.TutorialsTab:GetID()) then
 		tierData = GetEJTierData(EJSuggestTab_GetPlayerTierIndex());
 	else
 		tierData = GetEJTierData(EJ_GetCurrentTier());
@@ -2645,6 +2678,9 @@ function EJ_ContentTab_Select(id)
 	local showRaid = id == EncounterJournal.raidsTab:GetID();
 	local showDungeons = id == EncounterJournal.dungeonsTab:GetID();
 	local showLoot = id == EncounterJournal.LootJournalTab:GetID();
+	local showTutorials = id == EncounterJournal.TutorialsTab:GetID();
+
+	EncounterJournal.TutorialsFrame:SetShown(showTutorials);
 
 	if showMonthlyActivities then
 		EJ_HideSuggestPanel();
@@ -2662,6 +2698,10 @@ function EJ_ContentTab_Select(id)
 		EJ_HideNonInstancePanels();
 		EncounterJournal_ListInstances();
 		EncounterJournal_EnableExpansionDropdown();
+	elseif showTutorials then
+		EJ_HideSuggestPanel();
+		EJ_HideLootJournalPanel();
+		EncounterJournal_DisableExpansionDropdown();
 	end
 
 	-- Update title bar with the current tab name
@@ -2676,7 +2716,7 @@ function EJ_ContentTab_Select(id)
 	EncounterJournal.searchBox:SetShown(showSearchBox);
 
 	instanceSelect.ExpansionDropdown:SetShown(showDungeons or showRaid or showLoot);
-	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid);
+	instanceSelect.bg:SetShown(showSuggestedContent or showDungeons or showRaid or showTutorials);
 	EncounterJournal.MonthlyActivitiesFrame:SetShown(showMonthlyActivities);
 
 	local showInstanceSelect = (id == EncounterJournal.dungeonsTab:GetID() or id == EncounterJournal.raidsTab:GetID());
@@ -3401,9 +3441,9 @@ function EncounterJournalBossButton_OnEvent(self, event)
 end
 
 function EncounterJournalBossButton_OnClick(self)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		if self.link then
-			ChatEdit_InsertLink(self.link);
+			ChatFrameUtil.InsertLink(self.link);
 		end
 		return;
 	end
@@ -3460,7 +3500,19 @@ function EJInstanceSelect_UpdateTitle(tabId)
 		showTitle = false; -- MonthlyActivities frame has a unique header bar so we hide this title
 	elseif (tabId == EncounterJournal.LootJournalTab:GetID()) then
 		instanceSelect.Title:SetText(LOOT_JOURNAL_ITEM_SETS);
+	elseif (tabId == EncounterJournal.TutorialsTab:GetID()) then
+		instanceSelect.Title:SetText(EJ_TUTORIALS);
 	end
 
 	instanceSelect.Title:SetShown(showTitle);
+end
+
+EncounterJournalRPEStartButtonMixin = { };
+
+function EncounterJournalRPEStartButtonMixin:OnClick()
+	C_EncounterJournal.StartArathiRPE();
+end
+
+function EJTutorialsFrame_OpenFrame()
+	EJ_ContentTab_Select(EncounterJournal.TutorialsTab:GetID());
 end

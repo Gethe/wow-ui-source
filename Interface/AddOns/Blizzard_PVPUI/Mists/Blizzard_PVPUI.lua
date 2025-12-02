@@ -371,12 +371,12 @@ function HonorQueueFrame_Queue(isParty, forceSolo)
 	end
 	local HonorQueueFrame = HonorQueueFrame;
 	if ( HonorQueueFrame.type == "specific" and HonorQueueFrame.SpecificFrame.bgID ) then
-		JoinBattlefield(HonorQueueFrame.SpecificFrame.bgID, isParty);
+		C_PvP.JoinBattlefield(HonorQueueFrame.SpecificFrame.bgID, isParty);
 	elseif ( HonorQueueFrame.type == "bonus" and HonorQueueFrame.BonusFrame.selectedButton ) then
 		if ( HonorQueueFrame.BonusFrame.selectedButton.worldID ) then
 			JoinWorldPVPQueue(false, isParty, HonorQueueFrame.BonusFrame.selectedButton.bgID);
 		else
-			JoinBattlefield(HonorQueueFrame.BonusFrame.selectedButton.bgID, isParty);
+			C_PvP.JoinBattlefield(HonorQueueFrame.BonusFrame.selectedButton.bgID, isParty);
 		end
 	end
 end

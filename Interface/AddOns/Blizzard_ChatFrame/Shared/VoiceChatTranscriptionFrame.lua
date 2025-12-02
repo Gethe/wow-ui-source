@@ -30,7 +30,7 @@ function VoiceTranscriptionFrame_UpdateVisibility(self)
 			SetChatWindowShown(id, false);
 
 			if LAST_ACTIVE_CHAT_EDIT_BOX == self.editBox then
-				ChatEdit_SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
+				ChatFrameUtil.SetLastActiveWindow(DEFAULT_CHAT_FRAME.editBox);
 			end
 
 			update = true;
@@ -69,7 +69,7 @@ function VoiceTranscription_GetChatTypeAndInfo()
 				-- Check if the channel is registered as a chat channel
 				local clubInfo = C_Club.GetClubInfo(channel.clubId);
 				if (clubInfo) then
-					local chatChannel, channelIdx = Chat_GetCommunitiesChannel(channel.clubId, channel.streamId);
+					local chatChannel, channelIdx = ChatFrameUtil.GetCommunitiesChannel(channel.clubId, channel.streamId);
 					local channelName, channelColor;
 					if (chatChannel) then
 						channelName = string.format("%d. %s", channelIdx, clubInfo.shortName or clubInfo.name);
@@ -164,8 +164,8 @@ function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 			if channel then
 				local atlas = CreateAtlasMarkup("voicechat-icon-stt");
 				local announce = Voice_FormatChannelNotification(channel, SPEECH_TO_TEXT_JOINED);
-				ChatFrame_DisplaySystemMessageInPrimary(atlas .. announce);
-				ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED);
+				ChatFrameUtil.DisplaySystemMessageInPrimary(atlas .. announce);
+				ChatFrameUtil.DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED);
 			end
 		end
 
@@ -190,7 +190,7 @@ function VoiceTranscriptionFrame_Init(self)
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
 
-	ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_HEADER);
+	ChatFrameUtil.DisplaySystemMessage(self, SPEECH_TO_TEXT_HEADER);
 	VoiceTranscriptionFrame_UpdateVisibility(self);
 	VoiceTranscriptionFrame_UpdateVoiceTab(self);
 	VoiceTranscriptionFrame_UpdateEditBox(self);

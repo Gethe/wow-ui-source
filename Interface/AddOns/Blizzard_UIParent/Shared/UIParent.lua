@@ -43,6 +43,44 @@ function UIParent_Shared_OnEvent(self, event, ...)
 	end
 end
 
+--Aubrie TODO.. Convert these into horizontal layout frames? It's fine for now tho..
+function UIParent_UpdateTopFramePositions()
+	local yOffset = 0;
+	local xOffset = -230;
+
+	local statusFrames = {};
+	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
+		table.insert(statusFrames, GMChatStatusFrame);
+	end
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
+	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
+		table.insert(statusFrames, BehavioralMessagingTray);
+	end
+	if WowSurveyStatusFrame and WowSurveyStatusFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyStatusFrame);
+	end
+
+	local buffOffset = 0;
+	for i, frame in ipairs(statusFrames) do
+		frame:ClearAllPoints();
+		if i == 1 then
+			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		else
+			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
+		end
+
+		buffOffset = math.max(buffOffset, frame:GetHeight());
+	end
+
+	if BuffFrame:IsInDefaultPosition() then
+		local anchor = EditModeManagerFrame:GetDefaultAnchor(BuffFrame);
+		BuffFrame:ClearAllPoints();
+		BuffFrame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.offsetX, anchor.offsetY - buffOffset);
+	end
+end
+
 function OpenAchievementFrameToAchievement(achievementID)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
@@ -766,6 +804,12 @@ function TrialAccountCapReached_Inform(capType)
 		DEFAULT_CHAT_FRAME:AddMessage(CAPPED_MONEY_TRIAL, info.r, info.g, info.b);
 	end
 	displayedCapMessage = true;
+end
+
+function IsLevelAtEffectiveMaxLevel(level)
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
+	return level >= maxLevel;
 end
 
 function AbbreviateLargeNumbers(value)

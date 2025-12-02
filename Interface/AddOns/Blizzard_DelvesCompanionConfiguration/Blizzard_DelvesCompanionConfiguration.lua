@@ -384,7 +384,7 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
                 if conditionInfo then
                     local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
                     local curioLink = C_DelvesUI.GetCurioLink(selection.spellID, rarity);
-                    ChatEdit_InsertLink(curioLink);
+                    ChatFrameUtil.InsertLink(curioLink);
                     return;
                 end
             end
@@ -657,7 +657,7 @@ function CompanionConfigListButtonMixin:OnClick()
             if conditionInfo then
                 local rarity = C_DelvesUI.GetCurioRarityByTraitCondAccountElementID(conditionInfo.traitCondAccountElementID);
                 local curioLink = C_DelvesUI.GetCurioLink(self.data.spellID, rarity);
-                ChatEdit_InsertLink(curioLink);
+                ChatFrameUtil.InsertLink(curioLink);
                 return;
             end
         end

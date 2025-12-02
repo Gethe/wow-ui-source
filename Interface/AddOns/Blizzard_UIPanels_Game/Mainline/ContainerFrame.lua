@@ -111,13 +111,39 @@ function ContainerFrame_GetContainerNumSlots(bagId)
 	return maxNumSlots, currentNumSlots;
 end
 
+local FullscreenFrame = UIParent;
+local function ReparentContainerFrames()
+	FrameUtil.SetParentMaintainRenderLayering(BagsBar, FullscreenFrame);
+	for i = 1, NUM_CONTAINER_FRAMES do
+		local containerFrame = _G["ContainerFrame"..i];
+		if containerFrame then
+			FrameUtil.SetParentMaintainRenderLayering(containerFrame, FullscreenFrame);
+		end
+	end
+	FrameUtil.SetParentMaintainRenderLayering(ContainerFrameCombinedBags, FullscreenFrame);
+end
+
+function ContainerFrame_SetFullScreenFrame(frame)
+	if frame then
+		local previousFullScreenFrame = FullscreenFrame;
+		FullscreenFrame = frame;
+		ReparentContainerFrames();
+	end
+end
+
+function ContainerFrame_ClearFullScreenFrame()
+	local previousFullScreenFrame = FullscreenFrame;
+	FullscreenFrame = UIParent;
+	ReparentContainerFrames();
+end
+
 function ContainerFrame_AllowedToOpenBags()
 	local bagsUIDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
 	if bagsUIDisabled then
 		return false;
 	end
 
-	return UIParent:IsShown() and CanOpenPanels();
+	return FullscreenFrame:IsShown() and (FullscreenFrame ~= UIParent or CanOpenPanels());
 end
 
 function ToggleBackpack_Combined()
@@ -416,7 +442,7 @@ end
 local ContainerFrameTutorialInfo = {
 	{ considerFunction = ContainerFrame_ConsiderItemButtonForAzeriteTutorial, tutorialText = AZERITE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_AZERITE_ITEM_IN_SLOT, },
 	{ considerFunction = ContainerFrame_ConsiderItemButtonForUpgradeTutorial, tutorialText = ITEM_UPGRADE_TUTORIAL_ITEM_IN_SLOT, tutorialFlag = LE_FRAME_TUTORIAL_UPGRADEABLE_ITEM_IN_SLOT, },
-	{ considerFunction = ContainerFrame_ConsiderItemButtonForWarboundUntilEquipTutorial, tutorialText = BIND_TO_ACCOUNT_UNTIL_EQUIP_TUTORIAL, tutorialFlag = LE_FRAME_TUTORIAL_BIND_TO_ACCOUNT_UNTIL_EQUIP, isAccountTutorial = true, },
+	{ considerFunction = ContainerFrame_ConsiderItemButtonForWarboundUntilEquipTutorial, tutorialText = BIND_TO_ACCOUNT_UNTIL_EQUIP_TUTORIAL, tutorialFlag = Enum.FrameTutorialAccount.BindToAccountUntilEquip, isAccountTutorial = true, },
 };
 
 function ContainerFrame_HasUnacknowledgedItemTutorial()
@@ -1526,7 +1552,7 @@ function ContainerFrameItemButtonMixin:OnUpdate()
 
 	GameTooltip:SetBagItem(self:GetBagID(), self:GetID());
 
-	if TooltipUtil.ShouldDoItemComparison() then
+	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	end
 
@@ -1841,12 +1867,12 @@ end
 
 function ContainerFramePortraitButtonMixin:OnShow()
 	if ( self:GetID() == 0 ) then
-		if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_HUD_REVAMP_BAG_CHANGES) then
+		if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.HudRevampBagChanges) then
 			local helpTipInfo = {
 				text = TUTORIAL_HUD_REVAMP_BAG_CHANGES,
 				buttonStyle = HelpTip.ButtonStyle.Close,
 				cvarBitfield = "closedInfoFramesAccountWide",
-				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_HUD_REVAMP_BAG_CHANGES,
+				bitfieldFlag = Enum.FrameTutorialAccount.HudRevampBagChanges,
 				targetPoint = HelpTip.Point.LeftEdgeCenter,
 				offsetX = 0,
 				alignment = HelpTip.Alignment.Center,

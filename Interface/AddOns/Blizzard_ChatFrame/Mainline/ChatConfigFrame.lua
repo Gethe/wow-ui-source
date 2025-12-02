@@ -125,7 +125,7 @@ do
 				local chatFrame = FCF_GetCurrentChatFrame();
 				if ( checked ) then
 					chatFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
-					ChatFrame_DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
+					ChatFrameUtil.DisplaySystemMessage(chatFrame, SPEECH_TO_TEXT_HEADER);
 				else
 					chatFrame:UnregisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
 				end
@@ -855,7 +855,7 @@ function ChatConfig_CreateCheckboxes(frame, checkBoxTable, checkBoxTemplate, tit
 		end
 	end
 
-	for index = #checkBoxTable + 1, MAX_WOW_CHAT_CHANNELS do
+	for index = #checkBoxTable + 1, Constants.ChatFrameConstants.MaxChatChannels do
 		checkBoxName = checkBoxNameString..index;
 		checkBox = _G[checkBoxName];
 		if checkBox then
@@ -1253,10 +1253,11 @@ function CombatConfig_SetFilterName(name)
 end
 
 function ToggleChatMessageGroup(checked, group)
+	local chatFrame = FCF_GetCurrentChatFrame();
 	if ( checked ) then
-		ChatFrame_AddMessageGroup(FCF_GetCurrentChatFrame(), group);
+		chatFrame:AddMessageGroup(group);
 	else
-		ChatFrame_RemoveMessageGroup(FCF_GetCurrentChatFrame(), group);
+		chatFrame:RemoveMessageGroup(group);
 	end
 end
 
@@ -1384,14 +1385,14 @@ function IsClassColoringMessageType(messageType)
 	if ( groupInfo ) then
 		for key, value in pairs(groupInfo) do	--If any of the sub-categories color by name, we'll consider the entire thing as colored by name.
 			local info = ChatTypeInfo[strsub(value, 10)];
-			if ( info and Chat_ShouldColorChatByClass(info) ) then
+			if ( info and ChatFrameUtil.ShouldColorChatByClass(info) ) then
 				return true;
 			end
 		end
 		return false;
 	else
 		local info = ChatTypeInfo[messageType];
-		return info and Chat_ShouldColorChatByClass(info);
+		return info and ChatFrameUtil.ShouldColorChatByClass(info);
 	end
 end
 
@@ -1619,14 +1620,14 @@ function CreateChatChannelList(self, ...)
 
 		CHAT_CONFIG_CHANNEL_LIST[count] = {};
 		CHAT_CONFIG_CHANNEL_LIST[count].channelID = channelID;
-		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
+		CHAT_CONFIG_CHANNEL_LIST[count].text = channelID.."."..ChatFrameUtil.ResolveChannelName(channel);
 		CHAT_CONFIG_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
 		CHAT_CONFIG_CHANNEL_LIST[count].checked = checked;
 		CHAT_CONFIG_CHANNEL_LIST[count].disabled = disabled;
 		CHAT_CONFIG_CHANNEL_LIST[count].func = function (self, checked)
-							ChatFrame_SetChannelEnabled(FCF_GetCurrentChatFrame(), CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName, checked);
+							FCF_GetCurrentChatFrame():SetChannelEnabled(CHAT_CONFIG_CHANNEL_LIST[self:GetID()].channelName, checked);
 							end;
 		count = count+1;
 	end
@@ -1663,7 +1664,7 @@ function CreateChatTextToSpeechChannelList(self, ...)
 
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count] = {};
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelID = channelID;
-		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = channelID.."."..ChatFrame_ResolveChannelName(channel);
+		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].text = channelID.."."..ChatFrameUtil.ResolveChannelName(channel);
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].channelName = channel;
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].type = tag;
 		CHAT_CONFIG_TEXT_TO_SPEECH_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
@@ -1832,7 +1833,7 @@ end
 function ChatConfig_ResetChatSettings()
 	C_ChatInfo.ResetDefaultZoneChannels();
 	ChatConfig_UpdateChatSettings();
-	ChatEdit_CheckUpdateNewcomerEditBoxHint();
+	ChatFrameUtil.CheckUpdateNewcomerEditBoxHint();
 end
 
 function UsesGUID(direction)
@@ -2439,7 +2440,7 @@ function ChatConfigWideCheckboxManagerMixin:StopMovingEntry()
 	self:SetScript("OnUpdate", nil);
 	self:UpdateStates();
 
-	ChatEdit_CheckUpdateNewcomerEditBoxHint();
+	ChatFrameUtil.CheckUpdateNewcomerEditBoxHint();
 end
 
 function ChatConfigWideCheckboxManagerMixin:GetMovingEntry()

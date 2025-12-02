@@ -338,7 +338,7 @@ function AdventuresBoardMixin:ResetBoardIndicators()
 	end
 end
 
--- Overriden by AdventuresBoardCombatMixin.
+-- Overridden by AdventuresBoardCombatMixin.
 function AdventuresBoardMixin:IsShowingActiveCombat() 
 	return false;
 end

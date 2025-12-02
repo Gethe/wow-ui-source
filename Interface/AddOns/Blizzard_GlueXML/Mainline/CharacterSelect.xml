@@ -40,7 +40,7 @@
 					<Anchor point="TOP" relativeKey="$parent.ExpandBar" relativePoint="BOTTOM" y="30"/>
 				</Anchors>
 			</Frame>
-			<Button parentKey="UpgradeButton" inherits="GlueGoldRedButtonTemplate" text="UPGRADE">
+			<Button parentKey="UpgradeButton" inherits="GlueGoldRedButtonTemplate" text="UPGRADE" frameLevel="10">
 				<Size x="215" y="50"/>
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOM" x="0" y="12"/>
@@ -544,6 +544,24 @@
 								</Scripts>
 								<NormalTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" />
 								<HighlightTexture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" alphaMode="ADD" />
+							</Button>
+							<Button parentKey="InfoButton" inherits="GlueButtonSmallTemplate" mixin="CharacterSelectInfoButtonMixin" text="CHARACTER_SELECT_INFO_BUTTON" hidden="true">
+								<Size x="250" y="42"/>
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="CharSelectEnterWorldButton" relativePoint="LEFT" x="-5" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
+							</Button>
+							<Button parentKey="RewardsButton" inherits="GlueButtonSmallTemplate" mixin="CharacterSelectRewardsButtonMixin" text="CHARACTER_SELECT_SHOW_REWARDS" hidden="true">
+								<Size x="250" y="42"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="CharSelectEnterWorldButton" relativePoint="RIGHT" x="5" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
 							</Button>
 							<Button name="CharacterSelectBackButton" inherits="GlueButtonTemplate" mixin="CharacterSelectBackButtonMixin" text="CHARACTER_SELECT_BACK">
 								<Size x="188" y="42"/>

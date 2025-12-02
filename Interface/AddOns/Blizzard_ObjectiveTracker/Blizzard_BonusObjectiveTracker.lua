@@ -60,7 +60,7 @@ function BonusObjectiveTrackerMixin:OnBlockHeaderClick(block, button)
 	local isThreatQuest = C_QuestLog.IsThreatQuest(questID);
 	if self.showWorldQuests or isThreatQuest then
 		if button == "LeftButton" then
-			if ( not ChatEdit_TryInsertQuestLinkForQuestID(questID) ) then
+			if ( not ChatFrameUtil.TryInsertQuestLinkForQuestID(questID) ) then
 				if IsShiftKeyDown() then
 					if QuestUtils_IsQuestWatched(questID) and not isThreatQuest then
 						QuestUtil.UntrackWorldQuest(questID);

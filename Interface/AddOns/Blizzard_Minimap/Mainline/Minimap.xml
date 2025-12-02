@@ -2,6 +2,9 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Frame name="MinimapCluster" inherits="EditModeMinimapSystemTemplate, ResizeLayoutFrame" mixin="MinimapClusterMixin" frameStrata="LOW" toplevel="true" enableMouse="true" parent="UIParent">
 		<Size x="256" y="256"/>
+		<KeyValues>
+			<KeyValue key="scaleMinimapHeader" value="false" type="boolean"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT"/>
 		</Anchors>
@@ -220,7 +223,10 @@
 									<Anchor point="CENTER" relativeTo="Minimap" x="0" y="0"/>
 								</Anchors>
 								<Layers>
-									<Layer level="OVERLAY">
+									<Layer level="OVERLAY" textureSubLevel="0">
+										<Texture parentKey="StaticOverlayTexture" setAllPoints="true" hidden="true"/>
+									</Layer>
+									<Layer level="OVERLAY" textureSubLevel="2">
 										<Texture name="MinimapCompassTexture" atlas="ui-hud-minimap-frame">
 											<Size x="215" y="226"/>
 											<Anchors>

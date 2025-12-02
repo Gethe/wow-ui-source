@@ -2,6 +2,7 @@ ObjectiveTrackerManager = {
 	containers = { },
 	moduleToContainerMap = { },
 	backgroundAlpha = 0,
+	canAddModules = true,
 };
 
 function ObjectiveTrackerManager:AssignModulesOrder(modules)
@@ -14,6 +15,16 @@ function ObjectiveTrackerManager:AddContainer(container)
 	self.containers[container] = true;
 	-- pass current alpha to new container
 	container:OnAdded(self.backgroundAlpha);
+end
+
+function ObjectiveTrackerManager:HasAnyModules()
+	for container in pairs(self.containers) do
+		if container:HasAnyModules() then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function ObjectiveTrackerManager:UpdateAll()
@@ -180,26 +191,43 @@ function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadi
 	if not isInitialLogin and not isReloadingUI then
 		return;
 	end
-
-	local orderedModules = {
-		ScenarioObjectiveTracker,
-		UIWidgetObjectiveTracker,
-		CampaignQuestObjectiveTracker,	
-		QuestObjectiveTracker,
-		AdventureObjectiveTracker,
-		AchievementObjectiveTracker,
-		MonthlyActivitiesObjectiveTracker,
-		ProfessionsRecipeTracker,
-		BonusObjectiveTracker,
-		WorldQuestObjectiveTracker,
-	};
-
-	self:AssignModulesOrder(orderedModules);
+	
 	local mainTrackerFrame = ObjectiveTrackerFrame;
 	self:AddContainer(mainTrackerFrame);
-	for i, module in ipairs(orderedModules) do
-		self:SetModuleContainer(module, mainTrackerFrame);
+
+	if self.canAddModules then
+		local orderedModules = {
+			ScenarioObjectiveTracker,
+			UIWidgetObjectiveTracker,
+			CampaignQuestObjectiveTracker,	
+			QuestObjectiveTracker,
+			AdventureObjectiveTracker,
+			AchievementObjectiveTracker,
+			MonthlyActivitiesObjectiveTracker,
+			ProfessionsRecipeTracker,
+			BonusObjectiveTracker,
+			WorldQuestObjectiveTracker,
+		};
+
+		self:AssignModulesOrder(orderedModules);
+		for i, module in ipairs(orderedModules) do
+			self:SetModuleContainer(module, mainTrackerFrame);
+		end
 	end
+
+	self:UpdateAll();
+end
+
+function ObjectiveTrackerManager:RemoveAllModules()
+	for container in pairs(self.containers) do
+		container:RemoveAllModules();
+	end
+
+	self:UpdateAll();
+end
+
+function ObjectiveTrackerManager:SetCanAddModules(canAdd)
+	self.canAddModules = canAdd;
 end
 
 EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", ObjectiveTrackerManager.OnPlayerEnteringWorld, ObjectiveTrackerManager);

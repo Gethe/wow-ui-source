@@ -283,6 +283,15 @@ local PlayerInfo =
 			},
 		},
 		{
+			Name = "IsPlayerInRPE",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isInRPE", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerInTimerunningHeroicWorldTier",
 			Type = "Function",
 
@@ -298,6 +307,15 @@ local PlayerInfo =
 			Returns =
 			{
 				{ Name = "isRestricted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsReturningCharacter",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isReturning", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -320,6 +338,15 @@ local PlayerInfo =
 		},
 		{
 			Name = "IsTravelersLogAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsTutorialsTabAvailable",
 			Type = "Function",
 
 			Returns =

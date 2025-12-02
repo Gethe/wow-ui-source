@@ -136,7 +136,7 @@ function SpellBookFrameTutorialsMixin:CheckShowHelpTips()
 		end
 	end
 
-	local showAssistedCombatRotationHelptip = AssistedCombatManager:HasActionSpell() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL);
+	local showAssistedCombatRotationHelptip = AssistedCombatManager:HasActionSpell() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell);
 	if showAssistedCombatRotationHelptip then
 		local helpTipInfo = {
 			text = ASSISTED_COMBAT_ROTATION_DRAG_HELPTIP,
@@ -145,7 +145,7 @@ function SpellBookFrameTutorialsMixin:CheckShowHelpTips()
 			system = helpTipSystem,
 			onAcknowledgeCallback = function() self:CheckShowHelpTips(); end,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL,
+			bitfieldFlag = Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell,
 		};
 		HelpTip:Show(UIParent, helpTipInfo, self.AssistedCombatRotationSpellFrame.Button);
 		return;

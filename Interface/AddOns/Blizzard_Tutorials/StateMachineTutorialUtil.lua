@@ -57,3 +57,61 @@ end
 function StateMachineBasedTutorialMixin:IsShowingTutorialHelp()
 	return HelpTip:IsShowingAnyInSystem(self:GetSystem());
 end
+
+HelpTipStateMachineBasedTutorialMixin = CreateFromMixins(StateMachineBasedTutorialMixin);
+
+function HelpTipStateMachineBasedTutorialMixin:Init(helpTipInfos, helpTipSystemName, states, initialState, bitfield, bitfieldFlag)
+	self.helpTipInfos = helpTipInfos;
+	self.helpTipSystemName = helpTipSystemName;
+
+	for _key, state in pairs(states) do
+		-- Checking for the phase allows for specifying overrides to functionality
+		local startPhase = "StartPhase_"..state;
+		if not self[startPhase] then
+			self[startPhase] = function(self)
+				self:ShowHelpTipByState(state);
+			end;
+		end
+
+		local stopPhase = "StopPhase_"..state;
+		if not self[stopPhase] then
+			self[stopPhase] = function(self)
+				self:HideHelpTipByState(state);
+			end;
+		end
+
+		self:AddState(state, startPhase, stopPhase);
+	end
+
+	self:SetInitialStateName(initialState);
+	self:SetTutorialFlagType(bitfield, bitfieldFlag);
+end
+
+function HelpTipStateMachineBasedTutorialMixin:ShowHelpTipByState(stateName)
+	local helpTipInfo = self.helpTipInfos[stateName];
+
+	self.helpTipParent = helpTipInfo.parent;
+	self.relativeRegion = helpTipInfo.relativeRegion or helpTipInfo.parent;
+	HelpTip:Show(self.helpTipParent, helpTipInfo, self.relativeRegion);
+end
+
+function HelpTipStateMachineBasedTutorialMixin:HideHelpTipByState(stateName)
+	HelpTip:Hide(self.helpTipParent, self.helpTipInfos[stateName].text);
+	self.helpTipParent = nil;
+end
+
+function HelpTipStateMachineBasedTutorialMixin:IsComplete()
+	return self:IsTutorialFlagSet();
+end
+
+function HelpTipStateMachineBasedTutorialMixin:GetSystem()
+	return self.helpTipSystemName;
+end
+
+function HelpTipStateMachineBasedTutorialMixin:AcknowledgeTutorial()
+	if self:IsShowingTutorialHelp() then
+		HelpTip:HideAllSystem(self:GetSystem());
+	end
+
+	StateMachineBasedTutorialMixin.AcknowledgeTutorial(self);
+end

@@ -61,9 +61,9 @@ function ProfessionsCraftingPageMixin:OnLoad()
 				MacroFrameText:Insert(link);
 			end
 		else
-			if ChatEdit_GetActiveWindow() then
+			if ChatFrameUtil.GetActiveWindow() then
 				local link = C_TradeSkillUI.GetTradeSkillListLink();
-				ChatEdit_InsertLink(link);
+				ChatFrameUtil.InsertLink(link);
 			end
 		end
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -293,7 +293,7 @@ function ProfessionsCraftingPageMixin:OnShow()
 	local channels = { GetChannelList() };
 		for index = 1, #channels, 3 do
 			local slashChannel = "/"..channels[index];
-			local text = ChatFrame_ResolveChannelName(channels[index + 1]);
+			local text = ChatFrameUtil.ResolveChannelName(channels[index + 1]);
 			local enabled = not (channels[index + 2]);
 			table.insert(channelTbls, CreateChannelTbl(slashChannel, text, enabled));
 		end
@@ -302,7 +302,7 @@ function ProfessionsCraftingPageMixin:OnShow()
 			local button = rootDescription:CreateButton(tbl.text, function()
 				local link = C_TradeSkillUI.GetTradeSkillListLink();
 				if link then
-					ChatFrame_OpenChat(string.format("%s %s", tbl.slashChannel, link), DEFAULT_CHAT_FRAME);
+					ChatFrameUtil.OpenChat(string.format("%s %s", tbl.slashChannel, link), DEFAULT_CHAT_FRAME);
 	end
 			end);
 			button:SetEnabled(tbl.enabled);
@@ -1465,7 +1465,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 	end
 
 	-- Concentration helptip
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.ConcentrationCurrency) then
 		if self.ConcentrationDisplay:IsVisible() then
 			local helpTipInfo =
 			{
@@ -1478,7 +1478,7 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 				offsetX = 0,
 				onAcknowledgeCallback = function() self:CheckShowHelptips(); end,
 				cvarBitfield = "closedInfoFramesAccountWide",
-				bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_CONCENTRATION_CURRENCY,
+				bitfieldFlag = Enum.FrameTutorialAccount.ConcentrationCurrency,
 			};
 			RunNextFrame(function() HelpTip:Show(UIParent, helpTipInfo, self.ConcentrationDisplay); end);
 			return;

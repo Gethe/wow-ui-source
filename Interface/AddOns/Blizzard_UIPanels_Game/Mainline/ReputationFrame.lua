@@ -152,7 +152,7 @@ end
 function ReputationFrameMixin:RefreshAccountWideReputationTutorial()
 	HelpTip:Hide(self, ACCOUNT_WIDE_REPUTATION_TUTORIAL);
 
-	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION);
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AccountWideReputation);
 	if tutorialAcknowledged then
 		return;
 	end
@@ -166,7 +166,7 @@ function ReputationFrameMixin:RefreshAccountWideReputationTutorial()
 		text = ACCOUNT_WIDE_REPUTATION_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_WIDE_REPUTATION,
+		bitfieldFlag = Enum.FrameTutorialAccount.AccountWideReputation,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = 40,
 		alignment = HelpTip.Alignment.Center,

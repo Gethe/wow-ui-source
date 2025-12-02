@@ -46,12 +46,13 @@ local UIFrameManager =
 		{
 			Name = "UIFrameType",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 0,
-			MaxValue = 0,
+			MaxValue = 1,
 			Fields =
 			{
 				{ Name = "JailersTowerBuffs", Type = "UIFrameType", EnumValue = 0 },
+				{ Name = "InterruptTutorial", Type = "UIFrameType", EnumValue = 1 },
 			},
 		},
 	},

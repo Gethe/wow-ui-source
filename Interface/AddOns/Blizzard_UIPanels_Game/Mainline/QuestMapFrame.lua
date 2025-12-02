@@ -1,5 +1,3 @@
-local tooltipButton;
-
 QuestLogButtonTypes = EnumUtil.MakeEnum("None", "Any", "Header", "HeaderCampaign", "HeaderCampaignMinimal", "HeaderCallings", "StoryHeader", "Quest");
 
 QuestLogDisplayMode = EnumUtil.MakeEnum("Quests", "Events", "MapLegend");
@@ -220,9 +218,9 @@ function QuestLogMixin:SetDisplayMode(displayMode)
 	end
 
 	if displayMode == QuestLogDisplayMode.Events then
-		if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN) then
+		if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EventSchedulerTabSeen) then
 			HelpTip:Hide(self.EventsTab, EVENT_SCHEDULER_WORLD_MAP_HELP_TEXT);
-			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN, true);
+			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EventSchedulerTabSeen, true);
 		end
 	end
 
@@ -250,13 +248,13 @@ function QuestLogMixin:ValidateTabs()
 end
 
 function QuestLogMixin:CheckEventsTabTutorial()
-	local shouldShowHelp = self.EventsTab:IsShown() and C_PlayerInfo.CanPlayerUseEventScheduler() and not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN);
+	local shouldShowHelp = self.EventsTab:IsShown() and C_PlayerInfo.CanPlayerUseEventScheduler() and not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EventSchedulerTabSeen);
 	if shouldShowHelp then
 		local helpTipInfo = {
 			text = EVENT_SCHEDULER_WORLD_MAP_HELP_TEXT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_EVENT_SCHEDULER_TAB_SEEN,
+			bitfieldFlag = Enum.FrameTutorialAccount.EventSchedulerTabSeen,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			offsetY = 4,
 		};
@@ -518,10 +516,6 @@ local function QuestMapFrame_DoFullUpdate()
 
 	QuestMapFrame_UpdateAll();
 	QuestMapFrame_UpdateAllQuestCriteria();
-
-	if ( tooltipButton ) then
-		QuestMapLogTitleButton_OnEnter(tooltipButton);
-	end
 end
 
 function QuestMapFrame_OnEvent(self, event, ...)
@@ -2074,6 +2068,10 @@ function QuestLogQuests_Update()
 end
 
 function ToggleQuestLog()
+	if ( C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) ) then
+		return;
+	end
+
 	if ( QuestMapFrame:IsShown() and QuestMapFrame:IsVisible() ) then
 		HideUIPanel(QuestMapFrame:GetParent());
 	else
@@ -2093,7 +2091,7 @@ end
 
 function QuestMapLogTitleButton_OnEnter(self)
 	-- do block highlight
-	local info = C_QuestLog.GetInfo(self.questLogIndex);
+	local info = self.info;
 	assert(info and not info.isHeader);
 	local isComplete = C_QuestLog.IsComplete(info.questID);
 	local questID = info.questID;
@@ -2200,7 +2198,6 @@ function QuestMapLogTitleButton_OnEnter(self)
 	end
 
 	GameTooltip:Show();
-	tooltipButton = self;
 	EventRegistry:TriggerEvent("QuestMapLogTitleButton.OnEnter", self, questID);
 	POIButtonHighlightManager:SetHighlight(questID);
 end
@@ -2224,7 +2221,6 @@ function QuestMapLogTitleButton_OnLeave(self)
 
 	QuestMapFrame:GetParent():ClearHighlightedQuestID();
 	GameTooltip:Hide();
-	tooltipButton = nil;
 
 	POIButtonHighlightManager:ClearHighlight();
 end
@@ -2303,7 +2299,7 @@ function QuestMapLogTitleButton_CreateContextMenu(self)
 end
 
 function QuestMapLogTitleButton_OnClick(self, button)
-	if ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
+	if ChatFrameUtil.TryInsertQuestLinkForQuestID(self.questID) then
 		return;
 	end
 

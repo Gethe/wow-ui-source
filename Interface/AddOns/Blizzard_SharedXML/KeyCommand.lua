@@ -96,7 +96,7 @@ end
 
 function GetBindingFromInput(input)
 	local fullInput = GetBindingFullInput(input);
-	return GetBindingByKey(fullInput);
+	return C_KeyBindings.GetBindingByKey(fullInput);
 end
 
 -- May deprecate GetBindingFromClick.

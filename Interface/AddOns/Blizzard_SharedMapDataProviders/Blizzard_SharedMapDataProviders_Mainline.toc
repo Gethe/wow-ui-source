@@ -50,3 +50,5 @@ DragonridingRaceDataProvider.xml
 DelveEntranceDataProvider.xml
 SuperTrackWaypointDataProvider.lua
 SuperTrackWaypointDataProvider.xml
+NeighborhoodMapDataProvider.xml
+NeighborhoodMapDataProvider.lua

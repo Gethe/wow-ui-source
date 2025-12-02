@@ -59,14 +59,15 @@ local ContentTrackingTypes =
 		{
 			Name = "ContentTrackingType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Appearance", Type = "ContentTrackingType", EnumValue = 0 },
 				{ Name = "Mount", Type = "ContentTrackingType", EnumValue = 1 },
 				{ Name = "Achievement", Type = "ContentTrackingType", EnumValue = 2 },
+				{ Name = "Decor", Type = "ContentTrackingType", EnumValue = 3 },
 			},
 		},
 		{

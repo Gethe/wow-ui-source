@@ -235,7 +235,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local searchResultID, newStatus, oldStatus, kstringGroupName = ...;
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
-			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 
 		if IsDeclined(newStatus) then
@@ -2046,7 +2046,7 @@ function LFGListApplicantMember_OnMouseDown(self)
 		rootDescription:CreateTitle(name or "");
 
 		local whisperButton = rootDescription:CreateButton(WHISPER, function()
-			ChatFrame_SendTell(name);
+			ChatFrameUtil.SendTell(name);
 		end);
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_PLAYER, function()
@@ -3250,7 +3250,7 @@ function LFGListSearchEntry_CreateContextMenu(self)
 		rootDescription:CreateTitle(searchResultInfo.name);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 
 		if not searchResultInfo.leaderName then
@@ -4280,7 +4280,8 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			if memberInfo.isLeaver then
 				leaverString = " "..CreateAtlasMarkup("groupfinder-icon-leaver", 12, 12, 0, 0);
 			end
-			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
+			local specName = memberInfo.specLocalized or "";
+			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, specName)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));

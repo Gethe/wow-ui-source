@@ -102,6 +102,11 @@ function CharacterSelectUIMixin:OnLoad()
 
 	EventRegistry:RegisterCallback("GlueCollections.OnShow", OnCollectionsShow);
 	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
+
+	GameRulesUtil.RegisterSystemCallback(GenerateFlatClosure(self.RefreshConfig, self));
+
+	-- Initialize a default config state.
+	self:RefreshConfig();
 end
 
 function CharacterSelectUIMixin:OnEvent(event, ...)
@@ -172,8 +177,7 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 			end
 		end
 	elseif event == "ACCOUNT_CVARS_LOADED" then
-		local isExpanded = GetCVarBool("expandWarbandCharacterList");
-		self:ExpandCharacterList(isExpanded);
+		self:ExpandCharacterList(CharacterSelectUtil.ShouldExpandCharacterList());
 	elseif event == "MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME" then
 		local characterID = ...;
 
@@ -240,6 +244,44 @@ function CharacterSelectUIMixin:OnMouseUp(button)
 	if isVisibilityDoubleClick then
 		self:ToggleVisibilityButtonState();
 		self.inVisibilityDoubleClickThreshold = false;
+	end
+end
+
+function CharacterSelectUIMixin:RefreshConfig()
+	local config = {};
+
+	local useSimpleList = C_GameRules.IsGameRuleActive(Enum.GameRule.UseSimpleCharacterSelectList);
+	config[CharacterSelectUtil.ConfigParam.CharacterTooltips] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListSearch] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListGroupCollapse] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListDetails] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListUngroupedSection] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterContext] = not useSimpleList;
+	config[CharacterSelectUtil.ConfigParam.CharacterListFaction] = not C_GameRules.IsGameRuleActive(Enum.GameRule.HideFaction);
+	config[CharacterSelectUtil.ConfigParam.VASTokens] = not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableVas);
+	config[CharacterSelectUtil.ConfigParam.DisableCampsites] = C_GameRules.IsGameRuleActive(Enum.GameRule.DisableCampsites);
+	config[CharacterSelectUtil.ConfigParam.DisableRealmSelection] = C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRealmSelection);
+
+	self.config = config;
+
+	self:UpdateConfigElements();
+	EventRegistry:TriggerEvent("CharacterSelectUI.ConfigRefreshed");
+end
+
+function CharacterSelectUIMixin:GetConfig()
+	return self.config;
+end
+
+function CharacterSelectUIMixin:UpdateConfigElements()
+	local isVASEnabled = self.config[CharacterSelectUtil.ConfigParam.VASTokens];
+	self.VisibilityFramesContainer.VASTokenContainer:SetShown(isVASEnabled);
+
+	if isVASEnabled then
+		self.VisibilityFramesContainer.CharacterList:SetPoint("TOPRIGHT", self.VisibilityFramesContainer.VASTokenContainer, "BOTTOMRIGHT", 10, -2);
+	else
+		-- Anchor the same as the VAS container since it's not visible.
+		self.VisibilityFramesContainer.CharacterList:SetPoint(self.VisibilityFramesContainer.VASTokenContainer:GetPoint(1));
 	end
 end
 
@@ -419,7 +461,7 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 	local characterGuid = GetCharacterGUID(characterID);
 	local headersToRelease = {};
 	for _, header in ipairs(self.headerFrames) do
-		if header.basicCharacterInfo.guid == characterGuid then
+		if not header.basicCharacterInfo or header.basicCharacterInfo.guid == characterGuid then
 			table.insert(headersToRelease, header);
 		end
 	end
@@ -638,17 +680,31 @@ function CharacterSelectHeaderMixin:Initialize(characterID)
 		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
 		self.SelectedBackdrop:SetShown(characterID == selectedCharacterID);
 		local nameFontStyle = characterID == selectedCharacterID and "GlueFontNormalHuge" or "GlueFontNormalLarge";
-		local levelFontStyle = characterID == selectedCharacterID and "GlueFontHighlightLarge" or "GlueFontHighlight";
+		local characterContextFontStyle = characterID == selectedCharacterID and "GlueFontHighlightLarge" or "GlueFontHighlight";
 		self.Name:SetFontObject(nameFontStyle);
-		self.Level:SetFontObject(levelFontStyle);
+		self.CharacterContext:SetFontObject(characterContextFontStyle);
 
 		self.Name:SetText(self.basicCharacterInfo.name);
-		self.Level:SetText(CHARACTER_SELECT_HEADER_INFO:format(self.basicCharacterInfo.experienceLevel));
+
+		self.RPEAvailable:SetShown(IsRPEBoostEligible(characterID));
+
+		local config = CharacterSelectUtil.GetConfig();
+		if not config[CharacterSelectUtil.ConfigParam.CharacterContext] then
+			self.CharacterContext:Hide();
+			self.CharacterContext:SetText("");
+			self.Name:SetPoint("BOTTOM", 0, 12);
+		else
+			self.CharacterContext:Show();
+			self.CharacterContext:SetText(CHARACTER_SELECT_HEADER_INFO:format(self.basicCharacterInfo.experienceLevel));
+			self.Name:SetPoint("BOTTOM", self.CharacterContext, "TOP", 0, 5);
+		end
+
+		self.CharacterContext:SetText();
 
 		local guid = self.basicCharacterInfo.guid;
 		self.TimerunningIcon:SetShown(IsCharacterTimerunning(guid));
 
-		self:SetWidth(math.max(self.Name:GetStringWidth(), self.Level:GetStringWidth()));
+		self:SetWidth(math.max(self.Name:GetStringWidth(), self.CharacterContext:GetStringWidth()));
 	end
 end
 
@@ -658,8 +714,11 @@ function CharacterSelectHeaderMixin:SetTooltipAndShow()
 	end
 
 	GlueTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 5, 0);
-	CharacterSelectUtil.SetTooltipForCharacterInfo(self.basicCharacterInfo, nil);
-	GlueTooltip:Show();
+	if CharacterSelectUtil.SetTooltipForCharacterInfo(self.basicCharacterInfo, nil) then
+		GlueTooltip:Show();
+	else
+		GlueTooltip:Hide();
+	end
 end
 
 

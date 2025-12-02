@@ -63,6 +63,7 @@ HelpTip.ButtonStyle = {
 	Okay = 3,
 	GotIt = 4,
 	Next = 5,
+	Exit = 6,
 };
 
 HelpTip.HideReason = {
@@ -127,6 +128,7 @@ HelpTip.Buttons = {
 	[HelpTip.ButtonStyle.Okay]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = OKAY },
 	[HelpTip.ButtonStyle.GotIt]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_BUTTON_GOT_IT },
 	[HelpTip.ButtonStyle.Next]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = NEXT },
+	[HelpTip.ButtonStyle.Exit]	= { textWidthAdj = 0,	heightAdj = 30,	parentKey = "OkayButton", text = HELP_TIP_EXIT },
 };
 
 HelpTip.verticalPadding	 = 31;
@@ -152,6 +154,10 @@ function HelpTip:SetHelpTipsEnabled(flag, enabled)
 end
 
 function HelpTip:AreHelpTipsEnabled()
+	if Kiosk.IsEnabled() then
+		return false;
+	end
+
 	if GetCVarBool("hideHelptips") then
 		return false;
 	end
@@ -186,11 +192,11 @@ function HelpTip:Show(parent, info, relativeRegion)
 end
 
 function HelpTip:CanShow(info)
-	if Kiosk.IsEnabled() then
+	if not self:AreHelpTipsEnabled() then
 		return false;
 	end
 
-	if not self:AreHelpTipsEnabled() then
+	if self:IsRestricted(info) then
 		return false;
 	end
 
@@ -224,6 +230,24 @@ function HelpTip:CanShow(info)
 	end
 
 	return true;
+end
+
+function HelpTip:IsRestricted(info)
+	if C_PlayerInfo and C_PlayerInfo.IsPlayerInRPE() then
+		-- in RPE block almost all helptips
+		if info.system == "TutorialSoftTargetInteraction" or info.system == "EditMode" then
+			return false;
+		end
+		if info.text == TALENT_MICRO_BUTTON_NO_HERO_SPEC
+		or info.text == TALENT_MICRO_BUTTON_UNSPENT_TALENTS
+		or info.text == NPEV2_TALENTS_STARTER_BUILD
+		or info.text == TUTORIAL_SUPERTRACK_STEP_1 then
+			return false;
+		end
+		return true;
+	end
+
+	return false;
 end
 
 function HelpTip:ForceHideAll()
@@ -355,6 +379,7 @@ function HelpTipTemplateMixin:OnLoad()
 	self.acknowledged = false;
 
 	self.OkayButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:Acknowledge();
 	end);
 

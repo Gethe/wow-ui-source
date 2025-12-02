@@ -11,7 +11,9 @@ function DressUpModelFrameResetButtonMixin:OnClick()
 	local parent = self:GetParent();
 	DressUpFrame_Show(parent, itemModifiedAppearanceIDs, forcePlayerRefresh, parent:GetLastLink())
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
-	parent.SetSelectionPanel:Hide();
+	if parent.SetSelectionPanel then
+		parent.SetSelectionPanel:Hide();
+	end
 end
 
 --------------------------------------------------
@@ -42,8 +44,8 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 
 		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
 			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
-			if not ChatEdit_InsertLink(hyperlink) then
-				ChatFrame_OpenChat(hyperlink);
+			if not ChatFrameUtil.InsertLink(hyperlink) then
+				ChatFrameUtil.OpenChat(hyperlink);
 			end
 		end);
 
@@ -54,11 +56,11 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 		end);
 	end);
 
-	ChatEdit_RegisterForStickyFocus(self);
+	ChatFrameUtil.RegisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnHide()
-	ChatEdit_UnregisterForStickyFocus(self);
+	ChatFrameUtil.UnregisterForStickyFocus(self);
 end
 
 function DressUpModelFrameLinkButtonMixin:OnClick()
@@ -138,7 +140,9 @@ function DressUpModelFrameBaseMixin:SetMode(mode)
 			self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
 		end
 
-		self.SetSelectionPanel:SetShown(inPlayerMode and self.SetSelectionPanel.setID);
+		if self.SetSelectionPanel then
+			self.SetSelectionPanel:SetShown(inPlayerMode and self.SetSelectionPanel.setID);
+		end
 	end
 end
 

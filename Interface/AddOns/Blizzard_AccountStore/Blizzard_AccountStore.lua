@@ -1,4 +1,9 @@
 
+local STORE_FRONT_TO_TITLE = {
+	[Constants.AccountStoreConsts.WowhackStoreFrontID] = WOWHACK_ACCOUNT_STORE_TITLE,
+	[Constants.AccountStoreConsts.PlunderstormStoreFrontID] = PLUNDERSTORM_PLUNDER_STORE_TITLE,
+};
+
 local function LeaveFullscreenMode()
 	AccountStoreFrame:SetFullscreenMode(false);
 	AccountStoreUtil.SetAccountStoreShown(false);
@@ -11,8 +16,6 @@ end
 AccountStoreMixin = {};
 
 function AccountStoreMixin:OnLoad()
-	self:SetTitle(PLUNDERSTORM_PLUNDER_STORE_TITLE);
-
 	self:SetPortraitToAsset("Interface\\Icons\\UI_PlunderCoins");
 
 	if UIPanelWindows then
@@ -29,6 +32,8 @@ function AccountStoreMixin:OnHide()
 	PlaySound(SOUNDKIT.ACCOUNT_STORE_CLOSE);
 	EventRegistry:TriggerEvent("AccountStore.ShownState", false);
 
+	AccountStoreUtil.CloseStaticPopups();
+
 	if self.inFullscreenMode then
 		LeaveFullscreenMode();
 	end
@@ -36,6 +41,9 @@ end
 
 function AccountStoreMixin:SetStoreFrontID(storeFrontID)
 	self.storeFrontID = storeFrontID;
+
+	self:SetTitle(STORE_FRONT_TO_TITLE[storeFrontID] or "");
+
 	EventRegistry:TriggerEvent("AccountStore.StoreFrontSet", storeFrontID);
 end
 

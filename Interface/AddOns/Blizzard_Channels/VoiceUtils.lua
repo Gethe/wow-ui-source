@@ -22,9 +22,9 @@ local function GetVoiceChannelNotificationColor(channel)
 	if channel then
 		local chatInfo = Voice_GetChatInfoForChannelType(channel);
 		if chatInfo then
-			return Chat_GetChannelColor(chatInfo);
+			return ChatFrameUtil.GetChannelColor(chatInfo);
 		elseif channel.channelType == Enum.ChatChannelType.Communities then
-			return Chat_GetCommunitiesChannelColor(channel.clubId, channel.streamId);
+			return ChatFrameUtil.GetCommunitiesChannelColor(channel.clubId, channel.streamId);
 		end
 	end
 

@@ -215,6 +215,15 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetAutoDeclineNeighborhoodInvites",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAvoidance",
 			Type = "Function",
 
@@ -1390,6 +1399,15 @@ local PlayerScript =
 		},
 		{
 			Name = "SetAutoDeclineGuildInvites",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "allow", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetAutoDeclineNeighborhoodInvites",
 			Type = "Function",
 
 			Arguments =

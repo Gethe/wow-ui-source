@@ -39,6 +39,20 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetAtlasExists",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "atlas", Type = "textureAtlas", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "atlasExists", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAtlasID",
 			Type = "Function",
 

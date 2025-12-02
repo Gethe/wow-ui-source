@@ -1,0 +1,18 @@
+## Title: Blizzard_Minimap
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip, Blizzard_QueueStatusFrame
+## AllowLoad: game
+## AllowLoadGameType: vanilla, tbc
+
+Classic\Minimap.lua
+Classic\Minimap.xml
+
+Classic\MinimapTracking_Simple.lua		[AllowLoadGameType vanilla]
+Classic\MinimapTracking_Simple.xml		[AllowLoadGameType vanilla]
+Classic\MinimapTracking_Dropdown.lua	[AllowLoadGameType tbc]
+Classic\MinimapTracking_Dropdown.xml	[AllowLoadGameType tbc]
+
+Classic\GameTime_NoCalendar.lua
+Classic\GameTime_Shared.lua
+Classic\GameTime_NoCalendar.xml

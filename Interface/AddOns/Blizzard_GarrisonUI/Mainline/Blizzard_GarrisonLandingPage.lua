@@ -833,7 +833,7 @@ function GarrisonLandingPageReportMission_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local missionLink = C_Garrison.GetMissionLink(item.missionID);
 		if (missionLink) then
-			ChatEdit_InsertLink(missionLink);
+			ChatFrameUtil.InsertLink(missionLink);
 			return;
 		end
 	elseif ( C_Garrison.CastSpellOnMission(item.missionID) ) then

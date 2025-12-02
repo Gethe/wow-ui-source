@@ -260,6 +260,19 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "IsPreferringModelCollisionBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "preferringCollisionBounds", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsShown",
 			Type = "Function",
 
@@ -347,6 +360,18 @@ local FrameAPIModelSceneFrameActorBase =
 			Arguments =
 			{
 				{ Name = "strength", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetGradientMask",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "gradientIndex0", Type = "number", Nilable = false },
+				{ Name = "gradientIndex1", Type = "number", Nilable = false },
+				{ Name = "gradientIndex2", Type = "number", Nilable = false },
+				{ Name = "gradientIndex3", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -460,6 +485,16 @@ local FrameAPIModelSceneFrameActorBase =
 				{ Name = "positionX", Type = "number", Nilable = false },
 				{ Name = "positionY", Type = "number", Nilable = false },
 				{ Name = "positionZ", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPreferModelCollisionBounds",
+			Type = "Function",
+			Documentation = { "If true, will try to use the collision bounds of models for sizing and centering. Will fall back to default model bounds if set to False, or if collision bounds are unavailable." },
+
+			Arguments =
+			{
+				{ Name = "preferCollisionBounds", Type = "bool", Nilable = false },
 			},
 		},
 		{

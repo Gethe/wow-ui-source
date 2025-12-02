@@ -8,6 +8,27 @@ end
 
 AccountStoreUtil = {};
 
+StaticPopupDialogs["ACCOUNT_STORE_TRANSACTION_ERROR"] = {
+	text = NORMAL_FONT_COLOR:WrapTextInColorCode(ACCOUNT_STORE_INCOMPLETE_TRANSACTION),
+	button1 = OKAY,
+	showAlert = true,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
+}
+
+local ACCOUNT_STORE_STATIC_POPUPS = {
+	"ACCOUNT_STORE_TRANSACTION_ERROR",
+};
+
+function AccountStoreUtil.CloseStaticPopups()
+	for i, popup in ipairs(ACCOUNT_STORE_STATIC_POPUPS) do
+		if StaticPopup_Visible(popup) then
+			StaticPopup_Hide(popup);
+		end
+	end
+end
+
 function AccountStoreUtil.SetAccountStoreShown(shown)
 	if AccountStoreFrame:IsShown() == shown then
 		return;
@@ -34,6 +55,10 @@ end
 
 function AccountStoreUtil.FormatCurrencyDisplay(currencyAmount, accountStoreCurrencyID)
 	local currencyInfo = C_AccountStore.GetCurrencyInfo(accountStoreCurrencyID);
+	if not currencyInfo.icon then
+		return "";
+	end
+
 	return BreakUpLargeNumbers(currencyAmount) .. " " .. CreateSimpleTextureMarkup(currencyInfo.icon, 12, 12);
 end
 
@@ -47,7 +72,7 @@ function AccountStoreUtil.IsCurrencyAtWarningThreshold(accountStoreCurrencyID)
 end
 
 function AccountStoreUtil.FormatCurrencyDisplayWithWarning(accountStoreCurrencyID, currencyAmount, hideIcon)
-	local currencyInfo = C_AccountStore.GetCurrencyInfo(accountStoreCurrencyID);
+	local currencyInfo = accountStoreCurrencyID and C_AccountStore.GetCurrencyInfo(accountStoreCurrencyID) or nil;
 	if not currencyInfo then
 		return "";
 	end

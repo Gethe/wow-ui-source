@@ -1,9 +1,6 @@
 -- Prevent the DebugBarManager from loading into the secure environment and responding
 -- to DISPLAY_SIZE_CHANGED events, calling UpdateUIParentPosition and giving UIParent
--- improper anchoring via GetTotalHeight.
-if not IsInGlobalEnvironment() then
-	return;
-end
+-- improper anchoring via GetTotalHeight: this is done in the toc file
 
 DebugBarManager = { };
 

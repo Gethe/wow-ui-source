@@ -87,7 +87,7 @@ function ProfessionsCustomerOrdersRecipeListElementMixin:OnClick(button)
 		if IsModifiedClick("DRESSUP") then
 			UseItemLink(DressUpLink);
 		elseif IsModifiedClick("CHATLINK") then
-			UseItemLink(ChatEdit_InsertLink);
+			UseItemLink(ChatFrameUtil.InsertLink);
 		else
 			local unusableBOP = self.option.bindOnPickup and not self.option.canUse;
 			EventRegistry:TriggerEvent("ProfessionsCustomerOrders.RecipeSelected", self.option.itemID, self.option.spellID, self.option.skillLineAbilityID, unusableBOP);

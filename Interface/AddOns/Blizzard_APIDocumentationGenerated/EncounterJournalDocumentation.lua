@@ -218,6 +218,10 @@ local EncounterJournal =
 				{ Name = "tabIdx", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "StartArathiRPE",
+			Type = "Function",
+		},
 	},
 
 	Events =

@@ -981,6 +981,16 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "JoinBattlefield",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "battlemasterListId", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "JoinBrawl",
 			Type = "Function",
 

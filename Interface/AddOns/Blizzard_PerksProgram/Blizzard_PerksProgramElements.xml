@@ -537,35 +537,6 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="PerksProgramProductHeaderTemplate" virtual="true">
-		<Size x="484" y="38"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontNormalLarge">
-					<Color color="LIGHTGRAY_FONT_COLOR"/>
-					<Size x="0" y="38"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="BarTexture" atlas="perks-divider" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-				<MaskTexture parentKey="BarMask" atlas="TransparentSquareMask" vWrapMode="CLAMPTOBLACK" hWrapMode="CLAMPTOBLACK">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-5" y="0"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="5" y="0"/>
-					</Anchors>
-					<MaskedTextures>
-						<MaskedTexture childKey="BarTexture"/>
-					</MaskedTextures>
-				</MaskTexture>
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Button name="PerksProgramButtonTemplate" inherits="SharedButtonLargeTemplate" mixin="PerksProgramButtonMixin" virtual="true" >
 		<Size x="180" y="46"/>
 		<Scripts>

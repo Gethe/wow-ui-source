@@ -84,9 +84,9 @@ end
 -- Screen Tutorials
 -- Center top screen box that can't be moved
 -- Frame is automatically closed when tutorial is shutdown
-function Class_TutorialBase:ShowScreenTutorial(content, druation, position, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:ShowScreenTutorial(content, duration, position)
 	self:DebugLog("ShowScreenTutorial");
-	self._screenTutorial = TutorialMainFrame_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialMainFrame_Frame:ShowTutorial(content, duration, position);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -108,14 +108,24 @@ function Class_TutorialBase:HideMouseKeyboardTutorial()
 	self._screenTutorial = TutorialKeyboardMouseFrame_Frame:HideTutorial();
 end
 
-function Class_TutorialBase:ShowSingleKeyTutorial(content, druation, position, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:ShowSingleKeyTutorial(content, duration, position)
 	self:DebugLog("ShowSingleKeyTutorial");
-	self._screenTutorial = TutorialSingleKey_Frame:ShowTutorial(content, druation, position, showMovieName, loopMovie, resolution);
+	self._screenTutorial = TutorialSingleKey_Frame:ShowTutorial(content, duration, position);
 end
 
 function Class_TutorialBase:HideSingleKeyTutorial()
 	self:DebugLog("HideSingleKeyTutorial");
 	self._screenTutorial = TutorialSingleKey_Frame:HideTutorial();
+end
+
+function Class_TutorialBase:ShowDoubleKeyTutorial(content, duration, position)
+	self:DebugLog("ShowDoubleKeyTutorial");
+	self._screenTutorial = TutorialDoubleKey_Frame:ShowTutorial(content, duration, position);
+end
+
+function Class_TutorialBase:HideDoubleKeyTutorial()
+	self:DebugLog("HideDoubleKeyTutorial");
+	self._screenTutorial = TutorialDoubleKey_Frame:HideTutorial();
 end
 
 function Class_TutorialBase:ShowWalkTutorial()
@@ -133,18 +143,18 @@ end
 -- Arrow frame that points at something on screen
 -- Frame is automatically closed when tutorial is shutdown
 -- This function clears any existing pointers before adding the new one
-function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("ShowPointerTutorial");
 
 	self:HidePointerTutorials();
-	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);
+	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Adds a pointer tutorial ontop of existing pointers
-function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution)
+function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, showMovieName, loopMovie, resolution);
+	local pointer = TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;

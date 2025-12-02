@@ -1,0 +1,210 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HousingTopBannerFrame" mixin="HousingTopBannerMixin" parent="UIParent" hidden="true">
+		<Anchors>
+			<Anchor point="TOP" y="-160"/>
+		</Anchors>
+		<Size x="128" y="128"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Rays" alpha="0.75" alphaMode="ADD" atlas="housing-celebrationtoast-outerglowrays">
+					<Size x="270" y="265"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="RaysMask" atlas="housing-celebrationtoast-rays-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="284" y="284"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-6"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Rays"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="1">
+				<Texture parentKey="Back" atlas="housing-celebrationtoast-back">
+					<Size x="383" y="108"/>
+					<Anchors>
+						<Anchor point="CENTER" x="8" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BackGlow" atlas="housing-celebrationtoast-outerglow">
+					<Size x="304" y="188"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-3" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="3">
+				<Texture parentKey="top1" atlas="housing-celebrationtoast-leaf-top01">
+					<Size x="14" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-60" y="55"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="top5" atlas="housing-celebrationtoast-leaf-top05">
+					<Size x="13" y="7"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="70" y="55"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="top4" atlas="housing-celebrationtoast-leaf-top04">
+					<Size x="10" y="9"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="CENTER" x="64" y="53"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="Glow" atlas="housing-celebrationtoast-bottomglow">
+					<Size x="363" y="142"/>
+					<Anchors>
+						<Anchor point="CENTER" x="2" y="17"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Flipbook" alpha="1" alphaMode="ADD" atlas="housing-celebrationtoast-sparkledust-flipbook">
+					<Size x="259" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-31" y="-27"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Frame" atlas="housing-celebrationtoast-frame">
+					<Size x="423" y="248"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Title" inherits="QuestFont_Super_Huge" alpha="1">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Subtitle" inherits="GameFontHighlightLarge" alpha="1">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="0" y="-7"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="Sheen" atlas="housing-item-toast-framesheen" scale="1.8">
+					<Size x="125" y="75"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-150" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="Mask" alphaMode="ADD" atlas="housing-celebrationtoast-sheen-mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="512" y="512"/>
+					<Anchors>
+						<Anchor point="CENTER" x="11" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Sheen"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="top3" atlas="housing-celebrationtoast-leaf-top03">
+					<Size x="11" y="10"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="CENTER" x="10" y="53"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="top2" atlas="housing-celebrationtoast-leaf-top02">
+					<Size x="10" y="10"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="CENTER" x="-49" y="53"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="bottom1" atlas="housing-celebrationtoast-leaf-bottom01">
+					<Size x="17" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativePoint="CENTER" x="-60" y="-58"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="bottom2" atlas="housing-celebrationtoast-leaf-bottom02">
+					<Size x="10" y="13"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="CENTER" x="-9" y="-56"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="bottom3" atlas="housing-celebrationtoast-leaf-bottom03">
+					<Size x="8" y="10"/>
+					<Anchors>
+						<Anchor point="TOP" relativePoint="CENTER" x="33" y="-56"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="bottom4" atlas="housing-celebrationtoast-leaf-bottom04">
+					<Size x="15" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="CENTER" x="68" y="-57"/>
+					</Anchors>
+				</Texture>
+			</Layer>			
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="RaysAndGlow" looping="REPEAT">
+				<Rotation childKey="Rays" duration="18" order="1" degrees="365">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Scale childKey="Glow" duration="2" order="1" endDelay="16" smoothing="OUT" fromScaleX="0.35" fromScaleY="0.35" toScaleX="1" toScaleY="0.6">
+					<Origin point="BOTTOM"/>
+				</Scale>
+				<Alpha childKey="Glow" duration="2" order="1" smoothing="OUT" fromAlpha="0" toAlpha="1"/>
+				<FlipBook childKey="Flipbook" duration="2" order="1" flipBookRows="25" flipBookColumns="2" flipBookFrames="50" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="LeavesFlutter" looping="BOUNCE" setToFinalAlpha="true">
+				<Rotation childKey="top3" duration="1" order="1" smoothing="IN_OUT" degrees="5">
+					<Origin point="TOPLEFT"/>
+				</Rotation>
+				<Rotation childKey="top2" duration="1" order="1" degrees="7">
+					<Origin point="TOP"/>
+				</Rotation>
+				<Rotation childKey="bottom1" duration="1" order="1" smoothing="IN_OUT" degrees="6">
+					<Origin point="BOTTOMRIGHT"/>
+				</Rotation>
+				<Rotation childKey="bottom2" duration="1" order="1" smoothing="IN_OUT" degrees="7">
+					<Origin point="TOPRIGHT"/>
+				</Rotation>
+				<Rotation childKey="bottom3" duration="1" order="1" smoothing="IN_OUT" degrees="-5">
+					<Origin point="TOP"/>
+				</Rotation>
+				<Rotation childKey="bottom4" duration="1" order="1" smoothing="IN_OUT" degrees="-6">
+					<Origin point="BOTTOMLEFT"/>
+				</Rotation>
+				<Rotation childKey="top1" duration="1" order="1" smoothing="IN_OUT" degrees="-6">
+					<Origin point="BOTTOMRIGHT"/>
+				</Rotation>
+				<Rotation childKey="top5" duration="1" order="1" smoothing="IN_OUT" degrees="6">
+					<Origin point="BOTTOMLEFT"/>
+				</Rotation>
+				<Rotation childKey="top4" duration="1" order="1" smoothing="IN_OUT" degrees="-4">
+					<Origin point="TOPRIGHT"/>
+				</Rotation>
+			</AnimationGroup>
+			<AnimationGroup parentKey="SheenShine" setToFinalAlpha="true">
+				<Translation childKey="Sheen" duration="2" order="1" startDelay="1" endDelay="16" smoothing="OUT" offsetX="300" offsetY="0"/>
+				<Alpha childKey="Sheen" duration="1" order="1" startDelay="2" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="PopinAnim" setToFinalAlpha="true">
+				<Alpha startDelay="0" smoothing="IN" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.33" order="1" smoothing="OUT" fromAlpha="0" toAlpha="0"/>
+				<Scale duration="0.35" order="1" startDelay="0.15" smoothing="OUT" fromScaleX="0.2" fromScaleY="1" toScaleX="1" toScaleY="1"/>
+				<Alpha childKey="Title" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Subtitle" startDelay="0.17" duration="0.33" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Scale startDelay="5" smoothing="IN" duration="0.35" order="1" fromScaleX="1" fromScaleY="1" toScaleX="0.55" toScaleY="0.55"/>
+				<Alpha startDelay="5" smoothing="IN" duration="0.35" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

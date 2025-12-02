@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_TutorialMainFrame.lua" />
 
-	<Frame name="TutorialMainFrame_Frame" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="UIParent" alpha="0">
+	<Frame name="TutorialMainFrameTemplate" mixin="TutorialMainFrameMixin" inherits="ResizeLayoutFrame" hidden="true" parent="UIParent" alpha="0" virtual="true">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
 			<KeyValue key="heightPadding" value="64" type="number"/>
@@ -55,6 +55,8 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="TutorialMainFrame_Frame" inherits="TutorialMainFrameTemplate"/>
+
 	<Frame name="TutorialSingleKey_Frame" mixin="TutorialSingleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0">
 		<KeyValues>
 			<KeyValue key="widthPadding" value="180" type="number"/>
@@ -77,6 +79,55 @@
 				</Frames>
 				<Layers>
 					<Layer level="OVERLAY">
+						<FontString parentKey="Text" text="" inherits="GameFontNormalHuge2">
+							<Color color="TUTORIAL_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="RIGHT" x="20" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="TutorialDoubleKey_Frame" mixin="TutorialDoubleKeyMixin" inherits="ResizeLayoutFrame" parent="UIParent" hidden="true" alpha="0">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="180" type="number"/>
+			<KeyValue key="heightPadding" value="64" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" y="232" />
+		</Anchors>
+		<Frames>
+			<Frame parentKey="ContainerFrame" inherits="ResizeLayoutFrame" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="CENTER" />
+				</Anchors>
+				<Frames>
+					<Frame parentKey="KeyBind1" inherits="KeyBindingTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="0"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="KeyBind2" inherits="KeyBindingTemplate">
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.KeyBind1" relativePoint="RIGHT" x="16" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Separator" inherits="GameFontNormalHuge2">
+							<Color color="TUTORIAL_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.KeyBind1" relativePoint="RIGHT" x="0" y="0"/>
+								<Anchor point="RIGHT" relativeKey="$parent.KeyBind2" relativePoint="LEFT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
 						<FontString parentKey="Text" text="" inherits="GameFontNormalHuge2">
 							<Color color="TUTORIAL_FONT_COLOR"/>
 							<Anchors>

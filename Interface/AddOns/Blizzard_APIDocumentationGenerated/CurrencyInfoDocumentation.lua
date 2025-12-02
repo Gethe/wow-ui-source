@@ -354,6 +354,21 @@ local CurrencyInfo =
 			},
 		},
 		{
+			Name = "GetPlayerCurrencyCategoryInfo",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "categoryID", Type = "number", Nilable = false },
+				{ Name = "includeAccountWide", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "PlayerCurrencyCategoryInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWarResourcesCurrencyID",
 			Type = "Function",
 
@@ -668,6 +683,16 @@ local CurrencyInfo =
 				{ Name = "quantityTransferred", Type = "number", Nilable = false },
 				{ Name = "totalQuantityConsumed", Type = "number", Nilable = false },
 				{ Name = "timestamp", Type = "time_t", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerCurrencyCategoryInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "categoryName", Type = "cstring", Nilable = false },
+				{ Name = "currencyTypes", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "childCategories", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 	},

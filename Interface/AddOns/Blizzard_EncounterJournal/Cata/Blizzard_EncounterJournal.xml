@@ -367,7 +367,7 @@
 				self.showingTooltip = false;
 			</OnLeave>
 			<OnClick>
-				if not ChatEdit_TryInsertChatLink(self.link) then
+				if not ChatFrameUtil.TryInsertChatLink(self.link) then
 					EncounterJournal_DisplayInstance(self.instanceID);
 					PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 				end

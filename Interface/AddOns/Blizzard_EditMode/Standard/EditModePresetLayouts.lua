@@ -1,6 +1,9 @@
 MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 45;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -5;
+RIGHT_ACTION_BAR_DEFAULT_PADDING_X = 0;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
+ACTION_BARS_SKIP_AUTOMATIC_POSITIONING = false;
+RIGHT_CONTAINER_OFFSET_Y = -260;
 
 EDIT_MODE_MODERN_SYSTEM_MAP =
 {
@@ -447,7 +450,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
 			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
 			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
-			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 70,
 		},
 		anchorInfo = {
 			point = "BOTTOMLEFT",

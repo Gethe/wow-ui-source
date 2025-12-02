@@ -1,0 +1,13 @@
+## Title: Blizzard_CatalogShopRefundFlow
+## AllowLoad: Both
+## RequiredDep: Blizzard_SharedXML, Blizzard_CatalogShopSharedUtil, Blizzard_CatalogShopSharedTemplates
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_GlueDialogs, Blizzard_Shared_SimpleCheckout
+## UseSecureEnvironment: 1
+
+Blizzard_CatalogShopRefundFlow_Elements.lua
+Blizzard_CatalogShopRefundFlow.lua
+
+Blizzard_CatalogShopRefundFlow_Elements.xml
+Blizzard_CatalogShopRefundFlow.xml
+
+Blizzard_CatalogShopRefundFlow_Inbound.lua

@@ -1,0 +1,438 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="HousingCornerstoneFrame" mixin="HousingCornerstoneFrameMixin" inherits="DefaultPanelTemplate, TabSystemOwnerTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HouseNameText" inherits="Game15Font_Shadow" text="House Name">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+				<KeyValues>
+					<KeyValue key="minTabWidth" value="100" type="number"/>
+					<KeyValue key="maxTabWidth" value="150" type="number"/>
+					<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT" x="22" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
+			<Frame parentKey="InfoFrame" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="Info">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="DropboxFrame" frameLevel="100" setAllPoints="true" hidden="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="Dropbox">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCornerstonePurchaseFrame" mixin="HousingCornerstonePurchaseFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="340" y="340"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="housing-basic-panel-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-85"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Footer" atlas="housing-basic-panel-footer">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="1" y="40"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PlotText" inherits="Game22Font" text="plot # here">
+					<Anchors>
+						<Anchor point="TOP" y="-30"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_NEIGHBORHOOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="15" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="200"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodLocationLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_NEIGHBORHOOD_LOCATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="BOTTOMLEFT" x="10" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodLocationText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood map here">
+					<Size x="220"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLocationLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodTypeLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_NEIGHBORHOOD_TYPE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodLocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodTypeText" inherits="Game13FontShadow" text="neighborhood type here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodTypeLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodOwnerLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_OWNED_BY">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NeighborhoodTypeLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodOwnerText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood owner here">
+					<Size x="210"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodOwnerLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				
+				<FontString parentKey="ErrorText" inherits="Game13FontShadow" text="">
+					<Size x="300"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="94"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ForSaleSign">
+				<Size x="150" y="25"/>
+				<Anchors>
+					<Anchor point="TOP" y="11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="WoodSign" atlas="housing-woodsign" setAllPoints="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="ForSaleText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_FORSALE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+							<Color r="1.0" g="0.82" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PriceMoneyFrame" name="HousingCornerstonePriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.Header" x="6" y="8"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="BuyButton" inherits="UIPanelButtonTemplate" text="HOUSING_CORNERSTONE_BUY" motionScriptsWhileDisabled="true">
+				<Size x="116" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="60"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalLarge"/>
+				<HighlightFont style="GameFontNormalLarge"/>
+				<DisabledFont style="GameFontHighlightMedium"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="MoneyFrameTemplate" enableMouse="false">
+				<Anchors>
+					<Anchor point="BOTTOM" y="8"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="MoneyFrameBackdrop" inherits="TooltipBackdropTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MoneyFrame"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.MoneyFrame"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCornerstoneVisitorTemplate" virtual="true">
+		<Size x="340" y="240"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="housing-cornerstone-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="0" y="-55"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HouseNameText" inherits="Game22Font" text="House Name">
+					<Size x="300" y="22"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Header" x="0" y="6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OwnerLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_OWNER">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-70"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="OwnerText" inherits="Game13FontShadow" text="owner name here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.OwnerLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="LocationLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_LOCATION">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.OwnerLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PlotText" inherits="Game13FontShadow" text="plot # here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSING_CORNERSTONE_NEIGHBORHOOD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.LocationLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="neighborhood name here">
+					<Size x="180"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-3" y="-3"/>
+				</Anchors>
+			</Button>
+			<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CloseButton" relativePoint="LEFT" x="-2"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingCornerstoneVisitorFrame" mixin="HousingCornerstoneVisitorFrameMixin" inherits="HousingCornerstoneVisitorTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="340" y="240"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingCornerstoneHouseInfoFrame" mixin="HousingCornerstoneHouseInfoFrameMixin" inherits="HousingCornerstoneVisitorTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="340" y="240"/>
+		<Frames>
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true">
+				<Size x="80" y="80"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="MoveHouseConfirmationDialog" mixin="MoveHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="400" y="230"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_MOVE_DIALOG">
+					<Size x="350"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HouseToMoveLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_HOUSE_TO_MOVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOMLEFT" y="-20"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="HouseToMoveText" inherits="Game15Font_Shadow" text="house name here">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToMoveLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PriceLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_PRICE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToMoveLabel" relativePoint="BOTTOMLEFT" y="-30"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PriceMoneyFrameOriginal" inherits="SmallMoneyFrameTemplate" frameLevel="0" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PriceLabel" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="OriginalStrikethrough" frameLevel="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PriceMoneyFrameOriginal"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PriceMoneyFrameOriginal"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PriceStrikethrough" atlas="pricestrikethrough-gray" useAtlasSize="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PriceMoneyFrameDiscount" inherits="SmallMoneyFrameTemplate" hidden="false">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PriceMoneyFrameOriginal" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="ImportHouseConfirmationDialog" mixin="ImportHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="400" y="200"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_IMPORT_DIALOG">
+					<Size x="350"/>
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HouseToImportLabel" inherits="Game15Font_Shadow" text="HOUSING_CORNERSTONE_HOUSE_TO_IMPORT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOMLEFT" y="-20"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="HouseToImportText" inherits="Game15Font_Shadow" text="house name here">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HouseToImportLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+				<Size x="152" y="28"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

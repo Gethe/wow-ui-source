@@ -9,7 +9,6 @@ NewDefinitionsFramework.lua
 Mainline\NewDefinitions.lua
 Blizzard_SettingsRegistrar.lua
 Blizzard_Settings.lua
-Mainline\Blizzard_Settings.lua
 Blizzard_Category.lua
 Blizzard_CategoryList.xml
 Blizzard_SettingsList.xml

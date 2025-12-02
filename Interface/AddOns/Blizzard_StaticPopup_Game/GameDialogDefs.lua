@@ -14,6 +14,27 @@ local function SetupLockOnDeclineButtonAndEscape(dialog, declineTimeLeft)
 	dialog.hideOnEscape = false;
 end
 
+StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
+	text = CONFIRM_XP_LOSS_NO_SICKNESS_NO_DURABILITY,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(dialog, data)
+		C_PlayerInteractionManager.ConfirmationInteraction(Enum.PlayerInteractionType.SpiritHealer);
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
+	OnUpdate = function(dialog, elapsed)
+		if ( not C_PlayerInteractionManager.IsValidNPCInteraction(Enum.PlayerInteractionType.SpiritHealer) ) then
+			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+			dialog:Hide();
+		end
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	showAlert = 1,
+	hideOnEscape = 1
+};
+
 StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	text = "",		-- supplied dynamically.
 	button1 = "",	-- supplied dynamically.
@@ -41,6 +62,12 @@ StaticPopupDialogs["GENERIC_CONFIRMATION"] = {
 	multiple = 1,
 	whileDead = 1,
 	wide = 1, -- Always wide to accomodate the alert icon if it is present.
+};
+
+StaticPopupDialogs["OKAY"] = {
+	text = "",
+	button1 = OKAY,
+	button2 = nil,
 };
 
 StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
@@ -743,7 +770,7 @@ StaticPopupDialogs["RENAME_GUILD"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -869,7 +896,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 	OnAccept = function(dialog, data)
 		local channel = dialog:GetEditBox():GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -877,7 +904,7 @@ StaticPopupDialogs["JOIN_CHANNEL"] = {
 		local dialog = editBox:GetParent();
 		local channel = editBox:GetText();
 		JoinPermanentChannel(channel, nil, FCF_GetCurrentChatFrameID(), 1);
-		ChatFrame_AddChannel(FCF_GetCurrentChatFrame(), channel);
+		FCF_GetCurrentChatFrame():AddChannel(channel);
 		editBox:SetText("");
 		dialog:Hide();
 	end,
@@ -895,7 +922,7 @@ StaticPopupDialogs["CHANNEL_INVITE"] = {
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -922,7 +949,7 @@ StaticPopupDialogs["CHANNEL_PASSWORD"] = {
 	maxLetters = 31,
 	whileDead = 1,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	OnAccept = function(dialog, data)
@@ -1484,7 +1511,7 @@ StaticPopupDialogs["ADD_FRIEND"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1514,7 +1541,7 @@ StaticPopupDialogs["SET_FRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1544,7 +1571,7 @@ StaticPopupDialogs["SET_BNFRIENDNOTE"] = {
 	end,
 	--OnShow OVERRIDEN
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1612,7 +1639,7 @@ StaticPopupDialogs["SET_COMMUNITY_MEMBER_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1706,7 +1733,7 @@ StaticPopupDialogs["ADD_IGNORE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1758,7 +1785,7 @@ StaticPopupDialogs["SET_GUILDPLAYERNOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1789,7 +1816,7 @@ StaticPopupDialogs["SET_GUILDOFFICERNOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -1820,7 +1847,7 @@ StaticPopupDialogs["SET_GUILD_COMMUNITIY_NOTE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -2382,7 +2409,7 @@ StaticPopupDialogs["GOSSIP_ENTER_CODE"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
@@ -3115,3 +3142,41 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	timeout = 0,
 	exclusive = 1,
 };
+
+StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {
+	text = GROUP_FINDER_DELIST_WARNING_TITLE,
+	GetExpirationSubText = function(dialog, data, timeleft)
+		local dialogInfo = dialog.dialogInfo;
+		return dialogInfo.subText:format(SecondsToTime(timeleft));
+	end,
+	subText = GROUP_FINDER_DELIST_WARNING_SUBTEXT,
+	button1 = LIST_MY_GROUP,
+	button2 = GROUP_FINDER_DESLIST_WARNING_EDIT_LISTING,
+	button3 = UNLIST_MY_GROUP,
+
+	OnAccept = function(dialog, data)
+		dialog.delistOnHide = false;
+	end,
+
+	OnCancel = function(dialog, data, reason)
+		if(reason ~= "timeout") then
+			LFGListUtil_OpenBestWindow(true);
+			dialog.delistOnHide = false;
+		end
+	end,
+
+	OnHide = function(dialog, data)
+		if  (C_LFGList.HasActiveEntryInfo() and dialog.delistOnHide) then
+			C_LFGList.RemoveListing();
+		end
+	end,
+
+	OnShow = function(dialog, data)
+		dialog:SetText(GROUP_FINDER_DELIST_WARNING_TITLE:format(data.listingTitle));
+		dialog.timeleft = data.delistTime;
+		dialog.delistOnHide = true;
+	end,
+
+	whileDead = 1,
+	showAlert = 1,
+}

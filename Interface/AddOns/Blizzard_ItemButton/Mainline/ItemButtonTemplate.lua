@@ -217,16 +217,16 @@ local function SetItemButtonQuality_Base(button, quality, itemIDOrLink, suppress
 		color = ColorManager.GetColorDataForBagItemQuality(quality);
 	end
 
+	if not suppressOverlays and itemIDOrLink then
+		SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
+	end
+
 	if color then
 		if itemIDOrLink then
 			if C_ItemSocketInfo.IsArtifactRelicItem(itemIDOrLink) then
 				SetItemButtonBorder(button, [[Interface\Artifacts\RelicIconFrame]]);
 			else
 				SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
-			end
-
-			if not suppressOverlays then
-				SetItemButtonOverlay(button, itemIDOrLink, quality, isBound);
 			end
 		else
 			SetItemButtonBorder(button, [[Interface\Common\WhiteIconFrame]]);
@@ -284,6 +284,11 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 		local color = GetButtonOverlayQualityColor(quality);
 		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
 		button.IconOverlay:SetAtlas("delves-curios-icon-border");
+		button.IconOverlay:Show();
+	elseif C_Item.IsDecorItem(itemIDOrLink) then
+		local color = HIGHLIGHT_FONT_COLOR;
+		button.IconOverlay:SetVertexColor(color.r, color.g, color.b);
+		button.IconOverlay:SetAtlas("housing-item-wood-frame_64");
 		button.IconOverlay:Show();
 	else
 		-- The reagent slots contain this button/mixin, however there's a nuance in the button behavior that the overlay needs to be
@@ -369,7 +374,7 @@ function HandleModifiedItemClick(link, itemLocation)
 				return true;
 			end
 		end
-		if ( ChatEdit_InsertLink(link) ) then
+		if ( ChatFrameUtil.InsertLink(link) ) then
 			return true;
 		elseif ( SocialPostFrame and Social_IsShown() ) then
 			Social_InsertLink(link);

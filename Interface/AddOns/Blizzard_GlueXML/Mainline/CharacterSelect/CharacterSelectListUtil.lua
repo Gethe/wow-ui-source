@@ -14,8 +14,16 @@ function CharacterSelectListUtil.CanReorder()
 	if sortByLastActive then
 		return false;
 	end
-	return (CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() == "") and
-	not CharacterSelectUtil.IsUndeleting() and CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
+
+	if CharacterSelectUtil.IsFilteringCharacterList() then
+		return false;
+	end
+
+	if CharacterSelectUtil.IsUndeleting() then
+		return false;
+	end
+
+	return CharacterServicesMaster_AllowCharacterReordering(CharacterServicesMaster);
 end
 
 local function LastActiveTimeComparator(lhs, rhs)
@@ -83,12 +91,15 @@ function CharacterSelectListUtil.CreateCompleteDataProvider()
 			end
 		end
 
-		-- Divider info
-		local dividerData = {
-			isDivider = true,
-			height = CharacterSelectListUtil.DividerHeight
-		};
-		dataProvider:Insert(dividerData);
+		local config = CharacterSelectUtil.GetConfig();
+		if config[CharacterSelectUtil.ConfigParam.CharacterListUngroupedSection] then
+			-- Divider info
+			local dividerData = {
+				isDivider = true,
+				height = CharacterSelectListUtil.DividerHeight
+			};
+			dataProvider:Insert(dividerData);
+		end
 	end
 
 	-- Non-group character info
@@ -120,7 +131,7 @@ function CharacterSelectListUtil.GenerateCharactersDataProvider()
 	local completeDataProvider = CharacterSelectListUtil.CreateCompleteDataProvider();
 
 	-- If we are searching, that takes priority over all other setups.
-	if CharacterSelectCharacterFrame.SearchBox:IsShown() and CharacterSelectCharacterFrame.SearchBox:GetText() ~= "" then
+	if CharacterSelectUtil.IsFilteringCharacterList() then
 		return CharacterSelectCharacterFrame.SearchBox:GenerateFilteredCharacters(completeDataProvider);
 	end
 

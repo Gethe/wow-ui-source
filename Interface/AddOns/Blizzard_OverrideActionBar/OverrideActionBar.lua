@@ -138,7 +138,7 @@ end
 function OverrideActionBarMixin:UpdateMicroButtons()
 	if ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_OVERRIDE then
 		local anchorX, anchorY = self:GetMicroButtonAnchor();
-		OverrideMicroMenuPosition(self, "BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
+		MicroMenu:OverrideMicroMenuPosition(self, "BOTTOMLEFT", self, "BOTTOMLEFT", anchorX, anchorY, true);
 	end
 end
 

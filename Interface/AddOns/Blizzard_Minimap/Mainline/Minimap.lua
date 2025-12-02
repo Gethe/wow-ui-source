@@ -115,6 +115,10 @@ function MinimapZoneTextButtonMixin:OnEvent()
 end
 
 function MinimapZoneTextButtonMixin:OnEnter()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	local pvpType, isSubZonePvP, factionName = C_PvP.GetZonePVPInfo();
 	Minimap_SetTooltip( pvpType, factionName );
@@ -162,7 +166,11 @@ function MinimapMixin:OnMouseWheel(d)
 end
 
 function ToggleMinimap()
-	if(Minimap:IsShown()) then
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.MinimapDisabled) then
+		return;
+	end
+
+	if Minimap:IsShown() then
 		PlaySound(SOUNDKIT.IG_MINIMAP_CLOSE);
 		Minimap:Hide();
 	else
@@ -259,6 +267,8 @@ function MinimapMixin:OnEvent(event, ...)
 				HybridMinimap:Disable();
 			end
 		end
+
+		self:UpdateStaticOverlayTexture();
 	end
 end
 
@@ -266,10 +276,8 @@ function MinimapMixin:OnEnter()
 	GameTooltip_ClearAllStatusBars(GameTooltip);
 	self:SetScript("OnUpdate", Minimap_OnUpdate);
 
-	if(not DISABLE_MAP_ZOOM) then
-		self.ZoomIn:Show();
-		self.ZoomOut:Show();
-	end
+	self.ZoomIn:Show();
+	self.ZoomOut:Show();
 end
 
 function MinimapMixin:OnLeave()
@@ -279,6 +287,15 @@ function MinimapMixin:OnLeave()
 		self.ZoomIn:Hide();
 		self.ZoomOut:Hide();
 	end
+end
+
+function MinimapMixin:UpdateStaticOverlayTexture()
+
+	local show = C_Housing.IsInsideHouse();
+	MinimapBackdrop.StaticOverlayTexture:SetShown(show);
+
+	local atlas = show and "ui-hud-minimap-housing-indoor-static-bg" or nil;
+	MinimapBackdrop.StaticOverlayTexture:SetAtlas(atlas);
 end
 
 function Minimap_OnUpdate(self)
@@ -368,6 +385,10 @@ function MinimapClusterMixin:OnLoad()
 	CacheFramePoints(self.BorderTop);
 	CacheFramePoints(self.InstanceDifficulty);
 	CacheFramePoints(self.IndicatorFrame);
+
+	local showMinimap = not C_GameRules.IsGameRuleActive(Enum.GameRule.MinimapDisabled);
+	self.Tracking:SetShown(showMinimap);
+	self.MinimapContainer.Minimap:SetShown(showMinimap);
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
@@ -380,6 +401,16 @@ end
 function MinimapClusterMixin:CheckTutorials()
 	if not self:IsShown() then
 		return;
+	end
+end
+
+function MinimapClusterMixin:SetEditModeScale(scale)
+	self.MinimapContainer:SetScale(scale);
+	if (self.scaleMinimapHeader) then
+		local headerScale = math.max(scale, 1.0);
+
+		self.BorderTop:SetScale(headerScale);
+		self.ZoneTextButton:SetScale(headerScale);
 	end
 end
 

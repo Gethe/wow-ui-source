@@ -5,5 +5,7 @@
 ## LoadWith: Blizzard_UIParent
 ## AllowLoad: game
 ## AllowLoadGameType: mainline
-Mainline\UIParentPanelManager.lua
-Shared\UpdateUIPanelPositions.lua
+Mainline\UIPanelWindows.lua
+Shared\UIParentPanelManager.lua [AllowLoadEnvironment Global]
+Mainline\UIParentPanelManagerOverrides.lua [AllowLoadEnvironment Global]
+Shared\UpdateUIPanelPositions.lua [AllowLoadEnvironment Global]

@@ -168,6 +168,7 @@ local BattleNet =
 				{ Name = "realmID", Type = "number", Nilable = true },
 				{ Name = "factionName", Type = "string", Nilable = true },
 				{ Name = "raceName", Type = "string", Nilable = true },
+				{ Name = "classID", Type = "number", Nilable = true },
 				{ Name = "className", Type = "string", Nilable = true },
 				{ Name = "areaName", Type = "string", Nilable = true },
 				{ Name = "characterLevel", Type = "number", Nilable = true },

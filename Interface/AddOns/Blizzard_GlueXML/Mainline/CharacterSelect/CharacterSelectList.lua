@@ -1,11 +1,11 @@
 
+local LIST_SCROLL_BOX_DEFAULT_X_OFFSET = -32;
+local LIST_SCROLL_BOX_DEFAULT_Y_OFFSET = 83;
+
 CharacterSelectListMixin = {};
 
 function CharacterSelectListMixin:OnLoad()
 	self.AddGroupButton:SetScript("OnClick", function()
-		-- Clear helptip if not yet closed.
-		SetCVar("seenCharacterSelectAddGroupHelpTip", 1);
-		HelpTip:Hide(self.AddGroupButton, CHARACTER_SELECT_ADD_GROUP_HELPTIP);
 		PlaySound(SOUNDKIT.GS_TITLE_OPTIONS);
 
 		CharacterListEditGroupFrame:ShowNewGroupFrame();
@@ -54,16 +54,34 @@ function CharacterSelectListMixin:OnLoad()
 	self:RegisterEvent("CHARACTER_LIST_GROUP_CREATED");
 	self:RegisterEvent("CHARACTER_LIST_GROUP_DELETED");
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
+	self:RegisterEvent("CHARACTER_LIST_RESTRICTIONS_RECEIVED");
 
 	local function OnCollectionsHide()
 		self:EvaluateHelptips();
 	end
 	EventRegistry:RegisterCallback("GlueCollections.OnHide", OnCollectionsHide);
 
+	local function OnConfigRefreshed()
+		self:UpdateConfigElements();
+	end
+	EventRegistry:RegisterCallback("CharacterSelectUI.ConfigRefreshed", OnConfigRefreshed);
+
 	-- This event handler can only be added after the CharacterSelectUI's OnLoad has run.
 	RunNextFrame(function ()
 		self:AddDynamicEventMethod(CharacterSelectUI, CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, CharacterSelectListMixin.OnExpansionTrialStateUpdated);
 	end);
+end
+
+function CharacterSelectListMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+
+	self:UpdateConfigElements();
+end
+
+function CharacterSelectListMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
+
+	self:UpdateConfigElements();
 end
 
 function CharacterSelectListMixin:OnEvent(event, ...)
@@ -114,6 +132,9 @@ function CharacterSelectListMixin:OnEvent(event, ...)
 		CharacterSelectListUtil.SaveCharacterOrder();
 	elseif event == "ACCOUNT_CVARS_LOADED" then
 		self:EvaluateHelptips();
+	elseif event == "CHARACTER_LIST_RESTRICTIONS_RECEIVED" then
+		local noCreate = true;
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
 	end
 end
 
@@ -470,6 +491,13 @@ function CharacterSelectListMixin:InitDragBehavior()
 	self.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 
+function CharacterSelectListMixin:UpdateConfigElements()
+	local isUndeleting = CharacterSelectUtil.IsUndeleting();
+	local config = CharacterSelectUtil.GetConfig();
+	self.SearchBox:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListSearch]);
+	self.AddGroupButton:SetShown(not isUndeleting and config[CharacterSelectUtil.ConfigParam.CharacterListAddGroup]);
+end
+
 function CharacterSelectListMixin:UpdateUndeleteState()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
 
@@ -480,13 +508,10 @@ function CharacterSelectListMixin:UpdateUndeleteState()
 	self.UndeleteRealmLabel:SetShown(isUndeleting);
 	self.UndeleteRealmBackdrop:SetShown(isUndeleting);
 	self.BackToActiveButton:SetShown(isUndeleting);
-	self.SearchBox:SetShown(not isUndeleting);
-	self.AddGroupButton:SetShown(not isUndeleting);
+	self:UpdateConfigElements();
 	self.SearchBox:SetText("");
 
 	if isUndeleting then
-		HelpTip:Hide(self, CHARACTER_SELECT_WARBAND_INTRO_HELPTIP);
-
 		self.UndeleteRealmLabel:SetText(CHARACTER_SELECT_UNDELETE_REALM_LABEL:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 		local helpTipInfo = {
 			text = CHARACTER_SELECT_UNDELETE_REALM_HELPTIP,
@@ -558,28 +583,8 @@ function CharacterSelectListMixin:SetScrollEnabled(enabled)
 end
 
 function CharacterSelectListMixin:EvaluateHelptips()
-	if IsCharacterSelectListModeRealmless() then
-		local introHelpTipInfo = {
-			text = CHARACTER_SELECT_WARBAND_INTRO_HELPTIP,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			targetPoint = HelpTip.Point.LeftEdgeTop,
-			cvar = "seenCharacterSelectWarbandHelpTip",
-			cvarValue = "1",
-			checkCVars = true,
-			offsetY = -153
-		};
-		HelpTip:Show(self, introHelpTipInfo);
-	end
-
-	local addGroupHelpTipInfo = {
-		text = CHARACTER_SELECT_ADD_GROUP_HELPTIP,
-		buttonStyle = HelpTip.ButtonStyle.Close,
-		targetPoint = HelpTip.Point.LeftEdgeCenter,
-		cvar = "seenCharacterSelectAddGroupHelpTip",
-		cvarValue = "1",
-		checkCVars = true,
-	};
-	HelpTip:Show(self.AddGroupButton, addGroupHelpTipInfo);
+	-- Warbands helptips used to be here.
+	-- Keeping the function around for the future since it's called from several places.
 end
 
 function CharacterSelectListMixin:ClearSearch()

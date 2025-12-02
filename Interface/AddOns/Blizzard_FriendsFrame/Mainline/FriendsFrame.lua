@@ -52,6 +52,7 @@ local INVITE_RESTRICTION_NONE = 9;
 local INVITE_RESTRICTION_MOBILE = 10;
 local INVITE_RESTRICTION_REGION = 11;
 local INVITE_RESTRICTION_QUEST_SESSION = 12;
+local INVITE_RESTRICTION_GAME_MODE = 13;
 
 local FriendListEntries = { };
 local playerRealmID;
@@ -272,6 +273,14 @@ function FriendsFrame_OnLoad(self)
 		FriendsFrameTab1:Hide();
 		FriendsFrameTab2:Hide();
 		FriendsFrameTab3:Hide();
+		FriendsFrameTab4:Hide();
+	end
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableRaidGroups) then
+		FriendsFrameTab3:Hide();
+	end
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.DisableQuickJoin) then
 		FriendsFrameTab4:Hide();
 	end
 
@@ -1333,11 +1342,11 @@ function FriendsFrameSendMessageButton_OnClick(self)
 	local name;
 	if ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW ) then
 		name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-		ChatFrame_SendTell(name);
+		ChatFrameUtil.SendTell(name);
 	elseif ( FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET ) then
 		local accountInfo = C_BattleNet.GetFriendAccountInfo(FriendsFrame.selectedFriend);
 		if accountInfo then
-			ChatFrame_SendBNetTell(accountInfo.accountName);
+			ChatFrameUtil.SendBNetTell(accountInfo.accountName);
 		end
 	end
 	if ( name ) then
@@ -1394,7 +1403,7 @@ end
 
 function FriendsFrame_SendMessage()
 	local name = C_FriendList.GetFriendInfoByIndex(FriendsFrame.selectedFriend).name;
-	ChatFrame_SendTell(name);
+	ChatFrameUtil.SendTell(name);
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
 
@@ -1716,16 +1725,47 @@ function FriendsFrame_GetLastOnlineText(accountInfo)
 	end
 end
 
-local function ShowRichPresenceOnly(client, wowProjectID, faction, realmID, areaName)
-	if (client ~= BNET_CLIENT_WOW) or (wowProjectID ~= WOW_PROJECT_ID) then
+local CLASS_ID_TO_GAME_MODE = {
+	[14] = Enum.GameMode.Plunderstorm,
+	[15] = Enum.GameMode.WoWHack,
+};
+
+local function CanInviteByGameMode(gameAccountInfo)
+	-- This lookup should be replaced with a separate field instead of relying on classID.
+	local otherGameMode = CLASS_ID_TO_GAME_MODE[gameAccountInfo.classID];
+	local activeGameMode = C_GameRules.GetActiveGameMode();
+
+	if otherGameMode then
+		-- If we're both in the same game mode, we can invite them.
+		return otherGameMode == activeGameMode;
+	else
+		-- If we're both in standard we can invite them.
+		return activeGameMode == Enum.GameMode.Standard;
+	end
+end
+
+local function ShouldGameModeShowRichPresence(gameAccountInfo)
+	-- This lookup should be replaced with a separate field instead of relying on classID.
+	local otherGameMode = CLASS_ID_TO_GAME_MODE[gameAccountInfo.classID];
+	if otherGameMode then
+		-- We show rich presence for game mode logins.
+		return true;
+	end
+
+	return false;
+end
+
+local function ShowRichPresenceOnly(gameAccountInfo)
+	if (gameAccountInfo.clientProgram ~= BNET_CLIENT_WOW) or (gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID) then
 		-- If they are not in wow or in a different version of wow, always show rich presence only
 		return true;
-	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((faction ~= playerFactionGroup) or (realmID ~= playerRealmID)) then
+	elseif (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and ((gameAccountInfo.factionName ~= playerFactionGroup) or (gameAccountInfo.realmID ~= playerRealmID)) then
 		-- If we are both in wow classic and our factions or realms don't match, show rich presence only
 		return true;
+	elseif (ShouldGameModeShowRichPresence(gameAccountInfo)) then
+		return true;
 	else
-		-- Otherwise show more detailed info about them
-		return FORCE_RICH_PRESENCE or not areaName;
+		return not gameAccountInfo.areaName;
 	end;
 end
 
@@ -1845,7 +1885,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 			if accountInfo.gameAccountInfo.isOnline then
 				button.background:SetColorTexture(FRIENDS_BNET_BACKGROUND_COLOR.r, FRIENDS_BNET_BACKGROUND_COLOR.g, FRIENDS_BNET_BACKGROUND_COLOR.b, FRIENDS_BNET_BACKGROUND_COLOR.a);
 
-				if ShowRichPresenceOnly(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.wowProjectID, accountInfo.gameAccountInfo.factionName, accountInfo.gameAccountInfo.realmID, accountInfo.gameAccountInfo.areaName) then
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo) then
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.richPresence);
 				else
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
@@ -2213,7 +2253,7 @@ function FriendsListButtonMixin:OnEnter()
 			FriendsTooltipHeader:SetTextColor(nameColor:GetRGB());
 
 			if accountInfo.gameAccountInfo.gameAccountID then
-				if ShowRichPresenceOnly(accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.wowProjectID, accountInfo.gameAccountInfo.factionName, accountInfo.gameAccountInfo.realmID, accountInfo.gameAccountInfo.areaName) then
+				if ShowRichPresenceOnly(accountInfo.gameAccountInfo) then
 					local characterName = FriendsFrame_GetFormattedCharacterName(accountInfo.gameAccountInfo.characterName, accountInfo.battleTag, accountInfo.gameAccountInfo.clientProgram, accountInfo.gameAccountInfo.timerunningSeasonID);
 					FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Name, nil, characterName);
 					anchor = FriendsFrameTooltip_SetLine(FriendsTooltipGameAccount1Info, nil, accountInfo.gameAccountInfo.richPresence, -4);
@@ -2612,7 +2652,7 @@ function FriendsFrame_InviteOrRequestToJoin(guid, gameAccountID)
 	local inviteType = GetDisplayedInviteType(guid);
 	if ( inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" ) then
 		if inviteType == "SUGGEST_INVITE" and C_PartyInfo.IsPartyFull() then
-			ChatFrame_DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(ERR_GROUP_FULL);
 			return;
 		end
 
@@ -2684,6 +2724,8 @@ function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
 					restriction = INVITE_RESTRICTION_INFO;
 				elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 					restriction = INVITE_RESTRICTION_REALM;
+				elseif (not CanInviteByGameMode(gameAccountInfo)) then
+					restriction = INVITE_RESTRICTION_GAME_MODE;
 				end
 				if restriction == INVITE_RESTRICTION_NONE then
 					text = string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, gameAccountInfo.raceName or UNKNOWN, gameAccountInfo.className or UNKNOWN);
@@ -2808,6 +2850,8 @@ function FriendsFrame_GetInviteRestriction(index)
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			elseif not gameAccountInfo.isInCurrentRegion then
 				restriction = INVITE_RESTRICTION_REGION;
+			elseif not CanInviteByGameMode(gameAccountInfo) then
+				restriction = INVITE_RESTRICTION_GAME_MODE;
 			else
 				-- there is at lease 1 game account that can be invited
 				return INVITE_RESTRICTION_NONE;
@@ -2842,6 +2886,8 @@ function FriendsFrame_GetInviteRestrictionText(restriction)
 		return ERR_TRAVEL_PASS_DIFFERENT_REGION;
 	elseif ( restriction == INVITE_RESTRICTION_QUEST_SESSION ) then
 		return ERR_TRAVEL_PASS_QUEST_SESSION;
+	elseif ( restriction == INVITE_RESTRICTION_GAME_MODE ) then
+		return ERR_TRAVEL_PASS_GAME_MODE;
 	else
 		return "";
 	end

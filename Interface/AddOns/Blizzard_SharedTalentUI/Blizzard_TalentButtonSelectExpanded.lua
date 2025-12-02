@@ -4,6 +4,12 @@
 
 TalentButtonSelectExpandedButtonMixin = CreateFromMixins(TalentButtonSelectMixin);
 
+function TalentButtonSelectExpandedButtonMixin:FullUpdate()
+	TalentButtonSelectMixin.FullUpdate(self);
+
+	self:UpdateSelections(self:CanSelectChoice(), self:GetSelectedEntryID(), self:GetTraitCurrenciesCost());
+end
+
 function TalentButtonSelectExpandedButtonMixin:ShowSelections()
 	-- Overrides TalentButtonSelectMixin.
 

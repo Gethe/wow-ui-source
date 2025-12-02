@@ -825,10 +825,10 @@ function EventSchedulerReminderManager:AnnounceEvent(eventInfo, time)
 	if areaPoiInfo then
 		local nameLink = LinkUtil.FormatLink(LinkTypes.EventPOI, "["..areaPoiInfo.name.."]", eventInfo.areaPoiID);
 		if time <= 0 then
-			Chat_AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_NOW:format(nameLink));
+			ChatFrameUtil.AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_NOW:format(nameLink));
 		else
 			local timeText = eventSecondsFormatter:Format(time);
-			Chat_AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_SOON:format(nameLink, timeText));
+			ChatFrameUtil.AddSystemMessage(EVENT_SCHEDULER_CHAT_REMINDER_SOON:format(nameLink, timeText));
 		end
 		local forceNoDuplicates = true;
 		PlaySound(SOUNDKIT.UI_EVENT_SCHEDULER_CHIME, nil, forceNoDuplicates);

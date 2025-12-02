@@ -12,7 +12,9 @@ function GraphicsOverrides.CreateAdvancedSettingsTable(category, addFunc)
 	addFunc(advSettings, category, "graphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_COMPUTE_EFFECTS");
 	addFunc(advSettings, category, "graphicsOutlineMode", OUTLINE_MODE, "PROXY_OUTLINE_MODE");
 	addFunc(advSettings, category, "graphicsTextureResolution", TEXTURE_DETAIL, "PROXY_TEXTURE_RESOLUTION");
-	addFunc(advSettings, category, "graphicsSpellDensity", SPELL_DENSITY, "PROXY_SPELL_DENSITY");
+	if(C_VideoOptions.IsSpellVisualDensitySystemSupported()) then
+		addFunc(advSettings, category, "graphicsSpellDensity", SPELL_DENSITY, "PROXY_SPELL_DENSITY");
+	end
 	addFunc(advSettings, category, "graphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_PROJECTED_TEXTURES");
 	addFunc(advSettings, category, "graphicsViewDistance", FARCLIP, "PROXY_VIEW_DISTANCE");
 	addFunc(advSettings, category, "graphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_ENVIRONMENT_DETAIL");
@@ -33,7 +35,9 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	addFunc(advRaidSettings, category, "raidGraphicsComputeEffects", COMPUTE_EFFECTS, "PROXY_RAID_COMPUTE_EFFECTS");
 	addFunc(advRaidSettings, category, "raidGraphicsOutlineMode", OUTLINE_MODE, "PROXY_RAID_OUTLINE_MODE");
 	addFunc(advRaidSettings, category, "raidGraphicsTextureResolution", TEXTURE_DETAIL, "PROXY_RAID_TEXTURE_RESOLUTION");
-	addFunc(advRaidSettings, category, "raidGraphicsSpellDensity", SPELL_DENSITY, "PROXY_RAID_SPELL_DENSITY");
+	if(C_VideoOptions.IsSpellVisualDensitySystemSupported()) then
+		addFunc(advRaidSettings, category, "raidGraphicsSpellDensity", SPELL_DENSITY, "PROXY_RAID_SPELL_DENSITY");
+	end
 	addFunc(advRaidSettings, category, "raidGraphicsProjectedTextures", PROJECTED_TEXTURES, "PROXY_RAID_PROJECTED_TEXTURES");
 	addFunc(advRaidSettings, category, "raidGraphicsViewDistance", FARCLIP, "PROXY_RAID_VIEW_DISTANCE");
 	addFunc(advRaidSettings, category, "raidGraphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_RAID_ENVIRONMENT_DETAIL");

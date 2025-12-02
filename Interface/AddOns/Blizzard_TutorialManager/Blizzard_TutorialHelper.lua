@@ -283,6 +283,21 @@ function TutorialHelper:GetBagBinding()
 	return GetBindingKey("OPENALLBAGS") or NPE_UNBOUND_KEYBIND;
 end
 
+-- ------------------------------------------------------------------------------------------------------------
 function TutorialHelper:GetCreatureIDFromGUID(guid)
 	return tonumber(string.match(guid, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:RegisterTutorialForEvents(tutorial, events)
+	for _i, event in ipairs(events) do
+		Dispatcher:RegisterEvent(event, tutorial);
+	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+function TutorialHelper:UnregisterTutorialForEvents(tutorial, events)
+	for _i, event in ipairs(events) do
+		Dispatcher:UnregisterEvent(event, tutorial);
+	end
 end

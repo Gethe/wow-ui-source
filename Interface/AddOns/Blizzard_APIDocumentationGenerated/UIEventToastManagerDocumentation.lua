@@ -60,9 +60,9 @@ local UIEventToastManager =
 		{
 			Name = "EventToastDisplayType",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 16,
 			MinValue = 0,
-			MaxValue = 14,
+			MaxValue = 15,
 			Fields =
 			{
 				{ Name = "NormalSingleLine", Type = "EventToastDisplayType", EnumValue = 0 },
@@ -80,14 +80,15 @@ local UIEventToastManager =
 				{ Name = "CapstoneUnlocked", Type = "EventToastDisplayType", EnumValue = 12 },
 				{ Name = "SingleLineWithIcon", Type = "EventToastDisplayType", EnumValue = 13 },
 				{ Name = "Scoreboard", Type = "EventToastDisplayType", EnumValue = 14 },
+				{ Name = "HouseUpgradeAvailable", Type = "EventToastDisplayType", EnumValue = 15 },
 			},
 		},
 		{
 			Name = "EventToastEventType",
 			Type = "Enumeration",
-			NumValues = 26,
+			NumValues = 27,
 			MinValue = 0,
-			MaxValue = 25,
+			MaxValue = 26,
 			Fields =
 			{
 				{ Name = "LevelUp", Type = "EventToastEventType", EnumValue = 0 },
@@ -116,6 +117,7 @@ local UIEventToastManager =
 				{ Name = "WeeklyRewardUnlock", Type = "EventToastEventType", EnumValue = 23 },
 				{ Name = "WeeklyRewardUpgrade", Type = "EventToastEventType", EnumValue = 24 },
 				{ Name = "FlightpointDiscovered", Type = "EventToastEventType", EnumValue = 25 },
+				{ Name = "HouseUpgradeAvailable", Type = "EventToastEventType", EnumValue = 26 },
 			},
 		},
 		{

@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HouseEditorFrame" mixin="HouseEditorFrameMixin" inherits="TopLevelParentScaleFrameTemplate" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="matchAnchors" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Button parentKey="StorageButton" inherits="HouseEditorStorageButtonTemplate">
+				<Anchors>
+					<Anchor point="LEFT" y="150"/>
+				</Anchors>
+			</Button>
+			
+			<Frame parentKey="StoragePanel" inherits="HouseEditorStorageFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="0" y="150"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ModeBar" inherits="HouseEditorModesBarTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BasicDecorModeFrame" inherits="HouseEditorBasicDecorModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.BasicDecor" type="global" />
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="LayoutModeFrame" inherits="HouseEditorLayoutModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.Layout" type="global" />
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="CustomizeModeFrame" inherits="HouseEditorCustomizeModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.Customize" type="global" />
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="CleanupModeFrame" inherits="HouseEditorCleanupModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.Cleanup" type="global" />
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="ExpertDecorModeFrame" inherits="HouseEditorExpertDecorModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.ExpertDecor" type="global" />
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="ExteriorCustomizationModeFrame" inherits="HouseEditorExteriorCustomizationModeTemplate" setAllPoints="true" hidden="true">
+				<KeyValues>
+					<KeyValue key="modeType" value="Enum.HouseEditorMode.ExteriorCustomization" type="global" />
+				</KeyValues>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnEvent method="OnEvent" inherit="append"/>
+			<OnShow method="OnShow" inherit="append"/>
+			<OnHide method="OnHide" inherit="append"/>
+		</Scripts>
+	</Frame>
+</Ui>

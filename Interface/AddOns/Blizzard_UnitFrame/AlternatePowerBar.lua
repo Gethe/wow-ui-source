@@ -1,3 +1,4 @@
+-- CLASS { [data primary power type] = { alt power type, alt power name }} 
 ALT_POWER_BAR_PAIR_DISPLAY_INFO = {
 	DRUID = {
 		[Enum.PowerType.LunarPower] = { powerType = Enum.PowerType.Mana, powerName = "MANA" },
@@ -7,6 +8,9 @@ ALT_POWER_BAR_PAIR_DISPLAY_INFO = {
 	},
 	SHAMAN = {
 		[Enum.PowerType.Maelstrom] = { powerType = Enum.PowerType.Mana, powerName = "MANA" },
+	},
+	TRAVELER = {
+		[Enum.PowerType.Mana] = { powerType = Enum.PowerType.Energy, powerName = "ENERGY" },
 	},
 };
 
@@ -54,9 +58,10 @@ function AlternatePowerBarMixin:EvaluateUnit()
 			alternatePowerName = alternatePowerInfo.powerName;
 		end
 	end
-	
-	self.powerType = alternatePowerType;
-	self.powerName = alternatePowerName;
+
+	-- SetBarEnabled will take care of the update as necessary.
+	local skipUpdate = true;
+	self:SetPowerType(alternatePowerType, alternatePowerName, skipUpdate);
 
 	self:SetBarEnabled(self.powerType ~= nil and self.powerName ~= nil);
 end
@@ -65,14 +70,31 @@ function AlternatePowerBarMixin:OnBarEnabled()
 	self:RegisterEvent("UNIT_POWER_UPDATE");
 	self:RegisterEvent("UNIT_MAXPOWER");
 
-	self:UpdateArt();
-	self:UpdateMinMaxPower();
-	self:UpdatePower();
+	self:Update();
 end
 
 function AlternatePowerBarMixin:OnBarDisabled()
 	self:UnregisterEvent("UNIT_POWER_UPDATE");
 	self:UnregisterEvent("UNIT_MAXPOWER");
+end
+
+function AlternatePowerBarMixin:Update()
+	if not self:IsBarEnabled() then
+		return;
+	end
+
+	self:UpdateArt();
+	self:UpdateMinMaxPower();
+	self:UpdatePower();
+end
+
+function AlternatePowerBarMixin:SetPowerType(powerType, powerName, skipUpdate)
+	self.powerType = powerType;
+	self.powerName = powerName;
+
+	if not skipUpdate then
+		self:Update();
+	end
 end
 
 function AlternatePowerBarMixin:GetCurrentPower()

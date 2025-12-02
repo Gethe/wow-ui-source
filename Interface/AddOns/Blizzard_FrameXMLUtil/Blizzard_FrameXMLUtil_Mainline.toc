@@ -11,6 +11,7 @@ AchievementUtil.lua
 Mainline\MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
+AuraUtil.lua
 Mainline\AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
@@ -41,3 +42,4 @@ DragonridingUtil.lua
 Mainline\MinimapUtil.lua
 AreaPoiUtil.lua
 Mainline\ReputationUtil.lua
+Mainline\TraitUtil.lua

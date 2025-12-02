@@ -1,0 +1,11 @@
+## Title: Blizzard Housing Tutorials
+## AllowLoad: Game
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_Tutorials
+
+Blizzard_HousingTutorialsData.lua
+Blizzard_HousingTutorialsUtil.lua
+Blizzard_HousingTutorialsDecor.lua
+Blizzard_HousingTutorialsHouseFinder.lua
+Blizzard_HousingTutorialsMisc.lua
+Blizzard_HousingTutorialsInit.lua

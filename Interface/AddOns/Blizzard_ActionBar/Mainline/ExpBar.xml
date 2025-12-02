@@ -18,6 +18,10 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="ExhaustionTick" hidden="true" frameStrata="MEDIUM" mixin="ExhaustionTickMixin">
+				<KeyValues>
+					<KeyValue key="hideAtBarEdge" value="true" type="boolean"/>
+					<KeyValue key="yOffset" value="2" type="number"/>
+				</KeyValues>
 				<Size x="10" y="14"/>
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.ExhaustionLevelFillBar" relativePoint="RIGHT"/>
@@ -38,7 +42,6 @@
 			<OnShow method="OnShow"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
-			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

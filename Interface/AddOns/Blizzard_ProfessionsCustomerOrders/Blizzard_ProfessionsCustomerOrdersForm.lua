@@ -272,7 +272,7 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		local canWhisper = whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisper or whisperStatus == Enum.ChatWhisperTargetStatus.CanWhisperGuild;
 		if canWhisper then
 			rootDescription:CreateButton(WHISPER_MESSAGE, function()
-				ChatFrame_SendTell(self.order.crafterName);
+				ChatFrameUtil.SendTell(self.order.crafterName);
 			end);
 		else
 			local button = rootDescription:CreateButton(WHISPER_MESSAGE, nop);

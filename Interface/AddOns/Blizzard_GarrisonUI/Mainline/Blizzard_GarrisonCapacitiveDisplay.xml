@@ -35,7 +35,7 @@
 		<Scripts>
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") ) then
-	 				ChatEdit_InsertLink(C_Garrison.GetShipmentReagentItemLink(self:GetID()));
+					ChatFrameUtil.InsertLink(C_Garrison.GetShipmentReagentItemLink(self:GetID()));
 	 			end
 	 		</OnClick>
 	 		<OnEnter>

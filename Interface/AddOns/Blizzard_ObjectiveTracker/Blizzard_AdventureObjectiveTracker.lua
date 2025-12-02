@@ -7,7 +7,7 @@ local NavigableContentTrackingTargets = {
 
 local settings = {
 	headerText = ADVENTURE_TRACKING_MODULE_HEADER_TEXT,
-	events = { "CONTENT_TRACKING_UPDATE", "TRANSMOG_COLLECTION_SOURCE_ADDED", "SUPER_TRACKING_CHANGED", "TRACKING_TARGET_INFO_UPDATE", "TRACKABLE_INFO_UPDATE" },
+	events = { "CONTENT_TRACKING_UPDATE", "TRANSMOG_COLLECTION_SOURCE_ADDED", "SUPER_TRACKING_CHANGED", "TRACKING_TARGET_INFO_UPDATE", "TRACKABLE_INFO_UPDATE", "HOUSE_DECOR_ADDED_TO_CHEST" },
 	lineTemplate = "ObjectiveTrackerAnimLineTemplate",
 	blockTemplate = "ObjectiveTrackerAnimBlockTemplate",
 };
@@ -26,13 +26,18 @@ function AdventureObjectiveTrackerMixin:OnEvent(event, ...)
 		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Appearance, transmogSourceId) then
 			self:OnTrackableItemCollected(Enum.ContentTrackingType.Appearance, transmogSourceId);
 		end
+	elseif event == "HOUSE_DECOR_ADDED_TO_CHEST" then
+		local _, decorSourceID = ...;
+		if C_ContentTracking.IsTracking(Enum.ContentTrackingType.Decor, decorSourceID) then
+			self:OnTrackableItemCollected(Enum.ContentTrackingType.Decor, decorSourceID);
+		end
 	elseif event == "SUPER_TRACKING_CHANGED" then
 		-- Before, processing this would not call StopTrackingCollectedItems, which now always happens in the Refresh.
 		-- Not sure if this will cause problems.
 		self:MarkDirty();
 	elseif event == "CONTENT_TRACKING_UPDATE" then
 		local trackableType, trackableID, added = ...;
-		if trackableType == Enum.ContentTrackingType.Appearance then
+		if trackableType == Enum.ContentTrackingType.Appearance or trackableType == Enum.ContentTrackingType.Decor then
 			if added then
 				local blockKey = ContentTrackingUtil.MakeCombinedID(trackableType, trackableID);
 				self:SetNeedsFanfare(blockKey);
@@ -230,15 +235,23 @@ end
 
 function AdventureObjectiveTrackerMixin:OnTrackableItemCollected(trackableType, trackableID)
 	local block = self:GetExistingBlock(ContentTrackingUtil.MakeCombinedID(trackableType, trackableID));
-
-	local info = C_TransmogCollection.GetSourceInfo(trackableID);
-	local icon = C_TransmogCollection.GetSourceIcon(trackableID);
-	local item = Item:CreateFromItemID(info.itemID);
-
 	local rewards = { };
 	local t = { };
-	t.label = item:GetItemName();
-	t.texture = icon;
+	if trackableType == Enum.ContentTrackingType.Appearance then 
+		local info = C_TransmogCollection.GetSourceInfo(trackableID);
+		local icon = C_TransmogCollection.GetSourceIcon(trackableID);
+		local item = Item:CreateFromItemID(info.itemID);
+
+		t.label = item:GetItemName();
+		t.texture = icon;
+	elseif trackableType == Enum.ContentTrackingType.Decor then
+		local decorIcon = C_HousingDecor.GetDecorIcon(trackableID);
+		local decorName = C_HousingDecor.GetDecorName(trackableID);
+
+		t.label = decorName;
+		t.texture = decorIcon;
+	end
+	
 	t.count = 1;
 	t.font = "GameFontHighlightSmall";
 	table.insert(rewards, t);

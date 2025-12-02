@@ -1,50 +1,36 @@
-local _, addonTbl = ...;
-local SecureCmdList = addonTbl.SecureCmdList;
-
-SecureCmdList["PET_DEFENSIVEASSIST"] = function(msg)
-	if ( SecureCmdOptionParse(msg) ) then
-		PetDefensiveAssistMode();
-	end
-end
-
-SecureCmdList["PET_ASSIST"] = function(msg)
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PET_ASSIST, SLASH_COMMAND_CATEGORY.PET_COMMAND, function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		C_PetInfo.PetAssistMode();
 	end
-end
+end);
 
-SecureCmdList["PET_AUTOCASTON"] = function(msg)
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PET_AUTOCASTON, SLASH_COMMAND_CATEGORY.PET_COMMAND, function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
 		C_Spell.SetSpellAutoCastEnabled(spell, true);
 	end
-end
+end);
 
-SecureCmdList["PET_AUTOCASTOFF"] = function(msg)
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PET_AUTOCASTOFF, SLASH_COMMAND_CATEGORY.PET_COMMAND, function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
 		C_Spell.SetSpellAutoCastEnabled(spell, false);
 	end
-end
+end);
 
-SecureCmdList["PET_AUTOCASTTOGGLE"] = function(msg)
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PET_AUTOCASTTOGGLE, SLASH_COMMAND_CATEGORY.PET_COMMAND, function(msg)
 	local spell = SecureCmdOptionParse(msg);
 	if ( spell ) then
 		C_Spell.ToggleSpellAutoCast(spell);
 	end
-end
+end);
 
-SecureCmdList["USE_TOY"] = function(msg)
-	-- GAME RULES TODO:: This should be an explicit game rule.
-	if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
-		return;
-	end
-
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.USE_TOY, SLASH_COMMAND_CATEGORY.TOY, function(msg)
 	local toyName = SecureCmdOptionParse(msg);
 	if ( toyName and toyName ~= "" ) then
 		UseToyByName(toyName)
 	end
-end
+end);
 
 if not C_Glue.IsOnGlueScreen() then
 	local function CleanupPingTypeString(pingTypeString)
@@ -66,7 +52,7 @@ if not C_Glue.IsOnGlueScreen() then
 		["6"] = Enum.PingSubjectType.AlertThreat,
 		[CleanupPingTypeString(PING_TYPE_THREAT)] = Enum.PingSubjectType.AlertThreat,
 	};
-	SecureCmdList["PING"] = function(msg)
+	SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.PING, SLASH_COMMAND_CATEGORY.PING, function(msg)
 		local action, target = SecureCmdOptionParse(msg);
 		local pingType;
 		if action then
@@ -81,13 +67,13 @@ if not C_Glue.IsOnGlueScreen() then
 		end
 
 		C_Ping.SendMacroPing(pingType, target);
-	end
+	end);
 end
 
 local abandonCooldownFormatter = CreateFromMixins(SecondsFormatterMixin);
 abandonCooldownFormatter:Init(0, SecondsFormatter.Abbreviation.None, false, true);
 
-SecureCmdList["ABANDON"] = function(msg)
+SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.ABANDON, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	local _duration, cooldownTimeLeft = C_PartyInfo.GetInstanceAbandonVoteCooldownTime();
 	if cooldownTimeLeft then
 		local cooldownTimeLeftFormatted = abandonCooldownFormatter:Format(cooldownTimeLeft);
@@ -98,58 +84,62 @@ SecureCmdList["ABANDON"] = function(msg)
 	elseif C_PartyInfo.ChallengeModeRestrictionsActive() then
 		C_PartyInfo.StartInstanceAbandonVote();
 	end
-end
+end);
 
-SlashCmdList["INVITE"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.INVITE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true)
 	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+	if( msg and (strlen(msg) > Constants.ChatFrameConstants.MaxCharacterNameBytes) ) then
+		ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
 	if(msg == nil) then
-		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
 	C_PartyInfo.InviteUnit(msg);
-end
+end);
 
-SlashCmdList["REQUEST_INVITE"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REQUEST_INVITE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if(msg == "") then
 		msg = GetUnitName("target", true)
 	end
-	if( msg and (strlen(msg) > MAX_CHARACTER_NAME_BYTES) ) then
-		ChatFrame_DisplayUsageError(ERR_NAME_TOO_LONG2);
+	if( msg and (strlen(msg) > Constants.ChatFrameConstants.MaxCharacterNameBytes) ) then
+		ChatFrameUtil.DisplayUsageError(ERR_NAME_TOO_LONG2);
 		return;
 	end
 	if(msg == nil) then
-		ChatFrame_DisplayUsageError(ERR_NO_TARGET_OR_NAME);
+		ChatFrameUtil.DisplayUsageError(ERR_NO_TARGET_OR_NAME);
 		return;
 	end
 	C_PartyInfo.RequestInviteFromUnit(msg);
-end
+end);
 
-SlashCmdList["CHAT_AFK"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.CHAT_AFK, SLASH_COMMAND_CATEGORY.CHAT_COMMAND, function(msg)
 	if C_PvP.IsInRatedMatchWithDeserterPenalty() then
 		ConfirmOrLeaveBattlefield();
 		return;
 	end
 
 	C_ChatInfo.SendChatMessage(msg, "AFK");
-end
+end);
 
-SlashCmdList["DUNGEONS"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DUNGEONS, SLASH_COMMAND_CATEGORY.DUNGEON, function(msg)
 	ToggleLFDParentFrame();
-end
+end);
 
-SlashCmdList["LEAVEVEHICLE"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.LEAVEVEHICLE, SLASH_COMMAND_CATEGORY.VEHICLE, function(msg)
 	if ( SecureCmdOptionParse(msg) ) then
 		VehicleExit();
 	end
-end
+end);
 
-SlashCmdList["CALENDAR"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.CALENDAR, SLASH_COMMAND_CATEGORY.CALENDAR, function(msg)
+	if Kiosk.IsEnabled() then
+		return;
+	end
+
 	local inGameCalendarDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameCalendarDisabled);
 	if inGameCalendarDisabled then
 		return;
@@ -161,9 +151,9 @@ SlashCmdList["CALENDAR"] = function(msg)
 	if ( Calendar_Toggle ) then
 		Calendar_Toggle();
 	end
-end
+end);
 
-SlashCmdList["SET_TITLE"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SET_TITLE, SLASH_COMMAND_CATEGORY.TITLE, function(msg)
 	local name = SecureCmdOptionParse(msg);
 	if ( name and name ~= "") then
 		if(not SetTitleByName(name)) then
@@ -172,9 +162,9 @@ SlashCmdList["SET_TITLE"] = function(msg)
 	else
 		SetCurrentTitle(-1)
 	end
-end
+end);
 
-SlashCmdList["FRAMESTACK"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRAMESTACK, SLASH_COMMAND_CATEGORY.DEBUG_COMMAND, function(msg)
 	UIParentLoadAddOn("Blizzard_DebugTools");
 
 	local showHiddenArg, showRegionsArg, showAnchorsArg;
@@ -193,17 +183,17 @@ SlashCmdList["FRAMESTACK"] = function(msg)
 	local showAnchors = StringToBoolean(showAnchorsArg or "", showAnchorsDefault);
 
 	FrameStackTooltip_Toggle(showHidden, showRegions, showAnchors);
-end
+end);
 
-SlashCmdList["SOLOSHUFFLE_WARGAME"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SOLOSHUFFLE_WARGAME, SLASH_COMMAND_CATEGORY.PVP, function(msg)
 	StartSoloShuffleWarGameByName(msg);
-end
+end);
 
-SlashCmdList["SOLORBG_WARGAME"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SOLORBG_WARGAME, SLASH_COMMAND_CATEGORY.PVP, function(msg)
 	C_PvP.StartSoloRBGWarGameByName(msg);
-end
+end);
 
-SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SPECTATOR_WARGAME, SLASH_COMMAND_CATEGORY.COMMENTATOR, function(msg)
 	local target1, target2, size, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)")
 	if (not target1 or not target2 or not size) then
 		return;
@@ -213,9 +203,9 @@ SlashCmdList["SPECTATOR_WARGAME"] = function(msg)
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	StartSpectatorWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, size, area, ValueToBoolean(isTournamentMode));
-end
+end);
 
-SlashCmdList["SPECTATOR_SOLOSHUFFLE_WARGAME"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SPECTATOR_SOLOSHUFFLE_WARGAME, SLASH_COMMAND_CATEGORY.COMMENTATOR, function(msg)
 	local target1, target2, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)");
 	if (not target1 or not target2) then
 		return;
@@ -225,9 +215,9 @@ SlashCmdList["SPECTATOR_SOLOSHUFFLE_WARGAME"] = function(msg)
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	StartSpectatorSoloShuffleWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
-end
+end);
 
-SlashCmdList["SPECTATOR_SOLORBG_WARGAME"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.SPECTATOR_SOLORBG_WARGAME, SLASH_COMMAND_CATEGORY.COMMENTATOR, function(msg)
 	local target1, target2, area, isTournamentMode = strmatch(msg, "^([^%s]+)%s+([^%s]+)%s*([^%s]*)%s*([^%s]*)");
 	if (not target1 or not target2) then
 		return;
@@ -237,7 +227,7 @@ SlashCmdList["SPECTATOR_SOLORBG_WARGAME"] = function(msg)
 	if (area == "" or area == "nil" or area == "0") then area = nil end
 
 	C_PvP.StartSpectatorSoloRBGWarGame(bnetIDGameAccount1 or target1, bnetIDGameAccount2 or target2, area, ValueToBoolean(isTournamentMode));
-end
+end);
 
 function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
 	local bnetIDGameAccount1 = BNet_GetBNetIDAccountFromCharacterName(target1) or BNet_GetBNetIDAccount(target1);
@@ -251,23 +241,23 @@ function ChatFrame_WargameTargetsVerifyBNetAccounts(target1, target2)
 	return bnetIDGameAccount1, bnetIDGameAccount2;
 end
 
-SlashCmdList["GUILDFINDER"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.GUILDFINDER, SLASH_COMMAND_CATEGORY.GUILD, function(msg)
 	if ( GameLimitedMode_IsActive() ) then
 		UIErrorsFrame:AddMessage(ERR_RESTRICTED_ACCOUNT_TRIAL, 1.0, 0.1, 0.1, 1.0);
 	else
 		ToggleGuildFinder();
 	end
-end
+end);
 
-SlashCmdList["TRANSMOG_OUTFIT"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMAND_CATEGORY.TRANSMOG, function(msg)
 	local itemTransmogInfoList = TransmogUtil.ParseOutfitSlashCommand(msg);
 	if itemTransmogInfoList then
 		local showOutfitDetails = true;
 		DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
 	end
-end
+end);
 
-SlashCmdList["COMMUNITY"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMMUNITY, SLASH_COMMAND_CATEGORY.COMMUNITY, function(msg)
 	if msg == "" then
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(COMMUNITY_COMMAND_SYNTAX, info.r, info.g, info.b, info.id);
@@ -292,18 +282,18 @@ SlashCmdList["COMMUNITY"] = function(msg)
 			CommunitiesCreateBattleNetDialog();
 		end
 	end
-end
+end);
 
-SlashCmdList["RAF"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAF, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
 	if(C_RecruitAFriend.IsEnabled()) then
 		ToggleRafPanel();
 	end
-end
+end);
 
-SlashCmdList["EDITMODE"] = function(msg)
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.EDITMODE, SLASH_COMMAND_CATEGORY.EDIT_MODE, function(msg)
 	if EditModeManagerFrame:CanEnterEditMode() then
 		ShowUIPanel(EditModeManagerFrame);
 	else
-		ChatFrame_DisplaySystemMessageInPrimary(ERROR_SLASH_EDITMODE_CANNOT_ENTER);
+		ChatFrameUtil.DisplaySystemMessageInPrimary(ERROR_SLASH_EDITMODE_CANNOT_ENTER);
 	end
-end
+end);

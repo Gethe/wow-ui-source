@@ -7,6 +7,9 @@
 		</KeyValues>
 		<Frames>
 			<StatusBar parentKey="StatusBar" drawLayer="BORDER" inherits="GradualAnimatedStatusBarTemplate" mixin="TextStatusBarMixin">
+				<KeyValues>
+					<KeyValue key="supportsAnimation" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="804" y="10"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="0" y="0"/>

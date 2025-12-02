@@ -20,6 +20,21 @@ local FrameScript =
 			},
 		},
 		{
+			Name = "CreateSecureDelegate",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "luaFunction", Type = "LuaValueReference", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secureDelegateFunction", Type = "LuaValueReference", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateWindow",
 			Type = "Function",
 

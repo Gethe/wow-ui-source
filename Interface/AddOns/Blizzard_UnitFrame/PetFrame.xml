@@ -193,8 +193,8 @@
 			<Anchor point="BOTTOM" relativeTo="PlayerCastingBarFrame" relativePoint="TOP" x="0" y="18"/>
 		</Anchors>
 		<Scripts>
-			<OnLoad method="PetCastingBar_OnLoad"/>
-			<OnEvent method="PetCastingBar_OnEvent"/>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</StatusBar>
 </Ui>

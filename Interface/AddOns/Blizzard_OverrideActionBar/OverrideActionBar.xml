@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="OverrideActionBar.lua"/>
 	<CheckButton name="OverrideActionBarButtonTemplate" inherits="ActionBarButtonTemplate" mixin="OverrideActionBarButtonMixin" virtual="true">
 		<Size x="45" y="45"/>
 		<Scripts>
@@ -36,7 +35,7 @@
 					<Size x="178" y="152"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>				
+					</Anchors>
 					<TexCoords left="0.001953125" right="0.3496094" top="0.6992188" bottom="0.9960938"/>
 				</Texture>
 				<Texture name="$parentEndCapR" parentKey="EndCapR">
@@ -136,8 +135,8 @@
 							</Anchors>
 							<TexCoords left="0.4042969" right="0.4980469" top="0.7792969" bottom="0.9980469"/>
 						</Texture>
-					</Layer>					
-					<Layer level="BORDER" textureSubLevel="-1">			
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="-1">
 						<Texture name="$parentPitchOverlay" parentKey="PitchOverlay">
 							<Size x="26" y="94"/>
 							<Anchors>
@@ -381,11 +380,10 @@
 							self:UpdateTextString();
 						end
 						self:SetFrameLevel(self:GetParent():GetFrameLevel() - 1);
-					</OnShow>					
+					</OnShow>
 					<OnEnter>
 						self:UpdateTextString();
 						self:ShowStatusBarText();
-						--ExhaustionTick.timer = 1;
 						local label = XPBAR_LABEL;
 						if ( GameLimitedMode_IsActive() ) then
 							local rLevel = GetRestrictedAccountData();
@@ -397,11 +395,7 @@
 					<OnLeave>
 						self:HideStatusBarText();
 						GameTooltip:Hide();
-						---ExhaustionTick.timer = nil;
 					</OnLeave>
-					<OnUpdate>
-						--ExhaustionTick_OnUpdate(ExhaustionTick, elapsed);
-					</OnUpdate>
 					<OnValueChanged>
 						if (not self:IsShown()) then
 							return;
@@ -524,7 +518,7 @@
 				</Scripts>
 				<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 			</StatusBar>
-			
+
 			<CheckButton name="$parentButton1" inherits="OverrideActionBarButtonTemplate" id="1" parentKey="SpellButton1">
 				<Anchors>
 					<!--Anchor point="BOTTOM" x="-234" y="17"/-->

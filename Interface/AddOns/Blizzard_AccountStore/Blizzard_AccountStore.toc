@@ -1,6 +1,7 @@
 ## Title: Blizzard Account Store
 ## AllowLoad: Both
 ## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SharedXML, Blizzard_StaticPopup
 ## OptionalDep: Blizzard_UIParentPanelManager
 ## LoadOnDemand: 1
 

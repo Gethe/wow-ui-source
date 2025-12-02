@@ -44,7 +44,7 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- @Usage NPE_TutorialPointerFrame:Show(content, direction, frame, ofsX, ofsY [,relativePoint])
-function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, _overrideWidth)
 	ofsX = ofsX or 0;
 	ofsY = ofsY or 0;
 

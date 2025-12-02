@@ -816,7 +816,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			end
 			-- check for item compare input of flag
 			if not showRetrievingData then
-				if TooltipUtil.ShouldDoItemComparison() then
+				if TooltipUtil.ShouldDoItemComparison(tooltip.ItemTooltip.Tooltip) then
 					GameTooltip_ShowCompareItem(tooltip.ItemTooltip.Tooltip, tooltip.BackdropFrame);
 				else
 					for i, shoppingTooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do

@@ -367,18 +367,18 @@ end
 -- Arrow frame that points at something on screen
 -- Frame is automatically closed when tutorial is shutdown
 -- This function clears any existing poitners before adding the new one
-function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("ShowPointerTutorial");
 
 	self:HidePointerTutorials();
-	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Adds a pointer tutorial ontop of existing pointers
-function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;
@@ -2592,7 +2592,7 @@ function Class_ChatFrame:OnBegin(editBox)
 
 		self.Elapsed = 0;
 		Dispatcher:RegisterEvent("OnUpdate", self);
-		Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", function() self:Complete() end, true);
+		Dispatcher:RegisterFunction(ChatFrameUtil, "DeactivateChat", function() self:Complete() end, true);
 	end
 end
 
@@ -2601,7 +2601,7 @@ function Class_ChatFrame:OnUpdate(elapsed)
 
 	if (self.Elapsed > 30) then
 		if (self.EditBox) then
-			ChatEdit_DeactivateChat(self.EditBox);
+			ChatFrameUtil.DeactivateChat(self.EditBox);
 		end
 		self:Interrupt(self);
 	end
@@ -2790,7 +2790,7 @@ function Tutorials:Begin()
 	-- Chat frame
 	-- We don't want this active right off the bat.
 	C_Timer.After(5, function()
-			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
+			Dispatcher:RegisterFunction(ChatFrameUtil, "ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 		end);
 
 	-- Level 3 ability

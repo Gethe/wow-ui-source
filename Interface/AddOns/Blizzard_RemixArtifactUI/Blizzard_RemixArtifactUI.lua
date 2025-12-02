@@ -151,28 +151,6 @@ function RemixArtifactFrameMixin:SetArtifactItem(itemID)
 	end);
 end
 
-function RemixArtifactFrameMixin:SetConfigID(configID, forceUpdate)
-	if not forceUpdate and (configID == self:GetConfigID()) then
-		return;
-	end
-
-	local configInfo = configID and C_Traits.GetConfigInfo(configID) or nil;
-	if not configInfo then
-		return;
-	end
-
-	TalentFrameBaseMixin.SetConfigID(self, configID);
-
-	self.configurationInfo = configInfo;
-
-	local forceTreeUpdate = true;
-	self:SetTalentTreeID(self.configurationInfo.treeIDs[1], forceTreeUpdate);
-end
-
-function RemixArtifactFrameMixin:GetConfigID()
-	return self.configurationInfo and self.configurationInfo.ID or nil;
-end
-
 function RemixArtifactFrameMixin:CheckAndReportCommitOperation()
 	if not C_Traits.IsReadyForCommit() then
 		self:ReportConfigCommitError();
@@ -421,18 +399,18 @@ function RemixArtifactCurrencyFrameMixin:Setup(currencyInfo, displayText)
 	displayText = displayText or "";
 	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(currencyInfo and currencyInfo.quantity or 0, displayText);
 	local currencyText = WHITE_FONT_COLOR:WrapTextInColorCode(currencyCostText);
-	self.traitCurrencyID = currencyInfo.traitCurrencyID;
+	local LEGION_REMIX_TRAIT_CURRENCY_TYPE_ID = 3268;
+	self.currencyTypeID = LEGION_REMIX_TRAIT_CURRENCY_TYPE_ID;
 	self.UnspentPointsCount:SetText(currencyText);
 end
 
 function RemixArtifactCurrencyFrameMixin:OnEnter()
-	local _flags, _traitCurrencyType, currencyTypesID, _overrideIcon = C_Traits.GetTraitCurrencyInfo(self.traitCurrencyID or 0);
-	if not currencyTypesID then
+	if not self.currencyTypeID then
 		return;
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOM");
-	GameTooltip:SetCurrencyByID(currencyTypesID);
+	GameTooltip:SetCurrencyByID(self.currencyTypeID);
 	GameTooltip:Show();
 end
 

@@ -1,0 +1,11 @@
+## Title: Blizzard Housing Decor Controls
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+Blizzard_HousingControlsUtil.lua
+Blizzard_HousingControlButton.lua
+Blizzard_HousingControlButton.xml
+Blizzard_HousingControls.lua
+Blizzard_HousingControls.xml

@@ -191,7 +191,7 @@ function PlunderstormLobbyMixin:OnKeyDown(key)
             self:OnExit();
         end
 	elseif key == "ENTER" then
-		ChatFrame_OpenChat();
+		ChatFrameUtil.OpenChat();
     end
 end
 

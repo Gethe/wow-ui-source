@@ -57,14 +57,14 @@
 					<Anchor point="CENTER" />
 				</Anchors>
 				<Frames>
-					<Frame parentKey="TURNLEFT" inherits="KeyBindingTemplate">
+					<Frame parentKey="STRAFELEFT" inherits="KeyBindingTemplate">
 						<Anchors>
 							<Anchor point="LEFT" x="0" y="-15"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="MOVEBACKWARD" inherits="KeyBindingTemplate">
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.TURNLEFT" relativePoint="RIGHT" />
+							<Anchor point="LEFT" relativeKey="$parent.STRAFELEFT" relativePoint="RIGHT" />
 						</Anchors>
 					</Frame>
 					<Frame parentKey="MOVEFORWARD" inherits="KeyBindingTemplate">
@@ -72,7 +72,7 @@
 							<Anchor point="BOTTOM" relativeKey="$parent.MOVEBACKWARD" relativePoint="TOP" />
 						</Anchors>
 					</Frame>
-					<Frame parentKey="TURNRIGHT" inherits="KeyBindingTemplate">
+					<Frame parentKey="STRAFERIGHT" inherits="KeyBindingTemplate">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.MOVEBACKWARD" relativePoint="RIGHT" />
 						</Anchors>
@@ -83,7 +83,7 @@
 						<FontString parentKey="Text" text="NPEV2_INTRO_MOVE_ALLIANCE" inherits="GameFontNormalHuge2">
 							<Color color="TUTORIAL_FONT_COLOR"/>
 							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TURNRIGHT" relativePoint="RIGHT" x="20" y="15"/>
+								<Anchor point="LEFT" relativeKey="$parent.STRAFERIGHT" relativePoint="RIGHT" x="20" y="15"/>
 							</Anchors>
 						</FontString>
 					</Layer>

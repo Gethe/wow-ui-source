@@ -220,19 +220,19 @@ function ProfessionSpellButtonMixin:OnModifiedClick(button)
 			local spellName, subSpellName = C_SpellBook.GetSpellBookItemName(slotIndex, activeSpellBank);
 			if ( spellName and not C_SpellBook.IsSpellBookItemPassive(slotIndex, activeSpellBank) ) then
 				if ( subSpellName and (strlen(subSpellName) > 0) ) then
-					ChatEdit_InsertLink(spellName.."("..subSpellName..")");
+					ChatFrameUtil.InsertLink(spellName.."("..subSpellName..")");
 				else
-					ChatEdit_InsertLink(spellName);
+					ChatFrameUtil.InsertLink(spellName);
 				end
 			end
 			return;
 		else
 			local tradeSkillLink = C_SpellBook.GetSpellBookItemTradeSkillLink(slotIndex, activeSpellBank);
 			if ( tradeSkillLink ) then
-				ChatEdit_InsertLink(tradeSkillLink);
+				ChatFrameUtil.InsertLink(tradeSkillLink);
 			else
 				local spellLink = C_SpellBook.GetSpellBookItemLink(slotIndex, activeSpellBank);
-				ChatEdit_InsertLink(spellLink);
+				ChatFrameUtil.InsertLink(spellLink);
 			end
 			return;
 		end

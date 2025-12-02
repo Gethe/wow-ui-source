@@ -1,0 +1,5 @@
+## Title: Blizzard Housing Event Handler
+## Author: Blizzard Entertainment
+## AllowLoadGameType: standard
+
+Blizzard_HousingEventHandler.lua

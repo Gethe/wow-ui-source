@@ -1,10 +1,11 @@
 ## Title: Blizzard NamePlates
 ## LoadOnDemand: 0
-## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
+## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs, Blizzard_UnitFrame
 
 Blizzard_NamePlates.xml
 Blizzard_ClassNameplateBar.xml
-Blizzard_ClassNameplateAlternatePowerBar.xml
+Blizzard_ClassNameplateAlternatePowerBarBase.lua
+Blizzard_ClassNameplateAlternatePowerBarBase.xml
 Blizzard_ClassNameplateBar_Paladin.xml
 Blizzard_ClassNameplateBar_DeathKnight.xml
 Blizzard_ClassNameplateBar_Dracthyr.xml
@@ -13,3 +14,5 @@ Blizzard_ClassNameplateBar_Druid.xml
 Blizzard_ClassNameplateBar_Mage.xml
 Blizzard_ClassNameplateBar_Monk.xml
 Blizzard_ClassNameplateBar_Warlock.xml
+Blizzard_ClassNameplateBar_AlternatePower.lua [AllowLoadGameType wowhack]
+Blizzard_ClassNameplateBar_AlternatePower.xml [AllowLoadGameType wowhack]

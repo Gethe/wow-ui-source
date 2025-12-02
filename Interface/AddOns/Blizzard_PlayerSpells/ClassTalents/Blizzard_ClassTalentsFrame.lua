@@ -154,6 +154,8 @@ function ClassTalentsFrameMixin:OnShow()
 	self.HeroTalentsContainer:UpdateHeroTalentInfo();
 
 	self:SetBackgroundAnimationsPlaying(true);
+
+	self:CheckLoadSystemTutorials();
 end
 
 function ClassTalentsFrameMixin:LoadSavedVariables()
@@ -261,6 +263,8 @@ function ClassTalentsFrameMixin:OnHide()
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.TalentTab.Hide");
 
 	self:SetBackgroundAnimationsPlaying(false);
+
+	self:CancelLoadSystemTutorials();
 end
 
 function ClassTalentsFrameMixin:OnEvent(event, ...)
@@ -525,8 +529,8 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 
 	local function ChatLinkCallback()
 		local chatLink = self:GenerateChatLink();
-		if not ChatEdit_InsertLink(chatLink) then
-			ChatFrame_OpenChat(chatLink);
+		if not ChatFrameUtil.InsertLink(chatLink) then
+			ChatFrameUtil.OpenChat(chatLink);
 		end
 	end
 
@@ -606,6 +610,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 			end
 
 			self:GetParent():CheckConfirmResetAction(ConfirmFinishLoadConfiguration, CancelLoadConfiguration);
+			self:CheckLoadSystemTutorials(configID);
 		end
 
 	self.LoadSystem:SetLoadCallback(LoadConfiguration);
@@ -723,13 +728,18 @@ end
 
 function ClassTalentsFrameMixin:RefreshCurrencyDisplay()
 	local classCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
-	local className = self:GetClassName();
-	self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
 	self.ClassCurrencyDisplay:SetAmount(classCurrencyInfo and classCurrencyInfo.quantity or 0);
+	local className = self:GetClassName();
+	if className then
+		self.ClassCurrencyDisplay:SetPointTypeText(string.upper(className));
+	end
 
 	local specCurrencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[2] or nil;
-	self.SpecCurrencyDisplay:SetPointTypeText(string.upper(self:GetSpecName()));
 	self.SpecCurrencyDisplay:SetAmount(specCurrencyInfo and specCurrencyInfo.quantity or 0);
+	local specName = self:GetSpecName();
+	if specName then
+		self.SpecCurrencyDisplay:SetPointTypeText(string.upper(specName));
+	end
 
 	self.HeroTalentsContainer:UpdateHeroTalentCurrency();
 end
@@ -841,31 +851,22 @@ function ClassTalentsFrameMixin:RefreshConfigID()
 end
 
 function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)
-	if not forceUpdate and (configID == self:GetConfigID()) then
-		return;
-	end
+	-- Overrides TalentFrameBaseMixin.
 
+	-- Class talents have special behaivor required when clearing a configID.
 	if not configID then
+		if not forceUpdate and (configID == self:GetConfigID()) then
+			return;
+		end
+
 		-- We're probably returning from an Inspect state back to current play with no chosen spec
         -- So clear everything back out as it was when we first loaded
-		TalentFrameBaseMixin.SetConfigID(self, configID);
 		self.configurationInfo = nil;
 		local forceTreeUpdate = true;
 		self:SetTalentTreeID(nil, forceTreeUpdate);
-		return;
+	else
+		TalentFrameBaseMixin.SetConfigID(self, configID, forceUpdate);
 	end
-
-	local configInfo = C_Traits.GetConfigInfo(configID);
-	if not configInfo then
-		return;
-	end
-
-	TalentFrameBaseMixin.SetConfigID(self, configID);
-
-	self.configurationInfo = configInfo;
-
-	local forceTreeUpdate = true;
-	self:SetTalentTreeID(self.configurationInfo.treeIDs[1], forceTreeUpdate);
 end
 
 function ClassTalentsFrameMixin:SetTalentTreeID(talentTreeID, forceUpdate)
@@ -1636,6 +1637,46 @@ function ClassTalentsFrameMixin:CheckHeroTalentTutorial(subTreeInfo, tipOffsetX,
 		HelpTip:Show(tipParent, helpTipInfo, tipRegion);
 	else
 		HelpTip:Hide(tipParent, TUTORIAL_HERO_TALENT_NONE_SPENT);
+	end
+end
+
+function ClassTalentsFrameMixin:CheckLoadSystemTutorials(changedConfigID)
+	if C_ClassTalents.GetStarterBuildActive()  then
+		return;
+	end
+
+	if not C_PlayerInfo.IsPlayerInRPE() or GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RPETalentStarterBuild) then
+		return;
+	end
+
+	if not self.rpeTalentStarterBuildTimer then
+		EventRegistry:RegisterCallback("Menu.OpenMenuTag", function(o, tag)
+			if tag == "MENU_CLASS_TALENT_PROFILE" then
+				SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.RPETalentStarterBuild, true);
+				HelpTip:Hide(self.LoadSystem, NPEV2_TALENTS_STARTER_BUILD);
+				self:CancelLoadSystemTutorials();
+			end
+		end, self);
+
+		self.rpeTalentStarterBuildTimer = C_Timer.NewTimer(3, function()
+			local helpTipInfo = {
+				text = NPEV2_TALENTS_STARTER_BUILD,
+				cvarBitfield = "closedInfoFramesAccountWide",
+				bitfieldFlag = Enum.FrameTutorialAccount.RPETalentStarterBuild,
+				buttonStyle = HelpTip.ButtonStyle.GotIt,
+				targetPoint = HelpTip.Point.TopEdgeCenter,
+				alignment = HelpTip.Alignment.Center,
+			};
+			HelpTip:Show(self.LoadSystem, helpTipInfo);
+		end);
+	end
+end
+
+function ClassTalentsFrameMixin:CancelLoadSystemTutorials()
+	if self.rpeTalentStarterBuildTimer then
+		EventRegistry:UnregisterCallback("Menu.OpenMenuTag", self);
+		self.rpeTalentStarterBuildTimer:Cancel();
+		self.rpeTalentStarterBuildTimer = nil;
 	end
 end
 

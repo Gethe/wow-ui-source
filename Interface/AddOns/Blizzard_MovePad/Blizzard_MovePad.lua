@@ -25,6 +25,8 @@ function MovePadMixin:OnLoad()
 
 	MovePadStrafeLeft.opposingMoveButton = MovePadStrafeRight;
 	MovePadStrafeRight.opposingMoveButton = MovePadStrafeLeft;
+
+	FrameUtil.RegisterForTopLevelParentChanged(self);
 end
 
 function MovePadMixin:SetLockedMode(locked)

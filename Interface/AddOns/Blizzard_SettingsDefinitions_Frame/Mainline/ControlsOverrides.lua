@@ -5,7 +5,7 @@ end
 
 function ControlsOverrides.SetupAutoDismountSetting(category)
 	-- Plunderstorm doesn't have mounts.
-	if Settings.IsPlunderstorm() then
+	if C_GameRules.IsPlunderstorm() then
 		return;
 	end
 
@@ -13,7 +13,7 @@ function ControlsOverrides.SetupAutoDismountSetting(category)
 	Settings.SetupCVarCheckbox(category, "autoDismountFlying", AUTO_DISMOUNT_FLYING_TEXT, OPTION_TOOLTIP_AUTO_DISMOUNT_FLYING);
 end
 function ControlsOverrides.RunSettingsCallback(callback)
-	if not Settings.IsPlunderstorm() then
+	if not C_GameRules.IsPlunderstorm() then
 		callback();
 	end	
 end

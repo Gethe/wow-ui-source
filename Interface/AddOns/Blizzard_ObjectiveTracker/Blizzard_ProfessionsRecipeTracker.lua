@@ -32,10 +32,10 @@ function ProfessionsRecipeTrackerMixin:OnEvent(event, ...)
 end
 
 function ProfessionsRecipeTrackerMixin:OnBlockHeaderClick(block, mouseButton)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local link = C_TradeSkillUI.GetRecipeLink(GetRecipeID(block));
 		if link then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	elseif mouseButton ~= "RightButton" then
 		if not ProfessionsFrame then

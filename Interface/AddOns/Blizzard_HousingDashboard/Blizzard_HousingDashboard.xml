@@ -1,0 +1,56 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HousingDashboardSideTabTemplate" mixin="SidePanelTabButtonMixin" parentArray="TabButtons" virtual="true">
+		<Size x="43" y="55"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="QuestLog-Tab-side-Glow-hover" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingDashboardFrame" mixin="HousingDashboardFrameMixin" inherits="PortraitFrameTemplate, TabSystemOwnerTemplate" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="814" y="544"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Frames>
+			<Frame parentKey="HouseInfoContent" inherits="HousingDashboardHouseInfoTemplate" setAllPoints="true">
+			</Frame>
+			<Frame parentKey="CatalogContent" inherits="HousingCatalogFrameTemplate" setAllPoints="true">
+			</Frame>
+
+			<Frame parentKey="HouseInfoTabButton" inherits="HousingDashboardSideTabTemplate">
+				<KeyValues>
+					<KeyValue key="activeAtlas" value="housing-sidetabs-dashboard-active" type="string"/>
+					<KeyValue key="inactiveAtlas" value="housing-dashboard-sidetabs-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="HOUSING_DASHBOARD_HOUSEINFO_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="-60"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="CatalogTabButton" inherits="HousingDashboardSideTabTemplate">
+				<KeyValues>
+					<KeyValue key="activeAtlas" value="housing-sidetabs-catalog-active" type="string"/>
+					<KeyValue key="inactiveAtlas" value="housing-dashboard-sidetabs-catalog-inactive" type="string"/>
+					<KeyValue key="tooltipText" value="HOUSING_DASHBOARD_CATALOG_TOOLTIP" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HouseInfoTabButton" relativePoint="BOTTOM" x="0" y="-12"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

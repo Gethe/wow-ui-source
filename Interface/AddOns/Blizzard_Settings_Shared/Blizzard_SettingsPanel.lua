@@ -404,18 +404,22 @@ function SettingsPanelMixin:SetAllSettingsToDefaults()
 	local saveBindings = false;
 	local gxRestart = false;
 	local windowUpdate = false;
-
 	local settings = {};
+
 	for setting, category in pairs(self.settings) do
 		table.insert(settings, setting);
 	end
+
 	SortTableByCommitOrder(settings);
 
+	local isKioskEnabled = Kiosk.IsEnabled();
 	for index, setting in ipairs(settings) do
-		if securecallfunction(setting.SetValueToDefault, setting) then
-			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		if not isKioskEnabled or not setting:HasCommitFlag(Settings.CommitFlag.KioskProtected) then
+			if securecallfunction(setting.SetValueToDefault, setting) then
+				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			end
 		end
 	end
 
@@ -436,20 +440,25 @@ function SettingsPanelMixin:SetCurrentCategorySettingsToDefaults()
 
 	local settings = {};
 	local currentCategory = self:GetCurrentCategory();
+
 	for setting, category in pairs(self.settings) do
 		if category == currentCategory then
 			table.insert(settings, setting);
 		end
 	end
+	
 	SortTableByCommitOrder(settings);
 
+	local isKioskEnabled = Kiosk.IsEnabled();
 	for index, setting in ipairs(settings) do
-		if securecallfunction(setting.SetValueToDefault, setting) then
-			saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
-			gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
-			windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+		if not isKioskEnabled or not setting:HasCommitFlag(Settings.CommitFlag.KioskProtected) then
+			if securecallfunction(setting.SetValueToDefault, setting) then
+				saveBindings = saveBindings or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.SaveBindings);
+				gxRestart = gxRestart or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.GxRestart);
+				windowUpdate = windowUpdate or securecallfunction(setting.HasCommitFlag, setting, Settings.CommitFlag.UpdateWindow);
+			end
+			self.modified[setting] = nil;
 		end
-		self.modified[setting] = nil;
 	end
 
 	for _, category in ipairs(self:GetAllCategories()) do

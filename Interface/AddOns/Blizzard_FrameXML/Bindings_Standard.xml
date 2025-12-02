@@ -110,25 +110,25 @@
 	</Binding>
 	<!-- Chat frame bindings header="CHAT" -->
 	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat(nil);
+		ChatFrameUtil.OpenChat(nil);
 	</Binding>
 	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
-		ChatFrame_OpenChat("/");
+		ChatFrameUtil.OpenChat("/");
 	</Binding>
 	<Binding name="CHATPAGEUP" category="BINDING_HEADER_CHAT">
-		ChatFrame_ChatPageUp();
+		ChatFrameUtil.ChatPageUp();
 	</Binding>
 	<Binding name="CHATPAGEDOWN" category="BINDING_HEADER_CHAT">
-		ChatFrame_ChatPageDown();
+		ChatFrameUtil.ChatPageDown();
 	</Binding>
 	<Binding name="CHATBOTTOM" category="BINDING_HEADER_CHAT">
-		ChatFrame_ScrollToBottom();
+		ChatFrameUtil.ScrollToBottom();
 	</Binding>
 	<Binding name="REPLY" category="BINDING_HEADER_CHAT">
-		ChatFrame_ReplyTell();
+		ChatFrameUtil.ReplyTell();
 	</Binding>
 	<Binding name="REPLY2" category="BINDING_HEADER_CHAT">
-		ChatFrame_ReplyTell2();
+		ChatFrameUtil.ReplyTell2();
 	</Binding>
 	<Binding name="COMBATLOGPAGEUP" category="BINDING_HEADER_CHAT">
 		ChatFrame2:PageUp();
@@ -1225,43 +1225,46 @@
 		ToggleAllBags();
 	</Binding>
 
-	<Binding name="TOGGLECHARACTER0" header="BLANK8" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECHARACTER0" header="BLANK8" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("PaperDollFrame");
 	</Binding>
-	<Binding name="TOGGLECHARACTER2" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECHARACTER2" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCharacter("ReputationFrame");
 	</Binding>
-	<Binding name="TOGGLECURRENCY" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECURRENCY" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		CharacterFrame:ToggleTokenFrame();
 	</Binding>
 
-	<Binding name="TOGGLESPELLBOOK" header="BLANK7" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLESPELLBOOK" header="BLANK7" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		PlayerSpellsUtil.ToggleSpellBookFrame();
 	</Binding>
-	<Binding name="TOGGLEPROFESSIONBOOK" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEPROFESSIONBOOK" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleProfessionsBook();
 	</Binding>
-	<Binding name="TOGGLEPETBOOK" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEPETBOOK" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		PlayerSpellsUtil.ToggleSpellBookFrame(PlayerSpellsUtil.SpellBookCategories.Pet);
 	</Binding>
-	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLETALENTS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame();
 	</Binding>
 	<Binding name="TOGGLECOOLDOWNVIEWERSETTINGS" category="BINDING_HEADER_INTERFACE">
 		CooldownViewerSettings:TogglePanel();
 	</Binding>
 
-	<Binding name="TOGGLEACHIEVEMENT" header="BLANK10" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEACHIEVEMENT" ignoreInKioskMode="true" header="BLANK10" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame();
 	</Binding>
-	<Binding name="TOGGLESTATISTICS" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLESTATISTICS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleAchievementFrame(1);
 	</Binding>
 
-	<Binding name="TOGGLEQUESTLOG" header="BLANK11" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEQUESTLOG" ignoreInKioskMode="true" header="BLANK11" category="BINDING_HEADER_INTERFACE">
 		ToggleQuestLog();
 	</Binding>
-	<Binding name="TOGGLEWORLDMAP" category="BINDING_HEADER_INTERFACE">
+    <Binding name="TOGGLEHOUSINGDASHBOARD" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
+		HousingFramesUtil.ToggleHousingDashboard();
+	</Binding>
+	<Binding name="TOGGLEWORLDMAP" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleWorldMap();
 	</Binding>
 	<Binding name="TOGGLEWORLDMAPSIZE" category="BINDING_HEADER_INTERFACE">
@@ -1277,64 +1280,64 @@
 		TogglePVPScoreboardOrResults();
 	</Binding>
 
-	<Binding name="TOGGLEGUILDTAB" header="BLANK12" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEGUILDTAB" ignoreInKioskMode="true" header="BLANK12" category="BINDING_HEADER_INTERFACE">
 		ToggleGuildFrame();
 	</Binding>
-	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLESOCIAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame();
 	</Binding>
-	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEFRIENDSTAB" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
 	</Binding>
-	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEQUICKJOINTAB" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleQuickJoinPanel();
 	</Binding>
-	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEWHOTAB" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleFriendsFrame(FRIEND_TAB_WHO);
 	</Binding>
-	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECHATTAB" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleChannelFrame();
 	</Binding>
-	<Binding name="TOGGLERAIDTAB" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLERAIDTAB" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleRaidFrame();
 	</Binding>
-	<Binding name="TOGGLETEXTTOSPEECH" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLETEXTTOSPEECH" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleTextToSpeechFrame();
 	</Binding>
 
-	<Binding name="TOGGLEGROUPFINDER" header="BLANK13" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEGROUPFINDER" ignoreInKioskMode="true" header="BLANK13" category="BINDING_HEADER_INTERFACE">
 		PVEFrame_ToggleFrame();
 	</Binding>
-	<Binding name="TOGGLEDUNGEONSANDRAIDS" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEDUNGEONSANDRAIDS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		PVEFrame_ToggleFrame("GroupFinderFrame", nil);
 	</Binding>
 	<Binding name="TOGGLECHARACTER4" category="BINDING_HEADER_INTERFACE">
 		TogglePVPUI();
 	</Binding>
 
-	<Binding name="TOGGLECOLLECTIONS" header="BLANK14" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONS" ignoreInKioskMode="true" header="BLANK14" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal();
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONSMOUNTJOURNAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_MOUNTS);
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONSPETJOURNAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_PETS);
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSTOYBOX" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONSTOYBOX" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSWARDROBE" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONSWARDROBE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	</Binding>
 
-	<Binding name="TOGGLEENCOUNTERJOURNAL" header="BLANK15" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEENCOUNTERJOURNAL" ignoreInKioskMode="true" header="BLANK15" category="BINDING_HEADER_INTERFACE">
 		ToggleEncounterJournal();
 	</Binding>
-	<Binding name="TOGGLEGARRISONLANDINGPAGE" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLEGARRISONLANDINGPAGE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		if ( ExpansionLandingPageMinimapButton:IsShown() ) then
 			ExpansionLandingPageMinimapButton:ToggleLandingPage();
 		end
@@ -1368,7 +1371,10 @@
 	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
 		Sound_MasterVolumeDown();
 	</Binding>
-	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
+	<Binding name="TOGGLEUI" ignoreInKioskMode="true" category="BINDING_HEADER_MISC">
+		if (GetAppropriateTopLevelParent() ~= UIParent ) then
+			return;
+		end
 		if ( UIParent:IsShown() ) then
 			securecall("CloseMenus");
 			securecall("CloseAllWindows");
@@ -1377,10 +1383,10 @@
 			SetUIVisibility(true);
 		end
 	</Binding>
-	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
+	<Binding name="TOGGLEFPS" ignoreInKioskMode="true" category="BINDING_HEADER_MISC">
 		FramerateFrame:Toggle();
 	</Binding>
-	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
+	<Binding name="SCREENSHOT" ignoreInKioskMode="true" category="BINDING_HEADER_MISC">
 		Screenshot();
 	</Binding>
 	<Binding name="ITEMCOMPARISONCYCLING" category="BINDING_HEADER_MISC">
@@ -1621,7 +1627,129 @@
 	C_Ping.SendMacroPing(Enum.PingSubjectType.Assist);
 </Binding>
 
-<!-- Hidden bindings -->
+<!-- Housing System keybindings -->
+<Binding name="HOUSING_TOGGLEEDITOR" category="BINDING_HEADER_HOUSING_SYSTEM" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.ToggleHouseEditor();
+</Binding>
+
+<!-- Housing Editor Submode Bindings -->
+<Binding name="HOUSING_TOGGLEBASICDECORMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" header="BLANK17" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
+</Binding>
+<Binding name="HOUSING_TOGGLEEXPERTDECORMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.ExpertDecor);
+</Binding>
+<Binding name="HOUSING_TOGGLECUSTOMIZEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.Customize);
+</Binding>
+<Binding name="HOUSING_TOGGLECLEANUPMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.Cleanup);
+</Binding>
+<Binding name="HOUSING_TOGGLELAYOUTMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.Layout);
+</Binding>
+<Binding name="HOUSING_TOGGLEEXTERIORCUSTOMIZEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditor" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING">
+	HousingFramesUtil.ActivateHouseEditorMode(Enum.HouseEditorMode.ExteriorCustomization);
+</Binding>
+
+<!-- Housing Basic AND Expert Decor Mode shared keybindings -->
+<Binding name="HOUSING_TOGGLEDECORGRIDVISIBILITY" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicAndExpertDecorMode" header="BLANK18" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetGridVisible(not C_HousingBasicMode.IsGridVisible());
+</Binding>
+<Binding name="HOUSING_REMOVEDECOR" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicAndExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.RemoveSelectedDecor();
+</Binding>
+
+<!-- Housing Basic Decor Edit Mode keybindings -->
+<Binding name="HOUSING_TOGGLEDECORSNAPMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" header="BLANK19" preface="HOUSING_BASICDECOR_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetGridSnapEnabled(not C_HousingBasicMode.IsGridSnapEnabled());
+</Binding>
+<Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
+</Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATELEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.HandleRotateBasicDecorSelectionLeftKeybind(keystate);
+</Binding>
+<Binding name="HOUSING_BASICDECOR_ROTATERIGHT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.HandleRotateBasicDecorSelectionRightKeybind(keystate);
+</Binding>
+
+<!-- Housing Expert Decor Edit Mode keybindings -->
+<Binding name="HOUSING_EXPERTDECORTRANSLATESUBMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" header="BLANK20" preface="HOUSING_EXPERTDECOR_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetExpertDecorSubmode(Enum.HousingPrecisionSubmode.Translate);
+</Binding>
+<Binding name="HOUSING_EXPERTDECORROTATESUBMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetExpertDecorSubmode(Enum.HousingPrecisionSubmode.Rotate);
+</Binding>
+<Binding name="HOUSING_EXPERTDECORSCALESUBMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	HousingFramesUtil.SetExpertDecorSubmode(Enum.HousingPrecisionSubmode.Scale);
+</Binding>
+
+<Binding name="HOUSING_EXPERTDECORINCREMENT_LEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" preface="HOUSING_EXPERTDECOR_INCREMENT_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Left, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_RIGHT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Right, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_FORWARD" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Forward, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_BACK" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Back, keystate == "down");
+</Binding>
+
+<Binding name="HOUSING_EXPERTDECORINCREMENT_UP" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Up, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_DOWN" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.Down, keystate == "down");
+</Binding>
+
+<Binding name="HOUSING_EXPERTDECORINCREMENT_SCALEUP" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.ScaleUp, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_SCALEDOWN" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.ScaleDown, keystate == "down");
+</Binding>
+
+<Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATELEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.RotateLeft, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORINCREMENT_ROTATERIGHT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SetPrecisionIncrementingActive(Enum.HousingIncrementType.RotateRight, keystate == "down");
+</Binding>
+<Binding name="HOUSING_EXPERTDECORROTATION_NEXTAXIS" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorExpertDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
+	C_HousingExpertMode.SelectNextRotationAxis();
+</Binding>
+
+<!-- Housing Layout Edit Mode keybindings -->
+<Binding name="HOUSING_ROTATEROOMLEFT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" header="BLANK21" preface="HOUSING_LAYOUT_BINDINGS" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.RotateFocusedRoom(true);
+</Binding>
+<Binding name="HOUSING_ROTATEROOMRIGHT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.RotateFocusedRoom(false);
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_UP" category="BINDING_HEADER_HOUSING_SYSTEM" runOnUp="true" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.MoveLayoutCamera(Enum.HousingLayoutCameraDirection.Up, keystate == "down");
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_DOWN" category="BINDING_HEADER_HOUSING_SYSTEM" runOnUp="true" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.MoveLayoutCamera(Enum.HousingLayoutCameraDirection.Down, keystate == "down");
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_LEFT" category="BINDING_HEADER_HOUSING_SYSTEM" runOnUp="true" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.MoveLayoutCamera(Enum.HousingLayoutCameraDirection.Left, keystate == "down");
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_RIGHT" category="BINDING_HEADER_HOUSING_SYSTEM" runOnUp="true" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	C_HousingLayout.MoveLayoutCamera(Enum.HousingLayoutCameraDirection.Right, keystate == "down");
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_ZOOM_IN" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	HousingFramesUtil.ZoomLayoutCamera(true);
+</Binding>
+<Binding name="HOUSING_LAYOUTCAMERA_ZOOM_OUT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	HousingFramesUtil.ZoomLayoutCamera(false);
+</Binding>
+
+
+	<!-- Hidden bindings -->
 	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
 		if ( keystate == "down" ) then
 			TurnOrActionStart();
@@ -1657,4 +1785,7 @@
 	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
 	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
 	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+	<ModifiedClick action="HOUSINGINVERTINCLUDECHILDREN" default="SHIFT"/>
+	<ModifiedClick action="HOUSINGEXTRAINCREMENT" default="SHIFT"/>
+	<ModifiedClick action="TRANSFORMMANIPULATORSNAP" default="SHIFT"/>
 </Bindings>

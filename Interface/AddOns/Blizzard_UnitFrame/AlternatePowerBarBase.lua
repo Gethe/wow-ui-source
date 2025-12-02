@@ -91,6 +91,10 @@ function AlternatePowerBarBaseMixin:SetBarEnabled(enabled)
 	end
 end
 
+function AlternatePowerBarBaseMixin:IsBarEnabled()
+	return self.isEnabled;
+end
+
 function AlternatePowerBarBaseMixin:UpdatePower()
 	local currentPower = self:GetCurrentPower();
 	self:SetValue(currentPower);

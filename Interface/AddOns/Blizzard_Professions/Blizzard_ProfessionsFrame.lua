@@ -341,7 +341,7 @@ local npcCraftingOrdersHelpTipInfo =
 	alignment = HelpTip.Alignment.Center,
 	offsetX = 0,
 	cvarBitfield = "closedInfoFramesAccountWide",
-	bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDERS,
+	bitfieldFlag = Enum.FrameTutorialAccount.NpcCraftingOrders,
 	checkCVars = true,
 	system = helptipSystemName,
 };
@@ -401,7 +401,7 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	end
 
 	if isCraftingOrderTab then
-		SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_NPC_CRAFTING_ORDERS, true);
+		SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.NpcCraftingOrders, true);
 	elseif not specHelpTipShown then
 		local craftingOrderTab = self:GetTabButton(self.craftingOrdersTabID);
 		local latestProfession = Professions.GetNewestKnownProfessionInfo();

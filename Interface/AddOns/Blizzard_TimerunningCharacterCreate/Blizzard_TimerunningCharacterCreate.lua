@@ -79,12 +79,6 @@ function TimerunningFirstTimeDialogMixin:OnLoad()
 	self:UpdateState();
 end
 
-function TimerunningFirstTimeDialogMixin:OnKeyDown(key)
-	if key == "ESCAPE" then
-		self:Dismiss();
-	end
-end
-
 function TimerunningFirstTimeDialogMixin:OnShow()
 	self:UpdateState();
 end
@@ -165,12 +159,8 @@ function TimerunningFirstTimeDialogMixin:Dismiss(suppressPopup)
 	end
 end
 
-TimerunningChoiceInfoButtonMixin = {};
-
-function TimerunningChoiceInfoButtonMixin:OnClick()
-	TimerunningChoicePopup:Hide();
-	local shownFromPopup = true;
-	TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
+function TimerunningFirstTimeDialogMixin:OnEscapePressed()
+	self:Dismiss();
 end
 
 StaticPopupDialogs["TIMERUNNING_CHOICE_WARNING"] = {
@@ -229,6 +219,12 @@ TimerunningChoicePopupMixin = {};
 
 function TimerunningChoicePopupMixin:OnLoad()
 	self:RegisterEvent("LOGIN_STATE_CHANGED");
+
+	TimerunningChoiceDialogCreateTimerunning.InfoButton:SetScript("OnClick", function()
+		self:Hide();
+		local shownFromPopup = true;
+		TimerunningFirstTimeDialog:ShowFromClick(shownFromPopup);
+	end);
 end
 
 function TimerunningChoicePopupMixin:OnShow()
@@ -241,12 +237,6 @@ function TimerunningChoicePopupMixin:OnEvent(event, ...)
 		if not IsConnectedToServer() then
 			self:Hide();
 		end
-	end
-end
-
-function TimerunningChoicePopupMixin:OnKeyDown(key)
-	if key == "ESCAPE" then
-		self:Hide();
 	end
 end
 

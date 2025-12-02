@@ -60,14 +60,7 @@
 		</Anchors>
 	</Frame>
 
-	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
-					<Color color="BLACK_FONT_COLOR"/>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="TimerunningFirstTimeDialog" mixin="TimerunningFirstTimeDialogMixin" ignoreParentScale="true" inherits="CharacterSelectBlockingFrameTemplate">
 		<Frames>
 			<Frame parentKey="InfoPanel">
 				<Anchors>
@@ -191,7 +184,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
-			<OnKeyDown method="OnKeyDown"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
@@ -227,28 +219,6 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
-	<Button name="TimerunningChoiceInfoButtonTemplate" mixin="TimerunningChoiceInfoButtonMixin" virtual="true">
-		<Anchors>
-			<Anchor point="TOPLEFT" x="-6" y="6"/>
-		</Anchors>
-		<Size x="30" y="30"/>
-		<NormalTexture parentKey="LetterI" file="Interface\common\help-i">
-			<Size x="30" y="30"/>
-			<Anchors>
-				<Anchor point="CENTER"/>
-			</Anchors>
-		</NormalTexture>
-		<HighlightTexture file="Interface\common\help-i" alphaMode="ADD" hidden="true">
-			<Size x="30" y="30"/>
-			<Anchors>
-				<Anchor point="CENTER" relativeKey="$parent.LetterI"/>
-			</Anchors>
-			<Color r="1" g="1" b="1" a=".2"/>
-		</HighlightTexture>
-		<Scripts>
-			<OnClick method="OnClick"/>
-		</Scripts>
-	</Button>
 	
 	<Frame name="TimerunningChoiceSandCornersTemplate" hidden="false" inherits="AnimateWhileShownTemplate" virtual="true">
 		<Layers>
@@ -374,14 +344,7 @@
 		</Frames>
 	</Frame>
 		
-	<Frame name="TimerunningChoicePopup" mixin="TimerunningChoicePopupMixin" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true">
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="FullscreenDarken" setAllPoints="true" alpha="0.8">
-					<Color color="BLACK_FONT_COLOR"/>
-				</Texture>
-			</Layer>
-		</Layers>
+	<Frame name="TimerunningChoicePopup" mixin="TimerunningChoicePopupMixin" inherits="CharacterSelectBlockingFrameTemplate">
 		<Frames>
 			<Frame name="TimerunningChoiceDialogCreateStandard" inherits="TimerunningChoiceDialogTemplate">
 				<KeyValues>
@@ -412,7 +375,11 @@
 				<Frames>
 					<Frame parentKey="Glow" inherits="TimerunningChoiceFrameGlowTemplate" setAllPoints="true" useParentLevel="true"/>
 					<Frame parentKey="SandCorners" inherits="TimerunningChoiceSandCornersTemplate" setAllPoints="true"/>
-					<Button parentKey="InfoButton" inherits="TimerunningChoiceInfoButtonTemplate"/>
+					<Button parentKey="InfoButton" inherits="RinglessHelpPlateButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-6" y="6"/>
+						</Anchors>
+					</Button>
 					<Button parentKey="SelectButton" inherits="GlueButtonSmallTemplate" text="TIMERUNNING_CHOICE_SELECT">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="20"/>
@@ -424,7 +391,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
-			<OnKeyDown method="OnKeyDown"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

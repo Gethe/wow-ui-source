@@ -2,7 +2,8 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip
-## AllowLoadGameType: standard
-Standard\GameMenuFrame.lua
-Standard\GameMenuFrame.xml
+Shared\GameMenuFrame.lua [AllowLoadGameType standard, wowhack]
+Shared\GameMenuFrame.xml [AllowLoadGameType standard, wowhack]
+WoWLabs\GameMenuFrame.lua [AllowLoadGameType plunderstorm]
+WoWLabs\GameMenuFrame.xml [AllowLoadGameType plunderstorm]
 Shared\Localization.lua

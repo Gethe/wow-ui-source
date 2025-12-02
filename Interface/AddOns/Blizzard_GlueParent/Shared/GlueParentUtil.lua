@@ -54,3 +54,45 @@ function GlueParent_CheckPhotosensitivity()
 
 	return false;
 end
+
+function GetLogoReleaseType()
+	if(GetCNLogoReleaseType) then
+		return GetCNLogoReleaseType();
+	end
+
+	return GetGameReleaseType();
+end
+
+function GetDisplayedExpansionLogo(expansionLevel, releaseType)
+	releaseType = releaseType or GetLogoReleaseType();
+
+	local isTrial = expansionLevel == nil;
+
+	if isTrial then
+		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
+	elseif expansionLevel <= GetMinimumExpansionLevel() then
+		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC, releaseType);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	else
+		local expansionInfo = GetExpansionDisplayInfo(expansionLevel, releaseType);
+		if expansionInfo then
+			return expansionInfo.logo;
+		end
+	end
+
+	return nil;
+end
+
+function SetExpansionLogo(texture, expansionLevel, releaseType)
+	releaseType = releaseType or GetLogoReleaseType();
+
+	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
+	if logo then
+		texture:SetTexture(logo);
+		texture:Show();
+	else
+		texture:Hide();
+	end
+end

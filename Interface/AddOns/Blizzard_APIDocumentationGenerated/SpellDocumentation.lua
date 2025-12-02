@@ -43,6 +43,21 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetAuraStatChanges",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "healthChange", Type = "number", Nilable = false },
+				{ Name = "powerTypeChanges", Type = "table", InnerType = "PowerTypeChange", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseSpell",
 			Type = "Function",
 
@@ -70,6 +85,20 @@ local Spell =
 			Returns =
 			{
 				{ Name = "deadlyDebuffInfo", Type = "DeadlyDebuffInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemModifiedAppearancesApplied",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemModifiedAppearanceIDs", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -760,6 +789,15 @@ local Spell =
 				{ Name = "priority", Type = "number", Nilable = false },
 				{ Name = "warningText", Type = "string", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PowerTypeChange",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
 		{

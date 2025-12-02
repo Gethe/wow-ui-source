@@ -1,4 +1,3 @@
-
 function AddDragonridingTutorials()
 	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_DRAGON_RIDING_ACTIONBAR) then
 		TutorialManager:AddWatcher(Class_DragonRidingWatcher:new(), true);
@@ -30,7 +29,7 @@ function Class_DragonRidingWatcher:OnUpdateBonusActionBar()
 	local bonusBarIndex = GetBonusBarIndex();
 	--Dragon riding bar is 11
 	if bonusBarIndex == 11 then
-		HelpTip:Show(UIParent, self.helpTipInfo, MainMenuBar);
+		HelpTip:Show(UIParent, self.helpTipInfo, MainActionBar);
 	else
 		HelpTip:Hide(UIParent, DRAGON_RIDING_ACTIONBAR_TUTORIAL);
 	end

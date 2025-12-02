@@ -169,12 +169,30 @@ local AccountStore =
 			},
 		},
 		{
+			Name = "AccountStoreFrontUpdated",
+			Type = "Event",
+			LiteralName = "ACCOUNT_STORE_FRONT_UPDATED",
+			Payload =
+			{
+				{ Name = "storeFrontID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AccountStoreItemInfoUpdated",
 			Type = "Event",
 			LiteralName = "ACCOUNT_STORE_ITEM_INFO_UPDATED",
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "AccountStoreTransactionError",
+			Type = "Event",
+			LiteralName = "ACCOUNT_STORE_TRANSACTION_ERROR",
+			Payload =
+			{
+				{ Name = "result", Type = "AccountStoreTransactionResult", Nilable = false },
 			},
 		},
 		{
@@ -220,6 +238,7 @@ local AccountStore =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "status", Type = "AccountStoreItemStatus", Nilable = false },
+				{ Name = "mode", Type = "AccountStoreItemMode", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "flags", Type = "AccountStoreItemFlag", Nilable = false },
 				{ Name = "customUIModelSceneID", Type = "number", Nilable = true },
