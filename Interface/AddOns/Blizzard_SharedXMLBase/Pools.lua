@@ -83,6 +83,16 @@ function ObjectPoolBaseMixin:Release(object, canFailToFindObject)
 		assertsafe(active, GetObjectIsInvalidMsg, object, self);
 	end
 
+	-- We don't want to allow secret values to be released into pools because
+	-- they get stored as keys in the 'activeObjects' table, which ends up 
+	-- making *all* future Acquire calls yield secret values. Further, we have
+	-- checks in the SecureStack container that disallow secret values.
+
+	if issecretvalue(object) then
+		assertsafe(false, "attempted to release a secret value into a pool: %s", tostring(object));
+		return active;
+	end
+
 	if active then
 		--[[
 		The reset function will error if forbidden actions are attempted insecurely,

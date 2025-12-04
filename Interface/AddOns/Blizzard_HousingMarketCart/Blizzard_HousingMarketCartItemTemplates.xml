@@ -1,22 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="PlaceInWorldButtonTemplate" inherits="HousingMarketShoppingCartServiceButtonTemplate" frameLevel="1500" virtual="true">
-		<Size x="24" y="24"/>
+	<Button name="PlaceInWorldButtonTemplate" mixin="PlaceInWorldButtonMixin" inherits="HousingMarketShoppingCartServiceButtonTemplate" frameLevel="1500" virtual="true">
+		<Size x="32" y="32"/>
 		<KeyValues>
 			<KeyValue key="serviceName" value="HousingMarketCartDataServiceEvents.PlaceInWorld" type="global"/>
 		</KeyValues>
 
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="BG" setAllPoints="true">
-					<Color r="1" g="1" b="1"/>
-				</Texture>
+				<Texture parentKey="Icon" atlas="house-chest-icon" setAllPoints="true"/>
+				<Texture parentKey="HighlightIcon" atlas="house-chest-icon" setAllPoints="true" alphaMode="ADD" hidden="true"/>
 			</Layer>
 		</Layers>
+
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
 	</Button>
+
+	<Frame name="HousingMarketCartPriceTemplate" inherits="ShoppingCartPriceTemplate" mixin="HousingMarketCartPriceMixin" virtual="true"/>
 	
-	<Button name="HousingMarketCartItemTemplate" mixin="HousingMarketCartItemMixin" propagateMouseInput="Both" virtual="true">
+	<Button name="HousingMarketCartItemTemplate" mixin="HousingMarketCartItemMixin" propagateMouseInput="Both" registerForDrag="LeftButton" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="300" y="80"/>
 		<Frames>
 			<Button parentKey="RemoveFromCartButtonContainer" inherits="ShoppingCartRemoveFromCartButtonTemplate">
@@ -26,7 +32,7 @@
 				</Anchors>
 			</Button>
 
-			<Frame parentKey="PriceContainer" inherits="ShoppingCartPriceTemplate">
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="RIGHT" x="-16"/>
 				</Anchors>
@@ -107,6 +113,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Button>
 
@@ -198,7 +205,7 @@
 				</Anchors>
 			</Button>
 
-			<Frame parentKey="PriceContainer" inherits="ShoppingCartPriceTemplate">
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
 				<Anchors>
 					<Anchor point="RIGHT" relativePoint="RIGHT" x="-16" y="-8"/>
 				</Anchors>
@@ -220,7 +227,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="HousingMarketCartBundleItemTemplate" inherits="HousingMarketCartBraceTemplate" mixin="HousingMarketCartBundleItemMixin" propagateMouseInput="Both" virtual="true">
+	<Button name="HousingMarketCartBundleItemTemplate" inherits="HousingMarketCartBraceTemplate" mixin="HousingMarketCartBundleItemMixin" registerForDrag="LeftButton" motionScriptsWhileDisabled="true" propagateMouseInput="Both" virtual="true">
 		<Size x="300" y="80"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="80"/>
@@ -308,6 +315,7 @@
 			<OnLoad method="OnLoad"/>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
 		</Scripts>
 	</Button>
 </Ui>

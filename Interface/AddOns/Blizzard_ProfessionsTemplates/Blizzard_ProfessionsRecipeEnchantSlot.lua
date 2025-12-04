@@ -3,6 +3,8 @@ ProfessionsEnchantSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 function ProfessionsEnchantSlotMixin:Init(transaction)
 	ProfessionsRecipeSlotBaseMixin.Init(self);
 
+	self:ClearReagent();
+
 	self:SetNameText(PROFESSIONS_ADD_ENCHANT);
 
 	self:Update();

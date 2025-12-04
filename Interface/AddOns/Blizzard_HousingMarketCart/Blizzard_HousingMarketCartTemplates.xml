@@ -6,6 +6,25 @@
 			<KeyValue key="eventNamespace" value="HOUSING_MARKET_EVENT_NAMESPACE" type="global"/>
 		</KeyValues>
 	</Button>
+
+	<Button name="HousingMarketCartCheckoutButtonTemplate" inherits="SharedButtonLargeTemplate, HousingMarketShoppingCartServiceButtonTemplate" virtual="true">
+		<Size x="256" y="64"/>
+		<KeyValues>
+			<KeyValue key="serviceName" value="ShoppingCartDataServices.PurchaseCart" type="global"/>
+			<KeyValue key="disabledTooltip" value="HOUSING_MARKET_CART_EMPTY_TOOLTIP" type="global"/>
+			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
+				<KeyValues>
+					<KeyValue key="isLarge" value="true" keyType="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
 	
 	<Frame name="HousingMarketCartFrameTemplate" inherits="ShoppingCartVisualsFrameTemplate" mixin="HousingMarketCartFrameMixin" virtual="true">
 		<Size x="400" y="500"/>
@@ -14,6 +33,7 @@
 			<KeyValue key="maxItemsToShow" value="5" type="number"/>
 			<KeyValue key="spacingSize" value="6" type="number"/>
 			<KeyValue key="sizingItemTemplate" value="HousingMarketCartItemTemplate" type="string"/>
+			<KeyValue key="purchaseButtonTemplate" value="HousingMarketCartCheckoutButtonTemplate" type="string"/>
 		</KeyValues>
 
 		<Layers>
@@ -34,6 +54,9 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 	

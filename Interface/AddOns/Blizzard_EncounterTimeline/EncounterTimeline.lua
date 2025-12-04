@@ -78,6 +78,7 @@ function EncounterTimelineMixin:OnEditingChanged(isEditing)
 		self:StartEditModeEvents();
 	else
 		self:CancelEditModeEvents();
+		self:Hide();
 	end
 end
 
@@ -159,7 +160,7 @@ function EncounterTimelineMixin:EvaluateVisibility()
 	elseif visibility == Enum.EncounterEventsVisibility.InEncounter then
 		if C_InstanceEncounter.IsEncounterInProgress() and C_InstanceEncounter.ShouldShowTimelineForEncounter() then
 			return true;
-		elseif C_EncounterTimeline.HasAnyEvents() or self:HasEventFrames() then
+		elseif C_EncounterTimeline.HasVisibleEvents() or self:HasEventFrames() then
 			-- Accommodating respawn timers and the like without having to fake the
 			-- in-encounter state. Also works for custom events.
 			return true;
@@ -283,8 +284,8 @@ function EncounterTimelineMixin:UpdateSystemSettingOverallSize()
 	self:SetScale(frameScale);
 end
 
-function EncounterTimelineMixin:UpdateSystemSettingBackground()
-	local backgroundAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Background) * EncounterTimelineConstants.TransparencyToAlphaMultiplier;
+function EncounterTimelineMixin:UpdateSystemSettingBackgroundTransparency()
+	local backgroundAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.BackgroundTransparency) * EncounterTimelineConstants.TransparencyToAlphaMultiplier;
 	self:GetView():SetViewBackgroundAlpha(backgroundAlpha);
 end
 

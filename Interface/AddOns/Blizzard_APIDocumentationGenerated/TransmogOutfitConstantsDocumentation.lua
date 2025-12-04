@@ -181,6 +181,17 @@ local TransmogOutfitConstants =
 			},
 		},
 		{
+			Name = "TransmogOutfitSlotSaveFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "AppearanceIsNotValid", Type = "TransmogOutfitSlotSaveFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TransmogOutfitSlotWarning",
 			Type = "Enumeration",
 			NumValues = 5,

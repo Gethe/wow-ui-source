@@ -118,7 +118,7 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 	-- at the transmogrifier check the checkbox state
 	if C_Transmog.CanHaveSecondaryAppearanceForSlotID(transmogLocation.slotID) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(transmogLocation.slotID);
-		if (C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:HasActiveSecondaryAppearance()) or TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+		if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
 			itemTransmogInfo = playerActor:GetItemTransmogInfo(transmogLocation.slotID);
 			if transmogLocation:IsSecondary() then
 				itemTransmogInfo.secondaryAppearanceID = appearanceID;

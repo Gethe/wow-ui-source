@@ -118,8 +118,8 @@ local ActionBarFrame =
 		{
 			Name = "GetActionCharges",
 			Type = "Function",
-			SecretWhenCooldownsRestricted = true,
 			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -135,8 +135,8 @@ local ActionBarFrame =
 		{
 			Name = "GetActionCooldown",
 			Type = "Function",
-			SecretWhenCooldownsRestricted = true,
 			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -152,8 +152,8 @@ local ActionBarFrame =
 		{
 			Name = "GetActionLossOfControlCooldown",
 			Type = "Function",
-			SecretWhenCooldownsRestricted = true,
 			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -203,8 +203,8 @@ local ActionBarFrame =
 		{
 			Name = "GetActionUseCount",
 			Type = "Function",
-			SecretWhenCooldownsRestricted = true,
 			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -991,39 +991,6 @@ local ActionBarFrame =
 
 	Tables =
 	{
-		{
-			Name = "ActionBarChargeInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "currentCharges", Type = "number", Nilable = false, Documentation = { "Number of charges currently available" } },
-				{ Name = "maxCharges", Type = "number", Nilable = false, Documentation = { "Max number of charges that can be accumulated" } },
-				{ Name = "cooldownStartTime", Type = "number", Nilable = false, Documentation = { "If charge cooldown is active, time at which the most recent charge cooldown began; 0 if cooldown is not active" } },
-				{ Name = "cooldownDuration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds required to generate a charge" } },
-				{ Name = "chargeModRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
-			},
-		},
-		{
-			Name = "ActionBarCooldownInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "startTime", Type = "number", Nilable = false, Documentation = { "If cooldown is active, time started; 0 if no cooldown; Current time if isEnabled is false" } },
-				{ Name = "duration", Type = "number", Nilable = false, Documentation = { "Cooldown duration in seconds if active; 0 if cooldown is inactive" } },
-				{ Name = "isEnabled", Type = "bool", Nilable = false, Documentation = { "False if cooldown is on hold (ex: some cooldowns only start after an active spell is cancelled); True otherwise" } },
-				{ Name = "modRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
-			},
-		},
-		{
-			Name = "ActionUsableState",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "usable", Type = "bool", Nilable = false },
-				{ Name = "noMana", Type = "bool", Nilable = false },
-			},
-		},
 	},
 };
 

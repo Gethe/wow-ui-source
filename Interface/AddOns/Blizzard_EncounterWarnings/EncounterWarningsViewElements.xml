@@ -23,7 +23,7 @@
 		</Animation>
 	</AnimationGroup>
 
-	<Frame name="EncounterWarningsIconElementTemplate" mixin="EncounterWarningsIconElementMixin" enableMouseClicks="false" enableMouseMotion="true" virtual="true">
+	<Frame name="EncounterWarningsIconElementTemplate" mixin="EncounterWarningsIconElementMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -57,10 +57,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
 	<FontString name="EncounterWarningsTextElementTemplate" mixin="EncounterWarningsTextElementMixin" justifyH="CENTER" justifyV="MIDDLE" nonspacewrap="true" wordwrap="true" scaleAnimationMode="Vertex" virtual="true"/>

@@ -8,6 +8,7 @@ local FrameAPITooltip =
 		{
 			Name = "GetMinimumWidth",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.MinimumWidth },
 
 			Arguments =
 			{
@@ -20,14 +21,46 @@ local FrameAPITooltip =
 			},
 		},
 		{
+			Name = "GetPadding",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Padding },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "number", Nilable = false },
+				{ Name = "top", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "SetMinimumWidth",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.MinimumWidth },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "width", Type = "number", Nilable = false },
 				{ Name = "force", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetPadding",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Padding },
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "right", Type = "number", Nilable = false },
+				{ Name = "bottom", Type = "number", Nilable = false },
+				{ Name = "left", Type = "number", Nilable = true },
+				{ Name = "top", Type = "number", Nilable = true },
 			},
 		},
 		{

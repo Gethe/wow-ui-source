@@ -122,6 +122,12 @@ local DamageMeter =
 			},
 		},
 		{
+			Name = "DamageMeterCurrentSessionUpdated",
+			Type = "Event",
+			LiteralName = "DAMAGE_METER_CURRENT_SESSION_UPDATED",
+			UniqueEvent = true,
+		},
+		{
 			Name = "DamageMeterReset",
 			Type = "Event",
 			LiteralName = "DAMAGE_METER_RESET",

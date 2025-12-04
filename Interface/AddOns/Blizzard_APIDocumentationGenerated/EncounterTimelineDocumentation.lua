@@ -77,6 +77,22 @@ local EncounterTimeline =
 			},
 		},
 		{
+			Name = "GetEventCountBySource",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the number of present events in the timeline by their source type." },
+
+			Arguments =
+			{
+				{ Name = "source", Type = "EncounterTimelineEventSource", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEventInfo",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
@@ -227,6 +243,16 @@ local EncounterTimeline =
 			Returns =
 			{
 				{ Name = "hasPausedEvents", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasVisibleEvents",
+			Type = "Function",
+			Documentation = { "Returns true if the timeline contains any events that are on visible tracks." },
+
+			Returns =
+			{
+				{ Name = "hasVisibleEvents", Type = "bool", Nilable = false },
 			},
 		},
 		{

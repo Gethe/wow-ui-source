@@ -304,3 +304,4 @@ SecureMixin = nil;
 CreateFromSecureMixins = nil;
 CreateSecureDelegate = nil;
 loadstring_untainted = nil;
+secretunwrap = nil;

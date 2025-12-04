@@ -844,9 +844,13 @@ function DebuffFrameMixin:UpdateDeadlyDebuffs()
 
 		if RaidBossEmoteFrame and RaidBossEmoteFrame:IsShown() then
 			DeadlyDebuffFrame:SetPoint("TOP", RaidBossEmoteFrame, "BOTTOM");
-		elseif RaidWarningFrame and RaidWarningFrame:IsShown() then
+		elseif RaidWarningFrame then
 			DeadlyDebuffFrame:SetPoint("TOP", RaidWarningFrame, "BOTTOM");
 		else
+			-- Fallback location only if RaidWarningFrame doesn't exist. We
+			-- want to anchor to RaidWarningFrame even if it's hidden to
+			-- make some room for the default position of Boss Warning text
+			-- displays.
 			DeadlyDebuffFrame:SetPoint("TOP", UIErrorsFrame, "BOTTOM");
 		end
 	else

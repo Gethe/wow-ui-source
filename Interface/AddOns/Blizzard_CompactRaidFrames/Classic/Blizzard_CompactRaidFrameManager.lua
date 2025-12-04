@@ -72,7 +72,7 @@ end
 
 function CompactRaidFrameManager_SetupRaidMarkerDropdown(self)
 	local raidMarkerDropdown = self.displayFrame.leaderOptions.raidMarkerDropdown;
-	if (not AreRaidMarkersEnabled()) then
+	if (not IsRaidMarkerSystemEnabled()) then
 		-- We don't support Raid Markers. Hide the dropdown and expand the Ready Check button to compensate.
 		raidMarkerDropdown:Hide();
 		local buttonToExpand = self.displayFrame.leaderOptions.readyCheckButton;

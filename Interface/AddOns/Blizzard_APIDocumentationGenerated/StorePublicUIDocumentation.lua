@@ -33,15 +33,6 @@ local StorePublicUI =
 			},
 		},
 		{
-			Name = "IsDisabledByParentalControls",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "disabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsEnabled",
 			Type = "Function",
 

@@ -32,15 +32,17 @@ function HouseEditorBasicDecorModeMixin:OnLoad()
 
 	local decorIsSelected = false;
 	self:UpdateInstructions(decorIsSelected);
+	
+	EventRegistry:RegisterCallback("HousingMarketEvents.SetCartFrameShown", self.OnCartFrameSetShown, self);
 end
 
 function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED" then
-		local selected, targetType = ...;
+		local selected, targetType, isPreview = ...;
 		if selected then
 			self:OnTargetSelected();
 			if targetType == Enum.HousingBasicModeTargetType.Decor then
-				self:PlaySelectedSoundForDecorInfo(C_HousingBasicMode.GetSelectedDecorInfo());
+				self:PlaySelectedSoundForDecorInfo(C_HousingBasicMode.GetSelectedDecorInfo(), isPreview);
 			elseif targetType == Enum.HousingBasicModeTargetType.House then
 				self:PlaySelectedSoundForHouse();
 			end
@@ -100,8 +102,8 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 
 		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
 	elseif event == "HOUSING_DECOR_PLACE_SUCCESS" then
-		local _, size = ...;
-		self:PlayPlacedSoundForSize(size);
+		local _, size, _, isPreview = ...;
+		self:PlayPlacedSoundForSize(size, isPreview);
 	elseif event == "HOUSE_EXTERIOR_POSITION_SUCCESS" then
 		self:PlayPlacementSoundForHouse();
 	elseif event == "UPDATE_BINDINGS" then
@@ -136,6 +138,10 @@ function HouseEditorBasicDecorModeMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, BasicDecorModeShownEvents);
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorBasicDecorMode);
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorBasicAndExpertDecorMode);
+end
+
+function HouseEditorBasicDecorModeMixin:OnCartFrameSetShown(cartShown)
+	self.Instructions:SetShown(not cartShown);
 end
 
 function HouseEditorBasicDecorModeMixin:OnTargetSelected()
@@ -198,21 +204,17 @@ function HouseEditorBasicDecorModeMixin:TryHandleEscape()
 end
 
 function HouseEditorBasicDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+
 	if decorInstanceInfo.isLocked then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
 		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
-
-		GameTooltip:Show();
-		return GameTooltip;
  	elseif not decorInstanceInfo.canBeRemoved then	
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
 		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
-
-		GameTooltip:Show();
-		return GameTooltip;
 	end
+
+	GameTooltip:Show();
+	return GameTooltip;
 end
 
 function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)

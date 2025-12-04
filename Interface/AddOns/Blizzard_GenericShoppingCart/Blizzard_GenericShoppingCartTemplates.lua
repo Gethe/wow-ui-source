@@ -13,10 +13,12 @@ function ShoppingCartVisualsFrameMixin:OnLoad()
 
 	self.CartVisibleContainer.Header.HideCartButton.eventNamespace = self.eventNamespace;
 	self.CartVisibleContainer.Footer.ClearCartButton.eventNamespace = self.eventNamespace;
-	self.CartVisibleContainer.Footer.PurchaseCartButton.eventNamespace = self.eventNamespace;
+	self.CartVisibleContainer.Footer.PurchaseCartButton = CreateFrame("BUTTON", nil, self.CartVisibleContainer.Footer, self.purchaseButtonTemplate);
+	self.CartVisibleContainer.Footer.PurchaseCartButton:SetPoint("LEFT", self.CartVisibleContainer.Footer.ClearCartButton, "RIGHT", 16, 0);
 
 	self.CartHiddenContainer.ViewCartButton.eventNamespace = self.eventNamespace;
-	self.CartHiddenContainer.PurchaseCartButton.eventNamespace = self.eventNamespace;
+	self.CartHiddenContainer.PurchaseCartButton = CreateFrame("BUTTON", nil, self.CartHiddenContainer, self.purchaseButtonTemplate);
+	self.CartHiddenContainer.PurchaseCartButton:SetPoint("LEFT", self.CartHiddenContainer.ViewCartButton, "RIGHT", 16, 0);
 
 	self.ScrollBox = self.CartVisibleContainer.ScrollBox;
 	self.ScrollBar = self.CartVisibleContainer.ScrollBar;
@@ -141,6 +143,15 @@ function ShoppingCartVisualsFrameMixin:RefreshDividers()
 	end
 end
 
+function ShoppingCartVisualsFrameMixin:GetCartCurrencyInfo()
+	-- Override in child mixin
+	local currencyAmount = GetMoney();
+	local icon = "Interface\\Icons\\inv_misc_coin_01";
+	local iconIsAtlas = false;
+
+	return currencyAmount, icon, iconIsAtlas;
+end
+
 function ShoppingCartVisualsFrameMixin:FullUpdate()
 	self:UpdateScrollBar();
 	self:RefreshScrollElements();
@@ -149,16 +160,23 @@ function ShoppingCartVisualsFrameMixin:FullUpdate()
 	self.ScrollBox:Rebuild(retainScrollPosition);
 
 	self:UpdateNumItemsInCart();
+	self:UpdateCurrencyTotal();
 
-	local playerCurrencyAmount = GetMoney();
-	local currencyIcon = "Interface\\Icons\\inv_misc_coin_01";
-	self.PlayerTotalCurrencyDisplay.CurrencyIcon:SetTexture(currencyIcon);
+	self:RefreshDividers();
+end
+
+function ShoppingCartVisualsFrameMixin:UpdateCurrencyTotal()
+	local playerCurrencyAmount, currencyIcon, iconIsAtlas = self:GetCartCurrencyInfo();
+	if iconIsAtlas then
+		self.PlayerTotalCurrencyDisplay.CurrencyIcon:SetAtlas(currencyIcon);
+	else
+		self.PlayerTotalCurrencyDisplay.CurrencyIcon:SetTexture(currencyIcon);
+	end
+
 	self.PlayerTotalCurrencyDisplay.CurrencyTotal:SetText(playerCurrencyAmount);
 	
 	self.PlayerTotalCurrencyDisplay:SetPoint("BOTTOMLEFT", self.CartVisibleContainer:IsShown() and self.CartVisibleContainer or self.CartHiddenContainer, "TOPLEFT", 40, 8);
 	self.PlayerTotalCurrencyDisplay:SetPoint("BOTTOMRIGHT", self.CartVisibleContainer:IsShown() and self.CartVisibleContainer or self.CartHiddenContainer, "TOPRIGHT", -40, 8);
-
-	self:RefreshDividers();
 end
 
 function ShoppingCartVisualsFrameMixin:UpdateScrollBar()
@@ -234,6 +252,8 @@ end
 
 function ShoppingCartVisualsFrameMixin:GetNumItemsInCart()
 	-- implement in derived mixin
+
+	return 0;
 end
 
 function ShoppingCartVisualsFrameMixin:AddItemToList(item)
@@ -249,7 +269,20 @@ function ShoppingCartVisualsFrameMixin:RemoveItemFromList(itemIndex, _item)
 end
 
 function ShoppingCartVisualsFrameMixin:UpdateNumItemsInCart()
-	-- implement in derived mixin
+	-- extend in derived mixin
+	local itemsInCart = self:GetNumItemsInCart() ~= 0;
+	self:SetPurchaseButtonsEnabled(itemsInCart);
+
+	local cartIsShown = self.CartVisibleContainer:IsShown();
+	if not itemsInCart and cartIsShown then
+		-- If there's no items in the cart, force it hidden
+		self:SetCartShown(false);
+	end
+end
+
+function ShoppingCartVisualsFrameMixin:SetPurchaseButtonsEnabled(buttonsEnabled)
+	self.CartVisibleContainer.Footer.PurchaseCartButton:SetEnabled(buttonsEnabled);
+	self.CartHiddenContainer.PurchaseCartButton:SetEnabled(buttonsEnabled);
 end
 
 function ShoppingCartVisualsFrameMixin:SetupDividerPredicates()
@@ -277,10 +310,35 @@ end
 
 function ShoppingCartPriceContainerMixin:SetPrice(price, salePrice)
 	local itemOnSale = salePrice and salePrice < price;
-	local playerCurrencyAmount, currencyIcon = self:GetCurrencyInfo();
+	local playerCurrencyAmount, currencyIcon, iconIsAtlas = self:GetCurrencyInfo();
+	playerCurrencyAmount = playerCurrencyAmount or 0;
 
-	self.PriceIcon:SetTexture(currencyIcon);
+	if iconIsAtlas then
+		self.PriceIcon:SetAtlas(currencyIcon);
+	else
+		self.PriceIcon:SetTexture(currencyIcon);
+	end
 
+	local priceText, salePriceText = self:GetPriceText(price, SalePrice, playerCurrencyAmount);
+	self.Price:SetText(priceText);
+	self.Price:SetHeight(self.Price:GetStringHeight());
+
+	if itemOnSale then
+		self.SalePrice:SetText(salePriceText);
+		self.SalePrice:SetHeight(self.SalePrice:GetStringHeight());
+	else
+		self.SalePrice:SetHeight(1);
+	end
+
+	self.SalePrice:SetShown(itemOnSale);
+
+	self.PriceContainer:SetHeight(self.Price:GetHeight() + self.SalePrice:GetHeight());
+
+	self.PriceContainer.PriceStrikethrough:SetShown(itemOnSale);
+end
+
+function ShoppingCartPriceContainerMixin:GetPriceText(price, salePrice, playerCurrencyAmount)
+	local itemOnSale = salePrice and salePrice < price;
 	local priceText = "";
 	local salePriceText = "";
 	if playerCurrencyAmount then
@@ -301,34 +359,27 @@ function ShoppingCartPriceContainerMixin:SetPrice(price, salePrice)
 		end
 	end
 
-	self.Price:SetText(priceText);
-	self.Price:SetHeight(self.Price:GetStringHeight());
-
-	if itemOnSale then
-		self.SalePrice:SetText(salePriceText);
-		self.SalePrice:SetHeight(self.SalePrice:GetStringHeight());
-	else
-		self.SalePrice:SetHeight(1);
-	end
-
-	self.SalePrice:SetShown(itemOnSale);
-
-	self.PriceContainer:SetHeight(self.Price:GetHeight() + self.SalePrice:GetHeight());
-
-	self.PriceContainer.PriceStrikethrough:SetShown(itemOnSale);
+	return priceText, salePriceText;
 end
 
 function ShoppingCartPriceContainerMixin:GetCurrencyInfo()
 	local playerCurrencyAmount = GetMoney();
 	local currencyIcon = "Interface\\Icons\\inv_misc_coin_01";
+	local iconIsAtlas = false;
 
-	return playerCurrencyAmount, currencyIcon;
+	return playerCurrencyAmount, currencyIcon, iconIsAtlas;
 end
 
 ShoppingCartViewCartButtonMixin = {};
 
 function ShoppingCartViewCartButtonMixin:UpdateNumItemsInCart(numItemsInCart)
+	local buttonEnabled = numItemsInCart ~= 0;
+	self.ItemCountBG:SetShown(buttonEnabled);
+
+	self.ItemCountText:SetShown(buttonEnabled);
 	self.ItemCountText:SetText(numItemsInCart);
+
+	self:SetEnabled(buttonEnabled);
 end
 
 ShoppingCartShowCartServiceMixin = {};
@@ -371,4 +422,20 @@ function ShoppingCartRemoveFromCartItemButtonMixin:OnLeave()
 	if not self:GetParent().mouseOver then
 		self:Hide();
 	end
+end
+
+ShoppingCartPlayerTotalCurrencyMixin = {};
+
+function ShoppingCartPlayerTotalCurrencyMixin:OnEnter()
+	if self.tooltip then
+		local wrap = true;
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+		GameTooltip_AddNormalLine(GameTooltip, self.tooltip, wrap);
+		GameTooltip:Show();
+	end
+end
+
+function ShoppingCartPlayerTotalCurrencyMixin:OnLeave()
+	GameTooltip_Hide(GameTooltip);
 end

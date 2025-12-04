@@ -605,7 +605,9 @@ local function ExpansionDropdown_SelectInternal(self, tier)
 	EJ_ContentTab_SetEnabled(EncounterJournal.raidsTab, true);
 
 	local tierData = GetEJTierData(tier);
-	instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+	if not EncounterJournal_IsJourneysTabSelected(EncounterJournal) then
+		instanceSelect.bg:SetAtlas(tierData.backgroundAtlas, true);
+	end
 
 	-- Item Set tab uses the tier dropdown, but we do not want to show instances when changing tiers on that tab.
 	if EncounterJournal_IsDungeonTabSelected(EncounterJournal) or EncounterJournal_IsRaidTabSelected(EncounterJournal) then
@@ -2358,7 +2360,7 @@ EncounterJournalFlagIconAtlases = {
 	[Enum.JournalEncounterIconFlags.Disease] = "icons_16x16_disease";
 	[Enum.JournalEncounterIconFlags.Enrage] = "icons_16x16_enrage";
 	[Enum.JournalEncounterIconFlags.Mythic] = "icons_16x16_mythic";
-	[Enum.JournalEncounterIconFlags.Bleed] = "icons_16x16_blood";
+	[Enum.JournalEncounterIconFlags.Bleed] = "icons_16x16_bleed";
 };
 
 function EncounterJournal_GetIconAtlasFromFlag(flag)
@@ -3129,7 +3131,11 @@ function EJSuggestFrame_RefreshDisplay()
 		local numLines = min(2, titleText:GetNumLines());
 		local fontHeight = select(2, titleText:GetFont());
 		centerDisplay.title:SetHeight(numLines * fontHeight + 2);
-		centerDisplay.description:SetHeight(descText:GetStringHeight());
+		local descStringHeight = descText:GetStringHeight();
+
+		-- Description could be empty if the data description is missing. We need a non-zero height so we can
+		-- access 'bottom' successfully.
+		centerDisplay.description:SetHeight(math.max(descStringHeight, 1));
 
 		-- adjust the center display to keep the text centered
 		local top = centerDisplay.title:GetTop();

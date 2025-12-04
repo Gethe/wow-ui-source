@@ -552,6 +552,8 @@ function CharacterSelectListMixin:UpdateCharacterMatchingGUID(guid)
 end
 
 function CharacterSelectListMixin:UpdateCharacterSelection()
+	self.ScrollBox.dragBehavior:AbortDrag();
+
 	local dataProvider = CharacterSelectListUtil.GenerateCharactersDataProvider();
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
@@ -563,6 +565,8 @@ function CharacterSelectListMixin:UpdateCharacterSelection()
 end
 
 function CharacterSelectListMixin:ClearCharacterSelection()
+	self.ScrollBox.dragBehavior:AbortDrag();
+
 	self.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 

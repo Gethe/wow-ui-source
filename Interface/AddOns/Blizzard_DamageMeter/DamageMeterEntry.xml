@@ -19,15 +19,12 @@
 				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true"/>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="ui-damagemeters-bar-shadowbg">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-2" y="2"/>
-								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
-							</Anchors>
+						<Texture parentKey="Background" parentArray="BackgroundRegions" atlas="ui-damagemeters-bar-shadowbg">
+							<!-- Anchoring dynamically managed in Lua. -->
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<Texture atlas="ui-damagemeters-bar-shadowedge">
+						<Texture parentKey="BackgroundEdge" parentArray="BackgroundRegions" atlas="ui-damagemeters-bar-shadowedge">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="-2" y="2"/>
 								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>

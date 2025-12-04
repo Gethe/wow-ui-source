@@ -557,6 +557,7 @@ function BaseHousingCatalogCategoryMixin:SetActive(isActive)
 		self.isActive = isActive;
 		if self.SelectedBackground then
 			self.SelectedBackground:SetShown(self.isActive);
+			self.SelectedBackground.FlipbookSparkleAnim:SetPlaying(self.isActive);
 		end
 		self:UpdateState();
 	end

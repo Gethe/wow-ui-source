@@ -146,7 +146,7 @@ local function Register()
 
 			-- Combat Speaker Voice
 			do
-				local function GetVoiceOptions()
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
 					for index, voice in ipairs(C_VoiceChat.GetTtsVoices()) do
 						container:Add(voice.voiceID, voice.name);
@@ -155,7 +155,7 @@ local function Register()
 				end
 
 				local setting = Settings.RegisterCVarSetting(category, "CAAVoice", Settings.VarType.Number, CAA_SPEAKER_VOICE_LABEL);
-				local initializer = Settings.CreateDropdown(category, setting, GetVoiceOptions, CAA_SPEAKER_VOICE_TOOLTIP);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SPEAKER_VOICE_TOOLTIP);
 				InitCAAOption(initializer);
 			end
 
@@ -169,13 +169,12 @@ local function Register()
 					C_CombatAudioAlert.SetSpeakerSpeed(value);
 				end
 
-				local defaultValue = Constants.TTSConstants.TTSRateDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_SPEED",
-					Settings.VarType.Number, CAA_SPEAKER_SPEED_LABEL, defaultValue, GetValue, SetValue);
+					Settings.VarType.Number, CAA_SPEAKER_SPEED_LABEL, Constants.TTSConstants.TTSRateDefault, GetValue, SetValue);
 
-				local minValue, maxValue, step = Constants.TTSConstants.TTSRateMin, Constants.TTSConstants.TTSRateMax, 1;
-				local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+				local options = Settings.CreateSliderOptions(Constants.TTSConstants.TTSRateMin, Constants.TTSConstants.TTSRateMax, 1);
 				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
 				local initializer = Settings.CreateSlider(category, setting, options, CAA_SPEAKER_SPEED_TOOLTIP);
 				InitCAAOption(initializer);
 			end
@@ -190,48 +189,47 @@ local function Register()
 					C_CombatAudioAlert.SetSpeakerVolume(value);
 				end
 
-				local defaultValue = Constants.TTSConstants.TTSVolumeDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_VOLUME",
-					Settings.VarType.Number, CAA_SPEAKER_VOLUME_LABEL, defaultValue, GetValue, SetValue);
+					Settings.VarType.Number, CAA_SPEAKER_VOLUME_LABEL, Constants.TTSConstants.TTSVolumeDefault, GetValue, SetValue);
 
-				local minValue, maxValue, step = Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1;
-				local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+				local options = Settings.CreateSliderOptions(Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1);
 				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
 				local initializer = Settings.CreateSlider(category, setting, options,CAA_SPEAKER_VOLUME_TOOLTIP);
 				InitCAAOption(initializer);
 			end
 
 			-- Say Combat Start
 			do
-				local sayCombatStartSetting = Settings.RegisterCVarSetting(category, "CAASayCombatStart", Settings.VarType.Number, CAA_SAY_COMBAT_START_LABEL);
-				local function GetCombatStartOptions()
+				local setting = Settings.RegisterCVarSetting(category, "CAASayCombatStart", Settings.VarType.Number, CAA_SAY_COMBAT_START_LABEL);
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
 					container:Add(0, LOC_OPTION_OFF);
 					container:Add(1, CAA_SAY_COMBAT_START_TEXT);
 					return container:GetData();
 				end
-				local sayCombatStartInitializer = Settings.CreateDropdown(category, sayCombatStartSetting, GetCombatStartOptions, CAA_SAY_COMBAT_START_TOOLTIP);
-				InitCAAOption(sayCombatStartInitializer);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_COMBAT_START_TOOLTIP);
+				InitCAAOption(initializer);
 			end
 
 			-- Say Combat End
 			do
-				local sayCombatEndSetting = Settings.RegisterCVarSetting(category, "CAASayCombatEnd", Settings.VarType.Number, CAA_SAY_COMBAT_END_LABEL);
-				local function GetCombatEndOptions()
+				local setting = Settings.RegisterCVarSetting(category, "CAASayCombatEnd", Settings.VarType.Number, CAA_SAY_COMBAT_END_LABEL);
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
 					container:Add(0, LOC_OPTION_OFF);
 					container:Add(1, CAA_SAY_COMBAT_END_TEXT);
 					return container:GetData();
 				end
-				local sayCombatEndInitializer = Settings.CreateDropdown(category, sayCombatEndSetting, GetCombatEndOptions, CAA_SAY_COMBAT_END_TOOLTIP);
-				InitCAAOption(sayCombatEndInitializer);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_COMBAT_END_TOOLTIP);
+				InitCAAOption(initializer);
 			end
 
 			local function GetPercentOptionString(percent)
 				return EVERY_X_PERCENT:format(percent);
 			end
 
-			local function GetUnitHealthPercentOptions()
+			local function GetPercentOptions()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(0, LOC_OPTION_OFF);
 				container:Add(10, GetPercentOptionString(10));
@@ -244,37 +242,37 @@ local function Register()
 
 			-- Say Your Health
 			local sayPlayerHealthSetting = Settings.RegisterCVarSetting(category, "CAAPlayerHealthPercent", Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_LABEL);
-			local sayPlayerHealthInitializer = Settings.CreateDropdown(category, sayPlayerHealthSetting, GetUnitHealthPercentOptions, CAA_SAY_PLAYER_HEALTH_TOOLTIP);
+			local sayPlayerHealthInitializer = Settings.CreateDropdown(category, sayPlayerHealthSetting, GetPercentOptions, CAA_SAY_PLAYER_HEALTH_TOOLTIP);
 			InitCAAOption(sayPlayerHealthInitializer);
 
 			local function SayPlayerHealthOptionsModifiable()
 				return GetCVarNumberOrDefault("CAAPlayerHealthPercent") > 0;
 			end
 
-			local exampleHealthPercent = 20;
+			local examplePercent = 20;
 
 			-- Say Your Health Format
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetCurrentUnitHealthFormat(Enum.CombatAudioAlertUnit.Player);
+					return C_CombatAudioAlert.GetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Health);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetCurrentUnitHealthFormat(Enum.CombatAudioAlertUnit.Player, value);
+					C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Health, value);
 				end
 
-				local function GetFormatOptions()
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player") do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedHealthString(formatInfo, exampleHealthPercent));
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Health) do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
 					end
 					return container:GetData();
 				end
 
-				local defaultValue = Constants.CAAConstants.CAAPlayerHealthFormatDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_HEALTH_FORMAT",
-					Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_FORMAT_LABEL, defaultValue, GetValue, SetValue);
-				local initializer = Settings.CreateDropdown(category, setting, GetFormatOptions, CAA_SAY_PLAYER_HEALTH_FORMAT_TOOLTIP);
+					Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_FORMAT_LABEL, Constants.CAAConstants.CAAPlayerHealthFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_PLAYER_HEALTH_FORMAT_TOOLTIP);
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayPlayerHealthInitializer, SayPlayerHealthOptionsModifiable);
 			end
@@ -286,20 +284,19 @@ local function Register()
 			-- Say Health Throttle
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertUnit.Player);
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealth);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertUnit.Player, value);
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerHealth, value);
 				end
 
-				local defaultValue = Constants.CAAConstants.CAAThrottleDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_HEALTH_THROTTLE",
-					Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_THROTTLE_LABEL, defaultValue, GetValue, SetValue);
+					Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
 
-				local minValue, maxValue, step = Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep;
-				local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
 				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
 				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_PLAYER_HEALTH_THROTTLE_TOOLTIP);
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayPlayerHealthInitializer, SayPlayerHealthOptionsModifiable);
@@ -307,13 +304,13 @@ local function Register()
 
 			-- Say Target Name
 			do
-				local sayTargetNameSetting, sayTargetNameInitializer = Settings.SetupCVarCheckbox(category, "CAASayTargetName", CAA_SAY_TARGET_NAME_LABEL, CAA_SAY_TARGET_NAME_TOOLTIP);
-				InitCAAOption(sayTargetNameInitializer);
+				local setting, initializer = Settings.SetupCVarCheckbox(category, "CAASayTargetName", CAA_SAY_TARGET_NAME_LABEL, CAA_SAY_TARGET_NAME_TOOLTIP);
+				InitCAAOption(initializer);
 			end
 
 			-- Say Target Health
 			local sayTargetHealthSetting = Settings.RegisterCVarSetting(category, "CAATargetHealthPercent", Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_LABEL);
-			local sayTargetHealthInitializer = Settings.CreateDropdown(category, sayTargetHealthSetting, GetUnitHealthPercentOptions, CAA_SAY_TARGET_HEALTH_TOOLTIP);
+			local sayTargetHealthInitializer = Settings.CreateDropdown(category, sayTargetHealthSetting, GetPercentOptions, CAA_SAY_TARGET_HEALTH_TOOLTIP);
 			InitCAAOption(sayTargetHealthInitializer);
 
 			local function SayTargetHealthOptionsModifiable()
@@ -323,63 +320,414 @@ local function Register()
 			-- Say Target Health Format
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetCurrentUnitHealthFormat(Enum.CombatAudioAlertUnit.Target);
+					return C_CombatAudioAlert.GetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Health);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetCurrentUnitHealthFormat(Enum.CombatAudioAlertUnit.Target, value);
+					C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Health, value);
 				end
 
-				local function GetFormatOptions()
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target") do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedHealthString(formatInfo, exampleHealthPercent));
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Health) do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
 					end
 					return container:GetData();
 				end
 
-				local defaultValue = Constants.CAAConstants.CAATargetHealthFormatDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_TARGET_HEALTH_FORMAT",
-					Settings.VarType.Number, CAA_SAY_PLAYER_HEALTH_FORMAT_LABEL, defaultValue, GetValue, SetValue);
-				local initializer = Settings.CreateDropdown(category, setting, GetFormatOptions, CAA_SAY_PLAYER_HEALTH_FORMAT_TOOLTIP);
+					Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_FORMAT_LABEL, Constants.CAAConstants.CAATargetHealthFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_TARGET_HEALTH_FORMAT_TOOLTIP);
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
 			end
 
 			-- When Target Dies Behavior
 			do
-				local sayTargetDeathSetting = Settings.RegisterCVarSetting(category, "CAATargetDeathBehavior", Settings.VarType.Number, CAA_WHEN_TARGET_DIES_LABEL);
-				local function GetTargetDeathOptions()
+				local setting = Settings.RegisterCVarSetting(category, "CAATargetDeathBehavior", Settings.VarType.Number, CAA_WHEN_TARGET_DIES_LABEL);
+				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
 					container:Add(Enum.CombatAudioAlertTargetDeathBehavior.Default, CAA_WHEN_TARGET_DIES_USE_FORMAT);
 					container:Add(Enum.CombatAudioAlertTargetDeathBehavior.SayTargetDead, CAA_WHEN_TARGET_DIES_VOICE_TARGET_DEAD);
 					return container:GetData();
 				end
-				local sayTargetDeathInitializer = Settings.CreateDropdown(category, sayTargetDeathSetting, GetTargetDeathOptions, CAA_WHEN_TARGET_DIES_TOOLTIP);
-				InitCAAOption(sayTargetDeathInitializer);
-				sayTargetDeathInitializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_WHEN_TARGET_DIES_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
 			end
 
 			-- Say Target Throttle
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertUnit.Target);
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetHealth);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertUnit.Target, value);
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.TargetHealth, value);
 				end
 
-				local defaultValue = Constants.CAAConstants.CAAThrottleDefault;
 				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_TARGET_HEALTH_THROTTLE",
-					Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_THROTTLE_LABEL, defaultValue, GetValue, SetValue);
+					Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
 
-				local minValue, maxValue, step = Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep;
-				local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
 				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
 				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_TARGET_HEALTH_THROTTLE_TOOLTIP);
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
+			end
+
+			-- Player Resource Options
+			local resource1PowerName, resource2PowerName;
+
+			local function GetResourceSettingFormattedString(formatString, primary)
+				local _resource1PowerType, resource1PowerToken = UnitPowerType("player");
+				resource1PowerName = resource1PowerToken and _G[resource1PowerToken];
+
+				local _resource2PowerType, resource2PowerToken = GetUnitSecondaryPowerInfo("player");
+				resource2PowerName = resource2PowerToken and _G[resource2PowerToken];
+
+				local powerName = primary and resource1PowerName or resource2PowerName;
+				if powerName then
+					return formatString:format(powerName);
+				end
+
+				-- Important:
+				-- This empty string return is what causes the resource settings to hide if the player's spec doesn't use a resource (see IsResource1Allowed and IsResource2Allowed)
+				-- It must return a string (rather than nil) or ErrorIfInvalidSettingArguments will error
+				return "";
+			end
+
+			-- Player Resource 1 Options
+			local isPrimaryYes = true;
+
+			local function GetResource1Label()
+				return GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_LABEL, isPrimaryYes);
+			end
+
+			local function IsResource1Allowed()
+				return GetResource1Label() ~= "";
+			end
+
+			local function InitCAAResource1Option(initializer)
+				initializer:AddShownPredicate(IsResource1Allowed);
+				InitCAAOption(initializer);
+			end
+
+			-- Say Resource 1
+			local function GetResource1Value()
+				return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Percent);
+			end
+
+			local function SetResource1Value(value)
+				C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Percent, value);
+			end
+
+			local sayResource1Setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_1_PERCENT",
+				Settings.VarType.Number, GetResource1Label, Constants.CAAConstants.CAAPlayerResourcePercentDefault, GetResource1Value, SetResource1Value);
+			local sayResource1Initializer = Settings.CreateDropdown(category, sayResource1Setting, GetPercentOptions, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_TOOLTIP, isPrimaryYes));
+			InitCAAResource1Option(sayResource1Initializer);
+
+			local function SayResource1OptionsModifiable()
+				return GetResource1Value() > 0;
+			end
+
+			-- Say Resource 1 Format
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Format);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Format, value);
+				end
+
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource1PowerName, examplePercent));
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_1_FORMAT",
+					Settings.VarType.Number, CAA_SAY_PLAYER_RESOURCE_FORMAT_LABEL, Constants.CAAConstants.CAAPlayerResourceFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_FORMAT_TOOLTIP, isPrimaryYes));
+				InitCAAResource1Option(initializer);
+				initializer:SetParentInitializer(sayResource1Initializer, SayResource1OptionsModifiable);
+			end
+
+			-- Say Resource 1 Throttle
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource1, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_1_THROTTLE",
+					Settings.VarType.Number, CAA_SAY_PLAYER_RESOURCE_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_THROTTLE_TOOLTIP, isPrimaryYes));
+				InitCAAResource1Option(initializer);
+				initializer:SetParentInitializer(sayResource1Initializer, SayResource1OptionsModifiable);
+			end
+
+			-- Player Resource 2 Options
+			local isPrimaryNo = false;
+			local function GetResource2Label()
+				return GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_LABEL, isPrimaryNo);
+			end
+
+			local function IsResource2Allowed()
+				return GetResource2Label() ~= "";
+			end
+
+			local function InitCAAResource2Option(initializer)
+				initializer:AddShownPredicate(IsResource2Allowed);
+				InitCAAOption(initializer);
+			end
+
+			-- Say Resource 2
+			local function GetResource2Value()
+				return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Percent);
+			end
+
+			local function SetResource2Value(value)
+				C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Percent, value);
+			end
+
+			local sayResource2Setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_2_PERCENT",
+				Settings.VarType.Number, GetResource2Label, Constants.CAAConstants.CAAPlayerResourcePercentDefault, GetResource2Value, SetResource2Value);
+			local sayResource2Initializer = Settings.CreateDropdown(category, sayResource2Setting, GetPercentOptions, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_TOOLTIP, isPrimaryNo));
+			InitCAAResource2Option(sayResource2Initializer);
+
+			local function SayResource2OptionsModifiable()
+				return GetResource2Value() > 0;
+			end
+
+			-- Say Resource 2 Format
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Format);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Format, value);
+				end
+
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource2PowerName, examplePercent));
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_2_FORMAT",
+					Settings.VarType.Number, CAA_SAY_PLAYER_RESOURCE_FORMAT_LABEL, Constants.CAAConstants.CAAPlayerResourceFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_FORMAT_TOOLTIP, isPrimaryNo));
+				InitCAAResource2Option(initializer);
+				initializer:SetParentInitializer(sayResource2Initializer, SayResource2OptionsModifiable);
+			end
+
+			-- Say Resource 2 Throttle
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerResource2, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_2_THROTTLE",
+					Settings.VarType.Number, CAA_SAY_PLAYER_RESOURCE_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, GetResourceSettingFormattedString(CAA_SAY_PLAYER_RESOURCE_THROTTLE_TOOLTIP, isPrimaryNo));
+				InitCAAResource2Option(initializer);
+				initializer:SetParentInitializer(sayResource2Initializer, SayResource2OptionsModifiable);
+			end
+
+			local function GetCastModeOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(Enum.CombatAudioAlertCastState.Off, LOC_OPTION_OFF);
+				container:Add(Enum.CombatAudioAlertCastState.OnCastStart, CAA_SAY_CASTS_START_OF_CAST);
+				container:Add(Enum.CombatAudioAlertCastState.OnCastEnd, CAA_SAY_CASTS_END_OF_CAST);
+				return container:GetData();
+			end
+
+			-- Say Player Cast
+			local sayPlayerCastSetting = Settings.RegisterCVarSetting(category, "CAAPlayerCastMode", Settings.VarType.Number, CAA_SAY_PLAYER_CASTS_LABEL);
+			local sayPlayerCastInitializer = Settings.CreateDropdown(category, sayPlayerCastSetting, GetCastModeOptions, CAA_SAY_PLAYER_CASTS_TOOLTIP);
+			InitCAAOption(sayPlayerCastInitializer);
+
+			local function SayPlayerCastOptionsModifiable()
+				return GetCVarNumberOrDefault("CAAPlayerCastMode") > 0;
+			end
+
+			-- Say Player Cast Format
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Cast);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Player, Enum.CombatAudioAlertType.Cast, value);
+				end
+
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Cast) do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_CAST_FORMAT",
+					Settings.VarType.Number, CAA_SAY_PLAYER_CASTS_FORMAT_LABEL, Constants.CAAConstants.CAAPlayerCastFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_PLAYER_CASTS_FORMAT_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayPlayerCastInitializer, SayPlayerCastOptionsModifiable);
+			end
+
+			-- Say Player Cast Min Cast TIme
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAAPlayerCastMinTime", Settings.VarType.Number, CAA_SAY_PLAYER_CASTS_MIN_CAST_TIME_LABEL);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAMinCastTimeMin, Constants.CAAConstants.CAAMinCastTimeMax, Constants.CAAConstants.CAAMinCastTimeStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_PLAYER_CASTS_MIN_CAST_TIME_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayPlayerCastInitializer, SayPlayerCastOptionsModifiable);
+			end
+
+			-- Say Player Cast Throttle
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.PlayerCast);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.PlayerCast, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_CAST_THROTTLE",
+					Settings.VarType.Number, CAA_SAY_PLAYER_CASTS_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_PLAYER_CASTS_THROTTLE_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayPlayerCastInitializer, SayPlayerCastOptionsModifiable);
+			end
+
+			-- Say Target Cast
+			local sayTargetCastSetting = Settings.RegisterCVarSetting(category, "CAATargetCastMode", Settings.VarType.Number, CAA_SAY_TARGET_CASTS_LABEL);
+			local sayTargetCastInitializer = Settings.CreateDropdown(category, sayTargetCastSetting, GetCastModeOptions, CAA_SAY_TARGET_CASTS_TOOLTIP);
+			InitCAAOption(sayTargetCastInitializer);
+
+			local function SayTargetCastOptionsModifiable()
+				return GetCVarNumberOrDefault("CAATargetCastMode") > 0;
+			end
+
+			-- Say Target Cast Format
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Cast);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetFormatSetting(Enum.CombatAudioAlertUnit.Target, Enum.CombatAudioAlertType.Cast, value);
+				end
+
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Cast) do
+						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_TARGET_CAST_FORMAT",
+					Settings.VarType.Number, CAA_SAY_TARGET_CASTS_FORMAT_LABEL, Constants.CAAConstants.CAATargetCastFormatDefault, GetValue, SetValue);
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_TARGET_CASTS_FORMAT_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayTargetCastInitializer, SayTargetCastOptionsModifiable);
+			end
+
+			-- Say Target Cast Min Cast TIme
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAATargetCastMinTime", Settings.VarType.Number, CAA_SAY_TARGET_CASTS_MIN_CAST_TIME_LABEL);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAMinCastTimeMin, Constants.CAAConstants.CAAMinCastTimeMax, Constants.CAAConstants.CAAMinCastTimeStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_TARGET_CASTS_MIN_CAST_TIME_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayTargetCastInitializer, SayTargetCastOptionsModifiable);
+			end
+
+			-- Say Target Cast Throttle
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetThrottle(Enum.CombatAudioAlertThrottle.TargetCast);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetThrottle(Enum.CombatAudioAlertThrottle.TargetCast, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_TARGET_CAST_THROTTLE",
+					Settings.VarType.Number, CAA_SAY_TARGET_CASTS_THROTTLE_LABEL, Constants.CAAConstants.CAAThrottleDefault, GetValue, SetValue);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAThrottleMin, Constants.CAAConstants.CAAThrottleMax, Constants.CAAConstants.CAAThrottleStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_TARGET_CASTS_THROTTLE_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayTargetCastInitializer, SayTargetCastOptionsModifiable);
+			end
+
+			-- Interrupt Alert
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAAInterruptCast", Settings.VarType.Number, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(0, LOC_OPTION_OFF);
+					container:Add(1, CAA_SAY_TARGET_CASTS_INTERRUPT_TEXT);
+					return container:GetData();
+				end
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_TARGET_CASTS_INTERRUPT_TOOLTIP);
+				InitCAAOption(initializer);
+			end
+
+			-- Successful Interrupt Alert
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAAInterruptCastSuccess", Settings.VarType.Number, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(0, LOC_OPTION_OFF);
+					container:Add(1, CAA_SAY_TARGET_CAST_INTERRUPT_SUCCESS_TEXT);
+					return container:GetData();
+				end
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_TOOLTIP);
+				InitCAAOption(initializer);
 			end
 		end
 	end

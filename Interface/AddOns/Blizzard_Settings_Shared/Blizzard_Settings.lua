@@ -141,7 +141,7 @@ function Settings.SetKeybindingsCategory(category)
 end
 
 function Settings.OpenToCategory(categoryID, scrollToElementName)
-	return SettingsInbound.OpenToCategory(categoryID, scrollToElementName);
+	C_SettingsUtil.OpenSettingsPanel(categoryID, scrollToElementName);
 end
 
 function Settings.SafeLoadBindings(bindingSet)

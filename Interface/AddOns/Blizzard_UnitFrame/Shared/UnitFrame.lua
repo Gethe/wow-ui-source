@@ -4,7 +4,7 @@ TempMaxHealthLossMixin = {};
 function TempMaxHealthLossMixin:InitalizeMaxHealthLossBar(healthBarsContainer, healthBar, optionalTempMaxHealthLossDivider)
 	self.myHealthBarContainer = healthBarsContainer;
 	self.healthBar = healthBar;
-	self:SetFillStyle("REVERSE");
+	self:SetFillStyle(Enum.StatusBarFillStyle.Reverse);
 	self:SetMinMaxValues(0, 1);
 	
 	if(optionalTempMaxHealthLossDivider) then

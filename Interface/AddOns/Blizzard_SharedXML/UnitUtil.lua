@@ -104,3 +104,13 @@ end
 function PlayerUtil.CanUseClassTalents()
 	return C_SpecializationInfo.CanPlayerUseTalentUI() and not IsPlayerInitialSpec();
 end
+
+function PlayerUtil.IsPlayerEffectivelyTank()
+	local assignedRole = UnitGroupRolesAssigned("player");
+	if assignedRole == "NONE" then
+		local spec = C_SpecializationInfo.GetSpecialization();
+		return spec and GetSpecializationRole(spec) == "TANK";
+	end
+
+	return assignedRole == "TANK";
+end

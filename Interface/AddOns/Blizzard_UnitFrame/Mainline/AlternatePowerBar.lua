@@ -14,6 +14,17 @@ ALT_POWER_BAR_PAIR_DISPLAY_INFO = {
 	},
 };
 
+function GetUnitSecondaryPowerInfo(unit)
+	local _className, class = UnitClass(unit);
+	if ALT_POWER_BAR_PAIR_DISPLAY_INFO[class] then
+		local primaryPowerType = UnitPowerType(unit);
+		local alternatePowerInfo = ALT_POWER_BAR_PAIR_DISPLAY_INFO[class][primaryPowerType];
+		if alternatePowerInfo then
+			return alternatePowerInfo.powerType, alternatePowerInfo.powerName;
+		end
+	end
+end
+
 -- Basic alternate power bar for displaying a specific UnitPower type
 -- Primarily intended to be the 3rd bar in a unit frame, beneath the unit's primary power bar
 AlternatePowerBarMixin = {};
@@ -45,19 +56,7 @@ function AlternatePowerBarMixin:OnEvent(event, ...)
 end
 
 function AlternatePowerBarMixin:EvaluateUnit()
-	local unit = self:GetUnit();
-	local _, class = UnitClass(unit);
-
-	local alternatePowerType, alternatePowerName = nil, nil;
-
-	if ALT_POWER_BAR_PAIR_DISPLAY_INFO[class] then
-		local primaryPowerType = UnitPowerType(unit);
-		local alternatePowerInfo = ALT_POWER_BAR_PAIR_DISPLAY_INFO[class][primaryPowerType];
-		if alternatePowerInfo then
-			alternatePowerType = alternatePowerInfo.powerType;
-			alternatePowerName = alternatePowerInfo.powerName;
-		end
-	end
+	local alternatePowerType, alternatePowerName = GetUnitSecondaryPowerInfo(self:GetUnit());
 
 	-- SetBarEnabled will take care of the update as necessary.
 	local skipUpdate = true;

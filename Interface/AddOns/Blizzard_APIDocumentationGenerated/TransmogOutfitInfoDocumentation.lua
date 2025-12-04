@@ -461,6 +461,15 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "HasPendingOutfitTransmogs",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasPending", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEquippedGearOutfitDisplayed",
 			Type = "Function",
 

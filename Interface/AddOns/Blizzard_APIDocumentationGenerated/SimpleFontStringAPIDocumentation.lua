@@ -8,6 +8,8 @@ local SimpleFontStringAPI =
 		{
 			Name = "CalculateScreenAreaFromCharacterSpan",
 			Type = "Function",
+			RequiresFontStringTextAccess = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -59,6 +61,8 @@ local SimpleFontStringAPI =
 			Name = "FindCharacterIndexAtCoordinate",
 			Type = "Function",
 			MayReturnNothing = true,
+			RequiresFontStringTextAccess = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

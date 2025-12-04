@@ -77,17 +77,16 @@
 		</Layer>
 
 		<Layer level="ARTWORK">
-			<Texture parentKey="RepeatableIcon" atlas="UI-RefreshButton" useAtlasSize="false" hidden="true">
-				<Size x="20" y="20"/>
+			<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true" hidden="true">
 				<Anchors>
-					<Anchor point="LEFT" x="45" y="10"/>
+					<Anchor point="LEFT" x="50" y="0"/>
 				</Anchors>
 			</Texture>
 
 			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">
 				<Size x="330" y="35"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RepeatableIcon" relativePoint="RIGHT" x="4" y="-9"/>
+					<Anchor point="LEFT" relativeKey="$parent.TrackingCheckmark" relativePoint="RIGHT" x="5" y="-10"/>
 				</Anchors>
 			</FontString>
 
@@ -117,6 +116,7 @@
 					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" x="-3" y="8"/>
 				</Anchors>
 			</Texture>
+			
 		</Layer>
 
 		<Layer level="HIGHLIGHT">
@@ -204,20 +204,51 @@
 					</MaskTexture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<Texture parentKey="IconBorder" hidden="true" atlas="housing-dashboard-fillbar-pip-complete" useAtlasSize="true">
+					<Texture parentKey="IconBorder" atlas="housing-dashboard-fillbar-pip-incomplete" useAtlasSize="true">
 					<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
 					</Texture>
+					<Texture parentKey="PipFlipbook" atlas="housing-dashboard-fillbar-pip-flipbook" alpha="0">
+						<Size x="47" y="47"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-2" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-dashboard-fillbar-pip-glow" useAtlasSize="true" alpha="0">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 				<Layer level="OVERLAY" textureSubLevel="1">
-					<Texture parentKey="EarnedCheckmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="true" hidden="true">
+					<Texture parentKey="EarnedCheckmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="2"/>
 						</Anchors>
 					</Texture>
+					<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+						<Size x="98" y="98"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.EarnedCheckmark" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ThresholdReached" setToFinalAlpha="false">
+					<FlipBook childKey="PipFlipbook" duration="1.25" order="1" flipBookRows="6" flipBookColumns="6" flipBookFrames="36" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="PipFlipbook" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Glow" duration="0.5" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Glow" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" startDelay="0.5" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+			</Animations>
 		</Frame>
 	</Frames>
 </Frame>
@@ -229,8 +260,7 @@
 		<Frame parentKey="Reward" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
 			<Layers>
 				<Layer level="BACKGROUND">
-					<Texture parentKey="IconBG" atlas="housing-dashboard-fillbar-icon-bg" useAtlasSize="false">
-						<Size x="50" y="50"/>
+					<Texture parentKey="IconBG" atlas="housing-dashboard-fillbar-icon-bg" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="3"/>
 						</Anchors>
@@ -252,10 +282,20 @@
 							<MaskedTexture childKey="Icon"/>
 						</MaskedTextures>
 					</MaskTexture>
+					<Texture parentKey="Flipbook" atlas="housing-dashboard-fillbar-icon-fx-flipbook" alpha="0">
+						<Size x="113" y="99"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 				<Layer level="OVERLAY">
-					<Texture parentKey="IconBorder" atlas="housing-dashboard-fillbar-icon-frame" useAtlasSize="false">
-						<Size x="56" y="56"/>
+					<Texture parentKey="FrameGlow" atlas="housing-dashboard-fillbar-icon-frame-glow" useAtlasSize="true" alpha="0">
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="IconBorder" atlas="housing-dashboard-fillbar-icon-frame" useAtlasSize="true">
 						<Anchors>
 							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
 						</Anchors>
@@ -267,8 +307,28 @@
 							<Anchor point="TOPLEFT" relativePoint="CENTER" x="10" y="-3"/>
 						</Anchors>
 					</Texture>
+					<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+						<Size x="98" y="98"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.EarnedCheckmark" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
 				</Layer>
 			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ThresholdReached" setToFinalAlpha="false">
+					<Alpha childKey="Flipbook" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<FlipBook childKey="Flipbook" duration="1.4" order="1" flipBookRows="8" flipBookColumns="5" flipBookFrames="38" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="FrameGlow" duration="1" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="FrameGlow" duration="0.5" order="1" startDelay="1" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" startDelay="0.5" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+			</Animations>
 		</Frame>
 	</Frames>
 </Frame>
@@ -401,6 +461,13 @@
 											<Anchor point="TOP" relativeKey="$parent.InitiativeName" relativePoint="BOTTOM" x="13" y="-2"/>
 										</Anchors>
 									</FontString>
+
+									<FontString parentKey="NeighborhoodGroupText" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+										<Size x="600" y="40"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.InitiativeDescription" relativePoint="BOTTOM" y="-55"/>
+										</Anchors>
+									</FontString>
 								</Layer>
 							</Layers>
 							<Frames>
@@ -483,13 +550,31 @@
 											<Texture parentKey="BarBackground" atlas="housing-dashboard-fillbar-bar-bg">
 												<Size x="1" y="35"/>
 												<Anchors>
-													<Anchor point="LEFT" x="-8" y="-1"/>
+													<Anchor point="LEFT" x="-5" y="-1"/>
 													<Anchor point="RIGHT" x="8"/>
 												</Anchors>
 											</Texture>
 										</Layer>
 									</Layers>
 									<Frames>
+										<Frame parentKey="TextContainer" frameStrata="HIGH" setAllPoints="true">
+											<Layers>
+												<Layer level="OVERLAY">
+													<FontString parentKey="Points" inherits="GameFontHighlight" text="ENDEAVOR_FAVOR">
+														<Size x="0" y="0"/>
+														<Anchors>
+															<Anchor point="LEFT" x="15" y="0"/>
+														</Anchors>
+													</FontString>
+													<FontString parentKey="ProgressText" inherits="GameFontHighlight" hidden="true">
+														<Size x="0" y="0"/>
+														<Anchors>
+															<Anchor point="RIGHT" x="-30" y="0"/>
+														</Anchors>
+													</FontString>
+												</Layer>
+											</Layers>
+										</Frame>
 										<Frame parentKey="BarEnd" useParentLevel="true" hidden="true">
 											<Size x="1" y="25"/>
 											<Layers>
@@ -501,8 +586,21 @@
 															<Anchor point="RIGHT"/>
 														</Anchors>
 													</Texture>
+													<Texture parentKey="Flipbook" alphaMode="ADD" atlas="housing-dashboard-fillbar-fill-threshold-flipbook" alpha="0">
+														<Size x="142" y="25"/>
+														<Anchors>
+															<Anchor point="CENTER"/>
+														</Anchors>
+													</Texture>
 												</Layer>
 											</Layers>
+											<Animations>
+												<AnimationGroup parentKey="Sparkles" setToFinalAlpha="true">
+													<FlipBook childKey="Flipbook" duration="1.5" order="1" flipBookRows="11" flipBookColumns="4" flipBookFrames="44" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+													<Alpha childKey="Flipbook" duration="1.4" order="1" fromAlpha="1" toAlpha="1"/>
+													<Alpha childKey="Flipbook" duration="0.2" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
 										</Frame>
 									</Frames>
 								</StatusBar>
@@ -803,6 +901,7 @@
 						<OnLoad method="OnLoad"/>
 						<OnShow method="OnShow"/>
 						<OnHide method="OnHide"/>
+						<OnUpdate method="OnUpdate"/>
 					</Scripts>
 				</Frame>
 

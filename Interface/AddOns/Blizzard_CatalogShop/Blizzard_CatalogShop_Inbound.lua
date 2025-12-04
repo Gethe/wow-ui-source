@@ -61,3 +61,7 @@ end
 function CatalogShopInboundInterface.SelectGameTimeProduct()
 	CatalogShopFrame:SetAttribute("selectgametime", true);
 end
+
+function CatalogShopInboundInterface.SelectSpecificProduct(productID)
+	CatalogShopFrame:SetAttribute("selectspecificproduct", productID);
+end

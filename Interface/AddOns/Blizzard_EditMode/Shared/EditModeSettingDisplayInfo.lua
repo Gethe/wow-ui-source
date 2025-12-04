@@ -963,7 +963,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 		-- Background
 		{
-			setting = Enum.EditModeEncounterEventsSetting.Background,
+			setting = Enum.EditModeEncounterEventsSetting.BackgroundTransparency,
 			name = HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_BACKGROUND,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 0,
@@ -1028,8 +1028,11 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeDamageMeterSetting.Style,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE,
 			type = Enum.EditModeSettingDisplayType.Dropdown,
+			hideSystemSelectionOnInteract = true,
 			options = {
 				{ value = Enum.DamageMeterStyle.Default, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_DEFAULT },
+				{ value = Enum.DamageMeterStyle.Bordered, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_BORDERED },
+				{ value = Enum.DamageMeterStyle.FullBackground, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_FULL_BACKGROUND },
 				{ value = Enum.DamageMeterStyle.Thin, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_THIN },
 			},
 		},
@@ -1065,7 +1068,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 150,
+			minValue = 80,
 			maxValue = 400,
 			stepSize = 1,
 			ConvertValue = ConvertValueDiffFromMin,
@@ -1105,6 +1108,19 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_TRANSPARENCY,
 			type = Enum.EditModeSettingDisplayType.Slider,
 			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Background
+		{
+			setting = Enum.EditModeDamageMeterSetting.BackgroundTransparency,
+			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_BACKGROUND,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 0,
 			maxValue = 100,
 			stepSize = 1,
 			ConvertValue = ConvertValueDefault,

@@ -99,7 +99,9 @@ end
 function TabSystemButtonMixin:OnClick()
 	local tabSystem = self:GetTabSystem();
 	tabSystem:PlayTabSelectSound();
-	tabSystem:SetTab(self:GetTabID());
+
+	local isUserAction = true;
+	tabSystem:SetTab(self:GetTabID(), isUserAction);
 end
 
 function TabSystemButtonMixin:Init(tabID, tabText)
@@ -195,8 +197,8 @@ function TabSystemMixin:SetTabSelectedCallback(tabSelectedCallback)
 	self.tabSelectedCallback = tabSelectedCallback;
 end
 
-function TabSystemMixin:SetTab(tabID)
-	if not self.tabSelectedCallback(tabID) then
+function TabSystemMixin:SetTab(tabID, isUserAction)
+	if not self.tabSelectedCallback(tabID, isUserAction) then
 		self:SetTabVisuallySelected(tabID);
 	end
 end

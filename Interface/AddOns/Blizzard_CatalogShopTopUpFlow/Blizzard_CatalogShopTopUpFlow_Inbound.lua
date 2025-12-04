@@ -4,11 +4,11 @@ SwapToGlobalEnvironment();
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
 CatalogShopTopUpFlowInboundInterface = {};
 
-function CatalogShopTopUpFlowInboundInterface.SetShown(shown, contextKey)
+function CatalogShopTopUpFlowInboundInterface.SetShown(shown, parentFrame)
 	local wasShown = CatalogShopTopUpFlowInboundInterface.IsShown();
-	local contextKeyString = contextKey and tostring(contextKey) or nil;
 	if shown then
-		CatalogShopTopUpFrame:SetAttribute("contextkey", contextKeyString);
+		local frameToUse = parentFrame or GetAppropriateTopLevelParent();
+		CatalogShopTopUpFrame:SetAttribute("parentframe", frameToUse);
 	end
 	CatalogShopTopUpFrame:SetAttribute("action", shown and "Show" or "Hide");
 end

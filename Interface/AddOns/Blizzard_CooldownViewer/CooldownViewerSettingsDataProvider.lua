@@ -4,7 +4,15 @@ function CooldownViewerSettingsDataProviderMixin:Init(layoutManager)
 	self:SetLayoutManager(layoutManager);
 	self:SwitchToBestLayoutForSpec();
 
-	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", self.SwitchToBestLayoutForSpec, self);
+	-- This can be called very easily when the CooldownViewerSettings are hidden
+	-- If the player switches specs the last active layout for a spec needs to be updated
+	-- in the save data, so ensure that happens and that the PendingChanges on the layout manager are cleared
+	local function OnTraitConfigUpdated()
+		self:SwitchToBestLayoutForSpec();
+		self:GetLayoutManager():SaveLayouts();
+	end
+
+	EventRegistry:RegisterFrameEventAndCallback("TRAIT_CONFIG_UPDATED", OnTraitConfigUpdated, self);
 
 	local function RefreshFromExternalUpdate()
 		self:MarkDirty();
@@ -170,32 +178,32 @@ end
 
 function CooldownViewerSettingsDataProviderMixin:ResetCurrentToDefaults()
 	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
-		layoutManager:ResetCurrentToDefaults()
+		layoutManager:ResetCurrentToDefaults();
 	end);
 end
 
 -- Non-destructive, just deactivates the current layout, but doesn't delete anything
 function CooldownViewerSettingsDataProviderMixin:UseDefaultLayout()
 	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
-		layoutManager:UseDefaultLayout()
+		layoutManager:UseDefaultLayout();
 	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:ResetToRestorePoint()
 	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
-		layoutManager:ResetToRestorePoint()
+		layoutManager:ResetToRestorePoint();
 	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SwitchToBestLayoutForSpec()
 	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
-		layoutManager:SwitchToBestLayoutForSpec()
+		layoutManager:SwitchToBestLayoutForSpec();
 	end);
 end
 
 function CooldownViewerSettingsDataProviderMixin:SetActiveLayoutByID(layoutID)
 	RunDataProviderCallbackThatRequiresLayoutNotifications(self, function(layoutManager)
-		layoutManager:SetActiveLayoutByID(layoutID)
+		layoutManager:SetActiveLayoutByID(layoutID);
 	end);
 end
 

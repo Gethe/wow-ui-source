@@ -13,24 +13,70 @@ function HousingMarketCartBraceMixin:InitBraces(hasTopBrace, hasBottomBrace)
 	end
 end
 
-local function GetPreviewAtlasName(selected, hovered, enabled)
+HousingMarketCartPriceMixin = {};
+
+function HousingMarketCartPriceMixin:GetCurrencyInfo()
+	local hearthsteelBalance = tonumber(C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE));
+	local hearthsteelIcon = "hearthsteel-icon-32x32";
+	local iconIsAtlas = true;
+
+	return hearthsteelBalance, hearthsteelIcon, iconIsAtlas;
+end
+
+function HousingMarketCartPriceMixin:GetPriceText(price, salePrice, playerCurrencyAmount)
+	local itemOnSale = salePrice and salePrice < price;
+	local priceText = "";
+	local salePriceText = "";
+	if playerCurrencyAmount then
+		if itemOnSale then
+			priceText = GRAY_FONT_COLOR:WrapTextInColorCode(price);
+			salePriceText = GREEN_FONT_COLOR:WrapTextInColorCode(salePrice);
+		else
+			priceText = WHITE_FONT_COLOR:WrapTextInColorCode(price);
+		end
+	end
+
+	return priceText, salePriceText;
+end
+
+
+local function GetPreviewAtlasName(elementData, hovered, enabled)
 	if not enabled then
 		return "perks-previewoff";
-	end 
+	end
 
-	if not selected then
-		if hovered then
+	if not elementData.selected then
+		-- Only respond to hover if not selected when there's a decorGUID to preview toggle on and off.
+		if hovered and elementData.decorGUID then
 			return "Perks-PreviewOn-Gray"
 		end
 
 		return "perks-previewoff";
 	end
-	
-	if selected and hovered then
+
+	if elementData.selected and hovered then
 		return "Perks-PreviewOn";
 	end
 
 	return nil;
+end
+
+PlaceInWorldButtonMixin = {};
+
+function PlaceInWorldButtonMixin:OnEnter()
+	self.HighlightIcon:Show();
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	local wrap = true;
+	GameTooltip_AddHighlightLine(GameTooltip, HOUSING_DECOR_PLACE_IN_WORLD_TOOLTIP_DESC, wrap);
+	GameTooltip_AddColoredLine(GameTooltip, HOUSING_DECOR_PLACE_IN_WORLD_TOOLTIP_INSTRUCTIONS, GREEN_FONT_COLOR, wrap);
+	GameTooltip:Show();
+end
+
+function PlaceInWorldButtonMixin:OnLeave()
+	self.HighlightIcon:Hide();
+
+	GameTooltip_Hide();
 end
 
 HousingMarketCartItemMixin = {};
@@ -43,11 +89,15 @@ function HousingMarketCartItemMixin:OnLoad()
 	end;
 
 	self.PlaceInWorldButton.GetEventData = function (_btn)
-		return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
+		return self:GetPlaceInWorldData();
 	end
 
 	self.selected = false;
 	self:Refresh();
+end
+
+function HousingMarketCartItemMixin:GetPlaceInWorldData()
+	return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
 end
 
 function HousingMarketCartItemMixin:InitItem(elementData)
@@ -60,7 +110,8 @@ function HousingMarketCartItemMixin:Refresh()
 		return;
 	end
 
-	self:SetEnabled(self.elementData.decorGUID);
+	-- Can't actually disable enable here since we need on click in the disabled state for drag
+	self.enabled = not not self.elementData.decorGUID;
 	self.PlaceInWorldButton:SetShown(not self.elementData.decorGUID);
 
 	self.ItemName:SetText(self.elementData.name or "");
@@ -70,6 +121,12 @@ function HousingMarketCartItemMixin:Refresh()
 	self:UpdatePreviewStatusIcon();
 end
 
+function HousingMarketCartItemMixin:OnDragStart()
+	if not self.elementData.decorGUID then
+		EventRegistry:TriggerEvent(HOUSING_MARKET_EVENT_NAMESPACE .. "." .. HousingMarketCartDataServiceEvents.PlaceInWorld, self:GetPlaceInWorldData());
+	end
+end
+
 function HousingMarketCartItemMixin:SetSelection(selected)
 	self:Refresh();
 end
@@ -77,7 +134,7 @@ end
 function HousingMarketCartItemMixin:OnEnter()
 	self.mouseHovered = true;
 
-	if not self:IsEnabled() then
+	if not self.enabled then
 		return;
 	end
 
@@ -87,20 +144,14 @@ end
 
 function HousingMarketCartItemMixin:OnLeave()
 	self.mouseHovered = false;
-
-	if not self:IsEnabled() then
-		return;
-	end
-
 	self.HighlightTexture:Hide();
 	self:UpdatePreviewStatusIcon();
 end
 
 function HousingMarketCartItemMixin:UpdatePreviewStatusIcon()
-	self.enabled = self:IsEnabled();
 	self.IconVignette:SetShown(not self.enabled or self.mouseHovered or not self.elementData.selected);
 	
-	self.PreviewStatusIcon:SetAtlas(GetPreviewAtlasName(self.elementData.selected, self.mouseHovered, self.enabled), TextureKitConstants.UseAtlasSize);
+	self.PreviewStatusIcon:SetAtlas(GetPreviewAtlasName(self.elementData, self.mouseHovered, self.enabled), TextureKitConstants.UseAtlasSize);
 
 	local showGoldBorder = self.enabled and (self.elementData.selected);
 	self.IconBorder:SetAtlas(showGoldBorder and "perks-border-square-gold" or "perks-border-square-gray");
@@ -192,12 +243,22 @@ HousingMarketCartBundleItemMixin = CreateFromMixins(HousingMarketCartBundleRegis
 
 function HousingMarketCartBundleItemMixin:OnLoad()
 	self.PlaceInWorldButton.GetEventData = function (_btn)
-		return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
+		return self:GetPlaceInWorldData();
 	end
 
 	-- These items don't have the remove button on them
 	self.selected = false;
 	self:Refresh();
+end
+
+function HousingMarketCartBundleItemMixin:GetPlaceInWorldData()
+	return { cartID = self.elementData.cartID, decorID = self.elementData.decorID, bundleCatalogShopProductID = self.elementData.bundleCatalogShopProductID };
+end
+
+function HousingMarketCartBundleItemMixin:OnDragStart()
+	if not self.elementData.decorGUID then
+		EventRegistry:TriggerEvent(HOUSING_MARKET_EVENT_NAMESPACE .. "." .. HousingMarketCartDataServiceEvents.PlaceInWorld, self:GetPlaceInWorldData());
+	end
 end
 
 function HousingMarketCartBundleItemMixin:InitItem(elementData)
@@ -239,10 +300,10 @@ function HousingMarketCartBundleItemMixin:OnLeave()
 end
 
 function HousingMarketCartBundleItemMixin:UpdatePreviewStatusIcon()
-	self.enabled = self:IsEnabled();
+	self.enabled = not not self.elementData.decorGUID;
 	self.VisualContainer.IconVignette:SetShown(not self.enabled or self.mouseHovered or not self.elementData.selected);
 	
-	self.VisualContainer.PreviewStatusIcon:SetAtlas(GetPreviewAtlasName(self.elementData.selected, self.mouseHovered, self.enabled), TextureKitConstants.UseAtlasSize);
+	self.VisualContainer.PreviewStatusIcon:SetAtlas(GetPreviewAtlasName(self.elementData, self.mouseHovered, self.enabled), TextureKitConstants.UseAtlasSize);
 
 	local showGoldBorder = self.enabled and (self.elementData.selected);
 	self.VisualContainer.IconBorder:SetAtlas(showGoldBorder and "perks-border-square-gold" or "perks-border-square-gray");

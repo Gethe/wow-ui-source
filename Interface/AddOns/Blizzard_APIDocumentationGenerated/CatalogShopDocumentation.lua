@@ -7,6 +7,22 @@ local CatalogShop =
 	Functions =
 	{
 		{
+			Name = "BulkPurchaseProducts",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canPurchaseProducts", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseCatalogShopInteraction",
 			Type = "Function",
 		},
@@ -82,6 +98,21 @@ local CatalogShop =
 			{
 				{ Name = "errorResultEnum", Type = "StoreError", Nilable = true },
 				{ Name = "errorResultRaw", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFirstCategoryByProductID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryInfo", Type = "CatalogShopCategoryInfo", Nilable = true },
 			},
 		},
 		{
@@ -227,14 +258,17 @@ local CatalogShop =
 			},
 		},
 		{
-			Name = "OpenCatalogShopInteraction",
+			Name = "OpenCatalogShopInteractionFromHouse",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
 
-			Arguments =
+			Returns =
 			{
-				{ Name = "shouldAllowMovement", Type = "bool", Nilable = false, Default = false },
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
 			},
+		},
+		{
+			Name = "OpenCatalogShopInteractionFromShop",
+			Type = "Function",
 
 			Returns =
 			{
@@ -295,6 +329,16 @@ local CatalogShop =
 
 	Events =
 	{
+		{
+			Name = "BulkPurchaseResultReceived",
+			Type = "Event",
+			LiteralName = "BULK_PURCHASE_RESULT_RECEIVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "wasSuccess", Type = "bool", Nilable = false },
+			},
+		},
 		{
 			Name = "CatalogShopAddPendingProduct",
 			Type = "Event",
@@ -529,6 +573,7 @@ local CatalogShop =
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
 				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
+				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "consumableQuantity", Type = "number", Nilable = true },
 			},
 		},

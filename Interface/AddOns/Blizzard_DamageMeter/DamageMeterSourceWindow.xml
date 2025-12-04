@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DamageMeterSourceWindowTemplate" mixin="DamageMeterSourceWindowMixin" resizable="true" virtual="true">
+	<Frame name="DamageMeterSourceWindowTemplate" mixin="DamageMeterSourceWindowMixin" resizable="true" virtual="true" frameStrata="HIGH">
 		<Size x="400" y="200"/>
 		<ResizeBounds>
 			<minResize>
@@ -12,27 +12,12 @@
 		</ResizeBounds>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Background" atlas="damagemeters-background" alpha="0">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10"/>
-						<Anchor point="BOTTOMRIGHT" x="-10"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Header" atlas="ui-damagemeters-header-bar">
-					<Size y="32"/>
-					<!-- Provided explicit height so scroll box can be resolved prior to first render. -->
+				<Texture parentKey="Background" atlas="common-dropdown-bg">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
-						<Anchor point="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString parentKey="Name" inherits="GameFontNormalMed1" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.Header"  x="20"/>
-					</Anchors>
-				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -60,9 +45,6 @@
 		<Animations>
 			<AnimationGroup parentKey="ShowResizeButton" setToFinalAlpha="true">
 				<Alpha childKey="ResizeButton" duration="0.25" order="1" fromAlpha="0" toAlpha="1" />
-			</AnimationGroup>
-			<AnimationGroup parentKey="ShowBackground" setToFinalAlpha="true">
-				<Alpha childKey="Background" duration="0.25" order="1" fromAlpha="0" toAlpha="0.5" />
 			</AnimationGroup>
 			<AnimationGroup parentKey="EmphasizeScrollBar" setToFinalAlpha="true">
 				<Alpha childKey="ScrollBar" duration="0.25" order="1" fromAlpha="0.3" toAlpha="1" />

@@ -1081,9 +1081,19 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDropdown()
 		EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(importLayoutButton, importLayoutDisableOnMaxLayouts, importLayoutDisableOnActiveChanges, layoutManager);
 
 		-- share
-		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_COPY_TO_CLIPBOARD, function()
+		local copyLayoutButton = rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_COPY_TO_CLIPBOARD, function()
 			self:CopyLayoutToClipboard(layoutManager:GetActiveLayout());
 		end);
+
+		local canCopyLayout = layoutManager:GetActiveLayout() ~= nil;
+		copyLayoutButton:SetEnabled(canCopyLayout);
+
+		if not canCopyLayout then
+			copyLayoutButton:SetTooltip(function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, COOLDOWN_VIEWER_SETTINGS_ERROR_CANNOT_COPY_DEFAULT_LAYOUT);
+				GameTooltip_AddErrorLine(tooltip, COOLDOWN_VIEWER_SETTINGS_ERROR_CANNOT_COPY_DEFAULT_LAYOUT_LINE);
+			end);
+		end
 	end);
 end
 
@@ -1353,6 +1363,7 @@ end
 
 function CooldownViewerSettingsMixin:OnHide()
 	self:CheckSaveCurrentLayout();
+	self:GetLayoutManager():DestroyRestorePoint();
 
 	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
 
@@ -1580,7 +1591,14 @@ function CooldownViewerSettingsMixin:SaveCurrentLayout()
 	local layoutManager = self:GetLayoutManager();
 
 	local savedSomething, isVerboseChange = layoutManager:SaveLayouts();
-	layoutManager:CreateRestorePoint();
+
+	-- If the user is actually editing layouts then we should create a restore point now, but
+	-- if the settings frame is hidden, like with a rename dialog or a spec change, don't create
+	-- a restore point since the user won't even expect a restore point to exist when they open
+	-- the layout editing frame the next time.
+	if self:IsShown() then
+		layoutManager:CreateRestorePoint();
+	end
 
 	if savedSomething and isVerboseChange then
 		UIErrorsFrame:AddExternalWarningMessage(COOLDOWN_VIEWER_SETTINGS_LAYOUT_SAVED_MESSAGE);
@@ -1604,8 +1622,7 @@ function CooldownViewerSettingsMixin:CheckSaveCurrentLayout()
 end
 
 function CooldownViewerSettingsMixin:UpdateSaveButtonStates()
-	local hasPendingChanges = self:GetLayoutManager():HasPendingChanges();
-	self.UndoButton:SetEnabled(hasPendingChanges);
+	self.UndoButton:SetEnabled(self:GetLayoutManager():CanUseRestorePoint());
 end
 
 local statusCodeToText =

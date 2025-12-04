@@ -1,9 +1,12 @@
+EncounterWarningsSystemDynamicEvents = {
+	"ENCOUNTER_WARNING",
+};
+
 EncounterWarningsSystemFrameMixin = CreateFromMixins(EditModeEncounterEventsSystemMixin, ResizeLayoutMixin);
 
 function EncounterWarningsSystemFrameMixin:OnLoad()
 	EditModeEncounterEventsSystemMixin.OnSystemLoad(self);
 
-	self:RegisterEvent("ENCOUNTER_WARNING");
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
 	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
 
@@ -14,7 +17,12 @@ function EncounterWarningsSystemFrameMixin:OnLoad()
 end
 
 function EncounterWarningsSystemFrameMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, EncounterWarningsSystemDynamicEvents);
 	ResizeLayoutMixin.OnShow(self);
+end
+
+function EncounterWarningsSystemFrameMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, EncounterWarningsSystemDynamicEvents);
 end
 
 function EncounterWarningsSystemFrameMixin:OnEvent(event, ...)
@@ -30,47 +38,32 @@ end
 
 function EncounterWarningsSystemFrameMixin:OnEncounterWarning(encounterWarningInfo)
 	if self:GetSystemSeverity() ~= encounterWarningInfo.severity then
+		-- This warning isn't appropriate for this frame.
 		return;
 	end
 
-	-- EETODO: There's some disgusting hacks in here. Right now the BCTs
-	-- we're getting down embed the icon as texture markup into the text.
-	--
-	-- Ideally, this needs splitting out to a separate field and sending down
-	-- the wire separate from the BCT. Until that's done, the iconFileID
-	-- we're getting down with the event is a hardcoded zero.
+	if not encounterWarningInfo.shouldShowWarning then
+		-- This warning has been hidden by user configuration.
+		return;
+	end
 
-	local originalText = encounterWarningInfo.text;
-	local iconFileAsset = string.match(originalText, "|T([^:|]+)");
-	local maintainColor = true;
-	local maintainBrackets = true;
-	local stripNewlines = true;
-	local maintainAtlases = false;
-	local unformattedText = StripHyperlinks(originalText, maintainColor, maintainBrackets, stripNewlines, maintainAtlases);
-
-	if encounterWarningInfo.iconFileID == 0 then
-		encounterWarningInfo.iconFileID = iconFileAsset;
+	if self:IsEditing() then
+		-- Don't allow external warnings to interrupt edit mode previews.
+		return;
 	end
 
 	-- The message sent down with the event may require formatting to include
 	-- caster and target name information. Of these, the target name should
-	-- be class colored - but we allow disabling that via a view setting.
+	-- be class colored.
 
 	local formattedCasterName = encounterWarningInfo.casterName;
-	local formattedTargetName;
+	local formattedTargetName = EncounterWarningsUtil.GetClassColoredTargetName(encounterWarningInfo);
 
-	if EncounterWarningsViewSettings.ShouldClassColorTargetNames(self.View) then
-		formattedTargetName = EncounterWarningsUtil.GetClassColoredTargetName(encounterWarningInfo);
-	else
-		formattedTargetName = encounterWarningInfo.targetName;
-	end
-
-	local formattedText = string.format(unformattedText, formattedCasterName, formattedTargetName);
-	encounterWarningInfo.text = formattedText;
+	local formattedText = string.format(encounterWarningInfo.text, formattedCasterName, formattedTargetName);
+	local trimmedText = string.trim(formattedText);
+	encounterWarningInfo.text = trimmedText;
 
 	self:ShowWarning(encounterWarningInfo);
-
-	-- EETODO: Investigate TTS routing.
 end
 
 function EncounterWarningsSystemFrameMixin:OnBossEmoteCleared()
@@ -109,16 +102,8 @@ function EncounterWarningsSystemFrameMixin:OnEditingChanged(isEditing)
 	self:UpdateVisibility();
 
 	if isEditing then
-		-- EETODO: Move this to native code and set up some static dummy spell recs.
-		local dummyWarningInfo = {
-			iconFileID = 134400,
-			severity = self:GetSystemSeverity(),
-			text = self.systemNameString,
-			tooltipSpellID = nil,
-			duration = nil,
-		};
-
-		self:ShowWarning(dummyWarningInfo);
+		local encounterWarningInfo = C_EncounterWarnings.GetEditModeWarningInfo(self:GetSystemSeverity());
+		self:ShowWarning(encounterWarningInfo);
 	else
 		self:ClearWarning();
 	end
@@ -173,17 +158,17 @@ function EncounterWarningsSystemFrameMixin:UpdateVisibility()
 end
 
 function EncounterWarningsSystemFrameMixin:UpdateSystemSettingIconSize()
-	local iconScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize) / 100;
-	EncounterWarningsViewSettings.SetIconScale(self.View, iconScale);
+	local iconScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.IconSize) * EncounterWarningsConstants.SizeToScaleMultiplier;
+	self:GetView():SetIconScale(iconScale);
 end
 
 function EncounterWarningsSystemFrameMixin:UpdateSystemSettingOverallSize()
-	local frameScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize) / 100;
+	local frameScale = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.OverallSize) * EncounterWarningsConstants.SizeToScaleMultiplier;
 	self:SetScale(frameScale);
 end
 
 function EncounterWarningsSystemFrameMixin:UpdateSystemSettingTransparency()
-	local frameAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency) / 100;
+	local frameAlpha = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Transparency) * EncounterWarningsConstants.TransparencyToAlphaMultiplier;
 	self:SetAlpha(frameAlpha);
 end
 
@@ -193,5 +178,5 @@ end
 
 function EncounterWarningsSystemFrameMixin:UpdateSystemSettingShowTooltips()
 	local tooltipsEnabled = self:GetSettingValueBool(Enum.EditModeEncounterEventsSetting.ShowTooltips);
-	EncounterWarningsViewSettings.SetTooltipsEnabled(self.View, tooltipsEnabled);
+	self:GetView():SetTooltipsEnabled(tooltipsEnabled);
 end

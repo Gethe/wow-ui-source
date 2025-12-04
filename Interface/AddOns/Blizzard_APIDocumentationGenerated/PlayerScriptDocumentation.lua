@@ -1602,6 +1602,12 @@ local PlayerScript =
 				{ Name = "inCombat", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "PlayerTargetDied",
+			Type = "Event",
+			LiteralName = "PLAYER_TARGET_DIED",
+			SynchronousEvent = true,
+		},
 	},
 
 	Tables =

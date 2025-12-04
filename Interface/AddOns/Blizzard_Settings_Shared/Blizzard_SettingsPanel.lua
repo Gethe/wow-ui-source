@@ -91,6 +91,7 @@ function SettingsPanelMixin:OnLoad()
 
 	CVarCallbackRegistry:RegisterCallbackForAllCVarUpdates(self.OnCVarChanged, self);
 
+	self:RegisterEvent("SETTINGS_PANEL_OPEN");
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
 
@@ -127,7 +128,15 @@ function SettingsPanelMixin:OnCVarChanged(cvar, cvarValue)
 end
 
 function SettingsPanelMixin:OnEvent(event, ...)
-	if event == "UPDATE_BINDINGS" then
+	if event == "SETTINGS_PANEL_OPEN" then
+		local openToCategoryID, scrollToElementName = ...;
+
+		if openToCategoryID ~= nil then
+			self:OpenToCategory(openToCategoryID, scrollToElementName);
+		else
+			self:Open();
+		end
+	elseif event == "UPDATE_BINDINGS" then
 		self:RenewKeybinds();
 	end
 end

@@ -87,21 +87,6 @@ local TextureUtils =
 			},
 		},
 		{
-			Name = "GetCraftingReagentQualityChatIcon",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "quality", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "textureMarkup", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

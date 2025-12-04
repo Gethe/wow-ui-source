@@ -349,6 +349,7 @@ local HousingDecorUI =
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
 				{ Name = "isNew", Type = "bool", Nilable = false, Documentation = { "Will be true if the decor is newly placed from storage, false if it was already placed and just moved" } },
+				{ Name = "isPreview", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -236,6 +236,7 @@ local HousingBasicModeUI =
 			{
 				{ Name = "hasSelectedTarget", Type = "bool", Nilable = false },
 				{ Name = "targetType", Type = "HousingBasicModeTargetType", Nilable = false },
+				{ Name = "isPreview", Type = "bool", Nilable = false },
 			},
 		},
 		{

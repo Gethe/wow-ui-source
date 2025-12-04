@@ -37,6 +37,21 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "AuraIsBigDefensive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isBigDefensive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AuraIsPrivate",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",

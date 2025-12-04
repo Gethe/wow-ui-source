@@ -57,7 +57,7 @@
 		<Size x="135" y="130"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="RewardCardBG" atlas="shop-card-wide-map" useAtlasSize="false" setAllPoints="true"/> <!--! TODO final art -->
+				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-reward-bar" useAtlasSize="true" setAllPoints="true"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" parentArray="Textures">
@@ -66,11 +66,17 @@
 						<Anchor point="BOTTOM" y="-20"/>
 					</Anchors>
 				</Texture>
+				
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture parentKey="LevelSquare" atlas="ui-journeys-delve-level-square" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="9"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Level" inherits="GameFontNormal">
 					<Anchors>
-						<Anchor point="TOP" y="3"/>
+						<Anchor point="CENTER" relativeKey="$parent.LevelSquare"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="RewardName" inherits="GameFontHighlight" justifyV="TOP">
@@ -88,26 +94,26 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" scale="0.89" virtual="true">
-		<Size x="22" y="39"/>
-		<NormalTexture atlas="CovenantSanctum-Renown-Arrow" useAtlasSize="true">
+	<Button name="RewardTrackButtonTemplate" mixin="RewardTrackButtonMixin" virtual="true">
+		<Size x="22" y="34"/>
+		<NormalTexture atlas="ui-journeys-delve-arrow-big-left" useAtlasSize="true">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</NormalTexture>
-		<PushedTexture atlas="CovenantSanctum-Renown-Arrow-Depressed" useAtlasSize="true">
+		<PushedTexture atlas="ui-journeys-delve-arrow-big-left-pressed" useAtlasSize="true">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</PushedTexture>
-		<DisabledTexture atlas="CovenantSanctum-Renown-Arrow-Disabled" useAtlasSize="true">
+		<DisabledTexture atlas="ui-journeys-delve-arrow-big-left-disable" useAtlasSize="true">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</DisabledTexture>
-		<HighlightTexture atlas="CovenantSanctum-Renown-Arrow-Hover" useAtlasSize="true" alphaMode="ADD">
+		<HighlightTexture atlas="ui-journeys-delve-arrow-big-left-hover" useAtlasSize="true" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
@@ -118,26 +124,26 @@
 		</Scripts>
 	</Button>
 
-	<Button name="RewardTrackJumpButtonTemplate" mixin="RewardTrackJumpButtonMixin" scale="0.7" virtual="true">
-		<Size x="32" y="38"/>
-		<NormalTexture atlas="CovenantSanctum-Renown-DoubleArrow" useAtlasSize="true">
+	<Button name="RewardTrackJumpButtonTemplate" mixin="RewardTrackJumpButtonMixin" virtual="true">
+		<Size x="22" y="22"/>
+		<NormalTexture atlas="ui-journeys-delve-arrow-small-left" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</NormalTexture>
-		<PushedTexture atlas="CovenantSanctum-Renown-DoubleArrow-Depressed" useAtlasSize="true">
+		<PushedTexture atlas="ui-journeys-delve-arrow-small-left-pressed" useAtlasSize="true">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</PushedTexture>
-		<DisabledTexture atlas="CovenantSanctum-Renown-DoubleArrow-Disabled" useAtlasSize="true">
+		<DisabledTexture atlas="ui-journeys-delve-arrow-small-left-disable" useAtlasSize="true">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</DisabledTexture>
-		<HighlightTexture atlas="CovenantSanctum-Renown-DoubleArrow-Hover" useAtlasSize="true" alphaMode="ADD">
+		<HighlightTexture atlas="ui-journeys-delve-arrow-small-left-hover" useAtlasSize="true" alphaMode="ADD">
 			<Anchors>
-				<Anchor point="CENTER" y="1"/>
+				<Anchor point="CENTER"/>
 			</Anchors>
 		</HighlightTexture>
 		<Scripts>
@@ -174,35 +180,38 @@
 						<Size x="200" y="50"/>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture parentKey="Divider" atlas="recipelist-divider" useAtlasSize="false" rotation="180"> <!--! TODO final art needed, will need to adjust this once we have art -->
-									<Size x="5" y="120"/>
+								<Texture parentKey="Divider" atlas="ui-journeys-paragon-level-divider" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="LEFT" y="10"/>
+										<Anchor point="LEFT" x="-10"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="Icon">
-									<Size x="40" y="39"/>
+								<Texture parentKey="LabelBackground" atlas="ui-journeys-paragon-level-bar" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="RIGHT"/>
+										<Anchor point="LEFT" relativeKey="$parent.Divider" relativePoint="RIGHT"/>
 									</Anchors>
 								</Texture>
-								<Texture parentKey="LabelBackground" atlas="shop-card-wide-map">
-									<Size x="130" y="43"/>
+								<Texture parentKey="Icon">
+									<Size x="40" y="40"/>
 									<Anchors>
-										<Anchor point="RIGHT" relativeKey="$parent.Icon" relativePoint="LEFT"/>
+										<Anchor point="RIGHT" relativeKey="$parent.LabelBackground" relativePoint="RIGHT" x="-12"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="LevelFrame" atlas="ui-journeys-paragon-level-frame" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LabelBackground" relativePoint="LEFT" x="10"/>
 									</Anchors>
 								</Texture>
 								<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="LEFT" text="JOURNEYS_MAX_RENOWN_LABEL">
 									<Size x="105" y="35"/>
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.LabelBackground"/>
+										<Anchor point="LEFT" relativeKey="$parent.LevelFrame" relativePoint="RIGHT" x="5"/>
 									</Anchors>
 								</FontString>
 							</Layer>
 							<Layer level="BORDER">
-								<Texture parentKey="IconBorder" atlas="CovenantSanctum-Renown-Icon-Border-Standard" useAtlasSize="true">
+								<Texture parentKey="IconBorder" atlas="ui-journeys-delve-rewardicon-square-frame" useAtlasSize="true">
 									<Size x="55" y="55"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.Icon"/>
@@ -212,7 +221,7 @@
 							<Layer level="OVERLAY">
 								<FontString parentKey="Level" inherits="GameFontNormal">
 									<Anchors>
-										<Anchor point="BOTTOM" relativeKey="$parent.IconBorder" y="3"/>
+										<Anchor point="CENTER" relativeKey="$parent.LevelFrame"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -277,16 +286,15 @@
 						<Size x="200" y="50"/>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture parentKey="Divider" atlas="recipelist-divider" useAtlasSize="false" rotation="180"> <!--! TODO final art needed, will need to adjust this once we have art -->
-									<Size x="5" y="120"/>
+								<Texture parentKey="Divider" atlas="ui-journeys-paragon-level-divider" useAtlasSize="true">
 									<Anchors>
-										<Anchor point="LEFT" y="10"/>
+										<Anchor point="LEFT" x="-10"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="Icon">
-									<Size x="40" y="39"/>
+									<Size x="40" y="40"/>
 									<Anchors>
 										<Anchor point="RIGHT"/>
 									</Anchors>
@@ -336,7 +344,7 @@
 					<KeyValue key="direction" value="-1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" relativePoint="LEFT" x="-4"/>
+					<Anchor point="RIGHT" relativePoint="LEFT"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="JumpLeftButton" inherits="RewardTrackJumpButtonTemplate">
@@ -344,7 +352,7 @@
 					<KeyValue key="direction" value="-1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.LeftButton" relativePoint="LEFT" x="-17"/>
+					<Anchor point="RIGHT" relativeKey="$parent.LeftButton" relativePoint="LEFT"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="RightButton" inherits="RewardTrackButtonTemplate">
@@ -352,7 +360,7 @@
 					<KeyValue key="direction" value="1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" x="4"/>
+					<Anchor point="LEFT" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
 			<Button parentKey="JumpRightButton" inherits="RewardTrackJumpButtonTemplate">
@@ -360,7 +368,7 @@
 					<KeyValue key="direction" value="1" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.RightButton" relativePoint="RIGHT" x="17"/>
+					<Anchor point="LEFT" relativeKey="$parent.RightButton" relativePoint="RIGHT"/>
 				</Anchors>
 			</Button>
 		</Frames>

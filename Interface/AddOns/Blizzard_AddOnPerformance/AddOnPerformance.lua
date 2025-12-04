@@ -4,7 +4,8 @@ StaticPopupDialogs["ADDON_PERFORMANCE_SPECIFIC_ERROR"] = {
 	button1 = DISABLE,
 	button2 = IGNORE_DIALOG,
 	OnAccept = function(dialog, data)
-		ShowUIPanel(AddonList);
+		C_AddOns.DisableAddOn(data);
+		ReloadUI();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -39,7 +40,8 @@ function AddOnPerformanceMixin:DisplayMessage(msg)
 		local message = string.format(ADDON_PERFORMANCE_SPECIFIC_WARNING_TEXT, msg.addOnName);
 		ChatFrameUtil.AddSystemMessage(message);
 	elseif msg.type == Enum.AddOnPerformanceMessageType.SpecificAddOnErrorDialog and msg.addOnName then
-		StaticPopup_Show("ADDON_PERFORMANCE_SPECIFIC_ERROR", msg.addOnName);
+		local textArg2 = nil;
+		StaticPopup_Show("ADDON_PERFORMANCE_SPECIFIC_ERROR", msg.addOnName, textArg2, msg.addOnName);
 	elseif msg.type == Enum.AddOnPerformanceMessageType.OverallAddOnErrorDialog then
 		StaticPopup_Show("ADDON_PERFORMANCE_OVERALL_ERROR");
 	else

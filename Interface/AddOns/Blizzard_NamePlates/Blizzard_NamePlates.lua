@@ -342,7 +342,7 @@ local function GetAuraFrameHeight(namePlateScale)
 end
 
 local function GetHealthBarHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block or Enum.NamePlateStyle.HealthFocus then
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block or namePlateStyle == Enum.NamePlateStyle.HealthFocus then
 		local largeHealthBarHeight = NamePlateConstants.LARGE_HEALTH_BAR_HEIGHT;
 		return largeHealthBarHeight * namePlateScale.vertical;
 	end
@@ -382,7 +382,7 @@ local function IsUnitNameInsideHealthBar(namePlateStyle)
 end
 
 local function IsUnitNameColored(namePlateStyle)
-	if namePlateStyle == Enum.NamePlateStyle.Default then
+	if namePlateStyle == Enum.NamePlateStyle.Legacy then
 		return true;
 	end
 
@@ -454,7 +454,6 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	NamePlateSetupOptions.spellNameInsideCastBar = IsSpellNameInsideCastBar(namePlateStyle);
 
 	NamePlateSetupOptions.classificationScale = namePlateScale.classification;
-	NamePlateSetupOptions.maxClassificationScale = 1.25;
 
 	-- Options specific to Enemy nameplates.
 	NamePlateEnemyFrameOptions.useClassColors = GetCVarBool("nameplateShowClassColor");
@@ -494,18 +493,6 @@ function NamePlateDriverMixin:UpdateNamePlateSize(namePlateStyle, namePlateScale
 	self:ForEachScriptNamePlate(function(frame)
 		frame:SetSize(namePlateWidth, namePlateHeight);
 	end);
-end
-
-NamePlateLevelDiffMixin = {};
-function NamePlateLevelDiffMixin:OnSizeChanged()
-	self.playerLevelDiffIcon:SetScale(1.0);
-	self.playerLevelDiffText:SetScale(1.0);
-
-	local effectiveScale = self:GetEffectiveScale();
-	if self.maxScale and effectiveScale > self.maxScale then
-		self.playerLevelDiffIcon:SetScale(self.maxScale / effectiveScale);
-		self.playerLevelDiffText:SetScale(self.maxScale / effectiveScale);
-	end
 end
 
 NamePlateBorderTemplateMixin = {};

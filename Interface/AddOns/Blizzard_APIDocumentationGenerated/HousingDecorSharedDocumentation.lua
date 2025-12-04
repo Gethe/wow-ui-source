@@ -28,6 +28,7 @@ local HousingDecorShared =
 				{ Name = "canBeRemoved", Type = "bool", Nilable = false, Documentation = { "False if this decor must remain placed in the house and cannot be placed back into house chest storage" } },
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false },
 				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false },
+				{ Name = "isRefundable", Type = "bool", Nilable = false },
 				{ Name = "dyeSlots", Type = "table", InnerType = "HousingDecorDyeSlot", Nilable = false, Documentation = { "Empty for decor that can't be dyed (see canBeCustomized)" } },
 				{ Name = "dataTagsByID", Type = "LuaValueVariant", Nilable = false, Documentation = { "Simple localized 'tag' strings that are primarily used for things like categorization and filtering" } },
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },

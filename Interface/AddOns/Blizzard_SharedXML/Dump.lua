@@ -106,9 +106,9 @@ local function prepSimple(val, context)
 		if (canaccessvalue(val) and ShouldTruncateString(val)) then
 			local more = #val - DEVTOOLS_LONG_STRING_CUTOFF;
 			val = string.sub(val, 1, DEVTOOLS_LONG_STRING_CUTOFF);
-			return EscapeQuotedCodes(string.format("%q...+%s",val,more));
+			return C_StringUtil.EscapeQuotedCodes(string.format("%q...+%s",val,more));
 		else
-			return EscapeQuotedCodes(string.format("%q",val));
+			return C_StringUtil.EscapeQuotedCodes(string.format("%q",val));
 		end
 	elseif (not canaccessvalue(val)) then
 		return string.format(FORMATS.opaqueTypeKeySecret, valType);

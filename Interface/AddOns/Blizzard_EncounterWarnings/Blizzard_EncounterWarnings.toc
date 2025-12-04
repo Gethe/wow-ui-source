@@ -4,7 +4,7 @@
 
 EncounterWarningsConstants.lua
 EncounterWarningsUtil.lua
-EncounterWarningsViewSettings.lua
+EncounterWarningsSettings.lua
 EncounterWarningsViewElements.lua
 EncounterWarningsViewElements.xml
 EncounterWarningsView.lua

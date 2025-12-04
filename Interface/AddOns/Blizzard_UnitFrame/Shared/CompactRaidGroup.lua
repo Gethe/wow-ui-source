@@ -79,7 +79,7 @@ function CompactRaidGroup_UpdateUnits(frame)
 				frameIndex = frameIndex + 1;
 			end
 		end
-		
+
 		local forcedShown = EditModeManagerFrame:AreRaidFramesForcedShown();
 
 		for i=frameIndex, MEMBERS_PER_RAID_GROUP do
@@ -94,8 +94,8 @@ end
 
 local function SetupBorderFrameAnchor(groupFrame, topUnitFrame, bottomUnitFrame)
 	groupFrame.borderFrame:ClearAllPoints();
-	groupFrame.borderFrame:SetPoint("TOPLEFT", topUnitFrame, "TOPLEFT", -3, 5);
-	groupFrame.borderFrame:SetPoint("BOTTOMRIGHT", bottomUnitFrame, "BOTTOMRIGHT", 8, -5);
+	groupFrame.borderFrame:SetPoint("TOPLEFT", topUnitFrame, "TOPLEFT", -2, 2);
+	groupFrame.borderFrame:SetPoint("BOTTOMRIGHT", bottomUnitFrame, "BOTTOMRIGHT", 2, -3);
 end
 
 function CompactRaidGroup_UpdateLayout(frame)

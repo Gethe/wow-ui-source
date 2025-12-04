@@ -7,6 +7,21 @@ local EncounterWarnings =
 	Functions =
 	{
 		{
+			Name = "GetEditModeWarningInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "warningInfo", Type = "EncounterWarningInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSoundKitForSeverity",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -84,11 +99,13 @@ local EncounterWarnings =
 				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false, SecretValue = true },
 				{ Name = "targetName", Type = "cstring", Nilable = false, SecretValue = true },
 				{ Name = "iconFileID", Type = "number", Nilable = false, SecretValue = true },
-				{ Name = "tooltipSpellID", Type = "number", Nilable = true, SecretValue = true },
+				{ Name = "tooltipSpellID", Type = "number", Nilable = false, SecretValue = true },
+				{ Name = "isDeadly", Type = "bool", Nilable = false, SecretValue = true },
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
 				{ Name = "shouldPlaySound", Type = "bool", Nilable = false },
 				{ Name = "shouldShowChatMessage", Type = "bool", Nilable = false },
+				{ Name = "shouldShowWarning", Type = "bool", Nilable = false },
 			},
 		},
 	},

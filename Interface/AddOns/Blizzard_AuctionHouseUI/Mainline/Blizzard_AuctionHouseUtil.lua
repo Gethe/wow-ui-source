@@ -49,17 +49,6 @@ local AuctionHouseTooltipType = {
 	SpecificPetLink = 4,
 };
 
-function AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey)
-	local itemDisplayCraftingQuality = nil;
-	local craftingQuality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemKey.itemID);
-
-	if craftingQuality then
-		itemDisplayCraftingQuality = C_Texture.GetCraftingReagentQualityChatIcon(craftingQuality);
-	end
-
-	return itemDisplayCraftingQuality;
-end
-
 local function GetAuctionHouseTooltipType(rowData)
 	if rowData.itemLink then
 		local linkType = LinkUtil.ExtractLink(rowData.itemLink);

@@ -23,6 +23,11 @@ local FullWidthTemplateKeySet = {
 	["CATALOG_ENTRY_INSTRUCTIONS"] = true,
 };
 
+local TemplateHeightAdjust = {
+	["CATALOG_ENTRY_BUNDLE"] = -8,
+	["CATALOG_ENTRY_BUNDLE_DIVIDER"] = -24,
+};
+
 -- Base Mixin
 BaseHousingCatalogMixin = {};
 
@@ -143,14 +148,17 @@ function ScrollingHousingCatalogMixin:OnLoad()
 	view:SetElementSizeCalculator(function(_dataIndex, elementData)
 		local templateKey = elementData.templateKey;
 
+		local heightAdjust = TemplateHeightAdjust[templateKey] or 0;
+
 		-- The divider should fill the whole width of the scroll box.
 		if FullWidthTemplateKeySet[templateKey] then
 			local template = Templates[elementData.templateKey].template;
 			local templateInfo = C_XMLUtil.GetTemplateInfo(template);
-			return 0, templateInfo.height;
+			return 0, templateInfo.height + heightAdjust;
 		end
 
-		return view:GetTemplateSizeFromElementData(elementData);
+		local templateWidth, templateHeight = view:GetTemplateSizeFromElementData(elementData);
+		return templateWidth, templateHeight + heightAdjust;
 	end);
 
 

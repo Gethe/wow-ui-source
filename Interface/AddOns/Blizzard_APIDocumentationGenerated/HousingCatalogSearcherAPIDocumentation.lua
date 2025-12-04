@@ -208,19 +208,6 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "IsIncludingMarketEntries",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "isIncludingMarketEntries", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "IsOwnedOnlyActive",
 			Type = "Function",
 
@@ -390,16 +377,6 @@ local HousingCatalogSearcherAPI =
 			Arguments =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "SetIncludeMarketEntries",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "includeMarketEntries", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -28,15 +28,6 @@ function NamePlateClassificationFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function NamePlateClassificationFrameMixin:OnSizeChanged()
-	self.classificationIndicator:SetScale(1.0);
-
-	local effectiveScale = self:GetEffectiveScale();
-	if self.maxScale and effectiveScale > self.maxScale then
-		self.classificationIndicator:SetScale(self.maxScale / effectiveScale);
-	end
-end
-
 function NamePlateClassificationFrameMixin:OnInfoDisplayCVarChanged()
 	self:UpdateClassificationIndicator();
 end

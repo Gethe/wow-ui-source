@@ -9,6 +9,7 @@ local HouseExteriorUI =
 		{
 			Name = "CancelActiveExteriorEditing",
 			Type = "Function",
+			Documentation = { "Cancels all in-progress editing of house exterior fixtures, which will deselect any active targets" },
 		},
 		{
 			Name = "GetCoreFixtureOptionsInfo",

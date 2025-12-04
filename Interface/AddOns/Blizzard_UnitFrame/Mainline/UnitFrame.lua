@@ -1023,6 +1023,11 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 					if ( isTanking ) then
 						display = UnitThreatPercentageOfLead(indicator.feedbackUnit, indicator.unit);
 					end
+					-- To more closely match nameplate behavior when showing threat color on the health bar, color
+					-- the indicator orange for tanks that have lost threat.
+					if (not isTanking and PlayerUtil.IsPlayerEffectivelyTank()) then
+						detailedStatus = 2; -- THREAT_STATE_ORANGE
+					end
 					if ( display and display ~= 0 ) then
 						numericIndicator.text:SetText(format("%1.0f", display).."%");
 						numericIndicator.bg:SetVertexColor(GetThreatStatusColor(detailedStatus));

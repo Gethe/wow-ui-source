@@ -1,14 +1,5 @@
 
-TestProductIDs = {
-	{productID=2023436},
-	{productID=2023431},
-	{productID=2023432},
-	{productID=2023435},
-	{productID=2023434},
-	{productID=2023433},
-};
-
-local SmallCardWidth = 195;
+local SmallCardWidth = 301;
 
 local function IsElementDataItemInfo(elementData)
 	return (elementData and (elementData.elementType ~= CatalogShopConstants.ScrollViewElementType.Header)) or false;
@@ -47,25 +38,26 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 		dataProvider:Insert(productInfo);
 		return true;
 	end
-	
+
 	local function InitializeButton(frame, productInfo)
 		local isSelected = self.selectionBehavior:IsElementDataSelected(productInfo);
 
 		frame:Init();
 		frame:SetProductInfo(productInfo);
 		frame:SetSelected(isSelected);
-		frame:SetScript("OnClick", function(button, buttonName)
-			self.selectionBehavior:ToggleSelect(button);
+		frame.PurchaseButton:SetScript("OnClick", function(button, buttonName)
+			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
+			CatalogShopTopUpFrame:Hide();
 		end);
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
-		factory("SmallCatalogShopProductWithBuyButtonCardTemplate", InitializeButton)
+		factory("SmallCatalogShopHousingCurrencyCardTemplate", InitializeButton)
 	end
 	self:SetupScrollView(GetProductContainerElementFactory);
 
 	local dataProvider = CreateDataProvider();
-	for _, product in ipairs(TestProductIDs) do
+	for _, product in ipairs(TopUpFlowConstants.TestProductIDs) do
 		local productID = product.productID;
 		local productAdded = addProductToDataProvider(dataProvider, productID);
 	end
@@ -81,10 +73,9 @@ function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)
 	local bottomPadding = 0;
 	local leftPadding = 0;
 	local rightPadding = 0;
-	local horizontalSpacing = 0;
-	local verticalSpacing = 0;
+	local elementSpacing = -10;
 
-	local view = CreateScrollBoxListLinearView(DefaultPad, DefaultPad, DefaultPad, DefaultPad, -0.05);
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 	view:SetVirtualized(false);
 	view:SetHorizontal(true);
 	view:SetElementFactory(elementFactory);
@@ -92,7 +83,6 @@ function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)
 		return SmallCardWidth;
 	end);
 	self.ScrollBox:Init(view);
-	--ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local function OnSelectionChanged(o, elementData, selected)
 		-- Cannot select, or it's meaningless to select a Header element

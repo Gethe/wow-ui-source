@@ -677,6 +677,7 @@ local glueScreenTags =
 		["VULPERA"] = true,
 		["DRACTHYR"] = true,
 		["EARTHENDWARF"] = true,
+		["HARRONIR"] = true,
 	},
 };
 

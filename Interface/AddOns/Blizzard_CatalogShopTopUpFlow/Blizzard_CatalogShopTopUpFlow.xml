@@ -1,59 +1,68 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="CatalogShopTopUpFrame" mixin="CatalogShopTopUpFrameMixin" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="DefaultPanelTemplate" enableMouse="true" hidden="true">
-		<Size x="1235" y="556"/>
+	<Frame name="DefaultDiamondMetalTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas ="shop-virtual currency-menu-bg" setAllPoints="true" >
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="BackgroundTexture" atlas="UI-DiamondDialogBox-Border" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10" />
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10" />
+					</Anchors>
+				</Texture>					
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="CatalogShopTopUpFrame" mixin="CatalogShopTopUpFrameMixin" frameStrata="FULLSCREEN_DIALOG" parent="UIParent" inherits="DefaultDiamondMetalTemplate" enableMouse="true" hidden="true">
+		<Size x="1832" y="656"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="0"/>
 		</Anchors>
-
 		<Layers>
 			<Layer>
-
 				<FontString parentKey="PurchaseTotal" inherits="Game40Font_Shadow2" text="CATALOG_SHOP_TOPUPFLOW_PURCHASE">
 					<Size x="500" y="50"/>
 					<Color color="WHITE_FONT_COLOR"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-50"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-100"/>
 					</Anchors>
 				</FontString>
-
 			</Layer>
 		</Layers>
-
-
-
 		<Frames>
-
-			<Frame parentKey="TopUpProductContainerFrame" mixin="TopUpProductContainerFrameMixin" frameLevel="500" >
-				<Size x="1170" y="267"/>
-					<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.PurchaseTotal" relativePoint="BOTTOM" x="0" y="0" />
-						<!--<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="12" y="0" />
-						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-12" y="0" />-->
-					</Anchors>
-
-				<Frames>
-					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true">
-						
-					</Frame>
-					<!--
-					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMLEFT" x="0" y="0"/>
-							<Anchor point="TOPRIGHT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-						</Anchors>
-					</EventFrame>
-					-->
-					
-				</Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="2" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
 			
+			<Frame parentKey="TopUpProductContainerFrame" mixin="TopUpProductContainerFrameMixin" frameLevel="500" >
+				<Size y="412"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PurchaseTotal" relativePoint="BOTTOM" x="0" y="-10" />
+						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="36" y="0" />
+						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-36" y="0" />
+					</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" setAllPoints="true" />
+				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
+			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" hidden="true">
 				<KeyValues>
 					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 				</KeyValues>
@@ -64,12 +73,7 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnKeyDown function="nop"/>
-					<OnKeyUp function="nop"/>
-				</Scripts>
 			</Frame>
-
 		</Frames>
 
 		<Scripts>
@@ -80,5 +84,5 @@
 			<OnAttributeChanged method="OnAttributeChanged" />
 		</Scripts>
 	</Frame>
-	
+
 </Ui>

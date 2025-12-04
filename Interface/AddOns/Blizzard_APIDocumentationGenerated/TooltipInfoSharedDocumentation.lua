@@ -26,9 +26,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 43,
+			NumValues = 44,
 			MinValue = 0,
-			MaxValue = 42,
+			MaxValue = 43,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -74,6 +74,7 @@ local TooltipInfoShared =
 				{ Name = "GemSocketEnchantment", Type = "TooltipDataLineType", EnumValue = 40 },
 				{ Name = "ItemLevel", Type = "TooltipDataLineType", EnumValue = 41 },
 				{ Name = "ItemUpgradeLevel", Type = "TooltipDataLineType", EnumValue = 42 },
+				{ Name = "SpellPassive", Type = "TooltipDataLineType", EnumValue = 43 },
 			},
 		},
 		{

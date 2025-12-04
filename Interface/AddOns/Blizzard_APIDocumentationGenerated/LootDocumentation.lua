@@ -163,6 +163,16 @@ local Loot =
 			},
 		},
 		{
+			Name = "LegacyLootRulesChanged",
+			Type = "Event",
+			LiteralName = "LEGACY_LOOT_RULES_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isLegacyLootModeEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "LootBindConfirm",
 			Type = "Event",
 			LiteralName = "LOOT_BIND_CONFIRM",

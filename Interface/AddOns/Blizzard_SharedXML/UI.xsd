@@ -158,6 +158,15 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="StatusBarFillStyle">
+		<xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="Standard"/>
+            <xs:enumeration value="StandardNoRangeFill"/>
+            <xs:enumeration value="Center"/>
+            <xs:enumeration value="Reverse"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="PROPAGATE_MOUSE">
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="Motion"/>
@@ -885,6 +894,7 @@
 				<xs:attribute name="orientation" type="ui:ORIENTATION" default="HORIZONTAL"/>
 				<xs:attribute name="rotatesTexture" type="xs:boolean" default="false"/>
 				<xs:attribute name="reverseFill" type="xs:boolean" default="false"/>
+				<xs:attribute name="fillStyle" type="ui:StatusBarFillStyle" default="Standard"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

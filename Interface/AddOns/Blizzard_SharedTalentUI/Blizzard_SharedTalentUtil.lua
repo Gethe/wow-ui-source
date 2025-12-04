@@ -630,7 +630,7 @@ C_Traits.GetConditionInfo = function (...)
 
 		-- Designers can use tokens (e.g. $@spellname1234) for condition tooltips and the parsing code
 		-- automatically applies colorization that isn't desired so remove it prior to coloring the entire string red.
-		local strippedTooltipText = StripHyperlinks(tooltipText);
+		local strippedTooltipText = C_StringUtil.StripHyperlinks(tooltipText);
 
 		local coloredTooltipText = RED_FONT_COLOR:WrapTextInColorCode(strippedTooltipText);
 		return coloredTooltipText;

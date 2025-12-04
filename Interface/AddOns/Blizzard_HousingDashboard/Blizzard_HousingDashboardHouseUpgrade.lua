@@ -32,8 +32,12 @@ end
 --These two asynchronous events can happen in either order and both need to happen before SelectLevel is called.
 function HousingUpgradeFrameMixin:OnEvent(event, ...)
 	if event == "HOUSE_LEVEL_FAVOR_UPDATED" then
+		-- Only update if this event is for the house we're actually looking at
+		-- Things like decor acquisition bonuses update all owned houses at once
 		local houseLevelFavor = ...;
-		self:SelectHouseLevel(houseLevelFavor);
+		if houseLevelFavor and self.houseInfo and houseLevelFavor.houseGUID == self.houseInfo.houseGUID then
+			self:SelectHouseLevel(houseLevelFavor);
+		end
 	elseif event == "RECEIVED_HOUSE_LEVEL_REWARDS" then
 		local level, rewards = ...;
 		self.houseLevelRewardInfos[level].rewards = rewards;
@@ -60,7 +64,7 @@ function HousingUpgradeFrameMixin:AllRewardsLoaded()
 end
 
 function HousingUpgradeFrameMixin:OnShow()
-	self.CurrentLevelFrame.HouseBarFrame.Bar.BarFill:OnUpdate();
+	self.CurrentLevelFrame.HouseBarFrame.Bar.BarFill:UpdateFill();
 	EventRegistry:TriggerEvent("HousingUpgradeFrame.Shown");
 end
 
@@ -118,7 +122,7 @@ function HousingUpgradeFrameMixin:SelectHouseLevel(houseLevelFavor)
 	local BarFill = self.CurrentLevelFrame.HouseBarFrame.Bar.BarFill;
 	BarFill:SetHouseLevelFavor(self.actualLevel, houseLevelFavor);
 	if self:IsVisible() then
-		BarFill:OnUpdate();
+		BarFill:UpdateFill();
 	end
 end
 
@@ -499,11 +503,12 @@ function HouseUpgradeProgressBarMixin:DoToEdges(name, ...)
 	flipBook[name](flipBook, ...);
 end
 
-function HouseUpgradeProgressBarMixin:OnUpdate()
+function HouseUpgradeProgressBarMixin:UpdateFill()
 	local startingPercentage = self.currentPercentage;
 	local endingPercentage = self.targetPercentage;
 	local diff = startingPercentage - endingPercentage;
 	if diff == 0 then
+		self:StopCurrentAnimation();
 		return;
 	end
 
@@ -518,29 +523,43 @@ function HouseUpgradeProgressBarMixin:OnUpdate()
 	local function UpdateBar(elapsedTime, duration)
 		local timePercent = elapsedTime / duration;
 		local newPercentage = math.min(startingPercentage + EasingUtil.InOutQuartic(timePercent) * (endingPercentage - startingPercentage), 1.0);
-		
 		UpdateGivenPercentage(newPercentage);
 	end
 
-	ScriptAnimationUtil.StartScriptAnimation(self, UpdateBar, BAR_ANIM_TIME, GenerateClosure(self.OnAnimationFinished, self));
+	-- Interrupt any previously started script animations, otherwise StartScriptAnimation won't actually work
+	if self.cancelAnimCallback then
+		self.cancelAnimCallback();
+		self.cancelAnimCallback = nil;
+	end
+
+	self.cancelAnimCallback = ScriptAnimationUtil.StartScriptAnimation(self, UpdateBar, BAR_ANIM_TIME, GenerateClosure(self.OnAnimationFinished, self));
 	self.BarAnimation:Restart();
 end
 
 function HouseUpgradeProgressBarMixin:OnHide()
+	self:StopCurrentAnimation();
+end
+
+function HouseUpgradeProgressBarMixin:StopCurrentAnimation()
 	if self.loopSoundHandle then
 		StopSound(self.loopSoundHandle);
 		self.loopSoundHandle = nil;
 	end
+
+	if self.cancelAnimCallback then
+		self.cancelAnimCallback();
+		self.cancelAnimCallback = nil;
+	end
 end
 
 function HouseUpgradeProgressBarMixin:OnAnimationFinished()
+	local wasSoundLoopActive = self.loopSoundHandle ~= nil;
+	-- OnAnimationFinished will be called again if the cancel callback is called, so just nil it here
+	self.cancelAnimCallback = nil;
+	self:StopCurrentAnimation();
 
-	if self.loopSoundHandle then
-		StopSound(self.loopSoundHandle);
-		self.loopSoundHandle = nil;
-		if self:IsVisible() then
-			PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
-		end
+	if wasSoundLoopActive and self:IsVisible() then
+		PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_EXPERIENCE_GAIN_STOP);
 	end
 	self.finishAnimCallback();
 end
@@ -549,7 +568,7 @@ function HouseUpgradeProgressBarMixin:SetHouseLevelFavor(level, houseLevelFavor)
 	local neededForPreviousLevel = C_Housing.GetHouseLevelFavorForLevel(level);
 	local neededForNextLevel = C_Housing.GetHouseLevelFavorForLevel(level + 1);
 	local neededForThisLevel = neededForNextLevel - neededForPreviousLevel;
-
+	
 	local basePercentage = neededForThisLevel == 0 and 1 or ((houseLevelFavor.houseFavor - neededForPreviousLevel) / neededForThisLevel);
 	basePercentage = basePercentage > 1 and 1 or basePercentage;
 	-- The bottom portion of the circular progress bar is covered

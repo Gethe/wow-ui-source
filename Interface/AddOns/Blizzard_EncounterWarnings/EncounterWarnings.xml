@@ -16,6 +16,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
@@ -42,7 +43,6 @@
 		<KeyValues>
 			<KeyValue key="minimumWidth" value="500" type="number"/>
 			<KeyValue key="minimumHeight" value="36" type="number"/>
-			<!-- EETODO: Enum rename? This also means renaming globalstrings though. -->
 			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.NormalWarnings" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_NORMAL_WARNINGS" type="global"/>
 		</KeyValues>

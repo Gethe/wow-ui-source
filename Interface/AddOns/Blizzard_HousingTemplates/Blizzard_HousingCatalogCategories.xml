@@ -30,18 +30,36 @@
 
 	<Button name="BaseHousingCatalogSubcategoryTemplate" inherits="BaseHousingCatalogCategoryTemplate" virtual="true">
 		<Size x="54" y="54"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="SelectedBackground" atlas="house-chest-active-nav_selected-bg-glow" useAtlasSize="false" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
-					<Anchors>
-						<Anchor point="TOP" y="10"/>
-						<Anchor point="BOTTOM" y="-10"/>
-						<Anchor point="LEFT" relativeKey="$parent.$parent"/>
-						<Anchor point="RIGHT" relativeKey="$parent.$parent"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame parentKey="SelectedBackground" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="TOP" y="10"/>
+					<Anchor point="BOTTOM" y="-10"/>
+					<Anchor point="LEFT" relativeKey="$parent.$parent"/>
+					<Anchor point="RIGHT" relativeKey="$parent.$parent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="FlipbookSparkle" atlas="house-chest-active-nav-highlight-flipbook">
+							<Size x="76" y="82"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Highlight" atlas="house-chest-active-nav_selected-bg-glow" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlipbookSparkleAnim" looping="REPEAT">
+						<FlipBook childKey="FlipbookSparkle" duration="2" order="1" flipBookRows="8" flipBookColumns="6" flipBookFrames="48" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
 	</Button>
 
 	<Button name="HousingCatalogCategoryTemplate" mixin="HousingCatalogCategoryMixin" inherits="BaseHousingCatalogCategoryTemplate" virtual="true">

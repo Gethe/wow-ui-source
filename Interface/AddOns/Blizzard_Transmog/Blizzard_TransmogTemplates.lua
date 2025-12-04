@@ -63,14 +63,19 @@ function TransmogOutfitEntryMixin:Init(elementData)
 	self.OutfitIcon.Icon:SetTexture(elementData.icon);
 
 	self.OutfitIcon:SetScript("OnClick", function(_button, buttonName)
-		local allowRemoveOutfit = true;
-		local toggleLock = false;
+		local function ClickCallback()
+			local allowRemoveOutfit = true;
+			local toggleLock = false;
 
-		if buttonName == "RightButton" then
-			toggleLock = true;
-		end
+			if buttonName == "RightButton" then
+				toggleLock = true;
+			end
 
-		C_TransmogOutfitInfo.ChangeDisplayedOutfit(elementData.outfitID, Enum.TransmogSituationTrigger.Manual, toggleLock, allowRemoveOutfit);
+			C_TransmogOutfitInfo.ChangeDisplayedOutfit(elementData.outfitID, Enum.TransmogSituationTrigger.Manual, toggleLock, allowRemoveOutfit);
+		end;
+
+		local includeViewedOutfit = true;
+		self:CheckPendingAction(ClickCallback, includeViewedOutfit);
 	end);
 
 	local activeOutfitID = C_TransmogOutfitInfo.GetActiveOutfitID();
@@ -117,12 +122,24 @@ end
 
 function TransmogOutfitEntryMixin:SelectEntry()
 	local elementData = self:GetElementData();
-	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
-	if not elementData or elementData.outfitID == viewedOutfitID then
+	if not elementData then
 		return;
 	end
 
-	C_TransmogOutfitInfo.ChangeViewedOutfit(elementData.outfitID);
+	local function SelectCallback()
+		-- Call the click callback regardless, for things like changing tabs even if selecting the same outfit.
+		elementData.onClickCallback();
+
+		local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+		if elementData.outfitID == viewedOutfitID then
+			return;
+		end
+
+		C_TransmogOutfitInfo.ChangeViewedOutfit(elementData.outfitID);
+	end;
+
+	local includeViewedOutfit = false;
+	self:CheckPendingAction(SelectCallback, includeViewedOutfit);
 end
 
 function TransmogOutfitEntryMixin:OpenEditPopup()
@@ -131,7 +148,27 @@ function TransmogOutfitEntryMixin:OpenEditPopup()
 		return;
 	end
 
-	elementData.onEditCallback();
+	local includeViewedOutfit = true;
+	self:CheckPendingAction(elementData.onEditCallback, includeViewedOutfit);
+end
+
+function TransmogOutfitEntryMixin:CheckPendingAction(callback, includeViewedOutfit)
+	local elementData = self:GetElementData();
+	if not elementData or not callback then
+		return;
+	end
+
+	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+	local checkPending = includeViewedOutfit or elementData.outfitID ~= viewedOutfitID;
+
+	if checkPending and (C_TransmogOutfitInfo.HasPendingOutfitTransmogs() or C_TransmogOutfitInfo.HasPendingOutfitSituations()) then
+		local dialogData = {
+			confirmCallback = callback
+		};
+		StaticPopup_Show("TRANSMOG_PENDING_CHANGES", nil, nil, dialogData);
+	else
+		callback();
+	end
 end
 
 function TransmogOutfitEntryMixin:UpdateCooldown()
@@ -1042,16 +1079,13 @@ function TransmogItemModelMixin:UpdateItemBorder()
 	end
 
 	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
+
+	local sourceID = appearanceInfo.sourceID;
 	if selectedSlotData.transmogLocation:IsAppearance() then
-		local sourceID = itemsCollectionFrame:GetAnAppearanceSourceFromVisual(appearanceInfo.visualID, nil);
-		if outfitSlotInfo and sourceID == outfitSlotInfo.transmogID and outfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Unassigned and outfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Equipped then
-			if outfitSlotInfo.hasPending then
-				transmogStateAtlas = "transmog-itemcard-transmogrified-pending";
-			else
-				transmogStateAtlas = "transmog-itemcard-transmogrified";
-			end
-		end
-	elseif outfitSlotInfo and appearanceInfo.sourceID == outfitSlotInfo.transmogID then
+		sourceID = itemsCollectionFrame:GetAnAppearanceSourceFromVisual(appearanceInfo.visualID, nil);
+	end
+
+	if outfitSlotInfo and sourceID == outfitSlotInfo.transmogID and outfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Unassigned and outfitSlotInfo.displayType ~= Enum.TransmogOutfitDisplayType.Equipped then
 		if outfitSlotInfo.hasPending then
 			transmogStateAtlas = "transmog-itemcard-transmogrified-pending";
 		else
@@ -1459,20 +1493,21 @@ function TransmogCustomSetModelMixin:OnMouseUp(button)
 			end);
 		end
 
+		local itemTransmogInfoList = self.elementData.collectionFrame:GetItemTransmogInfoListCallback();
 		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_RENAME, function()
 			local name, _icon = C_TransmogCollection.GetCustomSetInfo(self.elementData.customSetID);
-			local data = { name = name, customSetID = self.elementData.customSetID, itemTransmogInfoList = self.elementData.collectionFrame:GetItemTransmogInfoListCallback() };
+			local data = { name = name, customSetID = self.elementData.customSetID, itemTransmogInfoList = itemTransmogInfoList };
 			StaticPopup_Show("TRANSMOG_CUSTOM_SET_NAME", nil, nil, data);
 		end);
 
-		rootDescription:CreateDivider();
+		local hasValidAppearance = TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList);
+		if hasValidAppearance then
+			rootDescription:CreateDivider();
 
-		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_REPLACE, function()
-			local itemTransmogInfoList = self.elementData.collectionFrame:GetItemTransmogInfoListCallback();
-			if itemTransmogInfoList then
+			rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_REPLACE, function()
 				C_TransmogCollection.ModifyCustomSet(self.elementData.customSetID, itemTransmogInfoList);
-			end
-		end);
+			end);
+		end
 
 		rootDescription:CreateDivider();
 

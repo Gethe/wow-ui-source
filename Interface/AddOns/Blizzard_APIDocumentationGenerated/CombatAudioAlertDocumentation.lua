@@ -7,18 +7,34 @@ local CombatAudioAlert =
 	Functions =
 	{
 		{
-			Name = "GetCurrentUnitHealthFormat",
+			Name = "GetFormatSetting",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "unit", Type = "CombatAudioAlertUnit", Nilable = false },
+				{ Name = "alertType", Type = "CombatAudioAlertType", Nilable = false },
 			},
 
 			Returns =
 			{
 				{ Name = "formatVal", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetResourceSettingForCurrentSpec",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setting", Type = "CombatAudioAlertResourceSetting", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -46,7 +62,7 @@ local CombatAudioAlert =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "CombatAudioAlertUnit", Nilable = false },
+				{ Name = "throttleType", Type = "CombatAudioAlertThrottle", Nilable = false },
 			},
 
 			Returns =
@@ -55,13 +71,34 @@ local CombatAudioAlert =
 			},
 		},
 		{
-			Name = "SetCurrentUnitHealthFormat",
+			Name = "IsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetFormatSetting",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "unit", Type = "CombatAudioAlertUnit", Nilable = false },
+				{ Name = "alertType", Type = "CombatAudioAlertType", Nilable = false },
+				{ Name = "newVal", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetResourceSettingForCurrentSpec",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setting", Type = "CombatAudioAlertResourceSetting", Nilable = false },
 				{ Name = "newVal", Type = "number", Nilable = false },
 			},
 		},
@@ -92,8 +129,18 @@ local CombatAudioAlert =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "CombatAudioAlertUnit", Nilable = false },
+				{ Name = "throttleType", Type = "CombatAudioAlertThrottle", Nilable = false },
 				{ Name = "newVal", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SpeakText",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -105,6 +152,33 @@ local CombatAudioAlert =
 	Tables =
 	{
 		{
+			Name = "CombatAudioAlertCastState",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Off", Type = "CombatAudioAlertCastState", EnumValue = 0 },
+				{ Name = "OnCastStart", Type = "CombatAudioAlertCastState", EnumValue = 1 },
+				{ Name = "OnCastEnd", Type = "CombatAudioAlertCastState", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertResourceSetting",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Resource1Percent", Type = "CombatAudioAlertResourceSetting", EnumValue = 0 },
+				{ Name = "Resource1Format", Type = "CombatAudioAlertResourceSetting", EnumValue = 1 },
+				{ Name = "Resource2Percent", Type = "CombatAudioAlertResourceSetting", EnumValue = 2 },
+				{ Name = "Resource2Format", Type = "CombatAudioAlertResourceSetting", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "CombatAudioAlertTargetDeathBehavior",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -114,6 +188,35 @@ local CombatAudioAlert =
 			{
 				{ Name = "Default", Type = "CombatAudioAlertTargetDeathBehavior", EnumValue = 0 },
 				{ Name = "SayTargetDead", Type = "CombatAudioAlertTargetDeathBehavior", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertThrottle",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Sample", Type = "CombatAudioAlertThrottle", EnumValue = 0 },
+				{ Name = "PlayerHealth", Type = "CombatAudioAlertThrottle", EnumValue = 1 },
+				{ Name = "TargetHealth", Type = "CombatAudioAlertThrottle", EnumValue = 2 },
+				{ Name = "PlayerCast", Type = "CombatAudioAlertThrottle", EnumValue = 3 },
+				{ Name = "TargetCast", Type = "CombatAudioAlertThrottle", EnumValue = 4 },
+				{ Name = "PlayerResource1", Type = "CombatAudioAlertThrottle", EnumValue = 5 },
+				{ Name = "PlayerResource2", Type = "CombatAudioAlertThrottle", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Health", Type = "CombatAudioAlertType", EnumValue = 0 },
+				{ Name = "Cast", Type = "CombatAudioAlertType", EnumValue = 1 },
 			},
 		},
 		{

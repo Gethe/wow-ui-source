@@ -101,21 +101,6 @@ local Localization =
 			},
 		},
 		{
-			Name = "FloorToNearestString",
-			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
-
-			Arguments =
-			{
-				{ Name = "number", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "string", Nilable = false },
-			},
-		},
-		{
 			Name = "GetNumDeclensionSets",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -153,21 +138,6 @@ local Localization =
 			Returns =
 			{
 				{ Name = "result", Type = "LuaValueVariant", Nilable = false },
-			},
-		},
-		{
-			Name = "RoundToNearestString",
-			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
-
-			Arguments =
-			{
-				{ Name = "number", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "string", Nilable = false },
 			},
 		},
 		{

@@ -2,6 +2,7 @@ local StringUtil =
 {
 	Name = "StringUtil",
 	Type = "System",
+	Namespace = "C_StringUtil",
 
 	Functions =
 	{
@@ -22,6 +23,36 @@ local StringUtil =
 			},
 		},
 		{
+			Name = "FloorToNearestString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "RoundToNearestString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "StripHyperlinks",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -38,6 +69,40 @@ local StringUtil =
 			Returns =
 			{
 				{ Name = "stripped", Type = "stringView", Nilable = false },
+			},
+		},
+		{
+			Name = "TruncateWhenZero",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Formats the given number to a string as an integer (rounding down). If the integer is zero, returns an empty string." },
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "WrapString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a string with 'prefix' and 'suffix' joined to 'infix' iif 'infix' is not an empty string. Else, an empty string is returned." },
+
+			Arguments =
+			{
+				{ Name = "infix", Type = "stringView", Nilable = false },
+				{ Name = "prefix", Type = "stringView", Nilable = true },
+				{ Name = "suffix", Type = "stringView", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 	},

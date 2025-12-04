@@ -4,6 +4,8 @@ HOUSING_MARKET_EVENT_NAMESPACE = "HousingMarketEvents";
 HousingMarketCartFrameMixin = CreateFromMixins(ShoppingCartVisualsFrameMixin);
 
 function HousingMarketCartFrameMixin:OnLoad()
+	C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+
 	self.CustomElementExtentCalc = function(dataIndex, elementData)
 		local GetElementInitInfo = self:GetElementInitInfoFunc();
 		local template, _ = GetElementInitInfo(elementData);
@@ -26,19 +28,69 @@ function HousingMarketCartFrameMixin:OnLoad()
 	end
 
 	self.CartUpdatedFlipbookAnim:SetScript("OnFinished", ResetAnim);
+
+	self.PlayerTotalCurrencyDisplay.tooltipTitle = HOUSING_MARKET_HEARTHSTEEL_TOOLTIP;
+	self.PlayerTotalCurrencyDisplay.tooltip = HOUSING_MARKET_HEARTHSTEEL_TOOLTIP_DESC;
 end
+
+local HousingMarketCartDynamicEvents = {
+	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
+};
 
 function HousingMarketCartFrameMixin:OnShow()
 	ShoppingCartVisualsFrameMixin.OnShow(self);
 
-	if self.isPendingAddedToCartAnim then
+	if self.isPendingAddedToCartAnim and not self.CartVisibleContainer:IsShown() then
 		self.CartUpdatedFlipbookTexture:Show();
 		self.CartUpdatedFlipbookAnim:Play();
+	else
+		self.isPendingAddedToCartAnim = false;
+	end
+
+	FrameUtil.RegisterFrameForEvents(self, HousingMarketCartDynamicEvents);
+
+	-- Force a full update on show if anything has gone stale since the
+	-- last time we had the cart shown
+	self:FullUpdate();
+
+	local currencyRefreshTickTime = 20;
+	self.CurrencyRefreshTicker = C_Timer.NewTicker(currencyRefreshTickTime, function()
+		C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+	end);
+end
+
+function HousingMarketCartFrameMixin:OnHide()
+	ShoppingCartVisualsFrameMixin.OnHide(self);
+
+	FrameUtil.UnregisterFrameForEvents(self, HousingMarketCartDynamicEvents);
+
+	if self.CurrencyRefreshTicker then
+		self.CurrencyRefreshTicker:Cancel();
+		self.CurrencyRefreshTicker = nil;
+	end
+end
+
+function HousingMarketCartFrameMixin:OnEvent(event, ...)
+	if event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE" then
+		local vcCode, _balance = ...;
+		if vcCode == Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE then
+			self:UpdateCurrencyTotal();
+		end
 	end
 end
 
 function HousingMarketCartFrameMixin:GetEventNamespace()
 	return HOUSING_MARKET_EVENT_NAMESPACE;
+end
+
+function HousingMarketCartFrameMixin:SetCartShown(isShown)
+	if isShown then
+		PlaySound(SOUNDKIT.HOUSING_MARKET_MAXIMIZE_CART);
+	else
+		PlaySound(SOUNDKIT.HOUSING_MARKET_MINIMIZE_CART);
+	end
+
+	ShoppingCartVisualsFrameMixin.SetCartShown(self, isShown);
 end
 
 function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
@@ -56,11 +108,16 @@ function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 		button:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
 
 		button:SetScript("OnClick", function(btn)
-			self.selectionBehavior:ToggleSelect(btn);
-			local selected = self.selectionBehavior:IsElementDataSelected(elementData);
-			btn:SetSelection(selected);
-
 			if elementData.decorGUID then
+				self.selectionBehavior:ToggleSelect(btn);
+
+				local selected = self.selectionBehavior:IsElementDataSelected(elementData);
+				btn:SetSelection(selected);
+				if selected then
+					PlaySound(SOUNDKIT.HOUSING_MARKET_SHOW_ITEM);
+				else
+					PlaySound(SOUNDKIT.HOUSING_MARKET_HIDE_ITEM);
+				end
 				C_HousingCatalog.SetPreviewCartItemShown(elementData.decorGUID, selected);
 			end
 		end);
@@ -78,31 +135,6 @@ function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 		bundleParent:InitItem(elementData);
 	end
 
-	local function InitializeBundleSubItem(button, elementData)
-		button:InitItem(elementData);
-
-		if elementData.decorGUID then
-			if C_HousingCatalog.IsPreviewCartItemShown(elementData.decorGUID) then
-				self.selectionBehavior:Select(button);
-			else
-				self.selectionBehavior:Deselect(button);
-			end
-		end
-
-		button:SetSelection(self.selectionBehavior:IsElementDataSelected(elementData));
-
-		button:SetScript("OnClick", function(btn)
-			self.selectionBehavior:ToggleSelect(btn);
-
-			local selected = self.selectionBehavior:IsElementDataSelected(elementData);
-			btn:SetSelection(selected);
-
-			if elementData.decorGUID then
-				C_HousingCatalog.SetPreviewCartItemShown(elementData.decorGUID, selected);
-			end
-		end);
-	end
-
 	return function(elementData)
 		if elementData.isHeader then
 			return "HousingMarketCartBundleHeaderTemplate", InitializeBundleHeader;
@@ -111,12 +143,39 @@ function HousingMarketCartFrameMixin:GetElementInitInfoFunc()
 		elseif elementData.isBundleParent then
 			return "HousingMarketCartBundleTemplate", InitializeBundle;
 		elseif elementData.isBundleChild then
-			return "HousingMarketCartBundleItemTemplate", InitializeBundleSubItem;
+			return "HousingMarketCartBundleItemTemplate", InitializeItem;
 		end
 
 		return "HousingMarketCartItemTemplate", InitializeItem;
 	end
 end
+
+local function HousingMarketPurchaseCartOnAccept(popup)
+	C_CatalogShop.BulkPurchaseProducts(popup.data.productIDList);
+	-- Start the timeout timer
+	popup.data.timeoutCallback();
+end
+
+local function HousingMarketPurchaseCartOnEvent(popup, event, ...)
+	return event == "BULK_PURCHASE_RESULT_RECEIVED";
+end
+
+StaticPopupDialogs["HOUSING_MARKET_PURCHASE_CONFIRMATION"] = {
+	text = HOUSING_MARKET_PURCHASE_CONFIRMATION,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = GenerateClosure(StaticPopup_OnAcceptWithSpinner, HousingMarketPurchaseCartOnAccept, HousingMarketPurchaseCartOnEvent, {"BULK_PURCHASE_RESULT_RECEIVED"}, 0),
+	exclusive = 1,
+	fullScreenCover = true,
+};
+
+StaticPopupDialogs["HOUSING_MARKET_SLOW_PURCHASE"] = {
+	text = HOUSING_MARKET_PURCHASE_SLOW_DESC,
+	button1 = ACCEPT,
+	exclusive = 1,
+	fullScreenCover = true,
+	hideOnEscape = true,
+};
 
 function HousingMarketCartFrameMixin:SetupDataManager()
 	self.CartDataManager = CreateFromMixins(HousingMarketCartDataManagerMixin);
@@ -133,10 +192,19 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 
 		self:UpdateCartTotal(cartList);
 
+		-- Clear the purchase popup since it could've changed
+		StaticPopup_Hide("HOUSING_MARKET_PURCHASE_CONFIRMATION");
+
 		EventRegistry:TriggerEvent(HOUSING_MARKET_EVENT_NAMESPACE .. ".CartUpdated");
 	end);
 
 	self.CartDataManager:SetAddToCartCallback(function(cartItem)
+		if cartItem.bundleCatalogShopProductID then
+			PlaySound(SOUNDKIT.HOUSING_MARKET_ADD_BUNDLE_TO_CART);
+		else
+			PlaySound(SOUNDKIT.HOUSING_MARKET_ADD_SINGLE_ITEM_TO_CART);
+		end
+
 		self:AddItemToList(cartItem);
 
 		RunNextFrame(function()
@@ -151,16 +219,67 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 	end);
 
 	self.CartDataManager:SetRemoveFromCartCallback(function(itemIndex, cartItem)
+		PlaySound(SOUNDKIT.HOUSING_MARKET_REMOVE_SINGLE_ITEM_FROM_CART);
 		self:RemoveItemFromList(itemIndex, cartItem);
 	end);
 
 	self.CartDataManager:SetClearCartCallback(function()
+		PlaySound(SOUNDKIT.HOUSING_MARKET_REMOVE_ALL_ITEMS_ACTION);
+
 		local dataProvider = CreateDataProvider();
 		self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	end);
 
 	self.CartDataManager:SetPlaceInWorldCallback(function(_placeItemData)
 		self:FullUpdate();
+	end);
+
+	self.CartDataManager:SetPurchaseCartCallback(function(purchaseList)
+		PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_BUTTON);
+
+		local productIDList = {};
+		local totalPrice = 0;
+
+		for _, item in ipairs(purchaseList) do
+			local productID = nil;
+			if item.productID and item.productID ~= 0 then
+				productID = item.productID;
+			elseif item.isBundleParent and item.bundleCatalogShopProductID and item.bundleCatalogShopProductID ~= 0 then
+				productID = item.bundleCatalogShopProductID;
+			end
+
+			if productID then
+				table.insert(productIDList, productID);
+				totalPrice = totalPrice + (item.salePrice or item.price);
+			end
+		end
+
+		local function PurchaseTimeoutCB()
+			self.CartDataManager.timedout = false;
+
+			local timeoutTime = 20;
+			self.CartDataManager.timeoutTimer = C_Timer.NewTimer(timeoutTime, function()
+				StaticPopup_Hide("HOUSING_MARKET_PURCHASE_CONFIRMATION");
+				StaticPopup_Show("HOUSING_MARKET_SLOW_PURCHASE");
+
+				self.CartDataManager.timeoutTimer = nil;
+				self.CartDataManager.timedout = true;
+			end);
+		end
+
+		local popupData = {};
+		popupData.productIDList = productIDList;
+		popupData.timeoutCallback = PurchaseTimeoutCB;
+
+		local hearthsteelBalance, _icon, _iconIsAtlas = self:GetCartCurrencyInfo();
+		if totalPrice > hearthsteelBalance then
+			CatalogShopTopUpFlowInboundInterface.SetDesiredQuantity(totalPrice - hearthsteelBalance);
+			CatalogShopTopUpFlowInboundInterface.SetShown(true, self:GetParent());
+		else
+			if #productIDList > 1 then
+				StaticPopup_Show("HOUSING_MARKET_PURCHASE_CONFIRMATION", Blizzard_HousingCatalogUtil.FormatPrice(totalPrice), nil, popupData);
+			end
+		end
 	end);
 end
 
@@ -202,10 +321,24 @@ function HousingMarketCartFrameMixin:UpdateNumItemsInCart()
 	local numItemsInCart = self.CartDataManager:GetNumItemsInCart();
 	self.CartVisibleContainer.Header.Title:SetText(string.format(GENERIC_CART_PREVIEW_TITLE, numItemsInCart));
 	self.CartHiddenContainer.ViewCartButton:UpdateNumItemsInCart(numItemsInCart);
+
+	ShoppingCartVisualsFrameMixin.UpdateNumItemsInCart(self);
+end
+
+function HousingMarketCartFrameMixin:IsBundleInCart(bundleCatalogShopProductID)
+	return self.CartDataManager:IsBundleInCart(bundleCatalogShopProductID);
 end
 
 function HousingMarketCartFrameMixin:GetNumDecorPlaced(bundleCatalogShopProductID, decorID)
 	return self.CartDataManager:GetNumDecorPlaced(bundleCatalogShopProductID, decorID);
+end
+
+function HousingMarketCartFrameMixin:GetCartCurrencyInfo()
+	local hearthsteelBalance = tonumber(C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE));
+	local hearthsteelIcon = "hearthsteel-icon-32x32";
+	local iconIsAtlas = true;
+
+	return hearthsteelBalance, hearthsteelIcon, iconIsAtlas;
 end
 
 HousingMarketCartDataServiceEvents = {
@@ -217,6 +350,7 @@ HousingMarketCartDataManagerMixin = CreateFromMixins(ShoppingCartDataManagerMixi
 function HousingMarketCartDataManagerMixin:Init(eventNamespace)
 	ShoppingCartDataManagerMixin.Init(self, eventNamespace);
 
+	Dispatcher:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED", self);
 	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_UPDATED", self);
 	Dispatcher:RegisterEvent("HOUSING_DECOR_ADD_TO_PREVIEW_LIST", self);
 	Dispatcher:RegisterEvent("HOUSING_DECOR_PREVIEW_LIST_REMOVE_FROM_WORLD", self);
@@ -234,6 +368,16 @@ function HousingMarketCartDataManagerMixin:GetNumItemsInCart()
 	end
 
 	return count;
+end
+
+function HousingMarketCartDataManagerMixin:IsBundleInCart(bundleCatalogShopProductID)
+	for _i, cartItem in ipairs(self.cartList) do
+		if cartItem.bundleCatalogShopProductID == bundleCatalogShopProductID then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function HousingMarketCartDataManagerMixin:GetNumDecorPlaced(bundleCatalogShopProductID, decorID)
@@ -272,7 +416,7 @@ function HousingMarketCartDataManagerMixin:AddToCart(item)
 		end
 	end
 
-	if item.id then
+	if bundleCatalogShopProductID or item.id then
 		if bundleCatalogShopProductID then
 			local shopInfo = CatalogShopUtil.GetProductInfo(bundleCatalogShopProductID);
 			if not shopInfo then
@@ -402,6 +546,8 @@ function HousingMarketCartDataManagerMixin:ClearCartInternal()
 end
 
 function HousingMarketCartDataManagerMixin:ClearCart(requiresConfirmation)
+	PlaySound(SOUNDKIT.HOUSING_MARKET_REMOVE_ALL_ITEMS_BUTTON);
+
 	if #self.cartList < 1 then
 		return;
 	end
@@ -415,6 +561,38 @@ function HousingMarketCartDataManagerMixin:ClearCart(requiresConfirmation)
 		StaticPopup_Show("HOUSING_MARKET_CLEAR_CART_CONFIRMATION");
 	else
 		self:ClearCartInternal();
+	end
+end
+
+StaticPopupDialogs["HOUSING_MARKET_PURCHASE_FAILURE"] = {
+	text = HOUSING_MARKET_PURCHASE_FAILURE,
+	button1 = ACCEPT,
+	exclusive = 1,
+	fullScreenCover = true,
+};
+
+function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
+	C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+
+	if self.timeoutTimer then
+		self.timeoutTimer:Cancel();
+		self.timeoutTimer = nil;
+	end
+
+	if self.timedout then
+		self.timedout = false;
+		return;
+	end
+
+	local wasSuccess = ...;
+	if wasSuccess then
+		PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CELEBRATION);
+	
+		-- Clear the cart on a successful purchase
+		local requiresConfirmation = false;
+		self:ClearCart(requiresConfirmation);
+	else
+		StaticPopup_Show("HOUSING_MARKET_PURCHASE_FAILURE");
 	end
 end
 

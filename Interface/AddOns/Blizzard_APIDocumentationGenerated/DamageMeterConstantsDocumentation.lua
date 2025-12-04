@@ -3,6 +3,32 @@ local DamageMeterConstants =
 	Tables =
 	{
 		{
+			Name = "DamageMeterOverrideType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Ignore", Type = "DamageMeterOverrideType", EnumValue = 0 },
+				{ Name = "RedirectSource", Type = "DamageMeterOverrideType", EnumValue = 1 },
+				{ Name = "AllowFriendlyFire", Type = "DamageMeterOverrideType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DamageMeterRedirectGuidType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "DamageMeterRedirectGuidType", EnumValue = 0 },
+				{ Name = "Owner", Type = "DamageMeterRedirectGuidType", EnumValue = 1 },
+				{ Name = "AuraCaster", Type = "DamageMeterRedirectGuidType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "DamageMeterSessionType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -18,9 +44,9 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterStorageType",
 			Type = "Enumeration",
-			NumValues = 6,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 5,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Damage", Type = "DamageMeterStorageType", EnumValue = 0 },
@@ -29,14 +55,15 @@ local DamageMeterConstants =
 				{ Name = "Interrupts", Type = "DamageMeterStorageType", EnumValue = 3 },
 				{ Name = "Dispels", Type = "DamageMeterStorageType", EnumValue = 4 },
 				{ Name = "DamageTaken", Type = "DamageMeterStorageType", EnumValue = 5 },
+				{ Name = "AvoidableDamageTaken", Type = "DamageMeterStorageType", EnumValue = 6 },
 			},
 		},
 		{
 			Name = "DamageMeterType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "DamageDone", Type = "DamageMeterType", EnumValue = 0 },
@@ -47,6 +74,7 @@ local DamageMeterConstants =
 				{ Name = "Interrupts", Type = "DamageMeterType", EnumValue = 5 },
 				{ Name = "Dispels", Type = "DamageMeterType", EnumValue = 6 },
 				{ Name = "DamageTaken", Type = "DamageMeterType", EnumValue = 7 },
+				{ Name = "AvoidableDamageTaken", Type = "DamageMeterType", EnumValue = 8 },
 			},
 		},
 	},

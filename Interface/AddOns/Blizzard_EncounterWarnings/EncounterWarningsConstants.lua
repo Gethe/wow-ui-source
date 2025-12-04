@@ -1,3 +1,17 @@
+EncounterWarningsConstants = {
+	-- Scaling multiplier used to convert Edit Mode size settings to scale values.
+	SizeToScaleMultiplier = 0.01,
+	-- Scaling multiplier used to convert Edit Mode size transparency to alpha values.
+	TransparencyToAlphaMultiplier = 0.01,
+	-- Size of icons printed to the chat frame.
+	ChatMessageIconDisplaySize = 20,
+};
+
+EncounterWarningsSettingDefaults = {
+	IconScale = 1.0;
+	TooltipsEnabled = true;
+};
+
 EncounterWarningsSystemSeverity = {
 	[Enum.EditModeEncounterEventsSystemIndices.CriticalWarnings] = Enum.EncounterEventSeverity.High,
 	[Enum.EditModeEncounterEventsSystemIndices.MediumWarnings] = Enum.EncounterEventSeverity.Medium,

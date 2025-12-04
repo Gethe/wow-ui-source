@@ -25,15 +25,6 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "CanDisplayDamage",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanDisplayDeaths",
 			Type = "Function",
 
@@ -43,25 +34,7 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "CanDisplayHealing",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanDisplayHonorableKills",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "CanDisplayKillingBlows",
 			Type = "Function",
 
 			Returns =

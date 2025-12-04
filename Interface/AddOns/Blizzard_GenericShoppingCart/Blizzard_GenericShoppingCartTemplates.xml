@@ -69,8 +69,9 @@
 	</Frame>
 
 	<Button name="ShoppingCartCheckoutButtonTemplate" inherits="SharedButtonLargeTemplate, ShoppingCartServiceButtonTemplate" virtual="true">
+		<Size x="256" y="64"/>
 		<KeyValues>
-			<KeyValue key="serviceName" value="ShoppingCartDataServices.PurchaseCart" type="string"/>
+			<KeyValue key="serviceName" value="ShoppingCartDataServices.PurchaseCart" type="global"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="PriceContainer" inherits="ShoppingCartPriceTemplate">
@@ -124,6 +125,7 @@
 		<KeyValues>
 			<KeyValue key="eventNamespace" value="GenericCartEvents" type="string"/>
 			<KeyValue key="maxItemsToShow" value="5" type="number"/>
+			<KeyValue key="purchaseButtonTemplate" value="ShoppingCartCheckoutButtonTemplate" type="string"/>
 		</KeyValues>
 
 		<Frames>
@@ -134,6 +136,8 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
+					<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the frame -->
+					<Button parentKey="InputBlocker" setAllPoints="true" frameLevel="1"/>
 					<Frame parentKey="Background" inherits="NineSlicePanelTemplate" frameLevel="500">
 						<KeyValues>
 							<KeyValue key="layoutType" value="PerksProgramProductsPanelTemplate" type="string"/>
@@ -148,22 +152,15 @@
 							<Anchor point="TOPRIGHT" relativeKey="$parent.Background" y="-16"/>
 						</Anchors>
 						<Frames>
-							<Button parentKey="HideCartButton" inherits="ShoppingCartServiceButtonTemplate" mixin="ShoppingCartHideCartServiceMixin" motionScriptsWhileDisabled="true">
+							<Button parentKey="HideCartButton" inherits="UIButtonTemplate, ShoppingCartServiceButtonTemplate" mixin="ShoppingCartHideCartServiceMixin" motionScriptsWhileDisabled="true">
 								<Size x="32" y="32"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-48" y="-8"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="serviceName" value="ShoppingCartVisualServices.SetCartShown" type="global"/>
+									<KeyValue key="buttonArtKit" value="128-redbutton-arrowdown" type="string"/>
 								</KeyValues>
-
-								<Layers>
-									<Layer level="BACKGROUND">
-										<Texture parentKey="BG" setAllPoints="true">
-											<Color r="1" g="1" b="1"/>
-										</Texture>
-									</Layer>
-								</Layers>
 							</Button>
 						</Frames>
 						<Layers>
@@ -227,12 +224,8 @@
 								</KeyValues>
 							</Button>
 
-							<Button parentKey="PurchaseCartButton" inherits="ShoppingCartCheckoutButtonTemplate">
-								<Size x="256" y="64"/>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.ClearCartButton" relativePoint="RIGHT" x="16"/>
-								</Anchors>
-							</Button>
+							<!-- Created dynamically in OnLoad -->
+							<!-- Button parentKey="PurchaseCartButton" -->
 						</Frames>
 					</Frame>
 				</Frames>
@@ -245,6 +238,8 @@
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
 				<Frames>
+					<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the frame -->
+					<Button parentKey="InputBlocker" setAllPoints="true" frameLevel="1"/>
 					<Button parentKey="ViewCartButton" inherits="UIButtonTemplate, ShoppingCartServiceButtonTemplate" mixin="ShoppingCartShowCartServiceMixin, ShoppingCartViewCartButtonMixin" motionScriptsWhileDisabled="true">
 						<Size x="64" y="64"/>
 						<Anchors>
@@ -270,53 +265,13 @@
 							</Layer>
 						</Layers>
 					</Button>
-
-					<!-- TEMP BUTTON -->
-					<Button parentKey="AddToCartButton" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin" hidden="true">
-						<KeyValues>
-							<KeyValue key="serviceName" value="ShoppingCartDataServices.AddToCart" type="global"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.ViewCartButton" relativePoint="LEFT" x="-16" y="28"/>
-						</Anchors>
-
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="BG" setAllPoints="true">
-									<Color r="1" g="1" b="1"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Button>
-					<!-- TEMP BUTTON -->
-					<Button parentKey="AddToCartButtonBundle" inherits="HousingMarketShoppingCartServiceButtonTemplate" mixin="HousingMarketAddToCartServiceMixin" hidden="true">
-						<KeyValues>
-							<KeyValue key="serviceName" value="ShoppingCartDataServices.AddToCart" type="global"/>
-							<KeyValue key="bundleButton" value="true" type="boolean"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AddToCartButton" relativePoint="BOTTOM" y="-16"/>
-						</Anchors>
-
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="BG" setAllPoints="true">
-									<Color r="1" g="0.66" b="1"/>
-								</Texture>
-							</Layer>
-						</Layers>
-					</Button>
-
-					<Button parentKey="PurchaseCartButton" inherits="ShoppingCartCheckoutButtonTemplate">
-						<Size x="256" y="64"/>
-						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.ViewCartButton" relativePoint="RIGHT" x="16"/>
-						</Anchors>
-					</Button>
+					
+					<!-- Created dynamically in OnLoad -->
+					<!-- Button parentKey="PurchaseCartButton" -->
 				</Frames>
 			</Frame>
 
-			<Frame parentKey="PlayerTotalCurrencyDisplay">
+			<Frame parentKey="PlayerTotalCurrencyDisplay" mixin="ShoppingCartPlayerTotalCurrencyMixin">
 				<Size y="40"/>
 				<Anchors>
 					<!-- Anchored Dynamically -->
@@ -342,6 +297,10 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
 			</Frame>
 		</Frames>
 

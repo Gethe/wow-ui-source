@@ -2994,21 +2994,6 @@ StaticPopupDialogs["TRANSMOG_CUSTOM_SET_SOME_INVALID_APPEARANCES"] = {
 	whileDead = 1,
 };
 
-StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
-	text = "%s",
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		return WardrobeTransmogFrame:ApplyPending(data.warningIndex);
-	end,
-	OnHide = function(dialog, data)
-		WardrobeTransmogFrame:UpdateApplyButton();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-	hasItemFrame = 1,
-};
-
 StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
 	text = CHARACTER_UPGRADE_FINISH_BUTTON_POPUP_TEXT,
 	button1 = OKAY,

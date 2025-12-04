@@ -22,6 +22,18 @@ function DamageMeterEntryMixin:GetValue()
 	return self:GetStatusBar().Value;
 end
 
+function DamageMeterEntryMixin:GetBackground()
+	return self:GetStatusBar().Background;
+end
+
+function DamageMeterEntryMixin:GetBackgroundEdge()
+	return self:GetStatusBar().BackgroundEdge;
+end
+
+function DamageMeterEntryMixin:GetBackgroundRegions()
+	return self:GetStatusBar().BackgroundRegions;
+end
+
 function DamageMeterEntryMixin:GetIconAtlasElement()
 	-- Override as necessary.
 end
@@ -75,58 +87,139 @@ function DamageMeterEntryMixin:UpdateStatusBar()
 	self:GetStatusBar():SetValue(self.value or 0);
 end
 
-function DamageMeterEntryMixin:UpdateStyle()
-	local style = self:GetStyle();
-	local showBarIcons = self:ShouldShowBarIcons();
-
+function DamageMeterEntryMixin:SetupSharedStyleAnchors()
 	self:GetStatusBar():ClearAllPoints();
 	self:GetName():ClearAllPoints();
 	self:GetValue():ClearAllPoints();
+end
 
-	-- At present in all layouts the positioning of the bar relative to the
-	-- icon is a fixed deal - if shown, the icon is to the left of the bar.
+function DamageMeterEntryMixin:GetIconAttachmentAnchor()
+	local point = "LEFT";
+	local relativeTo = self;
+	local relativePoint = "LEFT";
+	local x = 0;
+	local y = 0;
 
-	do
-		self:GetIcon():SetShown(showBarIcons);
+	if self:ShouldShowBarIcons() then
+		local style = self:GetStyle();
 
-		if showBarIcons then
-			self:GetStatusBar():SetPoint("LEFT", self:GetIcon(), "RIGHT", 5, 0);
-		else
-			self:GetStatusBar():SetPoint("LEFT", 5, 0);
+		relativeTo = self:GetIcon();
+		relativePoint = "RIGHT";
+
+		if style == Enum.DamageMeterStyle.Bordered or style == Enum.DamageMeterStyle.Thin then
+			x = 5;
 		end
 	end
 
-	-- Keeping individual components split up for now to make this logic
-	-- easier to split up if later required.
+	return point, relativeTo, relativePoint, x, y;
+end
 
-	if style == Enum.DamageMeterStyle.Default then
-		self:GetStatusBar():SetPoint("TOP")
-		self:GetStatusBar():SetPoint("BOTTOMRIGHT");
-	elseif style == Enum.DamageMeterStyle.Thin then
-		self:GetStatusBar():SetHeight(10);
-		self:GetStatusBar():SetPoint("BOTTOMRIGHT");
+function DamageMeterEntryMixin:GetBackgroundAtlasForStyle(style)
+	if style == Enum.DamageMeterStyle.Bordered then
+		return "UI-HUD-CoolDownManager-Bar-BG";
+	else
+		return "ui-damagemeters-bar-shadowbg";
 	end
+end
 
-	if style == Enum.DamageMeterStyle.Default then
-		self:GetName():SetPoint("LEFT", 5, 0);
-		self:GetName():SetPoint("RIGHT", self:GetValue(), "LEFT", -25, 0);
-	elseif style == Enum.DamageMeterStyle.Thin then
-		self:GetName():SetPoint("TOP", self, "TOP", 0, 0);
-		if showBarIcons then
-			self:GetName():SetPoint("LEFT", self:GetIcon(), "RIGHT", 5, 0);
-		else
-			self:GetName():SetPoint("LEFT", self, "LEFT", 5, 0);
-		end
-		self:GetName():SetPoint("RIGHT", self:GetValue(), "LEFT", -25, 0);
-		self:GetName():SetPoint("BOTTOM", self:GetStatusBar(), "TOP", 0, 0);
+function DamageMeterEntryMixin:GetBackgroundInsetsForStyle(style)
+	-- Returns are left, top, right, bottom anchor point offsets.
+
+	if style == Enum.DamageMeterStyle.Bordered then
+		return -2, 2, 6, -7;
+	else
+		return -2, 2, 2, -2;
 	end
+end
+
+function DamageMeterEntryMixin:GetBackgroundEdgeVisibilityForStyle(style)
+	if style == Enum.DamageMeterStyle.Bordered then
+		return false;
+	else
+		return true;
+	end
+end
+
+function DamageMeterEntryMixin:SetupSharedStyleIconVisibility()
+	self:GetIcon():SetShown(self:ShouldShowBarIcons());
+end
+
+function DamageMeterEntryMixin:SetupSharedStyleBackground()
+	local style = self:GetStyle();
+	local left, top, right, bottom = self:GetBackgroundInsetsForStyle(style);
+
+	local background = self:GetBackground();
+	local backgroundEdge = self:GetBackgroundEdge();
+
+	background:ClearAllPoints();
+	background:SetPoint("TOPLEFT", left, top);
+	background:SetPoint("BOTTOMRIGHT", right, bottom);
+	background:SetAtlas(self:GetBackgroundAtlasForStyle(style));
+
+	backgroundEdge:SetShown(self:GetBackgroundEdgeVisibilityForStyle(style));
+end
+
+function DamageMeterEntryMixin:SetupDefaultStyle()
+	self:SetupSharedStyleAnchors();
+	self:SetupSharedStyleBackground();
+	self:SetupSharedStyleIconVisibility();
+
+	local name = self:GetName();
+	local statusBar = self:GetStatusBar();
+	local value = self:GetValue();
+
+	statusBar:SetPoint(self:GetIconAttachmentAnchor());
+	statusBar:SetPoint("TOP", 0, -1);
+	statusBar:SetPoint("BOTTOMRIGHT", -4, 1);
+
+	name:SetPoint("LEFT", 5, 0);
+	name:SetPoint("RIGHT", self:GetValue(), "LEFT", -25, 0);
+
+	value:SetPoint("RIGHT", -8, 0);
+end
+
+function DamageMeterEntryMixin:SetupBorderedStyle()
+	self:SetupDefaultStyle();
+end
+
+function DamageMeterEntryMixin:SetupFullBackgroundStyle()
+	self:SetupDefaultStyle();
+end
+
+function DamageMeterEntryMixin:SetupThinStyle()
+	self:SetupSharedStyleAnchors();
+	self:SetupSharedStyleBackground();
+	self:SetupSharedStyleIconVisibility();
+
+	local name = self:GetName();
+	local statusBar = self:GetStatusBar();
+	local value = self:GetValue();
+
+	statusBar:SetPoint(self:GetIconAttachmentAnchor());
+	statusBar:SetPoint("TOP", name, "BOTTOM", 0, 0);
+	statusBar:SetPoint("BOTTOMRIGHT", 0, 1);
+
+	name:SetPoint("TOP", self, "TOP", 0, 0);
+	name:SetPoint(self:GetIconAttachmentAnchor());
+	name:SetPoint("RIGHT", value, "LEFT", -25, 0);
+
+	value:SetPoint("TOP", self, "TOP", 0, 0);
+	value:SetPoint("RIGHT", self, "RIGHT", -8, 0);
+end
+
+function DamageMeterEntryMixin:UpdateStyle()
+	local style = self:GetStyle();
 
 	if style == Enum.DamageMeterStyle.Default then
-		self:GetValue():SetPoint("RIGHT", -8, 0);
+		self:SetupDefaultStyle();
+	elseif style == Enum.DamageMeterStyle.Bordered then
+		self:SetupBorderedStyle();
+	elseif style == Enum.DamageMeterStyle.FullBackground then
+		self:SetupFullBackgroundStyle();
 	elseif style == Enum.DamageMeterStyle.Thin then
-		self:GetValue():SetPoint("TOP", self, "TOP", 0, 0);
-		self:GetValue():SetPoint("RIGHT", -8, 0);
-		self:GetValue():SetPoint("BOTTOM", self:GetStatusBar(), "TOP", 0, 0);
+		self:SetupThinStyle();
+	else
+		assertsafe(false, "unhandled damage meter style: %s", style);
 	end
 end
 
@@ -162,10 +255,7 @@ function DamageMeterEntryMixin:GetBarHeight()
 end
 
 function DamageMeterEntryMixin:SetBarHeight(barHeight)
-	-- DMTODO: Need to discuss what bar height should do in the thin style.
-	if self:GetStyle() == Enum.DamageMeterStyle.Default then
-		self:SetHeight(barHeight);
-	end
+	self:SetHeight(barHeight);
 end
 
 function DamageMeterEntryMixin:GetTextScale()
@@ -196,7 +286,38 @@ end
 
 function DamageMeterEntryMixin:SetStyle(style)
 	self.style = style;
+	self:UpdateBackground();
 	self:UpdateStyle();
+end
+
+function DamageMeterEntryMixin:GetBackgroundAlpha()
+	return self.backgroundAlpha or 1;
+end
+
+function DamageMeterEntryMixin:SetBackgroundAlpha(alpha)
+	self.backgroundAlpha = alpha;
+	self:UpdateBackground();
+end
+
+function DamageMeterEntryMixin:UpdateBackground()
+	local style = self:GetStyle();
+	local alpha;
+
+	if style == Enum.DamageMeterStyle.FullBackground then
+		-- The full background style uses a background asset on the parent
+		-- frame instead.
+		alpha = 0;
+	elseif style == Enum.DamageMeterStyle.Bordered then
+		-- Art for the bordered style reuses an asset that doesn't permit
+		-- customization of background transparency.
+		alpha = 1;
+	else
+		alpha = self:GetBackgroundAlpha();
+	end
+
+	for _, region in ipairs(self:GetBackgroundRegions()) do
+		region:SetAlpha(alpha);
+	end
 end
 
 function DamageMeterEntryMixin:Init(source)
@@ -277,9 +398,11 @@ end
 
 function DamageMeterSpellEntryMixin:GetUnitNameText()
 	-- Color the text by class color if its provided.
-	if self.unitClassFilename and #self.unitClassFilename then
+	if self.unitClassFilename and #self.unitClassFilename > 0 then
 		local classColor = RAID_CLASS_COLORS[self.unitClassFilename];
-		return classColor:WrapTextInColorCode(self.unitName);
+		if classColor then
+			return classColor:WrapTextInColorCode(self.unitName);
+		end
 	end
 
 	return self.unitName;

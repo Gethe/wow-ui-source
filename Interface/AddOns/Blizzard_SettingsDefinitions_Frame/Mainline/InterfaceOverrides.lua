@@ -87,17 +87,45 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	-- Main Tank and Assist
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
 
+	-- Debuffs
 	do
-		-- Debuffs
 		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
 
-		-- Only Dispellable Debuffs
 		local function IsModifiable()
 			return debuffSetting:GetValue();
 		end
 
-		local _, initializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+		-- Bigger Role Debuffs
+		local _, largerDebuffsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayLargerRoleSpecificDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER);
+		largerDebuffsInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+
+		-- Only Dispellable Debuffs
+		local _, dispellableInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		dispellableInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Center Big Defensive Buffs
+	Settings.SetupCVarCheckbox(category, "raidFramesCenterBigDefensive", COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES);
+
+	-- Dispel Indicator Types (upper right poison, magic, disease, bleed, curse)
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelDisplayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelDisplayType.DispellableByMe, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME);
+			container:Add(Enum.RaidDispelDisplayType.DisplayAll, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL);
+			return container:GetData();
+		end
+
+		local dispelSetting, dispelInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorType", Settings.VarType.Number, GetOptions, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE);
+
+		local function IsModifiable()
+			return tonumber(dispelSetting:GetValue()) ~= Enum.RaidDispelDisplayType.Disabled;
+		end
+
+		-- Dispel Color Overlay
+		local _, dispelOverlayInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlay", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
+		dispelOverlayInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
 	end
 
 	-- Health Text

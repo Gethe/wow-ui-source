@@ -65,6 +65,15 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "GetRequiredLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "reqLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTrackedInitiativeTasks",
 			Type = "Function",
 
@@ -83,12 +92,30 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "IsPlayerInNeighborhoodGroup",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "inValidGroup", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsViewingActiveNeighborhood",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "isViewingActiveNeighborhood", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerMeetsRequiredLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{

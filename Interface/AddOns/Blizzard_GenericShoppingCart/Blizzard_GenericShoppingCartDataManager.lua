@@ -47,6 +47,10 @@ function ShoppingCartDataManagerMixin:SetClearCartCallback(clearCartCallback)
 	self.ClearCartCallback = clearCartCallback;
 end
 
+function ShoppingCartDataManagerMixin:SetPurchaseCartCallback(purchaseCartCallback)
+	self.PurchaseCartCallback = purchaseCartCallback;
+end
+
 local CartIDCounter = 0;
 
 local function IncrementAndGetCurrCartID()

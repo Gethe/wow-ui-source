@@ -247,6 +247,10 @@ end
 function NavigationBarMixin:Init(buttonInfos)
 	self:SetupNavigationScrollView();
 	self:SetupNavigationData(buttonInfos);
+	local linkProductID = CatalogShopFrame:GetCatalogShopLinkProductID();
+	if linkProductID then
+		CatalogShopFrame:SetCatalogShopLinkTagForLinkProduct();
+	end
 	local linkTag = CatalogShopFrame:GetCatalogShopLinkTag(); -- ok for this to be nil
 	self:SelectCategoryByLinkTag(linkTag)
 	self:SetupScrolling();

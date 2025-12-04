@@ -7,21 +7,6 @@ local Transmog =
 	Functions =
 	{
 		{
-			Name = "ApplyAllPending",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "currentSpecOnly", Type = "bool", Nilable = false, Default = false },
-			},
-
-			Returns =
-			{
-				{ Name = "requestSent", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanHaveSecondaryAppearanceForSlotID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -35,59 +20,6 @@ local Transmog =
 			{
 				{ Name = "canHaveSecondaryAppearance", Type = "bool", Nilable = false },
 			},
-		},
-		{
-			Name = "CanTransmogItem",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canBeTransmogged", Type = "bool", Nilable = false },
-				{ Name = "selfFailureReason", Type = "cstring", Nilable = true },
-				{ Name = "canTransmogOthers", Type = "bool", Nilable = false },
-				{ Name = "othersFailureReason", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "CanTransmogItemWithItem",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "targetItemInfo", Type = "ItemInfo", Nilable = false },
-				{ Name = "sourceItemInfo", Type = "ItemInfo", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "canTransmog", Type = "bool", Nilable = false },
-				{ Name = "failureReason", Type = "cstring", Nilable = true },
-			},
-		},
-		{
-			Name = "ClearAllPending",
-			Type = "Function",
-		},
-		{
-			Name = "ClearPending",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-		},
-		{
-			Name = "Close",
-			Type = "Function",
 		},
 		{
 			Name = "ExtractTransmogIDList",
@@ -120,55 +52,6 @@ local Transmog =
 			},
 		},
 		{
-			Name = "GetApplyCost",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "cost", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetApplyWarnings",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "warnings", Type = "table", InnerType = "TransmogApplyWarningInfo", Nilable = false },
-			},
-		},
-		{
-			Name = "GetBaseCategory",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
-			},
-		},
-		{
-			Name = "GetCreatureDisplayIDForSource",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "itemModifiedAppearanceID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "creatureDisplayID", Type = "number", Nilable = true },
-			},
-		},
-		{
 			Name = "GetItemIDForSource",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -181,22 +64,6 @@ local Transmog =
 			Returns =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetPending",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
 			},
 		},
 		{
@@ -231,46 +98,6 @@ local Transmog =
 			},
 		},
 		{
-			Name = "GetSlotInfo",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isTransmogrified", Type = "bool", Nilable = false },
-				{ Name = "hasPending", Type = "bool", Nilable = false },
-				{ Name = "isPendingCollected", Type = "bool", Nilable = false },
-				{ Name = "canTransmogrify", Type = "bool", Nilable = false },
-				{ Name = "cannotTransmogrifyReason", Type = "number", Nilable = false },
-				{ Name = "hasUndo", Type = "bool", Nilable = false },
-				{ Name = "isHideVisual", Type = "bool", Nilable = false },
-				{ Name = "texture", Type = "fileID", Nilable = true },
-			},
-		},
-		{
-			Name = "GetSlotUseError",
-			Type = "Function",
-			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "errorCode", Type = "number", Nilable = false },
-				{ Name = "errorString", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSlotVisualInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -293,52 +120,6 @@ local Transmog =
 			Returns =
 			{
 				{ Name = "isAtNPC", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsSlotBeingCollapsed",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns true if the only pending for the location's slot is a ToggleOff for the secondary appearance." },
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isBeingCollapsed", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "IsTransmogEnabled",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "isTransmogEnabled", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "LoadCustomSet",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "customSetID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "SetPending",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-				{ Name = "pendingInfo", Type = "TransmogPendingInfo", Mixin = "TransmogPendingInfoMixin", Nilable = false },
 			},
 		},
 	},

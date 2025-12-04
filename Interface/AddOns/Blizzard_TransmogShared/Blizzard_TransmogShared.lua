@@ -230,10 +230,6 @@ function TransmogUtil.GetSetIcon(setID)
 	end
 end
 
-function TransmogUtil.CreateTransmogPendingInfo(pendingType, transmogID, category, secondaryTransmogID)
-	return CreateAndInitFromMixin(TransmogPendingInfoMixin, pendingType, transmogID, category, secondaryTransmogID);
-end
-
 function TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation)
 	if itemLocation and C_Item.DoesItemExist(itemLocation) then
 		local itemTransmogInfo = C_Item.GetAppliedItemTransmogInfo(itemLocation);
@@ -249,22 +245,6 @@ function TransmogUtil.GetItemLocationFromTransmogLocation(transmogLocation)
 	end
 
 	return ItemLocation:CreateFromEquipmentSlot(transmogLocation:GetSlotID());
-end
-
-function TransmogUtil.GetRelevantTransmogID(itemTransmogInfo, transmogLocation)
-	if not itemTransmogInfo then
-		return Constants.Transmog.NoTransmogID;
-	end
-
-	if transmogLocation:IsIllusion() then
-		return itemTransmogInfo.illusionID;
-	end
-
-	if transmogLocation:IsSecondary() then
-		return itemTransmogInfo.secondaryAppearanceID;
-	end
-
-	return itemTransmogInfo.appearanceID;
 end
 
 function TransmogUtil.IsCategoryLegionArtifact(categoryID)
@@ -490,16 +470,43 @@ function TransmogUtil.ToggleFavorite(visualID, setFavorite, itemsCollectionFrame
 	C_TransmogCollection.SetIsAppearanceFavorite(visualID, setFavorite);
 end
 
+function TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList)
+	local isValid = false;
+	for slotID, itemTransmogInfo in ipairs(itemTransmogInfoList) do
+		local isValidAppearance = false;
+		if TransmogUtil.IsValidTransmogSlotID(slotID) then
+			local appearanceID = itemTransmogInfo.appearanceID;
+			isValidAppearance = appearanceID ~= Constants.Transmog.NoTransmogID;
 
-TransmogPendingInfoMixin = {};
+			-- Skip offhand if mainhand is an appeance from Legion Artifacts category and the offhand matches the paired appearance.
+			if isValidAppearance and slotID == INVSLOT_OFFHAND then
+				local mainHandInfo = itemTransmogInfoList[INVSLOT_MAINHAND];
+				if mainHandInfo:IsMainHandPairedWeapon() then
+					isValidAppearance = appearanceID ~= C_TransmogCollection.GetPairedArtifactAppearance(mainHandInfo.appearanceID);
+				end
+			end
 
-function TransmogPendingInfoMixin:Init(pendingType, transmogID, category)
-	self.type = pendingType;
-	if pendingType ~= Enum.TransmogPendingType.Apply then
-		transmogID = Constants.Transmog.NoTransmogID;
+			if isValidAppearance then
+				local _hasAllData, canCollect = C_TransmogCollection.PlayerCanCollectSource(appearanceID);
+				if canCollect then
+					isValid = true;
+					break;
+				end
+
+				-- Secondary check
+				local secondaryAppearanceID = itemTransmogInfo.secondaryAppearanceID;
+				if secondaryAppearanceID ~= Constants.Transmog.NoTransmogID and C_Transmog.CanHaveSecondaryAppearanceForSlotID(slotID) then
+					_hasAllData, canCollect = C_TransmogCollection.PlayerCanCollectSource(secondaryAppearanceID);
+					if canCollect then
+						isValid = true;
+						break;
+					end
+				end
+			end
+		end
 	end
-	self.transmogID = transmogID;
-	self.category = category;
+
+	return isValid;
 end
 
 
@@ -731,7 +738,7 @@ function ItemModelBaseMixin:OnMouseDown(button)
 		end
 	elseif self:CanCheckDressUpClick() and IsModifiedClick("DRESSUP") then
 		itemsCollectionFrame:DressUpVisual(appearanceInfo);
-	elseif button == "LeftButton" then
+	elseif button == "LeftButton" and itemsCollectionFrame.SelectVisual then
 		itemsCollectionFrame:SelectVisual(appearanceInfo.visualID);
 	end
 end

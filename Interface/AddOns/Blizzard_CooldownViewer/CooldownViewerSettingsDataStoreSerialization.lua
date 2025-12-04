@@ -163,8 +163,12 @@ local function ReadDataVersion4(dataTable, layoutManager, serializer)
 	For importing...the imported layoutID will likely be different from what's in the saved data
 	because when we import it, we might need to make a new id, so there now needs to be a temp map
 	maintained so that the saved data layout id can be mapped to the actually created layout id
+
+	Prepopulate the lookup with a default layout mapping because that layout will never be stored.
+	This is mostly to avoid some extra checks when processing previously active layouts.
 	--]]
-	local layoutIDLookup = {};
+	local defaultLayoutID = layoutManager:GetDefaultLayoutID();
+	local layoutIDLookup = { [defaultLayoutID] = defaultLayoutID };
 
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	local layoutIDToName = dataTable[SAVE_FIELD_ID_LAYOUT_ID_DATA];

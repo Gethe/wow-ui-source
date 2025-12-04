@@ -130,6 +130,19 @@ local SimpleRegionAPI =
 			},
 		},
 		{
+			Name = "SetAlphaFromBoolean",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "alphaIfTrue", Type = "SingleColorValue", Nilable = false, Default = 255 },
+				{ Name = "alphaIfFalse", Type = "SingleColorValue", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "SetDrawLayer",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -19,6 +19,21 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "GetInterpolatedValue",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
+			Documentation = { "Returns the current interpolated value displayed by the bar." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinMaxValues",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
@@ -129,6 +144,20 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "IsInterpolating",
+			Type = "Function",
+			Documentation = { "Returns true if the status bar is currently interpolating toward a target value." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isInterpolating", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsStatusBarDesaturated",
 			Type = "Function",
 
@@ -174,6 +203,7 @@ local SimpleStatusBarAPI =
 			{
 				{ Name = "minValue", Type = "number", Nilable = false },
 				{ Name = "maxValue", Type = "number", Nilable = false },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
 			},
 		},
 		{
@@ -255,6 +285,15 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "SetToTargetValue",
+			Type = "Function",
+			Documentation = { "Immediately finishes any interpolation of the bar and snaps it to the target value." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetValue",
 			Type = "Function",
 			SecretArgumentsAddAspect = { Enum.SecretAspect.BarValue },
@@ -263,6 +302,7 @@ local SimpleStatusBarAPI =
 			Arguments =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
 			},
 		},
 	},

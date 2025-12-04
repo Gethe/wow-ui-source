@@ -248,7 +248,6 @@ ReportSystemDocumentation.lua
 ReputationInfoDocumentation.lua
 ResearchInfoDocumentation.lua
 RestrictedActionsDocumentation.lua
-ReturningPlayerUIDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScreenDocumentation.lua
@@ -256,6 +255,7 @@ ScriptWarningsDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
 SecureTransferDocumentation.lua
+SettingsUtilDocumentation.lua
 SharedTraitsDocumentation.lua
 SimpleAnimAPIDocumentation.lua
 SimpleAnimAlphaAPIDocumentation.lua
@@ -373,6 +373,7 @@ ZoneAbilityDocumentation.lua
 ZoneScriptDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
+ActionBarSharedDocumentation.lua
 AddOnProfilerConstantsDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
@@ -388,6 +389,7 @@ BountySharedDocumentation.lua
 ButtonConstantsDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
+CatalogShopConstantsDocumentation.lua
 CharacterCreationConstantsDocumentation.lua
 CharacterCustomizationSharedDocumentation.lua
 CharacterSelectionConstantsDocumentation.lua
@@ -510,6 +512,7 @@ SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua
+SimpleStatusBarConstantsDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SoulbindsConstantsDocumentation.lua

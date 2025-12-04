@@ -802,9 +802,9 @@ function HANDLE:ChildUpdate(snippetid, message)
 end
 
 local function CallMethod_inner(frame, methodName, ...)
-    local method = frame[methodName];
     -- Ensure code isn't run securely
     forceinsecure();
+    local method = frame[methodName];
     if (type(method) ~= "function") then
         error("Invalid method '" .. methodName .. "'");
         return;

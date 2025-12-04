@@ -1,4 +1,16 @@
 
+TopUpFlowConstants = 
+{
+	TestProductIDs = {
+		{productID=2023433},
+		{productID=2023434},
+		{productID=2023435},
+		{productID=2023432},
+		{productID=2023431},
+		{productID=2023436},
+	},
+}
+
 local ScreenPadding =
 {
 	Horizontal = 100,
@@ -17,7 +29,7 @@ function CatalogShopTopUpFrameMixin:OnLoad()
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					CatalogShopFrame:SetAttribute("action", "EscapePressed");
+					CatalogShopTopUpFrame:SetAttribute("action", "EscapePressed");
 				end
 			end
 		);
@@ -39,7 +51,8 @@ function CatalogShopTopUpFrameMixin:OnShow()
 	if ( not C_Glue.IsOnGlueScreen() ) then
 
 	else
-
+		FrameUtil.SetParentMaintainRenderLayering(self, CatalogShopFrame);
+		self:SetFrameStrata("FULLSCREEN_DIALOG", CatalogShopFrame:GetFrameLevel() + 100)
 	end
 	self:ShowCoverFrame();
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + ScreenPadding.Horizontal, self:GetHeight() + ScreenPadding.Vertical);
@@ -75,10 +88,6 @@ function CatalogShopTopUpFrameMixin:HideCoverFrame()
 	self.CoverFrame:SetShown(false);
 end
 
-function CatalogShopTopUpFrameMixin:SetContextKey(contextKey)
-	self.contextKey = contextKey;
-end
-
 function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -94,8 +103,10 @@ function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
-	elseif (name == "contextkey") then
-		self:SetContextKey(value);
+	elseif (name == "parentframe") then
+		if value then
+			FrameUtil.SetParentMaintainRenderLayering(self, value);
+		end
 	end
 end
 

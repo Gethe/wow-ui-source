@@ -9,6 +9,17 @@ local function GetDefaultValueType(defaultValue)
 	return type(GetOrCallDefaultValue(defaultValue));
 end
 
+local function GetOrCallName(name)
+	if type(name) == "function" then
+		return name();
+	end
+	return name;
+end
+
+local function GetNameType(name)
+	return type(GetOrCallName(name));
+end
+
 local function EnsureVariableTypeIsValid(variableType, defaultValue)
 	if variableType == nil then
 		assert(defaultValue ~= nil);
@@ -18,8 +29,9 @@ local function EnsureVariableTypeIsValid(variableType, defaultValue)
 end
 
 local function ErrorIfInvalidSettingArguments(name, variable, variableType, defaultValue)
-	if type(name) ~= "string" then
-		error(string.format("'name' for variable '%s' requires string type.", variable));
+	local nameType = GetNameType(name);
+	if nameType ~= "string" then
+		error(string.format("'name' for variable '%s' requires string type or a function that returns a string.", variable));
 	end
 
 	if type(variable) ~= "string" then
@@ -62,7 +74,7 @@ function SettingMixin:Init(name, variable, variableType)
 end
 
 function SettingMixin:GetName()
-	return self.name;
+	return self:GetNameDerived();
 end
 
 function SettingMixin:GetVariable()
@@ -273,7 +285,11 @@ function CVarSettingMixin:Init(name, cvar, variableType)
 		value = self:TransformValue(value);
 		cvarAccessor:SetValue(value);
 	end
-	
+
+	self.GetNameDerived = function(self)
+		return securecallfunction(GetOrCallName, name);
+	end;
+
 	self.GetDefaultValueDerived = function(self)
 		local value = cvarAccessor:GetDefaultValue();
 		return self:TransformValue(value);
@@ -334,7 +350,11 @@ do
 		self.SetValueDerived = function(self, value)
 			securecallfunction(SecureSetValueDerived, self, value);
 		end;
-	
+
+		self.GetNameDerived = function(self)
+			return securecallfunction(GetOrCallName, name);
+		end;
+
 		self.GetDefaultValueDerived = function(self)
 			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;
@@ -352,6 +372,10 @@ function ModifiedClickSettingMixin:Init(name, modifier, defaultValue)
 
 	self.SetValueDerived = function(self, value)
 		SetModifiedClick(modifier, value);
+	end;
+
+	self.GetNameDerived = function(self)
+		return securecallfunction(GetOrCallName, name);
 	end;
 
 	self.GetDefaultValueDerived = function(self)
@@ -409,7 +433,11 @@ do
 		self.SetValueDerived = function(self, value)
 			securecallfunction(SecureSetValueDerived, self, value);
 		end;
-	
+
+		self.GetNameDerived = function(self)
+			return securecallfunction(GetOrCallName, name);
+		end;
+
 		self.GetDefaultValueDerived = function(self)
 			return securecallfunction(GetOrCallDefaultValue, defaultValue);
 		end;

@@ -142,6 +142,22 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetCatalogEntryRefundTimeStampByRecordID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "entryType", Type = "HousingCatalogEntryType", Nilable = false },
+				{ Name = "recordID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "refundTimeStamp", Type = "time_t", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCatalogSubcategoryInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -220,6 +236,10 @@ local HousingCatalogUI =
 		},
 		{
 			Name = "RequestHousingMarketInfoRefresh",
+			Type = "Function",
+		},
+		{
+			Name = "RequestHousingMarketRefundInfo",
 			Type = "Function",
 		},
 		{
@@ -324,6 +344,12 @@ local HousingCatalogUI =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "HousingRefundListUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_REFUND_LIST_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "HousingStorageEntryUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_STORAGE_ENTRY_UPDATED",
@@ -397,6 +423,7 @@ local HousingCatalogUI =
 				{ Name = "quantity", Type = "number", Nilable = false, Documentation = { "The number of fully instantiated instances of this entry that exist in storage; Does not include unredeemed instances (see remainingRedeemable)" } },
 				{ Name = "remainingRedeemable", Type = "number", Nilable = false, Documentation = { "The number of unredeemed instances of this entry that exist in storage; Some auto-awarded housing objects are granted in this 'lazily-instantiated' way, and will be 'redeemed' on first being placed" } },
 				{ Name = "numPlaced", Type = "number", Nilable = false, Documentation = { "The total number of instances of this entry that have been placed across all of the player's houses and plots" } },
+				{ Name = "isUniqueTrophy", Type = "bool", Nilable = false, Documentation = { "This decor is flagged to display as a unique trophy item." } },
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that is allowed to be placed outside, within a plot" } },
 				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that is allowed to be placed indoors, within a house interior" } },
 				{ Name = "canCustomize", Type = "bool", Nilable = false, Documentation = { "True if this entry is something that can be customized; Kinds of customization vary depending on the entry type" } },
@@ -456,6 +483,7 @@ local HousingCatalogUI =
 			Fields =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "productID", Type = "number", Nilable = true },
 				{ Name = "bundleCatalogShopProductID", Type = "number", Nilable = true },
 				{ Name = "isBundleParent", Type = "bool", Nilable = false },
 				{ Name = "isBundleChild", Type = "bool", Nilable = false },

@@ -79,6 +79,8 @@ function DamageMeterMixin:OnLoad()
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 
 	self.windowDataList = {};
+	self.sessionType = Enum.DamageMeterSessionType.Overall;
+	self.sessionID = nill;
 
 	self:InitializeWindowDataList();
 end
@@ -237,9 +239,11 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 	sessionWindow:SetSession(windowData.sessionType, windowData.sessionID);
 	sessionWindow:SetUseClassColor(self:ShouldUseClassColor());
 	sessionWindow:SetBarHeight(self:GetBarHeight());
+	sessionWindow:SetBarSpacing(self:GetBarSpacing());
 	sessionWindow:SetTextScale(self:GetTextScale());
 	sessionWindow:SetAlpha(self:GetWindowAlpha());
 	sessionWindow:SetShowBarIcons(self:ShouldShowBarIcons());
+	sessionWindow:SetBackgroundAlpha(self:GetBackgroundAlpha());
 	sessionWindow:SetStyle(self:GetStyle());
 
 	-- Each new window should render above the previous ones.
@@ -315,7 +319,8 @@ function DamageMeterMixin:ShowNewSessionWindow()
 	else
 		windowData = {
 			damageMeterType = Enum.DamageMeterType.DamageDone;
-			sessionType = Enum.DamageMeterSessionType.Overall;
+			sessionType = self:GetSessionType();
+			sessionID = self:GetSessionID();
 		};
 		table.insert(self.windowDataList, windowData );
 
@@ -379,16 +384,30 @@ function DamageMeterMixin:GetSessionWindowDamageMeterType(sessionWindow)
 	return self.windowDataList[sessionWindowIndex].damageMeterType;
 end
 
-function DamageMeterMixin:SetSessionWindowSessionID(sessionWindow, sessionType, sessionID)
-	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-	local windowData = self.windowDataList[sessionWindowIndex];
+function DamageMeterMixin:SetSessionWindowSessionID(sessionType, sessionID)
+	self.sessionType = sessionType;
+	self.sessionID = sessionID;
 
-	windowData.sessionType = sessionType;
-	windowData.sessionID = sessionID;
+	-- All windows share the same session type and ID.
+	self:ForEachSessionWindow(function(sessionWindow)
+		local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
+		local windowData = self.windowDataList[sessionWindowIndex];
 
-	SetSavedWindowData(sessionWindowIndex, windowData);
+		windowData.sessionType = sessionType;
+		windowData.sessionID = sessionID;
 
-	sessionWindow:SetSession(sessionType, sessionID);
+		SetSavedWindowData(sessionWindowIndex, windowData);
+
+		sessionWindow:SetSession(sessionType, sessionID);
+	end);
+end
+
+function DamageMeterMixin:GetSessionType()
+	return self.sessionType;
+end
+
+function DamageMeterMixin:GetSessionID()
+	return self.sessionID;
 end
 
 function DamageMeterMixin:SetSessionWindowLocked(sessionWindow, locked)
@@ -497,6 +516,21 @@ function DamageMeterMixin:SetShowBarIcons(showBarIcons)
 	end
 end
 
+function DamageMeterMixin:OnBarSpacingChanged(spacing)
+	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:SetBarSpacing(spacing); end);
+end
+
+function DamageMeterMixin:GetBarSpacing()
+	return self.barSpacing or DAMAGE_METER_DEFAULT_BAR_SPACING;
+end
+
+function DamageMeterMixin:SetBarSpacing(spacing)
+	if self.barSpacing ~= spacing then
+		self.barSpacing = spacing;
+		self:OnBarSpacingChanged(spacing);
+	end
+end
+
 function DamageMeterMixin:OnStyleChanged(style)
 	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:SetStyle(style); end);
 end
@@ -510,4 +544,27 @@ function DamageMeterMixin:SetStyle(style)
 		self.style = style;
 		self:OnStyleChanged(style);
 	end
+end
+
+function DamageMeterMixin:OnBackgroundAlphaChanged(alpha)
+	self:ForEachSessionWindow(function(sessionWindow) sessionWindow:SetBackgroundAlpha(alpha); end);
+end
+
+function DamageMeterMixin:GetBackgroundAlpha()
+	return self.backgroundAlpha or 1;
+end
+
+function DamageMeterMixin:SetBackgroundAlpha(alpha)
+	if not ApproximatelyEqual(self:GetBackgroundAlpha(), alpha) then
+		self.backgroundAlpha = alpha;
+		self:OnBackgroundAlphaChanged(alpha);
+	end
+end
+
+function DamageMeterMixin:GetBackgroundTransparency()
+	return self:GetBackgroundAlpha() / DAMAGE_METER_TRANSPARENCY_TO_ALPHA_MULTIPLIER;
+end
+
+function DamageMeterMixin:SetBackgroundTransparency(transparency)
+	return self:SetBackgroundAlpha(transparency * DAMAGE_METER_TRANSPARENCY_TO_ALPHA_MULTIPLIER);
 end

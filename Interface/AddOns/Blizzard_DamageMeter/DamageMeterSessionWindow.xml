@@ -26,6 +26,14 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NotActive" inherits="GameFontNormalMed1" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
 		</Layers>
 		<Frames>
 			<DropdownButton parentKey="SettingsDropdown" inherits="DamageMeterSettingsDropdownButtonTemplate">

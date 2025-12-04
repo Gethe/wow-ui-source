@@ -16,6 +16,7 @@ SecureTemplates.xml
 WardrobeCustomSets.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
+Cata\CharacterFrameTemplates.lua
 Cata\CharacterFrameTemplates.xml
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml

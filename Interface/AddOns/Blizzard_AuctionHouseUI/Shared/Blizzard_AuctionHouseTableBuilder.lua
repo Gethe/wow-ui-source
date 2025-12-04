@@ -2,6 +2,9 @@ local PRICE_DISPLAY_PADDING = 0;
 local BUYOUT_DISPLAY_PADDING = 0;
 local STANDARD_PADDING = 10;
 
+local function CreateChatIconAtlasMarkup(qualityInfo)
+	return CreateAtlasMarkup(qualityInfo.iconChat, 17, 15, 1, 0);
+end
 
 AuctionHouseTableCellMixin = CreateFromMixins(TableBuilderCellMixin);
 
@@ -699,11 +702,12 @@ end
 function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInfo)
 	local rowData = self.rowData;
 	local itemName = AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, self.hideItemLevel);
-	local craftingQualityIcon = AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey);
+	local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemKey.itemID);
 
-	if craftingQualityIcon then
-		self.Text:SetText(itemName .. " " .. craftingQualityIcon);
-		self.ExtraInfo:SetText(craftingQualityIcon);
+	if qualityInfo then
+		local markup = CreateChatIconAtlasMarkup(qualityInfo.iconChat);
+		self.Text:SetText(itemName .. " " .. markup);
+		self.ExtraInfo:SetText(markup);
 	else
 		self.Text:SetText(itemName);
 		self.ExtraInfo:SetText("");
@@ -741,12 +745,12 @@ function AuctionHouseTableCellAuctionsItemDisplayMixin:UpdateDisplay(itemKey, it
 	AuctionHouseTableCellItemDisplayMixin.UpdateDisplay(self, itemKey, itemKeyInfo);
 
 	local itemName = AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(self.rowData, itemKeyInfo, self.hideItemLevel);
-	local craftingQualityIcon = AuctionHouseUtil.GetItemDisplayCraftingQualityIconFromItemKey(itemKey);
+	local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemKey.itemID);
 	local quantity = AuctionHouseUtil.GetQuantityDisplayTextFromOwnedAuctionData(self.rowData);
 	local extraInfo = quantity or "";
 
-	if craftingQualityIcon then
-		extraInfo = extraInfo .. " " .. craftingQualityIcon;
+	if qualityInfo then
+		extraInfo = extraInfo .. " " .. CreateChatIconAtlasMarkup(qualityInfo.iconChat);
 	end
 
 	if not self:IsDisplayingBids() then

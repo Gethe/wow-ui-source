@@ -152,6 +152,12 @@
 								<Anchor point="CENTER" relativeKey="$parent.ScreenshotPreview"/>
 							</Anchors>
 						</FontString>
+						<FontString parentKey="ScreenshotError" inherits="GameFontNormal" text="" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ScreenshotPreview" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color color="PURE_RED_COLOR"/>
+						</FontString>
 					</Layer>
 				</Layers>
 			</Frame>

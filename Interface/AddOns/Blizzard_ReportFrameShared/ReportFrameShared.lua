@@ -50,6 +50,7 @@ function SharedReportFrameMixin:Reset()
 	self.reportInfo = nil;
 	self.minorCategoryFlags:ClearAll();
 	self.Comment.EditBox:SetText("");
+	self.ScreenshotReportingFrame.ScreenshotError:Hide();
 	self:Layout();
 end
 
@@ -249,13 +250,24 @@ function ScreenshotModeFrameMixin:OnHide()
 	ReportFrame.enteringScreenshotMode = false;
 end
 
+--TODO: Replace global strings when we decide what errors to show to players
+local ScreenshotReportErrorStrings = {
+	[Enum.InvalidPlotScreenshotReason.OutOfBounds] = SPELL_FAILED_OUT_OF_RANGE,
+	[Enum.InvalidPlotScreenshotReason.Facing] = SPELL_FAILED_LINE_OF_SIGHT,
+	[Enum.InvalidPlotScreenshotReason.NoNeighborhoodFound] = SPELL_FAILED_ERROR,
+	[Enum.InvalidPlotScreenshotReason.NoActivePlayer] = SPELL_FAILED_UNKNOWN,
+};
+
 function ScreenshotModeFrameMixin:OnMouseUp(button)
 	if ( button == "LeftButton" ) then
 		PlaySound(SOUNDKIT.REPORT_SCREENSHOT_CAMERA);
-		if C_Housing.ValidateReportScreenshot(ReportFrame.reportInfo.plotIndex) then
-			C_ReportSystem.TakeReportScreenshot();
+		local screenshotValidationResult =  C_Housing.CanTakeReportScreenshot(ReportFrame.reportInfo.plotIndex);
+		if screenshotValidationResult ~= Enum.InvalidPlotScreenshotReason.None then
+			ReportFrame.ScreenshotReportingFrame.ScreenshotError:SetText(ScreenshotReportErrorStrings[screenshotValidationResult]);
+			ReportFrame.ScreenshotReportingFrame.ScreenshotError:Show();
 		else
-			-- TODO: Display error
+			ReportFrame.ScreenshotReportingFrame.ScreenshotError:Hide();
+			C_ReportSystem.TakeReportScreenshot();
 		end
 		self:Hide();
 	end
@@ -412,8 +424,9 @@ function ReportInfo:CreateCraftingOrderReportInfo(reportType, craftingOrderID)
 	return reportInfo;
 end
 
-function ReportInfo:CreateNeighborhoodReportInfo(reportType)
+function ReportInfo:CreateNeighborhoodReportInfo(reportType, neighborhoodGUID)
 	local reportInfo = self:CreateReportInfoFromType(reportType);
+	reportInfo:SetNeighborhoodGUID(neighborhoodGUID);
 	return reportInfo;
 end
 

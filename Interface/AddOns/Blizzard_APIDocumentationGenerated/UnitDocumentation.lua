@@ -2122,7 +2122,7 @@ local Unit =
 		{
 			Name = "UnitIsUnit",
 			Type = "Function",
-			SecretWhenUnitIdentityRestricted = true,
+			SecretWhenUnitComparisonRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2310,7 +2310,7 @@ local Unit =
 		{
 			Name = "UnitPartialPower",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2424,7 +2424,7 @@ local Unit =
 		{
 			Name = "UnitPower",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2493,7 +2493,7 @@ local Unit =
 		{
 			Name = "UnitPowerMax",
 			Type = "Function",
-			SecretForAttackableUnits = true,
+			SecretWhenUnitPowerMaxRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2511,7 +2511,7 @@ local Unit =
 		{
 			Name = "UnitPowerMissing",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Result of UnitPowerMax() - UnitPower()" },
 
@@ -2530,7 +2530,7 @@ local Unit =
 		{
 			Name = "UnitPowerPercent",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns percent of power available - can be scaled to [0, 100] for display purposes" },
 
@@ -2847,7 +2847,6 @@ local Unit =
 		{
 			Name = "UnitStagger",
 			Type = "Function",
-			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -2857,7 +2856,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "number", Nilable = false },
+				{ Name = "result", Type = "number", Nilable = false, ConditionalSecret = true },
 			},
 		},
 		{
@@ -4211,6 +4210,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -4264,6 +4264,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "complete", Type = "bool", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
@@ -4316,6 +4317,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

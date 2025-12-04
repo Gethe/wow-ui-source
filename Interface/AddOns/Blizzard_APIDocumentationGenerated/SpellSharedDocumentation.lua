@@ -26,7 +26,7 @@ local SpellShared =
 				{ Name = "modRate", Type = "number", Nilable = false, Documentation = { "Rate at which cooldown UI should update" } },
 				{ Name = "activeCategory", Type = "number", Nilable = true, Documentation = { "Indicates which category is responsible for determining the duration. A nil value indicates the duration was determined through some other logic, e.g. the spell is on hold." } },
 				{ Name = "timeUntilEndOfStartRecovery", Type = "number", Nilable = true, Documentation = { "When this is set it indicates that the spell is in recovery and this is how long it will be until that recovery period is finished" } },
-				{ Name = "isOnGCD", Type = "bool", Nilable = false, Documentation = { "Whether or not this spell is considered to be on the global cooldown, do not trust this field unless responding to a SPELL_UPDATE_COOLDOWN event" } },
+				{ Name = "isOnGCD", Type = "bool", Nilable = true, NeverSecret = true, Documentation = { "Whether or not this spell is considered to be on the global cooldown, do not trust this field unless responding to a SPELL_UPDATE_COOLDOWN event" } },
 			},
 		},
 		{

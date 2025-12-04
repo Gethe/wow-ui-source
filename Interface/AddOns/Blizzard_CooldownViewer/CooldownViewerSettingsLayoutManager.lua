@@ -146,7 +146,11 @@ function CooldownViewerLayoutManagerMixin:IsUsingDefaultLayout()
 end
 
 function CooldownViewerLayoutManagerMixin:IsDefaultLayoutID(id)
-	return id == DEFAULT_LAYOUT_ID;
+	return id == self:GetDefaultLayoutID();
+end
+
+function CooldownViewerLayoutManagerMixin:GetDefaultLayoutID()
+	return DEFAULT_LAYOUT_ID;
 end
 
 function CooldownViewerLayoutManagerMixin:GetActiveLayout(accessMode)
@@ -182,6 +186,7 @@ function CooldownViewerLayoutManagerMixin:SetActiveLayout(layout)
 	if self:CanActivateLayout(layout) and self:GetActiveLayoutID() ~= newLayoutID then
 		self.activeLayoutID = newLayoutID;
 		self:SetPreviouslyActiveLayout(layout);
+
 		local isVerboseChange = false;
 		self:SetHasPendingChanges(true, isVerboseChange);
 		return true;
@@ -736,6 +741,14 @@ function CooldownViewerLayoutManagerMixin:CreateRestorePoint()
 	local activeLayout = self:GetActiveLayout(Enum.CDMLayoutMode.AccessOnly);
 	local layoutCopy = activeLayout and CopyTable(activeLayout);
 	self.restorePoint = { layoutID = activeLayoutID, layout = layoutCopy };
+end
+
+function CooldownViewerLayoutManagerMixin:DestroyRestorePoint()
+	self.restorePoint = nil;
+end
+
+function CooldownViewerLayoutManagerMixin:CanUseRestorePoint()
+	return self.restorePoint ~= nil and self:HasPendingChanges();
 end
 
 function CooldownViewerLayoutManagerMixin:ResetToRestorePoint()

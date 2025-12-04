@@ -136,7 +136,7 @@ local HousingNeighborhoodUI =
 
 			Returns =
 			{
-				{ Name = "previousHouseIdentifier", Type = "cstring", Nilable = false },
+				{ Name = "previousHouseIdentifier", Type = "string", Nilable = false },
 			},
 		},
 		{

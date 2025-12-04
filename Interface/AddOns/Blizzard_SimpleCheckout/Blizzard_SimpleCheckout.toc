@@ -5,6 +5,8 @@
 ## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent
 ## UseSecureEnvironment: 1
 
+Blizzard_SimpleCheckout_Inbound.lua
+Blizzard_SimpleCheckout_Outbound.lua
 Blizzard_SimpleCheckout.lua
 
 Blizzard_SimpleCheckout.xml

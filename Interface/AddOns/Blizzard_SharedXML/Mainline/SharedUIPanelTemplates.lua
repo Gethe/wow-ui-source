@@ -1553,6 +1553,10 @@ function PanelResizeButtonMixin:OnLeave()
 end
 
 function PanelResizeButtonMixin:OnMouseDown()
+	if not self:IsEnabled() then
+		return;
+	end
+
 	self.isActive = true;
 
 	local target = self.target;

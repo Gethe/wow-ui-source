@@ -401,10 +401,7 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 	self:Show();
 	HelpMicroButton:Hide();
 
-	if ( C_StorePublic.IsDisabledByParentalControls() ) then
-		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
-		self:Disable();
-	elseif ( Kiosk.IsEnabled() ) then
+	if ( Kiosk.IsEnabled() ) then
 		self.disabledTooltip = ERR_SYSTEM_DISABLED;
 		self:Disable();
 	elseif ( not C_StorePublic.IsEnabled() ) then

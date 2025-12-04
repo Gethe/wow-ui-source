@@ -35,11 +35,11 @@ function TabSystemTrackerMixin:SetTabDeselectCallback(tabID, callback)
 	self.tabIDToTabDeselectCallback[tabID] = callback;
 end
 
-function TabSystemTrackerMixin:SetTab(tabID)
+function TabSystemTrackerMixin:SetTab(tabID, isUserAction)
 	if self.tabID and tabID ~= self.tabID then
 		local deselectCallback = self.tabIDToTabDeselectCallback[self.tabID];
 		if deselectCallback then
-			deselectCallback();
+			deselectCallback(isUserAction);
 		end
 	end
 
@@ -52,7 +52,7 @@ function TabSystemTrackerMixin:SetTab(tabID)
 
 	local tabCallback = self.tabIDToTabCallback[tabID];
 	if tabCallback then
-		tabCallback();
+		tabCallback(isUserAction);
 	end
 end
 
@@ -95,8 +95,8 @@ function TabSystemOwnerMixin:SetTabDeselectCallback(tabID, callback)
 	self.internalTabTracker:SetTabDeselectCallback(tabID, callback);
 end
 
-function TabSystemOwnerMixin:SetTab(tabID)
-	self.internalTabTracker:SetTab(tabID);
+function TabSystemOwnerMixin:SetTab(tabID, isUserAction)
+	self.internalTabTracker:SetTab(tabID, isUserAction);
 	self.tabSystem:SetTabVisuallySelected(tabID);
 end
 

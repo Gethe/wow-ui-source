@@ -4,22 +4,16 @@ function EncounterWarningsUtil.GetSeverityFromSystemIndex(systemIndex)
 	return EncounterWarningsSystemSeverity[systemIndex];
 end
 
-function EncounterWarningsUtil.GetDefaultFontObject(severity)
+function EncounterWarningsUtil.GetFontObjectForSeverity(severity)
 	return GetValueOrCallFunction(EncounterWarningsSeverityFonts, severity);
 end
 
-function EncounterWarningsUtil.GetDefaultTextColor(severity)
+function EncounterWarningsUtil.GetTextColorForSeverity(severity)
 	return GetValueOrCallFunction(EncounterWarningsSeverityColors, severity);
 end
 
-function EncounterWarningsUtil.GetDefaultMaximumTextHeight(severity)
-	local textSizeLimits = GetValueOrCallFunction(EncounterWarningsSeverityTextSizeLimits, severity);
-	return textSizeLimits and textSizeLimits.height or nil;
-end
-
-function EncounterWarningsUtil.GetDefaultMaximumTextWidth(severity)
-	local textSizeLimits = GetValueOrCallFunction(EncounterWarningsSeverityTextSizeLimits, severity);
-	return textSizeLimits and textSizeLimits.width or nil;
+function EncounterWarningsUtil.GetMaximumTextSizeForSeverity(severity)
+	return GetValueOrCallFunction(EncounterWarningsSeverityTextSizeLimits, severity);
 end
 
 function EncounterWarningsUtil.GetClassColoredTargetName(encounterWarningInfo)
@@ -48,10 +42,16 @@ function EncounterWarningsUtil.ShouldShowFrameForSystem(systemIndex)
 	return systemSeverity >= minimumSeverity;
 end
 
-function EncounterWarningsUtil.ShowChatMessageForWarning(encounterWarningInfo)
-	-- EETODO: Clean this up; should also be a globalstring rather than a basic join.
-	local iconTextureMarkup = CreateTextureMarkup(encounterWarningInfo.iconFileID, 64, 64, 20, 20, 0, 1, 0, 1, 0, 0);
-	local formattedMessage = string.join(" ", iconTextureMarkup, encounterWarningInfo.text);
+function EncounterWarningsUtil.GenerateChatMessageIconMarkup(iconFileID)
+	local width = EncounterWarningsConstants.ChatMessageIconDisplaySize;
+	local height = EncounterWarningsConstants.ChatMessageIconDisplaySize;
+	return CreateSimpleTextureMarkup(iconFileID, width, height);
+end
 
-	ChatFrameUtil.DisplaySystemMessageInPrimary(formattedMessage);
+function EncounterWarningsUtil.ShowChatMessageForWarning(encounterWarningInfo)
+	local iconTextureMarkup = EncounterWarningsUtil.GenerateChatMessageIconMarkup(encounterWarningInfo.iconFileID);
+	local formattedMessage = string.join(" ", iconTextureMarkup, encounterWarningInfo.text);
+	local chatType = ChatTypeInfo["RAID_BOSS_EMOTE"];
+
+	DEFAULT_CHAT_FRAME:AddMessage(formattedMessage, chatType.r, chatType.g, chatType.b, chatType.id);
 end

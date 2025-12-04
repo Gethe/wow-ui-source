@@ -1779,9 +1779,9 @@ local function PerksProgramToy_ProcessLines(data)
 				local restrictionText = lineData.leftText;
 				restrictionText = lineData.leftColor:WrapTextInColorCode(restrictionText);
 				if lineData.type == Enum.TooltipDataLineType.ToyEffect then
-					toyEffect = StripHyperlinks(restrictionText);
+					toyEffect = C_StringUtil.StripHyperlinks(restrictionText);
 				elseif lineData.type == Enum.TooltipDataLineType.ToyDescription then				
-					toyDescription = StripHyperlinks(restrictionText);
+					toyDescription = C_StringUtil.StripHyperlinks(restrictionText);
 				end
 			end
 		end

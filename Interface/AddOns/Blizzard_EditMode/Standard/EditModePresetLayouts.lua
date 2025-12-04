@@ -284,7 +284,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -306,7 +306,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -341,7 +341,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -760,23 +760,23 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 	[Enum.EditModeSystem.EncounterEvents] = {
 		[Enum.EditModeEncounterEventsSystemIndices.Timeline] = {
 			settings = {
-				[Enum.EditModeEncounterEventsSetting.Orientation] = Enum.EncounterEventsOrientation.Horizontal,
+				[Enum.EditModeEncounterEventsSetting.Orientation] = Enum.EncounterEventsOrientation.Vertical,
 				[Enum.EditModeEncounterEventsSetting.IconDirection] = Enum.EncounterEventsIconDirection.Right,
 				[Enum.EditModeEncounterEventsSetting.IconSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
-				[Enum.EditModeEncounterEventsSetting.Background] = 0,
+				[Enum.EditModeEncounterEventsSetting.BackgroundTransparency] = 0,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.InEncounter,
 				[Enum.EditModeEncounterEventsSetting.ShowSpellName] = 0,
-				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 0,
+				[Enum.EditModeEncounterEventsSetting.ShowTooltips] = 1,
 				[Enum.EditModeEncounterEventsSetting.ShowTimer] = 1,
 			},
 			anchorInfo = {
-				point = "TOP",
+				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
-				relativePoint = "TOP",
-				offsetX = 0,
-				offsetY = -130,
+				relativePoint = "BOTTOM",
+				offsetX = -457,
+				offsetY = 336,
 			},
 		},
 		[Enum.EditModeEncounterEventsSystemIndices.CriticalWarnings] = {
@@ -792,7 +792,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "TOP",
 				offsetX = 0,
-				offsetY = -215,
+				offsetY = -40,
 			},
 		},
 		[Enum.EditModeEncounterEventsSystemIndices.MediumWarnings] = {
@@ -808,7 +808,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "TOP",
 				offsetX = 0,
-				offsetY = -270,
+				offsetY = -90,
 			},
 
 		},
@@ -825,7 +825,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "TOP",
 				offsetX = 0,
-				offsetY = -315,
+				offsetY = -130,
 			},
 		},
 	},
@@ -834,16 +834,17 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		settings = {
 			[Enum.EditModeDamageMeterSetting.Visibility] = Enum.DamageMeterVisibility.Always,
 			[Enum.EditModeDamageMeterSetting.Style] = Enum.DamageMeterStyle.Default,
-			[Enum.EditModeDamageMeterSetting.Numbers] = Enum.DamageMeterNumbers.Minimal,
+			[Enum.EditModeDamageMeterSetting.Numbers] = Enum.DamageMeterNumbers.Compact,
 			[Enum.EditModeDamageMeterSetting.FrameWidth] = 100,
-			[Enum.EditModeDamageMeterSetting.FrameHeight] = 50,
-			[Enum.EditModeDamageMeterSetting.BarHeight] = 9,
-			[Enum.EditModeDamageMeterSetting.Padding] = 0,
+			[Enum.EditModeDamageMeterSetting.FrameHeight] = 60,
+			[Enum.EditModeDamageMeterSetting.BarHeight] = 1,
+			[Enum.EditModeDamageMeterSetting.Padding] = 2,
 			[Enum.EditModeDamageMeterSetting.Transparency] = 50,
 			[Enum.EditModeDamageMeterSetting.LockScroll] = 0,
 			[Enum.EditModeDamageMeterSetting.ShowSpecIcon] = 1,
 			[Enum.EditModeDamageMeterSetting.ShowClassColor] = 1,
 			[Enum.EditModeDamageMeterSetting.TextSize] = 5,
+			[Enum.EditModeDamageMeterSetting.BackgroundTransparency] = 30,
 		},
 		anchorInfo = {
 			point = "TOPLEFT",
@@ -1134,7 +1135,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1156,7 +1157,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "TOPLEFT",
@@ -1191,7 +1192,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.AuraOrganizationType] = Enum.RaidAuraOrganizationType.Legacy,
 				[Enum.EditModeUnitFrameSetting.Opacity] = 100,
-				[Enum.EditModeUnitFrameSetting.IconSize] = 100,
+				[Enum.EditModeUnitFrameSetting.IconSize] = 5,
 			},
 			anchorInfo = {
 				point = "RIGHT",

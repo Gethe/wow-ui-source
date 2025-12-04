@@ -4,10 +4,6 @@ local DamageMeterSourceWindowMixinEvents = {
 	"GLOBAL_MOUSE_DOWN",
 };
 
-function DamageMeterSourceWindowMixin:GetName()
-	return self.Name;
-end
-
 function DamageMeterSourceWindowMixin:GetScrollBox()
 	return self.ScrollBox;
 end
@@ -16,12 +12,12 @@ function DamageMeterSourceWindowMixin:GetScrollBar()
 	return self.ScrollBar;
 end
 
-function DamageMeterSourceWindowMixin:GetHeader()
-	return self.Header;
-end
-
 function DamageMeterSourceWindowMixin:GetResizeButton()
 	return self.ResizeButton;
+end
+
+function DamageMeterSourceWindowMixin:GetBackground()
+	return self.Background;
 end
 
 function DamageMeterSourceWindowMixin:OnLoad()
@@ -54,27 +50,25 @@ function DamageMeterSourceWindowMixin:OnEnter()
 	self:SetScript("OnUpdate", function()
 		local resizeButton = self:GetResizeButton();
 		local shouldResizeButtonBeShown = (self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing());
-		local shouldChangeBackgroundOpacity = true;
 
 		if shouldResizeButtonBeShown and resizeButton:GetAlpha() == 0 then
 			self.ShowResizeButton:Play();
 			self.EmphasizeScrollBar:Play();
-
-			if shouldChangeBackgroundOpacity then
-				self.ShowBackground:Play();
-			end
 		elseif not shouldResizeButtonBeShown and resizeButton:GetAlpha() > 0 then
 			self:SetScript("OnUpdate", nil);
 
 			local reverse = true;
 			self.ShowResizeButton:Play(reverse);
 			self.EmphasizeScrollBar:Play(reverse);
-
-			if shouldChangeBackgroundOpacity then
-				self.ShowBackground:Play(reverse);
-			end
 		end
 	end);
+end
+
+function DamageMeterSourceWindowMixin:InitializeScrollBoxPadding(view)
+	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
+	local elementSpacing = self:GetBarSpacing();
+
+	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
 end
 
 function DamageMeterSourceWindowMixin:InitializeScrollBox()
@@ -86,23 +80,21 @@ function DamageMeterSourceWindowMixin:InitializeScrollBox()
 		frame:SetTextScale(self:GetTextScale());
 		frame:SetShowBarIcons(self:ShouldShowBarIcons());
 		frame:SetStyle(self:GetStyle());
+		frame:SetBackgroundAlpha(self:GetBackgroundAlpha());
 	end);
 
-	local topPadding, bottomPadding, leftPadding, rightPadding = 0, 0, 0, 0;
-	local elementSpacing = 4;
-	view:SetPadding(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
-
+	self:InitializeScrollBoxPadding(view);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self:GetScrollBox(), self:GetScrollBar(), view);
 
-	local topLeftX, topLeftY = 20, -5;
-	local bottomRightX, bottomRightY = -22, 6;
+	local topLeftX, topLeftY = 20, -15;
+	local bottomRightX, bottomRightY = -22, 17;
 	local withBarXOffset = 20;
 	local scrollBoxAnchorsWithBar = {
-		CreateAnchor("TOPLEFT", self:GetHeader(), "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("TOPLEFT", self:GetBackground(), "TOPLEFT", topLeftX, topLeftY),
 		CreateAnchor("BOTTOMRIGHT", bottomRightX - withBarXOffset, bottomRightY);
 	};
 	local scrollBoxAnchorsWithoutBar = {
-		CreateAnchor("TOPLEFT", self:GetHeader(), "BOTTOMLEFT", topLeftX, topLeftY),
+		CreateAnchor("TOPLEFT", self:GetBackground(), "TOPLEFT", topLeftX, topLeftY),
 		CreateAnchor("BOTTOMRIGHT", bottomRightX, bottomRightY);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self:GetScrollBox(), self:GetScrollBar(), scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
@@ -209,8 +201,6 @@ function DamageMeterSourceWindowMixin:SetSource(source)
 	self.sourceName = source.name;
 	self.classFilename = source.classFilename;
 	self.showsValuePerSecondAsPrimary = source.showsValuePerSecondAsPrimary;
-
-	self:UpdateName();
 end
 
 function DamageMeterSourceWindowMixin:ClearSource()
@@ -275,7 +265,7 @@ function DamageMeterSourceWindowMixin:AnchorToSessionWindow(sessionWindow)
 		self:SetPoint("TOPLEFT", sessionWindow, "TOPRIGHT");
 		self:SetPoint("BOTTOMLEFT", sessionWindow, "BOTTOMRIGHT");
 
-		resizeButton:SetPoint("BOTTOMRIGHT", -1, -8);
+		resizeButton:SetPoint("BOTTOMRIGHT", 1, 1);
 		resizeButton:GetNormalTexture():SetTexCoord(0, 1, 0, 1);
 		resizeButton:GetHighlightTexture():SetTexCoord(0, 1, 0, 1);
 		resizeButton:GetPushedTexture():SetTexCoord(0, 1, 0, 1);
@@ -284,22 +274,13 @@ function DamageMeterSourceWindowMixin:AnchorToSessionWindow(sessionWindow)
 		self:SetPoint("TOPRIGHT", sessionWindow, "TOPLEFT");
 		self:SetPoint("BOTTOMRIGHT", sessionWindow, "BOTTOMLEFT");
 
-		resizeButton:SetPoint("BOTTOMLEFT", 1, -8);
+		resizeButton:SetPoint("BOTTOMLEFT", -1, 1);
 		resizeButton:GetNormalTexture():SetTexCoord(1, 0, 0, 1);
 		resizeButton:GetHighlightTexture():SetTexCoord(1, 0, 0, 1);
 		resizeButton:GetPushedTexture():SetTexCoord(1, 0, 0, 1);
 	end
 
 	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
-end
-
-function DamageMeterSourceWindowMixin:GetNameText()
-	return self.sourceName;
-end
-
-function DamageMeterSourceWindowMixin:UpdateName()
-	local text = self:GetNameText();
-	self:GetName():SetText(text);
 end
 
 function DamageMeterSourceWindowMixin:OnUseClassColorChanged(useClassColor)
@@ -320,9 +301,8 @@ function DamageMeterSourceWindowMixin:SetUseClassColor(useClassColor)
 end
 
 function DamageMeterSourceWindowMixin:OnBarHeightChanged(barHeight)
-	local retainScrollPosition = true;
 	self:GetScrollBox():GetView():SetElementExtent(barHeight);
-	self:Refresh(retainScrollPosition);
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
 end
 
 function DamageMeterSourceWindowMixin:GetBarHeight()
@@ -368,6 +348,22 @@ function DamageMeterSourceWindowMixin:SetShowBarIcons(showBarIcons)
 	end
 end
 
+function DamageMeterSourceWindowMixin:OnBarSpacingChanged(_spacing)
+	self:InitializeScrollBoxPadding(self:GetScrollBox():GetView());
+	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+end
+
+function DamageMeterSourceWindowMixin:GetBarSpacing()
+	return self.barSpacing or DAMAGE_METER_DEFAULT_BAR_SPACING;
+end
+
+function DamageMeterSourceWindowMixin:SetBarSpacing(spacing)
+	if self.barSpacing ~= spacing then
+		self.barSpacing = spacing;
+		self:OnBarSpacingChanged(spacing);
+	end
+end
+
 function DamageMeterSourceWindowMixin:OnStyleChanged(style)
 	self:ForEachEntryFrame(function(frame) frame:SetStyle(style); end);
 end
@@ -381,4 +377,23 @@ function DamageMeterSourceWindowMixin:SetStyle(style)
 		self.style = style;
 		self:OnStyleChanged(style);
 	end
+end
+
+function DamageMeterSourceWindowMixin:OnBackgroundAlphaChanged(alpha)
+	self:ForEachEntryFrame(function(frame) frame:SetBackgroundAlpha(alpha); end);
+end
+
+function DamageMeterSourceWindowMixin:GetBackgroundAlpha()
+	return self.backgroundAlpha or 1;
+end
+
+function DamageMeterSourceWindowMixin:SetBackgroundAlpha(alpha)
+	if not ApproximatelyEqual(self:GetBackgroundAlpha(), alpha) then
+		self.backgroundAlpha = alpha;
+		self:OnBackgroundAlphaChanged(alpha);
+	end
+end
+
+function DamageMeterSourceWindowMixin:DoesCurrentStyleUseBackground()
+	return self:GetStyle() == Enum.DamageMeterStyle.FullBackground;
 end

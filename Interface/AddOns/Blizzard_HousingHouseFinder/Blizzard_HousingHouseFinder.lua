@@ -587,6 +587,22 @@ function HouseFinderNeighborhoodButtonMixin:OnClick()
 	end
 end
 
+function HouseFinderNeighborhoodButtonMixin:OnMouseUp(button, upInside)
+	if upInside and button == "RightButton" then
+		local ownerType = self.neighborhoodInfo.neighborhoodOwnerType;
+		if ownerType == Enum.NeighborhoodOwnerType.Charter or ownerType == Enum.NeighborhoodOwnerType.Guild then
+			MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
+				rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
+			end);
+		end
+	end
+end
+
+function HouseFinderNeighborhoodButtonMixin:ReportNeighborhood()
+	local reportInfo = ReportInfo:CreateNeighborhoodReportInfo(Enum.ReportType.Neighborhood, self.neighborhoodInfo.neighborhoodGUID);
+	ReportFrame:InitiateReport(reportInfo, self.neighborhoodInfo.neighborhoodName); 
+end
+
 function HouseFinderNeighborhoodButtonMixin:Select()
 	local selectedAtlasSuffix = C_Housing.GetNeighborhoodTextureSuffix(self.neighborhoodInfo.neighborhoodGUID);
 	if selectedAtlasSuffix then

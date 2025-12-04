@@ -1199,6 +1199,8 @@ function CastingBarMixin:SimulateCast(castData)
 	self:SetMinMaxValues(0, castData.castTime);
 	self.maxValue = castData.castTime;
 
+	self:ShowSpark();
+
 	self:SetValue(0);
 	self.value = 0;
 

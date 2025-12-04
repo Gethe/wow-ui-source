@@ -35,20 +35,37 @@ StaticPopupDialogs["TRANSMOG_OUTFIT_INVALID_NAME"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["TRANSMOG_PENDING_CHANGES"] = {
+	text = TRANSMOG_PENDING_CHANGES,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(_dialog, data)
+		if data.confirmCallback then
+			data.confirmCallback();
+		end
+	end,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 TransmogFrameMixin = {
 	DYNAMIC_EVENTS = {
 		"TRANSMOG_OUTFITS_CHANGED",
 		"TRANSMOG_DISPLAYED_OUTFIT_CHANGED",
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
 		"VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED",
-		"PLAYER_SPECIALIZATION_CHANGED"
+		"PLAYER_SPECIALIZATION_CHANGED",
+		"DISPLAY_SIZE_CHANGED",
+		"UI_SCALE_CHANGED"
 	};
 	HELP_PLATE_INFO = {
 		FramePos = { x = 0,	y = -21 },
-		FrameSize = { width = 1618, height = 861 },
-		[1] = { ButtonPos = { x = 133, y = -328 }, HighLightBox = { x = 3, y = -99, width = 308, height = 758 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_1 },
-		[2] = { ButtonPos = { x = 618, y = -328 }, HighLightBox = { x = 315, y = -3, width = 651, height = 854 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_2 },
-		[3] = { ButtonPos = { x = 1269, y = -328 }, HighLightBox = { x = 970, y = -3, width = 644, height = 854 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_3 },
+		-- Base positions and sizes to reference, as the transmog frame uses the 'checkFit' UIPanel setting to adjust its scale.
+		-- Actual positions and sizes set in RefreshHelpPlate.
+		FrameSizeBase = { width = 1618, height = 861 },
+		[1] = { ButtonPosBase = { x = 133, y = -328 }, HighLightBoxBase = { x = 3, y = -99, width = 308, height = 758 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_1 },
+		[2] = { ButtonPosBase = { x = 618, y = -328 }, HighLightBoxBase = { x = 315, y = -3, width = 651, height = 854 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_2 },
+		[3] = { ButtonPosBase = { x = 1269, y = -328 }, HighLightBoxBase = { x = 970, y = -3, width = 644, height = 854 }, ToolTipDir = "DOWN", ToolTipText = TRANSMOG_HELP_3 },
 	};
 };
 
@@ -58,6 +75,7 @@ function TransmogFrameMixin:OnLoad()
 
 	self.HelpPlateButton:SetScript("OnClick", function()
 		if not HelpPlate.IsShowingHelpInfo(self.HELP_PLATE_INFO) then
+			self:RefreshHelpPlate();
 			HelpPlate.Show(self.HELP_PLATE_INFO, self, self.HelpPlateButton);
 		else
 			local userToggled = true;
@@ -74,8 +92,8 @@ end
 function TransmogFrameMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
-	local selectActiveOutift = true;
-	self:RefreshOutfits(selectActiveOutift);
+	local selectActiveOutfit = true;
+	self:RefreshOutfits(selectActiveOutfit);
 	self:UpdateCostDisplay();
 end
 
@@ -85,6 +103,7 @@ function TransmogFrameMixin:OnHide()
 	-- Clean up any open dialogs.
 	StaticPopup_Hide("CONFIRM_BUY_OUTFIT_SLOT");
 	StaticPopup_Hide("TRANSMOG_OUTFIT_INVALID_NAME");
+	StaticPopup_Hide("TRANSMOG_PENDING_CHANGES");
 	StaticPopup_Hide("CONFIRM_DELETE_TRANSMOG_CUSTOM_SET");
 	StaticPopup_Hide("TRANSMOG_CUSTOM_SET_NAME");
 	StaticPopup_Hide("TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE");
@@ -103,28 +122,34 @@ end
 function TransmogFrameMixin:OnEvent(event, ...)
 	if event == "TRANSMOG_OUTFITS_CHANGED" then
 		local newOutfitID = ...;
-		local selectActiveOutift = false;
-		self:RefreshOutfits(selectActiveOutift);
+		local selectActiveOutfit = false;
+		self:RefreshOutfits(selectActiveOutfit);
 
 		if newOutfitID then
 			self.OutfitCollection:AnimateOutfitAdded(newOutfitID);
 		end
 	elseif event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" then
-		local selectActiveOutift = false;
-		self:RefreshOutfits(selectActiveOutift);
+		local selectActiveOutfit = false;
+		self:RefreshOutfits(selectActiveOutfit);
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" then
 		self:UpdateCostDisplay();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:RefreshSlots();
+	elseif event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
+		self:RefreshHelpPlate();
 	end
 end
 
-function TransmogFrameMixin:RefreshOutfits(selectActiveOutift)
+function TransmogFrameMixin:RefreshOutfits(selectActiveOutfit)
 	-- Build up the list of outfits.
 	local dataProvider = CreateDataProvider();
 	local outfitsInfo = C_TransmogOutfitInfo.GetOutfitsInfo();
 	if outfitsInfo then
 		for _index, outfitInfo in ipairs(outfitsInfo) do
+			local onClickCallback = function()
+				self.WardrobeCollection:SetToItemsTab();
+			end;
+
 			local onEditCallback = function()
 				local popupData = {
 					outfitID = outfitInfo.outfitID,
@@ -144,6 +169,7 @@ function TransmogFrameMixin:RefreshOutfits(selectActiveOutift)
 				name = outfitInfo.name,
 				situationCategories = outfitInfo.situationCategories,
 				icon = outfitInfo.icon,
+				onClickCallback = onClickCallback,
 				onEditCallback = onEditCallback
 			};
 
@@ -151,7 +177,7 @@ function TransmogFrameMixin:RefreshOutfits(selectActiveOutift)
 		end
 	end
 
-	self.OutfitCollection:Refresh(dataProvider, selectActiveOutift);
+	self.OutfitCollection:Refresh(dataProvider, selectActiveOutfit);
 end
 
 function TransmogFrameMixin:RefreshSlots()
@@ -161,6 +187,36 @@ function TransmogFrameMixin:RefreshSlots()
 
 	-- Update collection in case the selected slot changed.
 	self.WardrobeCollection:UpdateSlot(self.CharacterPreview:GetSelectedSlotData());
+end
+
+function TransmogFrameMixin:RefreshHelpPlate()
+	local relativeScale = self:GetEffectiveScale() / HelpPlate.GetEffectiveScale();
+
+	self.HELP_PLATE_INFO.FrameSize = {
+		width = self.HELP_PLATE_INFO.FrameSizeBase.width * relativeScale,
+		height = self.HELP_PLATE_INFO.FrameSizeBase.height * relativeScale
+	};
+
+	local function UpdateHelpPlateSection(helpPlate)
+		helpPlate.ButtonPos = {
+			x = helpPlate.ButtonPosBase.x * relativeScale,
+			y = helpPlate.ButtonPosBase.y * relativeScale
+		};
+		helpPlate.HighLightBox = {
+			x = helpPlate.HighLightBoxBase.x * relativeScale,
+			y = helpPlate.HighLightBoxBase.y * relativeScale,
+			width = helpPlate.HighLightBoxBase.width * relativeScale,
+			height = helpPlate.HighLightBoxBase.height * relativeScale
+		};
+	end
+
+	UpdateHelpPlateSection(self.HELP_PLATE_INFO[1]);
+	UpdateHelpPlateSection(self.HELP_PLATE_INFO[2]);
+	UpdateHelpPlateSection(self.HELP_PLATE_INFO[3]);
+
+	if HelpPlate.IsShowingHelpInfo(self.HELP_PLATE_INFO) then
+		HelpPlate.Show(self.HELP_PLATE_INFO, self, self.HelpPlateButton);
+	end
 end
 
 function TransmogFrameMixin:UpdateCostDisplay()
@@ -241,9 +297,22 @@ function TransmogOutfitCollectionMixin:OnLoad()
 	self.PurchaseOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.PurchaseOutfitButton:SetScript("OnClick", function()
-		StaticPopup_Show("CONFIRM_BUY_OUTFIT_SLOT");
+		local function ClickCallback()
+			-- Explicitly hide pending popup if showing so the confirm dialog is positioned correctly.
+			StaticPopup_Hide("TRANSMOG_PENDING_CHANGES");
+			StaticPopup_Show("CONFIRM_BUY_OUTFIT_SLOT");
 
-		HelpTip:HideAllSystem("TransmogOutfitCollection");
+			HelpTip:HideAllSystem("TransmogOutfitCollection");
+		end;
+
+		if C_TransmogOutfitInfo.HasPendingOutfitTransmogs() or C_TransmogOutfitInfo.HasPendingOutfitSituations() then
+			local dialogData = {
+				confirmCallback = ClickCallback
+			};
+			StaticPopup_Show("TRANSMOG_PENDING_CHANGES", nil, nil, dialogData);
+		else
+			ClickCallback();
+		end
 	end);
 
 	self.SaveOutfitButton:SetScript("OnEnter", function(button)
@@ -289,19 +358,24 @@ function TransmogOutfitCollectionMixin:OnEvent(event, ...)
 	end
 end
 
-function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutift)
+function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutfit)
 	self.OutfitList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 	self:UpdateShowEquippedGearButton();
 
 	self:CheckShowHelptips();
 
 	-- Active outfit is the outfit the player is wearing out in the world, viewed is what is being viewed in the transmog frame.
-	local outfitID = selectActiveOutift and C_TransmogOutfitInfo.GetActiveOutfitID() or C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+	local outfitID = selectActiveOutfit and C_TransmogOutfitInfo.GetActiveOutfitID() or viewedOutfitID;
 	if outfitID == 0 then
 		local firstElementData = dataProvider:Find(1);
 		outfitID = firstElementData.outfitID;
 	end
-	C_TransmogOutfitInfo.ChangeViewedOutfit(outfitID);
+
+	-- Make sure to set the viewed outfit when first opening the frame, otherwise only call if it changed.
+	if selectActiveOutfit or outfitID ~= viewedOutfitID then
+		C_TransmogOutfitInfo.ChangeViewedOutfit(outfitID);
+	end
 
 	-- Check to see if we can purchase more outfits (the outfit list might now be at the max number of slots allowed).
 	local source = Enum.TransmogOutfitEntrySource.PlayerPurchased;
@@ -420,13 +494,30 @@ function ShowEquippedGearSpellFrameMixin:OnLoad()
 end
 
 function ShowEquippedGearSpellFrameMixin:OnIconClick(_button, buttonName)
-	local toggleLock = false;
+	local function ClickCallback()
+		local toggleLock = false;
 
-	if buttonName == "RightButton" then
-		toggleLock = true;
+		if buttonName == "RightButton" then
+			toggleLock = true;
+		end
+
+		C_TransmogOutfitInfo.ClearDisplayedOutfit(Enum.TransmogSituationTrigger.Manual, toggleLock);
+	end;
+
+	-- If already active and normally clicking, nothing will happen so don't possibly show pending dialog.
+	local activeOutfit = C_TransmogOutfitInfo.IsEquippedGearOutfitDisplayed();
+	if activeOutfit and buttonName == "LeftButton" then
+		return;
 	end
 
-	C_TransmogOutfitInfo.ClearDisplayedOutfit(Enum.TransmogSituationTrigger.Manual, toggleLock);
+	if C_TransmogOutfitInfo.HasPendingOutfitTransmogs() or C_TransmogOutfitInfo.HasPendingOutfitSituations() then
+		local dialogData = {
+			confirmCallback = ClickCallback
+		};
+		StaticPopup_Show("TRANSMOG_PENDING_CHANGES", nil, nil, dialogData);
+	else
+		ClickCallback();
+	end
 end
 
 
@@ -1043,6 +1134,10 @@ function TransmogWardrobeMixin:UpdateTabs()
 end
 
 function TransmogWardrobeMixin:SetToDefaultAvailableTab()
+	self:SetToItemsTab();
+end
+
+function TransmogWardrobeMixin:SetToItemsTab()
 	self:SetTab(self.itemsTabID);
 end
 
@@ -1077,6 +1172,7 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 end
 
 function TransmogWardrobeMixin:UpdateSlot(slotData, forceRefresh)
+	self:SetToItemsTab();
 	self.TabContent.ItemsFrame:UpdateSlot(slotData, forceRefresh);
 end
 
@@ -1541,10 +1637,9 @@ function TransmogWardrobeItemsMixin:RefreshPagedEntry()
 	local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.transmogLocation:GetType(), selectedSlotData.currentWeaponOptionInfo.weaponOption);
 	if not outfitSlotInfo or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped then
 		self.PagedContent.PagingControls:SetCurrentPage(1);
-		return;
+	else
+		self:PageToTransmogID(outfitSlotInfo.transmogID);
 	end
-
-	self:PageToTransmogID(outfitSlotInfo.transmogID);
 end
 
 function TransmogWardrobeItemsMixin:SelectVisual(visualID)
@@ -1741,14 +1836,19 @@ function TransmogWardrobeItemsMixin:UpdateSlot(slotData, forceRefresh)
 	if transmogLocation then
 		local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(transmogLocation:GetSlot(), transmogLocation:GetType(), slotData.currentWeaponOptionInfo.weaponOption);
 		if outfitSlotInfo then
+			local isUnassignedOrEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
 			if not transmogLocation:IsEqual(self.transmogLocation) or forceRefresh then
 				self:SetActiveSlot(transmogLocation);
 
-				-- If initially setting to a new category, make sure we can correctly page to the entry we want once search filters update.
-				self.jumpToTransmogID = outfitSlotInfo.transmogID;
+				-- If initially setting to a new category and not one of the display type buttons, make sure we can correctly page to the entry we want once search filters update.
+				if not isUnassignedOrEquipped then
+					self.jumpToTransmogID = outfitSlotInfo.transmogID;
+				end
 			end
 
-			if outfitSlotInfo.transmogID then
+			if isUnassignedOrEquipped then
+				self.PagedContent.PagingControls:SetCurrentPage(1);
+			else
 				self:PageToTransmogID(outfitSlotInfo.transmogID);
 			end
 		end
@@ -1811,6 +1911,11 @@ function TransmogWardrobeItemsMixin:IsValidWeaponCategoryForSlot(categoryID)
 end
 
 function TransmogWardrobeItemsMixin:PageToTransmogID(transmogID)
+	if transmogID == Constants.Transmog.NoTransmogID then
+		self.PagedContent.PagingControls:SetCurrentPage(1);
+		return;
+	end
+
 	self.PagedContent:GoToElementByPredicate(function(elementData)
 		if self.transmogLocation:IsAppearance() then
 			local mustBeUsable = true;
@@ -2072,7 +2177,8 @@ TransmogWardrobeCustomSetsMixin = {
 		"TRANSMOG_CUSTOM_SETS_CHANGED",
 		"UI_SCALE_CHANGED",
 		"DISPLAY_SIZE_CHANGED",
-		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS"
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS",
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH"
 	};
 	COLLECTION_TEMPLATES = {
 		["COLLECTION_CUSTOM_SET"] = { template = "TransmogCustomSetModelTemplate", initFunc = TransmogCustomSetModelMixin.Init, resetFunc = TransmogCustomSetModelMixin.Reset }
@@ -2086,6 +2192,16 @@ function TransmogWardrobeCustomSetsMixin:OnLoad()
 		local data = { name = "", customSetID = nil, itemTransmogInfoList = self:GetItemTransmogInfoListCallback() };
 		StaticPopup_Show("TRANSMOG_CUSTOM_SET_NAME", nil, nil, data);
 	end);
+
+	self.NewCustomSetButton:SetScript("OnEnter", function(button)
+		if not button:IsEnabled() then
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED);
+			GameTooltip:Show();
+		end
+	end);
+
+	self.NewCustomSetButton:SetScript("OnLeave", GameTooltip_Hide);
 end
 
 function TransmogWardrobeCustomSetsMixin:OnShow()
@@ -2096,6 +2212,7 @@ function TransmogWardrobeCustomSetsMixin:OnShow()
 	end
 	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
+	self:RefreshNewCustomSetButton();
 	self:RefreshCollectionEntries();
 end
 
@@ -2122,6 +2239,8 @@ function TransmogWardrobeCustomSetsMixin:OnEvent(event, ...)
 		local appliedCustomSetID, _hasPending = self:GetFirstMatchingCustomSetID();
 		local outfitSlotSaved = appliedCustomSetID ~= nil;
 		self:SetOutfitSlotSavedState(outfitSlotSaved);
+	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" then
+		self:RefreshNewCustomSetButton();
 	end
 end
 
@@ -2137,6 +2256,13 @@ function TransmogWardrobeCustomSetsMixin:HandleFormChanged()
 			self:RefreshCollectionEntries();
 		end
 	end
+end
+
+function TransmogWardrobeCustomSetsMixin:RefreshNewCustomSetButton()
+	-- Enable the new custom set button if there is at least 1 valid slot apperance to make a custom set from.
+	local itemTransmogInfoList = self:GetItemTransmogInfoListCallback();
+	local hasValidAppearance = TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList);
+	self.NewCustomSetButton:SetEnabled(hasValidAppearance);
 end
 
 function TransmogWardrobeCustomSetsMixin:RefreshCollectionEntries()
@@ -2196,7 +2322,7 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 		hasPending = false;
 		for transmogLocation, info in pairs(transmogInfo) do
 			-- Custom set checks do not currently check weapon slots, as there is ambiguity with weapon options.
-			if transmogLocation:IsAppearance() then
+			if transmogLocation:IsAppearance() and not transmogLocation:IsEitherHand() then
 				local slotMatched = false;
 				for _indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
 					if info.transmogID == customSetInfo.appearanceID then

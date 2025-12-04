@@ -114,10 +114,10 @@ end
 function JourneysFrameMixin:SetupJourneysList()
 	local topPadding = 15;
 	local bottomPadding = 10;
-	local leftPadding = 40;
-	local rightPadding = 0;
-	local horizSpacing = 30;
-	local vertSpacing = 15;
+	local leftPadding = 10;
+	local rightPadding = 10;
+	local horizSpacing = 5;
+	local vertSpacing = 5;
 	local view = CreateScrollBoxListSequenceView(topPadding, bottomPadding, leftPadding, rightPadding, horizSpacing, vertSpacing);
 
 	local function CategoryNameInitializer(frame, elementData)
@@ -234,7 +234,6 @@ function JourneysFrameMixin:ResetView(majorFactionData, majorfactionID)
 		-- Main list of journeys shown, drill down into rewards/progress
 		self.JourneysList:Hide();
 		self.ScrollBar:Hide();
-		EncounterJournal.instanceSelect:Hide();
 
 		self.JourneyProgress.majorFactionData = majorFactionData;
 		self.JourneyProgress:Show();
@@ -259,8 +258,11 @@ function JourneysFrameMixin:ResetView(majorFactionData, majorfactionID)
 
 		self.JourneysList:Show();
 		self.ScrollBar:Show();
-		EncounterJournal.instanceSelect:Show();
 	end
+
+	EncounterJournal.instanceSelect.bg:SetAtlas("ui-journeys-bg", TextureKitConstants.UseAtlasSize);
+	EncounterJournal.instanceSelect.bg:Show();
+	EncounterJournal.instanceSelect.evergreenBg:Hide();
 
 	if majorFactionData then
 		EventRegistry:TriggerEvent("JourneysFrameMixin.FactionChanged", majorFactionData.factionID);
@@ -271,8 +273,6 @@ end
 RenownCardButtonMixin = {};
 
 function RenownCardButtonMixin:OnEnter()
-	self.Hover:Show();
-
 	if self.majorFactionData and self.majorFactionData.factionID then
 		if C_Reputation.IsFactionParagonForCurrentPlayer(self.majorFactionData.factionID) then
 			ShowParagonRewardsTooltip(self, self.majorFactionData.factionID);
@@ -287,8 +287,6 @@ function RenownCardButtonMixin:OnEnter()
 end
 
 function RenownCardButtonMixin:OnLeave()
-	self.Hover:Hide();
-
 	if GameTooltip:GetOwner() == self then
 		GameTooltip_Hide();
 	elseif EmbeddedItemTooltip:GetOwner() == self then
@@ -378,11 +376,13 @@ function JourneyProgressFrameMixin:CheckLockedState()
 		self.isLocked = true;
 		self.LockedStateFrame:Show();
 		self.ProgressDetailsFrame:Hide();
+		self.DelveRewardProgressBar:Hide();
 	else
 		self.isLocked = false;
 		self.LockedStateFrame:Hide();
 		self:SetupProgressDetails();
 		self.ProgressDetailsFrame:Show();
+		self.DelveRewardProgressBar:Show();
 	end
 end
 
@@ -404,6 +404,8 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 
 	progressFrame.JourneyLevel:SetText(level);
 	progressFrame.JourneyLevelProgress:SetText(JOURNEYS_CURRENT_PROGRESS:format(progress, threshold));
+	self.DelveRewardProgressBar:SetMinMaxValues(0, threshold);
+	self.DelveRewardProgressBar:SetValue(progress);
 end
 
 function JourneyProgressFrameMixin:GetLevels()
@@ -447,13 +449,13 @@ function JourneyProgressFrameMixin:SetupRewardTrack()
 		self.RenownTrackFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo);
 		self.RenownTrackFrame:Show();
 		self.track = self.RenownTrackFrame;
-		self.Divider:SetPoint("TOP", self.track, "BOTTOM", 0, -15);
+		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, -15);
 	else
 		self.RenownTrackFrame:Hide();
 		self.EncounterRewardProgressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo);
 		self.EncounterRewardProgressFrame:Show();
 		self.track = self.EncounterRewardProgressFrame;
-		self.Divider:SetPoint("TOP", self.track, "BOTTOM", 0, 0);
+		self.DividerTexture:SetPoint("TOP", self.track, "BOTTOM", 0, 0);
 	end
 end
 
@@ -477,17 +479,17 @@ function JourneyProgressFrameMixin:OnTrackUpdate(leftIndex, centerIndex, rightIn
 	if self.majorFactionData.playerCompanionID and self.majorFactionData.playerCompanionID ~= 0 then
 		local companionFactionID = C_DelvesUI.GetFactionForCompanion(self.majorFactionData.playerCompanionID);
 		local companionFactionInfo = C_Reputation.GetFactionDataByID(companionFactionID);
-		self.DelvesCompanionConfigurationFrame.CompanionName:SetText(companionFactionInfo and companionFactionInfo.name or "");
+		self.DelvesCompanionConfigurationFrame.CompanionConfigBtn.CompanionName:SetText(companionFactionInfo and companionFactionInfo.name or "");
 
-		SetPortraitTextureFromCreatureDisplayID(self.DelvesCompanionConfigurationFrame.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(self.majorFactionData.playerCompanionID));
+		SetPortraitTextureFromCreatureDisplayID(self.DelvesCompanionConfigurationFrame.CompanionConfigBtn.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(self.majorFactionData.playerCompanionID));
 		self.DelvesCompanionConfigurationFrame:Show();
 		self.DelvesCompanionConfigurationFrame.CompanionConfigBtn:Show();
-		self.Divider:Show();
+		self.DividerTexture:Show();
 	elseif not C_MajorFactions.ShouldDisplayMajorFactionAsJourney(self.majorFactionData.factionID) then
 		self:SetRewards(selectedLevel);
-		self.Divider:Show();
+		self.DividerTexture:Show();
 	else
-		self.Divider:Hide();
+		self.DividerTexture:Hide();
 	end
 end
 
@@ -547,12 +549,12 @@ function JourneyProgressFrameMixin:SetRewards(level)
 			end);
 
 			if #rewardInfo == 1 then
-				rewardFrame:SetPoint("TOP", self.Divider, "BOTTOM", 15, -50);
+				rewardFrame:SetPoint("TOP", self.DividerTexture, "BOTTOM", 15, -50);
 				rewardFrame:SetPoint("CENTER", self, "CENTER");
 			elseif #rewardInfo == 2 then
 				if idx == 1 then
 					firstRewardOfRow = rewardFrame;
-					rewardFrame:SetPoint("TOP", self.Divider, "BOTTOM", 15, -20);
+					rewardFrame:SetPoint("TOP", self.DividerTexture, "BOTTOM", 15, -20);
 					rewardFrame:SetPoint("CENTER", self, "CENTER");
 				else
 					rewardFrame:SetPoint("TOP", firstRewardOfRow, "BOTTOM", 0, -15);

@@ -1745,10 +1745,7 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 	self:Show();
 	HelpMicroButton:Hide();
 
-	if ( C_StorePublic.IsDisabledByParentalControls() ) then
-		self.disabledTooltip = BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS;
-		self:Disable();
-	elseif ( not C_StorePublic.IsEnabled() ) then
+	if ( not C_StorePublic.IsEnabled() ) then
 		if ( GetCurrentRegionName() == "CN" ) then
 			self:Show();
 			self:Hide();

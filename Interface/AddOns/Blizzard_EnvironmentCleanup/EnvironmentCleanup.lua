@@ -280,6 +280,7 @@ CreateFromSecureMixins = nil;
 CreateSecureDelegate = nil;
 CreateSecureMixinCopy = nil;
 loadstring_untainted = nil;
+secretunwrap = nil;
 Enum.StoreError = nil;
 Enum.VasTransactionPurchaseResult = nil;
 Enum.BattlepayBoostProduct = nil;

@@ -23,7 +23,7 @@ function NamePlatePreviewMixin:OnShow()
 			self.name:SetText(UNIT_NAMEPLATES_TARGET_NAME_PREVIEW);
 			self.name:SetShown(not self:IsSimplified());
 
-			if CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Default then
+			if CVarCallbackRegistry:GetCVarNumberOrDefault("nameplateStyle") == Enum.NamePlateStyle.Legacy then
 				self.name:SetVertexColor(1.0, 0.0, 0.0);
 			else
 				self.name:SetVertexColor(1.0, 1.0, 1.0);
@@ -58,7 +58,7 @@ function NamePlatePreviewMixin:OnShow()
 		self.UnitFrame.AurasFrame.explicitAuraList[4] = { auraInstanceID = 4, sourceUnit = "player", applications = 1, expirationTime = 0, duration = 10, icon = PreviewIconDataProvider:GetRandomIcon()};
 		self.UnitFrame.AurasFrame.explicitAuraList[5] = { auraInstanceID = 5, sourceUnit = "player", applications = 1, expirationTime = 0, duration = 10, icon = PreviewIconDataProvider:GetRandomIcon()};
 		self.UnitFrame.AurasFrame.explicitAuraList[6] = { auraInstanceID = 6, sourceUnit = "player", applications = 1, expirationTime = 0, duration = 10, icon = PreviewIconDataProvider:GetRandomIcon()};
-		
+
 		self.UnitFrame.AurasFrame:RefreshExplicitAuras();
 	end
 end
@@ -306,10 +306,10 @@ local function Register()
 					return 1;
 				end
 			end
-			
+
 			return 5;
 		end
-		
+
 		local function SetValue(value)
 			if value == 1 then
 				SetCVar("UnitNameFriendlySpecialNPCName", "1");
@@ -374,7 +374,7 @@ local function Register()
 		initializer:Indent();
 		initializer:SetParentInitializer(friendlyPlayerNameInitializer);
 	end);
-	
+
 	-- Enemy Players
 	InterfaceOverrides.RunSettingsCallback(function()
 		local enemyPlayerNameSetting, enemyPlayerNameInitializer = Settings.SetupCVarCheckbox(category, "UnitNameEnemyPlayerName", UNIT_NAME_ENEMY, OPTION_TOOLTIP_UNIT_NAME_ENEMY);
@@ -386,7 +386,7 @@ local function Register()
 	end);
 
 	-- NamePlates
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL));
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(NAMEPLATES_LABEL, "", "NAMEPLATES_LABEL"));
 
 	-- Always Show NamePlates
 	InterfaceOverrides.RunSettingsCallback(function()
@@ -433,7 +433,7 @@ local function Register()
 	InterfaceOverrides.RunSettingsCallback(function()
 		Settings.SetupCVarCheckbox(category, "nameplateShowOffscreen", UNIT_NAMEPLATES_SHOW_OFFSCREEN, UNIT_NAMEPLATES_SHOW_OFFSCREEN_TOOLTIP);
 	end);
-	
+
 	-- Stacking NamePlates
 	local namePlateStackingTypesCVar = "nameplateStackingTypes";
 	if C_CVar.GetCVar(namePlateStackingTypesCVar) then
@@ -474,7 +474,8 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
 
-		Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_GLOBAL_SCALE_TOOLTIP);
+		local initializer = Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_GLOBAL_SCALE_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 	end
 
 	-- Debuff Scale
@@ -485,23 +486,25 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatPercentageRounded);
 
-		Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_DEBUFF_SCALE_TOOLTIP);
+		local initializer = Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_DEBUFF_SCALE_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 	end
 
 	-- NamePlate Style
 	if C_CVar.GetCVar("nameplateStyle") then
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
-			container:Add(Enum.NamePlateStyle.Default, UNIT_NAMEPLATES_STYLE_DEFAULT);
 			container:Add(Enum.NamePlateStyle.Modern, UNIT_NAMEPLATES_STYLE_MODERN);
 			container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN);
 			container:Add(Enum.NamePlateStyle.Block, UNIT_NAMEPLATES_STYLE_BLOCK);
 			container:Add(Enum.NamePlateStyle.HealthFocus, UNIT_NAMEPLATES_STYLE_HEALTH_FOCUS);
 			container:Add(Enum.NamePlateStyle.CastFocus, UNIT_NAMEPLATES_STYLE_CAST_FOCUS);
+			container:Add(Enum.NamePlateStyle.Legacy, UNIT_NAMEPLATES_STYLE_LEGACY);
 			return container:GetData();
 		end
 
-		Settings.SetupCVarDropdown(category, "nameplateStyle", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_STYLE, UNIT_NAMEPLATES_STYLE_TOOLTIP);
+		local _setting, initializer = Settings.SetupCVarDropdown(category, "nameplateStyle", Settings.VarType.Number, GetOptions, UNIT_NAMEPLATES_STYLE, UNIT_NAMEPLATES_STYLE_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 	end
 	Settings.SetOnValueChangedCallback("nameplateStyle", function()
 		ShowPreviewNamePlateCastBar();
@@ -531,6 +534,7 @@ local function Register()
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateInfoDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_INFO_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_INFO_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_INFO_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_INFO_DISPLAY_NONE);
 		initializer.OnShow = OnPreviewNamePlateInfoChanged;
 		initializer.OnHide = OnDropdownHidden;
@@ -580,12 +584,14 @@ local function Register()
 			local container = Settings.CreateControlTextContainer();
 			container:AddCheckbox(Enum.NamePlateThreatDisplay.Progressive, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE, UNIT_NAMEPLATES_THREAT_DISPLAY_PROGRESSIVE_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateThreatDisplay.Flash, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH, UNIT_NAMEPLATES_THREAT_DISPLAY_FLASH_TOOLTIP);
+			container:AddCheckbox(Enum.NamePlateThreatDisplay.HealthBarColor, UNIT_NAMEPLATES_THREAT_DISPLAY_HEALTHBAR_COLOR, UNIT_NAMEPLATES_THREAT_DISPLAY_HEALTHBAR_COLOR_TOOLTIP);
 			return container:GetData();
 		end
 
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateThreatDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_THREAT_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_THREAT_DISPLAY_NONE);
 		initializer.OnShow = OnPreviewNamePlateThreatDisplayChanged;
 		initializer.OnHide = OnDropdownHidden;
@@ -614,6 +620,7 @@ local function Register()
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateEnemyNpcAuraDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_NPC_AURA_DISPLAY_NONE);
 		initializer.OnShow = TogglePreviewNamePlateEnemyNPCAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
@@ -642,6 +649,7 @@ local function Register()
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateEnemyPlayerAuraDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_ENEMY_PLAYER_AURA_DISPLAY_NONE);
 		initializer.OnShow = TogglePreviewNamePlateEnemyPlayerAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
@@ -670,6 +678,7 @@ local function Register()
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateFriendlyPlayerAuraDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_FRIENDLY_PLAYER_AURA_DISPLAY_NONE);
 		initializer.OnShow = TogglePreviewNamePlateFriendlyPlayerAuraDisplay;
 		initializer.OnHide = OnDropdownHidden;
@@ -683,7 +692,8 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
 
-		Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_DEBUFF_PADDING_TOOLTIP);
+		local initializer = Settings.CreateSlider(category, setting, options, UNIT_NAMEPLATES_DEBUFF_PADDING_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 	end
 
 	local nameplatesSimplifiedTypesCVar = "nameplateSimplifiedTypes";

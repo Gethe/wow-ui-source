@@ -3052,11 +3052,12 @@
 						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="DecorName" inherits="GameFontHighlightMed2" justifyH="LEFT">
+				<FontString parentKey="DecorName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="MIDDLE">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.DecorType" relativePoint="BOTTOM" y="-5"/>
+						<Anchor point="TOP" relativeKey="$parent.DecorType" relativePoint="BOTTOM" y="-3"/>
 						<Anchor point="LEFT" relativeKey="$parent.CollectedLabel"/>
-						<Anchor point="RIGHT" x="-20"/>
+						<Anchor point="RIGHT" x="-35"/>
+						<Anchor point="BOTTOM" y="15"/>
 					</Anchors>
 				</FontString>
 			</Layer>

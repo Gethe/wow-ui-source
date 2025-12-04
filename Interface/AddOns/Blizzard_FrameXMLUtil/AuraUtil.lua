@@ -3,7 +3,7 @@ BUFF_DURATION_WARNING_TIME = 90;
 
 --Aubrie TODO move these.. to something else
 DebuffTypeColor = { };
-DebuffTypeColor["none"]	=		{ r = 0.8000, g = 0.0000, b = 0.0000, a = 0 };
+DebuffTypeColor["none"]	=		{ r = 0.8000, g = 0.0000, b = 0.0000, a = 1 };
 DebuffTypeColor["Magic"] = 		{ r = 0.0000, g = 0.5059, b = 1.0000, a = 1 };
 DebuffTypeColor["Curse"] = 		{ r = 0.6235, g = 0.0235, b = 0.8941, a = 1 };
 DebuffTypeColor["Disease"] =	{ r = 0.9451, g = 0.4157, b = 0.0353, a = 1 };
@@ -135,6 +135,25 @@ function AuraUtil.DefaultAuraCompare(a, b)
 
 	if a.canApplyAura ~= b.canApplyAura then
 		return a.canApplyAura;
+	end
+
+	return a.auraInstanceID < b.auraInstanceID;
+end
+
+function AuraUtil.BigDefensiveAuraCompare(a, b)
+	-- Comparison rules, note that everything that's compared in here should be known to be a "big defensive" already.
+	-- The longest duration that is NOT yours has the highest priority, then another defensive that is not yours even at shorter duration should be next priority,
+	-- then show yours in center if there are no other defensives on the target.
+
+	-- Keeping the "is player caster" in sync with DefaultAuraCompare:
+	local aFromPlayer = (a.sourceUnit ~= nil) and UnitIsUnit("player", a.sourceUnit) or false;
+	local bFromPlayer = (b.sourceUnit ~= nil) and UnitIsUnit("player", b.sourceUnit) or false;
+	if aFromPlayer ~= bFromPlayer then
+		return not aFromPlayer; -- Big difference from above, we prefer showing things that are not cast by the player
+	end
+
+	if a.expirationTime ~= b.expirationTime then
+		return a.expirationTime > b.expirationTime;
 	end
 
 	return a.auraInstanceID < b.auraInstanceID;
@@ -298,6 +317,21 @@ do
 		end
 
 		return cachedPriorityChecks[spellId];
+	end
+
+	local cachedBigDefensives = {};
+	function AuraUtil.IsBigDefensive(aura)
+		-- EditMode data support without mocking an entire API
+		if aura.isBigDefensive ~= nil then
+			return aura.isBigDefensive;
+		end
+
+		local spellID = aura.spellId;
+		if cachedBigDefensives[spellID] == nil then
+			cachedBigDefensives[spellID] = securecallfunction(C_UnitAuras.AuraIsBigDefensive, spellID);
+		end
+
+		return cachedBigDefensives[spellID];
 	end
 
 	local function DumpCaches()

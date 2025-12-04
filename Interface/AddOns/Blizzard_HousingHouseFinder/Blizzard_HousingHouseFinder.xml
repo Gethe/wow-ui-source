@@ -95,6 +95,7 @@
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>
 			<OnClick method="OnClick"/>
+			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>
 		<HighlightTexture atlas="housefinder_neighborhood-list-item-highlight"/>
 	</Button>
@@ -436,9 +437,9 @@
 							</Anchors>
 						</FontString>
 						<FontString parentKey="ReservationError" inherits="Game13FontShadow" hidden="true" text="HOUSEFINDER_RESERVATION_ERROR">
-							<Size y="50"/>
+							<Size x="230" y="50"/>
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.VisitButtonBG" relativePoint="BOTTOM" x="0" y="0"/>
+								<Anchor point="TOP" relativeKey="$parent.VisitButtonBG" relativePoint="BOTTOM" x="0" y="62"/>
 							</Anchors>
 							<Color r="1.0" g="0" b="0"/>
 						</FontString>

@@ -504,7 +504,7 @@ function ProfessionsCustomerOrderFormMixin:SetupQualityDropdown()
 			button.fontString:SetFontObject("Number12Font");
 			
 			if index > 1 then
-				button.fontString:SetPoint("LEFT", button.leftTexture1, "RIGHT", 1, 7);
+				button.fontString:SetPoint("LEFT", button.leftTexture1, "RIGHT", 1, 0);
 			end
 		end);
 	end

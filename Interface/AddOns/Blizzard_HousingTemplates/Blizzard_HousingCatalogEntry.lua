@@ -199,6 +199,8 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 
 	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
 
+	self.InfoIcon:Hide();
+
 	self.InfoText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	if self:IsBundleItem() then
 		self.InfoText:Show();
@@ -209,11 +211,15 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		if quantity <= 0 then
 			self.InfoText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
 		end
-	elseif C_HousingDecor.IsPreviewState() then
+	elseif self:IsInMarketView() then
 		local marketInfo = self.entryInfo.marketInfo;
 		local price = marketInfo and marketInfo.price or 0;
 		self.InfoText:SetText(Blizzard_HousingCatalogUtil.FormatPrice(price));
 		self.InfoText:SetShown(price > 0);
+	elseif self.entryInfo.isUniqueTrophy then
+		-- Right now info icon is only used for the unique trophy icon.
+		self.InfoText:Hide();
+		self.InfoIcon:Show();
 	else
 		self.InfoText:SetText(self.entryInfo.quantity + self.entryInfo.remainingRedeemable);
 		self.InfoText:SetShown(self.entryInfo.showQuantity);
@@ -363,6 +369,10 @@ function HousingCatalogEntryMixin:AddTooltipTrackingLines(tooltip)
 	-- Optional override
 end
 
+function HousingCatalogEntryMixin:IsInMarketView()
+	-- Optional override. Rooms do not have a market view.
+	return false;
+end
 
 HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
@@ -391,6 +401,10 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	local entryInfo = self.entryInfo;
 	local marketInfo = entryInfo.marketInfo;
 
+	if entryInfo.isUniqueTrophy then
+		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP);
+	end
+
 	local stored = entryInfo.quantity + entryInfo.remainingRedeemable;
 	local total = entryInfo.numPlaced + stored;
 	if total ~= 0 then
@@ -410,9 +424,11 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 		else
 			GameTooltip_AddInstructionLine(tooltip, HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR);
 		end
-	else
+
+	-- We only show market info in the market view.
+	elseif self:IsInMarketView() then
 		if marketInfo and marketInfo.price then
-				local priceText = Blizzard_HousingCatalogUtil.FormatPrice(marketInfo.price);
+			local priceText = Blizzard_HousingCatalogUtil.FormatPrice(marketInfo.price);
 			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(priceText));
 		end
 
@@ -425,6 +441,13 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	if dyeNames and #dyeNames > 0 then
 		local dyeNamesString = table.concat(dyeNames, ", ");
 		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_DYE_LIST:format(dyeNamesString));
+	end
+
+	if not self:IsBundleItem() then
+		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryInfo.entryID.recordID);
+		if timeStamp then
+			GameTooltip_AddNormalLine(tooltip, Blizzard_HousingCatalogUtil.FormatRefundTime(timeStamp));
+		end
 	end
 end
 
@@ -463,9 +486,11 @@ function HousingCatalogDecorEntryMixin:IsInStorageView()
 end
 
 function HousingCatalogDecorEntryMixin:IsInMarketView()
+	-- Overrides HousingCatalogEntryMixin.
+
 	-- TODO:: Replace this hack. For now I'm not sure how preview placement will work so I'm disabling it.
 	local storagePanel = HouseEditorFrame and HouseEditorFrame.StoragePanel or nil;
-	if storagePanel and storagePanel:IsInMarketTab() then
+	if storagePanel and storagePanel:IsVisible() and storagePanel:IsInMarketTab() then
 		return true;
 	end
 
@@ -620,6 +645,22 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_CATALOG_ENTRY");
 
+		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryInfo.entryID.recordID);
+		if timeStamp then
+			rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_REFUND, function()
+				if IsPublicBuild() then
+					CatalogShopRefundFlowInboundInterface.SetShown(true);
+
+				-- TODO:: Remove this debug code once we're finished implementing the refund flow.
+				else
+					local debugInfo = C_HousingCatalog.GetCatalogEntryDebugInfoForID(self.entryID);
+					local guidToRefund = debugInfo.instanceGUIDs[#debugInfo.instanceGUIDs];
+					local guidString = (debugInfo.instanceGUIDs[#debugInfo.instanceGUIDs]):sub(9, #guidToRefund);
+					ConsoleExec("refundDecorWithVC " .. guidString);
+				end
+			end);
+		end
+
 		local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 			local popupData = {
 				destroyAll = false,
@@ -650,7 +691,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 			end
 		end
 
-		if self.entryInfo.marketInfo then
+		if self.entryInfo.marketInfo and self:IsInMarketView() then
 			local addToCartButton = rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
 				local elementData = {
 					isBundleParent = false,
@@ -660,6 +701,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 					name = self.entryInfo.name,
 					decorID = self.entryID.recordID,
 					icon = self.entryInfo.iconTexture,
+					productID = self.entryInfo.marketInfo.productID;
 					price = self.entryInfo.marketInfo.originalPrice or self.entryInfo.marketInfo.price,
 					salePrice = self.entryInfo.marketInfo.originalPrice and self.entryInfo.marketInfo.price or nil,
 				};

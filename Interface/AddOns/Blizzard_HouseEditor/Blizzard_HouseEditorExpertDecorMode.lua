@@ -45,7 +45,8 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 
 		local anythingSelect, targetType = ...;
 		if anythingSelect and targetType == Enum.HousingExpertModeTargetType.Decor then
-			self:PlaySelectedSoundForDecorInfo(C_HousingExpertMode.GetSelectedDecorInfo());
+			local isPreview = false; -- For now we don't have preview state in expert mode
+			self:PlaySelectedSoundForDecorInfo(C_HousingExpertMode.GetSelectedDecorInfo(), isPreview);
 		elseif anythingSelect and targetType == Enum.HousingExpertModeTargetType.House then
 			self:PlaySelectedSoundForHouse();
 		end
@@ -186,21 +187,20 @@ function HouseEditorExpertDecorModeMixin:SetInstructionShown(instructionSet, sho
 end
 
 function HouseEditorExpertDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
-	if decorInstanceInfo.isLocked or not decorInstanceInfo.canBeRemoved then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
-		if decorInstanceInfo.isLocked then
-			GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
-		else
-			GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
-		end
-
-		GameTooltip:Show();
-		return GameTooltip;
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+	
+	if decorInstanceInfo.isLocked then
+		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
+	elseif not decorInstanceInfo.canBeRemoved then
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
 	end
+
+	GameTooltip:Show();
+	return GameTooltip;
 end
 
-function HouseEditorExpertDecorModeMixin:PlaySelectedSoundForSize(size)
+function HouseEditorExpertDecorModeMixin:PlaySelectedSoundForSize(size, _isPreview)
 	self:PlaySoundForSize(size,
 		SOUNDKIT.HOUSING_EXPERTMODE_ITEM_SELECT,
 		SOUNDKIT.HOUSING_EXPERTMODE_ITEM_SELECT,

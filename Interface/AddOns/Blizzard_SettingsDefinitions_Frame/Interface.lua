@@ -107,46 +107,20 @@ local function Register()
 	end
 
 
-	-- Chat bubbles
-	do
-		local function GetValue()
-			local chatBubbles = C_CVar.GetCVarBool("chatBubbles");
-			local chatBubblesParty = C_CVar.GetCVarBool("chatBubblesParty");
-			if chatBubbles and chatBubblesParty then
-				return 1;
-			elseif not chatBubbles then
-				return 2;
-			elseif chatBubbles and not chatBubblesParty then
-				return 3;
-			end
-		end
-		
-		local function SetValue(value)
-			if value == 1 then
-				SetCVar("chatBubbles", "1");
-				SetCVar("chatBubblesParty", "1");
-			elseif value == 2 then
-				SetCVar("chatBubbles", "0");
-				SetCVar("chatBubblesParty", "0");
-			elseif value == 3 then
-				SetCVar("chatBubbles", "1");
-				SetCVar("chatBubblesParty", "0");
-			end
-		end
-		
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(1, ALL);
-			container:Add(2, NONE);
-			container:Add(3, CHAT_BUBBLES_EXCLUDE_PARTY_CHAT);
-			return container:GetData();
-		end
+	InterfaceOverrides.RunSettingsCallback(function()
+		-- Chat Bubbles
+		local chatBubblesSetting, chatBubblesInitializer = Settings.SetupCVarCheckbox(category, "chatBubbles", CHAT_BUBBLES_TEXT, OPTION_TOOLTIP_CHAT_BUBBLES);
 
-		local defaultValue = 1;
-		local setting = Settings.RegisterProxySetting(category, "PROXY_CHAT_BUBBLES",
-			Settings.VarType.Number, CHAT_BUBBLES_TEXT, defaultValue, GetValue, SetValue);
-		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHAT_BUBBLES);
-	end
+		-- Party Chat Bubbles
+		local chatBubblesPartySetting, chatBubblesPartyInitializer = Settings.SetupCVarCheckbox(category, "chatBubblesParty", PARTY_CHAT_BUBBLES_TEXT, OPTION_TOOLTIP_PARTY_CHAT_BUBBLES);
+		chatBubblesPartyInitializer:Indent();
+		chatBubblesPartyInitializer:SetParentInitializer(chatBubblesInitializer);
+
+		-- Raid Chat Bubbles
+		local chatBubblesRaidSetting, chatBubblesRaidInitializer = Settings.SetupCVarCheckbox(category, "chatBubblesRaid", RAID_CHAT_BUBBLES_TEXT, OPTION_TOOLTIP_RAID_CHAT_BUBBLES);
+		chatBubblesRaidInitializer:Indent();
+		chatBubblesRaidInitializer:SetParentInitializer(chatBubblesInitializer);
+	end);
 
 	InterfaceOverrides.RunSettingsCallback(function()
 		-- ReplaceOtherPlayerPortraits

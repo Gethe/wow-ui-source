@@ -83,8 +83,8 @@ function SettingsListSectionHeaderMixin:OnLoad()
 end
 
 function SettingsListSectionHeaderMixin:Init(initializer)
-	local data = initializer:GetData();
-	self.Title:SetTextToFit(data.name);
+	local name = initializer:GetName();
+	self.Title:SetTextToFit(name);
 
 	self:SetCustomTooltipAnchoring(self.Title, "ANCHOR_RIGHT");
 
@@ -218,7 +218,11 @@ function SettingsListElementInitializer:GetData()
 end
 
 function SettingsListElementInitializer:GetName()
-	return self.data.name;
+	if self.data.setting then
+		return self.data.setting:GetName();
+	else
+		return self.data.name;
+	end
 end
 
 function SettingsListElementInitializer:GetTooltip()
@@ -717,7 +721,8 @@ function SettingsButtonControlMixin:Init(initializer)
 	self.Button:SetScript("OnClick", self.data.buttonClick);
 	self.Button:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 
-	if self.data.name == "" then
+	local name = initializer:GetName();
+	if name == "" then
 		self.Button:SetPoint("LEFT", self.Text, "LEFT", 0, 0);
 		self.Tooltip:Hide();
 	else
@@ -1216,14 +1221,18 @@ function SettingsExpandableSectionMixin:OnExpandedChanged(expanded)
 end
 
 function SettingsExpandableSectionMixin:Init(initializer)
-	local data = initializer.data;
-	self.Button.Text:SetText(data.name);
+	local name = initializer:GetName();
+	self.Button.Text:SetText(name);
 end
 
 SettingsExpandableSectionInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
 
 function SettingsExpandableSectionInitializer:GetExtent()
 	error("Implement GetExtent");
+end
+
+function SettingsExpandableSectionInitializer:GetName()
+	return self.data and self.data.name or "";
 end
 
 function CreateSettingsExpandableSectionInitializer(name)

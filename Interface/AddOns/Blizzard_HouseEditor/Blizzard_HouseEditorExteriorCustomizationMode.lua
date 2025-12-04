@@ -166,12 +166,15 @@ function HouseEditorExteriorCustomizationModeMixin:UpdateSelectedPoint()
 end
 
 function HouseEditorExteriorCustomizationModeMixin:UpdateHoveredFixture(isHoveringFixture)
+	local tooltip = nil;
 	if isHoveringFixture then
-		local tooltip = GameTooltip;
+		tooltip = GameTooltip;
 		tooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 0, 0);
 		GameTooltip_AddHighlightLine(tooltip, HOUSING_EXTERIOR_CUSTOMIZATION_HOOKPOINT_OCCUPIED_TOOLTIP);
 		tooltip:Show();
 	elseif GameTooltip:GetOwner() == self then
 		GameTooltip:Hide();
 	end
+	
+	EventRegistry:TriggerEvent("HousingFixtureInstance.MouseOver", self, tooltip);
 end

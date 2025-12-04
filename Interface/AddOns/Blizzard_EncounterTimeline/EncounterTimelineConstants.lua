@@ -69,11 +69,11 @@ EncounterTimelineSettingDefaults = {
 
 EncounterTimelineLayoutDefaults = {
 	-- Amount of padding to apply to the start of the timeline.
-	PrimaryAxisStartPadding = 30;
+	PrimaryAxisStartPadding = 20;
 	-- Amount of padding to apply to the end of the timeline.
-	PrimaryAxisEndPadding = 30;
+	PrimaryAxisEndPadding = 20;
 	-- Controls the size allocated to events in sorted tracks (eg. long or queued).
-	SortedEventExtent = 40;
+	SortedEventExtent = 38;
 };
 
 EncounterEventOrientationSetup = {

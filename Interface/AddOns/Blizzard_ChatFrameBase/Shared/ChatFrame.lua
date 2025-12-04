@@ -23,7 +23,7 @@ function ChatFrameMixin:OnHyperlinkClick(link, text, button)
 end
 
 function ChatFrameMixin:AddMessage(...)
-	ScrollingMessageFrameMixin.AddMessage(self, ...);
+	ScrollingMessageFrameSecureMixin.AddMessage(self, ...);
 
 	if ( self.addMessageObserver ) then
 		self.addMessageObserver(self, ...);

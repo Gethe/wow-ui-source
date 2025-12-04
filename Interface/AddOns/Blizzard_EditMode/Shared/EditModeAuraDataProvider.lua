@@ -14,15 +14,17 @@ local editModeAurasBySlot;
 local editModeAuraSlots;
 
 local nextInstanceID = 1;
-local function CreateAura(spellID, name, dispelName, sourceUnit, isHelpful, isHarmful, isRaid, isBoss)
+local nextSpellID = 500;
+local function CreateAura(name, dispelName, sourceUnit, isHelpful, isHarmful, isRaid, isBoss, canActivePlayerDispel)
 	local aura =
 	{
 		auraInstanceID = nextInstanceID, name = name, icon = GetSampleAuraIcon(), applications = 1, dispelName = dispelName, duration = 0, expirationTime = 0, sourceUnit = sourceUnit,
-		isStealable = false, nameplateShowPersonal = false, spellId = spellID, canApplyAura = true, isBossAura = isBoss, isHarmful = isHarmful, isHelpful = isHelpful, isRaid = isRaid,
-		isFromPlayerOrPlayerPet = true, nameplateShowAll = false, timeMod = 1, points = {},
+		isStealable = false, nameplateShowPersonal = false, spellId = nextSpellID, canApplyAura = true, isBossAura = isBoss, isHarmful = isHarmful, isHelpful = isHelpful, isRaid = isRaid,
+		isFromPlayerOrPlayerPet = true, nameplateShowAll = false, timeMod = 1, points = {}, canActivePlayerDispel = canActivePlayerDispel,
 	};
 
 	nextInstanceID = nextInstanceID + 1;
+	nextSpellID = nextSpellID + 1;
 	return aura;
 end
 
@@ -31,6 +33,7 @@ local function AddAura(...)
 	table.insert(editModeAurasBySlot, aura);
 	table.insert(editModeAuraSlots, #editModeAurasBySlot);
 	editModeAurasByInstanceID[aura.auraInstanceID] = aura;
+	return aura;
 end
 
 local function CreateAuras()
@@ -42,16 +45,22 @@ local function CreateAuras()
 	editModeAurasByInstanceID = {};
 	editModeAuraSlots = {};
 
-	--		spellID		name			dispelName		sourceUnit		isHelpful		isHarmful		isRaid		isBoss
-	AddAura(500, 		"SampleAura1", 	"Poison", 		"player", 		false, 			true, 			true, 		true);
-	AddAura(501, 		"SampleAura2", 	"Magic", 		"player", 		false, 			true, 			true, 		false);
-	AddAura(502, 		"SampleAura3", 	"Curse", 		"player", 		false, 			true, 			true, 		false);
-	AddAura(500, 		"SampleAura4", 	nil, 			"player", 		true, 			false, 			false, 		false);
-	AddAura(501, 		"SampleAura5", 	nil, 			"player", 		true, 			false, 			false, 		false);
-	AddAura(502, 		"SampleAura6", 	nil, 			"player", 		true, 			false, 			false, 		false);
-	AddAura(500, 		"SampleAura7", 	nil, 			"player", 		true, 			false, 			false, 		false);
-	AddAura(501, 		"SampleAura8", 	nil, 			"player", 		true, 			false, 			false, 		false);
-	AddAura(502, 		"SampleAura9", 	nil, 			"player", 		true, 			false, 			false, 		false);
+	--		name			dispelName		sourceUnit		isHelpful		isHarmful		isRaid		isBoss	canActivePlayerDispel
+	AddAura("Poison 1", 	"Poison", 		"player", 		false, 			true, 			false, 		true,	false);
+	AddAura("Magic 1", 		"Magic", 		"player", 		false, 			true, 			false, 		false,	false);
+	AddAura("Curse 1", 		"Curse", 		"player", 		false, 			true, 			false, 		false,	false);
+	AddAura("Disease 1", 	"Disease", 		"player", 		false, 			true, 			false, 		false,	false);
+	AddAura("Bleed 1", 		"Bleed", 		"player", 		false, 			true, 			true, 		false,	true);
+	AddAura("Buff 1", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	AddAura("Buff 2", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	AddAura("Buff 3", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	AddAura("Buff 4", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	AddAura("Buff 5", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	AddAura("Buff 6", 		nil, 			"player", 		true, 			false, 			false, 		false,	false);
+
+	local bigDefensive =
+	AddAura("BigDefensive",	nil, 			"player", 		true, 			false, 			false, 		false,	false);
+	bigDefensive.isBigDefensive = true; -- EditMode specific data, actual check uses AuraUtil.IsBigDefensive.
 end
 
 local function BuildAuraSlotsFromFilter(filter)

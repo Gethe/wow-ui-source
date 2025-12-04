@@ -239,8 +239,8 @@ local FrameAPICooldown =
 
 			Arguments =
 			{
-				{ Name = "start", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "start", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
 			},
 		},
@@ -252,7 +252,20 @@ local FrameAPICooldown =
 
 			Arguments =
 			{
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
+			},
+		},
+		{
+			Name = "SetCooldownFromExpirationTime",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "expirationTime", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
 			},
 		},
@@ -375,6 +388,16 @@ local FrameAPICooldown =
 			Arguments =
 			{
 				{ Name = "milliseconds", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetPaused",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "paused", Type = "bool", Nilable = false },
 			},
 		},
 		{

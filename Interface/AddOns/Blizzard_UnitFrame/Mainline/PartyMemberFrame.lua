@@ -153,6 +153,11 @@ function PartyMemberFrameMixin:UpdateNameTextAnchors()
 	end
 end
 
+local function PartyAuraFrameResetter(pool, frame)
+	frame.layoutIndex = nil;
+	Pool_HideAndClearAnchors(pool, frame);
+end
+
 function PartyMemberFrameMixin:Setup()
 	self.unitToken = "party"..self.layoutIndex;
 	self.petUnitToken = "partypet"..self.layoutIndex;
@@ -189,8 +194,8 @@ function PartyMemberFrameMixin:Setup()
 		self.showBuffs = true;
 	end
 
-	self.AuraFramePool = CreateFramePool("BUTTON", self.AuraFrameContainer, "PartyAuraFrameTemplate");
-	self.PetFrame.AuraFramePool = CreateFramePool("BUTTON", self.PetFrame.AuraFrameContainer, "PartyAuraFrameTemplate");
+	self.AuraFramePool = CreateFramePool("BUTTON", self.AuraFrameContainer, "PartyAuraFrameTemplate", PartyAuraFrameResetter);
+	self.PetFrame.AuraFramePool = CreateFramePool("BUTTON", self.PetFrame.AuraFrameContainer, "PartyAuraFrameTemplate", PartyAuraFrameResetter);
 
 	self.statusCounter = 0;
 	self.statusSign = -1;

@@ -3,6 +3,8 @@ ProfessionsSalvageSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
 	ProfessionsRecipeSlotBaseMixin.Init(self);
 
+	self:ClearReagent();
+
 	self.quantityRequired = quantityRequired;
 
 	self:Update();

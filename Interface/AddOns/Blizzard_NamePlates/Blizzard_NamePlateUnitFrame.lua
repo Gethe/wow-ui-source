@@ -5,6 +5,8 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_FRIENDLY_NPCS_CVAR)
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.THREAT_DISPLAY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.DEBUFF_PADDING_CVAR);
 
+local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
+
 -- Displays the info about the unit to which the nameplate is attached.
 -- This mixin is a child of a frame that has been created in code and is using NamePlateBaseMixin.
 NamePlateUnitFrameMixin = {};
@@ -191,21 +193,38 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 	local customOptions = self.customOptions;
 
 	self.castBar:SetHeight(setupOptions.castBarHeight);
+	self.castBar.Spark:SetHeight(setupOptions.castBarHeight + CAST_BAR_SPARK_EXTRA_HEIGHT);
 
-	local fontName, _fontSize, fontFlags = self.castBar.Text:GetFont();
-	self.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
-	self.castBar.CastTargetNameText:SetFont(fontName, setupOptions.castBarFontHeight, fontFlags);
+	self.castBar.Text:SetTextHeight(setupOptions.castBarFontHeight);
+	self.castBar.CastTargetNameText:SetTextHeight(setupOptions.castBarFontHeight);
 
-	fontName, _fontSize, fontFlags = self.name:GetFont();
-	self.name:SetFont(fontName, setupOptions.healthBarFontHeight, fontFlags);
-	self.HealthBarsContainer.healthBar.Text:SetFont(fontName, setupOptions.healthBarFontHeight, fontFlags);
-	self.HealthBarsContainer.healthBar.LeftText:SetFont(fontName, setupOptions.healthBarFontHeight, fontFlags);
-	self.HealthBarsContainer.healthBar.RightText:SetFont(fontName, setupOptions.healthBarFontHeight, fontFlags);
+	if setupOptions.unitNameInsideHealthBar then
+		self.name:SetFontObject("SystemFont_NamePlate_Outlined");
+		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate_Outlined");
+		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate_Outlined");
+		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate_Outlined");
 
-	self.ClassificationFrame.maxScale = setupOptions.maxClassificationScale;
+		-- Clickable region defined by both name and health bar.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+	else
+		-- Outlined font is harder to read when text is outside the health bar.
+		self.name:SetFontObject("SystemFont_NamePlate");
+		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate");
+		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate");
+		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate");
+
+		-- Clickable region is just the health bar.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.name);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+	end
+
+	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
+	self.HealthBarsContainer.healthBar.Text:SetTextHeight(setupOptions.healthBarFontHeight);
+	self.HealthBarsContainer.healthBar.LeftText:SetTextHeight(setupOptions.healthBarFontHeight);
+	self.HealthBarsContainer.healthBar.RightText:SetTextHeight(setupOptions.healthBarFontHeight);
+
 	self.ClassificationFrame:SetScale(setupOptions.classificationScale or 1.0);
-
-	self.PlayerLevelDiffFrame.maxScale = setupOptions.maxClassificationScale;
 	self.PlayerLevelDiffFrame:SetScale(setupOptions.classificationScale or 1.0);
 
 	CompactUnitFrame_SetOptionTable(self, frameOptions);
@@ -532,13 +551,16 @@ function NamePlateUnitFrameMixin:UpdateThreatDisplay()
 	if self:IsFriend() == false then
 		self.displayAggroFlash = CVarCallbackRegistry:GetCVarBitfieldIndex(NamePlateConstants.THREAT_DISPLAY_CVAR, Enum.NamePlateThreatDisplay.Flash);
 		self.displayAggroHighlight = CVarCallbackRegistry:GetCVarBitfieldIndex(NamePlateConstants.THREAT_DISPLAY_CVAR, Enum.NamePlateThreatDisplay.Progressive);
+		self.displayThreatHealthBarColor = CVarCallbackRegistry:GetCVarBitfieldIndex(NamePlateConstants.THREAT_DISPLAY_CVAR, Enum.NamePlateThreatDisplay.HealthBarColor);
 	else
 		self.displayAggroFlash = false;
 		self.displayAggroHighlight = false;
+		self.displayThreatHealthBarColor = false;
 	end
 
 	CompactUnitFrame_UpdateAggroFlash(self);
 	CompactUnitFrame_UpdateAggroHighlight(self);
+	CompactUnitFrame_UpdateHealthColor(self);
 end
 
 function NamePlateUnitFrameMixin:ShouldShowName()

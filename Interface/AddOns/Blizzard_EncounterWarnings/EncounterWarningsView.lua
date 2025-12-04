@@ -1,8 +1,13 @@
-EncounterWarningsViewMixin = CreateFromMixins(EncounterWarningsViewSettingsMixin, ResizeLayoutMixin);
+EncounterWarningsViewMixin = CreateFromMixins(EncounterWarningsSettingsMixin, ResizeLayoutMixin);
 
 function EncounterWarningsViewMixin:OnLoad()
+	EncounterWarningsSettingsMixin.OnLoad(self);
+
+	self:SetMouseClickEnabled(false);
+
 	self.currentWarningInfo = nil;
 	self.expirationTimer = nil;
+	self.hideOnMouseLeave = false;
 end
 
 function EncounterWarningsViewMixin:OnShow()
@@ -10,32 +15,25 @@ function EncounterWarningsViewMixin:OnShow()
 end
 
 function EncounterWarningsViewMixin:OnHide()
-	self:ClearWarning();
+	self:ResetWarning();
 end
 
-function EncounterWarningsViewMixin:OnViewSettingChanged(setting, _value)
-	if setting == EncounterWarningsViewSetting.IconScale then
-		self:UpdateIconScale();
+function EncounterWarningsViewMixin:OnEnter()
+	local shouldShowTooltip = self:GetTooltipsEnabled(self);
+	self:SetTooltipShown(shouldShowTooltip);
+end
+
+function EncounterWarningsViewMixin:OnLeave()
+	self:SetTooltipShown(false);
+
+	if self.hideOnMouseLeave then
+		self.hideOnMouseLeave = false;
+		self:HideWarning();
 	end
 end
 
-function EncounterWarningsViewMixin:GetViewSetting(setting)
-	local value = self:GetAttribute(setting);
-
-	if value == nil then
-		value = EncounterWarningsUtil.GetDefaultViewSetting(setting);
-	end
-
-	return value;
-end
-
-function EncounterWarningsViewMixin:SetViewSetting(setting, value)
-	if self:GetViewSetting(setting) == value then
-		return;
-	end
-
-	self:SetAttribute(setting, value);
-	self:OnViewSettingChanged(setting, value);
+function EncounterWarningsViewMixin:OnIconScaleChanged(_iconScale)
+	self:UpdateIconScale();
 end
 
 function EncounterWarningsViewMixin:GetTextElement()
@@ -52,6 +50,10 @@ end
 
 function EncounterWarningsViewMixin:GetAnimationElement()
 	return self.SwingAnimation;
+end
+
+function EncounterWarningsViewMixin:GetTooltipFrame()
+	return GameTooltip;
 end
 
 function EncounterWarningsViewMixin:GetWarningElements()
@@ -79,7 +81,7 @@ function EncounterWarningsViewMixin:ShowWarning(encounterWarningInfo)
 		return;
 	end
 
-	self:ClearWarning();
+	self:ResetWarning();
 	self.currentWarningInfo = encounterWarningInfo;
 
 	for _, element in ipairs(self:GetWarningElements()) do
@@ -93,19 +95,12 @@ function EncounterWarningsViewMixin:ShowWarning(encounterWarningInfo)
 	-- it needs access to the encounter warning info which we know for sure
 	-- isn't nil here, we'll do it inline.
 
-	-- Addons can customize whether or not we route alerts to sound or chat
-	-- on a per-severity basis via extra view settings.
-
 	if encounterWarningInfo.shouldPlaySound then
-		if EncounterWarningsViewSettings.AreSoundAlertsEnabled(self) then
-			C_EncounterWarnings.PlaySound(encounterWarningInfo.severity);
-		end
+		C_EncounterWarnings.PlaySound(encounterWarningInfo.severity);
 	end
 
 	if encounterWarningInfo.shouldShowChatMessage then
-		if EncounterWarningsViewSettings.AreChatAlertsEnabled(self) then
-			EncounterWarningsUtil.ShowChatMessageForWarning(encounterWarningInfo);
-		end
+		EncounterWarningsUtil.ShowChatMessageForWarning(encounterWarningInfo);
 	end
 end
 
@@ -118,7 +113,7 @@ function EncounterWarningsViewMixin:HideWarning()
 	self:PlayHideAnimation();
 end
 
-function EncounterWarningsViewMixin:ClearWarning()
+function EncounterWarningsViewMixin:ResetWarning()
 	if not self:HasCurrentWarning() then
 		return;
 	end
@@ -129,26 +124,43 @@ function EncounterWarningsViewMixin:ClearWarning()
 
 	self:CancelExpirationTimer();
 	self.currentWarningInfo = nil;
+end
 
-	-- Hiding must be done last as our OnHide script also invokes this
-	-- function, which early returns so long as this is sequenced after
-	-- having nil'd out the current warning above.
+function EncounterWarningsViewMixin:ClearWarning()
+	if not self:HasCurrentWarning() then
+		return;
+	end
 
+	-- Reset needs to be explicit here as there exist call sequences where
+	-- the OnHide script may be deferred and not executed immediately.
+
+	self:ResetWarning();
 	self:Hide();
 end
 
 function EncounterWarningsViewMixin:StartExpirationTimer(duration)
+	local timer;
+
 	local function OnWarningExpired()
-		self:HideWarning();
+		if self.expirationTimer == timer then
+			self:CancelExpirationTimer();
+		end
+
+		if self:IsMouseOver() then
+			self.hideOnMouseLeave = true;
+		else
+			self:HideWarning();
+		end
 	end
 
 	self:CancelExpirationTimer();
 
-	-- We allow a nil duration for "static" alerts, eg. those triggered when
+	-- We allow a zero duration for "static" alerts, eg. those triggered when
 	-- idling in edit mode.
 
-	if duration ~= nil then
-		self.expirationTimer = C_Timer.NewTimer(duration, OnWarningExpired);
+	if duration ~= 0 then
+		timer = C_Timer.NewTimer(duration, OnWarningExpired);
+		self.expirationTimer = timer;
 	end
 end
 
@@ -183,13 +195,25 @@ function EncounterWarningsViewMixin:StopAnimating()
 	animationGroup:Stop();
 end
 
+function EncounterWarningsViewMixin:SetTooltipShown(shown)
+	local tooltip = self:GetTooltipFrame();
+	local encounterWarningInfo = self:GetCurrentWarning();
+
+	if shown and encounterWarningInfo ~= nil then
+		GameTooltip_SetDefaultAnchor(tooltip, self);
+		tooltip:SetSpellByID(encounterWarningInfo.tooltipSpellID);
+	elseif tooltip:IsOwned(self) then
+		tooltip:Hide();
+	end
+end
+
 function EncounterWarningsViewMixin:UpdateIconScale()
 	-- Icon scale is processed external to the icon elements because it's
 	-- easier for us to handle dynamic changes to them in edit mode and
 	-- apply them here than confine the setup of the icon scale to the
 	-- Init method of the element.
 
-	local iconScale = EncounterWarningsViewSettings.GetIconScale(self);
+	local iconScale = self:GetIconScale(self);
 	self:GetLeftIconElement():SetScale(iconScale);
 	self:GetRightIconElement():SetScale(iconScale);
 end

@@ -20,6 +20,21 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "CanTakeReportScreenshot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "plotIndex", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "reason", Type = "InvalidPlotScreenshotReason", Nilable = false },
+			},
+		},
+		{
 			Name = "CreateGuildNeighborhood",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -462,21 +477,6 @@ local HousingUI =
 			},
 		},
 		{
-			Name = "ValidateReportScreenshot",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "plotIndex", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "isValid", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "VisitHouse",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -824,15 +824,16 @@ local HousingUI =
 		{
 			Name = "HousingItemToastType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Room", Type = "HousingItemToastType", EnumValue = 0 },
 				{ Name = "Fixture", Type = "HousingItemToastType", EnumValue = 1 },
 				{ Name = "Customization", Type = "HousingItemToastType", EnumValue = 2 },
 				{ Name = "Decor", Type = "HousingItemToastType", EnumValue = 3 },
+				{ Name = "House", Type = "HousingItemToastType", EnumValue = 4 },
 			},
 		},
 	},

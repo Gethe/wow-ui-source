@@ -38,6 +38,12 @@
 						<Anchor point="BOTTOMRIGHT" x="-9" y="7"/>
 					</Anchors>
 				</FontString>
+
+				<Texture parentKey="InfoIcon" atlas="house-chest-trophy-icon" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false" hidden="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

@@ -253,6 +253,10 @@ local forceinsecure = forceinsecure;
 -- Table of supported action functions
 local SECURE_ACTIONS = {};
 
+SECURE_ACTIONS.menu = function(self, unit, button, isKeyPress)
+	self:ExecuteAttribute("menu-function", unit, button, isKeyPress);
+end
+
 SECURE_ACTIONS.togglemenu = function(self, unit, button)
 	if not unit then 
 		return;
@@ -662,8 +666,9 @@ local function PerformAction(self, button, unit, actionType, down, isKeyPress)
 			handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
 		end
 		if not handler then
-			atRisk = false;
-			-- functions retrieved from table keys carry their own taint
+			-- There exist a few means for this lookup to return user-provided
+			-- functions that don't carry taint, so consider this to be at-risk.
+			atRisk = true;
 			handler = rawget(self, actionType);
 		end
 		if type(handler) == 'function' then
@@ -751,7 +756,7 @@ function SecureUnitButton_OnLoad(self, unit, menufunc)
     self:SetAttribute("*type1", "target");
     self:SetAttribute("*type2", "menu");
     self:SetAttribute("unit", unit);
-    self.menu = menufunc;
+    self:SetAttribute("menu-function", menufunc);
 end
 
 function SecureUnitButton_OnClick(self, button, down)

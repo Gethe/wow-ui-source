@@ -1,3 +1,7 @@
+
+local ROOM_PIN_FRAME_LEVEL = 500;
+local DOOR_PIN_FRAME_LEVEL = 1000;
+
 local HouseEditorLayoutModeLifetimeEvents =
 {
 	"HOUSING_LAYOUT_PIN_FRAME_ADDED",
@@ -156,11 +160,11 @@ function HouseEditorLayoutModeMixin:AddPin(pinFrame)
 	if pinType == Enum.HousingLayoutPinType.Room then
 		pinPool = self.roomPinPool;
 		-- Must set FrameStratas here as they get reset on reparenting in & out of Pools
-		pinFrame:SetFrameStrata("LOW");
+		pinFrame:SetFrameLevel(ROOM_PIN_FRAME_LEVEL);
 	elseif pinType == Enum.HousingLayoutPinType.Door then
 		pinPool = self.doorPinPool;
 		-- Set Door pins higher than Rooms so they aren't potentially blocked by lengthy room names
-		pinFrame:SetFrameStrata("MEDIUM");
+		pinFrame:SetFrameLevel(DOOR_PIN_FRAME_LEVEL);
 	end
 
 	if pinPool then

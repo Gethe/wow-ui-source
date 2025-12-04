@@ -12,7 +12,6 @@ NamePlateSetupOptions = {
 	unitNameInsideHealthBar = true,
 	spellNameInsideCastBar = false,
 	classificationScale = 1.0,
-	maxClassificationScale = 1.25,
 }
 
 -- Some values listed here can be updated from NamePlateDriverMixin:UpdateNamePlateOptions.

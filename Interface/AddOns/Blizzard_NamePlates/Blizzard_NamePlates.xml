@@ -126,8 +126,8 @@
 								</Texture>
 								<Texture parentKey="deselectedOverlay" atlas="ui-hud-nameplates-deselected-overlay">
 									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="3"/>
-										<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
+										<Anchor point="TOPLEFT" x="0" y="1"/>
+										<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -191,7 +191,7 @@
 					<Layer level="OVERLAY">
 						<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-19" y="3"/>
+								<Anchor point="TOPLEFT" x="-16" y="3"/>
 								<Anchor point="BOTTOMRIGHT" x="16" y="-3"/>
 							</Anchors>
 						</Texture>
@@ -266,14 +266,14 @@
 			</Frame>
 
 			<Frame parentKey="ClassificationFrame" mixin="NamePlateClassificationFrameMixin" collapsesLayout="true">
-				<Size x="14" y="13" />
+				<Size x="20" y="20" />
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.RaidTargetFrame" relativePoint="LEFT"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture parentKey="classificationIndicator">
-							<Size x="14" y="13" />
+							<Size x="20" y="20" />
 							<Anchors>
 								<Anchor point="CENTER" />
 							</Anchors>
@@ -283,7 +283,6 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
-					<OnSizeChanged method="OnSizeChanged"/>
 				</Scripts>
 			</Frame>
 
@@ -333,7 +332,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="PlayerLevelDiffFrame" mixin="NamePlateLevelDiffMixin" frameStrata="HIGH" hidden="true">
+			<Frame parentKey="PlayerLevelDiffFrame" frameStrata="HIGH" hidden="true">
 				<Size x="28" y="28" />
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="LEFT" x="6"/>
@@ -355,9 +354,6 @@
 						</FontString>
 					</Layer>	
 				</Layers>
-				<Scripts>
-					<OnSizeChanged method="OnSizeChanged"/>
-				</Scripts>
 			</Frame>
 
 			<Frame parentKey="SoftTargetFrame">
@@ -374,8 +370,7 @@
 
 			<Frame parentKey="HitTestFrame">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer.healthBar" relativePoint="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.HealthBarsContainer.healthBar" relativePoint="BOTTOMRIGHT"/>
+					<!-- Anchoring and size handled dynamically in lua.-->
 				</Anchors>
 			</Frame>
 		</Frames>

@@ -300,9 +300,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CLIENT_SCENE_OPENED");
 	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 
-	-- Event(s) for returning player prompts
-	self:RegisterEvent("RETURNING_PLAYER_PROMPT");
-
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
@@ -2263,10 +2260,6 @@ function UIParent_OnEvent(self, event, ...)
 		GameTooltip_ShowEventHyperlink(hyperlink);
 	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
 		GameTooltip_HideEventHyperlink();
-	elseif (event == "RETURNING_PLAYER_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
-	elseif (event == "LEAVER_PENALTY_WARNING_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
@@ -2317,6 +2310,9 @@ function ToggleGameMenu()
 		else
 			SetGamePadCursorControl(true);
 		end
+	elseif ( SimpleCheckoutInboundInterface and SimpleCheckoutInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopTopUpFlowInboundInterface and CatalogShopTopUpFlowInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopRefundFlowInboundInterface and CatalogShopRefundFlowInboundInterface.EscapePressed() ) then
 	elseif HouseEditorFrame and HouseEditorFrame:IsShown() then
 		HouseEditorFrame:HandleEscape();
 	elseif ( not UIParent:IsShown() ) then
@@ -2326,10 +2322,8 @@ function ToggleGameMenu()
 		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
-	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
-	elseif ( CatalogShopTopUpFlowInboundInterface.EscapePressed and CatalogShopTopUpFlowInboundInterface.EscapePressed() ) then
-	elseif ( CatalogShopRefundFlowInboundInterface.EscapePressed and CatalogShopRefundFlowInboundInterface.EscapePressed() ) then
 	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
+	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then -- to be removed
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then

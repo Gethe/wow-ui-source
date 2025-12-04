@@ -1,4 +1,4 @@
-EncounterWarningsViewElementMixin = CreateFromMixins(EncounterWarningsViewSettingsAccessorMixin);
+EncounterWarningsViewElementMixin = {};
 
 function EncounterWarningsViewElementMixin:Init(encounterWarningInfo, parentView)
 	self.parentView = parentView;
@@ -12,10 +12,6 @@ end
 
 function EncounterWarningsViewElementMixin:GetView()
 	return self.parentView;
-end
-
-function EncounterWarningsViewElementMixin:GetViewSetting(setting)
-	return self:GetView():GetViewSetting(setting);
 end
 
 function EncounterWarningsViewElementMixin:GetCurrentWarning()
@@ -34,28 +30,14 @@ EncounterWarningsIconElementMixin = CreateFromMixins(EncounterWarningsViewElemen
 function EncounterWarningsIconElementMixin:Init(encounterWarningInfo, parentView)
 	EncounterWarningsViewElementMixin.Init(self, encounterWarningInfo, parentView);
 
-	self:SetMouseClickEnabled(false);
 	self:SetIconTexture(encounterWarningInfo.iconFileID);
 	self:SetDeadlyOverlayShown(encounterWarningInfo.isDeadly);
-end
-
-function EncounterWarningsIconElementMixin:OnEnter()
-	local shouldShowTooltip = EncounterWarningsViewSettings.AreTooltipsEnabled(self);
-	self:SetTooltipShown(shouldShowTooltip);
-end
-
-function EncounterWarningsIconElementMixin:OnLeave()
-	self:SetTooltipShown(false);
 end
 
 function EncounterWarningsIconElementMixin:Reset()
 	EncounterWarningsViewElementMixin.Reset(self);
 	self:SetIconTexture(nil);
 	self:SetDeadlyOverlayShown(false);
-end
-
-function EncounterWarningsIconElementMixin:GetTooltipFrame()
-	return self.tooltipFrame or GameTooltip;
 end
 
 function EncounterWarningsIconElementMixin:SetIconTexture(iconFileAsset)
@@ -66,18 +48,6 @@ function EncounterWarningsIconElementMixin:SetDeadlyOverlayShown(isDeadly)
 	self.NormalOverlay:SetShown(not isDeadly);
 	self.DeadlyOverlay:SetShown(isDeadly);
 	self.DeadlyOverlayGlow:SetShown(isDeadly);
-end
-
-function EncounterWarningsIconElementMixin:SetTooltipShown(shown)
-	local tooltip = self:GetTooltipFrame();
-	local encounterWarningInfo = self:GetCurrentWarning();
-
-	if shown and encounterWarningInfo ~= nil and encounterWarningInfo.tooltipSpellID ~= nil then
-		GameTooltip_SetDefaultAnchor(tooltip, self);
-		tooltip:SetSpellByID(encounterWarningInfo.tooltipSpellID);
-	elseif tooltip:IsOwned(self) then
-		tooltip:Hide();
-	end
 end
 
 EncounterWarningsTextElementMixin = CreateFromMixins(EncounterWarningsViewElementMixin, AutoScalingFontStringMixin);
@@ -92,19 +62,18 @@ function EncounterWarningsTextElementMixin:Init(encounterWarningInfo, parentView
 	-- The reason for not just enforcing a static width is that we don't want
 	-- small alert messages to have their icons anchored too far away.
 
-	local maximumTextHeight = EncounterWarningsViewSettings.GetMaximumTextHeight(self, encounterWarningInfo.severity);
-	local maximumTextWidth = EncounterWarningsViewSettings.GetMaximumTextWidth(self, encounterWarningInfo.severity);
-	local textFontObject = EncounterWarningsViewSettings.GetTextFontObject(self, encounterWarningInfo.severity);
-	local textColor = EncounterWarningsViewSettings.GetTextColor(self, encounterWarningInfo.severity);
+	local maximumTextSize = EncounterWarningsUtil.GetMaximumTextSizeForSeverity(encounterWarningInfo.severity);
+	local textFontObject = EncounterWarningsUtil.GetFontObjectForSeverity(encounterWarningInfo.severity);
+	local textColor = EncounterWarningsUtil.GetTextColorForSeverity(encounterWarningInfo.severity);
 
 	self:SetFontObject(textFontObject);
 	self:SetTextColor(textColor:GetRGB());
 	self:SetTextScale(1);
 	self:SetTextToFit(encounterWarningInfo.text);
-	self:SetHeight(maximumTextHeight);
+	self:SetHeight(maximumTextSize.height);
 
-	if self:GetStringWidth() > maximumTextWidth then
-		self:SetWidth(maximumTextWidth);
+	if self:GetStringWidth() > maximumTextSize.width then
+		self:SetWidth(maximumTextSize.width);
 		self:ScaleTextToFit();
 	end
 end

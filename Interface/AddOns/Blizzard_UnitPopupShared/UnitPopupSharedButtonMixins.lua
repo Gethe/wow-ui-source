@@ -985,11 +985,13 @@ function UnitPopupPartyInstanceAbandonButtonMixin:GetTooltipText()
 	if timeLeft then
 		local cooldownTimeLeftText = PartyInstanceAbandonFormatter:Format(timeLeft);
 		return VOTE_TO_ABANDON_ON_COOLDOWN:format(cooldownTimeLeftText);
-	elseif IsEncounterInProgress() then
-		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
-	else
-		return nil;
 	end
+
+	if C_InstanceEncounter.IsEncounterInProgress() then
+		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
+	end
+
+	return nil;
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

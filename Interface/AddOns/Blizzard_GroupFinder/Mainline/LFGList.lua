@@ -2412,9 +2412,28 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 		AddEntry(LFG_LIST_HAS_HEALER, "hasHealer");
 
 		rootDescription:CreateSpacer();
-		rootDescription:CreateTitle(DUNGEONS);
 
 		do
+			local displayedActivityIds = {};
+
+			local dungeonDescription = rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(DUNGEONS));
+			dungeonDescription:CreateButton(CHECK_ALL, function()
+				activitySet = {};
+				for _, activityId in pairs(displayedActivityIds) do
+					activitySet[activityId] = true;
+				end
+				ActivitiesSetToList();
+				C_LFGList.SaveAdvancedFilter(enabled); 
+				return MenuResponse.Refresh;
+			end);
+
+			dungeonDescription:CreateButton(UNCHECK_ALL, function()
+				activitySet = {};
+				ActivitiesSetToList();
+				C_LFGList.SaveAdvancedFilter(enabled); 
+				return MenuResponse.Refresh;
+			end);
+
 			local function IsGroupSelected(activityId)
 				return activitySet[activityId];
 			end
@@ -2434,12 +2453,14 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 				for _, activityId in ipairs(groups) do
 					local name = C_LFGList.GetActivityGroupInfo(activityId);
 					if name then
+						table.insert(displayedActivityIds, activityId);
+
 						if noneChecked then
 							table.insert(enabled.activities, activityId);
 							activitySet[activityId] = true;
 						end
 
-						rootDescription:CreateCheckbox(name, IsGroupSelected, SetGroupSelected, activityId);
+						dungeonDescription:CreateCheckbox(name, IsGroupSelected, SetGroupSelected, activityId);
 					end
 				end
 			end
@@ -2448,14 +2469,14 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 			AddGroup(seasonGroups);
 
 			if not TableIsEmpty(seasonGroups) then
-				rootDescription:CreateSpacer();
+				dungeonDescription:QueueSpacer();
 			end
 
 			local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(expansionGroups);
 
 			if not TableIsEmpty(expansionGroups) then
-				rootDescription:CreateSpacer();
+				dungeonDescription:QueueSpacer();
 			end
 
 			if PlayerIsTimerunning() then
@@ -4445,6 +4466,9 @@ function LFGEditBoxMixin:AddToTabCategory(tabCategory, editBox)
 end
 
 function LFGEditBoxMixin:OnLoad()
+	-- Replace the inherited indentation
+	self.Instructions:SetAllPoints();
+
 	if ( self.tabCategory ) then
 		self:AddToTabCategory(self.tabCategory);
 	end

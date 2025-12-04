@@ -40,16 +40,15 @@ local HousingCatalogConstants =
 		{
 			Name = "HousingCatalogEntrySubtype",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "HousingCatalogEntrySubtype", EnumValue = 0 },
 				{ Name = "Unowned", Type = "HousingCatalogEntrySubtype", EnumValue = 1, Documentation = { "Unowned entry, for displaying a catalog object in a static context" } },
-				{ Name = "MarketItem", Type = "HousingCatalogEntrySubtype", EnumValue = 2, Documentation = { "Purchasable shop product" } },
-				{ Name = "OwnedModifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 3, Documentation = { "Stack of owned instances that share specific modifications (ex: stack of red-dyed chairs)" } },
-				{ Name = "OwnedUnmodifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 4, Documentation = { "Stack of owned default instances of a record" } },
+				{ Name = "OwnedModifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 2, Documentation = { "Stack of owned instances that share specific modifications (ex: stack of red-dyed chairs)" } },
+				{ Name = "OwnedUnmodifiedStack", Type = "HousingCatalogEntrySubtype", EnumValue = 3, Documentation = { "Stack of owned default instances of a record" } },
 			},
 		},
 		{
