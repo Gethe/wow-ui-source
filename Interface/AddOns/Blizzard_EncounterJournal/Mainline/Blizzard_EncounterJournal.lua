@@ -3046,7 +3046,11 @@ function EJSuggestFrame_RefreshDisplay()
 		local numLines = min(2, titleText:GetNumLines());
 		local fontHeight = select(2, titleText:GetFont());
 		centerDisplay.title:SetHeight(numLines * fontHeight + 2);
-		centerDisplay.description:SetHeight(descText:GetStringHeight());
+		local descStringHeight = descText:GetStringHeight();
+
+		-- Description could be empty if the data description is missing. We need a non-zero height so we can
+		-- access 'bottom' successfully.
+		centerDisplay.description:SetHeight(math.max(descStringHeight, 1));
 
 		-- adjust the center display to keep the text centered
 		local top = centerDisplay.title:GetTop();
