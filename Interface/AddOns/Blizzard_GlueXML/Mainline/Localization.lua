@@ -1,11 +1,7 @@
 -- luacheck: ignore 111 (setting non-standard global variable)
 
 local l10nTable = {
-	deDE = {
-        localizeFrames = function()
-			RPEUpgradeMinimizedFrame.Title:SetFontObject(GameFontNormalLargeOutline);
-        end,
-	},
+	deDE = {},
 	enGB = {},
 	enUS = {
         localizeFrames = function()
@@ -19,8 +15,6 @@ local l10nTable = {
         localizeFrames = function()
 			RealmCharactersSort:SetWidth(RealmCharactersSort:GetWidth() + 8);
 			RealmLoadSort:SetWidth(RealmLoadSort:GetWidth() - 8);
-
-			RPEUPgradeInfoFrame.ControlsFrame.Header:SetFontObject(GameFontNormal);
         end,
 	},
 	itIT = {},

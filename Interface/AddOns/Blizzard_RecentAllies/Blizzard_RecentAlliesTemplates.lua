@@ -404,14 +404,18 @@ function RecentAlliesEntryPinDisplayMixin:RefreshPinExpirationIcon()
 end
 
 function RecentAlliesEntryPinDisplayMixin:OnEnter()
-	if self.pinExpirationDate then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+
+	local wrapText = false;
+	if IsPinNearingExpiration(self.pinExpirationDate) then
 		-- Set to a minimum of 1 second (lowest we should show is "< 1 Hour")
 		local timeUntilExpiration = math.max(self.pinExpirationDate - GetServerTime(), 1);
-		local wrapText = false;
 		GameTooltip_AddHighlightLine(GameTooltip, RECENT_ALLY_PIN_EXPIRING_TOOLTIP:format(RecentAlliesUtil.GetFormattedTime(timeUntilExpiration), wrapText));
-		GameTooltip:Show();
+	else
+		GameTooltip_AddHighlightLine(GameTooltip, RECENT_ALLY_PIN_TOOLTIP, wrapText);
 	end
+
+	GameTooltip:Show();
 end
 
 function RecentAlliesEntryPinDisplayMixin:OnLeave()

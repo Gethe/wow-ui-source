@@ -1,0 +1,318 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="HousingDecorDyeSwatchTemplate" mixin="HousingDecorDyeSwatchMixin" virtual="true" enableMouse="true">
+		<Size x="42" y="36"/>
+		<KeyValues>
+			<!-- Denotes whether this is a swatch in the dye list, or is the swatch selector -->
+			<KeyValue key="isCurrentSwatch" value="false" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="Border" atlas="Housing_Customize_Dye_Frame_Default" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="SwatchEmpty" atlas="housing_customize_dye_swatch_empty" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Border"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SwatchClear" atlas="dye-drop-no-dye_32" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="SwatchStart" atlas="Housing_Customize_Dye_Swatch_Base" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="SwatchEnd" atlas="Housing_Customize_Dye_Swatch_Gradient" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="Highlight" atlas="Housing_Customize_Dye_Swatch_Highlight" alphaMode="ADD" setAllPoints="true" alpha="0.05"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="SelectedBorder" atlas="Housing_Customize_Dye_Frame_Selected" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="HousingDecorDyeSlotTemplate" mixin="HousingDecorDyeSlotMixin" virtual="true">
+		<Size x="152" y="36"/>
+		<KeyValues>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" inherits="GameFontNormal">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="RIGHT"/>
+						<Anchor point="LEFT" x="62" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CurrentSwatch" inherits="HousingDecorDyeSwatchTemplate">
+				<KeyValues>
+					<KeyValue key="isCurrentSwatch" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	
+	<Frame name="HousingDecorDyeSlotPopoutTemplate" enableMouse="true" mixin="HousingDecorDyeSlotPopoutMixin" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="ShowOnlyOwnedText" inherits="GameFontHighlight" justifyH="LEFT" text="HOUSING_DECOR_CUSTOMIZATION_SHOW_ONLY_OWNED">
+					<Size y="20"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="50" y="10"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton parentKey="ShowOnlyOwned" inherits="UICheckButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.ShowOnlyOwnedText" relativePoint="LEFT"/>
+				</Anchors>
+			</CheckButton>
+			<Frame parentKey="DyeSlotScrollBox" inherits="WoWScrollBox">
+				<KeyValues>
+					<KeyValue key="wheelPanScalar" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="10" y="-16"/>
+					<Anchor point="BOTTOMRIGHT" x="-33" y="40"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Contents" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="scrollable" value="true" type="boolean"/>
+							<KeyValue key="spacing" value="4" type="number"/>
+						</KeyValues>
+						<Frames>
+							<Frame parentKey="RecentlyUsedFrame">
+								<Size x="190" y="58"/>
+								<KeyValues>
+									<KeyValue key="scrollable" value="true" type="boolean"/>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="Label" inherits="GameFontNormal" text="HOUSING_DECOR_CUSTOMIZATION_RECENTLY_USED">
+											<Size y="10"/>
+											<Anchors>
+												<Anchor point="TOPRIGHT"/>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+										</FontString>
+										<Texture parentKey="Divider" atlas="GM-bgOpen-divider-horizontal">
+											<Size y="4"/>
+											<Anchors>
+												<Anchor point="BOTTOMLEFT"/>
+												<Anchor point="BOTTOMRIGHT" x="-13" y="0"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="RecentlyUsedContainer" inherits="HorizontalLayoutFrame">
+										<Size y="36"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.Label" relativePoint="BOTTOM" x="0" y="-4"/>
+											<Anchor point="BOTTOM" relativeKey="$parent.Divider" relativePoint="TOP" x="0" y="4"/>
+											<Anchor point="LEFT"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="scrollable" value="true" type="boolean"/>
+
+											<KeyValue key="spacing" value="3" type="number"/>
+										</KeyValues>
+									</Frame>
+								</Frames>
+							</Frame>
+							
+							<Frame parentKey="DyeSwatchContainer" inherits="GridLayoutFrame">
+								<KeyValues>
+									<KeyValue key="scrollable" value="true" type="boolean"/>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+									
+									<KeyValue key="stride" value="4" type="number"/>
+									<KeyValue key="isHorizontal" value="true" type="boolean"/>
+									<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+									<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
+									<KeyValue key="childXPadding" value="3" type="number"/>
+									<KeyValue key="childYPadding" value="3" type="number"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<EventFrame parentKey="DyeSlotScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DyeSlotScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.DyeSlotScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingDyePaneTemplate" mixin="HousingDyePaneMixin" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
+					<Size y="40"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="6" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DecorName" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="14" y="-10"/>
+						<Anchor point="TOPRIGHT" x="-30" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="DyeSlotContainer" inherits="VerticalLayoutFrame">
+				<Size y="144"/>
+				<KeyValues>
+					<KeyValue key="spacing" value="3" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DecorName" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DecorName" relativePoint="BOTTOMRIGHT" x="0" y="-30"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ButtonFrame">
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="RIGHT"/>
+					<Anchor point="BOTTOM"/>
+					<Anchor point="TOP" relativeKey="$parent.DyeSlotContainer" relativePoint="BOTTOM" x="0" y="-15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Divider" atlas="perks-divider-short">
+							<Size y="4"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" x="15" y="45"/>
+								<Anchor point="BOTTOMRIGHT" x="-15" y="45"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="CurrentDyeIcons" inherits="GameFontNormal">
+							<Size y="40"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="25"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+						<Size x ="100" y="20"/>
+						<Anchors>
+							<Anchor point="LEFT" x="20" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="15"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="ApplyButton" inherits="UIPanelButtonTemplate" text="APPLY" motionScriptsWhileDisabled="true">
+						<Size x ="100" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="-20" y="0"/>
+							<Anchor point="BOTTOM" x="0" y="15"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame parentKey="DyeCostContainer" inherits="HorizontalLayoutFrame">
+				<Anchors>
+					<Anchor point="BOTTOM" y="56"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="spacing" value="12" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="DyeSpendWarning" inherits="GameFontHighlightLarge" text="HOUSING_DECOR_CUSTOMIZATION_DYE_SPEND_LABEL">
+							<KeyValues>
+								<KeyValue key="align" value="center" type="string"/>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+							</KeyValues>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="DyeRemoveWarning" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.DyeCostContainer" relativePoint="TOP" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="HousingDyeCostIconTemplate" mixin="HousingDyeCostIconMixin" virtual="true">
+		<Size x="24" y="24"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DyeIcon" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

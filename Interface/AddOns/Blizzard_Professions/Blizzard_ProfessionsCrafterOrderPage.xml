@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCrafterOrderPage.lua"/>
 
-	<Button name="ProfessionsCraftingOrderTypeTabTemplate" parentArray="orderTypeTabs" inherits="TabSystemButtonArtTemplate" registerForClicks="LeftButtonUp" virtual="true" frameStrata="HIGH">
+	<Button name="ProfessionsCraftingOrderTypeTabTemplate" parentArray="orderTypeTabs" inherits="TabSystemButtonArtTemplate" motionScriptsWhileDisabled="true" registerForClicks="LeftButtonUp" virtual="true" frameStrata="HIGH">
 		<Size x="180" y="30"/>
 		<KeyValues>
 			<KeyValue key="isTabOnTop" value="true" type="boolean"/>

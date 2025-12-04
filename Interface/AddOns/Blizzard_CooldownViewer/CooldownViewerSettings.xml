@@ -13,7 +13,8 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" virtual="true">
+	<!-- Ignore children for bounds to prevent secret icon from setting entire CDM settings UI as secret -->
+	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" virtual="true" ignoreChildrenForBounds="true">
 		<Size x="38" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -39,6 +40,14 @@
 					<Size x="38" y="38"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -203,6 +212,15 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
+			<DropdownButton parentKey="LayoutDropdown" inherits="WowStyle1DropdownTemplate">
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="BOTTOMLEFT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="TOPLEFT"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="5" y="3"/>
+				</Anchors>
+			</DropdownButton>
 			<Button parentKey="UndoButton" inherits="UIPanelButtonNoTooltipTemplate, UIButtonTemplate" registerForClicks="LeftButtonUp" text="COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES">
 				<KeyValues>
 					<KeyValue key="tooltipTitle" value="COOLDOWN_VIEWER_SETTINGS_BUTTON_REVERT_CHANGES_TOOLTIP" type="global"/>
@@ -210,7 +228,7 @@
 				</KeyValues>
 				<Size x="164" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 			</Button>
 			<Frame parentKey="ReorderMarker" mixin="CooldownViewerSettingsReorderMarkerMixin" hidden="true">

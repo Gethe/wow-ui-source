@@ -26,9 +26,9 @@ local TooltipInfoShared =
 		{
 			Name = "TooltipDataLineType",
 			Type = "Enumeration",
-			NumValues = 43,
+			NumValues = 44,
 			MinValue = 0,
-			MaxValue = 42,
+			MaxValue = 43,
 			Fields =
 			{
 				{ Name = "None", Type = "TooltipDataLineType", EnumValue = 0 },
@@ -74,14 +74,15 @@ local TooltipInfoShared =
 				{ Name = "GemSocketEnchantment", Type = "TooltipDataLineType", EnumValue = 40 },
 				{ Name = "ItemLevel", Type = "TooltipDataLineType", EnumValue = 41 },
 				{ Name = "ItemUpgradeLevel", Type = "TooltipDataLineType", EnumValue = 42 },
+				{ Name = "SpellPassive", Type = "TooltipDataLineType", EnumValue = 43 },
 			},
 		},
 		{
 			Name = "TooltipDataType",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "Item", Type = "TooltipDataType", EnumValue = 0 },
@@ -111,6 +112,7 @@ local TooltipInfoShared =
 				{ Name = "QuestPartyProgress", Type = "TooltipDataType", EnumValue = 24 },
 				{ Name = "Macro", Type = "TooltipDataType", EnumValue = 25 },
 				{ Name = "Debug", Type = "TooltipDataType", EnumValue = 26 },
+				{ Name = "Outfit", Type = "TooltipDataType", EnumValue = 27 },
 			},
 		},
 		{

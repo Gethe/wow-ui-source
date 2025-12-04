@@ -9,6 +9,7 @@ local WorldLootObject =
 		{
 			Name = "DoesSlotMatchInventoryType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local WorldLootObject =
 		{
 			Name = "GetWorldLootObjectDistanceSquared",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +41,7 @@ local WorldLootObject =
 			Name = "GetWorldLootObjectInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local WorldLootObject =
 			Name = "GetWorldLootObjectInfoByGUID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +72,7 @@ local WorldLootObject =
 		{
 			Name = "IsWorldLootObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,6 +87,7 @@ local WorldLootObject =
 		{
 			Name = "IsWorldLootObjectByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,6 +102,7 @@ local WorldLootObject =
 		{
 			Name = "IsWorldLootObjectInRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,6 +117,7 @@ local WorldLootObject =
 		{
 			Name = "OnWorldLootObjectClick",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +133,7 @@ local WorldLootObject =
 			Name = "WorldLootObjectInfoUpdated",
 			Type = "Event",
 			LiteralName = "WORLD_LOOT_OBJECT_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },

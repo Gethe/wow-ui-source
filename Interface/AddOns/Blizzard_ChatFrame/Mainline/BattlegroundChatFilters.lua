@@ -146,13 +146,13 @@ function BattlegroundChatFiltersMixin:StartBGChatFilter()
 	BG_CHAT_FILTERS_TIME_SINCE_LAST = -25;
 	BG_CHAT_FILTERS_TIME_SINCE_START = 0;
 	
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
+	ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
 	
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
 function BattlegroundChatFiltersMixin:StopBGChatFilter()
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
+	ChatFrameUtil.RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterChatMsgSystem);
 	
 	for i in next, ADDED_PLAYERS do
 		ADDED_PLAYERS[i] = nil;

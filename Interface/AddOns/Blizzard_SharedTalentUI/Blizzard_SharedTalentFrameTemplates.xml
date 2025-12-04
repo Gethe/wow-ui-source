@@ -2,6 +2,34 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SharedTalentFrameTemplates.lua"/>
 	
+	<Frame name="TalentFrameCurrencyDisplayTemplate" mixin="TalentFrameCurrencyDisplayMixin" inherits="CallbackRegistrantTemplate, ResizeLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="widthPadding" value="10" type="number"/>
+			<KeyValue key="heightPadding" value="6" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Color r="0.1" g="0.1" b="0.1" a="0.7"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge2" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="TalentFrameGateTemplate" mixin="TalentFrameGateMixin" virtual="true">
 		<Size x="124" y="40"/>
 		<Layers>
@@ -100,6 +128,112 @@
 
 		<Scripts>
 			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TalentSubTreeHeaderTemplate" mixin="TalentSubTreeHeaderMixin" inherits="VerticalLayoutFrame, CallbackRegistrantTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="1000" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Line" setAllPoints="false">
+					<Size x="1" y="2"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="bottomPadding" value="10" type="number"/>
+					</KeyValues>
+					<Color r="0.4" g="0.4" b="0.4"/>
+				</Texture>
+
+				<FontString parentKey="Text" inherits="Game27Font">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="bottomPadding" value="8" type="number"/>
+					</KeyValues>
+					<Size x="1" y="24"/>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+
+				<FontString parentKey="Info" inherits="Game22Font">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="3" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="1" y="16"/>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TalentFrameHeaderTemplate" mixin="TalentFrameHeaderMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="200" type="number"/>
+		</KeyValues>
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontHighlightLarge2">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+						<KeyValue key="bottomPadding" value="4" type="number"/>
+					</KeyValues>
+					<Size x="1" y="16"/>
+					<Color r="1" g="1" b="1"/>
+				</FontString>
+
+				<Texture parentKey="Line" setAllPoints="false">
+					<Size x="1" y="2"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="expand" value="true" type="boolean"/>
+					</KeyValues>
+					<Color r="0.7" g="0.7" b="0.7"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Button name="TalentTreeSelectableButtonTemplate" mixin="TalentTreeSelectableButtonMixin" inherits="SelectableButtonTemplate" virtual="true"/>
+
+	<!-- Note: use one of the derived layout frame templates rather than this base template directly. -->
+	<Frame name="TalentFrameTreeSelectorBaseTemplate" mixin="TalentFrameTreeSelectorMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<!--
+		buttonTemplate: this is required and should be a button template that derives from TalentTreeSelectableButtonTemplate.
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="" type="string"/>
+		</KeyValues>
+		-->
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TalentFrameTreeSelectorHorizontalTemplate" mixin="TalentFrameTreeSelectorHorizontalMixin" inherits="TalentFrameTreeSelectorBaseTemplate, HorizontalLayoutFrame" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="TalentFrameStarGridTemplate" mixin="TalentFrameStarGridMixin" inherits="GridLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="stride" value="1" type="number"/>
+			<KeyValue key="childXPadding" value="2" type="number"/>
+			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
+			<KeyValue key="alwaysUpdateLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
 </Ui>

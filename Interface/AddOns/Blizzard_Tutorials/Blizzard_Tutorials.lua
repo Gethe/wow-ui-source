@@ -8,6 +8,7 @@ end
 
 function GameTutorials:OnTutorialsInit()
 	AddEvokerTutorials();
+	AddRPETutorials();
 end
 
 function GameTutorials:OnTutorialsEnabled()

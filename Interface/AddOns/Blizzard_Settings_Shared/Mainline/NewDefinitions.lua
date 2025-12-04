@@ -39,6 +39,14 @@ NewSettings["11.1.7"] = {
 	"assistedCombatHighlight",
 };
 
+NewSettingsPredicates["ASSISTED_COMBAT_ROTATION"] = function()
+	return C_AssistedCombat.IsAvailable();
+end;
+
+NewSettingsPredicates["assistedCombatHighlight"] = function()
+	return C_AssistedCombat.IsAvailable();
+end;
+
 NewSettings["11.2.0"] = {
 	"PROXY_ACCESSIBILITY_FONT_SIZE",
 	"PROXY_SPELL_DENSITY",
@@ -50,10 +58,10 @@ NewSettings["11.2.5"] = {
 	"ADVANCED_COOLDOWN_SETTINGS",
 };
 
-NewSettingsPredicates["ASSISTED_COMBAT_ROTATION"] = function()
-	return C_AssistedCombat.IsAvailable();
-end;
-
-NewSettingsPredicates["assistedCombatHighlight"] = function()
-	return C_AssistedCombat.IsAvailable();
-end;
+NewSettings["12.0.0"] = {
+	"NAMEPLATES_LABEL", -- entire section is new
+	"COMBAT_WARNINGS_LABEL", -- entire section is new
+	"damageMeterEnabled",
+	"spellDiminishPVPEnemiesEnabled",
+	"externalDefensivesEnabled",
+};

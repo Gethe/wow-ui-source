@@ -41,6 +41,7 @@ local ClassTalents =
 		{
 			Name = "CommitConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +56,7 @@ local ClassTalents =
 		{
 			Name = "DeleteConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +90,7 @@ local ClassTalents =
 		{
 			Name = "GetConfigIDsBySpecID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +115,7 @@ local ClassTalents =
 			Name = "GetHeroTalentSpecsForClassSpec",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the SubTreeIDs of the Hero Talent Specializations available to a Class Specialization and config; Returns nothing if none available" },
 
 			Arguments =
@@ -129,6 +133,7 @@ local ClassTalents =
 		{
 			Name = "GetLastSelectedSavedConfigID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -162,6 +167,7 @@ local ClassTalents =
 		{
 			Name = "GetTraitTreeForSpec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,6 +205,7 @@ local ClassTalents =
 		{
 			Name = "ImportLoadout",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,6 +224,7 @@ local ClassTalents =
 		{
 			Name = "InitializeViewLoadout",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,6 +235,7 @@ local ClassTalents =
 		{
 			Name = "IsConfigPopulated",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "New configs may or may not be populated and ready to load immediately after creation. Avoid calling for configs intentionally created empty." },
 
 			Arguments =
@@ -242,6 +251,7 @@ local ClassTalents =
 		{
 			Name = "LoadConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -259,6 +269,7 @@ local ClassTalents =
 		{
 			Name = "RenameConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,6 +285,7 @@ local ClassTalents =
 		{
 			Name = "RequestNewConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,6 +300,7 @@ local ClassTalents =
 		{
 			Name = "SaveConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -302,6 +315,7 @@ local ClassTalents =
 		{
 			Name = "SetStarterBuildActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -316,6 +330,7 @@ local ClassTalents =
 		{
 			Name = "SetUsesSharedActionBars",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -326,6 +341,7 @@ local ClassTalents =
 		{
 			Name = "UpdateLastSelectedSavedConfigID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -336,6 +352,7 @@ local ClassTalents =
 		{
 			Name = "ViewLoadout",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,6 +373,7 @@ local ClassTalents =
 			Name = "ActiveCombatConfigChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_COMBAT_CONFIG_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "configID", Type = "number", Nilable = false },
@@ -365,16 +383,19 @@ local ClassTalents =
 			Name = "SelectedLoadoutChanged",
 			Type = "Event",
 			LiteralName = "SELECTED_LOADOUT_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpecializationChangeCastFailed",
 			Type = "Event",
 			LiteralName = "SPECIALIZATION_CHANGE_CAST_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StarterBuildActivationFailed",
 			Type = "Event",
 			LiteralName = "STARTER_BUILD_ACTIVATION_FAILED",
+			SynchronousEvent = true,
 		},
 	},
 

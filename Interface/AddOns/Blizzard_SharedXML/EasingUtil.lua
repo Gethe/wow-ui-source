@@ -66,3 +66,35 @@ end
 function EasingUtil.InOutQuintic(percent)
     return EaseOutIn(percent, 5);
 end
+
+function EasingUtil.InExponential(percent)
+	if percent == 0 then
+		return 0;
+	end
+
+	return 2 ^ (10 * (percent - 1));
+end
+
+function EasingUtil.OutExponential(percent)
+	if percent == 1 then
+		return 1;
+	end
+
+	return 1 - 2 ^ (-10 * percent);
+end
+
+function EasingUtil.InOutExponential(percent)
+	if (percent == 0) or (percent == 1) then
+		return percent;
+	elseif percent < 0.5 then
+		return 2 ^ (20 * percent - 11);
+	end
+
+	return 1 - 2 ^ (9 - 20 * percent);
+end
+
+function EasingUtil.OutBack(percent)
+	local c1 = 1.70158;  -- Overshoot the target by 10% (supposedly).
+	local c3 = c1 + 1;
+	return 1 + c3 * ((percent - 1) ^ 3) + c1 * ((percent - 1) ^ 2);
+end

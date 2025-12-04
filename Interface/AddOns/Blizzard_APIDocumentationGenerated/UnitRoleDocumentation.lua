@@ -37,6 +37,7 @@ local UnitRole =
 			Name = "UnitGetAvailableRoles",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +55,7 @@ local UnitRole =
 			Name = "UnitSetRole",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +72,7 @@ local UnitRole =
 			Name = "UnitSetRoleEnum",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +93,7 @@ local UnitRole =
 			Name = "RoleChangedInform",
 			Type = "Event",
 			LiteralName = "ROLE_CHANGED_INFORM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "changedName", Type = "cstring", Nilable = false },
@@ -102,6 +106,7 @@ local UnitRole =
 			Name = "RolePollBegin",
 			Type = "Event",
 			LiteralName = "ROLE_POLL_BEGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "fromName", Type = "cstring", Nilable = false },

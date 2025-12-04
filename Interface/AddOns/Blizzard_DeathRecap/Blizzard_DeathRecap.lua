@@ -10,9 +10,9 @@ function DeathRecapFrame_OpenRecap( recapID )
 	
 	self.recapID = recapID;	
 	ShowUIPanel(DeathRecapFrame);
-		
-	local events = DeathRecap_GetEvents( recapID );
-	
+
+	local events = C_DeathRecap.GetRecapEvents( recapID );
+
 	if( not events or #events <= 0 ) then
 		for i = 1, NUM_DEATH_RECAP_EVENTS do
 			self.DeathRecapEntry[i]:Hide();
@@ -125,8 +125,8 @@ function DeathRecapFrame_Amount_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:ClearLines();
 	if( self.amount ) then
-		local valueStr = self.school and format(TEXT_MODE_A_STRING_VALUE_SCHOOL, self.amount, CombatLog_String_SchoolString(self.school)) or
-						 self.amount;	
+		local valueStr = self.school and format(TEXT_MODE_A_STRING_VALUE_SCHOOL, self.amount, CombatLogUtil.GetSpellSchoolString(self.school)) or
+						 self.amount;
 		GameTooltip:AddLine(format(DEATH_RECAP_DAMAGE_TT, valueStr, self.dmgExtraStr), 1, 0, 0, false);
 	end
 	

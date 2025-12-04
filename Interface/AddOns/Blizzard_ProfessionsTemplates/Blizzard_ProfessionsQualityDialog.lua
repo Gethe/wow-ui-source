@@ -45,7 +45,9 @@ function ProfessionsQualityDialogMixin:OnLoad()
 		for reagentIndex = 1, self:GetReagentSlotCount() do
 			local container = self.containers[reagentIndex];
 			local editBox = container.EditBox;
-			editBox:SetValue(self.allocations:GetQuantityAllocated(self:GetReagent(reagentIndex)));
+			local reagent = self:GetReagent(reagentIndex);
+			local quantity = self.allocations:GetQuantityAllocated(reagent);
+			editBox:SetValue(quantity);
 		end
 
 		self:EvaluateAllocations();
@@ -70,7 +72,7 @@ function ProfessionsQualityDialogMixin:OnLoad()
 		local button = container.Button;
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if IsShiftKeyDown() then
-				Professions.HandleQualityReagentItemLink(self.recipeID, self.reagentSlotSchematic, containerIndex);
+				Professions.HandleQualityReagentLink(self.recipeID, self.reagentSlotSchematic, containerIndex);
 			else
 				if buttonName == "LeftButton" then
 					Allocate(containerIndex, self:GetQuantityRequired());
@@ -83,7 +85,7 @@ function ProfessionsQualityDialogMixin:OnLoad()
 		button:SetScript("OnEnter", function()
 			GameTooltip:SetOwner(button, "ANCHOR_TOPLEFT");
 			local reagent = self:GetReagent(containerIndex);
-			GameTooltip:SetItemByID(reagent.itemID);
+			Professions.SetupReagentTooltip(reagent);
 			GameTooltip:Show();
 		end);
 
@@ -145,11 +147,18 @@ function ProfessionsQualityDialogMixin:ReinitAllocations(allocations)
 end
 
 function ProfessionsQualityDialogMixin:Setup()
+	for index, container in ipairs(self.containers) do
+		container:Hide();
+	end
+
+	local totalWidth = 0;
+
 	for qualityIndex, reagent in ipairs(self.reagentSlotSchematic.reagents) do
 		local container = self.containers[qualityIndex];
-		local itemID = reagent.itemID;
+		container:Show();
+
 		local button = container.Button;
-		button:SetItem(itemID);
+		button:SetReagent(reagent);
 
 		-- The min and max values will be recalculated after our initial values are set.
 		local editBox = container.EditBox;
@@ -164,7 +173,13 @@ function ProfessionsQualityDialogMixin:Setup()
 		local enabled = count > 0;
 		button:DesaturateHierarchy(enabled and 0 or 1);
 		editBox:SetEnabled(enabled);
+
+		totalWidth = totalWidth + container:GetWidth();
 	end
+
+	local firstContainer = self.containers[1];
+	local x = -(totalWidth / 2) + (firstContainer:GetWidth() / 2) + 5;
+	firstContainer:SetPoint("CENTER", self, "CENTER", x, 0);
 
 	self:EvaluateAllocations();
 end

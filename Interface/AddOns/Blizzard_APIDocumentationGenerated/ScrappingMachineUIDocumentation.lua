@@ -13,6 +13,7 @@ local ScrappingMachineUI =
 		{
 			Name = "DropPendingScrapItemFromCursor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local ScrappingMachineUI =
 			Name = "GetCurrentPendingScrapItemLocationByIndex",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +75,7 @@ local ScrappingMachineUI =
 		{
 			Name = "RemoveItemToScrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +98,7 @@ local ScrappingMachineUI =
 			Name = "ScrappingMachineItemAdded",
 			Type = "Event",
 			LiteralName = "SCRAPPING_MACHINE_ITEM_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "index", Type = "number", Nilable = false },
@@ -104,6 +108,7 @@ local ScrappingMachineUI =
 			Name = "ScrappingMachineItemRemoved",
 			Type = "Event",
 			LiteralName = "SCRAPPING_MACHINE_ITEM_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "index", Type = "number", Nilable = false },
@@ -113,11 +118,13 @@ local ScrappingMachineUI =
 			Name = "ScrappingMachinePendingItemChanged",
 			Type = "Event",
 			LiteralName = "SCRAPPING_MACHINE_PENDING_ITEM_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScrappingMachineScrappingFinished",
 			Type = "Event",
 			LiteralName = "SCRAPPING_MACHINE_SCRAPPING_FINISHED",
+			SynchronousEvent = true,
 		},
 	},
 

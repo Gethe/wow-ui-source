@@ -5,8 +5,9 @@ local SpecializationVisuals = {
 	[252] = { background = "talents-background-deathknight-unholy", heroContainerOffset = -15, },
 
 	-- DH
-	[577] = { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },
-	[581] = { background = "talents-background-demonhunter-vengeance", heroContainerOffset = -45, },
+	[577] =  { background = "talents-background-demonhunter-havoc", heroContainerOffset = -15, },
+	[581] =  { background = "talents-background-demonhunter-vengeance", heroContainerOffset = -45, },
+	[1480] = { background = "talents-background-demonhunter-devourer", heroContainerOffset = 0 },
 
 	-- Druid
 	[102] = { background = "talents-background-druid-balance", heroContainerOffset = 15, },

@@ -303,7 +303,11 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		if UnitIsUnit(unit, "player") then
 			return false; 
 		end
-		
+
+		if not UnitIsPlayer(unit) then
+			return false;
+		end
+
 		if not UnitInBattleground(unit) and not IsInActiveWorldPVP(unit) then
 			return false; 
 		end
@@ -311,13 +315,13 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		local name = contextData.name;
 		if name then
 			if name == UnitNameUnmodified("player") then
-			return false; 
+				return false; 
 			end
 			
 			if not UnitInBattleground(name) and not IsInActiveWorldPVP(name) then
-			return false; 
+				return false; 
+			end
 		end
-	end
 	end
 
 	return true;
@@ -406,30 +410,6 @@ end
 
 function UnitPopupGarrisonVisitButtonMixin:CanShow(contextData)
 	return C_Garrison.IsVisitGarrisonAvailable() and (not C_PartyInfo.IsCrossFactionParty());
-end
-
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupMovePlayerFrameButtonMixin:CanShow(contextData)
-	return false;
-end
-
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupMoveTargetFrameButtonMixin:CanShow(contextData)
-	return false;
-end
-
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupMoveFocusButtonMixin:CanShow(contextData)
-	return false;
-end
-
--- UnitPopupEnterEditModeMixin is used instead
-function UnitPopupLargeFocusButtonMixin:CanShow(contextData)
-	return false;
-end
-
-function UnitPopupPlayerFrameShowCastBarButtonMixin:CanShow(contextData)
-	return false;
 end
 
 function UnitPopupEnterEditModeMixin:GetText(contextData)

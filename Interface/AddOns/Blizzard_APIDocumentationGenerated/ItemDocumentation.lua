@@ -17,6 +17,7 @@ local Item =
 		{
 			Name = "CanBeRefunded",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -31,6 +32,7 @@ local Item =
 		{
 			Name = "CanItemTransmogAppearance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,12 +42,13 @@ local Item =
 			Returns =
 			{
 				{ Name = "canTransmog", Type = "bool", Nilable = false },
-				{ Name = "errorCode", Type = "number", Nilable = false },
+				{ Name = "errorCode", Type = "TransmogOutfitSlotError", Nilable = false },
 			},
 		},
 		{
 			Name = "CanScrapItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +63,7 @@ local Item =
 		{
 			Name = "CanViewItemPowers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +90,7 @@ local Item =
 		{
 			Name = "DoesItemContainSpec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +107,7 @@ local Item =
 		{
 			Name = "DoesItemExist",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +122,7 @@ local Item =
 		{
 			Name = "DoesItemExistByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +137,7 @@ local Item =
 		{
 			Name = "DoesItemMatchBonusTreeReplacement",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +152,7 @@ local Item =
 		{
 			Name = "DoesItemMatchTargetEnchantingSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +167,7 @@ local Item =
 		{
 			Name = "DoesItemMatchTrackJump",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +182,7 @@ local Item =
 		{
 			Name = "DropItemOnUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +192,7 @@ local Item =
 		{
 			Name = "EndBoundTradeable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -190,6 +202,7 @@ local Item =
 		{
 			Name = "EndRefund",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,6 +212,7 @@ local Item =
 		{
 			Name = "EquipItemByName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -209,6 +223,7 @@ local Item =
 		{
 			Name = "GetAppliedItemTransmogInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +238,7 @@ local Item =
 		{
 			Name = "GetBaseItemTransmogInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -237,6 +253,7 @@ local Item =
 		{
 			Name = "GetCurrentItemLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,6 +268,7 @@ local Item =
 		{
 			Name = "GetCurrentItemTransmogInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -265,6 +283,7 @@ local Item =
 		{
 			Name = "GetDelvePreviewItemLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +299,7 @@ local Item =
 		{
 			Name = "GetDelvePreviewItemQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -296,6 +316,7 @@ local Item =
 			Name = "GetDetailedItemLevelInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -312,6 +333,7 @@ local Item =
 		{
 			Name = "GetFirstTriggeredSpellForItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -327,6 +349,7 @@ local Item =
 		{
 			Name = "GetItemChildInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -342,6 +365,7 @@ local Item =
 		{
 			Name = "GetItemClassInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,6 +380,7 @@ local Item =
 		{
 			Name = "GetItemConversionOutputIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -370,6 +395,7 @@ local Item =
 		{
 			Name = "GetItemCooldown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -386,6 +412,7 @@ local Item =
 		{
 			Name = "GetItemCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -404,6 +431,7 @@ local Item =
 		{
 			Name = "GetItemCreationContext",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -419,6 +447,7 @@ local Item =
 		{
 			Name = "GetItemFamily",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -433,6 +462,7 @@ local Item =
 		{
 			Name = "GetItemGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,6 +478,7 @@ local Item =
 			Name = "GetItemGem",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -465,6 +496,7 @@ local Item =
 			Name = "GetItemGemID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -480,6 +512,7 @@ local Item =
 		{
 			Name = "GetItemID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -494,6 +527,7 @@ local Item =
 		{
 			Name = "GetItemIDByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -508,6 +542,7 @@ local Item =
 		{
 			Name = "GetItemIDForItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -522,6 +557,7 @@ local Item =
 		{
 			Name = "GetItemIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -536,6 +572,7 @@ local Item =
 		{
 			Name = "GetItemIconByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -551,6 +588,7 @@ local Item =
 			Name = "GetItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -576,12 +614,14 @@ local Item =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "setID", Type = "number", Nilable = true },
 				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+				{ Name = "itemDescription", Type = "cstring", Nilable = false },
 			},
 		},
 		{
 			Name = "GetItemInfoInstant",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -602,6 +642,7 @@ local Item =
 		{
 			Name = "GetItemInventorySlotInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -616,6 +657,7 @@ local Item =
 		{
 			Name = "GetItemInventorySlotKey",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -630,6 +672,7 @@ local Item =
 		{
 			Name = "GetItemInventoryType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -644,6 +687,7 @@ local Item =
 		{
 			Name = "GetItemInventoryTypeByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -658,6 +702,7 @@ local Item =
 		{
 			Name = "GetItemLearnTransmogSet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -672,6 +717,7 @@ local Item =
 		{
 			Name = "GetItemLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -686,6 +732,7 @@ local Item =
 		{
 			Name = "GetItemLinkByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -700,6 +747,7 @@ local Item =
 		{
 			Name = "GetItemLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -714,6 +762,7 @@ local Item =
 		{
 			Name = "GetItemMaxStackSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -728,6 +777,7 @@ local Item =
 		{
 			Name = "GetItemMaxStackSizeByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -742,6 +792,7 @@ local Item =
 		{
 			Name = "GetItemName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -756,6 +807,7 @@ local Item =
 		{
 			Name = "GetItemNameByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -770,6 +822,7 @@ local Item =
 		{
 			Name = "GetItemNumAddedSockets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -784,6 +837,7 @@ local Item =
 		{
 			Name = "GetItemNumSockets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -798,6 +852,7 @@ local Item =
 		{
 			Name = "GetItemQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -812,6 +867,7 @@ local Item =
 		{
 			Name = "GetItemQualityByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -826,6 +882,7 @@ local Item =
 		{
 			Name = "GetItemQualityColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -843,6 +900,7 @@ local Item =
 		{
 			Name = "GetItemSetInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -858,6 +916,7 @@ local Item =
 			Name = "GetItemSpecInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -873,6 +932,7 @@ local Item =
 			Name = "GetItemSpell",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -889,6 +949,7 @@ local Item =
 			Name = "GetItemStatDelta",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -905,6 +966,7 @@ local Item =
 			Name = "GetItemStats",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -920,6 +982,7 @@ local Item =
 			Name = "GetItemSubClassInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -937,6 +1000,7 @@ local Item =
 			Name = "GetItemUniqueness",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -953,6 +1017,7 @@ local Item =
 			Name = "GetItemUniquenessByID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -970,6 +1035,7 @@ local Item =
 		{
 			Name = "GetItemUpgradeInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -985,6 +1051,7 @@ local Item =
 			Name = "GetLimitedCurrencyItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1004,6 +1071,7 @@ local Item =
 			Name = "GetSetBonusesForSpecializationByItemID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1019,6 +1087,7 @@ local Item =
 		{
 			Name = "GetStackCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1033,6 +1102,7 @@ local Item =
 		{
 			Name = "IsAnimaItemByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1047,6 +1117,7 @@ local Item =
 		{
 			Name = "IsArtifactPowerItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1061,6 +1132,7 @@ local Item =
 		{
 			Name = "IsBound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1075,6 +1147,7 @@ local Item =
 		{
 			Name = "IsBoundToAccountUntilEquip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "You can use IsItemBindToAccountUntilEquip instead if the item is not in your inventory" },
 
 			Arguments =
@@ -1090,6 +1163,7 @@ local Item =
 		{
 			Name = "IsConsumableItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1104,6 +1178,7 @@ local Item =
 		{
 			Name = "IsCorruptedItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1118,6 +1193,7 @@ local Item =
 		{
 			Name = "IsCosmeticItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1132,6 +1208,7 @@ local Item =
 		{
 			Name = "IsCurioItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the item is a consumable curio that can be applied to a delves companion." },
 
 			Arguments =
@@ -1147,6 +1224,7 @@ local Item =
 		{
 			Name = "IsCurrentItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1159,8 +1237,25 @@ local Item =
 			},
 		},
 		{
+			Name = "IsDecorItem",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the item is a consumable decor item." },
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isDecor", Type = "bool", Nilable = true },
+			},
+		},
+		{
 			Name = "IsDressableItemByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1175,6 +1270,7 @@ local Item =
 		{
 			Name = "IsEquippableItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1189,6 +1285,7 @@ local Item =
 		{
 			Name = "IsEquippedItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1203,6 +1300,7 @@ local Item =
 		{
 			Name = "IsEquippedItemType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1217,6 +1315,7 @@ local Item =
 		{
 			Name = "IsHarmfulItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1231,6 +1330,7 @@ local Item =
 		{
 			Name = "IsHelpfulItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1243,8 +1343,24 @@ local Item =
 			},
 		},
 		{
+			Name = "IsItemBindToAccount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "itemInfo", Type = "ItemInfo", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemBindToAccount", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsItemBindToAccountUntilEquip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "You can use IsBoundToAccountUntilEquip instead if the item exists in your inventory" },
 
 			Arguments =
@@ -1260,6 +1376,7 @@ local Item =
 		{
 			Name = "IsItemConduit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1274,6 +1391,7 @@ local Item =
 		{
 			Name = "IsItemConvertibleAndValidForPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1288,6 +1406,7 @@ local Item =
 		{
 			Name = "IsItemCorrupted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1302,6 +1421,7 @@ local Item =
 		{
 			Name = "IsItemCorruptionRelated",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1316,6 +1436,7 @@ local Item =
 		{
 			Name = "IsItemCorruptionResistant",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1330,6 +1451,7 @@ local Item =
 		{
 			Name = "IsItemDataCached",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1344,6 +1466,7 @@ local Item =
 		{
 			Name = "IsItemDataCachedByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1358,6 +1481,7 @@ local Item =
 		{
 			Name = "IsItemGUIDInInventory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1372,6 +1496,7 @@ local Item =
 		{
 			Name = "IsItemInRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1387,6 +1512,7 @@ local Item =
 		{
 			Name = "IsItemKeystoneByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1401,6 +1527,7 @@ local Item =
 		{
 			Name = "IsItemSpecificToPlayerClass",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1415,6 +1542,7 @@ local Item =
 		{
 			Name = "IsLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1429,6 +1557,7 @@ local Item =
 		{
 			Name = "IsRelicItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the item is a consumable relic  that can be applied to an artifact weapon." },
 
 			Arguments =
@@ -1444,6 +1573,7 @@ local Item =
 		{
 			Name = "IsUsableItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1459,6 +1589,7 @@ local Item =
 		{
 			Name = "ItemHasRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1473,6 +1604,7 @@ local Item =
 		{
 			Name = "LockItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1482,6 +1614,7 @@ local Item =
 		{
 			Name = "LockItemByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1491,6 +1624,7 @@ local Item =
 		{
 			Name = "PickupItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1512,6 +1646,7 @@ local Item =
 		{
 			Name = "RequestLoadItemData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1521,6 +1656,7 @@ local Item =
 		{
 			Name = "RequestLoadItemDataByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1530,6 +1666,7 @@ local Item =
 		{
 			Name = "UnlockItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1539,6 +1676,7 @@ local Item =
 		{
 			Name = "UnlockItemByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1548,6 +1686,7 @@ local Item =
 		{
 			Name = "UseItemByName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1563,16 +1702,19 @@ local Item =
 			Name = "ActionWillBindItem",
 			Type = "Event",
 			LiteralName = "ACTION_WILL_BIND_ITEM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BindEnchant",
 			Type = "Event",
 			LiteralName = "BIND_ENCHANT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CharacterItemFixupNotification",
 			Type = "Event",
 			LiteralName = "CHARACTER_ITEM_FIXUP_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "fixupVersion", Type = "number", Nilable = false },
@@ -1582,16 +1724,19 @@ local Item =
 			Name = "ConfirmBeforeUse",
 			Type = "Event",
 			LiteralName = "CONFIRM_BEFORE_USE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ConvertToBindToAccountConfirm",
 			Type = "Event",
 			LiteralName = "CONVERT_TO_BIND_TO_ACCOUNT_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DeleteItemConfirm",
 			Type = "Event",
 			LiteralName = "DELETE_ITEM_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemName", Type = "cstring", Nilable = false },
@@ -1604,6 +1749,7 @@ local Item =
 			Name = "EndBoundTradeable",
 			Type = "Event",
 			LiteralName = "END_BOUND_TRADEABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reason", Type = "cstring", Nilable = false },
@@ -1613,6 +1759,7 @@ local Item =
 			Name = "GetItemInfoReceived",
 			Type = "Event",
 			LiteralName = "GET_ITEM_INFO_RECEIVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1623,6 +1770,7 @@ local Item =
 			Name = "ItemChanged",
 			Type = "Event",
 			LiteralName = "ITEM_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "previousHyperlink", Type = "string", Nilable = false },
@@ -1633,6 +1781,7 @@ local Item =
 			Name = "ItemConversionDataReady",
 			Type = "Event",
 			LiteralName = "ITEM_CONVERSION_DATA_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemGUID", Type = "WOWGUID", Nilable = false },
@@ -1642,6 +1791,7 @@ local Item =
 			Name = "ItemCountChanged",
 			Type = "Event",
 			LiteralName = "ITEM_COUNT_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1651,6 +1801,7 @@ local Item =
 			Name = "ItemDataLoadResult",
 			Type = "Event",
 			LiteralName = "ITEM_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -1661,6 +1812,7 @@ local Item =
 			Name = "MerchantConfirmTradeTimerRemoval",
 			Type = "Event",
 			LiteralName = "MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLink", Type = "cstring", Nilable = false },
@@ -1670,6 +1822,7 @@ local Item =
 			Name = "ReplaceEnchant",
 			Type = "Event",
 			LiteralName = "REPLACE_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existingStr", Type = "cstring", Nilable = false },
@@ -1680,6 +1833,7 @@ local Item =
 			Name = "ReplaceTradeskillEnchant",
 			Type = "Event",
 			LiteralName = "REPLACE_TRADESKILL_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existing", Type = "cstring", Nilable = false },
@@ -1690,6 +1844,7 @@ local Item =
 			Name = "TradeReplaceEnchant",
 			Type = "Event",
 			LiteralName = "TRADE_REPLACE_ENCHANT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "existing", Type = "cstring", Nilable = false },
@@ -1700,16 +1855,19 @@ local Item =
 			Name = "UseBindConfirm",
 			Type = "Event",
 			LiteralName = "USE_BIND_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UseNoRefundConfirm",
 			Type = "Event",
 			LiteralName = "USE_NO_REFUND_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WeaponEnchantChanged",
 			Type = "Event",
 			LiteralName = "WEAPON_ENCHANT_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 
@@ -1737,6 +1895,7 @@ local Item =
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "setID", Type = "number", Nilable = true },
 				{ Name = "isCraftingReagent", Type = "bool", Nilable = false },
+				{ Name = "itemDescription", Type = "cstring", Nilable = false },
 			},
 		},
 		{

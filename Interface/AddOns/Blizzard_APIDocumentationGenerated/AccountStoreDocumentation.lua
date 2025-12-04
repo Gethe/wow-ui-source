@@ -9,6 +9,7 @@ local AccountStore =
 		{
 			Name = "BeginPurchase",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local AccountStore =
 		{
 			Name = "GetCategories",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local AccountStore =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +54,7 @@ local AccountStore =
 		{
 			Name = "GetCategoryItems",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +69,7 @@ local AccountStore =
 		{
 			Name = "GetCurrencyAvailable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,6 +84,7 @@ local AccountStore =
 		{
 			Name = "GetCurrencyIDForStore",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,6 +99,7 @@ local AccountStore =
 		{
 			Name = "GetCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,6 +114,7 @@ local AccountStore =
 		{
 			Name = "GetItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,6 +129,7 @@ local AccountStore =
 		{
 			Name = "GetStoreFrontState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -135,6 +144,7 @@ local AccountStore =
 		{
 			Name = "RefundItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,6 +159,7 @@ local AccountStore =
 		{
 			Name = "RequestStoreFrontInfoUpdate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,24 +174,47 @@ local AccountStore =
 			Name = "AccountStoreCurrencyAvailableUpdated",
 			Type = "Event",
 			LiteralName = "ACCOUNT_STORE_CURRENCY_AVAILABLE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currencyID", Type = "number", Nilable = false },
 			},
 		},
 		{
+			Name = "AccountStoreFrontUpdated",
+			Type = "Event",
+			LiteralName = "ACCOUNT_STORE_FRONT_UPDATED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "storeFrontID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "AccountStoreItemInfoUpdated",
 			Type = "Event",
 			LiteralName = "ACCOUNT_STORE_ITEM_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
 			},
 		},
 		{
+			Name = "AccountStoreTransactionError",
+			Type = "Event",
+			LiteralName = "ACCOUNT_STORE_TRANSACTION_ERROR",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "AccountStoreTransactionResult", Nilable = false },
+			},
+		},
+		{
 			Name = "StoreFrontStateUpdated",
 			Type = "Event",
 			LiteralName = "STORE_FRONT_STATE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "storeFrontID", Type = "number", Nilable = false },
@@ -220,6 +254,7 @@ local AccountStore =
 			{
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "status", Type = "AccountStoreItemStatus", Nilable = false },
+				{ Name = "mode", Type = "AccountStoreItemMode", Nilable = false },
 				{ Name = "currencyID", Type = "number", Nilable = false },
 				{ Name = "flags", Type = "AccountStoreItemFlag", Nilable = false },
 				{ Name = "customUIModelSceneID", Type = "number", Nilable = true },

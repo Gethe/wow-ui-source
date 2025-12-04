@@ -54,6 +54,7 @@
 	</Button>
 
 	<Frame name="AdventureMapQuestChoiceDialog" hidden="true" enableMouse="true" mixin="AdventureMapQuestChoiceDialogMixin">
+		<!-- The height of this can be changed by RefreshDetails -->
 		<Size x="295" y="380" />
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -152,7 +153,7 @@
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size x="78" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="2"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -164,7 +165,7 @@
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="77" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+					<Anchor point="BOTTOMLEFT" x="6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

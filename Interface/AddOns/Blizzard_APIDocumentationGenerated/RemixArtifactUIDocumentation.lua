@@ -14,6 +14,7 @@ local RemixArtifactUI =
 			Name = "GetAppearanceInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,6 +83,7 @@ local RemixArtifactUI =
 		{
 			Name = "ItemInSlotIsRemixArtifact",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +103,7 @@ local RemixArtifactUI =
 			Name = "RemixArtifactItemSpecsLoaded",
 			Type = "Event",
 			LiteralName = "REMIX_ARTIFACT_ITEM_SPECS_LOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -110,6 +113,7 @@ local RemixArtifactUI =
 			Name = "RemixArtifactUpdate",
 			Type = "Event",
 			LiteralName = "REMIX_ARTIFACT_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

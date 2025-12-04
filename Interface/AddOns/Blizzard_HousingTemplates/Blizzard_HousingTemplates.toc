@@ -1,0 +1,22 @@
+## Title: Blizzard Housing Templates
+## Author: Blizzard Entertainment
+## LoadOnDemand: 0
+## Dependencies: Blizzard_PagedContent
+## AllowLoadGameType: standard
+
+Blizzard_HousingCatalogUtil.lua
+Blizzard_HousingData.lua
+Blizzard_HousingCatalogEntry.lua
+Blizzard_HousingCatalogEntry.xml
+Blizzard_HousingCatalogBundleDisplay.lua
+Blizzard_HousingCatalogBundleDisplay.xml
+Blizzard_HousingCatalogCategories.lua
+Blizzard_HousingCatalogCategories.xml
+Blizzard_HousingCatalogFilters.lua
+Blizzard_HousingCatalogFilters.xml
+Blizzard_HousingCatalogTemplates.lua
+Blizzard_HousingCatalogTemplates.xml
+Blizzard_HousingActionButton.lua
+Blizzard_HousingActionButton.xml
+Blizzard_HousingTopBanner.lua
+Blizzard_HousingTopBanner.xml

@@ -613,7 +613,7 @@ function DelveRewardsButtonMixin:OnEnter()
 end
 
 function DelveRewardsButtonMixin:OnUpdate()
-	if TooltipUtil.ShouldDoItemComparison() then
+	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
 		GameTooltip_HideShoppingTooltips(GameTooltip);

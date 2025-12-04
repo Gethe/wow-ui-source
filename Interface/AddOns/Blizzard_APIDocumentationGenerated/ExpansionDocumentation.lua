@@ -6,7 +6,7 @@ local Expansion =
 	Functions =
 	{
 		{
-			Name = "CanUpgradeExpansion",
+			Name = "CanUpgradeToCurrentExpansion",
 			Type = "Function",
 
 			Returns =
@@ -53,10 +53,12 @@ local Expansion =
 		{
 			Name = "GetExpansionDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "expansionLevel", Type = "number", Nilable = false },
+				{ Name = "desiredReleaseType", Type = "ReleaseType", Nilable = true },
 			},
 
 			Returns =
@@ -68,6 +70,7 @@ local Expansion =
 			Name = "GetExpansionForLevel",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +104,7 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =
@@ -168,6 +172,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetUpgradeExpansionLevel",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "upgradeExpansionLevel", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDemonHunterAvailable",
 			Type = "Function",
 
@@ -207,10 +220,20 @@ local Expansion =
 			Name = "SendSubscriptionInterstitialResponse",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "response", Type = "SubscriptionInterstitialResponseType", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowExpansionUpgradeBanner",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "showUpgradeBanner", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -221,16 +244,19 @@ local Expansion =
 			Name = "MaxExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MAX_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MinExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MIN_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowSubscriptionInterstitial",
 			Type = "Event",
 			LiteralName = "SHOW_SUBSCRIPTION_INTERSTITIAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "SubscriptionInterstitialType", Nilable = false },

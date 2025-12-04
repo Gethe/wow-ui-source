@@ -75,8 +75,8 @@ local function CastSequenceManager_OnEvent(self, event, ...)
 		end
 
 		if ( unit == "player" or unit == "pet" ) then
-			local overrideSpellID = FindSpellOverrideByID(spellID);
-			local baseSpellID     = FindBaseSpellByID(spellID);
+			local overrideSpellID = C_SpellBook.FindSpellOverrideByID(spellID);
+			local baseSpellID     = C_SpellBook.FindBaseSpellByID(spellID);
 			for sequence, entry in pairs(CastSequenceTable) do
 				local entrySpellID = entry.spellID[entry.index];
 				if ( entrySpellID == overrideSpellID or entrySpellID == baseSpellID ) then

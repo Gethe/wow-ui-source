@@ -367,18 +367,18 @@ end
 -- Arrow frame that points at something on screen
 -- Frame is automatically closed when tutorial is shutdown
 -- This function clears any existing poitners before adding the new one
-function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:ShowPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("ShowPointerTutorial");
 
 	self:HidePointerTutorials();
-	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	return self:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 end
 
 -- ------------------------------------------------------------------------------------------------------------
 -- Adds a pointer tutorial ontop of existing pointers
-function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection)
+function Class_TutorialBase:AddPointerTutorial(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth)
 	self:DebugLog("AddPointerTutorial");
-	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection);
+	local pointer = NPE_TutorialPointerFrame:Show(content, direction, anchorFrame, ofsX, ofsY, relativePoint, backupDirection, overrideWidth);
 	table.insert(self._pointerTutorials, pointer);
 
 	return pointer;
@@ -1458,6 +1458,7 @@ end
 function Class_LootCorpseWatcher:OnBegin()
 	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:RegisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:WatchQuestMob(unitID)
@@ -1495,34 +1496,21 @@ end
 -- Entering Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_DISABLED(...)
 	self:SuppressChildren();
-	Dispatcher:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
 -- Leaving Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_ENABLED(...)
 	self:UnsuppressChildren();
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
--- Watch for units dying while in combat.  if that happened, check the unit to see if the
--- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
-	local eventData = {CombatLogGetCurrentEventInfo()};
-	local logEvent = eventData[2];
-	local unitGUID = eventData[8];
-	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
-		-- Wait for mirror data
-		C_Timer.After(1, function()
-				if CanLootUnit(unitGUID) then
-					self:UnitLootable(unitGUID);
-				end
-			end);
+function Class_LootCorpseWatcher:UNIT_LOOT(unitGUID, hasLoot)
+	if CanLootUnit(unitGUID) then
+		self:UnitLootable(unitGUID);
 	end
 end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
-
-	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if ((unitID == id) and (not hasKilled)) then
 			Tutorials.LootCorpse:ForceBegin(unitID);
@@ -2592,7 +2580,7 @@ function Class_ChatFrame:OnBegin(editBox)
 
 		self.Elapsed = 0;
 		Dispatcher:RegisterEvent("OnUpdate", self);
-		Dispatcher:RegisterFunction("ChatEdit_DeactivateChat", function() self:Complete() end, true);
+		Dispatcher:RegisterFunction(ChatFrameUtil, "DeactivateChat", function() self:Complete() end, true);
 	end
 end
 
@@ -2601,7 +2589,7 @@ function Class_ChatFrame:OnUpdate(elapsed)
 
 	if (self.Elapsed > 30) then
 		if (self.EditBox) then
-			ChatEdit_DeactivateChat(self.EditBox);
+			ChatFrameUtil.DeactivateChat(self.EditBox);
 		end
 		self:Interrupt(self);
 	end
@@ -2790,7 +2778,7 @@ function Tutorials:Begin()
 	-- Chat frame
 	-- We don't want this active right off the bat.
 	C_Timer.After(5, function()
-			Dispatcher:RegisterFunction("ChatEdit_ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
+			Dispatcher:RegisterFunction(ChatFrameUtil, "ActivateChat", function(editBox) Tutorials.ChatFrame:Begin(editBox) end);
 		end);
 
 	-- Level 3 ability

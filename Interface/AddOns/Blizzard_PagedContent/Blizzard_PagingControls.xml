@@ -17,6 +17,13 @@
 		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 	</Button>
 
+	<FontString name="PageTextTemplate" inherits="GameFontHighlight" virtual="true">
+		<KeyValues>
+			<KeyValue key="align" value="center" type="string"/>
+		</KeyValues>
+		<Size x="0" y="32"/>
+	</FontString>
+
 	<Frame name="PagingControlsTemplate" mixin="PagingControlsMixin" virtual="true">
 		<!-- 
 			hideWhenSinglePage: Hide controls when maxPages is 1
@@ -51,12 +58,10 @@
 		<Size x="100" y="32"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="PageText" inherits="GameFontHighlight">
+				<FontString parentKey="PageText" inherits="PageTextTemplate">
 					<KeyValues>
 						<KeyValue key="layoutIndex" value="1" type="number"/>
-						<KeyValue key="align" value="center" type="string"/>
 					</KeyValues>
-					<Size x="0" y="32"/>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -64,6 +69,34 @@
 			<Button parentKey="PrevPageButton" inherits="PagingControlsPrevPageButtonTemplate">
 				<KeyValues>
 					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="NextPageButton" inherits="PagingControlsNextPageButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<Frame name="PagingControlsCenteredTemplate" inherits="HorizontalLayoutFrame, PagingControlsTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="spacing" value="5" type="number"/>
+		</KeyValues>
+		<Size x="100" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PageText" inherits="PageTextTemplate">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="PrevPageButton" inherits="PagingControlsPrevPageButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
 				</KeyValues>
 			</Button>
 			<Button parentKey="NextPageButton" inherits="PagingControlsNextPageButtonTemplate">

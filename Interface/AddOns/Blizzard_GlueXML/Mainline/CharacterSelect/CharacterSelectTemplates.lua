@@ -90,3 +90,21 @@ end
 function CharacterSelectToolTrayMixin:SetExpanded(isExpanded, isUserInput)
 	self.ExpandBar:SetExpanded(isExpanded, isUserInput);
 end
+
+CharacterSelectBlockingFrameMixin = { };
+
+function CharacterSelectBlockingFrameMixin:OnKeyDown(key)
+	if key == "ESCAPE" then
+		self:OnEscapePressed();
+	end
+end
+
+function CharacterSelectBlockingFrameMixin:OnEscapePressed()
+	self:Hide();
+end
+
+function CharacterSelectBlockingFrameMixin:OnMouseUp()
+	if self.hideOnClick then
+		self:Hide();
+	end
+end

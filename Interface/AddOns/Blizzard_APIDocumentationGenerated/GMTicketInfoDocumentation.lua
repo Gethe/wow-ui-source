@@ -14,6 +14,7 @@ local GMTicketInfo =
 			Name = "GmPlayerInfo",
 			Type = "Event",
 			LiteralName = "GM_PLAYER_INFO",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -24,21 +25,25 @@ local GMTicketInfo =
 			Name = "ItemRestorationButtonStatus",
 			Type = "Event",
 			LiteralName = "ITEM_RESTORATION_BUTTON_STATUS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetitionClosed",
 			Type = "Event",
 			LiteralName = "PETITION_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetitionShow",
 			Type = "Event",
 			LiteralName = "PETITION_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerReportSubmitted",
 			Type = "Event",
 			LiteralName = "PLAYER_REPORT_SUBMITTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "invitedByGUID", Type = "WOWGUID", Nilable = false },
@@ -48,16 +53,19 @@ local GMTicketInfo =
 			Name = "QuickTicketSystemStatus",
 			Type = "Event",
 			LiteralName = "QUICK_TICKET_SYSTEM_STATUS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuickTicketThrottleChanged",
 			Type = "Event",
 			LiteralName = "QUICK_TICKET_THROTTLE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateWebTicket",
 			Type = "Event",
 			LiteralName = "UPDATE_WEB_TICKET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasTicket", Type = "bool", Nilable = false },

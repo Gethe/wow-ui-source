@@ -6,8 +6,41 @@ local Localization =
 	Functions =
 	{
 		{
+			Name = "AbbreviateLargeNumbers",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+				{ Name = "options", Type = "NumberAbbrevOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "AbbreviateNumbers",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "number", Type = "number", Nilable = false },
+				{ Name = "options", Type = "NumberAbbrevOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "BreakUpLargeNumbers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -23,6 +56,7 @@ local Localization =
 		{
 			Name = "CaseAccentInsensitiveParse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,8 +69,24 @@ local Localization =
 			},
 		},
 		{
+			Name = "CreateAbbreviateConfig",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = false },
+			},
+		},
+		{
 			Name = "DeclineName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +103,7 @@ local Localization =
 		{
 			Name = "GetNumDeclensionSets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +128,7 @@ local Localization =
 		{
 			Name = "LocalizedClassList",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +143,7 @@ local Localization =
 		{
 			Name = "SetEuropeanNumbers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,6 +158,16 @@ local Localization =
 
 	Tables =
 	{
+		{
+			Name = "NumberAbbrevOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbrevData", Nilable = true, Documentation = { "Order these from largest to smallest." } },
+				{ Name = "locale", Type = "cstring", Nilable = true, Documentation = { "Locale controls whether standard asian abbreviation data will be used along with a small change in behavior for large number abbreviation when fractionDivisor is greater than zero." } },
+				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
+			},
+		},
 	},
 };
 

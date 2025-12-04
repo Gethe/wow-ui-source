@@ -104,8 +104,14 @@ function TutorialManager:AddTutorial(tutorialInstance, optionalOverrideKey, args
 end
 
 function TutorialManager:RemoveTutorial(tutorialKey)
-	self.Tutorials[tutorialKey] = nil;
-	self:DebugLog("  REMOVE TUTORIAL: "..tutorialKey);
+	local tutorial = self:GetTutorial(tutorialKey);
+	if tutorial then
+		self.Tutorials[tutorialKey] = nil;
+		if tutorial.OnRemoved then
+			tutorial:OnRemoved();
+		end
+		self:DebugLog("  REMOVE TUTORIAL: "..tutorialKey);
+	end
 end
 
 function TutorialManager:GetTutorial(tutorialKey)
@@ -199,6 +205,13 @@ end
 function TutorialManager:CheckHasCompletedFrameTutorial(tutorial, callback)
 	EventUtil.ContinueOnVariablesLoaded(function()
 		local hasCompleted = GetCVarBitfield("closedInfoFrames", tutorial);
+		callback(hasCompleted);
+	end);
+end
+
+function TutorialManager:CheckHasCompletedTutorial(tutorialBitfield, tutorial, callback)
+	EventUtil.ContinueOnVariablesLoaded(function()
+		local hasCompleted = GetCVarBitfield(tutorialBitfield, tutorial);
 		callback(hasCompleted);
 	end);
 end

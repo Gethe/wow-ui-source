@@ -14,6 +14,7 @@ local Browser =
 			Name = "SimpleBrowserWebError",
 			Type = "Event",
 			LiteralName = "SIMPLE_BROWSER_WEB_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "errorCode", Type = "number", Nilable = false },
@@ -23,11 +24,13 @@ local Browser =
 			Name = "SimpleBrowserWebProxyFailed",
 			Type = "Event",
 			LiteralName = "SIMPLE_BROWSER_WEB_PROXY_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SimpleCheckoutClosed",
 			Type = "Event",
 			LiteralName = "SIMPLE_CHECKOUT_CLOSED",
+			SynchronousEvent = true,
 		},
 	},
 

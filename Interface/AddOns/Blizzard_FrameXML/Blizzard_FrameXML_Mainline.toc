@@ -1,10 +1,9 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Colors
+## Dependencies: Blizzard_UIParent, Blizzard_UIParentPanelManager, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Colors, Blizzard_TransmogShared
 ## LoadFirst: 1
 ## AllowLoad: Game
-## AllowLoadGameType: standard
 Shared\Localization.lua
 AchievementDisplayFrame.xml
 RewardTrackTemplates.xml
@@ -13,17 +12,13 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 Mainline\TutorialFrame.lua
 Mainline\TutorialFrame.xml
-Mainline\SecureTemplatesBase.xml
-Mainline\SecureTemplates.lua
-SecureStateDriver.lua
-SecureHoverDriver.lua
-Mainline\SecureTemplates.xml
-SecureHandlerTemplates.xml
-SecureGroupHeaders.xml
+SecureTemplatesBase.xml
+SecureTemplates.lua
+SecureTemplates.xml
 AzeriteAnimationTemplates.xml
 QuestNPCModelFrameMixin.lua
 TabardModelFrameMixin.lua
-WardrobeOutfits.xml
+WardrobeCustomSets.xml
 Mainline\NavigationBar.lua
 Mainline\NavigationBar.xml
 UIErrorsFrame.xml

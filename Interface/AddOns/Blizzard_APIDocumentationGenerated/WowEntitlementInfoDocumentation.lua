@@ -14,6 +14,7 @@ local WowEntitlementInfo =
 			Name = "EntitlementDelivered",
 			Type = "Event",
 			LiteralName = "ENTITLEMENT_DELIVERED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "entitlementType", Type = "WoWEntitlementType", Nilable = false },
@@ -27,6 +28,7 @@ local WowEntitlementInfo =
 			Name = "RafEntitlementDelivered",
 			Type = "Event",
 			LiteralName = "RAF_ENTITLEMENT_DELIVERED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "entitlementType", Type = "WoWEntitlementType", Nilable = false },

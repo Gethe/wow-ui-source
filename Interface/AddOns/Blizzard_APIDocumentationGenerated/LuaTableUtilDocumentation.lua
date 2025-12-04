@@ -10,6 +10,7 @@ local LuaTableUtil =
 			Name = "count",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,6 +27,7 @@ local LuaTableUtil =
 		{
 			Name = "create",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

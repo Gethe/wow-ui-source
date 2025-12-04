@@ -40,15 +40,15 @@ function PTR_IssueReporter.RegisterUIPanelTabEvent(eventString, index, offsetBut
 		if not (PTR_IssueReporter.RegisteredUIPanelButtons[frame]) then
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame] = CreateFrame("Button", eventString.."BugButton", frame, "UIPanelBugButton")
 		end
-		
-		if ((index) and (index == tabIndex)) or (index == nil) then
+
+		if ((index) and (index == tabIndex)) or (index == nil) or (tabIndex == nil) then
 			local offset = 40
 			if (offsetButton) then
 				offset = 70
 			end
 			
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetScript("OnClick", function()
-				PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, index))
+				PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.UIPanelButtonClicked, PTR_IssueReporter.GetUIPanelEventString(eventString, tabIndex))
 			end)            
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:SetPoint("TOPLEFT", frame, "TOPLEFT", offset, 20)
 			PTR_IssueReporter.RegisteredUIPanelButtons[frame]:Show()
@@ -834,7 +834,7 @@ function PTR_IssueReporter.CreateIssueButton(name, icon, buttonTooltip, func)
 	PTR_IssueReporter.AddBorder(newbutton)
 	newbutton:SetScript("OnEnter", function(self)
 		tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-		tooltip:SetText(name, 1, 1, 1, true);
+		tooltip:SetText(name, 1, 1, 1, 1, true);
 		tooltip:AddLine(buttonTooltip, nil, nil, nil, true);
 		tooltip:SetMinimumWidth(100);
 		tooltip:Show()
@@ -867,7 +867,7 @@ function PTR_IssueReporter.SetBugButtonContext(context, buttonTooltip, bugIcon)
 
 			PTR_IssueReporter.ReportBug:SetScript("OnEnter", function(self)
 				tooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-				tooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, true);
+				tooltip:SetText(PTR_IssueReporter.Data.CurrentBugButtonContext, 1, 1, 1, 1, true);
 				tooltip:AddLine(buttonTooltip or PTR_IssueReporter.Data.BugReportString, nil, nil, nil, true);
 				tooltip:SetMinimumWidth(100);
 				tooltip:Show()
@@ -1028,7 +1028,7 @@ end
 function PTR_IssueReporter.AddTooltip(frame, title, text, anchor, minWidth, owner, x, y)
 	frame:SetScript("OnEnter", function(self)
 		tooltip:SetOwner(owner or self, anchor or "ANCHOR_RIGHT", x or 0, y or 0);
-		tooltip:SetText(title, 1, 1, 1, true);
+		tooltip:SetText(title, 1, 1, 1, 1, true);
 		tooltip:AddLine(text, nil, nil, nil, true);
 		tooltip:SetMinimumWidth(minWidth or 100);
 		tooltip:Show()

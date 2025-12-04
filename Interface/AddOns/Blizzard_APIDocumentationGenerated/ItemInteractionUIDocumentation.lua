@@ -26,6 +26,7 @@ local ItemInteractionUI =
 		{
 			Name = "GetItemConversionCurrencyCost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,6 +72,7 @@ local ItemInteractionUI =
 		{
 			Name = "SetPendingItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,11 +92,13 @@ local ItemInteractionUI =
 			Name = "ItemInteractionChargeInfoUpdated",
 			Type = "Event",
 			LiteralName = "ITEM_INTERACTION_CHARGE_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemInteractionItemSelectionUpdated",
 			Type = "Event",
 			LiteralName = "ITEM_INTERACTION_ITEM_SELECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemLocation", Type = "ItemLocation", Mixin = "ItemLocationMixin", Nilable = true },
@@ -135,7 +139,7 @@ local ItemInteractionUI =
 				{ Name = "tutorialText", Type = "string", Nilable = false },
 				{ Name = "buttonText", Type = "string", Nilable = false },
 				{ Name = "interactionType", Type = "UIItemInteractionType", Nilable = false },
-				{ Name = "flags", Type = "number", Nilable = false },
+				{ Name = "flags", Type = "UIItemInteractionFlags", Nilable = false },
 				{ Name = "description", Type = "string", Nilable = true },
 				{ Name = "buttonTooltip", Type = "string", Nilable = true },
 				{ Name = "confirmationDescription", Type = "string", Nilable = true },

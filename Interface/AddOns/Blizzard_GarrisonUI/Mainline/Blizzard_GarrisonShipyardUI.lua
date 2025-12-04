@@ -53,7 +53,7 @@ StaticPopupDialogs["GARRISON_SHIP_RENAME"] = {
 		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
-		ChatEdit_FocusActiveWindow();
+		ChatFrameUtil.FocusActiveWindow();
 		dialog:GetEditBox():SetText("");
 	end,
 	timeout = 0,
@@ -2109,7 +2109,7 @@ function GarrisonShipTrait_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
 		if (abilityLink) then
-			ChatEdit_InsertLink(abilityLink);
+			ChatFrameUtil.InsertLink(abilityLink);
 		end
 	end
 end
@@ -2126,7 +2126,7 @@ function GarrisonShipEquipment_OnClick(self, button)
 	if ( IsModifiedClick("CHATLINK") and self.Icon:IsShown() ) then
 		local abilityLink = C_Garrison.GetFollowerAbilityLink(self.abilityID);
 		if (abilityLink) then
-			ChatEdit_InsertLink(abilityLink);
+			ChatFrameUtil.InsertLink(abilityLink);
 		end
 	elseif (self.abilityID) then
 		if ( button == "LeftButton") then

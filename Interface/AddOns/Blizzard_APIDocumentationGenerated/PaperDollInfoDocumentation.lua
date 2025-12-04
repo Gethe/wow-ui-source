@@ -18,6 +18,7 @@ local PaperDollInfo =
 		{
 			Name = "CanCursorCanGoInSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local PaperDollInfo =
 		{
 			Name = "GetArmorEffectiveness",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local PaperDollInfo =
 		{
 			Name = "GetArmorEffectivenessAgainstTarget",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +65,7 @@ local PaperDollInfo =
 			Name = "GetInspectAzeriteItemEmpoweredChoices",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +81,7 @@ local PaperDollInfo =
 		{
 			Name = "GetInspectGuildInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +99,7 @@ local PaperDollInfo =
 		{
 			Name = "GetInspectItemLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +150,7 @@ local PaperDollInfo =
 		{
 			Name = "GetStaggerPercentage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +166,7 @@ local PaperDollInfo =
 		{
 			Name = "IsInventorySlotEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,6 +176,15 @@ local PaperDollInfo =
 			Returns =
 			{
 				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsRangedSlotShown",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isShown", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -196,11 +213,13 @@ local PaperDollInfo =
 			Name = "AvoidanceUpdate",
 			Type = "Event",
 			LiteralName = "AVOIDANCE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CharacterPointsChanged",
 			Type = "Event",
 			LiteralName = "CHARACTER_POINTS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "change", Type = "number", Nilable = false },
@@ -210,6 +229,7 @@ local PaperDollInfo =
 			Name = "CharacterUpgradeSpellTierSet",
 			Type = "Event",
 			LiteralName = "CHARACTER_UPGRADE_SPELL_TIER_SET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "tierIndex", Type = "number", Nilable = false },
@@ -219,21 +239,25 @@ local PaperDollInfo =
 			Name = "CombatRatingUpdate",
 			Type = "Event",
 			LiteralName = "COMBAT_RATING_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DisableXpGain",
 			Type = "Event",
 			LiteralName = "DISABLE_XP_GAIN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EnableXpGain",
 			Type = "Event",
 			LiteralName = "ENABLE_XP_GAIN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EquipBindConfirm",
 			Type = "Event",
 			LiteralName = "EQUIP_BIND_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -244,11 +268,13 @@ local PaperDollInfo =
 			Name = "InspectHonorUpdate",
 			Type = "Event",
 			LiteralName = "INSPECT_HONOR_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InspectReady",
 			Type = "Event",
 			LiteralName = "INSPECT_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inspecteeGUID", Type = "WOWGUID", Nilable = false },
@@ -258,26 +284,31 @@ local PaperDollInfo =
 			Name = "LifestealUpdate",
 			Type = "Event",
 			LiteralName = "LIFESTEAL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MasteryUpdate",
 			Type = "Event",
 			LiteralName = "MASTERY_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetSpellPowerUpdate",
 			Type = "Event",
 			LiteralName = "PET_SPELL_POWER_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerAvgItemLevelUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_AVG_ITEM_LEVEL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerEquipmentChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_EQUIPMENT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "equipmentSlot", Type = "number", Nilable = false },
@@ -288,6 +319,7 @@ local PaperDollInfo =
 			Name = "ProfessionEquipmentChanged",
 			Type = "Event",
 			LiteralName = "PROFESSION_EQUIPMENT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },
@@ -298,41 +330,49 @@ local PaperDollInfo =
 			Name = "PvpPowerUpdate",
 			Type = "Event",
 			LiteralName = "PVP_POWER_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpeedUpdate",
 			Type = "Event",
 			LiteralName = "SPEED_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellPowerChanged",
 			Type = "Event",
 			LiteralName = "SPELL_POWER_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SturdinessUpdate",
 			Type = "Event",
 			LiteralName = "STURDINESS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateFaction",
 			Type = "Event",
 			LiteralName = "UPDATE_FACTION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateInventoryAlerts",
 			Type = "Event",
 			LiteralName = "UPDATE_INVENTORY_ALERTS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateInventoryDurability",
 			Type = "Event",
 			LiteralName = "UPDATE_INVENTORY_DURABILITY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WeaponSlotChanged",
 			Type = "Event",
 			LiteralName = "WEAPON_SLOT_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 

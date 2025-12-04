@@ -16,6 +16,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownDisplayDuration",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 			Documentation = { "The returned duration unit is milliseconds, unaffected by modRate." },
 
 			Arguments =
@@ -30,6 +31,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownDuration",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 			Documentation = { "The returned duration unit is milliseconds and is multiplied by the modRate." },
 
 			Arguments =
@@ -44,6 +46,7 @@ local FrameAPICooldown =
 		{
 			Name = "GetCooldownTimes",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Cooldown },
 
 			Arguments =
 			{
@@ -53,6 +56,19 @@ local FrameAPICooldown =
 			{
 				{ Name = "start", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCountdownFontString",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "countdownString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{
@@ -204,6 +220,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetBlingTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -217,27 +234,46 @@ local FrameAPICooldown =
 		{
 			Name = "SetCooldown",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "start", Type = "number", Nilable = false },
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "start", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
 			},
 		},
 		{
 			Name = "SetCooldownDuration",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "duration", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
+			},
+		},
+		{
+			Name = "SetCooldownFromExpirationTime",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "expirationTime", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
 			},
 		},
 		{
 			Name = "SetCooldownUNIX",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Cooldown },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -249,6 +285,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetCountdownAbbrevThreshold",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,6 +295,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetCountdownFont",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,6 +305,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawBling",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,6 +315,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawEdge",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +325,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetDrawSwipe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +335,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetEdgeColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -306,6 +348,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetEdgeScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -315,6 +358,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetEdgeTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -328,6 +372,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetHideCountdownNumbers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -337,6 +382,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetMinimumCountdownDuration",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Controls the minimum duration above which countdown text will be shown. This is applied based upon the total duration of the cooldown, not the remaining duration as it ticks down." },
 
 			Arguments =
@@ -345,8 +391,19 @@ local FrameAPICooldown =
 			},
 		},
 		{
+			Name = "SetPaused",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "paused", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetReverse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,6 +413,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetRotation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,6 +423,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetSwipeColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -377,6 +436,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetSwipeTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -390,6 +450,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetTexCoordRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -400,6 +461,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetUseAuraDisplayTime",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Aura durations are displayed slightly differently than cooldown durations. Setting this to true will adjust the display logic to stay in sync with aura timers." },
 
 			Arguments =
@@ -410,6 +472,7 @@ local FrameAPICooldown =
 		{
 			Name = "SetUseCircularEdge",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

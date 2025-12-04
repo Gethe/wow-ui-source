@@ -646,7 +646,7 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 	self.TreeView.TreeDescription:SetWidth(325);
 	self.TreeView.TreeDescription:SetText(self.tabInfo.description);
 
-	SetPortraitToTexture(self.TreePreview.PathIcon.Icon, self.tabInfo.rootIconID);
+	self.TreePreview.PathIcon.Icon:SetTexture(self.tabInfo.rootIconID);
 	self.TreePreview.Title:SetText(self.tabInfo.name);
 	self.TreePreview.Description:SetText(self.tabInfo.description);
 	self:ConfigurePreviewHighlights(self.tabInfo.highlights);
@@ -855,6 +855,21 @@ function ProfessionsSpecFrameMixin:AttemptConfigOperation(...) -- Override
 
 	self:UpdateConfigButtonsState();
 end
+
+function ProfessionsSpecFrameMixin:SetConfigID(configID) -- Override
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	self.configID = configID;
+end
+
+function ProfessionsSpecFrameMixin:GetConfigID() -- Override
+	-- Overrides TalentFrameBaseMixin.
+	-- We set config and tree separately so we just store the config ID.
+
+	return self.configID;
+end
+
 
 function ProfessionsSpecFrameMixin:HasValidConfig()
 	return (self:GetConfigID() ~= nil) and (self:GetTalentTreeID() ~= nil);

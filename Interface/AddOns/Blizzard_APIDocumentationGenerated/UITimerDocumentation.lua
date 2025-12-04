@@ -9,6 +9,7 @@ local UITimer =
 		{
 			Name = "After",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +20,7 @@ local UITimer =
 		{
 			Name = "NewTicker",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +37,7 @@ local UITimer =
 		{
 			Name = "NewTimer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

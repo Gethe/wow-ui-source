@@ -207,7 +207,7 @@ end
 
 TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_CHANNEL,
 	function(cmd, channelIdentifier)
-		local info = ChatFrame_GetFullChannelInfo(channelIdentifier);
+		local info = ChatFrameUtil.GetFullChannelInfo(channelIdentifier);
 		if info then
 			local enabled = TextToSpeechFrame_ToggleChannelEnabled(info);
 			cmd:GetCommands():SpeakConfirmation(GetOptionConfirmation(info.humanReadableName or info.name, enabled));

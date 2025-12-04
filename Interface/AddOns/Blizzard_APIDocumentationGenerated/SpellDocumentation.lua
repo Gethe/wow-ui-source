@@ -10,6 +10,7 @@ local Spell =
 			Name = "CancelSpellByID",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +20,7 @@ local Spell =
 		{
 			Name = "DoesSpellExist",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the spell exists, regardless of whether the player has learned it" },
 
 			Arguments =
@@ -34,6 +36,7 @@ local Spell =
 		{
 			Name = "EnableSpellRangeCheck",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Used in conjunction with SpellRangeCheckUpdate to inform the UI when a spell goes in or out of range with the current target." },
 
 			Arguments =
@@ -43,8 +46,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetAuraStatChanges",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "healthChange", Type = "number", Nilable = false },
+				{ Name = "powerTypeChanges", Type = "table", InnerType = "PowerTypeChange", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -61,6 +81,7 @@ local Spell =
 			Name = "GetDeadlyDebuffInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -73,9 +94,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetItemModifiedAppearancesApplied",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "itemModifiedAppearanceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMawPowerBorderAtlasBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -91,6 +128,7 @@ local Spell =
 			Name = "GetMawPowerLinkBySpellID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -105,6 +143,7 @@ local Spell =
 		{
 			Name = "GetOverrideSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +161,7 @@ local Spell =
 		{
 			Name = "GetSchoolString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -137,6 +177,7 @@ local Spell =
 			Name = "GetSpellAutoCast",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -153,6 +194,8 @@ local Spell =
 		{
 			Name = "GetSpellCastCount",
 			Type = "Function",
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns number of times a spell can be cast, typically based on availability of things like required reagent items; Returns 0 if spell is not found" },
 
 			Arguments =
@@ -169,6 +212,8 @@ local Spell =
 			Name = "GetSpellCharges",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating spell; May return nil if spell is not found or is not charge-based" },
 
 			Arguments =
@@ -185,6 +230,8 @@ local Spell =
 			Name = "GetSpellCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -201,6 +248,7 @@ local Spell =
 			Name = "GetSpellDescription",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -217,6 +265,7 @@ local Spell =
 			Name = "GetSpellIDForSpellIdentifier",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Meant primarily for getting a spell id from a spell name or link; Returns nothing if spell does not exist" },
 
 			Arguments =
@@ -233,6 +282,7 @@ local Spell =
 			Name = "GetSpellInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -248,6 +298,7 @@ local Spell =
 		{
 			Name = "GetSpellLevelLearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player" },
 
 			Arguments =
@@ -264,6 +315,7 @@ local Spell =
 			Name = "GetSpellLink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -281,6 +333,8 @@ local Spell =
 			Name = "GetSpellLossOfControlCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -295,9 +349,26 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellMaxCumulativeAuraApplications",
+			Type = "Function",
+			SecretWhenAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cumulativeAura", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellName",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -314,6 +385,7 @@ local Spell =
 			Name = "GetSpellPowerCost",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type this spell costs; May return nil if spell is not found or has no resource costs" },
 
 			Arguments =
@@ -339,6 +411,7 @@ local Spell =
 			Name = "GetSpellSkillLineAbilityRank",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the rank of a spell that corresponds to an ability within a ranked SkillLine (ex: a crafting Recipe); Returns nil if spell is not found, or isn't part of a ranked SkillLine" },
 
 			Arguments =
@@ -355,6 +428,7 @@ local Spell =
 			Name = "GetSpellSubtext",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not found" },
 
 			Arguments =
@@ -371,6 +445,7 @@ local Spell =
 			Name = "GetSpellTexture",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nothing if spell is not found" },
 
 			Arguments =
@@ -388,6 +463,7 @@ local Spell =
 			Name = "GetSpellTradeSkillLink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns nil if spell is not associated with a trade skill" },
 
 			Arguments =
@@ -401,8 +477,28 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetVisibilityInfo",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "visibilityType", Type = "SpellAuraVisibilityType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasCustom", Type = "bool", Nilable = false },
+				{ Name = "alwaysShowMine", Type = "bool", Nilable = false },
+				{ Name = "showForMySpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAutoAttackSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is the player's melee Auto Attack spell" },
 
 			Arguments =
@@ -418,6 +514,7 @@ local Spell =
 		{
 			Name = "IsAutoRepeatSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is an auto repeat player spell" },
 
 			Arguments =
@@ -433,6 +530,7 @@ local Spell =
 		{
 			Name = "IsClassTalentSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell comes from a Class Talent" },
 
 			Arguments =
@@ -448,6 +546,7 @@ local Spell =
 		{
 			Name = "IsCurrentSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is currently being cast or is queued to be cast" },
 
 			Arguments =
@@ -461,8 +560,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsExternalDefensive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura is considered an external defensive." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isExternalDefensive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPressHoldReleaseSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is an 'empower' type spell that is cast by pressing and holding, with the on-release cast typically being affected by time held" },
 
 			Arguments =
@@ -476,8 +592,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsPriorityAura",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura is considered high priority and should be ordered ahead of other auras in the UI." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHighPriority", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPvPTalentSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell comes from a PvP Talent" },
 
 			Arguments =
@@ -493,6 +626,7 @@ local Spell =
 		{
 			Name = "IsRangedAutoAttackSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
 
 			Arguments =
@@ -506,8 +640,41 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsSelfBuff",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an aura only applies effects to the player, and no other units." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSelfEffectsOnly", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSpellCrowdControl",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell causes a crowd control effect when cast on a valid target." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCrowdControl", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellDataCached",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if data for the spell has already been loaded and cached this session" },
 
 			Arguments =
@@ -523,6 +690,7 @@ local Spell =
 		{
 			Name = "IsSpellDisabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -537,6 +705,7 @@ local Spell =
 		{
 			Name = "IsSpellHarmful",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell can be cast on hostile targets" },
 
 			Arguments =
@@ -552,6 +721,7 @@ local Spell =
 		{
 			Name = "IsSpellHelpful",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell can be cast on the player or other friendly targets" },
 
 			Arguments =
@@ -565,8 +735,25 @@ local Spell =
 			},
 		},
 		{
+			Name = "IsSpellImportant",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is considered important. For example a spell that's lethal if not interrupted would be considered important." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isImportant", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsSpellInRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the current target is within range of the spell; False if out of range; Nil if range check was invalid" },
 
 			Arguments =
@@ -583,6 +770,7 @@ local Spell =
 		{
 			Name = "IsSpellPassive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -597,6 +785,7 @@ local Spell =
 		{
 			Name = "IsSpellUsable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns whether the spell is currently castable; Typically based on things like learned status, required resources, etc" },
 
 			Arguments =
@@ -613,6 +802,7 @@ local Spell =
 		{
 			Name = "PickupSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -622,6 +812,7 @@ local Spell =
 		{
 			Name = "RequestLoadSpellData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Requests data for the spell be loaded; Listen for SPELL_DATA_LOAD_RESULT to be notified when load is finished" },
 
 			Arguments =
@@ -632,6 +823,7 @@ local Spell =
 		{
 			Name = "SetSpellAutoCastEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -642,6 +834,7 @@ local Spell =
 		{
 			Name = "SpellHasRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns true if the spell has a min and/or max range greater than 0" },
 
 			Arguments =
@@ -684,6 +877,7 @@ local Spell =
 		{
 			Name = "ToggleSpellAutoCast",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Toggles whether spell's autoCast is enabled" },
 
 			Arguments =
@@ -699,6 +893,7 @@ local Spell =
 			Name = "EnchantSpellCompleted",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "successful", Type = "bool", Nilable = false },
@@ -709,11 +904,13 @@ local Spell =
 			Name = "EnchantSpellSelected",
 			Type = "Event",
 			LiteralName = "ENCHANT_SPELL_SELECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellDataLoadResult",
 			Type = "Event",
 			LiteralName = "SPELL_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -724,6 +921,7 @@ local Spell =
 			Name = "SpellRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Used in conjunction with EnableSpellRangeCheck to inform the UI when a spell goes in or out of range with the current target." },
 			Payload =
 			{
@@ -736,6 +934,7 @@ local Spell =
 			Name = "SpellTextUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_TEXT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -745,6 +944,7 @@ local Spell =
 			Name = "UpdateSpellTargetItemContext",
 			Type = "Event",
 			LiteralName = "UPDATE_SPELL_TARGET_ITEM_CONTEXT",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -760,6 +960,15 @@ local Spell =
 				{ Name = "priority", Type = "number", Nilable = false },
 				{ Name = "warningText", Type = "string", Nilable = false },
 				{ Name = "soundKitID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "PowerTypeChange",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},
 		{

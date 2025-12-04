@@ -9,6 +9,7 @@ local LevelLink =
 		{
 			Name = "IsActionLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local LevelLink =
 		{
 			Name = "IsSpellLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

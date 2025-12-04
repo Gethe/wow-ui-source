@@ -26,6 +26,7 @@ local Title =
 		{
 			Name = "GetTitleName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +42,7 @@ local Title =
 		{
 			Name = "IsTitleKnown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +57,7 @@ local Title =
 		{
 			Name = "SetCurrentTitle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

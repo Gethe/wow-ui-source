@@ -39,6 +39,13 @@ function ScrollBarMixin:OnLoad()
 		end
 	end
 	self:DisableControls();
+
+	-- This is a hackfix to resolve a Menu ScrollBar appearing disabled. Despite anchor chains being valid,
+	-- the Track extents are unobtainable until a subsequent frame validation pass. As soon as this becomes
+	-- available, attempt another internal layout pass.
+	self.Track:SetScript("OnSizeChanged", function(...)
+		self:Update();
+	end);
 end
 
 function ScrollBarMixin:Init(visibleExtentPercentage, panExtentPercentage)

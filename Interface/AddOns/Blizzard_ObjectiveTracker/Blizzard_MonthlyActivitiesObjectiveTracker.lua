@@ -34,9 +34,9 @@ function MonthlyActivitiesObjectiveTrackerMixin:OnEvent(event, ...)
 end
 
 function MonthlyActivitiesObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local perksActivityLink = C_PerksActivities.GetPerksActivityChatLink(block.id);
-		ChatEdit_InsertLink(perksActivityLink);
+		ChatFrameUtil.InsertLink(perksActivityLink);
 	elseif mouseButton ~= "RightButton" then
 		if not EncounterJournal then
 			EncounterJournal_LoadUI();
@@ -76,7 +76,6 @@ end
 
 function MonthlyActivitiesObjectiveTrackerMixin:LayoutContents()
 	local trackedActivities = C_PerksActivities.GetTrackedPerksActivities().trackedIDs;
-
 	for i = 1, #trackedActivities do
 		local activityID = trackedActivities[i];
 		local activityInfo = C_PerksActivities.GetPerksActivityInfo(activityID);
@@ -91,7 +90,6 @@ end
 function MonthlyActivitiesObjectiveTrackerMixin:AddActivity(activityInfo)
 	local activityName = activityInfo.activityName;
 	local requirements = activityInfo.requirementsList;
-
 	local block = self:GetBlock(activityInfo.ID);
 	block.name = activityName;
 	block:SetHeader(activityName);

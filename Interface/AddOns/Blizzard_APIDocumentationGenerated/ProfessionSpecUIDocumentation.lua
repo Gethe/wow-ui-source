@@ -9,6 +9,7 @@ local ProfessionSpecUI =
 		{
 			Name = "CanRefundPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +25,7 @@ local ProfessionSpecUI =
 		{
 			Name = "CanUnlockTab",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +41,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetChildrenForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +56,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetConfigIDForSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +71,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetCurrencyInfoForSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +95,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetDescriptionForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +110,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetDescriptionForPerk",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +125,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetEntryIDForPerk",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -141,6 +149,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetPerksForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -155,6 +164,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetRootPathForTab",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -169,6 +179,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetSourceTextForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,6 +195,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetSpecTabIDsForSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,6 +219,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetSpendCurrencyForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,6 +234,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetSpendEntryForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,6 +249,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetStateForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -250,6 +265,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetStateForPerk",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -265,6 +281,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetStateForTab",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +297,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetTabInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +312,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetUnlockEntryForPath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,6 +327,7 @@ local ProfessionSpecUI =
 		{
 			Name = "GetUnlockRankForPerk",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,6 +351,7 @@ local ProfessionSpecUI =
 		{
 			Name = "ShouldShowPointsReminderForSkillLine",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -354,6 +375,7 @@ local ProfessionSpecUI =
 		{
 			Name = "SkillLineHasSpecialization",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -373,11 +395,13 @@ local ProfessionSpecUI =
 			Name = "SkillLineSpecsRanksChanged",
 			Type = "Event",
 			LiteralName = "SKILL_LINE_SPECS_RANKS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SkillLineSpecsUnlocked",
 			Type = "Event",
 			LiteralName = "SKILL_LINE_SPECS_UNLOCKED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "skillLineID", Type = "number", Nilable = false },

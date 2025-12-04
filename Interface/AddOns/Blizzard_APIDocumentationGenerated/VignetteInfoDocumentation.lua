@@ -9,6 +9,7 @@ local VignetteInfo =
 		{
 			Name = "FindBestUniqueVignette",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local VignetteInfo =
 		{
 			Name = "GetHealthPercent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +40,7 @@ local VignetteInfo =
 			Name = "GetRecommendedGroupSize",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +56,7 @@ local VignetteInfo =
 		{
 			Name = "GetVignetteInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +72,7 @@ local VignetteInfo =
 			Name = "GetVignettePosition",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,6 +103,7 @@ local VignetteInfo =
 			Name = "VignetteMinimapUpdated",
 			Type = "Event",
 			LiteralName = "VIGNETTE_MINIMAP_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "vignetteGUID", Type = "WOWGUID", Nilable = false },
@@ -108,6 +114,7 @@ local VignetteInfo =
 			Name = "VignettesUpdated",
 			Type = "Event",
 			LiteralName = "VIGNETTES_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

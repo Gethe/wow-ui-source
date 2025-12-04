@@ -1,38 +1,42 @@
 ## Title: Blizzard_UnitFrame
 ## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UnitFrameUtil, Blizzard_CastingBar
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_TextStatusBar, Blizzard_ReadyCheck, Blizzard_UIParentPanelManager
 ## AllowLoad: Game
 ## AllowLoadGameType: mists
-Cata\PredictiveHealing.lua
-Cata\UnitPowerBarAlt.xml
-StatusBarOverlaySegment.lua
-StatusBarOverlaySegment.xml
+Classic\UnitPowerBarAlt.xml
+Shared\StatusBarOverlaySegment.lua
+Shared\StatusBarOverlaySegment.xml
+Shared\UnitFrame.lua
 Classic\UnitFrame.lua
-UnitFrame.xml
+Shared\UnitFrame.xml
+Shared\PlayerFrameTemplates.xml
+Shared\PlayerFrame.lua
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
 Wrath\AlternatePowerBar.lua
 Mists\AlternatePowerBar.xml
+Shared\PartyMemberFrame.lua
+Classic\PartyMemberFrame.lua
+Shared\PartyFrameTemplates.xml
 Classic\PartyFrameTemplates.xml
-Classic\PartyFrame.xml
+Shared\PartyFrame.xml
 Shared\TargetFrame.lua
-Wrath\TargetFrame.lua
-Cata\TargetFrame.xml
-Shared\TotemFrame.lua
+Classic\TargetFrame.lua
+Classic\TargetFrame.xml
+Classic\TotemFrame.lua
 Mists\TotemFrame.lua
-Shared\TotemFrame.xml
-Cata\PetFrame.lua
-Classic\PetFrame_Shared.lua
-Cata\PetFrame.xml
+Classic\TotemFrame.xml
+Classic\PetFrame.lua
+Classic\PetFrame.xml
 Classic\ComboFrame.lua
 Classic\ComboFrame.xml
-Wrath\CompactUnitFrame.lua
-Wrath\CompactUnitFrame.xml
-Classic\CompactRaidGroup.lua
-Classic\CompactRaidGroup.xml
-Classic\CompactPartyFrame.lua
-Classic\CompactPartyFrame.xml
+[Family]\CompactUnitFrameOptions.lua
+Shared\CompactUnitFrame.lua
+Shared\CompactUnitFrame.xml
+Shared\CompactRaidGroup.lua
+Shared\CompactRaidGroup.xml
+Shared\CompactPartyFrame.lua
+Shared\CompactPartyFrame.xml
 Classic\RuneFrame_Shared.lua
 Cata\RuneFrame.lua
 Cata\RuneFrame.xml

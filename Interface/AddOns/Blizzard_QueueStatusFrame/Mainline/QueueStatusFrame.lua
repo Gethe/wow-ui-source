@@ -310,6 +310,9 @@ function QueueStatusButtonMixin:OnClick(button)
 					return;
 				end
 			end
+
+			-- If left-click had no other action, open the context menu:
+			self:ShowContextMenu();
 		end
 	end
 end
@@ -828,8 +831,26 @@ local function QueueStatus_GetAllRelevantLFG(category, queuedList)
 	return queuedList;
 end
 
+local function GetFirstVisibleInstanceNameForLFGCategory(category)
+	local entryIDs = C_LFGInfo.GetAllEntriesForCategory(category);
+	for _index, entryID in ipairs(entryIDs) do
+		if not C_LFGInfo.HideNameFromUI(entryID) then
+			local instanceName = GetLFGDungeonInfo(entryID);
+			if instanceName then
+				return instanceName;
+			end
+		end
+	end
+end
+
 local function GetDisplayNameFromCategory(category)
 	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
+		end
+
+		-- We should be able to get the name from the LFG record, but use the brawl name as a fallback
 		local brawlInfo;
 		if (C_PvP.IsInBrawl()) then
 			brawlInfo = C_PvP.GetActiveBrawlInfo();
@@ -842,15 +863,15 @@ local function GetDisplayNameFromCategory(category)
 	end
 
 	if (category == LE_LFG_CATEGORY_SCENARIO) then
-		local scenarioIDs = C_LFGInfo.GetAllEntriesForCategory(category)
-		for i, scenID in ipairs(scenarioIDs) do
-			if (not C_LFGInfo.HideNameFromUI(scenID)) then
-				local instanceName = GetLFGDungeonInfo(scenID);
-				if(instanceName) then
-					return instanceName;
-				end
-			end
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
 		end
+	end
+
+	local overrideName = GameRulesUtil.GetOverrideLFGCategoryName(category);
+	if overrideName then
+		return overrideName;
 	end
 
 	return LFG_CATEGORY_NAMES[category];
@@ -1105,7 +1126,11 @@ function QueueStatusEntry_SetMinimalDisplay(entry, title, status, subTitle, extr
 		entry.SubTitle:Hide();
 	end
 
-	height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
+	if queuedTime then
+		height = height + AddQueuedTimeToEntry(entry, queuedTime, height);
+	else
+		entry.TimeInQueue:Hide();
+	end
 
 	if ( extraText ) then
 		entry.ExtraText:SetText(extraText);
@@ -1151,7 +1176,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
-		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
 	else
 		--Update your role icons
 		if ( isDPS ) then
@@ -1394,17 +1419,17 @@ function QueueStatusDropdown_AddLFGButtons(description, category)
 					end);
 				end
 			elseif ( IsInLFGDungeon() ) then
-				description:CreateButton(TELEPORT_OUT_OF_DUNGEON, function()
+				description:CreateButton(GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.TeleportOutText), function()
 					LFGTeleport(true);
 				end);
 			else
-				description:CreateButton(TELEPORT_TO_DUNGEON, function()
+				description:CreateButton(GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.TeleportInText), function()
 					LFGTeleport(false);
 				end);
 			end
 		end
 		if ( addExitOption ) then
-			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or INSTANCE_PARTY_LEAVE;
+			local text = (category == LE_LFG_CATEGORY_WORLDPVP) and LEAVE_BATTLEGROUND or GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.LeaveText);
 
 			if C_PartyInfo.IsPartyWalkIn() then
 				text = INSTANCE_WALK_IN_LEAVE;

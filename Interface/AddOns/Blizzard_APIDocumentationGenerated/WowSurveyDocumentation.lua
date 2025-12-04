@@ -14,6 +14,7 @@ local WowSurvey =
 		{
 			Name = "TriggerSurveyServe",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +29,7 @@ local WowSurvey =
 			Name = "SurveyDelivered",
 			Type = "Event",
 			LiteralName = "SURVEY_DELIVERED",
+			SynchronousEvent = true,
 		},
 	},
 

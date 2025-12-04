@@ -28,6 +28,7 @@ function AdventureMapQuestChoiceDialogMixin:ShowWithQuest(parent, anchorRegion, 
 	self.onClosedCallback = onClosedCallback;
 
 	self:ClearAllPoints();
+	self.anchorRegion = anchorRegion;
 	self:SetPoint("CENTER", anchorRegion);
 
 	if newQuest then
@@ -56,16 +57,21 @@ function AdventureMapQuestChoiceDialogMixin:OnEvent(event, ...)
 		if questID == self.questID then
 			self:Refresh();
 		end
+	elseif event == "QUEST_LOG_UPDATE" then
+		-- unfortunately have to use generic event to update in case of rewards being loaded async
+		self:Refresh();
 	end
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnShow()
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
+	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:Refresh();
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnHide()
 	self:UnregisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
+	self:UnregisterEvent("QUEST_LOG_UPDATE");
 
 	self:Finalize();
 end
@@ -168,11 +174,53 @@ function AdventureMapQuestChoiceDialogMixin:AddReward(label, texture, overlayTex
 	return nil;
 end
 
-local MAX_DETAILS_HEIGHT = 304;
+-- There are 2 versions of the frame because the background can't be tiled or stretched too much.
+local HEIGHT_SHORT = 380;
+local HEIGHT_LONG = 456;				-- used when both rewards and widgets are present
+local HEIGHT_UNUSABLE_SPACE = 78;		-- the art includes the border plus empty space above & below
+local WIDGET_VERTICAL_ADJUSTMENT = -16;	-- adjustment when calculating widget height
+local REWARDS_VERTICAL_ADJUSTMENT = 8;	-- adjustment when calculating rewards height
+
 function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 	local questTitle, descriptionText, objectiveText = C_AdventureMap.GetQuestInfo(self.questID);
 	if descriptionText then
-		self.Details:SetHeight(MAX_DETAILS_HEIGHT - self.rewardsHeight);
+		local widgetSetID = C_TaskQuest.GetQuestUIWidgetSetByType(self.questID, Enum.MapIconUIWidgetSetType.AdventureMapDetails);
+		if widgetSetID then
+			if not self.widgetContainer then
+				self.widgetContainer = CreateFrame("FRAME", nil, self, "UIWidgetContainerTemplate");
+				self.widgetContainer.verticalAnchorPoint = "TOP";
+				self.widgetContainer.verticalRelativePoint = "BOTTOM";
+				self.widgetContainer.showAndHideOnWidgetSetRegistration = false;
+			end
+			self.widgetContainer:RegisterForWidgetSet(widgetSetID);
+		elseif self.widgetContainer then
+			self.widgetContainer:UnregisterForWidgetSet();
+		end
+
+		local frameHeight;
+		local hasWidgets = self.widgetContainer and self.widgetContainer.numWidgetsShowing and self.widgetContainer.numWidgetsShowing > 0;
+		local hasRewards = self.Rewards:IsShown();
+		if hasWidgets and hasRewards then
+			frameHeight = HEIGHT_LONG;
+			self.widgetContainer:SetPoint("BOTTOM", self.RewardsHeader, "TOP", 0, 12);
+			self.Background:SetAtlas("AdventureMapQuest-QuestPane-9sliced", TextureKitConstants.UseAtlasSize);
+		else
+			frameHeight = HEIGHT_SHORT;
+			if hasWidgets then
+				self.widgetContainer:SetPoint("BOTTOM", 0, 36);
+			end
+			self.Background:SetAtlas("AdventureMapQuest-QuestPane", TextureKitConstants.UseAtlasSize);
+		end
+
+		self:SetHeight(frameHeight);
+		local detailsHeight = frameHeight - HEIGHT_UNUSABLE_SPACE;
+		if hasWidgets then
+			detailsHeight = detailsHeight - self.widgetContainer:GetHeight() + WIDGET_VERTICAL_ADJUSTMENT;
+		end
+		if hasRewards then
+			detailsHeight = detailsHeight - self.rewardsHeight + REWARDS_VERTICAL_ADJUSTMENT;
+		end
+		self.Details:SetHeight(detailsHeight);
 
 		self.Details.Child.TitleHeader:SetText(questTitle);
 		self.Details.Child.DescriptionText:SetText(descriptionText);
@@ -185,7 +233,18 @@ function AdventureMapQuestChoiceDialogMixin:RefreshDetails()
 		self.Details.Child:SetHeight(height);
 
 		self.Details:Show();
+
+		local portraitInfo = C_AdventureMap.GetQuestPortraitInfo(self.questID);
+		if portraitInfo and portraitInfo.portraitDisplayID ~= 0 then
+			QuestFrame_ShowQuestPortrait(self, portraitInfo.portraitDisplayID, portraitInfo.mountPortraitDisplayID, portraitInfo.modelSceneID, portraitInfo.text, portraitInfo.name, -0, -27, true);
+			local xOffset = QuestModelScene:GetWidth() / 2;
+			self:SetPoint("CENTER", self.anchorRegion, -xOffset , 0);
+		else
+			QuestFrame_HideQuestPortrait();
+			self:SetPoint("CENTER", self.anchorRegion, 0, 0);
+		end
 	else
+		QuestFrame_HideQuestPortrait();
 		self.Details:Hide();
 	end
 end
@@ -204,3 +263,4 @@ function AdventureMapQuestChoiceDialogMixin:DeclineQuest(abstain)
 	end
 	AdventureMapQuestChoiceDialog:Hide();
 end
+

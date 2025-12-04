@@ -105,7 +105,7 @@ end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	-- Leaving this as a surgical fix for timerunning for now.
-	local hideZoneAbilities = PlayerIsTimerunning() and HasVehicleActionBar();
+	local hideZoneAbilities = PlayerIsTimerunning() and C_ActionBar.HasVehicleActionBar();
 
 	local zoneAbilities = hideZoneAbilities and {} or GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
@@ -314,7 +314,7 @@ end
 
 function ZoneAbilityFrameSpellButtonMixin:GetOverrideSpellID()
 	local spellID = self:GetSpellID();
-	return FindSpellOverrideByID(spellID) or spellID;
+	return C_SpellBook.FindSpellOverrideByID(spellID) or spellID;
 end
 
 function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)

@@ -14,6 +14,7 @@ local UIAction =
 			Name = "HandleUIAction",
 			Type = "Event",
 			LiteralName = "HANDLE_UI_ACTION",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "actionType", Type = "UIActionType", Nilable = false },

@@ -22,6 +22,7 @@ local SimpleAnimTextureCoordTranslationAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

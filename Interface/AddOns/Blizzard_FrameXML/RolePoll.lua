@@ -97,16 +97,16 @@ function RoleChangedFrame_OnEvent(self, event, ...)
 		
 		if ( newRole == "NONE" ) then
 			if ( changed == from ) then
-				ChatFrame_DisplaySystemMessageInPrimary(format(ROLE_REMOVED_INFORM, changed));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(format(ROLE_REMOVED_INFORM, changed));
 			else
-				ChatFrame_DisplaySystemMessageInPrimary(format(ROLE_REMOVED_INFORM_WITH_SOURCE, changed, from));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(format(ROLE_REMOVED_INFORM_WITH_SOURCE, changed, from));
 			end
 		else
 			local displayedRole = _G["INLINE_"..newRole.."_ICON"].." ".._G[newRole];	--Uses INLINE_TANK_ICON, etc.
 			if ( changed == from ) then
-				ChatFrame_DisplaySystemMessageInPrimary(format(ROLE_CHANGED_INFORM, changed, displayedRole));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(format(ROLE_CHANGED_INFORM, changed, displayedRole));
 			else
-				ChatFrame_DisplaySystemMessageInPrimary(format(ROLE_CHANGED_INFORM_WITH_SOURCE, changed, displayedRole, from));
+				ChatFrameUtil.DisplaySystemMessageInPrimary(format(ROLE_CHANGED_INFORM_WITH_SOURCE, changed, displayedRole, from));
 			end
 		end
 	end

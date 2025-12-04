@@ -15,7 +15,7 @@ local l10nTable = {
 	itIT = {},
 	koKR = {
 		localizeFrames = function()
-			ChatEdit_LanguageShow();
+			ChatFrameUtil.SetIMEShown(true);
 		end,
 	},
 	ptBR = {},
@@ -24,13 +24,13 @@ local l10nTable = {
 	zhCN = {
 		localizeFrames = function()
 			LocalizeCombatConfig_zh();
-			ChatEdit_LanguageShow();
+			ChatFrameUtil.SetIMEShown(true);
 		end,
 	},
 	zhTW = {
         localizeFrames = function()
 			LocalizeCombatConfig_zh();
-			ChatEdit_LanguageShow();
+			ChatFrameUtil.SetIMEShown(true);
         end,
     },
 };

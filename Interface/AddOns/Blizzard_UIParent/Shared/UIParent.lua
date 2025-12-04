@@ -43,6 +43,44 @@ function UIParent_Shared_OnEvent(self, event, ...)
 	end
 end
 
+--Aubrie TODO.. Convert these into horizontal layout frames? It's fine for now tho..
+function UIParent_UpdateTopFramePositions()
+	local yOffset = 0;
+	local xOffset = -230;
+
+	local statusFrames = {};
+	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
+		table.insert(statusFrames, GMChatStatusFrame);
+	end
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
+	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
+		table.insert(statusFrames, BehavioralMessagingTray);
+	end
+	if WowSurveyStatusFrame and WowSurveyStatusFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyStatusFrame);
+	end
+
+	local buffOffset = 0;
+	for i, frame in ipairs(statusFrames) do
+		frame:ClearAllPoints();
+		if i == 1 then
+			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
+		else
+			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
+		end
+
+		buffOffset = math.max(buffOffset, frame:GetHeight());
+	end
+
+	if BuffFrame:IsInDefaultPosition() then
+		local anchor = EditModeManagerFrame:GetDefaultAnchor(BuffFrame);
+		BuffFrame:ClearAllPoints();
+		BuffFrame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.offsetX, anchor.offsetY - buffOffset);
+	end
+end
+
 function OpenAchievementFrameToAchievement(achievementID)
 	if ( not AchievementFrame ) then
 		AchievementFrame_LoadUI();
@@ -76,23 +114,6 @@ function ReverseQuestObjective(text, objectiveType)
 	else
 		return text;
   end
-end
-
--- Note: Numeric abbreviation data is presently defined in game-specific files.
-NUMBER_ABBREVIATION_DATA = {};
-
-function GetLocalizedNumberAbbreviationData()
-	return NUMBER_ABBREVIATION_DATA;
-end
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(GetLocalizedNumberAbbreviationData()) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
 end
 
 UIParentManagedFrameMixin = { };
@@ -730,6 +751,18 @@ function IsLFGModeActive(category)
 	return false;
 end
 
+function ShouldShowArenaParty()
+	return IsActiveBattlefieldArena() and not C_PvP.IsInBrawl();
+end
+
+function ShouldShowPartyFrames()
+	return ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
+end
+
+function ShouldShowRaidFrames()
+	return not ShouldShowArenaParty() and IsInRaid() or EditModeManagerFrame:AreRaidFramesForcedShown();
+end
+
 --Like date(), but localizes AM/PM. In the future, could also localize other stuff.
 function BetterDate(formatString, timeVal)
 	local dateTable = date("*t", timeVal);
@@ -768,17 +801,10 @@ function TrialAccountCapReached_Inform(capType)
 	displayedCapMessage = true;
 end
 
-function AbbreviateLargeNumbers(value)
-	local strLen = strlen(value);
-	local retString = value;
-	if ( strLen > 8 ) then
-		retString = string.sub(value, 1, -7)..SECOND_NUMBER_CAP;
-	elseif ( strLen > 5 ) then
-		retString = string.sub(value, 1, -4)..FIRST_NUMBER_CAP;
-	elseif (strLen > 3 ) then
-		retString = BreakUpLargeNumbers(value);
-	end
-	return retString;
+function IsLevelAtEffectiveMaxLevel(level)
+	-- Timerunners levels can go above the purchased max level to the max current expansion level
+	local maxLevel = GameRulesUtil.GetEffectiveMaxLevelForPlayer();
+	return level >= maxLevel;
 end
 
 function ConfirmOrLeaveLFGParty()

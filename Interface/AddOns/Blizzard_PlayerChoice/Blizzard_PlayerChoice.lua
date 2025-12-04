@@ -75,6 +75,11 @@ local customTextureKitInfo = {
 		closeButtonY = -9,
 	},
 
+	midnight = {
+		closeButtonX = -11,
+		closeButtonY = -11,
+	},
+
 	-- Texture Kits below here use custom templates 
 
 	-- Oribos is a special texture kit type, used for the covenant choice UI in Shadowlands
@@ -262,6 +267,10 @@ function PlayerChoiceFrameMixin:OnSelectionMade()
 end
 
 function PlayerChoiceFrameMixin:OnCloseUIFromExitButton()
+	if self.choiceInfo.requiresSelection then
+		return;
+	end
+
 	if self.textureKitInfo.exitButtonSoundKit then
 		PlaySound(self.textureKitInfo.exitButtonSoundKit);
 	end
@@ -287,7 +296,7 @@ local borderFrameTextureKitRegion = "UI-Frame-%s-Border";
 
 function PlayerChoiceFrameMixin:SetupFrame()
 	local showExtraFrames = not self.textureKitInfo.showOptionsOnly;
-	self.CloseButton:SetShown(showExtraFrames);
+	self.CloseButton:SetShown(showExtraFrames and not self.choiceInfo.requiresSelection);
 	self.Header:SetShown(showExtraFrames);
 	self.Title:SetShown(showExtraFrames);
 	self.Background:SetShown(showExtraFrames);

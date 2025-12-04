@@ -110,15 +110,18 @@ end
 local talkingHeadTextureKitRegionFormatStrings = {
 	["TextBackground"] = "%s-TextBackground",
 	["Portrait"] = "%s-PortraitFrame",
+	["PortraitBg"] = "%s-PortraitBg"
 }
 local talkingHeadDefaultAtlases = {
 	["TextBackground"] = "TalkingHeads-TextBackground",
 	["Portrait"] = "TalkingHeads-Alliance-PortraitFrame",
+	["PortraitBg"] = "TalkingHeads-PortraitBg",
 }
 local talkingHeadFontColor = {
 	["TalkingHeads-Horde"] = {Name = CreateColor(0.28, 0.02, 0.02), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
 	["TalkingHeads-Alliance"] = {Name = CreateColor(0.02, 0.17, 0.33), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
 	["TalkingHeads-Neutral"] = {Name = CreateColor(0.33, 0.16, 0.02), Text = CreateColor(0.0, 0.0, 0.0), Shadow = CreateColor(0.0, 0.0, 0.0, 0.0)},
+	["TalkingHeads-Housing"] = {Name = CreateColor(1, 0.82, 0.02), Text = CreateColor(1, 1, 1), Shadow = CreateColor(0.0, 0.0, 0.0, 1.0)},
 	["Normal"] = {Name = CreateColor(1, 0.82, 0.02), Text = CreateColor(1, 1, 1), Shadow = CreateColor(0.0, 0.0, 0.0, 1.0)},
 }
 
@@ -148,6 +151,14 @@ function TalkingHeadFrameMixin:PlayCurrent()
 			SetupAtlasesOnRegions(self.PortraitFrame, talkingHeadDefaultAtlases, true);
 			textureKit = "Normal";
 		end
+
+		-- This is an optional texture on the Talking Head texture kits
+		if textureKit ~= "Normal" and C_Texture.GetAtlasExists(string.format(talkingHeadTextureKitRegionFormatStrings["PortraitBg"], textureKit)) then
+			SetupTextureKitOnRegions(textureKit, self.MainFrame.Model, talkingHeadTextureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+		else
+			SetupAtlasesOnRegions(self.MainFrame.Model, talkingHeadDefaultAtlases, true);
+		end
+
 		local nameColor = talkingHeadFontColor[textureKit].Name;
 		local textColor = talkingHeadFontColor[textureKit].Text;
 		local shadowColor = talkingHeadFontColor[textureKit].Shadow;
@@ -223,7 +234,7 @@ function TalkingHeadFrameMixin:Close()
 		self:FadeoutFrames();
 		self.finishTimer = nil;
 	end
-
+	
 	self.voHandle = nil;
 end
 

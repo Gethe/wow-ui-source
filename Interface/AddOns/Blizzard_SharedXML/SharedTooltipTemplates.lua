@@ -11,7 +11,7 @@ function SharedTooltip_OnLoad(self)
 	local style = nil;
 	local isEmbedded = false;
 	SharedTooltip_SetBackdropStyle(self, style, isEmbedded);
-	self:SetClampRectInsets(0, 0, 15, 0);
+	self:SetClampRectInsets(0, 0, 25, 0);
 
 	SetupTextFont(self.TextLeft1, self.textLeft1Font);
 	SetupTextFont(self.TextRight1, self.textRight1Font);

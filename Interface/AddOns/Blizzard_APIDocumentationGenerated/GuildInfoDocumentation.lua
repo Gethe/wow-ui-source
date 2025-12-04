@@ -45,6 +45,7 @@ local GuildInfo =
 		{
 			Name = "Demote",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +60,7 @@ local GuildInfo =
 			Name = "GetGuildNewsInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +75,7 @@ local GuildInfo =
 		{
 			Name = "GetGuildRankOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +90,7 @@ local GuildInfo =
 		{
 			Name = "GetGuildTabardInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +105,7 @@ local GuildInfo =
 		{
 			Name = "GuildControlGetRankFlags",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +124,7 @@ local GuildInfo =
 		{
 			Name = "Invite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,6 +152,7 @@ local GuildInfo =
 		{
 			Name = "IsGuildRankAssignmentAllowed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +181,7 @@ local GuildInfo =
 		{
 			Name = "MemberExistsByName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -188,6 +196,7 @@ local GuildInfo =
 		{
 			Name = "Promote",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -197,6 +206,7 @@ local GuildInfo =
 		{
 			Name = "QueryGuildMemberRecipes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,6 +218,7 @@ local GuildInfo =
 			Name = "QueryGuildMembersForRecipe",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +236,7 @@ local GuildInfo =
 			Name = "RemoveFromGuild",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,6 +247,7 @@ local GuildInfo =
 			Name = "RequestGuildRename",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,6 +262,7 @@ local GuildInfo =
 		{
 			Name = "RequestRenameNameCheck",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -268,6 +282,7 @@ local GuildInfo =
 			Name = "SetGuildRankOrder",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -278,6 +293,7 @@ local GuildInfo =
 		{
 			Name = "SetLeader",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,6 +303,7 @@ local GuildInfo =
 		{
 			Name = "SetMOTD",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -297,6 +314,7 @@ local GuildInfo =
 			Name = "SetNote",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,6 +326,7 @@ local GuildInfo =
 		{
 			Name = "Uninvite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,21 +341,25 @@ local GuildInfo =
 			Name = "CloseTabardFrame",
 			Type = "Event",
 			LiteralName = "CLOSE_TABARD_FRAME",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DisableDeclineGuildInvite",
 			Type = "Event",
 			LiteralName = "DISABLE_DECLINE_GUILD_INVITE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EnableDeclineGuildInvite",
 			Type = "Event",
 			LiteralName = "ENABLE_DECLINE_GUILD_INVITE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildChallengeCompleted",
 			Type = "Event",
 			LiteralName = "GUILD_CHALLENGE_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "challengeType", Type = "number", Nilable = false },
@@ -349,21 +372,25 @@ local GuildInfo =
 			Name = "GuildChallengeUpdated",
 			Type = "Event",
 			LiteralName = "GUILD_CHALLENGE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildEventLogUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_EVENT_LOG_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildInviteCancel",
 			Type = "Event",
 			LiteralName = "GUILD_INVITE_CANCEL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildInviteRequest",
 			Type = "Event",
 			LiteralName = "GUILD_INVITE_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inviter", Type = "cstring", Nilable = false },
@@ -378,6 +405,7 @@ local GuildInfo =
 			Name = "GuildMotd",
 			Type = "Event",
 			LiteralName = "GUILD_MOTD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "motdText", Type = "cstring", Nilable = false },
@@ -387,11 +415,13 @@ local GuildInfo =
 			Name = "GuildNewsUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_NEWS_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "GuildPartyStateUpdated",
 			Type = "Event",
 			LiteralName = "GUILD_PARTY_STATE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inGuildParty", Type = "bool", Nilable = false },
@@ -401,26 +431,31 @@ local GuildInfo =
 			Name = "GuildRanksUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_RANKS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildRecipeKnownByMembers",
 			Type = "Event",
 			LiteralName = "GUILD_RECIPE_KNOWN_BY_MEMBERS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildRegistrarClosed",
 			Type = "Event",
 			LiteralName = "GUILD_REGISTRAR_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildRegistrarShow",
 			Type = "Event",
 			LiteralName = "GUILD_REGISTRAR_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildRenameNameCheck",
 			Type = "Event",
 			LiteralName = "GUILD_RENAME_NAME_CHECK",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "desiredName", Type = "cstring", Nilable = false },
@@ -432,6 +467,7 @@ local GuildInfo =
 			Name = "GuildRenameRefundResult",
 			Type = "Event",
 			LiteralName = "GUILD_RENAME_REFUND_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guildName", Type = "cstring", Nilable = false },
@@ -442,6 +478,7 @@ local GuildInfo =
 			Name = "GuildRenameRequired",
 			Type = "Event",
 			LiteralName = "GUILD_RENAME_REQUIRED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "flagSet", Type = "bool", Nilable = false },
@@ -451,6 +488,7 @@ local GuildInfo =
 			Name = "GuildRenameStatusUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_RENAME_STATUS_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "status", Type = "GuildRenameStatus", Nilable = false },
@@ -460,16 +498,19 @@ local GuildInfo =
 			Name = "GuildRewardsList",
 			Type = "Event",
 			LiteralName = "GUILD_REWARDS_LIST",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildRewardsListUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_REWARDS_LIST_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "GuildRosterUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_ROSTER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "canRequestRosterUpdate", Type = "bool", Nilable = false },
@@ -479,30 +520,35 @@ local GuildInfo =
 			Name = "GuildTradeskillUpdate",
 			Type = "Event",
 			LiteralName = "GUILD_TRADESKILL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GuildtabardUpdate",
 			Type = "Event",
 			LiteralName = "GUILDTABARD_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "OpenTabardFrame",
 			Type = "Event",
 			LiteralName = "OPEN_TABARD_FRAME",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerGuildUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_GUILD_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "RequestedGuildRenameResult",
 			Type = "Event",
 			LiteralName = "REQUESTED_GUILD_RENAME_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newName", Type = "cstring", Nilable = false },
@@ -513,6 +559,7 @@ local GuildInfo =
 			Name = "RequiredGuildRenameResult",
 			Type = "Event",
 			LiteralName = "REQUIRED_GUILD_RENAME_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -522,16 +569,19 @@ local GuildInfo =
 			Name = "TabardCansaveChanged",
 			Type = "Event",
 			LiteralName = "TABARD_CANSAVE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TabardSavePending",
 			Type = "Event",
 			LiteralName = "TABARD_SAVE_PENDING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UnitGuildLevel",
 			Type = "Event",
 			LiteralName = "UNIT_GUILD_LEVEL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newLevel", Type = "number", Nilable = false },

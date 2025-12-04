@@ -27,7 +27,7 @@ function UpdateUIElementsForClientScene(sceneType)
 		PlayerFrame:Hide();
 		TargetFrame:Hide();
 	else
-		PlayerFrame:SetShown(true);
+		PlayerFrame:SetShown(not C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerFrameDisabled));
 		TargetFrame:Update();
 	end
 end
@@ -300,9 +300,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CLIENT_SCENE_OPENED");
 	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 
-	-- Event(s) for returning player prompts
-	self:RegisterEvent("RETURNING_PLAYER_PROMPT");
-
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
@@ -469,10 +466,11 @@ function EncounterJournal_LoadUI()
 end
 
 function CollectionsJournal_LoadUI()
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
-		return;
-	end
 	UIParentLoadAddOn("Blizzard_Collections");
+end
+
+function Transmog_LoadUI()
+	UIParentLoadAddOn("Blizzard_Transmog");
 end
 
 function BlackMarket_LoadUI()
@@ -518,6 +516,7 @@ end
 function WeeklyRewards_LoadUI()
 	UIParentLoadAddOn("Blizzard_WeeklyRewards");
 end
+
 
 function WeeklyRewards_ShowUI()
 	if not WeeklyRewardsFrame then
@@ -606,6 +605,14 @@ function RemixArtifactUI_LoadUI()
 	RemixArtifactTutorialControllerFrame:RegisterForRemixArtifactFrameEvents();
 end
 
+function OutfitterUI_LoadUI()
+	UIParentLoadAddOn("Blizzard_OutfitterUI");
+end
+
+function WoWHackSpellsUI_LoadUI()
+	UIParentLoadAddOn("Blizzard_WoWHackSpellsUI");
+end
+
 function SubscriptionInterstitial_LoadUI()
 	C_AddOns.LoadAddOn("Blizzard_SubscriptionInterstitialUI");
 end
@@ -630,6 +637,10 @@ function ShowMacroFrame()
 
 	local macrosDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.MacrosDisabled);
 	if macrosDisabled then
+		return;
+	end
+
+	if (Kiosk.IsEnabled()) then
 		return;
 	end
 
@@ -1036,6 +1047,14 @@ function ToggleProfessionsBook()
 	ToggleFrame(ProfessionsBookFrame);
 end
 
+function ToggleWoWHackCharacterUI()
+	if not WoWHackCharacterUI then
+		UIParentLoadAddOn("Blizzard_WoWHackCharacterUI");
+	end
+
+	ToggleFrame(WoWHackCharacterUI);
+end
+
 
 function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
@@ -1281,8 +1300,8 @@ function UIParent_OnEvent(self, event, ...)
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
 				GetGMLink(lastTalkedToGM, "["..lastTalkedToGM.."]")), info.r, info.g, info.b, info.id);
-			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
-			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
+			GMChatFrameEditBox:SetTellTarget(lastTalkedToGM);
+			GMChatFrameEditBox:SetChatType("WHISPER");
 		end
 
 		NPETutorial_AttemptToBegin(event);
@@ -1485,6 +1504,8 @@ function UIParent_OnEvent(self, event, ...)
 		-- SHOW_MULTI_ACTIONBAR_1, SHOW_MULTI_ACTIONBAR_2, SHOW_MULTI_ACTIONBAR_3, SHOW_MULTI_ACTIONBAR_4 = GetActionBarToggles();
 		MultiActionBar_Update();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		local isInitialLogin, isUIReload = arg1, arg2;
+
 		-- Close any windows that were previously open
 		CloseAllWindows(1);
 
@@ -1575,11 +1596,7 @@ function UIParent_OnEvent(self, event, ...)
 
 		if Kiosk.IsEnabled() then
 			C_AddOns.LoadAddOn("Blizzard_Kiosk");
-
-			local isInitialLogin, isUIReload = arg1, arg2;
-			if isInitialLogin and not isUIReload then
-				KioskSessionStartedDialog:Show();
-			end
+			KioskFrame:HandlePlayerEnteringWorld(isInitialLogin, isUIReload);
 		end
 
 		if IsTrialAccount() or IsVeteranTrialAccount() then
@@ -1590,6 +1607,10 @@ function UIParent_OnEvent(self, event, ...)
 
 		if PlayerIsTimerunning() then
 			RemixArtifactTutorialUI_LoadUI();
+		end
+
+		if C_Housing.IsInsideHouseOrPlot() then
+			C_AddOns.LoadAddOn("Blizzard_HousingControls");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "PVP_BRAWL_INFO_UPDATED" ) then
 		PlayBattlefieldBanner(self);
@@ -1830,7 +1851,7 @@ function UIParent_OnEvent(self, event, ...)
 		StaticPopup_Show("AUCTION_HOUSE_DISABLED");
 	elseif ( event == "AUCTION_HOUSE_SHOW_NOTIFICATION" or event == "AUCTION_HOUSE_SHOW_FORMATTED_NOTIFICATION" ) then
 		local auctionHouseNotification, formatArg = ...;
-		Chat_AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
+		ChatFrameUtil.AddSystemMessage(ChatFrameUtil.GetAuctionHouseNotificationText(auctionHouseNotification, formatArg));
 
 	-- Events for trade skill UI handling
 	elseif ( event == "TRADE_SKILL_SHOW" ) then
@@ -1957,14 +1978,14 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "DAILY_RESET_INSTANCE_WELCOME" ) then
 		local instanceName = arg1;
 		local resetTime = arg2;
-		message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
+		local message = format(DAILY_RESET_INSTANCE_WELCOME, instanceName, SecondsToTime(resetTime, nil, 1));
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 
 	elseif ( event == "INSTANCE_RESET_WARNING" ) then
 		local warningString = arg1;
 		local resetTime = arg2;
-		message = format(warningString, SecondsToTime(resetTime, nil, 1));
+		local message = format(warningString, SecondsToTime(resetTime, nil, 1));
 		local info = ChatTypeInfo["SYSTEM"];
 		DEFAULT_CHAT_FRAME:AddMessage(message, info.r, info.g, info.b, info.id);
 
@@ -1982,10 +2003,13 @@ function UIParent_OnEvent(self, event, ...)
 	elseif ( event == "WOW_MOUSE_NOT_FOUND" ) then
 		StaticPopup_Show("WOW_MOUSE_NOT_FOUND");
 	elseif ( event == "TALENTS_INVOLUNTARILY_RESET" ) then
-		if ( arg1 ) then
-			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
-		else
-			StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+		if not C_PlayerInfo.IsReturningCharacter() then
+			local isForPet = arg1;
+			if isForPet then
+				StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET_PET");
+			else
+				StaticPopup_Show("TALENTS_INVOLUNTARILY_RESET");
+			end
 		end
 	elseif (event == "SPEC_INVOLUNTARILY_CHANGED" ) then
 		StaticPopup_Show("SPEC_INVOLUNTARILY_CHANGED")
@@ -2202,15 +2226,7 @@ function UIParent_OnEvent(self, event, ...)
 		ShowUIPanel(RuneforgeFrame);
 	elseif (event == "TRAIT_SYSTEM_INTERACTION_STARTED") then
 		local traitTreeID = ...;
-		--! TODO Getting companionID either from season data or player data has not been implemented yet. When done, pass companionID to this function
-		if traitTreeID == C_DelvesUI.GetTraitTreeForCompanion() then
-			ShowUIPanel(DelvesCompanionConfigurationFrame);
-		else
-			GenericTraitUI_LoadUI();
-
-			GenericTraitFrame:SetTreeID(traitTreeID);
-			ShowUIPanel(GenericTraitFrame);
-		end
+		TraitUtil.OpenTraitFrame(traitTreeID);
 	elseif ( event == "REMIX_ARTIFACT_UPDATE") then
 		if not RemixArtifactFrame then
 			RemixArtifactUI_LoadUI();
@@ -2244,15 +2260,13 @@ function UIParent_OnEvent(self, event, ...)
 		GameTooltip_ShowEventHyperlink(hyperlink);
 	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
 		GameTooltip_HideEventHyperlink();
-	elseif (event == "RETURNING_PLAYER_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
-	elseif (event == "LEAVER_PENALTY_WARNING_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
 			if(not currentTarget) then
-				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+				if (previousTarget) then
+					PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_NOT_AVAILABLE);
+				end
 			elseif(previousTarget ~= currentTarget) then
 				PlaySound(SOUNDKIT.UI_SOFT_TARGET_INTERACT_AVAILABLE);
 			end
@@ -2279,45 +2293,7 @@ function UIParent_OnEvent(self, event, ...)
 		ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 	elseif event == "REMIX_END_OF_EVENT" then
 		StaticPopup_Show("REMIX_END_OF_EVENT_NOTICE");
-	end
-end
-
---Aubrie TODO.. Convert these into horizontal layout frames? It's fine for now tho..
-function UIParent_UpdateTopFramePositions()
-	local yOffset = 0;
-	local xOffset = -230;
-
-	local statusFrames = {};
-	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
-		table.insert(statusFrames, GMChatStatusFrame);
-	end
-	if TicketStatusFrame and TicketStatusFrame:IsShown() then
-		table.insert(statusFrames, TicketStatusFrame);
-	end
-	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
-		table.insert(statusFrames, BehavioralMessagingTray);
-	end
-	if WowSurveyStatusFrame and WowSurveyStatusFrame:IsShown() then
-		table.insert(statusFrames, WowSurveyStatusFrame);
-	end
-
-	local buffOffset = 0;
-	for i, frame in ipairs(statusFrames) do
-		frame:ClearAllPoints();
-		if i == 1 then
-			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
-		else
-			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
-		end
-
-		buffOffset = math.max(buffOffset, frame:GetHeight());
-	end
-
-	if BuffFrame:IsInDefaultPosition() then
-		local anchor = EditModeManagerFrame:GetDefaultAnchor(BuffFrame);
-		BuffFrame:ClearAllPoints();
-		BuffFrame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.offsetX, anchor.offsetY - buffOffset);
-	end
+    end
 end
 
 -- Function that handles the escape key functions
@@ -2334,6 +2310,11 @@ function ToggleGameMenu()
 		else
 			SetGamePadCursorControl(true);
 		end
+	elseif ( SimpleCheckoutInboundInterface and SimpleCheckoutInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopTopUpFlowInboundInterface and CatalogShopTopUpFlowInboundInterface.EscapePressed() ) then
+	elseif ( CatalogShopRefundFlowInboundInterface and CatalogShopRefundFlowInboundInterface.EscapePressed() ) then
+	elseif HouseEditorFrame and HouseEditorFrame:IsShown() then
+		HouseEditorFrame:HandleEscape();
 	elseif ( not UIParent:IsShown() ) then
 		UIParent:Show();
 		SetUIVisibility(true);
@@ -2341,8 +2322,8 @@ function ToggleGameMenu()
 		Commentator:SetFrameLock(false);
 	elseif ( ModelPreviewFrame:IsShown() ) then
 		ModelPreviewFrame:Hide();
-	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then
 	elseif ( CatalogShopInboundInterface.EscapePressed and CatalogShopInboundInterface.EscapePressed() ) then
+	elseif ( StoreFrame_EscapePressed and StoreFrame_EscapePressed() ) then -- to be removed
 	elseif ( WowTokenRedemptionFrame_EscapePressed and WowTokenRedemptionFrame_EscapePressed() ) then
 	elseif ( securecall("StaticPopup_EscapePressed") ) then
 	elseif ( GameMenuFrame:IsShown() ) then
@@ -2383,6 +2364,8 @@ function ToggleGameMenu()
 	elseif ( SoulbindViewer and SoulbindViewer:HandleEscape()) then
 	elseif ( ProfessionsFrame and ProfessionsFrame:IsShown() ) then
 		ProfessionsFrame:CheckConfirmClose();
+	-- When a PlayerChoice is flagged as requiresSelection we don't want ESC to close the frame
+	elseif ( PlayerChoiceFrame and PlayerChoiceFrame:IsShown() and PlayerChoiceFrame.choiceInfo and PlayerChoiceFrame.choiceInfo.requiresSelection) then
 	elseif ( securecall("CloseAllWindows") ) then
 	elseif ( CovenantPreviewFrame and CovenantPreviewFrame:IsShown()) then
 		CovenantPreviewFrame:HandleEscape();
@@ -2597,119 +2580,6 @@ function CreatePendingInviteConfirmationText_GetWarnings(invite, name, guid, rol
 	return table.concat(warnings, "\n");
 end
 
-function RefreshBuffs(frame, unit, numBuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
-
-	frame.hasDispellable = nil;
-
-	numBuffs = numBuffs or MAX_PARTY_BUFFS;
-	suffix = suffix or "Buff";
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-
-	local filter = ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showCastableBuffs") and UnitCanAssist("player", unit) ) and "HELPFUL|RAID" or "HELPFUL";
-	local numFrames = 0;
-	AuraUtil.ForEachAura(unit, filter, numBuffs, function(...)
-		local name, icon, count, debuffType, duration, expirationTime = ...;
-
-		-- if we have an icon to show then proceed with setting up the aura
-		if ( icon ) then
-			numFrames = numFrames + 1;
-			local buffName = frameName..suffix..numFrames;
-
-			-- set the icon
-			local buffIcon = _G[buffName.."Icon"];
-			buffIcon:SetTexture(icon);
-
-			-- setup the cooldown
-			local coolDown = _G[buffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
-
-			-- show the aura
-			_G[buffName]:Show();
-		end
-		return numFrames >= numBuffs;
-	end);
-
-	for i=numFrames + 1,numBuffs do
-		local buffName = frameName..suffix..i;
-		local buffFrame = _G[buffName];
-		if buffFrame then
-			buffFrame:Hide();
-		else
-			break;
-		end
-	end
-end
-
-function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
-	local frameName = frame:GetName();
-	suffix = suffix or "Debuff";
-	local frameNameWithSuffix = frameName..suffix;
-
-	frame.hasDispellable = nil;
-
-	numDebuffs = numDebuffs or MAX_PARTY_DEBUFFS;
-
-	local unitStatus, statusColor;
-	local debuffTotal = 0;
-	local isEnemy = UnitCanAttack("player", unit);
-
-	local filter = ( checkCVar and CVarCallbackRegistry:GetCVarValueBool("showDispelDebuffs") and UnitCanAssist("player", unit) ) and "HARMFUL|RAID" or "HARMFUL";
-
-	if strsub(unit, 1, 5) == "party" then
-		unitStatus = _G[frameName.."Status"];
-	end
-	AuraUtil.ForEachAura(unit, filter, numDebuffs, function(...)
-		local name, icon, count, debuffType, duration, expirationTime, caster = ...;
-
-		if ( icon and ( SHOW_CASTABLE_DEBUFFS == "0" or not isEnemy or caster == "player" ) ) then
-			debuffTotal = debuffTotal + 1;
-			local debuffName = frameNameWithSuffix..debuffTotal;
-			-- if we have an icon to show then proceed with setting up the aura
-
-			-- set the icon
-			local debuffIcon = _G[debuffName.."Icon"];
-			debuffIcon:SetTexture(icon);
-
-			-- setup the border
-			local debuffBorder = _G[debuffName.."Border"];
-			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
-			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
-
-			-- record interesting data for the aura button
-			statusColor = debuffColor;
-			frame.hasDispellable = 1;
-
-			-- setup the cooldown
-			local coolDown = _G[debuffName.."Cooldown"];
-			if ( coolDown ) then
-				CooldownFrame_Set(coolDown, expirationTime - duration, duration, true);
-			end
-
-			-- show the aura
-			_G[debuffName]:Show();
-		end
-		return debuffTotal >= numDebuffs;
-	end);
-
-	for i=debuffTotal+1,numDebuffs do
-		local debuffName = frameNameWithSuffix..i;
-		_G[debuffName]:Hide();
-	end
-
-	frame.debuffTotal = debuffTotal;
-	-- Reset unitStatus overlay graphic timer
-	if ( frame.numDebuffs and debuffTotal >= frame.numDebuffs ) then
-		frame.debuffCountdown = 30;
-	end
-	if ( unitStatus and statusColor ) then
-		unitStatus:SetVertexColor(statusColor.r, statusColor.g, statusColor.b);
-	end
-end
 
 -- New Color API
 -- This function is intended to be used with C++ wrapped functions that return the difficulty of content instead
@@ -2805,43 +2675,6 @@ function LFD_IsEmpowered()
 	return false;
 end
 
-function ShouldShowArenaParty()
-	return IsActiveBattlefieldArena() and not C_PvP.IsInBrawl();
-end
-
-function ShouldShowPartyFrames()
-	return ShouldShowArenaParty() or (IsInGroup() and not IsInRaid()) or EditModeManagerFrame:ArePartyFramesForcedShown();
-end
-
-function ShouldShowRaidFrames()
-	return not ShouldShowArenaParty() and IsInRaid() or EditModeManagerFrame:AreRaidFramesForcedShown();
-end
-
-NUMBER_ABBREVIATION_DATA = {
-	-- Order these from largest to smallest.
-	--
-	-- significandDivisor and fractionDivisor should multiply such that they
-	-- become equal to a named order of magnitude, such as thousands or
-	-- millions.
-	--
-	-- Breakpoints should generally be specified as pairs, with one at the
-	-- named order (1,000) with fractionDivisor = 10, and one a single order
-	-- higher (eg. 10,000) with fractionDivisor = 1.
-	--
-	-- This ruleset means numbers like "1234" will be abbreviated to "1.2k"
-	-- and numbers like "12345" to "12k".
-	--
-	-- Note that this table may be overridden in Localization!
-
-	{ breakpoint = 10000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000000000,	abbreviation = FOURTH_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000000,	fractionDivisor = 10 },
-	{ breakpoint = 10000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000000,		abbreviation = THIRD_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000000,		fractionDivisor = 10 },
-	{ breakpoint = 10000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000000,		fractionDivisor = 1 },
-	{ breakpoint = 1000000,			abbreviation = SECOND_NUMBER_CAP_NO_SPACE,		significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 1000,			fractionDivisor = 1 },
-	{ breakpoint = 1000,			abbreviation = FIRST_NUMBER_CAP_NO_SPACE,		significandDivisor = 100,			fractionDivisor = 10 },
-};
 
 function IsInLFDBattlefield()
 	return IsLFGModeActive(LE_LFG_CATEGORY_BATTLEFIELD);
@@ -2851,7 +2684,8 @@ function LeaveInstanceParty()
 	if ( IsInLFDBattlefield() ) then
 		local currentMapID, _, lfgID = select(8, GetInstanceInfo());
 		local _, typeID, subtypeID, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, lfgMapID = GetLFGDungeonInfo(lfgID);
-		if currentMapID == lfgMapID and subtypeID == LE_LFG_CATEGORY_BATTLEFIELD then
+		local subtypeUsesLFGTeleport = (subtypeID == LFG_SUBTYPEID_BATTLEFIELD) or (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS);
+		if currentMapID == lfgMapID and subtypeUsesLFGTeleport then
 			LFGTeleport(true);
 			return;
 		end
@@ -2969,10 +2803,6 @@ function GetDisplayedInviteType(guid)
 			return "INVITE";
 		end
 	end
-end
-
-function IsLevelAtEffectiveMaxLevel(level)
-	return level >= GetMaxLevelForPlayerExpansion();
 end
 
 local INTERFACE_ACTION_BLOCKED_COUNT = 0;

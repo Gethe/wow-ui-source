@@ -19,6 +19,7 @@ local Instance =
 		{
 			Name = "CanMapChangeDifficulty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +43,7 @@ local Instance =
 		{
 			Name = "GetDifficultyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +62,7 @@ local Instance =
 				{ Name = "isLFR", Type = "bool", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = true },
 				{ Name = "maxPlayers", Type = "number", Nilable = true },
+				{ Name = "isUserSelectable", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -113,6 +116,7 @@ local Instance =
 		{
 			Name = "GetInstanceLockTimeRemainingEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +162,7 @@ local Instance =
 		{
 			Name = "IsLegacyDifficulty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -176,6 +181,7 @@ local Instance =
 		{
 			Name = "SetDungeonDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,6 +191,7 @@ local Instance =
 		{
 			Name = "SetLegacyRaidDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +202,7 @@ local Instance =
 		{
 			Name = "SetRaidDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +233,7 @@ local Instance =
 				{ Name = "isLFR", Type = "bool", Nilable = false },
 				{ Name = "minPlayers", Type = "number", Nilable = true },
 				{ Name = "maxPlayers", Type = "number", Nilable = true },
+				{ Name = "isUserSelectable", Type = "bool", Nilable = false },
 			},
 		},
 		{

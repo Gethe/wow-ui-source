@@ -9,6 +9,7 @@ local PingManager =
 		{
 			Name = "GetContextualPingTypeForUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +42,7 @@ local PingManager =
 		{
 			Name = "GetTextureKitForType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,9 +55,19 @@ local PingManager =
 			},
 		},
 		{
+			Name = "IsPingSystemEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SendMacroPing",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +79,7 @@ local PingManager =
 			Name = "TogglePingListener",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +94,7 @@ local PingManager =
 			Name = "PingSystemError",
 			Type = "Event",
 			LiteralName = "PING_SYSTEM_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "error", Type = "cstring", Nilable = false },

@@ -137,6 +137,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorAlpha",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -146,6 +147,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorAlphaTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -155,6 +157,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorAlphaThumbTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +167,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorHSV",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -175,6 +179,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorRGB",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -186,6 +191,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorValueTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +201,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorValueThumbTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,6 +211,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorWheelTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +221,7 @@ local SimpleColorSelectAPI =
 		{
 			Name = "SetColorWheelThumbTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

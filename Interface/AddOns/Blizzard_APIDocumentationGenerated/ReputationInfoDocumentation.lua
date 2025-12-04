@@ -22,6 +22,7 @@ local ReputationInfo =
 		{
 			Name = "CollapseFactionHeader",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +36,7 @@ local ReputationInfo =
 		{
 			Name = "ExpandFactionHeader",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +46,7 @@ local ReputationInfo =
 		{
 			Name = "GetFactionDataByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +61,7 @@ local ReputationInfo =
 		{
 			Name = "GetFactionDataByIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +77,7 @@ local ReputationInfo =
 			Name = "GetFactionParagonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +91,7 @@ local ReputationInfo =
 				{ Name = "rewardQuestID", Type = "number", Nilable = false },
 				{ Name = "hasRewardPending", Type = "bool", Nilable = false },
 				{ Name = "tooLowLevelForParagon", Type = "bool", Nilable = false },
+				{ Name = "paragonStorageLevel", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -145,6 +151,7 @@ local ReputationInfo =
 		{
 			Name = "IsAccountWideReputation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +166,7 @@ local ReputationInfo =
 		{
 			Name = "IsFactionActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +181,7 @@ local ReputationInfo =
 		{
 			Name = "IsFactionParagon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,12 +190,28 @@ local ReputationInfo =
 
 			Returns =
 			{
-				{ Name = "hasParagon", Type = "bool", Nilable = false },
+				{ Name = "factionIsParagon", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsFactionParagonForCurrentPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "currentPlayerHasParagon", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "IsMajorFaction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,6 +226,7 @@ local ReputationInfo =
 		{
 			Name = "RequestFactionParagonPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,6 +236,7 @@ local ReputationInfo =
 		{
 			Name = "SetFactionActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,6 +247,7 @@ local ReputationInfo =
 		{
 			Name = "SetLegacyReputationsShown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -229,6 +257,7 @@ local ReputationInfo =
 		{
 			Name = "SetReputationSortType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +267,7 @@ local ReputationInfo =
 		{
 			Name = "SetSelectedFaction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +277,7 @@ local ReputationInfo =
 		{
 			Name = "SetWatchedFactionByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -256,6 +287,7 @@ local ReputationInfo =
 		{
 			Name = "SetWatchedFactionByIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -265,6 +297,7 @@ local ReputationInfo =
 		{
 			Name = "ToggleFactionAtWar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -275,6 +308,17 @@ local ReputationInfo =
 
 	Events =
 	{
+		{
+			Name = "FactionStandingChanged",
+			Type = "Event",
+			LiteralName = "FACTION_STANDING_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
+				{ Name = "updatedStanding", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Tables =

@@ -19,8 +19,24 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "GetInterpolatedValue",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
+			Documentation = { "Returns the current interpolated value displayed by the bar." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinMaxValues",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
 
 			Arguments =
 			{
@@ -116,6 +132,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetValue",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.BarValue },
 
 			Arguments =
 			{
@@ -124,6 +141,20 @@ local SimpleStatusBarAPI =
 			Returns =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "IsInterpolating",
+			Type = "Function",
+			Documentation = { "Returns true if the status bar is currently interpolating toward a target value." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isInterpolating", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -142,6 +173,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetColorFill",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +186,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetFillStyle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,16 +196,20 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetMinMaxValues",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.BarValue },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
 				{ Name = "minValue", Type = "number", Nilable = false },
 				{ Name = "maxValue", Type = "number", Nilable = false },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
 			},
 		},
 		{
 			Name = "SetOrientation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +219,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetReverseFill",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,6 +229,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetRotatesTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +239,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +252,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturated",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -221,6 +262,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarDesaturation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -230,6 +272,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "SetStatusBarTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -242,12 +285,24 @@ local SimpleStatusBarAPI =
 			},
 		},
 		{
+			Name = "SetToTargetValue",
+			Type = "Function",
+			Documentation = { "Immediately finishes any interpolation of the bar and snaps it to the target value." },
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "SetValue",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.BarValue },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
 				{ Name = "value", Type = "number", Nilable = false },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
 			},
 		},
 	},

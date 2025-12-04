@@ -74,6 +74,19 @@ local LFG_STRING_FROM_ENUM = {
 	[Enum.LFGRole.Damage] = "DAMAGER",
 };
 
+local function GetGeneralPlaystyleString(enumValue)
+	if enumValue == Enum.LFGEntryGeneralPlaystyle.Learning then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE1;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunRelaxed then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE2;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunSerious then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE3;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.Expert then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE4;
+	end
+	return "";
+end
+
 function GetLFGStringFromEnum(role)
 	local stringName = LFG_STRING_FROM_ENUM[role];
 	
@@ -84,7 +97,6 @@ function GetLFGStringFromEnum(role)
 
 	return _G[stringName];
 end
-	
 
 --Fill out classes
 for i=1, #CLASS_SORT_ORDER do
@@ -235,7 +247,7 @@ function LFGListFrame_OnEvent(self, event, ...)
 		local searchResultID, newStatus, oldStatus, kstringGroupName = ...;
 		local chatMessage = LFGListFrame_GetChatMessageForSearchStatusChange(newStatus);
 		if ( chatMessage ) then
-			ChatFrame_DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(chatMessage:format(kstringGroupName));
 		end
 
 		if IsDeclined(newStatus) then
@@ -760,7 +772,8 @@ function LFGListEntryCreation_OnLoad(self)
 	end);
 
 	self.ActivityDropdown:SetWidth(138);
-	self.PlayStyleDropdown:SetWidth(144);
+
+	self.PlayStyleDropdown:SetDefaultText(DISABLED_FONT_COLOR:WrapTextInColorCode(GROUP_FINDER_PLAYSTYLE_REQUIRED));
 
 	LFGListEntryCreation_SetBaseFilters(self, 0);
 end
@@ -912,36 +925,21 @@ function LFGListEntryCreation_SetupActivityDropdown(self)
 end
 
 function LFGListEntryCreation_SetupPlayStyleDropdown(self)
-	local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
-	local categoryInfo = C_LFGList.GetLfgCategoryInfo(self.selectedCategory);
-	local shouldShowPlayStyleDropdown = categoryInfo.showPlaystyleDropdown and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity or activityInfo.isMythicActivity);
-	self.PlayStyleDropdown:SetShown(shouldShowPlayStyleDropdown);
-	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
-	
-	local function IsSelected(playstyle)
-		return self.selectedPlaystyle == playstyle;
+	local function IsSelected(generalPlaystyle)
+		return self.generalPlaystyle == generalPlaystyle;
 	end
 	
-	local function SetSelected(playstyle)
-		LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle);
+	local function SetSelected(generalPlaystyle)
+		LFGListEntryCreation_OnPlayStyleSelectedInternal(self, generalPlaystyle);
 	end
 
-	local function CreateRadio(rootDescription, activityInfo, playstyle)
-		local text = C_LFGList.GetPlaystyleString(playstyle, activityInfo);
-		rootDescription:CreateRadio(text, IsSelected, SetSelected, playstyle);
-	end
-
-	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
 	self.PlayStyleDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_LFG_FRAME_GROUP_PLAYSTYLE");
 
-		if(not self.selectedActivity or not self.selectedCategory) then
-			return;
-		end
-		local activityInfo = C_LFGList.GetActivityInfoTable(self.selectedActivity);
-		CreateRadio(rootDescription, activityInfo, Enum.LFGEntryPlaystyle.Standard);
-		CreateRadio(rootDescription, activityInfo, Enum.LFGEntryPlaystyle.Casual);
-		CreateRadio(rootDescription, activityInfo, Enum.LFGEntryPlaystyle.Hardcore);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.Learning), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.Learning);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.FunRelaxed), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.FunRelaxed);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.FunSerious), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.FunSerious);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.Expert), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.Expert);
 	end);
 end
 
@@ -970,7 +968,6 @@ function LFGListEntryCreation_Show(self, baseFilters, selectedCategory, selected
 		LFGListEntryCreation_Clear(self);
 		LFGListEntryCreation_Select(self, selectedFilters, selectedCategory);
 	end
-	LFGListEntryCreation_OnPlayStyleSelected(self, Enum.LFGEntryPlaystyle.Standard);
 	LFGListEntryCreation_SetEditMode(self, false);
 
 	LFGListEntryCreation_UpdateValidState(self);
@@ -989,6 +986,7 @@ function LFGListEntryCreation_Clear(self)
 	self.selectedFilters = nil;
 	self.selectedCategory = nil;
 	self.selectedPlaystyle = nil;
+	self.generalPlaystyle = Enum.LFGEntryGeneralPlaystyle.None;
 
 	--Reset widgets
 	C_LFGList.ClearCreationTextFields();
@@ -1046,19 +1044,9 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	self.GroupDropdown:SetShown(not categoryInfo.autoChooseActivity);
 	self.GroupDropdown:GenerateMenu();
 
-	local shouldShowPlayStyleDropdown = (categoryInfo.showPlaystyleDropdown) and (activityInfo.isMythicPlusActivity or activityInfo.isRatedPvpActivity or activityInfo.isCurrentRaidActivity or activityInfo.isMythicActivity);
 	local shouldShowCrossFactionToggle = (categoryInfo.allowCrossFaction);
 	local shouldDisableCrossFactionToggle = (categoryInfo.allowCrossFaction) and not (activityInfo.allowCrossFaction);
-	if(shouldShowPlayStyleDropdown) then
-		LFGListEntryCreation_OnPlayStyleSelected(self, self.selectedPlaystyle or Enum.LFGEntryPlaystyle.Standard);
-	end
 
-	self.PlayStyleDropdown:SetShown(shouldShowPlayStyleDropdown);
-	self.PlayStyleLabel:SetShown(shouldShowPlayStyleDropdown);
-
-	if(not shouldShowPlayStyleDropdown)  then
-		self.selectedPlaystyle = nil
-	end
 	local _, localizedFaction = UnitFactionGroup("player");
 	self.CrossFactionGroup.Label:SetText(LFG_LIST_CROSS_FACTION:format(localizedFaction));
 	self.CrossFactionGroup.tooltip = LFG_LIST_CROSS_FACTION_TOOLTIP:format(localizedFaction);
@@ -1101,12 +1089,9 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 	elseif (self.PVPRating:IsShown()) then
 		self.ItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
 		self.PvpItemLevel:SetPoint("TOPLEFT", self.PVPRating, "BOTTOMLEFT", 0, -3);
-	elseif(self.PlayStyleDropdown:IsShown()) then
-		self.ItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -1, -15);
-		self.PvpItemLevel:SetPoint("TOPLEFT", self.PlayStyleLabel, "BOTTOMLEFT", -1, -15);
 	else
-		self.ItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -6, -19);
-		self.PvpItemLevel:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", -6, -19);
+		self.ItemLevel:SetPoint("TOPLEFT", self.PlayStyleDropdown, "BOTTOMLEFT", -1, -15);
+		self.PvpItemLevel:SetPoint("TOPLEFT", self.PlayStyleDropdown, "BOTTOMLEFT", -1, -15);
 	end
 	if(self.ItemLevel:IsShown()) then
 		LFGListRequirement_Validate(self.ItemLevel, self.ItemLevel.EditBox:GetText());
@@ -1114,44 +1099,26 @@ function LFGListEntryCreation_Select(self, filters, categoryID, groupID, activit
 		LFGListRequirement_Validate(self.PvpItemLevel, self.PvpItemLevel.EditBox:GetText());
 	end
 
-	LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo);
 	LFGListEntryCreation_UpdateValidState(self);
 	LFGListEntryCreation_SetTitleFromActivityInfo(self);
 end
 
-function LFGListEntryCreation_SetPlaystyleLabelTextFromActivityInfo(self, activityInfo)
-	if(not activityInfo) then
-		return;
-	end
-	local labelText;
-	if(activityInfo.isRatedPvpActivity) then
-		labelText = LFG_PLAYSTYLE_LABEL_PVP
-	elseif (activityInfo.isMythicPlusActivity) then
-		labelText = LFG_PLAYSTYLE_LABEL_PVE;
-	else
-		labelText = LFG_PLAYSTYLE_LABEL_PVE_MYTHICZERO;
-	end
-	self.PlayStyleLabel:SetText(labelText);
-end
-
-function LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle)
-	local previousPlaystyle = self.selectedPlaystyle;
-	self.selectedPlaystyle = playstyle;
-	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, previousPlaystyle)) then
+function LFGListEntryCreation_OnPlayStyleSelectedInternal(self, generalPlaystyle)
+	local previousPlaystyle = self.generalPlaystyle;
+	self.generalPlaystyle = generalPlaystyle;
+	local legacyLFGEntryPlaystyle = Enum.LFGEntryPlaystyle.None;
+	if(C_LFGList.DoesEntryTitleMatchPrebuiltTitle(self.selectedActivity, self.selectedGroup, legacyLFGEntryPlaystyle, previousPlaystyle)) then
 		LFGListEntryCreation_SetTitleFromActivityInfo(self);
 	end
-end
 
-function LFGListEntryCreation_OnPlayStyleSelected(self, playstyle)
-	LFGListEntryCreation_OnPlayStyleSelectedInternal(self, playstyle);
-	self.PlayStyleDropdown:GenerateMenu();
+	LFGListEntryCreation_UpdateValidState(self);
 end
 
 function LFGListEntryCreation_GetSanitizedName(self)
 	return string.match(self.Name:GetText(), "^%s*(.-)%s*$");
 end
 
-function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction)
+function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, generalPlaystyle, isCrossFaction)
 	-- Arguments struct.
 	local createData = {
 		activityIDs = { activityID },
@@ -1159,7 +1126,8 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 		isAutoAccept = autoAccept,
 		isCrossFactionListing = isCrossFaction,
 		isPrivateGroup = privateGroup,
-		playstyle = selectedPlaystyle,
+		playstyle = Enum.LFGEntryPlaystyle.None,
+		generalPlaystyle = generalPlaystyle,
 		requiredDungeonScore = mythicPlusRating,
 		requiredItemLevel = itemLevel,
 		requiredPvpRating = pvpRating,
@@ -1207,9 +1175,9 @@ function LFGListEntryCreation_ListGroup(self)
 	local autoAccept = false;
 	local privateGroup = self.PrivateGroup.CheckButton:GetChecked();
 	local isCrossFaction =  self.CrossFactionGroup:IsShown() and not self.CrossFactionGroup.CheckButton:GetChecked();
-	local selectedPlaystyle = self.PlayStyleDropdown:IsShown() and self.selectedPlaystyle or nil;
+	local generalPlaystyle = self.generalPlaystyle;
 
-	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, autoAccept, privateGroup, 0, mythicPlusRating, pvpRating, selectedPlaystyle, isCrossFaction);
+	LFGListEntryCreation_ListGroupInternal(self, self.selectedActivity, itemLevel, autoAccept, privateGroup, 0, mythicPlusRating, pvpRating, generalPlaystyle, isCrossFaction);
 end
 
 function LFGListEntryCreation_SetAutoCreateDataInternal(self, activityType, activityID, contextID)
@@ -1277,6 +1245,8 @@ function LFGListEntryCreation_UpdateValidState(self)
 	local mythicPlusDisableActivity = not C_LFGList.IsPlayerAuthenticatedForLFG(activityInfo.categoryID) and (activityInfo.isMythicPlusActivity and not C_LFGList.GetKeystoneForActivity(self.selectedActivity));
 	if ( maxNumPlayers > 0 and GetNumGroupMembers(LE_PARTY_CATEGORY_HOME) >= maxNumPlayers ) then
 		errorText = string.format(LFG_LIST_TOO_MANY_FOR_ACTIVITY, maxNumPlayers);
+	elseif (self.generalPlaystyle == Enum.LFGEntryPlaystyle.None) then
+		errorText = GROUP_FINDER_PLAYSTYLE_REQUIRED;
 	elseif (mythicPlusDisableActivity) then
 		errorText = LFG_AUTHENTICATOR_BUTTON_MYTHIC_PLUS_TOOLTIP;
 	elseif ( LFGListEntryCreation_GetSanitizedName(self) == "" ) then
@@ -1334,7 +1304,7 @@ function LFGListEntryCreation_SetTitleFromActivityInfo(self)
 	local activityID = activeEntryInfo and activeEntryInfo.activityIDs[1] or (self.selectedActivity or 0);
 	local activityInfo =  C_LFGList.GetActivityInfoTable(activityID);
 	if((activityInfo and activityInfo.isMythicPlusActivity) or not C_LFGList.IsPlayerAuthenticatedForLFG(self.selectedCategory)) then
-		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle);
+		C_LFGList.SetEntryTitle(self.selectedActivity, self.selectedGroup, self.selectedPlaystyle, self.generalPlaystyle);
 	end
 end
 
@@ -1375,9 +1345,7 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 		self.PVPRating.EditBox:SetText(activeEntryInfo.requiredPvpRating or "" )
 		self.PrivateGroup.CheckButton:SetChecked(activeEntryInfo.privateGroup);
 		self.CrossFactionGroup.CheckButton:SetChecked(not activeEntryInfo.isCrossFactionListing);
-		if(self.PlayStyleDropdown:IsShown()) then
-			LFGListEntryCreation_OnPlayStyleSelected(self, activeEntryInfo.playstyle);
-		end
+		LFGListEntryCreation_OnPlayStyleSelectedInternal(self, activeEntryInfo.generalPlaystyle);
 
 		self.ListGroupButton:SetText(DONE_EDITING);
 	else
@@ -2046,7 +2014,7 @@ function LFGListApplicantMember_OnMouseDown(self)
 		rootDescription:CreateTitle(name or "");
 
 		local whisperButton = rootDescription:CreateButton(WHISPER, function()
-			ChatFrame_SendTell(name);
+			ChatFrameUtil.SendTell(name);
 		end);
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_PLAYER, function()
@@ -2341,10 +2309,19 @@ local function LFGListAdvancedFiltersDifficultyAllChecked(enabled)
 	return enabled.difficultyNormal and enabled.difficultyHeroic and enabled.difficultyMythic and enabled.difficultyMythicPlus;
 end
 
---for activities and difficulties, none checked and all checked are equivalent. Although visually we want to show all checked as the default.
+local function LFGListAdvancedFiltersGeneralPlaystyleNoneChecked(enabled)
+	return not (enabled.generalPlaystyle1 or enabled.generalPlaystyle2 or enabled.generalPlaystyle3 or enabled.generalPlaystyle4);
+end
+
+local function LFGListAdvancedFiltersGeneralPlaystyleAllChecked(enabled)
+	return enabled.generalPlaystyle1 and enabled.generalPlaystyle2 and enabled.generalPlaystyle3 and enabled.generalPlaystyle4;
+end
+
+--for activities, difficulties and general playstyle, none checked and all checked are equivalent. Although visually we want to show all checked as the default.
 local function LFGListAdvancedFiltersIsDefault(enabled)
 	return (LFGListAdvancedFiltersActivitiesNoneChecked(enabled) or LFGListAdvancedFiltersActivitiesAllChecked(enabled))
 		and (LFGListAdvancedFiltersDifficultyNoneChecked(enabled) or LFGListAdvancedFiltersDifficultyAllChecked(enabled))
+		and (LFGListAdvancedFiltersGeneralPlaystyleNoneChecked(enabled) or LFGListAdvancedFiltersGeneralPlaystyleAllChecked(enabled))
 		and not (enabled.needsTank or enabled.needsHealer or enabled.needsDamage or enabled.needsMyClass or enabled.hasTank or enabled.hasHealer 
 				or (enabled.minimumRating ~= 0));
 end
@@ -2354,6 +2331,13 @@ local function LFGListAdvancedFiltersCheckAllDifficulties(enabled)
 	enabled.difficultyHeroic = true;
 	enabled.difficultyMythic = true;
 	enabled.difficultyMythicPlus = true;
+end
+
+local function LFGListAdvancedFiltersCheckAllGeneralPlaystyles(enabled)
+	enabled.generalPlaystyle1 = true;
+	enabled.generalPlaystyle2 = true;
+	enabled.generalPlaystyle3 = true;
+	enabled.generalPlaystyle4 = true;
 end
 
 local function LFGListAdvancedFiltersCheckAllDungeons(enabled)
@@ -2428,9 +2412,28 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 		AddEntry(LFG_LIST_HAS_HEALER, "hasHealer");
 
 		rootDescription:CreateSpacer();
-		rootDescription:CreateTitle(DUNGEONS);
 
 		do
+			local displayedActivityIds = {};
+
+			local dungeonDescription = rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(DUNGEONS));
+			dungeonDescription:CreateButton(CHECK_ALL, function()
+				activitySet = {};
+				for _, activityId in pairs(displayedActivityIds) do
+					activitySet[activityId] = true;
+				end
+				ActivitiesSetToList();
+				C_LFGList.SaveAdvancedFilter(enabled); 
+				return MenuResponse.Refresh;
+			end);
+
+			dungeonDescription:CreateButton(UNCHECK_ALL, function()
+				activitySet = {};
+				ActivitiesSetToList();
+				C_LFGList.SaveAdvancedFilter(enabled); 
+				return MenuResponse.Refresh;
+			end);
+
 			local function IsGroupSelected(activityId)
 				return activitySet[activityId];
 			end
@@ -2450,12 +2453,14 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 				for _, activityId in ipairs(groups) do
 					local name = C_LFGList.GetActivityGroupInfo(activityId);
 					if name then
+						table.insert(displayedActivityIds, activityId);
+
 						if noneChecked then
 							table.insert(enabled.activities, activityId);
 							activitySet[activityId] = true;
 						end
 
-						rootDescription:CreateCheckbox(name, IsGroupSelected, SetGroupSelected, activityId);
+						dungeonDescription:CreateCheckbox(name, IsGroupSelected, SetGroupSelected, activityId);
 					end
 				end
 			end
@@ -2464,14 +2469,14 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 			AddGroup(seasonGroups);
 
 			if not TableIsEmpty(seasonGroups) then
-				rootDescription:CreateSpacer();
+				dungeonDescription:QueueSpacer();
 			end
 
 			local expansionGroups = C_LFGList.GetAvailableActivityGroups(GROUP_FINDER_CATEGORY_ID_DUNGEONS, bit.bor(Enum.LFGListFilter.CurrentExpansion, Enum.LFGListFilter.NotCurrentSeason, Enum.LFGListFilter.PvE));
 			AddGroup(expansionGroups);
 
 			if not TableIsEmpty(expansionGroups) then
-				rootDescription:CreateSpacer();
+				dungeonDescription:QueueSpacer();
 			end
 
 			if PlayerIsTimerunning() then
@@ -2515,6 +2520,15 @@ local function LFGListSearchPanel_SetupAdvancedFilter(dropdown, rootDescription)
 		AddEntry(PLAYER_DIFFICULTY2, "difficultyHeroic", noneChecked);
 		AddEntry(PLAYER_DIFFICULTY6, "difficultyMythic", noneChecked);
 		AddEntry(PLAYER_DIFFICULTY_MYTHIC_PLUS, "difficultyMythicPlus", noneChecked);
+
+		rootDescription:CreateSpacer();
+		rootDescription:CreateTitle(GROUP_FINDER_FILTER_PLAYSTYLE);
+
+		noneChecked = LFGListAdvancedFiltersGeneralPlaystyleNoneChecked(enabled);
+		AddEntry(GROUP_FINDER_GENERAL_PLAYSTYLE1, "generalPlaystyle1", noneChecked);
+		AddEntry(GROUP_FINDER_GENERAL_PLAYSTYLE2, "generalPlaystyle2", noneChecked);
+		AddEntry(GROUP_FINDER_GENERAL_PLAYSTYLE3, "generalPlaystyle3", noneChecked);
+		AddEntry(GROUP_FINDER_GENERAL_PLAYSTYLE4, "generalPlaystyle4", noneChecked);
 	end
 
 	if LFGListCanChangeLanguages() then
@@ -2579,6 +2593,7 @@ function LFGListSearchPanel_OnShow(self)
 		enabled.hasHealer = false;
 		enabled.minimumRating = 0;
 		enabled.activities = {};
+		LFGListAdvancedFiltersCheckAllGeneralPlaystyles(enabled);
 		LFGListAdvancedFiltersCheckAllDifficulties(enabled);
 		LFGListAdvancedFiltersCheckAllDungeons(enabled);
 		C_LFGList.SaveAdvancedFilter(enabled); 
@@ -3052,6 +3067,14 @@ local function EntryStillSatisfiesFilters(enabled, displayData, searchResultInfo
 			return false;
 		end
 	end
+	if not LFGListAdvancedFiltersGeneralPlaystyleNoneChecked(enabled) then
+		if ((searchResultInfo.generalPlaystyle == Enum.LFGEntryGeneralPlaystyle.Learning) and not enabled.generalPlaystyle1)
+			or ((searchResultInfo.generalPlaystyle == Enum.LFGEntryGeneralPlaystyle.FunRelaxed) and not enabled.generalPlaystyle2)
+			or ((searchResultInfo.generalPlaystyle == Enum.LFGEntryGeneralPlaystyle.FunSerious) and not enabled.generalPlaystyle3)
+			or ((searchResultInfo.generalPlaystyle == Enum.LFGEntryGeneralPlaystyle.Expert) and not enabled.generalPlaystyle4) then
+			return false;
+		end
+	end
 
 	return true;
 end
@@ -3197,6 +3220,8 @@ function LFGListSearchEntry_Update(self)
 	self.VoiceChat:SetShown(searchResultInfo.voiceChat ~= "");
 	self.VoiceChat.tooltip = searchResultInfo.voiceChat;
 
+	self.Playstyle:SetText(GetGeneralPlaystyleString(searchResultInfo.generalPlaystyle));
+
 	local showClassesByRole = LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS
 	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityIDs[1], displayData, searchResultInfo.isDelisted, showClassesByRole);
 
@@ -3250,7 +3275,7 @@ function LFGListSearchEntry_CreateContextMenu(self)
 		rootDescription:CreateTitle(searchResultInfo.name);
 
 		local whisperButton = rootDescription:CreateButton(WHISPER_LEADER, function()
-			ChatFrame_SendTell(searchResultInfo.leaderName);
+			ChatFrameUtil.SendTell(searchResultInfo.leaderName);
 		end);
 
 		if not searchResultInfo.leaderName then
@@ -4150,6 +4175,7 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 			isCrossFactionListing = activeEntryInfo.isCrossFaction,
 			isPrivateGroup = activeEntryInfo.privateGroup,
 			playstyle = activeEntryInfo.playstyle,
+			generalPlaystyle = activeEntryInfo.generalPlaystyle,
 			requiredDungeonScore = activeEntryInfo.requiredDungeonScore,
 			requiredItemLevel = activeEntryInfo.requiredItemLevel,
 			requiredPvpRating = activeEntryInfo.requiredPvpRating,
@@ -4167,17 +4193,17 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	local allowsCrossFaction = (categoryInfo and categoryInfo.allowCrossFaction) and (activityInfo and activityInfo.allowCrossFaction);
 
 	local memberCounts = C_LFGList.GetSearchResultMemberCounts(resultID);
-	tooltip:SetText(searchResultInfo.name, 1, 1, 1, true);
+	tooltip:SetText(searchResultInfo.name, 1, 1, 1, 1, true);
 	tooltip:AddLine(activityInfo.fullName);
 
-	if (searchResultInfo.playstyle and searchResultInfo.playstyle > 0) then
-		local playstyleString = C_LFGList.GetPlaystyleString(searchResultInfo.playstyle, activityInfo);
-		if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
-			GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
-		else
-			GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR);
-		end
-	elseif(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
+	local playstyleString = C_LFGList.GetPlaystyleString(Enum.LFGEntryPlaystyle.None, searchResultInfo.generalPlaystyle, activityInfo);
+	if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
+		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITH_PLAYSTLE:format(playstyleString,  FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
+	else
+		GameTooltip_AddColoredLine(tooltip, playstyleString, GREEN_FONT_COLOR);
+	end
+
+	if(not searchResultInfo.crossFactionListing and allowsCrossFaction) then
 		GameTooltip_AddColoredLine(tooltip, GROUP_FINDER_CROSS_FACTION_LISTING_WITHOUT_PLAYSTLE:format(FACTION_STRINGS[searchResultInfo.leaderFactionGroup]), GREEN_FONT_COLOR);
 	end
 	if ( searchResultInfo.comment and searchResultInfo.comment == "" and searchResultInfo.questID ) then
@@ -4280,7 +4306,8 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 			if memberInfo.isLeaver then
 				leaverString = " "..CreateAtlasMarkup("groupfinder-icon-leaver", 12, 12, 0, 0);
 			end
-			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, memberInfo.specLocalized)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
+			local specName = memberInfo.specLocalized or "";
+			tooltip:AddLine(roleIcon.." "..string.format(LFG_LIST_TOOLTIP_CLASS_ROLE, memberInfo.classLocalized, specName)..leaderString..leaverString, classColor.r, classColor.g, classColor.b);
 		end
 	else
 		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_MEMBERS, searchResultInfo.numMembers, memberCounts.TANK, memberCounts.HEALER, memberCounts.DAMAGER));
@@ -4439,6 +4466,9 @@ function LFGEditBoxMixin:AddToTabCategory(tabCategory, editBox)
 end
 
 function LFGEditBoxMixin:OnLoad()
+	-- Replace the inherited indentation
+	self.Instructions:SetAllPoints();
+
 	if ( self.tabCategory ) then
 		self:AddToTabCategory(self.tabCategory);
 	end

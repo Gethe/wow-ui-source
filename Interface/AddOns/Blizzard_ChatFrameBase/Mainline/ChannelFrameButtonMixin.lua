@@ -1,6 +1,10 @@
 ChannelFrameButtonMixin = {};
 
 function ToggleChannelFrame()
+	if (Kiosk.IsEnabled()) then
+		return;
+	end
+
 	local wasShown = ChannelFrame:IsShown();
 	ChannelFrame:Toggle();
 	if ChannelFrame:IsShown() ~= wasShown then
@@ -50,6 +54,32 @@ end
 function ChannelFrameButtonMixin:OnClick()
 	PropertyButtonMixin.OnClick(self);
 	UIFrameFlashStop(self.Flash);
+end
+
+function ChannelFrameButtonMixin:OnEnter()
+	if self:IsEnabled() then
+		PropertyBindingMixin.OnEnter(self);
+	elseif self.disabledTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(self.disabledTooltip, ERROR_COLOR.r, ERROR_COLOR.g, ERROR_COLOR.b)
+		GameTooltip:Show();
+	end
+end
+
+function ChannelFrameButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+function ChannelFrameButtonMixin:OnMouseDown()
+	if self:IsEnabled() then
+		PropertyButtonMixin.OnMouseDown(self);
+	end
+end
+
+function ChannelFrameButtonMixin:OnMouseUp()
+	if self:IsEnabled() then
+		PropertyButtonMixin.OnMouseUp(self);
+	end
 end
 
 function ChannelFrameButtonMixin:HideTutorial()

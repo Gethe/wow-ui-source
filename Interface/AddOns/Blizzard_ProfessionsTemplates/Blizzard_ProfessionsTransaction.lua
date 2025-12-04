@@ -1,6 +1,32 @@
+local function AssertReagentArgumentValid(reagent)
+	if not Professions.IsValidReagent(reagent) then
+		assert(false, "AssertReagentArgumentValid: Argument 'reagent' is invalid.");
+	end
+end
+
+local function AssertReagentArgumentNonNil(reagent)
+	if reagent == nil then
+		assert(false, "AssertReagentArgumentNonNil: Argument 'reagent' is nil.");
+	end
+end
+
+local function ReagentToTableKey(reagent)
+	if reagent.itemID then
+		return reagent.itemID;
+	end
+
+	if reagent.currencyID then
+		return reagent.currencyID;
+	end
+
+	return nil;
+end
+
 local AllocationMixin = {};
 
 function AllocationMixin:Init(reagent, quantity)
+	AssertReagentArgumentValid(reagent);
+
 	self:SetReagent(reagent);
 	self:SetQuantity(quantity);
 end
@@ -10,6 +36,8 @@ function AllocationMixin:GetReagent()
 end
 
 function AllocationMixin:SetReagent(reagent)
+	AssertReagentArgumentValid(reagent);
+
 	self.reagent = reagent;
 end
 
@@ -22,7 +50,9 @@ function AllocationMixin:SetQuantity(quantity)
 end
 
 function AllocationMixin:MatchesReagent(reagent)
-	return Professions.CraftingReagentMatches(self.reagent, reagent);
+	AssertReagentArgumentNonNil(reagent);
+
+	return ProfessionsUtil.CraftingReagentMatches(self.reagent, reagent);
 end
 
 function CreateAllocation(reagent, quantity)
@@ -44,13 +74,16 @@ function AllocationsMixin:Clear()
 	self:OnChanged();
 end
 
-
-function AllocationsMixin:SelectFirst()
-	return self.allocs[1];
+function AllocationsMixin:GetSize()
+	return #self.allocs;
 end
 
 function AllocationsMixin:Enumerate(indexBegin, indexEnd)
 	return CreateTableEnumerator(self.allocs, indexBegin, indexEnd);
+end
+
+function AllocationsMixin:GetFirstAllocation()
+	return self.allocs[1];
 end
 
 function AllocationsMixin:FindAllocationByPredicate(predicate)
@@ -59,6 +92,8 @@ function AllocationsMixin:FindAllocationByPredicate(predicate)
 end
 
 function AllocationsMixin:FindAllocationByReagent(reagent)
+	AssertReagentArgumentNonNil(reagent);
+
 	local function MatchesReagent(allocation)
 		return allocation:MatchesReagent(reagent);
 	end
@@ -80,12 +115,9 @@ function AllocationsMixin:HasAnyAllocations()
 	return self:Accumulate() > 0;
 end
 
-function AllocationsMixin:HasAllAllocations(quantityRequired)
-	return self:Accumulate() >= quantityRequired;
-end
-
 function AllocationsMixin:Allocate(reagent, quantity)
-	assert(reagent.itemID or reagent.currencyID);
+	AssertReagentArgumentValid(reagent);
+
 	local allocation = self:FindAllocationByReagent(reagent);
 	if quantity <= 0 then
 		if allocation then
@@ -117,6 +149,7 @@ end
 ProfessionsRecipeTransactionMixin = {};
 
 function ProfessionsRecipeTransactionMixin:Init(recipeSchematic)
+	self.exemptedReagents = {};
 	self.reagentTbls = {};
 	self.allocationTbls = {};
 	self.reagentSlotSchematicTbls = {};
@@ -187,8 +220,11 @@ function ProfessionsRecipeTransactionMixin:IsRecipeType(recipeType)
 	return recipeSchematic.recipeType == recipeType;
 end
 
-function ProfessionsRecipeTransactionMixin:GetQuantityRequiredInSlot(slotIndex)
+function ProfessionsRecipeTransactionMixin:GetQuantityRequiredInSlot(slotIndex, reagent)
 	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+	if reagent then
+		return reagentSlotSchematic:GetQuantityRequired(reagent);
+	end
 	return reagentSlotSchematic.quantityRequired;
 end
 
@@ -250,42 +286,83 @@ function ProfessionsRecipeTransactionMixin:OnChanged()
 	EventRegistry:TriggerEvent("Professions.TransactionUpdated", self);
 end
 
-function ProfessionsRecipeTransactionMixin:IsModificationAllocated(reagent, slotIndex)
+function ProfessionsRecipeTransactionMixin:IsAllocatedAsModification(reagent, slotIndex)
 	local modification = self:GetModificationAtSlotIndex(slotIndex);
-	return modification and (modification.itemID == reagent.itemID);
+	if not modification then
+		return false;
+	end
+
+	return Professions.DoesModificationContainReagent(modification, reagent);
 end
 
-local function CanReagentSlotBeItemModification(reagentSlotSchematic)
+local function DoesReagentSlotSupportModification(reagentSlotSchematic)
 	return (reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent) and
 			(reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying);
 end
 
-function ProfessionsRecipeTransactionMixin:GenerateExpectedItemModifications()
-	local modsCopy = CopyTable(self.recraftItemMods);
-	for index, modification in ipairs(modsCopy) do
-		modification.itemID = 0;
+function ProfessionsRecipeTransactionMixin:GetCraftingReagentInfos()
+	if self:IsManuallyAllocated() then
+		return self:CreateCraftingReagentInfoTbl();
 	end
 
-	self:ClearExemptedReagents();
+	return self:CreateOptionalOrFinishingCraftingReagentInfoTbl();
+end
 
-	for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
-		if CanReagentSlotBeItemModification(reagentSlotSchematic) then
-			local modification = modsCopy[reagentSlotSchematic.dataSlotIndex];
+function ProfessionsRecipeTransactionMixin:RecraftRecipe()
+	local craftingReagentTbl = self:CreateCraftingReagentInfoTbl();
+	local removedModifications = Professions.PrepareRecipeRecraft(self, craftingReagentTbl);
 
-			local allocations = self:GetAllocations(slotIndex);
-			local allocs = allocations:SelectFirst();
-			if allocs then
-				local reagent = allocs:GetReagent();
-				modification.itemID = reagent.itemID;
+	local result = C_TradeSkillUI.RecraftRecipe(self:GetRecraftAllocation(), craftingReagentTbl, removedModifications, self:IsApplyingConcentration());
+	if result then
+		-- Create an expected table of item modifications so that we don't incorrectly deallocate
+		-- an item modification slot on form refresh that has just been installed but hasn't been stamped
+		-- with the item modification yet.
+		local modsCopy = CopyTable(self.recraftItemMods);
+		for index, modification in ipairs(modsCopy) do
+			modification.reagent = {};
+		end
+
+		self:ClearExemptedReagents();
+
+		for slotIndex, reagentSlotSchematic in ipairs(self.recipeSchematic.reagentSlotSchematics) do
+			if DoesReagentSlotSupportModification(reagentSlotSchematic) then
 				local dataSlotIndex = reagentSlotSchematic.dataSlotIndex;
-				self:SetExemptedReagent(reagent, dataSlotIndex);
-			else
-				modification.itemID = 0;
+				local modification = modsCopy[dataSlotIndex];
+
+				local allocations = self:GetAllocations(slotIndex);
+				local allocation = allocations:GetFirstAllocation();
+				local reagent = allocation and allocation:GetReagent();
+				if reagent then
+					modification.reagent = CopyTable(reagent);
+
+					self:SetExemptedReagent(modification.reagent, dataSlotIndex);
+				end
 			end
 		end
-	end
 
-	self.recraftExpectedItemMods = modsCopy;
+		self.recraftExpectedItemMods = modsCopy;
+	end
+	return result;
+end
+
+--[[
+The recipe id may be different than the schematic recipe id if this is for a legacy recipe where multiple recipe ids were
+used to implement varied levels of the item.
+]]
+function ProfessionsRecipeTransactionMixin:CraftRecipe(recipeID, count, recipeLevel)
+	local craftingOrderID = nil;
+	C_TradeSkillUI.CraftRecipe(recipeID, count, self:GetCraftingReagentInfos(),
+		recipeLevel, craftingOrderID, self:IsApplyingConcentration());
+end
+
+function ProfessionsRecipeTransactionMixin:CraftEnchant(recipeID, count)
+	C_TradeSkillUI.CraftEnchant(recipeID, count, self:GetCraftingReagentInfos(),
+		self:GetEnchantAllocation():GetItemLocation(), self:IsApplyingConcentration());
+end
+
+function ProfessionsRecipeTransactionMixin:CraftSalvage(count)
+	local itemLocation = C_Item.GetItemLocation(self:GetSalvageAllocation():GetItemGUID());
+	C_TradeSkillUI.CraftSalvage(self.recipeID, count, itemLocation, self:CreateCraftingReagentInfoTbl(), self:IsApplyingConcentration());
 end
 
 function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, allocations)
@@ -297,7 +374,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, al
 			-- then we don't discard it -- it needs to remain in the allocation list
 			-- because it currently represents a "no change" operation.
 
-			if not self:IsModificationAllocated(reagent, index) and self:IsReagentSanizationExempt(reagent) then
+			if (not self:IsAllocatedAsModification(reagent, index)) and (not self:IsReagentSanitizationExempt(reagent)) then
 				local owned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.useCharacterInventoryOnly);
 				local quantity = allocs:GetQuantity();
 				if owned < quantity then
@@ -312,25 +389,20 @@ function ProfessionsRecipeTransactionMixin:SanitizeAllocationsInternal(index, al
 	end
 end
 
-function ProfessionsRecipeTransactionMixin:IsReagentSanizationExempt(reagent)
-	if self.exemptedReagents then
-		if self.exemptedReagents[reagent.itemID] then
-			return false;
-		end
-	end
-	return true;
+function ProfessionsRecipeTransactionMixin:IsReagentSanitizationExempt(reagent)
+	AssertReagentArgumentValid(reagent);
+
+	return self.exemptedReagents[ReagentToTableKey(reagent)];
 end
 
 function ProfessionsRecipeTransactionMixin:SetExemptedReagent(reagent, dataSlotIndex)
-	if not self.exemptedReagents then
-		self.exemptedReagents = {};
-	end
+	AssertReagentArgumentValid(reagent);
 
-	self.exemptedReagents[reagent.itemID] = dataSlotIndex;
+	self.exemptedReagents[ReagentToTableKey(reagent)] = dataSlotIndex;
 end
 
 function ProfessionsRecipeTransactionMixin:ClearExemptedReagents()
-	self.exemptedReagents = nil;
+	self.exemptedReagents = {};
 end
 
 function ProfessionsRecipeTransactionMixin:SanitizeOptionalAllocations()
@@ -354,19 +426,19 @@ function ProfessionsRecipeTransactionMixin:SanitizeTargetAllocations()
 	self:SanitizeSalvageAllocation();
 end
 
-function ProfessionsRecipeTransactionMixin:SanitizeRecraftAllocation(clearExpected)
+function ProfessionsRecipeTransactionMixin:SanitizeRecraftAllocation(clearExpectedItemMods)
 	local itemGUID = self:GetRecraftAllocation();
 	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
 		self:ClearRecraftAllocation();
 	end
 
-	if clearExpected then
+	if clearExpectedItemMods then
 		self.recraftExpectedItemMods = nil;
 	end
 	self:CacheItemModifications();
 end
 
-function ProfessionsRecipeTransactionMixin:SanitizeEnchantAllocation(clearExpected)
+function ProfessionsRecipeTransactionMixin:SanitizeEnchantAllocation()
 	local item = self:GetEnchantAllocation();
 	local itemGUID = item and item:GetItemGUID() or nil;
 	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
@@ -374,7 +446,7 @@ function ProfessionsRecipeTransactionMixin:SanitizeEnchantAllocation(clearExpect
 	end
 end
 
-function ProfessionsRecipeTransactionMixin:SanitizeSalvageAllocation(clearExpected)
+function ProfessionsRecipeTransactionMixin:SanitizeSalvageAllocation()
 	local item = self:GetSalvageAllocation();
 	local itemGUID = item and item:GetItemGUID() or nil;
 	if itemGUID and not C_Item.IsItemGUIDInInventory(itemGUID) then
@@ -403,13 +475,39 @@ function ProfessionsRecipeTransactionMixin:HasAnyAllocations(slotIndex)
 	return allocations and allocations:HasAnyAllocations();
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllAllocations(slotIndex, quantityRequired)
+function ProfessionsRecipeTransactionMixin:HasAllAllocations(slotIndex)
 	local allocations = self:GetAllocations(slotIndex);
-	local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
-	return allocations and allocations:HasAllAllocations(reagentSlotSchematic.quantityRequired);
+	if allocations then
+		local reagentSlotSchematic = self:GetReagentSlotSchematic(slotIndex);
+		if reagentSlotSchematic:HasVariableQuantities() then
+			-- Slots with variable quantity reagents expect one reagent to satisfy
+			-- the required quantity.
+			for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
+				local quantityRequired = reagentSlotSchematic:GetQuantityRequired(reagent);
+				local quantityAllocated = allocations:GetQuantityAllocated(reagent);
+				if quantityAllocated >= quantityRequired then
+					return true;
+				end
+			end
+		else
+			local quantityRequired = reagentSlotSchematic.quantityRequired;
+			local quantityAllocated = 0;
+			for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
+				local allocation = allocations:FindAllocationByReagent(reagent);
+				quantityAllocated = quantityAllocated + (allocation and allocation:GetQuantity() or 0);
+				if quantityAllocated >= quantityRequired then
+					return true;
+				end
+			end
+		end
+	end
+
+	return false;
 end
 
 function ProfessionsRecipeTransactionMixin:HasAllocatedReagent(reagent)
+	AssertReagentArgumentNonNil(reagent);
+
 	for index, allocations in self:EnumerateAllAllocations() do
 		if allocations:FindAllocationByReagent(reagent) then
 			return true;
@@ -418,28 +516,42 @@ function ProfessionsRecipeTransactionMixin:HasAllocatedReagent(reagent)
 	return false;
 end
 
-function ProfessionsRecipeTransactionMixin:AreAllRequirementsAllocatedByItemID(itemID)
-	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(itemID);
-	for index, requiredItemID in ipairs(requirements) do
-		if not self:HasAllocatedItemID(requiredItemID) then
+function ProfessionsRecipeTransactionMixin:HasAllocatedItemID(itemID)
+	local reagent = Professions.CreateItemReagent(itemID);
+	return self:HasAllocatedReagent(reagent);
+end
+
+function ProfessionsRecipeTransactionMixin:HasAllocatedCurrencyID(currencyID)
+	local reagent = Professions.CreateCurrencyReagent(currencyID);
+	return self:HasAllocatedReagent(reagent);
+end
+
+-- Reagent requirements are separate reagents that must also be allocated in order for
+-- the argument reagent to be considered valid. 
+function ProfessionsRecipeTransactionMixin:AreDependentReagentsAllocated(reagent)
+	AssertReagentArgumentValid(reagent);
+
+	local dependentReagents = C_TradeSkillUI.GetDependentReagents(reagent);
+	for index, dependentReagent in ipairs(dependentReagents) do
+		if not self:HasAllocatedReagent(dependentReagent) then
 			return false;
 		end
 	end
 	return true;
 end
 
-function ProfessionsRecipeTransactionMixin:AreAllRequirementsAllocated(item)
-	return self:AreAllRequirementsAllocatedByItemID(item:GetItemID());
+function ProfessionsRecipeTransactionMixin:AreDependentReagentsAllocatedByCurrencyID(currencyID)
+	local reagent = Professions.CreateCurrencyReagent(currencyID);
+	return self:AreDependentReagentsAllocated(reagent);
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllocatedItemID(itemID)
-	local reagent = Professions.CreateCraftingReagentByItemID(itemID);
-	return self:HasAllocatedReagent(reagent);
+function ProfessionsRecipeTransactionMixin:AreDependentReagentsAllocatedByItemID(itemID)
+	local reagent = Professions.CreateItemReagent(itemID);
+	return self:AreDependentReagentsAllocated(reagent);
 end
 
-function ProfessionsRecipeTransactionMixin:HasAllocatedCurrencyID(currencyID)
-	local reagent = Professions.CreateCraftingReagentByCurrencyID(currencyID);
-	return self:HasAllocatedReagent(reagent);
+function ProfessionsRecipeTransactionMixin:AreDependentReagentsAllocatedByItem(item)
+	return self:AreDependentReagentsAllocatedByItemID(item:GetItemID());
 end
 
 function ProfessionsRecipeTransactionMixin:ClearSalvageAllocations()
@@ -513,17 +625,28 @@ function ProfessionsRecipeTransactionMixin:SetRecraftAllocationOrderID(orderID)
 end
 
 function ProfessionsRecipeTransactionMixin:CacheItemModifications()
-	if self.recraftItemGUID or self.recraftOrderID then
-		self.recraftItemMods = self.recraftItemGUID and C_TradeSkillUI.GetItemSlotModifications(self.recraftItemGUID) or C_TradeSkillUI.GetItemSlotModificationsForOrder(self.recraftOrderID);
-		if not self.recraftExpectedItemMods then
-			self:ClearExemptedReagents();
-			for dataSlotIndex, modification in ipairs(self.recraftItemMods) do
-				local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-				self:SetExemptedReagent(reagent, dataSlotIndex);
-			end
-		end
+	if self.recraftItemGUID then
+		self.recraftItemMods = C_TradeSkillUI.GetItemSlotModifications(self.recraftItemGUID);
+	elseif self.recraftOrderID then
+		self.recraftItemMods = C_TradeSkillUI.GetItemSlotModificationsForOrder(self.recraftOrderID);
 	else
 		self.recraftItemMods = nil;
+	end
+
+	if self.recraftExpectedItemMods then
+		-- Do not continue past this point because we're waiting on the server to notify the client
+		-- that the item was successfully stamped with new item modifications.
+		return;
+	end
+
+	if self.recraftItemMods then
+		self:ClearExemptedReagents();
+
+		for dataSlotIndex, modification in ipairs(self.recraftItemMods) do
+			if Professions.IsValidReagent(modification.reagent) then
+				self:SetExemptedReagent(modification.reagent, dataSlotIndex);
+			end
+		end
 	end
 end
 
@@ -540,21 +663,32 @@ function ProfessionsRecipeTransactionMixin:HasRecraftAllocation()
 end
 
 function ProfessionsRecipeTransactionMixin:ClearModification(dataSlotIndex)
-	local modificationTable = self:GetModificationTable();
-	local modification = modificationTable and modificationTable[dataSlotIndex]
+	local modification = self:GetModification(dataSlotIndex);
 	if modification then
-		modification.itemID = 0;
+		modification.reagent = {};
 	end
 end
 
+-- Modifications are only present in recrafting contexts.
+function ProfessionsRecipeTransactionMixin:HasModifications()
+	return self:GetModificationTable() ~= nil;
+end
+
 function ProfessionsRecipeTransactionMixin:GetModificationTable()
+	--[[
+	The expected mods table has priority over the regular mods table when the
+	the crafting attempt is in-transit to the server so that any queries
+	into the transaction state refer to the mods we expect to be applied.
+	]]--
 	return self.recraftExpectedItemMods or self.recraftItemMods;
 end
 
+local function GetModificationInTable(modificationTable, dataSlotIndex)
+	return modificationTable and modificationTable[dataSlotIndex] or nil;
+end
+
 function ProfessionsRecipeTransactionMixin:GetModification(dataSlotIndex)
-	-- If expected item mods have been set then we've sent off the transaction to the
-	-- server and we're waiting for the item mods to be officially stamped onto the item.
-	return self:GetModificationInternal(dataSlotIndex, self:GetModificationTable());
+	return GetModificationInTable(self:GetModificationTable(), dataSlotIndex);
 end
 
 function ProfessionsRecipeTransactionMixin:GetModificationAtSlotIndex(slotIndex)
@@ -564,7 +698,7 @@ end
 
 function ProfessionsRecipeTransactionMixin:IsModificationUnchangedAtSlotIndex(slotIndex)
 	local modification = self:GetModificationAtSlotIndex(slotIndex);
-	return modification and self:HasAllocatedItemID(modification.itemID);
+	return modification and self:HasAllocatedReagent(modification.reagent);
 end
 
 function ProfessionsRecipeTransactionMixin:GetOriginalModification(dataSlotIndex)
@@ -572,95 +706,73 @@ function ProfessionsRecipeTransactionMixin:GetOriginalModification(dataSlotIndex
 		-- Recrafting an order does not display previous modifications
 		return nil;
 	end
-	return self:GetModificationInternal(dataSlotIndex, self.recraftItemMods);
-end
-
-function ProfessionsRecipeTransactionMixin:GetModificationInternal(dataSlotIndex, modificationTable)
-	return modificationTable and modificationTable[dataSlotIndex] or nil;
+	return GetModificationInTable(self.recraftItemMods, dataSlotIndex);
 end
 
 function ProfessionsRecipeTransactionMixin:HasModification(dataSlotIndex)
-	if self.recraftItemMods then
-		return self.recraftItemMods[dataSlotIndex].itemID > 0;
-	end
-	return false;
+	local modification = self:GetModification(dataSlotIndex);
+	return Professions.IsValidModification(modification);
 end
 
 function ProfessionsRecipeTransactionMixin:HasMetAllRequirements()
-	if not self:HasMetSalvageRequirements() then
+	if self:FailsSalvageRequirements() then
 		return false;
 	end
 
-	if not self:HasMetQuantityRequirements() then
+	if self:FailsQuantityRequirements() then
 		return false;
 	end
 
-	if not self:HasMetPrerequisiteRequirements() then
+	if self:HasMissingDependentReagents() then
 		return false;
 	end
 
 	return true;
 end
 
-function ProfessionsRecipeTransactionMixin:HasMetSalvageRequirements()
-	if self:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
-		if not self.salvageItem then
-			return false;
-		end
-
-		local recipeSchematic = self:GetRecipeSchematic();
-		local quantity = self.salvageItem:GetStackCount();
-		if not quantity then
-			return false;
-		end
-		
-		local quantityRequired = recipeSchematic.quantityMax;
-		return quantity >= quantityRequired;
+function ProfessionsRecipeTransactionMixin:FailsSalvageRequirements()
+	if not self:IsRecipeType(Enum.TradeskillRecipeType.Salvage) then
+		return false;
 	end
 
-	return true;
+	if not self.salvageItem then
+		return true;
+	end
+
+	local recipeSchematic = self:GetRecipeSchematic();
+	local quantity = self.salvageItem:GetStackCount() or 0;
+	return quantity < recipeSchematic.quantityMax;
 end
 
-function ProfessionsRecipeTransactionMixin:HasMetQuantityRequirements()
+function ProfessionsRecipeTransactionMixin:FailsQuantityRequirements()
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
 		if ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
-			local quantityRequired = reagentSlotSchematic.quantityRequired;
-			local allocations = self:GetAllocations(slotIndex);
-			for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
-				local allocation = allocations:FindAllocationByReagent(reagent);
-				if allocation then
-					quantityRequired = quantityRequired - allocation:GetQuantity();
-				end
-			end
-
-			if quantityRequired > 0 then
-				return false;
+			if not self:HasAllAllocations(slotIndex) then
+				return true;
 			end
 		end
 	end
 
-	return true;
+	return false;
 end
 
-function ProfessionsRecipeTransactionMixin:HasMetPrerequisiteRequirements()
+function ProfessionsRecipeTransactionMixin:HasMissingDependentReagents()
 	for slotIndex, reagentTbl in self:Enumerate() do
 		local allocations = self:GetAllocations(slotIndex);
 		local reagentSlotSchematic = reagentTbl.reagentSlotSchematic;
 		for reagentIndex, reagent in ipairs(reagentSlotSchematic.reagents) do
+			-- If the reagent is allocated, we need to check if any dependent reagents
+			-- are also allocated. An example of this is Crest reagents that can only
+			-- be used if a Spark is also allocated.
 			local allocation = allocations:FindAllocationByReagent(reagent);
-			if allocation then
-				if reagent.itemID and not self:AreAllRequirementsAllocatedByItemID(reagent.itemID) then
-					return false;
-				end
-				if reagent.currencyID and not self:HasAllocatedCurrencyID(reagent.currencyID) then
-					return false;
-				end
+			if allocation and not self:AreDependentReagentsAllocated(reagent) then
+				return true;
 			end
 		end
 	end
 	
-	return true;
+	return false;
 end
 
 function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTblIf(predicate)
@@ -672,9 +784,8 @@ function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTblIf(predic
 			for index, allocation in reagentTbl.allocations:Enumerate() do
 				local quantity = allocation:GetQuantity();
 				if quantity > 0 then
-					-- CraftingReagentInfo can only ever be initialized with items, so we can disregard currency here.
 					local reagent = allocation:GetReagent();
-					local craftingReagentInfo = Professions.CreateCraftingReagentInfo(reagent.itemID, dataSlotIndex, quantity);
+					local craftingReagentInfo = Professions.CreateCraftingReagentInfo(reagent, dataSlotIndex, quantity);
 					table.insert(tbl, craftingReagentInfo);
 				end
 			end
@@ -705,11 +816,27 @@ function ProfessionsRecipeTransactionMixin:CreateCraftingReagentInfoTbl()
 	return self:CreateCraftingReagentInfoTblIf(IsModifiedCraftingReagent);
 end
 
-function ProfessionsRecipeTransactionMixin:CreateRegularReagentInfoTbl()
-	local function IsRegularCraftingReagent(reagentTbl)
+function ProfessionsRecipeTransactionMixin:CreateReagentInfoTbl()
+	local function IsReagent(reagentTbl)
+		local dataSlotType = reagentTbl.reagentSlotSchematic.dataSlotType;
+		return dataSlotType == Enum.TradeskillSlotDataType.Reagent or
+			dataSlotType == Enum.TradeskillSlotDataType.Currency;
+	end
+	return self:CreateCraftingReagentInfoTblIf(IsReagent);
+end
+
+function ProfessionsRecipeTransactionMixin:CreateRegularItemReagentInfoTbl()
+	local function IsRegularItemReagent(reagentTbl)
 		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.Reagent;
 	end
-	return self:CreateCraftingReagentInfoTblIf(IsRegularCraftingReagent);
+	return self:CreateCraftingReagentInfoTblIf(IsRegularItemReagent);
+end
+
+function ProfessionsRecipeTransactionMixin:CreateRegularCurrencyReagentInfoTbl()
+	local function IsRegularCurrencyReagent(reagentTbl)
+		return reagentTbl.reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.Currency;
+	end
+	return self:CreateCraftingReagentInfoTblIf(IsRegularCurrencyReagent);
 end
 
 function ProfessionsRecipeTransactionMixin:IsApplyingConcentration()

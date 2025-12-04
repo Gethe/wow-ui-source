@@ -49,10 +49,10 @@ end
 
 function AchievementObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 	local achievementID = block.id;
-	if IsModifiedClick("CHATLINK") and ChatEdit_GetActiveWindow() then
+	if IsModifiedClick("CHATLINK") and ChatFrameUtil.GetActiveWindow() then
 		local achievementLink = GetAchievementLink(achievementID);
 		if achievementLink then
-			ChatEdit_InsertLink(achievementLink);
+			ChatFrameUtil.InsertLink(achievementLink);
 		end
 	elseif mouseButton ~= "RightButton" then
 		if not AchievementFrame then

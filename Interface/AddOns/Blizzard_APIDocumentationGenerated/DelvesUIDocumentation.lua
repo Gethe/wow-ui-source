@@ -18,6 +18,7 @@ local DelvesUI =
 		{
 			Name = "GetCreatureDisplayInfoForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local DelvesUI =
 		{
 			Name = "GetCurioLink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Given the spell ID for an owned curio and its rarity, return a spell link style hyperlink for the curio spell, since they aren't items when learned" },
 
 			Arguments =
@@ -48,6 +50,7 @@ local DelvesUI =
 		{
 			Name = "GetCurioNodeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +66,7 @@ local DelvesUI =
 		{
 			Name = "GetCurioRarityByTraitCondAccountElementID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -114,6 +118,7 @@ local DelvesUI =
 		{
 			Name = "GetFactionForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,6 +133,7 @@ local DelvesUI =
 		{
 			Name = "GetModelSceneForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,6 +148,7 @@ local DelvesUI =
 		{
 			Name = "GetRoleNodeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +163,7 @@ local DelvesUI =
 		{
 			Name = "GetRoleSubtreeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +179,7 @@ local DelvesUI =
 		{
 			Name = "GetTraitTreeForCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,6 +194,7 @@ local DelvesUI =
 		{
 			Name = "GetUnseenCuriosBySlotType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +210,7 @@ local DelvesUI =
 		{
 			Name = "HasActiveDelve",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -214,6 +225,7 @@ local DelvesUI =
 		{
 			Name = "IsEligibleForActiveDelveRewards",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -226,8 +238,24 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "IsTraitTreeForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "traitTreeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isForCompanion", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestPartyEligibilityForDelveTiers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Queries private party members to see what level they have unlocked for the Delve. Ineligible members are added to the tooltip of dropdown entries." },
 
 			Arguments =
@@ -238,6 +266,7 @@ local DelvesUI =
 		{
 			Name = "SaveSeenCuriosBySlotType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -253,12 +282,14 @@ local DelvesUI =
 			Name = "ActiveDelveDataUpdate",
 			Type = "Event",
 			LiteralName = "ACTIVE_DELVE_DATA_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when SpellScript calls change the data for players/parties owning a delve or when the delve is shut down." },
 		},
 		{
 			Name = "DelveAssistAction",
 			Type = "Event",
 			LiteralName = "DELVE_ASSIST_ACTION",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when an assist action occurs in a delve." },
 			Payload =
 			{
@@ -269,12 +300,14 @@ local DelvesUI =
 			Name = "DelvesAccountDataElementChanged",
 			Type = "Event",
 			LiteralName = "DELVES_ACCOUNT_DATA_ELEMENT_CHANGED",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when player account data element(s) have changed. This drives curio ranks, and the UI should update when this is sent." },
 		},
 		{
 			Name = "PartyEligibilityForDelveTiersChanged",
 			Type = "Event",
 			LiteralName = "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when responses come in from RequestPartyEligibilityForDelveTiers." },
 			Payload =
 			{
@@ -286,18 +319,21 @@ local DelvesUI =
 			Name = "ShowDelvesCompanionConfigurationUI",
 			Type = "Event",
 			LiteralName = "SHOW_DELVES_COMPANION_CONFIGURATION_UI",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
 		},
 		{
 			Name = "ShowDelvesDisplayUI",
 			Type = "Event",
 			LiteralName = "SHOW_DELVES_DISPLAY_UI",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when the UI needs to display the Delves dashbaord." },
 		},
 		{
 			Name = "WalkInDataUpdate",
 			Type = "Event",
 			LiteralName = "WALK_IN_DATA_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Signaled when the player or a private party member join a new walk-in instance or when the instance is shut down." },
 		},
 	},

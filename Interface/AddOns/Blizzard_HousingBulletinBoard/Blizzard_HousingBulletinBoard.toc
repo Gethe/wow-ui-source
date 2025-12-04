@@ -1,0 +1,9 @@
+## Title: Blizzard Housing Bulletin Board
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## Dependencies: Blizzard_HousingTemplates
+## AllowLoadGameType: standard
+
+Blizzard_HousingBulletinBoard.lua
+Blizzard_HousingBulletinBoard.xml
+Blizzard_HousingBulletinBoardRegistration.lua

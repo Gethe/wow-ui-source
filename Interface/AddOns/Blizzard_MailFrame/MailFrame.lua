@@ -64,11 +64,11 @@ function MailFrame_Show()
 	SendMailFrame_Update();
 	MailFrameTab_OnClick(nil, 1);
 	MailFrame_RefreshInbox(MailFrame);
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 end
 
 function MailFrame_Hide()
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	HideUIPanel(MailFrame);
 	CloseAllBags(self);
 	SendMailFrameLockSendMail:Hide();
@@ -284,7 +284,7 @@ function InboxFrame_Update()
 			-- Set highlight
 			if ( InboxFrame.openMailID == index ) then
 				button:SetChecked(true);
-				SetPortraitToTexture(OpenMailFrameIcon, stationeryIcon);
+				OpenMailFrameIcon:SetTexture(stationeryIcon);
 			else
 				button:SetChecked(false);
 			end
@@ -467,12 +467,12 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 			tinsert(OpenMailFrame.activeAttachmentButtons, attachmentButton);
 			rowAttachmentCount = rowAttachmentCount + 1;
 
-			local name, itemID, itemTexture, count, quality, canUse = GetInboxItem(InboxFrame.openMailID, i);
+			local name, id, itemTexture, count, quality, canUse, isCurrency = GetInboxItem(InboxFrame.openMailID, i);
 			if name then
 				attachmentButton.name = name;
 				SetItemButtonTexture(attachmentButton, itemTexture);
 				SetItemButtonCount(attachmentButton, count);
-				SetItemButtonQuality(attachmentButton, quality, itemID);
+				SetItemButtonQuality(attachmentButton, quality, id);
 			else
 				attachmentButton.name = nil;
 				SetItemButtonTexture(attachmentButton, "Interface/Icons/INV_Misc_QuestionMark");
@@ -1222,8 +1222,8 @@ function OpenAllMailMixin:AdvanceToNextItem()
 	local foundAttachment = false;
 	while ( not foundAttachment ) do
 		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
-		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex));
-		local hasBlacklistedItem = self:IsItemBlacklisted(itemID);
+		local _, id, _, _, _, _, isCurrency = GetInboxItem(self.mailIndex, self.attachmentIndex);
+		local hasBlacklistedItem = (not isCurrency) and self:IsItemBlacklisted(id);
 		local hasCOD = CODAmount and CODAmount > 0;
 		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
 		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then

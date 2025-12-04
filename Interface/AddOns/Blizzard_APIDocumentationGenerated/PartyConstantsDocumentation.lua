@@ -32,6 +32,14 @@ local PartyConstants =
 				{ Name = "TankHealer", Type = "RestrictPingsTo", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "PartyCountdownConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MaxCountdownSeconds", Type = "number", Value = 3600 },
+			},
+		},
 	},
 };
 

@@ -639,12 +639,12 @@ function HeirloomsMixin:UpdateButton(button)
 end
 
 function HeirloomsMixin:ConsiderShowingUpgradeTutorial(button)
-	if not GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_HEIRLOOM_JOURNAL_LEVEL) then
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.HeirloomJournalLevel) then
 		local helpTipInfo = {
 			text = HEIRLOOMS_JOURNAL_TUTORIAL_UPGRADE,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_HEIRLOOM_JOURNAL_LEVEL,
+			bitfieldFlag = Enum.FrameTutorialAccount.HeirloomJournalLevel,
 			targetPoint = HelpTip.Point.BottomEdgeRight,
 			alignment = HelpTip.Alignment.Left,
 			offsetX = -16,

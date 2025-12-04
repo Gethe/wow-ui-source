@@ -16,6 +16,8 @@ local SimpleObjectAPI =
 		{
 			Name = "GetDebugName",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,6 +32,7 @@ local SimpleObjectAPI =
 		{
 			Name = "GetParent",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{
@@ -56,6 +59,7 @@ local SimpleObjectAPI =
 		{
 			Name = "SetParentKey",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

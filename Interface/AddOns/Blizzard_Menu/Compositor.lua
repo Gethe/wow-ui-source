@@ -5,6 +5,8 @@ local AttributeDelegate = CreateFrame("Frame");
 local CallProtectedFunctionsAttribute = "call-protected-functions";
 
 local function PoolReset(pool, region, new)
+	region:SetToDefaults();
+
 	Pool_HideAndClearAnchors(pool, region);
 
 	if not new then
@@ -31,34 +33,15 @@ Note that these default functions are going to be deleted and replaced with a si
 reset/default function once it's available.
 ]]
 local function SetRegionToDefaults(region)
-	region:SetSize(1,1);
-	region:SetAlpha(1);
+	region:SetToDefaults();
 
-	region:SetScript("OnMouseDown", nil);
-	region:SetScript("OnMouseUp", nil);
-	region:SetScript("OnMouseWheel", nil);
-	region:SetScript("OnEnter", nil);
-	region:SetScript("OnLeave", nil);
+	region:SetSize(1,1);
 end
 
 local function SetTextureToDefaults(texture)
 	SetRegionToDefaults(texture);
 
-	texture:SetTexture(nil);
-	texture:SetHorizTile(false);
-	texture:SetVertTile(false);
-	texture:SetTexCoord(0,1,0,1);
-	texture:SetVertexColor(1,1,1,1);
-
-	for index = 1, 4 do
-		texture:SetVertexOffset(index,0,0);
-	end
-
-	texture:SetAtlas(nil);
-	texture:SetBlendMode("BLEND");
 	texture:SetDrawLayer("ARTWORK");
-	texture:SetDesaturation(0);
-	texture:ClearTextureSlice();
 end
 
 local function SetFontStringToDefaults(fontString)
@@ -76,50 +59,20 @@ local function SetFrameToDefaults(frame)
 	SetRegionToDefaults(frame);
 
 	AttributeDelegate:SetAttribute(CallProtectedFunctionsAttribute, frame);
-
-	frame:SetScript("OnLoad", nil);
-	frame:SetScript("OnShow", nil);
-	frame:SetScript("OnHide", nil);
-	frame:SetScript("OnUpdate", nil);
-	frame:SetScript("OnEvent", nil);
-	frame:SetScript("OnSizeChanged", nil);
-	frame:SetScript("OnDragStart", nil);
-	frame:SetScript("OnDragStop", nil);
-	frame:SetScript("OnReceiveDrag", nil);
 end
 
 local function SetButtonToDefaults(button)
 	SetFrameToDefaults(button);
-
-	button:RegisterForClicks("LeftButtonUp");
-
-	button:SetScript("OnClick", nil);
-	button:SetScript("OnDoubleClick", nil);
-	button:SetScript("OnEnable", nil);
-	button:SetScript("OnDisable", nil);
 end
 
 local function SetCheckButtonToDefaults(checkButton)
 	SetButtonToDefaults(checkButton);
-
-	local force = true;
-	checkButton:SetChecked(false, force);
 end
 
 local function SetStatusBarToDefaults(statusBar)
 	SetFrameToDefaults(statusBar);
 
-	statusBar:SetFillStyle("STANDARD");
-	statusBar:SetOrientation("HORIZONTAL");
-	statusBar:SetReverseFill(false);
-	statusBar:SetRotatesTexture(false);
 	statusBar:SetColorFill(1,1,1,1);
-	statusBar:SetStatusBarColor(1,1,1,1);
-	statusBar:SetStatusBarDesaturation(0);
-	statusBar:SetStatusBarDesaturated(false);
-	statusBar:SetStatusBarTexture("");
-	statusBar:SetMinMaxValues(0,0);
-	statusBar:SetValue(0);
 end
 
 local function SetEditBoxToDefaults(editBox)
@@ -128,11 +81,6 @@ local function SetEditBoxToDefaults(editBox)
 	editBox:SetFontObject("GameFontHighlight");
 	editBox:SetTextColor(1,1,1,1);
 	editBox:SetWidth(150);
-	editBox:SetJustifyH("LEFT");
-	editBox:SetJustifyV("MIDDLE");
-	editBox:SetText("");
-	editBox:SetAutoFocus(false);
-	editBox:ClearFocus();
 end
 
 local originalMetatables = {};

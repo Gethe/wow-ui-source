@@ -124,7 +124,7 @@
 			<OnClick>
 				if ( IsModifiedClick("CHATLINK") and self.spellID) then
 					local spellLink = C_Spell.GetSpellLink(self.spellID);
-					ChatEdit_InsertLink(spellLink);
+					ChatFrameUtil.InsertLink(spellLink);
 				end
 			</OnClick>
 		</Scripts>

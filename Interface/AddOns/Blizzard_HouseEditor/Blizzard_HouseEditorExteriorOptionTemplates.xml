@@ -1,0 +1,141 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Base choice entry for non-menu-system use -->
+	<Button name="HouseExteriorOptionElementTemplate" mixin="HouseExteriorOptionElementMixin" inherits="CustomizationElementTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="ExteriorEntryOnLoad" inherit="prepend"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<!-- Base choice entry for dropdown menu use -->
+	<Button name="HouseExteriorOptionDropdownElementTemplate" mixin="HouseExteriorOptionDropdownElementMixin" inherits="CustomizationElementTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="overrideDetailsWidth" value="160" type="number"/>
+		</KeyValues>
+	</Button>
+
+	<!-- Base dropdown containing multiple dropdown elements -->
+	<Frame name="HouseExteriorOptionDropdownTemplate" mixin="HouseExteriorOptionDropdownMixin" inherits="ResizeLayoutFrame" virtual="true">
+		 <KeyValues>
+			<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+			<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+			<KeyValue key="align" value="right" type="string"/>
+		</KeyValues>
+		<Frames>
+			<DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate" >
+				<KeyValues>
+					<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+					<KeyValue key="menuRelativePoint" type="string" value="BOTTOMRIGHT"/>
+				</KeyValues>
+				<Size x="140" y="25"/>
+				<Anchors>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Label" font="GameFontHighlightMed2">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Dropdown" relativePoint="LEFT" x="-75"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Placeholder dropdown for not-yet-implemented options -->
+	<!-- TODO: Remove once house size & type swapping are implemented -->
+	<Frame name="HouseExteriorPlaceholderDropdownTemplate" mixin="HouseExteriorPlaceholderDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	</Frame>
+
+	<!-- Dropdown specifically for Core Fixture options -->
+	<Frame name="HouseExteriorCoreFixtureDropdownTemplate" mixin="HouseExteriorCoreFixtureDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	</Frame>
+
+	<!-- List of non-core fixture options -->
+	<Frame name="HouseExteriorFixtureOptionListTemplate" mixin="HouseExteriorFixtureOptionListMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="horizontalSpacing" value="5" type="number"/>
+			<KeyValue key="verticalSpacing" value="10" type="number"/>
+			<KeyValue key="topPadding" value="0" type="number"/>
+			<KeyValue key="bottomPadding" value="0" type="number"/>
+			<KeyValue key="leftPadding" value="0" type="number"/>
+			<KeyValue key="rightPadding" value="0" type="number"/>
+		</KeyValues>
+		<Size x="400" y="400"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-basic-container">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-10" y="10"/>
+						<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" atlas="housing-basic-container-woodheader">
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Background" x="5" y="-5"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.Background" x="-5" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HeaderText" inherits="GameFontHighlight" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Header" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the frame -->
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true">
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.5"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Button>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="12" y="8"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<KeyValues>
+					<!-- How many rows are scrolled past at once via scroll wheel -->
+					<KeyValue key="wheelPanScalar" value="1" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-10"/>
+					<Anchor point="BOTTOMRIGHT" x="-23" y="10"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="hideIfUnscrollable" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

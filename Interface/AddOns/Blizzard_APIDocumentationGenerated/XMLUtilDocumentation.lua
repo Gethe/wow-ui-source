@@ -10,6 +10,7 @@ local XMLUtil =
 			Name = "GetTemplateInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

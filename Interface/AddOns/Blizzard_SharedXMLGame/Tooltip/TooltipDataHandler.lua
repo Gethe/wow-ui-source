@@ -465,7 +465,6 @@ do
 		SetGuildBankItem = "GetGuildBankItem",
 		SetHeirloomByItemID = "GetHeirloomByItemID",
 		SetRuneforgeResultItem = "GetRuneforgeResultItem",
-		SetTransmogrifyItem = "GetTransmogrifyItem",
 		SetArtifactItem = "GetArtifactItem",
 		SetBagItem = "GetBagItem",
 		SetBagItemChild = "GetBagItemChild",
@@ -521,11 +520,13 @@ do
 		SetMinimapMouseover = "GetMinimapMouseover",
 		SetUnitBuffByAuraInstanceID = "GetUnitBuffByAuraInstanceID",
 		SetUnitDebuffByAuraInstanceID = "GetUnitDebuffByAuraInstanceID",
+		SetUnitAuraByAuraInstanceID = "GetUnitAuraByAuraInstanceID",
 		SetTraitEntry = "GetTraitEntry",
 		SetSlottedKeystone = "GetSlottedKeystone",
 		SetItemInteractionItem = "GetItemInteractionItem",
 		SetItemByGUID = "GetItemByGUID",
 		SetWorldLootObject = "GetWorldLootObject",
+		SetOutfit = "GetOutfit",
 	};
 
 	local handler = TooltipDataHandlerMixin;

@@ -427,7 +427,7 @@ function StoreCardMixin:ShowIcon(displayData)
 		if useSquareBorder then
 			self.Icon:SetTexture(icon);
 		else
-			SetPortraitToTexture(self.Icon, icon);
+			self.Icon:SetTexture(icon);
 		end
 	end
 

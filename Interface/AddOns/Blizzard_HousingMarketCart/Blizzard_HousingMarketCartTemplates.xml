@@ -1,0 +1,63 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<Button name="HousingMarketShoppingCartServiceButtonTemplate" inherits="ShoppingCartServiceButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="eventNamespace" value="HOUSING_MARKET_EVENT_NAMESPACE" type="global"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="HousingMarketCartCheckoutButtonTemplate" inherits="SharedButtonLargeTemplate, HousingMarketShoppingCartServiceButtonTemplate" virtual="true">
+		<Size x="256" y="64"/>
+		<KeyValues>
+			<KeyValue key="serviceName" value="ShoppingCartDataServices.PurchaseCart" type="global"/>
+			<KeyValue key="disabledTooltip" value="HOUSING_MARKET_CART_EMPTY_TOOLTIP" type="global"/>
+			<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="PriceContainer" inherits="HousingMarketCartPriceTemplate">
+				<KeyValues>
+					<KeyValue key="isLarge" value="true" keyType="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Button>
+	
+	<Frame name="HousingMarketCartFrameTemplate" inherits="ShoppingCartVisualsFrameTemplate" mixin="HousingMarketCartFrameMixin" virtual="true">
+		<Size x="400" y="500"/>
+		<KeyValues>
+			<KeyValue key="eventNamespace" value="HOUSING_MARKET_EVENT_NAMESPACE" type="global"/>
+			<KeyValue key="maxItemsToShow" value="5" type="number"/>
+			<KeyValue key="spacingSize" value="6" type="number"/>
+			<KeyValue key="sizingItemTemplate" value="HousingMarketCartItemTemplate" type="string"/>
+			<KeyValue key="purchaseButtonTemplate" value="HousingMarketCartCheckoutButtonTemplate" type="string"/>
+		</KeyValues>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CartUpdatedFlipbookTexture" alphaMode="ADD" atlas="decor-ability-mode-fx-flipbook" hidden="true">
+					<Size x="125" y="125"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CartHiddenContainer.ViewCartButton"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Animations>
+			<AnimationGroup parentKey="CartUpdatedFlipbookAnim" setToFinalAlpha="true">
+				<FlipBook childKey="CartUpdatedFlipbookTexture" duration="1" order="1" flipBookRows="6" flipBookColumns="6" flipBookFrames="36" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

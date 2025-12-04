@@ -1,7 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="CooldownViewerEssentialItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
+	<Frame name="CooldownViewerBaseItemTemplate" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CooldownViewerEssentialItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
 		<Size x="50" y="50"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightHugeOutline" type="string"/>
@@ -65,14 +73,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerUtilityItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
+	<Frame name="CooldownViewerUtilityItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerUtilityItemMixin" virtual="true">
 		<Size x="30" y="30"/>
 		<KeyValues>
 			<KeyValue key="cooldownFont" value="GameFontHighlightOutline" type="string"/>
@@ -136,14 +139,9 @@
 				</Animations>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerBuffIconItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
+	<Frame name="CooldownViewerBuffIconItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerBuffIconItemMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<KeyValues>
 			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
@@ -186,14 +184,9 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerBuffBarItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
+	<Frame name="CooldownViewerBuffBarItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerBuffBarItemMixin" virtual="true">
 		<Size x="220" y="30"/>
 		<KeyValues>
 			<KeyValue key="allowHideWhenInactive" value="true" type="boolean"/>
@@ -231,14 +224,14 @@
 				</Layers>
 			</Frame>
 			<StatusBar parentKey="Bar" frameLevel="511">
-				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
-					<Color r="1.0" g="0.5" b="0.25"/>
-				</BarTexture>
+				<Size y="19"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3"/>
 					<Anchor point="RIGHT"/>
 				</Anchors>
-				<Size y="19"/>
+				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
+					<Color r="1.0" g="0.5" b="0.25"/>
+				</BarTexture>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
@@ -251,10 +244,10 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Pip" atlas="UI-HUD-CoolDownManager-Bar-Pip" useAtlasSize="true"/>
-						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT">
+						<FontString parentKey="Name" inherits="NumberFontNormal" justifyH="LEFT" justifyV="MIDDLE">
 							<Anchors>
-								<Anchor point="LEFT" x="5"/>
-								<Anchor point="RIGHT" x="-25"/>
+								<Anchor point="TOPLEFT" x="5" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="-25" y="0"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="Duration" inherits="NumberFontNormal" justifyH="LEFT">
@@ -266,14 +259,19 @@
 				</Layers>
 			</StatusBar>
 		</Frames>
+	</Frame>
+
+	<Frame name="CooldownViewerTemplate" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" mixin="CooldownViewerMixin" parent="UIParent" virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="EssentialCooldownViewer" mixin="EssentialCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+
+	<Frame name="EssentialCooldownViewer" mixin="EssentialCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Essential" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ESSENTIAL_COOLDOWNS" type="global"/>
@@ -282,15 +280,9 @@
 			<KeyValue key="layoutIndex" value="10" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="UtilityCooldownViewer" mixin="UtilityCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="UtilityCooldownViewer" mixin="UtilityCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.Utility" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_UTILITY_COOLDOWNS" type="global"/>
@@ -299,15 +291,9 @@
 			<KeyValue key="layoutIndex" value="11" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="BuffIconCooldownViewer" mixin="BuffIconCooldownViewerMixin" inherits="UIParentBottomManagedFrameTemplate, EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="BuffIconCooldownViewer" mixin="BuffIconCooldownViewerMixin" inherits="CooldownViewerTemplate, UIParentBottomManagedFrameTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffIcon" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFFS" type="global"/>
@@ -316,26 +302,14 @@
 			<KeyValue key="layoutIndex" value="9" type="number"/>
 			<KeyValue key="ignoreInLayoutWhenActionBarIsOverriden" value="true" type="boolean"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 
-	<Frame name="BuffBarCooldownViewer" mixin="BuffBarCooldownViewerMixin" inherits="EditModeCooldownViewerSystemTemplate, GridLayoutFrame" parent="UIParent">
+	<Frame name="BuffBarCooldownViewer" mixin="BuffBarCooldownViewerMixin" inherits="CooldownViewerTemplate">
 		<KeyValues>
 			<KeyValue key="systemIndex" value="Enum.EditModeCooldownViewerSystemIndices.BuffBar" type="global"/>
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_TRACKED_BUFF_BARS" type="global"/>
 			<KeyValue key="itemTemplate" value="CooldownViewerBuffBarItemTemplate" type="string"/>
 			<KeyValue key="cooldownViewerCategory" value="Enum.CooldownViewerCategory.TrackedBar" type="global"/>
 		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnHide method="OnHide"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
 	</Frame>
 </Ui>

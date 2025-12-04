@@ -27,6 +27,7 @@ local WeeklyRewards =
 		{
 			Name = "ClaimReward",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +41,7 @@ local WeeklyRewards =
 		{
 			Name = "GetActivities",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +57,7 @@ local WeeklyRewards =
 			Name = "GetActivityEncounterInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +83,7 @@ local WeeklyRewards =
 			Name = "GetDifficultyIDForActivityTier",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +99,7 @@ local WeeklyRewards =
 			Name = "GetExampleRewardItemHyperlinks",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,6 +116,7 @@ local WeeklyRewards =
 			Name = "GetItemHyperlink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +131,7 @@ local WeeklyRewards =
 		{
 			Name = "GetNextActivitiesIncrease",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,6 +150,7 @@ local WeeklyRewards =
 		{
 			Name = "GetNextMythicPlusIncrease",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -165,6 +173,22 @@ local WeeklyRewards =
 				{ Name = "numHeroic", Type = "number", Nilable = false },
 				{ Name = "numMythic", Type = "number", Nilable = false },
 				{ Name = "numMythicPlus", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSortedProgressForActivity",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "type", Type = "WeeklyRewardChestThresholdType", Nilable = false },
+				{ Name = "combineSharedDifficulty", Type = "bool", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "progress", Type = "table", InnerType = "WeeklyRewardActivityTierProgress", Nilable = false },
 			},
 		},
 		{
@@ -233,11 +257,13 @@ local WeeklyRewards =
 			Name = "WeeklyRewardsItemChanged",
 			Type = "Event",
 			LiteralName = "WEEKLY_REWARDS_ITEM_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WeeklyRewardsUpdate",
 			Type = "Event",
 			LiteralName = "WEEKLY_REWARDS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -306,6 +332,16 @@ local WeeklyRewards =
 				{ Name = "id", Type = "number", Nilable = false },
 				{ Name = "quantity", Type = "number", Nilable = false },
 				{ Name = "itemDBID", Type = "WeeklyRewardItemDBID", Nilable = true },
+			},
+		},
+		{
+			Name = "WeeklyRewardActivityTierProgress",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "activityTierID", Type = "number", Nilable = false },
+				{ Name = "difficulty", Type = "number", Nilable = false },
+				{ Name = "numPoints", Type = "number", Nilable = false },
 			},
 		},
 	},

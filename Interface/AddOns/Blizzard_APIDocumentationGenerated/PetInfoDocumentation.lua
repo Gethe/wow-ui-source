@@ -19,6 +19,7 @@ local PetInfo =
 		{
 			Name = "GetPetTamersForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +34,7 @@ local PetInfo =
 		{
 			Name = "GetSpellForPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local PetInfo =
 		{
 			Name = "IsPetActionPassive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +64,7 @@ local PetInfo =
 		{
 			Name = "PetAbandon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +78,7 @@ local PetInfo =
 		{
 			Name = "PetRename",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,31 +95,37 @@ local PetInfo =
 			Name = "PetAttackStart",
 			Type = "Event",
 			LiteralName = "PET_ATTACK_START",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetAttackStop",
 			Type = "Event",
 			LiteralName = "PET_ATTACK_STOP",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetBarHidegrid",
 			Type = "Event",
 			LiteralName = "PET_BAR_HIDEGRID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetBarShowgrid",
 			Type = "Event",
 			LiteralName = "PET_BAR_SHOWGRID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetBarUpdateCooldown",
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE_COOLDOWN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetDismissStart",
 			Type = "Event",
 			LiteralName = "PET_DISMISS_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "delay", Type = "number", Nilable = false },
@@ -124,6 +135,7 @@ local PetInfo =
 			Name = "PetForceNameDeclension",
 			Type = "Event",
 			LiteralName = "PET_FORCE_NAME_DECLENSION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -139,21 +151,25 @@ local PetInfo =
 			Name = "PetUiClose",
 			Type = "Event",
 			LiteralName = "PET_UI_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RaisedAsGhoul",
 			Type = "Event",
 			LiteralName = "RAISED_AS_GHOUL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdatePossessBar",
 			Type = "Event",
 			LiteralName = "UPDATE_POSSESS_BAR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateVehicleActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_VEHICLE_ACTIONBAR",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -169,7 +169,7 @@ function TimerTracker_StartTimerOfType(self, timerType, timeSeconds, totalTime, 
 		end
 			
 		if systemMessage then
-			ChatFrame_DisplaySystemMessageInPrimary(systemMessage);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(systemMessage);
 		end
 	end
 

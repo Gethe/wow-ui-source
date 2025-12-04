@@ -9,6 +9,7 @@ local QuestTaskInfo =
 		{
 			Name = "DoesMapShowTaskQuestObjectives",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -21,24 +22,10 @@ local QuestTaskInfo =
 			},
 		},
 		{
-			Name = "GetQuestIconUIWidgetSet",
-			Type = "Function",
-			MayReturnNothing = true,
-
-			Arguments =
-			{
-				{ Name = "questID", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "widgetSet", Type = "number", Nilable = false },
-			},
-		},
-		{
 			Name = "GetQuestInfoByQuestID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -57,6 +44,7 @@ local QuestTaskInfo =
 			Name = "GetQuestLocation",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +62,7 @@ local QuestTaskInfo =
 			Name = "GetQuestProgressBarInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -89,6 +78,7 @@ local QuestTaskInfo =
 			Name = "GetQuestTimeLeftMinutes",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +94,7 @@ local QuestTaskInfo =
 			Name = "GetQuestTimeLeftSeconds",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,13 +107,15 @@ local QuestTaskInfo =
 			},
 		},
 		{
-			Name = "GetQuestTooltipUIWidgetSet",
+			Name = "GetQuestUIWidgetSetByType",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "type", Type = "MapIconUIWidgetSetType", Nilable = false },
 			},
 
 			Returns =
@@ -134,6 +127,7 @@ local QuestTaskInfo =
 			Name = "GetQuestZoneID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,6 +143,7 @@ local QuestTaskInfo =
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +167,7 @@ local QuestTaskInfo =
 		{
 			Name = "IsActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,6 +182,7 @@ local QuestTaskInfo =
 		{
 			Name = "RequestPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -2,11 +2,15 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsRecipeFlyout.lua"/>
 
-	<ItemButton name="ProfessionsItemFlyoutButtonTemplate" mixin="ProfessionsItemFlyoutButtonMixin" virtual="true">
+	<ItemButton name="ProfessionsFlyoutItemButtonTemplate" inherits="ProfessionsButtonTemplate" mixin="ProfessionsFlyoutItemButtonMixin" virtual="true">
 		<Size x="37" y="37"/>
 	</ItemButton>
-	
-	<Frame name="ProfessionsItemFlyoutTemplate" mixin="ProfessionsItemFlyoutMixin" inherits="TooltipBackdropTemplate" virtual="true">
+
+	<ItemButton name="ProfessionsFlyoutCurrencyButtonTemplate" inherits="ProfessionsButtonTemplate" mixin="ProfessionsFlyoutCurrencyButtonMixin" virtual="true">
+		<Size x="37" y="37"/>
+	</ItemButton>
+
+	<Frame name="ProfessionsFlyoutTemplate" mixin="ProfessionsFlyoutMixin" inherits="TooltipBackdropTemplate" enableMouse="true" virtual="true">
 		<Size x="200" y="150"/>
 		<KeyValues>
 			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
@@ -22,7 +26,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ItemButton parentKey="UndoItem" inherits="ProfessionsItemFlyoutButtonTemplate">
+			<ItemButton parentKey="UndoItem" inherits="ProfessionsButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="18" y="-15"/>
 				</Anchors>

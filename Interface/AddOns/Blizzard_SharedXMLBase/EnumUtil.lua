@@ -10,13 +10,9 @@ function EnumUtil.IsValid(enumClass, enumValue)
 end
 
 function EnumUtil.GenerateNameTranslation(enum)
+	local keysByValue = tInvert(enum);
 	return function (enumValue)
-		for key, value in pairs(enum) do
-			if value == enumValue then
-				return key;
-			end
-		end
-
-		return UNKNOWN..enumValue;
+		local key = keysByValue[enumValue];
+		return key or UNKNOWN..enumValue;
 	end
 end

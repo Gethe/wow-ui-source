@@ -327,7 +327,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin:InitializeVisuals();
 	pin:SetPosition(info.x, info.y);
 
-	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(questID);
+	pin.iconWidgetSet = C_TaskQuest.GetQuestUIWidgetSetByType(questID, Enum.MapIconUIWidgetSetType.BehindIcon);
 	pin:AddIconWidgets();
 
 	if not HaveQuestRewardData(questID) then
@@ -431,7 +431,7 @@ end
 
 function WorldQuestPinMixin:OnMouseClickAction(button)
 	if not self.dataProvider:HandleClick(self) then
-		if not ChatEdit_TryInsertQuestLinkForQuestID(self.questID) then
+		if not ChatFrameUtil.TryInsertQuestLinkForQuestID(self.questID) then
 			local watchType = C_QuestLog.GetQuestWatchType(self.questID);
 			local isSuperTracked = C_SuperTrack.GetSuperTrackedQuestID() == self.questID;
 

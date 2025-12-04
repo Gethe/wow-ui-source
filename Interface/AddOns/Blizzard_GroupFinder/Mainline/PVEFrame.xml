@@ -34,6 +34,17 @@
 					</Anchors>
 				</FontString>
 			</Layer>
+			<Layer level="BORDER">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.icon" relativePoint="TOPLEFT" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" relativePoint="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
 		</Layers>
 		<HighlightTexture file="Interface\Common\bluemenu-main" alphaMode="ADD" alpha="0.8">
 			<Size x="224" y="80"/>
@@ -181,14 +192,6 @@
 							GameTooltip:SetText(MYTHIC_PLUS_TAB_DISABLE_TEXT);
 						end
 					</OnEnter>
-				</Scripts>
-			</Button>
-			<Button name="$parentTab4" inherits="PanelTabButtonTemplate" text="DELVES_LABEL" id="4" parentKey="tab4">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentTab3" relativePoint="RIGHT" x="3" y="0"/>
-				</Anchors>
-				<Scripts>
-					<OnClick function="PVEFrame_TabOnClick"/>
 				</Scripts>
 			</Button>
 			<Frame name="GroupFinderFrame" useParentLevel="true" setAllPoints="true">

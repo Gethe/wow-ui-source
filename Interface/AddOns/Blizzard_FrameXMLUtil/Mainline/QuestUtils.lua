@@ -90,6 +90,8 @@ local function GetWorldQuestAtlasInfo(questID, tagInfo, inProgress)
 		return QuestUtil.GetThreatPOIIcon(questID);
 	elseif worldQuestType == Enum.QuestTagType.DragonRiderRacing then
 		return "worldquest-icon-race";
+	elseif worldQuestType == Enum.QuestTagType.Prey then
+		return "worldquest-prey-crystal";
 	elseif (worldQuestType == Enum.QuestTagType.WorldBoss) or (worldQuestType == Enum.QuestTagType.Normal and tagInfo.isElite and tagInfo.quality == Enum.WorldQuestQuality.Epic) then
 		-- NOTE: Updated to include the new world boss type, but this continues to support the old way of identifying world bosses for now
 		return "worldquest-icon-boss";
@@ -770,6 +772,13 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 		hasAnySingleLineRewards = true;
 	end
 
+	-- favor
+	local favor = C_QuestInfoSystem.GetQuestLogRewardFavor(questID);
+	if ( favor > 0 ) then
+		GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_HOUSING_FAVOR_FORMAT:format(favor, HOUSING_DASHBOARD_REWARD_ESTATE_XP), HIGHLIGHT_FONT_COLOR);
+		hasAnySingleLineRewards = true;
+	end
+
 	-- currency
 	local mainRewardIsFirstTimeReputationBonus = false;
 	local secondaryRewardsContainFirstTimeRepBonus = false;
@@ -816,7 +825,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 			end
 			-- check for item compare input of flag
 			if not showRetrievingData then
-				if TooltipUtil.ShouldDoItemComparison() then
+				if TooltipUtil.ShouldDoItemComparison(tooltip.ItemTooltip.Tooltip) then
 					GameTooltip_ShowCompareItem(tooltip.ItemTooltip.Tooltip, tooltip.BackdropFrame);
 				else
 					for i, shoppingTooltip in ipairs(tooltip.ItemTooltip.Tooltip.shoppingTooltips) do

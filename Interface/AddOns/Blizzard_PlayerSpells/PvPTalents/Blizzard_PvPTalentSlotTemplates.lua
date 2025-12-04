@@ -80,7 +80,7 @@ function PvPTalentSlotButtonMixin:Update()
 		local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(inspectUnit, self.slotIndex);
 		if (selectedTalentID) then
 			local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
-			SetPortraitToTexture(self.Texture, selectedTalentInfo.icon);
+			self.Texture:SetTexture(selectedTalentInfo.icon);
 			self.Texture:SetVertexColor(1, 1, 1);
 
 			self.Texture:Show();
@@ -106,7 +106,7 @@ function PvPTalentSlotButtonMixin:Update()
 	local selectedTalentID = self:GetSelectedTalent();
 	if (selectedTalentID) then
 		local selectedTalentInfo = C_SpecializationInfo.GetPvpTalentInfo(selectedTalentID);
-		SetPortraitToTexture(self.Texture, selectedTalentInfo.icon);
+		self.Texture:SetTexture(selectedTalentInfo.icon);
 
 		if (selectedTalentInfo.dependenciesUnmet) then
 			self.Texture:SetVertexColor(0.9, 0, 0);
@@ -181,7 +181,7 @@ function PvPTalentSlotButtonMixin:OnClick()
 	local selectedTalentID = self:GetSelectedTalent();
 	if (IsModifiedClick("CHATLINK") and selectedTalentID) then
 		local link = GetPvpTalentLink(selectedTalentID);
-		ChatEdit_InsertLink(link);
+		ChatFrameUtil.InsertLink(link);
 		return;
 	end
 

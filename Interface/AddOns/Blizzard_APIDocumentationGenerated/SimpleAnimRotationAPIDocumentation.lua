@@ -49,6 +49,7 @@ local SimpleAnimRotationAPI =
 		{
 			Name = "SetDegrees",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +59,7 @@ local SimpleAnimRotationAPI =
 		{
 			Name = "SetOrigin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +71,7 @@ local SimpleAnimRotationAPI =
 		{
 			Name = "SetRadians",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

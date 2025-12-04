@@ -10,6 +10,7 @@ local GamePad =
 			Name = "AddSDLMapping",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,6 +31,7 @@ local GamePad =
 		{
 			Name = "AxisIndexToConfigName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +46,7 @@ local GamePad =
 		{
 			Name = "ButtonBindingToIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +61,7 @@ local GamePad =
 		{
 			Name = "ButtonIndexToBinding",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +76,7 @@ local GamePad =
 		{
 			Name = "ButtonIndexToConfigName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +96,7 @@ local GamePad =
 			Name = "DeleteConfig",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -136,6 +142,7 @@ local GamePad =
 		{
 			Name = "GetConfig",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -150,6 +157,7 @@ local GamePad =
 		{
 			Name = "GetDeviceMappedState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +172,7 @@ local GamePad =
 		{
 			Name = "GetDeviceRawState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,6 +196,7 @@ local GamePad =
 		{
 			Name = "GetPowerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -211,6 +221,7 @@ local GamePad =
 			Name = "SetConfig",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,6 +231,7 @@ local GamePad =
 		{
 			Name = "SetLedColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -229,6 +241,7 @@ local GamePad =
 		{
 			Name = "SetVibration",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -239,6 +252,7 @@ local GamePad =
 		{
 			Name = "StickIndexToConfigName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -262,6 +276,7 @@ local GamePad =
 			Name = "GamePadActiveChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_ACTIVE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isActive", Type = "bool", Nilable = false },
@@ -271,21 +286,25 @@ local GamePad =
 			Name = "GamePadConfigsChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_CONFIGS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadConnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_CONNECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadDisconnected",
 			Type = "Event",
 			LiteralName = "GAME_PAD_DISCONNECTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GamePadPowerChanged",
 			Type = "Event",
 			LiteralName = "GAME_PAD_POWER_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "powerLevel", Type = "GamePadPowerLevel", Nilable = false },

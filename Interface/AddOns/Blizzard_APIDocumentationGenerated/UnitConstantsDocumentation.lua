@@ -32,9 +32,9 @@ local UnitConstants =
 			Fields =
 			{
 				{ Name = "isFullUpdate", Type = "bool", Nilable = false, Default = false },
-				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
-				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true },
-				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
+				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true, ConditionalSecretContents = true },
+				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
 			},
 		},
 		{

@@ -8,6 +8,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "GetName",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectName },
 
 			Arguments =
 			{
@@ -21,6 +22,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "GetObjectType",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
 
 			Arguments =
 			{
@@ -32,8 +34,54 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "HasAnySecretAspect",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretAspect",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "aspect", Type = "SecretAspect", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretAspect", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasSecretValues",
+			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "hasSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsForbidden",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{
@@ -47,6 +95,9 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "IsObjectType",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +110,19 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "IsPreventingSecretValues",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isPreventingSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetForbidden",
 			Type = "Function",
 
@@ -67,10 +131,21 @@ local SimpleFrameScriptObjectAPI =
 			},
 		},
 		{
+			Name = "SetPreventSecretValues",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preventSecretValues", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetToDefaults",
 			Type = "Function",
 			IsProtectedFunction = true,
-			Documentation = { "Reset all script accessible values to their default values." },
+			Documentation = { "Reset all script accessible values to their default values. If possible, clears secret states." },
 
 			Arguments =
 			{

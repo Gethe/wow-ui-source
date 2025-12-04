@@ -9,6 +9,7 @@ local TaxiMap =
 		{
 			Name = "GetAllTaxiNodes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes at the current flight master." },
 
 			Arguments =
@@ -24,6 +25,7 @@ local TaxiMap =
 		{
 			Name = "GetTaxiNodesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns information on taxi nodes for a given map, without considering the current flight master." },
 
 			Arguments =
@@ -39,6 +41,7 @@ local TaxiMap =
 		{
 			Name = "ShouldMapShowTaxiNodes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,16 +61,19 @@ local TaxiMap =
 			Name = "TaxiNodeStatusChanged",
 			Type = "Event",
 			LiteralName = "TAXI_NODE_STATUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TaximapClosed",
 			Type = "Event",
 			LiteralName = "TAXIMAP_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TaximapOpened",
 			Type = "Event",
 			LiteralName = "TAXIMAP_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "system", Type = "number", Nilable = false },

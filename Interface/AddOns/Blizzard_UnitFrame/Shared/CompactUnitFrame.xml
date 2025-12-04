@@ -1,0 +1,208 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyDown">
+		<Size x="17" y="17"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="icon" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCount" parentKey="count" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="cooldown" hideCountdownNumbers="true" inherits="CooldownFrameTemplate" reverse="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-1"/>
+				</Anchors>
+			</Cooldown>
+		</Frames>
+		<Scripts>
+			<OnClick function="PassClickToParent"/>
+		</Scripts>
+	</Button>
+	<Button name="CompactDebuffTemplate" inherits="CompactAuraTemplate" frameLevel="80" parentArray="debuffFrames" mixin="CompactDebuffMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" parentKey="border" file="Interface\Buttons\UI-Debuff-Overlays">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="-1" y="1"/>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT">
+							<Offset x="1" y="-1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="CompactBuffBaseTemplate" inherits="CompactAuraTemplate" mixin="CompactBuffMixin" virtual="true">
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Button name="CompactBuffTemplate" inherits="CompactBuffBaseTemplate" frameLevel="10" parentArray="buffFrames" mixin="CompactBuffMixin" virtual="true"/>
+	<Button name="CompactDispelDebuffTemplate" frameLevel="100" parentArray="dispelDebuffFrames" mixin="CompactDispelDebuffMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" parentKey="icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick function="PassClickToParent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" frameLevel="90" parentArray="PrivateAuraAnchors" virtual="true"/>
+	<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="-6">
+				<Texture parentKey="Background" atlas="RaidFrame-Dispel-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true" alpha="0.2"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="-5">
+				<Texture parentKey="Gradient" setAllPoints="true"/>
+				<Texture parentKey="Border" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Button name="CompactUnitFrameTemplate" frameStrata="LOW" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="background" atlas="RaidFrame-Hp-Bg" hWrapMode="REPEAT" vWrapMode="REPEAT" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="5">
+				<Texture name="$parentMyHealPrediction" parentKey="myHealPrediction"/>
+				<Texture name="$parentOtherHealPrediction" parentKey="otherHealPrediction"/>
+				<Texture name="$parentTotalAbsorb" parentKey="totalAbsorb"/>
+			</Layer>
+			<Layer level="BORDER" textureSubLevel="6">
+				<Texture name="$parentTotalAbsorbOverlay" parentKey="totalAbsorbOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.totalAbsorb"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.totalAbsorb"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentName" inherits="GameFontHighlightSmall" parentKey="name" wordwrap="false"/>
+				<FontString name="$parentStatusText" inherits="GameFontDisable" parentKey="statusText"/>
+				<Texture name="$parentRoleIcon" hidden="true" parentKey="roleIcon">
+					<Size x="17" y="17"/>
+				</Texture>
+				<Texture name="$parentAggroHighlight" parentKey="aggroHighlight" atlas="RaidFrame-AgroFrame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentMyHealAbsorb" parentKey="myHealAbsorb"/>
+				<Texture name="$parentMyHealAbsorbOverlay" parentKey="myHealAbsorbOverlay"/>
+				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
+				<Texture name="$parentMyHealAbsorbRightShadow" parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
+					<TexCoords left="1" right="0" top="0" bottom="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture name="$parentOverAbsorbGlow" parentKey="overAbsorbGlow"/>
+				<Texture name="$parentOverHealAbsorbGlow" parentKey="overHealAbsorbGlow"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSelectionHighlight" parentKey="selectionHighlight" atlas="RaidFrame-TargetFrame" ignoreParentAlpha="true" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar name="$parentHealthBar" parentKey="healthBar" useParentLevel="true">
+				<BarTexture atlas="RaidFrame-Hp-Fill" hWrapMode="REPEAT" vWrapMode="REPEAT" horizTile="true" vertTile="true"/>
+			</StatusBar>
+			<StatusBar name="$parentTempMaxHealthLoss" parentKey="TempMaxHealthLoss" hidden="true" drawLayer="ARTWORK" useParentLevel="true" mixin="TempMaxHealthLossMixin">
+				<BarTexture atlas="Raid Frame"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="1" y="-1"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-1" y="1"/>
+				</Anchors>
+			</StatusBar>
+			<StatusBar name="$parentPowerBar" parentKey="powerBar" frameLevel="5">
+				<Size x="0" y="16"/>
+				<BarTexture atlas="_RaidFrame-Resource-Fill" hWrapMode="REPEAT" vWrapMode="CLAMP"/>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture name="$parentBackground" parentKey="background" atlas="_RaidFrame-Resource-Background" hWrapMode="REPEAT" vWrapMode="CLAMP" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</StatusBar>
+			<Frame parentKey="DispelOverlay" inherits="CompactUnitFrameDispelOverlayTemplate" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentBuff1" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff2" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff3" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff4" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff5" inherits="CompactBuffTemplate"/>
+			<Button name="$parentBuff6" inherits="CompactBuffTemplate"/>
+			<Button name="$parentDebuff1" parentKey="Debuff1" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff2" parentKey="Debuff2" inherits="CompactDebuffTemplate"/>
+			<Button name="$parentDebuff3" parentKey="Debuff3" inherits="CompactDebuffTemplate"/>
+			<Frame parentKey="PrivateAuraAnchor1" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="1" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="PrivateAuraAnchor2" inherits="CompactUnitPrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.PrivateAuraAnchor1" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+			<Button name="$parentDispelDebuff1" inherits="CompactDispelDebuffTemplate"/>
+			<Button name="$parentDispelDebuff2" inherits="CompactDispelDebuffTemplate"/>
+			<Button name="$parentDispelDebuff3" inherits="CompactDispelDebuffTemplate"/>
+			<Button name="$parentCenterStatusIcon" parentKey="centerStatusIcon" frameLevel="110" registerForClicks="LeftButtonDown,RightButtonUp" propagateMouseInputMask="Motion" mixin="CompactUnitFrameCenterStatusIconMixin">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture setAllPoints="true" parentKey="texture"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CenterDefensiveBuff" inherits="CompactBuffBaseTemplate" frameLevel="109">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.centerStatusIcon"/>
+				</Anchors>
+			</Button>
+			<Frame name="$parentReadyCheckIcon" parentKey="readyCheckIcon" ignoreParentAlpha="true" mixin="CompactUnitFrameReadyCheckMixin" frameLevel="120">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" ignoreParentAlpha="true" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CompactUnitFrame_OnLoad"/>
+			<OnEnter function="UnitFrame_OnEnter"/>
+			<OnLeave function="UnitFrame_OnLeave"/>
+			<OnShow function="CompactUnitFrame_OnShow"/>
+			<OnHide function="CompactUnitFrame_OnHide"/>
+		</Scripts>
+	</Button>
+</Ui>

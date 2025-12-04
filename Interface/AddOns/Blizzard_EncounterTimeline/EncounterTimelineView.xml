@@ -1,0 +1,34 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="EncounterTimelineViewTemplate" mixin="EncounterTimelineViewMixin" flattenRenderLayers="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" alpha="0"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LineEnd" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-right" useAtlasSize="true"/>
+				<Texture parentKey="LineStart" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-left" useAtlasSize="true"/>
+				<Texture parentKey="LongDivider" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-cooldown-divider" useAtlasSize="true"/>
+				<Texture parentKey="QueueDivider" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-cooldown-divider" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+				<MaskTexture parentArray="lineBreakMasks" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-line-break-mask" useAtlasSize="true"/>
+			</Layer>
+			<!-- Sublevel here needs to be higher than the negative level used for the trail on event elements. -->
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="PipIcon" mixin="EncounterTimelineOrientedTextureMixin" atlas="combattimeline-pip" useAtlasSize="true"/>
+				<FontString parentKey="PipText" mixin="EncounterTimelineOrientedTextureMixin" font="SystemFont_Shadow_Large"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

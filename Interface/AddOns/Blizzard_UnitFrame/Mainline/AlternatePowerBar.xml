@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Script file="AlternatePowerBar.lua"/>
+
+	<StatusBar name="AlternatePowerBarTemplate" mixin="AlternatePowerBarMixin" virtual="true">
+	</StatusBar>
+
+	<StatusBar name="AlternatePowerBar" inherits="PlayerFrameAlternatePowerBarBaseTemplate, AlternatePowerBarTemplate, SecureFrameParentPropagationTemplate">
+		<KeyValues>
+			<KeyValue key="powerName" value="MANA" type="string" />
+			<KeyValue key="powerType" value="Enum.PowerType.Mana" type="global"/>
+		</KeyValues>
+	</StatusBar>
+</Ui>

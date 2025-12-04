@@ -22,7 +22,7 @@ TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};
 TutorialData.UI_Elements.BAGS_BAR =	{BagsBar};
 TutorialData.UI_Elements.MAIN_BAGS_BUTTON =	{MainMenuBarBackpackButton};
 TutorialData.UI_Elements.PLAYERSPELLS_MICROBUTTON = {PlayerSpellsMicroButton};
-TutorialData.UI_Elements.OTHER_MICROBUTTONS = {CharacterMicroButton, GuildMicroButton, ProfessionMicroButton, MainMenuMicroButton, AchievementMicroButton, CollectionsMicroButton, QuestLogMicroButton, LFDMicroButton, EJMicroButton};
+TutorialData.UI_Elements.OTHER_MICROBUTTONS = {CharacterMicroButton, GuildMicroButton, ProfessionMicroButton, MainMenuMicroButton, AchievementMicroButton, CollectionsMicroButton, QuestLogMicroButton, LFDMicroButton, EJMicroButton, HousingMicroButton};
 TutorialData.UI_Elements.STORE_MICROBUTTON = {StoreMicroButton};
 TutorialData.UI_Elements.TARGET_FRAME = {TargetFrame};
 TutorialData.UI_Elements.STATUS_TRACKING_BAR = {StatusTrackingBarManager};
@@ -166,6 +166,8 @@ TutorialData.RogueStealthSpells = {1833, 8676};
 TutorialData.HunterTamePetSpells = {883, 1515};
 
 TutorialData.NPEDungeonID = 2043;
+
+TutorialData.TabTargetingQuestID = 55184;
 
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.ClassData = {
@@ -363,7 +365,7 @@ TutorialData.Alliance = {
 
 	LookingForGroupQuest = 55992;
 
-	GetMountQuest = 58908;
+	GetMountQuest = 87547;
 
 	SpecChoiceQuest = 59587;
 
@@ -413,21 +415,7 @@ TutorialData.Alliance = {
 		DRUID =		59350,
 	};
 
-	SpecQuestTrackID = 62548;
-	SpecCompleteQuestTrackID = 62550;
-
-	SpecQuests = {
-		WARRIOR =	59594,
-		PALADIN =	59589,
-		HUNTER =	59586,
-		ROGUE =		59591,
-		PRIEST =	59590,
-		SHAMAN =	59592,
-		MAGE =		59587,
-		WARLOCK =	59593,
-		MONK =		59588,
-		DRUID =		58910,
-	};
+	SpecQuestTrackID = 87547;
 }
 
 -- ------------------------------------------------------------------------------------------------------------
@@ -459,7 +447,7 @@ TutorialData.Horde = {
 
 	LookingForGroupQuest = 59984;
 	
-	GetMountQuest = 60344;
+	GetMountQuest = 90840;
 
 	SpecChoiceQuest = 60348;
 
@@ -509,19 +497,5 @@ TutorialData.Horde = {
 		DRUID =		59951,
 	};
 
-	SpecQuestTrackID = 62547;
-	SpecCompleteQuestTrackID = 62551;
-
-	SpecQuests = {
-		WARRIOR =	60357,
-		PALADIN =	60350,
-		HUNTER =	60347,
-		ROGUE =		60352,
-		PRIEST =	60351,
-		SHAMAN =	60353,
-		MAGE =		60348,
-		WARLOCK =	60355,
-		MONK =		60349,
-		DRUID =		60346,
-	};
+	SpecQuestTrackID = 90840;
 }

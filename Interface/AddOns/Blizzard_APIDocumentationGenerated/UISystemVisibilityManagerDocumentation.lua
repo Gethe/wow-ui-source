@@ -9,6 +9,7 @@ local UISystemVisibilityManager =
 		{
 			Name = "IsSystemVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +29,7 @@ local UISystemVisibilityManager =
 			Name = "SystemVisibilityChanged",
 			Type = "Event",
 			LiteralName = "SYSTEM_VISIBILITY_CHANGED",
+			UniqueEvent = true,
 		},
 	},
 

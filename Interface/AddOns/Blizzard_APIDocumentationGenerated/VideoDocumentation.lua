@@ -18,6 +18,7 @@ local Video =
 		{
 			Name = "GetDefaultGameWindowSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +33,7 @@ local Video =
 		{
 			Name = "GetGameWindowSizes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,8 +56,18 @@ local Video =
 			},
 		},
 		{
+			Name = "IsSpellVisualDensitySystemSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetGameWindowSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -71,46 +83,55 @@ local Video =
 			Name = "AdapterListChanged",
 			Type = "Event",
 			LiteralName = "ADAPTER_LIST_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "DisplaySizeChanged",
 			Type = "Event",
 			LiteralName = "DISPLAY_SIZE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GlueScreenshotFailed",
 			Type = "Event",
 			LiteralName = "GLUE_SCREENSHOT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GlueScreenshotStarted",
 			Type = "Event",
 			LiteralName = "GLUE_SCREENSHOT_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GlueScreenshotSucceeded",
 			Type = "Event",
 			LiteralName = "GLUE_SCREENSHOT_SUCCEEDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GxRestarted",
 			Type = "Event",
 			LiteralName = "GX_RESTARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScreenshotFailed",
 			Type = "Event",
 			LiteralName = "SCREENSHOT_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScreenshotStarted",
 			Type = "Event",
 			LiteralName = "SCREENSHOT_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScreenshotSucceeded",
 			Type = "Event",
 			LiteralName = "SCREENSHOT_SUCCEEDED",
+			SynchronousEvent = true,
 		},
 	},
 

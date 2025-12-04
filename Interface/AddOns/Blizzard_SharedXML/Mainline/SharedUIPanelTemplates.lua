@@ -45,13 +45,6 @@ function MagicButton_OnLoad(self)
 	end
 end
 
-function DynamicResizeButton_Resize(self)
-	local padding = 40;
-	local width = self:GetWidth();
-	local textWidth = self:GetTextWidth() + padding;
-	self:SetWidth(math.max(width, textWidth));
-end
-
 -- Frame template utilities to show/hide various decorative elements and to resize content areas
 function FrameTemplate_SetAtticHeight(self, atticHeight)
 	if self.bottomInset then
@@ -110,8 +103,8 @@ local function ButtonFrameTemplate_UpdateAnchors(self, isPortraitMode)
 	ButtonFrameTemplate_UpdateRegionAnchor(self.Inset, isPortraitMode and 4 or 9);
 
 	if self.TitleContainer then
-		self.TitleContainer:SetPoint("TOPLEFT", self, "TOPRIGHT", isPortraitMode and 58 or 0, -1);
-		self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPLEFT", isPortraitMode and -24 or 0, -1);
+		self.TitleContainer:SetPoint("TOPLEFT", self, "TOPLEFT", isPortraitMode and 58 or 0, -1);
+		self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", isPortraitMode and -24 or 0, -1);
 	end
 end
 
@@ -213,66 +206,6 @@ function EditBox_SetFocus (self)
 	self:SetFocus();
 end
 
-function InputBoxInstructions_OnTextChanged(self)
-	self.Instructions:SetShown(self:GetText() == "")
-end
-
-function InputBoxInstructions_UpdateColorForEnabledState(self, color)
-	if color then
-		self:SetTextColor(color:GetRGBA());
-	end
-end
-
-function InputBoxInstructions_OnDisable(self)
-	InputBoxInstructions_UpdateColorForEnabledState(self, self.disabledColor);
-end
-
-function InputBoxInstructions_OnEnable(self)
-	InputBoxInstructions_UpdateColorForEnabledState(self, self.enabledColor);
-end
-
-function SearchBoxTemplate_OnLoad(self)
-	self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-	self:SetTextInsets(16, 20, 0, 0);
-	self.Instructions:SetText(self.instructionText);
-	self.Instructions:ClearAllPoints();
-	self.Instructions:SetPoint("TOPLEFT", self, "TOPLEFT", 16, 0);
-	self.Instructions:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -20, 0);
-end
-
-function SearchBoxTemplate_OnEditFocusLost(self)
-	if ( self:GetText() == "" ) then
-		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-		self.clearButton:Hide();
-	end
-end
-
-function SearchBoxTemplate_OnEditFocusGained(self)
-	self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-	self.clearButton:Show();
-end
-
-function SearchBoxTemplate_OnTextChanged(self)
-	if ( not self:HasFocus() and self:GetText() == "" ) then
-		self.searchIcon:SetVertexColor(0.6, 0.6, 0.6);
-		self.clearButton:Hide();
-	else
-		self.searchIcon:SetVertexColor(1.0, 1.0, 1.0);
-		self.clearButton:Show();
-	end
-	InputBoxInstructions_OnTextChanged(self);
-end
-
-function SearchBoxTemplate_ClearText(self)
-	self:SetText("");
-	self:ClearFocus();
-end
-
-function SearchBoxTemplateClearButton_OnClick(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	SearchBoxTemplate_ClearText(self:GetParent());
-end
-
 UIPanelButtonMixin = CreateFromMixins(DisabledTooltipButtonMixin);
 
 function UIPanelButtonMixin:OnEnter()
@@ -288,6 +221,17 @@ function UIPanelButtonMixin:OnEnter()
 			DisabledTooltipButtonMixin.OnEnter(self);
 		end
 	end
+end
+
+UIPanelButtonHeightScaledMixin = CreateFromMixins(UIPanelButtonMixin);
+
+function UIPanelButtonHeightScaledMixin:OnLoad()
+	local height = self:GetHeight();
+	local templateHeight = C_XMLUtil.GetTemplateInfo("UIPanelButtonTemplate").height;
+
+	local scale = height / templateHeight;
+	self.Left:SetWidth(self.Left:GetWidth() * scale);
+	self.Right:SetWidth(self.Right:GetWidth() * scale);
 end
 
 PanelTabButtonMixin = {};
@@ -377,7 +321,9 @@ function SidePanelTabButtonMixin:SetChecked(checked)
 	else
 		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize);
 	end
-	self.SelectedTexture:SetShown(checked);
+	if self.SelectedTexture then
+		self.SelectedTexture:SetShown(checked);
+	end
 end
 
 function SidePanelTabButtonMixin:OnEnter()
@@ -550,6 +496,12 @@ function PanelTemplates_SetTabShown(frame, index, shown)
 	end
 end
 
+function PanelTemplates_SetAllTabsShown(frame, shown)
+	for i = 1, frame.numTabs do
+		PanelTemplates_SetTabShown(frame, i, shown);
+	end
+end
+
 function PanelTemplates_DeselectTab(tab)
 	tab.Left:Show();
 	tab.Middle:Show();
@@ -669,117 +621,6 @@ end
 function ScrollingEdit_OnCursorChanged(self, x, y, w, h)
 	ScrollingEdit_SetCursorOffsets(self, y, h);
 	self.handleCursorChange = true;
-end
-
-NumericInputSpinnerMixin = {};
-
--- "public"
-function NumericInputSpinnerMixin:SetValue(value)
-	local newValue = Clamp(value, self.min or -math.huge, self.max or math.huge);
-	local clampIfExceededRange = self.clampIfInputExceedsRange and (value ~= newValue);
-	local changed = newValue ~= self.currentValue;
-	if clampIfExceededRange or changed then
-		self.currentValue = newValue;
-		self:SetNumber(newValue);
-
-		if self.highlightIfInputExceedsRange and clampIfExceededRange then
-			self:HighlightText();
-		end
-
-		if changed and self.onValueChangedCallback then
-			self.onValueChangedCallback(self, self:GetNumber());
-		end
-	end
-end
-
-function NumericInputSpinnerMixin:SetMinMaxValues(min, max)
-	if self.min ~= min or self.max ~= max then
-		self.min = min;
-		self.max = max;
-
-		self:SetValue(self:GetValue());
-	end
-end
-
-function NumericInputSpinnerMixin:GetValue()
-	return self.currentValue or self.min or 0;
-end
-
-function NumericInputSpinnerMixin:SetOnValueChangedCallback(onValueChangedCallback)
-	self.onValueChangedCallback = onValueChangedCallback;
-end
-
-function NumericInputSpinnerMixin:Increment(amount)
-	self:SetValue(self:GetValue() + (amount or 1));
-end
-
-function NumericInputSpinnerMixin:Decrement(amount)
-	self:SetValue(self:GetValue() - (amount or 1));
-end
-
-function NumericInputSpinnerMixin:SetEnabled(enable)
-	self.IncrementButton:SetEnabled(enable);
-	self.DecrementButton:SetEnabled(enable);
-	GetEditBoxMetatable().__index.SetEnabled(self, enable);
-end
-
-function NumericInputSpinnerMixin:Enable()
-	self:SetEnabled(true)
-end
-
-function NumericInputSpinnerMixin:Disable()
-	self:SetEnabled(false)
-end
-
--- "private"
-function NumericInputSpinnerMixin:OnTextChanged()
-	self:SetValue(self:GetNumber());
-end
-
-local MAX_TIME_BETWEEN_CHANGES_SEC = .5;
-local MIN_TIME_BETWEEN_CHANGES_SEC = .075;
-local TIME_TO_REACH_MAX_SEC = 3;
-
-function NumericInputSpinnerMixin:StartIncrement()
-	self.incrementing = true;
-	self.startTime = GetTime();
-	self.nextUpdate = MAX_TIME_BETWEEN_CHANGES_SEC;
-	self:SetScript("OnUpdate", self.OnUpdate);
-	self:Increment();
-	self:ClearFocus();
-end
-
-function NumericInputSpinnerMixin:EndIncrement()
-	self:SetScript("OnUpdate", nil);
-end
-
-function NumericInputSpinnerMixin:StartDecrement()
-	self.incrementing = false;
-	self.startTime = GetTime();
-	self.nextUpdate = MAX_TIME_BETWEEN_CHANGES_SEC;
-	self:SetScript("OnUpdate", self.OnUpdate);
-	self:Decrement();
-	self:ClearFocus();
-end
-
-function NumericInputSpinnerMixin:EndDecrement()
-	self:SetScript("OnUpdate", nil);
-end
-
-function NumericInputSpinnerMixin:OnUpdate(elapsed)
-	self.nextUpdate = self.nextUpdate - elapsed;
-	if self.nextUpdate <= 0 then
-		if self.incrementing then
-			self:Increment();
-		else
-			self:Decrement();
-		end
-
-		local totalElapsed = GetTime() - self.startTime;
-
-		local nextUpdateDelta = Lerp(MAX_TIME_BETWEEN_CHANGES_SEC, MIN_TIME_BETWEEN_CHANGES_SEC, Saturate(totalElapsed / TIME_TO_REACH_MAX_SEC));
-		self.nextUpdate = self.nextUpdate + nextUpdateDelta;
-	end
 end
 
 MaximizeMinimizeButtonFrameMixin = {};
@@ -967,7 +808,7 @@ local FOO_COLUMN_INFO = {
 };
 --]]
 
-function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
+function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo, extraColumnXOffset)
 	self.columnHeaders:ReleaseAll();
 
 	local extraHeader = nil;
@@ -975,7 +816,8 @@ function ColumnDisplayMixin:LayoutColumns(columnInfo, extraColumnInfo)
 		extraHeader = self.columnHeaders:Acquire();
 		extraHeader:SetText(extraColumnInfo.title);
 		extraHeader:SetWidth(extraColumnInfo.width);
-		extraHeader:SetPoint("BOTTOMRIGHT", -28, 1);
+		--Added extraColumnXOffset to replace hardcoded formatting of extra columns. If more panels use this template in the future it may be worth reworking how the extra column gets laid out
+		extraHeader:SetPoint("BOTTOMRIGHT", extraColumnXOffset or -28, 1);
 		extraHeader:SetID(#columnInfo + 1);
 		extraHeader:Show();
 	end
@@ -1088,6 +930,7 @@ function UIResettableDropdownButtonMixin:OnLoad()
 		end
 
 		self.ResetButton:Hide();
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	end);
 end
 
@@ -1106,28 +949,6 @@ end
 
 function UIResettableDropdownButtonMixin:SetResetFunction(resetFunction)
 	self.resetFunction = resetFunction;
-end
-
-DialogHeaderMixin = {};
-
-function DialogHeaderMixin:OnLoad()
-	if self.textString then
-		self:Setup(self.textString);
-	end
-end
-
-function DialogHeaderMixin:Setup(text)
-	self.Text:SetText(text);
-	self:UpdateWidth();
-end
-
-function DialogHeaderMixin:SetHeaderFont(font)
-	self.Text:SetFontObject(font);
-	self:UpdateWidth();
-end
-
-function DialogHeaderMixin:UpdateWidth()
-	self:SetWidth(self.Text:GetWidth() + self.headerTextPadding);
 end
 
 NineSliceCheckButtonMixin = {};
@@ -1482,6 +1303,21 @@ function DropdownWithSteppersMixin:Decrement()
 	self.Dropdown:Decrement();
 end
 
+function DropdownWithSteppersMixin:HideSteppers()
+	self.DecrementButton:Hide();
+	self.IncrementButton:Hide();
+end
+
+function DropdownWithSteppersMixin:ShowSteppers()
+	self.DecrementButton:Show();
+	self.IncrementButton:Show();
+end
+
+function DropdownWithSteppersMixin:SetSteppersShown(shown)
+	self.DecrementButton:SetShown(shown);
+	self.IncrementButton:SetShown(shown);
+end
+
 function DropdownWithSteppersMixin:SetSteppersEnabled(canDecrement, canIncrement)
 	if self.Dropdown:IsEnabled() then
 		self.DecrementButton:SetEnabled(canDecrement);
@@ -1551,6 +1387,15 @@ function TopLevelParentScaleFrameMixin:UpdateScale()
 
 	if topLevelParent then
 		self:SetScale(topLevelParent:GetScale());
+
+		-- Set anchors to match topLevelParent anchors
+		-- This helps with handling any offsets for things like debug menu bars
+		if self.matchAnchors then
+			self:ClearAllPoints();
+			for i=1, topLevelParent:GetNumPoints() do
+				self:SetPoint(topLevelParent:GetPoint(i));
+			end
+		end
 	end
 end
 
@@ -1583,6 +1428,7 @@ end
 
 function PanelDragBarMixin:SetTarget(target)
 	self.target = target;
+	self.isMovingTarget = false;
 end
 
 function PanelDragBarMixin:OnDragStart()
@@ -1598,12 +1444,11 @@ function PanelDragBarMixin:OnDragStart()
 	end
 
 	if continueDragStart then
+		self.isMovingTarget = true;
 		target:StartMoving();
 	end
 
-	if SetCursor then
-		SetCursor("UI_MOVE_CURSOR");
-	end
+	self:UpdateCursor();
 end
 
 function PanelDragBarMixin:OnDragStop()
@@ -1619,12 +1464,11 @@ function PanelDragBarMixin:OnDragStop()
 	end
 
 	if continueDragStop then
+		self.isMovingTarget = false;
 		target:StopMovingOrSizing();
 	end
 
-	if SetCursor then
-		SetCursor(nil);
-	end
+	self:UpdateCursor();
 end
 
 function PanelDragBarMixin:SetOnDragStartCallback(onDragStartCallback)
@@ -1633,6 +1477,26 @@ end
 
 function PanelDragBarMixin:SetOnDragStopCallback(onDragStopCallback)
 	self.onDragStopCallback = onDragStopCallback;
+end
+
+function PanelDragBarMixin:OnEnter()
+	if self.showCursorOnHover then
+		self:UpdateCursor();
+	end
+end
+
+function PanelDragBarMixin:OnLeave()
+	if self.showCursorOnHover then
+		self:UpdateCursor();
+	end
+end
+
+function PanelDragBarMixin:UpdateCursor()
+	if SetCursor then
+		local showCursor = self.isMovingTarget or (self.showCursorOnHover and self:IsMouseMotionFocus());
+		local cursorStr = showCursor and "UI_MOVE_CURSOR" or nil;
+		SetCursor(cursorStr);
+	end
 end
 
 PanelResizeButtonMixin = {};
@@ -1689,6 +1553,10 @@ function PanelResizeButtonMixin:OnLeave()
 end
 
 function PanelResizeButtonMixin:OnMouseDown()
+	if not self:IsEnabled() then
+		return;
+	end
+
 	self.isActive = true;
 
 	local target = self.target;
@@ -1790,26 +1658,6 @@ function AlphaHighlightButtonMixin:SetPressed(pressed)
 	self:UpdateHighlightForState();
 end
 
-NumericInputBoxMixin = {};
-
-function NumericInputBoxMixin:OnTextChanged(isUserInput)
-	self.valueChangedCallback(self:GetNumber(), isUserInput);
-end
-
-function NumericInputBoxMixin:OnEditFocusLost()
-	EditBox_ClearHighlight(self);
-
-	self.valueFinalizedCallback(self:GetNumber());
-end
-
-function NumericInputBoxMixin:SetOnValueChangedCallback(valueChangedCallback)
-	self.valueChangedCallback = valueChangedCallback;
-end
-
-function NumericInputBoxMixin:SetOnValueFinalizedCallback(valueFinalizedCallback)
-	self.valueFinalizedCallback = valueFinalizedCallback;
-end
-
 IconSelectorPopupFrameTemplateMixin = {};
 
 IconSelectorPopupFrameModes = EnumUtil.MakeEnum(
@@ -1828,7 +1676,8 @@ local ValidIconSelectorCursorTypes = {
 	"spell",
 	"mount",
 	"battlepet",
-	"macro"
+	"macro",
+	"outfit"
 };
 
 local function IconSelectorPopupFrame_IconFilterToIconTypes(filter)
@@ -1920,19 +1769,19 @@ function IconSelectorPopupFrameTemplateMixin:UpdateDropdown()
 end
 
 function IconSelectorPopupFrameTemplateMixin:UpdateStateFromCursorType()
-		local cursorType = GetCursorInfo();
-		local isValidCursorType = false;
-		for _, validType in ipairs(ValidIconSelectorCursorTypes) do
-			if ( cursorType == validType ) then
-				isValidCursorType = true;
-				break;
-			end
+	local cursorType = GetCursorInfo();
+	local isValidCursorType = false;
+	for _, validType in ipairs(ValidIconSelectorCursorTypes) do
+		if ( cursorType == validType ) then
+			isValidCursorType = true;
+			break;
 		end
+	end
 
-		self.BorderBox.IconDragArea:SetShown(isValidCursorType);
-		self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
+	self.BorderBox.IconDragArea:SetShown(isValidCursorType);
+	self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
 	self.BorderBox.IconTypeDropdown:SetShown(not isValidCursorType);
-		self.IconSelector:SetShown(not isValidCursorType);
+	self.IconSelector:SetShown(not isValidCursorType);
 end
 
 function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
@@ -1952,6 +1801,11 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 				icon = select(9, C_PetJournal.GetPetInfoByPetID(ID));
 			elseif ( cursorType == "macro" ) then
 				icon = select(2, GetMacroInfo(ID));
+			elseif ( cursorType == "outfit" ) then
+				local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(ID);
+				if ( outfitInfo ) then
+					icon = outfitInfo.icon;
+				end
 			end
 
 			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(icon));
@@ -2368,84 +2222,6 @@ function SearchBoxListMixin:OnFocusGained()
 	self:SetSearchPreviewSelection(1);
 end
 
-MainMenuFrameMixin = {};
-
-local function HideAndClearAnchorsAndLayoutIndex(framePool, frame)
-	Pool_HideAndClearAnchors(framePool, frame);
-	frame.layoutIndex = nil;
-end
-
-function MainMenuFrameMixin:OnLoad()
-	if self.dialogHeaderFont then
-		self.Header:SetHeaderFont(self.dialogHeaderFont);
-	end
-
-	self.buttonPool = CreateFramePoolCollection();
-	self.buttonPool:CreatePool("BUTTON", self, self.buttonTemplate, HideAndClearAnchorsAndLayoutIndex);
-	self.buttonPool:CreatePool("BUTTON", self, self.goldRedButtonTemplate, HideAndClearAnchorsAndLayoutIndex);
-	self:Reset();
-end
-
-function MainMenuFrameMixin:Reset()
-	self.buttonPool:ReleaseAll();
-	self.sectionSpacing = nil;
-	self.nextLayoutIndex = 1;
-end
-
-function MainMenuFrameMixin:AddButton(text, callback, isDisabled, disabledText, useGoldRedButtonTemplate)
-	local template = useGoldRedButtonTemplate and self.goldRedButtonTemplate or self.buttonTemplate;
-	local newButton = self.buttonPool:Acquire(template);
-
-	newButton.layoutIndex = self.nextLayoutIndex;
-	self.nextLayoutIndex = self.nextLayoutIndex + 1;
-	newButton.topPadding = self.sectionSpacing;
-	self.sectionSpacing = nil;
-
-	newButton:SetText(text);
-	newButton:SetScript("OnClick", callback);
-
-	newButton:SetMotionScriptsWhileDisabled(true);
-	newButton:SetEnabled(not isDisabled);
-	if isDisabled and disabledText then
-		newButton:SetScript("OnEnter", function()
-			local tooltip = GetAppropriateTooltip();
-			tooltip:SetOwner(newButton, "ANCHOR_RIGHT");
-			tooltip:SetText(text);
-			GameTooltip_AddErrorLine(tooltip, disabledText);
-			tooltip:Show();
-		end);
-
-		newButton:SetScript("OnLeave", function()
-			GetAppropriateTooltip():Hide();
-		end);
-	else
-		newButton:SetScript("OnEnter", nil);
-		newButton:SetScript("OnLeave", nil);
-	end
-
-	newButton:Show();
-
-	self:MarkDirty();
-
-	return newButton;
-end
-
-function MainMenuFrameMixin:AddSection(customSpacing)
-	self.sectionSpacing = customSpacing or 20;
-end
-
-function MainMenuFrameMixin:AddCloseButton(customText, customSpacing)
-	self:AddSection(customSpacing);
-	self:AddButton(customText or CLOSE, function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_CONTINUE);
-		self:CloseMenu();
-	end);
-end
-
-function MainMenuFrameMixin:CloseMenu()
-	self:Hide();
-end
-
 SquareExpandButtonMixin = {};
 
 function SquareExpandButtonMixin:InitButton()
@@ -2549,63 +2325,6 @@ function ExpandBarMixin:SetEnabledState(isEnabled)
 	self.ExpandButton:SetEnabled(isEnabled);
 end
 
-LevelRangeFrameMixin = {};
-
-function LevelRangeFrameMixin:OnLoad()
-	self.MinLevel.nextEditBox = self.MaxLevel;
-	self.MaxLevel.nextEditBox = self.MinLevel;
-
-	local function OnTextChanged(...)
-		self:OnLevelRangeChanged();
-	end
-	self.MinLevel:SetScript("OnTextChanged", OnTextChanged);
-	self.MaxLevel:SetScript("OnTextChanged", OnTextChanged);
-end
-
-function LevelRangeFrameMixin:OnHide()
-	self:FixLevelRange();
-end
-
-function LevelRangeFrameMixin:SetLevelRangeChangedCallback(levelRangeChangedCallback)
-	self.levelRangeChangedCallback = levelRangeChangedCallback;
-end
-
-function LevelRangeFrameMixin:OnLevelRangeChanged()
-	if self.levelRangeChangedCallback then
-		local minLevel, maxLevel = self:GetLevelRange();
-		self.levelRangeChangedCallback(minLevel, maxLevel);
-	end
-end
-
-function LevelRangeFrameMixin:FixLevelRange()
-	local maxLevel = self.MaxLevel:GetNumber();
-	if maxLevel == 0 then
-		return;
-	end
-
-	local minLevel = self.MinLevel:GetNumber();
-	if minLevel > maxLevel then
-		self:SetMinLevel(maxLevel);
-	end
-end
-
-function LevelRangeFrameMixin:SetMinLevel(minLevel)
-	self.MinLevel:SetNumber(minLevel);
-end
-
-function LevelRangeFrameMixin:SetMaxLevel(maxLevel)
-	self.MaxLevel:SetNumber(maxLevel);
-end
-
-function LevelRangeFrameMixin:Reset()
-	self.MinLevel:SetText("");
-	self.MaxLevel:SetText("");
-end
-
-function LevelRangeFrameMixin:GetLevelRange()
-	return self.MinLevel:GetNumber(), self.MaxLevel:GetNumber();
-end
-
 UIPanelIconDropdownButtonMixin = { };
 
 function UIPanelIconDropdownButtonMixin:OnMouseDown()
@@ -2616,25 +2335,33 @@ function UIPanelIconDropdownButtonMixin:OnMouseUp(button, upInside)
 	self.Icon:AdjustPointsOffset(-1, 1);
 end
 
-ClearButtonMixin = {};
-function ClearButtonMixin:OnEnter()
-	self.texture:SetAlpha(1.0);
+BarDividerMixin = {};
+
+function BarDividerMixin:SetHeaderText(text, color)
+	local textColor = color or LIGHTGRAY_FONT_COLOR;
+	local textureColor = color or HIGHLIGHT_FONT_COLOR;
+
+	self.Text:SetText(text);
+	self.Text:SetTextColor(textColor:GetRGB());
+
+	local hasText = text ~= "";
+	self.Text:SetShown(hasText);
+	self.BarMask:SetShown(hasText);
+
+	self.BarTexture:SetVertexColor(textureColor:GetRGB());
 end
 
-function ClearButtonMixin:OnLeave()
-	self.texture:SetAlpha(0.5);
+function BarDividerMixin:SetMarginSpacing(spacing)
+	self.BarTexture:ClearAllPoints();
+	self.BarTexture:SetPoint("LEFT", spacing, 0);
+	self.BarTexture:SetPoint("RIGHT", -spacing, 0);
 end
 
-function ClearButtonMixin:OnMouseDown()
-	if self:IsEnabled() then
-		self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
-	end
-end
+ScrollBoxTextContainerMixin = {};
 
-function ClearButtonMixin:OnMouseUp()
-	self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -3);
-end
+function ScrollBoxTextContainerMixin:SetElementText(text, color)
+	self.Text:SetText(text);
 
-function ClearButtonMixin:OnClick()
-	SearchBoxTemplateClearButton_OnClick(self);
+	local textColor = color or LIGHTGRAY_FONT_COLOR;
+	self.Text:SetTextColor(textColor:GetRGB());
 end

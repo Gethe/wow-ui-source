@@ -1,0 +1,561 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+    <Button name="NeighborhoodRosterEntryTemplate" registerForClicks="RightButtonUp" virtual="true" mixin="NeighborhoodRosterEntryMixin">
+		<Size x="600" y="20"/>
+		<Frames>
+			<Frame parentKey="NameFrame">
+				<Size x="275" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" x="-2" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="PresenceIcon">
+							<Size x="16" y="16"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Name" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+							<Size x="136" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RankIcon">
+							<Size x="12" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Status" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="92" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameFrame" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Plot" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false">
+					<Size x="68" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Status" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+                <FontString parentKey="Subdivision" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="false" hidden="true">
+					<Size x="100" y="0"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Plot" relativePoint="RIGHT" x="8" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Divider" atlas="housing-bulletinboard-list-item-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<NormalTexture parentKey="NormalTexture" setAllPoints="true" atlas="housing-bulletinboard-list-item-bg-dark"/>
+		<HighlightTexture file="Interface\FriendsFrame\UI-FriendsFrame-HighlightBar" alphaMode="ADD" setAllPoints="true"/>
+	</Button>
+
+	<Button name="BulletinBoardColumnDisplayButtonTemplate" virtual="true">
+		<Size x="10" y="24"/>
+		<ButtonText>
+			<Anchors>
+				<Anchor point="LEFT" x="8" y="0"/>
+			</Anchors>
+		</ButtonText>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-8" y="5"/>
+				<Anchor point="BOTTOMRIGHT" x="-8" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+		<Scripts>
+			<OnClick function="ColumnDisplayButton_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="BulletinBoardColumnDisplayTemplate" mixin="BulletinBoardColumnDisplayMixin" virtual="true">
+		<Size x="0" y="60"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="DecorativeLine" atlas="housing-bulletinboard-list-header-decorative-line" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-12" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" x="12" y="-5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="NeighborhoodRosterTemplate" virtual="true" mixin="NeighborhoodRosterMixin">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Size x="600" y="400"/>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Background" atlas="housing-bulletinboard-list-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-60"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="40"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NeighborhoodNameText" inherits="Game15Font_Shadow" text="Neighborhood Name Here">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="InviteResidentButton" inherits="UIPanelButtonTemplate" hidden="true">
+				<Size x="130" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-42" y="9"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontDisableSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+			<Frame parentKey="ColumnDisplay" useParentLevel="true" inherits="BulletinBoardColumnDisplayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="30" y="-40"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="-30" y="-40"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="sortingFunction" value="HousingBulletinBoardRosterColumnDisplay_OnClick" type="global"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="30" y="-100"/>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="40"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-21" y="-108"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-21" y="43"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+	</Frame>
+
+	<Frame name="PendingInviteTemplate" virtual="true">
+		<Size x="280" y="30"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PlayerNameText" inherits="GameFontHighlight" justifyH="LEFT">
+					<Size x="180"/>
+					<Anchors>
+						<Anchor point="LEFT" x="5"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="housing-bulletinboard-list-item-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" atlas="housing-bulletinboard-list-item-bg-dark"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="RemoveButton">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-15"/>
+				</Anchors>
+				<DisabledTexture atlas="RedButton-Exit-Disabled"/>
+				<NormalTexture atlas="RedButton-Exit"/>
+				<PushedTexture atlas="RedButton-exit-pressed"/>
+				<HighlightTexture atlas="RedButton-Highlight" alphaMode="ADD"/>
+			</Button>
+			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.RemoveButton" relativePoint="LEFT" x="-5"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingInviteResidentFrame" mixin="HousingInviteResidentFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="340" y="340"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="housing-basic-panel-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="InviteHeader" inherits="Game15Font_Shadow" text="HOUSING_NEIGHBORHOOD_INVITE_TITLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="SearchLabel" inherits="Game13FontShadow" text="HOUSING_NEIGHBORHOOD_INVITE_SEARCH_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-70"/>
+					</Anchors>
+				</FontString>
+				
+				<FontString parentKey="ErrorText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+					<Size x="280" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.SearchLabel" relativePoint="BOTTOMLEFT" y="-55"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+
+				<FontString parentKey="PendingInvitesLabel" inherits="Game13FontShadow" text="HOUSING_NEIGHBORHOOD_INVITE_INVITATIONS_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ErrorText" relativePoint="BOTTOMLEFT" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="PendingInviteBackground" atlas="housing-bulletinboard-list-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PendingInvitesLabel" relativePoint="BOTTOMLEFT" x="-16" y="-5"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-20" y="-50"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+
+			<EditBox parentKey="PlayerSearchBox" autoFocus="false" letters="255" inherits="AutoCompleteEditBoxTemplate" mixin="HousingInviteSearchBoxMixin">
+				<Size x="280" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.SearchLabel" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LeftBorder" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture parentKey="RightBorder" file="Interface\Common\Common-Input-Border">
+							<Size x="8" y="20"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+							<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						</Texture>
+						<Texture parentKey="MiddleBorder" file="Interface\Common\Common-Input-Border">
+							<Size x="0" y="20"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.LeftBorder" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.RightBorder" relativePoint="LEFT"/>
+							</Anchors>
+							<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString parentKey="FillText" inherits="FriendsFont_Small" justifyH="LEFT" justifyV="MIDDLE" text="HOUSING_NEIGHBORHOOD_INVITE_SEARCH">
+							<Anchors>
+								<Anchor point="LEFT" x="3" y="0"/>
+							</Anchors>
+							<Color r="0.35" g="0.35" b="0.35"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnterPressed method="OnEnterPressed"/>
+					<OnEscapePressed method="OnEscapePressed"/>
+					<OnTextChanged method="OnTextChanged"/>
+				</Scripts>
+				<FontString inherits="FriendsFont_Small">
+					<Color r="1" g="1" b="1" />
+				</FontString>
+			</EditBox>
+
+			<Button parentKey="SendInviteButton" inherits="UIPanelButtonTemplate" text="HOUSING_NEIGHBORHOOD_INVITE_BUTTON_LABEL">
+				<Size x="116" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PlayerSearchBox" relativePoint="BOTTOMLEFT" x="-5" y="-2"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<HighlightFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontHighlightSmall"/>
+				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+			</Button>
+
+			<Frame parentKey="InviteButtonLoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.SendInviteButton" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="PendingListLoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.PendingInviteBackground" relativePoint="CENTER" x="5"/>
+				</Anchors>
+			</Frame>
+
+			<ScrollFrame parentKey="ScrollFrame" inherits="ScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.PendingInvitesLabel" relativePoint="BOTTOMLEFT" y="-5"/>
+					<Anchor point="BOTTOMRIGHT" x="-15" y="10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="scrollBarX" value="-13" type="number"/>
+					<KeyValue key="scrollBarTopY" value="-4" type="number"/>
+					<KeyValue key="scrollBarBottomY" value="4" type="number"/>
+				</KeyValues>
+				<ScrollChild>
+					<Frame parentKey="InviteList" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="leftPadding" value="5" type="number"/>
+							<KeyValue key="topPadding" value="5" type="number"/>
+							<KeyValue key="spacing" value="0" type="number"/>
+						</KeyValues>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
+	</Frame>
+
+	<Frame name="HousingBulletinBoardFrame" mixin="HousingBulletinBoardFrameMixin" inherits="TabSystemOwnerTemplate" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Size x="600" y="400"/>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-wood-frame" setAllPoints="true"/>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-7">
+				<Texture parentKey="Background" atlas="housing-dashboard-bg-elwynn">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="100" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-100" y="-60"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Footer" atlas="housing-basic-panel-footer">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="1" y="40"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="ResidentsTab" hidden="true" inherits="NeighborhoodRosterTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="RosterTabButton">
+				<Size x="187" y="30"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="3" y="-45"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" inherits="Game13FontShadow" text="HOUSING_BULLETINBOARD_NEIGHBORHOOD_ROSTER">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture setAllPoints="true" atlas="housing-woodsign"/>
+			</Button>
+			<Frame parentKey="FoliageDecoration" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PlantDecoLeft" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.RosterTabButton" relativePoint="BOTTOMLEFT" x="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PlantDecoButtonRight" atlas="housing-decorative-foliage-small-left" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.RosterTabButton" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="PlantDecoRight" atlas="housing-decorative-foliage-right" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="-6" y="-56"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<DropdownButton parentKey="GearDropdown" inherits="UIPanelIconDropdownButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CloseButton" relativePoint="BOTTOM" x="-5" y="-9"/>
+				</Anchors>
+			</DropdownButton>
+		</Frames>
+	</Frame>
+
+	<Frame name="NeighborhoodChangeNameDialog" mixin="NeighborhoodChangeNameDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+		<Size x="400" y="230"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="Game12Font" text="HOUSING_NEIGHBORHOOD_SETTINGS_CHANGENAME">
+					<Anchors>
+						<Anchor point="TOP" y="-20"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NameLabel" inherits="Game15Font_Shadow" text="HOUSING_NEIGHBORHOOD_SETTINGS_CURRENTNAME">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="28" y="-50"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NameText" inherits="Game15Font_Shadow" text="neighborhood name here">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.NameLabel" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NewNameLabel" inherits="Game15Font_Shadow" text="HOUSING_NEIGHBORHOOD_SETTINGS_NEWNAME">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" y="-8"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="CostLabel" inherits="Game15Font_Shadow" text="HOUSING_NEIGHBORHOOD_SETTINGS_COST">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" relativePoint="BOTTOMLEFT" y="-35"/>
+					</Anchors>
+					<Color r="1.0" g="0.82" b="0"/>
+				</FontString>
+				<FontString parentKey="NameError" inherits="Game15Font_Shadow" text="HOUSING_CREATENEIGHBORHOOD_ERROR_BADNAME" justifyV="BOTTOM" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="BOTTOMLEFT" y="-4"/>
+						<Anchor point="BOTTOMRIGHT" x="-28" y="54"/>
+					</Anchors>
+					<Color color="PURE_RED_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="CostIcon" enableMouse="true" mixin="NeighborhoodChangeNameCostMixin">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.CostLabel" relativePoint="TOPRIGHT" x="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+			<EditBox parentKey="NameEditBox" autoFocus="false" inherits="InputBoxInstructionsTemplate">
+				<Size x="241" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.NewNameLabel" relativePoint="BOTTOMLEFT" x="5" y="-5"/>
+				</Anchors>
+			</EditBox>
+			<Button parentKey="ConfirmButton" inherits="SharedButtonSmallTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CancelButton" inherits="SharedButtonSmallTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
+</Ui>

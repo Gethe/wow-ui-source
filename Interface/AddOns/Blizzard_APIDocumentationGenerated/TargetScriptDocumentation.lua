@@ -9,6 +9,7 @@ local TargetScript =
 			Name = "AssistUnit",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +38,7 @@ local TargetScript =
 			Name = "FocusUnit",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +57,7 @@ local TargetScript =
 		{
 			Name = "TargetDirectionEnemy",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +72,7 @@ local TargetScript =
 		{
 			Name = "TargetDirectionFriend",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +95,7 @@ local TargetScript =
 		{
 			Name = "TargetNearest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,6 +105,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestEnemy",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +115,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestEnemyPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +125,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestFriend",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,6 +135,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestFriendPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -136,6 +145,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestPartyMember",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -145,6 +155,7 @@ local TargetScript =
 		{
 			Name = "TargetNearestRaidMember",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +169,7 @@ local TargetScript =
 		{
 			Name = "TargetPriorityHighlightStart",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +185,7 @@ local TargetScript =
 			Name = "TargetUnit",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

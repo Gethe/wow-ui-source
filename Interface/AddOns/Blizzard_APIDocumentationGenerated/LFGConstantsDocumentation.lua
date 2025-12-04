@@ -3,6 +3,21 @@ local LFGConstants =
 	Tables =
 	{
 		{
+			Name = "LFGEntryGeneralPlaystyle",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "LFGEntryGeneralPlaystyle", EnumValue = 0 },
+				{ Name = "Learning", Type = "LFGEntryGeneralPlaystyle", EnumValue = 1 },
+				{ Name = "FunRelaxed", Type = "LFGEntryGeneralPlaystyle", EnumValue = 2 },
+				{ Name = "FunSerious", Type = "LFGEntryGeneralPlaystyle", EnumValue = 3 },
+				{ Name = "Expert", Type = "LFGEntryGeneralPlaystyle", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "LFGEntryPlaystyle",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -14,6 +29,22 @@ local LFGConstants =
 				{ Name = "Standard", Type = "LFGEntryPlaystyle", EnumValue = 1 },
 				{ Name = "Casual", Type = "LFGEntryPlaystyle", EnumValue = 2 },
 				{ Name = "Hardcore", Type = "LFGEntryPlaystyle", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "LFGListDisplayType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "RoleCount", Type = "LFGListDisplayType", EnumValue = 0 },
+				{ Name = "RoleEnumerate", Type = "LFGListDisplayType", EnumValue = 1 },
+				{ Name = "ClassEnumerate", Type = "LFGListDisplayType", EnumValue = 2 },
+				{ Name = "HideAll", Type = "LFGListDisplayType", EnumValue = 3 },
+				{ Name = "PlayerCount", Type = "LFGListDisplayType", EnumValue = 4 },
+				{ Name = "Comment", Type = "LFGListDisplayType", EnumValue = 5 },
 			},
 		},
 		{

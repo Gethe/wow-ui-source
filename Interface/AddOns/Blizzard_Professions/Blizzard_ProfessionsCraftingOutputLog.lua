@@ -10,7 +10,7 @@ end
 ProfessionsCraftingOutputLogElementMixin = {};
 
 function ProfessionsCraftingOutputLogElementMixin:OnLoad()
-	self.itemButtonPool = CreateFramePool("ItemButton", self);
+	self.itemButtonPool = CreateFramePool("ItemButton", self, "ProfessionsButtonTemplate");
 		
 	self.ItemContainer.CritText:SetScript("OnLeave", GameTooltip_Hide);
 	self.ItemContainer.Item:SetScript("OnLeave", GameTooltip_Hide);
@@ -85,8 +85,11 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 	if resultData.resourcesReturned then
 		local container = ContinuableContainer:Create();
 		for index, resource in ipairs(resultData.resourcesReturned) do
-			local resourceItem = Item:CreateFromItemID(resource.itemID);
-			container:AddContinuable(resourceItem);
+			local reagent = resource.reagent;
+			if reagent.itemID then
+				local resourceItem = Item:CreateFromItemID(reagent.itemID);
+				container:AddContinuable(resourceItem);
+			end
 		end
 
 		local function FactoryFunction(index)
@@ -108,18 +111,29 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 		local function OnResourcesLoaded()
 			for index, itemButton in ipairs(itemButtons) do
 				local resource = resultData.resourcesReturned[index];
+				local reagent = resource.reagent;
+				local count = 0;
+				local itemID = reagent.itemID;
+				if itemID then
+					count = resource.quantity;
+				else
+					local currencyID = reagent.currencyID;
+					if currencyID then
+						local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+						count = currencyInfo.quantity;
+					end
+				end
 
-				local item = Item:CreateFromItemID(resource.itemID);
-				itemButton:SetItem(resource.itemID);
-				itemButton:SetItemButtonCount(resource.quantity);
-				ReconfigureCountPointAndScale(itemButton);
-				itemButton:Show();
-
-				itemButton:SetScript("OnLeave", GameTooltip_Hide);
+				itemButton:SetReagent(reagent, count);
 				itemButton:SetScript("OnEnter", function(button)
 					GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-					GameTooltip:SetItemByID(resource.itemID);
+					Professions.SetupReagentTooltip(reagent);
+					GameTooltip:Show();
 				end);
+
+				ReconfigureCountPointAndScale(itemButton);
+				itemButton:Show();
+				itemButton:SetScript("OnLeave", GameTooltip_Hide);
 			end
 			
 			self.Resources.Text:SetScript("OnEnter", function(text)
@@ -166,21 +180,17 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 		local function OnBonusesLoaded()
 			for index, itemButton in ipairs(itemButtons) do
 				local childData = resultData.childData[index];
+				local count;
 				if childData.itemID then
-					local item = Item:CreateFromItemID(childData.itemID);
-					itemButton:SetItem(childData.itemID);
-					itemButton:SetItemButtonCount(childData.quantity);
-					ReconfigureCountPointAndScale(itemButton);
-
+					count = childData.quantity;
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
 						GameTooltip:SetItemByID(childData.itemID);
 					end);
 				elseif childData.currencyID then
-					local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(childData.currencyID);
-					itemButton:SetItemButtonTexture(currencyInfo.iconFileID);
-					itemButton:SetItemButtonCount(childData.showCurrencyText and childData.quantity or 1);
-					ReconfigureCountPointAndScale(itemButton);
+					if childData.showCurrencyText then
+						count = childData.quantity or 1;
+					end
 
 					itemButton:SetScript("OnEnter", function(button)
 						GameTooltip:SetOwner(button, "ANCHOR_RIGHT", 0, 0);
@@ -196,6 +206,10 @@ function ProfessionsCraftingOutputLogElementMixin:Init()
 						GameTooltip:ProcessInfo(tooltipInfo);
 					end);
 				end
+
+				itemButton:SetReagent(childData.reagent, count);
+				ReconfigureCountPointAndScale(itemButton);
+
 				itemButton:Show();
 				itemButton:SetScript("OnLeave", GameTooltip_Hide);
 			end
@@ -322,8 +336,14 @@ function ProfessionsCraftingOutputLogMixin:RestartTimer(waitSeconds)
 end
 
 function ProfessionsCraftingOutputLogMixin:OnEvent(event, ...)
-	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" or event == "TRADE_SKILL_CURRENCY_REWARD_RESULT" then
+	if event == "TRADE_SKILL_ITEM_CRAFTED_RESULT" then
 		local resultData = ...;
+		resultData.reagent = Professions.CreateItemReagent(resultData.itemID);
+		self:ProcessResultData(resultData);
+
+	elseif event == "TRADE_SKILL_CURRENCY_REWARD_RESULT" then
+		local resultData = ...;
+		resultData.reagent = Professions.CreateCurrencyReagent(resultData.currencyID);
 		self:ProcessResultData(resultData);
 	end
 end

@@ -269,7 +269,7 @@ end
 
 function MawBuffMixin:OnClick()
 	if (IsModifiedClick("CHATLINK")) then
-		ChatEdit_InsertLink(GetMawPowerLinkBySpellID(self.spellID));
+		ChatFrameUtil.InsertLink(GetMawPowerLinkBySpellID(self.spellID));
 		return;
 	end
 end

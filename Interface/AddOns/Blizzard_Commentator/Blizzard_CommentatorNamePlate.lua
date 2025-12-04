@@ -1,24 +1,14 @@
-
-local barHeight = 18;
 local customOptions = 
 {
-	healthBarHeight = barHeight,
-	castBarHeight = barHeight,
-	castBarFontHeight = 12,
 	maxHealOverflowRatio = 1.0,
-	ignoreIconSize = true,
-	ignoreIconPoint = true,
-	ignoreBarSize = true,
-	ignoreBarPoints = true,
 	ignoreOverAbsorbGlow = true,
 	ignoreOverHealAbsorbGlow = true,
-	nameFont = SystemFont_LargeNamePlateFixed,
 };
 
 CommentatorNamePlateMixin = {}
 
 function CommentatorNamePlateMixin:OnLoad()
-	CompactUnitFrame_OnLoad(self);
+	NamePlateUnitFrameMixin.OnLoad(self);
 	
 	-- Purposely inverting the upscaling so that our frame appears 1:1 at 1080p.
 	self:SetScale(COMMENTATOR_INVERSE_SCALE);
@@ -32,12 +22,8 @@ function CommentatorNamePlateMixin:OnLoad()
 	-- if necessary; returning true will prevent CUF from continuing in the case there is
 	-- any conflicting behavior. Note that functions like OnUpdate and OnSizeChanged cannot
 	-- be assigned in our XML because they are hijacked by CUF.
-	self.SizeChangedOverride = self.OnSizeChangedOverride;
-	self.SetupOverride = self.OnSetupOverride;
 	self.UpdateNameOverride = self.OnUpdateNameOverride;
 	self.UpdateHealthBorderOverride = self.OnUpdateHealthBorderOverride;
-	self.SetBarPointsOverride = self.OnSetBarPointsOverride;
-	self.CommentatorTeamSwapped = self.OnCommentatorTeamSwapped;
 
 	-- We cannot leverage the setup functions or frame functions in Blizzard_Nameplates because many
 	-- values are repeatedly overwritten (ex. UpdateNamePlateOptions).
@@ -49,13 +35,10 @@ function CommentatorNamePlateMixin:OnLoad()
 end
 
 function CommentatorNamePlateMixin:OnEvent(event, ...)
-	CompactUnitFrame_OnEvent(self, event, ...);
+	NamePlateUnitFrameMixin.OnEvent(self, event, ...);
 
-	if ( event == "COMMENTATOR_TEAMS_SWAPPED" ) then
-		local swapped = ...;
-		if self.CommentatorTeamSwapped then
-			self:CommentatorTeamSwapped(swapped);
-		end
+	if event == "COMMENTATOR_TEAMS_SWAPPED" then
+		self:SetBorderColors();
 	elseif event == "LOSS_OF_CONTROL_COMMENTATOR_ADDED" then
 		local guid , index = ...;
 		if UnitGUID(self.unit) == guid then
@@ -107,35 +90,13 @@ function CommentatorNamePlateMixin:ApplyLossOfControlAtIndex(index)
 	self:ApplyLossOfControlData(data);
 end
 
-function CommentatorNamePlateMixin:SetPointsByPixelUtil()
-	self.HealthBarsContainer:ClearAllPoints();
-	PixelUtil.SetSize(self.HealthBarsContainer, 190, barHeight);
-	PixelUtil.SetPoint(self.HealthBarsContainer, "LEFT", self, "LEFT", 0, -10);
-	
-	self.HealthBarsContainer:SetFrameLevel(self:GetFrameLevel() - 1);
+function CommentatorNamePlateMixin:UpdateAnchors()
+	NamePlateUnitFrameMixin.UpdateAnchors(self);
 
-	self.overAbsorbGlow:ClearAllPoints();
-	PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer, "BOTTOMRIGHT", -8, -1);
-	PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer, "TOPRIGHT", -8, 1);
-	PixelUtil.SetHeight(self.overAbsorbGlow, 8);
-	
-	self.overHealAbsorbGlow:ClearAllPoints();
-	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMLEFT", 2, -1);
-	--PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer, "TOPLEFT", 2, 1);
-	--PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
-	
-	PixelUtil.SetWidth(self.castBar, 170, barHeight);
-	PixelUtil.SetPoint(self.castBar, "TOP", self.HealthBarsContainer, "BOTTOM", 0, -6);
-	
-	self.castBar.Text:ClearAllPoints();
-	local iconSize = barHeight + 2;
-	local textOffset = iconSize / 2;
-	PixelUtil.SetPoint(self.castBar.Text, "CENTER", self.castBar, "CENTER", textOffset, 0);
-	
-	self.castBar.Icon:ClearAllPoints();
-	PixelUtil.SetSize(self.castBar.Icon, iconSize, iconSize);
-	PixelUtil.SetPoint(self.castBar.Icon, "TOPLEFT", self.castBar, "TOPLEFT", -1, 1);
-	
+	self.teamBorder:ClearAllPoints();
+	PixelUtil.SetPoint(self.teamBorder, "TOPLEFT", self.HealthBarsContainer.selectedBorder, "TOPLEFT", 0, 0);
+	PixelUtil.SetPoint(self.teamBorder, "BOTTOMRIGHT", self.HealthBarsContainer.selectedBorder, "BOTTOMRIGHT", 0, 0);
+
 	self.castBar.border:UpdateSizes();
 
 	self.ClassIcon:ClearAllPoints();
@@ -157,27 +118,6 @@ function CommentatorNamePlateMixin:SetPointsByPixelUtil()
 	PixelUtil.SetPoint(self.Mask, "CENTER", self.ClassIcon, "CENTER", 0, 0);
 end
 
-function CommentatorNamePlateMixin:OnSetupOverride()
-	self.healthBar:SetStatusBarTexture("_Bar-mid");
-	self.castBar:SetStatusBarTexture("_Bar-mid");
-	self.myHealPrediction:SetAtlas("_Bar-mid");
-	self.otherHealPrediction:SetAtlas("_Bar-mid");
-	self.myHealAbsorb:SetAtlas("_Bar-mid");
-	self.myHealAbsorb:SetVertexColor(21/255, 89/255, 72/255);
-	self.totalAbsorb:SetAtlas("_Bar-mid");
-
-	self:SetPointsByPixelUtil();
-	-- CUF can continue.
-	return false;
-end
-
-function CommentatorNamePlateMixin:OnSizeChangedOverride()
-	self:SetPointsByPixelUtil();
-	
-	-- CUF can continue.
-	return false;
-end
-
 function CommentatorNamePlateMixin:OnUpdateNameOverride()
 	self:UpdateNameText();
 
@@ -187,7 +127,7 @@ end
 
 function CommentatorNamePlateMixin:SetBorderColors()
 	local color = C_Commentator.GetTeamColorByUnit(self.unit);
-	self.HealthBarsContainer.border:SetVertexColor(color.r, color.g, color.b, color.a);
+	self.teamBorder:SetVertexColor(color.r, color.g, color.b, color.a);
 	self.castBar.border:SetVertexColor(color.r, color.g, color.b, color.a);
 end
 
@@ -199,10 +139,6 @@ function CommentatorNamePlateMixin:OnUpdateHealthBorderOverride()
 
 	-- CUF cannot continue.
 	return true;
-end
-
-function CommentatorNamePlateMixin:OnCommentatorTeamSwapped(swapped)
-	self:SetBorderColors();
 end
 
 function CommentatorNamePlateMixin:UpdateCrowdControlAuras()

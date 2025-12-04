@@ -18,7 +18,7 @@ function InspectPvpTalentSlotMixin:Update()
 	local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(INSPECTED_UNIT, self.slotIndex);
 
 	if (selectedTalentID) then
-		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(selectedTalentID)));
+		self.Texture:SetTexture(select(3, GetPvpTalentInfoByID(selectedTalentID)));
 		self.Texture:Show();
 		self.talentID = selectedTalentID;
 	else
@@ -41,7 +41,7 @@ function InspectPvpTalentSlotMixin:OnClick()
 	if (IsModifiedClick("CHATLINK") and self.talentID) then
 		local link = GetPvpTalentLink(self.talentID);
 		if (link) then
-			ChatEdit_InsertLink(link);
+			ChatFrameUtil.InsertLink(link);
 		end
 	end
 end
@@ -124,6 +124,6 @@ end
 
 function InspectPvPTalentFrameTalent_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
-		ChatEdit_InsertLink(GetPvpTalentLink(self.pvpTalentID));
+		ChatFrameUtil.InsertLink(GetPvpTalentLink(self.pvpTalentID));
 	end
 end

@@ -63,7 +63,7 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
-		elseif ( strsub(text, startLink + 2, startLink + 7) == "outfit" ) then
+		elseif ( strsub(text, startLink + 2, startLink + 10) == "customset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
@@ -336,6 +336,7 @@ function ItemRefTooltipMixin:OnLoad()
 	GameTooltip_OnLoad(self);
 	self:RegisterForDrag("LeftButton");
 	self.shoppingTooltips = { ItemRefShoppingTooltip1, ItemRefShoppingTooltip2 };
+	self.updateTooltipTimer = nil;
 end
 
 function ItemRefTooltipMixin:OnUpdate(elapsed)
@@ -343,7 +344,7 @@ function ItemRefTooltipMixin:OnUpdate(elapsed)
 		self:RefreshData();
 	end
 	if self.updateTooltipTimer then
-		if ( IsModifiedClick("COMPAREITEMS") ) then
+		if TooltipUtil.ShouldDoItemComparison(self) then
 			self.updateTooltipTimer = self.updateTooltipTimer - elapsed;
 			if ( self.updateTooltipTimer > 0 ) then
 				return;
@@ -374,6 +375,7 @@ function ItemRefTooltipMixin:OnLeave()
 		frame:Hide();
 	end
 	self.updateTooltipTimer = nil;
+	TooltipComparisonManager:Clear(self);
 end
 
 function ItemRefTooltipMixin:ItemRefSetHyperlink(link)

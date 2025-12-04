@@ -26,10 +26,27 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 		if (CatalogShopFrame:IsShown()) then
 			self:CalculateDesiredSize();
 			self:RecalculateSize();
+			local parent = SimpleCheckoutOutbound.GetAppropriateTopLevelParent();
+			FrameUtil.SetParentMaintainRenderLayering(self, parent);
+			self.Background:FixupToParent(parent);
 			self:Show();
 			if (self:OpenCheckout(checkoutID)) then
 				self:SetFocus();
 				CatalogShopFrame:HideForCheckout();
+			else
+				self:Hide();
+			end
+		elseif (SimpleCheckoutOutbound.HousingEditorFrameIsShown()) then
+			self:CalculateDesiredSize();
+			self:RecalculateSize();
+			local parent = SimpleCheckoutOutbound.GetHousingEditorFrame();
+			FrameUtil.SetParentMaintainRenderLayering(self, parent);
+			self.Background:FixupToParent(parent);
+			self:SetIgnoreParentAlpha(true);
+			self:Show();
+			if (self:OpenCheckout(checkoutID)) then
+				self:SetFocus();
+				parent:HideForCheckout();
 			else
 				self:Hide();
 			end
@@ -39,30 +56,20 @@ function SimpleCheckoutMixin:OnEvent(event, ...)
 	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		self:CalculateDesiredSize();
 		self:RecalculateSize();
-	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if (C_Glue.IsOnGlueScreen()) then
-			self.closeShopOnHide = true;
-		end
 	end
 end
 
 function SimpleCheckoutMixin:OnShow()
+	self:SetAttribute("isshown", true);
 	self:RegisterEvent("UI_SCALE_CHANGED");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
 	self.closeShopOnHide = false;
 end
 
 function SimpleCheckoutMixin:OnHide()
+	self:SetAttribute("isshown", false);
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-	self:UnregisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	
-	if (C_Glue.IsOnGlueScreen() and self.closeShopOnHide) then
-		_G.SetStoreUIShown(false);
-		_G.StaticPopup_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
-		self.closeShopOnHide = false;
-	end
 	
 	self:CloseCheckout();
 end
@@ -158,4 +165,18 @@ function SimpleCheckoutMixin:RecalculateSize()
 
 	SetOffsets(self.TopInside, self.LeftInside, self.BottomInside, self.RightInside, pixelSize, -1, 1, 1, -1);
 	SetOffsets(self.TopOutside, self.LeftOutside, self.BottomOutside, self.RightOutside, pixelSize, 0, 0, 0, 0);
+end
+
+SimpleCheckoutBackgroundMixin = {};
+function SimpleCheckoutBackgroundMixin:OnLoad()
+	self:FixupToParent(UIParent);
+end
+
+function SimpleCheckoutBackgroundMixin:FixupToParent(newParent)
+	if newParent then
+		self:ClearAllPoints();
+		self:SetFrameStrata("FULLSCREEN");
+		self:SetPoint("TOPLEFT", newParent, "TOPLEFT");
+		self:SetPoint("BOTTOMRIGHT", newParent, "BOTTOMRIGHT");
+	end
 end

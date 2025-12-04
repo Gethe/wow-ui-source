@@ -14,6 +14,7 @@ local CompactUnitFrames =
 			Name = "CompactUnitFrameProfilesLoaded",
 			Type = "Event",
 			LiteralName = "COMPACT_UNIT_FRAME_PROFILES_LOADED",
+			SynchronousEvent = true,
 		},
 	},
 

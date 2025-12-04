@@ -8,14 +8,17 @@ local ccRemoverFrameInitialAnchor =
 
 local debuffFrameInitialAnchor =
 {
-	point = "TOPRIGHT";
-	relativePoint = "TOPLEFT";
+	point = "RIGHT";
+	relativePoint = "LEFT";
 	xOffset = -3;
-	yOffset = -2;
+	yOffset = 0;
 }
 
 local useClassColorsCvarName = "pvpFramesDisplayClassColor";
 CVarCallbackRegistry:SetCVarCachable(useClassColorsCvarName);
+
+local spellDiminishEnemiesCvarName = "spellDiminishPVPEnemiesEnabled";
+CVarCallbackRegistry:SetCVarCachable(spellDiminishEnemiesCvarName);
 
 local function GetUseClassColors()
 	return CVarCallbackRegistry:GetCVarValueBool(useClassColorsCvarName);
@@ -121,7 +124,13 @@ function CompactArenaFrameMixin:OnLoad()
 		-- Create casting bar
 		local castingBarFrame = CreateFrame("StatusBar", nil, memberUnitFrame, "ArenaUnitFrameCastingBarTemplate");
 		memberUnitFrame.CastingBarFrame = castingBarFrame;
-		castingBarFrame:SetPoint("TOPRIGHT", debuffFrame, "TOPLEFT", -5, -2);
+		castingBarFrame:SetPoint("TOPRIGHT", debuffFrame, "LEFT", -5, -5);
+
+		-- Create Spell Diminish status tray
+		local spellDiminishStatusTray = CreateFrame("Frame", nil, memberUnitFrame, "SpellDiminishStatusTrayTemplate");
+		memberUnitFrame.SpellDiminishStatusTray = spellDiminishStatusTray;
+		spellDiminishStatusTray:SetPoint("BOTTOMRIGHT", memberUnitFrame.CastingBarFrame, "TOPRIGHT", 0, 2);
+
 
 		-- Create stealthed unit frames
 		local stealthedUnitFrame = CreateFrame("Frame", nil, self, "StealthedArenaUnitFrameTemplate");
@@ -132,6 +141,8 @@ function CompactArenaFrameMixin:OnLoad()
 
 	self:RefreshMembers();
 	EditModeSystemMixin.OnSystemLoad(self);
+
+	CVarCallbackRegistry:RegisterCallback(spellDiminishEnemiesCvarName, self.OnSpellDiminishEnemiesCVarChanged, self);
 end
 
 function CompactArenaFrameMixin:UpdateLayout()
@@ -151,12 +162,20 @@ function CompactArenaFrameMixin:UpdateLayout()
 
 	local width, height = self:GetSize();
 
+
+	-- Keep track of how many frames we're showing to calculate the height later
+	local totalMemberFramesShown = 0;
 	for i, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		if memberUnitFrame:IsShown() then
+			totalMemberFramesShown = totalMemberFramesShown + 1;
+		end
+
 		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
+		local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
 		local debuffFrame = memberUnitFrame.DebuffFrame;
 		local castingBarFrame = memberUnitFrame.CastingBarFrame;
 
-		if ccRemoverFrame and debuffFrame and castingBarFrame then
+		if ccRemoverFrame and debuffFrame and castingBarFrame and spellDiminishStatusTray then
 
 			-- Adjust ccRemoverFrame anchor to account for the frame border
 			local ccRemoverFrameXOffset = ccRemoverFrameInitialAnchor.xOffset + frameBorderOffset;
@@ -168,7 +187,7 @@ function CompactArenaFrameMixin:UpdateLayout()
 			debuffFrame:ClearAllPoints();
 			debuffFrame:SetPoint(debuffFrameInitialAnchor.point, memberUnitFrame, debuffFrameInitialAnchor.relativePoint, debuffFrameXOffset, debuffFrameInitialAnchor.yOffset);
 
-			-- Adjust frame width to fit various frames
+			-- Adjust frame width and height to fit various frames
 			-- Only need to adjust if this is the first frame since all subsequent frames will be the same size/layout
 			local isFirstMemberFrame = i == 1;
 			if isFirstMemberFrame then
@@ -182,6 +201,21 @@ function CompactArenaFrameMixin:UpdateLayout()
 			end
 		end
 	end
+
+	-- Arena Frames are anchored under each other with an offset
+	-- We take these offsets into account to calculate our final height
+	if totalMemberFramesShown > 1 then
+		-- Use the second frame for reference since the rest should be anchored with the same offset
+		local _point, relativeTo, _relativePoint, _xOffset, yOffset = self.memberUnitFrames[2]:GetPoint(1);
+		if yOffset then
+			local arenaFrameVerticalOffsetsCombined = math.abs(yOffset) * (totalMemberFramesShown - 1);
+			height = height + arenaFrameVerticalOffsetsCombined;
+		end
+	end
+	-- Let's also add a little padding for the edit mode border
+	local heightPadding = 7;
+	height = height + heightPadding;
+
 	firstMemberUnitFrame:ClearAllPoints();
 	firstMemberUnitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", unitFrameXOffset, -14);
 	self:SetSize(width, height);
@@ -191,6 +225,14 @@ end
 
 function CompactArenaFrameMixin:UpdateVisibility()
 	self:SetShown(IsInArena() or EditModeManagerFrame:GetNumArenaFramesForcedShown() > 0);
+end
+
+function CompactArenaFrameMixin:OnSpellDiminishEnemiesCVarChanged()
+	for _index, memberUnitFrame in ipairs(self.memberUnitFrames) do
+		if memberUnitFrame.SpellDiminishStatusTray then
+			memberUnitFrame.SpellDiminishStatusTray:UpdateShownState();
+		end
+	end
 end
 
 function CompactArenaFrameMixin:RefreshMembers()
@@ -217,6 +259,11 @@ function CompactArenaFrameMixin:RefreshMembers()
 
 		if memberUnitFrame.DebuffFrame then
 			memberUnitFrame.DebuffFrame:SetUnit(memberUnitFrame.unitToken);
+		end
+
+		if memberUnitFrame.SpellDiminishStatusTray then
+			local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
+			spellDiminishStatusTray:SetUnit(memberUnitFrame.unitToken);
 		end
 
 		local stealthedUnitFrame = self.stealthedUnitFrames and self.stealthedUnitFrames[i];
@@ -291,7 +338,7 @@ function PreMatchArenaUnitFrameMixin:Update(index)
 		self.SpecNameText:SetText(specName);
 		self.ClassNameText:SetText(className);
 
-		SetPortraitToTexture(self.SpecPortraitTexture, specIcon);
+		self.SpecPortraitTexture:SetTexture(specIcon);
 		SetRoleIconTexture(self.RoleIconTexture , role);
 		SetFrameBarColor(self.BarTexture, class);
 
@@ -312,6 +359,12 @@ local ccRemoverShownEvents =
 {
 	"ARENA_COOLDOWNS_UPDATE"
 };
+
+function ArenaUnitFrameCcRemoverMixin:OnLoad()
+	local seconds = 60;
+	self.Cooldown:SetCountdownAbbrevThreshold(seconds);
+	self.Cooldown:SetCountdownFont("GameFontHighlightSmallOutline");
+end
 
 function ArenaUnitFrameCcRemoverMixin:OnEvent(event, ...)
 	if event == "ARENA_COOLDOWNS_UPDATE" then
@@ -337,13 +390,11 @@ end
 
 function ArenaUnitFrameCcRemoverMixin:UpdateCooldown()
 	local spellId, startTimeMs, durationMs = C_PvP.GetArenaCrowdControlInfo(self.unitToken);
-	if spellId and startTimeMs > 0 and durationMs > 0 then
-		self.Cooldown:SetCooldown(startTimeMs / 1000.0, durationMs / 1000.0);
-	else
-		self.Cooldown:Clear();
-	end
-
-	self.Cooldown:UpdateText();
+	local startTime = startTimeMs and (startTimeMs / 1000) or 0;
+	local duration = durationMs and (durationMs / 1000) or 0;
+	local enabled = spellId and duration > 0;
+	local forceShowDrawEdge = true;
+	CooldownFrame_Set(self.Cooldown, startTime, duration, enabled, forceShowDrawEdge);
 end
 
 function ArenaUnitFrameCcRemoverMixin:SetSpellId(spellId)
@@ -352,8 +403,8 @@ function ArenaUnitFrameCcRemoverMixin:SetSpellId(spellId)
 		return;
 	end
 
-	local texture = newSpellId and C_Spell.GetSpellTexture(newSpellId) or nil;
-	self.Icon:SetTexture(texture or QUESTION_MARK_ICON);
+	local texture = newSpellId and C_Spell.GetSpellTexture(newSpellId) or QUESTION_MARK_ICON;
+	self.Icon:SetTexture(texture);
 	self.spellId = newSpellId;
 	self:UpdateShownState();
 end
@@ -388,55 +439,17 @@ function ArenaUnitFrameCcRemoverMixin:UpdateShownState()
 	self:SetShown(self.isInEditMode or self.spellId);
 end
 
-ArenaUnitFrameCooldownMixin = {};
-
-local cooldownTextFormatter = CreateFromMixins(SecondsFormatterMixin);
-cooldownTextFormatter:Init(1, SecondsFormatter.Abbreviation.OneLetter, true, true);
-cooldownTextFormatter:SetDesiredUnitCount(1);
-cooldownTextFormatter:SetStripIntervalWhitespace(true);
-
-function ArenaUnitFrameCooldownMixin:OnHide()
-	self:StopUpdateTextTicker();
-	self.Text:SetText("");
-end
-
-function ArenaUnitFrameCooldownMixin:OnCooldownDone()
-	self:StopUpdateTextTicker();
-	self.Text:SetText("");
-end
-
-function ArenaUnitFrameCooldownMixin:UpdateText()
-	local startTimeMs, durationMs = self:GetCooldownTimes();
-	local currentTimeSeconds = GetTime();
-	local remainingTimeSeconds = (durationMs / 1000.0) - (currentTimeSeconds - (startTimeMs / 1000.0))
-
-	if remainingTimeSeconds > 0 then
-		self.Text:SetText(cooldownTextFormatter:Format(remainingTimeSeconds));
-
-		if not self.updateTextTicker and self:IsShown() then
-			self.updateTextTicker = C_Timer.NewTicker(1, function() self:UpdateText() end);
-		end
-	else
-		self:StopUpdateTextTicker();
-		self.Text:SetText("");
-	end
-end
-
-function ArenaUnitFrameCooldownMixin:StopUpdateTextTicker()
-	if not self.updateTextTicker then
-		return;
-	end
-
-	self.updateTextTicker:Cancel();
-	self.updateTextTicker = nil;
-end
-
 ArenaUnitFrameDebuffMixin = {};
 
 local arenaUnitFrameDebuffEvents = {
 	"LOSS_OF_CONTROL_UPDATE",
 	"LOSS_OF_CONTROL_ADDED",
 };
+
+function ArenaUnitFrameDebuffMixin:OnLoad()
+	self.Cooldown:SetUseAuraDisplayTime(true);
+	self.Cooldown:SetCountdownFont("GameFontHighlightOutline");
+end
 
 function ArenaUnitFrameDebuffMixin:OnEvent(event, ...)
 	if event == "LOSS_OF_CONTROL_UPDATE" then
@@ -447,7 +460,7 @@ function ArenaUnitFrameDebuffMixin:OnEvent(event, ...)
 end
 
 function ArenaUnitFrameDebuffMixin:OnEnter()
-	if not self.shownData or not self.shownData.auraInstanceID then
+	if not self.auraData or not self.auraData.auraInstanceID then
 		return;
 	end
 
@@ -466,7 +479,7 @@ function ArenaUnitFrameDebuffMixin:UpdateTooltip()
 		return;
 	end
 
-	GameTooltip:SetUnitDebuffByAuraInstanceID(self.unitToken, self.shownData.auraInstanceID, nil);
+	GameTooltip:SetUnitDebuffByAuraInstanceID(self.unitToken, self.auraData.auraInstanceID, nil);
 end
 
 function ArenaUnitFrameDebuffMixin:SetUnit(unitToken)
@@ -485,49 +498,41 @@ function ArenaUnitFrameDebuffMixin:SetUnit(unitToken)
 end
 
 function ArenaUnitFrameDebuffMixin:Update()
-	local highestPriorityData;
+	local lossOfControlData;
 	if ArenaUtil.UnitExists(self.unitToken) then
-		local numLossOfControlEffects = C_LossOfControl.GetActiveLossOfControlDataCountByUnit(self.unitToken) or 0;
-		for i = 1, numLossOfControlEffects do
+		for i = 1, C_LossOfControl.GetActiveLossOfControlDataCountByUnit(self.unitToken) do
 			local data = C_LossOfControl.GetActiveLossOfControlDataByUnit(self.unitToken, i);
-			if data then
-				if not highestPriorityData or data.priority > highestPriorityData.priority then
-					highestPriorityData = data;
-				end
+			if (lossOfControlData == nil) or (data and data.priority > lossOfControlData.priority) then
+				lossOfControlData = data;
 			end
 		end
 	end
 
-	self.shownData = highestPriorityData;
+	if lossOfControlData then
+		self.auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unitToken, lossOfControlData.auraInstanceID);
+	else
+		self.auraData = nil;
+	end
 
 	local unitFrame = self:GetParent();
 	CompactUnitFrame_ClearBlockedAuraInstanceIDs(unitFrame, self);
-	if self.shownData then
-		CompactUnitFrame_AddBlockedAuraInstanceID(unitFrame, self, self.shownData.auraInstanceID);
+
+	if self.auraData then
+		CompactUnitFrame_AddBlockedAuraInstanceID(unitFrame, self, self.auraData.auraInstanceID);
+
+		self.Icon:SetTexture(self.auraData.icon);
+
+		local enabled = self.auraData.duration > 0;
+		local forceShowDrawEdge = true;
+		CooldownFrame_Set(self.Cooldown, self.auraData.expirationTime - self.auraData.duration, self.auraData.duration, enabled, forceShowDrawEdge);
+	else
+		self.Icon:SetTexture(QUESTION_MARK_ICON);
 	end
+
 	CompactUnitFrame_UpdateAuras(unitFrame);
 
-	self:UpdateIcon();
-	self:UpdateCooldown();
 	self:UpdateShownState();
 	self:UpdateTooltip();
-end
-
-function ArenaUnitFrameDebuffMixin:UpdateIcon()
-	local texture = self.shownData and C_Spell.GetSpellTexture(self.shownData.spellID) or QUESTION_MARK_ICON;
-	self.Icon:SetTexture(texture);
-end
-
-function ArenaUnitFrameDebuffMixin:UpdateCooldown()
-	local startTimeSeconds = self.shownData and self.shownData.startTime or 0;
-	local durationSeconds = self.shownData and self.shownData.duration or 0;
-	if startTimeSeconds > 0 and durationSeconds > 0 then
-		self.Cooldown:SetCooldown(startTimeSeconds, durationSeconds);
-	else
-		self.Cooldown:Clear();
-	end
-
-	self.Cooldown:UpdateText();
 end
 
 function ArenaUnitFrameDebuffMixin:SetIsInEditMode(isInEditMode)
@@ -536,7 +541,7 @@ function ArenaUnitFrameDebuffMixin:SetIsInEditMode(isInEditMode)
 end
 
 function ArenaUnitFrameDebuffMixin:UpdateShownState()
-	self:SetShown(self.shownData or self.isInEditMode)
+	self:SetShown(self.auraData or self.isInEditMode)
 end
 
 StealthedArenaUnitFrameMixin = {};

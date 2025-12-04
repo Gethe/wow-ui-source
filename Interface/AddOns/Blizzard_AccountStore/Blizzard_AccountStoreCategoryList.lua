@@ -22,8 +22,8 @@ function AccountStoreCategoryListMixin:OnLoad()
 
 	self:InitScrollBox();
 
-	self:AddDynamicEventMethod(EventRegistry, "AccountStore.StoreFrontSet", self.OnStoreFrontSet);
-	self:AddDynamicEventMethod(EventRegistry, "AccountStore.CategorySelected", self.OnCategorySelected);
+	self:AddStaticEventMethod(EventRegistry, "AccountStore.StoreFrontSet", self.OnStoreFrontSet);
+	self:AddStaticEventMethod(EventRegistry, "AccountStore.CategorySelected", self.OnCategorySelected);
 end
 
 function AccountStoreCategoryListMixin:InitScrollBox()

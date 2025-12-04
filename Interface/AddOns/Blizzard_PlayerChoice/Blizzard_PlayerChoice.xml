@@ -93,7 +93,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString parentKey="Text" inherits="SystemFont_Large" justifyH="CENTER">
+						<FontString parentKey="Text" inherits="SystemFont_Shadow_Large" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Middle"/>
 							</Anchors>

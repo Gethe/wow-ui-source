@@ -37,7 +37,7 @@
 						</OnMouseUp>
 					</Scripts>
 				</Button>
-				<Frame parentKey="Background" enableMouse="true" frameStrata="FULLSCREEN">
+				<Frame parentKey="Background" mixin="SimpleCheckoutBackgroundMixin" enableMouse="true" frameStrata="FULLSCREEN">
 					<Layers>
 						<Layer level="BACKGROUND">
 							<Texture setAllPoints="true" parentKey="Texture">
@@ -53,10 +53,7 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnLoad>
-							self:SetPoint("TOPLEFT", UIParent, "TOPLEFT");
-							self:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT");
-						</OnLoad>
+						<OnLoad method="OnLoad"/>
 						<OnMouseWheel>
 							-- this comment is here so that the handler doesn't get stripped out.
 						</OnMouseWheel>

@@ -19,6 +19,7 @@ local InvasionInfo =
 		{
 			Name = "GetInvasionForUiMapID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +35,7 @@ local InvasionInfo =
 			Name = "GetInvasionInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +50,7 @@ local InvasionInfo =
 		{
 			Name = "GetInvasionTimeLeft",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -1,0 +1,8 @@
+## Title: Blizzard_Transmog
+## LoadOnDemand: 1
+## AllowLoad: Game
+## Dependencies: Blizzard_SharedXML, Blizzard_SharedXMLGame, Blizzard_FrameXMLBase, Blizzard_FrameXMLUtil, Blizzard_UIPanelTemplates, Blizzard_StaticPopup_Game, Blizzard_TransmogShared, Blizzard_PagedContent, Blizzard_GameTooltip, Blizzard_MoneyFrame, Blizzard_Menu, Blizzard_HelpPlate
+[Family]\Blizzard_TransmogOverrides.lua
+Blizzard_TransmogTemplates.xml
+Blizzard_Transmog.xml
+Blizzard_TransmogRegistration.lua

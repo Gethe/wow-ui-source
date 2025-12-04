@@ -1,17 +1,17 @@
 local SAVE_FIELD_ID_VERSION = 1;
+
+-- NOTE: SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES
+-- In v3 and below: This is specTag (number) -> layout name (string)
+-- In v4 (and likely above) this is spec (number) -> layoutID (number)
 local SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES = 2;
 local SAVE_FIELD_ID_LAYOUTS = 3;
+local SAVE_FIELD_ID_LAYOUT_ID_DATA = 4;
 
 local SAVE_FIELD_ID_COOLDOWN_ORDER = 1;
 local SAVE_FIELD_ID_CATEGORY_OVERRIDES = 2;
-local SAVE_FIELD_ID_SOUND_OVERRIDES = 3;
+local SAVE_FIELD_ID_ALERT_OVERRIDES = 3;
 
 local ENCODING_VERSION_PAYLOAD_DELIMITER = "|";
-
-local function MakeClassAndSpecTag(class, spec)
-	assertsafe(spec < 10, "MakeClassAndSpecTag can only use one digit for encoding spec");
-	return class * 10 + spec;
-end
 
 CooldownViewerDataStoreSerializationMixin = {};
 
@@ -86,76 +86,49 @@ function CooldownViewerDataStoreSerializationMixin:ClearSerializedData()
 	end
 end
 
-function CooldownViewerDataStoreSerializationMixin:GetCurrentClassAndSpec()
-	local classID = select(3, UnitClass("player"));
-	local specialization = C_SpecializationInfo.GetSpecialization();
-
-	return classID, specialization;
-end
-
-function CooldownViewerDataStoreSerializationMixin:GetCurrentClassAndSpecTag()
-	local classID, specialization = self:GetCurrentClassAndSpec();
-
-	if classID and specialization then
-		return MakeClassAndSpecTag(classID, specialization);
+local function CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, orderedCooldownIDs)
+	if orderedCooldownIDs then
+		layoutManager:WriteCooldownOrderToLayout(layoutObject, orderedCooldownIDs);
 	end
-
-	return nil;
 end
 
-local function ValidateReaderVersion(dataTable, expectedVersion)
-	assertsafe(dataTable[SAVE_FIELD_ID_VERSION] == expectedVersion, "Attempting to read incorrect data version, expected %s, was: %s", tostring(expectedVersion), tostring(dataTable[SAVE_FIELD_ID_VERSION]));
+local function CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, categoryOverrides)
+	if categoryOverrides then
+		for cooldownCategory, cooldownIDs in pairs(categoryOverrides) do
+			layoutManager:WriteCooldownCategoryToLayout(layoutObject, cooldownCategory, cooldownIDs);
+		end
+	end
 end
 
-local function ReadDataVersion1(dataTable, layoutManager)
-	ValidateReaderVersion(dataTable, 1);
+local function CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, alerts)
+	if alerts then
+		layoutManager:WriteCooldownAlertsToLayout(layoutObject, alerts);
+	end
+end
 
+local function ReadDataVersion1(dataTable, layoutManager, serializer)
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutName, layout in pairs(classAndSpecLayouts) do
-				local layoutObject = layoutManager:AddLayout(layoutName, classAndSpecTag);
-				layoutManager:WriteCooldownOrderToLayout(layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag);
+				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
+				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
 
-				local categoryOverrides = layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES];
-				if categoryOverrides then
-					for cooldownCategory, cooldownIDs in pairs(categoryOverrides) do
-						layoutManager:WriteCooldownCategoryToLayout(layoutObject, cooldownCategory, cooldownIDs);
-					end
-				end
-
-				local soundOverrides = layout[SAVE_FIELD_ID_SOUND_OVERRIDES];
-				if soundOverrides then
-					-- No sounds notifications for now
-				end
-
-				layoutManager:SetPreviouslyActiveLayoutNameForSpec(classAndSpecTag, layoutName);
+				layoutManager:SetPreviouslyActiveLayout(layoutObject);
 			end
 		end
 	end
 end
 
-local function ReadDataVersion2(dataTable, layoutManager)
-	ValidateReaderVersion(dataTable, 2);
-
+local function ReadDataVersion2(dataTable, layoutManager, serializer)
 	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
 	if layouts then
 		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
 			for layoutName, layout in pairs(classAndSpecLayouts) do
-				local layoutObject = layoutManager:AddLayout(layoutName, classAndSpecTag);
-				layoutManager:WriteCooldownOrderToLayout(layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
-
-				local categoryOverrides = layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES];
-				if categoryOverrides then
-					for cooldownCategory, cooldownIDs in pairs(categoryOverrides) do
-						layoutManager:WriteCooldownCategoryToLayout(layoutObject, cooldownCategory, cooldownIDs);
-					end
-				end
-
-				local soundOverrides = layout[SAVE_FIELD_ID_SOUND_OVERRIDES];
-				if soundOverrides then
-					-- No sounds notifications for now
-				end
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag);
+				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
+				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
 			end
 		end
 	end
@@ -163,7 +136,83 @@ local function ReadDataVersion2(dataTable, layoutManager)
 	local activeLayoutNames = dataTable[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES];
 	if activeLayoutNames then
 		for specTag, layoutName in pairs(activeLayoutNames) do
-			layoutManager:SetPreviouslyActiveLayoutNameForSpec(specTag, layoutName);
+			layoutManager:SetPreviouslyActiveLayoutByName(layoutName, specTag);
+		end
+	end
+end
+
+local function ReadDataVersion3(dataTable, layoutManager, serializer)
+	ReadDataVersion2(dataTable, layoutManager, serializer);
+
+	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
+	if layouts then
+		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
+			for layoutName, layout in pairs(classAndSpecLayouts) do
+				local layoutObject = layoutManager:GetLayoutByName(layoutName, classAndSpecTag);
+				assertsafe(layoutObject ~= nil, "Unable to find layout that should have been added");
+				if layoutObject then
+					CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, layout[SAVE_FIELD_ID_ALERT_OVERRIDES]);
+				end
+			end
+		end
+	end
+end
+
+local function ReadDataVersion4(dataTable, layoutManager, serializer)
+	--[[
+	For importing...the imported layoutID will likely be different from what's in the saved data
+	because when we import it, we might need to make a new id, so there now needs to be a temp map
+	maintained so that the saved data layout id can be mapped to the actually created layout id
+
+	Prepopulate the lookup with a default layout mapping because that layout will never be stored.
+	This is mostly to avoid some extra checks when processing previously active layouts.
+	--]]
+	local defaultLayoutID = layoutManager:GetDefaultLayoutID();
+	local layoutIDLookup = { [defaultLayoutID] = defaultLayoutID };
+
+	local layouts = dataTable[SAVE_FIELD_ID_LAYOUTS];
+	local layoutIDToName = dataTable[SAVE_FIELD_ID_LAYOUT_ID_DATA];
+	if layouts then
+		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
+			for layoutID, layout in pairs(classAndSpecLayouts) do
+				local layoutName = layoutIDToName[layoutID];
+				local layoutObject = serializer:AddLayout(layoutManager, layoutName, classAndSpecTag, layoutID);
+				local newLayoutID = CooldownManagerLayout_GetID(layoutObject);
+				layoutIDLookup[layoutID] = newLayoutID;
+
+				CheckWriteCooldownOrderToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_COOLDOWN_ORDER]);
+				CheckWriteCategoryOverridesToLayout_v1(layoutManager, layoutObject, layout[SAVE_FIELD_ID_CATEGORY_OVERRIDES]);
+			end
+		end
+	end
+
+	local activeLayouts = dataTable[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES];
+	if activeLayouts then
+		for specTag, layoutID in pairs(activeLayouts) do
+			local layout = layoutManager:GetLayout(layoutIDLookup[layoutID]);
+			local isDefaultLayoutID = layoutManager:IsDefaultLayoutID(layoutIDLookup[layoutID]);
+			assertsafe(isDefaultLayoutID or layout ~= nil, "Cannot update previously active layout[%s]: didn't exist", tostring(layoutIDLookup[layoutID]));
+			if layout then
+				local layoutSpecTag = CooldownManagerLayout_GetClassAndSpecTag(layout);
+				assertsafe(layoutSpecTag == specTag, "Cannot update previously active layout[%s], specTag[%s] didn't match layoutSpec[%s]", tostring(specTag), tostring(layoutSpecTag));
+				if layoutSpecTag == specTag then
+					layoutManager:SetPreviouslyActiveLayout(layout);
+				end
+			elseif isDefaultLayoutID then
+				layoutManager:SetPreviouslyActiveLayoutForSpecToDefault(specTag);
+			end
+		end
+	end
+
+	if layouts then
+		for classAndSpecTag, classAndSpecLayouts in pairs(layouts) do
+			for layoutID, layout in pairs(classAndSpecLayouts) do
+				local layoutObject = layoutManager:GetLayout(layoutIDLookup[layoutID]);
+				assertsafe(layoutObject ~= nil, "Unable to find layout[%s] that should have been added", tostring(layoutIDLookup[layoutID]));
+				if layoutObject then
+					CheckWriteAlertsToLayout_v3(layoutManager, layoutObject, layout[SAVE_FIELD_ID_ALERT_OVERRIDES]);
+				end
+			end
 		end
 	end
 end
@@ -172,6 +221,8 @@ local versionedDataReaders =
 {
 	[1] = ReadDataVersion1,
 	[2] = ReadDataVersion2,
+	[3] = ReadDataVersion3,
+	[4] = ReadDataVersion4,
 };
 
 local versionedEncoders =
@@ -199,7 +250,7 @@ local versionedEncoders =
 };
 
 function CooldownViewerDataStoreSerializationMixin:GetCurrentSaveFormatVersion()
-	return 2;
+	return 4;
 end
 
 function CooldownViewerDataStoreSerializationMixin:GetCurrentEncodingVersion()
@@ -207,50 +258,97 @@ function CooldownViewerDataStoreSerializationMixin:GetCurrentEncodingVersion()
 end
 
 function CooldownViewerDataStoreSerializationMixin:ReadData()
+	self:DeserializeLayouts(self:GetSerializedData());
+end
+
+function CooldownViewerDataStoreSerializationMixin:AddLayout(layoutManager, ...)
+	local layoutObject = layoutManager:AddLayout(...);
+	if layoutObject then
+		local layoutID = CooldownManagerLayout_GetID(layoutObject);
+		table.insert(GetOrCreateTableEntry(self, "newLayoutIDs"), layoutID);
+	end
+
+	return layoutObject;
+end
+
+local function IsFailCondition(isUserInput, condition, ...)
+	-- NOTE: If this is user input, errors should be handled gracefully, if it's from saved data, then assert.
+	if not isUserInput then
+		assertsafe(condition, ...);
+	end
+
+	return not condition;
+end
+
+function CooldownViewerDataStoreSerializationMixin:DeserializeLayouts(serializedData, isUserInput)
 	local layoutManager = self:GetLayoutManager();
 
-	local serializedData = self:GetSerializedData();
-	assertsafe(type(serializedData) == "string", "Incorrect serialized data format");
+	if IsFailCondition(isUserInput, type(serializedData) == "string", "Incorrect serialized data format") then return; end
 
 	if #serializedData == 0 then
-		return;
+		return nil;
 	end
 
 	-- Format: <version string><pipe delimiter><encoded data, custom format depending on version>
 	local delimiterIndex = string.find(serializedData, ENCODING_VERSION_PAYLOAD_DELIMITER, 1, true);
-	assert(delimiterIndex ~= nil, "Unable to find version for serialized data")
+	if IsFailCondition(isUserInput, delimiterIndex ~= nil, "Unable to find version for serialized data") then return; end
 
 	local versionString = string.sub(serializedData, 1, delimiterIndex - 1);
-	assert(versionString ~= nil, "Unable to find version for serialized data")
+	if IsFailCondition(isUserInput, versionString ~= nil, "Unable to find version for serialized data") then return; end
+
 	local dataVersion = tonumber(versionString);
 
 	local dataPayload = string.sub(serializedData, delimiterIndex + 1);
-	assertsafe(dataPayload ~= nil, "Serialized data missing payload");
+	if IsFailCondition(isUserInput, dataPayload ~= nil, "Serialized data missing payload") then return; end
 
 	local decoder = versionedEncoders[dataVersion];
-	assertsafe(decoder ~= nil, "Decoder missing for data version %s", tostring(dataVersion));
+	if IsFailCondition(isUserInput, decoder ~= nil, "Decoder missing for data version %s", tostring(dataVersion)) then return; end
 
 	local deserializedTable = decoder.Read(dataPayload);
-	assertsafe(type(deserializedTable) == "table", "Serialized data didn't decode to a table");
+	if IsFailCondition(isUserInput, type(deserializedTable) == "table", "Serialized data didn't decode to a table") then return; end
 
 	local settingsDataVersion = deserializedTable[SAVE_FIELD_ID_VERSION];
-	assertsafe(type(settingsDataVersion) == "number", "Deserialized table did not contain version in expected location, or there was no reader for version %s", tostring(settingsDataVersion));
+	if IsFailCondition(isUserInput, type(settingsDataVersion) == "number", "Deserialized table did not contain version in expected location, or there was no reader for version %s", tostring(settingsDataVersion)) then return; end
 
 	local reader = versionedDataReaders[settingsDataVersion];
-	assertsafe(type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion));
+	if IsFailCondition(isUserInput, type(reader) == "function", "Reader missing for data version %s", tostring(settingsDataVersion)) then return; end
 
-	reader(deserializedTable, layoutManager);
+	layoutManager:LockNotifications();
+	layoutManager:SetShouldCheckAddLayoutStatus(false);
+	reader(deserializedTable, layoutManager, self);
+	layoutManager:SetShouldCheckAddLayoutStatus(true);
+	layoutManager:UnlockNotifications();
+
+	local newLayoutIDs = self.newLayoutIDs;
+	self.newLayoutIDs = nil;
+	return newLayoutIDs;
 end
 
-function CooldownViewerDataStoreSerializationMixin:WriteData()
+function CooldownViewerDataStoreSerializationMixin:CreateEncodeOutput(output)
+	local encodingVersion = self:GetCurrentEncodingVersion();
+	local encoder = versionedEncoders[encodingVersion];
+	assertsafe(encoder ~= nil, "Encoder missing for data version %s", tostring(encodingVersion));
+
+	local encodedOutput = encoder.Write(output);
+	assertsafe(type(encodedOutput) == "string", "Unable to serialize output");
+
+	return tostring(encodingVersion)..ENCODING_VERSION_PAYLOAD_DELIMITER..encodedOutput;
+end
+
+function CooldownViewerDataStoreSerializationMixin:SerializeLayouts(singleLayoutID)
+	local needsPreviouslyActiveLayouts = singleLayoutID == nil;
+
 	local layoutManager = self:GetLayoutManager();
 	local output = {};
 	output[SAVE_FIELD_ID_VERSION] = self:GetCurrentSaveFormatVersion();
 
-	local activeLayoutNames = {};
-	output[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES] = activeLayoutNames;
-	for specTag, layoutName in layoutManager:EnumeratePreviouslyActiveLayoutNames() do
-		activeLayoutNames[specTag] = layoutName;
+	local activeLayouts = {};
+	output[SAVE_FIELD_ID_ACTIVE_LAYOUT_NAMES] = activeLayouts;
+
+	if needsPreviouslyActiveLayouts then
+		for specTag, layoutID in layoutManager:EnumeratePreviouslyActiveLayoutIDs() do
+			activeLayouts[specTag] = layoutID;
+		end
 	end
 
 	local layouts;
@@ -259,64 +357,87 @@ function CooldownViewerDataStoreSerializationMixin:WriteData()
 			layouts = {};
 		end
 
-		if not layouts[layout.classAndSpecTag] then
-			layouts[layout.classAndSpecTag] = {};
+		local tag = CooldownManagerLayout_GetClassAndSpecTag(layout);
+		if not layouts[tag] then
+			layouts[tag] = {};
 		end
 
-		return layouts[layout.classAndSpecTag];
+		return layouts[tag];
 	end
 
-	local function AddCooldownOverrideToLayout(layoutContainer, containerStorageIndex, cooldownID, cooldownValue)
-		if cooldownValue then
-			if not layoutContainer[containerStorageIndex] then
-				layoutContainer[containerStorageIndex] = {};
+	local function AddCooldownOverrideToLayout(layoutContainer, ...)
+		local argCount = select("#", ...);
+		local lastKeyIndex = argCount - 1;
+
+		-- First pass to validate all keys
+		for key = 1, lastKeyIndex do
+			local currentKey = select(key, ...);
+			if currentKey == nil then
+				return; -- nil is totally fine, it just means we don't need to write anything to layoutContainer.
 			end
 
-			if not layoutContainer[containerStorageIndex][cooldownValue] then
-				layoutContainer[containerStorageIndex][cooldownValue] = {};
+			local currentKeyType = type(currentKey);
+			if currentKeyType ~= "number" then
+				assertsafe(false, "AddCooldownOverrideToLayout: All keys must be numbers (found %s)", currentKeyType);
 			end
-
-			table.insert(layoutContainer[containerStorageIndex][cooldownValue], cooldownID);
 		end
+
+		for key = 1, lastKeyIndex do
+			local currentKey = select(key, ...);
+			layoutContainer = GetOrCreateTableEntry(layoutContainer, currentKey);
+		end
+
+		local value = select(argCount, ...);
+		table.insert(layoutContainer, value);
 	end
 
-	local function AddLayoutToContainer(layoutName, layout)
+	local layoutIDToName = {};
+	local function AddLayoutToContainer(layoutID, layout)
+		assertsafe(CooldownManagerLayout_GetID(layout) == layoutID, "LayoutID %s doesn't match actual layoutID of %s", tostring(layoutID), tostring(CooldownManagerLayout_GetID(layout)));
+		assertsafe(layoutIDToName[layoutID] == nil, "layoutID must be unique");
+
+		layoutIDToName[layoutID] = CooldownManagerLayout_GetName(layout); -- This could be getting the default/generated name, that's ok.
 		local classAndSpecContainer = AddClassSpecTagToContainer(layout);
+		local outputLayoutContainer = {};
 
-		-- TODO: I don't think that layout names need to be completely unique, but maybe they should be? Leaving this here for PR thoughts.
-		assertsafe(classAndSpecContainer[layoutName] == nil, "Layout names must be unique within class and spec");
+		local orderedCooldownIDs = CooldownManagerLayout_GetOrderedCooldownIDs(layout);
 
-		local layoutContainer = {};
-
-		if layout.orderedCooldownIDs then
-			layoutContainer[SAVE_FIELD_ID_COOLDOWN_ORDER] = layout.orderedCooldownIDs;
+		if orderedCooldownIDs then
+			outputLayoutContainer[SAVE_FIELD_ID_COOLDOWN_ORDER] = orderedCooldownIDs;
 		end
 
-		if layout.cooldownInfo then
-			for cooldownID, cooldownInfo in pairs(layout.cooldownInfo) do
-				AddCooldownOverrideToLayout(layoutContainer, SAVE_FIELD_ID_CATEGORY_OVERRIDES, cooldownID, cooldownInfo.category);
+		local layoutCooldownInfo = CooldownManagerLayout_GetCooldownInfo(layout);
+		if layoutCooldownInfo then
+			for cooldownID, cooldownInfo in pairs(layoutCooldownInfo) do
+				AddCooldownOverrideToLayout(outputLayoutContainer, SAVE_FIELD_ID_CATEGORY_OVERRIDES, cooldownInfo.category, cooldownID);
+
+				if cooldownInfo.alerts then
+					for alertIndex, alert in ipairs(cooldownInfo.alerts) do
+						AddCooldownOverrideToLayout(outputLayoutContainer, SAVE_FIELD_ID_ALERT_OVERRIDES, cooldownID, alert);
+					end
+				end
 			end
 		end
 
-		if next(layoutContainer) then
-			classAndSpecContainer[layoutName] = layoutContainer;
-		end
+		-- Always add the layout to the container, newly created layouts still need to be saved and will not contain any customizations yet, just a name, id, and spec tag.
+		classAndSpecContainer[layoutID] = outputLayoutContainer;
 	end
 
-	for layoutName, layout in layoutManager:EnumerateLayouts() do
-		AddLayoutToContainer(layoutName, layout);
+	for layoutID, layout in layoutManager:EnumerateLayouts() do
+		local addLayout = not singleLayoutID or layoutID == singleLayoutID;
+		if addLayout then
+			AddLayoutToContainer(layoutID, layout);
+		end
 	end
 
 	if layouts then
 		output[SAVE_FIELD_ID_LAYOUTS] = layouts;
+		output[SAVE_FIELD_ID_LAYOUT_ID_DATA] = layoutIDToName;
 	end
 
-	local encodingVersion = self:GetCurrentEncodingVersion();
-	local encoder = versionedEncoders[encodingVersion];
-	assertsafe(encoder ~= nil, "Encoder missing for data version %s", tostring(encodingVersion));
+	return self:CreateEncodeOutput(output);
+end
 
-	local encodedOutput = encoder.Write(output);
-	assertsafe(type(encodedOutput) == "string", "Unable to serialize output");
-
-	self:SetSerializedData(tostring(encodingVersion)..ENCODING_VERSION_PAYLOAD_DELIMITER..encodedOutput);
+function CooldownViewerDataStoreSerializationMixin:WriteData()
+	self:SetSerializedData(self:SerializeLayouts());
 end

@@ -9,6 +9,7 @@ local WowTokenUI =
 		{
 			Name = "StartTokenSell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,16 +24,19 @@ local WowTokenUI =
 			Name = "TokenAuctionSold",
 			Type = "Event",
 			LiteralName = "TOKEN_AUCTION_SOLD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenBuyConfirmRequired",
 			Type = "Event",
 			LiteralName = "TOKEN_BUY_CONFIRM_REQUIRED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenBuyResult",
 			Type = "Event",
 			LiteralName = "TOKEN_BUY_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -42,6 +46,7 @@ local WowTokenUI =
 			Name = "TokenCanVeteranBuyUpdate",
 			Type = "Event",
 			LiteralName = "TOKEN_CAN_VETERAN_BUY_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -51,6 +56,7 @@ local WowTokenUI =
 			Name = "TokenDistributionsUpdated",
 			Type = "Event",
 			LiteralName = "TOKEN_DISTRIBUTIONS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -60,6 +66,7 @@ local WowTokenUI =
 			Name = "TokenMarketPriceUpdated",
 			Type = "Event",
 			LiteralName = "TOKEN_MARKET_PRICE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -69,11 +76,13 @@ local WowTokenUI =
 			Name = "TokenRedeemBalanceUpdated",
 			Type = "Event",
 			LiteralName = "TOKEN_REDEEM_BALANCE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenRedeemConfirmRequired",
 			Type = "Event",
 			LiteralName = "TOKEN_REDEEM_CONFIRM_REQUIRED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "choiceType", Type = "luaIndex", Nilable = false },
@@ -83,16 +92,19 @@ local WowTokenUI =
 			Name = "TokenRedeemFrameShow",
 			Type = "Event",
 			LiteralName = "TOKEN_REDEEM_FRAME_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenRedeemGameTimeUpdated",
 			Type = "Event",
 			LiteralName = "TOKEN_REDEEM_GAME_TIME_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenRedeemResult",
 			Type = "Event",
 			LiteralName = "TOKEN_REDEEM_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "luaIndex", Nilable = false },
@@ -103,16 +115,19 @@ local WowTokenUI =
 			Name = "TokenSellConfirmRequired",
 			Type = "Event",
 			LiteralName = "TOKEN_SELL_CONFIRM_REQUIRED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenSellConfirmed",
 			Type = "Event",
 			LiteralName = "TOKEN_SELL_CONFIRMED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TokenSellResult",
 			Type = "Event",
 			LiteralName = "TOKEN_SELL_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -122,6 +137,7 @@ local WowTokenUI =
 			Name = "TokenStatusChanged",
 			Type = "Event",
 			LiteralName = "TOKEN_STATUS_CHANGED",
+			SynchronousEvent = true,
 		},
 	},
 

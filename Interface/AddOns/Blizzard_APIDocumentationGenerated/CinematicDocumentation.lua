@@ -8,6 +8,7 @@ local Cinematic =
 		{
 			Name = "CinematicFinished",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +20,7 @@ local Cinematic =
 		{
 			Name = "CinematicStarted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +41,7 @@ local Cinematic =
 		{
 			Name = "MouseOverrideCinematicDisable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +64,7 @@ local Cinematic =
 			Name = "CinematicStart",
 			Type = "Event",
 			LiteralName = "CINEMATIC_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "canBeCancelled", Type = "bool", Nilable = false },
@@ -71,16 +75,19 @@ local Cinematic =
 			Name = "CinematicStop",
 			Type = "Event",
 			LiteralName = "CINEMATIC_STOP",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HideSubtitle",
 			Type = "Event",
 			LiteralName = "HIDE_SUBTITLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayMovie",
 			Type = "Event",
 			LiteralName = "PLAY_MOVIE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "movieID", Type = "number", Nilable = false },
@@ -90,6 +97,7 @@ local Cinematic =
 			Name = "ShowSubtitle",
 			Type = "Event",
 			LiteralName = "SHOW_SUBTITLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "subtitle", Type = "cstring", Nilable = false },
@@ -100,6 +108,7 @@ local Cinematic =
 			Name = "StopMovie",
 			Type = "Event",
 			LiteralName = "STOP_MOVIE",
+			SynchronousEvent = true,
 		},
 	},
 

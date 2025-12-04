@@ -23,6 +23,7 @@ local ScriptedAnimations =
 			Name = "ScriptedAnimationsUpdate",
 			Type = "Event",
 			LiteralName = "SCRIPTED_ANIMATIONS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

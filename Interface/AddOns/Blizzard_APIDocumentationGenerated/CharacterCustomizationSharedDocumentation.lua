@@ -5,9 +5,9 @@ local CharacterCustomizationShared =
 		{
 			Name = "CharCustomizationType",
 			Type = "Enumeration",
-			NumValues = 12,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 11,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Skin", Type = "CharCustomizationType", EnumValue = 0 },
@@ -19,9 +19,6 @@ local CharacterCustomizationShared =
 				{ Name = "CustomOptionHorn", Type = "CharCustomizationType", EnumValue = 6 },
 				{ Name = "CustomOptionFacewear", Type = "CharCustomizationType", EnumValue = 7 },
 				{ Name = "CustomOptionTattooColor", Type = "CharCustomizationType", EnumValue = 8 },
-				{ Name = "Outfit", Type = "CharCustomizationType", EnumValue = 9 },
-				{ Name = "Facepaint", Type = "CharCustomizationType", EnumValue = 10 },
-				{ Name = "FacepaintColor", Type = "CharCustomizationType", EnumValue = 11 },
 			},
 		},
 		{

@@ -296,6 +296,10 @@
 		</Scripts>
 	</Button>
 
+	<Button name="PVPSpecificTrainingGroundButtonTemplate" virtual="true" inherits="PVPInstanceListEntryButtonTemplate, CallbackRegistrantTemplate" mixin="PVPSpecificTrainingGroundButtonMixin">
+		<Size x="373" y="40"/>
+	</Button>
+
 	<Frame name="PVPBonusBattlegroundContentsTemplate" virtual="true">
 		<Size x="300" y="56"/>
 		<Anchors>
@@ -375,7 +379,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						SetPortraitToTexture(self.Icon, C_Spell.GetSpellTexture(241260));
+						self.Icon:SetTexture(C_Spell.GetSpellTexture(241260));
 					</OnLoad>
 					<OnEnter function="PVPRewardEnlistmentBonus_OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>
@@ -695,6 +699,15 @@
 			<OnEnter method="OnEnter"/>
 		</Scripts>
 	</Button>
+	<Button name="PVPTrainingGroundActivityButtonTemplate" inherits="PVPCasualStandardButtonTemplate, CallbackRegistrantTemplate" mixin="TrainingGroundActivityButtonMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
 
 	<Button name="PVPRatedActivityButtonTemplate" virtual="true">
 		<Size x="365" y="56"/>
@@ -835,6 +848,36 @@
 		<KeyValues>
 			<KeyValue key="onClick" value="PVPUIFrame_RoleButtonClicked" type="global"/>
 		</KeyValues>
+	</Frame>
+
+	<Frame name="PVPRoleListTemplate" virtual="true">
+		<Size x="118" y="32"/>
+		<Frames>
+			<Button parentKey="TankIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="1">
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" x="4"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="HealerIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="2">
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8"/>
+				</Anchors>
+			</Button>
+			<Button parentKey="DPSIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="3">
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8"/>
+				</Anchors>
+			</Button>
+		</Frames>
 	</Frame>
 
 	<Frame name="PVPUIFrame" setAllPoints="true" parent="PVEFrame" hidden="true">
@@ -1027,7 +1070,7 @@
 							</OnLoad>
 						</Scripts>
 					</Frame>
-					<Button name="$parentCategoryButton1" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1">
+					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton1" id="1" parentArray="CategoryButtons">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-101" />
 						</Anchors>
@@ -1042,9 +1085,9 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<Button name="$parentCategoryButton2" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2">
+					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton2" id="2" parentArray="CategoryButtons">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton1" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton1" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1057,9 +1100,9 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<Button name="$parentCategoryButton3" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3">
+					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton3" id="3" parentArray="CategoryButtons">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1072,9 +1115,9 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<Button name="$parentCategoryButton4" inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4" hidden="true">
+					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton4" id="4" parentArray="CategoryButtons">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentCategoryButton2" relativePoint="BOTTOM" x="0" y="-30" />
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton3" relativePoint="BOTTOM" x="0" y="-30" />
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -1082,6 +1125,21 @@
 									<Size x="106" y="0"/>
 									<Anchors>
 										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT" x="0" y="0" />
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Button>
+					<Button inherits="PVPQueueFrameButtonTemplate" parentKey="CategoryButton5" id="5" parentArray="CategoryButtons">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.CategoryButton4" relativePoint="BOTTOM" y="-30"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontNormalLarge" spacing="2" justifyH="LEFT" mixin="AutoScalingFontStringMixin">
+									<Size x="106"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Ring" relativePoint="RIGHT"/>
 									</Anchors>
 								</FontString>
 							</Layer>
@@ -1105,30 +1163,11 @@
 									<Anchor point="TOPLEFT" x="4" y="-85"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="TankIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="1">
-								<KeyValues>
-									<KeyValue key="role" value="TANK" type="string"/>
-								</KeyValues>
+							<Frame parentKey="RoleList" inherits="PVPRoleListTemplate">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="5" y="2"/>
 								</Anchors>
-							</Button>
-							<Button parentKey="HealerIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="2">
-								<KeyValues>
-									<KeyValue key="role" value="HEALER" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="DPSIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="3">
-								<KeyValues>
-									<KeyValue key="role" value="DAMAGER" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
+							</Frame>
 							<DropdownButton parentKey="TypeDropdown" name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate" id="1">
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-6" y="4"/>
@@ -1285,30 +1324,11 @@
 									<Anchor point="TOPLEFT" x="4" y="-85"/>
 								</Anchors>
 							</Frame>
-							<Button parentKey="TankIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="1">
-								<KeyValues>
-									<KeyValue key="role" value="TANK" type="string"/>
-								</KeyValues>
+							<Frame parentKey="RoleList" inherits="PVPRoleListTemplate">
 								<Anchors>
-									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="9" y="2"/>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="5" y="2"/>
 								</Anchors>
-							</Button>
-							<Button parentKey="HealerIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="2">
-								<KeyValues>
-									<KeyValue key="role" value="HEALER" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.TankIcon" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
-							<Button parentKey="DPSIcon" inherits="PVPRoleButtonTemplate" parentArray="RoleIcons" id="3">
-								<KeyValues>
-									<KeyValue key="role" value="DAMAGER" type="string"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="LEFT" relativeKey="$parent.HealerIcon" relativePoint="RIGHT" x="8" y="0"/>
-								</Anchors>
-							</Button>
+							</Frame>
 							<Button parentKey="RatedSoloShuffle" inherits="PVPRatedActivityButtonTemplate" id="1">
 								<KeyValues>
 									 <KeyValue key="toolTipTitle" value="PVP_RATED_SOLO_SHUFFLE" type="global"/>
@@ -1433,6 +1453,121 @@
 							</OnHide>
 						</Scripts>
 					</Frame>
+					<!-- Training Grounds -->
+					<Frame name="TrainingGroundsFrame" hidden="true" inherits="CallbackRegistrantTemplate" mixin="TrainingGroundsFrameMixin">
+						<Size x="402" y="403"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="220" y="-22"/>
+						</Anchors>
+						<Frames>
+							<StatusBar parentKey="ConquestBar" inherits="PVPConquestBarTemplate">
+								<Anchors>
+									<Anchor point="TOPLEFT" x="16" y="-19"/>
+								</Anchors>
+							</StatusBar>
+							<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-5" y="22"/>
+									<Anchor point="TOPLEFT" x="4" y="-85"/>
+								</Anchors>
+							</Frame>
+							<Frame parentKey="RoleList" inherits="PVPRoleListTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="5" y="2"/>
+								</Anchors>
+							</Frame>
+							<DropdownButton parentKey="TypeDropdown" name="$parentTypeDropdown" inherits="WowStyle1DropdownTemplate">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="TOPRIGHT" x="-6" y="4"/>
+								</Anchors>
+							</DropdownButton>
+							<Frame parentKey="SpecificTrainingGroundList" hidden="true" frameStrata="HIGH" mixin="SpecificTrainingGroundListMixin">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="2" y="-2"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-21" y="2"/>
+								</Anchors>
+								<Frames>
+									<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT"/>
+										</Anchors>
+									</Frame>
+									<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="4" y="-5"/>
+											<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="4" y="3"/>
+										</Anchors>
+									</EventFrame>
+								</Frames>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
+									<OnEvent method="OnEvent"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="BonusTrainingGroundList" hidden="true" mixin="BonusTrainingGroundListMixin">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeKey="$parent.Inset"/>
+									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset"/>
+								</Anchors>
+								<Layers>
+									<Layer level="BACKGROUND">
+										<Texture parentKey="WorldBattlesTexture" atlas="pvpqueue-background-casual-alliance" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="TOP" x="0" y="-3"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Button parentKey="RandomTrainingGroundButton" inherits="PVPTrainingGroundActivityButtonTemplate" parentArray="BonusTrainingGroundButtons">
+										<Size x="365" y="54"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.WorldBattlesTexture" y="-6"/>
+										</Anchors>
+										<KeyValues>
+											<KeyValue key="titleText" value="RANDOM_BATTLEGROUNDS" type="global"/>
+											<KeyValue key="queueOption" value="Constants.TrainingGroundConstants.RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID" type="global"/>
+											<KeyValue key="tooltipTitle" value="BONUS_BUTTON_RANDOM_BG_TITLE" type="global"/>
+											<KeyValue key="tooltipDescription" value="BONUS_BUTTON_RANDOM_BG_DESC" type="global"/>
+										</KeyValues>
+									</Button>
+									<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" useParentLevel="true">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.WorldBattlesTexture" relativePoint="TOPLEFT" x="0" y="0"/>
+											<Anchor point="BOTTOMRIGHT" relativeKey="$parent.WorldBattlesTexture" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+								<Scripts>
+									<OnLoad method="OnLoad"/>
+									<OnShow method="OnShow"/>
+									<OnHide method="OnHide"/>
+									<OnEvent method="OnEvent"/>
+								</Scripts>
+							</Frame>
+							<Button parentKey="QueueButton" inherits="MagicButtonTemplate, DisabledTooltipButtonTemplate" text="BATTLEFIELD_JOIN" motionScriptsWhileDisabled="true">
+								<Size x="116" y="22"/>
+								<KeyValues>
+									<!-- Disabled tooltip set dynamically 
+										<KeyValue key="disabledTooltip" value="" type="global"/>
+									-->
+									<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="BOTTOM" y="-1"/>
+								</Anchors>
+							</Button>
+						</Frames>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
 					<!-- Plunderstorm -->
 					<Frame name="PlunderstormFrame" hidden="true" mixin="PlunderstormQueueFrameMixin">
 						<Size x="402" y="407"/>
@@ -1530,7 +1665,10 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="CasualPanel" mixin="PVPWeeklyCasualPanelMixin" setAllPoints="true" hidden="true">
+							<Frame parentKey="CasualPanel" mixin="PVPWeeklyCasualPanelMixin" setAllPoints="true" hidden="true" parentArray="InsetPanels">
+								<KeyValues>
+									<KeyValue key="panelType" value="PVPUIHonorInsetPanelType.Casual" type="global"/>
+								</KeyValues>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
@@ -1557,7 +1695,10 @@
 									<OnShow method="OnShow"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true">
+							<Frame parentKey="RatedPanel" mixin="PVPWeeklyRatedPanelMixin" setAllPoints="true" hidden="true" parentArray="InsetPanels">
+								<KeyValues>
+									<KeyValue key="panelType" value="PVPUIHonorInsetPanelType.Rated" type="global"/>
+								</KeyValues>
 								<Frames>
 									<Cooldown parentKey="HonorLevelDisplay" inherits="HonorLevelDisplayTemplate">
 										<Anchors>
@@ -1651,7 +1792,10 @@
 									<OnEvent method="OnEvent"/>
 								</Scripts>
 							</Frame>
-							<Frame parentKey="PlunderstormPanel" mixin="PlunderstormPanelMixin" setAllPoints="true" hidden="true">
+							<Frame parentKey="PlunderstormPanel" mixin="PlunderstormPanelMixin" setAllPoints="true" hidden="true" parentArray="InsetPanels">
+								<KeyValues>
+									<KeyValue key="panelType" value="PVPUIHonorInsetPanelType.Plunderstorm" type="global"/>
+								</KeyValues>
 								<Layers>
 									<Layer level="ARTWORK">
 										<FontString parentKey="PlunderDesc" inherits="GameFontHighlight" justifyV="BOTTOM" justifyH="CENTER" text="WOW_LABS_PLUNDER_LFG_DESC">
@@ -1682,6 +1826,36 @@
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
+								</Scripts>
+							</Frame>
+							<Frame parentKey="TrainingGroundsPanel" mixin="PVPWeeklyCasualPanelMixin" setAllPoints="true" hidden="true" parentArray="InsetPanels">
+								<KeyValues>
+									<KeyValue key="panelType" value="PVPUIHonorInsetPanelType.TrainingGrounds" type="global"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString parentKey="HKLabel" inherits="GameFontNormal" text="HONORABLE_KILLS">
+											<Anchors>
+												<Anchor point="TOP" y="-184"/>
+											</Anchors>
+										</FontString>
+										<FontString parentKey="HKValue" inherits="GameFontNormalHuge2">
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.HKLabel" relativePoint="BOTTOM" y="-8"/>
+											</Anchors>
+											<Color color="HIGHLIGHT_FONT_COLOR"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Cooldown parentKey="HonorLevelDisplay" inherits="HonorLevelDisplayTemplate">
+										<Anchors>
+											<Anchor point="TOP" y="-25"/>
+										</Anchors>
+									</Cooldown>
+								</Frames>
+								<Scripts>
+									<OnShow method="OnShow"/>
 								</Scripts>
 							</Frame>
 						</Frames>

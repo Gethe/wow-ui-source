@@ -1,0 +1,715 @@
+<Bindings>
+
+	<!-- User interface key bindings header="MOVEMENT" -->
+	<Binding name="MOVEANDSTEER" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveAndSteerStart();
+		else
+			MoveAndSteerStop();
+		end
+	</Binding>
+	<Binding name="MOVEFORWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveForwardStart();
+		else
+			MoveForwardStop();
+		end
+	</Binding>
+	<Binding name="MOVEBACKWARD" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			MoveBackwardStart();
+		else
+			MoveBackwardStop();
+		end
+	</Binding>
+	<Binding name="TURNLEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			TurnLeftStart();
+		else
+			TurnLeftStop();
+		end
+	</Binding>
+	<Binding name="TURNRIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			TurnRightStart();
+		else
+			TurnRightStop();
+		end
+	</Binding>
+	<Binding name="STRAFELEFT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			StrafeLeftStart();
+		else
+			StrafeLeftStop();
+		end
+	</Binding>
+	<Binding name="STRAFERIGHT" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			StrafeRightStart();
+		else
+			StrafeRightStop();
+		end
+	</Binding>
+	<Binding name="JUMP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			JumpOrAscendStart();
+		else
+			AscendStop();
+		end
+	</Binding>
+	<Binding name="SITORSTAND" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			SitStandOrDescendStart();
+		else
+			DescendStop();
+		end
+	</Binding>
+	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleAutoRun();
+	</Binding>
+	<Binding name="STARTAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StartAutoRun();
+	</Binding>
+	<Binding name="STOPAUTORUN" category="BINDING_HEADER_MOVEMENT">
+		StopAutoRun();
+	</Binding>
+	<Binding name="PITCHUP" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchUpStart();
+		else
+			PitchUpStop();
+		end
+	</Binding>
+	<Binding name="PITCHDOWN" runOnUp="true" category="BINDING_HEADER_MOVEMENT">
+		if ( keystate == "down" ) then
+			PitchDownStart();
+		else
+			PitchDownStop();
+		end
+	</Binding>
+	<Binding name="TOGGLERUN" category="BINDING_HEADER_MOVEMENT">
+		ToggleRun();
+	</Binding>
+	<Binding name="FOLLOWTARGET" category="BINDING_HEADER_MOVEMENT">
+		FollowUnit("target");
+	</Binding>
+	<!-- Chat frame bindings header="CHAT" -->
+	<Binding name="OPENCHAT" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.OpenChat(nil);
+	</Binding>
+	<Binding name="OPENCHATSLASH" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.OpenChat("/");
+	</Binding>
+	<Binding name="CHATPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.ChatPageUp();
+	</Binding>
+	<Binding name="CHATPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.ChatPageDown();
+	</Binding>
+	<Binding name="CHATBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.ScrollToBottom();
+	</Binding>
+	<Binding name="REPLY" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.ReplyTell();
+	</Binding>
+	<Binding name="REPLY2" category="BINDING_HEADER_CHAT">
+		ChatFrameUtil.ReplyTell2();
+	</Binding>
+	<Binding name="COMBATLOGPAGEUP" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageUp();
+	</Binding>
+	<Binding name="COMBATLOGPAGEDOWN" category="BINDING_HEADER_CHAT">
+		ChatFrame2:PageDown();
+	</Binding>
+	<Binding name="COMBATLOGBOTTOM" category="BINDING_HEADER_CHAT">
+		ChatFrame2:ScrollToBottom();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_MUTE" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleMutedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_SELF_DEAFEN" category="BINDING_HEADER_CHAT">
+		VoiceChat_ToggleDeafenedFromUserAction();
+	</Binding>
+	<Binding name="TOGGLE_VOICE_PUSH_TO_TALK" category="BINDING_HEADER_CHAT" customBindingID="VoicePushToTalk">
+		nop(); -- Action handler is custom
+	</Binding>
+	<Binding name="TEXT_TO_SPEECH_STOP" category="BINDING_HEADER_CHAT">
+		TextToSpeech_StopAll();
+	</Binding>
+	<!-- Action bar bindings header="ACTIONBAR" -->
+	<Binding name="ACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(1);
+		else
+			ActionButtonUp(1);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(2);
+		else
+			ActionButtonUp(2);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(3);
+		else
+			ActionButtonUp(3);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(4);
+		else
+			ActionButtonUp(4);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(5);
+		else
+			ActionButtonUp(5);
+		end
+	</Binding>
+	<Binding name="ACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			ActionButtonDown(6);
+		else
+			ActionButtonUp(6);
+		end
+	</Binding>
+
+	<Binding name="EXTRAACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		ExtraActionButtonKey(1, keystate == "down")
+	</Binding>
+
+	<Binding name="TOGGLEACTIONBARLOCK" category="BINDING_HEADER_ACTIONBAR">
+		local locked = Settings.GetValue("lockActionBars");
+		Settings.SetValue("lockActionBars", not locked);
+	</Binding>
+	<Binding name="TOGGLEAUTOSELFCAST" category="BINDING_HEADER_ACTIONBAR">
+		local selfCast = Settings.GetValue("autoSelfCast");
+		Settings.SetValue("lockActionBars", not selfCast);
+	</Binding>
+
+	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
+	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 1);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 2);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR1BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBarBottomLeft", 3);
+		else
+			MultiActionButtonUp("MultiBarBottomLeft", 3);
+		end
+	</Binding>
+	<Binding name="WOWHACKITEM1" category="BINDING_HEADER_ACTIONBAR2">
+		WoWHackItemBar:UseItemButton(1);
+	</Binding>
+	<Binding name="WOWHACKITEM2" category="BINDING_HEADER_ACTIONBAR2">
+		WoWHackItemBar:UseItemButton(2);
+	</Binding>
+	<Binding name="WOWHACKITEM3" category="BINDING_HEADER_ACTIONBAR2">
+		WoWHackItemBar:UseItemButton(3);
+	</Binding>
+	<Binding name="WOWHACKITEM4" category="BINDING_HEADER_ACTIONBAR2">
+		WoWHackItemBar:UseItemButton(4);
+	</Binding>
+
+	<!-- Target function key bindings header="TARGETING" -->
+	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetNearestEnemy();
+			TargetPriorityHighlightStart(true);
+		else
+			TargetPriorityHighlightEnd();
+		end
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMY" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemy(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETSCANENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
+		if ( keystate == "down" ) then
+			TargetPriorityHighlightStart(false);
+		else
+			TargetPriorityHighlightEnd();
+		end
+	</Binding>
+	<Binding name="TARGETNEARESTFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIEND" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriend(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSENEMYPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestEnemyPlayer(true);	-- true means reverse!
+	</Binding>
+	<Binding name="TARGETNEARESTFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer();
+	</Binding>
+	<Binding name="TARGETPREVIOUSFRIENDPLAYER" category="BINDING_HEADER_TARGETING">
+		TargetNearestFriendPlayer(true);	-- true means reverse!
+	</Binding>
+<!-- These didn't end up getting used, but might be useful at some point.
+	<Binding name="TARGETNEAREST" category="BINDING_HEADER_TARGETING">
+		TargetNearest();
+	</Binding>
+	<Binding name="TARGETPREVIOUS" category="BINDING_HEADER_TARGETING">
+		TargetNearest(true);
+	</Binding>
+-->
+	<Binding name="TARGETSELF" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("player", "target") ) then
+			TargetUnit("pet", true);
+		else
+			TargetUnit("player");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER1" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party1", "target") or UnitTargetsVehicleInRaidUI("party1") ) then
+			TargetUnit("partypet1");
+		else
+			TargetUnit("party1");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER2" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party2", "target") or UnitTargetsVehicleInRaidUI("party2") ) then
+			TargetUnit("partypet2");
+		else
+			TargetUnit("party2");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER3" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party3", "target") or UnitTargetsVehicleInRaidUI("party3") ) then
+			TargetUnit("partypet3");
+		else
+			TargetUnit("party3");
+		end
+	</Binding>
+	<Binding name="TARGETPARTYMEMBER4" category="BINDING_HEADER_TARGETING">
+		if ( UnitIsUnit("party4", "target") or UnitTargetsVehicleInRaidUI("party4") ) then
+			TargetUnit("partypet4");
+		else
+			TargetUnit("party4");
+		end
+	</Binding>
+	<Binding name="TARGETLASTHOSTILE" category="BINDING_HEADER_TARGETING">
+		TargetLastEnemy();
+	</Binding>
+	<Binding name="TARGETLASTTARGET" category="BINDING_HEADER_TARGETING">
+		TargetLastTarget();
+	</Binding>
+
+	<Binding name="NAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		if ( showEnemies ) then
+			Settings.SetValue("nameplateShowEnemies", false);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		else
+			Settings.SetValue("nameplateShowEnemies", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ENEMY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		end
+	</Binding>
+	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( showFriends ) then
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		else
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+			if ( Settings.GetValue("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		end
+	</Binding>
+	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
+		local showEnemies = Settings.GetValue("nameplateShowEnemies");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
+		if ( not showEnemies or not showFriends ) then
+			Settings.SetValue("nameplateShowEnemies", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
+		if ( Settings.GetValue("nameplateShowAll") ) then
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			else
+				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON_AUTO, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+			end
+		else
+			Settings.SetValue("nameplateShowEnemies", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
+			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+		end
+	</Binding>
+	<Binding name="INTERACTMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		if ( not C_PlayerInteractionManager.InteractUnit("mouseover") ) then
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
+		end
+	</Binding>
+	<Binding name="INTERACTTARGET" category="BINDING_HEADER_TARGETING">
+		C_PlayerInteractionManager.InteractUnit("anyinteract");
+	</Binding>
+	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
+		AssistUnit("target");
+	</Binding>
+	<Binding name="ATTACKTARGET" category="BINDING_HEADER_TARGETING">
+		AttackTarget();
+	</Binding>
+  <Binding name="STARTATTACK" category="BINDING_HEADER_TARGETING">
+    StartAttack();
+  </Binding>
+	<Binding name="FOCUSTARGET" category="BINDING_HEADER_TARGETING">
+		FocusUnit("target");
+	</Binding>
+	<Binding name="TARGETFOCUS" category="BINDING_HEADER_TARGETING">
+		TargetUnit("focus");
+	</Binding>
+	<Binding name="TARGETMOUSEOVER" category="BINDING_HEADER_TARGETING">
+		TargetUnit("mouseover");
+	</Binding>
+	<Binding name="TARGETTALKER" category="BINDING_HEADER_TARGETING">
+		nop();
+	</Binding>
+
+	<!-- UI Panels header="INTERFACE" -->
+	<Binding name="TOGGLEGAMEMENU" category="BINDING_HEADER_INTERFACE">
+		ToggleGameMenu();
+	</Binding>
+
+	<Binding name="TOGGLECHARACTER0" category="BINDING_HEADER_INTERFACE">
+		ToggleWoWHackCharacterUI();
+	</Binding>
+
+	<Binding name="TOGGLESPELLBOOK" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
+		PlayerSpellsUtil.ToggleSpellBookFrame();
+	</Binding>
+
+	<Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
+		ToggleAchievementFrame();
+	</Binding>
+
+	<Binding name="TOGGLESOCIAL" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame();
+	</Binding>
+	<Binding name="TOGGLEFRIENDSTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_FRIENDS);
+	</Binding>
+	<Binding name="TOGGLEQUICKJOINTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleQuickJoinPanel();
+	</Binding>
+	<Binding name="TOGGLEWHOTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleFriendsFrame(FRIEND_TAB_WHO);
+	</Binding>
+	<Binding name="TOGGLECHATTAB" category="BINDING_HEADER_INTERFACE">
+		ToggleChannelFrame();
+	</Binding>
+	<Binding name="TOGGLETEXTTOSPEECH" category="BINDING_HEADER_INTERFACE">
+		ToggleTextToSpeechFrame();
+	</Binding>
+
+	<!-- Misc header="MISC" -->
+	<Binding name="STOPCASTING" category="BINDING_HEADER_MISC">
+		SpellStopCasting();
+	</Binding>
+	<Binding name="STOPATTACK" category="BINDING_HEADER_MISC">
+		StopAttack();
+	</Binding>
+	<Binding name="TOGGLEMUSIC" category="BINDING_HEADER_MISC">
+		Sound_ToggleMusic();
+	</Binding>
+	<Binding name="TOGGLESOUND" category="BINDING_HEADER_MISC">
+		Sound_ToggleSound();
+	</Binding>
+	<Binding name="MASTERVOLUMEUP" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeUp();
+	</Binding>
+	<Binding name="MASTERVOLUMEDOWN" category="BINDING_HEADER_MISC">
+		Sound_MasterVolumeDown();
+	</Binding>
+	<Binding name="TOGGLEUI" category="BINDING_HEADER_MISC">
+		if ( UIParent:IsShown() ) then
+			securecall("CloseMenus");
+			securecall("CloseAllWindows");
+			SetUIVisibility(false);
+		else
+			SetUIVisibility(true);
+		end
+	</Binding>
+	<Binding name="TOGGLEFPS" category="BINDING_HEADER_MISC">
+		FramerateFrame:Toggle();
+	</Binding>
+	<Binding name="SCREENSHOT" category="BINDING_HEADER_MISC">
+		Screenshot();
+	</Binding>
+	<Binding name="TOGGLEGRAPHICSSETTINGS" category="BINDING_HEADER_MISC">
+		if ( GetCVarBool("RAIDsettingsEnabled") ) then
+			local setting = GetCurrentGraphicsSetting()
+			if (setting == 0) then
+				SetCurrentGraphicsSetting( 1 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_RAID_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			else
+				SetCurrentGraphicsSetting( 0 );
+				UIErrorsFrame:AddMessage(GRAPHICS_SETTING_NORMAL_NOTICE, 1.0, 0.1, 0.1, 1.0);
+			end
+		end
+	</Binding>
+	<Binding name="TOGGLESELFHIGHLIGHT" category="BINDING_HEADER_MISC">
+		local text;
+		if ( ToggleSelfHighlight() ) then
+			text = SELF_HIGHLIGHT_ON;
+		else
+			text = SELF_HIGHLIGHT_OFF;
+		end
+		UIErrorsFrame:AddMessage(text, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
+	</Binding>
+	<Binding name="TOGGLEWINDOWED" category="BINDING_HEADER_MISC">
+		ToggleWindowed();
+	</Binding>
+
+	<!-- Debug function key bindings -->
+  <Binding name="RELOADUI" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+    ReloadUI();
+  </Binding>
+	<Binding name="FSTACK" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_AddOns.LoadAddOn("Blizzard_DebugTools");
+		FrameStackTooltip_ToggleDefaults();
+	</Binding>
+	<Binding name="TOGGLECUSTOMIZATIONDEBUGINFO" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCustomizationDebugInfo();
+	</Binding>
+  <Binding name="TOGGLESTATS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleStats();
+	</Binding>
+	<Binding name="TOGGLETRIS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleTris();
+	</Binding>
+	<Binding name="TOGGLEPORTALS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePortals();
+	</Binding>
+	<Binding name="TOGGLECOLLISION" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollision();
+	</Binding>
+	<Binding name="TOGGLECOLLISIONDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleCollisionDisplay();
+	</Binding>
+	<Binding name="TOGGLEPLAYERBOUNDS" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePlayerBounds();
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformanceValues(false);
+	</Binding>
+  <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TogglePerformanceValues(true);
+  </Binding>
+	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleAnimKitDisplay();
+	</Binding>
+	<Binding name="TOGGLEWINDDEBUGMENU" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_Debug.ToggleWindDebugMenu();
+	</Binding>
+	<Binding name="TOGGLEDEBUGAIDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		ToggleDebugAIDisplay();
+	</Binding>
+	<!-- Commentator Mode Bindings -->
+	<Binding name="TOGGLECOMMENTATOR" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		C_Commentator.ToggleCheats();
+	</Binding>
+	<Binding name="DUMPMOVEMENTCAPTURE" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DumpMovementCapture();
+	</Binding>
+	<Binding name="COPYTOOLTIP" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		TooltipUtil.DebugCopyGameTooltip();
+	</Binding>
+	<Binding name="REPEATCONSOLECOMMAND" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
+		DeveloperConsole_RepeatLastCommand();
+	</Binding>
+
+	<!-- Camera key bindings header="CAMERA" -->
+	<Binding name="NEXTVIEW" category="BINDING_HEADER_CAMERA">
+		NextView();
+	</Binding>
+	<Binding name="PREVVIEW" category="BINDING_HEADER_CAMERA">
+		PrevView();
+	</Binding>
+	<Binding name="CAMERAZOOMIN" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( keystate == "down" ) then
+			MoveViewInStart(1.0, 0, true);
+		else
+			CameraZoomIn(1.0);
+		end
+	</Binding>
+	<Binding name="CAMERAZOOMOUT" runOnUp="true" category="BINDING_HEADER_CAMERA">
+		if ( keystate == "down" ) then
+			MoveViewOutStart(1.0, 0, true);
+		else
+			CameraZoomOut(1.0);
+		end
+	</Binding>
+	<Binding name="SETVIEW1" category="BINDING_HEADER_CAMERA">
+		SetView(1);
+	</Binding>
+	<Binding name="SETVIEW2" category="BINDING_HEADER_CAMERA">
+		SetView(2);
+	</Binding>
+	<Binding name="SETVIEW3" category="BINDING_HEADER_CAMERA">
+		SetView(3);
+	</Binding>
+	<Binding name="SETVIEW4" category="BINDING_HEADER_CAMERA">
+		SetView(4);
+	</Binding>
+	<Binding name="SETVIEW5" category="BINDING_HEADER_CAMERA">
+		SetView(5);
+	</Binding>
+	<Binding name="SAVEVIEW1" category="BINDING_HEADER_CAMERA">
+		SaveView(1);
+	</Binding>
+	<Binding name="SAVEVIEW2" category="BINDING_HEADER_CAMERA">
+		SaveView(2);
+	</Binding>
+	<Binding name="SAVEVIEW3" category="BINDING_HEADER_CAMERA">
+		SaveView(3);
+	</Binding>
+	<Binding name="SAVEVIEW4" category="BINDING_HEADER_CAMERA">
+		SaveView(4);
+	</Binding>
+	<Binding name="SAVEVIEW5" category="BINDING_HEADER_CAMERA">
+		SaveView(5);
+	</Binding>
+	<Binding name="RESETVIEW1" category="BINDING_HEADER_CAMERA">
+		ResetView(1);
+	</Binding>
+	<Binding name="RESETVIEW2" category="BINDING_HEADER_CAMERA">
+		ResetView(2);
+	</Binding>
+	<Binding name="RESETVIEW3" category="BINDING_HEADER_CAMERA">
+		ResetView(3);
+	</Binding>
+	<Binding name="RESETVIEW4" category="BINDING_HEADER_CAMERA">
+		ResetView(4);
+	</Binding>
+	<Binding name="RESETVIEW5" category="BINDING_HEADER_CAMERA">
+		ResetView(5);
+	</Binding>
+	<Binding name="FLIPCAMERAYAW" category="BINDING_HEADER_CAMERA">
+		FlipCameraYaw(180);
+	</Binding>
+	<Binding name="CENTERCAMERA" category="BINDING_HEADER_CAMERA">
+		CenterCamera();
+	</Binding>
+	<!--  header="RAID_TARGET" -->
+	<Binding name="RAIDTARGET8" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 8);
+	</Binding>
+		<Binding name="RAIDTARGET7" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 7);
+	</Binding>
+		<Binding name="RAIDTARGET6" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 6);
+	</Binding>
+		<Binding name="RAIDTARGET5" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 5);
+	</Binding>
+		<Binding name="RAIDTARGET4" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 4);
+	</Binding>
+		<Binding name="RAIDTARGET3" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 3);
+	</Binding>
+		<Binding name="RAIDTARGET2" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 2);
+	</Binding>
+	<Binding name="RAIDTARGET1" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTargetIcon("target", 1);
+	</Binding>
+	<Binding name="RAIDTARGETNONE" category="BINDING_HEADER_RAID_TARGET">
+		SetRaidTarget("target", 0);
+	</Binding>
+
+<!-- Ping System keybindings header="BINDING_HEADER_PING_SYSTEM" -->
+<Binding name="TOGGLEPINGLISTENER" runOnUp="true" category="BINDING_HEADER_PING_SYSTEM">
+	C_Ping.TogglePingListener(keystate == "down");
+</Binding>
+
+<Binding name="PINGATTACK" category="BINDING_HEADER_PING_SYSTEM">
+	C_Ping.SendMacroPing(Enum.PingSubjectType.Attack);
+</Binding>
+
+<Binding name="PINGWARNING" category="BINDING_HEADER_PING_SYSTEM">
+	C_Ping.SendMacroPing(Enum.PingSubjectType.Warning);
+</Binding>
+
+<Binding name="PINGONMYWAY" category="BINDING_HEADER_PING_SYSTEM">
+	C_Ping.SendMacroPing(Enum.PingSubjectType.OnMyWay);
+</Binding>
+
+<Binding name="PINGASSIST" category="BINDING_HEADER_PING_SYSTEM">
+	C_Ping.SendMacroPing(Enum.PingSubjectType.Assist);
+</Binding>
+
+<!-- Housing Layout Edit Mode keybindings: These are unused in WoWHack and are listed
+     here so they don't overwrite our default bindings when not found. -->
+	<Binding name="HOUSING_ROTATEROOMLEFT" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_ROTATEROOMRIGHT" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_UP" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_DOWN" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_LEFT" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_RIGHT" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_ZOOM_IN" bindingContext="HousingEditorLayoutMode"/>
+	<Binding name="HOUSING_LAYOUTCAMERA_ZOOM_OUT" bindingContext="HousingEditorLayoutMode"/>
+
+	<!-- Hidden bindings -->
+	<Binding name="TURNORACTION" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			TurnOrActionStart();
+		else
+			TurnOrActionStop();
+		end
+	</Binding>
+	<Binding name="CAMERAORSELECTORMOVE" runOnUp="true" hidden="true">
+		if ( keystate == "down" ) then
+			CameraOrSelectOrMoveStart();
+		else
+			CameraOrSelectOrMoveStop(IsModifiedClick("STICKYCAMERA"));
+		end
+	</Binding>
+
+	<!-- Modified Click Actions -->
+	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="FOCUSCAST" default="NONE"/>
+	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
+	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="MAILAUTOLOOTTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="STICKYCAMERA" default="CTRL"/>
+	<ModifiedClick action="CHATLINK" default="SHIFT-BUTTON1"/>
+	<ModifiedClick action="DRESSUP" default="CTRL-BUTTON1"/>
+	<ModifiedClick action="EXPANDITEM" default="SHIFT-BUTTON2"/>
+	<ModifiedClick action="SPLITSTACK" default="SHIFT"/>
+	<ModifiedClick action="PICKUPACTION" default="SHIFT"/>
+	<ModifiedClick action="PICKUPITEM" default="SHIFT"/>
+	<ModifiedClick action="COMPAREITEMS" default="SHIFT"/>
+	<ModifiedClick action="OPENALLBAGS" default="SHIFT"/>
+	<ModifiedClick action="QUESTWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="RECIPEWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="TOKENWATCHTOGGLE" default="SHIFT"/>
+	<ModifiedClick action="SHOWITEMFLYOUT" default="ALT"/>
+	<ModifiedClick action="SHOWMULTICASTFLYOUT" default="ALT"/>
+</Bindings>

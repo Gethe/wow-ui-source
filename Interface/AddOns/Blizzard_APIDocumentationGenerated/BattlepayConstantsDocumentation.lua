@@ -3,6 +3,39 @@ local BattlepayConstants =
 	Tables =
 	{
 		{
+			Name = "BulkPurchaseResult",
+			Type = "Enumeration",
+			NumValues = 7,
+			MinValue = 0,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "ResultOk", Type = "BulkPurchaseResult", EnumValue = 0 },
+				{ Name = "ResultInProgress", Type = "BulkPurchaseResult", EnumValue = 1 },
+				{ Name = "ResultFailed", Type = "BulkPurchaseResult", EnumValue = 2 },
+				{ Name = "ResultTooManyProducts", Type = "BulkPurchaseResult", EnumValue = 3 },
+				{ Name = "ResultSystemDisabled", Type = "BulkPurchaseResult", EnumValue = 4 },
+				{ Name = "ResultInsufficientFunds", Type = "BulkPurchaseResult", EnumValue = 5 },
+				{ Name = "ResultPurchaseTimeout", Type = "BulkPurchaseResult", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "BulkRefundResult",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "ResultOk", Type = "BulkRefundResult", EnumValue = 0 },
+				{ Name = "ResultFailed", Type = "BulkRefundResult", EnumValue = 1 },
+				{ Name = "ResultInvalidRequest", Type = "BulkRefundResult", EnumValue = 2 },
+				{ Name = "ResultRefundWindowExpired", Type = "BulkRefundResult", EnumValue = 3 },
+				{ Name = "ResultSystemDisabled", Type = "BulkRefundResult", EnumValue = 4 },
+				{ Name = "ResultTimeout", Type = "BulkRefundResult", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "CanRedeemTokenForBalanceResult",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -12,6 +45,21 @@ local BattlepayConstants =
 			{
 				{ Name = "Ok", Type = "CanRedeemTokenForBalanceResult", EnumValue = 0 },
 				{ Name = "FailureCap", Type = "CanRedeemTokenForBalanceResult", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "SimpleOrderStatus",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SimpleOrderStatus", EnumValue = 0 },
+				{ Name = "Creating", Type = "SimpleOrderStatus", EnumValue = 1 },
+				{ Name = "InProgress", Type = "SimpleOrderStatus", EnumValue = 2 },
+				{ Name = "Success", Type = "SimpleOrderStatus", EnumValue = 3 },
+				{ Name = "Failed", Type = "SimpleOrderStatus", EnumValue = 4 },
 			},
 		},
 		{

@@ -22,6 +22,7 @@ local BarberShop =
 		{
 			Name = "ClearPreviewChoices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,6 +97,7 @@ local BarberShop =
 		{
 			Name = "HasCustomizationFeature",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +121,7 @@ local BarberShop =
 		{
 			Name = "MarkCustomizationChoiceAsSeen",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,6 +131,7 @@ local BarberShop =
 		{
 			Name = "MarkCustomizationOptionAsSeen",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -137,6 +141,7 @@ local BarberShop =
 		{
 			Name = "PreviewCustomizationChoice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -159,6 +164,7 @@ local BarberShop =
 		{
 			Name = "RotateCamera",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +178,7 @@ local BarberShop =
 		{
 			Name = "SetCameraDistanceOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +188,7 @@ local BarberShop =
 		{
 			Name = "SetCameraZoomLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -191,6 +199,7 @@ local BarberShop =
 		{
 			Name = "SetCustomizationChoice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,6 +210,7 @@ local BarberShop =
 		{
 			Name = "SetModelDressState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -210,6 +220,7 @@ local BarberShop =
 		{
 			Name = "SetSelectedSex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +230,7 @@ local BarberShop =
 		{
 			Name = "SetViewingAlteredForm",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -228,6 +240,7 @@ local BarberShop =
 		{
 			Name = "SetViewingChrModel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +251,7 @@ local BarberShop =
 		{
 			Name = "SetViewingShapeshiftForm",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +261,7 @@ local BarberShop =
 		{
 			Name = "ZoomCamera",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -261,36 +276,43 @@ local BarberShop =
 			Name = "BarberShopAppearanceApplied",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_APPEARANCE_APPLIED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "BarberShopCameraValuesUpdated",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_CAMERA_VALUES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BarberShopClose",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BarberShopCostUpdate",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_COST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BarberShopForceCustomizationsUpdate",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_FORCE_CUSTOMIZATIONS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BarberShopOpen",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BarberShopResult",
 			Type = "Event",
 			LiteralName = "BARBER_SHOP_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },

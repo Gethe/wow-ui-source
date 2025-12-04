@@ -951,10 +951,18 @@ local function MeasureExtents(regions)
 	local l, r, t, b = math.huge, 0, 0, math.huge;
 	for index, region in ipairs(regions) do
 		local left, bottom, width, height = region:GetRect();
-		l = math.min(l, left);
-		r = math.max(r, left + width);
-		t = math.max(t, bottom + height);
-		b = math.min(b, bottom);
+
+		--[[ 
+		If the rect is invalid and any of these are nil, the assumption is that the extents are being measured
+		on a menu that is being closed (or is otherwise invalid and will be subsequently refreshed) and we can
+		return values knowing that they'll be updated before they're relevant.
+		]]--
+		if left and bottom and width and height then
+			l = math.min(l, left);
+			r = math.max(r, left + width);
+			t = math.max(t, bottom + height);
+			b = math.min(b, bottom);
+		end
 	end
 	return r - l, t - b;
 end
@@ -1020,6 +1028,8 @@ local function CallInitializers(frame, menu, compositor)
 end
 
 local function ResetMenuElement(pool, frame, new)
+	frame:SetToDefaults();
+
 	if not new then
 		TryHideTooltip(frame);
 
@@ -1101,15 +1111,13 @@ function MenuMixin:SetMenuDescription(menuDescription)
 		
 		local isCompositorEnabled = menuDescription:IsCompositorEnabled();
 		local function Factory(frameTemplateOrFrameType, initializer)
-			local childFrame, new, templateInfo = securecallfunction(AcquireMenuElement, frameDummy, frameTemplateOrFrameType, ResetMenuElement)
+			local childFrame, _new, templateInfo = securecallfunction(AcquireMenuElement, frameDummy, frameTemplateOrFrameType, ResetMenuElement)
 			if not childFrame then
 				error(string.format("MenuMixin:SetMenuDescription: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
 			end
 			
-			if new then
-				-- ID is for our test harness, it has no significance elsewhere.
-				childFrame:SetID(1001);
-			end
+			-- ID is for our test harness, it has no significance elsewhere.
+			childFrame:SetID(1001);
 
 			factoryArgs.childFrame = childFrame;
 			factoryArgs.initializer = initializer;
@@ -1530,9 +1538,15 @@ do
 	end
 
 	function MenuMixin:FlipPositionIfOffscreen()
-		local overflowHorizontal, overflowVertical = false, false;
 		local menuFrame = self:ToProxy();
-		
+		local l, r, t, b = RegionUtil.GetBounds(menuFrame);
+		if not l or not r or not t or not b then
+			-- If we cannot obtain bounds, then we cannot determine if the menu is offscreen.
+			return;
+		end
+
+		local overflowHorizontal, overflowVertical = false, false;
+
 		local br, bt;
 		local window = menuFrame:GetWindow();
 		if window then
@@ -1543,14 +1557,10 @@ do
 			bt = boundsParent:GetTop();
 		end
 
-		local l = menuFrame:GetLeft();
-		local r = menuFrame:GetRight();
 		if (l < 0) or (r > br) then
 			overflowHorizontal = true;
 		end
 
-		local t = menuFrame:GetTop();
-		local b = menuFrame:GetBottom();
 		if (b < 0) or (t > bt) then
 			overflowVertical = true;
 		end
@@ -2032,11 +2042,9 @@ function MenuManagerMixin:AcquireMenu(params)
 	Menus are parented to WorldFrame because UIParent is hidden in certain fullscreen UIs.
 	We apply the scale of the appropriate parent to the menu to get the desired base scale.
 	]]--
-	local proxy, new = securecallfunction(AcquireMenuFrame, self);
-	if new then
-		-- ID is for our test harness, it has no significance elsewhere.
-		proxy:SetID(1000);
-	end
+	local proxy = securecallfunction(AcquireMenuFrame, self);
+	-- ID is for our test harness, it has no significance elsewhere.
+	proxy:SetID(1000);
 	--assert(select("#", proxy:GetRegions()) == 0);
 	--assert(select("#", proxy:GetChildren()) == 0);
 

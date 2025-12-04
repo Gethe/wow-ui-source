@@ -490,6 +490,7 @@ end
 function Class_XPBarWatcher:QUEST_TURNED_IN(completedQuestID)
 	Dispatcher:UnregisterEvent("QUEST_TURNED_IN", self);
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
+	Dispatcher:RegisterEvent("TALKINGHEAD_REQUESTED", self);
 
 	local watcher = TutorialManager:GetWatcher("UI_Watcher");
 	if watcher then
@@ -503,6 +504,11 @@ end
 
 function Class_XPBarWatcher:QUEST_DETAIL()
 	Dispatcher:UnregisterEvent("QUEST_DETAIL", self);
+	self:Complete();
+end
+
+function Class_XPBarWatcher:TALKINGHEAD_REQUESTED()
+	Dispatcher:UnregisterEvent("TALKINGHEAD_REQUESTED", self);
 	self:Complete();
 end
 
@@ -798,6 +804,7 @@ function Class_LootCorpseWatcher:StartWatching()
 	end
 	Dispatcher:RegisterEvent("PLAYER_REGEN_DISABLED", self);
 	Dispatcher:RegisterEvent("PLAYER_REGEN_ENABLED", self);
+	Dispatcher:RegisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:StopWatching()
@@ -805,12 +812,7 @@ function Class_LootCorpseWatcher:StopWatching()
 	Dispatcher:UnregisterEvent("PLAYER_REGEN_ENABLED", self);
 	Dispatcher:UnregisterEvent("CHAT_MSG_LOOT", self);
 	Dispatcher:UnregisterEvent("CHAT_MSG_MONEY", self);
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
-
-	if (self.canLootTimer) then
-		self.canLootTimer:Cancel();
-		self.canLootTimer = nil;
-	end
+	Dispatcher:UnregisterEvent("UNIT_LOOT", self);
 end
 
 function Class_LootCorpseWatcher:WatchQuestMob(unitID)
@@ -848,31 +850,16 @@ end
 -- Entering Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_DISABLED(...)
 	self:SuppressChildren();
-	Dispatcher:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
 -- Leaving Combat
 function Class_LootCorpseWatcher:PLAYER_REGEN_ENABLED(...)
 	self:UnsuppressChildren();
-	Dispatcher:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self);
 end
 
--- Watch for units dying while in combat.  if that happened, check the unit to see if the
--- player can loot it and if so, prompt the player to loot
-function Class_LootCorpseWatcher:COMBAT_LOG_EVENT_UNFILTERED(timestamp, _logEvent)
-	local eventData = {CombatLogGetCurrentEventInfo()};
-	local logEvent = eventData[2];
-	local unitGUID = eventData[8];
-	if ((logEvent == "UNIT_DIED") or (logEvent == "UNIT_DESTROYED")) then
-		-- Wait for mirror data
-		if not self.canLootTimer then
-			self.canLootTimer = C_Timer.NewTimer(1, function()
-				if CanLootUnit(unitGUID) then
-					self:UnitLootable(unitGUID);
-				end
-				self.canLootTimer = nil;
-			end);
-		end
+function Class_LootCorpseWatcher:UNIT_LOOT(unitGUID, hasLoot)
+	if CanLootUnit(unitGUID) then
+		self:UnitLootable(unitGUID);
 	end
 end
 
@@ -883,7 +870,7 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 		return;
 	end
 
-	local unitID = tonumber(string.match(unitGUID, "Creature%-.-%-.-%-.-%-.-%-(.-)%-"));
+	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if (unitID == hasKilled) then			
 			tutorial:ForceBegin(unitID);
@@ -905,4 +892,74 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 		Dispatcher:RegisterEvent("CHAT_MSG_LOOT", self);
 		Dispatcher:RegisterEvent("CHAT_MSG_MONEY", self);
 	end
+end
+
+-- ============================================================================================================
+-- Tab targeting - watches for progress on a specific quest
+-- ============================================================================================================
+
+Class_TabTargetingWatcher = class("TabTargetingWatcher", Class_TutorialBase);
+
+function Class_TabTargetingWatcher:StartWatching()
+	if C_QuestLog.IsComplete(TutorialData.TabTargetingQuestID) or C_QuestLog.IsQuestFlaggedCompleted(TutorialData.TabTargetingQuestID) then
+		self:Complete();
+		return;
+	end
+
+	local onQuest = C_QuestLog.IsOnQuest(TutorialData.TabTargetingQuestID);
+	if onQuest then
+		local objectiveIndex = 1;
+		local displayComplete = false;
+		local _objectiveText, _objectiveType, _finished, numFulfilled, numRequired = GetQuestObjectiveInfo(TutorialData.TabTargetingQuestID, objectiveIndex, displayComplete);
+		if numRequired - numFulfilled <= 1 then
+			-- Not enough left to transition from one kill to another
+			self:Complete();
+			return;
+		end
+		self.lastFulfilled = numFulfilled;
+		Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
+	else
+		Dispatcher:RegisterEvent("QUEST_ACCEPTED", self);
+	end
+end
+
+function Class_TabTargetingWatcher:StopWatching()
+	Dispatcher:UnregisterEvent("QUEST_ACCEPTED", self);
+	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
+	Dispatcher:UnregisterEvent("PLAYER_TARGET_CHANGED", self);
+end
+
+function Class_TabTargetingWatcher:QUEST_ACCEPTED(questID)
+	if questID == TutorialData.TabTargetingQuestID then
+		self.lastFulfilled = 0;
+		Dispatcher:RegisterEvent("QUEST_LOG_UPDATE", self);
+	end
+end
+
+function Class_TabTargetingWatcher:QUEST_LOG_UPDATE()
+	local objectiveIndex = 1;
+	local displayComplete = false;
+	local _objectiveText, _objectiveType, _finished, numFulfilled, _numRequired = GetQuestObjectiveInfo(TutorialData.TabTargetingQuestID, objectiveIndex, displayComplete);
+	if numFulfilled > self.lastFulfilled then
+		self.lastFulfilled = numFulfilled;
+		local bindingString = GetBindingKey("TARGETNEARESTENEMY");
+		if bindingString then
+			local content = { text = NPE_TAB_TARGETING, keyText = bindingString };
+			self:ShowSingleKeyTutorial(content);
+			C_Timer.After(0.1, function()
+				Dispatcher:RegisterEvent("PLAYER_TARGET_CHANGED", self);
+			end);
+		end
+	end
+end
+
+function Class_TabTargetingWatcher:PLAYER_TARGET_CHANGED()
+	if UnitCanAttack("player", "target") and not UnitIsDeadOrGhost("target") then
+		self:HideSingleKeyTutorial();
+		self:Complete();
+	end
+end
+
+function Class_TabTargetingWatcher:OnComplete()
+	self:StopWatching();
 end

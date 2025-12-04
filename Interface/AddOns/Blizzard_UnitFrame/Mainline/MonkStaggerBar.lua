@@ -1,3 +1,5 @@
+-- NOTE: If you make changes here, you likely need to make changes to MonkAlternatePower.lua
+
 -- percentages at which bar should change color
 STAGGER_STATES = {
 	RED 	= { key = "red", threshold = .60 },

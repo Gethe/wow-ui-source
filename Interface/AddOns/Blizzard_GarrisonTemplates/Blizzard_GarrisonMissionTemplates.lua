@@ -82,7 +82,7 @@ function GarrisonMission:OnClickMission(missionInfo)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local missionLink = C_Garrison.GetMissionLink(missionInfo.missionID);
 		if (missionLink) then
-			ChatEdit_InsertLink(missionLink);
+			ChatFrameUtil.InsertLink(missionLink);
 		end
 		return false;
 	end

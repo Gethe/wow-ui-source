@@ -1,0 +1,229 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+<Frame name="HouseSettingsAccessOptionsTemplate" mixin="HouseSettingsAccessOptionsMixin" virtual="true">
+	<Size x="160" y="225"/>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString parentKey="Label" inherits="Game15Font_Shadow">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<DropdownButton parentKey="AccessTypeDropdown" inherits="WowStyle2DropdownTemplate">
+			<KeyValues>
+				<KeyValue key="menuMixin" value="MenuStyle1Mixin" type="global"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Label" relativePoint="BOTTOMLEFT" y="-5"/>
+			</Anchors>
+		</DropdownButton>
+		<Frame parentKey="Options" inherits="VerticalLayoutFrame">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.AccessTypeDropdown" relativePoint="BOTTOMLEFT" x="20" y="-24"/>
+			</Anchors>
+			<KeyValues>
+				<KeyValue key="spacing" value="14" type="number"/>
+			</KeyValues>
+		</Frame>
+	</Frames>
+</Frame>
+
+<Frame name="HouseSettingsAccessButtonTemplate" virtual="true">
+	<Size x="100" y="30"/>
+	<Frames>
+		<CheckButton parentKey="Checkbox">
+			<Size x="30" y="29"/>
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+			<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+			<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+			<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+			<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+		</CheckButton>
+	</Frames>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString parentKey="OptionLabel" inherits="GameFontNormal" justifyH="LEFT">
+				<Size x="220"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Checkbox" relativePoint="RIGHT" x="5"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Frame>
+
+<Frame name="AbandonHouseConfirmationDialog" mixin="AbandonHouseConfirmationDialogMixin" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+	<Size x="350" y="400"/>
+	<Anchors>
+		<Anchor point="CENTER"/>
+	</Anchors>
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+	</Scripts>
+	<Layers>
+		<Layer level="ARTWORK">
+			<FontString parentKey="HouseName" inherits="Game20Font" text="house name here">
+				<Size x="340"/>
+				<Anchors>
+					<Anchor point="TOP" y="-15"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="ConfirmationText" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_ABANDON_CONFIRMATION">
+				<Size x="250"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HouseName" relativePoint="BOTTOM" y="-25"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="ConfirmationDescription" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_ABANDON_DESCRIPTION">
+				<Size x="250"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ConfirmationText" relativePoint="BOTTOM" y="-10"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame parentKey="RefundContainer" inherits="ResizeLayoutFrame">
+			<KeyValues>
+				<KeyValue key="maximumWidth" value="300" type="number"/>
+			</KeyValues>
+			<Anchors>
+				<Anchor point="BOTTOM" y="60"/>
+			</Anchors>
+			<Layers>
+				<Layer level="ARTWORK">
+					<FontString parentKey="RefundText" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_ABANDON_REFUND">
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Color r="1.0" g="0.82" b="0"/>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Frame parentKey="RefundMoneyFrame" name="AbandonHouseRefundMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RefundText" relativePoint="RIGHT" x="5"/>
+					</Anchors>
+				</Frame>
+			</Frames>
+		</Frame>
+		<Button parentKey="ConfirmButton" inherits="UIPanelButtonTemplate">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-5" y="20"/>
+			</Anchors>
+		</Button>
+		<Button parentKey="CancelButton" inherits="UIPanelButtonTemplate">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="5" y="20"/>
+			</Anchors>
+		</Button>
+	</Frames>
+</Frame>
+
+<Frame name="HousingHouseSettingsFrame" mixin="HousingHouseSettingsFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+	<Size x="600" y="550"/>
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+		<OnEvent method="OnEvent"/>
+		<OnShow method="OnShow"/>
+		<OnHide method="OnHide"/>
+	</Scripts>
+	<Frames>
+		<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+		<Frame parentKey="PlotAccess" inherits="HouseSettingsAccessOptionsTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="46" y="-215"/>
+			</Anchors>
+		</Frame>
+		<Frame parentKey="HouseAccess" inherits="HouseSettingsAccessOptionsTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.PlotAccess" relativePoint="TOPRIGHT" x="118"/>
+			</Anchors>
+		</Frame>
+		<Button parentKey="IgnoreListButton" inherits="UIPanelButtonTemplate" text="HOUSING_HOUSE_SETTINGS_IGNORELIST_BUTTON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMLEFT" x="46" y="34" />
+			</Anchors>
+		</Button>
+		<Button parentKey="SaveButton" inherits="UIPanelButtonTemplate" text="SAVE">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT" x="-46" y="34" />
+			</Anchors>
+		</Button>
+
+		<DropdownButton parentKey="HouseOwnerDropdown" inherits="WowStyle1DropdownTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="46" y="-132"/>
+			</Anchors>
+		</DropdownButton>
+
+		<Button parentKey="AbandonHouseButton" inherits="UIPanelButtonTemplate" text="HOUSING_HOUSE_SETTINGS_ABANDON">
+			<Size x="152" y="28"/>
+			<Anchors>
+				<Anchor point="TOPRIGHT" x="-36" y="-110"/>
+			</Anchors>
+		</Button>
+	</Frames>
+	<Layers>
+		<Layer level="BACKGROUND" textureSubLevel="-1">
+			<Texture parentKey="Background" atlas="housing-basic-container" setAllPoints="true"/>
+		</Layer>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="WoodHeader" atlas="housing-basic-container-woodheader">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-6"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-6" y="-45"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="Header" atlas="housing-basic-panel-gradient-header-bg">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="100" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" x="-100" y="-80"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="ARTWORK">
+			<Texture parentKey="PlantDecoLeft" atlas="housing-decorative-foliage-left" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-7"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="Title" inherits="Game17Font_Shadow" text="HOUSING_HOUSE_SETTINGS_TITLE">
+				<Anchors>
+					<Anchor point="TOP" y="-18"/>
+				</Anchors>
+			</FontString>
+			<FontString parentKey="HouseNameText" inherits="Game15Font_Shadow" text="">
+				<Anchors>
+					<Anchor point="TOP" y="-60"/>
+				</Anchors>
+				<Color r="1.0" g="0.82" b="0"/>
+			</FontString>
+			<FontString parentKey="HouseOwnerLabel" inherits="Game15Font_Shadow" text="HOUSING_HOUSE_SETTINGS_HOUSEOWNER">
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.HouseOwnerDropdown" relativePoint="TOPLEFT" y="8"/>
+				</Anchors>
+			</FontString>
+			<Texture parentKey="Spacer" atlas="Options_HorizontalDivider">
+					<Anchors>
+						<Anchor point="TOP" y="-174"/>
+					</Anchors>
+					<Size x="550" y="1"/>
+			</Texture>
+		</Layer>
+	</Layers>
+</Frame>
+
+</Ui>

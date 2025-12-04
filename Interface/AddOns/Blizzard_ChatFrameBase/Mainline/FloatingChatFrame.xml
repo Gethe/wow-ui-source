@@ -386,7 +386,7 @@
 
 	<!-- ===============================================================================-->
 	<!-- Floating frame template-->
-	<ScrollingMessageFrame name="FloatingChatFrameTemplate" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" frameLevel="5" virtual="true">
+	<ScrollingMessageFrame name="FloatingChatFrameTemplate" mixin="FloatingChatFrameMixin" movable="true" enableMouse="false" resizable="true" inherits="ChatFrameTemplate,FloatingBorderedFrame" parent="UIParent" hidden="true" clampedToScreen="true" dontSavePosition="true" frameLevel="5" virtual="true">
 		<Size x="430" y="120"/>
 		<Anchors>
 			<Anchor point="BOTTOMLEFT" x="100" y="100"/>
@@ -409,7 +409,7 @@
 						FCFClickAnywhereButton_OnEvent(self, event, ...);
 					</OnEvent>
 					<OnClick>
-						ChatEdit_SetLastActiveWindow(self:GetParent().editBox);
+						ChatFrameUtil.SetLastActiveWindow(self:GetParent().editBox);
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -500,21 +500,15 @@
 					<Anchor point="RIGHT" relativeKey="$parent.ScrollBar" relativePoint="RIGHT" x="8" y="0"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad>
+					<OnLoad inherit="append">
 						self.chatFrame = self:GetParent();
-						ChatEdit_OnLoad(self);
 					</OnLoad>
 				</Scripts>
 			</EditBox>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				ChatFrame_OnLoad(self);
-				FloatingChatFrame_OnLoad(self);
-			</OnLoad>
-			<OnUpdate>
-				ChatFrame_OnUpdate(self, elapsed);
-			</OnUpdate>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
 			<OnShow>
 				SetChatWindowShown(self:GetID(), true);
 				FCF_StopAlertFlash(self);
@@ -527,10 +521,7 @@
 					end
 				end
 			</OnHide>
-			<OnEvent>
-				ChatFrame_OnEvent(self, event, ...);
-				FloatingChatFrame_OnEvent(self, event, ...);
-			</OnEvent>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</ScrollingMessageFrame>
 
@@ -684,9 +675,7 @@
 	<Button name="ChatFrame2Tab" inherits="ChatTabTemplate" id="2"/>
 	<ScrollingMessageFrame name="ChatFrame2" inherits="FloatingChatFrameTemplate" id="2">
 		<Scripts>
-			<OnLoad>
-				ChatFrame_OnLoad(self);
-				FloatingChatFrame_OnLoad(self);
+			<OnLoad inherit="prepend">
 				self.isStaticDocked = true;
 			</OnLoad>
 		</Scripts>

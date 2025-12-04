@@ -19,6 +19,7 @@ local WarbandSceneInfo =
 			Name = "GetWarbandSceneEntry",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +34,7 @@ local WarbandSceneInfo =
 		{
 			Name = "HasWarbandScene",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local WarbandSceneInfo =
 		{
 			Name = "IsFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -61,6 +64,7 @@ local WarbandSceneInfo =
 		{
 			Name = "SearchWarbandSceneEntries",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,6 +79,7 @@ local WarbandSceneInfo =
 		{
 			Name = "SetFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +95,7 @@ local WarbandSceneInfo =
 			Name = "NewWarbandSceneAdded",
 			Type = "Event",
 			LiteralName = "NEW_WARBAND_SCENE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warbandScenID", Type = "number", Nilable = false },
@@ -99,6 +105,7 @@ local WarbandSceneInfo =
 			Name = "WarbandSceneFavoritesUpdated",
 			Type = "Event",
 			LiteralName = "WARBAND_SCENE_FAVORITES_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

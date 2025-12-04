@@ -306,9 +306,9 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
 		AddFilter(rootDescription, "showTamers");
-		AddFilterWithNewIndicator(rootDescription, "questPOILocalStory", LE_FRAME_TUTORIAL_ACCOUNT_LOCAL_STORIES_FILTER_SEEN);	
+		AddFilterWithNewIndicator(rootDescription, "questPOILocalStory", Enum.FrameTutorialAccount.LocalStoriesFilterSeen);	
 		AddFilter(rootDescription, "trivialQuests");
-		AddFilterWithNewIndicator(rootDescription, "showAccountCompletedQuests", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER_SEEN);
+		AddFilterWithNewIndicator(rootDescription, "showAccountCompletedQuests", Enum.FrameTutorialAccount.CompletedQuestsFilterSeen);
 		AddFilter(rootDescription, "contentTrackingFilter");
 
 		if arch then
@@ -380,7 +380,7 @@ end
 function WorldMapTrackingOptionsButtonMixin:RefreshAccountCompletedQuestFilterTutorial()
 	HelpTip:Hide(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 
-	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER);
+	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.CompletedQuestsFilter);
 	if tutorialAcknowledged then
 		return;
 	end
@@ -389,7 +389,7 @@ function WorldMapTrackingOptionsButtonMixin:RefreshAccountCompletedQuestFilterTu
 		text = ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,
 		cvarBitfield = "closedInfoFramesAccountWide",
-		bitfieldFlag = LE_FRAME_TUTORIAL_ACCOUNT_COMPLETED_QUESTS_FILTER,
+		bitfieldFlag = Enum.FrameTutorialAccount.CompletedQuestsFilter,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		offsetX = -2,
 		alignment = HelpTip.Alignment.Center,

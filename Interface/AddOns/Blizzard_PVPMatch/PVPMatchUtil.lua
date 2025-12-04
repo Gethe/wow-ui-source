@@ -125,33 +125,29 @@ function PVPMatchUtil.UpdateMatchmakingText(fontString)
 	end
 end
 
-function PVPMatchUtil.UpdateDataProvider(scrollBox, forceNewDataProvider)
-	local scores = GetNumBattlefieldScores();
-	if scrollBox:GetDataProviderSize() ~= scores or forceNewDataProvider then
-		local useAlternateColor = not C_PvP.IsMatchFactional();
-		local dataProvider = CreateDataProvider();
+function PVPMatchUtil.UpdateDataProvider(scrollBox)
+	local useAlternateColor = not C_PvP.IsMatchFactional();
+	local dataProvider = CreateDataProvider();
 
-		if C_PvP.GetCustomVictoryStatID() == 0 then
-			for index = 1, scores do 
+	if C_PvP.GetCustomVictoryStatID() == 0 then
+		for index = 1, GetNumBattlefieldScores() do 
+			dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
+		end
+	else
+		local isMatchComplete = PVPMatchUtil.IsActiveMatchComplete();
+		for index = 1, GetNumBattlefieldScores() do 
+			if isMatchComplete then
+				local scoreInfo = C_PvP.GetScoreInfo(index);
+				local isLocalPlayer = scoreInfo and IsPlayerGuid(scoreInfo.guid);
+				local backgroundColor = isLocalPlayer and PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR or PVP_SCOREBOARD_HORDE_ALT_ROW_COLOR;
+				dataProvider:Insert({index=index, backgroundColor=backgroundColor});
+			else
 				dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
 			end
-		else
-			local isMatchComplete = PVPMatchUtil.IsActiveMatchComplete();
-			for index = 1, scores do 
-				if isMatchComplete then
-					local scoreInfo = C_PvP.GetScoreInfo(index);
-					local isLocalPlayer = scoreInfo and IsPlayerGuid(scoreInfo.guid);
-					local backgroundColor = isLocalPlayer and PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR or PVP_SCOREBOARD_HORDE_ALT_ROW_COLOR;
-					dataProvider:Insert({index=index, backgroundColor=backgroundColor});
-				else
-					dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
-				end
-			end
 		end
-
-		local retainScrollPosition = not forceNewDataProvider;
-		scrollBox:SetDataProvider(dataProvider, retainScrollPosition);
 	end
+
+	scrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
 
 function PVPMatchUtil.InitScrollBox(scrollBox, scrollBar, tableBuilder)

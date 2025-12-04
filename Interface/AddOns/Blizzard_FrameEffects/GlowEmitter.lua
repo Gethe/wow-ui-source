@@ -38,8 +38,12 @@ function GlowEmitterFactory:Attach(frame, target, offsetX, offsetY, width, heigh
 		offsetY = 0;
 	end
 
-	frame:SetPoint("LEFT", target, -offsetX, offsetY);
-	frame:SetPoint("RIGHT", target, offsetX, offsetY);
+	if width then
+		frame:SetPoint("CENTER");
+	else
+		frame:SetPoint("LEFT", target, -offsetX, offsetY);
+		frame:SetPoint("RIGHT", target, offsetX, offsetY);
+	end
 end
 
 GlowEmitterFactory:Init("Frame", "GlowEmitterTemplate");

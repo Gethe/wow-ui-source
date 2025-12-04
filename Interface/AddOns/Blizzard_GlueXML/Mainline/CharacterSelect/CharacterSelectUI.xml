@@ -21,15 +21,21 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Level" inherits="GlueFontHighlight">
+				<FontString parentKey="CharacterContext" inherits="GlueFontHighlight">
 					<Anchors>
 						<Anchor point="BOTTOM" x="0" y="12"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Name" inherits="GlueFontNormalLarge">
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.Level" relativePoint="TOP" x="0" y="5"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.CharacterContext" relativePoint="TOP" x="0" y="5"/>
 					</Anchors>
+				</FontString>
+				<FontString parentKey="RPEAvailable" inherits="GlueFontNormal" text="RPE_CATCH_UP_AVAILABLE">
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.Name" relativePoint="TOP" x="0" y="5"/>
+					</Anchors>
+					<Color color="RPE_FONT_COLOR"/>
 				</FontString>
 				<Texture parentKey="TimerunningIcon" atlas="timerunning-glues-icon" hidden="true">
 					<Size x="24" y="24"/>
@@ -46,7 +52,7 @@
 			<OnDoubleClick method="OnDoubleClick"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="CharacterFooterFrameTemplate" virtual="true">
 		<Size x="100" y="50"/>
 		<Frames>

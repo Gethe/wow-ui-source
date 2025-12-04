@@ -276,7 +276,7 @@ function ClassNameplateManaBar:OnOptionsUpdated()
 end
 
 function ClassNameplateManaBar:OnSizeChanged() -- override
-	PixelUtil.SetHeight(self, DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
+	PixelUtil.SetHeight(self, NamePlateSetupOptions.healthBarHeight);
 	self.Border:UpdateSizes();
 end
 

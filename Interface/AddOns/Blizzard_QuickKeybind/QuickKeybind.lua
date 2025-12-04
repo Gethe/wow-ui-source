@@ -151,7 +151,7 @@ function QuickKeybindFrameMixin:OnShow()
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();
 	local showQuickKeybindEffects = true;
 	-- ACTION BARS TODO: Re-enable these effects with proper art
-	--MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
+	--MainActionBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	--MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	ExtraActionBar_ForceShowIfNeeded();
 end
@@ -170,7 +170,7 @@ function QuickKeybindFrameMixin:OnHide()
 
 	local showQuickKeybindEffects = false;
 	-- ACTION BARS TODO: Re-enable these effects with proper art
-	--MainMenuBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
+	--MainActionBar:SetQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	--MultiActionBar_SetAllQuickKeybindModeEffectsShown(showQuickKeybindEffects);
 	ExtraActionBar_CancelForceShow();
 end

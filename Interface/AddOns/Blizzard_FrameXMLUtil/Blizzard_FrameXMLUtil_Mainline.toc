@@ -1,23 +1,23 @@
 ## Title: Blizzard_FrameXMLUtil
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors
+## Dependencies: Blizzard_SharedXMLGame, Blizzard_Colors, Blizzard_StaticPopup
 ## AllowLoad: Game
 ## AllowLoadGameType: mainline
-Mainline\ArenaUtil.lua
+ArenaUtil.lua
 PartyUtil.lua
 Mainline\QuestUtils.lua
 AchievementUtil.lua
 Mainline\MapUtil.lua
 AzeriteUtil.lua
 AzeriteEssenceUtil.lua
+AuraUtil.lua
 Mainline\AuraUtil.lua
 CalendarUtil.lua
 CommunitiesUtil.lua
 RuneforgeUtil.xml
 ItemUtil.lua
 PVPUtil.lua
-Mainline\TransmogUtil.lua
 DifficultyUtil.lua
 RenownRewardUtil.lua
 TitleUtil.lua
@@ -41,3 +41,4 @@ DragonridingUtil.lua
 Mainline\MinimapUtil.lua
 AreaPoiUtil.lua
 Mainline\ReputationUtil.lua
+Mainline\TraitUtil.lua

@@ -13,6 +13,7 @@ local LobbyMatchmakerInfo =
 		{
 			Name = "EnterQueue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +68,7 @@ local LobbyMatchmakerInfo =
 		{
 			Name = "RespondToQueuePop",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,26 +83,31 @@ local LobbyMatchmakerInfo =
 			Name = "LobbyMatchmakerQueueAbandoned",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_ABANDONED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueError",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueExpired",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_EXPIRED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueuePopped",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_POPPED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LobbyMatchmakerQueueStatusUpdate",
 			Type = "Event",
 			LiteralName = "LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

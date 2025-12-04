@@ -22,6 +22,7 @@ function AlertFrameSystems_Register()
 	NewWarbandSceneAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewWarbandSceneAlertFrameTemplate", NewWarbandSceneAlertFrame_SetUp);
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
+	HousingItemEarnedAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HousingItemEarnedAlertFrameTemplate", HousingItemEarnedAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -126,7 +127,7 @@ function StandardRewardAlertFrame_OnEnter(self)
 end
 
 local function SetRewardInternal(frame, texture, rewardID)
-	SetPortraitToTexture(frame.texture, texture);
+	frame.texture:SetTexture(texture);
 	frame.rewardID = rewardID;
 end
 
@@ -912,9 +913,9 @@ function GarrisonFollowerAlertFrame_OnClick(self, button, down)
 		Garrison_LoadUI();
 	end
 	local garrisonType = GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType;
-	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then 
+	if(garrisonType and C_Garrison.GetLandingPageGarrisonType() == garrisonType) then
 		ShowGarrisonLandingPage(GarrisonFollowerOptions[self.followerInfo.followerTypeID].garrisonType);
-	end 
+	end
 end
 
 -- Trees that override behaviors associated with their tree type
@@ -938,9 +939,9 @@ function GarrisonAlertFrame_OnClick(self, button, down)
 			Garrison_LoadUI();
 		end
 
-		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then 
+		if(self.garrisonType and C_Garrison.GetLandingPageGarrisonType() == self.garrisonType) then
 			ShowGarrisonLandingPage(self.garrisonType);
-		end 
+		end
 	end
 end
 
@@ -1098,7 +1099,7 @@ function WorldQuestCompleteAlertFrame_SetUp(frame, questData)
 	if questData.currencyRewards then
 		for currencyIndex, currencyTexture in ipairs(questData.currencyRewards) do
 			local rewardFrame = GetRewardFrame(frame, "WorldQuestFrameRewardTemplate");
-			SetPortraitToTexture(rewardFrame.texture, currencyTexture);
+			rewardFrame.texture:SetTexture(currencyTexture);
 			rewardFrame.currencyIndex = currencyIndex;
 		end
 	end
@@ -1350,7 +1351,7 @@ function NewCosmeticAlertFrameMixin:SetUp(itemModifiedAppearanceID)
 	self:SetUpDisplay(icon, quality, name, YOU_COLLECTED_LABEL, "CosmeticIconFrame");
 
 	local item = Item:CreateFromItemID(info.itemID);
-	item:ContinueOnItemLoad(function()	
+	item:ContinueOnItemLoad(function()
 		if self.itemModifiedAppearanceID == itemModifiedAppearanceID then
 			self:SetUpDisplay(icon, item:GetItemQuality(), item:GetItemName(), YOU_COLLECTED_LABEL, "CosmeticIconFrame");
 		end
@@ -1381,7 +1382,7 @@ function NewCosmeticAlertFrameMixin:OnClick(button, down)
 
 	TransmogUtil.OpenCollectionToItem(self.itemModifiedAppearanceID);
 end
- 
+
 function NewCosmeticAlertFrameMixin:OnRelease()
 	self.LeftModelScene:ClearEffects();
 	self.RightModelScene:ClearEffects();
@@ -1390,7 +1391,7 @@ function NewCosmeticAlertFrameMixin:OnRelease()
 	end
 	self.timers = { };
  end
- 
+
 -- [[ MonthlyActivityAlertFrame ]] --
 function MonthlyActivityAlertFrame_SetUp(frame, perksActivityID)
 	local info = C_PerksActivities.GetPerksActivityInfo(perksActivityID);
@@ -1439,4 +1440,32 @@ function GuildRenameAlertSystem:CheckAddAlert(guildName, status)
 	end
 end
 
+-- [[ HousingItemEarnedAlertFrameSystem ]] --
 
+local HousingItemTypeStrings = {
+	[Enum.HousingItemToastType.Decor] = HOUSING_ITEM_TOAST_TYPE_DECOR,
+	[Enum.HousingItemToastType.Room] = HOUSING_ITEM_TOAST_TYPE_ROOM,
+	[Enum.HousingItemToastType.Customization] = HOUSING_ITEM_TOAST_TYPE_CUSTOMIZATION,
+	[Enum.HousingItemToastType.Fixture] = HOUSING_ITEM_TOAST_TYPE_FIXTURE,
+};
+
+function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
+	PlaySound(SOUNDKIT.HOUSING_ITEM_ACQUIRED);
+	if rewardData.icon then
+		frame.Icon:SetTexture(rewardData.icon);
+	--rooms, customizations, and fixtures have no unique icon, just a generic one for every item
+	elseif rewardData.itemType == Enum.HousingItemToastType.Room then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericRoom");
+	elseif rewardData.itemType == Enum.HousingItemToastType.Fixture then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericFixture");
+	elseif rewardData.itemType == Enum.HousingItemToastType.Customization then
+		frame.Icon:SetTexture("Interface\\Housing\\INV_12PH_GenericCustomization");
+	end
+	frame.DecorType:SetText(HousingItemTypeStrings[rewardData.itemType]);
+	frame.DecorName:SetText(rewardData.itemName);
+	frame.LightRays:SetAlpha(0);
+	frame.LightRays2:SetAlpha(0);
+	frame.glowAnimIn:Play();
+	frame.sparklesAnimIn:Play();
+	frame.lightRaysAnimIn:Play();
+end

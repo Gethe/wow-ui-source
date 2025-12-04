@@ -8,6 +8,7 @@ local Font =
 		{
 			Name = "CreateFontFamily",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local Font =
 		{
 			Name = "GetFontInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

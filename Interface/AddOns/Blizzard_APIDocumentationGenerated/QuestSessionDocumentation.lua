@@ -107,6 +107,7 @@ local QuestSession =
 		{
 			Name = "SendSessionBeginResponse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +117,7 @@ local QuestSession =
 		{
 			Name = "SetQuestIsSuperTracked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,16 +133,19 @@ local QuestSession =
 			Name = "QuestSessionCreated",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_CREATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestSessionDestroyed",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_DESTROYED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestSessionEnabledStateChanged",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_ENABLED_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -150,21 +155,25 @@ local QuestSession =
 			Name = "QuestSessionJoined",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_JOINED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestSessionLeft",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_LEFT",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestSessionMemberConfirm",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_MEMBER_CONFIRM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestSessionMemberStartResponse",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_MEMBER_START_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
@@ -175,6 +184,7 @@ local QuestSession =
 			Name = "QuestSessionNotification",
 			Type = "Event",
 			LiteralName = "QUEST_SESSION_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "QuestSessionResult", Nilable = false },

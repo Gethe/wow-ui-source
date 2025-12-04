@@ -7,6 +7,22 @@ local CatalogShop =
 	Functions =
 	{
 		{
+			Name = "BulkPurchaseProducts",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canPurchaseProducts", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseCatalogShopInteraction",
 			Type = "Function",
 		},
@@ -31,6 +47,7 @@ local CatalogShop =
 		{
 			Name = "GetCatalogShopProductDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,6 +62,7 @@ local CatalogShop =
 		{
 			Name = "GetCategoryInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +77,7 @@ local CatalogShop =
 		{
 			Name = "GetCategorySectionInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,8 +101,24 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetFirstCategoryByProductID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "categoryInfo", Type = "CatalogShopCategoryInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetProductAvailabilityTimeRemainingSecs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,6 +133,7 @@ local CatalogShop =
 		{
 			Name = "GetProductIDsForBundle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +148,7 @@ local CatalogShop =
 		{
 			Name = "GetProductIDsForCategorySection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,6 +164,7 @@ local CatalogShop =
 		{
 			Name = "GetProductInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -141,6 +179,7 @@ local CatalogShop =
 		{
 			Name = "GetProductSortOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,6 +196,7 @@ local CatalogShop =
 		{
 			Name = "GetSectionIDsForCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +211,7 @@ local CatalogShop =
 		{
 			Name = "GetSpellVisualInfoForMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -180,6 +221,21 @@ local CatalogShop =
 			Returns =
 			{
 				{ Name = "spellVisualInfo", Type = "CatalogShopSpellVisualInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetVirtualCurrencyBalance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "balance", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -194,6 +250,7 @@ local CatalogShop =
 		{
 			Name = "OnLegalDisclaimerClicked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -201,7 +258,16 @@ local CatalogShop =
 			},
 		},
 		{
-			Name = "OpenCatalogShopInteraction",
+			Name = "OpenCatalogShopInteractionFromHouse",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenCatalogShopInteractionFromShop",
 			Type = "Function",
 
 			Returns =
@@ -212,6 +278,7 @@ local CatalogShop =
 		{
 			Name = "ProductDisplayedTelemetry",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +290,7 @@ local CatalogShop =
 		{
 			Name = "ProductSelectedTelemetry",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,6 +303,7 @@ local CatalogShop =
 		{
 			Name = "PurchaseProduct",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,14 +315,35 @@ local CatalogShop =
 				{ Name = "canPurchase", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "RefreshVirtualCurrencyBalance",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
 		{
+			Name = "BulkPurchaseResultReceived",
+			Type = "Event",
+			LiteralName = "BULK_PURCHASE_RESULT_RECEIVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "wasSuccess", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CatalogShopAddPendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_ADD_PENDING_PRODUCT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -263,6 +353,7 @@ local CatalogShop =
 			Name = "CatalogShopDataRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DATA_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -272,11 +363,13 @@ local CatalogShop =
 			Name = "CatalogShopDisabled",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopFetchFailure",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -286,6 +379,7 @@ local CatalogShop =
 			Name = "CatalogShopFetchSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_FETCH_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
@@ -295,6 +389,7 @@ local CatalogShop =
 			Name = "CatalogShopOpenSimpleCheckout",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "checkoutID", Type = "number", Nilable = false },
@@ -304,6 +399,7 @@ local CatalogShop =
 			Name = "CatalogShopPmtImageDownloaded",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "catalogProductID", Type = "number", Nilable = false },
@@ -313,6 +409,7 @@ local CatalogShop =
 			Name = "CatalogShopPurchaseSuccess",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_PURCHASE_SUCCESS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -322,11 +419,13 @@ local CatalogShop =
 			Name = "CatalogShopRebuildScrollBox",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_REBUILD_SCROLL_BOX",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopRemovePendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_REMOVE_PENDING_PRODUCT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
@@ -336,14 +435,27 @@ local CatalogShop =
 			Name = "CatalogShopResultError",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_RESULT_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CatalogShopSpecificProductRefresh",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CatalogShopVirtualCurrencyBalanceUpdate",
+			Type = "Event",
+			LiteralName = "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "currencyCode", Type = "string", Nilable = false },
+				{ Name = "balance", Type = "string", Nilable = false },
 			},
 		},
 	},
@@ -459,6 +571,10 @@ local CatalogShop =
 				{ Name = "isHidden", Type = "bool", Nilable = false },
 				{ Name = "hasPendingOrders", Type = "bool", Nilable = false },
 				{ Name = "numBundleDetailCards", Type = "number", Nilable = false },
+				{ Name = "isDynamicallyDiscounted", Type = "bool", Nilable = false },
+				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
+				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
+				{ Name = "consumableQuantity", Type = "number", Nilable = true },
 			},
 		},
 		{

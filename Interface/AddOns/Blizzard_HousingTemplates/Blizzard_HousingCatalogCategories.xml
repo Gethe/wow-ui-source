@@ -1,0 +1,183 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="BaseHousingCatalogCategoryTemplate" mixin="BaseHousingCatalogCategoryMixin" inherits="BaseHousingActionButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="true"/>
+			<KeyValue key="align" value="center" type="string"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_RIGHT"/>
+			<KeyValue key="tooltipAnchorX" type="number" value="-12"/>
+			<KeyValue key="tooltipAnchorY" type="number" value="-12"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" useAtlasSize="false" setAllPoints="true"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="HoverIcon" useAtlasSize="false" setAllPoints="true" hidden="true" alphaMode="ADD" alpha="0.5"/>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="ExpandedArrow" useAtlasSize="false" atlas="common-icon-backarrow" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-2" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="BaseHousingCatalogSubcategoryTemplate" inherits="BaseHousingCatalogCategoryTemplate" virtual="true">
+		<Size x="54" y="54"/>
+		<Frames>
+			<Frame parentKey="SelectedBackground" useParentLevel="true">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="TOP" y="10"/>
+					<Anchor point="BOTTOM" y="-10"/>
+					<Anchor point="LEFT" relativeKey="$parent.$parent"/>
+					<Anchor point="RIGHT" relativeKey="$parent.$parent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="FlipbookSparkle" atlas="house-chest-active-nav-highlight-flipbook">
+							<Size x="76" y="82"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Highlight" atlas="house-chest-active-nav_selected-bg-glow" useAtlasSize="false" setAllPoints="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlipbookSparkleAnim" looping="REPEAT">
+						<FlipBook childKey="FlipbookSparkle" duration="2" order="1" flipBookRows="8" flipBookColumns="6" flipBookFrames="48" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Button>
+
+	<Button name="HousingCatalogCategoryTemplate" mixin="HousingCatalogCategoryMixin" inherits="BaseHousingCatalogCategoryTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="isSubcategory" type="boolean" value="false"/>
+			<KeyValue key="onHoverSound" type="string" value="HOUSING_CATALOG_CATEGORY_HOVER"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="HousingCatalogSubcategoryTemplate" mixin="HousingCatalogCategoryMixin" inherits="BaseHousingCatalogSubcategoryTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="isSubcategory" type="boolean" value="true"/>
+			<KeyValue key="onHoverSound" type="string" value="HOUSING_CATALOG_SUBCATEGORY_HOVER"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="HousingCategoryBackButtonTemplate" mixin="HousingCategoryBackButtonMixin" inherits="BaseHousingActionButtonTemplate, HorizontalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="useStateColors" type="boolean" value="true"/>
+			<KeyValue key="useStateTextures" type="boolean" value="false"/>
+			<KeyValue key="align" value="center" type="string"/>
+			<KeyValue key="tooltipAnchor" type="string" value="ANCHOR_RIGHT"/>
+			<KeyValue key="tooltipAnchorX" type="number" value="-12"/>
+			<KeyValue key="tooltipAnchorY" type="number" value="-12"/>
+			<KeyValue key="fixedWidth" value="64" type="number"/>
+			<KeyValue key="fixedHeight" value="40" type="number"/>
+		</KeyValues>
+		<Size x="64" y="40"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" useAtlasSize="false" atlas="common-icon-backarrow" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<Size x="14" y="14"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="align" value="bottom" type="string"/>
+					</KeyValues>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontNormal" text="HOUSING_CATALOG_CATEGORIES_BACK">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="align" value="bottom" type="string"/>
+					</KeyValues>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HoverIcon" useAtlasSize="false" atlas="common-icon-backarrow" alphaMode="ADD" alpha="0.5" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="HousingCatalogCategoriesTemplate" mixin="HousingCatalogCategoriesMixin" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="75" type="number"/>
+			<KeyValue key="categoryButtonSize" value="64" type="number"/>
+			<KeyValue key="subcategoryButtonSize" value="54" type="number"/>
+			<KeyValue key="topPadding" value="6" type="number"/>
+			<KeyValue key="backgroundCategories" value="house-chest-nav-bg_primary" type="string"/>
+			<KeyValue key="backgroundSubcategories" value="house-chest-nav-bg_secondary" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="Background" atlas="house-chest-nav-bg_primary" setAllPoints="true">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="TopBorder" atlas="house-chest-nav-top-corbels">
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Size y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="TOPRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="SubcategoriesDivider"  atlas="house-chest-parent-category-bg" useAtlasSize="false" hidden="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="2" type="number"/>
+						<KeyValue key="topPadding" value="-30" type="number" />
+						<KeyValue key="bottomPadding" value="15" type="number" />
+						<KeyValue key="expand" value="true" type="boolean" />
+					</KeyValues>
+					<Size y="34"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="BackButton" inherits="HousingCategoryBackButtonTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+				</KeyValues>
+			</Button>
+			<Button parentKey="AllSubcategoriesStandIn" inherits="BaseHousingCatalogSubcategoryTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="iconName" value="category-icons_all_active" type="string" />
+					<KeyValue key="enabledTooltip" value="HOUSING_CATALOG_CATEGORIES_ALL" type="global" />
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

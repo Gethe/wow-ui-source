@@ -9,6 +9,7 @@ local MapExploration =
 		{
 			Name = "GetExploredAreaIDsAtPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +26,7 @@ local MapExploration =
 			Name = "GetExploredMapTextures",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +46,7 @@ local MapExploration =
 			Name = "MapExplorationUpdated",
 			Type = "Event",
 			LiteralName = "MAP_EXPLORATION_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

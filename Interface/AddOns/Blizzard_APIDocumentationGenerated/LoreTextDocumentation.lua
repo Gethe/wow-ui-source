@@ -9,6 +9,7 @@ local LoreText =
 		{
 			Name = "RequestLoreTextForCampaignID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local LoreText =
 			Name = "LoreTextUpdatedCampaign",
 			Type = "Event",
 			LiteralName = "LORE_TEXT_UPDATED_CAMPAIGN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "campaignID", Type = "number", Nilable = false },

@@ -37,6 +37,7 @@ local Input =
 		{
 			Name = "GetMouseButtonName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,6 +79,7 @@ local Input =
 		{
 			Name = "IsKeyDown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -147,6 +149,7 @@ local Input =
 		{
 			Name = "IsMouseButtonDown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

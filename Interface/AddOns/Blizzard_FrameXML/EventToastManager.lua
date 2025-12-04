@@ -34,6 +34,12 @@ local hideButtonHitRectInsets = {
 		top = 40,
 		bottom = 30,
 	},
+	["midnight-score"] = {
+		left = 50,
+		right = 50,
+		top = 40,
+		bottom = 30,
+	},
 };
 
 local scenarioTextureKitOffsets = {
@@ -64,6 +70,15 @@ local scenarioTextureKitOffsets = {
 		topperBackgroundYPadding = 5,
 		footerBackgroundYPadding = -5,
 	},
+	["midnight-score"] = {
+		topperXOffset = 0,
+		topperYOffset = 44,
+		footerXOffset = 0,
+		footerYOffset = -58,
+		backgroundXPadding = -24.5,
+		topperBackgroundYPadding = 27,
+		footerBackgroundYPadding = 13,
+	},
 	["default"] = {
 		topperXOffset = 0,
 		topperYOffset = 0,
@@ -92,6 +107,7 @@ local eventToastTemplatesByToastType = {
 	[Enum.EventToastDisplayType.CapstoneUnlocked] = {template ="EventToastManagerCapstoneUnlockedTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.SingleLineWithIcon] = {template = "EventToastManagerSingleLineWithIconTemplate", frameType = "FRAME", hideAutomatically = true,},
 	[Enum.EventToastDisplayType.Scoreboard] = {template = "EventToastScoreboardTemplate", frameType = "FRAME", hideAutomatically = false,},
+	[Enum.EventToastDisplayType.HouseUpgradeAvailable] = {template = "EventToastHouseUpgradeAvailableTemplate", frameType = "FRAME", hideAutomatically = true,},
 };
 
 EventToastManagerMixin = { };
@@ -460,6 +476,11 @@ end
 
 EventToastScenarioBaseToastMixin = { };
 
+function EventToastScenarioBaseToastMixin:OnLoad()
+	EventToastAnimationsMixin.OnLoad(self);
+	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
+end
+
 function EventToastScenarioBaseToastMixin:SetupTextureKitOffsets(uiTextureKit)
 	local textureKitOffsets = scenarioTextureKitOffsets[uiTextureKit] or scenarioTextureKitOffsets["default"];
 	self.Topper:ClearAllPoints();
@@ -559,14 +580,10 @@ local scenarioExpandSoundKitIDs = {
 };
 
 EventToastScenarioExpandToastMixin = { };
-function EventToastScenarioBaseToastMixin:OnLoad()
-	EventToastAnimationsMixin.OnLoad(self);
-	self:RegisterForClicks("RightButtonDown", "LeftButtonDown");
-end
 
 function EventToastScenarioExpandToastMixin:Setup(toastInfo)
 	EventToastScenarioBaseToastMixin.Setup(self, toastInfo);
-	self.Title:SetFontObject("Fancy24Font");
+	self.Title:SetFontObject("GameFontNormalHuge");
 	self.Title:ClearAllPoints();
 	self.Title:SetPoint("TOP", self.PaddingFrame, "BOTTOM");
 	self.SubTitle:ClearAllPoints();
@@ -1313,3 +1330,18 @@ function EventToastScoreboardMixin:OnHide()
 	self.WidgetContainer:UnregisterForWidgetSet();
 	EventRegistry:TriggerEvent("EventToastManager.CloseActiveToasts");
 end
+
+EventToastHouseUpgradeAvailableMixin = {}
+
+function EventToastHouseUpgradeAvailableMixin:Setup(toastInfo)
+	self.SubTitle:SetText(toastInfo.subtitle);
+
+	local borderAtlasInfo = C_Texture.GetAtlasInfo("housing-celebrationtoast-frame");
+	self.Border:SetWidth((self.Border:GetHeight() / borderAtlasInfo.height) * borderAtlasInfo.width);
+
+	self:Show();
+	PlaySound(SOUNDKIT.HOUSING_HOUSE_UPGRADES_UPGRADE_READY_TOAST);
+	self:SetSkipParentAnim(true);
+	self:AnimIn();
+end
+

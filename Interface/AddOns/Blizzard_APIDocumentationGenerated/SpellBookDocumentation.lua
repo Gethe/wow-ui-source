@@ -9,6 +9,7 @@ local SpellBook =
 		{
 			Name = "CastSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,9 +29,40 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "FindBaseSpellByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "baseSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "FindFlyoutSlotBySpellID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "flyoutSlot", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "FindSpellBookSlotForSpell",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If found, returns the first slot position of a SpellBookItem matching the specified spell and criteria" },
 
 			Arguments =
@@ -49,9 +81,25 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "FindSpellOverrideByID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "overrideSpellID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetCurrentLevelSpells",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns general, class, and active spec spells that are learned at the specified level" },
 
 			Arguments =
@@ -76,6 +124,7 @@ local SpellBook =
 		{
 			Name = "GetSkillLineIndexByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +140,7 @@ local SpellBook =
 			Name = "GetSpellBookItemAutoCast",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nothing if item doesn't exist or isn't a spell" },
 
 			Arguments =
@@ -108,6 +158,8 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemCastCount",
 			Type = "Function",
+			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns number of times a SpellBookItem can be cast, typically based on availability of things like required reagent items; Always returns 0 if item is not found or is not a spell" },
 
 			Arguments =
@@ -125,6 +177,8 @@ local SpellBook =
 			Name = "GetSpellBookItemCharges",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating SpellBookItem; May return nil if item is not found or is not charge-based" },
 
 			Arguments =
@@ -142,6 +196,8 @@ local SpellBook =
 			Name = "GetSpellBookItemCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 
 			Arguments =
@@ -159,6 +215,7 @@ local SpellBook =
 			Name = "GetSpellBookItemDescription",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -175,6 +232,7 @@ local SpellBook =
 			Name = "GetSpellBookItemInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -190,6 +248,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemLevelLearned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the level the spell is learned at; May return a different value if the player is currently Level Linked with another player; Returns 0 if item is not a Spell" },
 
 			Arguments =
@@ -207,6 +266,7 @@ local SpellBook =
 			Name = "GetSpellBookItemLink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -224,6 +284,8 @@ local SpellBook =
 			Name = "GetSpellBookItemLossOfControlCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 
 			Arguments =
@@ -242,6 +304,7 @@ local SpellBook =
 			Name = "GetSpellBookItemName",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -259,6 +322,7 @@ local SpellBook =
 			Name = "GetSpellBookItemPowerCost",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a table containing one or more SpellPowerCostInfos, one for each power type a SpellBookItem costs; May return nil if item is not found or has no resource costs" },
 
 			Arguments =
@@ -275,6 +339,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemSkillLineIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Get the index of the SkillLine this SpellBookItem is part of" },
 
 			Arguments =
@@ -292,6 +357,7 @@ local SpellBook =
 			Name = "GetSpellBookItemTexture",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,6 +374,7 @@ local SpellBook =
 			Name = "GetSpellBookItemTradeSkillLink",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nil if SpellBookItem is not associated with a trade skill" },
 
 			Arguments =
@@ -325,6 +392,7 @@ local SpellBook =
 			Name = "GetSpellBookItemType",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -343,6 +411,7 @@ local SpellBook =
 			Name = "GetSpellBookSkillLineInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -369,6 +438,7 @@ local SpellBook =
 		{
 			Name = "IsAutoAttackSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem is the player's melee Auto Attack spell" },
 
 			Arguments =
@@ -385,6 +455,7 @@ local SpellBook =
 		{
 			Name = "IsClassTalentSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem comes from a Class Talent" },
 
 			Arguments =
@@ -401,6 +472,7 @@ local SpellBook =
 		{
 			Name = "IsPvPTalentSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem comes from a PvP Talent" },
 
 			Arguments =
@@ -417,6 +489,7 @@ local SpellBook =
 		{
 			Name = "IsRangedAutoAttackSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem is the player's ranged Auto Attack spell (ex: Shoot, Auto Shot, etc)" },
 
 			Arguments =
@@ -433,6 +506,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemHarmful",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookIem can be cast on hostile targets" },
 
 			Arguments =
@@ -449,6 +523,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemHelpful",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookIem can be cast on the player or other friendly targets" },
 
 			Arguments =
@@ -465,6 +540,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemInRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the current target is within range of the SpellBookIem; False if out of range; Nil if range check was invalid" },
 
 			Arguments =
@@ -482,6 +558,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemOffSpec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem belongs to a non-active class specialization" },
 
 			Arguments =
@@ -498,6 +575,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemPassive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookItem is a passive spell; Will always return false if it is not a spell" },
 
 			Arguments =
@@ -514,6 +592,7 @@ local SpellBook =
 		{
 			Name = "IsSpellBookItemUsable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the SpellBookIem is currently castable; Typically based on things like learned status, required resources, etc" },
 
 			Arguments =
@@ -531,6 +610,7 @@ local SpellBook =
 		{
 			Name = "IsSpellInSpellBook",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell should be found in the spellbook. This function can also return true for spells that aren't known, such as override spells granted by an aura linked to class talents" },
 
 			Arguments =
@@ -548,6 +628,7 @@ local SpellBook =
 		{
 			Name = "IsSpellKnown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a player knows a spell. This function can also return true for spells that aren't in the spellbook, such as temporarily-granted abilities" },
 
 			Arguments =
@@ -564,6 +645,7 @@ local SpellBook =
 		{
 			Name = "IsSpellKnownOrInSpellBook",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if a spell is considered to be known or present in the spellbook" },
 
 			Arguments =
@@ -581,6 +663,7 @@ local SpellBook =
 		{
 			Name = "PickupSpellBookItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -591,6 +674,7 @@ local SpellBook =
 		{
 			Name = "SetSpellBookItemAutoCastEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -602,6 +686,7 @@ local SpellBook =
 		{
 			Name = "SpellBookItemHasRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the SpellBookIem has a min and/or max range greater than 0; Will always return false if it is not a spell" },
 
 			Arguments =
@@ -618,6 +703,7 @@ local SpellBook =
 		{
 			Name = "ToggleSpellBookItemAutoCast",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -633,6 +719,7 @@ local SpellBook =
 			Name = "CurrentSpellCastChanged",
 			Type = "Event",
 			LiteralName = "CURRENT_SPELL_CAST_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "cancelledCast", Type = "bool", Nilable = false },
@@ -642,6 +729,7 @@ local SpellBook =
 			Name = "LearnedSpellInSkillLine",
 			Type = "Event",
 			LiteralName = "LEARNED_SPELL_IN_SKILL_LINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -653,6 +741,7 @@ local SpellBook =
 			Name = "MaxSpellStartRecoveryOffsetChanged",
 			Type = "Event",
 			LiteralName = "MAX_SPELL_START_RECOVERY_OFFSET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "clampedNewQueueWindowMs", Type = "number", Nilable = false },
@@ -662,6 +751,7 @@ local SpellBook =
 			Name = "PlayerTotemUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TOTEM_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "totemSlot", Type = "luaIndex", Nilable = false },
@@ -671,6 +761,8 @@ local SpellBook =
 			Name = "SpellFlyoutUpdate",
 			Type = "Event",
 			LiteralName = "SPELL_FLYOUT_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = true },
@@ -682,6 +774,7 @@ local SpellBook =
 			Name = "SpellPushedToActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -693,6 +786,7 @@ local SpellBook =
 			Name = "SpellPushedToFlyoutOnActionbar",
 			Type = "Event",
 			LiteralName = "SPELL_PUSHED_TO_FLYOUT_ON_ACTIONBAR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -704,11 +798,14 @@ local SpellBook =
 			Name = "SpellUpdateCharges",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_CHARGES",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateCooldown",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_COOLDOWN",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Can be a base spell or an override spell. A nil value indicates that all cooldowns should be updated, rather than just a specific one." } },
@@ -721,6 +818,7 @@ local SpellBook =
 			Name = "SpellUpdateIcon",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_ICON",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = true, Documentation = { "Always refers to the base spell. A nil value indicates that all icons should be updated, rather than just a specific one." } },
@@ -730,11 +828,13 @@ local SpellBook =
 			Name = "SpellUpdateUsable",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USABLE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SpellUpdateUses",
 			Type = "Event",
 			LiteralName = "SPELL_UPDATE_USES",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "Can be a base spell or override spell." } },
@@ -745,25 +845,30 @@ local SpellBook =
 			Name = "SpellsChanged",
 			Type = "Event",
 			LiteralName = "SPELLS_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "StartAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "START_AUTOREPEAT_SPELL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "StopAutorepeatSpell",
 			Type = "Event",
 			LiteralName = "STOP_AUTOREPEAT_SPELL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UnitSpellcastSent",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SENT",
+			SecretWhenSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unit", Type = "cstring", Nilable = false },
-				{ Name = "target", Type = "cstring", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -772,21 +877,25 @@ local SpellBook =
 			Name = "UpdateShapeshiftCooldown",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_COOLDOWN",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForm",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftForms",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_FORMS",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateShapeshiftUsable",
 			Type = "Event",
 			LiteralName = "UPDATE_SHAPESHIFT_USABLE",
+			UniqueEvent = true,
 		},
 	},
 

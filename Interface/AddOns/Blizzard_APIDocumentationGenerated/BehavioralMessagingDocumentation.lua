@@ -9,6 +9,7 @@ local BehavioralMessaging =
 		{
 			Name = "SendNotificationReceipt",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +26,7 @@ local BehavioralMessaging =
 			Name = "BehavioralNotification",
 			Type = "Event",
 			LiteralName = "BEHAVIORAL_NOTIFICATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "notificationType", Type = "string", Nilable = false },

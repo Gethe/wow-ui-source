@@ -1,5 +1,7 @@
 SOUND_MASTERVOLUME_STEP = 0.1;
 
+PlaySound = C_Sound.PlaySound;
+
 function Sound_ToggleMusic()
 	if ( GetCVar("Sound_EnableAllSound") == "0" ) then
 		ActionStatus:DisplayMessage(SOUND_DISABLED);

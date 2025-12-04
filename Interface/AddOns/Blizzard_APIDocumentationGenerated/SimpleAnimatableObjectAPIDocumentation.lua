@@ -8,6 +8,7 @@ local SimpleAnimatableObjectAPI =
 		{
 			Name = "CreateAnimationGroup",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{

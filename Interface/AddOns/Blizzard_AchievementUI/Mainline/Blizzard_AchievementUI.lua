@@ -178,12 +178,12 @@ local function AchievementFrame_GetOrSelectCurrentCategory()
 end
 
 local function AchievementFrame_OnAchievementLinkedInChat(achievementID)
-	local chatType = ChatEdit_GetActiveChatType();
+	local chatType = ChatFrameUtil.GetActiveChatType();
 	if chatType == "WHISPER" then
 		C_AchievementTelemetry.LinkAchievementInWhisper(achievementID);
 	elseif chatType == "CHANNEL" then
-		local editBox = ChatEdit_GetActiveWindow();
-		local _localID, _channelName, _instanceID, isCommunitiesChannel = GetChannelName(ChatEdit_GetChannelTarget(editBox))
+		local editBox = ChatFrameUtil.GetActiveWindow();
+		local _localID, _channelName, _instanceID, isCommunitiesChannel = GetChannelName(editBox:GetChannelTarget())
 		if isCommunitiesChannel then
 			C_AchievementTelemetry.LinkAchievementInClub(achievementID);
 		end
@@ -273,6 +273,10 @@ function AchievementFrame_OnShow (self)
 	UpdateMicroButtons();
 
 	C_AchievementTelemetry.ShowAchievements();
+
+	local gameRule = Enum.GameRule.RestrictedAchievementCategoryID;
+	local restrictedCategoryID = C_GameRules.IsGameRuleActive(gameRule) and C_GameRules.GetGameRuleAsFloat(gameRule) or nil;
+	AchievementFrame_SetRestrictedMode(self, restrictedCategoryID);
 end
 
 function AchievementFrame_OnHide (self)
@@ -281,6 +285,33 @@ function AchievementFrame_OnHide (self)
 	self.SearchResults:Hide();
 	self.SearchBox:SetText("");
 	UpdateMicroButtons();
+end
+
+function AchievementFrame_SetRestrictedMode (self, restrictedCategoryID)
+	self.restrictedCategoryID = restrictedCategoryID;
+
+	local isRestricted = restrictedCategoryID ~= nil;
+	self.Header:SetShown(not isRestricted);
+	self.SearchBox:SetShown(not isRestricted);
+	if isRestricted then
+		self.searchProgressBar:Hide();
+	end
+
+	PanelTemplates_SetAllTabsShown(self, not isRestricted);
+
+	AchievementFrame_UpdateAndSelectCategory(restrictedCategoryID);
+end
+
+function AchievementFrame_HideFilterDropdown (self)
+	self.FilterDropdown:Hide();
+	self.Header.LeftDDLInset:Hide();
+end
+
+function AchievementFrame_TryShowFilterDropdown (self)
+	if not self.restrictedCategoryID then
+		self.FilterDropdown:Show();
+		self.Header.LeftDDLInset:Show();
+	end
 end
 
 function AchievementFrame_ForceUpdate ()
@@ -685,10 +716,17 @@ function AchievementFrameCategories_SelectDefaultElementData()
 end
 
 function AchievementFrameCategories_UpdateDataProvider ()
+	local restrictedCategoryID = AchievementFrame.restrictedCategoryID;
 	local newDataProvider = CreateDataProvider();
 	for index, category in ipairs(achievementFunctions.categories) do
 		if not category.hidden then
-			newDataProvider:Insert(category);
+			if restrictedCategoryID then
+				if (category.id == restrictedCategoryID) or (category.parent == restrictedCategoryID) then
+					newDataProvider:Insert(category);
+				end
+			else
+				newDataProvider:Insert(category);
+			end
 		end;
 	end
 
@@ -729,11 +767,9 @@ function AchievementFrameCategories_OnCategoryChanged(category)
 			AchievementFrame_ShowSubFrame(AchievementFrameAchievements);
 			AchievementFrameAchievements_UpdateDataProvider();
 			if IsCategoryFeatOfStrength(category) then
-				AchievementFrameFilterDropdown:Hide();
-				AchievementFrame.Header.LeftDDLInset:Hide();
+				AchievementFrame_HideFilterDropdown(AchievementFrame);
 			else
-				AchievementFrameFilterDropdown:Show();
-				AchievementFrame.Header.LeftDDLInset:Show();
+				AchievementFrame_TryShowFilterDropdown(AchievementFrame);
 			end
 		elseif ( achievementFunctions == COMPARISON_ACHIEVEMENT_FUNCTIONS ) then
 			AchievementFrame_ShowSubFrame(AchievementFrameComparison, AchievementFrameComparison.AchievementContainer);
@@ -769,19 +805,16 @@ function AchievementFrameAchievements_OnShow(self)
 	FrameUtil.RegisterFrameForEvents(self, AchievementFrameShownEvents);
 
 	if IsCategoryFeatOfStrength(GetSelectedCategory()) then
-		AchievementFrameFilterDropdown:Hide();
-		AchievementFrame.Header.LeftDDLInset:Hide();
+		AchievementFrame_HideFilterDropdown(AchievementFrame);
 	else
-		AchievementFrameFilterDropdown:Show();
-		AchievementFrame.Header.LeftDDLInset:Show();
+		AchievementFrame_TryShowFilterDropdown(AchievementFrame);
 	end
 end
 
 function AchievementFrameAchievements_OnHide(self)
 	FrameUtil.UnregisterFrameForEvents(self, AchievementFrameShownEvents);
 
-	AchievementFrameFilterDropdown:Hide();
-	AchievementFrame.Header.LeftDDLInset:Hide();
+	AchievementFrame_HideFilterDropdown(AchievementFrame);
 end
 
 function AchievementFrameComparison_UpdateStatusBars (id)
@@ -1031,7 +1064,7 @@ function AchievementTemplateMixin:ProcessClick(buttonName, down)
 		if IsModifiedClick("CHATLINK") then
 			local achievementLink = GetAchievementLink(elementData.id);
 			if achievementLink then
-				handled = ChatEdit_InsertLink(achievementLink);
+				handled = ChatFrameUtil.InsertLink(achievementLink);
 				if handled then
 					AchievementFrame_OnAchievementLinkedInChat(elementData.id);
 				end
@@ -1059,6 +1092,11 @@ end
 
 function AchievementTemplateMixin:OnEnter()
 	self.Highlight:Show();
+
+	if ( not self.id ) then
+		return; -- This happens when we create buttons
+	end
+
     EventRegistry:TriggerEvent("AchievementFrameAchievement.OnEnter", self, self.id);
 end
 
@@ -2455,7 +2493,7 @@ function AchievementFrameSummaryAchievement_OnClick(self)
 	if ( IsModifiedClick("CHATLINK") ) then
 		local achievementLink = GetAchievementLink(self.id);
 		if ( achievementLink ) then
-			if ( ChatEdit_InsertLink(achievementLink) ) then
+			if ( ChatFrameUtil.InsertLink(achievementLink) ) then
 				AchievementFrame_OnAchievementLinkedInChat(self.id);
 				return;
 			elseif ( SocialPostFrame and Social_IsShown() ) then

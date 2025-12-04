@@ -9,6 +9,7 @@ local PlayerInteractionManager =
 		{
 			Name = "ClearInteraction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +19,7 @@ local PlayerInteractionManager =
 		{
 			Name = "ConfirmationInteraction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +30,7 @@ local PlayerInteractionManager =
 			Name = "InteractUnit",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +47,7 @@ local PlayerInteractionManager =
 		{
 			Name = "IsInteractingWithNpcOfType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +71,7 @@ local PlayerInteractionManager =
 		{
 			Name = "IsValidNPCInteraction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +96,7 @@ local PlayerInteractionManager =
 			Name = "PlayerInteractionManagerFrameHide",
 			Type = "Event",
 			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },
@@ -100,6 +106,7 @@ local PlayerInteractionManager =
 			Name = "PlayerInteractionManagerFrameShow",
 			Type = "Event",
 			LiteralName = "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "PlayerInteractionType", Nilable = false },

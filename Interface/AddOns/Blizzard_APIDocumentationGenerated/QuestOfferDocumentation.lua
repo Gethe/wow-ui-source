@@ -28,6 +28,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestRequiredCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +43,7 @@ local QuestOffer =
 		{
 			Name = "GetQuestRewardCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +64,7 @@ local QuestOffer =
 			Name = "QuestAcceptConfirm",
 			Type = "Event",
 			LiteralName = "QUEST_ACCEPT_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -72,21 +75,25 @@ local QuestOffer =
 			Name = "QuestFinished",
 			Type = "Event",
 			LiteralName = "QUEST_FINISHED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestGreeting",
 			Type = "Event",
 			LiteralName = "QUEST_GREETING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestItemUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_ITEM_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestProgress",
 			Type = "Event",
 			LiteralName = "QUEST_PROGRESS",
+			SynchronousEvent = true,
 		},
 	},
 

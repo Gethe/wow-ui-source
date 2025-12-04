@@ -32,8 +32,8 @@ local function HandlePlayerLink(link, text, linkData, contextData)
 				_G[staticPopup.."EditBox"]:SetText(name);
 				return;
 			end
-			if ( ChatEdit_GetActiveWindow() ) then
-				ChatEdit_InsertLink(name);
+			if ( ChatFrameUtil.GetActiveWindow() ) then
+				ChatFrameUtil.InsertLink(name);
 			else
 				C_FriendList.SendWho(WHO_TAG_EXACT..name, Enum.SocialWhoOrigin.Item);
 			end
@@ -41,7 +41,7 @@ local function HandlePlayerLink(link, text, linkData, contextData)
 		elseif ( contextData.button == "RightButton" and (linkData.type ~= LinkTypes.PlayerGM) and FriendsFrame_ShowDropdown) then
 			FriendsFrame_ShowDropdown(name, 1, lineID, chatType, contextData.frame, nil, communityClubID, communityStreamID, communityEpoch, communityPosition);
 		else
-			ChatFrame_SendTell(name, contextData.frame);
+			ChatFrameUtil.SendTell(name, contextData.frame);
 		end
 	end
 end
@@ -115,11 +115,15 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, linkData, contextData)
 	local sourceID = string.split(":", linkData.options);
 	if ( IsModifiedClick("CHATLINK") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		HandleModifiedItemClick(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);			
+		end
 	elseif ( IsModifiedClick("DRESSUP") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		DressUpItemLink(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			DressUpItemLink(appearanceSourceInfo.itemLink);
+		end
 	else
 		TransmogUtil.OpenCollectionToItem(sourceID);
 	end
@@ -130,13 +134,13 @@ LinkUtil.RegisterLinkHandler(LinkTypes.TransmogSet, function(link, text, linkDat
 	TransmogUtil.OpenCollectionToSet(setID);
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.TransmogOutfit, function(link, text, linkData, contextData)
+LinkUtil.RegisterLinkHandler(LinkTypes.TransmogCustomSet, function(link, text, linkData, contextData)
 	local fixedLink = GetFixedLink(text);
 	if not HandleModifiedItemClick(fixedLink) then
-		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
+		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromCustomSetHyperlink(text);
 		if itemTransmogInfoList then
-			local showOutfitDetails = true;
-			DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+			local showCustomSetDetails = true;
+			DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails);
 		end
 	end
 end);
@@ -196,7 +200,7 @@ LinkUtil.RegisterLinkHandler(LinkTypes.Community, function(link, text, linkData,
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.AzeriteEssence, function(link, text, linkData, contextData)
-	if ChatEdit_InsertLink(link) then
+	if ChatFrameUtil.InsertLink(link) then
 		return;
 	end
 
@@ -205,7 +209,7 @@ end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.ClubFinder, function(link, text, linkData, contextData)
 	if ( IsModifiedClick("CHATLINK") and contextData.button == "LeftButton" ) then
-		if ChatEdit_InsertLink(text) then
+		if ChatFrameUtil.InsertLink(text) then
 			return;
 		end
 	end
@@ -245,12 +249,14 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AADCOpenConfig, function(link, text, link
 	Settings.OpenToCategory(Settings.SOCIAL_CATEGORY_ID);
 end);
 
+--[[
 LinkUtil.RegisterLinkHandler(LinkTypes.EditModeLayout, function(link, text, linkData, contextData)
 	local fixedLink = GetFixedLink(text);
 	if not HandleModifiedItemClick(fixedLink) then
 		EditModeManagerFrame:OpenAndShowImportLayoutLinkDialog(fixedLink);
 	end
 end);
+--]]
 
 LinkUtil.RegisterLinkHandler(LinkTypes.TalentBuild, function(link, text, linkData, contextData)
 	local fixedLink = GetFixedLink(text);

@@ -229,10 +229,10 @@ function LFGEventFrame_OnEvent(self, event, ...)
 			end
 		end
 		assert(roleList);
-		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(LFG_ROLE_CHECK_ROLE_CHOSEN, player, roleList));
 	elseif ( event == "LFG_READY_CHECK_PLAYER_IS_READY" ) then
 		local player = ...;
-		ChatFrame_DisplaySystemMessageInPrimary(string.format(LFG_READY_CHECK_PLAYER_IS_READY, player));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(string.format(LFG_READY_CHECK_PLAYER_IS_READY, player));
 	elseif ( event == "VARIABLES_LOADED" ) then
 		LFG_UpdateAllRoleCheckboxes();
 	elseif ( event == "LFG_ROLE_UPDATE" ) then
@@ -533,7 +533,7 @@ function LFG_SetRoleIconIncentive(roleButton, incentiveIndex)
 		elseif ( incentiveIndex == LFG_ROLE_SHORTAGE_RARE ) then
 			tex = "Interface\\Icons\\INV_Misc_Coin_17";
 		end
-		SetPortraitToTexture(roleButton.incentiveIcon.texture, tex);
+		roleButton.incentiveIcon.texture:SetTexture(tex);
 		roleButton.incentiveIcon:Show();
 		roleButton.shortageBorder:Show();
 	else
@@ -779,12 +779,17 @@ function LFGDungeonReadyPopup_Update()
 				LFGDungeonReadyDialog.instanceInfo.underline:Show();
 			end
 
-			if ( numMembers > 1 ) then
+			local overrideLabelText = GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.OverrideLFGLabelText);
+			if ( overrideLabelText ) then
+				LFGDungeonReadyDialog.label:SetText(overrideLabelText);
+			elseif ( numMembers > 1 ) then
 				LFGDungeonReadyDialog.label:SetText(SPECIFIC_DUNGEON_IS_READY);
 			else
 				LFGDungeonReadyDialog.label:SetText(SPECIFIC_INSTANCE_IS_READY);
 			end
-			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, totalEncounters);
+
+			local overrideNumEncounters = GameRulesUtil.GetQueueStatusInfo(GameRulesUtil.QueueStatusModeKey.OverrideLFGNumEncounters);
+			LFGDungeonReadyDialog_UpdateInstanceInfo(name, completedEncounters, overrideNumEncounters or totalEncounters);
 			LFGDungeonReadyDialog.instanceInfo:Show();
 		end
 		if ( not LFGDungeonReadyDialog.background:SetTexture(backgroundTexture) ) then	--We haven't added this texture yet. Default to the Deadmines.
@@ -908,7 +913,7 @@ function LFGDungeonReadyDialog_UpdateRewards(dungeonID, role)
 end
 
 function LFGDungeonReadyDialogReward_SetMisc(button)
-	SetPortraitToTexture(button.texture, "Interface\\Icons\\inv_misc_coin_02");
+	button.texture:SetTexture("Interface\\Icons\\inv_misc_coin_02");
 	button.rewardType = "misc";
 	button:Show();
 end
@@ -921,7 +926,7 @@ function LFGDungeonReadyDialogReward_SetReward(button, dungeonID, rewardIndex, r
 		name, texturePath, quantity = GetLFGDungeonShortageRewardInfo(dungeonID, rewardArg, rewardIndex);
 	end
 	if ( texturePath ) then	--Otherwise, we may be waiting on the item data to come from the server.
-		SetPortraitToTexture(button.texture, texturePath);
+		button.texture:SetTexture(texturePath);
 	end
 	button.rewardType = rewardType;
 	button.rewardID = rewardIndex;

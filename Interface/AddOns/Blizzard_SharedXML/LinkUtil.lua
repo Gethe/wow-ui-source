@@ -21,7 +21,7 @@ LinkTypes = {
 	DeathRecap = "death",
 	DelveCompanionConfig = "delvecompanionconfig",
 	DungeonScore = "dungeonScore",
-	EditModeLayout = "layout",
+	-- EditModeLayout = "layout",
 	EventPOI = "eventpoi",
 	GarrisonFollower = "garrfollower",
 	GarrisonFollowerAbility = "garrfollowerability",
@@ -49,13 +49,14 @@ LinkTypes = {
 	TalentsUI = "talentpane",
 	TransmogAppearance = "transmogappearance",
 	TransmogIllusion = "transmogillusion",
-	TransmogOutfit = "outfit",
+	TransmogCustomSet = "customset",
 	TransmogSet = "transmogset",
 	Unit = "unit",
 	URLIndex = "urlIndex",
 	WarbandScene = "warbandScene",
 	WorldMapWaypoint = "worldmap",
 	WorldQuest = "worldquest",
+	Talent = "talent"
 };
 
 LinkUtil = {};

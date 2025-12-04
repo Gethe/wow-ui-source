@@ -4,5 +4,8 @@
 ## Dependencies: Blizzard_CharacterFrame
 ## AllowLoadGameType: mists
 ## AllowLoad: Game
+
+Shared\MainMenuBarBagManager.lua
 Classic\MainMenuBarBagButtons.lua
+Shared\BagsBar.lua
 Mists\MainMenuBarBagButtons.xml

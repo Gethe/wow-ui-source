@@ -270,7 +270,7 @@ function PvpTalentSlotMixin:Update()
 	local selectedTalentID = self:GetSelectedTalent();
 	if (selectedTalentID) then
 		local _, name, texture = GetPvpTalentInfoByID(selectedTalentID);
-		SetPortraitToTexture(self.Texture, texture);
+		self.Texture:SetTexture(texture);
 
 		self.TalentName:SetText(name);
 		self.TalentName:Show();

@@ -9,6 +9,7 @@ local ActionBarFrame =
 		{
 			Name = "EnableActionRangeCheck",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Used in conjunction with ActionRangeCheckUpdate to inform the UI when an action goes in or out of range with its current target." },
 
 			Arguments =
@@ -32,6 +33,7 @@ local ActionBarFrame =
 			Name = "FindFlyoutActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local ActionBarFrame =
 			Name = "FindPetActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +65,7 @@ local ActionBarFrame =
 			Name = "FindSpellActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the list of action bar slots that contain a specified spell." },
 
 			Arguments =
@@ -77,6 +81,7 @@ local ActionBarFrame =
 		{
 			Name = "ForceUpdateAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Force updates some internals for an action button slot." },
 
 			Arguments =
@@ -85,8 +90,146 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetActionAutocast",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "autocastAllowed", Type = "bool", Nilable = false },
+				{ Name = "autocastEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionBarPage",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "currentPage", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionCharges",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "chargeInfo", Type = "ActionBarChargeInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionCooldown",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "cooldownInfo", Type = "ActionBarCooldownInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionLossOfControlCooldown",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "startTime", Type = "number", Nilable = false },
+				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionText",
+			Type = "Function",
+			MayReturnNothing = true,
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionTexture",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "textureFileID", Type = "fileID", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionUseCount",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetBonusBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bonusBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBonusBarIndexForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,8 +242,27 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetBonusBarOffset",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "bonusBarOffset", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetExtraBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "extraBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemActionOnEquipSpellID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,9 +275,37 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetMultiCastBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "multiCastBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "overrideBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetOverrideBarSkin",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "textureFileID", Type = "fileID", Nilable = true },
+			},
+		},
+		{
 			Name = "GetPetActionPetBarIndices",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +320,7 @@ local ActionBarFrame =
 		{
 			Name = "GetProfessionQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,8 +333,24 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetProfessionQualityInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "info", Type = "CraftingQualityInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +363,41 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetTempShapeshiftBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "tempShapeshiftBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "GetVehicleBarIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vehicleBarIndex", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "HasAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an actionbar slot is populated with an action." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAssistedCombatActionButtons",
 			Type = "Function",
 
@@ -165,8 +407,27 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasBonusActionBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasBonusActionBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasExtraActionBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasExtraActionBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasFlyoutActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -179,8 +440,18 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasOverrideActionBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasOverrideActionBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasPetActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +466,7 @@ local ActionBarFrame =
 		{
 			Name = "HasPetActionPetBarIndices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -207,8 +479,25 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasRangeRequirements",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasRangeRequirements", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSpellActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -221,8 +510,44 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "HasTempShapeshiftActionBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasTempShapeshiftActionBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasVehicleActionBar",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasVehicleActionBar", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActionInRange",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "target", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isInRange", Type = "bool", Nilable = true, Documentation = { "If nil, range cannot be determined (eg. no target is available)." } },
+			},
+		},
+		{
 			Name = "IsAssistedCombatAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns whether the given action button contains the Assisted Combat action spell." },
 
 			Arguments =
@@ -236,8 +561,25 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsAttackAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAttackAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -250,8 +592,57 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsAutoRepeatAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isAutoRepeatAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsConsumableAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isConsumableAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCurrentAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isCurrentAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnabledAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,8 +655,40 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsEquippedAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEquippedAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsEquippedGearOutfitAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEquippedGearOutfitAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHarmfulAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -281,6 +704,7 @@ local ActionBarFrame =
 		{
 			Name = "IsHelpfulAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,8 +718,41 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsInterruptAction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the given action button contains a spell that can interrupt spellcasting." },
+
+			Arguments =
+			{
+				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isInterruptAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsItemAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isItemAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -308,12 +765,78 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsPossessBarVisible",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPossessBarVisible", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsStackableAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isStackableAction", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsableAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUsable", Type = "bool", Nilable = false },
+				{ Name = "isLackingResources", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PutActionInSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "RegisterActionUIButton",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "checkboxFrame", Type = "SimpleCheckbox", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "cooldownFrame", Type = "CooldownFrame", Nilable = false },
+			},
+		},
+		{
+			Name = "SetActionBarPage",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "pageIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -337,10 +860,21 @@ local ActionBarFrame =
 		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "slotID", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
+			Name = "UnregisterActionUIButton",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "checkboxFrame", Type = "SimpleCheckbox", Nilable = false },
 			},
 		},
 	},
@@ -351,6 +885,7 @@ local ActionBarFrame =
 			Name = "ActionRangeCheckUpdate",
 			Type = "Event",
 			LiteralName = "ACTION_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
 			Documentation = { "Used in conjunction with EnableActionRangeCheck to inform the UI when an action goes in or out of range with its current target." },
 			Payload =
 			{
@@ -363,6 +898,7 @@ local ActionBarFrame =
 			Name = "ActionUsableChanged",
 			Type = "Event",
 			LiteralName = "ACTION_USABLE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "changes", Type = "table", InnerType = "ActionUsableState", Nilable = false },
@@ -372,26 +908,31 @@ local ActionBarFrame =
 			Name = "ActionbarHidegrid",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_HIDEGRID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ActionbarPageChanged",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_PAGE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ActionbarShowBottomleft",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_SHOW_BOTTOMLEFT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ActionbarShowgrid",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_SHOWGRID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ActionbarSlotChanged",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_SLOT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -401,56 +942,55 @@ local ActionBarFrame =
 			Name = "ActionbarUpdateCooldown",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_UPDATE_COOLDOWN",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ActionbarUpdateState",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_UPDATE_STATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ActionbarUpdateUsable",
 			Type = "Event",
 			LiteralName = "ACTIONBAR_UPDATE_USABLE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PetBarUpdate",
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBonusActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_BONUS_ACTIONBAR",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateExtraActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_EXTRA_ACTIONBAR",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateMultiCastActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_MULTI_CAST_ACTIONBAR",
+			UniqueEvent = true,
 		},
 		{
 			Name = "UpdateOverrideActionbar",
 			Type = "Event",
 			LiteralName = "UPDATE_OVERRIDE_ACTIONBAR",
+			UniqueEvent = true,
 		},
 	},
 
 	Tables =
 	{
-		{
-			Name = "ActionUsableState",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "slot", Type = "luaIndex", Nilable = false },
-				{ Name = "usable", Type = "bool", Nilable = false },
-				{ Name = "noMana", Type = "bool", Nilable = false },
-			},
-		},
 	},
 };
 

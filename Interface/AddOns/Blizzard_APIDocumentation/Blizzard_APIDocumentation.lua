@@ -78,7 +78,7 @@ function APIDocumentationMixin:HandleOpenDump(apiInfo)
 		end
 
 		local desiredCursorPosition = #dumpString - 1;
-		ChatFrame_OpenChat(dumpString, nil, desiredCursorPosition);
+		ChatFrameUtil.OpenChat(dumpString, nil, desiredCursorPosition);
 	else
 		self:WriteLine("Can only /dump functions");
 	end

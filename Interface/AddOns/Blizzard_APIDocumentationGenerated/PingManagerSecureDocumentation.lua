@@ -20,6 +20,7 @@ local PingManagerSecure =
 			Name = "DisplayError",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -30,6 +31,7 @@ local PingManagerSecure =
 			Name = "GetTargetPingReceiver",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +48,7 @@ local PingManagerSecure =
 			Name = "GetTargetWorldPing",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +75,7 @@ local PingManagerSecure =
 			Name = "SendPing",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +92,7 @@ local PingManagerSecure =
 			Name = "SetPendingPingOffScreenCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -98,6 +103,7 @@ local PingManagerSecure =
 			Name = "SetPingCooldownStartedCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -108,6 +114,7 @@ local PingManagerSecure =
 			Name = "SetPingPinFrameAddedCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +125,7 @@ local PingManagerSecure =
 			Name = "SetPingPinFrameRemovedCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,6 +136,7 @@ local PingManagerSecure =
 			Name = "SetPingPinFrameScreenClampStateUpdatedCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +147,7 @@ local PingManagerSecure =
 			Name = "SetPingRadialWheelCreatedCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,6 +158,7 @@ local PingManagerSecure =
 			Name = "SetSendMacroPingCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +169,7 @@ local PingManagerSecure =
 			Name = "SetTogglePingListenerCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

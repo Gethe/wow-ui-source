@@ -48,6 +48,7 @@ PTR_IssueReporter.Assets = {
 	RadiantChordIcon = 135948,
 	EditModeIcon = "Interface\\Icons\\ability_siege_engineer_pattern_recognition",
 	AIBotIcon = "Interface\\HelpFrame\\HelpIcon-Bug-Red",
+	HouseEditModeIcon = 950988,
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.Init()

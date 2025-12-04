@@ -9,6 +9,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +24,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataByUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +49,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataCountByUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -66,9 +69,10 @@ local LossOfControl =
 			Name = "LossOfControlAdded",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "effectIndex", Type = "luaIndex", Nilable = false },
 			},
 		},
@@ -76,6 +80,7 @@ local LossOfControl =
 			Name = "LossOfControlCommentatorAdded",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "victim", Type = "WOWGUID", Nilable = false },
@@ -86,6 +91,8 @@ local LossOfControl =
 			Name = "LossOfControlCommentatorUpdate",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_COMMENTATOR_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "victim", Type = "WOWGUID", Nilable = false },
@@ -95,20 +102,24 @@ local LossOfControl =
 			Name = "LossOfControlUpdate",
 			Type = "Event",
 			LiteralName = "LOSS_OF_CONTROL_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerControlGained",
 			Type = "Event",
 			LiteralName = "PLAYER_CONTROL_GAINED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerControlLost",
 			Type = "Event",
 			LiteralName = "PLAYER_CONTROL_LOST",
+			SynchronousEvent = true,
 		},
 	},
 

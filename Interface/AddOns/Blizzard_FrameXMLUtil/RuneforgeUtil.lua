@@ -122,7 +122,7 @@ function RuneforgePowerBaseMixin:OnSelected()
 			return false;
 		end
 
-		ChatEdit_InsertLink(C_Spell.GetSpellLink(powerInfo.descriptionSpellID));
+		ChatFrameUtil.InsertLink(C_Spell.GetSpellLink(powerInfo.descriptionSpellID));
 		return true;
 	end
 

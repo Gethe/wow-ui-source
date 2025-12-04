@@ -196,6 +196,12 @@ function IconDataProviderMixin:GetIconByIndex(index)
 	end
 end
 
+function IconDataProviderMixin:GetRandomIcon()
+	local numIcons = self:GetNumIcons();
+	local avoidQuestionMarkIndex = 2;
+	return self:GetIconByIndex(math.random(avoidQuestionMarkIndex, numIcons));
+end
+
 function IconDataProviderMixin:GetIconForSaving(index)
 	local icon = self:GetIconByIndex(index);
 	if type(icon) == "string" then

@@ -11,6 +11,7 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +23,7 @@ local FriendList =
 			Name = "AddIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +39,7 @@ local FriendList =
 			Name = "AddOrDelIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +51,7 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -59,6 +63,7 @@ local FriendList =
 			Name = "DelIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local FriendList =
 			Name = "DelIgnoreByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,6 +91,7 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +108,7 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +124,7 @@ local FriendList =
 			Name = "GetIgnoreName",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -193,6 +202,7 @@ local FriendList =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,6 +218,7 @@ local FriendList =
 			Name = "IsFriend",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +234,7 @@ local FriendList =
 			Name = "IsIgnored",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +250,7 @@ local FriendList =
 			Name = "IsIgnoredByGuid",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -253,6 +266,7 @@ local FriendList =
 			Name = "IsOnIgnoredList",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -268,6 +282,7 @@ local FriendList =
 			Name = "RemoveFriend",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -283,6 +298,7 @@ local FriendList =
 			Name = "RemoveFriendByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +310,7 @@ local FriendList =
 			Type = "Function",
 			HasRestrictions = true,
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -305,6 +322,7 @@ local FriendList =
 			Name = "SetFriendNotes",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -321,6 +339,7 @@ local FriendList =
 			Name = "SetFriendNotesByIndex",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -332,6 +351,7 @@ local FriendList =
 			Name = "SetSelectedFriend",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -342,6 +362,7 @@ local FriendList =
 			Name = "SetSelectedIgnore",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -352,6 +373,7 @@ local FriendList =
 			Name = "SetWhoToUi",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -367,6 +389,7 @@ local FriendList =
 			Name = "SortWho",
 			Type = "Function",
 			RequiresFriendList = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -381,6 +404,7 @@ local FriendList =
 			Name = "BattletagInviteShow",
 			Type = "Event",
 			LiteralName = "BATTLETAG_INVITE_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -390,6 +414,7 @@ local FriendList =
 			Name = "BnBlockFailedTooMany",
 			Type = "Event",
 			LiteralName = "BN_BLOCK_FAILED_TOO_MANY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "blockType", Type = "cstring", Nilable = false },
@@ -399,11 +424,13 @@ local FriendList =
 			Name = "BnBlockListUpdated",
 			Type = "Event",
 			LiteralName = "BN_BLOCK_LIST_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnChatWhisperUndeliverable",
 			Type = "Event",
 			LiteralName = "BN_CHAT_WHISPER_UNDELIVERABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "senderID", Type = "number", Nilable = false },
@@ -413,6 +440,7 @@ local FriendList =
 			Name = "BnConnected",
 			Type = "Event",
 			LiteralName = "BN_CONNECTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "suppressNotification", Type = "bool", Nilable = false, Default = false },
@@ -422,6 +450,7 @@ local FriendList =
 			Name = "BnCustomMessageChanged",
 			Type = "Event",
 			LiteralName = "BN_CUSTOM_MESSAGE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "id", Type = "number", Nilable = true },
@@ -431,11 +460,13 @@ local FriendList =
 			Name = "BnCustomMessageLoaded",
 			Type = "Event",
 			LiteralName = "BN_CUSTOM_MESSAGE_LOADED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnDisconnected",
 			Type = "Event",
 			LiteralName = "BN_DISCONNECTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "bool", Nilable = false },
@@ -446,6 +477,7 @@ local FriendList =
 			Name = "BnFriendAccountOffline",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_ACCOUNT_OFFLINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
@@ -456,6 +488,7 @@ local FriendList =
 			Name = "BnFriendAccountOnline",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_ACCOUNT_ONLINE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "friendId", Type = "number", Nilable = false },
@@ -466,6 +499,7 @@ local FriendList =
 			Name = "BnFriendInfoChanged",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_INFO_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "friendIndex", Type = "luaIndex", Nilable = true },
@@ -475,6 +509,7 @@ local FriendList =
 			Name = "BnFriendInviteAdded",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_INVITE_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "accountID", Type = "number", Nilable = false },
@@ -484,6 +519,7 @@ local FriendList =
 			Name = "BnFriendInviteListInitialized",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_INVITE_LIST_INITIALIZED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "listSize", Type = "number", Nilable = false },
@@ -493,11 +529,13 @@ local FriendList =
 			Name = "BnFriendInviteRemoved",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_INVITE_REMOVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnFriendListSizeChanged",
 			Type = "Event",
 			LiteralName = "BN_FRIEND_LIST_SIZE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "accountID", Type = "number", Nilable = true },
@@ -507,36 +545,43 @@ local FriendList =
 			Name = "BnInfoChanged",
 			Type = "Event",
 			LiteralName = "BN_INFO_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BnRequestFofSucceeded",
 			Type = "Event",
 			LiteralName = "BN_REQUEST_FOF_SUCCEEDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "FriendlistUpdate",
 			Type = "Event",
 			LiteralName = "FRIENDLIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "IgnorelistUpdate",
 			Type = "Event",
 			LiteralName = "IGNORELIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MutelistUpdate",
 			Type = "Event",
 			LiteralName = "MUTELIST_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NewMatchmakingPartyInvite",
 			Type = "Event",
 			LiteralName = "NEW_MATCHMAKING_PARTY_INVITE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RejectedMatchmakingPartyInvite",
 			Type = "Event",
 			LiteralName = "REJECTED_MATCHMAKING_PARTY_INVITE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -546,6 +591,7 @@ local FriendList =
 			Name = "WhoListUpdate",
 			Type = "Event",
 			LiteralName = "WHO_LIST_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

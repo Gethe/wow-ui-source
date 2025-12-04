@@ -22,7 +22,7 @@ local ClassTrialSpecs;
 local ZoneChoiceFrame;
 local NewPlayerTutorial;
 
-local HUMAN_RADE_ID = 1;
+local HUMAN_RACE_ID = 1;
 local ORC_RACE_ID = 2;
 
 NineSliceUtil.AddLayout("CharacterCreateThickBorder", {
@@ -195,18 +195,18 @@ function CharacterCreateMixin:OnShow()
 
 	local _, selectedFaction;
 	local existingCharacterID = self:GetExistingCharacterID();
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
 	if existingCharacterID then
 		C_CharacterCreation.CustomizeExistingCharacter(existingCharacterID);
 		self.currentPaidServiceName = C_PaidServices.GetName();
 		_, selectedFaction = C_PaidServices.GetCurrentFaction();
+		local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
 		if not fullCharacterCreateDisabled then
 			NameChoiceFrame.EditBox:SetText(self.currentPaidServiceName or "");
 		end
 	else
 		self.currentPaidServiceName = nil;
 		C_CharacterCreation.ResetCharCustomize();
-		if not fullCharacterCreateDisabled then
+		if not C_GameRules.IsPlunderstorm() then
 			NameChoiceFrame.EditBox:SetText("");
 		end
 	end
@@ -220,13 +220,8 @@ function CharacterCreateMixin:OnShow()
 
 	RaceAndClassFrame:UpdateState(selectedFaction);
 
-	if IsKioskGlueEnabled() then
-		local templateIndex = Kiosk.GetCharacterTemplateSetIndex();
-		if templateIndex then
-			C_CharacterCreation.SetCharacterTemplate(templateIndex);
-		else
-			C_CharacterCreation.ClearCharacterTemplate();
-		end
+	if KioskFrame then
+		KioskFrame:HandleCharacterCreateOnShow();
 	end
 end
 
@@ -564,8 +559,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 	RaceAndClassFrame:SetShown(mode == CHAR_CREATE_MODE_CLASS_RACE);
 	CharCustomizeFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	ClassTrialSpecs:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE and (C_CharacterCreation.GetCharacterCreateType() == Enum.CharacterCreateType.TrialBoost));
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if not fullCharacterCreateDisabled then
+	if not C_GameRules.IsPlunderstorm() then
 		NameChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_CUSTOMIZE);
 	end
 	ZoneChoiceFrame:SetShown(mode == CHAR_CREATE_MODE_ZONE_CHOICE);
@@ -589,9 +583,7 @@ end
 function CharacterCreateMixin:NavBack()
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CANCEL);
 	if self:IsMode(CHAR_CREATE_MODE_CLASS_RACE) then
-		if( IsKioskGlueEnabled() ) then
-			GlueParent_SetScreen("kioskmodesplash");
-		else
+		if( not (KioskFrame and KioskFrame:NavBack()) ) then
 			if CharacterUpgrade_IsCreatedCharacterTrialBoost() or CharacterUpgrade_IsCreatedCharacterUpgrade() then
 				CharacterUpgrade_ResetBoostData();
 			end
@@ -691,8 +683,7 @@ function CharacterCreateMixin:SetMissingOptionsNavBlockersEnabled(enabled)
 end
 
 function CharacterCreateMixin:GetSelectedName()
-	local fullCharacterCreateDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.FullCharacterCreateDisabled);
-	if fullCharacterCreateDisabled then
+	if C_GameRules.IsPlunderstorm() then
 		return "";
 	end
 	return NameChoiceFrame.EditBox:GetText();
@@ -708,8 +699,8 @@ function CharacterCreateMixin:CreateCharacter()
 	elseif self.vasType == Enum.ValueAddedServiceType.PaidFactionChange or self.vasType == Enum.ValueAddedServiceType.PaidRaceChange then
 		StaticPopup_Show("CONFIRM_VAS_FACTION_CHANGE");
 	else
-		if Kiosk.IsEnabled() then
-			KioskModeSplash:SetAutoEnterWorld(true);
+		if KioskFrame then
+			KioskFrame:HandleCreateCharacter();
 		end
 
 		self.creatingCharacter = true;
@@ -991,16 +982,25 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				end
 			end
 
-				-- Sort alphabetically
-				table.sort(validAllianceRaceNames);
-				table.sort(validHordeRaceNames);
+			-- Sort alphabetically
+			table.sort(validAllianceRaceNames);
+			table.sort(validHordeRaceNames);
 
-				local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
-				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
+			local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
+			local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
-				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+			tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTimerunning then
 			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TIMERUNNING;
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.LockedByAchievement then
+			tooltipDisabledReason = RACE_CLASS_UNLOCK_TEXT;
+
+			local requirements = C_CharacterCreation.GetClassAchievementRequirements(C_CharacterCreation.GetSelectedRace(), classData.classID);
+			if requirements then
+				for _, requirement in ipairs(requirements) do
+					tooltipDisabledReason = tooltipDisabledReason.."\n"..DASH_WITH_TEXT:format(requirement);
+				end
+			end
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1289,6 +1289,12 @@ local function GetDHMetaModelInfo(race, sex)
 			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		end
 	elseif race == "BloodElf" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	elseif race == "VoidElf" then
 		if sex == Enum.UnitSex.Female then
 			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		else
@@ -2073,7 +2079,7 @@ function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
 				self:UpdateState(false, _G[reason]);
 				return;
 			end
-	
+
 			-- The name is valid, so next request the availability be checked
 			C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
 		end);
@@ -2268,7 +2274,7 @@ end
 function SelectOtherRaceAvailable()
 	local currentFaction = C_CharacterCreation.GetFactionForRace(C_CharacterCreation.GetSelectedRace());
 	if (currentFaction == "Alliance") then
-		RaceAndClassFrame:SetCharacterRace(HUMAN_RADE_ID);
+		RaceAndClassFrame:SetCharacterRace(HUMAN_RACE_ID);
 	elseif (currentFaction == "Horde") then
 		RaceAndClassFrame:SetCharacterRace(ORC_RACE_ID);
 	end

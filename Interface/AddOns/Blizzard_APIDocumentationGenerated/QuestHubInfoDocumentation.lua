@@ -9,6 +9,7 @@ local QuestHubInfo =
 		{
 			Name = "IsQuestCurrentlyRelatedToHub",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

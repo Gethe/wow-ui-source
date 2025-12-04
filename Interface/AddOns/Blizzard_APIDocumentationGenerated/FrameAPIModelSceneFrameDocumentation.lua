@@ -16,6 +16,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "CreateActor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,6 +27,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "GetActorAtIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -330,6 +332,7 @@ local FrameAPIModelSceneFrame =
 			Name = "Project3DPointTo2D",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -348,6 +351,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetAllowOverlappedModels",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -357,6 +361,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraFarClip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -366,6 +371,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraFieldOfView",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Field of view in radians" },
 
 			Arguments =
@@ -376,6 +382,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraNearClip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -385,6 +392,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraOrientationByAxisVectors",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -402,6 +410,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraOrientationByYawPitchRoll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -413,6 +422,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetCameraPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -424,6 +434,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetDesaturation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -433,6 +444,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetDrawLayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -442,6 +454,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetFogColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -453,6 +466,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetFogFar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -462,6 +476,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetFogNear",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -471,6 +486,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightAmbientColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -482,6 +498,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightDiffuseColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -493,6 +510,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightDirection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -504,6 +522,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -515,6 +534,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -524,6 +544,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetLightVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -533,6 +554,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetPaused",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -543,6 +565,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetViewInsets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -552,6 +575,7 @@ local FrameAPIModelSceneFrame =
 		{
 			Name = "SetViewTranslation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

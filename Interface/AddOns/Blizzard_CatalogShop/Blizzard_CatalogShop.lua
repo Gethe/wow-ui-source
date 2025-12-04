@@ -2,6 +2,12 @@
 -- CatalogShopMixin
 ----------------------------------------------------------------------------------
 CatalogShopMixin = {};
+
+local CATALOG_SHOP_DYNAMIC_EVENTS = {
+	"CATALOG_SHOP_REBUILD_SCROLL_BOX",
+	"CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
+};
+
 function CatalogShopMixin.GetBaseProductInfo(productID)
 	if productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID then
 		-- TODO fix this C_StoreSecure call
@@ -25,42 +31,28 @@ end
 ----------------------------------------------------------------------------------
 function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_DATA_REFRESH");
-	self:RegisterEvent("CATALOG_SHOP_REBUILD_SCROLL_BOX");
 	self:RegisterEvent("CATALOG_SHOP_FETCH_SUCCESS");
 	self:RegisterEvent("CATALOG_SHOP_FETCH_FAILURE");
-	self:RegisterEvent("CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH");
 	self:RegisterEvent("CATALOG_SHOP_PURCHASE_SUCCESS");
 	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
 	self:RegisterEvent("STORE_PURCHASE_ERROR");
 	self:RegisterEvent("CATALOG_SHOP_RESULT_ERROR");
-	self:RegisterEvent("STORE_ORDER_INITIATION_FAILED");
-	self:RegisterEvent("AUTH_CHALLENGE_FINISHED");
 	self:RegisterEvent("TOKEN_MARKET_PRICE_UPDATED");
 	self:RegisterEvent("TOKEN_STATUS_CHANGED");
-	self:RegisterEvent("STORE_BOOST_AUTO_CONSUMED");
-	self:RegisterEvent("STORE_REFRESH");
-	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
-	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
-	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
-	self:RegisterEvent("SUBSCRIPTION_CHANGED_KICK_IMMINENT");
-	self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
-	self:RegisterEvent("BN_DISCONNECTED");
-	-- RNM: Removed becuase this was no longer used in Shop 2.0 
-	-- self:RegisterEvent("DYNAMIC_BUNDLE_PRICE_UPDATED");
+	self:RegisterEvent("CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnCategorySelected", self.OnCategorySelected, self);
 
-	self:SetPortraitToAsset("Interface\\Icons\\WoW_Store");
+	self:SetPortraitToAsset("Interface\\Icons\\UI_Shop");
 	self:SetTitle(BLIZZARD_STORE);
 
 	if ( C_Glue.IsOnGlueScreen() ) then
-		self:SetFrameStrata("FULLSCREEN_DIALOG");
+		self:SetFrameStrata("FULLSCREEN");
 		-- block keys
 		self:EnableKeyboard(true);
 		self:SetScript("OnKeyDown",
@@ -278,6 +270,10 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		local resetSelection = false;
 		self.ProductContainerFrame:UpdateProducts(resetSelection);
 	elseif event == "CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH" then
+		if not self:IsShown() then
+			return;
+		end
+
 		local productID = ...;
 		if self.ProductContainerFrame:IsShown() then
 			self.ProductContainerFrame:UpdateSpecificProduct(productID);
@@ -285,9 +281,8 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 			-- If the details frame is shown, update it with the specific product info
 			self.ProductDetailsContainerFrame:UpdateSpecificProduct(productID);
 		end
-	elseif event =="CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT" then
+	elseif event == "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT" then
 		--... handle it
-	
 	elseif event =="SIMPLE_CHECKOUT_CLOSED" then
 		self:ShowAfterCheckout();
 
@@ -339,11 +334,6 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		--self:ShowUnavailableScreen();
 		local err, internalErr = C_StoreSecure.GetFailureInfo();
 		self:OnError(err, true, internalErr);
-	elseif (event == "SUBSCRIPTION_CHANGED_KICK_IMMINENT") then
-		if not SimpleCheckout:IsShown() then
-			self:Hide();
-			GlueDialog_Show("SUBSCRIPTION_CHANGED_KICK_WARNING");
-		end
 	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
 		--local result = ...;
 		--if (StoreFrame_GetSelectedCategoryID() == WOW_TOKEN_CATEGORY_ID) then
@@ -356,8 +346,9 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
 		--	// Finish implementation when completing [WOW11-144188]
 		--...handle it
-	elseif (event == "BN_DISCONNECTED") then
-		self:Hide();
+	elseif event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE" then
+		local currencyCode, balance = ...;
+		-- TODO (WOW12-40870): Implement this
 	end
 end
 
@@ -384,6 +375,8 @@ function CatalogShopMixin:IsLoading()
 end
 
 function CatalogShopMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, CATALOG_SHOP_DYNAMIC_EVENTS);
+
 	self:HideUnavailableScreen();
 	self:ShowLoadingScreen();
 	self:SetAttribute("isshown", true);
@@ -394,10 +387,12 @@ function CatalogShopMixin:OnShow()
 		GlueParent_AddModalFrame(self);
 	end
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + CatalogShopConstants.ScreenPadding.Horizontal, self:GetHeight() + CatalogShopConstants.ScreenPadding.Vertical);
-	self.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteraction();
+	self.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromShop();
 end
 
 function CatalogShopMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, CATALOG_SHOP_DYNAMIC_EVENTS);
+
 	self:SetAttribute("isshown", false);
 
 	if ( not C_Glue.IsOnGlueScreen() ) then
@@ -460,6 +455,27 @@ function CatalogShopMixin:SetCatalogShopLinkTag(linkTag)
 	end
 end
 
+-- This is done in this way to keep the navigation mixin separate from as much of the internals of product linking as possible.
+-- The goal of this function is to prime linkTag such that if we are linking to a product we can also use the category link flow
+-- that works when we do simple category linking. See NavigationBarMixin:Init
+function CatalogShopMixin:SetCatalogShopLinkTagForLinkProduct()
+	if not self.linkProductID then
+		return;
+	end
+	local categoryInfo = C_CatalogShop.GetFirstCategoryByProductID(self.linkProductID);
+	if categoryInfo then
+		self.linkTag = categoryInfo.linkTag;
+	end
+end
+
+function CatalogShopMixin:GetCatalogShopLinkProductID()
+	return self.linkProductID; -- can be nil
+end
+
+function CatalogShopMixin:SetCatalogShopLinkProductID(linkProductID)
+	self.linkProductID = linkProductID;
+end
+
 function CatalogShopMixin:OnAttributeChanged(name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -500,17 +516,15 @@ function CatalogShopMixin:OnAttributeChanged(name, value)
 		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
 	elseif ( name == "selectboost") then
 		self:SetCatalogShopLinkTag(CatalogShopConstants.CategoryLinks.Services);
+	elseif ( name == "selectspecificproduct" ) then
+		local productID = value;
+		self:SetCatalogShopLinkProductID(productID);
 	end
 end
 
 function CatalogShopMixin:Leave()
 	--... handle leaving
 	self:Hide();
-end
-
-function CatalogShopMixin:IsProductCompletelyOwned(productInfo)
-	-- TODO: convert this check
-	return false;--entryInfo.sharedData.eligibility == Enum.PurchaseEligibility.Owned;
 end
 
 function CatalogShopMixin:ShowError(title, desc, urlIndex, needsAck)
@@ -544,7 +558,7 @@ end
 function CatalogShopMixin:PurchaseProduct()
 	local productInfo = self:GetSelectedProductInfo();
 
-	local completelyOwned = self:IsProductCompletelyOwned(productInfo);
+	local completelyOwned = productInfo.isFullyOwned;
 	if completelyOwned then
 		self:OnError(Enum.StoreError.AlreadyOwned, false, "FakeOwned");
 	elseif C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID) then
@@ -641,83 +655,6 @@ function CatalogShopMixin:FormatTimeLeft(secondsRemaining, formatter)
 	local color = (secondsRemaining > RED_TEXT_SECONDS_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
 	local text = formatter:Format(secondsRemaining);
 	return color:WrapTextInColorCode(text);
-end
-
-function CatalogShopMixin:GetProductInfo(productID)
-	local productInfo = C_CatalogShop.GetProductInfo(productID)
-	if not productInfo then
-		return nil;
-	end
-
-	local productDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(productInfo.catalogShopProductID);
-	if not productDisplayInfo then
-		error("CatalogShopMixin:GetProductInfo : product display info not found!")
-		return productInfo;
-	end
-		
-	local defaultPreviewModelSceneID = productDisplayInfo.defaultPreviewModelSceneID;
-	local overridePreviewModelSceneID = productDisplayInfo.overridePreviewModelSceneID or nil;
-	local defaultCardModelSceneID = productDisplayInfo.defaultCardModelSceneID;
-	local overrideCardModelSceneID = productDisplayInfo.overrideCardModelSceneID or nil;
-	local defaultWideCardModelSceneID = productDisplayInfo.defaultWideCardModelSceneID;
-	local overrideWideCardModelSceneID = productDisplayInfo.overrideWideCardModelSceneID or nil;
-
-	-- get preview scene display data
-	productInfo.sceneDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID);
-
-	-- get small card display data - should always be here
-	productInfo.cardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID);
-
-	-- get wide card display data if set
-	if defaultWideCardModelSceneID then
-		productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
-	end
-				
-	-- get bundle children display data
-	if productDisplayInfo.productType == CatalogShopConstants.ProductType.Bundle then
-		local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
-		if productInfo.sceneDisplayData then
-			productInfo.sceneDisplayData.bundleChildrenDisplayData = {};
-		end
-		if productInfo.cardDisplayData then
-			productInfo.cardDisplayData.bundleChildrenDisplayData = {};
-		end
-		if productInfo.wideCardDisplayData then
-			productInfo.wideCardDisplayData.bundleChildrenDisplayData = {};
-		end
-		for _, childData in ipairs(childrenProductData) do
-			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-			-- If this product has an otherProductGameType then we can't use this product in our model scene (it's from another game)
-			if childProductDisplayInfo.otherProductGameType == nil then
-				if productInfo.sceneDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.cardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.wideCardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-			end
-		end
-	end
-
-	return productInfo;
 end
 
 function CatalogShopMixin:GetSelectedProductInfo()
@@ -857,6 +794,7 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local isTokenOnGlues = (C_Glue.IsOnGlueScreen() and displayInfo.productType == CatalogShopConstants.ProductType.Token);
 	local isPurchasable = (not isTokenOnGlues and not selectedProductInfo.isFullyOwned);
 	local shouldShowPendingPurchasesText = isPurchasable and selectedProductInfo.hasPendingOrders;
+	local shouldShowDynamicBundleDiscountText = isPurchasable and (not shouldShowPendingPurchasesText) and selectedProductInfo.isDynamicallyDiscounted;
 
 	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
@@ -864,9 +802,10 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	-- Adjust for text fields
 	self.ButtonContainer.NoPriceInGlues:SetShown(isTokenOnGlues);
 	self.ButtonContainer.PendingPurchasesText:SetShown(shouldShowPendingPurchasesText);
+	self.ButtonContainer.DynamicBundleDiscountText:SetShown(shouldShowDynamicBundleDiscountText);
 	if isTokenOnGlues then
 		self.ButtonContainer:SetSize(320, 80);
-	elseif shouldShowPendingPurchasesText then
+	elseif shouldShowPendingPurchasesText or shouldShowDynamicBundleDiscountText then
 		self.ButtonContainer:SetSize(320, 60);
 	else
 		self.ButtonContainer:SetSize(320, 50);

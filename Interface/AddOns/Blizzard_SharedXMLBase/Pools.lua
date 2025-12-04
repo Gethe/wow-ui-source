@@ -16,7 +16,7 @@ local Proxies = CreateProxyDirectory("Pools.lua", enableProxyReporting);
 local ObjectPoolBaseMixin = {};
 
 --[[
-Reserve() is not exposed on the pool to prevent the attack vector of addons having control 
+Reserve() is not exposed on the pool to prevent the attack vector of addons having control
 over the quantity of objects available to a preexisting pool.
 ]]--
 local function Reserve(pool, capacity)
@@ -30,8 +30,12 @@ local function Reserve(pool, capacity)
 	end
 end
 
-local function GetObjectIsInvalidMsg(object, poolCollection)
-	return string.format("Attempted to release inactive object '%s'", tostring(object));
+local function GetObjectIsInvalidMsg(object, poolOrCollection)
+	if poolOrCollection:DoesObjectBelongToPool(object) then
+		return ("Attempted to release inactive object '%s'"):format(tostring(object));
+	else
+		return ("Attempted to release object '%s' that doesn't belong to this pool"):format(tostring(object));
+	end
 end
 
 function ObjectPoolBaseMixin:Acquire()
@@ -79,6 +83,16 @@ function ObjectPoolBaseMixin:Release(object, canFailToFindObject)
 		assertsafe(active, GetObjectIsInvalidMsg, object, self);
 	end
 
+	-- We don't want to allow secret values to be released into pools because
+	-- they get stored as keys in the 'activeObjects' table, which ends up 
+	-- making *all* future Acquire calls yield secret values. Further, we have
+	-- checks in the SecureStack container that disallow secret values.
+
+	if issecretvalue(object) then
+		assertsafe(false, "attempted to release a secret value into a pool: %s", tostring(object));
+		return active;
+	end
+
 	if active then
 		--[[
 		The reset function will error if forbidden actions are attempted insecurely,
@@ -114,7 +128,7 @@ function ObjectPoolMixin:Init(createFunc, resetFunc, capacity)
 	self.activeObjects = {};
 	self.inactiveObjects = {};
 	self.activeObjectCount = 0;
-	
+
 	Reserve(self, capacity);
 end
 
@@ -161,6 +175,20 @@ function ObjectPoolMixin:IsActive(object)
 	return self.activeObjects[object] ~= nil;
 end
 
+function ObjectPoolMixin:DoesObjectBelongToPool(object)
+	if self:IsActive(object) then
+		return true;
+	end
+
+	for index, candidate in pairs(self.inactiveObjects) do
+		if candidate == object then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function ObjectPoolMixin:GetNumActive()
 	return self.activeObjectCount;
 end
@@ -176,7 +204,7 @@ function SecureObjectPoolMixin:Init(proxy, createFunc, resetFunc, capacity)
 	self.activeObjects = CreateSecureMap();
 	self.inactiveObjects = CreateSecureStack();
 	self.activeObjectCount = CreateSecureNumber();
-	
+
 	Reserve(self, capacity);
 end
 
@@ -222,6 +250,14 @@ function SecureObjectPoolMixin:IsActive(object)
 	return self.activeObjects:HasKey(object);
 end
 
+function SecureObjectPoolMixin:DoesObjectBelongToPool(object)
+	if self:IsActive(object) then
+		return true;
+	end
+
+	return self.inactiveObjects:Contains(object);
+end
+
 function SecureObjectPoolMixin:GetNumActive()
 	return self.activeObjectCount:GetValue();
 end
@@ -237,6 +273,7 @@ do
 		"GetNextActive",
 		"IsActive",
 		"GetNumActive",
+		"DoesObjectBelongToPool",
 	};
 
 	ObjectPoolProxyMixin = CreateProxyMixin(Proxies, SecureObjectPoolMixin, Funcs);
@@ -345,6 +382,16 @@ function PoolCollectionMixin:Release(object)
 		end
 	end
 	assertsafe(false, GetObjectIsInvalidMsg, object, self);
+end
+
+function PoolCollectionMixin:DoesObjectBelongToPool(object)
+	for poolKey, pool in pairs(self.pools) do
+		if pool:DoesObjectBelongToPool(object) then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 function PoolCollectionMixin:ReleaseAll()
@@ -457,6 +504,11 @@ function Pool_HideAndClearAnchors(pool, region)
 	region:ClearAllPoints();
 end
 
+function Pool_HideAndSetToDefaults(pool, region)
+	region:SetToDefaults();
+	region:Hide();
+end
+
 local function CreateSecureObjectPoolInstance(createFunc, resetFunc, capacity)
 	local pool = CreateFromMixinsPrivate(SecureObjectPoolMixin);
 	local proxy = CreateProxy(pool, ObjectPoolProxyMixin);
@@ -479,7 +531,7 @@ local function CreateSecureFramePoolInstance(frameType, parent, template, resetF
 		local createFrame = forbidden and CreateForbiddenFrame or CreateFrame;
 		local name = nil;
 		local frame = createFrame(frameType, name, parent, template);
-		
+
 		if postCreate then
 			postCreate(frame);
 		end
@@ -552,7 +604,7 @@ different argument signatures. This will also be helpful if we want to access a 
 such as 'parent' without dealing with argument position in ...
 ]]--
 local function FramePoolCollection_ArgsToTable(frameType, parent, template, resetFunc, forbidden, specialization, capacity)
-	local args = 
+	local args =
 	{
 		frameType = frameType,
 		parent = parent,
@@ -573,7 +625,7 @@ end
 
 function FramePoolCollectionConverterMixin:CreatePoolKeyFromPoolArgs(args)
 	return securecallfunction(SecureCreatePoolKeyFromPoolArgs, args);
-end	
+end
 
 function FramePoolCollectionConverterMixin:GetOrCreatePool(...)
 	local args = FramePoolCollection_ArgsToTable(...);
@@ -603,14 +655,14 @@ do
 			local createFrame = forbidden and CreateForbiddenFrame or CreateFrame;
 			local name = nil;
 			local frame = createFrame(frameType, name, parent, template);
-			
+
 			if postCreate then
 				postCreate(frame);
 			end
-	
+
 			return frame;
 		end
-		
+
 		return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
 	end
 
@@ -631,10 +683,10 @@ local SecureFontStringPoolCollectionMixin = CreateFromMixinsPrivate(SecurePoolCo
 
 function SecureFontStringPoolCollectionMixin:CreatePoolKeyFromPoolArgs(args)
 	return args.template;
-end	
+end
 
 local function FontStringPoolCollection_ArgsToTable(parent, layer, subLayer, template, resetFunc, capacity)
-	local args = 
+	local args =
 	{
 		parent = parent,
 		layer = layer,
@@ -694,9 +746,11 @@ do
 		"ReleaseAllByTemplate",
 		"EnumerateActiveByTemplate",
 		"EnumerateActive",
+		"IsActive",
+		"DoesObjectBelongToPool",
 		--"Dump",
 	};
-	
+
 	local PoolCollectionProxyMixin = CreateProxyMixin(Proxies, SecurePoolCollectionMixin, Funcs);
 	PoolCollectionProxyMixin.__index = PoolCollectionProxyMixin;
 
@@ -754,7 +808,7 @@ function CreateUnsecuredFontStringPool(parent, layer, subLayer, template, resetF
 	local function Create()
 		local name = nil;
 		return parent:CreateFontString(name, layer, template, subLayer);
-	end	
+	end
 	return CreateUnsecuredRegionPoolInstance(template, Create, resetFunc, capacity);
 end
 

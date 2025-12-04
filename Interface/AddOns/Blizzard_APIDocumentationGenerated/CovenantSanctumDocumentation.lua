@@ -72,6 +72,7 @@ local CovenantSanctum =
 		{
 			Name = "GetRenownLevels",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +87,7 @@ local CovenantSanctum =
 		{
 			Name = "GetRenownRewardsForLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -155,11 +157,13 @@ local CovenantSanctum =
 			Name = "CovenantRenownCatchUpStateUpdate",
 			Type = "Event",
 			LiteralName = "COVENANT_RENOWN_CATCH_UP_STATE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CovenantSanctumRenownLevelChanged",
 			Type = "Event",
 			LiteralName = "COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newRenownLevel", Type = "number", Nilable = false },
