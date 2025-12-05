@@ -4,6 +4,7 @@
 	<CheckButton name="ActionButtonTemplate" inherits="FlyoutButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="enableSpellFX" value="false" type="boolean"/>
+			<KeyValue key="enableLOCCooldown" value="false" type="boolean"/>
 			<KeyValue key="popupDirection" value="UP" type="string"/>
 			<KeyValue key="popupOffset" value="-4" type="number"/>
 			<KeyValue key="popupCrossAxisSize" value="47" type="number"/>
@@ -113,6 +114,10 @@
 			</Frame>
 
 			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">
+				<KeyValues>
+					<KeyValue key="edgeTextureNormal" value="Interface\Cooldown\edge-LoC" type="string"/>
+					<KeyValue key="edgeTextureLOC" value="Interface\Cooldown\edge" type="string"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>			

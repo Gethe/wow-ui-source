@@ -13,5 +13,5 @@ GradualAnimatedStatusBar.xml
 PlayerMovementFrameFader.lua
 Classic\Constants.lua
 Shared\Constants.lua
-Vanilla\Constants.lua
+TBC\Constants.lua
 TBC\Localization.lua

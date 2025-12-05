@@ -1,4 +1,3 @@
--- BIG PROBLEM HERE. NOT SAVING REFS
 --
 -- New constants should be added to this file and other constants
 -- deprecated and moved to this file.
@@ -96,3 +95,8 @@ WOW_PROJECT_WRATH_CLASSIC = 11;
 WOW_PROJECT_CATACLYSM_CLASSIC = 14;
 WOW_PROJECT_MISTS_CLASSIC = 19;
 WOW_PROJECT_ID = WOW_PROJECT_BURNING_CRUSADE_CLASSIC;
+
+--
+-- Glyph
+-- 
+INSCRIPTION_AVAILABLE = false;

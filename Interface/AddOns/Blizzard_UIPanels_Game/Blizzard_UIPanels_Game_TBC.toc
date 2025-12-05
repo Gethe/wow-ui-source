@@ -79,6 +79,10 @@ Classic\PVPFrameTemplates.xml
 Classic\PVPFrame.xml
 Classic\BattlefieldFrame.lua
 Classic\BattlefieldFrame.xml
+Classic\ArenaFrame.lua
+Classic\ArenaFrame.xml
+Classic\ArenaRegistrarFrame.lua
+Classic\ArenaRegistrarFrame.xml
 Shared\PlayerInteractionFrameManager.lua
 Shared\PlayerInteractionFrameManager.xml
 Classic\Localization.lua

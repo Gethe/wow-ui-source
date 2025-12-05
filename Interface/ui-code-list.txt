@@ -1142,6 +1142,7 @@ Interface\AddOns\Blizzard_FrameXMLBase\GradualAnimatedStatusBar.xml
 Interface\AddOns\Blizzard_FrameXMLBase\Mists\Constants.lua
 Interface\AddOns\Blizzard_FrameXMLBase\PlayerMovementFrameFader.lua
 Interface\AddOns\Blizzard_FrameXMLBase\Shared\Constants.lua
+Interface\AddOns\Blizzard_FrameXMLBase\TBC\Constants.lua
 Interface\AddOns\Blizzard_FrameXMLBase\TBC\Localization.lua
 Interface\AddOns\Blizzard_FrameXMLBase\Vanilla\Constants.lua
 Interface\AddOns\Blizzard_FrameXMLBase\Vanilla\Localization.lua
@@ -1268,7 +1269,6 @@ Interface\AddOns\Blizzard_FrameXML\Shared\Localization.lua
 Interface\AddOns\Blizzard_FrameXML\Shared\LowHealthFrame.lua
 Interface\AddOns\Blizzard_FrameXML\SpellActivationOverlay.lua
 Interface\AddOns\Blizzard_FrameXML\SpellActivationOverlay.xml
-Interface\AddOns\Blizzard_FrameXML\TBC\Constants.lua
 Interface\AddOns\Blizzard_FrameXML\TBC\Localization.lua
 Interface\AddOns\Blizzard_FrameXML\TBC\WorldStateFrame.lua
 Interface\AddOns\Blizzard_FrameXML\TBC\WorldStateFrame.xml
@@ -1447,6 +1447,8 @@ Interface\AddOns\Blizzard_GroupFinder\Classic\QueueUpdater.lua
 Interface\AddOns\Blizzard_GroupFinder\Classic\ScenarioFinder.lua
 Interface\AddOns\Blizzard_GroupFinder\Mists\GroupFinderHelpers.lua
 Interface\AddOns\Blizzard_GroupFinder\Shared\LFGFrame.lua
+Interface\AddOns\Blizzard_GroupFinder\Shared\LFGReadyCheck.lua
+Interface\AddOns\Blizzard_GroupFinder\Shared\LFGReadyCheck.xml
 Interface\AddOns\Blizzard_GroupFinder\Shared\RaidFinder.lua
 Interface\AddOns\Blizzard_GroupFinder\Shared\RaidFinder.xml
 Interface\AddOns\Blizzard_GroupFinder\Shared\ScenarioFinder.xml

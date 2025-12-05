@@ -13,6 +13,7 @@ Shared\ChatTypeInfoConstants.lua
 Shared\CastRandomManager.lua
 Shared\CastSequenceManager.lua
 Shared\ChatFrameUtil.lua
+Shared\ChatFrameFiltersSecure.lua [LoadIntoEnvironment secure]
 Shared\ChatFrameFilters.lua
 Shared\MessageFrameScrollButton.lua
 [Family]\ChatEmoteConstants.lua

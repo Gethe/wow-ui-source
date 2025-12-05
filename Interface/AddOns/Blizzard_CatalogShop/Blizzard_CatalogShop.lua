@@ -618,6 +618,13 @@ function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
 		self.ProductDetailsContainerFrame:UpdateProductInfo(productInfo);
+	else
+		-- If we have a productInfo we need to ask the ProductContainerFrame to update so
+		-- that product is selected and the scroll view is rebuilt correctly. [Fixes CLASS-45742]
+		if productInfo then
+			local resetSelection = false;
+			self.ProductContainerFrame:UpdateProducts(resetSelection);
+		end
 	end
 	self.CatalogShopDetailsFrame:MarkDirty();
 end

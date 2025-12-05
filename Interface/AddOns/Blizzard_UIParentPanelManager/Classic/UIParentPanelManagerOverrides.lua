@@ -1,5 +1,7 @@
 local _, addonTable = ...; -- Used for passing functions between UIParentPanelManager.lua and other files in this addon.
 
+BOTTOM_FRAME_CONTAINER_MARGIN = 5;
+
 local function FrameShouldBePositionManaged(frame)
 	return frame:IsShown() and frame:IsInDefaultPosition();
 end
@@ -79,6 +81,14 @@ addonTable.UIParentManageFramePositions = function(self)
 		ApplyPositionManagement(PossessActionBar, frameState, 0, frameState.bottomLeftYOffset,
 			function(frame, frameState) frame:SetBackgroundArtShown(MainMenuBar:IsShown() and not frameState.bottomLeftBarSlotIsOccupied); end,
 			function(frame, frameState) frameState.bottomLeftYOffset = frameState.bottomLeftYOffset + frame:GetHeight() + 10; frameState.bottomLeftBarSlotIsOccupied = true; end);
+
+		-- ChatFrame1
+		-- If our bottomLeftYOffset if sufficiently high (> 30), then offset the ChatFrame upwards. But don't let it go too high because it'll start to look silly (and also clip the PlayerFrame if the player is using the "Modern" layout).
+		local chatFrameOffset = frameState.bottomLeftYOffset - 30;
+		chatFrameOffset = Clamp(chatFrameOffset, 0, 28);
+		ApplyPositionManagement(ChatFrame1, frameState, 0, chatFrameOffset,
+			nil,
+			nil);
 	end
 
 	-- Layout managed frame containers.

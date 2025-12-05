@@ -895,9 +895,11 @@ function ActionButton_UpdateCooldown(self)
 		charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(self.action);
 	end
 
-	if ( (locStart + locDuration) > (start + duration) ) then
+	if ( self.enableLOCCooldown and (locStart + locDuration) > (start + duration) ) then
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-LoC");
+			if (self.cooldown.edgeTextureLOC) then
+				self.cooldown:SetEdgeTexture(self.cooldown.edgeTextureLOC);
+			end
 			self.cooldown:SetSwipeColor(0.17, 0, 0);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_LOSS_OF_CONTROL;
 			ActionButton_UpdateCooldownNumberHidden(self);
@@ -908,7 +910,9 @@ function ActionButton_UpdateCooldown(self)
 		ClearChargeCooldown(self);
 	else
 		if ( self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_NORMAL ) then
-			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\UI-HUD-ActionBar-SecondaryCooldown");
+			if (self.cooldown.edgeTextureNormal) then
+				self.cooldown:SetEdgeTexture(self.cooldown.edgeTextureNormal);
+			end
 			self.cooldown:SetSwipeColor(0, 0, 0);
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL;
 			ActionButton_UpdateCooldownNumberHidden(self);

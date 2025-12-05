@@ -211,12 +211,13 @@ function EditModeManagerFrameMixin:GetRegisteredSystemFrame(system, systemIndex)
 end
 
 local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
+	local anchorEpsilon = 0.1;
 	if anchorInfo and otherAnchorInfo then
 		return anchorInfo.point == otherAnchorInfo.point
 		and anchorInfo.relativeTo == otherAnchorInfo.relativeTo
 		and anchorInfo.relativePoint == otherAnchorInfo.relativePoint
-		and anchorInfo.offsetX == otherAnchorInfo.offsetX
-		and anchorInfo.offsetY == otherAnchorInfo.offsetY
+		and ApproximatelyEqual(anchorInfo.offsetX, otherAnchorInfo.offsetX, anchorEpsilon)
+		and ApproximatelyEqual(anchorInfo.offsetY, otherAnchorInfo.offsetY, anchorEpsilon)
 	end
 
 	return anchorInfo == otherAnchorInfo;
