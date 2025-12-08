@@ -214,7 +214,7 @@ end
 
 function Class_Dragonriding_RPE_Watcher:Deactivate()
 	EventRegistry:UnregisterFrameEventAndCallback("QUEST_ACCEPTED", self);
-	self:HideTutorialFrames();
+	self:StopTutorial();
 end
 
 function Class_Dragonriding_RPE_Watcher:StartTutorial()

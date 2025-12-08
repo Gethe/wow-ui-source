@@ -57,6 +57,12 @@ local InteractionManagerFrameInfo = {
 			end
 		end,
 		showFunc = function()
+			if not C_HousingNeighborhood.IsNeighborhoodManager() then
+				UIErrorsFrame:AddExternalErrorMessage(ERR_HOUSING_RESULT_PERMISSION_DENIED);
+				C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.RenameNeighborhood);
+				return;
+			end
+
 			StaticPopupSpecial_Show(NeighborhoodChangeNameDialog);
 			NeighborhoodChangeNameDialog.NameText:SetText(C_HousingNeighborhood.GetNeighborhoodName());
 		end,
