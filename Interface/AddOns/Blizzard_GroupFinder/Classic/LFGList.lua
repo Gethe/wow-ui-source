@@ -115,6 +115,7 @@ function LFGListFrame_OnLoad(self)
 	self:RegisterEvent("LFG_LIST_ENTRY_CREATION_FAILED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED");
 	self:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED");
+	self:RegisterEvent("LFG_LIST_UPDATE_SEARCH_RESULTS");
 	self:RegisterEvent("LFG_LIST_SEARCH_FAILED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED");
 	self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED");
@@ -2006,6 +2007,8 @@ function LFGListSearchPanel_OnEvent(self, event, ...)
 			end
 		end
 		LFGListSearchPanel_UpdateButtonStatus(self);
+	elseif ( event == "LFG_LIST_UPDATE_SEARCH_RESULTS" ) then
+		LFGListSearchPanel_UpdateResultList(self);
 	elseif ( event == "PARTY_LEADER_CHANGED" ) then
 		LFGListSearchPanel_UpdateButtonStatus(self);
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
@@ -2627,12 +2630,10 @@ function LFGListSearchEntry_CreateContextMenu(self)
 
 		rootDescription:CreateButton(LFG_LIST_REPORT_GROUP_FOR, function()
 			LFGList_ReportListing(self.resultID, searchResultInfo.leaderName);
-			LFGListSearchPanel_UpdateResultList(panel);
 		end);
 
 		rootDescription:CreateButton(REPORT_GROUP_FINDER_ADVERTISEMENT, function()
-			LFGList_ReportAdvertisement(self.resultID, searchResultInfo.leaderName);
-			LFGListSearchPanel_UpdateResultList(panel);
+			LFGList_ReportAdvertisement(self.resultID);
 		end);
 	end);
 end
@@ -3310,13 +3311,8 @@ function LFGList_ReportListing(searchResultID, leaderName)
 	ReportFrame:InitiateReport(reportInfo, leaderName);
 end
 
-function LFGList_ReportAdvertisement(searchResultID, leaderName)
-	local reportInfo = ReportInfo:CreateReportInfoFromType(Enum.ReportType.GroupFinderPosting);
-	reportInfo:SetGroupFinderSearchResultID(searchResultID);
-	ReportFrame:SetMinorCategoryFlag(Enum.ReportMinorCategory.Advertisement, true);
-	ReportFrame:SetMajorType(Enum.ReportMajorCategory.InappropriateCommunication);
-	local sendReportWithoutDialog = true;
-	ReportFrame:InitiateReport(reportInfo, leaderName, nil, nil, sendReportWithoutDialog);
+function LFGList_ReportAdvertisement(searchResultID)
+	C_LFGList.ReportGroupAsAdvertisement(searchResultID);
 end
 
 function LFGList_ReportApplicant(applicantID, applicantName)

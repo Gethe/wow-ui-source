@@ -333,17 +333,33 @@ function PaperDollFrame_SetDamage(unit, prefix)
 	local displayMin = max(floor(minDamage),1);
 	local displayMax = max(ceil(maxDamage),1);
 
-	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
-	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	if (percent == 0) then
+		minDamage = 0;
+		maxDamage = 0;
+	else
+		minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
+		maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	end
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;
 	local totalBonus = (fullDamage - baseDamage);
-	local damagePerSecond = (max(fullDamage,1) / speed);
+	local damagePerSecond;
+	if speed == 0 then
+		damagePerSecond = 0;
+	else
+		damagePerSecond = (max(fullDamage,1) / speed);
+	end
 	local damageTooltip = max(floor(minDamage),1).." - "..max(ceil(maxDamage),1);
 	
 	local colorPos = "|cff20ff20";
 	local colorNeg = "|cffff2020";
+
+	-- epsilon check
+	if ( totalBonus < 0.1 and totalBonus > -0.1 ) then
+		totalBonus = 0.0;
+	end
+
 	if ( totalBonus == 0 ) then
 		if ( ( displayMin < 100 ) and ( displayMax < 100 ) ) then 
 			damageText:SetText(displayMin.." - "..displayMax);	
@@ -387,7 +403,12 @@ function PaperDollFrame_SetDamage(unit, prefix)
 
 		local offhandBaseDamage = (minOffHandDamage + maxOffHandDamage) * 0.5;
 		local offhandFullDamage = (offhandBaseDamage + physicalBonusPos + physicalBonusNeg) * percent;
-		local offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
+		local offhandDamagePerSecond;
+		if offhandSpeed == 0 then
+			offhandDamagePerSecond = 0;
+		else
+			offhandDamagePerSecond = (max(offhandFullDamage,1) / offhandSpeed);
+		end
 		local offhandDamageTooltip = max(floor(minOffHandDamage),1).." - "..max(ceil(maxOffHandDamage),1);
 		if ( physicalBonusPos > 0 ) then
 			offhandDamageTooltip = offhandDamageTooltip..colorPos.." +"..physicalBonusPos.."|r";

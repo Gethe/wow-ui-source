@@ -74,6 +74,8 @@ end
 local BaseLanguageDropdownControlMixin = {}; 
 
 function BaseLanguageDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
+	self.Control:HideSteppers();
+
 	SetupDropdown(self.Control.Dropdown, setting, options, initTooltip);
 end
 

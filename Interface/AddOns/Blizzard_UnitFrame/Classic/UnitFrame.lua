@@ -76,14 +76,12 @@ function UnitFrame_Initialize (self, unit, name, portrait, healthbar, healthtext
 	self.threatNumericIndicator = threatNumericIndicator;
 	self.myHealPredictionBar = myHealPredictionBar;
 	self.otherHealPredictionBar = otherHealPredictionBar
-	if ClassicExpansionAtLeast(LE_EXPANSION_MISTS_OF_PANDARIA) then
-		self.totalAbsorbBar = totalAbsorbBar;
-		self.overAbsorbGlow = overAbsorbGlow;
-		self.overHealAbsorbGlow = overHealAbsorbGlow;
-		self.healAbsorbBar = healAbsorbBar;
-		self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
-		self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
-	end
+	self.totalAbsorbBar = totalAbsorbBar;
+	self.overAbsorbGlow = overAbsorbGlow;
+	self.overHealAbsorbGlow = overHealAbsorbGlow;
+	self.healAbsorbBar = healAbsorbBar;
+	self.healAbsorbBarLeftShadow = healAbsorbBarLeftShadow;
+	self.healAbsorbBarRightShadow = healAbsorbBarRightShadow;
 	self.myManaCostPredictionBar = myManaCostPredictionBar;
 
 	if ( self.myManaCostPredictionBar ) then

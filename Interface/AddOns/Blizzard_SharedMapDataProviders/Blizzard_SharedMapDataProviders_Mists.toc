@@ -25,6 +25,7 @@ FogOfWarDataProvider.xml
 DeathMapDataProvider.lua
 Wrath\DeathMapDataProvider.xml
 QuestBlobDataProvider.xml
+ScenarioDataProvider.xml
 VignetteDataProvider.xml
 InvasionDataProvider.xml
 GossipDataProvider.xml

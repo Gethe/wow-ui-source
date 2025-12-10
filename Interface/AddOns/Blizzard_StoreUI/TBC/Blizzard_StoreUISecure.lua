@@ -3540,7 +3540,7 @@ function VASCharacterSelectionCharacterSelector_Callback(value)
 				frame.ValidationDescription:SetPoint("TOPLEFT", frame.SelectedCharacterFrame, "BOTTOMLEFT", 8, -8);
 				frame.ValidationDescription:SetFontObject("GameFontBlackSmall2");
 				frame.ValidationDescription:SetTextColor(1.0, 0.1, 0.1);
-				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasError.RaceClassComboIneligible, character, true));
+				frame.ValidationDescription:SetText(StoreVASValidationFrame_AppendError(BLIZZARD_STORE_VAS_ERROR_LABEL, Enum.VasTransactionPurchaseResult.DbRaceClassComboIneligible, character, true));
 				frame.ValidationDescription:Show();
 				frame.ContinueButton:Disable();
 				return;

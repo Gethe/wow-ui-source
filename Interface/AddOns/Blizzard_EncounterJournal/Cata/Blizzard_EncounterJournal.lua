@@ -309,7 +309,6 @@ function EncounterJournal_OnLoad(self)
 
 		local scrollBox = EncounterJournal.searchResults.ScrollBox;
 		local scrollBar = EncounterJournal.searchResults.ScrollBar;
-		local panExtent = buttonHeight;
 		ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, view);
 	end
 

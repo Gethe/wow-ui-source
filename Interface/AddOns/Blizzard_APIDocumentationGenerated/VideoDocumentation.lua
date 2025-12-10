@@ -54,6 +54,15 @@ local Video =
 			},
 		},
 		{
+			Name = "IsSpellVisualDensitySystemSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSupported", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetGameWindowSize",
 			Type = "Function",
 

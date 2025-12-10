@@ -68,9 +68,9 @@ local CurrencyConstants =
 		{
 			Name = "CurrencyFlagsB",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 1,
-			MaxValue = 512,
+			MaxValue = 1024,
 			Fields =
 			{
 				{ Name = "CurrencyBUseTotalEarnedForEarned", Type = "CurrencyFlagsB", EnumValue = 1 },
@@ -83,6 +83,7 @@ local CurrencyConstants =
 				{ Name = "CurrencyBScaleMaxQuantityByWeeksSinceStart", Type = "CurrencyFlagsB", EnumValue = 128 },
 				{ Name = "CurrencyBForceMaxQuantityOnConversion", Type = "CurrencyFlagsB", EnumValue = 256 },
 				{ Name = "CurrencyBUnearnableBeforeMaxQuantityStart", Type = "CurrencyFlagsB", EnumValue = 512 },
+				{ Name = "CurrencyBAllowReductionByResourcefulness", Type = "CurrencyFlagsB", EnumValue = 1024 },
 			},
 		},
 		{
@@ -161,7 +162,7 @@ local CurrencyConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "PLAYER_CURRENCY_CLIENT_FLAGS", Type = "number", Value = Enum.PlayerCurrencyFlagsDbFlags.InBackpack + Enum.PlayerCurrencyFlagsDbFlags.UnusedInUI },
+				{ Name = "PLAYER_CURRENCY_CLIENT_FLAGS", Type = "PlayerCurrencyFlagsDbFlags", Value = Enum.PlayerCurrencyFlagsDbFlags.InBackpack + Enum.PlayerCurrencyFlagsDbFlags.UnusedInUI },
 				{ Name = "MAX_CURRENCY_QUANTITY", Type = "number", Value = 100000000 },
 				{ Name = "CONQUEST_ARENA_AND_BG_META_CURRENCY_ID", Type = "number", Value = 483 },
 				{ Name = "CONQUEST_RATED_BG_META_CURRENCY_ID", Type = "number", Value = 484 },

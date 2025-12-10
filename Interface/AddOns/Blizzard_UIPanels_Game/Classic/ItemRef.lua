@@ -45,6 +45,8 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cff4e96f7%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 10) == "battlepet" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- s_defaultColorString (yellow)
+		elseif ( strsub(text, startLink + 2, startLink + 13) == "nonbattlepet" ) then
+			return (gsub(text, "(|H.+|h.+|h)", "|cffffd200%1|r", 1)); -- s_defaultColorString (yellow)
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "garrmission" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 17) == "transmogillusion" ) then

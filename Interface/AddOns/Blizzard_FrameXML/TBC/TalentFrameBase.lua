@@ -9,11 +9,6 @@ MAX_NUM_ARROW_TEXTURES = 30;
 INITIAL_TALENT_OFFSET_X = 35;
 INITIAL_TALENT_OFFSET_Y = 20;
 
-
-
-
-
-
 function TalentFrame_Update(TalentFrame)
 	if ( not TalentFrame ) then
 		return;
@@ -67,18 +62,11 @@ function TalentFrame_Update(TalentFrame)
 				TalentFrame.TALENT_BRANCH_ARRAY[talentInfo.tier][talentInfo.column].id = button:GetID();
 			
 				-- If player has no talent points then show only talents with points in them
-				if ( (TalentFrame.talentPoints <= 0 and talentInfo.rank == 0)  ) then
-					forceDesaturated = 1;
-				else
-					forceDesaturated = nil;
-				end
+				forceDesaturated = TalentFrame.talentPoints <= 0 and talentInfo.rank == 0;
 
 				-- If the player has spent at least 5 talent points in the previous tier
-				if ( ( (talentInfo.tier - 1) * 5 <= TalentFrame.pointsSpent ) ) then
-					tierUnlocked = 1;
-				else
-					tierUnlocked = nil;
-				end
+				tierUnlocked = (talentInfo.tier - 1) * 5 <= TalentFrame.pointsSpent;
+
 				SetItemButtonTexture(button, talentInfo.icon);
 	
 				-- Talent must meet prereqs or the player must have no points to spend

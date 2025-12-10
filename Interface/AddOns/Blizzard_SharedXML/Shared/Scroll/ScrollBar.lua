@@ -211,22 +211,11 @@ function ScrollBarMixin:Update()
 		thumbExtent = self:GetFrameExtent(thumb);
 	end
 
-	-- Consider interpolation so the enabled or disabled state is not delayed as it approaches
-	-- 0 or 1.
+	local backEnabled, forwardEnabled = ScrollUtil.GetScrollableDirections(self);
+	self:GetBackStepper():SetEnabled(backEnabled);
+	self:GetForwardStepper():SetEnabled(forwardEnabled);
+
 	local scrollPercentage = self:GetScrollPercentage();
-	local targetScrollPercentage = scrollPercentage;
-	local interpolateTo = self:GetScrollInterpolator():GetInterpolateTo();
-	if interpolateTo then
-		targetScrollPercentage = interpolateTo;
-	end
-
-	-- Small exponential representations of zero (ex. E-15) don't evaluate as > 0, 
-	-- and 1.0 can be represented by .99999XXXXXX.
-	local hasScrollableExtent = self:HasScrollableExtent();
-	local scrollEnabled = hasScrollableExtent and self:IsScrollAllowed();
-	self:GetBackStepper():SetEnabled(scrollEnabled and targetScrollPercentage > MathUtil.Epsilon);
-	self:GetForwardStepper():SetEnabled(scrollEnabled and targetScrollPercentage < (1 - MathUtil.Epsilon));
-
 	local offset = (trackExtent - thumbExtent) * scrollPercentage;
 	local x, y = 0, -offset;
 	if self.isHorizontal then
@@ -237,6 +226,8 @@ function ScrollBarMixin:Update()
 	
 	-- hideTrack and hideTrackIfThumbExceedsTrack are not expected to be enabled unless
 	-- the thumb's cannot appear correctly when it's extent is clamped to the track's extent.
+	local hasScrollableExtent = self:HasScrollableExtent();
+	local scrollEnabled = hasScrollableExtent and self:IsScrollAllowed();
 	local showThumb = hasScrollableExtent and not clampedThumb;
 	thumb:SetShown(showThumb);
 	thumb:SetEnabled(scrollEnabled);

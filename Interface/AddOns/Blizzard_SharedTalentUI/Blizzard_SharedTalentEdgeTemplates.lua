@@ -134,12 +134,12 @@ function TalentEdgeArrowMixin:UpdateState()
 		if isRefundInvalidState then
 			self.Line:SetAtlas("talents-arrow-line-red", TextureKitConstants.IgnoreAtlasSize);
 			self.ArrowHead:SetAtlas("talents-arrow-head-red");
-		elseif edgeInfo.isActive then
-			self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
-			self.ArrowHead:SetAtlas("talents-arrow-head-yellow");
 		elseif endButtonVisualState == TalentButtonUtil.BaseVisualState.Gated then
 			self.Line:SetAtlas("talents-arrow-line-locked", TextureKitConstants.IgnoreAtlasSize);
 			self.ArrowHead:SetAtlas("talents-arrow-head-locked");
+		elseif edgeInfo.isActive then
+			self.Line:SetAtlas("talents-arrow-line-yellow", TextureKitConstants.IgnoreAtlasSize);
+			self.ArrowHead:SetAtlas("talents-arrow-head-yellow");
 		else
 			self.Line:SetAtlas("talents-arrow-line-gray", TextureKitConstants.IgnoreAtlasSize);
 			self.ArrowHead:SetAtlas("talents-arrow-head-gray");
@@ -149,6 +149,8 @@ function TalentEdgeArrowMixin:UpdateState()
 	if self:IsPositionDirty() then
 		self:UpdatePosition();
 	end
+
+	startButton:GetTalentFrame():UpdateEdgeFrameLevel(self);
 end
 
 function TalentEdgeArrowMixin:UpdatePosition()
@@ -178,8 +180,6 @@ function TalentEdgeArrowMixin:UpdatePosition()
 
 	self.GhostArrowHead:SetPoint("CENTER", endButton, xOffset, yOffset);
 	self.GhostArrowHead:SetRotation(angle - (math.pi / 2));
-
-	startButton:GetTalentFrame():UpdateEdgeFrameLevel(self);
 
 	self:MarkPositionClean();
 end

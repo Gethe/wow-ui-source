@@ -55,7 +55,8 @@
         <Scripts>
             <OnLoad function="SecureAuraHeader_OnLoad"/>
             <OnEvent function="SecureAuraHeader_OnEvent"/>
-            <OnShow function="SecureAuraHeader_Update"/>
+            <OnShow function="SecureAuraHeader_OnShow"/>
+            <OnHide function="SecureAuraHeader_OnHide"/>
             <OnUpdate function="SecureAuraHeader_OnUpdate" />
             <OnAttributeChanged function="SecureAuraHeader_OnAttributeChanged"/>
         </Scripts>

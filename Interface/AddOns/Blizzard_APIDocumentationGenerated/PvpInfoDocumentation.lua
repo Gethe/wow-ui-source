@@ -209,6 +209,15 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetSelectedBattlefieldIndex",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "GetWorldPVPAreaInfo",
 			Type = "Function",
 
@@ -285,6 +294,18 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "JoinBattlefield",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Arguments =
+			{
+				{ Name = "battlemasterListId", Type = "number", Nilable = false },
+				{ Name = "joinAsGroup", Type = "bool", Nilable = true },
+				{ Name = "instanceIndex", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
 
@@ -310,6 +331,15 @@ local PvpInfo =
 			Arguments =
 			{
 				{ Name = "enablePVP", Type = "bool", Nilable = false, Default = false },
+			},
+		},
+		{
+			Name = "SetSelectedBattlefieldByIndex",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{

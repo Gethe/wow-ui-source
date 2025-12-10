@@ -158,9 +158,8 @@ end
 
 function CharacterSelectHighResButton_OnShow(self)
 	local version = GetBuildInfo();
-	local showGlow = (version == "4.4.1") and GetCVar("hasDeclinedHighResTextures") == "0";
-	self.Glow:SetShown(showGlow);
-	self.New:SetShown(showGlow);
+	local isNew = (version == "4.4.1") and GetCVar("hasDeclinedHighResTextures") == "0";
+	self.New:SetShown(isNew);
 end
 
 function CharacterSelectHighResButton_OnEnter(self)
@@ -193,7 +192,6 @@ StaticPopupDialogs["CHARACTER_SELECT_DOWNLOAD_HIGH_RES_TEXTURES"] = {
 	end,
 	OnCancel = function(dialog, data)
 		SetCVar("hasDeclinedHighResTextures", "1");
-		CharacterSelectHighResButton.Glow:Hide();
 		CharacterSelectHighResButton.New:Hide();
 	end,
 };
@@ -2026,22 +2024,43 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI()
-	local wasShown = StoreFrame_IsShown();
-    if ( not wasShown ) then
-        --We weren't showing, now we are. We should hide all other panels.
-        -- not sure if anything is needed here at the gluescreen
-    end
-    StoreFrame_SetShown(not wasShown);
+	if not CharacterSelect_IsStoreAvailable() then
+		return;
+	end
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		local contextKey = nil;	-- contextKey is for Mainline only
+		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
+	else
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
+		StoreFrame_SetShown(not wasShown);
+	end
 end
 
 function SetStoreUIShown(shown)
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown and shown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		-- not sure if anything is needed here at the gluescreen
-	end
+	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
+	if useNewCashShop then
+		local wasShown = CatalogShopInboundInterface.IsShown();
+		if ( not wasShown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			securecall("CloseAllWindows");
+		end
+		local contextKey = nil;	-- contextKey is for Mainline only
+		CatalogShopInboundInterface.SetShown(not wasShown, contextKey);
+	else
+		local wasShown = StoreFrame_IsShown();
+		if ( not wasShown and shown ) then
+			--We weren't showing, now we are. We should hide all other panels.
+			-- not sure if anything is needed here at the gluescreen
+		end
 
-	StoreFrame_SetShown(shown);
+		StoreFrame_SetShown(shown);
+	end
 end
 
 function PlayersOnServer_Update()
@@ -2474,6 +2493,8 @@ local function GetVASDistributions()
 					usable = DoesClientThinkTheCharacterIsEligibleForPRC(charID);
 				elseif vasType == Enum.ValueAddedServiceType.PaidNameChange then
 					usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
+				elseif vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
+					usable = DoesClientThinkTheCharacterIsEligibleForFCM(charID);
 				end
 				if usable then
 					break;
@@ -2707,6 +2728,8 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginFlow(PaidRaceChangeFlow, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.PaidNameChange and PaidNameChangeFlowClassic then
 		BeginFlow(PaidNameChangeFlowClassic, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
+		BeginFlow(FreeCharacterTransferFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end

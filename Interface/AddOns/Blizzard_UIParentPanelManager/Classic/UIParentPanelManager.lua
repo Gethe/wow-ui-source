@@ -108,11 +108,6 @@ function UIParent_UpdateTopFramePositions()
 	local yOffset = 0;
 	local xOffset = -180;
 
-	if OrderHallCommandBar and OrderHallCommandBar:IsShown() then
-		topOffset = 12;
-		yOffset = OrderHallCommandBar:GetHeight();
-	end
-
 	if PlayerFrame and not PlayerFrame:IsUserPlaced() and not PlayerFrame_IsAnimatedOut(PlayerFrame) then
 		PlayerFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", -19, -4 - topOffset)
 	end
@@ -121,38 +116,30 @@ function UIParent_UpdateTopFramePositions()
 		TargetFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -4 - topOffset);
 	end
 
-	local buffOffset = 0;
-	local gmChatStatusFrameShown = GMChatStatusFrame and GMChatStatusFrame:IsShown();
-	local ticketStatusFrameShown = TicketStatusFrame and TicketStatusFrame:IsShown();
-	local notificationAnchorTo = UIParent;
-	if gmChatStatusFrameShown then
-		GMChatStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
-
-		buffOffset = math.max(buffOffset, GMChatStatusFrame:GetHeight());
-		notificationAnchorTo = GMChatStatusFrame;
+	local statusFrames = {};
+	if GMChatStatusFrame and GMChatStatusFrame:IsShown() then
+		table.insert(statusFrames, GMChatStatusFrame);
+	end
+	if TicketStatusFrame and TicketStatusFrame:IsShown() then
+		table.insert(statusFrames, TicketStatusFrame);
+	end
+	if BehavioralMessagingTray and BehavioralMessagingTray:IsShown() then
+		table.insert(statusFrames, BehavioralMessagingTray);
+	end
+	if WowSurveyFrame and WowSurveyFrame:IsShown() then
+		table.insert(statusFrames, WowSurveyFrame);
 	end
 
-	if ticketStatusFrameShown then
-		if gmChatStatusFrameShown then
-			TicketStatusFrame:SetPoint("TOPRIGHT", GMChatStatusFrame, "TOPLEFT");
+	local buffOffset = 0;
+	for i, frame in ipairs(statusFrames) do
+		frame:ClearAllPoints();
+		if i == 1 then
+			frame:SetPoint("TOPRIGHT", xOffset, yOffset);
 		else
-			TicketStatusFrame:SetPoint("TOPRIGHT", xOffset, yOffset);
+			frame:SetPoint("TOPRIGHT", statusFrames[i-1], "TOPLEFT");
 		end
 
-		buffOffset = math.max(buffOffset, TicketStatusFrame:GetHeight());
-		notificationAnchorTo = TicketStatusFrame;
-	end
-
-	local reportNotificationShown = BehavioralMessagingTray and BehavioralMessagingTray:IsShown();
-	if reportNotificationShown then
-		BehavioralMessagingTray:ClearAllPoints();
-		if notificationAnchorTo ~= UIParent then
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", notificationAnchorTo, "TOPLEFT");
-		else
-			BehavioralMessagingTray:SetPoint("TOPRIGHT", xOffset, yOffset);
-	end
-
-		buffOffset = math.max(buffOffset, BehavioralMessagingTray:GetHeight());
+		buffOffset = math.max(buffOffset, frame:GetHeight());
 	end
 
 	local y = -(buffOffset + 13)

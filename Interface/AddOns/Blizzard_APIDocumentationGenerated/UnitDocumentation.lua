@@ -251,6 +251,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitFactionGroup",
+			Type = "Function",
+
+			Arguments =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "checkDisplayRace", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "factionGroupTag", Type = "cstring", Nilable = false },
+				{ Name = "localized", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitGetTotalAbsorbs",
 			Type = "Function",
 

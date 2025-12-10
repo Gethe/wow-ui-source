@@ -118,6 +118,24 @@ local ProfessionConstants =
 			},
 		},
 		{
+			Name = "CraftingOrderSortType",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "ItemName", Type = "CraftingOrderSortType", EnumValue = 0 },
+				{ Name = "AveTip", Type = "CraftingOrderSortType", EnumValue = 1 },
+				{ Name = "MaxTip", Type = "CraftingOrderSortType", EnumValue = 2 },
+				{ Name = "Quantity", Type = "CraftingOrderSortType", EnumValue = 3 },
+				{ Name = "Reagents", Type = "CraftingOrderSortType", EnumValue = 4 },
+				{ Name = "Tip", Type = "CraftingOrderSortType", EnumValue = 5 },
+				{ Name = "TimeRemaining", Type = "CraftingOrderSortType", EnumValue = 6 },
+				{ Name = "Status", Type = "CraftingOrderSortType", EnumValue = 7 },
+			},
+		},
+		{
 			Name = "CraftingOrderState",
 			Type = "Enumeration",
 			NumValues = 16,

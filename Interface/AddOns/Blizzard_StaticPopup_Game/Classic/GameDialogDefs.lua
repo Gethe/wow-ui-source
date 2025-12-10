@@ -775,17 +775,17 @@ StaticPopupDialogs["ABANDON_QUEST_WITH_ITEMS"].OnAccept = function(dialog, data)
 end;
 
 StaticPopupDialogs["SET_FRIENDNOTE"].OnShow = function(dialog, data)
-	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
-	if ( noteText ) then
-		dialog:GetEditBox():SetText(noteText);
+	local info = C_FriendList.GetFriendInfo(FriendsFrame.NotesID);
+	if info.notes then
+		dialog:GetEditBox():SetText(info.notes);
 	end
 	dialog:GetEditBox():SetFocus();
 end;
 
 StaticPopupDialogs["SET_BNFRIENDNOTE"].OnShow = function(dialog, data)
-	local bnetIDAccount, accountName, battleTag, isBattleTag, characterName, bnetIDGameAccount, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText = BNGetFriendInfoByID(FriendsFrame.NotesID);
-	if ( noteText ) then
-		dialog:GetEditBox():SetText(noteText);
+	local accountInfo = C_BattleNet.GetAccountInfoByID(FriendsFrame.NotesID);
+	if accountInfo and accountInfo.note ~= "" then
+		dialog:GetEditBox():SetText(accountInfo.note);
 	end
 	dialog:GetEditBox():SetFocus();
 end;

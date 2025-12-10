@@ -188,13 +188,6 @@ local function Register()
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(DISPLAY_LABEL));
 
 	InterfaceOverrides.RunSettingsCallback(function()
-		if C_CVar.GetCVar("hideAdventureJournalAlerts") then
-			-- Hide Adventure Guide Alerts
-			Settings.SetupCVarCheckbox(category, "hideAdventureJournalAlerts", HIDE_ADVENTURE_JOURNAL_ALERTS, OPTION_TOOLTIP_HIDE_ADVENTURE_JOURNAL_ALERTS);
-		end
-	end);
-
-	InterfaceOverrides.RunSettingsCallback(function()
 		if C_CVar.GetCVar("showInGameNavigation") then
 			-- In Game Navigation
 			Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);

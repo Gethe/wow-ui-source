@@ -150,7 +150,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Button parentKey="StoreButton" inherits="UIPanelGoldButtonTemplate" motionScriptsWhileDisabled="true" text="BLIZZARD_STORE">
+							<Button parentKey="StoreButton" inherits="UIPanelGoldButtonTemplate" mixin="AuctionHouseStoreButtonMixin" motionScriptsWhileDisabled="true" text="BLIZZARD_STORE">
 								<Size x="164" y="32"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" relativeKey="$parent.Tutorial2" relativePoint="BOTTOMLEFT" x="41" y="-12"/>
@@ -164,46 +164,15 @@
 									</Layer>
 								</Layers>
 								<Scripts>
-									<OnLoad function="WowTokenGameTimeTutorialStoreButton_OnLoad"/>
-									<OnEvent function="WowTokenGameTimeTutorialStoreButton_OnEvent"/>
-									<OnClick>
-										ToggleStoreUI();
-										StoreFrame_SetTokenCategory();
-									</OnClick>
-									<OnMouseDown>
-										if (self:IsEnabled()) then
-											local fontString = self:GetFontString();
-											self.Logo:SetPoint("RIGHT", fontString, "LEFT", -1, -2);
-										end
-									</OnMouseDown>
-									<OnMouseUp>
-										if (self:IsEnabled()) then
-											local fontString = self:GetFontString();
-											self.Logo:SetPoint("RIGHT", fontString, "LEFT", -2, 0);
-										end
-									</OnMouseUp>
-									<OnEnable>
-										self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-left");
-										self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-middle");
-										self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-up-right");
-										self.Logo:SetDesaturated(false);
-										self.Logo:SetAlpha(1);
-									</OnEnable>
-									<OnDisable>
-										self.Left:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-left");
-										self.Middle:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-middle");
-										self.Right:SetTexture("Interface\\Buttons\\UI-DialogBox-goldbutton-disabled-right");
-										self.Logo:SetDesaturated(true);
-										self.Logo:SetAlpha(0.4);
-									</OnDisable>
-									<OnEnter>
-										if (self.tooltip) then
-											GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-											GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
-											GameTooltip:Show();
-										end
-									</OnEnter>
-									<OnLeave function="GameTooltip_Hide"/>
+									<OnLoad method="OnLoad" />
+									<OnEvent method="OnEvent" />
+									<OnClick method="OnClick" />
+									<OnMouseDown method="OnMouseDown" />
+									<OnMouseUp method="OnMouseUp" />
+									<OnEnable method="OnEnable" />
+									<OnDisable method="OnDisable" />
+									<OnEnter method="OnEnter" />
+									<OnLeave method="OnLeave" />
 								</Scripts>
 							</Button>
 						</Frames>

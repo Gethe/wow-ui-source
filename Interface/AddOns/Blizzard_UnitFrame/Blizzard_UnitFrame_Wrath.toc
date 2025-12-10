@@ -11,6 +11,8 @@ Classic\UnitFrame.lua
 UnitFrame.xml
 Classic\PlayerFrame.lua
 Classic\PlayerFrame.xml
+Classic\UnitPowerBarAlt.lua
+Classic\UnitPowerBarAlt.xml
 Wrath\AlternatePowerBar.lua
 Wrath\AlternatePowerBar.xml
 Classic\PartyFrameTemplates.xml

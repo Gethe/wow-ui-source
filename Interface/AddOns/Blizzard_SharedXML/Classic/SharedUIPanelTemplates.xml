@@ -1161,7 +1161,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentClearButton" parentKey="clearButton" hidden="true">
+			<Button name="$parentClearButton" parentKey="clearButton" mixin="ClearButtonMixin" hidden="true">
 				<Size x="17" y="17"/>
 				<Anchors>
 					<Anchor point="RIGHT" x="-3" y="0"/>
@@ -1179,21 +1179,11 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnEnter>
-						self.texture:SetAlpha(1.0);
-					</OnEnter>
-					<OnLeave>
-						self.texture:SetAlpha(0.5);
-					</OnLeave>
-					<OnMouseDown>
-						if self:IsEnabled() then
-							self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -1);
-						end
-					</OnMouseDown>
-					<OnMouseUp>
-						self.texture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0);
-					</OnMouseUp>
-					<OnClick function="SearchBoxTemplateClearButton_OnClick"/>
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
+					<OnMouseDown method="OnMouseDown" />
+					<OnMouseUp method="OnMouseUp" />
+					<OnClick method="OnClick"/>
 				</Scripts>
 			</Button>
 		</Frames>
@@ -1204,7 +1194,7 @@
 			<OnEditFocusLost function="SearchBoxTemplate_OnEditFocusLost"/>
 			<OnEditFocusGained function="SearchBoxTemplate_OnEditFocusGained"/>
 			<OnTextChanged function="SearchBoxTemplate_OnTextChanged"/>
-		</Scripts>
+		</Scripts>		
 	</EditBox>
 
 	<Button name="TabButtonTemplate" virtual="true">
@@ -1875,133 +1865,6 @@
 			<OnEvent method="OnDefaultScaleFrameEvent" inherit="prepend"/>
 		</Scripts>
 	</Frame>
-
-		<Button name="UIButtonTemplate" mixin="UIButtonMixin" virtual="true">
-			<Size x="20" y="20"/>
-			<!--
-			buttonArtKit: The art kit to use for the  button.
-							* The normal texture will be "buttonArtKit"
-							* The pressed texture will be "buttonArtKit-Pressed"
-							* The disabled texture will be "buttonArtKit-Disabled"
-							* The highlight texture will be "buttonArtKit-Highlight"
-			onClickHandler: forwards the standard OnClick arguments.
-			onClickSoundKit: sound to play for OnClick.
-			tooltipAnchor: where to anchor the tooltip for SetOwner.
-			tooltipTitle: the title text for the tooltip.
-			tooltipTitleColor: a color for tooltipTitle.
-			tooltipText: the body text for a tooltip; can be set with or without tooltipTitle.
-			tooltipTextColor: a color for tooltipText.
-			tooltipOffsetX: x offset for the tooltip relative to tooltipAnchor for SetOwner.
-			tooltipOffsetY: y offset for the tooltip relative to tooltipAnchor for SetOwner.
-
-			<KeyValues>
-				<KeyValue key="buttonArtKit" value="128-RedButton" type="string"/>
-				<KeyValue key="onClickHandler" value="RefreshButton_OnClick" type="global"/>
-				<KeyValue key="onClickSoundKit" value="SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON" type="global"/>
-				<KeyValue key="tooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
-				<KeyValue key="tooltipTitle" value="REFRESH_BUTTON_TOOLTIP_TITLE" type="string"/>
-				<KeyValue key="tooltipText" value="REFRESH_BUTTON_TOOLTIP" type="string"/>
-				<KeyValue key="tooltipOffsetX" value="0" type="number"/>
-				<KeyValue key="tooltipOffsetY" value="0" type="number"/>
-				<KeyValue key="disabledTooltip" value="REFRESH_BUTTON_TOOLTIP_DISABLED" type="string"/>
-				<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
-				<KeyValue key="disabledTooltipOffsetX" value="0" type="number"/>
-				<KeyValue key="disabledTooltipOffsetY" value="0" type="number"/>
-			</KeyValues>
-			-->
-			<Frames>
-				<Frame parentKey="Controller" mixin="ButtonControllerMixin">
-					<Scripts>
-						<OnLoad method="OnLoad"/>
-						<OnShow method="OnShow"/>
-					</Scripts>
-				</Frame>
-			</Frames>
-			<Scripts>
-				<OnClick method="OnClick"/>
-				<OnEnter method="OnEnter"/>
-				<OnLeave method="OnLeave"/>
-			</Scripts>
-		</Button>
-
-	<Button name="BigRedExitButtonTemplate" inherits="UIPanelCloseButtonNoScripts" virtual="true"/>
-
-	<Button name="IconButtonTemplate" mixin="IconButtonMixin" inherits="UIButtonTemplate" virtual="true">
-		<!--
-		icon: texture file to be displayed on the button.
-		iconSize: size for square icons. iconSize/{iconWidth iconHeight}/useAtlasSize are exclusive.
-		iconWidth: specified with iconHeight.
-		iconHeight: specified with iconWidth.
-		iconAtlas: atlas to be displayed on the button.
-		useAtlasSize: used with iconAtlas.
-		useIconAsHighlight: use the same icon for the highlight texture.
-		<KeyValues>
-			<KeyValue key="icon" value="Interface\Buttons\UI-RefreshButton" type="string"/>
-			<KeyValue key="iconSize" value="16" type="number"/>
-			<KeyValue key="iconWidth" value="16" type="number"/>
-			<KeyValue key="iconHeight" value="16" type="number"/>
-			<KeyValue key="iconAtlas" value="UI-RefreshButton" type="string"/>
-			<KeyValue key="useAtlasSize" value="true" type="boolean"/>
-			<KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
-		</KeyValues>
-		-->
-		<Layers>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Icon">
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<!-- Note: This isn't using the InitButton pattern from UIButtonTemplate because there are load order issues if we do. -->
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-		</Scripts>
-	</Button>
-
-	<Button name="SquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="IconButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconSize" value="16" type="number"/>
-		</KeyValues>
-		<Size x="32" y="32"/>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnMouseDown method="OnMouseDown"/>
-			<OnMouseUp method="OnMouseUp"/>
-			<OnEnter method="OnEnter"/>
-			<OnLeave method="OnLeave"/>
-			<OnClick method="OnClick"/>
-		</Scripts>
-		<NormalTexture file="Interface\Buttons\UI-SquareButton-Up"/>
-		<PushedTexture file="Interface\Buttons\UI-SquareButton-Down"/>
-		<DisabledTexture file="Interface\Buttons\UI-SquareButton-Disabled"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
-	</Button>
-	
-	<Button name="CommonSquareIconButtonTemplate" mixin="SquareIconButtonMixin" inherits="SquareIconButtonTemplate" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconSize" value="24" type="number"/>
-		</KeyValues>
-		<Size x="48" y="48"/>
-		<HitRectInsets left="6" right="6" top="6" bottom="6"/>
-		<NormalTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
-		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.4">
-			<Anchors>
-				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
-				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
-			</Anchors>
-		</HighlightTexture>
-		<PushedTexture parentKey="PushedTexture" atlas="common-button-square-gray-down">
-			<Anchors>
-				<Anchor point="TOPLEFT" x="1" y="-1"/>
-				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
-			</Anchors>
-		</PushedTexture>
-		<DisabledTexture parentKey="NormalTexture" atlas="common-button-square-gray-up"/>
-	</Button>
 
 	<Button name="RefreshButtonTemplate" inherits="SquareIconButtonTemplate" virtual="true">
 		<KeyValues>

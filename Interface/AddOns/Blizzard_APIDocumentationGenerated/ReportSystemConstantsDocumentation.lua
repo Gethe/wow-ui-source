@@ -60,9 +60,9 @@ local ReportSystemConstants =
 		{
 			Name = "ReportType",
 			Type = "Enumeration",
-			NumValues = 17,
+			NumValues = 18,
 			MinValue = 0,
-			MaxValue = 16,
+			MaxValue = 17,
 			Fields =
 			{
 				{ Name = "Chat", Type = "ReportType", EnumValue = 0 },
@@ -82,6 +82,7 @@ local ReportSystemConstants =
 				{ Name = "PvPScoreboard", Type = "ReportType", EnumValue = 14 },
 				{ Name = "PvPGroupMember", Type = "ReportType", EnumValue = 15 },
 				{ Name = "CraftingOrder", Type = "ReportType", EnumValue = 16 },
+				{ Name = "RecentAlly", Type = "ReportType", EnumValue = 17 },
 			},
 		},
 		{

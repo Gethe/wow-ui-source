@@ -44,34 +44,35 @@ function ScriptAnimatedEffectControllerMixin:StartEffect()
 		return;
 	end
 
-	self.effectStarted = true;
-
-	self.effectCount = self.effectCount + 1;
-
-	self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self, self.scaleMultiplier);
-
-	local effect = self:GetEffect();
-	if effect.startBehavior then
-		self:BeginBehavior(effect.startBehavior);
-	end
-
-	if self:IsSoundEnabled() and effect.loopingSoundKitID then
-		local startingSound = nil;
-		local loopingSound = effect.loopingSoundKitID;
-
-		local endingSound = nil;
-		local loopStartDelay = 0;
-		local loopEndDelay = 0;
-		local loopFadeTime = 0;
-		self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
-		self.loopingSoundEmitter:StartLoopingSound();
-	end
-	
-	if self:IsSoundEnabled() and effect.startSoundKitID then
-		PlaySound(effect.startSoundKitID);
-	end
-
 	self:UpdateActorDynamicOffsets()
+	local effect = self:GetEffect();
+	if effect then
+		self.effectStarted = true;
+
+		self.effectCount = self.effectCount + 1;
+
+		self.actor = self.modelScene:InternalAddEffect(self.effectID, self.source, self.target, self, self.scaleMultiplier);
+
+		if effect.startBehavior then
+			self:BeginBehavior(effect.startBehavior);
+		end
+
+		if self:IsSoundEnabled() and effect.loopingSoundKitID then
+			local startingSound = nil;
+			local loopingSound = effect.loopingSoundKitID;
+
+			local endingSound = nil;
+			local loopStartDelay = 0;
+			local loopEndDelay = 0;
+			local loopFadeTime = 0;
+			self.loopingSoundEmitter = CreateLoopingSoundEffectEmitter(startingSound, loopingSound, endingSound, loopStartDelay, loopEndDelay, loopFadeTime);
+			self.loopingSoundEmitter:StartLoopingSound();
+		end
+	
+		if self:IsSoundEnabled() and effect.startSoundKitID then
+			PlaySound(effect.startSoundKitID);
+		end
+	end
 end
 
 function ScriptAnimatedEffectControllerMixin:DeltaUpdate(elapsedTime)

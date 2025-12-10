@@ -36,7 +36,7 @@ end
 
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for all Cooldown Viewer items.
-CooldownViewerItemMixin = {};
+CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin);
 
 function CooldownViewerItemMixin:GetCooldownFrame()
 	return self.Cooldown;
@@ -55,68 +55,8 @@ function CooldownViewerItemMixin:OnLoad()
 	end
 end
 
-function CooldownViewerItemMixin:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self);
-	self:RefreshTooltip();
-	GameTooltip:Show();
-end
-
-function CooldownViewerItemMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
 function CooldownViewerItemMixin:SetViewerFrame(viewerFrame)
 	self.viewerFrame = viewerFrame;
-end
-
-function CooldownViewerItemMixin:SetCooldownID(cooldownID)
-	if self.cooldownID == cooldownID then
-		return;
-	end
-
-	self.cooldownID = cooldownID;
-
-	self:OnCooldownIDSet();
-end
-
-function CooldownViewerItemMixin:OnCooldownIDSet()
-	self.cooldownInfo = C_CooldownViewer.GetCooldownViewerCooldownInfo(self.cooldownID);
-
-	self:ClearEditModeData();
-
-	-- If one of the item's linked spells currenly has an active aura, it needs to be linked now because
-	-- the UNIT_AURA event for it may have already happened and there might not be another one. e.g. the
-	-- case of an infinite duration aura.
-	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
-		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
-			local auraData = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
-			if auraData then
-				self:SetLinkedSpell(spellID);
-			end
-		end
-	end
-
-	self:RefreshData();
-	self:UpdateShownState();
-end
-
-function CooldownViewerItemMixin:ClearCooldownID()
-	if self.cooldownID == nil then
-		return;
-	end
-
-	self.cooldownID = nil;
-	
-	self:OnCooldownIDCleared();
-end
-
-function CooldownViewerItemMixin:OnCooldownIDCleared()
-	self.cooldownInfo = nil;
-	self:ClearAuraInfo();
-	self:ClearTotemData();
-
-	self:RefreshData();
-	self:UpdateShownState();
 end
 
 function CooldownViewerItemMixin:ClearAuraInfo()
@@ -126,10 +66,6 @@ function CooldownViewerItemMixin:ClearAuraInfo()
 
 	self.auraInstanceID = nil;
 	self.auraSpellID = nil;
-end
-
-function CooldownViewerItemMixin:ClearTotemData()
-	self.totemData = nil;
 end
 
 function CooldownViewerItemMixin:SetIsEditing(isEditing)
@@ -157,74 +93,6 @@ function CooldownViewerItemMixin:ClearEditModeData()
 
 	self.editModeIndex = nil;
 	self:RefreshData();
-end
-
-function CooldownViewerItemMixin:SetOverrideSpell(overrideSpellID)
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return false;
-	end
-
-	if cooldownInfo.overrideSpellID == overrideSpellID then
-		return false;
-	end
-
-	-- Capture the previous override for rare conditions involving spells that remove their
-	-- override before the Update Cooldown Event is sent.
-	if cooldownInfo.overrideSpellID and overrideSpellID == nil then
-		cooldownInfo.previousOverrideSpellID = cooldownInfo.overrideSpellID;
-	end
-
-	cooldownInfo.overrideSpellID = overrideSpellID;
-
-	return true;
-end
-
-function CooldownViewerItemMixin:SetLinkedSpell(linkedSpellID)
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return false;
-	end
-
-	if cooldownInfo.linkedSpellID == linkedSpellID then
-		return false;
-	end
-
-	cooldownInfo.linkedSpellID = linkedSpellID;
-
-	return true;
-end
-
-function CooldownViewerItemMixin:GetLinkedSpell()
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
-	end
-
-	return cooldownInfo.linkedSpellID;
-end
-
-function CooldownViewerItemMixin:UpdateLinkedSpell(spellID)
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return false;
-	end
-
-	if not cooldownInfo.linkedSpellIDs then
-		return false;
-	end
-
-	-- If the provided spellId matches the base spell then remove the linked spell's precedence.
-	if cooldownInfo.linkedSpellID and spellID == cooldownInfo.spellID then
-		return self:SetLinkedSpell(nil);
-	end
-
-	-- If the provided spellID is one of the item's linked spells, then give precedence to the linked spell.
-	if tContains(cooldownInfo.linkedSpellIDs, spellID) then
-		return self:SetLinkedSpell(spellID);
-	end
-
-	return false;
 end
 
 function CooldownViewerItemMixin:OnCooldownViewerSpellOverrideUpdatedEvent(baseSpellID, overrideSpellID)
@@ -278,117 +146,24 @@ function CooldownViewerItemMixin:OnPlayerTotemUpdateEvent(slot, name, startTime,
 	if duration == 0 then
 		self:ClearTotemData();
 	else
-		self.totemData = {
+		self:SetTotemData({
 			slot = slot,
 			expirationTime = startTime + duration,
 			duration = duration,
 			name = name,
 			modRate = modRate;
-		};
+		});
 	end
 
 	self:RefreshData();
 end
 
-function CooldownViewerItemMixin:GetCooldownID()
-	return self.cooldownID;
-end
-
-function CooldownViewerItemMixin:GetCooldownInfo()
-	return self.cooldownInfo;
-end
-
--- Prefer calling GetSpellID in most cases. This function is provided for unique cases where the base spell is needed.
-function CooldownViewerItemMixin:GetBaseSpellID()
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
-	end
-	return cooldownInfo.spellID;
-end
-
-function CooldownViewerItemMixin:GetSpellID()
-	if self.auraSpellID then
-		return self.auraSpellID;
+function CooldownViewerItemMixin:GetFallbackSpellTexture()
+	if self:HasEditModeData() then
+		return GetEditModeIcon(self.editModeIndex);
 	end
 
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
-	end
-
-	if cooldownInfo.linkedSpellID then
-		return cooldownInfo.linkedSpellID;
-	end
-
-	if cooldownInfo.overrideSpellID then
-		return cooldownInfo.overrideSpellID;
-	end
-
-	return cooldownInfo.spellID;
-end
-
-function CooldownViewerItemMixin:GetSpellCooldownInfo()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
-	end
-	return C_Spell.GetSpellCooldown(spellID);
-end
-
-function CooldownViewerItemMixin:GetSpellChargeInfo()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
-	end
-	return C_Spell.GetSpellCharges(spellID);
-end
-
-function CooldownViewerItemMixin:GetSpellTexture()
-	local linkedSpellID = self:GetLinkedSpell();
-	if linkedSpellID then
-		return C_Spell.GetSpellTexture(linkedSpellID);
-	end
-
-	-- Intentionally always use the base spell when calling C_Spell.GetSpellTexture. Its internal logic will handle the override if needed.
-	local spellID = self:GetBaseSpellID();
-	if not spellID then
-		if self:HasEditModeData() then
-			return GetEditModeIcon(self.editModeIndex);
-		end
-
-		return nil;
-	end
-	return C_Spell.GetSpellTexture(spellID);
-end
-
-function CooldownViewerItemMixin:GetAuraData()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
-	end
-	return C_UnitAuras.GetPlayerAuraBySpellID(spellID);
-end
-
-function CooldownViewerItemMixin:UseAuraForCooldown()
-	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return true;
-	end
-
-	if cooldownInfo.flags == nil then
-		return true;
-	end
-
-	return FlagsUtil.IsSet(cooldownInfo.flags, Enum.CooldownSetSpellFlags.HideAura) == false;
-end
-
-function CooldownViewerItemMixin:GetTotemData()
-	return self.totemData;
-end
-
-function CooldownViewerItemMixin:RefreshData()
-	assertsafe(false, "RefreshData must be overridden by a derived mixin.");
+	return nil;
 end
 
 function CooldownViewerItemMixin:RefreshActive()
@@ -420,18 +195,6 @@ function CooldownViewerItemMixin:UpdateTooltip()
 	end
 end
 
-function CooldownViewerItemMixin:RefreshTooltip()
-	if self.auraInstanceID then
-		GameTooltip:SetUnitBuffByAuraInstanceID("player", self.auraInstanceID);
-	else
-		local spellID = self:GetSpellID();
-		if spellID then
-			local isPet = false;
-			GameTooltip:SetSpellByID(spellID, isPet);
-		end
-	end
-end
-
 function CooldownViewerItemMixin:SetHideWhenInactive(hideWhenInactive)
 	self.hideWhenInactive = hideWhenInactive;
 	self:UpdateShownState();
@@ -448,6 +211,10 @@ function CooldownViewerItemMixin:ShouldBeShown()
 		end
 
 		if self:IsActive() then
+			return true;
+		end
+
+		if CooldownViewerSettings:IsVisible() then
 			return true;
 		end
 	end
@@ -507,7 +274,7 @@ function CooldownViewerItemMixin:IsActive()
 end
 
 function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, startRecoveryCategory)
-	-- A nill spellID indicates all cooldowns should be updated.
+	-- A nil spellID indicates all cooldowns should be updated.
 	if spellID == nil then
 		return true;
 	end
@@ -537,7 +304,7 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, start
 		return true;
 	end
 
-	-- In rare cases, some spells remove their override before the Update Cooldown Event is sent. 
+	-- In rare cases, some spells remove their override before the Update Cooldown Event is sent.
 	-- When this happens the event doesn't correctly reference the base spell, so this logic
 	-- compensates for that to ensure the event causes a refresh.
 	local cooldownInfo = self:GetCooldownInfo();
@@ -571,7 +338,8 @@ function CooldownViewerItemMixin:NeedsTotemUpdate(slot, spellID)
 
 	-- If a totem is destroyed the totem's spellID may already be set to 0, in which case
 	-- it's necessary to use the slot to determine if the update is needed.
-	if spellID == 0 and self.totemData and self.totemData.slot == slot then
+	local totemData = self:GetTotemData();
+	if spellID == 0 and totemData and totemData.slot == slot then
 		return true;
 	end
 
@@ -1212,29 +980,6 @@ function CooldownViewerBuffBarItemMixin:RefreshCooldownInfo()
 	end
 end
 
-function CooldownViewerBuffBarItemMixin:GetNameText()
-	local totemData = self:GetTotemData();
-	if totemData then
-		return totemData.name;
-	end
-
-	local auraData = self:GetAuraData();
-	if auraData then
-		return auraData.name;
-	end
-
-	local spellID = self:GetSpellID();
-	if spellID then
-		return C_Spell.GetSpellName(spellID);
-	end
-
-	if self:HasEditModeData() then
-		return HUD_EDIT_MODE_COOLDOWN_VIEWER_EXAMPLE_BUFF_NAME;
-	end
-
-	return "";
-end
-
 function CooldownViewerBuffBarItemMixin:RefreshName()
 	local nameFontString = self:GetNameFontString();
 	if not nameFontString:IsShown() then
@@ -1310,12 +1055,12 @@ function CooldownViewerMixin:OnLoad()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 	self:RegisterEvent("PLAYER_REGEN_DISABLED");
 	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
-	self:RegisterEvent("TRAIT_CONFIG_UPDATED");
-	self:RegisterEvent("PLAYER_PVP_TALENT_UPDATE");
-	self:RegisterEvent("COOLDOWN_VIEWER_TABLE_HOTFIXED");
-	
+
 	EventRegistry:RegisterFrameEventAndCallback("VARIABLES_LOADED", self.OnVariablesLoaded, self);
 	CVarCallbackRegistry:RegisterCallback(cooldownViewerEnabledCVar, self.OnCooldownViewerEnabledCVarChanged, self);
+
+	EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", self.OnViewerSettingsShownStateChange, self);
+	EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", self.OnViewerSettingsShownStateChange, self);
 
 	self:UpdateShownState();
 
@@ -1346,6 +1091,15 @@ function CooldownViewerMixin:OnShow()
 	self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:RegisterUnitEvent("UNIT_AURA", "player");
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE");
+
+	local function RefreshFromSettingsUpdate()
+		self:RefreshLayout();
+	end
+
+	EventRegistry:RegisterCallback("CooldownViewerSettings.OnDataChanged", RefreshFromSettingsUpdate, self);
+	EventRegistry:RegisterCallback("CooldownViewerSettings.OnSettingsLoaded", RefreshFromSettingsUpdate, self);
+
+	self:RefreshLayout();
 end
 
 function CooldownViewerMixin:OnHide()
@@ -1354,6 +1108,9 @@ function CooldownViewerMixin:OnHide()
 	self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("PLAYER_TOTEM_UPDATE");
+
+	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnDataChanged", self);
+	EventRegistry:UnregisterCallback("CooldownViewerSettings.OnSettingsLoaded", self);
 end
 
 function CooldownViewerMixin:OnVariablesLoaded()
@@ -1367,12 +1124,6 @@ end
 function CooldownViewerMixin:OnEvent(event, ...)
 	if event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED" or event == "PLAYER_LEVEL_CHANGED" then
 		self:UpdateShownState();
-	elseif event == "TRAIT_CONFIG_UPDATED" then
-		self:RefreshLayout();
-	elseif event == "PLAYER_PVP_TALENT_UPDATE" then
-		self:RefreshLayout();
-	elseif event == "COOLDOWN_VIEWER_TABLE_HOTFIXED" then
-		self:RefreshLayout();
 	elseif event == "COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED" then
 		local baseSpellID, overrideSpellID = ...;
 		for itemFrame in self.itemFramePool:EnumerateActive() do
@@ -1438,6 +1189,10 @@ function CooldownViewerMixin:ShouldBeShown()
 		return false;
 	end
 
+	if CooldownViewerSettings:IsVisible() then
+		return true;
+	end
+
 	if self.visibleSetting then
 		if self.visibleSetting == Enum.CooldownViewerVisibleSetting.Always then
 			return true;
@@ -1500,6 +1255,14 @@ function CooldownViewerMixin:UpdateShownState()
 	end
 end
 
+function CooldownViewerMixin:OnViewerSettingsShownStateChange()
+	self:UpdateShownState();
+
+	for itemFrame in self.itemFramePool:EnumerateActive() do
+		itemFrame:UpdateShownState();
+	end
+end
+
 function CooldownViewerMixin:IsHorizontal()
 	return self.orientationSetting == Enum.CooldownViewerOrientation.Horizontal;
 end
@@ -1546,10 +1309,10 @@ function CooldownViewerMixin:RefreshLayout()
 
 	-- Vertical layout is always left to right. Horizontal layout uses the Icon Direction.
 	itemContainerFrame.layoutFramesGoingRight = not self.isHorizontal or (self.isHorizontal and self.iconDirection == Enum.CooldownViewerIconDirection.Right);
-	
+
 	-- Horizontal layout is always top to bottom. Vertical layout uses the Icon Direction.
 	itemContainerFrame.layoutFramesGoingUp = not self.isHorizontal and self.iconDirection == Enum.CooldownViewerIconDirection.Right;
-	
+
 	itemContainerFrame.childXPadding = self.iconPadding;
 	itemContainerFrame.childYPadding = self.iconPadding;
 
@@ -1562,9 +1325,13 @@ function CooldownViewerMixin:RefreshLayout()
 	self:GetItemContainerFrame():Layout();
 end
 
+function CooldownViewerMixin:GetCategory()
+	return self.cooldownViewerCategory;
+end
+
 function CooldownViewerMixin:GetCooldownIDs()
-	assertsafe(self.cooldownViewerCategory, "Cooldown Viewer Category not set");
-	return C_CooldownViewer.GetCooldownViewerCategorySet(self.cooldownViewerCategory);
+	assertsafe(self:GetCategory(), "Cooldown Viewer Category not set");
+	return CooldownViewerSettings:GetDataProvider():GetOrderedCooldownIDsForCategory(self:GetCategory());
 end
 
 function CooldownViewerMixin:RefreshData()
@@ -1579,7 +1346,7 @@ function CooldownViewerMixin:RefreshData()
 
 			if self:IsEditing() then
 				-- Generate a unique number for each item in edit mode that can be used to look up a placeholder texture or generate a fake duration.
-				local editModeData = itemFrame.layoutIndex * 5 + self.cooldownViewerCategory;
+				local editModeData = itemFrame.layoutIndex * 5 + self:GetCategory();
 				itemFrame:SetEditModeData(editModeData);
 			else
 				itemFrame:ClearEditModeData();

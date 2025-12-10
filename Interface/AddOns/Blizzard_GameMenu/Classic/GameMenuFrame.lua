@@ -8,11 +8,16 @@ function GameMenuFrame_OnShow(self)
 	GameMenuFrame_UpdateVisibleButtons(self);
 end
 
+
 function GameMenuFrame_UpdateVisibleButtons(self)
 	local height = 242;
 
 	local storeIsRestricted = IsTrialAccount();
-	if ( C_StorePublic.IsEnabled() and C_StorePublic.HasPurchaseableProducts() and not storeIsRestricted ) then
+	local shop1Enabled = C_StorePublic.IsEnabled() and C_StorePublic.HasPurchaseableProducts();
+	local shop2Enabled = C_CatalogShop.IsShop2Enabled();
+	local storeEnabled = (not storeIsRestricted) and (shop1Enabled or shop2Enabled);
+
+	if storeEnabled then 
 		height = height + 20;
 		GameMenuButtonStore:Show();
 	else

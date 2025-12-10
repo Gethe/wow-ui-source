@@ -19,7 +19,7 @@ local l10nTable = {
 	ruRU = {
 		localize = function()
 			--Adjust spec font so it doesn't overflow the window
-			SpecializationSpecName:SetFontObject(GameFontNormalHuge);
+			InspectTalentFrameSpecName:SetFontObject(GameFontNormalHuge);
 		end,
 	},
 	zhCN = {

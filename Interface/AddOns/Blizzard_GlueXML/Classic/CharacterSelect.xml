@@ -603,7 +603,7 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CharacterSelect" toplevel="true" parent="GlueParent" setAllPoints="true" enableKeyboard="true" hidden="true" propagateMouseInput="Motion">
 		<Frames>
 			<Frame parentKey="GameLogoDarkBackdrop" inherits="GameLogoDarkBackdropTemplate"/>
@@ -846,20 +846,12 @@
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="30" y="25"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="$parentGlow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="true" alphaMode="ADD">
-											<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnClick>
 										PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
 										AddonList:Show();
 									</OnClick>
 									<OnUpdate>
-										GlueButtonMaster_OnUpdate(self, elapsed);
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
@@ -869,13 +861,6 @@
 								<Anchors>
 									<Anchor point="BOTTOMLEFT" x="30" y="52"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="$parentGlow" parentKey="Glow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="true" alphaMode="ADD">
-											<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Frames>
 									<Frame parentKey="New" inherits="NewFeatureLabelTemplate">
 										<Anchors>
@@ -890,7 +875,6 @@
 									<OnEnter function="CharacterSelectHighResButton_OnEnter"/>
 									<OnLeave function="CharacterSelectHighResButton_OnLeave"/>
 									<OnUpdate>
-										GlueButtonMaster_OnUpdate(self, elapsed);
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
@@ -900,13 +884,6 @@
 								<Anchors>
 									<Anchor point="TOP" relativeTo="CharacterSelectAddonsButton" relativePoint="BOTTOM" x="0" y="8"/>
 								</Anchors>
-								<Layers>
-									<Layer level="OVERLAY">
-										<Texture name="$parentGlow" file="Interface\Glues\Common\Glue-Panel-Button-Glow" hidden="true" alphaMode="ADD">
-											<TexCoords left="0" right="0.578125" top="0" bottom="0.75"/>
-										</Texture>
-									</Layer>
-								</Layers>
 								<Scripts>
 									<OnLoad>
 										self:SetShown(C_Login.IsLauncherLogin());
@@ -919,7 +896,6 @@
 										GlueMenuFrameUtil.ShowMenu();
 									</OnClick>
 									<OnUpdate>
-										GlueButtonMaster_OnUpdate(self, elapsed);
 										GlueParent_DeathKnightButtonSwap(self);
 									</OnUpdate>
 								</Scripts>
@@ -1784,7 +1760,7 @@
 									<Anchor point="TOP" relativeTo="CharacterSelectCharacterFrame" relativePoint="BOTTOM" x="-260" y="0"/>
 								</Anchors>
 							</Button>
-							
+
 							<Button name="CharSelectUndeleteCharacterButtonSpecial" inherits="CharSelectUndeleteCharacterButtonTemplate" hidden="true">
 								<Anchors>
 									<Anchor point="LEFT" relativeTo="CreateCharacterButtonSpecial" relativePoint="RIGHT" x="-20"/>

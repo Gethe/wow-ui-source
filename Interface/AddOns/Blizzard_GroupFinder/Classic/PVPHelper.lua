@@ -100,6 +100,10 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 	
 	PVPReadyDialog.text:SetFormattedText(CONFIRM_BATTLEFIELD_ENTRY, displayName, nil);
 
+	-- Classic doesnt currently use SubText, but if ever we do, account for it.
+	local dynamicDialogHeight = self.windowHeightOffset + PVPReadyDialog.text:GetHeight() + PVPReadyDialog.SubText:GetHeight();
+	self:SetSize(self:GetWidth(), dynamicDialogHeight);
+
 	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 	StaticPopupSpecial_Show(PVPReadyDialog);
 	FlashClientIcon();

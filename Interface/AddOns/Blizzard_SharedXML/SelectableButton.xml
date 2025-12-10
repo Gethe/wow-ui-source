@@ -2,6 +2,7 @@
 UI.xsd">
 	<Button name="SelectableButtonTemplate" mixin="SelectableButtonMixin" virtual="true">
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>

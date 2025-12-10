@@ -672,8 +672,17 @@ local function SetupAuraButtonConfiguration( header, newChild, defaultConfigFunc
 	end
 end
 
-function SecureAuraHeader_OnLoad(self)
-	self:RegisterEvent("UNIT_AURA");
+function SecureAuraHeader_OnLoad(_self)
+	-- No-op; retained for backwards compatibility.
+end
+
+function SecureAuraHeader_OnShow(self)
+	SecureAuraHeader_UpdateEventRegistrations(self);
+	SecureAuraHeader_Update(self);
+end
+
+function SecureAuraHeader_OnHide(self)
+	SecureAuraHeader_UpdateEventRegistrations(self);
 end
 
 function SecureAuraHeader_OnUpdate(self)
@@ -688,8 +697,7 @@ end
 
 function SecureAuraHeader_OnEvent(self, event, ...)
 	if ( self:IsVisible() ) then
-		local unit = SecureButton_GetUnit(self);
-		if ( event == "UNIT_AURA" and ... == unit ) then
+		if ( event == "UNIT_AURA" ) then
 			SecureAuraHeader_Update(self);
 		end
 	end
@@ -699,8 +707,29 @@ function SecureAuraHeader_OnAttributeChanged(self, name, value)
 	if ( name == "_ignore" or self:GetAttribute("_ignore") ) then
 		return;
 	end
+
+	if ( name == "unit" or name == "unitsuffix" ) then
+		-- Note that this won't catch attribute updates if the header has useparent
+		-- propagation applied; addons will need to call UpdateEventRegistrations
+		-- themselves or manually propagate the "unit" attribute down to this
+		-- header.
+		SecureAuraHeader_UpdateEventRegistrations(self);
+	end
+
 	if ( self:IsVisible() ) then
 		SecureAuraHeader_Update(self);
+	end
+end
+
+function SecureAuraHeader_GetUnit(self)
+	return SecureButton_GetUnit(self) or "player";
+end
+
+function SecureAuraHeader_UpdateEventRegistrations(self)
+	if self:IsVisible() then
+		self:RegisterUnitEvent("UNIT_AURA", SecureAuraHeader_GetUnit(self));
+	else
+		self:UnregisterEvent("UNIT_AURA");
 	end
 end
 
@@ -961,7 +990,7 @@ sorters.TIME = sorters.EXPIRES;
 function SecureAuraHeader_Update(self)
 	local filter = self:GetAttribute("filter");
 	local groupBy = self:GetAttribute("groupBy");
-	local unit = SecureButton_GetUnit(self) or "player";
+	local unit = SecureAuraHeader_GetUnit(self);
 	local includeWeapons = tonumber(self:GetAttribute("includeWeapons"));
 	if ( includeWeapons == 0 ) then
 		includeWeapons = nil
