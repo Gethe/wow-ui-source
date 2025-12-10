@@ -171,7 +171,7 @@ function QuestRewardCompleteButton_OnClick()
 		if ( tbcAndBeyond and money and money > 0 ) then
 			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
 			if ( QuestFrame.dialog ) then
-				MoneyFrame_Update(dialog.MoneyFrame, money);
+				MoneyFrame_Update(QuestFrame.dialog.MoneyFrame, money);
 			end
 		else
 			GetQuestReward(QuestInfoFrame.itemChoice);
