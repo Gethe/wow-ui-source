@@ -1364,28 +1364,6 @@ local factionMajorCities = {
 	["Horde"] = ORGRIMMAR,
 }
 
-StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
-	text = "",
-	button1 = YES,
-	button2 = NO,
-	OnShow = function(dialog, data)
-		local playerFactionGroup = UnitFactionGroup("player");
-		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil;
-		if(factionCity) then
-			dialog:SetText(RETURNING_PLAYER_PROMPT:format(factionCity));
-		end
-	end,
-	OnAccept = function(dialog, data)
-		C_ReturningPlayerUI.AcceptPrompt();
-		dialog:Hide();
-	end,
-	OnCancel = function(dialog, data)
-		C_ReturningPlayerUI.DeclinePrompt();
-	end,
-	timeout = 0,
-	exclusive = 1,
-}
-
 StaticPopupDialogs["CRAFTING_HOUSE_DISABLED"] = {
 	text = ERR_CRAFTING_HOUSE_DISABLED,
 	button1 = OKAY,

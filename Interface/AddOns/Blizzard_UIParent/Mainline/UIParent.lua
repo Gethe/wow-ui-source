@@ -302,9 +302,6 @@ function UIParent_OnLoad(self)
 	self:RegisterEvent("CLIENT_SCENE_OPENED");
 	self:RegisterEvent("CLIENT_SCENE_CLOSED");
 
-	-- Event(s) for returning player prompts
-	self:RegisterEvent("RETURNING_PLAYER_PROMPT");
-
 	--Event(s) for soft targetting
 	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED");
 
@@ -2260,10 +2257,6 @@ function UIParent_OnEvent(self, event, ...)
 		GameTooltip_ShowEventHyperlink(hyperlink);
 	elseif event == "HIDE_HYPERLINK_TOOLTIP" then
 		GameTooltip_HideEventHyperlink();
-	elseif (event == "RETURNING_PLAYER_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
-	elseif (event == "LEAVER_PENALTY_WARNING_PROMPT") then
-		StaticPopup_Show("RETURNING_PLAYER_PROMPT");
 	elseif(event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		if(GetCVarBool("softTargettingInteractKeySound")) then
 			local previousTarget, currentTarget = ...;
