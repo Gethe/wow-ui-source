@@ -85,22 +85,22 @@
 					</Layer>
 					<Layer level="ARTWORK">
 						<Texture parentKey="DividerTop" atlas="shop-card-label-bg" hidden="true" useAtlasSize="true" />
-						<FontString parentKey="Price" inherits="SystemFont_Shadow_Huge2" wordwrap="true" justifyH="RIGHT">
+						<FontString parentKey="Price" inherits="GameFontNormalLarge" wordwrap="true" justifyH="RIGHT">
 							<Color color="NORMAL_FONT_COLOR"/>
 						</FontString>
-						<FontString parentKey="DiscountPrice" hidden="true" inherits="SystemFont_Shadow_Large2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
+						<FontString parentKey="DiscountPrice" hidden="true" inherits="GameFontNormalMed3" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
 							<Color color="GREEN_FONT_COLOR"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="10" type="number"/>
 							</KeyValues>
 						</FontString>
-						<FontString parentKey="OriginalPrice" hidden="true" inherits="SystemFont_Shadow_Large2" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
+						<FontString parentKey="OriginalPrice" hidden="true" inherits="GameFontNormalMed3" mixin="AutoScalingFontStringMixin" wordwrap="true" justifyH="CENTER">
 							<Color color="GRAY_FONT_COLOR"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="10" type="number"/>
 							</KeyValues>
 						</FontString>
-						<FontString parentKey="Name" inherits="SystemFont_Shadow_Large2"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
+						<FontString parentKey="Name" inherits="GameFontNormalLarge"  mixin="AutoScalingFontStringMixin" wordwrap="true" justifyV="MIDDLE" justifyH="CENTER" >
 							<Color color="WHITE_FONT_COLOR"/>
 							<KeyValues>
 								<KeyValue key="minLineHeight" value="12" type="number"/>

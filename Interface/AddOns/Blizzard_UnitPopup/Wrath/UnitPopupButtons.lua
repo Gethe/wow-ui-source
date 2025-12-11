@@ -123,12 +123,21 @@ end
 
 -- Overrides
 function UnitPopupRaidDifficultyButtonMixin:GetEntries()
-	return { 
+	local difficultyEntries = { 
 		UnitPopupRaidDifficulty1ButtonMixin,
 		UnitPopupRaidDifficulty2ButtonMixin, 
 		UnitPopupRaidDifficulty3ButtonMixin, 
 		UnitPopupRaidDifficulty4ButtonMixin,
-	}
+	};
+
+	local supportedDifficultyEntries = {};
+	for i, buttonMixin in ipairs(difficultyEntries) do
+		if buttonMixin:IsSupported() then
+			table.insert(supportedDifficultyEntries, buttonMixin);
+		end
+	end
+
+	return supportedDifficultyEntries;
 end 
 
 function UnitPopupRaidDifficulty1ButtonMixin:GetText(contextData)
@@ -140,7 +149,18 @@ function UnitPopupRaidDifficulty1ButtonMixin:IsChecked()
 end
 
 function UnitPopupRaidDifficultyButtonMixin:CanShow(contextData)
-	return not (UnitLevel("player") < 65 and GetDungeonDifficultyID() == 1);
+	local isMinLevel = UnitLevel("player") >= 65;
+	local hasNonDefaultDifficultySelected = GetDungeonDifficultyID() ~= 1;
+
+	-- Do we have any supported difficulty entries?
+	local supportedDifficultyEntriesCount = 0;
+	for i, buttonMixin in ipairs(self:GetEntries()) do
+		if buttonMixin:IsSupported() then
+			supportedDifficultyEntriesCount = supportedDifficultyEntriesCount + 1;
+		end
+	end
+
+	return (isMinLevel and supportedDifficultyEntriesCount > 0) or hasNonDefaultDifficultySelected;
 end
 
 function UnitPopupRaidDifficulty1ButtonMixin:GetDifficultyID()
@@ -150,6 +170,11 @@ end
 function UnitPopupRaidDifficulty1ButtonMixin:OnClick(contextData)
 	local raidDifficultyID = self:GetDifficultyID();
 	SetRaidDifficultyID(raidDifficultyID);
+end
+
+function UnitPopupRaidDifficulty1ButtonMixin:IsSupported()
+	local isUserSelectable = select(11, GetDifficultyInfo(self:GetDifficultyID()));
+	return isUserSelectable;
 end
 
 UnitPopupRaidDifficulty2ButtonMixin = CreateFromMixins(UnitPopupRaidDifficulty1ButtonMixin);

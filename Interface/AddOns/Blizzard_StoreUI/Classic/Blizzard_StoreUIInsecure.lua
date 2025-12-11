@@ -21,10 +21,12 @@ end
 
 function StorePreviewFrame_OnShow()
 	StoreFrame_PreviewFrameIsShown(true);
+	ModelPreviewFrame.Display.ModelScene:SetAllowOverlappedModels(true); -- CLASS-44103: Automatically allow overlapped models for shop scenes
 end
 
 function StorePreviewFrame_OnHide()
 	StoreFrame_PreviewFrameIsShown(false);
+	ModelPreviewFrame.Display.ModelScene:SetAllowOverlappedModels(false); -- CLASS-44103: Automatically allow overlapped models for shop scenes
 end
 
 function HidePreviewFrame()

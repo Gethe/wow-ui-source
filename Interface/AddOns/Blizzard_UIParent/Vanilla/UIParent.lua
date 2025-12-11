@@ -340,32 +340,6 @@ function ToggleCommunitiesFrame()
 	ToggleFrame(CommunitiesFrame);
 end
 
-function ToggleStoreUI()
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(not wasShown);
-end
-
-function SetStoreUIShown(shown)
-	if (Kiosk.IsEnabled()) then
-		return;
-	end
-
-	local wasShown = StoreFrame_IsShown();
-	if ( not wasShown and shown ) then
-		--We weren't showing, now we are. We should hide all other panels.
-		securecall("CloseAllWindows");
-	end
-	StoreFrame_SetShown(shown);
-end
-
 function OpenDeathRecapUI(id)
 	--[[if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();

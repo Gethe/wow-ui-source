@@ -16,6 +16,24 @@ local MythicPlusInfoShared =
 			},
 		},
 		{
+			Name = "MythicPlusLeaderboardPlayerResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "playerGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "specID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MythicPlusLeaderboardResult",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "completionTime", Type = "number", Nilable = false },
+				{ Name = "players", Type = "table", InnerType = "MythicPlusLeaderboardPlayerResult", Nilable = false },
+			},
+		},
+		{
 			Name = "MythicPlusRatingLinkInfo",
 			Type = "Structure",
 			Fields =

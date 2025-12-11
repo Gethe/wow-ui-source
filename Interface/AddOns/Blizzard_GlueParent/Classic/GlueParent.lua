@@ -716,36 +716,8 @@ function UpgradeAccount()
 	end
 end
 
-function GetDisplayedExpansionLogo(expansionLevel, releaseType)
-	local isTrial = expansionLevel == nil;
-
-	if isTrial then
-		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
-	elseif expansionLevel <= GetMinimumExpansionLevel() then
-		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC, releaseType);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	else
-		local expansionInfo = GetExpansionDisplayInfo(expansionLevel, releaseType);
-		if expansionInfo then
-			return expansionInfo.logo;
-		end
-	end
-
-	return nil;
-end
-
-function SetExpansionLogo(texture, expansionLevel, releaseType)
-	releaseType = releaseType or LE_RELEASE_TYPE_CLASSIC;
-
-	local logo = GetDisplayedExpansionLogo(expansionLevel, releaseType);
-	if logo then
-		texture:SetTexture(logo);
-		texture:Show();
-	else
-		texture:Hide();
-	end
+function GetGameReleaseType()
+	return Enum.ReleaseType.Classic;
 end
 
 function MinutesToTime(mins, hideDays)

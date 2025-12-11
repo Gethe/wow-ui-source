@@ -42,11 +42,7 @@ end
 
 function GlueGameLogoMixin:UpdateLogoTexture()
 	local expansionLevel = self.expansionLevel or GetClientDisplayExpansionLevel();
-	local releaseType = self.releaseType or LE_RELEASE_TYPE_CLASSIC;
-
-	if(GetCNLogoReleaseType) then
-		releaseType = GetCNLogoReleaseType();
-	end
+	local releaseType = self.releaseType or GetLogoReleaseType();
 
 	local logo = nil;
 	local logoHeight = 0;

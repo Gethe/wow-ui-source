@@ -41,10 +41,6 @@ function QuestFrame_OnLoad(self)
 
 	local dimensions = GetQuestFrameSize();
 	QuestFrame:SetSize(dimensions.width, dimensions.height);
-
-	if(GetClassicExpansionLevel() == LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
-		QuestFramePortrait:GetParent():SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", -4, 8);
-	end
 end
 
 function QuestFrame_OnEvent(self, event, ...)
@@ -175,7 +171,7 @@ function QuestRewardCompleteButton_OnClick()
 		if ( tbcAndBeyond and money and money > 0 ) then
 			QuestFrame.dialog = StaticPopup_Show("CONFIRM_COMPLETE_EXPENSIVE_QUEST");
 			if ( QuestFrame.dialog ) then
-				MoneyFrame_Update(dialog.MoneyFrame, money);
+				MoneyFrame_Update(QuestFrame.dialog.MoneyFrame, money);
 			end
 		else
 			GetQuestReward(QuestInfoFrame.itemChoice);

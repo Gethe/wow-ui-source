@@ -7,36 +7,10 @@
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
+				<Texture name="$parentBg" file="Interface\QuestFrame\QuestBG">
+					<Size x="514" y="505"/>
 					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-TopRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="TOPRIGHT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotLeft">
-					<Size>
-						<AbsDimension x="256" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT"/>
-					</Anchors>
-				</Texture>
-				<Texture file="Interface\QuestFrame\UI-QuestGreeting-BotRight">
-					<Size>
-						<AbsDimension x="128" y="256"/>
-					</Size>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" x="23" y="-83"/>
 					</Anchors>
 				</Texture>
 			</Layer>
