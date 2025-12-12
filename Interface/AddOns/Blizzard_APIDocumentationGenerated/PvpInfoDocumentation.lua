@@ -302,7 +302,7 @@ local PvpInfo =
 			{
 				{ Name = "battlemasterListId", Type = "number", Nilable = false },
 				{ Name = "joinAsGroup", Type = "bool", Nilable = true },
-				{ Name = "instanceIndex", Type = "number", Nilable = true },
+				{ Name = "instanceIndex", Type = "luaIndex", Nilable = true },
 			},
 		},
 		{
