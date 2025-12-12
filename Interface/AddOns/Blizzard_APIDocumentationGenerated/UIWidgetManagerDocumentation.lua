@@ -3,6 +3,7 @@ local UIWidgetManager =
 	Name = "UIWidgetManager",
 	Type = "System",
 	Namespace = "C_UIWidgetManager",
+	Environment = "All",
 
 	Functions =
 	{

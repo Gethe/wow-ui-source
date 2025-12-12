@@ -2,6 +2,7 @@ local SimpleSliderAPI =
 {
 	Name = "SimpleSliderAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

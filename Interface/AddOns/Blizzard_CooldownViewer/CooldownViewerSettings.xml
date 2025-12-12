@@ -53,6 +53,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="AlertTarget"> <!-- This exists because regions can't be parents of frames -->
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<StatusBar parentKey="Bar" frameLevel="511" frameStrata="LOW">
 				<Size y="19"/>
 				<Anchors>

@@ -97,6 +97,10 @@ function NamePlateClassificationFrameMixin:GetClassificationAtlasElement()
 		return nil;
 	end
 
+	if self:IsShowOnlyName() then
+		return nil;
+	end
+
 	if self:IsWidgetsOnlyMode() then
 		return nil;
 	end

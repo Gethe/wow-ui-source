@@ -2,6 +2,7 @@ local FrameAPISimpleCheckout =
 {
 	Name = "FrameAPISimpleCheckout",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

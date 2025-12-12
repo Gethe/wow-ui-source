@@ -3,6 +3,7 @@ local ClickBindings =
 	Name = "ClickBindings",
 	Type = "System",
 	Namespace = "C_ClickBindings",
+	Environment = "All",
 
 	Functions =
 	{

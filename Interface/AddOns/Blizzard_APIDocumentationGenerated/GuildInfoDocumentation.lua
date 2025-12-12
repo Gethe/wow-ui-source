@@ -3,6 +3,7 @@ local GuildInfo =
 	Name = "GuildInfo",
 	Type = "System",
 	Namespace = "C_GuildInfo",
+	Environment = "All",
 
 	Functions =
 	{

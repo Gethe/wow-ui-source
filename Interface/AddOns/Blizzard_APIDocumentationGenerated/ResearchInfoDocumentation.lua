@@ -3,6 +3,7 @@ local ResearchInfo =
 	Name = "ResearchInfo",
 	Type = "System",
 	Namespace = "C_ResearchInfo",
+	Environment = "All",
 
 	Functions =
 	{

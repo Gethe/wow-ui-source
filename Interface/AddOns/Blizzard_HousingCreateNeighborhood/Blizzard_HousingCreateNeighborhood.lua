@@ -22,7 +22,7 @@ function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnEvent(event, ...
             HousingTopBannerFrame:SetBannerText(HOUSING_CREATENEIGHBORHOOD_TOAST, neighborhoodName);
             TopBannerManager_Show(HousingTopBannerFrame);
         else
-			UIErrorsFrame:AddExternalErrorMessage(HOUSING_CREATENEIGHBORHOOD_SERVER_ERROR .."\n".. HousingResultToErrorText[result]);
+			UIErrorsFrame:AddExternalErrorMessage(HousingResultToErrorText[result]);
         end
 		self:UnregisterEvent("CREATE_NEIGHBORHOOD_RESULT");
     end

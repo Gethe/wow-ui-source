@@ -62,7 +62,7 @@ function HousingCharterMixin:OnHide()
 end
 
 function HousingCharterMixin:UpdateRequestButton()
-	if UnitExists("target") and UnitIsPlayer("target") and not UnitIsUnit("player", "target") then
+	if UnitExists("target") and UnitIsHumanPlayer("target") and not UnitIsUnit("player", "target") then
 		self.RequestButton:Enable()
 	else
 		self.RequestButton:Disable()

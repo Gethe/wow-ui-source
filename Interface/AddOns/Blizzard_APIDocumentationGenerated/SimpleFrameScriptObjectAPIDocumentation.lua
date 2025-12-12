@@ -2,6 +2,7 @@ local SimpleFrameScriptObjectAPI =
 {
 	Name = "SimpleFrameScriptObjectAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

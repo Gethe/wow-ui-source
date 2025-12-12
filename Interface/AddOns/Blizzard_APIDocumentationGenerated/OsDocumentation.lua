@@ -2,6 +2,7 @@ local Os =
 {
 	Name = "Os",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

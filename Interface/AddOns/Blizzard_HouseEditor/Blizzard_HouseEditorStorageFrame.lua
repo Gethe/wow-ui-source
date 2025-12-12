@@ -201,6 +201,11 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 end
 
 local function SetCartFrameShown(shown, preserveCartState)
+	if not C_HousingCatalog.HasFeaturedEntries() then
+		shown = false;
+		preserveCartState = false;
+	end
+
 	local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartVisualServices.SetCartFrameShown);
 	EventRegistry:TriggerEvent(cartShownEvent, shown, preserveCartState);
 end
@@ -548,6 +553,8 @@ function HouseEditorStorageFrameMixin:RefreshMarketData()
 		local categorySearchParams = self.Categories:GetCategorySearchParams();
 		categorySearchParams.includeFeaturedCategory = true;
 		self.Categories:SetCategorySearchParams(categorySearchParams);
+
+		SetCartFrameShown(true, true);
 	end
 
 	self:UpdateCatalogData();

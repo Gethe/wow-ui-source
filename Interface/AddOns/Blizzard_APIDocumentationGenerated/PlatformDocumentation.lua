@@ -3,6 +3,7 @@ local Platform =
 	Name = "Platform",
 	Type = "System",
 	Namespace = "C_Platform",
+	Environment = "All",
 
 	Functions =
 	{

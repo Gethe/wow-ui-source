@@ -3,6 +3,7 @@ local EncodingUtil =
 	Name = "EncodingUtil",
 	Type = "System",
 	Namespace = "C_EncodingUtil",
+	Environment = "All",
 
 	Functions =
 	{

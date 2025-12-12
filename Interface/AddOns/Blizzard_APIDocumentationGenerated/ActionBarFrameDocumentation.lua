@@ -3,6 +3,7 @@ local ActionBarFrame =
 	Name = "ActionBar",
 	Type = "System",
 	Namespace = "C_ActionBar",
+	Environment = "All",
 
 	Functions =
 	{
@@ -116,6 +117,23 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetActionChargeDuration",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active recharge time for an action." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActionCharges",
 			Type = "Function",
 			RequiresValidActionSlot = true,
@@ -150,6 +168,81 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetActionCooldownDuration",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active cooldown duration for an action." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionCooldownRemaining",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the remaining duration of an action cooldown." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "remainingSeconds", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionCooldownRemainingPercent",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the remaining duration of an action cooldown as a percentage, optionally evaluating it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
+			},
+		},
+		{
+			Name = "GetActionDisplayCount",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretWhenActionCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Depending on the action type, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = false, Default = 9999 },
+				{ Name = "replacementString", Type = "cstring", Nilable = false, Default = "*" },
+			},
+
+			Returns =
+			{
+				{ Name = "displayCount", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActionLossOfControlCooldown",
 			Type = "Function",
 			RequiresValidActionSlot = true,
@@ -165,6 +258,23 @@ local ActionBarFrame =
 			{
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActionLossOfControlCooldownDuration",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for an action." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{

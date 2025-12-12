@@ -2,6 +2,7 @@ local BagIndexConstants =
 {
 	Name = "BagIndexConstants",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

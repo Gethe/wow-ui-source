@@ -3,6 +3,7 @@ local MailInfo =
 	Name = "MailInfo",
 	Type = "System",
 	Namespace = "C_Mail",
+	Environment = "All",
 
 	Functions =
 	{

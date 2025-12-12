@@ -3,6 +3,7 @@ local SpecializationInfo =
 	Name = "SpecializationInfo",
 	Type = "System",
 	Namespace = "C_SpecializationInfo",
+	Environment = "All",
 
 	Functions =
 	{

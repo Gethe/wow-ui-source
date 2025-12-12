@@ -2,6 +2,7 @@ local SimpleHTMLAPI =
 {
 	Name = "SimpleHTMLAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

@@ -178,7 +178,7 @@ end
 -- Do this so bars can appear above talents UI since it's pretty big and likely covers your bars
 -- Don't do for other cursor types (specifically items since we don't want bars to cover bag slots when dragging items)
 -- The current intent is to raise this when dragging from the spellbook/talents
-local cursorTypesThatRaiseActionBar = tInvert({ "spell", "petaction", "flyout"});
+local cursorTypesThatRaiseActionBar = tInvert({ "spell", "petaction", "flyout", "outfit" });
 
 function ActionBarMixin:ShouldRaise(showGrid, reason)
 	if showGrid and (reason == ACTION_BUTTON_SHOW_GRID_REASON_EVENT) then

@@ -3,6 +3,7 @@ local IslandsInfo =
 	Name = "IslandsInfo",
 	Type = "System",
 	Namespace = "C_IslandsInfo",
+	Environment = "All",
 
 	Functions =
 	{

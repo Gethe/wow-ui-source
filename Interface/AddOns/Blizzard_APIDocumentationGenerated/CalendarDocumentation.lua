@@ -3,6 +3,7 @@ local Calendar =
 	Name = "Calendar",
 	Type = "System",
 	Namespace = "C_Calendar",
+	Environment = "All",
 
 	Functions =
 	{

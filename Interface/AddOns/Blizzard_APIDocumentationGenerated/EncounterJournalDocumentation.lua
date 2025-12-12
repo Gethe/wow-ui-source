@@ -3,6 +3,7 @@ local EncounterJournal =
 	Name = "EncounterJournal",
 	Type = "System",
 	Namespace = "C_EncounterJournal",
+	Environment = "All",
 
 	Functions =
 	{
@@ -259,6 +260,17 @@ local EncounterJournal =
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "ShowJourneysUI",
+			Type = "Event",
+			LiteralName = "SHOW_JOURNEYS_UI",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when the UI needs to display the journeys dashboard at a specific faction." },
+			Payload =
+			{
+				{ Name = "factionID", Type = "number", Nilable = false },
 			},
 		},
 	},

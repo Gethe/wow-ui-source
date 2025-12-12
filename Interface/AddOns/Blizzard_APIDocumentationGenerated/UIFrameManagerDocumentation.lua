@@ -3,6 +3,7 @@ local UIFrameManager =
 	Name = "UIFrameManager",
 	Type = "System",
 	Namespace = "C_FrameManager",
+	Environment = "All",
 
 	Functions =
 	{

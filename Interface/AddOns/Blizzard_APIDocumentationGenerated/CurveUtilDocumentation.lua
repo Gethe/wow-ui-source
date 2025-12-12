@@ -3,6 +3,7 @@ local CurveUtil =
 	Name = "CurveUtil",
 	Type = "System",
 	Namespace = "C_CurveUtil",
+	Environment = "All",
 
 	Functions =
 	{

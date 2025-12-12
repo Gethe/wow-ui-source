@@ -2,6 +2,7 @@ local SimpleFontStringAPI =
 {
 	Name = "SimpleFontStringAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -9,6 +10,7 @@ local SimpleFontStringAPI =
 			Name = "CalculateScreenAreaFromCharacterSpan",
 			Type = "Function",
 			RequiresFontStringTextAccess = true,
+			SecretWhenAnchoringSecret = true,
 			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -62,6 +64,7 @@ local SimpleFontStringAPI =
 			Type = "Function",
 			MayReturnNothing = true,
 			RequiresFontStringTextAccess = true,
+			SecretWhenAnchoringSecret = true,
 			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -215,6 +218,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetNumLines",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -384,6 +388,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "GetWrappedWidth",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{
@@ -397,6 +402,7 @@ local SimpleFontStringAPI =
 		{
 			Name = "IsTruncated",
 			Type = "Function",
+			SecretWhenAnchoringSecret = true,
 
 			Arguments =
 			{

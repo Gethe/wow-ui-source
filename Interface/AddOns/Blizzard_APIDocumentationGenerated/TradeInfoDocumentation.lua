@@ -3,6 +3,7 @@ local TradeInfo =
 	Name = "TradeInfo",
 	Type = "System",
 	Namespace = "C_TradeInfo",
+	Environment = "All",
 
 	Functions =
 	{

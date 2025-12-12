@@ -47,13 +47,17 @@ function CooldownViewerSettingsEditAlertMixin:GetValidEventTypesForCooldown()
 	return self.validCooldownAlertTypes;
 end
 
+local defaultPayloadForAlertType = {
+	[Enum.CooldownViewerAlertType.Sound] = CooldownViewerSound.ImpactsLowThud,
+	[Enum.CooldownViewerAlertType.Visual] = CooldownViewerVisual.MarchingAnts,
+};
 
 function CooldownViewerSettingsEditAlertMixin:DisplayForCooldown(cooldownItem)
 	-- Only pick an initial default from the set of valid events for this cooldownItem.
 	local firstEvent = cooldownItem:GetFirstValidAlertType();
 	assertsafe(firstEvent ~= nil, "DisplayForCooldown invoked when cooldown %d doesn't support events", tostring(cooldownItem:GetCooldownID()));
 
-	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, firstEvent, CooldownViewerSound.ImpactsLowThud);
+	local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, firstEvent, defaultPayloadForAlertType[Enum.CooldownViewerAlertType.Sound]);
 	local isNewAlert = true;
 	self:DisplayForAlert(cooldownItem, alert, isNewAlert);
 end
@@ -104,9 +108,21 @@ local soundCategoryKeyToText =
 	War3 = COOLDOWN_VIEWER_SETTINGS_SOUND_ALERT_CATEGORY_WAR3,
 }
 
+local alertTypeToPayloadLabelText =
+{
+	[Enum.CooldownViewerAlertType.Sound] = COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_SOUND_TYPE,
+	[Enum.CooldownViewerAlertType.Visual] = COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_VISUAL_TYPE,
+};
+
 function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 	local function SetAlertType(elementData, _inputData, _menuProxy)
-		CooldownViewerAlert_SetType(self.workingCopyOfAlert, elementData);
+		-- NOTE: It's possible for the user to reselect the same thing and this is still called, so don't do the extra work if that's the case
+		if CooldownViewerAlert_GetType(self.workingCopyOfAlert) ~= elementData then
+			CooldownViewerAlert_SetType(self.workingCopyOfAlert, elementData);
+			CooldownViewerAlert_SetPayload(self.workingCopyOfAlert, defaultPayloadForAlertType[elementData]);
+
+			self:SetupDropdowns();
+		end
 	end
 
 	self.TypeDropdown:SetSelectionText(function(selections)
@@ -116,6 +132,7 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 	self.TypeDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_TYPE");
 		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_SOUND, SetAlertType, Enum.CooldownViewerAlertType.Sound);
+		rootDescription:CreateButton(COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_VISUAL, SetAlertType, Enum.CooldownViewerAlertType.Visual);
 	end);
 
 	local function SetAlertEvent(elementData, _inputData, _menuProxy)
@@ -159,7 +176,7 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 			MenuTemplates.SetUtilityButtonAnchor(playSampleButton, MenuVariants.GearButtonAnchor, button); -- gear means throw on the right
 			MenuTemplates.SetUtilityButtonClickHandler(playSampleButton, function()
 				local alert = CooldownViewerAlert_Create(Enum.CooldownViewerAlertType.Sound, Enum.CooldownViewerAlertEventType.Available, alertPayload);
-				CooldownViewerAlert_PlayAlert(self:GetCooldownName(), alert);
+				CooldownViewerAlert_PlayAlert(self, self:GetCooldownName(), alert);
 			end);
 		end);
 	end
@@ -175,9 +192,29 @@ function CooldownViewerSettingsEditAlertMixin:SetupDropdowns()
 		end
 	end
 
+	local function BuildVisualMenus(description, currentTable)
+		for key, value in pairs (currentTable) do
+			if value.enum and value.text then
+				description:CreateButton(value.text, SetAlertPayload, value.enum);
+			end
+		end
+	end
+
 	self.PayloadDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("COOLDOWN_VIEWER_ALERT_PAYLOAD");
-		BuildSoundMenus(rootDescription, CooldownViewerSoundData);
-		AddSoundAlertButton(rootDescription, COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, CooldownViewerSound.TextToSpeech);
+
+		local alertType = CooldownViewerAlert_GetType(self.workingCopyOfAlert);
+		if alertType == Enum.CooldownViewerAlertType.Sound then
+			BuildSoundMenus(rootDescription, CooldownViewerSoundData);
+			AddSoundAlertButton(rootDescription, COOLDOWN_VIEWER_SETTINGS_ALERT_LABEL_SOUND_TYPE_TEXT_TO_SPEECH, CooldownViewerSound.TextToSpeech);
+		elseif alertType == Enum.CooldownViewerAlertType.Visual then
+			BuildVisualMenus(rootDescription, CooldownViewerVisualData);
+		else
+			assertsafe(false, "Unhandled alert type %s in SetupDropdowns", tostring(alertType));
+		end
 	end);
+
+	-- Update the alert editing frame elements to match the current alert data.
+	local alertType = CooldownViewerAlert_GetType(self.workingCopyOfAlert);
+	self.PayloadLabel:SetText(alertTypeToPayloadLabelText[alertType]);
 end

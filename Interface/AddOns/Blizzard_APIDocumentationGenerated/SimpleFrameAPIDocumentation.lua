@@ -2,6 +2,7 @@ local SimpleFrameAPI =
 {
 	Name = "SimpleFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

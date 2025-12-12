@@ -461,6 +461,15 @@ function QuestFrame_UpdatePortraitText(text)
 	QuestNPCModelTextScrollChildFrame:SetHeight(QuestNPCModelText:GetHeight() + descenderPadding);
 end
 
+QuestFrameModelSceneMixin = {};
+
+function QuestFrameModelSceneMixin:OnShow()
+	-- Hide if this exceeds the right-edge of the screen.
+	if (self:GetRight() + 6) > UIParent:GetRight() then
+		self:Hide();
+	end
+end
+
 function QuestFrame_ShowQuestPortrait(parentFrame, portraitDisplayID, mountPortraitDisplayID, modelSceneID, text, name, x, y, useCompactDescription)
 	QuestModelScene:SetParent(parentFrame);
 	QuestModelScene:SetFrameStrata("HIGH");

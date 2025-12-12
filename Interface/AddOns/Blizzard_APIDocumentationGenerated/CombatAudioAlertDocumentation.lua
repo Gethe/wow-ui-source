@@ -3,6 +3,7 @@ local CombatAudioAlert =
 	Name = "CombatAudioAlert",
 	Type = "System",
 	Namespace = "C_CombatAudioAlert",
+	Environment = "All",
 
 	Functions =
 	{

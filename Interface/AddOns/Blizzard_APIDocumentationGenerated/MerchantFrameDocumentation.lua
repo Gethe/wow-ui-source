@@ -3,6 +3,7 @@ local MerchantFrame =
 	Name = "MerchantFrame",
 	Type = "System",
 	Namespace = "C_MerchantFrame",
+	Environment = "All",
 
 	Functions =
 	{

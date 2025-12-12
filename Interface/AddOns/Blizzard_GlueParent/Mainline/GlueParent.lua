@@ -385,12 +385,19 @@ end
 
 local function GlueParent_UpdateScreenSound(screenInfo)
 	local displayedExpansionLevel = GetClientDisplayExpansionLevel();
+	local expansionDisplayInfo = GetExpansionDisplayInfo(displayedExpansionLevel);
+
 	if ( screenInfo.playMusic ) then
-		local musicSoundKit = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or SafeGetExpansionData(EXPANSION_GLUE_MUSIC, displayedExpansionLevel);
-		PlayGlueMusic(musicSoundKit);
+		local musicSoundKit = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or (expansionDisplayInfo and expansionDisplayInfo.glueMusicSoundKit);
+		if musicSoundKit then
+			PlayGlueMusic(musicSoundKit);
+		end
 	end
 	if ( screenInfo.playAmbience ) then
-		PlayGlueAmbience(SafeGetExpansionData(EXPANSION_GLUE_AMBIENCE, displayedExpansionLevel), 4.0);
+		local ambianceSoundKit = expansionDisplayInfo and expansionDisplayInfo.glueAmbianceSoundKit;
+		if ambianceSoundKit then
+			PlayGlueAmbience(ambianceSoundKit, 4.0);
+		end
 	end	
 end
 

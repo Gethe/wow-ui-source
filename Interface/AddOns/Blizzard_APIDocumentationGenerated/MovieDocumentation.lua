@@ -2,6 +2,7 @@ local Movie =
 {
 	Name = "Movie",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

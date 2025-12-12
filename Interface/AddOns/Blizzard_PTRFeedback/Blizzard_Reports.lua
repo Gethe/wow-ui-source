@@ -821,6 +821,35 @@ function PTR_IssueReporter.CreateReports()
 	componentReport:AddDataCollection(collector.RunFunction, getComponentCeilingType)
 	componentReport:AddDataCollection(collector.RunFunction, getComponentDoorType)
 	componentReport:RegisterPopEvent(event.Tooltip, tooltips.housingComponent)
+	
+	--------------------------------------- House Exterior Issue Reporting ----------------------------------------------
+	local getFixtureType = function(dataPackage)
+		local fixtureType = 0
+		if dataPackage and dataPackage.Additional and dataPackage.Additional.type then
+			fixtureType = dataPackage.Additional.type
+		end
+
+		return fixtureType
+	end
+
+	local getParentHookID = function(dataPackage)
+		local parentHookID = 0
+		if dataPackage and dataPackage.Additional and dataPackage.Additional.parentHookID then
+			parentHookID = dataPackage.Additional.parentHookID
+		end
+
+		return parentHookID
+	end
+
+	local exteriorFixtureReport = PTR_IssueReporter.CreateSurvey(25, "Issue Report: %s")
+	PTR_IssueReporter.AttachDefaultCollectionToSurvey(exteriorFixtureReport, true)
+	exteriorFixtureReport:PopulateDynamicTitleToken(1, "Name")
+	exteriorFixtureReport:AddDataCollection(collector.FromDataPackage, "ID")
+	exteriorFixtureReport:AddDataCollection(collector.OpenEndedQuestion, "What was the issue with this Component?")
+	exteriorFixtureReport:AddDataCollection(collector.RunFunction, getFixtureType)
+	exteriorFixtureReport:AddDataCollection(collector.RunFunction, getParentHookID)
+	exteriorFixtureReport:RegisterPopEvent(event.Tooltip, tooltips.exteriorFixture)
+
 	--------------------------------------- Character Customization Issue Reporting ----------------------------------------------
 	local barberShopReport = PTR_IssueReporter.CreateSurvey(3001, "Issue Report")
 	

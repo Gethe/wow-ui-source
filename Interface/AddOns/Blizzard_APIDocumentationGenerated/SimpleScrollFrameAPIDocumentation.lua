@@ -2,6 +2,7 @@ local SimpleScrollFrameAPI =
 {
 	Name = "SimpleScrollFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

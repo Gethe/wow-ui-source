@@ -2,6 +2,7 @@ local SimpleRegionAPI =
 {
 	Name = "SimpleRegionAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -198,6 +199,19 @@ local SimpleRegionAPI =
 				{ Name = "colorG", Type = "number", Nilable = false },
 				{ Name = "colorB", Type = "number", Nilable = false },
 				{ Name = "a", Type = "SingleColorValue", Nilable = true },
+			},
+		},
+		{
+			Name = "SetVertexColorFromBoolean",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.VertexColor, Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "colorIfTrue", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "colorIfFalse", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
 			},
 		},
 	},

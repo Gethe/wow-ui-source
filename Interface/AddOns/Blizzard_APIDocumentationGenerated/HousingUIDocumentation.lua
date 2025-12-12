@@ -3,6 +3,7 @@ local HousingUI =
 	Name = "HousingUI",
 	Type = "System",
 	Namespace = "C_Housing",
+	Environment = "All",
 
 	Functions =
 	{
@@ -384,6 +385,7 @@ local HousingUI =
 		{
 			Name = "ReturnAfterVisitingHouse",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SaveHouseSettings",
@@ -443,6 +445,7 @@ local HousingUI =
 		{
 			Name = "TeleportHome",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -479,6 +482,7 @@ local HousingUI =
 		{
 			Name = "VisitHouse",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -593,6 +597,16 @@ local HousingUI =
 			Type = "Event",
 			LiteralName = "HOUSE_INFO_UPDATED",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "HouseLevelChanged",
+			Type = "Event",
+			LiteralName = "HOUSE_LEVEL_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "newHouseLevelInfo", Type = "HouseLevelInfo", Nilable = true },
+			},
 		},
 		{
 			Name = "HouseLevelFavorUpdated",

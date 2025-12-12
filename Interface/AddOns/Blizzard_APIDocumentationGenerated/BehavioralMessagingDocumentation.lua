@@ -3,6 +3,7 @@ local BehavioralMessaging =
 	Name = "BehavioralMessaging",
 	Type = "System",
 	Namespace = "C_BehavioralMessaging",
+	Environment = "All",
 
 	Functions =
 	{

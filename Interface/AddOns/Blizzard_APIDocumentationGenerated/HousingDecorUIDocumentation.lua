@@ -3,6 +3,7 @@ local HousingDecorUI =
 	Name = "HousingDecorUI",
 	Type = "System",
 	Namespace = "C_HousingDecor",
+	Environment = "All",
 
 	Functions =
 	{
@@ -310,16 +311,6 @@ local HousingDecorUI =
 			SynchronousEvent = true,
 		},
 		{
-			Name = "HouseLevelChanged",
-			Type = "Event",
-			LiteralName = "HOUSE_LEVEL_CHANGED",
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "newHouseLevelInfo", Type = "HousingLevelInfo", Nilable = true },
-			},
-		},
-		{
 			Name = "HousingDecorGridVisibilityStatusChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_DECOR_GRID_VISIBILITY_STATUS_CHANGED",
@@ -400,18 +391,6 @@ local HousingDecorUI =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
-			},
-		},
-		{
-			Name = "HousingLevelInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "level", Type = "number", Nilable = false, Documentation = { "This specific house's current level, determined/increasesd by earning house xp" } },
-				{ Name = "interiorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for inside the house; Can be increased via house level" } },
-				{ Name = "exteriorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for the house exterior/in the house's plot; Can be increased via house level" } },
-				{ Name = "roomPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max room placement budget for the house; Can be increased via house level" } },
-				{ Name = "exteriorFixtureBudget", Type = "number", Nilable = false },
 			},
 		},
 	},

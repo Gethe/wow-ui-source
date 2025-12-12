@@ -384,22 +384,16 @@ function DamageMeterMixin:GetSessionWindowDamageMeterType(sessionWindow)
 	return self.windowDataList[sessionWindowIndex].damageMeterType;
 end
 
-function DamageMeterMixin:SetSessionWindowSessionID(sessionType, sessionID)
-	self.sessionType = sessionType;
-	self.sessionID = sessionID;
+function DamageMeterMixin:SetSessionWindowSessionID(sessionWindow, sessionType, sessionID)
+	local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
+	local windowData = self.windowDataList[sessionWindowIndex];
 
-	-- All windows share the same session type and ID.
-	self:ForEachSessionWindow(function(sessionWindow)
-		local sessionWindowIndex = sessionWindow:GetSessionWindowIndex();
-		local windowData = self.windowDataList[sessionWindowIndex];
+	windowData.sessionType = sessionType;
+	windowData.sessionID = sessionID;
 
-		windowData.sessionType = sessionType;
-		windowData.sessionID = sessionID;
+	SetSavedWindowData(sessionWindowIndex, windowData);
 
-		SetSavedWindowData(sessionWindowIndex, windowData);
-
-		sessionWindow:SetSession(sessionType, sessionID);
-	end);
+	sessionWindow:SetSession(sessionType, sessionID);
 end
 
 function DamageMeterMixin:GetSessionType()

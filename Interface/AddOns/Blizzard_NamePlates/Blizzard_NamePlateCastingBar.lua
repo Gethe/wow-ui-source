@@ -10,6 +10,10 @@ function NamePlateCastingBarMixin:OnLoad()
 end
 
 function NamePlateCastingBarMixin:ShouldShowCastBar()
+	if self:IsShowOnlyName() then
+		return false;
+	end
+
 	if self:IsWidgetsOnlyMode() then
 		return false;
 	end

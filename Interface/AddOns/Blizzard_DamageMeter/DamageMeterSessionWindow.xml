@@ -42,7 +42,11 @@
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="SessionDropdown" inherits="WowStyle2DropdownTemplate">
-				<Size x="18" y="18"/>
+				<KeyValues>
+					<KeyValue key="shortShortNameWidth" type="number" value="18"/>
+					<KeyValue key="longShortNameWidth" type="number" value="32"/>
+				</KeyValues>
+				<Size y="18"/> <!-- Width set dynamically in lua-->
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-8" y="3"/>
 				</Anchors>

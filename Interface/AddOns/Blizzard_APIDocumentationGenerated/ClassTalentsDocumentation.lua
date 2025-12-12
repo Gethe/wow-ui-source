@@ -3,6 +3,7 @@ local ClassTalents =
 	Name = "ClassTalents",
 	Type = "System",
 	Namespace = "C_ClassTalents",
+	Environment = "All",
 
 	Functions =
 	{

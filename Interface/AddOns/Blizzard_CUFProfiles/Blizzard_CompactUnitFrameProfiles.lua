@@ -61,10 +61,13 @@ end
 
 function CompactUnitFrameProfiles:ApplyCurrentSettings()
 	-- Query and transform all cvars, then call the appropriate UnitFrame settings API with the translated option name and value
+	-- Skip the setup for cvars that don't exist
 	for cvar, option in pairs(self.CVarOptions) do
-		local optionName = option.option;
-		local optionValue = option.accessor and option.accessor(cvar) or CUF_GetCVarBool(cvar);
-		(option.mutator or CUF_SetOption)(optionName, optionValue, option.target or "normal");
+		if C_CVar.GetCVar(cvar) ~= nil then
+			local optionName = option.option;
+			local optionValue = option.accessor and option.accessor(cvar) or CUF_GetCVarBool(cvar);
+			(option.mutator or CUF_SetOption)(optionName, optionValue, option.target or "normal");
+		end
 	end
 
 	--Refresh all frames to make sure the changes stick.

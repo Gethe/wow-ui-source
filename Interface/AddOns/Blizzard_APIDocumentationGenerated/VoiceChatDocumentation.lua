@@ -3,6 +3,7 @@ local VoiceChat =
 	Name = "VoiceChat",
 	Type = "System",
 	Namespace = "C_VoiceChat",
+	Environment = "All",
 
 	Functions =
 	{
@@ -810,6 +811,7 @@ local VoiceChat =
 			Name = "SpeakText",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "SpeakText also supports XML TTS tags on Windows including bookmarks - see SAPI XML TTS Tutorial in Microsoft's online documentation for more information." },
 
 			Arguments =
 			{
@@ -1244,6 +1246,17 @@ local VoiceChat =
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "VoiceChatTtsPlaybackBookmark",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_BOOKMARK",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+				{ Name = "bookmarkName", Type = "cstring", Nilable = false },
+			},
 		},
 		{
 			Name = "VoiceChatTtsPlaybackFailed",

@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Button name="DamageMeterEntryTemplate" mixin="DamageMeterEntryMixin" virtual="true">
+	<Button name="DamageMeterEntryTemplate" mixin="DamageMeterEntryMixin" virtual="true" clipChildren="true">
 		<Size y ="24"/>
 		<Frames>
 			<Frame parentKey="Icon">
@@ -10,7 +10,9 @@
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Icon" setAllPoints="true"/>
+						<Texture parentKey="Icon" setAllPoints="true">
+							<TexCoords top="0.0626" left="0.0625" bottom="0.9" right="0.9"/>
+						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
@@ -44,14 +46,6 @@
 		</Frames>
 	</Button>
 
-	<Button name="DamageMeterSourceEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSourceEntryMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconUsesAtlas" value="true" type="boolean"/>
-		</KeyValues>
-	</Button>
-	<Button name="DamageMeterSpellEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSpellEntryMixin" virtual="true">
-		<KeyValues>
-			<KeyValue key="iconUsesAtlas" value="false" type="boolean"/>
-		</KeyValues>
-	</Button>
+	<Button name="DamageMeterSourceEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSourceEntryMixin" virtual="true"/>
+	<Button name="DamageMeterSpellEntryTemplate" inherits="DamageMeterEntryTemplate" mixin="DamageMeterSpellEntryMixin" virtual="true"/>
 </Ui>

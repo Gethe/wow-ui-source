@@ -3,6 +3,7 @@ local SpellActivationOverlay =
 	Name = "SpellActivationOverlay",
 	Type = "System",
 	Namespace = "C_SpellActivationOverlay",
+	Environment = "All",
 
 	Functions =
 	{

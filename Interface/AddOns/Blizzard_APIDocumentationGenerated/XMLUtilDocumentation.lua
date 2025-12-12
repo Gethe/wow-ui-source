@@ -3,6 +3,7 @@ local XMLUtil =
 	Name = "XMLUtil",
 	Type = "System",
 	Namespace = "C_XMLUtil",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local WorldStateInfo =
 	Name = "WorldStateInfo",
 	Type = "System",
 	Namespace = "C_WorldStateInfo",
+	Environment = "All",
 
 	Functions =
 	{

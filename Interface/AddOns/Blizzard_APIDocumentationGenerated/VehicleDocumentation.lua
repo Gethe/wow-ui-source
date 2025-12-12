@@ -3,6 +3,7 @@ local Vehicle =
 	Name = "Vehicle",
 	Type = "System",
 	Namespace = "C_Vehicle",
+	Environment = "All",
 
 	Functions =
 	{

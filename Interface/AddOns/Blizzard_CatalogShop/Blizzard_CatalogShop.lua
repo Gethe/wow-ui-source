@@ -6,6 +6,9 @@ CatalogShopMixin = {};
 local CATALOG_SHOP_DYNAMIC_EVENTS = {
 	"CATALOG_SHOP_REBUILD_SCROLL_BOX",
 	"CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
+	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
+	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE",
+	"CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED",
 };
 
 function CatalogShopMixin.GetBaseProductInfo(productID)
@@ -42,7 +45,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT");
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
-	self:RegisterEvent("CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE");
+	self:RegisterEvent("SET_SEEN_PRODUCTS");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -202,6 +205,7 @@ function CatalogShopMixin:ShowLoadingScreen()
 	self.HeaderFrame:Hide();
 	self.CatalogShopDetailsFrame:Hide();
 	self.ProductDetailsContainerFrame:Hide();
+	self.PersistentRefundContainerFrame:Hide();
 	self:HidePreviewFrames();
 end
 
@@ -216,6 +220,7 @@ function CatalogShopMixin:HideLoadingScreen(fromError)
 		self.BackgroundContainer:Show();
 		self.ProductContainerFrame:Show();
 		self.HeaderFrame:Show();
+		self.PersistentRefundContainerFrame:UpdateState();
 	end
 end
 
@@ -346,9 +351,17 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 	elseif (event == "CATALOG_SHOP_PMT_IMAGE_DOWNLOADED") then
 		--	// Finish implementation when completing [WOW11-144188]
 		--...handle it
-	elseif event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE" then
+	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE") then
 		local currencyCode, balance = ...;
+	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE") then
+		local currencyCode = ...;
+	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
 		-- TODO (WOW12-40870): Implement this
+	elseif (event == "SET_SEEN_PRODUCTS") then
+		local productIds = ...;
+		if not CatalogShopOutbound.SavedSet_HasAny() then
+			CatalogShopOutbound.SavedSet_Set(productIds);
+		end
 	end
 end
 
@@ -583,10 +596,23 @@ function CatalogShopMixin:ShowProductDetails()
 	local productInfo = self:GetSelectedProductInfo();
 	-- Dont show details if nothing is selected
 	if not productInfo then
-		return
+		return;
 	end
 	local showDetails = true;
 	self:ToggleProductDetails(showDetails, productInfo);
+end
+
+function CatalogShopMixin:ShowAllRefundableDecor()
+	CatalogShopOutbound.ShowRefundFlow();
+end
+
+function CatalogShopMixin:ShowSelectedRefundableDecor()
+	local selectedProductInfo = self:GetSelectedProductInfo();
+	if not selectedProductInfo then
+		return;
+	end
+
+	CatalogShopOutbound.ShowRefundFlow(selectedProductInfo.catalogShopProductID);
 end
 
 function CatalogShopMixin:AcceptError()
@@ -637,6 +663,7 @@ function CatalogShopMixin:OnCategorySelected(categoryID)
 	self:ToggleProductDetails(showDetailsFrame, productInfo);
 
 	self.ProductContainerFrame:OnCategorySelected(categoryID);
+	self.PersistentRefundContainerFrame:OnCategorySelected(categoryID);
 end
 
 function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
@@ -646,15 +673,21 @@ function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
 	self.CatalogShopDetailsFrame.ButtonContainer:SetShown(not showDetails);
 	if showDetails then
 		self.ProductDetailsContainerFrame:UpdateProductInfo(productInfo);
+	else
+		-- If we have a productInfo we need to ask the ProductContainerFrame to update so
+		-- that product is selected and the scroll view is rebuilt correctly. [Fixes CLASS-45742]
+		if productInfo then
+			local resetSelection = false;
+			self.ProductContainerFrame:UpdateProducts(resetSelection);
+		end
 	end
 	self.CatalogShopDetailsFrame:MarkDirty();
+	self.PersistentRefundContainerFrame:UpdateState();
 end
 
-local RED_TEXT_SECONDS_THRESHOLD = 3600;
 function CatalogShopMixin:FormatTimeLeft(secondsRemaining, formatter)
-	local color = (secondsRemaining > RED_TEXT_SECONDS_THRESHOLD) and WHITE_FONT_COLOR or RED_FONT_COLOR;
 	local text = formatter:Format(secondsRemaining);
-	return color:WrapTextInColorCode(text);
+	return WHITE_FONT_COLOR:WrapTextInColorCode(text);
 end
 
 function CatalogShopMixin:GetSelectedProductInfo()
@@ -790,6 +823,8 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		C_CatalogShop.OnLegalDisclaimerClicked(selectedProductInfo.catalogShopProductID);
 	end
 	self:SetScript("OnHyperlinkClick", onHyperlinkClicked);
+
+	self.ProductRefundContainer:SetProductID(selectedProductInfo.catalogShopProductID);
 
 	local isTokenOnGlues = (C_Glue.IsOnGlueScreen() and displayInfo.productType == CatalogShopConstants.ProductType.Token);
 	local isPurchasable = (not isTokenOnGlues and not selectedProductInfo.isFullyOwned);

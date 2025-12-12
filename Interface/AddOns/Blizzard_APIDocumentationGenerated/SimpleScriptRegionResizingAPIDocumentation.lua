@@ -2,6 +2,7 @@ local SimpleScriptRegionResizingAPI =
 {
 	Name = "SimpleScriptRegionResizingAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -104,19 +105,6 @@ local SimpleScriptRegionResizingAPI =
 				{ Name = "relativePoint", Type = "FramePoint", Nilable = false },
 				{ Name = "offsetX", Type = "uiUnit", Nilable = false },
 				{ Name = "offsetY", Type = "uiUnit", Nilable = false },
-			},
-		},
-		{
-			Name = "IsAnchoringSecret",
-			Type = "Function",
-
-			Arguments =
-			{
-			},
-
-			Returns =
-			{
-				{ Name = "isAnchoringSecret", Type = "bool", Nilable = false },
 			},
 		},
 		{

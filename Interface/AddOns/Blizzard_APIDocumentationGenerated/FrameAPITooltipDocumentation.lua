@@ -2,6 +2,7 @@ local FrameAPITooltip =
 {
 	Name = "FrameAPITooltip",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

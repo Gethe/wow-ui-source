@@ -7,7 +7,8 @@ local CatalogShopConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "HEARTHSTEEL_VC_CURRENCY_CODE", Type = "cstring", Value = 0 },
+				{ Name = "HEARTHSTEEL_VC_CURRENCY_CODE", Type = "cstring", Value = XVV },
+				{ Name = "TRADERS_TENDER_VC_CURRENCY_CODE", Type = "cstring", Value = XWP },
 			},
 		},
 	},

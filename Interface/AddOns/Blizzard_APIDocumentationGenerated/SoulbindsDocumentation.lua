@@ -3,6 +3,7 @@ local Soulbinds =
 	Name = "Soulbinds",
 	Type = "System",
 	Namespace = "C_Soulbinds",
+	Environment = "All",
 
 	Functions =
 	{

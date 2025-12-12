@@ -3,6 +3,7 @@ local ContributionCollector =
 	Name = "ContributionCollector",
 	Type = "System",
 	Namespace = "C_ContributionCollector",
+	Environment = "All",
 
 	Functions =
 	{

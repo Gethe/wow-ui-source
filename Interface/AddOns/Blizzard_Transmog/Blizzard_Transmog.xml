@@ -414,9 +414,9 @@
 					<Frame parentKey="TabHeaders" inherits="TabSystemTemplate">
 						<KeyValues>
 							<KeyValue key="minTabWidth" value="95" type="number"/>
-							<KeyValue key="maxTabWidth" value="150" type="number"/>
+							<KeyValue key="maxTabWidth" value="170" type="number"/>
 							<KeyValue key="tabTemplate" value="TransmogWardrobeCollectionTabTemplate" type="string"/>
-							<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_SPELLBOOK_OPEN" type="global"/>
+							<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_TRANSMOG_CATEGORIES_CLICK" type="global"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="32" y="-12"/>
@@ -506,6 +506,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>
@@ -583,6 +585,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>
@@ -622,6 +626,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>

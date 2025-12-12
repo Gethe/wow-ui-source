@@ -3,6 +3,7 @@ local TransmogOutfitInfo =
 	Name = "TransmogOutfitInfo",
 	Type = "System",
 	Namespace = "C_TransmogOutfitInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -503,6 +504,21 @@ local TransmogOutfitInfo =
 			},
 		},
 		{
+			Name = "IsSlotWeaponSlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isWeaponSlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsValidTransmogOutfitName",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -717,6 +733,8 @@ local TransmogOutfitInfo =
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "situationCategories", Type = "table", InnerType = "cstring", Nilable = false },
 				{ Name = "icon", Type = "fileID", Nilable = false },
+				{ Name = "isEventOutfit", Type = "bool", Nilable = false },
+				{ Name = "isDisabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

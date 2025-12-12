@@ -3,6 +3,7 @@ local PetInfo =
 	Name = "PetInfo",
 	Type = "System",
 	Namespace = "C_PetInfo",
+	Environment = "All",
 
 	Functions =
 	{

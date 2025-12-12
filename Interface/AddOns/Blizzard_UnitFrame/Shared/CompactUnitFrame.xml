@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyDown">
+	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="LeftButtonDown, RightButtonUp">
 		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -105,7 +105,7 @@
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture name="$parentMyHealAbsorb" parentKey="myHealAbsorb"/>
-				<Texture name="$parentMyHealAbsorbOverlay" parentKey="myHealAbsorbOverlay"/>
+				<Texture name="$parentMyHealAbsorbOverlay" parentKey="myHealAbsorbOverlay" alpha="0.2"/>
 				<Texture name="$parentMyHealAbsorbLeftShadow" parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge"/>
 				<Texture name="$parentMyHealAbsorbRightShadow" parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge">
 					<TexCoords left="1" right="0" top="0" bottom="1"/>

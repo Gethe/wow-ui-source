@@ -16,6 +16,7 @@ PTR_IssueReporter.TooltipTypes = {
 	housingDecor = "Housing Decor",
 	housingRoom = "Housing Room",
 	housingComponent = "Housing Component",
+	exteriorFixture = "Exterior Fixture",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -307,6 +308,23 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 			GameTooltip:Show()
 		end
 	end
+
+	local fixtureInstanceMouseOverFunc = function(callerName, callerFrame, existingTooltip)
+		if not C_HouseExterior or not C_HouseExterior.GetHoveredFixtureDebugInfo() then
+			return;
+		end
+
+		local fixtureInfo = C_HouseExterior.GetHoveredFixtureDebugInfo();
+
+		if (existingTooltip) then
+			PTR_IssueReporter.HookIntoTooltip(existingTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, false, nil, fixtureInfo)
+		else
+			GameTooltip:ClearAllPoints()
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, true, nil, fixtureInfo)
+			GameTooltip:Show()
+		end
+	end
 	
 	EventRegistry:RegisterCallback("HousingDecorInstance.MouseOver", decorInstanceFunc, PTR_IssueReporter)
 	-- MouseOverDebug event is called if another debug system has added to/affected a decor tooltip, so that lines added by this system can be re-added to the bottom
@@ -314,8 +332,8 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 	EventRegistry:RegisterCallback("HousingCatalogEntry.TooltipCreated", decorChestFunc, PTR_IssueReporter)
 	EventRegistry:RegisterCallback("HousingRoomComponentInstance.MouseOver", componentMouseOverFunc, PTR_IssueReporter)
 	EventRegistry:RegisterCallback("HousingRoomComponentInstance.MouseOverDebug", componentMouseOverFunc, PTR_IssueReporter)
-	-- EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOver", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
-	-- EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOverDebug", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
+	EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOver", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
+	EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOverDebug", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
 	-- EventRegistry:RegisterCallback("HousingFixturePoint.MouseOver", fixturePointMouseOverFunc, PTR_IssueReporter)
 	-- EventRegistry:RegisterCallback("HousingFixturePoint.MouseOverDebug", fixturePointMouseOverFunc, PTR_IssueReporter)
 end

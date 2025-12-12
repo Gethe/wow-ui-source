@@ -2,6 +2,7 @@ local SimpleAnimScaleLineAPI =
 {
 	Name = "SimpleAnimScaleLineAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

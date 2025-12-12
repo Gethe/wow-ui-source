@@ -2,6 +2,7 @@ local Instance =
 {
 	Name = "Instance",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

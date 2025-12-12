@@ -2,6 +2,7 @@ local SimpleModelAPI =
 {
 	Name = "SimpleModelAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

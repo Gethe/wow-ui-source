@@ -3,6 +3,7 @@ local MountJournal =
 	Name = "MountJournal",
 	Type = "System",
 	Namespace = "C_MountJournal",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local EncounterWarnings =
 	Name = "EncounterWarnings",
 	Type = "System",
 	Namespace = "C_EncounterWarnings",
+	Environment = "All",
 
 	Functions =
 	{

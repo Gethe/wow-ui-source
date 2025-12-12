@@ -94,7 +94,7 @@ end
 
 function UnitPopupSharedUtil.IsPlayer(contextData)
 	local unit = contextData.unit;
-	return unit and UnitIsPlayer(unit);
+	return unit and UnitIsHumanPlayer(unit);
 end
 
 function UnitPopupSharedUtil.IsPlayerOffline(contextData)

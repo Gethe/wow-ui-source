@@ -3,6 +3,7 @@ local LFGListInfo =
 	Name = "LFGList",
 	Type = "System",
 	Namespace = "C_LFGList",
+	Environment = "All",
 
 	Functions =
 	{

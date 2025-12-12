@@ -2,6 +2,7 @@ local DebugToggle =
 {
 	Name = "DebugToggle",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

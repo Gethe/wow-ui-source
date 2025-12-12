@@ -3,6 +3,7 @@ local AdventureMap =
 	Name = "AdventureMap",
 	Type = "System",
 	Namespace = "C_AdventureMap",
+	Environment = "All",
 
 	Functions =
 	{

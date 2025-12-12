@@ -3,6 +3,7 @@ local WarCampaign =
 	Name = "WarCampaign",
 	Type = "System",
 	Namespace = "C_CampaignInfo",
+	Environment = "All",
 
 	Functions =
 	{

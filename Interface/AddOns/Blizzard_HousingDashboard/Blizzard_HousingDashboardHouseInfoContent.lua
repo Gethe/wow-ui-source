@@ -161,7 +161,7 @@ function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 	self.selectedHouseID = 1;
 
 	if oldSelectedHouseID then
-		local newSelectedHouseInfo = houseInfoList[oldSelectedHouseID];
+		local newSelectedHouseInfo = houseInfoList[self.selectedHouseID];
 		-- If we had something previously selected, and it still exists in the updated list, maintain that selection
 		if self.selectedHouseInfo and self.selectedHouseInfo.houseGUID == newSelectedHouseInfo.houseGUID then
 			self.selectedHouseID = oldSelectedHouseID;
@@ -278,6 +278,9 @@ end
 InitiativesTabMixin = {};
 
 function InitiativesTabMixin:OnLoad()
+	self.thresholdFrames = {};
+	self.thresholdMax = 0;
+
 	self:SetupTaskList();
 	self:SetupActivityLog();
 end
@@ -407,10 +410,6 @@ function InitiativesTabMixin:SetProgressBarThresholds()
 		self.InitiativeSetFrame.ProgressBar.BarEnd:ClearAllPoints();
 	end
 
-	if not self.thresholdFrames then
-		self.thresholdFrames = {};
-	end
-
 	local currentThreshold = 1;
 	for i, thresholdInfo in pairs(self.currentInitiative.milestones) do
 		local thresholdName = "Threshold" .. currentThreshold;
@@ -444,7 +443,7 @@ end
 function InitiativesTabMixin:UpdateBackground(selectedHouseInfo)
 	if selectedHouseInfo and selectedHouseInfo.neighborhoodGUID then
 		local atlas = "housing-dashboard-bg-" .. C_Housing.GetNeighborhoodTextureSuffix(selectedHouseInfo.neighborhoodGUID);
-		self.InitiativeSetFrame.InitiativesBG:SetAtlas(atlas);
+		self.InitiativesArt.InitiativesBG:SetAtlas(atlas);
 	end
 end
 
@@ -533,7 +532,6 @@ function InitiativesTabMixin:SetupActivityLog()
 
 	view:SetElementFactory(function(factory, data)
 		local function Initializer(frame)
-			frame.ActivityXP:SetText(data.amount);
 			frame.ActivityMessage:SetText(HOUSING_DASHBOARD_ACTIVITY_LOG_ENTRY:format(data.playerName, data.taskName));
 		end
 
@@ -633,6 +631,7 @@ function InitiativesTabMixin:RefreshActivityLog()
 
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetEdgeFadeLength(SCROLL_BOX_EDGE_FADE_LENGTH);
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+		self.InitiativeSetFrame.InitiativeActivity.NoActivityText:SetShown(#self.initiativeActivityLog.taskActivity == 0);
 	end
 end
 

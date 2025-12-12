@@ -3,6 +3,7 @@ local RecentAllies =
 	Name = "RecentAllies",
 	Type = "System",
 	Namespace = "C_RecentAllies",
+	Environment = "All",
 
 	Functions =
 	{

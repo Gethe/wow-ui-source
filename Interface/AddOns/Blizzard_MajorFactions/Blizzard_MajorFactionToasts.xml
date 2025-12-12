@@ -5,30 +5,87 @@
 	<Frame name="MajorFactionCelebrationBannerTemplate" frameStrata="DIALOG" mixin="MajorFactionCelebrationBannerMixin" virtual="true">
 		<Size x="128" y="128"/>
 		<Frames>
-			<ModelScene parentKey="IconSwirlModelScene" inherits="ScriptAnimatedModelSceneTemplate">
-				<Size x="256" y="256"/>
+			<Frame parentKey="Mask" alpha="0.4">
+				<Size x="128" y="128"/>
 				<Anchors>
-					<Anchor point="CENTER" relativePoint="TOP" y="-48"/>
-				</Anchors>
-			</ModelScene>
-			<Frame parentKey="Icon">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.IconSwirlModelScene"/>
+					<Anchor point="CENTER"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture parentKey="Texture">
+					<Layer level="ARTWORK">
+						<Texture parentKey="Shine" alpha="1" alphaMode="ADD" atlas="evergreen-toast-celebration-shine" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" y="-13"/>
+								<Anchor point="CENTER" x="-200" y="150"/>
 							</Anchors>
 						</Texture>
+					</Layer>
+					<Layer level="ARTWORK" textureSubLevel="7">
+						<MaskTexture parentKey="MaskTexture" alpha="1" alphaMode="BLEND" atlas="evergreen-toast-celebration-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="150"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Shine"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 				</Layers>
 			</Frame>
 		</Frames>
-		<Scripts>
-			<OnHide method="OnHide"/>
-		</Scripts>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ToastBG" alpha="0" atlas="evergreen-toast-celebration-bg">
+					<Size x="275" y="240"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Glow1" alpha="0" alphaMode="ADD" atlas="evergreen-toast-celebration-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="190"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="Star1" alpha="0" atlas="Evergreen-toast-celebration-star" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="160"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Star2" alpha="0" atlas="evergreen-toast-celebration-star" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="160"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="5">
+				<Texture parentKey="GlowLineBottom" alpha="0" atlas="evergreen-toast-celebration-bottomline" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="135"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TopBorder" alpha="0" atlas="evergreen-toast-celebration-topfiligree" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="150"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Glow2" alpha="0" alphaMode="ADD" atlas="evergreen-toast-celebration-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="190"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="TopIcon" alpha="0" useAtlasSize="false">
+					<Size x="54" y="54"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.TopBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

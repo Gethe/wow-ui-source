@@ -2,6 +2,7 @@ local Console =
 {
 	Name = "Console",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

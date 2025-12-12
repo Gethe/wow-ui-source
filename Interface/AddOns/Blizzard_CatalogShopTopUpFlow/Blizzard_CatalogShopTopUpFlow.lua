@@ -107,6 +107,16 @@ function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 		if value then
 			FrameUtil.SetParentMaintainRenderLayering(self, value);
 		end
+	elseif (name == "setdesiredquantity") then
+		self.desiredQuantity = tonumber(value);
+		if self.desiredQuantity then
+			self.PurchaseTotal:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_PURCHASE, self.desiredQuantity));
+		end
+	elseif (name == "setcurrentbalance") then
+		self.currentBalance = tonumber(value);
+		if self.currentBalance then
+			self.CurrentBalance:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_CURRENT_BALANCE, self.currentBalance));
+		end
 	end
 end
 

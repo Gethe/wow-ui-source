@@ -25,3 +25,7 @@ end
 function CatalogShopTopUpFlowInboundInterface.SetDesiredQuantity(quantity)
 	CatalogShopTopUpFrame:SetAttribute("setdesiredquantity", quantity);
 end
+
+function CatalogShopTopUpFlowInboundInterface.SetCurrentBalance(currentBalance)
+	CatalogShopTopUpFrame:SetAttribute("setcurrentbalance", currentBalance);
+end

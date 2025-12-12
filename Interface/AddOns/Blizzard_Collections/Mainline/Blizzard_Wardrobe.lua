@@ -240,7 +240,7 @@ function WardrobeCollectionFrameMixin:OnKeyDown(key)
 		end
 		self.tooltipContentFrame:RefreshAppearanceTooltip();
 		return false;
-	elseif key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY and self.activeFrame == self.SetsCollectionFrame then
+	elseif (key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY) and self.activeFrame == self.SetsCollectionFrame then
 		self.activeFrame:HandleKey(key);
 		return false;
 	end

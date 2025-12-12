@@ -69,6 +69,18 @@ local HousingUIShared =
 			},
 		},
 		{
+			Name = "HouseLevelInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "level", Type = "number", Nilable = false, Documentation = { "This specific house's current level, determined/increasesd by earning house xp" } },
+				{ Name = "interiorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for inside the house; Can be increased via house level" } },
+				{ Name = "exteriorDecorPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max decor placement budget for the house exterior/in the house's plot; Can be increased via house level" } },
+				{ Name = "roomPlacementBudget", Type = "number", Nilable = false, Documentation = { "Current max room placement budget for the house; Can be increased via house level" } },
+				{ Name = "exteriorFixtureBudget", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HouseLevelReward",
 			Type = "Structure",
 			Fields =

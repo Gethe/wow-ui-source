@@ -485,6 +485,10 @@ function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
 		return 0;
 	end
 
+	if not self:HasSetting(setting) then
+		return 0;
+	end
+
 	local compositeNumberValue = self:GetCompositeNumberSettingValue(setting, useRawValue);
 	if compositeNumberValue ~= nil then
 		return compositeNumberValue;
@@ -2017,6 +2021,11 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSettingOpacity()
 	self:SetAlpha(opacitySetting / 100);
 end
 
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingShowDispelType()
+	self.AuraContainer.showDispelType = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowDispelType);
+	C_UnitAuras.TriggerPrivateAuraShowDispelType(self.AuraContainer.showDispelType);
+end
+
 function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -2042,6 +2051,9 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 			self:UpdateSystemSettingVisibleSetting();
 		elseif setting == Enum.EditModeAuraFrameSetting.Opacity then
 			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeAuraFrameSetting.ShowDispelType then
+			self:UpdateSystemSettingShowDispelType();
+			self:UpdateAuraButtons();
 		end
 	end
 
@@ -3235,11 +3247,14 @@ function EditModeDamageMeterSystemMixin:ShouldShowSetting(setting)
 		return false;
 	end
 
+	--[[
+	-- FullBackground style removed, and since the BG always shows the transparency setting is always applicable.
 	if setting == Enum.EditModeDamageMeterSetting.BackgroundTransparency then
 		-- Art assets for the Bordered style don't support adjusting transparency
 		-- of the background at present.
 		return not self:DoesSettingValueEqual(Enum.EditModeDamageMeterSetting.Style, Enum.DamageMeterStyle.Bordered);
 	end
+	--]]
 
 	return true;
 end
@@ -3281,10 +3296,6 @@ end
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingTransparency()
 	local transparency = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Transparency);
 	self:SetWindowTransparency(transparency);
-end
-
-function EditModeDamageMeterSystemMixin:UpdateSystemSettingLockScroll()
-	-- NYI
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowSpecIcon()
@@ -3330,8 +3341,6 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 		self:UpdateSystemSettingPadding();
 	elseif setting == Enum.EditModeDamageMeterSetting.Transparency and self:HasSetting(Enum.EditModeDamageMeterSetting.Transparency) then
 		self:UpdateSystemSettingTransparency();
-	elseif setting == Enum.EditModeDamageMeterSetting.LockScroll and self:HasSetting(Enum.EditModeDamageMeterSetting.LockScroll) then
-		self:UpdateSystemSettingLockScroll();
 	elseif setting == Enum.EditModeDamageMeterSetting.ShowSpecIcon and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowSpecIcon) then
 		self:UpdateSystemSettingShowSpecIcon();
 	elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowClassColor) then

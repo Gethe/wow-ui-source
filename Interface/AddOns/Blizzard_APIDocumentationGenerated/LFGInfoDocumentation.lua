@@ -3,6 +3,7 @@ local LFGInfo =
 	Name = "LFGInfo",
 	Type = "System",
 	Namespace = "C_LFGInfo",
+	Environment = "All",
 
 	Functions =
 	{

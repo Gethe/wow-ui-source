@@ -3,6 +3,7 @@ local BattleNet =
 	Name = "BattleNet",
 	Type = "System",
 	Namespace = "C_BattleNet",
+	Environment = "All",
 
 	Functions =
 	{

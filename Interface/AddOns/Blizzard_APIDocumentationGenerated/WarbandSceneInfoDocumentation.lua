@@ -3,6 +3,7 @@ local WarbandSceneInfo =
 	Name = "WarbandSceneInfo",
 	Type = "System",
 	Namespace = "C_WarbandScene",
+	Environment = "All",
 
 	Functions =
 	{

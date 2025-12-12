@@ -244,6 +244,14 @@ local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameA
 	end
 end
 
+local function ShouldUseNativeForm()
+	if CatalogShopFrame then
+		return CatalogShopFrame:GetUseNativeForm();
+	end
+
+	return true;
+end
+
 --[[
 
 CatalogShopUtil is a system for taking relevant product info and "flattening" it into a single "display data" table.  There is an auto tools system
@@ -642,8 +650,7 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 				actor:SetAnimation(0);
 			end
 			local showPlayer = forceHidePlayer == nil or not forceHidePlayer; -- fetch this instead
-			local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
-			--local useNativeForm = true; -- fetch this
+			local useNativeForm = ShouldUseNativeForm();
 
 			local isSelfMount = false;
 			local disablePlayerMountPreview = false; -- some mounts are flagged to not show the player on the mount - this is static data we need to fetch
@@ -665,7 +672,7 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 end
 
 -- GETTING PLAYER WHILE INGAME
-function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID)
+function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID, actorDisplayData)
 	if not playerData then
 		return;
 	end
@@ -694,6 +701,11 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 		playerData.modelScene.useNativeForm = playerData.useNativeForm;
 		local holdBowString = true;
 		actor:SetModelByUnit("player", playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, holdBowString, customRaceID);
+
+		-- Fix for rotations not applying correctly after the initial native form swap
+		if actorDisplayData then
+			actor:SetYaw(math.rad(actorDisplayData.yaw));
+		end
 	else
 		if playerData.autoDress then
 			actor:Dress();
@@ -769,8 +781,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	end
 
 	local hideWeapon, sheatheWeapon, autoDress = false, true, true;
-	local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
-	--local itemModifiedAppearanceID;
+	local useNativeForm = ShouldUseNativeForm();
 	local itemModifiedAppearanceIDs;
 
 	local actorDisplayData = nil;
@@ -825,7 +836,12 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	if C_Glue.IsOnGlueScreen() then
 		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID);
 	else
-		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID);
+		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(
+			playerData,
+			modelLoadedCB,
+			customRaceID,
+			preserveCurrentView and actorDisplayData or nil
+		);
 	end
 
 	if displayData and not preserveCurrentView then
@@ -950,7 +966,7 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 		if not C_Glue.IsOnGlueScreen() then
 			hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		end
-		local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
+		local useNativeForm = ShouldUseNativeForm();
 
 		if not isOverrideData then
 			local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;

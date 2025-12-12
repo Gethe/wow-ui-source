@@ -3,6 +3,7 @@ local ItemUpgrade =
 	Name = "ItemUpgrade",
 	Type = "System",
 	Namespace = "C_ItemUpgrade",
+	Environment = "All",
 
 	Functions =
 	{

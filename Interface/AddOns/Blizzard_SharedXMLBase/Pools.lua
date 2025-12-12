@@ -844,3 +844,6 @@ CreateActorPool = CreateSecureActorPool;
 CreateFramePoolCollection = CreateSecureFramePoolCollection;
 CreateFontStringPoolCollection = CreateSecureFontStringPoolCollection;
 CreateMaskTexturePool = CreateSecureMaskTexturePool;
+
+-- Script objects created from this file should have their source location set to the calling function, rather than generic Pools.lua internals
+AddSourceLocationExclude("Pools.lua");

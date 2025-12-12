@@ -3,6 +3,7 @@ local AchievementInfo =
 	Name = "AchievementInfo",
 	Type = "System",
 	Namespace = "C_AchievementInfo",
+	Environment = "All",
 
 	Functions =
 	{

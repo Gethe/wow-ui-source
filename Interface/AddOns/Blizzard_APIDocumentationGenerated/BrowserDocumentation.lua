@@ -3,6 +3,7 @@ local Browser =
 	Name = "Browser",
 	Type = "System",
 	Namespace = "C_Browser",
+	Environment = "All",
 
 	Functions =
 	{

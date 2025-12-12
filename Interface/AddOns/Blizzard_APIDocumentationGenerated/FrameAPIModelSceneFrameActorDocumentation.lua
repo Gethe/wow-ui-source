@@ -2,6 +2,7 @@ local FrameAPIModelSceneFrameActor =
 {
 	Name = "FrameAPIModelSceneFrameActor",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

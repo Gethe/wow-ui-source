@@ -3,6 +3,7 @@ local HousingCleanupModeUI =
 	Name = "HousingCleanupModeUI",
 	Type = "System",
 	Namespace = "C_HousingCleanupMode",
+	Environment = "All",
 
 	Functions =
 	{

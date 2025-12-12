@@ -3,6 +3,7 @@ local CovenantCallings =
 	Name = "CovenantCallings",
 	Type = "System",
 	Namespace = "C_CovenantCallings",
+	Environment = "All",
 
 	Functions =
 	{

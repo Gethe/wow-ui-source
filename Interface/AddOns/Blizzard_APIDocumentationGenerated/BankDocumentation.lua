@@ -3,6 +3,7 @@ local Bank =
 	Name = "Bank",
 	Type = "System",
 	Namespace = "C_Bank",
+	Environment = "All",
 
 	Functions =
 	{

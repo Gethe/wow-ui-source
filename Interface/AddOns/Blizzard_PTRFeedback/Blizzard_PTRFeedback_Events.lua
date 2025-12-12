@@ -111,7 +111,7 @@ local function PlayerDeathHandler()
     local deathEvents = C_DeathRecap.GetRecapEvents()
 
     if (deathEvents[1]) and (deathEvents[1].sourceGUID) then
-        local creatureID = C_GUIDUtil.GetCreatureID(deathEvents[1].sourceGUID)
+        local creatureID = C_CreatureInfo.GetCreatureID(deathEvents[1].sourceGUID)
         
         if (creatureID) then
             PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.PlayerDeath, creatureID)

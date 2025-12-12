@@ -552,6 +552,21 @@ local function RestrictedTable_rtgsub(s, pattern, repl, n)
     return s_gsub(s, pattern, repl, n);
 end
 
+
+local function RestrictedTable_copytable(src)
+	local dst = RestrictedTable_create();
+
+	for k, v in RestrictedTable_pairs(src) do
+		if (RestrictedTable_type(v) == "table") then
+			dst[k] = RestrictedTable_copytable(v);
+		else
+			dst[k] = v;
+		end
+	end
+
+	return dst;
+end
+
 -- Export these functions so that addon code can use them if desired
 -- and so that the handlers can create these tables
 rtable = {
@@ -560,6 +575,7 @@ rtable = {
     ipairs = RestrictedTable_ipairs;
     unpack = RestrictedTable_unpack;
     newtable = RestrictedTable_create;
+	copytable = RestrictedTable_copytable;
 
     maxn = RestrictedTable_maxn;
     insert = RestrictedTable_insert;

@@ -2,6 +2,7 @@ local SimpleFontAPI =
 {
 	Name = "SimpleFontAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

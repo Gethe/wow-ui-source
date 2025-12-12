@@ -3,6 +3,7 @@ local ConfigurationWarnings =
 	Name = "ConfigurationWarnings",
 	Type = "System",
 	Namespace = "C_ConfigurationWarnings",
+	Environment = "All",
 
 	Functions =
 	{

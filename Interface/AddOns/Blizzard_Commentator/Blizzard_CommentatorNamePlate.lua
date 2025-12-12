@@ -100,7 +100,7 @@ function CommentatorNamePlateMixin:UpdateAnchors()
 	self.castBar.border:UpdateSizes();
 
 	self.ClassIcon:ClearAllPoints();
-	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
+	PixelUtil.SetPoint(self.ClassIcon, "RIGHT", self.ClassificationFrame, "LEFT", 0, 0);
 
 	self.CCIcon:ClearAllPoints();
 	PixelUtil.SetPoint(self.CCIcon, "CENTER", self.ClassIcon, "CENTER", 0, 0);
@@ -116,6 +116,8 @@ function CommentatorNamePlateMixin:UpdateAnchors()
 	
 	self.Mask:ClearAllPoints();
 	PixelUtil.SetPoint(self.Mask, "CENTER", self.ClassIcon, "CENTER", 0, 0);
+
+	PixelUtil.SetPoint(self.AurasFrame.BuffListFrame, "RIGHT", self.ClassIcon, "LEFT", -5, 0);
 end
 
 function CommentatorNamePlateMixin:OnUpdateNameOverride()

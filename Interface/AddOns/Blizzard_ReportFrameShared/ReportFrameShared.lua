@@ -252,8 +252,8 @@ end
 
 --TODO: Replace global strings when we decide what errors to show to players
 local ScreenshotReportErrorStrings = {
-	[Enum.InvalidPlotScreenshotReason.OutOfBounds] = SPELL_FAILED_OUT_OF_RANGE,
-	[Enum.InvalidPlotScreenshotReason.Facing] = SPELL_FAILED_LINE_OF_SIGHT,
+	[Enum.InvalidPlotScreenshotReason.OutOfBounds] = ERR_HOUSING_DECOR_REPORT_PLOT_OUT_OF_RANGE,
+	[Enum.InvalidPlotScreenshotReason.Facing] = ERR_HOUSING_DECOR_REPORT_BAD_FACING,
 	[Enum.InvalidPlotScreenshotReason.NoNeighborhoodFound] = SPELL_FAILED_ERROR,
 	[Enum.InvalidPlotScreenshotReason.NoActivePlayer] = SPELL_FAILED_UNKNOWN,
 };

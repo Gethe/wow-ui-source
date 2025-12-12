@@ -3,6 +3,7 @@ local AdventureJournal =
 	Name = "AdventureJournal",
 	Type = "System",
 	Namespace = "C_AdventureJournal",
+	Environment = "All",
 
 	Functions =
 	{

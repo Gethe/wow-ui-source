@@ -365,9 +365,13 @@ function QuickJoinToastMixin:OnEnter()
 				GameTooltip:AddLine(SOCIAL_QUEUE_CLICK_TO_JOIN, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
 				GameTooltip:Show();
 			end
-		else
+		elseif self:IsEnabled() then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip_SetTitle(GameTooltip, MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL"));
+			GameTooltip:Show();
+		elseif self.disabledTooltip then
+			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+			GameTooltip:AddLine(self.disabledTooltip, ERROR_COLOR.r, ERROR_COLOR.g, ERROR_COLOR.b)
 			GameTooltip:Show();
 		end
 	end

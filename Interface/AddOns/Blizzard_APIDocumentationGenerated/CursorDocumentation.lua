@@ -3,6 +3,7 @@ local Cursor =
 	Name = "Cursor",
 	Type = "System",
 	Namespace = "C_Cursor",
+	Environment = "All",
 
 	Functions =
 	{

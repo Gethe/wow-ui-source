@@ -2,6 +2,7 @@ local FrameAPIBlob =
 {
 	Name = "FrameAPIBlob",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

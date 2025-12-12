@@ -3,6 +3,7 @@ local TaxiMap =
 	Name = "TaxiMap",
 	Type = "System",
 	Namespace = "C_TaxiMap",
+	Environment = "All",
 
 	Functions =
 	{

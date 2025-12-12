@@ -89,7 +89,7 @@ end
 
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for all Cooldown Viewer items.
-CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin);
+CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, CooldownViewerVisualAlertTargetMixin);
 
 function CooldownViewerItemMixin:OnUpdate(_elapsed, timeNow)
 	if self:ShouldTriggerAvailableAlert(timeNow) then
@@ -443,7 +443,7 @@ function CooldownViewerItemMixin:TriggerAlertEvent(event)
 		if alerts then
 			local name = self:GetNameText();
 			for _, alert in ipairs(alerts) do
-				CooldownViewerAlert_PlayAlert(name, alert);
+				CooldownViewerAlert_PlayAlert(self, name, alert);
 			end
 		end
 	end
@@ -455,12 +455,14 @@ end
 
 function CooldownViewerItemMixin:TriggerAvailableAlert()
 	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
-	self.allowAvailableAlert = nil;
-	self.availableAlertTriggerTime = nil;
 
 	-- Need to refresh the entire button state after the cooldown finishes, this is what simulates the client sending
 	-- a final SPELL_UPDATE_COOLDOWN event which is required to update the icon in case it was tracking buffs.
 	self:RefreshData();
+
+	-- Since we just triggered the alert, prevent this from being triggered again immediately
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
 end
 
 function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeNow)
@@ -815,10 +817,17 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges(tim
 	end
 end
 
+-- Not exposed, but this is  but needed to check durations for cooldowns to see if an available alert would be allowed.
+local MIN_GLOBAL_RECOVERY_TIME = 0.75;
+
 local wasOnGCDLookup = {};
 local function CheckAllowOnCooldown(cdItem, spellID, spellCooldownInfo)
+	-- The "was on GCD" check tries to account for spells that cooldown on specific events like Ancestral Swiftness which enter a state
+	-- where they cannot be cast but are not on cooldown until the aura they apply is consumed. Once that aura is consumed they go from
+	-- not on GCD -> on regular CD and need to be considered as "on GCD" in that state so that the On Cooldown alert can properly be triggered.
+	-- TODO: This likely needs a special case built into the code to check for this info rather than just comparing durations.
 	local wasOnGCD = wasOnGCDLookup[spellID];
-	wasOnGCDLookup[spellID] = cdItem.isOnGCD;
+	wasOnGCDLookup[spellID] = cdItem.isOnGCD or (spellCooldownInfo.duration and spellCooldownInfo.duration < MIN_GLOBAL_RECOVERY_TIME);
 
 	local allowOnCooldownAlert = wasOnGCD and not cdItem.isOnGCD and spellCooldownInfo.duration > (cdItem.cooldownDuration or 0) and spellCooldownInfo.duration > 0;
 	return allowOnCooldownAlert;
@@ -835,11 +844,11 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 		self.cooldownIsActive = endTime > timeNow;
 
 		self.isOnGCD = spellCooldownInfo.isOnGCD;
+		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.isOnActualCooldown = not self.isOnGCD and self.cooldownIsActive;
 		self.allowOnCooldownAlert = CheckAllowOnCooldown(self, spellID, spellCooldownInfo);
-		self.allowAvailableAlert = self.allowAvailableAlert or (not self.isOnGCD and spellCooldownInfo.duration > 0 and self.cooldownEnabled);
+		self.allowAvailableAlert = self.allowAvailableAlert or (not self.isOnGCD and spellCooldownInfo.duration > MIN_GLOBAL_RECOVERY_TIME and self.cooldownEnabled);
 		self.availableAlertTriggerTime = self.allowAvailableAlert and endTime or nil;
-		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.cooldownStartTime = spellCooldownInfo.startTime;
 		self.cooldownDuration = spellCooldownInfo.duration;
 		self.cooldownModRate = spellCooldownInfo.modRate;
@@ -1356,6 +1365,10 @@ function CooldownViewerBuffBarItemMixin:RefreshData()
 	self:RefreshName();
 	self:RefreshApplications();
 	self:RefreshActive();
+end
+
+function CooldownViewerBuffBarItemMixin:GetAlertTargetFrame()
+	return self.Icon;
 end
 
 ---------------------------------------------------------------------------------------------------

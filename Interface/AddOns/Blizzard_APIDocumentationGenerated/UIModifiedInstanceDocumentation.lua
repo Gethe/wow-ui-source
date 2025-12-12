@@ -3,6 +3,7 @@ local UIModifiedInstance =
 	Name = "UIModifiedInstance",
 	Type = "System",
 	Namespace = "C_ModifiedInstance",
+	Environment = "All",
 
 	Functions =
 	{

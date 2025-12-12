@@ -3,6 +3,7 @@ local PartyInfo =
 	Name = "PartyInfo",
 	Type = "System",
 	Namespace = "C_PartyInfo",
+	Environment = "All",
 
 	Functions =
 	{

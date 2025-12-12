@@ -2,6 +2,7 @@ local SimpleColorSelectAPI =
 {
 	Name = "SimpleColorSelectAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

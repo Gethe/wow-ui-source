@@ -3,6 +3,7 @@ local QuestLog =
 	Name = "QuestLog",
 	Type = "System",
 	Namespace = "C_QuestLog",
+	Environment = "All",
 
 	Functions =
 	{

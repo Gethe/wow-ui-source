@@ -2,6 +2,7 @@ local SimpleCheckboxAPI =
 {
 	Name = "SimpleCheckboxAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -47,7 +48,7 @@ local SimpleCheckboxAPI =
 		{
 			Name = "SetChecked",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

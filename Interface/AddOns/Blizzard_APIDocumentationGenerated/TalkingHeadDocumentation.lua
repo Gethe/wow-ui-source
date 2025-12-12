@@ -3,6 +3,7 @@ local TalkingHead =
 	Name = "TalkingHead",
 	Type = "System",
 	Namespace = "C_TalkingHead",
+	Environment = "All",
 
 	Functions =
 	{

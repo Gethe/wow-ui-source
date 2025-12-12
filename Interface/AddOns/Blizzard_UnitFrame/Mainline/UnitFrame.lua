@@ -1049,7 +1049,7 @@ function UnitFrame_UpdateThreatIndicator(indicator, numericIndicator, unit)
 end
 
 function UnitFrame_ShouldReplacePortrait(self)
-	if UnitIsPlayer(self.unit) then
+	if UnitIsHumanPlayer(self.unit) then
 		local isMyPlayer = UnitIsUnit(self.unit, "player");
 		if isMyPlayer then
 			return GetCVarBool("ReplaceMyPlayerPortrait");

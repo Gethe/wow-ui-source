@@ -3,6 +3,7 @@ local ArdenwealdGardening =
 	Name = "ArdenwealdGardening",
 	Type = "System",
 	Namespace = "C_ArdenwealdGardening",
+	Environment = "All",
 
 	Functions =
 	{

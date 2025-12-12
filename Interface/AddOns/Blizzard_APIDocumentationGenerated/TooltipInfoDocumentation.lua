@@ -3,6 +3,7 @@ local TooltipInfo =
 	Name = "TooltipInfo",
 	Type = "System",
 	Namespace = "C_TooltipInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -1195,7 +1196,7 @@ local TooltipInfo =
 			Name = "GetUnitAura",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAuraIndexRestricted = true,
+			SecretWhenUnitAuraIndexRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1234,7 +1235,7 @@ local TooltipInfo =
 			Name = "GetUnitBuff",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAuraIndexRestricted = true,
+			SecretWhenUnitAuraIndexRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1253,7 +1254,7 @@ local TooltipInfo =
 			Name = "GetUnitBuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAuraInstanceRestricted = true,
+			SecretWhenUnpackedUnitAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -1272,7 +1273,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuff",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAuraIndexRestricted = true,
+			SecretWhenUnitAuraIndexRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1291,7 +1292,7 @@ local TooltipInfo =
 			Name = "GetUnitDebuffByAuraInstanceID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenAuraInstanceRestricted = true,
+			SecretWhenUnpackedUnitAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =

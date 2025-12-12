@@ -92,11 +92,6 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AdventureGuide, function(link, text, link
 	end
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.URLIndex, function(link, text, linkData, contextData)
-	local index = string.split(":", linkData.options);
-	LoadURLIndex(tonumber(index));
-end);
-
 LinkUtil.RegisterLinkHandler(LinkTypes.LootHistory, function(link, text, linkData, contextData)
 	local encounterID = string.split(":", linkData.options);
 	SetLootHistoryFrameToEncounter(tonumber(encounterID));

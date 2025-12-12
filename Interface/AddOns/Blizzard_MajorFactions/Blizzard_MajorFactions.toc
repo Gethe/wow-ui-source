@@ -1,7 +1,7 @@
 ## Title: Blizzard Major Factions UI
 ## Author: Blizzard Entertainment
 ## Version: 1.0
-## LoadOnDemand: 1
+## LoadOnDemand: 0
 
 Blizzard_MajorFactionsLandingTemplates.xml
 

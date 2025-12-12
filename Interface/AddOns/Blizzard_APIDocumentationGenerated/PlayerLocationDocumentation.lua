@@ -3,6 +3,7 @@ local PlayerLocation =
 	Name = "PlayerLocationInfo",
 	Type = "System",
 	Namespace = "C_PlayerInfo",
+	Environment = "All",
 
 	Functions =
 	{

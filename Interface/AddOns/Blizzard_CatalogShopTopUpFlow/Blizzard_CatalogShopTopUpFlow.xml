@@ -29,7 +29,15 @@
 					<Size x="500" y="50"/>
 					<Color color="WHITE_FONT_COLOR"/>
 					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP" x="0" y="-100"/>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="-36"/>
+					</Anchors>
+				</FontString>
+
+				<FontString parentKey="CurrentBalance" inherits="Game22Font">
+					<Size x="500" y="50"/>
+					<Color color="NORMAL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PurchaseTotal" relativePoint="BOTTOM" x="0" y="-4"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -50,7 +58,7 @@
 			<Frame parentKey="TopUpProductContainerFrame" mixin="TopUpProductContainerFrameMixin" frameLevel="500" >
 				<Size y="412"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.PurchaseTotal" relativePoint="BOTTOM" x="0" y="-10" />
+						<Anchor point="TOP" relativeKey="$parent.CurrentBalance" relativePoint="BOTTOM" x="0" y="-10" />
 						<Anchor point="LEFT" relativeKey="$parent" relativePoint="LEFT" x="36" y="0" />
 						<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-36" y="0" />
 					</Anchors>

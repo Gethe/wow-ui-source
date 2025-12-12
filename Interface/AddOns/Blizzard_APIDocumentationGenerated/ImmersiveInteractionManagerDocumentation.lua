@@ -3,6 +3,7 @@ local ImmersiveInteractionManager =
 	Name = "ImmersiveInteraction",
 	Type = "System",
 	Namespace = "C_ImmersiveInteraction",
+	Environment = "All",
 
 	Functions =
 	{

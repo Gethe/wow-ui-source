@@ -295,9 +295,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAuraFrameSetting",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeAuraFrameSetting", EnumValue = 0 },
@@ -310,6 +310,7 @@ local EditModeManagerConstants =
 				{ Name = "DeprecatedShowFull", Type = "EditModeAuraFrameSetting", EnumValue = 7 },
 				{ Name = "VisibleSetting", Type = "EditModeAuraFrameSetting", EnumValue = 8 },
 				{ Name = "Opacity", Type = "EditModeAuraFrameSetting", EnumValue = 9 },
+				{ Name = "ShowDispelType", Type = "EditModeAuraFrameSetting", EnumValue = 10 },
 			},
 		},
 		{
@@ -417,7 +418,7 @@ local EditModeManagerConstants =
 				{ Name = "FrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
 				{ Name = "Padding", Type = "EditModeDamageMeterSetting", EnumValue = 5 },
 				{ Name = "Transparency", Type = "EditModeDamageMeterSetting", EnumValue = 6 },
-				{ Name = "LockScroll", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
+				{ Name = "ObsoleteReuse1", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
 				{ Name = "ShowSpecIcon", Type = "EditModeDamageMeterSetting", EnumValue = 8 },
 				{ Name = "ShowClassColor", Type = "EditModeDamageMeterSetting", EnumValue = 9 },
 				{ Name = "BarHeight", Type = "EditModeDamageMeterSetting", EnumValue = 10 },

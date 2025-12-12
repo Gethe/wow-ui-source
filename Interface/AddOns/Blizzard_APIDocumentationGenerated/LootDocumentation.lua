@@ -3,6 +3,7 @@ local Loot =
 	Name = "Loot",
 	Type = "System",
 	Namespace = "C_Loot",
+	Environment = "All",
 
 	Functions =
 	{

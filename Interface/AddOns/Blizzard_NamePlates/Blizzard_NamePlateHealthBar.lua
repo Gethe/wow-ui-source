@@ -158,6 +158,10 @@ function NamePlateHealthBarMixin:SetIsFocus(isFocus)
 end
 
 function NamePlateHealthBarMixin:ShouldBeShown()
+	if self:IsShowOnlyName() then
+		return false;
+	end
+
 	if self:IsWidgetsOnlyMode() then
 		return false;
 	end

@@ -3,6 +3,7 @@ local NeighborhoodInitiative =
 	Name = "NeighborhoodInitiative",
 	Type = "System",
 	Namespace = "C_NeighborhoodInitiative",
+	Environment = "All",
 
 	Functions =
 	{

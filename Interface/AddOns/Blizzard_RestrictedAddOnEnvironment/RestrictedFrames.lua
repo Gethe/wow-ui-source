@@ -21,8 +21,14 @@ local tostring = tostring;
 local tonumber = tonumber;
 local securecall = securecall;
 
+local ClearOverrideBindings = ClearOverrideBindings;
 local GetCursorPosition = GetCursorPosition;
 local InCombatLockdown = InCombatLockdown;
+local SetOverrideBinding = SetOverrideBinding;
+local SetOverrideBindingClick = SetOverrideBindingClick;
+local SetOverrideBindingItem = SetOverrideBindingItem;
+local SetOverrideBindingMacro = SetOverrideBindingMacro;
+local SetOverrideBindingSpell = SetOverrideBindingSpell;
 
 local IsFrameHandle = IsFrameHandle;
 local GetFrameHandle = GetFrameHandle;

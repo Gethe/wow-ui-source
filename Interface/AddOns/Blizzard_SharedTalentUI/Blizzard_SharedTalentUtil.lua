@@ -5,6 +5,8 @@ local TemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSmallCircle] = "TalentButtonSmallCircleTemplate",
 	[Enum.TraitNodeEntryType.RedButton] = "TalentRedButtonTemplate",
 	[Enum.TraitNodeEntryType.ArmorSet] = "TalentArmorSetTemplate",
+	[Enum.TraitNodeEntryType.SpendCapstoneCircle] = "TalentButtonCapstoneCircleTemplate",
+	[Enum.TraitNodeEntryType.SpendCapstoneSquare] = "TalentButtonCapstoneSquareTemplate",
 };
 
 local LargeTemplatesByTalentType = {
@@ -320,6 +322,60 @@ TalentButtonUtil.SizingAdjustment = {
 		{ region = "DisabledOverlayMask", adjust = 0, },
 		{ region = "SpendText", anchorX = 14, anchorY = 6, },
 	},
+
+	CapstoneCircle = {
+		{ region = "Icon", adjust = -3, },
+		{ region = "IconMask", adjust = -3, },
+		{ region = "DisabledOverlay", adjust = 0, },
+		{ region = "BorderShadow", adjust = 0, },
+		{ region = "StateBorder", adjust = 0,},
+		{ region = "StateBorderHover", adjust = 0 },
+		{ region = "Border2", adjust = 0, },
+		{ region = "Border", adjust = 0, },
+		{ region = "BorderMask", adjust = 0, },
+		{ region = "Border2Mask", adjust = 0, },
+		{ region = "BorderShadowMask", adjust = 0, },
+		{ region = "DisabledOverlayMask", adjust = 0, },
+		{ region = "SelectableGlow", adjust = 90, },
+		{ region = "SpendText", anchorX = 2, anchorY = -10, },
+	},
+
+	CapstoneSquare = {
+		{ region = "Icon", adjust = -3, },
+		{ region = "IconMask", adjust = -3, },
+		{ region = "DisabledOverlay", adjust = 0, },
+		{ region = "BorderShadow", adjust = 0, },
+		{ region = "StateBorder", adjust = 0,},
+		{ region = "StateBorderHover", adjust = 0 },
+		{ region = "Border2", adjust = 0, },
+		{ region = "Border", adjust = 0, },
+		{ region = "BorderMask", adjust = 0, },
+		{ region = "Border2Mask", adjust = 0, },
+		{ region = "BorderShadowMask", adjust = 0, },
+		{ region = "DisabledOverlayMask", adjust = 0, },
+		{ region = "SelectableGlow", adjust = 90, },
+		{ region = "SpendText", anchorX = 2, anchorY = -10, },
+	},
+
+	CapstonePipCircle = {
+		{ region = "Icon", adjust = 0, },
+		{ region = "DisabledOverlay", adjust = 0, },
+		{ region = "BorderShadow", adjust = 0, },
+		{ region = "StateBorder", adjust = 0, },
+		{ region = "Border2", adjust = 0, },
+		{ region = "Border", adjust = 0, },
+		{ region = "IconMask", adjust = 0, },
+		{ region = "Ghost", adjust = 6, },
+		{ region = "BorderMask", adjust = 0, },
+		{ region = "Border2Mask", adjust = 0, },
+		{ region = "BorderShadowMask", adjust = 0, },
+		{ region = "DisabledOverlayMask", adjust = 0, },
+		{ region = "BorderSheen", anchorY = 0 },
+		{ region = "BorderSheenMask", adjust = 12 },
+		{ region = "Shadow", adjust = 0, },
+		{ region = "SpendText", anchorX = 2, anchorY = -7, },
+	},
+
 };
 
 local HoverAlphaByVisualState = {
@@ -344,6 +400,19 @@ function TalentButtonUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarg
 		end
 	end
 
+	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Tiered) and FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowTierTrack) then
+		if talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle then
+			return "TalentButtonCapstoneWithTrackCircleTemplate";
+		elseif talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare then
+			return "TalentButtonCapstoneWithTrackSquareTemplate";
+		end
+	end
+
+	local isCapstoneChildDisplayElement = not nodeInfo and (talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle or talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare);
+	if isCapstoneChildDisplayElement then
+		return "TalentButtonCapstonePipCircleTemplate";
+	end
+
 	if useLarge then
 		return LargeTemplatesByTalentType[talentType] or "TalentButtonLargeCircleTemplate";
 	end
@@ -361,6 +430,12 @@ function TalentButtonUtil.GetSpecializedMixin(nodeInfo, talentType)
 			return TalentButtonSplitSelectMixin;
 		else
 			return TalentButtonSelectMixin;
+		end
+	end
+
+	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Tiered) and FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowTierTrack) then
+		if talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle or talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare then
+			return TalentButtonCapstoneWithTrackMixin;
 		end
 	end
 

@@ -3,6 +3,7 @@ local InvasionInfo =
 	Name = "InvasionInfo",
 	Type = "System",
 	Namespace = "C_InvasionInfo",
+	Environment = "All",
 
 	Functions =
 	{

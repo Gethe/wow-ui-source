@@ -2,6 +2,7 @@ local Localization =
 {
 	Name = "Localization",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

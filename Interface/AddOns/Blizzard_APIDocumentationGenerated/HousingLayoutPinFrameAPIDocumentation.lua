@@ -2,6 +2,7 @@ local HousingLayoutPinFrameAPI =
 {
 	Name = "HousingLayoutPinFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

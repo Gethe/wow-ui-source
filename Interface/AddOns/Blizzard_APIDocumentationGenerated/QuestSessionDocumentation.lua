@@ -3,6 +3,7 @@ local QuestSession =
 	Name = "QuestSession",
 	Type = "System",
 	Namespace = "C_QuestSession",
+	Environment = "All",
 
 	Functions =
 	{

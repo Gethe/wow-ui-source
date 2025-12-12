@@ -3,6 +3,7 @@ local WowSurvey =
 	Name = "WowSurvey",
 	Type = "System",
 	Namespace = "C_WowSurvey",
+	Environment = "All",
 
 	Functions =
 	{

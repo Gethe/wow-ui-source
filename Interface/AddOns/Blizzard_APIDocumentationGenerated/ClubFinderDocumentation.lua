@@ -3,6 +3,7 @@ local ClubFinder =
 	Name = "ClubFinderInfo",
 	Type = "System",
 	Namespace = "C_ClubFinder",
+	Environment = "All",
 
 	Functions =
 	{

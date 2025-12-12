@@ -3,6 +3,7 @@ local GarrisonInfo =
 	Name = "GarrisonInfo",
 	Type = "System",
 	Namespace = "C_Garrison",
+	Environment = "All",
 
 	Functions =
 	{

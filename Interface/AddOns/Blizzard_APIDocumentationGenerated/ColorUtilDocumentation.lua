@@ -3,6 +3,7 @@ local ColorUtil =
 	Name = "ColorUtil",
 	Type = "System",
 	Namespace = "C_ColorUtil",
+	Environment = "All",
 
 	Functions =
 	{

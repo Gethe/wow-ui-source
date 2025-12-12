@@ -3,6 +3,7 @@ local SplashScreen =
 	Name = "SplashScreen",
 	Type = "System",
 	Namespace = "C_SplashScreen",
+	Environment = "All",
 
 	Functions =
 	{

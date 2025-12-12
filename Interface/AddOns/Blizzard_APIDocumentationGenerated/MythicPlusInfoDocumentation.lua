@@ -3,6 +3,7 @@ local MythicPlusInfo =
 	Name = "MythicPlusInfo",
 	Type = "System",
 	Namespace = "C_MythicPlus",
+	Environment = "All",
 
 	Functions =
 	{

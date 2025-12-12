@@ -2,7 +2,9 @@
 ## Dependencies: Blizzard_UIParent, Blizzard_UIPanelTemplates, Blizzard_HelpPlate
 Shared\EditModeLayoutManagerUtil.lua [AllowLoadEnvironment Global]
 Shared\EditModePresetLayoutSystemUtils.lua [AllowLoadEnvironment Global]
-[Game]\EditModePresetLayouts.lua [AllowLoadGameType standard, wowhack, plunderstorm] [AllowLoadEnvironment Global]
+[Game]\EditModePresetLayoutConstants.lua [AllowLoadGameType standard] [AllowLoadEnvironment Global]
+[Game]\EditModePresetLayouts.lua [AllowLoadGameType wowhack, plunderstorm] [AllowLoadEnvironment Global]
+[Family]\EditModePresetLayouts.lua [AllowLoadGameType standard] [AllowLoadEnvironment Global]
 [Family]\EditModePresetLayouts.lua [AllowLoadGameType classic] [AllowLoadEnvironment Global]
 Shared\EditModePresetLayoutsManager.lua [AllowLoadEnvironment Global]
 Shared\EditModeSettingDisplayInfo.lua [AllowLoadEnvironment Global]

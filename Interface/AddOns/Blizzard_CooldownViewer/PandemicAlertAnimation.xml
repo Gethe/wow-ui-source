@@ -62,12 +62,7 @@
 								<Anchor point="BOTTOMRIGHT" x="251" y="-199"/>
 							</Anchors>
 						</Texture>
-						<MaskTexture parentKey="Mask" atlas="UI-CooldownManager-PandemicBorderBar-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
-							<Size x="0" y="138"/>
-							<Anchors>
-								<Anchor point="LEFT" x="1"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
+						<MaskTexture parentKey="Mask" atlas="UI-CooldownManager-PandemicBorderBar-Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
 							<MaskedTextures>
 								<MaskedTexture childKey="Texture"/>
 							</MaskedTextures>

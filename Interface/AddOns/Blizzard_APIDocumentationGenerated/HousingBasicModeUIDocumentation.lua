@@ -3,6 +3,7 @@ local HousingBasicModeUI =
 	Name = "HousingBasicModeUI",
 	Type = "System",
 	Namespace = "C_HousingBasicMode",
+	Environment = "All",
 
 	Functions =
 	{

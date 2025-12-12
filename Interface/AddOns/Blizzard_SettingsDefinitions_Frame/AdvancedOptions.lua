@@ -37,7 +37,7 @@ local function Register()
 		end
 
 		local function OnButtonClick()
-			SetCVarBitfield("closedInfoFramesAccountWide", LE_FRAME_TUTORIAL_ACCOUNT_ASSISTED_COMBAT_ROTATION_DRAG_SPELL, false);
+			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.AssistedCombatRotationDragSpell, false);
 			local skipTransitionBackToOpeningPanel = true;
 			SettingsPanel:Close(skipTransitionBackToOpeningPanel);
 			PlayerSpellsUtil.ToggleSpellBookFrame();

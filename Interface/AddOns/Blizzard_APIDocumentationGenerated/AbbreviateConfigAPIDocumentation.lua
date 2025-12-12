@@ -2,6 +2,7 @@ local AbbreviateConfigAPI =
 {
 	Name = "AbbreviateConfigAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

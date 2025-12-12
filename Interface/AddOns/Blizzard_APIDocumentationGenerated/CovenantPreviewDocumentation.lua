@@ -3,6 +3,7 @@ local CovenantPreview =
 	Name = "CovenantPreview",
 	Type = "System",
 	Namespace = "C_CovenantPreview",
+	Environment = "All",
 
 	Functions =
 	{

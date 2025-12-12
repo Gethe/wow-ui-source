@@ -2,6 +2,7 @@ local TargetScript =
 {
 	Name = "TargetScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

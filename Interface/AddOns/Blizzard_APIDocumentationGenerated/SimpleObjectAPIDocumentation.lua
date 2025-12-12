@@ -2,6 +2,7 @@ local SimpleObjectAPI =
 {
 	Name = "SimpleObjectAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

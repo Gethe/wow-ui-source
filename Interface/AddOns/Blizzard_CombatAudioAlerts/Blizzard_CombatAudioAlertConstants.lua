@@ -20,6 +20,9 @@ CombatAudioAlertConstants =
 		TARGET_HEALTH_FMT_CVAR = {name = "CAATargetHealthFormat"},
 		TARGET_HEALTH_THROTTLE_CVAR = {name = "CAATargetHealthThrottle", refreshThrottles = true},
 
+		PARTY_HEALTH_PCT_CVAR = {name = "CAAPartyHealthPercent", refreshEvents = true},
+		PARTY_HEALTH_FREQ_CVAR = {name = "CAAPartyHealthFrequency"},
+
 		PLAYER_RESOURCE_1_PCT_CVAR = {name = "CAAResource1Percents", refreshEvents = true},
 		PLAYER_RESOURCE_1_FMT_CVAR = {name = "CAAResource1Formats"},
 		PLAYER_RESOURCE_1_THROTTLE_CVAR = {name = "CAAResource1Throttle", refreshThrottles = true},
@@ -41,4 +44,7 @@ CombatAudioAlertConstants =
 		SAY_INTERRUPT_CAST_CVAR = {name = "CAAInterruptCast", refreshEvents = true},
 		SAY_INTERRUPT_CAST_SUCCESS_CVAR = {name = "CAAInterruptCastSuccess", refreshEvents = true},
 	},
+
+	PARTY_HEALTH_UPDATE_MIN_SECONDS = 1;
+	PARTY_HEALTH_UPDATE_MAX_SECONDS = 5;
 };

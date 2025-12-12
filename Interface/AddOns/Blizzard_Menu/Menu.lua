@@ -60,17 +60,17 @@ end);
 do
 	-- Handles closing dropdowns under the correct circumstances.
 	local event = "GLOBAL_MOUSE_DOWN";
-	
+
 	local function HandlesGlobalMouseEvent(focus, buttonName)
 		return focus and focus.HandlesGlobalMouseEvent and focus:HandlesGlobalMouseEvent(buttonName, event);
 	end
-	
+
 	EventRegistry:RegisterFrameEventAndCallback(event, function(buttonID, buttonName)
 		local manager = Menu.GetManager();
 		if not manager then
 			return;
 		end
-	
+
 		-- Only interested in the top focus.
 		local foci = GetMouseFoci();
 		if not HandlesGlobalMouseEvent(foci[1], buttonName) then
@@ -96,7 +96,7 @@ MenuAttributeDelegate:SetScript("OnAttributeChanged", function(self, attribute, 
 			local response = self:GetAttribute("respond-response");
 			local menuManager = menu.menuManager;
 			menuManager:AttributeRespond(menu, description, response);
-			
+
 			self:SetAttribute("respond-menu", nil);
 			self:SetAttribute("respond-description", nil);
 			self:SetAttribute("respond-response", nil);
@@ -145,7 +145,7 @@ do
 	local function GetMenuMixin(smp)
 		return smp.menuMixin;
 	end
-	
+
 	function SharedMenuPropertiesMixin:GetMenuMixin()
 		return securecall(GetMenuMixin, self);
 	end
@@ -199,7 +199,7 @@ the description frame.the description frame. Child element description are also 
 local BaseMenuDescriptionMixin = CreateFromMixinsPrivate(ProxyConvertablePrivateMixin);
 
 local function IsValidGridDirection(direction)
-	return (direction == MenuConstants.VerticalGridDirection) 
+	return (direction == MenuConstants.VerticalGridDirection)
 		or (direction == MenuConstants.HorizontalGridDirection);
 end
 
@@ -238,7 +238,7 @@ do
 	local function HasGridLayout(menuDescription)
 		return IsValidGridDirection(menuDescription.gridDirection);
 	end
-	
+
 	function BaseMenuDescriptionMixin:HasGridLayout()
 		return securecall(HasGridLayout, self);
 	end
@@ -248,7 +248,7 @@ do
 	local function IsScrollable(menuDescription)
 		return menuDescription.scrollable;
 	end
-	
+
 	function BaseMenuDescriptionMixin:IsScrollable()
 		return securecall(IsScrollable, self);
 	end
@@ -258,7 +258,7 @@ do
 	local function GetMaxScrollExtent(menuDescription)
 		return menuDescription.maxScrollExtent;
 	end
-	
+
 	function BaseMenuDescriptionMixin:GetMaxScrollExtent()
 		return securecall(GetMaxScrollExtent, self);
 	end
@@ -408,7 +408,7 @@ do
 	local function EnumerateElementDescriptions(menuDescription)
 		return menuDescription.elementDescriptions:Enumerate();
 	end
-	
+
 	function BaseMenuDescriptionMixin:EnumerateElementDescriptions()
 		return securecall(EnumerateElementDescriptions, self);
 	end
@@ -520,7 +520,7 @@ function MenuElementDescriptionMixin:ForceOpenSubmenu()
 	end
 end
 
-local BaseMenuDescriptionAPI = 
+local BaseMenuDescriptionAPI =
 {
 	"HasElements",
 	"AddInitializer",
@@ -591,7 +591,7 @@ do
 	RootMenuDescriptionProxyMixin.ClearQueuedDescriptions = ClearQueuedDescriptions;
 	MenuElementDescriptionProxyMixin.ClearQueuedDescriptions = ClearQueuedDescriptions;
 
-	
+
 	local function AddQueuedDescription(descriptionProxy, queuedDescriptionProxy)
 		if not descriptionProxy.queuedProxies then
 			descriptionProxy.queuedProxies = {};
@@ -635,10 +635,10 @@ do
 				return index, value:ToProxy();
 			end
 		end
-	
+
 		return Iterator, tbl, 0;
 	end
-	
+
 	do
 		local function EnumerateElementDescriptions(descriptionProxy)
 			local description = Proxies:ToPrivate(descriptionProxy);
@@ -652,7 +652,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetRadio(isRadio)
 		self.isRadio = isRadio;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:IsRadio()
 		return self.isRadio;
 	end
@@ -660,7 +660,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetIsSelected(isSelected)
 		self.isSelected = isSelected;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:IsSelected()
 		if self.isSelected == nil then
 			return false;
@@ -668,11 +668,11 @@ do
 
 		return self.isSelected(self:GetData());
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:SetCanSelect(canSelect)
 		self.canSelect = canSelect;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:CanSelect()
 		if not self:IsEnabled() then
 			return false;
@@ -688,11 +688,11 @@ do
 
 		return self.canSelect(self:GetData());
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:SetSelectionIgnored()
 		self.isSelectionIgnored = true;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:IsSelectionIgnored()
 		return self.isSelectionIgnored == true;
 	end
@@ -708,7 +708,7 @@ do
 
 		return self.soundKit(self);
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:SetShouldRespondIfSubmenu(canRespond)
 		self.shouldRespondIfSubmenu = canRespond;
 	end
@@ -720,7 +720,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetShouldPlaySoundOnSubmenuClick(canPlay)
 		self.playSoundOnSubmenuClick = canPlay;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:ShouldPlaySoundOnSubmenuClick()
 		return self.playSoundOnSubmenuClick;
 	end
@@ -735,7 +735,7 @@ do
 			onEnter(...);
 		end
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:HookOnEnter(callback)
 		if self.onEnter then
 			hooksecurefunc(self, "onEnter", callback);
@@ -747,7 +747,7 @@ do
 	function MenuElementDescriptionProxyMixin:GetOnEnter()
 		return self.onEnter;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:HandleOnEnter(frame)
 		if frame.OnEnter then
 			frame:OnEnter(self);
@@ -768,7 +768,7 @@ do
 			onLeave(...);
 		end
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:HookOnLeave(callback)
 		if self.onLeave then
 			hooksecurefunc(self, "onLeave", callback);
@@ -785,7 +785,7 @@ do
 		if frame.OnLeave then
 			frame:OnLeave(self);
 		end
-	
+
 		if self.onLeave then
 			self.onLeave(frame, self);
 		end
@@ -796,7 +796,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetEnabled(isEnabled)
 		self.isEnabled = isEnabled;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:IsEnabled()
 		if self.isEnabled == nil then
 			return true;
@@ -808,7 +808,7 @@ do
 
 		return self.isEnabled(self);
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:ShouldPollEnabled()
 		return type(self.isEnabled) == "function";
 	end
@@ -816,7 +816,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetData(data)
 		self.data = data;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:GetData()
 		return self.data;
 	end
@@ -824,7 +824,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetResponder(callback)
 		self.responder = callback;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:HookResponder(callback)
 		if self.responder then
 			hooksecurefunc(self, "responder", callback);
@@ -836,7 +836,7 @@ do
 	function MenuElementDescriptionProxyMixin:SetResponse(response)
 		self.defaultResponse = response;
 	end
-	
+
 	function MenuElementDescriptionProxyMixin:GetDefaultResponse(menuInputContext, menuInputButtonName)
 		if type(self.defaultResponse) == "function" then
 			return securecallfunction(self.defaultResponse, menuInputContext, menuInputButtonName);
@@ -875,7 +875,7 @@ do
 		end
 
 		--[[
-		If a responder callback is not set, then the menu will not change. Selecting a submenu root should 
+		If a responder callback is not set, then the menu will not change. Selecting a submenu root should
 		never cause the menu to close.
 		]]--
 		local response = nil;
@@ -952,7 +952,7 @@ local function MeasureExtents(regions)
 	for index, region in ipairs(regions) do
 		local left, bottom, width, height = region:GetRect();
 
-		--[[ 
+		--[[
 		If the rect is invalid and any of these are nil, the assumption is that the extents are being measured
 		on a menu that is being closed (or is otherwise invalid and will be subsequently refreshed) and we can
 		return values knowing that they'll be updated before they're relevant.
@@ -967,10 +967,10 @@ local function MeasureExtents(regions)
 	return r - l, t - b;
 end
 
---[[ 
+--[[
 Note that we don't expect frame extents to change when reinitializing a frame, otherwise we'll potentially
 breach the screen bounds and create either the problem of a mispositioned menu, or flipping the menu across
-it's parent menu. 
+it's parent menu.
 
 We still need to do another layout pass because initializing the frame may have overwritten the common
 width we assigned.
@@ -989,7 +989,7 @@ local function CallInitializers(frame, menu, compositor)
 	local descriptionProxy = frame:GetElementDescription();
 	local description = Proxies:ToPrivate(descriptionProxy);
 	local menuProxy = menu:ToProxy();
-	
+
 	description:GetInitializers():ExecuteRange(function(index, initializer)
 		-- Use the size returned from the initializer. This is intended to be overridable
 		-- as each initializer in the list represents an extension of control.
@@ -1067,7 +1067,7 @@ local function InitializeElementDescription(menu, elementDescription, factory, f
 	end;
 
 	--[[
-	InitializationOrder - It is very important that we insert this initializer at the front of the 
+	InitializationOrder - It is very important that we insert this initializer at the front of the
 	array because the element description object will frequently have had initializers added before
 	the factory was invoked, and these initializers are intended to be called in least to
 	most specialized order.
@@ -1101,21 +1101,21 @@ end
 
 function MenuMixin:SetMenuDescription(menuDescription)
 	self.menuDescription = menuDescription;
-	
+
 	-- In a secure context, the factoryArgs table can be passed to securecallfunction without tainting execution.
 	local factoryArgs = {};
 	if self.frames:IsEmpty() or menuDescription:CanReacquireFrames() then
 		self.menuDescription = menuDescription;
-		
+
 		self:DiscardChildFrames();
-		
+
 		local isCompositorEnabled = menuDescription:IsCompositorEnabled();
 		local function Factory(frameTemplateOrFrameType, initializer)
 			local childFrame, _new, templateInfo = securecallfunction(AcquireMenuElement, frameDummy, frameTemplateOrFrameType, ResetMenuElement)
 			if not childFrame then
 				error(string.format("MenuMixin:SetMenuDescription: Failed to create a frame from pool for frame template or frame type '%s'", frameTemplateOrFrameType));
 			end
-			
+
 			-- ID is for our test harness, it has no significance elsewhere.
 			childFrame:SetID(1001);
 
@@ -1129,7 +1129,7 @@ function MenuMixin:SetMenuDescription(menuDescription)
 			childFrame.frameTemplateOrFrameType = frameTemplateOrFrameType;
 
 			--[[
-			Menu frames have 'ignoreAllChildren' set to prevent any cosmetic regions 
+			Menu frames have 'ignoreAllChildren' set to prevent any cosmetic regions
 			from being included in the layout calculation. We opt-in the frames that we
 			expect to be included in the menu's layout list.
 			]]--
@@ -1157,7 +1157,7 @@ function MenuMixin:SetMenuDescription(menuDescription)
 				self.elementCompositors:SetValue(childFrame, CreateCompositor(childFrame));
 			end
 		end
-		
+
 		for index, elementDescription in menuDescription:EnumerateElementDescriptions() do
 			securecallfunction(InitializeElementDescription, self, elementDescription, Factory, factoryArgs);
 		end
@@ -1182,11 +1182,11 @@ function MenuMixin:SetMenuDescription(menuDescription)
 			securecallfunction(InitializeElementDescription, self, elementDescription, Factory, factoryArgs);
 		end
 	end
-	
+
 	for index, frame in self.frames:Enumerate() do
 		securecallfunction(InitializeFrame, frame, self);
 	end;
-	
+
 	--After all initializers have been called, continue with layout.
 	self:PerformLayout();
 end
@@ -1196,7 +1196,7 @@ function MenuMixin:Open(menuDescription, onElementMouseDown, onElementEnter, onE
 	self.onElementMouseDown = onElementMouseDown;
 	self.onElementEnter = onElementEnter;
 	self.onElementLeave = onElementLeave;
-	
+
 	self:SetMenuDescription(menuDescription);
 end
 
@@ -1258,20 +1258,20 @@ local function SecureGetChildExtentPadding(menuFrame)
 end
 
 function MenuMixin:PerformLayout()
-	--[[ 
-	GetTop() is returning inconsistently between openings despite it's anchor being fixed in space. 
-	Will need to create a simpler test case for us to understand this misbehavior, but in the meantime, 
+	--[[
+	GetTop() is returning inconsistently between openings despite it's anchor being fixed in space.
+	Will need to create a simpler test case for us to understand this misbehavior, but in the meantime,
 	setting the size to 1,1 appears to force the GetTop() call to return accurately each time.
 	]]--
 	local menuFrame = self:ToProxy();
 	menuFrame:SetSize(1, 1);
 
-	--[[ 
+	--[[
 	Obtaining the size of a frame is complicated by a case in character customization where
 	the frame will compact itself if the menu requires multiple columns. We would normally know
-	if a multiple columns are necessary from the number of frames alone, however in this case, 
+	if a multiple columns are necessary from the number of frames alone, however in this case,
 	design wants the menu to compact instead of reposition if the menu would exceed the screen bounds.
-	
+
 	We cannot know if the menu would exceed the screen bounds unless we first measure the frame height,
 	which implies we have to initialize the frame first.
 
@@ -1286,15 +1286,15 @@ function MenuMixin:PerformLayout()
 	If a grid,
 	3a) Calculate grid columns and rows.
 	3b) If callbacks are provided, allow frames to do compaction, then measure frame extents again.
-	
+
 	4) Resize all frames to a common width.
 	]]--
-	
+
 	local finalColumns = 1;
 	local finalRows = nil;
 
 	local childMaxWidth, childMaxHeight, childTotalHeight = self:MeasureFrameExtents();
-	
+
 	-- To avoid cramping, an additional amount of padding can be added.
 	local childPadWidth, childPadHeight = securecallfunction(SecureGetChildExtentPadding, menuFrame);
 	childMaxWidth = childMaxWidth + childPadWidth;
@@ -1312,7 +1312,7 @@ function MenuMixin:PerformLayout()
 			columns, rows = AutoCalculateColumnsAndRows(size);
 		end
 
-		--[[ 
+		--[[
 		If a compaction margin is provided, then the menu will compact. This overrides any
 		menu repositioning that could occur along the vertical axis.
 		]]--
@@ -1334,7 +1334,7 @@ function MenuMixin:PerformLayout()
 		for index, frame in self.frames:Enumerate() do
 			local descriptionProxy = frame:GetElementDescription();
 			local description = Proxies:ToPrivate(descriptionProxy);
-			
+
 			if description.finalizeGridLayout:IsSet() then
 				description.finalizeGridLayout:CallFunction(frame, descriptionProxy, menuFrame, finalColumns, finalRows);
 				recalculateSize = true;
@@ -1393,7 +1393,7 @@ function MenuMixin:PerformLayout()
 	end
 
 	--[[
-	The common width is applied to all frames. Also, anchor utilities below do not care if the 
+	The common width is applied to all frames. Also, anchor utilities below do not care if the
 	frame is an RLF, so we need to ensure the extents are set so that the grid size can be
 	calculated correctly.
 	]]--
@@ -1416,7 +1416,7 @@ function MenuMixin:PerformLayout()
 		local scrollBox = menuFrame.ScrollBox;
 		local onScrollBoxScroll = function(o, scrollPercentage, visibleExtentPercentage, panExtentPercentage)
 			self.menuManager:CollapseMenusUntilLevel(self:GetLevel());
-		end;  
+		end;
 		scrollBox:RegisterCallback(BaseScrollBoxEvents.OnScroll, onScrollBoxScroll, self);
 
 		if not menuFrame.ScrollBox:HasDataProvider() then
@@ -1442,7 +1442,7 @@ function MenuMixin:PerformLayout()
 			elseif gridDirection == MenuConstants.HorizontalGridDirection then
 				layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, finalColumns, gridPadding);
 			end
-			
+
 			self.frames:ExecuteTable(function(frames)
 				AnchorUtil.GridLayout(frames, anchor, layout);
 			end);
@@ -1458,10 +1458,10 @@ function MenuMixin:PerformLayout()
 	A layout frame is ideal for the menu because it will conform to all of the child contents, however because we
 	have already directed children to do RLF calls, resize, or expicitly overwrite their size, we don't want the RLF
 	behavior to call Layout() on all of the children again.
-	
-	This is avoided by having the menu template define 'skipChildLayout' = true, allowing the children to be included 
-	in the extent calculations, but not make additional Layout() calls. 
-	
+
+	This is avoided by having the menu template define 'skipChildLayout' = true, allowing the children to be included
+	in the extent calculations, but not make additional Layout() calls.
+
 	All of the elements have been resized, continue with the final menu Layout().
 	]]--
 	menuFrame:Layout();
@@ -1564,7 +1564,7 @@ do
 		if (b < 0) or (t > bt) then
 			overflowVertical = true;
 		end
-	
+
 		if overflowHorizontal or overflowVertical then
 			for index = 1, menuFrame:GetNumPoints() do
 				local flipped = false;
@@ -1577,7 +1577,7 @@ do
 						flipped = true;
 					end
 				end
-				
+
 				if (not flipped) and overflowVertical then
 					if asContextMenu then
 						-- A context menu frame is always anchored to the UI origin, so to flip we
@@ -1622,8 +1622,8 @@ function MenuMixin:DiscardChildFrames()
 	--[[
 	Releasing the compositors will cause any keys assigned or changed to be discarded.
 	All frame cleanup that is contingent on these keys must be finished prior to this
-	release. 
-	
+	release.
+
 	This will also restore any restricted APIs that were disallowed by the
 	compositor like SetParent() which will be needed once the frame pool reset
 	function is called.
@@ -1644,7 +1644,7 @@ function MenuMixin:DiscardChildFrames()
 				compositor:Detach();
 			end
 		end
-		
+
 		MenuElementFactory:Release(frame);
 	end
 
@@ -1656,9 +1656,9 @@ function MenuMixin:Close()
 	menuFrame:SetScript("OnEnter", nil);
 	menuFrame:SetScript("OnLeave", nil);
 	menuFrame:SetScript("OnUpdate", nil);
-	
+
 	menuFrame.ScrollBox:RemoveDataProvider();
-	
+
 	-- All scripts must be finished before the compositor flushes our keys.
 
 	if self.onCloseCallback then
@@ -1805,7 +1805,7 @@ function MenuManagerMixin:Init(proxy)
 
 	self.menus = CreateSecureArray();
 	self.frameFactory = CreateFrameFactory();
-	
+
 	self:SetRetainMenuLevel(0);
 
 	self.mouseEventTimerCallback = function(frame, dt)
@@ -1931,7 +1931,7 @@ function MenuManagerMixin:RemoveMenu(menu)
 	keys.
 	]]--
 	menu:Close();
-	
+
 	--[[
 	The proxy for a menu must be manually removed because a pool frame is never
 	dereferenced and will always persist.
@@ -2022,6 +2022,10 @@ local function ResetMenu(pool, frame, new)
 	end
 
 	frame:SetParent(nil);
+	frame:SetToDefaults();
+
+	-- Reset back to a non-zero size otherwise menu shows up very tiny and broken.
+	frame:SetSize(1, 1);
 
 	Pool_HideAndClearAnchors(pool, frame);
 end
@@ -2053,8 +2057,8 @@ function MenuManagerMixin:AcquireMenu(params)
 	local menu = CreateFromMixinsPrivate(MenuMixin);
 
 	--[[
-	Normally all proxies are tables with private references to the object. Since the frame 
-	is the proxy, we'll need to set the private reference manually, and then remove it once 
+	Normally all proxies are tables with private references to the object. Since the frame
+	is the proxy, we'll need to set the private reference manually, and then remove it once
 	the frame is returned to the pool. Frames are never released from these pools so it is
 	important we clear the private reference, else the menu object will never get gc'ed.
 	--]]
@@ -2062,13 +2066,13 @@ function MenuManagerMixin:AcquireMenu(params)
 
 	--[[
 	A previous menu object may be in the proxy directory if it hasn't been gc'ed yet.
-	We want that assert to ensure that we evaluate each case individually. 
+	We want that assert to ensure that we evaluate each case individually.
 	--]]
 	local permitOverwrite = true;
 	menu:Init(self, proxy, permitOverwrite);
 
 	--[[
-	Important! After this Init() call, all value changes to this frame will be 
+	Important! After this Init() call, all value changes to this frame will be
 	discarded once this frame is reclaimed.
 	--]]
 	securecallfunction(SecureGenerate, proxy, menuDescription);
@@ -2194,7 +2198,7 @@ function MenuManagerMixin:AttributeRespond(menu, description, response)
 	elseif response == MenuResponse.Open then
 		-- No action
 	end
-	
+
 	if canReinitializeHierarchy and parentMenu then
 		securecallfunction(ReinitializeHierarchy, parentMenu);
 		ReinitializeHierarchy(parentMenu);
@@ -2319,8 +2323,8 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	end);
 
 	-- Anchors must be valid prior to opening the menu so that all point measurements are retrievable.
-	menuPositionFunc(menu:ToProxy());	
-	
+	menuPositionFunc(menu:ToProxy());
+
 	local function OnMouseDown(frame)
 		-- The enter is discarded when we stop the timer, but we still need to process the leave.
 		self:ProcessMouseEventLeaveData();
@@ -2336,9 +2340,9 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	local function OnLeave(frame)
 		self:LeaveFrame(frame, menu);
 	end
-	
+
 	securecallfunction(menu.Open, menu, menuDescription, OnMouseDown, OnEnter, OnLeave);
-	
+
 	local proxy = menu:ToProxy();
 
 	-- The NineSlice utility creates a frame with frame level 500. To avoid interlacing with this frame
@@ -2364,10 +2368,10 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	proxy:SetScript("OnLeave", function(menuFrame)
 		self:OnMenuLeave();
 	end);
-	
+
 	--[[
-	If an owner region becomes invisible, we generally want the root menu to close along with it. 
-	In this instance this behavior is undesireable, the .ignoreOwner key should be set. Note that 
+	If an owner region becomes invisible, we generally want the root menu to close along with it.
+	In this instance this behavior is undesireable, the .ignoreOwner key should be set. Note that
 	this will require exposing a parameter to OpenMenu, OpenContextMenu, proxies, and utility file.
 	]]--
 	if ownerRegion and not params.ignoreOwner then
@@ -2380,7 +2384,7 @@ function MenuManagerMixin:GenerateMenuInternal(params)
 	end
 
 	self.menus:Insert(menu);
-	
+
 	--[[
 	Any scroll controller or SMF under the mouse has scrolling disabled once a menu is opened above it.
 	The region will be renabled once the menu is closed.
@@ -2404,10 +2408,10 @@ function MenuManagerMixin:DisableScrollableRegions(menu)
 		while region do
 			if IsScrollController(region) or IsScrollingMessageFrame(region) then
 				region:SetScrollAllowed(false);
-				
-				self.disabledScrollRegionData = 
+
+				self.disabledScrollRegionData =
 				{
-					menu = menu, 
+					menu = menu,
 					region = region,
 				};
 
@@ -2428,7 +2432,7 @@ function MenuManagerMixin:OpenMenuInternal(params)
 
 	-- The level of retained menus when the cursor exits the menu bounds.
 	self:SetRetainMenuLevel(RootMenuLevel);
-	
+
 	return self:GenerateMenuInternal(params);
 end
 
@@ -2537,7 +2541,7 @@ do
 	function Menu.CreateRootMenuDescription(menuMixin)
 		return securecallfunction(SecureCreateRootMenuDescription, menuMixin);
 	end
-	
+
 	local function SecureCreateMenuElementDescription()
 		local elementDescription = {};
 		setmetatable(elementDescription, MenuElementDescriptionMixin);
@@ -2550,11 +2554,11 @@ do
 	function Menu.CreateMenuElementDescription()
 		return securecallfunction(SecureCreateMenuElementDescription);
 	end
-	
+
 	--[[
-	Menu descriptions are always regenerated before the menu is displayed, so any additions 
-	made by an addon should always appear regardless of the menu description having already 
-	been created. However, if the addon wants to affect the dropdown's displayed selected 
+	Menu descriptions are always regenerated before the menu is displayed, so any additions
+	made by an addon should always appear regardless of the menu description having already
+	been created. However, if the addon wants to affect the dropdown's displayed selected
 	state, then we need to inform the dropdown to update after the changes are made.
 	]]--
 	local generatedDescriptions = {};
@@ -2592,7 +2596,7 @@ do
 		local function Callback(subscriber, ownerRegion, description)
 			callback(ownerRegion, description, description.contextData);
 		end
-		
+
 		-- Do not provide an owner context as we want one auto-generated to enable addons to use
 		-- the same callback if they choose to do so.
 		return ModifyMenuRegistry:RegisterCallbackWithHandle(tag, Callback);

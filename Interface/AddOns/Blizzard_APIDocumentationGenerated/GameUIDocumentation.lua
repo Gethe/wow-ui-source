@@ -2,6 +2,7 @@ local GameUI =
 {
 	Name = "GameUI",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

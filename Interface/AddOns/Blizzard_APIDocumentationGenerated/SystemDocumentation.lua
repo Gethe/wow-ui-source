@@ -3,6 +3,7 @@ local System =
 	Name = "SystemInfo",
 	Type = "System",
 	Namespace = "C_System",
+	Environment = "All",
 
 	Functions =
 	{

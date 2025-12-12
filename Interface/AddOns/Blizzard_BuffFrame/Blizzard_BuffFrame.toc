@@ -1,6 +1,7 @@
 ## Title: Blizzard_BuffFrame
 ## Dependencies: Blizzard_Minimap, Blizzard_EditMode, Blizzard_FrameXMLUtil
 BuffFrame.lua
+[Family]/BuffFrame.lua [AllowLoadGameType classic]
 BuffFrameTemplates.xml
 BuffFrame.xml
 ExternalDefensivesFrame.lua [AllowLoadGameType standard]

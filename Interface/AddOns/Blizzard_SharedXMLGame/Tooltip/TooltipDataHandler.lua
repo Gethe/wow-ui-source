@@ -3,8 +3,14 @@
 -- Tooltip data callback processor
 -- =======================================================================
 
-local issecure = issecure;
+local C_TooltipInfo = CreateFromMixins(C_TooltipInfo or {});
+
+local canaccessallvalues = canaccessallvalues;
 local forceinsecure = forceinsecure;
+local issecure = issecure;
+local CheckAllowProtectedFunctions = C_RestrictedActions.CheckAllowProtectedFunctions;
+local SafePack = SafePack;
+local SafeUnpack = SafeUnpack;
 
 local SecureTooltipPreCalls = { };
 local SecureTooltipPostCalls = { };
@@ -207,7 +213,8 @@ end
 -- =======================================================================
 
 --[[ info table layout
-	getterName		: If tooltipData is not set, the C_TooltipInfo function to call. The data returned will be set as tooltipData in this table.
+	getterName		: If tooltipData is not set, the C_TooltipInfo function name to call. The data returned will be set as tooltipData in this table.
+	getterFunction	: If tooltipData is not set, the C_TooltipInfo function reference to call. The data returned will be set as tooltipData in this table.
 	getterArgs		: Optional table of arguments for the C_TooltipInfo call.
 	tooltipData		: In some places code already has this data, so it can set this key and leave the getterName nil.
 	append			: If true, the tooltip will not be cleared and the backdrop style (Azerite and Corrupted) will not be set.
@@ -224,7 +231,7 @@ end
 function CreateBaseTooltipInfo(getterName, ...)
 	local tooltipInfo = {
 		getterName = getterName,
-		getterArgs = { ... };
+		getterArgs = SafePack(...),
 	};
 	return tooltipInfo;
 end
@@ -241,16 +248,19 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 	end
 
 	if not info.tooltipData then
-		if not info.getterName then
+		local getterFunction = info.getterFunction or C_TooltipInfo[info.getterName];
+
+		if not getterFunction then
 			return false;
 		end
+
 		if info.getterArgs then
-			info.tooltipData = C_TooltipInfo[info.getterName](unpack(info.getterArgs));
+			info.tooltipData = getterFunction(SafeUnpack(info.getterArgs));
 		else
-			info.tooltipData = C_TooltipInfo[info.getterName]();
+			info.tooltipData = getterFunction();
 		end
 	end
-	
+
 	local tooltipData = info.tooltipData;
 	if not tooltipData then
 		if not info.append then
@@ -266,10 +276,10 @@ function TooltipDataHandlerMixin:InternalProcessInfo(info)
 		-- infoList will be missing in append mode if the tooltip needs to start with non-data text
 		self.infoList = { };
 	end
-	
+
 	table.insert(self.infoList, info);
 	self.processingInfo = info;
-	
+
 	local tooltipType = tooltipData.type;
 	if ProcessTooltipPreCalls(tooltipType, self, tooltipData) then
 		return false;
@@ -303,7 +313,7 @@ function TooltipDataHandlerMixin:ProcessLines()
 	local linePostCall = info.linePostCall;
 	for i, lineData in ipairs(info.tooltipData.lines) do
 		self:ProcessLineData(lineData, excludeLines, linePreCall, linePostCall);
-	end	
+	end
 end
 
 function TooltipDataHandlerMixin:ProcessLineData(lineData, excludeLines, linePreCall, linePostCall)
@@ -353,7 +363,7 @@ function TooltipDataHandlerMixin:RebuildFromTooltipInfo()
 
 	local infoList = self.infoList;
 	self.infoList = { };
-	
+
 	if oldPrimaryInfo.rebuildPreCall then
 		local skipRebuild = oldPrimaryInfo.rebuildPreCall(self);
 		if skipRebuild then
@@ -441,9 +451,73 @@ function AddTooltipDataAccessor(handler, accessor, getterName)
 			getterArgs = { ... };
 		};
 		return self:ProcessInfo(tooltipInfo);
-	end	
+	end
 end
-		
+
+local function CheckAllowSecretArguments(getterFunction, ...)
+	if canaccessallvalues(...) then
+		return true;
+	end
+
+	-- The calling function doesn't have access to secret values. This is
+	-- expected to occur for tainted calls that are supplying us secrets to
+	-- show in a tooltip. If this happens, we want to forward them as-is
+	-- to the tooltip accessor and see if it's happy with accepting them
+	-- anyway.
+	--
+	-- The expectation here is that if the tooltip data function doesn't
+	-- accept secrets from tainted callers, this call will error.
+
+	local _tooltipData = getterFunction(...);
+	return true;
+end
+
+local function SanitizeTooltipDataArgument(value)
+	if type(value) == "function" then
+		-- Function values are never legal inputs to tooltip data functions.
+		return nil;
+	end
+
+	return value;
+end
+
+local function SanitizeTooltipDataArguments(...)
+	return mapvalues(SanitizeTooltipDataArgument, ...);
+end
+
+local function AddTooltipDataAccessorDelegate(handler, accessor, getterName)
+	-- Tooltip data accessors are promoted to secure delegates to allow
+	-- tainted code to show standard tooltips without running into Lua errors
+	-- in the ProcessInfo function.
+
+	local getterFunction = C_TooltipInfo[getterName];
+
+	local TooltipDataAccessorSecure = CreateSecureDelegate(function(self, ...)
+		-- Execution at this point is untainted, and taint is removed from all
+		-- supplied arguments.
+
+		local tooltipInfo = {
+			getterFunction = getterFunction,
+			getterArgs = SafePack(...),
+		};
+		return self:ProcessInfo(tooltipInfo);
+	end);
+
+	handler[accessor] = function(self, ...)
+		if not CheckAllowProtectedFunctions(self) then
+			-- Caller is not permitted to operate on this object.
+			return false;
+		end
+
+		if not CheckAllowSecretArguments(getterFunction, ...) then
+			-- Caller is not permitted to supply secrets to this function.
+			return false;
+		end
+
+		return TooltipDataAccessorSecure(self, SanitizeTooltipDataArguments(...));
+	end;
+end
+
 do
 	local accessors = {
 		SetMerchantItem = "GetMerchantItem",
@@ -531,6 +605,6 @@ do
 
 	local handler = TooltipDataHandlerMixin;
 	for accessor, getterName in pairs(accessors) do
-		AddTooltipDataAccessor(handler, accessor, getterName);
+		AddTooltipDataAccessorDelegate(handler, accessor, getterName);
 	end
 end

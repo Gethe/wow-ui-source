@@ -420,10 +420,18 @@
 							<KeyValue key="bottomPadding" value="0" type="number"/>
 						</KeyValues>
 					</Frame>
+					<Frame parentKey="ProductRefundContainer" inherits="ProductRefundContainerTemplate" hidden="true">
+						<Size x="320" y="100"/>
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="35" type="number"/>
+							<KeyValue key="topPadding" value="0" type="number"/>
+							<KeyValue key="bottomPadding" value="0" type="number"/>
+						</KeyValues>
+					</Frame>
 					<Frame parentKey="ButtonContainer" >
 						<Size x="320" y="50"/>
 						<KeyValues>
-							<KeyValue key="layoutIndex" value="35" type="number"/>
+							<KeyValue key="layoutIndex" value="40" type="number"/>
 							<KeyValue key="topPadding" value="0" type="number"/>
 							<KeyValue key="bottomPadding" value="15" type="number"/>
 							<KeyValue key="leftPadding" value="0" type="number"/>
@@ -499,7 +507,14 @@
 					<OnLoad method="OnLoad" />
 				</Scripts>
 			</Frame>
-			
+
+			<Frame parentKey="PersistentRefundContainerFrame" inherits="CatalogShopPersistentRefundContainerFrameTemplate" frameLevel="1000" hidden="true" >
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ProductContainerFrame.ProductsHeader" relativePoint="TOP" y="0" />
+					<Anchor point="RIGHT" relativeKey="$parent.CatalogShopDetailsFrame" relativePoint="RIGHT" x="-116" />
+				</Anchors>
+			</Frame>
+
 			<Frame parentKey="CatalogShopErrorFrame" inherits="CatalogShopErrorFrameTemplate" frameLevel="1000">
 				<Anchors>
 					<Anchor point="CENTER" x="0" y="0" />
@@ -513,7 +528,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="CatalogShopUnavailableScreenFrame" inherits="CatalogShopUnavailableScreenTemplate" hidden="true" frameLevel="300">
+			<Frame parentKey="CatalogShopUnavailableScreenFrame" inherits="CatalogShopUnavailableScreenTemplate" hidden="true" frameLevel="0">
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-23"/>
 					<Anchor point="LEFT" x="0" y="0"/>

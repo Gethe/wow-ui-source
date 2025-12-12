@@ -3,6 +3,7 @@ local HousingCatalogUI =
 	Name = "HousingCatalogUI",
 	Type = "System",
 	Namespace = "C_HousingCatalog",
+	Environment = "All",
 
 	Functions =
 	{
@@ -235,6 +236,22 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "PromotePreviewDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+				{ Name = "previewDecorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestHousingMarketInfoRefresh",
 			Type = "Function",
 		},
@@ -387,6 +404,7 @@ local HousingCatalogUI =
 				{ Name = "originalPrice", Type = "number", Nilable = true },
 				{ Name = "productID", Type = "number", Nilable = false },
 				{ Name = "decorEntries", Type = "table", InnerType = "HousingBundleDecorEntryInfo", Nilable = false },
+				{ Name = "canPreview", Type = "bool", Nilable = false, Default = true, Documentation = { "Bundles containing non-decor items cannot be previewed" } },
 			},
 		},
 		{

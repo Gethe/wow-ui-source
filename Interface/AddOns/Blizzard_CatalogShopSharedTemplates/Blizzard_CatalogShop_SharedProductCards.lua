@@ -50,6 +50,22 @@ end
 
 function CatalogShopDefaultProductCardMixin:OnLeave()
 	self.ForegroundContainer.HoverTexture:Hide();
+
+	local function NonSecureWrapper(productId)
+		SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, productId)
+	end
+
+	local function NonSecureSet(productId)
+		SavedSetsUtil.Set(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, productId);
+	end
+
+	local checkfunction = SavedSetsUtil and NonSecureWrapper or CatalogShopOutbound.SavedSet_Check
+	local setFunction = SavedSetsUtil and NonSecureSet or CatalogShopOutbound.SavedSet_Set
+
+	if not checkfunction(self.productInfo.catalogShopProductID) then
+		setFunction(self.productInfo.catalogShopProductID);
+		self:HideNotification();
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:IsSameProduct(productInfo)
@@ -60,7 +76,6 @@ function CatalogShopDefaultProductCardMixin:OnProductInfoChanged(productInfo)
 	if not self:IsSameProduct(productInfo) then
 		return;
 	end
-
 	self:SetProductInfo(productInfo);
 end
 
@@ -91,6 +106,25 @@ function CatalogShopDefaultProductCardMixin:UpdateState()
 	end
 
 	--... handle state
+end
+
+function CatalogShopDefaultProductCardMixin:ShowNotification()
+	if CatalogShopOutbound and not CatalogShopOutbound.SavedSet_Check(self.productInfo.catalogShopProductID) and not self.notificationFrame then
+		self.notificationFrame = CatalogShopOutbound.NotificationUtil_AcquireLargeNotification("TOPRIGHT", self.SelectedContainer, "TOPRIGHT", 0, 0);
+	elseif not CatalogShopOutbound and not SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, self.productInfo.catalogShopProductID) and not self.notificationFrame then
+		self.notificationFrame = NotificationUtil.AcquireLargeNotification("TOPRIGHT", self.SelectedContainer, "TOPRIGHT", 0, 0);
+	end
+end
+
+function CatalogShopDefaultProductCardMixin:HideNotification()
+	if self.notificationFrame then
+		if CatalogShopOutbound then
+			CatalogShopOutbound.NotificationUtil_ReleaseNotification(self.notificationFrame);
+		else
+			NotificationUtil.ReleaseNotification(self.notificationFrame);
+		end
+		self.notificationFrame = nil;
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:SetProductInfo(productInfo)
@@ -197,6 +231,7 @@ function CatalogShopDefaultProductCardMixin:HideCardVisuals()
 end
 
 function CatalogShopDefaultProductCardMixin:Layout()
+	self:HideNotification();
 	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(self.productInfo.catalogShopProductID);
 	local productType = displayInfo.productType;
 	local container = self.ForegroundContainer;
@@ -241,6 +276,7 @@ function CatalogShopDefaultProductCardMixin:Layout()
 	container.ConsumableQuantityBackground:SetShown(shouldShowConsumableQuantity);
 	container.ConsumableQuantityText:SetShown(shouldShowConsumableQuantity);
 	container.ConsumableQuantityText:SetText(consumableQuantity);
+	self:ShowNotification();
 end
 
 

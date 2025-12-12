@@ -3,6 +3,7 @@ local EncounterTimeline =
 	Name = "EncounterTimeline",
 	Type = "System",
 	Namespace = "C_EncounterTimeline",
+	Environment = "All",
 
 	Functions =
 	{

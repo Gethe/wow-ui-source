@@ -3,6 +3,7 @@ local Transmog =
 	Name = "Transmogrify",
 	Type = "System",
 	Namespace = "C_Transmog",
+	Environment = "All",
 
 	Functions =
 	{

@@ -7,6 +7,10 @@ local hash_SlashCmdList = _G.hash_SlashCmdList;
 
 ChatFrameEditBoxBaseMixin = {};
 
+function ChatFrameEditBoxBaseMixin:OnPreSendText()
+	-- Implement in a derived mixin.
+end
+
 function ChatFrameEditBoxBaseMixin:GetChatType()
 	return self:GetAttribute("chatType");
 end
@@ -278,6 +282,7 @@ end
 
 function ChatFrameEditBoxBaseMixin:SendText(addHistory)
 	self:ParseText(1);
+	self:OnPreSendText();  -- Intentionally sequenced after ParseText and before GetText.
 	local type = self:GetChatType();
 	local text = self:GetText();
 	if ( strfind(text, "%s*[^%s]+") ) then
@@ -364,10 +369,13 @@ function ChatFrameEditBoxMixin:OnUpdate(elapsedSec)
 end
 
 function ChatFrameEditBoxMixin:OnShow()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxShow", self);
 	self:ResetChatType();
 end
 
 function ChatFrameEditBoxMixin:OnHide()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxHide", self);
+
 	if ( ACTIVE_CHAT_EDIT_BOX == self ) then
 		ChatFrameUtil.DeactivateChat(self);
 	end
@@ -379,10 +387,12 @@ function ChatFrameEditBoxMixin:OnHide()
 end
 
 function ChatFrameEditBoxMixin:OnEditFocusGained()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxFocusGained", self);
 	ChatFrameUtil.ActivateChat(self);
 end
 
 function ChatFrameEditBoxMixin:OnEditFocusLost()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxFocusLost", self);
 	AutoCompleteEditBox_OnEditFocusLost(self);
 
 	if self:ShouldDeactivateChatOnEditFocusLost() then
@@ -501,6 +511,13 @@ function ChatFrameEditBoxMixin:OnInputLanguageChanged()
 	local button = _G[self:GetName().."Language"];
 	local variable = _G["INPUT_"..self:GetInputLanguage()];
 	button:SetText(variable);
+end
+
+function ChatFrameEditBoxMixin:OnPreSendText()
+	-- Notification for user addons to perform any final edits to chat text
+	-- contents before sending.
+
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxPreSendText", self);
 end
 
 function ChatFrameEditBoxMixin:ClearChat()

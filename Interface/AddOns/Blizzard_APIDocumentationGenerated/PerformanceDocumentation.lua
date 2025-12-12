@@ -2,6 +2,7 @@ local Performance =
 {
 	Name = "PerformanceScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

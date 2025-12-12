@@ -43,8 +43,8 @@ function DamageMeterEntryMixin:GetIconTexture()
 end
 
 function DamageMeterEntryMixin:UpdateIcon()
-	if self.iconUsesAtlas then
-		local atlasElement = self:GetIconAtlasElement();
+	local atlasElement = self:GetIconAtlasElement();
+	if atlasElement then
 		self:GetIcon():SetAtlas(atlasElement);
 	else
 		local texture = self:GetIconTexture();
@@ -299,21 +299,29 @@ function DamageMeterEntryMixin:SetBackgroundAlpha(alpha)
 	self:UpdateBackground();
 end
 
-function DamageMeterEntryMixin:UpdateBackground()
+function DamageMeterEntryMixin:GetBackgroundRegionAlpha()
+	--[[
+	-- Previous behavior
 	local style = self:GetStyle();
-	local alpha;
 
 	if style == Enum.DamageMeterStyle.FullBackground then
 		-- The full background style uses a background asset on the parent
 		-- frame instead.
-		alpha = 0;
+		return 0;
 	elseif style == Enum.DamageMeterStyle.Bordered then
 		-- Art for the bordered style reuses an asset that doesn't permit
 		-- customization of background transparency.
-		alpha = 1;
+		return 1;
 	else
-		alpha = self:GetBackgroundAlpha();
+		return self:GetBackgroundAlpha();
 	end
+	--]]
+
+	return 1; -- Only controlled by container frame opacity now.
+end
+
+function DamageMeterEntryMixin:UpdateBackground()
+	local alpha = self:GetBackgroundRegionAlpha();
 
 	for _, region in ipairs(self:GetBackgroundRegions()) do
 		region:SetAlpha(alpha);
@@ -340,16 +348,26 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.sourceName = combatSource.name;
 	self.isLocalPlayer = combatSource.isLocalPlayer;
 	self.classFilename = combatSource.classFilename;
+	self.specIconID = combatSource.specIconID;
 
 	DamageMeterEntryMixin.Init(self, combatSource);
 end
 
 function DamageMeterSourceEntryMixin:GetIconAtlasElement()
+	-- If spec is set it takes precedence over class.
+	if self.specIconID and self.specIconID ~= 0 then
+		return nil;
+	end
+
 	if not self.classFilename then
 		return nil;
 	end
 
 	return GetClassAtlas(self.classFilename);
+end
+
+function DamageMeterEntryMixin:GetIconTexture()
+	return self.specIconID;
 end
 
 function DamageMeterSourceEntryMixin:GetNameText()

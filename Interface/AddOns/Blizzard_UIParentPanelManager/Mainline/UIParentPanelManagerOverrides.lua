@@ -1,5 +1,7 @@
 local _, addonTable = ...; -- Used for passing functions between UIParentPanelManager.lua and other files in this addon.
 
+BOTTOM_FRAME_CONTAINER_MARGIN = 15;
+
 addonTable.UIParentManageFramePositions = function(self)
 	if MainActionBar and MicroButtonAndBagsBar and not MainActionBar:IsUserPlaced() and not MicroButtonAndBagsBar:IsUserPlaced() then
 		local screenWidth = UIParent:GetWidth();

@@ -2,6 +2,7 @@ local ZoneScript =
 {
 	Name = "ZoneScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

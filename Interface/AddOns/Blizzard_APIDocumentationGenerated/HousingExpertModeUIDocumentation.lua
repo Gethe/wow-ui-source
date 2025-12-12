@@ -3,6 +3,7 @@ local HousingExpertModeUI =
 	Name = "HousingExpertModeUI",
 	Type = "System",
 	Namespace = "C_HousingExpertMode",
+	Environment = "All",
 
 	Functions =
 	{

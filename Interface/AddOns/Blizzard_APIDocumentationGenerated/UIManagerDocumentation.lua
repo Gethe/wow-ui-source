@@ -3,6 +3,7 @@ local UIManager =
 	Name = "UI",
 	Type = "System",
 	Namespace = "C_UI",
+	Environment = "All",
 
 	Functions =
 	{

@@ -1115,7 +1115,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRIENDS, SLASH_COMMAND_CATEG
 		return;
 	end
 
-	if msg == "" and UnitIsPlayer("target") then
+	if msg == "" and UnitIsHumanPlayer("target") then
 		msg = GetUnitName("target", true)
 	end
 	if not msg or msg == "" then
@@ -1133,7 +1133,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsPlayer("target") ) then
+	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
 		local bNetIDAccount = BNet_GetBNetIDAccount(msg);
 		if ( bNetIDAccount ) then
 			if ( BNIsFriend(bNetIDAccount) ) then
@@ -1150,7 +1150,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGO
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNIGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsPlayer("target") ) then
+	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
 		C_FriendList.DelIgnore(msg);
 	else
 		ToggleIgnorePanel();

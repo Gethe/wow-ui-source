@@ -3,6 +3,7 @@ local AreaPoiInfo =
 	Name = "AreaPoiInfo",
 	Type = "System",
 	Namespace = "C_AreaPoiInfo",
+	Environment = "All",
 
 	Functions =
 	{

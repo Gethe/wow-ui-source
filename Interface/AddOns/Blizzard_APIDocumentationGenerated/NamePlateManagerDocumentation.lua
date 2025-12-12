@@ -3,9 +3,29 @@ local NamePlateManager =
 	Name = "NamePlateManager",
 	Type = "System",
 	Namespace = "C_NamePlateManager",
+	Environment = "All",
 
 	Functions =
 	{
+		{
+			Name = "GetNamePlateHitTestInsets",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the values used to adjust the hit testing area for nameplates." },
+
+			Arguments =
+			{
+				{ Name = "type", Type = "NamePlateType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
+			},
+		},
 		{
 			Name = "IsNamePlateUnitBehindCamera",
 			Type = "Function",
@@ -33,6 +53,22 @@ local NamePlateManager =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "hitTestFrame", Type = "SimpleFrame", Nilable = false },
+			},
+		},
+		{
+			Name = "SetNamePlateHitTestInsets",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "NotAllowed",
+			Documentation = { "Provide values to adjust the hit testing area for nameplates. Positive values will decrease the hit test area, negative values will increase it. Note that all hit testing is clamped to the bounds of the nameplate and can not be moved outside it." },
+
+			Arguments =
+			{
+				{ Name = "type", Type = "NamePlateType", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false },
+				{ Name = "right", Type = "uiUnit", Nilable = false },
+				{ Name = "top", Type = "uiUnit", Nilable = false },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false },
 			},
 		},
 		{

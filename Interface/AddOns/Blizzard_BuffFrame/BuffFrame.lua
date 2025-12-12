@@ -390,6 +390,23 @@ function AuraFrameEditModeMixin:TryEditModeUpdateAuraButtons()
 
 			self.hasInitializedForEditMode = true;
 		end
+
+		if self:HasSetting(Enum.EditModeAuraFrameSetting.ShowDispelType) then
+			local showDispelType = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowDispelType);
+			-- Make a table to cycle through setting fake dispelTypes
+			local dispelIndex = 0;
+			local dispelTypes = GetKeysArray(AuraUtil.GetDebuffDisplayInfoTable());
+			-- Apply the dispelTypes to the aura frames
+			for index, auraFrame in ipairs(self.auraFrames) do
+				if not auraFrame.isAuraAnchor then
+					dispelIndex = dispelIndex + 1;
+					if dispelIndex > #dispelTypes then
+						dispelIndex = 1;
+					end
+					AuraUtil.SetAuraBorderAtlas(auraFrame.DebuffBorder, dispelTypes[dispelIndex], showDispelType);
+				end
+			end
+		end
 	else
 		if self.hasInitializedForEditMode then
 			for _, auraFrame in ipairs(self.PrivateAuraAnchors or {}) do
@@ -868,6 +885,7 @@ AuraButtonMixin = { };
 function AuraButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self:UpdateAuraType(nil);
+	self:SetupDebuffBorderTexture();
 end
 
 function AuraButtonMixin:OnClick(button)
@@ -1006,8 +1024,8 @@ function AuraButtonMixin:UpdateAuraType(auraType)
 		self.DebuffBorder:Hide();
 		self.TempEnchantBorder:Hide();
 	elseif self.auraType == "Debuff" or self.auraType == "DeadlyDebuff" then
-		local color = DebuffTypeColor["none"];
-		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
+		-- reset to "None" by only passing the border region
+		AuraUtil.SetAuraBorderAtlas(self.DebuffBorder);
 		self.DebuffBorder:Show();
 		self.TempEnchantBorder:Hide();
 	elseif self.auraType == "TempEnchant" then
@@ -1083,20 +1101,9 @@ function AuraButtonMixin:Update(buttonInfo)
 	end
 
 	if self:GetFilter() == "HARMFUL" then
-		local color;
-		if buttonInfo.debuffType then
-			color = DebuffTypeColor[buttonInfo.debuffType];
-			if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
-				self.Symbol:Show();
-				self.Symbol:SetText(DebuffTypeSymbol[buttonInfo.debuffType] or "");
-			else
-				self.Symbol:Hide();
-			end
-		else
-			self.Symbol:Hide();
-			color = DebuffTypeColor["none"];
-		end
-		self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
+		local containerFrame = self:GetParent();
+		AuraUtil.SetAuraBorderAtlas(self.DebuffBorder, buttonInfo.debuffType, containerFrame.showDispelType);
+		AuraUtil.SetAuraSymbol(self.Symbol, buttonInfo.debuffType);
 	end
 
 	self:UpdateExpirationTime(buttonInfo);
@@ -1147,6 +1154,10 @@ function AuraButtonMixin:UpdateDuration(timeLeft)
 		local color = (timeLeft < BUFF_DURATION_WARNING_TIME) and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR;
 		self.Duration:SetVertexColor(color.r, color.g, color.b);
 	end
+end
+
+function AuraButtonMixin:SetupDebuffBorderTexture()
+	-- nothing by default
 end
 
 CollapseAndExpandButtonMixin = { };

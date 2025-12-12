@@ -1423,14 +1423,13 @@
 				</Layers>
 				<Frames>
 					<DropdownButton parentKey="ExpansionDropdown" inherits="WowStyle1DropdownTemplate"/>
-					<Button parentKey="GreatVaultButton" hidden="true" mixin="GreatVaultButtonMixin">
+					<Button parentKey="GreatVaultButton" inherits="AlphaHighlightButtonTemplate" hidden="true" mixin="GreatVaultButtonMixin">
 						<Size x="35" y="35"/>
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.ExpansionDropdown" relativePoint="RIGHT" x="2"/>
 						</Anchors>
-						<NormalTexture parentKey="GVButtonBG" atlas="ui-journeys-greatvault-button" useAtlasSize="true"/>
-						<HighlightTexture parentKey="GVButtonBGHighlight" atlas="ui-journeys-greatvault-button-hover" useAtlasSize="true" alphaMode="ADD"/>
-						<PushedTexture parentKey="GVButtonBGPushed" atlas="ui-journeys-greatvault-button-pressed" useAtlasSize="true" alphaMode="ADD"/>
+						<NormalTexture parentKey="NormalTexture" atlas="ui-journeys-greatvault-button" useAtlasSize="true"/>
+						<PushedTexture parentKey="PushedTexture" atlas="ui-journeys-greatvault-button-pressed" useAtlasSize="true" alphaMode="ADD"/>
 						<Scripts>
 							<OnShow method="OnShow"/>
 							<OnClick method="OnClick"/>

@@ -378,6 +378,47 @@ local function Register()
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
 			end
 
+			local function GetUnderPercentOptionString(percent)
+				return UNDER_X_PERCENT:format(percent);
+			end
+
+			local function GetUnderPercentOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(0, LOC_OPTION_OFF);
+				container:Add(100, GetUnderPercentOptionString(100));
+				container:Add(90, GetUnderPercentOptionString(90));
+				container:Add(80, GetUnderPercentOptionString(80));
+				container:Add(70, GetUnderPercentOptionString(70));
+				container:Add(60, GetUnderPercentOptionString(60));
+				container:Add(50, GetUnderPercentOptionString(50));
+				container:Add(40, GetUnderPercentOptionString(40));
+				container:Add(30, GetUnderPercentOptionString(30));
+				container:Add(20, GetUnderPercentOptionString(20));
+				container:Add(10, GetUnderPercentOptionString(10));
+				return container:GetData();
+			end
+
+			-- Say Party Health
+			local sayPartyHealthSetting = Settings.RegisterCVarSetting(category, "CAAPartyHealthPercent", Settings.VarType.Number, CAA_SAY_PARTY_HEALTH_LABEL);
+			local sayPartyHealthInitializer = Settings.CreateDropdown(category, sayPartyHealthSetting, GetUnderPercentOptions, CAA_SAY_PARTY_HEALTH_TOOLTIP);
+			InitCAAOption(sayPartyHealthInitializer);
+
+			local function SayPartyHealthOptionsModifiable()
+				return GetCVarNumberOrDefault("CAAPartyHealthPercent") > 0;
+			end
+
+			-- Say Party Health Frequency
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAAPartyHealthFrequency", Settings.VarType.Number, CAA_SAY_PARTY_HEALTH_FREQUENCY_LABEL);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAFrequencyMin, Constants.CAAConstants.CAAFrequencyMax, 1);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_PARTY_HEALTH_FREQUENCY_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayPartyHealthInitializer, SayPartyHealthOptionsModifiable);
+			end
+
 			-- Player Resource Options
 			local resource1PowerName, resource2PowerName;
 

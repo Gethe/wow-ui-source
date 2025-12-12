@@ -3,6 +3,7 @@ local MapExploration =
 	Name = "MapExplorationInfo",
 	Type = "System",
 	Namespace = "C_MapExplorationInfo",
+	Environment = "All",
 
 	Functions =
 	{

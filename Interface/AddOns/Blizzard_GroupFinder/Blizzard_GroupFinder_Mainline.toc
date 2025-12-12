@@ -12,6 +12,8 @@ Shared\LFGFrame.lua
 Mainline\LFGFrame.xml
 Mainline\LFDFrame.lua
 Mainline\LFDFrame.xml
+Shared\LFGReadyCheck.lua
+Shared\LFGReadyCheck.xml
 Shared\RaidFinder.lua
 Shared\RaidFinder.xml
 Mainline\LFGList.lua

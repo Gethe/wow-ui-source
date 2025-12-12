@@ -3,6 +3,7 @@ local CurrencyInfo =
 	Name = "CurrencySystem",
 	Type = "System",
 	Namespace = "C_CurrencyInfo",
+	Environment = "All",
 
 	Functions =
 	{

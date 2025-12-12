@@ -3,6 +3,7 @@ local AddOnProfiler =
 	Name = "AddOnProfiler",
 	Type = "System",
 	Namespace = "C_AddOnProfiler",
+	Environment = "All",
 
 	Functions =
 	{

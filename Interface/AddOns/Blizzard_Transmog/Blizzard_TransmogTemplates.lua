@@ -25,6 +25,7 @@ function TransmogOutfitEntryMixin:OnLoad()
 
 	self.OutfitButton:SetScript("OnClick", function(_button, buttonName)
 		if buttonName == "LeftButton" then
+			PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 			self:SelectEntry();
 		elseif buttonName == "RightButton" then
 			MenuUtil.CreateContextMenu(self, function(_owner, rootDescription)
@@ -260,8 +261,12 @@ function TransmogSlotMixin:OnEnter()
 
 		GameTooltip:Show();
 	else
+		-- For some edgecases, a player may have a slot set to 'show equipped' with no gear in that slot, which can return the hidden appearance transmogID for correct rendering on the model.
+		-- Do not show the hidden item name in this case on the tooltip.
+		local isHiddenEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped and C_TransmogCollection.IsAppearanceHiddenVisual(outfitSlotInfo.transmogID);
+
 		local itemID = C_TransmogCollection.GetSourceItemID(outfitSlotInfo.transmogID);
-		if not itemID or not outfitSlotInfo.canTransmogrify or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Hidden then
+		if not itemID or not outfitSlotInfo.canTransmogrify or isHiddenEquipped or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Hidden then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 			-- Use weapon option name if set.
@@ -812,20 +817,7 @@ end
 function TransmogSearchBoxMixin:OnTextChanged()
 	SearchBoxTemplate_OnTextChanged(self);
 
-	if not self.searchType then
-		return;
-	end
-
-	if self:GetText() == "" then
-		C_TransmogCollection.ClearSearch(self.searchType);
-	else
-		C_TransmogCollection.SetSearch(self.searchType, self:GetText());
-	end
-
-	-- Restart search tracking.
-	self.ProgressFrame:Hide();
-	self.updateDelay = 0;
-	self.checkProgress = true;
+	self:UpdateSearch();
 end
 
 function TransmogSearchBoxMixin:SetSearchType(searchType)
@@ -843,6 +835,23 @@ function TransmogSearchBoxMixin:Reset()
 	self.updateDelay = 0;
 	self.checkProgress = false;
 	C_TransmogCollection.ClearSearch(self.searchType);
+end
+
+function TransmogSearchBoxMixin:UpdateSearch()
+	if not self.searchType then
+		return;
+	end
+
+	if self:GetText() == "" then
+		C_TransmogCollection.ClearSearch(self.searchType);
+	else
+		C_TransmogCollection.SetSearch(self.searchType, self:GetText());
+	end
+
+	-- Restart search tracking.
+	self.ProgressFrame:Hide();
+	self.updateDelay = 0;
+	self.checkProgress = true;
 end
 
 
@@ -1209,7 +1218,8 @@ end
 TransmogSetBaseModelMixin = {
 	DYNAMIC_EVENTS = {
 		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
-		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH"
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
+		"PLAYER_EQUIPMENT_CHANGED"
 	};
 };
 
@@ -1256,7 +1266,7 @@ function TransmogSetBaseModelMixin:OnLeave()
 end
 
 function TransmogSetBaseModelMixin:OnEvent(event, ...)
-	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" then
+	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "PLAYER_EQUIPMENT_CHANGED" then
 		self:UpdateSet();
 	end
 end
@@ -1297,6 +1307,7 @@ function TransmogSetModelMixin:OnMouseDown(button)
 	end
 
 	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 		C_TransmogOutfitInfo.SetOutfitToSet(self.elementData.set.setID);
 	end
 end
@@ -1471,6 +1482,7 @@ function TransmogCustomSetModelMixin:OnMouseDown(button)
 	end
 
 	if button == "LeftButton" then
+		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 		C_TransmogOutfitInfo.SetOutfitToCustomSet(self.elementData.customSetID);
 	end
 end

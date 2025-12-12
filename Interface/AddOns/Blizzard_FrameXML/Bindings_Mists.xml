@@ -66,6 +66,12 @@
 	</Binding>
 	<Binding name="TOGGLESHEATH" category="BINDING_HEADER_MOVEMENT">
 		ToggleSheath();
+		if ( TransmogFrame and TransmogFrame.CharacterPreview.ModelScene:IsShown() ) then
+			local playerActor = TransmogFrame.CharacterPreview.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
+		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
 		ToggleAutoRun();
@@ -227,34 +233,34 @@
 	</Binding>
 
 	<Binding name="SHAPESHIFTBUTTON1" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(1)
+		StanceBar:Select(1)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON2" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(2)
+		StanceBar:Select(2)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON3" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(3)
+		StanceBar:Select(3)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON4" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(4)
+		StanceBar:Select(4)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON5" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(5)
+		StanceBar:Select(5)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON6" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(6)
+		StanceBar:Select(6)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON7" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(7)
+		StanceBar:Select(7)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON8" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(8)
+		StanceBar:Select(8)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON9" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(9)
+		StanceBar:Select(9)
 	</Binding>
 	<Binding name="SHAPESHIFTBUTTON10" category="BINDING_HEADER_ACTIONBAR">
-		StanceBar_Select(10)
+		StanceBar:Select(10)
 	</Binding>
 
 	<Binding name="BONUSACTIONBUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
@@ -719,6 +725,261 @@
 		end
 	</Binding>
 
+	<Binding name="MULTIACTIONBAR5BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 1);
+		else
+			MultiActionButtonUp("MultiBar5", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 2);
+		else
+			MultiActionButtonUp("MultiBar5", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 3);
+		else
+			MultiActionButtonUp("MultiBar5", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 4);
+		else
+			MultiActionButtonUp("MultiBar5", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 5);
+		else
+			MultiActionButtonUp("MultiBar5", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 6);
+		else
+			MultiActionButtonUp("MultiBar5", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 7);
+		else
+			MultiActionButtonUp("MultiBar5", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 8);
+		else
+			MultiActionButtonUp("MultiBar5", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 9);
+		else
+			MultiActionButtonUp("MultiBar5", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 10);
+		else
+			MultiActionButtonUp("MultiBar5", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON11" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 11);
+		else
+			MultiActionButtonUp("MultiBar5", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON12" runOnUp="true" category="BINDING_HEADER_ACTIONBAR6">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 12);
+		else
+			MultiActionButtonUp("MultiBar5", 12);
+		end
+	</Binding>
+
+	<Binding name="MULTIACTIONBAR6BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 1);
+		else
+			MultiActionButtonUp("MultiBar6", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 2);
+		else
+			MultiActionButtonUp("MultiBar6", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 3);
+		else
+			MultiActionButtonUp("MultiBar6", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 4);
+		else
+			MultiActionButtonUp("MultiBar6", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 5);
+		else
+			MultiActionButtonUp("MultiBar6", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 6);
+		else
+			MultiActionButtonUp("MultiBar6", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 7);
+		else
+			MultiActionButtonUp("MultiBar6", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 8);
+		else
+			MultiActionButtonUp("MultiBar6", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 9);
+		else
+			MultiActionButtonUp("MultiBar6", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 10);
+		else
+			MultiActionButtonUp("MultiBar6", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON11" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 11);
+		else
+			MultiActionButtonUp("MultiBar6", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR6BUTTON12" runOnUp="true" category="BINDING_HEADER_ACTIONBAR7">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar6", 12);
+		else
+			MultiActionButtonUp("MultiBar6", 12);
+		end
+	</Binding>
+
+	<Binding name="MULTIACTIONBAR7BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 1);
+		else
+			MultiActionButtonUp("MultiBar7", 1);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 2);
+		else
+			MultiActionButtonUp("MultiBar7", 2);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 3);
+		else
+			MultiActionButtonUp("MultiBar7", 3);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 4);
+		else
+			MultiActionButtonUp("MultiBar7", 4);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 5);
+		else
+			MultiActionButtonUp("MultiBar7", 5);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 6);
+		else
+			MultiActionButtonUp("MultiBar7", 6);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON7" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 7);
+		else
+			MultiActionButtonUp("MultiBar7", 7);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON8" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 8);
+		else
+			MultiActionButtonUp("MultiBar7", 8);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON9" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 9);
+		else
+			MultiActionButtonUp("MultiBar7", 9);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON10" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 10);
+		else
+			MultiActionButtonUp("MultiBar7", 10);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON11" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 11);
+		else
+			MultiActionButtonUp("MultiBar7", 11);
+		end
+	</Binding>
+	<Binding name="MULTIACTIONBAR7BUTTON12" runOnUp="true" category="BINDING_HEADER_ACTIONBAR8">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar7", 12);
+		else
+			MultiActionButtonUp("MultiBar7", 12);
+		end
+	</Binding>
+	
 	<!-- Target function key bindings header="TARGETING" -->
 	<Binding name="TARGETNEARESTENEMY" runOnUp="true" category="BINDING_HEADER_TARGETING">
 		if ( keystate == "down" ) then

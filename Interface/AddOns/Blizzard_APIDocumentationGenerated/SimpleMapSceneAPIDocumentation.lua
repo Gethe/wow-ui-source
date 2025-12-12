@@ -2,6 +2,7 @@ local SimpleMapSceneAPI =
 {
 	Name = "SimpleMapSceneAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local ScenarioInfo =
 	Name = "ScenarioInfo",
 	Type = "System",
 	Namespace = "C_ScenarioInfo",
+	Environment = "All",
 
 	Functions =
 	{

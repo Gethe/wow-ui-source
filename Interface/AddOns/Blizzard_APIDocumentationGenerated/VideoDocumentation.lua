@@ -3,6 +3,7 @@ local Video =
 	Name = "Video",
 	Type = "System",
 	Namespace = "C_VideoOptions",
+	Environment = "All",
 
 	Functions =
 	{

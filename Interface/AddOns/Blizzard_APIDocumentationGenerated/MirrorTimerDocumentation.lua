@@ -2,6 +2,7 @@ local MirrorTimer =
 {
 	Name = "MirrorTimer",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

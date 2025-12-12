@@ -3,6 +3,7 @@ local CooldownViewer =
 	Name = "CooldownViewer",
 	Type = "System",
 	Namespace = "C_CooldownViewer",
+	Environment = "All",
 
 	Functions =
 	{

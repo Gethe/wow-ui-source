@@ -3,6 +3,7 @@ local Club =
 	Name = "Club",
 	Type = "System",
 	Namespace = "C_Club",
+	Environment = "All",
 
 	Functions =
 	{

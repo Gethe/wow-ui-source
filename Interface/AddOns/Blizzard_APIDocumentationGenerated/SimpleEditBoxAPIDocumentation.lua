@@ -2,6 +2,7 @@ local SimpleEditBoxAPI =
 {
 	Name = "SimpleEditBoxAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

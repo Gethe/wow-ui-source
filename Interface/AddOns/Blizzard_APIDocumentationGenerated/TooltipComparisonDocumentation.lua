@@ -3,6 +3,7 @@ local TooltipComparison =
 	Name = "TooltipComparison",
 	Type = "System",
 	Namespace = "C_TooltipComparison",
+	Environment = "All",
 
 	Functions =
 	{

@@ -37,7 +37,11 @@ function HousingCatalogBundleDisplayMixin:OnEnter()
 		GameTooltip_AddHighlightLine(GameTooltip, HOUSING_BUNDLE_IN_CART);
 	end
 
-	GameTooltip_AddInstructionLine(GameTooltip, HOUSING_BUNDLE_CLICK_TO_VIEW);
+	if self.elementData.canPreview then
+		GameTooltip_AddInstructionLine(GameTooltip, HOUSING_BUNDLE_CLICK_TO_VIEW);
+	else
+		GameTooltip_AddInstructionLine(GameTooltip, HOUSING_BUNDLE_CLICK_TO_VIEW_IN_SHOP);
+	end
 
 	GameTooltip:Show();
 end
@@ -50,9 +54,12 @@ end
 function HousingCatalogBundleDisplayMixin:OnClick(button)
 	if button == "RightButton" then
 		self:ShowContextMenu();
-	else
+	elseif self.elementData.canPreview then
 		PlaySound(SOUNDKIT.HOUSING_MARKET_SELECT_BUNDLE);
 		EventRegistry:TriggerEvent("HousingMarket.BundleSelected", self.elementData);
+	else
+		-- For non-previewable bundles, open in shop
+		Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(self.elementData.productID);
 	end
 end
 
@@ -99,6 +106,12 @@ function HousingCatalogBundleDisplayMixin:ShowContextMenu()
 		if isInCart then
 			addToCartButton:SetTooltip(function(tooltip, _elementDescription)
 				GameTooltip_AddErrorLine(tooltip, HOUSING_BUNDLE_IN_CART);
+			end);
+		end
+
+		if self.elementData.productID then
+			rootDescription:CreateButton(HOUSING_MARKET_VIEW_IN_SHOP, function()
+				Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(self.elementData.productID);
 			end);
 		end
 	end);

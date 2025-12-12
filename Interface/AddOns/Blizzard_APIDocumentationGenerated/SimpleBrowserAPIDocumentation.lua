@@ -2,6 +2,7 @@ local SimpleBrowserAPI =
 {
 	Name = "SimpleBrowserAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

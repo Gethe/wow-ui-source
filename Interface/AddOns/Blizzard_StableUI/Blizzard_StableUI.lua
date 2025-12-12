@@ -7,7 +7,6 @@ local CALL_PET_SPELL_IDS = { -- Each "active" pet slot corresponds to a "call pe
 	83244,
 	83245,
 };
-local ANIMAL_COMPANION_NODE_ID = 102361; -- BM talent required for secondary pet slot
 local STABLE_FRAME_SWAP_TIMEOUT_SECONDS = 0.3; -- 300ms
 
 local STABLED_PETS_FIRST_SLOT_LUA_INDEX = Constants.PetConsts_PostCata.STABLED_PETS_FIRST_SLOT_INDEX + 1;
@@ -748,13 +747,11 @@ function StableBeastMasterSecondaryPetButtonMixin:OnEvent(event, ...)
 end
 
 function StableBeastMasterSecondaryPetButtonMixin:Refresh()
-	local configID = C_ClassTalents.GetActiveConfigID();
-	local animalCompanionTalentInfo = configID and C_Traits.GetNodeInfo(configID, ANIMAL_COMPANION_NODE_ID);
-	local knowsAnimalCompanion = animalCompanionTalentInfo and animalCompanionTalentInfo.ranksPurchased > 0;
-	self:SetEnabled(knowsAnimalCompanion);
-	self:SetDesaturated(not knowsAnimalCompanion);
-	self:SetLocked(not knowsAnimalCompanion);
-	self:SetPet(knowsAnimalCompanion and GetBeastmasterSecondaryPet() or nil);
+	local isAvailable = C_StableInfo.IsBonusPetSlotAvailable();
+	self:SetEnabled(isAvailable);
+	self:SetDesaturated(not isAvailable);
+	self:SetLocked(not isAvailable);
+	self:SetPet(isAvailable and GetBeastmasterSecondaryPet() or nil);
 	self.disabledTooltip = STABLE_SECONDARY_PET_DISABLED;
 end
 

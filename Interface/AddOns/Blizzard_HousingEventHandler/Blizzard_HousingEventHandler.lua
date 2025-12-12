@@ -19,7 +19,13 @@ StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
 --See HouseEditorUI.cpp
 function HousingFramesUtil.LeaveHouseEditor()
 	if C_HousingDecor.GetNumPreviewDecor() > 0 then
-		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function() C_HouseEditor.LeaveHouseEditor(); end);
+		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+			local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
+			local requiresConfirmation = false;
+			EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
+
+			C_HouseEditor.LeaveHouseEditor();
+		end);
 	else
 		C_HouseEditor.LeaveHouseEditor();
 	end

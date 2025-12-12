@@ -3,6 +3,7 @@ local EncounterInfo =
 	Name = "EncounterInfo",
 	Type = "System",
 	Namespace = "C_EncounterInfo",
+	Environment = "All",
 
 	Functions =
 	{

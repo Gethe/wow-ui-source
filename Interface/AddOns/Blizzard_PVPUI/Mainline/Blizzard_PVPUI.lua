@@ -2891,6 +2891,10 @@ end
 
 TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
 
+local queueOptionToRewardGetter = {
+	[Constants.TrainingGroundConstants.RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID] = C_PvP.GetRandomTrainingGroundRewards;
+};
+
 function TrainingGroundActivityButtonMixin:OnLoad()
 	self:InitializeAnchorPosition();
 	self:InitializeTitleText();
@@ -2929,6 +2933,16 @@ function TrainingGroundActivityButtonMixin:RefreshVisualsForEnabledState()
 	self:RefreshTitleTextColor();
 	self:RefreshNormalTextureAlpha();
 	self:RefreshLevelRequirementAndTitleAnchoring();
+	self:RefreshRewardDisplay();
+end
+
+function TrainingGroundActivityButtonMixin:RefreshRewardDisplay()
+	local rewardGetterFunction = queueOptionToRewardGetter[self:GetQueueOption()];
+	if not rewardGetterFunction then
+		return;
+	end
+
+	PVPUIFrame_ConfigureRewardFrame(self.Reward, rewardGetterFunction());
 end
 
 function TrainingGroundActivityButtonMixin:RefreshTitleTextColor()

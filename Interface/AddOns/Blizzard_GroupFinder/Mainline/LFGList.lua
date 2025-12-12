@@ -53,6 +53,7 @@ LFG_LIST_PER_EXPANSION_TEXTURES = {
 	[8] = "shadowlands",
 	[9] = "dragonflight",
 	[10] = "war-within",
+	[11] = "midnight",
 }
 
 LFG_LIST_GROUP_DATA_ATLASES = {

@@ -3,6 +3,7 @@ local QuestInfoSystem =
 	Name = "QuestInfoSystem",
 	Type = "System",
 	Namespace = "C_QuestInfoSystem",
+	Environment = "All",
 
 	Functions =
 	{

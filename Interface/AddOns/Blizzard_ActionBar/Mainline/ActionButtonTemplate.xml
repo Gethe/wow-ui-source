@@ -4,6 +4,7 @@
 	<CheckButton name="ActionButtonTemplate" inherits="ActionButtonSpellFXTemplate, FlyoutButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="enableSpellFX" value="true" type="boolean"/>
+			<KeyValue key="enableLOCCooldown" value="true" type="boolean"/>
 			<KeyValue key="popupDirection" value="UP" type="string"/>
 			<KeyValue key="popupOffset" value="-4" type="number"/>
 			<KeyValue key="popupCrossAxisSize" value="47" type="number"/>
@@ -107,14 +108,30 @@
 				<Size x="45" y="45"/>
 			</Frame>
 
-			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false" useParentLevel="true" parentKey="cooldown">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="3" y="-3"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
-				</Anchors>				
+				</Anchors>
 				<SwipeTexture>
-					<Color r="1" g="1" b="1" a="0.8"/>
+					<Color r="0" g="0" b="0" a="1"/>
 				</SwipeTexture>
+			</Cooldown>
+			<Cooldown parentKey="lossOfControlCooldown" inherits="CooldownFrameTemplate" drawBling="false" hideCountdownNumbers="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="3" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
+				</Anchors>
+				<SwipeTexture>
+					<Color r="0.17" g="0" b="0" a="1"/>
+				</SwipeTexture>
+				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
+			</Cooldown>
+			<Cooldown parentKey="chargeCooldown" inherits="CooldownFrameTemplate" drawSwipe="false" hideCountdownNumbers="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.icon" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-2" y="2"/>
+				</Anchors>
 			</Cooldown>
 		</Frames>
 

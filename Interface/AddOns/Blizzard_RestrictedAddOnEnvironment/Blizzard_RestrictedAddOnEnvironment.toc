@@ -4,7 +4,7 @@
 ## Dependencies: Blizzard_FrameXML
 
 RestrictedInfrastructure.lua
-RestrictedEnvironment.lua
+RestrictedEnvironment.lua [LoadIntoEnvironment secure]
 RestrictedExecution.lua
 RestrictedFrames.lua
 SecureHandlers.lua

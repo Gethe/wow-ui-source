@@ -3,6 +3,7 @@ local KeyBindings =
 	Name = "KeyBindings",
 	Type = "System",
 	Namespace = "C_KeyBindings",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local PlayerInteractionManager =
 	Name = "PlayerInteractionManager",
 	Type = "System",
 	Namespace = "C_PlayerInteractionManager",
+	Environment = "All",
 
 	Functions =
 	{

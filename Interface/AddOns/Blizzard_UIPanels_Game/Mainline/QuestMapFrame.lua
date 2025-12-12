@@ -1005,7 +1005,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 
 	local mapFrame = QuestMapFrame:GetParent();
 	local questPortrait, questPortraitText, questPortraitName, questPortraitMount, questPortraitModelSceneID = C_QuestLog.GetQuestLogPortraitGiver();
-	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait() and (UIParent:GetRight() - mapFrame:GetRight() > QuestModelScene:GetWidth() + 6)) then
+	if (questPortrait and questPortrait ~= 0 and QuestLogShouldShowPortrait()) then
 		local useCompactDescription = false;
 		QuestFrame_ShowQuestPortrait(mapFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -43, useCompactDescription);
 		QuestModelScene:SetFrameStrata("HIGH");

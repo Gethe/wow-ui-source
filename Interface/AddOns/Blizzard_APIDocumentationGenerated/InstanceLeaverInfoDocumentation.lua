@@ -3,6 +3,7 @@ local InstanceLeaverInfo =
 	Name = "InstanceLeaverInfo",
 	Type = "System",
 	Namespace = "C_InstanceLeaver",
+	Environment = "All",
 
 	Functions =
 	{

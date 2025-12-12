@@ -3,6 +3,7 @@ local QuestOffer =
 	Name = "QuestOffer",
 	Type = "System",
 	Namespace = "C_QuestOffer",
+	Environment = "All",
 
 	Functions =
 	{

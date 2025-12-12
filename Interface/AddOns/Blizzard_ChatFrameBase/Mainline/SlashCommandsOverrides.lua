@@ -88,7 +88,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.INVITE, SLASH_COMMAND_CATEGORY.GROUP_COMMAND, function(msg)
 	if(msg == "") then
-		if not UnitIsPlayer("target") then
+		if not UnitIsHumanPlayer("target") then
 			return;
 		end
 

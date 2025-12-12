@@ -3,6 +3,7 @@ local LoadingScreen =
 	Name = "LoadingScreen",
 	Type = "System",
 	Namespace = "C_LoadingScreen",
+	Environment = "All",
 
 	Functions =
 	{

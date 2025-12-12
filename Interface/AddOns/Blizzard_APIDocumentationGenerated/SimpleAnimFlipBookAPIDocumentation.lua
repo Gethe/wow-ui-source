@@ -2,6 +2,7 @@ local SimpleAnimFlipBookAPI =
 {
 	Name = "SimpleAnimFlipBookAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

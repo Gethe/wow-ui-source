@@ -1658,7 +1658,8 @@ end
 
 function EJMicroButtonMixin:UpdateNotificationIcon()
 	local show = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen);
-	self.NotificationOverlay:SetShown(show);
+	local journeyTutorial = not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_JOURNEYS_TAB);
+	self.NotificationOverlay:SetShown(show or journeyTutorial);
 end
 
 StoreMicroButtonMixin = {};
@@ -1768,6 +1769,8 @@ function StoreMicroButtonMixin:UpdateMicroButton()
 		self.disabledTooltip = nil;
 		self:Enable();
 	end
+
+	self.NotificationOverlay:SetShown(C_CatalogShop.HasNewProducts());
 end
 
 HelpMicroButtonMixin = {};

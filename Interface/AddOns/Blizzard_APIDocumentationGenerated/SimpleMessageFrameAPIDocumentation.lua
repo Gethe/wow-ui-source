@@ -2,6 +2,7 @@ local SimpleMessageFrameAPI =
 {
 	Name = "SimpleMessageFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

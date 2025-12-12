@@ -8,3 +8,15 @@ secureEnv = nil;	--This file shouldn't be calling back into secure code.
 function SecureTransferOutbound.UpdateSendMailButton()
     securecall("SendMailFrame_EnableSendMailButton");
 end
+
+function SecureTransferOutbound.GetAppropriateTopLevelParent()
+	return securecall("GetAppropriateTopLevelParent");
+end
+
+function SecureTransferOutbound.HousingEditorFrameIsShown()
+	return securecallfunction(HouseEditorFrame_IsShown);
+end
+
+function SecureTransferOutbound.GetHousingEditorFrame()
+	return securecallfunction(HouseEditorFrame_GetFrame);
+end

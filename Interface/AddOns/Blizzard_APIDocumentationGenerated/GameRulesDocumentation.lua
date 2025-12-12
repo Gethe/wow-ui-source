@@ -3,6 +3,7 @@ local GameRules =
 	Name = "GameRules",
 	Type = "System",
 	Namespace = "C_GameRules",
+	Environment = "All",
 
 	Functions =
 	{

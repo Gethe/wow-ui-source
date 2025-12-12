@@ -284,7 +284,7 @@ function Class_Intro_CombatDummyInRange:OnBegin()
 
 	self.targetedDummy = false;
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		self.targetedDummy = true;
 	end
 
@@ -305,7 +305,7 @@ end
 
 function Class_Intro_CombatDummyInRange:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		self.targetedDummy = true;
 		self:CheckFinished();
 	end
@@ -390,7 +390,7 @@ function Class_Intro_CombatTactics:Reset()
 	self.firstTime = true;
 
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		if self.playerClass == "WARRIOR" then -- warriors are the only class that can't use their ability straight away
 			Dispatcher:RegisterEvent("UNIT_POWER_FREQUENT", self);
 		else
@@ -403,7 +403,7 @@ end
 
 function Class_Intro_CombatTactics:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().StartingQuestTargetDummyCreatureID) then
 		Dispatcher:UnregisterEvent("UNIT_TARGET", self);
 	end
 end
@@ -972,7 +972,7 @@ end
 function Class_UseQuestItem:StartWatchingTarget()
 	local unitGUID = UnitGUID("target");
 	if unitGUID then
-		local creatureID = C_GUIDUtil.GetCreatureID(unitGUID);
+		local creatureID = C_CreatureInfo.GetCreatureID(unitGUID);
 		local itemTargets = self.questData.ItemTargets;
 		for i, target in ipairs(itemTargets) do
 			if creatureID == target then
@@ -1410,7 +1410,7 @@ end
 
 function Class_EnhancedCombatTactics:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
 		--check for the builder spell on the action bar
 		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
 			return;
@@ -1580,7 +1580,7 @@ end
 
 function Class_EnhancedCombatTactics_Warrior:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
 		--check for the builder spell on the action bar
 		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
 			return;
@@ -1804,7 +1804,7 @@ function Class_EnhancedCombatTactics_UseDoTs:TUTORIAL_COMBAT_EVENT()
 	local eventData = {C_Tutorial.GetCombatEventInfo()};
 
 	local unitGUID = eventData[8];
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
 		local spellEffect = eventData[2];
 		local spenderSpellID = self.combatData.alternateResourceSpenderSpellID or self.combatData.resourceSpenderSpellID;
 		if spellEffect and (spellEffect == "SPELL_AURA_APPLIED" or spellEffect == "SPELL_AURA_REFRESH") then
@@ -1825,7 +1825,7 @@ end
 
 function Class_EnhancedCombatTactics_UseDoTs:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
 		--check for the builder spell on the action bar
 		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
 			return;
@@ -1909,7 +1909,7 @@ end
 
 function Class_EnhancedCombatTactics_Ranged:UNIT_TARGET()
 	local unitGUID = UnitGUID("target");
-	if unitGUID and (C_GUIDUtil.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
+	if unitGUID and (C_CreatureInfo.GetCreatureID(unitGUID) == TutorialData:GetFactionData().EnhancedCombatTacticsCreatureID) then
 		--check for the builder spell on the action bar
 		if not self:IsSpellOnActionBar(self.combatData.resourceBuilderSpellID, self.combatData.warningBuilderString, NPEV2_SPELLBOOK_ADD_SPELL) then
 			return;

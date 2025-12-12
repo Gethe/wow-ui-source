@@ -3,6 +3,7 @@ local FogOfWar =
 	Name = "FogOfWar",
 	Type = "System",
 	Namespace = "C_FogOfWar",
+	Environment = "All",
 
 	Functions =
 	{
