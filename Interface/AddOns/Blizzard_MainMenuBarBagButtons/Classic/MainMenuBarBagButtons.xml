@@ -187,6 +187,7 @@
 				<Scripts>
 					<OnLoad method="OnLoad"/>
 					<OnEvent method="OnEvent"/>
+					<OnShow method="OnShow"/>
 					<OnClick method="OnClick"/>
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>

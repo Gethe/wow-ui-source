@@ -15,6 +15,10 @@ function KeyringMixin:OnEvent(event, ...)
 	ItemAnim_OnEvent(self, event, ...);
 end
 
+function KeyringMixin:OnShow()
+	self:GetParent():Layout();
+end
+
 function KeyringMixin:OnClick()
 	if (CursorHasItem()) then
 		PutKeyInKeyRing();

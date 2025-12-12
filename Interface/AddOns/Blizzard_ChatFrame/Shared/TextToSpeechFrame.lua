@@ -115,7 +115,8 @@ end
 function TextToSpeech_StartPlayNextQueuedMessageTimer()
 	if not queuedMessageTimer then
 		queuedMessageTimer = C_Timer.NewTicker(1, function()
-			if UIParent:IsShown() then
+			local currentChatParent = FCF_GetCurrentFullScreenFrame();
+			if currentChatParent and currentChatParent:IsShown() then
 				TextToSpeech_PlayNextQueuedMessage();
 			end
 		end);
@@ -145,7 +146,8 @@ end
 
 function TextToSpeech_Speak(text, voice)
 	-- Queue messages
-	local uiHidden = not UIParent:IsShown();
+	local currentChatParent = FCF_GetCurrentFullScreenFrame();
+	local uiHidden = not currentChatParent or not currentChatParent:IsShown();
 	local shouldQueue = playbackActive or uiHidden;
 	if shouldQueue then
 		table.insert(queuedMessages, {text=text, voice=voice});

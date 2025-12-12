@@ -128,22 +128,24 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	-- Loading Screen Tips
 	Settings.SetupCVarCheckbox(category, "showLoadingScreenTips", SHOW_TIPOFTHEDAY_TEXT, OPTION_TOOLTIP_SHOW_TIPOFTHEDAY);
 
-	do
-		-- Display Aggro Warning
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, NEVER, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY1);
-			container:Add(1, AGGRO_WARNING_IN_INSTANCE, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY2);
-			container:Add(2, AGGRO_WARNING_IN_PARTY, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY3);
-			container:Add(3, ALWAYS, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY4);
-			return container:GetData();
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		do
+			-- Display Aggro Warning
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(0, NEVER, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY1);
+				container:Add(1, AGGRO_WARNING_IN_INSTANCE, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY2);
+				container:Add(2, AGGRO_WARNING_IN_PARTY, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY3);
+				container:Add(3, ALWAYS, OPTION_TOOLTIP_AGGRO_WARNING_DISPLAY4);
+				return container:GetData();
+			end
+
+			Settings.SetupCVarDropdown(category, "threatWarning", Settings.VarType.Number, GetOptions, AGGRO_WARNING_DISPLAY, nil);
 		end
 
-		Settings.SetupCVarDropdown(category, "threatWarning", Settings.VarType.Number, GetOptions, AGGRO_WARNING_DISPLAY, nil);
+		--Show Aggro Percentages
+		Settings.SetupCVarCheckbox(category, "threatShowNumeric", SHOW_AGGRO_PERCENTAGES, OPTION_TOOLTIP_SHOW_NUMERIC_THREAT);
 	end
-
-	--Show Aggro Percentages
-	Settings.SetupCVarCheckbox(category, "threatShowNumeric", SHOW_AGGRO_PERCENTAGES, OPTION_TOOLTIP_SHOW_NUMERIC_THREAT);
 
 	--Show Enemy Castbars
 	Settings.SetupCVarCheckbox(category, "showTargetCastbar", SHOW_ENEMY_CASTBARS, OPTION_TOOLTIP_SHOW_ENEMY_CASTBARS);
