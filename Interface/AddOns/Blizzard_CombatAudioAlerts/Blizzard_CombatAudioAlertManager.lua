@@ -7,6 +7,7 @@ function CombatAudioAlertManagerMixin:OnLoad()
 	self.lastUnitHealthPercent = {};
 	self.lastPlayerPowerPercent = {};
 	self.partyHealthInfo = { unitCount = 0, unitInfo = {} };
+	self.knownTargetingList = {};
 
 	local function CheckRefreshEvents()
 		if not SettingsPanel:CheckIsSettingDefaults() then
@@ -52,11 +53,14 @@ function CombatAudioAlertManagerMixin:OnLoad()
 	EventRegistry:RegisterCallback("Settings.Defaulted", OnSettingsDefaulted);
 	EventRegistry:RegisterCallback("Settings.CategoryDefaulted", OnSettingsDefaulted);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 end
 
 function CombatAudioAlertManagerMixin:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:Init();
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+		self:UpdateSpecSpecificSettings();
 	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
 		local inCombat = ...;
 		self:ProcessCombatStateChanged(inCombat);
@@ -84,6 +88,9 @@ function CombatAudioAlertManagerMixin:OnEvent(event, ...)
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
 		local _, castGUID = ...;
 		self:ProcessTargetCastInterrupted(castGUID);
+	elseif event == "UNIT_TARGET" then
+		local unit = ...;
+		self:ProcessUnitTargetChanged(unit);
 	end
 end
 
@@ -133,9 +140,6 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		self:UnregisterEvent("PLAYER_TARGET_DIED");
 		self:UnregisterEvent("PLAYER_TARGET_CHANGED");
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE");
-		self:UnregisterEvent("UNIT_POWER_UPDATE");
-		self:UnregisterEvent("UNIT_MAXPOWER");
-		self:UnregisterEvent("UNIT_DISPLAYPOWER");
 		self:UnregisterEvent("UNIT_SPELLCAST_START");
 		self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
@@ -162,14 +166,6 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		else
 			self:ClearAllPartyHealthUnits();
 		end
-
-		local playerPowerNeeded = self:IsSayPlayerResource1Enabled() or self:IsSayPlayerResource2Enabled();
-		if playerPowerNeeded then
-			self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player");
-			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
-			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
-		end
-		self:UpdateWatchedPowerTokens();
 
 		local unitCastStartUnits = {};
 		local unitCastEndUnits = {};
@@ -212,12 +208,44 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		self:ClearAllPartyHealthUnits();
 	end
 
+	self:UpdateSpecSpecificSettings(isInit);
+
 	if isInit and C_CombatAudioAlert.IsEnabled() then
 		if self:IsInPartyHealthMode() then
 			self:RefreshAllPartyHealthUnits();
 		else
 			self:ProcessUnitHealthChange("player");
 		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetSpeakerVoice(newVoiceID)
+	newVoiceID = tonumber(newVoiceID);
+	local currentVoiceID = tonumber(GetCVar("CAAVoice"));
+	if newVoiceID ~= currentVoiceID then
+		SetCVar("CAAVoice", newVoiceID);
+	else
+		self:PlaySample();
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetSpeakerSpeed(newSpeed)
+	newSpeed = tonumber(newSpeed);
+	local currentSpeed = C_CombatAudioAlert.GetSpeakerSpeed();
+	if newSpeed ~= currentSpeed then
+		C_CombatAudioAlert.SetSpeakerSpeed(newSpeed);
+	else
+		self:PlaySample();
+	end
+end
+
+function CombatAudioAlertManagerMixin:SetSpeakerVolume(newVolume)
+	newVolume = tonumber(newVolume);
+	local currentVolume = C_CombatAudioAlert.GetSpeakerVolume();
+	if newVolume ~= currentVolume then
+		C_CombatAudioAlert.SetSpeakerVolume(newVolume);
+	else
+		self:PlaySample();
 	end
 end
 
@@ -265,6 +293,10 @@ function CombatAudioAlertManagerMixin:IsSayPartyHealthEnabled()
 	return (CombatAudioAlertUtil.GetCAACvarValueNumber("PARTY_HEALTH_PCT_CVAR") > 0);
 end
 
+function CombatAudioAlertManagerMixin:GetSayPartyHealthPercent()
+	return CombatAudioAlertUtil.GetCurrentPartyHealthPercentInfo().percentVal;
+end
+
 function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencySetting()
 	return CombatAudioAlertUtil.GetCAACvarValueNumber("PARTY_HEALTH_FREQ_CVAR");
 end
@@ -282,11 +314,11 @@ function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencyScalingValu
 end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerResource1Enabled()
-	return (C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Percent) > 0);
+	return (C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent) > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerResource2Enabled()
-	return (C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Percent) > 0);
+	return (C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent) > 0);
 end
 
 function CombatAudioAlertManagerMixin:GetSayUnitCastMode(unit)
@@ -309,6 +341,14 @@ end
 
 function CombatAudioAlertManagerMixin:IsInterruptCastSuccessEnabled()
 	return (CombatAudioAlertUtil.GetCAACvarValueNumber("SAY_INTERRUPT_CAST_SUCCESS_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:GetSayIfTargetedMode()
+	return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
+end
+
+function CombatAudioAlertManagerMixin:IsSayIfTargetedEnabled()
+	return (self:GetSayIfTargetedMode() > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsWatchingUnitHealth(unit)
@@ -361,6 +401,33 @@ function CombatAudioAlertManagerMixin:RegisterForUnitHealth()
 	end
 end
 
+function CombatAudioAlertManagerMixin:UpdateSpecSpecificSettings(isInit)
+	if not isInit and not self.initDone then
+		return;
+	end
+
+	if not isInit then
+		self:UnregisterEvent("UNIT_TARGET");
+		self:UnregisterEvent("UNIT_POWER_UPDATE");
+		self:UnregisterEvent("UNIT_MAXPOWER");
+		self:UnregisterEvent("UNIT_DISPLAYPOWER");
+	end
+
+	if C_CombatAudioAlert.IsEnabled() then
+		if self:IsSayIfTargetedEnabled() then
+			self:RegisterEvent("UNIT_TARGET");
+		end
+
+		local playerPowerNeeded = self:IsSayPlayerResource1Enabled() or self:IsSayPlayerResource2Enabled();
+		if playerPowerNeeded then
+			self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player");
+			self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+			self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
+		end
+		self:UpdateWatchedPowerTokens();
+	end
+end
+
 function CombatAudioAlertManagerMixin:UpdateWatchedPowerTokens()
 	self.watchedPowerTokens = {};
 
@@ -394,7 +461,7 @@ end
 local sampleTextInfo = {throttleType = Enum.CombatAudioAlertThrottle.Sample, text = CAA_SAMPLE_TEXT};
 
 function CombatAudioAlertManagerMixin:PlaySample()
-	self:TrySpeakText(sampleTextInfo);
+	self:TrySpeakText(sampleTextInfo, CombatAudioAlertConstants.ALLOW_OVERLAP_NO);
 end
 
 function CombatAudioAlertManagerMixin:OnThrottleTimerComplete(throttleType)
@@ -454,9 +521,9 @@ end
 
 function CombatAudioAlertManagerMixin:GetUnitHealthThreshold(unit)
 	if unit == "player" then
-		return CombatAudioAlertUtil.GetCAACvarValueNumber("PLAYER_HEALTH_PCT_CVAR");
+		return CombatAudioAlertUtil.GetCAACvarValueNumber("PLAYER_HEALTH_PCT_CVAR") * 10;
 	elseif unit == "target" then
-		return CombatAudioAlertUtil.GetCAACvarValueNumber("TARGET_HEALTH_PCT_CVAR");
+		return CombatAudioAlertUtil.GetCAACvarValueNumber("TARGET_HEALTH_PCT_CVAR") * 10;
 	else
 		error("Invalid unit passed to GetUnitHealthThreshold")
 	end
@@ -589,7 +656,7 @@ function CombatAudioAlertManagerMixin:ProcessPartyUnitHealthChange(unit)
 
 	--print("Processing "..unit.." health: "..healthPercent.." dead: "..(UnitIsDead(unit) and "true" or "false").." ghost: "..(UnitIsGhost(unit) and "true" or "false"));
 
-	if not self:ShouldConsiderUnitDead(unit) and healthPercent < CombatAudioAlertUtil.GetCAACvarValueNumber("PARTY_HEALTH_PCT_CVAR") then
+	if not self:ShouldConsiderUnitDead(unit) and healthPercent < self:GetSayPartyHealthPercent() then
 		self:UpdatePartyHealthUnit(unit, healthPercent);
 	else
 		self:RemovePartyHealthUnitIfNeeded(unit);
@@ -659,7 +726,7 @@ function CombatAudioAlertManagerMixin:RefreshAllPartyHealthUnits()
 end
 
 function CombatAudioAlertManagerMixin:GetPlayerPowerThreshold(powerType)
-	return CombatAudioAlertUtil.GetResourcePercentCVarVal(powerType);
+	return CombatAudioAlertUtil.GetResourcePercentCVarVal(powerType) * 10;
 end
 
 function CombatAudioAlertManagerMixin:GetPlayerPowerBand(powerType, powerPercent)
@@ -761,12 +828,86 @@ function CombatAudioAlertManagerMixin:ProcessTargetCastInterrupted(castGUID)
 	end
 end
 
-function CombatAudioAlertManagerMixin:TrySpeakText(textInfo)
+function CombatAudioAlertManagerMixin:GetUnitFormattedTargetingString(unit)
+	local sayIfTargetedMode = self:GetSayIfTargetedMode();
+
+	local text;
+	if sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.Aggro then
+		text = CAA_AGGRO_TEXT;
+	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.Targeted then
+		text = CAA_YOURE_TARGETED_TEXT;
+	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.TargetedBy then
+		local unitName = UnitName(unit);
+		if unitName then
+			text = CAA_TARGETED_BY_TEXT:format(unitName);
+		else
+			-- Fallback if we can't get the name
+			text = CAA_YOURE_TARGETED_TEXT;
+		end
+	else
+		error("Invalid SayIfTargetedMode set")
+	end
+
+	return text;
+end
+
+function CombatAudioAlertManagerMixin:AddToKnownTargetingList(unit)
+	--print("AddToKnownTargetingList : "..unit);
+	for knownTargetingUnit in pairs(self.knownTargetingList) do
+		if UnitIsUnit(knownTargetingUnit, unit) then
+			--print("dupe : "..knownTargetingUnit);
+			return false;
+		end
+	end
+
+	--print("added to knownTargetingList");
+	self.knownTargetingList[unit] = true;
+	return true;
+end
+
+function CombatAudioAlertManagerMixin:RemoveFromKnownTargetingList(unit)
+	--print("RemoveFromKnownTargetingList : "..unit);
+	for knownTargetingUnit in pairs(self.knownTargetingList) do
+		if UnitIsUnit(knownTargetingUnit, unit) then
+			--print("found matching unit : "..knownTargetingUnit);
+			self.knownTargetingList[knownTargetingUnit] = nil;
+			return true;
+		end
+	end
+
+	--print("didn't find matching unit : "..unit);
+	return false;
+end
+
+function CombatAudioAlertManagerMixin:ProcessUnitTargetChanged(unit)
+	if not self:IsSayIfTargetedEnabled() then
+		return;
+	end
+
+	if not UnitCanAttack("player", unit) then
+		-- If they aren't an attackable ignore them
+		return;
+	end
+
+	local unitTarget = unit.."target";
+	if UnitIsUnit(unitTarget, "player") then
+		-- This unit is targeting the player. Check if they are already on the known targeting list
+		if self:AddToKnownTargetingList(unit) then
+			-- Nope they just started targeting the player, announce it
+			C_CombatAudioAlert.SpeakText(self:GetUnitFormattedTargetingString(unit));
+		end
+	else
+		-- This unit is not targeting the player. Check if they are on the known targeting list
+		self:RemoveFromKnownTargetingList(unit);
+	end
+end
+
+function CombatAudioAlertManagerMixin:TrySpeakText(textInfo, allowOverlap)
 	if not C_CombatAudioAlert.IsEnabled() then
 		return;
 	end
 
 	if self:CheckThrottle(textInfo) then
-		C_CombatAudioAlert.SpeakText(textInfo.text);
+		C_CombatAudioAlert.SpeakText(textInfo.text, allowOverlap);
 	end
 end

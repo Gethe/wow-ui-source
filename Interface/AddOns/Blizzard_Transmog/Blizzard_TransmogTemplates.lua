@@ -345,7 +345,23 @@ function TransmogSlotMixin:GetSlotInfo()
 		return nil;
 	end
 
-	return C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentWeaponOptionInfo.weaponOption);
+	local slotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentWeaponOptionInfo.weaponOption);
+
+	-- Some specific weapons may not be able to support illusions.
+	if self.slotData.transmogLocation:IsIllusion() then
+		local appearanceType = Enum.TransmogType.Appearance;
+		local appearanceSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), appearanceType, self.slotData.currentWeaponOptionInfo.weaponOption);
+		if appearanceSlotInfo then
+			-- If we have a valid warning state, make sure it can show relative to other possible warnings.
+			local cannotSupportIllusions = appearanceSlotInfo.transmogID ~= Constants.Transmog.NoTransmogID and not TransmogUtil.CanEnchantSource(appearanceSlotInfo.transmogID);
+			if cannotSupportIllusions and slotInfo.warning < Enum.TransmogOutfitSlotWarning.WeaponDoesNotSupportIllusions then
+				slotInfo.warning = Enum.TransmogOutfitSlotWarning.WeaponDoesNotSupportIllusions;
+				slotInfo.warningText = TRANSMOGRIFY_ILLUSION_INVALID_ITEM;
+			end
+		end
+	end
+
+	return slotInfo;
 end
 
 function TransmogSlotMixin:GetSlot()
@@ -1040,8 +1056,7 @@ function TransmogItemModelMixin:UpdateCamera()
 			end
 		end
 
-		-- If appearance slot doesn't have a visual, use the default visual for this collection type.
-		if transmogID == Constants.Transmog.NoTransmogID then
+		if transmogID == Constants.Transmog.NoTransmogID or self:ShouldLocationUseDefaultVisual() then
 			local itemModifiedAppearanceID = C_TransmogOutfitInfo.GetIllusionDefaultIMAIDForCollectionType(itemsCollectionFrame:GetActiveCategory());
 			if itemModifiedAppearanceID then
 				transmogID = itemModifiedAppearanceID;
@@ -1155,8 +1170,7 @@ function TransmogItemModelMixin:UpdateItem()
 			end
 		end
 
-		-- If appearance slot doesn't have a visual, use the default visual for this collection type.
-		if transmogID == Constants.Transmog.NoTransmogID then
+		if transmogID == Constants.Transmog.NoTransmogID or self:ShouldLocationUseDefaultVisual() then
 			local itemModifiedAppearanceID = C_TransmogOutfitInfo.GetIllusionDefaultIMAIDForCollectionType(itemsCollectionFrame:GetActiveCategory());
 			if itemModifiedAppearanceID then
 				transmogID = itemModifiedAppearanceID;
@@ -1212,6 +1226,29 @@ function TransmogItemModelMixin:RefreshItemCamera()
 	if self.cameraID then
 		Model_ApplyUICamera(self, self.cameraID);
 	end
+end
+
+function TransmogItemModelMixin:ShouldLocationUseDefaultVisual()
+	local useDefaultVisual = false;
+
+	local itemsCollectionFrame = self:GetCollectionFrame();
+	if not itemsCollectionFrame then
+		useDefaultVisual = true;
+		return useDefaultVisual;
+	end
+
+	local transmogLocation = itemsCollectionFrame:GetTransmogLocation();
+	if transmogLocation:IsIllusion() then
+		local slotFrame = itemsCollectionFrame:GetSlotFrameCallback(transmogLocation:GetSlot(), transmogLocation:GetType());
+		if slotFrame then
+			local outfitSlotInfo = slotFrame:GetSlotInfo();
+			if outfitSlotInfo then
+				useDefaultVisual = outfitSlotInfo.warning == Enum.TransmogOutfitSlotWarning.WeaponDoesNotSupportIllusions;
+			end
+		end
+	end
+
+	return useDefaultVisual;
 end
 
 

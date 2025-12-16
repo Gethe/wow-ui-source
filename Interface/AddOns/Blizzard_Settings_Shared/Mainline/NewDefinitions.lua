@@ -64,4 +64,5 @@ NewSettings["12.0.0"] = {
 	"damageMeterEnabled",
 	"spellDiminishPVPEnemiesEnabled",
 	"externalDefensivesEnabled",
+	"CAA_COMBAT_AUDIO_ALERTS_LABEL", -- entire section is new
 };

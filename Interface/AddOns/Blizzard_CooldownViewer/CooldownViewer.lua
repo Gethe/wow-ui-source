@@ -258,6 +258,12 @@ function CooldownViewerItemMixin:OnAuraInstanceInfoCleared(_auraSpellID, auraIns
 	end
 end
 
+function CooldownViewerItemMixin:RefreshIconBorder()
+	if self.DebuffBorder then
+		self.DebuffBorder:UpdateFromAuraData(self:GetAuraData());
+	end
+end
+
 function CooldownViewerItemMixin:UpdateTooltip()
 	if GameTooltip:IsOwned(self) then
 		self:RefreshTooltip();
@@ -543,16 +549,16 @@ function CooldownViewerItemMixin:IsInPandemicTime(timeNow)
 	return self.pandemicStartTime and timeNow >= self.pandemicStartTime and timeNow <= self.pandemicEndTime;
 end
 
-function CooldownViewerItemMixin:AddChargeGainedAlertTime(predictedChargeGainTime)
+function CooldownViewerItemMixin:AddChargeGainedAlertTime(predictedChargeCount, predictedChargeGainTime)
 	local chargeTimes = GetOrCreateTableEntry(self, "chargeGainedAlertTimes", {});
-	chargeTimes[predictedChargeGainTime] = true;
+	chargeTimes[predictedChargeCount] = predictedChargeGainTime;
 end
 
 function CooldownViewerItemMixin:ShouldTriggerChargeGainedAlert(timeNow)
 	if self.chargeGainedAlertTimes then
-		for chargeTime in pairs(self.chargeGainedAlertTimes) do
-			if timeNow >= chargeTime then
-				self.chargeGainedAlertTimes[chargeTime] = nil;
+		for predictedChargeCount, predictedChargeTime in pairs(self.chargeGainedAlertTimes) do
+			if timeNow >= predictedChargeTime then
+				self.chargeGainedAlertTimes[predictedChargeCount] = nil;
 				return true;
 			end
 		end
@@ -782,9 +788,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 				self.cooldownDesaturated = false;
 			end
 
-			if self:CheckSetPandemicAlertTiggerTime(auraData, timeNow) then
-				self.cooldownUseAuraDisplayTime = false;
-			end
+			self:CheckSetPandemicAlertTiggerTime(auraData, timeNow);
 		end
 	end
 end
@@ -811,7 +815,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges(tim
 		if spellChargeInfo.cooldownStartTime > 0 and spellChargeInfo.cooldownDuration > 0 and spellChargeInfo.currentCharges < spellChargeInfo.maxCharges then
 			local predictedChargeGainTime = spellChargeInfo.cooldownStartTime + spellChargeInfo.cooldownDuration;
 			if predictedChargeGainTime > timeNow then
-				self:AddChargeGainedAlertTime(predictedChargeGainTime);
+				self:AddChargeGainedAlertTime(spellChargeInfo.currentCharges + 1, predictedChargeGainTime);
 			end
 		end
 	end
@@ -911,24 +915,37 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 	end
 end
 
+function CooldownViewerCooldownItemMixin:SetCachedChargeValues(count, shown)
+	local considerAddingAlert = self.previousCooldownChargesCount ~= nil;
+	self.previousCooldownChargesCount = (self.cooldownChargesCount or 0);
+	self.cooldownChargesCount = count;
+	self.cooldownChargesShown = shown;
+
+	if considerAddingAlert and self.previousCooldownChargesCount < self.cooldownChargesCount then
+		self:AddChargeGainedAlertTime(self.cooldownChargesCount, GetTime());
+	end
+end
+
 function CooldownViewerCooldownItemMixin:CacheChargeValues()
 	-- Give precedence to spells set up with explicit charge info that have more than one max charge.
 	local spellChargeInfo = self:GetSpellChargeInfo();
 	if spellChargeInfo and spellChargeInfo.maxCharges > 1 then
-		self.cooldownChargesCount = spellChargeInfo.currentCharges;
-		self.cooldownChargesShown = true;
+		local showCharges = true;
+		self:SetCachedChargeValues(spellChargeInfo.currentCharges, showCharges);
 		return;
 	end
 
 	-- Some spells are set up to show 'cast count' (also called 'use count') which can have different meanings base on the context of the spell.
 	local spellID = self:GetSpellID();
 	if spellID then
-		self.cooldownChargesCount = C_Spell.GetSpellCastCount(spellID);
-		self.cooldownChargesShown = self.cooldownChargesCount > 0;
+		local charges = C_Spell.GetSpellCastCount(spellID);
+		self:SetCachedChargeValues(charges, charges > 0);
 		return;
 	end
 
-	self.cooldownChargesShown = false;
+	-- Passing in the current charges to preserve previous behavior since neither of the above cases applied.
+	local hideCharges = false;
+	self:SetCachedChargeValues(self.cooldownChargesCount, hideCharges);
 end
 
 function CooldownViewerCooldownItemMixin:IsExpired()
@@ -1043,11 +1060,12 @@ end
 function CooldownViewerCooldownItemMixin:RefreshData()
 	self:ClearVisualDataSource();
 	self:RefreshAuraInstance();
-	self:RefreshSpellCooldownInfo();
 	self:RefreshSpellChargeInfo();
+	self:RefreshSpellCooldownInfo();
 	self:RefreshSpellTexture();
 	self:RefreshIconDesaturation();
 	self:RefreshIconColor();
+	self:RefreshIconBorder();
 	self:RefreshOverlayGlow();
 	self:RefreshActive();
 end
@@ -1206,6 +1224,7 @@ function CooldownViewerBuffIconItemMixin:RefreshData()
 	self:RefreshCooldownInfo();
 	self:RefreshSpellTexture();
 	self:RefreshApplications();
+	self:RefreshIconBorder();
 	self:RefreshActive();
 end
 
@@ -1249,7 +1268,7 @@ function CooldownViewerBuffBarItemMixin:OnLoad()
 	local pipTexture = self:GetPipTexture();
 	local barFrame = self:GetBarFrame();
 	pipTexture:ClearAllPoints();
-	pipTexture:SetPoint("CENTER", barFrame:GetStatusBarTexture(), "RIGHT", 0, 0);
+	pipTexture:SetPoint("CENTER", barFrame:GetStatusBarTexture(), "RIGHT", 0, -1);
 end
 
 function CooldownViewerBuffBarItemMixin:OnUpdate(elapsed, timeNow)
@@ -1263,24 +1282,22 @@ end
 function CooldownViewerBuffBarItemMixin:SetBarContent(barContent)
 	local iconFrame = self:GetIconFrame();
 	local nameFontString = self:GetNameFontString();
-	local point, relativeTo, relativePoint, offsetX, offsetY = "LEFT", iconFrame, "RIGHT", 0, 0;
 
 	if barContent == Enum.CooldownViewerBarContent.IconAndName then
 		iconFrame:Show();
 		nameFontString:Show();
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "RIGHT", 2, 0);
 	elseif barContent == Enum.CooldownViewerBarContent.IconOnly then
 		iconFrame:Show();
 		nameFontString:Hide();
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "RIGHT", 2, 0);
 	elseif barContent == Enum.CooldownViewerBarContent.NameOnly then
 		iconFrame:Hide();
 		nameFontString:Show();
-		relativeTo = self;
-		relativePoint = "LEFT";
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "LEFT", 0, 0);
 	else
 		assertsafe(false, "Unknown value for bar content: %d", barContent);
 	end
-
-	self:GetBarFrame():SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
 
 function CooldownViewerBuffBarItemMixin:SetBarWidth(barWidth)
@@ -1364,6 +1381,7 @@ function CooldownViewerBuffBarItemMixin:RefreshData()
 	self:RefreshCooldownInfo();
 	self:RefreshName();
 	self:RefreshApplications();
+	self:RefreshIconBorder();
 	self:RefreshActive();
 end
 
@@ -1669,6 +1687,10 @@ function CooldownViewerMixin:OnAcquireItemFrame(itemFrame)
 	itemFrame:SetIsEditing(self.isEditing);
 end
 
+function CooldownViewerMixin:GetAdditionalPaddingOffset()
+	return -4;
+end
+
 function CooldownViewerMixin:RefreshLayout()
 	self.itemFramePool:ReleaseAll();
 
@@ -1692,8 +1714,12 @@ function CooldownViewerMixin:RefreshLayout()
 	-- Horizontal layout is always top to bottom. Vertical layout uses the Icon Direction.
 	itemContainerFrame.layoutFramesGoingUp = not self.isHorizontal and self.iconDirection == Enum.CooldownViewerIconDirection.Right;
 
-	itemContainerFrame.childXPadding = self.iconPadding;
-	itemContainerFrame.childYPadding = self.iconPadding;
+	-- To allow the icons to touch they're placed closer together by this additional offset.
+	-- The max setting value has been increased to account for this to allow the user to choose the same padding as before.
+	-- To avoid needing to use this the cooldownItem layout and sizing will need a substantial update.
+	local padding = self.iconPadding + self:GetAdditionalPaddingOffset();
+	itemContainerFrame.childXPadding = padding;
+	itemContainerFrame.childYPadding = padding;
 
 	itemContainerFrame.stride = self:GetStride();
 
@@ -1994,3 +2020,19 @@ function BuffBarCooldownViewerMixin:AnchorPandemicStateFrame(frame, cooldownItem
 	frame:SetPoint("BOTTOMRIGHT", cooldownItem.Bar, "BOTTOMRIGHT", 9, -10);
 	frame:SetFrameLevel(cooldownItem.Bar:GetFrameLevel() + 1);
 end
+
+function BuffBarCooldownViewerMixin:GetAdditionalPaddingOffset()
+	return -2;
+end
+
+CooldownViewerItemDebuffBorderMixin = {};
+
+function CooldownViewerItemDebuffBorderMixin:UpdateFromAuraData(auraData)
+	if auraData then
+		self:Show();
+		AuraUtil.SetAuraBorderAtlasFromAura(self.Texture, auraData);
+	else
+		self:Hide();
+	end
+end
+

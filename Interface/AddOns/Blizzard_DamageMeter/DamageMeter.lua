@@ -234,6 +234,11 @@ end
 
 function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 	local sessionWindow = windowData.sessionWindow or CreateFrame("FRAME", "DamageMeterSessionWindow" .. windowIndex, self, "DamageMeterSessionWindowTemplate");
+
+	if not windowData.sessionWindow then
+		windowData.sessionWindow = sessionWindow;
+	end
+
 	sessionWindow:SetDamageMeterOwner(self, windowIndex);
 	sessionWindow:SetDamageMeterType(windowData.damageMeterType);
 	sessionWindow:SetSession(windowData.sessionType, windowData.sessionID);
@@ -263,18 +268,22 @@ function DamageMeterMixin:SetupSessionWindow(windowData, windowIndex)
 		sessionWindow:SetPoint("TOPLEFT", UIParent, "TOPLEFT", xOffset, yOffset);
 	end
 
-	-- Ensure that the window's position won't be saved out until it's restored from the frame
-	-- position cache, or if the player moves it. Important for the case when the player hides a
-	-- window and shows a new one that's reusing a name already in the cache.
-	sessionWindow:SetUserPlaced(false);
+	-- Only the secondary windows can be moved and resized outside of edit mode.
+	if self:CanMoveOrResizeSessionWindow(sessionWindow) then
+		sessionWindow:SetMovable(true);
+		sessionWindow:SetResizable(true);
+
+		-- Ensure that the window's position won't be saved out until it's restored from the frame
+		-- position cache, or if the player moves it. Important for the case when the player hides a
+		-- window and shows a new one that's reusing a name already in the cache.
+		sessionWindow:SetUserPlaced(false);
+	end
 
 	sessionWindow:Show();
 
 	if windowData.locked == true then
 		sessionWindow:SetLocked(true);
 	end
-
-	windowData.sessionWindow = sessionWindow;
 end
 
 function DamageMeterMixin:LoadSavedWindowDataList()

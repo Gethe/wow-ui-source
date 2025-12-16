@@ -267,6 +267,15 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "IsHousingMarketShopEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHousingMarketShopEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHousingServiceEnabled",
 			Type = "Function",
 
@@ -784,6 +793,16 @@ local HousingUI =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "HouseLevelReward", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveNeighborhoodCharterSignature",
+			Type = "Event",
+			LiteralName = "REMOVE_NEIGHBORHOOD_CHARTER_SIGNATURE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "signature", Type = "cstring", Nilable = false },
 			},
 		},
 		{

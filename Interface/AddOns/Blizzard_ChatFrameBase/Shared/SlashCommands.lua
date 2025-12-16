@@ -131,6 +131,7 @@ SLASH_COMMAND = {
 	RESET_COMMENTATOR_SETTINGS = "RESET_COMMENTATOR_SETTINGS",
 	VOICECHAT = "VOICECHAT",
 	TEXTTOSPEECH = "TEXTTOSPEECH",
+	COMBATAUDIOALERTS = "CAA",
 	COUNTDOWN = "COUNTDOWN",
 	PET_ASSIST = "PET_ASSIST",
 	PET_AUTOCASTON = "PET_AUTOCASTON",
@@ -1525,7 +1526,19 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXTTOSPEECH, SLASH_COMMAND_
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	else
 		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
-		TextToSpeechCommands:ShowHelp(msg)
+		TextToSpeechCommands:ShowHelp(msg);
+	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
+	local success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
+	if not success then
+		if failureText then
+			CAACommands:SpeakConfirmation(failureText, failureTextNarrated);
+		else
+			CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+			CAACommands:ShowHelp(msg);
+		end
 	end
 end);
 

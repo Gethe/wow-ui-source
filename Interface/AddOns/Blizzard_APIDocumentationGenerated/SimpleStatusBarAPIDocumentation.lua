@@ -307,6 +307,7 @@ local SimpleStatusBarAPI =
 			{
 				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "direction", Type = "StatusBarTimerDirection", Nilable = false, Default = "ElapsedTime" },
 			},
 		},
 		{

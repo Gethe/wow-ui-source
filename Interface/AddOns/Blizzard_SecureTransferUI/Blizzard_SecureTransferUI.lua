@@ -119,13 +119,14 @@ local SECURE_TRANSFER_DIALOGS = {
 			C_SecureTransfer.CompleteHousingPurchase();
 		end,
 		waitForEvent = "BULK_PURCHASE_RESULT_RECEIVED",
-		eventCallback = function(self, wasSuccess)
-			if not wasSuccess then
-				-- Show failure dialog before hiding
-				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE");
-			else
+		eventCallback = function(self, ...)
+			local result, _individualResults = ...;
+			if result == Enum.BulkPurchaseResult.ResultOk or result == Enum.BulkPurchaseResult.ResultPartialSuccess then
 				PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CELEBRATION);
 				self:Hide();
+			else
+				-- Show failure dialog before hiding
+				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE");
 			end
 		end,
 		beforeSpinnerWaitTime = 0,
@@ -144,9 +145,37 @@ local SECURE_TRANSFER_DIALOGS = {
 		text = HOUSING_MARKET_PURCHASE_FAILURE,
 		hideButton2 = true,
 	},
+	["START_HOUSING_VC_PURCHASE"] = {
+		button1 = CONTINUE,
+		text = HOUSING_MARKET_VC_PURCHASE_CONFIRMATION,
+		onAccept = function(self)
+			local productID = C_SecureTransfer.GetHousingVCPurchaseProductID();
+			C_SecureTransfer.CompleteHousingVCPurchase();
+			C_CatalogShop.PurchaseProduct(productID);
+			SecureTransferOutbound.HideCatalogShopTopUpFrame();
+		end,
+		fullScreenCover = true,
+		-- Use TOOLTIP strata to layer above the TopUpFrame which uses FULLSCREEN_DIALOG
+		overrideFrameStrata = "TOOLTIP",
+		getFocusedFrame = SecureTransferOutbound.GetCatalogShopTopUpFrame,
+	},
 }
 
 local currentDialog;
+
+local function GetHearthsteelQuantityFromProduct(productInfo)
+	local hearthsteelCurrencyCode = SecureTransferOutbound.GetHearthsteelVirtualCurrencyCode();
+	if productInfo and productInfo.virtualCurrencies then
+		for _, virtualCurrency in ipairs(productInfo.virtualCurrencies) do
+			if virtualCurrency.currencyCode == hearthsteelCurrencyCode then
+				return virtualCurrency.amount;
+			end
+		end
+	end
+
+	-- This should never happen in practice.
+	return 0;
+end
 
 function SecureTransferDialog_Show(which, ...)
     if (not SECURE_TRANSFER_DIALOGS[which]) then
@@ -180,7 +209,20 @@ function SecureTransferDialog_Show(which, ...)
 	local parent = SecureTransferOutbound.GetAppropriateTopLevelParent();
 	FrameUtil.SetParentMaintainRenderLayering(SecureTransferDialog, parent);
 
-	local coverFrameParent = SecureTransferOutbound.GetAppropriateTopLevelParent();
+	SecureTransferDialog:SetFrameStrata(currentDialog.overrideFrameStrata or "DIALOG");
+
+	local focusedFrame = currentDialog.getFocusedFrame and currentDialog.getFocusedFrame() or nil;
+
+	-- Position dialog centered on focused frame, or default positioning
+	SecureTransferDialog:ClearAllPoints();
+	if focusedFrame then
+		SecureTransferDialog:SetPoint("CENTER", focusedFrame, "CENTER");
+	else
+		SecureTransferDialog:SetPoint("CENTER");
+	end
+
+	local coverFrameParent = focusedFrame or SecureTransferOutbound.GetAppropriateTopLevelParent();
+
 	SecureTransferDialog.CoverFrame:ClearAllPoints();
 	SecureTransferDialog.CoverFrame:SetPoint("TOPLEFT", coverFrameParent, "TOPLEFT");
 	SecureTransferDialog.CoverFrame:SetPoint("BOTTOMRIGHT", coverFrameParent, "BOTTOMRIGHT");
@@ -208,6 +250,7 @@ function SecureTransferDialog_OnLoad(self)
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT");
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_SEND_MAIL");
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE");
+	self:RegisterEvent("SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION");
 	self:RegisterEvent("SECURE_TRANSFER_CANCEL");
 	self:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED");
 end
@@ -225,6 +268,13 @@ function SecureTransferDialog_OnEvent(self, event, ...)
 	elseif (event == "SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE") then
 		local costText = C_SecureTransfer.GetHousingPurchaseCost() .. HearthsteelAtlasMarkup;
 		SecureTransferDialog_Show("CONFIRM_HOUSING_PURCHASE", costText);
+	elseif (event == "SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION") then
+		local productID = C_SecureTransfer.GetHousingVCPurchaseProductID();
+		local productInfo = C_CatalogShop.GetProductInfo(productID);
+
+		-- We're not formatting in the currency icon because the currency name is spelled out in the dialog text.
+		local quantity = GetHearthsteelQuantityFromProduct(productInfo);
+		SecureTransferDialog_Show("START_HOUSING_VC_PURCHASE", quantity);
     elseif (event == "SECURE_TRANSFER_CANCEL") then
         SecureTransferDialog:Hide();
 	elseif (self.waitingForEvents and currentDialog and currentDialog.waitForEvent) then

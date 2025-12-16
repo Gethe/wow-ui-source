@@ -1673,10 +1673,11 @@ do
 		elseif auraType == AuraUtil.AuraUpdateChangedType.Buff then
 			frame.buffs[aura.auraInstanceID] = aura;
 			frame.buffsChanged = true;
+		end
 
-			if AuraUtil.IsBigDefensive(aura) then
-				frame.bigDefensives[aura.auraInstanceID] = aura;
-			end
+		if AuraUtil.IsBigDefensive(aura) then
+			frame.bigDefensives[aura.auraInstanceID] = aura;
+			frame.buffsChanged = true;
 		end
 	end
 

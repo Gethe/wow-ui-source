@@ -235,8 +235,8 @@ function NeighborhoodRosterMixin:SortByColumnIndex(columnIndex)
 			if self.reverseActiveColumnSort then
 				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
 			end
-			local lhsSortScore = lhsMemberInfo.subdivision;
-			local rhsSortScore = rhsMemberInfo.subdivision; 
+			local lhsSortScore = lhsMemberInfo.subdivision or 0;
+			local rhsSortScore = rhsMemberInfo.subdivision or 0; 
 			return lhsSortScore < rhsSortScore;
 		end);
         self:UpdateRoster(self.sortedMemberList);

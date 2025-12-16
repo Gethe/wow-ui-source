@@ -46,8 +46,7 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 		frame:SetProductInfo(productInfo);
 		frame:SetSelected(isSelected);
 		frame.PurchaseButton:SetScript("OnClick", function(button, buttonName)
-			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
-			CatalogShopTopUpFrame:Hide();
+			CatalogShopTopUpFrame:PurchaseProduct(productInfo.catalogShopProductID);
 		end);
 	end
 

@@ -45,6 +45,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.LockedByOtherPlayer] = ERR_HOUSING_RESULT_LOCKED_BY_OTHER_PLAYER,
 	[Enum.HousingResult.LockOperationFailed] = ERR_HOUSING_RESULT_LOCK_OPERATION_FAILED,
 	[Enum.HousingResult.MaxDecorReached] = ERR_HOUSING_RESULT_MAX_DECOR_REACHED,
+	[Enum.HousingResult.MaxPreviewDecorReached] = HOUSING_PLACEMENT_PREVIEW_LIMIT_REACHED,
 	[Enum.HousingResult.MissingCoreFixture] = ERR_HOUSING_RESULT_MISSING_CORE_FIXTURE,
 	[Enum.HousingResult.MissingDye] = ERR_HOUSING_RESULT_MISSING_DYE,
 	[Enum.HousingResult.MissingExpansionAccess] = ERR_HOUSING_RESULT_MISSING_EXPANSION_ACCESS,

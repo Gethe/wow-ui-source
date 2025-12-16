@@ -223,8 +223,9 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 	elseif event == "DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE" then
 		local success = ...;
 		if success then
-			local nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(self.pendingDeclineInviteNeighborhoodButton);
+			local nextNeighborhood = nil;
 			self.neighborhoodButtonPool:Release(self.pendingDeclineInviteNeighborhoodButton);
+			nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(nextNeighborhood);
 			self:SelectNeighborhood(nextNeighborhood, true); --select new first button and request data for map
 			self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 		else

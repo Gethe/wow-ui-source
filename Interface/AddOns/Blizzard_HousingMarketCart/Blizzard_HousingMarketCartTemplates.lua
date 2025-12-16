@@ -405,6 +405,16 @@ end
 local bundleRefCount = 0;
 
 function HousingMarketCartDataManagerMixin:AddToCart(item)
+
+	if self:GetNumItemsInCart() >= C_HousingCatalog.GetCartSizeLimit() then
+		UIErrorsFrame:AddExternalErrorMessage(HOUSING_MARKET_CART_FULL_ERROR);
+		RunNextFrame(function()
+			C_HousingBasicMode.CancelActiveEditing();
+		end);
+
+		return;
+	end
+
 	local bundleCatalogShopProductID = item.bundleCatalogShopProductID;
 	if bundleCatalogShopProductID then
 		local bundleAlreadyAdded = false;
@@ -590,20 +600,55 @@ function HousingMarketCartDataManagerMixin:BULK_PURCHASE_RESULT_RECEIVED(...)
 		self.timeoutTimer = nil;
 	end
 
-	if self.timedout then
-		self.timedout = false;
-		return;
+	local function Promote(cartItem)
+		if cartItem.decorGUID then
+			if not C_HousingCatalog.PromotePreviewDecor(cartItem.decorID, cartItem.decorGUID) then
+				--if the promotion fails for any reason, delete the preview decor.
+				C_HousingCatalog.DeletePreviewCartDecor(cartItem.decorGUID);
+			end
+		end
 	end
 
-	local wasSuccess = ...;
-	if wasSuccess then
-		PlaySound(SOUNDKIT.HOUSING_MARKET_PURCHASE_CELEBRATION);
-	
-		-- Clear the cart on a successful purchase
-		local requiresConfirmation = false;
-		self:ClearCart(requiresConfirmation);
-	else
-		StaticPopup_Show("HOUSING_MARKET_PURCHASE_FAILURE");
+	local result, individualResults = ...;
+	if result == Enum.BulkPurchaseResult.ResultOk or result == Enum.BulkPurchaseResult.ResultPartialSuccess then
+		local bundlesToRemove = {};
+		for _, individualResult in ipairs(individualResults) do
+			if individualResult.status == Enum.SimpleOrderStatus.Success then
+				for i, cartItem in ipairs(self.cartList) do
+					local isMatchingDecor = cartItem.decorID == individualResult.recordId;
+					local isBundleChild = cartItem.isBundleChild;
+					local isBundleParent = cartItem.isBundleParent;
+					local hasMatchingBundleParent = individualResult.parentProductId == cartItem.bundleCatalogShopProductID;
+
+					if isMatchingDecor and hasMatchingBundleParent and not cartItem.markedForRemoval and not isBundleParent then
+						Promote(cartItem);
+
+						cartItem.decorGUID = nil; -- prevent double deletion in the RemoveFromCartInternal call
+
+						if isBundleChild then
+							bundlesToRemove[cartItem.bundleCatalogShopProductID] = true;
+							cartItem.markedForRemoval = true;
+						else
+							self:RemoveFromCartInternal(i, cartItem);
+						end
+
+						break;
+					end
+				end
+			end
+		end
+
+		for bundleProdID, _toRemove in pairs(bundlesToRemove) do
+			for i, cartItem in ipairs(self.cartList) do
+				if cartItem.bundleCatalogShopProductID == bundleProdID and cartItem.isBundleParent then
+					self:RemoveFromCartInternal(i, cartItem);
+
+					break;
+				end
+			end
+		end
+		
+		self:UpdateCart();
 	end
 	-- Note: Failure handling is now in SecureTransferUI
 end

@@ -690,6 +690,7 @@ function TransmogCharacterMixin:OnShow()
 
 	self.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	self:RefreshPlayerModel();
+	self:RefreshHideIgnoredToggle();
 end
 
 function TransmogCharacterMixin:OnHide()
@@ -911,7 +912,7 @@ function TransmogCharacterMixin:RefreshSlots()
 			local illusionID = Constants.Transmog.NoTransmogID;
 			if illusionSlotFrame then
 				local illusionSlotInfo = illusionSlotFrame:GetSlotInfo();
-				if illusionSlotInfo then
+				if illusionSlotInfo and illusionSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.WeaponDoesNotSupportIllusions then
 					illusionID = illusionSlotInfo.transmogID;
 				end
 			end
@@ -2343,7 +2344,9 @@ function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 				if isValidSlot and customSetInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
 					slotMatched = false;
 
-					local outfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(slot, Enum.TransmogType.Appearance, Enum.TransmogOutfitSlotOption.None);
+					local appearanceType = Enum.TransmogType.Appearance;
+					local weaponOption = Enum.TransmogOutfitSlotOption.None;
+					local outfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(slot, appearanceType, weaponOption);
 					if outfitInfo.transmogID ~= customSetInfo.appearanceID then
 						break;
 					end

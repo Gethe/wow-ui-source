@@ -141,18 +141,17 @@ end
 
 function HousingCatalogFrameMixin:OnCatalogEntryUpdated(entryID)
 	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
-	local shouldShowOption = entryInfo and entryInfo.quantity > 0 or false;
 
 	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
 	
 	-- If option was added or removed entirely, reset our options list
-	if self.catalogSearcher and ((shouldShowOption and not elementData) or (not shouldShowOption and elementData)) then
+	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
 		self.catalogSearcher:RunSearch();
 		return;
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data
-	if shouldShowOption and optionFrame then
+	if entryInfo and optionFrame then
 		optionFrame:UpdateEntryData();
 	end
 end

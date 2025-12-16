@@ -54,6 +54,16 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanPlayerUseTrainingGroundsUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseTrainingGroundsUI", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CanToggleWarMode",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

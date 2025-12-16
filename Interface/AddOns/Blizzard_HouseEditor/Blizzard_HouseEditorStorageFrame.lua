@@ -236,7 +236,7 @@ function HouseEditorStorageFrameMixin:OnShow()
 
 	self:UpdateCategoryTotal();
 
-	if C_HousingDecor.IsPreviewState() or self:IsInMarketTab() then
+	if C_HousingDecor.IsPreviewState() or (self:IsInMarketTab() and self:ShouldShowMarketShop()) then
 		SetCartFrameShown(true, true);
 	end
 
@@ -341,7 +341,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 	self.catalogSearcher:SetOwnedOnly(false);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
-	categorySearchParams.includeFeaturedCategory = self:HasMarketEntries();
+	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
@@ -350,7 +350,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 	C_HousingDecor.EnterPreviewState();
 	self:OnTabChanged();
 
-	SetCartFrameShown(true);
+	SetCartFrameShown(self:ShouldShowMarketShop());
 end
 
 function HouseEditorStorageFrameMixin:OnMarketTabDeselected()
@@ -362,8 +362,8 @@ function HouseEditorStorageFrameMixin:ShouldShowMarketTab()
 	return C_Housing.IsHousingMarketEnabled();
 end
 
-function HouseEditorStorageFrameMixin:ShouldEnableMarketTab()
-	return self:ShouldShowMarketTab() and C_StorePublic.IsEnabled();
+function HouseEditorStorageFrameMixin:ShouldShowMarketShop()
+	return C_Housing.IsHousingMarketShopEnabled() and C_StorePublic.IsEnabled() and self:HasMarketEntries();
 end
 
 function HouseEditorStorageFrameMixin:HasMarketEntries()
@@ -376,7 +376,7 @@ function HouseEditorStorageFrameMixin:HasMarketEntries()
 end
 
 function HouseEditorStorageFrameMixin:CheckStartMarketInteraction()
-	if not self:ShouldEnableMarketTab() then
+	if not self:ShouldShowMarketTab() then
 		return;
 	end
 
@@ -402,13 +402,7 @@ function HouseEditorStorageFrameMixin:UpdateMarketTabVisibility()
 	self.TabSystem:SetTabShown(self.marketTabID, showMarketTab);
 
 	if showMarketTab then
-		local shouldEnableMarketTab = self:ShouldEnableMarketTab();
-		self.TabSystem:SetTabEnabled(self.marketTabID, shouldEnableMarketTab, HOUSING_MARKET_TAB_UNAVAILABLE_TEXT);
 		self:UpdateMarketTabNotification();
-
-		if not shouldEnableMarketTab and self:IsInMarketTab() then
-			self:SetTab(self.storageTabID);
-		end
 	elseif self:IsInMarketTab() then
 		-- We shouldn't be showing the market tab any more but we're in it, so switch to storage.
 		self:SetTab(self.storageTabID);
@@ -544,7 +538,7 @@ function HouseEditorStorageFrameMixin:RefreshMarketData()
 	C_HousingCatalog.RequestHousingMarketInfoRefresh();
 	self.hasMarketData = true;
 
-	if not self:HasMarketEntries() then
+	if not self:ShouldShowMarketShop() then
 		local categorySearchParams = self.Categories:GetCategorySearchParams();
 		categorySearchParams.includeFeaturedCategory = false;
 		self.Categories:SetCategorySearchParams(categorySearchParams);
@@ -705,18 +699,17 @@ end
 
 function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryID)
 	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
-	local shouldShowOption = entryInfo and entryInfo.quantity > 0 or false;
 
 	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
 	
 	-- If option was added or removed entirely, reset our options list
-	if self.catalogSearcher and ((shouldShowOption and not elementData) or (not shouldShowOption and elementData)) then
+	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
 		self.catalogSearcher:RunSearch();
 		return;
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data
-	if shouldShowOption and optionFrame then
+	if entryInfo and optionFrame then
 		optionFrame:UpdateEntryData();
 	end
 end

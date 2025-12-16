@@ -111,9 +111,8 @@ function HousingTutorialsHouseTeleportWatcherMixin:InitTutorial()
 	if HousingMicroButton and HousingMicroButton:IsEnabled() and HousingMicroButton:IsShown() and not C_CVar.GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingTeleportButton) then
 		if not self.teleportTutorial then
 			self.teleportTutorial = CreateAndInitFromMixin(HousingTutorialsHouseTeleportMixin);
+			self.teleportTutorial:BeginInitialState();
 		end
-
-		self.teleportTutorial:BeginInitialState();
 	end
 end
 

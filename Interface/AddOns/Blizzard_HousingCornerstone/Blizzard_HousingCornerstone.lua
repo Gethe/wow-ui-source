@@ -123,11 +123,17 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 
 	self.purchaseMode = C_HousingNeighborhood.GetCornerstonePurchaseMode();
 	if self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
+		-- Hide the money frame because moves are always free. If HousingMoveHouseJob is updated to deduct a cost, we need to update this
+		self.PriceMoneyFrame:Hide();
+
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_MOVE_BUTTON);
+		self.BuyButton:Enable();
+		self.ErrorText:Hide();
 	else
+		self.PriceMoneyFrame:Show();
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_BUY);
+		self:CheckPurchaseEligibility();
 	end
-	self:CheckPurchaseEligibility();
 	self:CheckMoveCooldown();
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_OPEN);

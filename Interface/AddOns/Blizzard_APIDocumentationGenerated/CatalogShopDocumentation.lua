@@ -388,6 +388,16 @@ local CatalogShop =
 				{ Name = "currencyCode", Type = "string", Nilable = false },
 			},
 		},
+		{
+			Name = "StartHousingVCPurchaseConfirmation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -573,6 +583,7 @@ local CatalogShop =
 			Fields =
 			{
 				{ Name = "recordId", Type = "number", Nilable = false },
+				{ Name = "parentProductId", Type = "number", Nilable = true },
 				{ Name = "entitlementId", Type = "string", Nilable = false },
 				{ Name = "externalTransactionId", Type = "string", Nilable = false },
 				{ Name = "status", Type = "SimpleOrderStatus", Nilable = false },

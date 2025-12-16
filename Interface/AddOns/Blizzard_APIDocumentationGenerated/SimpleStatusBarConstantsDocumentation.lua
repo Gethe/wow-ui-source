@@ -28,6 +28,18 @@ local SimpleStatusBarConstants =
 				{ Name = "ExponentialEaseOut", Type = "StatusBarInterpolation", EnumValue = 1, Documentation = { "Interpolate the bar toward the target value with exponential ease-out style decay." } },
 			},
 		},
+		{
+			Name = "StatusBarTimerDirection",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "ElapsedTime", Type = "StatusBarTimerDirection", EnumValue = 0, Documentation = { "Calculate status timer bar values using the elapsed time of a duration." } },
+				{ Name = "RemainingTime", Type = "StatusBarTimerDirection", EnumValue = 1, Documentation = { "Calculate status timer bar values using the remaining time of a duration." } },
+			},
+		},
 	},
 };
 

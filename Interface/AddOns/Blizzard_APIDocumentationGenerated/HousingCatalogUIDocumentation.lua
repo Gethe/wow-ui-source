@@ -80,6 +80,15 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetCartSizeLimit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cartSizeLimit", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCatalogCategoryInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

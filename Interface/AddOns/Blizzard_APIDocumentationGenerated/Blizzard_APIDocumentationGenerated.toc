@@ -357,6 +357,7 @@ UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
 UnitAuraDocumentation.lua
+UnitHealPredictionCalculatorAPIDocumentation.lua
 UnitRoleDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
@@ -560,6 +561,7 @@ UiModelSceneConstantsDocumentation.lua
 UiRpcRequestManagerConstantsDocumentation.lua
 UnitAuraSharedDocumentation.lua
 UnitConstantsDocumentation.lua
+UnitHealPredictionCalculatorSharedDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua

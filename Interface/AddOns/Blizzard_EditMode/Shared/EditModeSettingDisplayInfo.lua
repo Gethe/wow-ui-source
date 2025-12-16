@@ -825,8 +825,8 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.IconPadding,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_PADDING,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 2,
-			maxValue = 10,
+			minValue = 0,	-- NOTE: See CooldownViewerMixin:GetAdditionalPaddingOffset when changing these values.
+			maxValue = 14,
 			stepSize = 1,
 		},
 
@@ -1076,7 +1076,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 80,
+			minValue = 120,
 			maxValue = 400,
 			stepSize = 1,
 			ConvertValue = ConvertValueDiffFromMin,

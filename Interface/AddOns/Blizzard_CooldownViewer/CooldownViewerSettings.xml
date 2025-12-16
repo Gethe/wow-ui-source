@@ -14,7 +14,7 @@
 	</Frame>
 
 	<!-- Ignore children for bounds to prevent secret icon from setting entire CDM settings UI as secret -->
-	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" virtual="true" ignoreChildrenForBounds="true">
+	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" ignoreChildrenForBounds="true" virtual="true">
 		<Size x="38" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -32,7 +32,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerSettingsBarItemTemplate" mixin="CooldownViewerSettingsBarItemMixin" registerForDrag="LeftButton" virtual="true">
+	<Frame name="CooldownViewerSettingsBarItemTemplate" mixin="CooldownViewerSettingsBarItemMixin" registerForDrag="LeftButton" ignoreChildrenForBounds="true" virtual="true">
 		<Size x="317" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">

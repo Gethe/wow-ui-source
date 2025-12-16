@@ -13,10 +13,20 @@ function SecureTransferOutbound.GetAppropriateTopLevelParent()
 	return securecall("GetAppropriateTopLevelParent");
 end
 
-function SecureTransferOutbound.HousingEditorFrameIsShown()
-	return securecallfunction(HouseEditorFrame_IsShown);
+function SecureTransferOutbound.GetCatalogShopTopUpFrame()
+	return securecallfunction(CatalogShopTopUpFrame_GetFrame);
 end
 
-function SecureTransferOutbound.GetHousingEditorFrame()
-	return securecallfunction(HouseEditorFrame_GetFrame);
+local function GetHearthsteelCurrencyCode()
+	return Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE;
+end
+
+function SecureTransferOutbound.GetHearthsteelVirtualCurrencyCode()
+	return securecallfunction(GetHearthsteelCurrencyCode);
+end
+
+function SecureTransferOutbound.HideCatalogShopTopUpFrame()
+	if CatalogShopTopUpFlowInboundInterface then
+		CatalogShopTopUpFlowInboundInterface.SetShown(false);
+	end
 end

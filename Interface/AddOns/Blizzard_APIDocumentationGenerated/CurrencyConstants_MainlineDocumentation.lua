@@ -32,9 +32,9 @@ local CurrencyConstants_Mainline =
 		{
 			Name = "CurrencySource",
 			Type = "Enumeration",
-			NumValues = 67,
+			NumValues = 68,
 			MinValue = 0,
-			MaxValue = 66,
+			MaxValue = 67,
 			Fields =
 			{
 				{ Name = "ConvertOldItem", Type = "CurrencySource", EnumValue = 0 },
@@ -104,6 +104,7 @@ local CurrencyConstants_Mainline =
 				{ Name = "SpellSkipLinkedCurrency", Type = "CurrencySource", EnumValue = 64 },
 				{ Name = "AccountTransfer", Type = "CurrencySource", EnumValue = 65 },
 				{ Name = "RenownRepGainInitialVisibility", Type = "CurrencySource", EnumValue = 66 },
+				{ Name = "InitiativeReward", Type = "CurrencySource", EnumValue = 67 },
 			},
 		},
 	},

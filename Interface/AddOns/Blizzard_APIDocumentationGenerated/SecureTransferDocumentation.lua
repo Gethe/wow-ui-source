@@ -23,6 +23,11 @@ local SecureTransfer =
 			HasRestrictions = true,
 		},
 		{
+			Name = "CompleteHousingVCPurchase",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
 			Name = "GetHousingPurchaseCost",
 			Type = "Function",
 			HasRestrictions = true,
@@ -30,6 +35,16 @@ local SecureTransfer =
 			Returns =
 			{
 				{ Name = "totalCost", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetHousingVCPurchaseProductID",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -73,6 +88,12 @@ local SecureTransfer =
 			Name = "SecureTransferConfirmTradeAccept",
 			Type = "Event",
 			LiteralName = "SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "SecureTransferHousingCurrencyPurchaseConfirmation",
+			Type = "Event",
+			LiteralName = "SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION",
 			SynchronousEvent = true,
 		},
 	},

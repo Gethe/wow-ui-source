@@ -480,3 +480,12 @@ end
 function AuraUtil.GetDebuffDisplayInfoTable()
 	return DEBUFF_DISPLAY_INFO;
 end
+
+function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelType)
+	if auraData.isHarmful then
+		borderRegion:Show();
+		AuraUtil.SetAuraBorderAtlas(borderRegion, auraData.dispelName, showDispelType);
+	else
+		borderRegion:Hide();
+	end
+end

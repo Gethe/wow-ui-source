@@ -69,6 +69,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "CreateUnitHealPredictionCalculator",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "EjectPassengerFromSeat",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1130,6 +1139,18 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "WOWGUID", Nilable = true },
+			},
+		},
+		{
+			Name = "UnitGetDetailedHealPrediction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitToken", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
 			},
 		},
 		{
@@ -3450,6 +3471,18 @@ local Unit =
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
+			Name = "PartyKill",
+			Type = "Event",
+			LiteralName = "PARTY_KILL",
+			SecretWhenUnitIdentityRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "attackerGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{

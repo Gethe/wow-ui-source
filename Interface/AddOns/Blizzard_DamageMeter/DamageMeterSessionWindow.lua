@@ -609,7 +609,7 @@ function DamageMeterSessionWindowMixin:SetDamageMeterType(damageMeterType)
 	-- Changes to the damage meter type should always hide the source window.
 	self:HideSourceWindow();
 
-	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSessionWindowMixin:GetDamageMeterType()
@@ -626,7 +626,7 @@ function DamageMeterSessionWindowMixin:SetSession(sessionType, sessionID)
 
 	self:GetSourceWindow():SetSession(sessionType, sessionID);
 
-	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSessionWindowMixin:GetSessionType()

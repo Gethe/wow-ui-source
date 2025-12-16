@@ -42,6 +42,19 @@ local DamageMeterConstants =
 			},
 		},
 		{
+			Name = "DamageMeterSpellDetailsDisplayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "SpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 0 },
+				{ Name = "UnitSpecificSpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 1 },
+				{ Name = "SpellAffected", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "DamageMeterStorageType",
 			Type = "Enumeration",
 			NumValues = 7,

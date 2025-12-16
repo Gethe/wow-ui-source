@@ -209,16 +209,17 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitSlotWarning",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Ok", Type = "TransmogOutfitSlotWarning", EnumValue = 0 },
 				{ Name = "InvalidEquippedDestinationItem", Type = "TransmogOutfitSlotWarning", EnumValue = 1 },
 				{ Name = "WrongWeaponCategoryEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 2 },
 				{ Name = "PendingWeaponChanges", Type = "TransmogOutfitSlotWarning", EnumValue = 3 },
-				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
+				{ Name = "WeaponDoesNotSupportIllusions", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
+				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 5 },
 			},
 		},
 		{
