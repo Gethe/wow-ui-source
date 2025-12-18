@@ -28,7 +28,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<ContainedAlertFrame  name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" inherits="QuickKeybindButtonTemplate" mixin="QuickJoinToastMixin">
+	<ContainedAlertFrame  name="QuickJoinToastButton" frameStrata="LOW" frameLevel="4" parent="UIParent" inherits="QuickKeybindButtonTemplate" mixin="QuickJoinToastMixin" motionScriptsWhileDisabled="true">
 		<Size x="32" y="32"/>
 		<KeyValues>
 			<KeyValue key="commandName" value="TOGGLESOCIAL" type="string"/>

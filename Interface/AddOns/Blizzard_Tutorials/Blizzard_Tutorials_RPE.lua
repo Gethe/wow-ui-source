@@ -349,6 +349,9 @@ end
 function Class_Dragonriding_RPE_Watcher:OnPlayerCanGlideChanged(canGlide)
 	if canGlide and self.step == DragonridingTutorialStep.MountUp then
 		self:AdvanceStep();
+	elseif canGlide and self.step < DragonridingTutorialStep.TakeOff then
+		self.step = DragonridingTutorialStep.TakeOff;
+		self:EvaluateStep();
 	elseif self.step == DragonridingTutorialStep.TakeOff then
 		if canGlide then
 			self:ShowTakeOffTutorial();
@@ -422,6 +425,9 @@ function Class_Dragonriding_RPE_Watcher:EvaluateStep()
 		local content = { text = RPE_SKYRIDING_MOUNT_UP };
 		self:ShowScreenTutorial(content);
 	elseif self.step == DragonridingTutorialStep.TakeOff then
+		-- can be jumped to this step, hide all possible tutorials up to it
+		TutorialDragButton:Hide();
+		self:HidePointerTutorials();
 		self:HideScreenTutorial();
 		self:ShowTakeOffTutorial();
 	elseif self.step == DragonridingTutorialStep.FlyHigher then

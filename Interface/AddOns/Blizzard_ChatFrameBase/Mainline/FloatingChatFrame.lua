@@ -71,6 +71,7 @@ function FloatingChatFrameMixin:OnLoad()
 	--IMPORTANT NOTE: This function isn't run by ChatFrame1.
 	ChatFrameMixin.OnLoad(self);
 	tinsert(CHAT_FRAMES, self:GetName());
+	FCF_UpdateChatFrameParent(self);
 
 	FCF_SetTabPosition(self, 0);
 	FloatingChatFrame_Update(self:GetID());
@@ -168,6 +169,8 @@ function PrimaryChatFrameMixin:OnLoad()
 	end
 
 	tinsert(CHAT_FRAMES, self:GetName());
+	FCF_UpdateChatFrameParent(self);
+
 	ChatFrameMixin.OnLoad(self);
 	DEFAULT_CHAT_FRAME = ChatFrame1;
 	SELECTED_CHAT_FRAME = ChatFrame1;
@@ -203,22 +206,27 @@ local function SetChatFrameButtonsEnabled(enabled, buttonDisabledTooltip)
 end
 
 local FullscreenFrame = UIParent;
-local function ReparentChatFrames(previousFullScreenFrame)
-	local function ReparentFrame(frame)
-		if frame and frame:GetParent() == previousFullScreenFrame then
-			FrameUtil.SetParentMaintainRenderLayering(frame, FullscreenFrame);
-		end
+local PreviousFullScreenFrame = nil;
+local function ReparentFrame(frame)
+	if frame and frame:GetParent() == PreviousFullScreenFrame then
+		FrameUtil.SetParentMaintainRenderLayering(frame, FullscreenFrame);
 	end
+end
 
+local function UpdateChatFrameParent(chatFrameName)
+	local frame = _G[chatFrameName];
+	local chatTab = _G[chatFrameName.."Tab"];
+	local frameMinimized = _G[chatFrameName.."Minimized"];
+	local editBox = _G[chatFrameName.."EditBox"];
+	ReparentFrame(frame);
+	ReparentFrame(chatTab);
+	ReparentFrame(frameMinimized);
+	ReparentFrame(editBox);
+end
+
+local function ReparentChatFrames()
 	for _, chatFrameName in pairs(CHAT_FRAMES) do
-		local frame = _G[chatFrameName];
-		local chatTab = _G[chatFrameName.."Tab"];
-		local frameMinimized = _G[chatFrameName.."Minimized"];
-		local editBox = _G[chatFrameName.."EditBox"];
-		ReparentFrame(frame);
-		ReparentFrame(chatTab);
-		ReparentFrame(frameMinimized);
-		ReparentFrame(editBox);
+		UpdateChatFrameParent(chatFrameName);
 	end
 	ReparentFrame(GeneralDockManager);
 	ReparentFrame(ChatMenu);
@@ -229,18 +237,31 @@ end
 
 function FCF_SetFullScreenFrame(frame, buttonDisabledTooltip)
 	if frame then
-		local previousFullScreenFrame = FullscreenFrame;
+		PreviousFullScreenFrame = FullscreenFrame;
 		FullscreenFrame = frame;
-		ReparentChatFrames(previousFullScreenFrame);
+		ReparentChatFrames();
 		SetChatFrameButtonsEnabled(false, buttonDisabledTooltip);
 	end
 end
 
 function FCF_ClearFullScreenFrame()
-	local previousFullScreenFrame = FullscreenFrame;
+	PreviousFullScreenFrame = FullscreenFrame;
 	FullscreenFrame = UIParent;
-	ReparentChatFrames(previousFullScreenFrame);
+	ReparentChatFrames();
 	SetChatFrameButtonsEnabled(true, nil);
+	PreviousFullScreenFrame = nil;
+end
+
+function FCF_UpdateChatFrameParent(chatFrame)
+	-- If we have a PreviousFullScreenFrame, then we've reparented frames at some point
+	-- So make sure to update the new one's parent
+	if PreviousFullScreenFrame then
+		UpdateChatFrameParent(chatFrame:GetName());
+	end
+end
+
+function FCF_GetCurrentFullScreenFrame()
+	return FullscreenFrame;
 end
 
 function FCF_GetChatWindowInfo(id)
