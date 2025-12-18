@@ -21,6 +21,10 @@ function NamePlateRaidTargetMixin:ShouldBeShown()
 		return false;
 	end
 
+	if self:IsShowOnlyName() then
+		return false;
+	end
+
 	if self:IsWidgetsOnlyMode() then
 		return false;
 	end

@@ -3,6 +3,7 @@ local WowTokenUI =
 	Name = "WowTokenUI",
 	Type = "System",
 	Namespace = "C_WowTokenUI",
+	Environment = "All",
 
 	Functions =
 	{

@@ -2,6 +2,7 @@ local URL =
 {
 	Name = "URL",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

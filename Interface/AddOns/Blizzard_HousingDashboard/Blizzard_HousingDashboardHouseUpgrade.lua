@@ -98,6 +98,12 @@ function HousingUpgradeFrameMixin:SelectHouseLevel(houseLevelFavor)
 	self.houseFavor = houseLevelFavor.houseFavor;
 	self.houseFavorNeeded = C_Housing.GetHouseLevelFavorForLevel(self.actualLevel + 1);
 
+	-- This can happen due to debug commands, and if we don't start with some valid display level, it can block many other parts of this frame's setup
+	-- So ensure we at least start with a display level we know will allow us to proceed
+	if self.displayLevel > self.maxLevel then
+		self.displayLevel = self.maxLevel;
+	end
+
 	self.CurrentLevelFrame.HouseLevelText:SetText(self.actualLevel);
 	self.CurrentLevelFrame.HouseLevelText:ClearAllPoints();
 	-- The FRIZQT font has a problemm with rendering 1 (or numbers starting with 1), which causes it to be off center

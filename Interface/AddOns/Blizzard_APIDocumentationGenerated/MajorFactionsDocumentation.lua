@@ -3,6 +3,7 @@ local MajorFactions =
 	Name = "MajorFactionsUI",
 	Type = "System",
 	Namespace = "C_MajorFactions",
+	Environment = "All",
 
 	Functions =
 	{
@@ -166,6 +167,21 @@ local MajorFactions =
 				{ Name = "shouldDisplayMajorFactionAsJourney", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldUseJourneyRewardTrack",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldUseJourneyRewardTrack", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -215,7 +231,7 @@ local MajorFactions =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "description", Type = "cstring", Nilable = false },
-				{ Name = "highlights", Type = "table", InnerType = "cstring", Nilable = false },
+				{ Name = "highlights", Type = "table", InnerType = "RenownHighlightInfo", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = false },
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
@@ -275,6 +291,16 @@ local MajorFactions =
 				{ Name = "description", Type = "cstring", Nilable = true },
 				{ Name = "toastDescription", Type = "cstring", Nilable = true },
 				{ Name = "rewardType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RenownHighlightInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "title", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 	},

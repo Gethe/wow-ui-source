@@ -2,6 +2,7 @@ local Input =
 {
 	Name = "Input",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -222,6 +223,67 @@ local Input =
 			Returns =
 			{
 				{ Name = "down", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCursorPosition",
+			Type = "Function",
+			RequiresLimitedInput = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
+
+			Arguments =
+			{
+				{ Name = "xPosition", Type = "uiUnit", Nilable = false },
+				{ Name = "yPosition", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "SimulateMouseClick",
+			Type = "Function",
+			RequiresLimitedInput = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Effectively the same as SimulateMouseDown plus SimulateMouseUp and consumes limited input for both." },
+
+			Arguments =
+			{
+				{ Name = "button", Type = "mouseButton", Nilable = false },
+			},
+		},
+		{
+			Name = "SimulateMouseDown",
+			Type = "Function",
+			RequiresLimitedInput = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
+
+			Arguments =
+			{
+				{ Name = "button", Type = "mouseButton", Nilable = false },
+			},
+		},
+		{
+			Name = "SimulateMouseUp",
+			Type = "Function",
+			RequiresLimitedInput = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
+
+			Arguments =
+			{
+				{ Name = "button", Type = "mouseButton", Nilable = false },
+			},
+		},
+		{
+			Name = "SimulateMouseWheel",
+			Type = "Function",
+			RequiresLimitedInput = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Insecure code can only call this once in response to gamepad input hardware events." },
+
+			Arguments =
+			{
+				{ Name = "delta", Type = "number", Nilable = false },
 			},
 		},
 	},

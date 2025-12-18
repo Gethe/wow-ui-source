@@ -2,6 +2,7 @@ local SimpleLineAPI =
 {
 	Name = "SimpleLineAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

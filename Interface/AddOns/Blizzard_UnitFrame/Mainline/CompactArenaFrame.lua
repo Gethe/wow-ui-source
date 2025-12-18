@@ -508,7 +508,7 @@ function ArenaUnitFrameDebuffMixin:Update()
 		end
 	end
 
-	if lossOfControlData then
+	if lossOfControlData and lossOfControlData.auraInstanceID then
 		self.auraData = C_UnitAuras.GetAuraDataByAuraInstanceID(self.unitToken, lossOfControlData.auraInstanceID);
 	else
 		self.auraData = nil;

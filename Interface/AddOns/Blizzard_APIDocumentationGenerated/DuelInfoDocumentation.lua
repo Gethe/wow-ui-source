@@ -3,6 +3,7 @@ local DuelInfo =
 	Name = "DuelInfo",
 	Type = "System",
 	Namespace = "C_DuelInfo",
+	Environment = "All",
 
 	Functions =
 	{

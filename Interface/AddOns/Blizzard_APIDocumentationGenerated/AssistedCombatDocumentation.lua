@@ -3,6 +3,7 @@ local AssistedCombat =
 	Name = "AssistedCombat",
 	Type = "System",
 	Namespace = "C_AssistedCombat",
+	Environment = "All",
 
 	Functions =
 	{

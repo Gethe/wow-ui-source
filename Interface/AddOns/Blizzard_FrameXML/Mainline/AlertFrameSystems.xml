@@ -3063,4 +3063,136 @@
 			</Layer>
 		</Layers>
 	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="InitiativeTaskCompleteAlertFrameTemplate" parent="UIParent" hidden="true" frameStrata="DIALOG" virtual="true" inherits="AlertFrameTemplate">
+		<Size x="304" y="105"/>
+		<Animations>
+			<AnimationGroup parentKey="animIn">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0" order="1"/>
+				<Alpha fromAlpha="0" toAlpha="1" duration="0.2" order="2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="waitAndAnimOut">
+				<Alpha startDelay="4.05" fromAlpha="1" toAlpha="0" duration="1.5" parentKey="animOut">
+					<Scripts>
+						<OnFinished>
+							self:GetRegionParent():Hide();
+						</OnFinished>
+					</Scripts>
+				</Alpha>
+			</AnimationGroup>
+			<AnimationGroup parentKey="sparklesAnimIn" looping="REPEAT" setToFinalAlpha="true">
+				<FlipBook childKey="Sparkles" duration="3" order="1" flipBookRows="10" flipBookColumns="5" flipBookFrames="50" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				<Alpha childKey="Sparkles" duration="0.25" order="1" smoothing="OUT" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="lightRaysAnimIn" setToFinalAlpha="true">
+				<Alpha childKey="LightRays" duration="0.5" order="1" startDelay="0.25" smoothing="OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightRays" duration="1" order="1" startDelay="0.75" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.4"/>
+				<Alpha childKey="LightRays2" duration="0.6" order="1" startDelay="0.25" smoothing="OUT" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="LightRays2" duration="1" order="1" startDelay="0.85" smoothing="OUT" fromAlpha="1" toAlpha="0.6"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="glowAnimIn" setToFinalAlpha="true">
+				<Alpha childKey="Glow" duration="0.25" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Glow" duration="0.75" order="1" startDelay="0.25" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-item-toast-glow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="housing-item-toast-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightRays" alphaMode="ADD" atlas="housing-item-toast-lightrays01" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LightRays2" alphaMode="ADD" atlas="housing-item-toast-lightrays02" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LightRays"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Sparkles" alphaMode="ADD" atlas="housing-item-toast-sparkles-flipbook" useAtlasSize="false">
+					<Size x="274" y="83"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="housing-item-toast-frame" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeafTL" atlas="housing-item-toast-leaf01" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="22" y="-23"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeafL" atlas="housing-item-toast-leaf04" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="5" y="10"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeafBL" atlas="housing-item-toast-leaf02" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="15" y="37"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeafTR" atlas="housing-item-toast-leaf06" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-1" y="7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LeafBR" atlas="housing-item-toast-leaf03" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-5" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="CompletedLabel" inherits="GameFontHighlightSmall2" justifyH="LEFT" text="ENDEAVOR_TASK_COMPLETED">
+					<Color color="HOUSING_REWARD_TOAST_LABEL_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="88" y="-25"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Divider" atlas="housing-item-toast-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.CompletedLabel" relativePoint="BOTTOM" y="-4"/>
+						<Anchor point="LEFT" relativeKey="$parent.CompletedLabel" x="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Banner" atlas="housing-dashboard-tasks-listitem-flag" useAtlasSize="false">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Background"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Divider" relativePoint="LEFT" x="-5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Checkmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="false">
+					<Size x="15" y="15"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Banner" relativePoint="CENTER" y="2"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="TaskName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="TOP">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-8"/>
+						<Anchor point="LEFT" relativeKey="$parent.CompletedLabel"/>
+						<Anchor point="RIGHT" x="-35"/>
+						<Anchor point="BOTTOM" y="15"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ContainedAlertFrame>
 </Ui>

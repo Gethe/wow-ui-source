@@ -3,6 +3,7 @@ local UIEventToastManager =
 	Name = "UIEventToastManagerInfo",
 	Type = "System",
 	Namespace = "C_EventToastManager",
+	Environment = "All",
 
 	Functions =
 	{

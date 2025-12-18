@@ -17,6 +17,7 @@ NamePlateConstants =
 	SOFT_TARGET_ICON_FRIEND_CVAR = "SoftTargetIconFriend";
 	SOFT_TARGET_ICON_INTERACT_CVAR = "SoftTargetIconInteract";
 	SHOW_FRIENDLY_NPCS_CVAR = "nameplateShowFriendlyNpcs";
+	SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR = "nameplateShowOnlyNameForFriendlyPlayerUnits";
 
 	PREVIEW_UNIT_TOKEN = "preview";
 

@@ -3,6 +3,7 @@ local FriendList =
 	Name = "FriendList",
 	Type = "System",
 	Namespace = "C_FriendList",
+	Environment = "All",
 
 	Functions =
 	{

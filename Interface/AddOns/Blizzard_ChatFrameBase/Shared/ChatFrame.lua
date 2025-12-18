@@ -17,9 +17,19 @@ function ChatFrameMixin:OnEvent(event, ...)
 end
 
 function ChatFrameMixin:OnHyperlinkClick(link, text, button)
+	EventRegistry:TriggerEvent("ChatFrame.OnHyperlinkClick", self, link, text, button);
+
 	if not C_Glue.IsOnGlueScreen() then
 		SetItemRef(link, text, button, self);
 	end
+end
+
+function ChatFrameMixin:OnHyperlinkEnter(link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight)
+	EventRegistry:TriggerEvent("ChatFrame.OnHyperlinkEnter", self, link, text, region, boundsLeft, boundsBottom, boundsWidth, boundsHeight);
+end
+
+function ChatFrameMixin:OnHyperlinkLeave()
+	EventRegistry:TriggerEvent("ChatFrame.OnHyperlinkLeave", self);
 end
 
 function ChatFrameMixin:AddMessage(...)

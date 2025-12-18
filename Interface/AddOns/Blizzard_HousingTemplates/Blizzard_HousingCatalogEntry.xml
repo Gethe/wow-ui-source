@@ -44,6 +44,25 @@
 						<Anchor point="BOTTOMRIGHT" x="-11" y="9"/>
 					</Anchors>
 				</Texture>
+
+				<Texture parentKey="Dye1" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="10" y="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dye2" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Dye1" relativePoint="RIGHT" x="-6" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Dye3" atlas="dye-drop-no-dye_32" parentArray="dyeIcons" hidden="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Dye2" relativePoint="RIGHT" x="-6" y="0"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>

@@ -72,6 +72,12 @@
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
 		end
+		if ( TransmogFrame and TransmogFrame.CharacterPreview.ModelScene:IsShown() ) then
+			local playerActor = TransmogFrame.CharacterPreview.ModelScene:GetPlayerActor();
+			if playerActor then
+				playerActor:SetSheathed(not playerActor:GetSheathed());
+			end
+		end
 	</Binding>
 	<Binding name="TOGGLEAUTORUN" category="BINDING_HEADER_MOVEMENT">
 		ToggleAutoRun();

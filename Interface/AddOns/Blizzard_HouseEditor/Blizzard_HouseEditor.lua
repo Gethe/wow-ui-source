@@ -54,6 +54,7 @@ function HouseEditorFrameMixin:OnEvent(event, ...)
 		self:OnDecorSelectResponse(result);
 	elseif event =="SIMPLE_CHECKOUT_CLOSED" then
 		self:ShowAfterCheckout();
+		EventRegistry:TriggerEvent("HouseEditor.SimpleCheckoutClosed");
 	end
 end
 

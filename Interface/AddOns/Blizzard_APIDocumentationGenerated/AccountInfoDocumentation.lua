@@ -3,6 +3,7 @@ local AccountInfo =
 	Name = "AccountInfo",
 	Type = "System",
 	Namespace = "C_AccountInfo",
+	Environment = "All",
 
 	Functions =
 	{

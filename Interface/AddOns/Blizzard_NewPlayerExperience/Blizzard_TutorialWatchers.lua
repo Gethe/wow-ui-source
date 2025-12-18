@@ -870,7 +870,7 @@ function Class_LootCorpseWatcher:UnitLootable(unitGUID)
 		return;
 	end
 
-	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
+	local unitID = C_CreatureInfo.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if (unitID == hasKilled) then			
 			tutorial:ForceBegin(unitID);

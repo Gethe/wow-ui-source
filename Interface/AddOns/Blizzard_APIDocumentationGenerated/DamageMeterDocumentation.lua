@@ -3,6 +3,7 @@ local DamageMeter =
 	Name = "DamageMeter",
 	Type = "System",
 	Namespace = "C_DamageMeter",
+	Environment = "All",
 
 	Functions =
 	{
@@ -174,11 +175,12 @@ local DamageMeter =
 			Fields =
 			{
 				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "name", Type = "cstring", Nilable = false },
-				{ Name = "classFilename", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "classFilename", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 				{ Name = "amountPerSecond", Type = "number", Nilable = false },
-				{ Name = "isLocalPlayer", Type = "bool", Nilable = false },
+				{ Name = "isLocalPlayer", Type = "bool", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -201,8 +203,8 @@ local DamageMeter =
 			Fields =
 			{
 				{ Name = "unitName", Type = "cstring", Nilable = false },
-				{ Name = "unitClassFilename", Type = "cstring", Nilable = false },
-				{ Name = "classification", Type = "cstring", Nilable = false },
+				{ Name = "unitClassFilename", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
 				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},

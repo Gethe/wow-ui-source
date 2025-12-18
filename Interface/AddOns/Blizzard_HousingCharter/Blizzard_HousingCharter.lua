@@ -4,7 +4,8 @@ local HousingCharterFrameShowingEvents =
 {
 	"OPEN_NEIGHBORHOOD_CHARTER",
 	"PLAYER_TARGET_CHANGED",
-	"ADD_NEIGHBORHOOD_CHARTER_SIGNATURE"
+	"ADD_NEIGHBORHOOD_CHARTER_SIGNATURE",
+	"REMOVE_NEIGHBORHOOD_CHARTER_SIGNATURE"
 };
 
 function HousingCharterMixin:OnLoad()
@@ -46,6 +47,10 @@ function HousingCharterMixin:OnEvent(event, ...)
 		local signature = ...;
 		self:AddSignature(signature);
 		self:UpdateSettingsButton();
+	elseif event == "REMOVE_NEIGHBORHOOD_CHARTER_SIGNATURE" then
+		local signature = ...;
+		self:RemoveSignature(signature);
+		self:UpdateSettingsButton();
 	end
 end
 
@@ -62,7 +67,7 @@ function HousingCharterMixin:OnHide()
 end
 
 function HousingCharterMixin:UpdateRequestButton()
-	if UnitExists("target") and UnitIsPlayer("target") and not UnitIsUnit("player", "target") then
+	if UnitExists("target") and UnitIsHumanPlayer("target") and not UnitIsUnit("player", "target") then
 		self.RequestButton:Enable()
 	else
 		self.RequestButton:Disable()
@@ -73,6 +78,17 @@ function HousingCharterMixin:AddSignature(signature)
 	for signatureFrame in self.signaturePool:EnumerateActive() do
 		if not signatureFrame.signed then
 			signatureFrame.PlayerNameText:SetText(signature);
+			signatureFrame.signed = true;
+			return;
+		end
+	end
+end
+
+function HousingCharterMixin:RemoveSignature(signature)
+	for signatureFrame in self.signaturePool:EnumerateActive() do
+		if signatureFrame.signed and signatureFrame.PlayerNameText:GetText() == signature then
+			signatureFrame.PlayerNameText:SetText(HOUSING_CHARTER_UNSIGNED);
+			signatureFrame.signed = false;
 			return;
 		end
 	end

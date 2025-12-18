@@ -86,6 +86,8 @@ local ClassVisuals = {
 local ClassTemplatesByTalentType = {
 	[Enum.TraitNodeEntryType.SpendSquare] = "ClassTalentButtonSquareTemplate",
 	[Enum.TraitNodeEntryType.SpendCircle] = "ClassTalentButtonCircleTemplate",
+	[Enum.TraitNodeEntryType.SpendCapstoneCircle] = "ClassTalentButtonCapstoneCircleTemplate",
+	[Enum.TraitNodeEntryType.SpendCapstoneSquare] = "ClassTalentButtonCapstoneSquareTemplate",
 };
 
 local ClassLargeTemplatesByTalentType = {
@@ -126,6 +128,19 @@ function ClassTalentUtil.GetTemplateForTalentType(nodeInfo, talentType, useLarge
 		end
 	end
 
+	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Tiered) and FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowTierTrack) then
+		if talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle then
+			return "ClassTalentButtonCapstoneWithTrackCircleTemplate";
+		elseif talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare then
+			return "ClassTalentButtonCapstoneWithTrackSquareTemplate";
+		end
+	end
+
+	local isCapstoneChildDisplayElement = not nodeInfo and (talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle or talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare);
+	if isCapstoneChildDisplayElement then
+		return "ClassTalentButtonCapstonePipCircleTemplate";
+	end
+
 	if useLarge then
 		return ClassLargeTemplatesByTalentType[talentType] or "ClassTalentButtonLargeCircleTemplate";
 	end
@@ -144,6 +159,12 @@ function ClassTalentUtil.GetSpecializedMixin(nodeInfo, talentType)
 			return ClassTalentButtonSplitSelectMixin;
 		else
 			return ClassTalentButtonSelectMixin;
+		end
+	end
+
+	if nodeInfo and (nodeInfo.type == Enum.TraitNodeType.Tiered) and FlagsUtil.IsSet(nodeInfo.flags, Enum.TraitNodeFlag.ShowTierTrack) then
+		if talentType == Enum.TraitNodeEntryType.SpendCapstoneCircle or talentType == Enum.TraitNodeEntryType.SpendCapstoneSquare then
+			return ClassTalentButtonCapstoneWithTrackMixin;
 		end
 	end
 

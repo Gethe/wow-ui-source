@@ -3,6 +3,7 @@ local DeathRecap =
 	Name = "DeathRecap",
 	Type = "System",
 	Namespace = "C_DeathRecap",
+	Environment = "All",
 
 	Functions =
 	{

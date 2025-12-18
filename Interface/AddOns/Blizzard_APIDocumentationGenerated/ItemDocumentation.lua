@@ -3,6 +3,7 @@ local Item =
 	Name = "Item",
 	Type = "System",
 	Namespace = "C_Item",
+	Environment = "All",
 
 	Functions =
 	{

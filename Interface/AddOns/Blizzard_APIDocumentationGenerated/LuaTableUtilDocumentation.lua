@@ -3,6 +3,7 @@ local LuaTableUtil =
 	Name = "LuaTableUtil",
 	Type = "System",
 	Namespace = "table",
+	Environment = "All",
 
 	Functions =
 	{

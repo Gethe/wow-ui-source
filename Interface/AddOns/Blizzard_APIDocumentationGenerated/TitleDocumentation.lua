@@ -2,6 +2,7 @@ local Title =
 {
 	Name = "Title",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

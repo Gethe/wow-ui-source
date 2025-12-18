@@ -3,6 +3,7 @@ local Container =
 	Name = "Container",
 	Type = "System",
 	Namespace = "C_Container",
+	Environment = "All",
 
 	Functions =
 	{

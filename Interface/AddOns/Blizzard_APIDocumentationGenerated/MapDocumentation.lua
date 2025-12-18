@@ -3,6 +3,7 @@ local Map =
 	Name = "MapUI",
 	Type = "System",
 	Namespace = "C_Map",
+	Environment = "All",
 
 	Functions =
 	{

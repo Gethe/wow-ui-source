@@ -3,6 +3,7 @@ local ChallengeModeInfo =
 	Name = "ChallengeModeInfo",
 	Type = "System",
 	Namespace = "C_ChallengeMode",
+	Environment = "All",
 
 	Functions =
 	{

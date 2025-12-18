@@ -6,7 +6,7 @@ QUEST_CHOICE_DIALOG_RESULT_DECLINED = 2;
 QUEST_CHOICE_DIALOG_RESULT_ABSTAIN = 3;
 
 function AdventureMapQuestChoiceDialogMixin:OnLoad()
-	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate");
+	self.rewardPool = CreateFramePool("FRAME", self, "AdventureMapQuestRewardTemplate", function(pool, reward) reward:OnReset(pool); end);
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnParentHide(parent)
@@ -67,6 +67,7 @@ function AdventureMapQuestChoiceDialogMixin:OnShow()
 	self:RegisterEvent("ADVENTURE_MAP_QUEST_UPDATE");
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:Refresh();
+	self.Details:SetVerticalScroll(0);
 end
 
 function AdventureMapQuestChoiceDialogMixin:OnHide()
@@ -116,11 +117,15 @@ function AdventureMapQuestChoiceDialogMixin:RefreshRewards()
 		local rewardFrame = self:AddReward(currencyReward.name, currencyReward.texture, nil, currencyReward.totalRewardAmount, "GameFontHighlightSmall");
 		local currencyColor = GetColorForCurrencyReward(currencyReward.currencyID, currencyReward.totalRewardAmount);
 		rewardFrame.Count:SetTextColor(currencyColor:GetRGB());
+		rewardFrame.rewardType = "currency";
+		rewardFrame.rewardIndex = index;
 	end
 
 	for itemIndex = 1, GetNumQuestLogRewards(self.questID) do
 		local name, texture, count, quality, isUsable = GetQuestLogRewardInfo(itemIndex, self.questID);
-		self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
+		local rewardFrame = self:AddReward(name, texture, nil, count, "GameFontHighlightSmall");
+		rewardFrame.rewardType = "item";
+		rewardFrame.rewardIndex = itemIndex;
 	end
 
 	local money = GetQuestLogRewardMoney(self.questID);
@@ -264,3 +269,24 @@ function AdventureMapQuestChoiceDialogMixin:DeclineQuest(abstain)
 	AdventureMapQuestChoiceDialog:Hide();
 end
 
+AdventureMapQuestRewardMixin = { };
+
+function AdventureMapQuestRewardMixin:OnEnter()
+	if self.tooltipText then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltipText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
+	elseif self.rewardType then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		if self.rewardType == "item" then
+			GameTooltip:SetQuestLogItem("reward", self.rewardIndex, self:GetParent().questID);
+		elseif self.rewardType == "currency" then
+			GameTooltip:SetQuestLogCurrency("reward", self.rewardIndex, self:GetParent().questID);
+		end
+	end
+end
+
+function AdventureMapQuestRewardMixin:OnReset(pool)
+	Pool_HideAndClearAnchors(pool, self);
+	self.rewardType = nil;
+	self.rewardIndex = nil;
+end

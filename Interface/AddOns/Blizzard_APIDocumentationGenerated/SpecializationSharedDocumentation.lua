@@ -2,6 +2,7 @@ local SpecializationShared =
 {
 	Name = "SpecializationShared",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

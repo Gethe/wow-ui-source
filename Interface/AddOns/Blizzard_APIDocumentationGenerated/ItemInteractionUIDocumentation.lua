@@ -3,6 +3,7 @@ local ItemInteractionUI =
 	Name = "ItemInteractionUI",
 	Type = "System",
 	Namespace = "C_ItemInteraction",
+	Environment = "All",
 
 	Functions =
 	{

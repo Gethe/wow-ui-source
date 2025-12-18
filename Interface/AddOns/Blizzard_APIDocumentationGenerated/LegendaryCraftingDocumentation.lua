@@ -3,6 +3,7 @@ local LegendaryCrafting =
 	Name = "LegendaryCrafting",
 	Type = "System",
 	Namespace = "C_LegendaryCrafting",
+	Environment = "All",
 
 	Functions =
 	{

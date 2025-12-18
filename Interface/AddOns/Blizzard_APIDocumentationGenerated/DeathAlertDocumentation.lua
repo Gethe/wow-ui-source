@@ -3,6 +3,7 @@ local DeathAlert =
 	Name = "DeathAlert",
 	Type = "System",
 	Namespace = "C_DeathAlert",
+	Environment = "All",
 
 	Functions =
 	{

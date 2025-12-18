@@ -510,6 +510,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{value = Enum.AuraFrameVisibleSetting.Hidden, text = HUD_EDIT_MODE_SETTING_AURA_FRAME_VISIBLE_SETTING_HIDDEN},
 			},
 		},
+
+		-- Show Dispel Type Setting
+		{
+			setting = Enum.EditModeAuraFrameSetting.ShowDispelType,
+			name = HUD_EDIT_MODE_SETTING_AURA_FRAME_SHOW_DISPEL_TYPE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
 	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] =
@@ -818,8 +825,8 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeCooldownViewerSetting.IconPadding,
 			name = HUD_EDIT_MODE_SETTING_COOLDOWN_VIEWER_ICON_PADDING,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 2,
-			maxValue = 10,
+			minValue = 0,	-- NOTE: See CooldownViewerMixin:GetAdditionalPaddingOffset when changing these values.
+			maxValue = 14,
 			stepSize = 1,
 		},
 
@@ -1032,12 +1039,12 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			options = {
 				{ value = Enum.DamageMeterStyle.Default, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_DEFAULT },
 				{ value = Enum.DamageMeterStyle.Bordered, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_BORDERED },
-				{ value = Enum.DamageMeterStyle.FullBackground, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_FULL_BACKGROUND },
 				{ value = Enum.DamageMeterStyle.Thin, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_STYLE_THIN },
 			},
 		},
 
 		-- Numbers
+		--[[ NYI: Hiding.
 		{
 			setting = Enum.EditModeDamageMeterSetting.Numbers,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS,
@@ -1048,6 +1055,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{ value = Enum.DamageMeterNumbers.Complete, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPLETE },
 			},
 		},
+		--]]
 
 		-- Frame Width
 		{
@@ -1068,7 +1076,7 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			setting = Enum.EditModeDamageMeterSetting.FrameHeight,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_FRAME_HEIGHT,
 			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 80,
+			minValue = 120,
 			maxValue = 400,
 			stepSize = 1,
 			ConvertValue = ConvertValueDiffFromMin,
@@ -1151,13 +1159,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{value = Enum.DamageMeterVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_IN_COMBAT},
 				{value = Enum.DamageMeterVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_VISIBILITY_HIDDEN},
 			},
-		},
-
-		-- Lock Scroll
-		{
-			setting = Enum.EditModeDamageMeterSetting.LockScroll,
-			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_LOCK_SCROLL,
-			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
 		-- Show Spec Icon

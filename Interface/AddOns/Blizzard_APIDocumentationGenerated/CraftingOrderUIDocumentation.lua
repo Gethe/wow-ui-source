@@ -3,6 +3,7 @@ local CraftingOrderUI =
 	Name = "CraftingOrderUI",
 	Type = "System",
 	Namespace = "C_CraftingOrders",
+	Environment = "All",
 
 	Functions =
 	{

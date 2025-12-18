@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="AM_QuestDialog.lua"/>
 
-	<Button name="AdventureMapQuestRewardTemplate" enableMouse="true" virtual="true">
+	<Button name="AdventureMapQuestRewardTemplate" mixin="AdventureMapQuestRewardMixin" enableMouse="true" virtual="true">
 		<Size x="135" y="41" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -42,13 +42,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				if self.tooltipText then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
-				end
-			</OnEnter>
-
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide" />
 		</Scripts>
 	</Button>

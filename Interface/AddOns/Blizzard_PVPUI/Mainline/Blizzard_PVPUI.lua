@@ -370,6 +370,13 @@ function PVPQueueFrame_OnLoad(self)
 		self.CategoryButton3.tooltip = failureReason;
 	end
 
+	canUse, failureReason = C_PvP.CanPlayerUseTrainingGroundsUI();
+	if not canUse then
+		disabledButtons = true;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
+	end
+
 	if disabledButtons then
 		PVPQueueFrame:SetScript("OnEvent", PVPQueueFrame_OnEvent);
 		PVPQueueFrame:RegisterEvent("PLAYER_LEVEL_CHANGED");
@@ -424,6 +431,7 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_LEVEL_CHANGED") then
 		local canUseRated = C_PvP.CanPlayerUseRatedPVPUI();
 		local canUsePremade = C_LFGInfo.CanPlayerUsePremadeGroup();
+		local canUseTrainingGrounds = C_PvP.CanPlayerUseTrainingGroundsUI();
 		if canUseRated then
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
 			self.CategoryButton2.tooltip = nil;
@@ -432,7 +440,11 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 			self.CategoryButton3.tooltip = nil;
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
 		end
-		if canUseRated and canUsePremade then
+		if canUseTrainingGrounds then
+			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
+			self.CategoryButton4.tooltip = nil;
+		end
+		if canUseRated and canUsePremade and canUseTrainingGrounds then
 			self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
@@ -2827,6 +2839,7 @@ local BonusTrainingGroundListEvents = {
 	"PVPQUEUE_ANYWHERE_SHOW",
 	"PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
 	"PVP_RATED_STATS_UPDATE",
+	"PVP_REWARDS_UPDATE",
 };
 
 function BonusTrainingGroundListMixin:OnLoad()
@@ -2887,9 +2900,16 @@ function BonusTrainingGroundListMixin:TrySelectFirstQueueOptionIfNoneSelected()
 end
 
 function BonusTrainingGroundListMixin:Refresh()
+	for index, button in ipairs(self.BonusTrainingGroundButtons) do
+		button:RefreshVisuals();
+	end
 end
 
 TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
+
+local queueOptionToRewardGetter = {
+	[Constants.TrainingGroundConstants.RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID] = C_PvP.GetRandomTrainingGroundRewards;
+};
 
 function TrainingGroundActivityButtonMixin:OnLoad()
 	self:InitializeAnchorPosition();
@@ -2929,6 +2949,16 @@ function TrainingGroundActivityButtonMixin:RefreshVisualsForEnabledState()
 	self:RefreshTitleTextColor();
 	self:RefreshNormalTextureAlpha();
 	self:RefreshLevelRequirementAndTitleAnchoring();
+	self:RefreshRewardDisplay();
+end
+
+function TrainingGroundActivityButtonMixin:RefreshRewardDisplay()
+	local rewardGetterFunction = queueOptionToRewardGetter[self:GetQueueOption()];
+	if not rewardGetterFunction then
+		return;
+	end
+
+	PVPUIFrame_ConfigureRewardFrame(self.Reward, rewardGetterFunction());
 end
 
 function TrainingGroundActivityButtonMixin:RefreshTitleTextColor()

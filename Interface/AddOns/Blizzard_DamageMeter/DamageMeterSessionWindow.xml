@@ -1,13 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DamageMeterSessionWindowTemplate" mixin="DamageMeterSessionWindowMixin" resizable="true" movable="true" clampedToScreen="true" virtual="true">
+	<Frame name="DamageMeterSessionWindowTemplate" mixin="DamageMeterSessionWindowMixin" clampedToScreen="true" virtual="true">
 		<Size x="400" y="200"/>
 		<ResizeBounds>
 			<minResize>
-				<AbsDimension x="250" y="120"/>
+				<AbsDimension x="300" y="120"/>
 			</minResize>
 			<maxResize>
-				<AbsDimension x="800" y="800"/>
+				<AbsDimension x="600" y="400"/>
 			</maxResize>
 		</ResizeBounds>
 		<Layers>
@@ -42,7 +42,11 @@
 				</Anchors>
 			</DropdownButton>
 			<DropdownButton parentKey="SessionDropdown" inherits="WowStyle2DropdownTemplate">
-				<Size x="18" y="18"/>
+				<KeyValues>
+					<KeyValue key="shortShortNameWidth" type="number" value="18"/>
+					<KeyValue key="longShortNameWidth" type="number" value="32"/>
+				</KeyValues>
+				<Size y="18"/> <!-- Width set dynamically in lua-->
 				<Anchors>
 					<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-8" y="3"/>
 				</Anchors>
@@ -80,7 +84,7 @@
 					<!-- Anchored dynamically in lua-->
 				</Anchors>
 			</Frame>
-			<Button parentKey="LocalPlayerEntry" inherits="DamageMeterSourceEntryTemplate" hidden="true">
+			<Button parentKey="LocalPlayerEntry" inherits="DamageMeterSourceEntryTemplate" hidden="true" frameLevel="10">
 				<Anchors>
 					<!-- Anchored dynamically in lua-->
 				</Anchors>

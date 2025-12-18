@@ -2,6 +2,7 @@ local Streaming =
 {
 	Name = "Streaming",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

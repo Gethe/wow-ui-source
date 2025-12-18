@@ -235,8 +235,8 @@ function NeighborhoodRosterMixin:SortByColumnIndex(columnIndex)
 			if self.reverseActiveColumnSort then
 				lhsMemberInfo, rhsMemberInfo = rhsMemberInfo, lhsMemberInfo;
 			end
-			local lhsSortScore = lhsMemberInfo.subdivision;
-			local rhsSortScore = rhsMemberInfo.subdivision; 
+			local lhsSortScore = lhsMemberInfo.subdivision or 0;
+			local rhsSortScore = rhsMemberInfo.subdivision or 0; 
 			return lhsSortScore < rhsSortScore;
 		end);
         self:UpdateRoster(self.sortedMemberList);
@@ -614,7 +614,7 @@ function HousingInviteResidentFrameMixin:OnSendInviteClicked()
 	self.SendInviteButton:Disable();
 	self.InviteButtonLoadingSpinner:Show();
 	self.pendingInvite = true;
-	self.pendingInviteName = self.PlayerSearchBox:GetText();
+	self.pendingInviteName = C_CharacterServices.CapitalizeCharName(self.PlayerSearchBox:GetText());
 	C_HousingNeighborhood.InvitePlayerToNeighborhood(self.pendingInviteName);
 	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
 end

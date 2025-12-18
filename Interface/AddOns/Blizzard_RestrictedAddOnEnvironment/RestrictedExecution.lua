@@ -10,6 +10,8 @@
 -- Nevin Flanagan
 ---------------------------------------------------------------------------
 
+local _, addonTable = ...;
+
 -- Localizes for functions that are frequently called or need to be
 -- assuredly un-replaceable or unhookable.
 local type = type;
@@ -275,6 +277,7 @@ local LOCAL_No_Secure_Update_Meta = {
 
 local LOCAL_Restricted_Global_Functions = {
     newtable = rtable.newtable;
+	copytable = rtable.copytable;
     pairs = rtable.pairs;
     ipairs = rtable.ipairs;
     next = rtable.next;
@@ -314,10 +317,9 @@ local function PopulateGlobalFunctions(src, dest)
 end
 
 -- Import any functions initialized by other/earier files
-if (RESTRICTED_FUNCTIONS_SCOPE) then
-    PopulateGlobalFunctions(RESTRICTED_FUNCTIONS_SCOPE,
-                            LOCAL_Restricted_Global_Functions);
-    RESTRICTED_FUNCTIONS_SCOPE = nil;
+if (addonTable.RESTRICTED_FUNCTIONS_SCOPE) then
+    PopulateGlobalFunctions(addonTable.RESTRICTED_FUNCTIONS_SCOPE, LOCAL_Restricted_Global_Functions);
+    addonTable.RESTRICTED_FUNCTIONS_SCOPE = nil;
 end
 
 local LOCAL_Table_Namespace = {

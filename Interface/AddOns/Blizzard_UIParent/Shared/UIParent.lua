@@ -732,6 +732,9 @@ function GetLFGMode(category, lfgID)
 		if IsLFGComplete() then
 			return "lfgparty", "complete";
 		end
+		if IsInLFGDungeon() then -- If we're inside, we should still always show the option to leave instance party, which will boot the player out
+			return "abandonedInDungeon";
+		end
 		return "lfgparty", "noteleport";
 	elseif ( IsPartyLFG() and IsInLFGDungeon() and partyCategory == category and (not lfgID or lfgID == partySlot) ) then
 		return "abandonedInDungeon";

@@ -3,6 +3,7 @@ local ConsoleScriptCollection =
 	Name = "ConsoleScriptCollection",
 	Type = "System",
 	Namespace = "C_ConsoleScriptCollection",
+	Environment = "All",
 
 	Functions =
 	{

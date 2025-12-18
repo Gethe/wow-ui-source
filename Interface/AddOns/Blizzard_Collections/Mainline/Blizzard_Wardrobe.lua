@@ -240,7 +240,7 @@ function WardrobeCollectionFrameMixin:OnKeyDown(key)
 		end
 		self.tooltipContentFrame:RefreshAppearanceTooltip();
 		return false;
-	elseif key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY and self.activeFrame == self.SetsCollectionFrame then
+	elseif (key == WARDROBE_UP_VISUAL_KEY or key == WARDROBE_DOWN_VISUAL_KEY) and self.activeFrame == self.SetsCollectionFrame then
 		self.activeFrame:HandleKey(key);
 		return false;
 	end
@@ -846,14 +846,14 @@ function WardrobeItemsCollectionMixin:SetActiveSlot(transmogLocation, category, 
 end
 
 function WardrobeItemsCollectionMixin:UpdateWeaponDropdown()
-	local name, isWeapon;
+	local _name, isActiveCategoryWeapon;
 	if self.transmogLocation:IsAppearance() then
-		name, isWeapon = C_TransmogCollection.GetCategoryInfo(self:GetActiveCategory());
+		_name, isActiveCategoryWeapon = C_TransmogCollection.GetCategoryInfo(self:GetActiveCategory());
 	end
 
-	self.WeaponDropdown:SetShown(isWeapon);
+	self.WeaponDropdown:SetShown(isActiveCategoryWeapon);
 
-	if not isWeapon then
+	if not isActiveCategoryWeapon then
 		return;
 	end
 
@@ -868,20 +868,16 @@ function WardrobeItemsCollectionMixin:UpdateWeaponDropdown()
 	end
 
 	local transmogLocation = self.transmogLocation;
-	self.WeaponDropdown:SetupMenu(function(dropdown, rootDescription)
+	self.WeaponDropdown:SetupMenu(function(_dropdown, rootDescription)
 		rootDescription:SetTag("MENU_WARDROBE_WEAPONS_FILTER");
 
-		local equippedItemID = GetInventoryItemID("player", transmogLocation:GetSlotID());
 		local isForMainHand = transmogLocation:IsMainHand();
 		local isForOffHand = transmogLocation:IsOffHand();
+
 		for categoryID = FIRST_TRANSMOG_COLLECTION_WEAPON_TYPE, LAST_TRANSMOG_COLLECTION_WEAPON_TYPE do
-			local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
-			if name and isWeapon then
-				if (isForMainHand and canMainHand) or (isForOffHand and canOffHand) then
-					if C_TransmogCollection.IsCategoryValidForItem(categoryID, equippedItemID) then
-						rootDescription:CreateRadio(name, IsSelected, SetSelected, categoryID);
-					end
-				end
+			local name, isWeapon, _canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+			if name and isWeapon and ((isForMainHand and canMainHand) or (isForOffHand and canOffHand)) then
+				rootDescription:CreateRadio(name, IsSelected, SetSelected, categoryID);
 			end
 		end
 

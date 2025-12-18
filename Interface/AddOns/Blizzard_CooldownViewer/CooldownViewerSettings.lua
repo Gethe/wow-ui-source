@@ -158,7 +158,7 @@ function CooldownViewerBaseReorderTargetMixin:GetBestCooldownItemTarget(_mouseX,
 	return self;
 end
 
-CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, CooldownViewerBaseReorderTargetMixin);
+CooldownViewerSettingsItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, CooldownViewerBaseReorderTargetMixin, CooldownViewerVisualAlertTargetMixin);
 
 function CooldownViewerSettingsItemMixin:RefreshData()
 	if not self:IsEmptyCategory() then
@@ -171,6 +171,26 @@ function CooldownViewerSettingsItemMixin:RefreshData()
 	end
 end
 
+local function AnchorAlertTypeIcons(overlay)
+	local firstAlertIcon = overlay.visibleIcons[1];
+	if not firstAlertIcon then
+		return;
+	end
+
+	local iconWidth = firstAlertIcon:GetWidth();
+	local totalIconsWidth = (#overlay.visibleIcons * iconWidth) + ((#overlay.visibleIcons - 1) * 2);
+	local overlayWidth = overlay:GetWidth();
+	local firstIconOffset = (overlayWidth - totalIconsWidth) / 2;
+
+	local anchor = CreateAnchor("LEFT", overlay, "LEFT", firstIconOffset, 0);
+	local clearAllPoints = true;
+
+	for index, icon in ipairs(overlay.visibleIcons) do
+		anchor:SetPoint(icon, clearAllPoints);
+		anchor:Set("LEFT", icon, "RIGHT", 2, 0);
+	end
+end
+
 local function AddAlertTypeIcon(index, alertType, overlay)
 	local asset = CooldownViewerAlert_GetTypeAtlas(alertType);
 	if asset then
@@ -179,13 +199,14 @@ local function AddAlertTypeIcon(index, alertType, overlay)
 			icon = overlay:CreateTexture(nil, "ARTWORK");
 			local size = overlay:GetHeight() - 2;
 			icon:SetSize(size, size);
-			icon:SetPoint("CENTER", overlay, "CENTER", 0, 0);
 
 			overlay.icons[index] = icon;
 		end
 
 		icon:SetAtlas(asset);
 		icon:Show();
+
+		table.insert(overlay.visibleIcons, icon);
 	end
 end
 
@@ -193,6 +214,8 @@ local function HideAlertTypeIcons(overlay)
 	for _, icon in ipairs(overlay.icons) do
 		icon:Hide();
 	end
+
+	overlay.visibleIcons = {};
 end
 
 function CooldownViewerSettingsItemMixin:RefreshAlertTypeOverlay()
@@ -201,9 +224,8 @@ function CooldownViewerSettingsItemMixin:RefreshAlertTypeOverlay()
 		if not self.AlertTypesOverlay then
 			local overlay = CreateFrame("Frame", nil, self);
 			self.AlertTypesOverlay = overlay;
-			overlay:SetPoint("BOTTOMLEFT", self.Icon, "BOTTOMLEFT", 1, 2);
-			overlay:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", -1, 2);
-			overlay:SetHeight(self:GetHeight() * 0.37);
+			overlay:SetPoint("BOTTOM", self.Icon, "BOTTOM", 0, 2);
+			overlay:SetSize(34, 14); -- This used to be programatically determined, but then anchor setup ordering got in the way.
 
 			overlay.BG = overlay:CreateTexture(nil, "BACKGROUND");
 			overlay.BG:SetAllPoints(overlay);
@@ -217,6 +239,8 @@ function CooldownViewerSettingsItemMixin:RefreshAlertTypeOverlay()
 		for index, alertType in ipairs(alertTypes) do
 			AddAlertTypeIcon(index, alertType, self.AlertTypesOverlay);
 		end
+
+		AnchorAlertTypeIcons(self.AlertTypesOverlay);
 
 		self.AlertTypesOverlay:Show();
 	elseif self.AlertTypesOverlay then
@@ -308,7 +332,7 @@ function CooldownViewerSettingsItemMixin:BeginOrderChange(eatNextGlobalMouseUp)
 end
 
 function CooldownViewerSettingsItemMixin:PlayAlertSample(alert)
-	CooldownViewerAlert_PlayAlert(self:GetNameText(), alert);
+	CooldownViewerAlert_PlayAlert(self, self:GetNameText(), alert);
 end
 
 do
@@ -600,6 +624,10 @@ function CooldownViewerSettingsBarItemMixin:UpdateReorderMarkerPosition(marker, 
 	end
 end
 
+function CooldownViewerSettingsBarItemMixin:GetAlertTargetFrame()
+	return self.AlertTarget;
+end
+
 CooldownViewerContainerReorderTargetMixin = CreateFromMixins(CooldownViewerBaseReorderTargetMixin);
 
 function CooldownViewerContainerReorderTargetMixin:GetBestCooldownItemTarget(cursorX, cursorY)
@@ -774,6 +802,7 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetupScrollFrame();
 	self:SetupEventEditFrame();
 	self:SetupLayoutManagerDialog();
+	self:SetupAlerts();
 
 	local function LoadCooldownSettings()
 		local manager = self:GetLayoutManager();
@@ -1196,6 +1225,12 @@ function CooldownViewerSettingsMixin:SetupLayoutManagerDialog()
 			end,
 		},
 	});
+end
+
+function CooldownViewerSettingsMixin:SetupAlerts()
+	for _index, visualAlertData in pairs(CooldownViewerVisualData) do
+		CooldownViewerVisualAlertsManager:RegisterAlert(visualAlertData.enum, visualAlertData.animTemplate);
+	end
 end
 
 function CooldownViewerSettingsMixin:IsReordering()

@@ -24,11 +24,11 @@ end
 
 -- Bridge functions for compatibility
 function RegisterStateDriver(frame, state, values)
-    return RegisterAttributeDriver(frame, "state-"..state, values);
+    RegisterAttributeDriver(frame, "state-"..state, values);
 end
 
 function UnregisterStateDriver(frame, state)
-    return UnregisterAttributeDriver(frame, "state-"..state);
+    UnregisterAttributeDriver(frame, "state-"..state);
 end
 
 -- Register a frame to be notified when a unit's existence changes, the

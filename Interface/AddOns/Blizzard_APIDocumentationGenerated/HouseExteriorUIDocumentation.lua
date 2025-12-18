@@ -3,6 +3,7 @@ local HouseExteriorUI =
 	Name = "HouseExteriorUI",
 	Type = "System",
 	Namespace = "C_HouseExterior",
+	Environment = "All",
 
 	Functions =
 	{
@@ -36,12 +37,31 @@ local HouseExteriorUI =
 			},
 		},
 		{
-			Name = "GetCurrentHouseExteriorTypeName",
+			Name = "GetCurrentHouseExteriorType",
 			Type = "Function",
 
 			Returns =
 			{
+				{ Name = "houseExteriorTypeID", Type = "number", Nilable = true },
 				{ Name = "houseExteriorTypeName", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "GetHouseExteriorSizeOptions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "options", Type = "HouseExteriorSizeOptionsInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetHouseExteriorTypeOptions",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "options", Type = "HouseExteriorTypeOptionsInfo", Nilable = true },
 			},
 		},
 		{
@@ -95,10 +115,40 @@ local HouseExteriorUI =
 				{ Name = "fixtureID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "SetHouseExteriorSize",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "size", Type = "HousingFixtureSize", Nilable = false },
+			},
+		},
+		{
+			Name = "SetHouseExteriorType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "houseExteriorTypeID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
 	{
+		{
+			Name = "HouseExteriorTypeUnlocked",
+			Type = "Event",
+			LiteralName = "HOUSE_EXTERIOR_TYPE_UNLOCKED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "fixtureID", Type = "number", Nilable = false },
+			},
+		},
 		{
 			Name = "HousingCoreFixtureChanged",
 			Type = "Event",
@@ -153,6 +203,46 @@ local HouseExteriorUI =
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingFixtureUnlocked",
+			Type = "Event",
+			LiteralName = "HOUSING_FIXTURE_UNLOCKED",
+			UniqueEvent = true,
+			Payload =
+			{
+				{ Name = "fixtureID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingSetExteriorHouseSizeResponse",
+			Type = "Event",
+			LiteralName = "HOUSING_SET_EXTERIOR_HOUSE_SIZE_RESPONSE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingSetExteriorHouseTypeResponse",
+			Type = "Event",
+			LiteralName = "HOUSING_SET_EXTERIOR_HOUSE_TYPE_RESPONSE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "HousingResult", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingSetFixtureResponse",
+			Type = "Event",
+			LiteralName = "HOUSING_SET_FIXTURE_RESPONSE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "HousingResult", Nilable = false },
 			},
 		},
 	},

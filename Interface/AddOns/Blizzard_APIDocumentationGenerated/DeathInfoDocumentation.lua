@@ -3,6 +3,7 @@ local DeathInfo =
 	Name = "DeathInfo",
 	Type = "System",
 	Namespace = "C_DeathInfo",
+	Environment = "All",
 
 	Functions =
 	{

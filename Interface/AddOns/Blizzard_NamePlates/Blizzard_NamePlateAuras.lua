@@ -391,6 +391,10 @@ function NamePlateAurasMixin:ShouldBeShown()
 		return false;
 	end
 
+	if self:IsShowOnlyName() then
+		return false;
+	end
+
 	if self:IsSimplified() then
 		return false;
 	end

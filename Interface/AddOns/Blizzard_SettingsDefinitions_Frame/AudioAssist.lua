@@ -118,7 +118,9 @@ local function Register()
 		if voiceChatEnabled then
 			-- Header
 			do
-				local initializer = CreateSettingsListSectionHeaderInitializer(CAA_COMBAT_AUDIO_ALERTS_LABEL, CAA_COMBAT_AUDIO_ALERTS_TOOLTIP);
+				local _sectionTooltip = nil;
+				local sectionNewTagID = "CAA_COMBAT_AUDIO_ALERTS_LABEL";
+				local initializer = CreateSettingsListSectionHeaderInitializer(CAA_COMBAT_AUDIO_ALERTS_LABEL, _sectionTooltip, sectionNewTagID);
 				AddTTSSearchTags(initializer);
 				initializer:AddSearchTags(CAA_SEARCH_TAG_SHORT);
 				layout:AddInitializer(initializer);
@@ -225,18 +227,11 @@ local function Register()
 				InitCAAOption(initializer);
 			end
 
-			local function GetPercentOptionString(percent)
-				return EVERY_X_PERCENT:format(percent);
-			end
-
 			local function GetPercentOptions()
 				local container = Settings.CreateControlTextContainer();
-				container:Add(0, LOC_OPTION_OFF);
-				container:Add(10, GetPercentOptionString(10));
-				container:Add(20, GetPercentOptionString(20));
-				container:Add(30, GetPercentOptionString(30));
-				container:Add(40, GetPercentOptionString(40));
-				container:Add(50, GetPercentOptionString(50));
+				for index, percentInfo in CombatAudioAlertUtil.EnumeratePercentInfo() do
+					container:Add(index - 1, percentInfo.str);
+				end
 				return container:GetData();
 			end
 
@@ -263,8 +258,8 @@ local function Register()
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Health) do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
+					for index, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Health) do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
 					end
 					return container:GetData();
 				end
@@ -308,6 +303,31 @@ local function Register()
 				InitCAAOption(initializer);
 			end
 
+			-- Say If Targeted
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_SAY_IF_TARGETED",
+					Settings.VarType.Number, CAA_SAY_IF_TARGETED_LABEL, Constants.CAAConstants.CAASayIfTargetedDefault, GetValue, SetValue);
+
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for index, info in CombatAudioAlertUtil.EnumerateSayIfTargetedInfo() do
+						container:Add(index - 1, info.str);
+					end
+					return container:GetData();
+				end
+
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_IF_TARGETED_TOOLTIP);
+				InitCAAOption(initializer);
+			end
+
 			-- Say Target Health
 			local sayTargetHealthSetting = Settings.RegisterCVarSetting(category, "CAATargetHealthPercent", Settings.VarType.Number, CAA_SAY_TARGET_HEALTH_LABEL);
 			local sayTargetHealthInitializer = Settings.CreateDropdown(category, sayTargetHealthSetting, GetPercentOptions, CAA_SAY_TARGET_HEALTH_TOOLTIP);
@@ -329,8 +349,8 @@ local function Register()
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Health) do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
+					for index, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Health) do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, nil, examplePercent));
 					end
 					return container:GetData();
 				end
@@ -378,6 +398,35 @@ local function Register()
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
 			end
 
+			local function GetUnderPercentOptions()
+				local container = Settings.CreateControlTextContainer();
+				for index, percentInfo in CombatAudioAlertUtil.EnumeratePartyHealthPercentInfo() do
+					container:Add(index - 1, percentInfo.str);
+				end
+				return container:GetData();
+			end
+
+			-- Say Party Health
+			local sayPartyHealthSetting = Settings.RegisterCVarSetting(category, "CAAPartyHealthPercent", Settings.VarType.Number, CAA_SAY_PARTY_HEALTH_LABEL);
+			local sayPartyHealthInitializer = Settings.CreateDropdown(category, sayPartyHealthSetting, GetUnderPercentOptions, CAA_SAY_PARTY_HEALTH_TOOLTIP);
+			InitCAAOption(sayPartyHealthInitializer);
+
+			local function SayPartyHealthOptionsModifiable()
+				return GetCVarNumberOrDefault("CAAPartyHealthPercent") > 0;
+			end
+
+			-- Say Party Health Frequency
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAAPartyHealthFrequency", Settings.VarType.Number, CAA_SAY_PARTY_HEALTH_FREQUENCY_LABEL);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAAFrequencyMin, Constants.CAAConstants.CAAFrequencyMax, 1);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_PARTY_HEALTH_FREQUENCY_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayPartyHealthInitializer, SayPartyHealthOptionsModifiable);
+			end
+
 			-- Player Resource Options
 			local resource1PowerName, resource2PowerName;
 
@@ -417,11 +466,11 @@ local function Register()
 
 			-- Say Resource 1
 			local function GetResource1Value()
-				return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Percent);
+				return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent);
 			end
 
 			local function SetResource1Value(value)
-				C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Percent, value);
+				C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent, value);
 			end
 
 			local sayResource1Setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_1_PERCENT",
@@ -436,17 +485,17 @@ local function Register()
 			-- Say Resource 1 Format
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Format);
+					return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Format);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource1Format, value);
+					C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Format, value);
 				end
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource1PowerName, examplePercent));
+					for index, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource1PowerName, examplePercent));
 					end
 					return container:GetData();
 				end
@@ -497,11 +546,11 @@ local function Register()
 
 			-- Say Resource 2
 			local function GetResource2Value()
-				return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Percent);
+				return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent);
 			end
 
 			local function SetResource2Value(value)
-				C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Percent, value);
+				C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent, value);
 			end
 
 			local sayResource2Setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_RESOURCE_2_PERCENT",
@@ -516,17 +565,17 @@ local function Register()
 			-- Say Resource 2 Format
 			do
 				local function GetValue()
-					return C_CombatAudioAlert.GetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Format);
+					return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Format);
 				end
 
 				local function SetValue(value)
-					C_CombatAudioAlert.SetResourceSettingForCurrentSpec(Enum.CombatAudioAlertResourceSetting.Resource2Format, value);
+					C_CombatAudioAlert.SetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Format, value);
 				end
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource2PowerName, examplePercent));
+					for index, formatInfo in CombatAudioAlertUtil.EnumeratePlayerResourceFormatInfo() do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, resource2PowerName, examplePercent));
 					end
 					return container:GetData();
 				end
@@ -562,9 +611,9 @@ local function Register()
 
 			local function GetCastModeOptions()
 				local container = Settings.CreateControlTextContainer();
-				container:Add(Enum.CombatAudioAlertCastState.Off, LOC_OPTION_OFF);
-				container:Add(Enum.CombatAudioAlertCastState.OnCastStart, CAA_SAY_CASTS_START_OF_CAST);
-				container:Add(Enum.CombatAudioAlertCastState.OnCastEnd, CAA_SAY_CASTS_END_OF_CAST);
+				for index, info in CombatAudioAlertUtil.EnumerateSayCastInfo() do
+					container:Add(index - 1, info.str);
+				end
 				return container:GetData();
 			end
 
@@ -589,8 +638,8 @@ local function Register()
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Cast) do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
+					for index, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("player", Enum.CombatAudioAlertType.Cast) do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
 					end
 					return container:GetData();
 				end
@@ -657,8 +706,8 @@ local function Register()
 
 				local function GetOptions()
 					local container = Settings.CreateControlTextContainer();
-					for cvarVal, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Cast) do
-						container:Add(cvarVal, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
+					for index, formatInfo in CombatAudioAlertUtil.EnumerateUnitFormatInfo("target", Enum.CombatAudioAlertType.Cast) do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_SPELLNAME));
 					end
 					return container:GetData();
 				end

@@ -3,13 +3,13 @@
 	<Frame name="MajorFactionsRenownToast" parent="UIParent" hidden="true" mixin="MajorFactionsRenownToastMixin" inherits="MajorFactionCelebrationBannerTemplate">
 		<Size x="128" y="128"/>
 		<Anchors>
-			<Anchor point="TOP" y="-160"/>
+			<Anchor point="TOP" y="-250"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<FontString parentKey="RenownLabel" inherits="QuestFont_30" justifyH="CENTER" justifyV="MIDDLE">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="-116"/>
+						<Anchor point="TOP" relativeKey="$parent" relativePoint="TOP" x="0" y="20"/>
 					</Anchors>
 					<Shadow x="1" y="-1">
 						<Color r="0" g="0" b="0"/>
@@ -41,23 +41,8 @@
 					</Shadow>
 				</FontString>
 			</Layer>
-			<Layer level="ARTWORK">
-				<Texture parentKey="GlowLineBottom">
-					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.RewardDescription" relativePoint="BOTTOM" y="-15"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="ToastBG" atlas="majorfaction-celebration-toastBG" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.GlowLineBottom" y="8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="RewardIconRing" alpha="0" atlas="majorfaction-celebration-content-ring" useAtlasSize="false">
-					<Size x="64" y="64"/>
+				<Texture parentKey="RewardIconRing" alpha="0" atlas="evergreen-toast-celebration-content-ring" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.RewardIcon" />
 					</Anchors>
@@ -86,15 +71,30 @@
 		</Frames>
 		<Animations>
 			<AnimationGroup parentKey="ShowAnim" setToFinalAlpha="true">
-				<Alpha childKey="IconSwirlModelScene" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="Icon" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="ToastBG" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RenownLabel" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RewardIconRing" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RewardIcon" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
-				<Alpha childKey="RewardDescription" smoothing="OUT" duration="0.25" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RenownLabel" duration="0.16" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardIconRing" duration="0.16" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardIcon" duration="0.16" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="RewardDescription" duration="0.16" order="1" startDelay="0.5" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="Mask.Shine" duration="1" order="1" startDelay="0.5" smoothing="OUT" offsetX="400" offsetY="0"/>
+				<Alpha childKey="TopBorder" duration="0.13333" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TopIcon" duration="0.13333" order="1" fromAlpha="0" toAlpha="1"/>
+				<Scale childKey="ToastBG" duration="0.43333" order="1" startDelay="0.13333" smoothing="IN" fromScaleX="1" fromScaleY="0" toScaleX="1" toScaleY="1">
+					<Origin point="TOP"/>
+				</Scale>
+				<Alpha childKey="ToastBG" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="0.72"/>
+				<Alpha childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" fromAlpha="0" toAlpha="1"/>
+				<Translation childKey="GlowLineBottom" duration="0.43333" order="1" startDelay="0.13333" smoothing="IN" offsetX="0" offsetY="-242"/>
+				<Alpha childKey="Glow1" duration="0.5" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
+				<Alpha childKey="Glow2" duration="0.86666" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="0.65"/>
+				<Alpha childKey="Glow2" duration="0.66666" order="1" startDelay="1.19999" fromAlpha="0.65" toAlpha="0"/>
+				<Translation childKey="Star1" duration="1" order="1" startDelay="0.33333" offsetX="0" offsetY="50"/>
+				<Alpha childKey="Star1" duration="0.3" order="1" startDelay="0.33333" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Star1" duration="0.3" order="1" startDelay="1.16666" fromAlpha="1" toAlpha="0"/>
+				<Translation childKey="Star2" duration="1" order="1" startDelay="0.6" offsetX="0" offsetY="50"/>
+				<Alpha childKey="Star2" duration="0.3" order="1" startDelay="0.6" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="Star2" duration="0.3" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
 
-				<Alpha parentKey="HoldAlpha" duration="5" fromAlpha="1" toAlpha="1" order="1">
+				<Alpha parentKey="HoldAlpha" startDelay="0.5" duration="4.5" fromAlpha="1" toAlpha="1" order="1">
 					<Scripts>
 						<OnPlay>
 							self:GetParent():GetParent():OnHoldAnimStarted();
@@ -112,6 +112,8 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad" />
+			<OnEnter method="OnMouseEnter" />
+			<OnLeave method="OnMouseLeave" />
 			<OnEvent method="OnEvent" />
 			<OnHide method="OnHide" />
 		</Scripts>

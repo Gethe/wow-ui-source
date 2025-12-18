@@ -2,6 +2,7 @@ local ExpansionInfo =
 {
 	Name = "ExpansionInfo",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

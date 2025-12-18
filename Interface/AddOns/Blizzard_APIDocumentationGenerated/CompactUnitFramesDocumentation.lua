@@ -3,6 +3,7 @@ local CompactUnitFrames =
 	Name = "CompactUnitFrames",
 	Type = "System",
 	Namespace = "C_CompactUnitFrames",
+	Environment = "All",
 
 	Functions =
 	{

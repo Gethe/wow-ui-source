@@ -56,12 +56,13 @@ local CooldownViewerConstants =
 		{
 			Name = "CooldownViewerAlertType",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 2,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Sound", Type = "CooldownViewerAlertType", EnumValue = 1 },
+				{ Name = "Visual", Type = "CooldownViewerAlertType", EnumValue = 2 },
 			},
 		},
 		{

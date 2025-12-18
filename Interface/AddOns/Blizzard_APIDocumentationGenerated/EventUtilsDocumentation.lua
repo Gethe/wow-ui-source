@@ -3,6 +3,7 @@ local EventUtils =
 	Name = "EventUtils",
 	Type = "System",
 	Namespace = "C_EventUtils",
+	Environment = "All",
 
 	Functions =
 	{

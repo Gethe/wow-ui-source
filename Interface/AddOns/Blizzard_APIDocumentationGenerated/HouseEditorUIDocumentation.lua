@@ -3,6 +3,7 @@ local HouseEditorUI =
 	Name = "HouseEditorUI",
 	Type = "System",
 	Namespace = "C_HouseEditor",
+	Environment = "All",
 
 	Functions =
 	{

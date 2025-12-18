@@ -3,6 +3,7 @@ local LiveEvent =
 	Name = "LiveEvent",
 	Type = "System",
 	Namespace = "C_LiveEvent",
+	Environment = "All",
 
 	Functions =
 	{

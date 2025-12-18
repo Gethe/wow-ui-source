@@ -2,6 +2,7 @@ local PlayerScript =
 {
 	Name = "PlayerScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

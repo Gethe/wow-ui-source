@@ -3,6 +3,7 @@ local SettingsUtil =
 	Name = "SettingsUtil",
 	Type = "System",
 	Namespace = "C_SettingsUtil",
+	Environment = "All",
 
 	Functions =
 	{

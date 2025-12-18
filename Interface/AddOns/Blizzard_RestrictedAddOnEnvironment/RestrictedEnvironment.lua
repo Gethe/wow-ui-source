@@ -9,17 +9,19 @@
 -- Daniel Stephens
 ---------------------------------------------------------------------------
 
-local tostring = tostring;
-local GetFrameHandleFrame = GetFrameHandleFrame;
+local _, addonTable = ...;  -- Used for passing RESTRICTED_FUNCTIONS_SCOPE.
 
-local IsGamePadEnabled = C_GamePad.IsEnabled;
-local GetGamePadState = C_GamePad.GetDeviceMappedState;
-local GetAssistedCombatSpell = C_AssistedCombat.GetActionSpell;
+local _G = GetGlobalEnvironment();
+
+local tostring = tostring;
+local GetFrameHandleFrame = _G.GetFrameHandleFrame;
+local IsFrameHandle = _G.IsFrameHandle;
+local RestrictedTable_copytable = _G.rtable.copytable;
 
 -- The bare minimum functions that should exist in order to be
 -- useful without being ridiculously restrictive.
 
-RESTRICTED_FUNCTIONS_SCOPE = {
+local RESTRICTED_FUNCTIONS_SCOPE = {
     math = math;
     string = string;
     -- table is provided elsewhere, as direct tables are not allowed
@@ -27,8 +29,7 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     select = select;
     tonumber = tonumber;
     tostring = tostring;
-
-    print = print;
+	rawtype = type;  -- Added for test cases; almost certainly useless to addons.
 
     -- String methods
     format = format;
@@ -36,10 +37,12 @@ RESTRICTED_FUNCTIONS_SCOPE = {
     gsub = gsub; -- Restricted table aware rtgsub is added later
     strbyte = strbyte;
     strchar = strchar;
+    strcmputf8i = strcmputf8i;
     strconcat = strconcat;
     strfind = strfind;
     strjoin = strjoin;
     strlen = strlen;
+    strlenutf8 = strlenutf8;
     strlower = strlower;
     strmatch = strmatch;
     strrep = strrep;
@@ -89,32 +92,56 @@ local DIRECT_MACRO_CONDITIONAL_NAMES = {
     "IsIndoors", "IsOutdoors", "CanExitVehicle"
 };
 
-local OTHER_SAFE_FUNCTION_NAMES = {
-    "GetBindingKey",
-    "GetMultiCastTotemSpells", "FindSpellBookSlotBySpellID", "UnitTargetsVehicleInRaidUI"
-};
-
 -- Copy the direct functions into the table
 for _, name in ipairs( DIRECT_MACRO_CONDITIONAL_NAMES ) do
     RESTRICTED_FUNCTIONS_SCOPE[name] = _G[name];
 end
 
--- Copy the other safe functions into the table
-for _, name in ipairs( OTHER_SAFE_FUNCTION_NAMES ) do
-    RESTRICTED_FUNCTIONS_SCOPE[name] = _G[name];
+-- The remaining functions in this file are bindings to either non-builtin
+-- C APIs that don't return macro-conditional style booleans, or call outbound
+-- to Lua functions in the global environment.
+--
+-- These functions should all be collected into the following 'ENV' table so
+-- that they can be wrapped in closures that scrub inbound return values to
+-- prevent table returns entering the restricted environment.
+
+local ENV = {};
+
+local function ScrubInboundValue(v)
+	if type(v) == "table" then
+		return RestrictedTable_copytable(v);
+	else
+		return scrub(v);
+	end
 end
 
--- Now create the remainder (ENV is just an alias for brevity)
-local ENV = RESTRICTED_FUNCTIONS_SCOPE;
+local function ScrubInboundValues(...)
+	return mapvalues(ScrubInboundValue, ...);
+end
 
-ENV.IsHarmfulItem = C_Item.IsHarmfulItem;
-ENV.IsHelpfulItem = C_Item.IsHelpfulItem;
-ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
-ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
-ENV.IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell;
+local function ScrubOutboundValue(v)
+	if IsFrameHandle(v) then
+		return v;
+	else
+		return scrub(v);
+	end
+end
+
+local function ScrubOutboundValues(...)
+	return mapvalues(ScrubOutboundValue, ...);
+end
+
+-- Note: Where possible, please don't do direct assignments like this and
+-- instead write out proper functions that forward the call manually. Caching
+-- function references directly like this makes it impossible to exercise
+-- these in unit tests.
+
+ENV.FindSpellBookSlotBySpellID = FindSpellBookSlotBySpellID;
 ENV.GetActionBarPage = C_ActionBar.GetActionBarPage;
+ENV.GetBindingKey = GetBindingKey;
 ENV.GetBonusBarIndex = C_ActionBar.GetBonusBarIndex;
 ENV.GetBonusBarOffset = C_ActionBar.GetBonusBarOffset;
+ENV.GetMultiCastTotemSpells = GetMultiCastTotemSpells;
 ENV.GetOverrideBarIndex = C_ActionBar.GetOverrideBarIndex;
 ENV.GetTempShapeshiftBarIndex = C_ActionBar.GetTempShapeshiftBarIndex;
 ENV.GetVehicleBarIndex = C_ActionBar.GetVehicleBarIndex;
@@ -124,7 +151,35 @@ ENV.HasExtraActionBar = C_ActionBar.HasExtraActionBar;
 ENV.HasOverrideActionBar = C_ActionBar.HasOverrideActionBar;
 ENV.HasTempShapeshiftActionBar = C_ActionBar.HasTempShapeshiftActionBar;
 ENV.HasVehicleActionBar = C_ActionBar.HasVehicleActionBar;
+ENV.IsHarmfulItem = C_Item.IsHarmfulItem;
+ENV.IsHelpfulItem = C_Item.IsHelpfulItem;
+ENV.IsPressHoldReleaseSpell = C_Spell.IsPressHoldReleaseSpell;
+ENV.IsSpellHarmful = C_Spell.IsSpellHarmful;
+ENV.IsSpellHelpful = C_Spell.IsSpellHelpful;
+ENV.UnitTargetsVehicleInRaidUI = UnitTargetsVehicleInRaidUI;
 
+local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
+local function scrubActionInfo(actionType, id, subType, ...)
+	if actionType == "spell" and subType == "assistedcombat" then
+		return actionType, C_AssistedCombat.GetActionSpell(), subType, ...;
+    elseif safeActionTypes[actionType] then
+        return actionType, id, subType, ...;
+    else
+        return actionType;
+    end
+end
+
+function ENV.GetActionInfo(...)
+    return scrubActionInfo(GetActionInfo(...));
+end
+
+function ENV.IsGamePadEnabled()
+	return C_GamePad.IsEnabled();
+end
+
+function ENV.GetGamePadState()
+	return C_GamePad.GetDeviceMappedState();
+end
 
 function ENV.PlayerCanAttack( unit )
     return UnitCanAttack( "player", unit )
@@ -158,55 +213,75 @@ function ENV.UnitHasVehicleUI(unit)
         (UnitCanAssist("player", unit) and false);
 end
 
+-- The following functions are outbound calls to Lua functions defined in the
+-- global environment.
+--
+-- Because functions in the global environment can be securely hooked by
+-- addons, it is *required* that all outbound calls invoke either the scrub
+-- or ScrubOutboundValues functions on all inputs from the restricted
+-- environment.
+--
+-- One exception applies and that's for calls to GetFrameHandleFrame, which is
+-- safe to call without scrubbing.
+
+function ENV.print(...)
+	_G.print(ScrubOutboundValues(...));
+end
+
 function ENV.RegisterStateDriver(frameHandle, ...)
-    return RegisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+    _G.RegisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterStateDriver(frameHandle, ...)
-    return UnregisterStateDriver(GetFrameHandleFrame(frameHandle), ...);
+    _G.UnregisterStateDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.RegisterAttributeDriver(frameHandle, ...)
-    return RegisterAttributeDriver(GetFrameHandleFrame(frameHandle), ...);
+    _G.RegisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterAttributeDriver(frameHandle, ...)
-    return UnregisterAttributeDriver(GetFrameHandleFrame(frameHandle), ...);
+    _G.UnregisterAttributeDriver(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.RegisterUnitWatch(frameHandle, ...)
-    return RegisterUnitWatch(GetFrameHandleFrame(frameHandle), ...);
+    _G.RegisterUnitWatch(GetFrameHandleFrame(frameHandle), scrub(...));
 end
 
 function ENV.UnregisterUnitWatch(frameHandle, ...)
-    return UnregisterUnitWatch(GetFrameHandleFrame(frameHandle), ...);
+    _G.UnregisterUnitWatch(GetFrameHandleFrame(frameHandle));
 end
 
 function ENV.UnitWatchRegistered(frameHandle, ...)
-    return UnitWatchRegistered(GetFrameHandleFrame(frameHandle), ...);
+    return _G.UnitWatchRegistered(GetFrameHandleFrame(frameHandle));
 end
 
-local safeActionTypes = {["spell"] = true, ["companion"] = true, ["item"] = true, ["macro"] = true, ["flyout"] = true}
-local function scrubActionInfo(actionType, id, subType, ...)
-	if actionType == "spell" and subType == "assistedcombat" then
-		return actionType, GetAssistedCombatSpell(), subType, ...;
-    elseif safeActionTypes[actionType] then
-        return actionType, id, subType, ...;
-    else
-        return actionType
-    end
+-- All functions in the ENV table need copying to RESTRICTED_FUNCTIONS_SCOPE
+-- with wrapping closures to scrub return values.
+
+local function CreateInboundReturnScrubber(func)
+	local function Wrapper(...)
+		return ScrubInboundValues(func(...));
+	end
+
+	return Wrapper;
 end
 
-function ENV.GetActionInfo(...)
-    return scrubActionInfo(GetActionInfo(...));
+local function ImportOutboundFunctions(dst, src)
+	for k, v in pairs(src) do
+		if type(v) == "function" then
+			dst[k] = CreateInboundReturnScrubber(v);
+		elseif type(v) == "table" then
+			ImportOutboundFunctions(dst[k] or {}, v);
+		else
+			dst[k] = v;
+		end
+	end
 end
 
-function ENV.IsGamePadEnabled()
-	return IsGamePadEnabled();
-end
+ImportOutboundFunctions(RESTRICTED_FUNCTIONS_SCOPE, ENV);
 
-function ENV.GetGamePadState()
-	return GetGamePadState();
-end
+-- The RESTRICTED_FUNCTIONS_SCOPE table needs exporting via our local addon
+-- table to make it available to other scripts in this addon.
 
-ENV = nil;
+addonTable.RESTRICTED_FUNCTIONS_SCOPE = RESTRICTED_FUNCTIONS_SCOPE;

@@ -2,6 +2,7 @@ local Unit =
 {
 	Name = "Unit",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,15 @@ local Unit =
 			},
 		},
 		{
+			Name = "CreateUnitHealPredictionCalculator",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "EjectPassengerFromSeat",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -80,7 +90,7 @@ local Unit =
 		{
 			Name = "GetComboPoints",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitComboPointsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -107,7 +117,7 @@ local Unit =
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretReturns = true,
+			SecretWhenUnitChargedPowerPointsRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -123,7 +133,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerHoldAtMaxTime",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitSpellCastingRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -139,7 +149,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerMinHoldTime",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitSpellCastingRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -155,7 +165,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerStageDuration",
 			Type = "Function",
-			SecretReturns = true,
+			SecretWhenUnitSpellCastingRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -764,6 +774,23 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCastingDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitCastingInfo",
 			Type = "Function",
 			SecretWhenUnitCastingInfoRestricted = true,
@@ -785,6 +812,22 @@ local Unit =
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
 				{ Name = "notInterruptible", Type = "bool", Nilable = false },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitChannelDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -858,6 +901,24 @@ local Unit =
 
 			Returns =
 			{
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitClassFromGUID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "className", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
@@ -1081,6 +1142,18 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitGetDetailedHealPrediction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitToken", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitGetIncomingHeals",
 			Type = "Function",
 			SecretReturns = true,
@@ -1222,7 +1295,7 @@ local Unit =
 		{
 			Name = "UnitHealthMax",
 			Type = "Function",
-			SecretForAttackableUnits = true,
+			SecretWhenUnitHealthMaxRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1256,38 +1329,21 @@ local Unit =
 		{
 			Name = "UnitHealthPercent",
 			Type = "Function",
+			SecretWhenCurveSecret = true,
 			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns percent of health remaining - can be scaled to [0, 100] for display purposes" },
+			Documentation = { "Returns percent of health remaining - can be scaled via a curve for display purposes" },
 
 			Arguments =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
-				{ Name = "scaleTo100", Type = "bool", Nilable = false, Default = false },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "percent", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "UnitHealthPercentColor",
-			Type = "Function",
-			SecretReturns = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
-				{ Name = "colorCurve", Type = "LuaColorCurveObject", Nilable = false },
-				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
-			},
-
-			Returns =
-			{
-				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
 			},
 		},
 		{
@@ -1814,6 +1870,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsHumanPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsInMyGuild",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1882,6 +1954,21 @@ local Unit =
 			Arguments =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsNPCAsPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -2200,11 +2287,28 @@ local Unit =
 			Name = "UnitName",
 			Type = "Function",
 			SecretWhenUnitIdentityRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitServer", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitNameFromGUID",
+			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -2531,20 +2635,21 @@ local Unit =
 			Name = "UnitPowerPercent",
 			Type = "Function",
 			SecretWhenUnitPowerRestricted = true,
+			SecretWhenCurveSecret = true,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Returns percent of power available - can be scaled to [0, 100] for display purposes" },
+			Documentation = { "Queries the percent of power remaining, optionally evaluating it against a supplied curve." },
 
 			Arguments =
 			{
 				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
 				{ Name = "powerType", Type = "PowerType", Nilable = true },
 				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
-				{ Name = "scaleTo100", Type = "bool", Nilable = false, Default = false },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
 			},
 
 			Returns =
 			{
-				{ Name = "percent", Type = "number", Nilable = false },
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
 			},
 		},
 		{
@@ -3369,6 +3474,18 @@ local Unit =
 			},
 		},
 		{
+			Name = "PartyKill",
+			Type = "Event",
+			LiteralName = "PARTY_KILL",
+			SecretWhenUnitIdentityRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "attackerGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "PetBarUpdateUsable",
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE_USABLE",
@@ -3830,6 +3947,17 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitDied",
+			Type = "Event",
+			LiteralName = "UNIT_DIED",
+			SecretWhenUnitIdentityRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitDisplaypower",
 			Type = "Event",
 			LiteralName = "UNIT_DISPLAYPOWER",
@@ -4119,6 +4247,7 @@ local Unit =
 			Name = "UnitPowerPointCharge",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_POINT_CHARGE",
+			SecretWhenUnitChargedPowerPointsRestricted = true,
 			UniqueEvent = true,
 			Payload =
 			{
@@ -4190,7 +4319,7 @@ local Unit =
 			Name = "UnitSpellcastChannelStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4203,7 +4332,7 @@ local Unit =
 			Name = "UnitSpellcastChannelStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4217,7 +4346,7 @@ local Unit =
 			Name = "UnitSpellcastChannelUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4230,7 +4359,7 @@ local Unit =
 			Name = "UnitSpellcastDelayed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4243,7 +4372,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4256,7 +4385,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4271,7 +4400,7 @@ local Unit =
 			Name = "UnitSpellcastEmpowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4284,7 +4413,7 @@ local Unit =
 			Name = "UnitSpellcastFailed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4297,7 +4426,7 @@ local Unit =
 			Name = "UnitSpellcastFailedQuiet",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4310,7 +4439,7 @@ local Unit =
 			Name = "UnitSpellcastInterrupted",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4344,7 +4473,7 @@ local Unit =
 			Name = "UnitSpellcastReticleClear",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4357,7 +4486,7 @@ local Unit =
 			Name = "UnitSpellcastReticleTarget",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4367,10 +4496,24 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSpellcastSent",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_SENT",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitSpellcastStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4383,7 +4526,7 @@ local Unit =
 			Name = "UnitSpellcastStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_STOP",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -4396,9 +4539,8 @@ local Unit =
 			Name = "UnitSpellcastSucceeded",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
-			SecretWhenSpellCastRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SynchronousEvent = true,
-			CallbackEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },

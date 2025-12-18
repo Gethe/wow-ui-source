@@ -3,6 +3,7 @@ local Tutorial =
 	Name = "Tutorial",
 	Type = "System",
 	Namespace = "C_Tutorial",
+	Environment = "All",
 
 	Functions =
 	{

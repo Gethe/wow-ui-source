@@ -3,6 +3,7 @@ local ToyBoxInfo =
 	Name = "ToyBoxInfo",
 	Type = "System",
 	Namespace = "C_ToyBoxInfo",
+	Environment = "All",
 
 	Functions =
 	{

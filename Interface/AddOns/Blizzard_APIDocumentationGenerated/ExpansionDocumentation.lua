@@ -2,6 +2,7 @@ local Expansion =
 {
 	Name = "Expansion",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -303,6 +304,9 @@ local Expansion =
 				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "glueAmbianceSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueMusicSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueCreditsSoundKit", Type = "number", Nilable = true },
 			},
 		},
 		{

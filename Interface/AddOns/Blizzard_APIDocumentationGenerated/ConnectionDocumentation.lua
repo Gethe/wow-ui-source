@@ -2,6 +2,7 @@ local Connection =
 {
 	Name = "ConnectionScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local AnimaDiversionUI =
 	Name = "AnimaDiversionInfo",
 	Type = "System",
 	Namespace = "C_AnimaDiversion",
+	Environment = "All",
 
 	Functions =
 	{

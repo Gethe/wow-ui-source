@@ -2,6 +2,7 @@ local RaidMarkers =
 {
 	Name = "RaidMarkers",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -82,6 +83,12 @@ local RaidMarkers =
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "token", Type = "cstring", Nilable = true },
 			},
+		},
+		{
+			Name = "RemoveRaidTargets",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Removes all assigned raid target markers." },
 		},
 		{
 			Name = "SetRaidTarget",

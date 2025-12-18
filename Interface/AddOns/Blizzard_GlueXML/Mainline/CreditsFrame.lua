@@ -80,10 +80,13 @@ end
 
 
 function CreditsFrameMixin:Update()
-	PlayCreditsMusic(SafeGetExpansionData(GLUE_CREDITS_SOUND_KITS, self.expansion));
 	local expansionInfo = GetExpansionDisplayInfo(self.expansion);
 	if expansionInfo then
 		self.Logo:SetTexture(expansionInfo.logo);
+	end
+	local musicSoundKit = expansionInfo and expansionInfo.glueCreditsSoundKit;
+	if musicSoundKit then
+		PlayCreditsMusic(musicSoundKit);
 	end
 
 	self:SetSpeed(CREDITS_SCROLL_RATE_PLAY);

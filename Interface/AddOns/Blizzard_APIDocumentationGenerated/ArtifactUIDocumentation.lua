@@ -3,6 +3,7 @@ local ArtifactUI =
 	Name = "ArtifactUI",
 	Type = "System",
 	Namespace = "C_ArtifactUI",
+	Environment = "All",
 
 	Functions =
 	{

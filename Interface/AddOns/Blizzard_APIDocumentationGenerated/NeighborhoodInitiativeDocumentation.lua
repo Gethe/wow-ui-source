@@ -3,6 +3,7 @@ local NeighborhoodInitiative =
 	Name = "NeighborhoodInitiative",
 	Type = "System",
 	Namespace = "C_NeighborhoodInitiative",
+	Environment = "All",
 
 	Functions =
 	{
@@ -173,7 +174,7 @@ local NeighborhoodInitiative =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "initiativeTaskID", Type = "number", Nilable = false },
+				{ Name = "taskName", Type = "string", Nilable = false },
 			},
 		},
 		{

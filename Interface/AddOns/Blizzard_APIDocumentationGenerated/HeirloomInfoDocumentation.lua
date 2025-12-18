@@ -3,6 +3,7 @@ local HeirloomInfo =
 	Name = "HeirloomInfo",
 	Type = "System",
 	Namespace = "C_HeirloomInfo",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local ClassTrial =
 	Name = "ClassTrial",
 	Type = "System",
 	Namespace = "C_ClassTrial",
+	Environment = "All",
 
 	Functions =
 	{

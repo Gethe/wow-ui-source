@@ -115,7 +115,8 @@ end
 function TextToSpeech_StartPlayNextQueuedMessageTimer()
 	if not queuedMessageTimer then
 		queuedMessageTimer = C_Timer.NewTicker(1, function()
-			if UIParent:IsShown() then
+			local currentChatParent = FCF_GetCurrentFullScreenFrame();
+			if currentChatParent and currentChatParent:IsShown() then
 				TextToSpeech_PlayNextQueuedMessage();
 			end
 		end);
@@ -145,7 +146,8 @@ end
 
 function TextToSpeech_Speak(text, voice, neverQueue, allowOverlappedSpeech)
 	-- Queue messages
-	local uiHidden = not UIParent:IsShown();
+	local currentChatParent = FCF_GetCurrentFullScreenFrame();
+	local uiHidden = not currentChatParent or not currentChatParent:IsShown();
 	local shouldQueue = (playbackActive or uiHidden) and not neverQueue;
 	if shouldQueue then
 		table.insert(queuedMessages, {text = text, voice = voice});
@@ -360,7 +362,7 @@ local function TextToSpeechFrame_AddCommands(self)
 
 			return false;
 		end,
-		nil, SLASH_TEXTTOSPEECH_HELP_SPEED, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX
+		nil, SLASH_TEXTTOSPEECH_HELP_SPEED, nil, TEXTTOSPEECH_RATE_MIN, TEXTTOSPEECH_RATE_MAX
 	);
 
 	TextToSpeechCommands:AddCommand(SLASH_TEXTTOSPEECH_VOLUME,
@@ -372,7 +374,7 @@ local function TextToSpeechFrame_AddCommands(self)
 
 			return false;
 		end,
-		nil, SLASH_TEXTTOSPEECH_HELP_VOLUME, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX
+		nil, SLASH_TEXTTOSPEECH_HELP_VOLUME, nil, TEXTTOSPEECH_VOLUME_MIN, TEXTTOSPEECH_VOLUME_MAX
 	);
 end
 

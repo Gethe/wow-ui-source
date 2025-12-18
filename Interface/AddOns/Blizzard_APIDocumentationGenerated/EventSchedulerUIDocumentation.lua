@@ -3,6 +3,7 @@ local EventSchedulerUI =
 	Name = "EventSchedulerUI",
 	Type = "System",
 	Namespace = "C_EventScheduler",
+	Environment = "All",
 
 	Functions =
 	{

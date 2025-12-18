@@ -3,6 +3,7 @@ local ScriptedAnimations =
 	Name = "ScriptedAnimations",
 	Type = "System",
 	Namespace = "C_ScriptedAnimations",
+	Environment = "All",
 
 	Functions =
 	{

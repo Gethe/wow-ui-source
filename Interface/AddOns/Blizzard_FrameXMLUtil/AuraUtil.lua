@@ -1,22 +1,14 @@
 DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 BUFF_DURATION_WARNING_TIME = 90;
 
---Aubrie TODO move these.. to something else
-DebuffTypeColor = { };
-DebuffTypeColor["none"]	=		{ r = 0.8000, g = 0.0000, b = 0.0000, a = 1 };
-DebuffTypeColor["Magic"] = 		{ r = 0.0000, g = 0.5059, b = 1.0000, a = 1 };
-DebuffTypeColor["Curse"] = 		{ r = 0.6235, g = 0.0235, b = 0.8941, a = 1 };
-DebuffTypeColor["Disease"] =	{ r = 0.9451, g = 0.4157, b = 0.0353, a = 1 };
-DebuffTypeColor["Poison"] = 	{ r = 0.4824, g = 0.7804, b = 0.0000, a = 1 };
-DebuffTypeColor["Bleed"] =		{ r = 0.7216, g = 0.0000, b = 0.0588, a = 1 };
-DebuffTypeColor[""]	= DebuffTypeColor["none"];
-
-DebuffTypeSymbol = { };
-DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
-DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
-DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
-DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
-DebuffTypeSymbol["Bleed"] = DEBUFF_SYMBOL_BLEED;
+local DEBUFF_DISPLAY_INFO = {
+	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon" },
+	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon" },
+	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon" },
+	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon" },
+	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon" },
+	["None"] = { color = DEBUFF_TYPE_NONE_COLOR, abbreviation = "", basicAtlas = "ui-debuff-border-default-noicon" },
+};
 
 AuraUtil = {};
 
@@ -425,8 +417,7 @@ local function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 
 			-- setup the border
 			local debuffBorder = _G[debuffName.."Border"];
-			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
-			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
+			AuraUtil.SetAuraBorderColor(debuffBorder, debuffType);
 
 			-- record interesting data for the aura button
 			statusColor = debuffColor;
@@ -472,6 +463,29 @@ function AuraUtil.IsRoleAura(aura)
 end
 
 function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
-	local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"];
-	borderRegion:SetVertexColor(color.r, color.g, color.b, color.a);
+	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+	borderRegion:SetVertexColor(info.color:GetRGBA());
+end
+
+function AuraUtil.SetAuraSymbol(fontstring, dispelType)
+	if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
+		local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+		fontstring:SetText(info.abbreviation);
+		fontstring:Show();
+	else
+		fontstring:Hide();
+	end
+end
+
+function AuraUtil.GetDebuffDisplayInfoTable()
+	return DEBUFF_DISPLAY_INFO;
+end
+
+function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelType)
+	if auraData.isHarmful then
+		borderRegion:Show();
+		AuraUtil.SetAuraBorderAtlas(borderRegion, auraData.dispelName, showDispelType);
+	else
+		borderRegion:Hide();
+	end
 end

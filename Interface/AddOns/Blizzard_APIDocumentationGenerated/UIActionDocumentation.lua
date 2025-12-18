@@ -3,6 +3,7 @@ local UIAction =
 	Name = "UIActionHandlerSystem",
 	Type = "System",
 	Namespace = "C_UIActionHandler",
+	Environment = "All",
 
 	Functions =
 	{

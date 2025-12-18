@@ -3,6 +3,7 @@ local ProfessionSpecUI =
 	Name = "ProfessionSpecUI",
 	Type = "System",
 	Namespace = "C_ProfSpecs",
+	Environment = "All",
 
 	Functions =
 	{

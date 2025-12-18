@@ -3,6 +3,7 @@ local ContentTracking =
 	Name = "ContentTracking",
 	Type = "System",
 	Namespace = "C_ContentTracking",
+	Environment = "All",
 
 	Functions =
 	{

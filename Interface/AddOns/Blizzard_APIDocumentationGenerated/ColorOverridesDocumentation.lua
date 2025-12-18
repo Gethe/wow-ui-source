@@ -3,6 +3,7 @@ local ColorOverrides =
 	Name = "ColorOverrides",
 	Type = "System",
 	Namespace = "C_ColorOverrides",
+	Environment = "All",
 
 	Functions =
 	{

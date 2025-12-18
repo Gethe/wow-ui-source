@@ -3,6 +3,7 @@ local RemixArtifactUI =
 	Name = "RemixArtifactUI",
 	Type = "System",
 	Namespace = "C_RemixArtifactUI",
+	Environment = "All",
 
 	Functions =
 	{

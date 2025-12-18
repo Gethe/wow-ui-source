@@ -15,7 +15,7 @@
 
 <!-- Initiative Activity Template -->
 <Frame name="HousingDashboard_InitiativeTaskActivityEntryTemplate" virtual="true">
-	<Size x="290" y="70"/>
+	<Size x="290" y="60"/>
 	<Layers>
 		<Layer level="ARTWORK">
 			<Texture parentKey="Divider" atlas="housing-dashboard-activity-listitem-divider" useAtlasSize="false">
@@ -33,23 +33,17 @@
 				</Anchors>
 			</Texture>
 
-			<FontString parentKey="ActivityXP" inherits="GameFontNormalSmall2">
-				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" x="-1" y="5"/>
-				</Anchors>
-			</FontString>
-
 			<Texture parentKey="Checkmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="false">
 				<Size x="21" y="21"/>
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" relativePoint="BOTTOMRIGHT" x="-7" y="11"/>
+					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" relativePoint="CENTER" y="2"/>
 				</Anchors>
 			</Texture>
 
 			<FontString parentKey="ActivityMessage" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
-				<Size x="180" y="60"/>
+				<Size x="180" y="40"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EntryFlag" relativePoint="RIGHT" x="8" y="-15"/>
+					<Anchor point="LEFT" relativeKey="$parent.EntryFlag" relativePoint="RIGHT" x="8" y="-10"/>
 				</Anchors>
 			</FontString>
 		</Layer>
@@ -420,6 +414,52 @@
 				<!-- Initiatives Tab -->
 				<Frame parentKey="InitiativesFrame" mixin="InitiativesTabMixin" setAllPoints="true" hidden="true">
 					<Frames>
+						<Frame parentKey="InitiativesArt" setAllPoints="true">
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="InitiativesBG" useAtlasSize="false">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Frames>
+								<Frame parentKey="BorderArt" frameStrata="HIGH" setAllPoints="true">
+									<Layers>
+										<Layer level="BORDER">
+											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-wood-small-tl" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="2" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="-2" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-3" y="3"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="1" y="3"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+								</Frame>
+							</Frames>
+						</Frame>
+
 						<Frame parentKey="NoInitiativeSetFrame" setAllPoints="true" hidden="true">
 							<Layers>
 								<Layer level="ARTWORK">
@@ -432,21 +472,12 @@
 							</Layers>
 						</Frame>
 
-						<Frame parentKey="InitiativeSetFrame" inherits="InsetFrameTemplate" hidden="true">
+						<Frame parentKey="InitiativeSetFrame" hidden="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" x="0" y="0"/>
 								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 							<Layers>
-								<Layer level="BACKGROUND">
-									<Texture parentKey="InitiativesBG" useAtlasSize="false">
-										<Anchors>
-											<Anchor point="TOPLEFT"/>
-											<Anchor point="BOTTOMRIGHT"/>
-										</Anchors>
-									</Texture>
-								</Layer>
-
 								<Layer level="ARTWORK">
 									<FontString parentKey="InitiativeName" inherits="GameFontHighlightLarge2" justifyH="LEFT">
 										<Size x="580" y="30"/>
@@ -471,38 +502,6 @@
 								</Layer>
 							</Layers>
 							<Frames>
-								<Frame parentKey="BorderArt" frameStrata="HIGH" setAllPoints="true">
-									<Layers>
-										<Layer level="BORDER">
-											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-wood-small-tl" useAtlasSize="false">
-												<Size x="23" y="23"/>
-												<Anchors>
-													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="2" y="-2"/>
-												</Anchors>
-											</Texture>
-
-											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
-												<Size x="23" y="23"/>
-												<Anchors>
-													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="-2" y="-2"/>
-												</Anchors>
-											</Texture>
-
-											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="true">
-												<Anchors>
-													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-5" y="-2"/>
-												</Anchors>
-											</Texture>
-
-											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="true">
-												<Anchors>
-													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="5" y="-2"/>
-												</Anchors>
-											</Texture>
-										</Layer>
-									</Layers>
-								</Frame>
-
 								<!-- Initiative Timer -->
 								<Frame parentKey="InitiativeTimer">
 									<Size x="209" y="30"/>
@@ -607,9 +606,9 @@
 
 								<!-- Active Neighborhood Switcher -->
 								<Frame parentKey="InitiativeActiveNeighborhoodSwitcher" useParentLevel="true" hidden="true">
-									<Size x="470" y="285"/>
+									<Size x="470" y="300"/>
 									<Anchors>
-										<Anchor point="LEFT" y="-71"/>
+										<Anchor point="LEFT" y="-90"/>
 										<Anchor point="RIGHT"/>
 									</Anchors>
 									<Layers>
@@ -827,6 +826,13 @@
 													<Anchor point="TOPRIGHT" y="-2"/>
 												</Anchors>
 											</Texture>
+										</Layer>
+										<Layer>
+											<FontString parentKey="NoActivityText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_INITIATIVE_NO_ACTIVITY">
+												<Anchors>
+													<Anchor point="CENTER"/>
+												</Anchors>
+											</FontString>
 										</Layer>
 									</Layers>
 									<Frames>

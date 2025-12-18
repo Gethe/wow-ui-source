@@ -3,6 +3,7 @@ local IslandsQueueUI =
 	Name = "IslandsQueue",
 	Type = "System",
 	Namespace = "C_IslandsQueue",
+	Environment = "All",
 
 	Functions =
 	{

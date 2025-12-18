@@ -3,6 +3,7 @@ local CreatureInfo =
 	Name = "CreatureInfo",
 	Type = "System",
 	Namespace = "C_CreatureInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -43,6 +44,21 @@ local CreatureInfo =
 			Returns =
 			{
 				{ Name = "creatureFamilyInfo", Type = "CreatureFamilyInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCreatureID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "creatureGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = true },
 			},
 		},
 		{

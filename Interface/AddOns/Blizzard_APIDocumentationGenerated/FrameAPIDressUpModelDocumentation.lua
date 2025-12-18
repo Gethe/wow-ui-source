@@ -2,6 +2,7 @@ local FrameAPIDressUpModel =
 {
 	Name = "FrameAPIDressUpModel",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

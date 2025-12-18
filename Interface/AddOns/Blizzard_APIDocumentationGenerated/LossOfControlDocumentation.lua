@@ -3,6 +3,7 @@ local LossOfControl =
 	Name = "LossOfControl",
 	Type = "System",
 	Namespace = "C_LossOfControl",
+	Environment = "All",
 
 	Functions =
 	{

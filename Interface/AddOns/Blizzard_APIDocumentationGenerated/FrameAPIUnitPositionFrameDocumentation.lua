@@ -2,6 +2,7 @@ local FrameAPIUnitPositionFrame =
 {
 	Name = "FrameAPIUnitPositionFrame",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

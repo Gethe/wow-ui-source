@@ -433,6 +433,7 @@ end
 function RenownLevelMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
 	self:RefreshTooltip();
+	EventRegistry:TriggerEvent("RenownLevel.OnEnter", self, GameTooltip);
 end
 
 function RenownLevelMixin:RefreshTooltip()

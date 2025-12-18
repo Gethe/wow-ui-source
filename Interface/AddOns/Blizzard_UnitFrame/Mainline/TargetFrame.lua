@@ -623,13 +623,7 @@ function TargetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 
 		if aura.isHarmful then
 			-- set debuff type color
-			local color;
-			if aura.dispelName ~= nil then
-				color = DebuffTypeColor[aura.dispelName];
-			else
-				color = DebuffTypeColor["none"];
-			end
-			frame.Border:SetVertexColor(color.r, color.g, color.b, color.a);
+			AuraUtil.SetAuraBorderColor(frame.Border, aura.dispelName);
 		else
 			-- Show stealable frame if the target is not the current player and the buff is stealable.
 			frame.Stealable:SetShown(not playerIsTarget and aura.isStealable);

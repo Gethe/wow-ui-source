@@ -3,6 +3,7 @@ local AzeriteItem =
 	Name = "AzeriteItem",
 	Type = "System",
 	Namespace = "C_AzeriteItem",
+	Environment = "All",
 
 	Functions =
 	{

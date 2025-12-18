@@ -499,6 +499,7 @@ function AlertFrameMixin:OnLoad()
 	self:RegisterEvent("PERKS_PROGRAM_CURRENCY_AWARDED");
 	self:RegisterEvent("PERKS_ACTIVITY_COMPLETED");
 	self:RegisterEvent("REQUESTED_GUILD_RENAME_RESULT");
+	self:RegisterEvent("INITIATIVE_TASK_COMPLETED");
 end
 
 function CreateContinuableContainerForLFGRewards()
@@ -736,6 +737,9 @@ function AlertFrameMixin:OnEvent(event, ...)
 	elseif ( event == "REQUESTED_GUILD_RENAME_RESULT" ) then
 		local guildName, status = ...;
 		GuildRenameAlertSystem:CheckAddAlert(guildName, status);
+	elseif ( event == "INITIATIVE_TASK_COMPLETED" ) then
+		local taskName = ...;
+		InitiativeTaskCompleteAlertFrameSystem:AddAlert(taskName);
 	end
 end
 

@@ -3,6 +3,7 @@ local BarberShop =
 	Name = "BarberShop",
 	Type = "System",
 	Namespace = "C_BarberShop",
+	Environment = "All",
 
 	Functions =
 	{

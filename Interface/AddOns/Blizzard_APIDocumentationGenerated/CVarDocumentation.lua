@@ -3,6 +3,7 @@ local CVar =
 	Name = "CVarScripts",
 	Type = "System",
 	Namespace = "C_CVar",
+	Environment = "All",
 
 	Functions =
 	{

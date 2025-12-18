@@ -3,6 +3,7 @@ local PaperDollInfo =
 	Name = "PaperDollInfo",
 	Type = "System",
 	Namespace = "C_PaperDollInfo",
+	Environment = "All",
 
 	Functions =
 	{

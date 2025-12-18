@@ -3,6 +3,7 @@ local LootHistory =
 	Name = "LootHistory",
 	Type = "System",
 	Namespace = "C_LootHistory",
+	Environment = "All",
 
 	Functions =
 	{

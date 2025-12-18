@@ -64,6 +64,12 @@ ClassTalentButtonBaseMixin = {};
 function ClassTalentButtonBaseMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+
+	if self.SelectableGlow then
+		self.SelectableGlow.Anim.GlowFadeIn:SetToAlpha(self.SelectableGlowMaxAlpha);
+		self.SelectableGlow.Anim.GlowFadeOut:SetFromAlpha(self.SelectableGlowMaxAlpha);
+	end
+
 	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 	self.SearchIcon.tooltipBackdropStyle = self.tooltipBackdropStyle;
 end
@@ -417,4 +423,22 @@ function ClassTalentSelectionChoiceMixin:OnLeave()
 	-- Overrides TalentDisplayMixin.
 	TalentDisplayMixin.OnLeave(self);
 	self:HideActionBarHighlights();
+end
+
+ClassTalentButtonCapstoneWithTrackMixin = CreateFromMixins(ClassTalentButtonBaseMixin, TalentButtonCapstoneWithTrackMixin);
+
+function ClassTalentButtonCapstoneWithTrackMixin:OnLoad()
+	ClassTalentButtonBaseMixin.OnLoad(self);
+	TalentButtonCapstoneWithTrackMixin.OnLoad(self);
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:GetCapstonePipMixin()
+	return ClassTalentButtonCapstonePipMixin;
+end
+
+ClassTalentButtonCapstonePipMixin = CreateFromMixins(ClassTalentButtonBaseMixin, TalentButtonCapstonePipMixin);
+
+function ClassTalentButtonCapstonePipMixin:OnLoad()
+	ClassTalentButtonBaseMixin.OnLoad(self);
+	TalentButtonCapstonePipMixin.OnLoad(self);
 end

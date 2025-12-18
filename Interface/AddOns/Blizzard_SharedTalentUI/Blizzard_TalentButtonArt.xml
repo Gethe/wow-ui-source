@@ -243,4 +243,22 @@
 			</AnimationGroup>
 		</Animations>
 	</Frame>
+
+	<Button name="TalentButtonCapstoneCircleTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonSizeScaleOverride" value="1.6" type="number"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.CapstoneCircle" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.CapstoneCircle" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
+
+	<Button name="TalentButtonCapstoneSquareTemplate" inherits="TalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonSizeScaleOverride" value="1.6" type="number"/>
+			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.CapstoneSquare" type="global"/>
+			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.CapstoneSquare" type="global"/>
+		</KeyValues>
+		<Size x="64" y="64"/>
+	</Button>
 </Ui>

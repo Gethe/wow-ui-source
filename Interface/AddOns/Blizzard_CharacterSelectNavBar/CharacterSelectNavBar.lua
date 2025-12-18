@@ -73,6 +73,7 @@ end
 local CharacterSelectNavBarEvents = {
 	"GLOBAL_MOUSE_DOWN",
 	"EVENT_REALM_QUEUES_UPDATED",
+	"SHOW_NEW_PRODUCT_NOTIFICATION"
 };
 
 function CharacterSelectNavBarMixin:OnLoad()
@@ -136,6 +137,12 @@ function CharacterSelectNavBarMixin:OnEvent(event, ...)
 		self.tryForceShowModes = not g_newGameModeAvailableAcknowledged and eventRealmQueues ~= Enum.EventRealmQueues.None;
 
 		self:UpdateGameModeSelectionTutorial();
+	elseif event == "SHOW_NEW_PRODUCT_NOTIFICATION" then
+		if self.StoreButton and C_CatalogShop.HasNewProducts() then
+			self.StoreButton.TutorialBadge:Show();
+		elseif self.StoreButton then
+			self.StoreButton.TutorialBadge:Hide();
+		end
 	end
 end
 
@@ -234,6 +241,9 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		local highlight = false;
 		self.StoreButton:formatButtonTextCallback(enabled, highlight);
 		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
+		
+		self.StoreButton.TutorialBadge:ClearAllPoints();
+		self.StoreButton.TutorialBadge:SetPoint("CENTER", self.StoreButton:GetFontString(), "LEFT", -10, 0);
 	end
 end
 

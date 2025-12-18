@@ -3,7 +3,6 @@ local HouseInfoLifetimeEvents =
 {
 	"PLAYER_HOUSE_LIST_UPDATED",
 	"NEIGHBORHOOD_INITIATIVE_UPDATED",
-	"INITIATIVE_TASK_COMPLETED",
 	"INITIATIVE_TASKS_TRACKED_UPDATED",
 	"INITIATIVE_TASKS_TRACKED_LIST_CHANGED",
 	"INITIATIVE_ACTIVITY_LOG_UPDATED",
@@ -158,14 +157,34 @@ end
 
 function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 	local oldSelectedHouseID = self.selectedHouseID;
-	self.selectedHouseID = 1;
+	local oldSelectedHouseInfo = self.selectedHouseInfo;
+	self.selectedHouseID = nil;
+	self.selectedHouseInfo = nil;
 
-	if oldSelectedHouseID then
+	if oldSelectedHouseID and oldSelectedHouseInfo then
 		local newSelectedHouseInfo = houseInfoList[oldSelectedHouseID];
 		-- If we had something previously selected, and it still exists in the updated list, maintain that selection
-		if self.selectedHouseInfo and self.selectedHouseInfo.houseGUID == newSelectedHouseInfo.houseGUID then
+		if newSelectedHouseInfo and oldSelectedHouseInfo.houseGUID == newSelectedHouseInfo.houseGUID then
 			self.selectedHouseID = oldSelectedHouseID;
 		end
+	end
+
+	if not self.selectedHouseID then
+		-- If we don't have a previous selection, check if we're in a neighborhood and default to a house that belongs there
+		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
+		if currentNeighborhoodGUID then
+			for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+				if houseInfo.neighborhoodGUID == currentNeighborhoodGUID then
+					self.selectedHouseID = houseInfoIndex;
+					break;
+				end
+			end
+		end
+	end
+
+	-- Fallback to just using the first one in the list
+	if not self.selectedHouseID then
+		self.selectedHouseID = 1;
 	end
 
 	local function OnHouseSelected(houseInfoID)
@@ -189,9 +208,8 @@ function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 			OnHouseSelected(houseInfoID);
 		end;
 
-		for houseInfoID = 1, #houseInfoList do
-			local houseInfo = houseInfoList[houseInfoID];
-			rootDescription:CreateRadio(houseInfo.houseName, IsSelected, SetSelected, houseInfoID);
+		for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+			rootDescription:CreateRadio(houseInfo.houseName, IsSelected, SetSelected, houseInfoIndex);
 		end
 	end);
 
@@ -278,6 +296,9 @@ end
 InitiativesTabMixin = {};
 
 function InitiativesTabMixin:OnLoad()
+	self.thresholdFrames = {};
+	self.thresholdMax = 0;
+
 	self:SetupTaskList();
 	self:SetupActivityLog();
 end
@@ -407,10 +428,6 @@ function InitiativesTabMixin:SetProgressBarThresholds()
 		self.InitiativeSetFrame.ProgressBar.BarEnd:ClearAllPoints();
 	end
 
-	if not self.thresholdFrames then
-		self.thresholdFrames = {};
-	end
-
 	local currentThreshold = 1;
 	for i, thresholdInfo in pairs(self.currentInitiative.milestones) do
 		local thresholdName = "Threshold" .. currentThreshold;
@@ -444,7 +461,7 @@ end
 function InitiativesTabMixin:UpdateBackground(selectedHouseInfo)
 	if selectedHouseInfo and selectedHouseInfo.neighborhoodGUID then
 		local atlas = "housing-dashboard-bg-" .. C_Housing.GetNeighborhoodTextureSuffix(selectedHouseInfo.neighborhoodGUID);
-		self.InitiativeSetFrame.InitiativesBG:SetAtlas(atlas);
+		self.InitiativesArt.InitiativesBG:SetAtlas(atlas);
 	end
 end
 
@@ -533,7 +550,6 @@ function InitiativesTabMixin:SetupActivityLog()
 
 	view:SetElementFactory(function(factory, data)
 		local function Initializer(frame)
-			frame.ActivityXP:SetText(data.amount);
 			frame.ActivityMessage:SetText(HOUSING_DASHBOARD_ACTIVITY_LOG_ENTRY:format(data.playerName, data.taskName));
 		end
 
@@ -633,6 +649,7 @@ function InitiativesTabMixin:RefreshActivityLog()
 
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetEdgeFadeLength(SCROLL_BOX_EDGE_FADE_LENGTH);
 		self.InitiativeSetFrame.InitiativeActivity.ActivityLog:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+		self.InitiativeSetFrame.InitiativeActivity.NoActivityText:SetShown(#self.initiativeActivityLog.taskActivity == 0);
 	end
 end
 
@@ -788,7 +805,11 @@ function InitiativeTaskButtonMixin:ShowTooltip()
 		return;
 	end
 
-	GameTooltip_SetTitle(GameTooltip, data.taskName, NORMAL_FONT_COLOR, true);
+	if data.timesCompleted and data.timesCompleted > 0 and data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
+		GameTooltip_SetTitle(GameTooltip, HOUSING_DASHBOARD_REPEATABLE_TASK_TITLE_TOOLTIP_FORMAT:format(data.taskName, data.timesCompleted), NORMAL_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(GameTooltip, data.taskName, NORMAL_FONT_COLOR);
+	end
 
 	if data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 		GameTooltip_AddNormalLine(GameTooltip, HOUSING_ENDEAVOR_REPEATABLE_TASK)

@@ -29,8 +29,8 @@ AzeriteItemDocumentation.lua
 BNetOutageDocumentation.lua
 BagIndexConstantsDocumentation.lua
 BankDocumentation.lua
-BarberShopDocumentation.lua
 BarberShopInternalDocumentation.lua
+BarberShopDocumentation.lua
 BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BehavioralMessagingDocumentation.lua
@@ -90,6 +90,7 @@ DeathRecapDocumentation.lua
 DebugToggleDocumentation.lua
 DelvesUIDocumentation.lua
 DuelInfoDocumentation.lua
+DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncodingUtilDocumentation.lua
@@ -127,7 +128,6 @@ FrameAPIUnitPositionFrameDocumentation.lua
 FrameScriptDocumentation.lua
 FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
-GUIDUtilDocumentation.lua
 GameCursorDocumentation.lua
 GameErrorDocumentation.lua
 GamePadDocumentation.lua
@@ -177,6 +177,7 @@ LFGListInfoDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
+LimitedInputDocumentation.lua
 LiveEventDocumentation.lua
 LoadingScreenDocumentation.lua
 LobbyMatchmakerInfoDocumentation.lua
@@ -190,6 +191,8 @@ LoreTextDocumentation.lua
 LossOfControlDocumentation.lua
 LuaColorCurveObjectAPIDocumentation.lua
 LuaCurveObjectAPIDocumentation.lua
+LuaCurveObjectBaseAPIDocumentation.lua
+LuaDurationObjectAPIDocumentation.lua
 LuaTableUtilDocumentation.lua
 MacOptionsDocumentation.lua
 MailInfoDocumentation.lua
@@ -254,6 +257,7 @@ ScreenDocumentation.lua
 ScriptWarningsDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
+SecretPredicateAPIDocumentation.lua
 SecureTransferDocumentation.lua
 SettingsUtilDocumentation.lua
 SharedTraitsDocumentation.lua
@@ -353,6 +357,7 @@ UIWidgetManagerDocumentation.lua
 URLDocumentation.lua
 UnitDocumentation.lua
 UnitAuraDocumentation.lua
+UnitHealPredictionCalculatorAPIDocumentation.lua
 UnitRoleDocumentation.lua
 UserFeedbackDocumentation.lua
 VehicleDocumentation.lua
@@ -461,6 +466,7 @@ LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
+LuaDurationObjectSharedDocumentation.lua
 MajorFactionsConstantsDocumentation.lua
 MapConstantsDocumentation.lua
 MatrixSharedDocumentation.lua
@@ -502,6 +508,7 @@ RecentAlliesConstantsDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 RenownConstantsDocumentation.lua
 ReportSystemConstantsDocumentation.lua
+RestrictedActionsConstantsDocumentation.lua
 RolodexConstantsDocumentation.lua
 ScreenLocationConstantsDocumentation.lua
 ScriptRegionSharedDocumentation.lua
@@ -552,7 +559,9 @@ UITextureConstantsDocumentation.lua
 UIWidgetManagerSharedDocumentation.lua
 UiModelSceneConstantsDocumentation.lua
 UiRpcRequestManagerConstantsDocumentation.lua
+UnitAuraSharedDocumentation.lua
 UnitConstantsDocumentation.lua
+UnitHealPredictionCalculatorSharedDocumentation.lua
 UnitSexConstantsDocumentation.lua
 UnitSharedDocumentation.lua
 ValidateNameConstantsDocumentation.lua

@@ -3,6 +3,7 @@ local GamePad =
 	Name = "GamePad",
 	Type = "System",
 	Namespace = "C_GamePad",
+	Environment = "All",
 
 	Functions =
 	{

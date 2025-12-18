@@ -26,7 +26,7 @@
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
-			<Layer level="BORDER">
+			<Layer level="OVERLAY">
 				<Texture parentKey="NormalOverlay" inherits="EncounterTimelineTextureTemplate" atlas="UI-HUD-CoolDownManager-IconOverlay">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-7" y="6"/>
@@ -39,16 +39,40 @@
 						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
 					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="BORDER" textureSubLevel="1">
-				<Texture parentKey="DeadlyOverlayGlow" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-deadlyglow-overlay" alphaMode="ADD" hidden="true">
+				<Texture parentKey="PausedOverlay" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-pause" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QueuedOverlay" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-7" y="6"/>
 						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="2">
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DeadlyOverlayGlow" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-deadlyglow-overlay" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PausedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-pause-icon" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QueuedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued-icon" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="HighlightGlow" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-highlight" useAtlasSize="true" alpha="0">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-8" y="7"/>
@@ -56,7 +80,7 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-			<Layer level="BORDER" textureSubLevel="3">
+			<Layer level="OVERLAY" textureSubLevel="3">
 				<Texture parentKey="HighlightSwirl" inherits="EncounterTimelineTextureTemplate" useAtlasSize="true" alphaMode="ADD" atlas="combattimeline-fx-highlight-fx" alpha="0">
 					<Anchors>
 						<Anchor point="CENTER"/>

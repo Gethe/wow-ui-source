@@ -3,6 +3,7 @@ local PetJournalInfo =
 	Name = "PetJournalInfo",
 	Type = "System",
 	Namespace = "C_PetJournal",
+	Environment = "All",
 
 	Functions =
 	{

@@ -90,6 +90,8 @@ function TransmogFrameMixin:OnLoad()
 end
 
 function TransmogFrameMixin:OnShow()
+	PlaySound(SOUNDKIT.UI_TRANSMOG_OPEN_WINDOW);
+
 	FrameUtil.RegisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
 	local selectActiveOutfit = true;
@@ -98,6 +100,8 @@ function TransmogFrameMixin:OnShow()
 end
 
 function TransmogFrameMixin:OnHide()
+	PlaySound(SOUNDKIT.UI_TRANSMOG_CLOSE_WINDOW);
+
 	FrameUtil.UnregisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
 	-- Clean up any open dialogs.
@@ -323,6 +327,7 @@ function TransmogOutfitCollectionMixin:OnLoad()
 	self.SaveOutfitButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.SaveOutfitButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
 		C_TransmogOutfitInfo.CommitAndApplyAllPending();
 
 		HelpTip:HideAllSystem("TransmogOutfitCollection");
@@ -520,6 +525,11 @@ function ShowEquippedGearSpellFrameMixin:OnIconClick(_button, buttonName)
 	end
 end
 
+function ShowEquippedGearSpellFrameMixin:OnIconDragStart()
+	-- PickupOutfit with outfitID of 0 is a special case for this spell.
+	C_TransmogOutfitInfo.PickupOutfit(0);
+end
+
 
 TransmogOutfitPopupMixin = {};
 
@@ -607,7 +617,8 @@ TransmogCharacterMixin = {
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_WEAPON_OPTION_CHANGED",
 		"VIEWED_TRANSMOG_OUTFIT_SECONDARY_SLOTS_CHANGED",
-		"TRANSMOG_DISPLAYED_OUTFIT_CHANGED"
+		"TRANSMOG_DISPLAYED_OUTFIT_CHANGED",
+		"PLAYER_EQUIPMENT_CHANGED"
 	};
 	HELPTIP_INFO = {
 		text = TRANSMOG_WEAPON_OPTIONS_HELPTIP,
@@ -627,7 +638,14 @@ function TransmogCharacterMixin:OnLoad()
 	end);
 
 	self.HideIgnoredToggle.Checkbox:SetScript("OnClick", function()
-		SetCVar("transmogHideIgnoredSlots", not GetCVarBool("transmogHideIgnoredSlots"));
+		local toggledOn = not GetCVarBool("transmogHideIgnoredSlots");
+		if toggledOn then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+
+		SetCVar("transmogHideIgnoredSlots", toggledOn);
 		self:RefreshHideIgnoredToggle();
 		self:RefreshSlots();
 	end);
@@ -672,6 +690,7 @@ function TransmogCharacterMixin:OnShow()
 
 	self.ModelScene:TransitionToModelSceneID(290, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, true);
 	self:RefreshPlayerModel();
+	self:RefreshHideIgnoredToggle();
 end
 
 function TransmogCharacterMixin:OnHide()
@@ -695,11 +714,19 @@ function TransmogCharacterMixin:OnEvent(event, ...)
 				self.SavedFrame.Anim:Restart();
 			end
 		end
-	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" then
+	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" or event == "PLAYER_EQUIPMENT_CHANGED" then
 		self:RefreshSlots();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SECONDARY_SLOTS_CHANGED" then
 		self:SetupSlots();
 		self:RefreshSlots();
+
+		if self.selectedSlotData then
+			local slotFrame = self:GetSlotFrame(self.selectedSlotData.transmogLocation:GetSlot(), self.selectedSlotData.transmogLocation:GetType());
+			if slotFrame then
+				local forceRefresh = true;
+				TransmogFrame:SelectSlot(slotFrame, forceRefresh);
+			end
+		end
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_WEAPON_OPTION_CHANGED" then
 		local slot, weaponOption = ...;
 		local appearanceType = Enum.TransmogType.Appearance;
@@ -774,7 +801,7 @@ function TransmogCharacterMixin:SetupSlotSection(groupData)
 		local transmogLocation = TransmogUtil.GetTransmogLocation(appearanceInfo.slotName, appearanceInfo.type, appearanceInfo.isSecondary);
 		local slotData = {
 			transmogLocation = transmogLocation,
-			transmogFrame = self:GetParent(),
+			transmogFrame = TransmogFrame,
 			currentWeaponOptionInfo = nil,
 			-- Appearance specific fields.
 			weaponOptionsInfo = nil,
@@ -800,7 +827,7 @@ function TransmogCharacterMixin:SetupSlotSection(groupData)
 			local transmogLocation = TransmogUtil.GetTransmogLocation(illusionInfo.slotName, illusionInfo.type, illusionInfo.isSecondary);
 			local illusionSlotData = {
 				transmogLocation = transmogLocation,
-				transmogFrame = self:GetParent(),
+				transmogFrame = TransmogFrame,
 				currentWeaponOptionInfo = slotFrame:GetCurrentWeaponOptionInfo()
 			};
 
@@ -893,13 +920,14 @@ function TransmogCharacterMixin:RefreshSlots()
 			local illusionID = Constants.Transmog.NoTransmogID;
 			if illusionSlotFrame then
 				local illusionSlotInfo = illusionSlotFrame:GetSlotInfo();
-				if illusionSlotInfo then
+				if illusionSlotInfo and illusionSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.WeaponDoesNotSupportIllusions then
 					illusionID = illusionSlotInfo.transmogID;
 				end
 			end
 
 			local transmogLocation = slotFrame:GetTransmogLocation();
 			if transmogLocation then
+
 				local slotID = transmogLocation:GetSlotID();
 				if slotID ~= nil then
 					local appearanceID = slotFrame:GetEffectiveTransmogID();
@@ -910,7 +938,7 @@ function TransmogCharacterMixin:RefreshSlots()
 					local mainHandCategoryID;
 					local isLegionArtifact = false;
 					if transmogLocation:IsMainHand() then
-						mainHandCategoryID = C_Transmog.GetSlotEffectiveCategory(transmogLocation:GetData());
+						mainHandCategoryID = C_TransmogOutfitInfo.GetItemModifiedAppearanceEffectiveCategory(appearanceID);
 						isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
 						itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
 					end
@@ -1123,7 +1151,6 @@ end
 
 function TransmogWardrobeMixin:OnHide()
 	self.TabContent.ItemsFrame:Reset();
-	self.TabContent.SetsFrame:ResetFilters();
 end
 
 function TransmogWardrobeMixin:UpdateTabs()
@@ -1187,7 +1214,8 @@ TransmogWardrobeItemsMixin = {
 		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
 		"VIEWED_TRANSMOG_OUTFIT_SECONDARY_SLOTS_CHANGED",
-		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS"
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS",
+		"PLAYER_EQUIPMENT_CHANGED"
 	};
 	COLLECTION_TEMPLATES = {
 		["COLLECTION_ITEM"] = { template = "TransmogItemModelTemplate", initFunc = TransmogItemModelMixin.Init, resetFunc = TransmogItemModelMixin.Reset }
@@ -1225,6 +1253,7 @@ function TransmogWardrobeItemsMixin:OnLoad()
 	self.DisplayTypeUnassignedButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.DisplayTypeUnassignedButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 		SetPendingDisplayTypeForSlot(Enum.TransmogOutfitDisplayType.Unassigned);
 	end);
 
@@ -1242,6 +1271,7 @@ function TransmogWardrobeItemsMixin:OnLoad()
 	self.DisplayTypeEquippedButton:SetScript("OnLeave", GameTooltip_Hide);
 
 	self.DisplayTypeEquippedButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.UI_TRANSMOG_ITEM_CLICK);
 		SetPendingDisplayTypeForSlot(Enum.TransmogOutfitDisplayType.Equipped);
 	end);
 
@@ -1252,6 +1282,11 @@ function TransmogWardrobeItemsMixin:OnLoad()
 		end
 
 		local toggledOn = button:GetChecked();
+		if toggledOn then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
 		C_TransmogOutfitInfo.SetSecondarySlotState(selectedSlotData.transmogLocation:GetSlot(), toggledOn);
 		self.SecondaryAppearanceToggle.Text:SetFontObject(toggledOn and "GameFontHighlight" or "GameFontNormal");
 	end);
@@ -1318,6 +1353,8 @@ function TransmogWardrobeItemsMixin:OnEvent(event, ...)
 
 		local outfitSlotSaved = selectedSlotData.transmogLocation:GetSlot() == slot and selectedSlotData.transmogLocation:GetType() == type and selectedSlotData.currentWeaponOptionInfo.weaponOption == weaponOption;
 		self:SetOutfitSlotSavedState(outfitSlotSaved);
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		self:RefreshDisplayTypeButtons();
 	end
 end
 
@@ -1372,12 +1409,6 @@ function TransmogWardrobeItemsMixin:Reset()
 	self.itemCollectionEntries = nil;
 	self.chosenVisualSources = {};
 	self.PagedContent:SetDataProvider(CreateDataProvider());
-	self:ResetFilters();
-end
-
-function TransmogWardrobeItemsMixin:ResetFilters()
-	self.SearchBox:Reset();
-	self.FilterButton.ResetButton:Click();
 end
 
 function TransmogWardrobeItemsMixin:HandleFormChanged()
@@ -1435,6 +1466,9 @@ function TransmogWardrobeItemsMixin:RefreshFilterButtons()
 
 	self.SearchBox:Show();
 	self.FilterButton:Show();
+
+	-- Reapply current search, in case the collection has changed.
+	self.SearchBox:UpdateSearch();
 end
 
 function TransmogWardrobeItemsMixin:RefreshWeaponDropdown()
@@ -1994,7 +2028,7 @@ TransmogWardrobeSetsMixin = {
 		"TRANSMOG_SETS_UPDATE_FAVORITE",
 		"UI_SCALE_CHANGED",
 		"DISPLAY_SIZE_CHANGED",
-		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS",
+		"VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS"
 	};
 	COLLECTION_TEMPLATES = {
 		["COLLECTION_SET"] = { template = "TransmogSetModelTemplate", initFunc = TransmogSetModelMixin.Init, resetFunc = TransmogSetModelMixin.Reset }
@@ -2076,11 +2110,6 @@ function TransmogWardrobeSetsMixin:InitFilterButton()
 	self.FilterButton:SetDefaultCallback(function()
 		return C_TransmogSets.SetDefaultSetsFilters();
 	end);
-end
-
-function TransmogWardrobeSetsMixin:ResetFilters()
-	self.SearchBox:Reset();
-	self.FilterButton.ResetButton:Click();
 end
 
 function TransmogWardrobeSetsMixin:HandleFormChanged()
@@ -2194,9 +2223,21 @@ function TransmogWardrobeCustomSetsMixin:OnLoad()
 	end);
 
 	self.NewCustomSetButton:SetScript("OnEnter", function(button)
-		if not button:IsEnabled() then
+		local showTooltip = self.NewCustomSetButton.Text:IsTruncated() or not button:IsEnabled();
+		if showTooltip then
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-			GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED);
+
+			if self.NewCustomSetButton.Text:IsTruncated() then
+				local text = self.NewCustomSetButton.Text:GetText();
+				if text then
+					GameTooltip_AddNormalLine(GameTooltip, text);
+				end
+			end
+
+			if not button:IsEnabled() then
+				GameTooltip_AddErrorLine(GameTooltip, TRANSMOG_CUSTOM_SET_NEW_TOOLTIP_DISABLED);
+			end
+
 			GameTooltip:Show();
 		end
 	end);
@@ -2279,15 +2320,7 @@ function TransmogWardrobeCustomSetsMixin:RefreshCollectionEntries()
 	local collectionElements = {};
 	local customSets = C_TransmogCollection.GetCustomSets();
 	for _indexCustomSet, customSetID in ipairs(customSets) do
-		local isCollected = true;
-		local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID);
-		for _indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
-			local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(customSetInfo.appearanceID);
-			if appearanceInfo and isCollected and not appearanceInfo.appearanceIsCollected then
-				isCollected = false;
-				break;
-			end
-		end
+		local isCollected = TransmogUtil.IsCustomSetCollected(customSetID);
 
 		local element = {
 			templateKey = "COLLECTION_CUSTOM_SET",
@@ -2314,36 +2347,43 @@ end
 function TransmogWardrobeCustomSetsMixin:GetFirstMatchingCustomSetID()
 	local appliedCustomSetID, hasPending;
 
-	local transmogInfo = self:GetCurrentTransmogInfoCallback();
 	local customSets = C_TransmogCollection.GetCustomSets();
 	for _indexCustomSet, customSetID in ipairs(customSets) do
-		local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID);
-		local customSetMatched = false;
-		hasPending = false;
-		for transmogLocation, info in pairs(transmogInfo) do
-			-- Custom set checks do not currently check weapon slots, as there is ambiguity with weapon options.
-			if transmogLocation:IsAppearance() and not transmogLocation:IsEitherHand() then
-				local slotMatched = false;
-				for _indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
-					if info.transmogID == customSetInfo.appearanceID then
-						slotMatched = true;
-						if not hasPending and info.hasPending then
-							hasPending = true;
-						end
+		if TransmogUtil.IsCustomSetCollected(customSetID) then
+			local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID);
+
+			local customSetMatched = false;
+			hasPending = false;
+
+			local slotMatched = false;
+			for indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
+				-- Should we check this slot? (filters out non appearances like neck slot, as well as slots not set in the custom set).
+				local slot = C_TransmogOutfitInfo.GetTransmogOutfitSlotFromInventorySlot(indexCustomSetInfo - 1);
+
+				-- Weapon slots are special here, as there is ambiguity with weapon options.
+				local isValidSlot = slot ~= nil and not C_TransmogOutfitInfo.IsSlotWeaponSlot(slot);
+				if isValidSlot and customSetInfo.appearanceID ~= Constants.Transmog.NoTransmogID then
+					slotMatched = false;
+
+					local appearanceType = Enum.TransmogType.Appearance;
+					local weaponOption = Enum.TransmogOutfitSlotOption.None;
+					local outfitInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(slot, appearanceType, weaponOption);
+					if outfitInfo.transmogID ~= customSetInfo.appearanceID then
 						break;
 					end
-				end
 
-				customSetMatched = slotMatched;
-				if not customSetMatched then
-					break;
+					slotMatched = true;
+					if not hasPending and outfitInfo.hasPending then
+						hasPending = true;
+					end
 				end
 			end
-		end
 
-		if customSetMatched then
-			appliedCustomSetID = customSetID;
-			break;
+			customSetMatched = slotMatched;
+			if customSetMatched then
+				appliedCustomSetID = customSetID;
+				break;
+			end
 		end
 	end
 
@@ -2369,7 +2409,6 @@ end
 
 TransmogWardrobeSituationsMixin = {
 	DYNAMIC_EVENTS = {
-		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
 		"VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED"
 	};
 };
@@ -2378,20 +2417,28 @@ function TransmogWardrobeSituationsMixin:OnLoad()
 	self.SituationFramePool = CreateFramePool("FRAME", self.Situations, "TransmogSituationTemplate", nil);
 
 	self.DefaultsButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 		C_TransmogOutfitInfo.ResetOutfitSituations();
 	end);
 
 	self.EnabledToggle.Checkbox:SetScript("OnClick", function()
-		local situationsEnabled = C_TransmogOutfitInfo.GetOutfitSituationsEnabled();
-		C_TransmogOutfitInfo.SetOutfitSituationsEnabled(not situationsEnabled);
+		local toggledOn = not C_TransmogOutfitInfo.GetOutfitSituationsEnabled();
+		if toggledOn then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+		C_TransmogOutfitInfo.SetOutfitSituationsEnabled(toggledOn);
 		self:Refresh();
 	end);
 
 	self.ApplyButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 		C_TransmogOutfitInfo.CommitPendingSituations();
 	end);
 
 	self.UndoButton:SetScript("OnClick", function()
+		PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 		C_TransmogOutfitInfo.ClearAllPendingSituations();
 	end);
 end
@@ -2407,7 +2454,7 @@ function TransmogWardrobeSituationsMixin:OnHide()
 end
 
 function TransmogWardrobeSituationsMixin:OnEvent(event, ...)
-	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" then
+	if event == "VIEWED_TRANSMOG_OUTFIT_SITUATIONS_CHANGED" then
 		self:Refresh();
 	end
 end

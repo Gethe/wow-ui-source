@@ -2,6 +2,7 @@ local SimpleScriptRegionAPI =
 {
 	Name = "SimpleScriptRegionAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

@@ -216,7 +216,9 @@ function QuestObjectiveTrackerMixin:DoQuestObjectives(block, questCompleted, que
 						end
 					end
 				else
-					if not questSequenced or not objectiveCompleting then
+					-- don't show a new objective if it's a sequenced quest if completion anim is playing on another objective
+					local skipObjective = not line and questSequenced and objectiveCompleting;
+					if not skipObjective then
 						-- new objectives need to animate in
 						if questSequenced and isExistingBlock and not line then
 							line = block:AddObjective(objectiveIndex, text, nil, useFullHeight);

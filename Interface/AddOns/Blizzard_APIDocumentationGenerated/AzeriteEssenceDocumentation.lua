@@ -3,6 +3,7 @@ local AzeriteEssence =
 	Name = "AzeriteEssence",
 	Type = "System",
 	Namespace = "C_AzeriteEssence",
+	Environment = "All",
 
 	Functions =
 	{

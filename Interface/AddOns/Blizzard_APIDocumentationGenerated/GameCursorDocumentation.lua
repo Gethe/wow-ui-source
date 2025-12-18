@@ -2,6 +2,7 @@ local GameCursor =
 {
 	Name = "GameCursor",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

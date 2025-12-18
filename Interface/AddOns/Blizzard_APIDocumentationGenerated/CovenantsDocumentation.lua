@@ -3,6 +3,7 @@ local Covenants =
 	Name = "Covenant",
 	Type = "System",
 	Namespace = "C_Covenants",
+	Environment = "All",
 
 	Functions =
 	{

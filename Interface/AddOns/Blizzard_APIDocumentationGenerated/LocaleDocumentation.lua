@@ -2,6 +2,7 @@ local Locale =
 {
 	Name = "Locale",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local DelvesUI =
 	Name = "DelvesUI",
 	Type = "System",
 	Namespace = "C_DelvesUI",
+	Environment = "All",
 
 	Functions =
 	{
@@ -128,6 +129,21 @@ local DelvesUI =
 			Returns =
 			{
 				{ Name = "factionID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetLockedTextForCompanion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "companionID", Type = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -321,13 +337,6 @@ local DelvesUI =
 			LiteralName = "SHOW_DELVES_COMPANION_CONFIGURATION_UI",
 			SynchronousEvent = true,
 			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
-		},
-		{
-			Name = "ShowDelvesDisplayUI",
-			Type = "Event",
-			LiteralName = "SHOW_DELVES_DISPLAY_UI",
-			SynchronousEvent = true,
-			Documentation = { "Signaled when the UI needs to display the Delves dashbaord." },
 		},
 		{
 			Name = "WalkInDataUpdate",

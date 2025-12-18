@@ -3,6 +3,7 @@ local SharedTraits =
 	Name = "SharedTraits",
 	Type = "System",
 	Namespace = "C_Traits",
+	Environment = "All",
 
 	Functions =
 	{

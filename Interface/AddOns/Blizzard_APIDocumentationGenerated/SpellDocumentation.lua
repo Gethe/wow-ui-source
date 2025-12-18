@@ -3,6 +3,7 @@ local Spell =
 	Name = "Spell",
 	Type = "System",
 	Namespace = "C_Spell",
+	Environment = "All",
 
 	Functions =
 	{
@@ -209,6 +210,23 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellChargeDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active recharge time for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellCharges",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -245,6 +263,23 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellDescription",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -259,6 +294,25 @@ local Spell =
 			Returns =
 			{
 				{ Name = "description", Type = "string", Nilable = false, Documentation = { "May be empty if spell's data isn't loaded yet; Listen for SPELL_TEXT_UPDATE event, or use SpellMixin to load asynchronously" } },
+			},
+		},
+		{
+			Name = "GetSpellDisplayCount",
+			Type = "Function",
+			SecretWhenSpellCooldownRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Depending on the spell, return a string that is either the use count or number of charges. If value is beyond the display count parameter, returns the replacementString (defaults to '*')." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = false, Default = 9999 },
+				{ Name = "replacementString", Type = "cstring", Nilable = false, Default = "*" },
+			},
+
+			Returns =
+			{
+				{ Name = "displayCount", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -349,9 +403,26 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetSpellLossOfControlCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for a spell." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellMaxCumulativeAuraApplications",
 			Type = "Function",
-			SecretWhenAuraRestricted = true,
+			SecretWhenSpellAuraRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -541,6 +612,21 @@ local Spell =
 			Returns =
 			{
 				{ Name = "isAutoRepeat", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsConsumableSpell",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "consumable", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -3,6 +3,7 @@ local UIMacros =
 	Name = "UIMacros",
 	Type = "System",
 	Namespace = "C_Macro",
+	Environment = "All",
 
 	Functions =
 	{

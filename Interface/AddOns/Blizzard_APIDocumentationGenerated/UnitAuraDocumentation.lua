@@ -3,6 +3,7 @@ local UnitAura =
 	Name = "UnitAuras",
 	Type = "System",
 	Namespace = "C_UnitAuras",
+	Environment = "All",
 
 	Functions =
 	{
@@ -67,15 +68,56 @@ local UnitAura =
 			},
 		},
 		{
+			Name = "DoesAuraHaveExpirationTime",
+			Type = "Function",
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraInstanceRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if an aura instance will expire after a certain amount of time." },
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasExpirationTime", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAuraApplicationDisplayCount",
+			Type = "Function",
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraInstanceRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Formats a string for displaying the number of applications an aura has present." },
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "minDisplayCount", Type = "number", Nilable = false, Default = 2, Documentation = { "Minimum number of applications required; if the application count is below this figure an empty string will be returned." } },
+				{ Name = "maxDisplayCount", Type = "number", Nilable = true, Documentation = { "Maximum number of applications allowed; if the application count is above this figure then the string '*' will be returned." } },
+			},
+
+			Returns =
+			{
+				{ Name = "count", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAuraBaseDuration",
 			Type = "Function",
-			SecretWhenAuraInstanceRestricted = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the base duration of the given spell (or aura). Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},
@@ -157,20 +199,41 @@ local UnitAura =
 			},
 		},
 		{
-			Name = "GetAuraDurationRemainingByAuraInstanceID",
+			Name = "GetAuraDispelTypeColor",
 			Type = "Function",
-			SecretWhenAuraInstanceRestricted = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraInstanceRestricted = true,
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Queries the dispel type associated with an aura instance and remaps it to a color via a curve, with the dispel type ID used as the 'x' value." },
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "curve", Type = "LuaColorCurveObject", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "dispelTypeColor", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAuraDuration",
+			Type = "Function",
+			RequiresValidUnitAuraInstance = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "durationRemaining", Type = "number", Nilable = true },
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -263,13 +326,14 @@ local UnitAura =
 		{
 			Name = "GetRefreshExtendedDuration",
 			Type = "Function",
-			SecretWhenAuraInstanceRestricted = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraInstanceRestricted = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the client-predicted new duration of this aura if it were cast again right now. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = true },
 			},
@@ -299,9 +363,8 @@ local UnitAura =
 			},
 		},
 		{
-			Name = "GetUnitAuras",
+			Name = "GetUnitAuraInstanceIDs",
 			Type = "Function",
-			MayReturnNothing = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -309,6 +372,27 @@ local UnitAura =
 				{ Name = "unit", Type = "UnitToken", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
+				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
+				{ Name = "sortDirection", Type = "UnitAuraSortDirection", Nilable = false, Default = "Normal" },
+			},
+
+			Returns =
+			{
+				{ Name = "auraInstanceIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetUnitAuras",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "filter", Type = "AuraFilters", Nilable = false },
+				{ Name = "maxCount", Type = "number", Nilable = true },
+				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
+				{ Name = "sortDirection", Type = "UnitAuraSortDirection", Nilable = false, Default = "Normal" },
 			},
 
 			Returns =
@@ -362,6 +446,16 @@ local UnitAura =
 			{
 				{ Name = "parent", Type = "SimpleFrame", Nilable = false },
 				{ Name = "anchor", Type = "AnchorBinding", Nilable = true },
+			},
+		},
+		{
+			Name = "TriggerPrivateAuraShowDispelType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "show", Type = "bool", Nilable = false },
 			},
 		},
 		{

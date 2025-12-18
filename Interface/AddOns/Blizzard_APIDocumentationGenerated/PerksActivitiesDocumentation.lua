@@ -3,6 +3,7 @@ local PerksActivities =
 	Name = "PerksActivities",
 	Type = "System",
 	Namespace = "C_PerksActivities",
+	Environment = "All",
 
 	Functions =
 	{

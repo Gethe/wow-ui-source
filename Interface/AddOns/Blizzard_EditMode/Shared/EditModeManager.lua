@@ -212,12 +212,13 @@ function EditModeManagerFrameMixin:GetRegisteredSystemFrame(system, systemIndex)
 end
 
 local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
+	local anchorEpsilon = 0.1;
 	if anchorInfo and otherAnchorInfo then
 		return anchorInfo.point == otherAnchorInfo.point
 		and anchorInfo.relativeTo == otherAnchorInfo.relativeTo
 		and anchorInfo.relativePoint == otherAnchorInfo.relativePoint
-		and anchorInfo.offsetX == otherAnchorInfo.offsetX
-		and anchorInfo.offsetY == otherAnchorInfo.offsetY
+		and ApproximatelyEqual(anchorInfo.offsetX, otherAnchorInfo.offsetX, anchorEpsilon)
+		and ApproximatelyEqual(anchorInfo.offsetY, otherAnchorInfo.offsetY, anchorEpsilon)
 	end
 
 	return anchorInfo == otherAnchorInfo;
@@ -643,7 +644,7 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 					offsetX = -bar:GetWidth() / 2;
 				end
 
-				local topBarHeight = topMostBar and topMostBar:GetHeight() + 5 or 0;
+				local topBarHeight = topMostBar and topMostBar:GetHeight() + BOTTOM_ACTION_BARS_SPACER_Y or 0;
 				offsetY = offsetY + topBarHeight;
 
 				bar:ClearAllPoints();
@@ -2664,7 +2665,7 @@ function EditModeAccountSettingsMixin:GetDamageMeterFrames()
 end
 
 function EditModeAccountSettingsMixin:RefreshDamageMeter()
-	local showDamageMeter = self.settingsCheckButtons.DamageMeter:IsControlChecked();
+	local showDamageMeter = self.settingsCheckButtons.DamageMeter:IsControlChecked() and self.settingsCheckButtons.DamageMeter:ShouldEnable();
 
 	local damageMeterFrames = self:GetDamageMeterFrames();
 

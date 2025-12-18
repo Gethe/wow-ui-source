@@ -766,7 +766,7 @@ end
 function FramePositionDelegate:UIParentManageBottomFrameContainer()
 	local customOverlayHeight = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CustomActionbarOverlayHeightOffset);
 	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
-	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + BOTTOM_FRAME_CONTAINER_MARGIN or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
 	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);

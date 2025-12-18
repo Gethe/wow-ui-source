@@ -3,6 +3,7 @@ local HousingLayoutUI =
 	Name = "HousingLayoutUI",
 	Type = "System",
 	Namespace = "C_HousingLayout",
+	Environment = "All",
 
 	Functions =
 	{

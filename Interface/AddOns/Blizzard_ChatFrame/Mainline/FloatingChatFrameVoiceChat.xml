@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<!-- Voice chat is only available in-game so these definitions were split out. -->
-	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate">
+	<Button name="ChatFrameChannelButton" frameStrata="MEDIUM" parent="ChatFrame1ButtonFrame" mixin="ChannelFrameButtonMixin" inherits="VoiceToggleButtonTemplate" motionScriptsWhileDisabled="true">
 		<Anchors>
 			<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
 		</Anchors>

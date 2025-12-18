@@ -2,6 +2,7 @@ local SimpleAnimRotationAPI =
 {
 	Name = "SimpleAnimRotationAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

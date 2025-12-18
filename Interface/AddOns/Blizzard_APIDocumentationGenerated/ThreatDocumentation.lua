@@ -2,6 +2,7 @@ local Threat =
 {
 	Name = "Threat",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

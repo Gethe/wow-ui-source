@@ -3,6 +3,7 @@ local GlyphInfo =
 	Name = "GlyphInfo",
 	Type = "System",
 	Namespace = "C_GlyphInfo",
+	Environment = "All",
 
 	Functions =
 	{

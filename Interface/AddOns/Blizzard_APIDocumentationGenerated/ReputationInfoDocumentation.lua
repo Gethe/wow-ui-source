@@ -3,6 +3,7 @@ local ReputationInfo =
 	Name = "ReputationInfo",
 	Type = "System",
 	Namespace = "C_Reputation",
+	Environment = "All",
 
 	Functions =
 	{

@@ -2,6 +2,7 @@ local Screen =
 {
 	Name = "Screen",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

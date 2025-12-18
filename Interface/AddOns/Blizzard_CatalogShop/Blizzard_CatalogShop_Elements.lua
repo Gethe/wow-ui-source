@@ -1,3 +1,14 @@
+local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
+timeRemainingFormatter:Init(
+	SecondsFormatterConstants.ZeroApproximationThreshold,
+	SecondsFormatter.Abbreviation.OneLetter,
+	SecondsFormatterConstants.DontRoundUpLastUnit,
+	SecondsFormatterConstants.ConvertToLower,
+	SecondsFormatterConstants.RoundUpIntervals);
+timeRemainingFormatter:SetDesiredUnitCount(2);
+timeRemainingFormatter:SetMinInterval(SecondsFormatter.Interval.Minutes);
+timeRemainingFormatter:SetStripIntervalWhitespace(true);
+
 -----------------------------------------------------------------------------------
 --- NavigationBarButtonMixin
 -----------------------------------------------------------------------------------
@@ -100,6 +111,29 @@ end
 NavigationBarMixin = {
 	NavBarButtonWidthBuffer = 70,
 };
+
+function NavigationBarMixin:UpdateNotifications()
+	local function CheckNotifications(button, data)
+		
+		local prodInCat = C_CatalogShop.GetProductIDsForCategory(button.sectionInfo.ID);
+		local foundNew = false;
+		for _, prod in ipairs(prodInCat) do
+			if CatalogShopOutbound.SavedSet_IsLoaded() and not CatalogShopOutbound.SavedSet_Check(prod) then
+				if not button.notificationFrame then
+					button.notificationFrame = CatalogShopOutbound.NotificationUtil_AcquireLargeNotification("CENTER", button, "BOTTOM", 0, 3);
+				end
+				foundNew = true;
+				break;
+			end
+		end
+		if not foundNew and button.notificationFrame then
+			CatalogShopOutbound.NotificationUtil_ReleaseNotification(button.notificationFrame);
+			button.notificationFrame = nil;
+		end
+	end
+	self.NavButtonScrollBox:ForEachFrame(CheckNotifications)
+end
+
 function NavigationBarMixin:SetupNavigationScrollView()
 	local DefaultPad = 0;
 	local DefaultSpacing = 0;
@@ -109,6 +143,12 @@ function NavigationBarMixin:SetupNavigationScrollView()
 		button:Init(sectionInfo, isSelected);
 		button:SetScript("OnClick", function(button, buttonName)
 			self.selectionBehavior:ToggleSelect(button);
+		end);
+		button:SetScript("OnHide", function(button, buttonName)
+			if button.notificationFrame then
+				CatalogShopOutbound.NotificationUtil_ReleaseNotification(button.notificationFrame);
+				button.notificationFrame = nil
+			end
 		end);
 	end
 
@@ -122,6 +162,14 @@ function NavigationBarMixin:SetupNavigationScrollView()
 	self.NavButtonScrollBox:Init(view);
 
 	local function OnSelectionChanged(o, elementData, selected)
+		if not selected  then
+			local prodInCat = C_CatalogShop.GetProductIDsForCategory(elementData.ID);
+			for _, prod in ipairs(prodInCat) do
+				if CatalogShopOutbound.SavedSet_IsLoaded() and not CatalogShopOutbound.SavedSet_Check(prod) then
+					CatalogShopOutbound.SavedSet_Set(prod)
+				end
+			end
+		end
 		if selected then
 			self:OnCategorySelected(elementData);
 		end
@@ -259,6 +307,7 @@ end
 function NavigationBarMixin:OnCategorySelected(sectionInfo)
 	local categoryID = sectionInfo.ID;
 	EventRegistry:TriggerEvent("CatalogShop.OnCategorySelected", categoryID);
+	self:UpdateNotifications();
 end
 
 
@@ -656,6 +705,93 @@ function CarouselControlMixin:SetCarouselItems(modelScene, actor, itemModifiedAp
 	self:SetShown(showCarousel);	
 end
 
+
+----------------------------------------------------------------------------------
+-- CatalogShopPersistentRefundContainerFrameMixin
+----------------------------------------------------------------------------------
+CatalogShopPersistentRefundContainerFrameMixin = {};
+function CatalogShopPersistentRefundContainerFrameMixin:OnHide()
+	if self.UpdateTimer then
+		self.UpdateTimer:Cancel();
+		self.UpdateTimer = nil;
+	end
+end
+
+function CatalogShopPersistentRefundContainerFrameMixin:OnCategorySelected(categoryID)
+	self.categoryID = categoryID;
+	self:UpdateState();
+end
+
+function CatalogShopPersistentRefundContainerFrameMixin:UpdateState()
+	self:Hide();
+
+	if not self.categoryID then
+		return;
+	end
+
+	local categoryInfo = C_CatalogShop.GetCategoryInfo(self.categoryID);
+	if CatalogShopFrame.CatalogShopLoadingScreenFrame:IsShown()
+		or CatalogShopFrame.ProductDetailsContainerFrame:IsShown()
+		or (not categoryInfo.showPersistentRefundButton) then
+		return;
+	end
+
+	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors();
+	if #refundableDecorInfos <= 0 then
+		return;
+	end
+
+	self:Show();
+
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	self.RefundTextFrame.RefundText:SetText(timeLeftFormatted);
+	self.RefundCountFrame.RefundCountText:SetText(tostring(#refundableDecorInfos));
+
+	self.UpdateTimer = C_Timer.NewTimer(60, function() self:UpdateState(); end);
+end
+
+
+----------------------------------------------------------------------------------
+-- ProductRefundContainerMixin
+----------------------------------------------------------------------------------
+ProductRefundContainerMixin = {};
+function ProductRefundContainerMixin:OnHide()
+	if self.UpdateTimer then
+		self.UpdateTimer:Cancel();
+		self.UpdateTimer = nil;
+	end
+end
+
+function ProductRefundContainerMixin:SetProductID(productID)
+	self.productID = productID;
+	self:UpdateState();
+end
+
+function ProductRefundContainerMixin:UpdateState()
+	self:Hide();
+
+	if not self.productID then
+		return;
+	end
+
+	local refundableDecorInfos = C_CatalogShop.GetRefundableDecors(self.productID);
+	if #refundableDecorInfos <= 0 then
+		return;
+	end
+
+	self:Show();
+
+	local timeLeftFormatted = CatalogShopFrame:FormatTimeLeft(refundableDecorInfos[1].timeRemainingSeconds, timeRemainingFormatter);
+	local refundTimeLeft = CATALOG_SHOP_REFUND_TIME_LEFT:format(timeLeftFormatted);
+	self.RefundTextFrame.RefundText:SetText(refundTimeLeft);
+
+	self.UpdateTimer = C_Timer.NewTimer(60, function() self:UpdateState(); end);
+end
+
+
+----------------------------------------------------------------------------------
+-- ProductsHeaderMixin
+----------------------------------------------------------------------------------
 ProductsHeaderMixin = {};
 function ProductsHeaderMixin:Init(headerData)
 	self.headerData = headerData;
@@ -681,6 +817,10 @@ function ProductsHeaderMixin:Init(headerData)
 	self.LegalDisclaimerText:SetShown(headerData.showLegal or false);
 end
 
+
+----------------------------------------------------------------------------------
+-- ProductDescriptionMixin
+----------------------------------------------------------------------------------
 ProductDescriptionMixin = {};
 function ProductDescriptionMixin:OnEnter()
 	local parent = self:GetParent();

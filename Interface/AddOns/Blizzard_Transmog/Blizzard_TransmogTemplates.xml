@@ -833,9 +833,10 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<ButtonText parentKey="Text" justifyH="LEFT">
+		<ButtonText parentKey="Text" maxLines="2" justifyH="LEFT">
+			<Size x="150" y="0"/>
 			<Anchors>
-				<Anchor point="LEFT" x="30" y="0"/>
+				<Anchor point="LEFT" x="30" y="1"/>
 			</Anchors>
 		</ButtonText>
 		<NormalFont style="GameFontNormal"/>
@@ -1291,10 +1292,10 @@
 		<Size x="554" y="50"/>
 		<Layers>
 			<Layer level="OVERLAY">
-				<FontString parentKey="Title" inherits="GameFontNormal" justifyH="LEFT">
-					<Size x="170" y="12"/>
+				<FontString parentKey="Title" inherits="GameFontNormal" maxLines="2" justifyH="LEFT">
+					<Size x="170" y="0"/>
 					<Anchors>
-						<Anchor point="LEFT" x="35" y="0"/>
+						<Anchor point="TOPLEFT" x="35" y="-19"/>
 					</Anchors>
 				</FontString>
 			</Layer>

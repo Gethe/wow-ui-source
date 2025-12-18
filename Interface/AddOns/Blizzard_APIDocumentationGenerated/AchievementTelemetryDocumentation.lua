@@ -3,6 +3,7 @@ local AchievementTelemetry =
 	Name = "AchievementTelemetry",
 	Type = "System",
 	Namespace = "C_AchievementTelemetry",
+	Environment = "All",
 
 	Functions =
 	{

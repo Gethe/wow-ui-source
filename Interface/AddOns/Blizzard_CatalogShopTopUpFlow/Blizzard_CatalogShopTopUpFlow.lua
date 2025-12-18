@@ -48,9 +48,7 @@ function CatalogShopTopUpFrameMixin:OnShow()
 	self:SetAttribute("isshown", true);
 
 	self.TopUpProductContainerFrame:Init();
-	if ( not C_Glue.IsOnGlueScreen() ) then
-
-	else
+	if C_Glue.IsOnGlueScreen() then
 		FrameUtil.SetParentMaintainRenderLayering(self, CatalogShopFrame);
 		self:SetFrameStrata("FULLSCREEN_DIALOG", CatalogShopFrame:GetFrameLevel() + 100)
 	end
@@ -60,12 +58,6 @@ end
 
 function CatalogShopTopUpFrameMixin:OnHide()
 	self:SetAttribute("isshown", false);
-
-	if ( not C_Glue.IsOnGlueScreen() ) then
-
-	else
-
-	end
 
 	local scrollBox = self.TopUpProductContainerFrame.ScrollBox;
 	if scrollBox then
@@ -107,6 +99,16 @@ function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 		if value then
 			FrameUtil.SetParentMaintainRenderLayering(self, value);
 		end
+	elseif (name == "setdesiredquantity") then
+		self.desiredQuantity = tonumber(value);
+		if self.desiredQuantity then
+			self.PurchaseTotal:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_PURCHASE, self.desiredQuantity));
+		end
+	elseif (name == "setcurrentbalance") then
+		self.currentBalance = tonumber(value);
+		if self.currentBalance then
+			self.CurrentBalance:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_CURRENT_BALANCE, self.currentBalance));
+		end
 	end
 end
 
@@ -115,21 +117,38 @@ function CatalogShopTopUpFrameMixin:Leave()
 	self:Hide();
 end
 
-function CatalogShopTopUpFrameMixin:PurchaseProduct()
-	local productInfo = self:GetSelectedProductInfo();
+function CatalogShopTopUpFrameMixin:PurchaseProduct(productID)
+	local productInfo = C_CatalogShop.GetProductInfo(productID);
+	if not productInfo then
+		self:Hide();
+		return;
+	end
 
 	local completelyOwned = productInfo.isFullyOwned;
 	if completelyOwned then
 		self:OnError(Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	elseif C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID) then
+	else
+		local vcAmount = self:GetVirtualCurrencyAmountForProduct(productInfo.catalogShopProductID);
+		local currentBalance = self.currentBalance or 0;
+		local desiredQuantity = self.desiredQuantity or 0;
 
+		if currentBalance + vcAmount < desiredQuantity then
+			C_CatalogShop.StartHousingVCPurchaseConfirmation(productInfo.catalogShopProductID);
+		else
+			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
+			self:Hide();
+		end
 	end
 end
 
-function CatalogShopTopUpFrameMixin:OnProductSelected(data)
-	local selectedProductInfo = self:GetSelectedProductInfo();
-end
+function CatalogShopTopUpFrameMixin:GetVirtualCurrencyAmountForProduct(productID)
+	local productInfo = C_CatalogShop.GetProductInfo(productID);
+	if productInfo and productInfo.virtualCurrencies and #productInfo.virtualCurrencies > 0 then
+		local virtualCurrency = productInfo.virtualCurrencies[1];
+		if virtualCurrency.currencyCode == Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE then
+			return virtualCurrency.amount;
+		end
+	end
 
-function CatalogShopTopUpFrameMixin:GetSelectedProductInfo()
-	return self.ProductContainerFrame:GetSelectedProductInfo();
+	return 0;
 end

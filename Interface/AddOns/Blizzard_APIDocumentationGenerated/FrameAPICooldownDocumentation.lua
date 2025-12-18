@@ -2,6 +2,7 @@ local FrameAPICooldown =
 {
 	Name = "FrameAPICooldown",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -254,6 +255,17 @@ local FrameAPICooldown =
 			{
 				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1 },
+			},
+		},
+		{
+			Name = "SetCooldownFromDurationObject",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+				{ Name = "clearIfZero", Type = "bool", Nilable = false, Default = true },
 			},
 		},
 		{

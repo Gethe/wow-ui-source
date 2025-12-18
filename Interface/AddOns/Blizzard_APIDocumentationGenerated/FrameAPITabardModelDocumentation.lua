@@ -2,6 +2,7 @@ local FrameAPITabardModel =
 {
 	Name = "FrameAPITabardModel",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

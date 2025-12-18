@@ -3,6 +3,7 @@ local WowEntitlementInfo =
 	Name = "WowEntitlementInfo",
 	Type = "System",
 	Namespace = "C_WowEntitlementInfo",
+	Environment = "All",
 
 	Functions =
 	{

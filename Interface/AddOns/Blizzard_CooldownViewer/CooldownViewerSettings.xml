@@ -14,7 +14,7 @@
 	</Frame>
 
 	<!-- Ignore children for bounds to prevent secret icon from setting entire CDM settings UI as secret -->
-	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" virtual="true" ignoreChildrenForBounds="true">
+	<Frame name="CooldownViewerSettingsItemTemplate" mixin="CooldownViewerSettingsItemMixin" registerForDrag="LeftButton" ignoreChildrenForBounds="true" virtual="true">
 		<Size x="38" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -32,7 +32,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="CooldownViewerSettingsBarItemTemplate" mixin="CooldownViewerSettingsBarItemMixin" registerForDrag="LeftButton" virtual="true">
+	<Frame name="CooldownViewerSettingsBarItemTemplate" mixin="CooldownViewerSettingsBarItemMixin" registerForDrag="LeftButton" ignoreChildrenForBounds="true" virtual="true">
 		<Size x="317" y="38"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -53,6 +53,12 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="AlertTarget"> <!-- This exists because regions can't be parents of frames -->
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
 			<StatusBar parentKey="Bar" frameLevel="511" frameStrata="LOW">
 				<Size y="19"/>
 				<Anchors>

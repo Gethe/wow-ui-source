@@ -60,16 +60,8 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 			GameTooltip:Hide();
 		end
 	elseif event == "HOUSING_BASIC_MODE_PLACEMENT_FLAGS_UPDATED" then
-		local targetType, invalidPlacementInfo = ...;
-		if invalidPlacementInfo.anyRestrictions then
-			if targetType == Enum.HousingBasicModeTargetType.Decor then
-				self:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo);
-			elseif targetType == Enum.HousingBasicModeTargetType.House then
-				self:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo);
-			end
-		else
-			GameTooltip:Hide();
-		end
+		local targetType, placementFlags = ...;
+		self:OnPlacementFlagsUpdate(targetType, placementFlags);
 	elseif event == "GLOBAL_MOUSE_UP" then
 		local button = ...;
 		if button == "LeftButton" and C_HousingBasicMode.IsPlacingNewDecor() then
@@ -217,36 +209,40 @@ function HouseEditorBasicDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceIn
 	return GameTooltip;
 end
 
-function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)
-	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
+function HouseEditorBasicDecorModeMixin:OnPlacementFlagsUpdate(targetType, placementFlags)
+	local showingAnyTooltips = false;
+	if targetType ~= Enum.HousingBasicModeTargetType.None then
+		showingAnyTooltips = self:TryShowInvalidPlacementTooltip(placementFlags);
+	end
 
-		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
-		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
-
-		GameTooltip:Show();
-		return GameTooltip;
+	if not showingAnyTooltips and GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end
 
-function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo)
-	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
+local invalidCollisionFlagsMask = bit.bor(Enum.HousingDecorPlacementRestriction.InvalidCollision, Enum.HousingDecorPlacementRestriction.InvalidTarget);
+function HouseEditorBasicDecorModeMixin:TryShowInvalidPlacementTooltip(placementFlags)
+	if FlagsUtil.IsAnySet(placementFlags, invalidCollisionFlagsMask) then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
-
 		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
 		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
-
 		GameTooltip:Show();
-		return GameTooltip;
-	elseif invalidPlacementInfo.notInRoom then
+		return true;
+	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.OutsidePlotBounds) then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_OUTSIDE_PLOT_ERROR_TITLE, ERROR_COLOR);
-
 		GameTooltip:Show();
-		return GameTooltip;
+		return true;
+	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.ChildOutsideBounds) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		-- Post 12.0.0, add a new more specific tooltip string rather than using the generic error code one
+		GameTooltip_SetTitle(GameTooltip, ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT, ERROR_COLOR);
+		GameTooltip:Show();
+		return true;
 	end
+
+	return false;
 end
 
 -- Iherits HouseEditorSubmodeButtonMixin

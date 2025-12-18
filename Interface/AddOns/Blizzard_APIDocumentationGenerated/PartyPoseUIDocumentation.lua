@@ -3,6 +3,7 @@ local PartyPoseUI =
 	Name = "PartyPose",
 	Type = "System",
 	Namespace = "C_PartyPose",
+	Environment = "All",
 
 	Functions =
 	{

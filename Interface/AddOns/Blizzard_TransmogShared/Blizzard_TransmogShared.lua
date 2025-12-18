@@ -509,6 +509,19 @@ function TransmogUtil.IsValidItemTransmogInfoList(itemTransmogInfoList)
 	return isValid;
 end
 
+function TransmogUtil.IsCustomSetCollected(customSetID)
+	local isCollected = true;
+	local customSetTransmogInfo = C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID);
+	for _indexCustomSetInfo, customSetInfo in ipairs(customSetTransmogInfo) do
+		local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(customSetInfo.appearanceID);
+		if appearanceInfo and isCollected and not appearanceInfo.appearanceIsCollected then
+			isCollected = false;
+			break;
+		end
+	end
+	return isCollected;
+end
+
 
 TransmogLocationMixin = {};
 

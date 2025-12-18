@@ -3,6 +3,7 @@ local RecruitAFriend =
 	Name = "RecruitAFriend",
 	Type = "System",
 	Namespace = "C_RecruitAFriend",
+	Environment = "All",
 
 	Functions =
 	{

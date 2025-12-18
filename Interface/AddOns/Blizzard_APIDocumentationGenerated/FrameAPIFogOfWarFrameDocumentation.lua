@@ -2,6 +2,7 @@ local FrameAPIFogOfWarFrame =
 {
 	Name = "FrameAPIFogOfWarFrame",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

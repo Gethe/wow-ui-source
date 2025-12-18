@@ -3,6 +3,7 @@ local GossipInfo =
 	Name = "GossipInfo",
 	Type = "System",
 	Namespace = "C_GossipInfo",
+	Environment = "All",
 
 	Functions =
 	{

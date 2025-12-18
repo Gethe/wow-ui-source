@@ -2,6 +2,7 @@ local UnitRole =
 {
 	Name = "UnitRole",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

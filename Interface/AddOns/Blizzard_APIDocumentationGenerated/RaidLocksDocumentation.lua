@@ -3,6 +3,7 @@ local RaidLocks =
 	Name = "RaidLocks",
 	Type = "System",
 	Namespace = "C_RaidLocks",
+	Environment = "All",
 
 	Functions =
 	{

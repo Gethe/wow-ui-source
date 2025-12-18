@@ -3,6 +3,7 @@ local LobbyMatchmakerInfo =
 	Name = "LobbyMatchmakerInfo",
 	Type = "System",
 	Namespace = "C_LobbyMatchmakerInfo",
+	Environment = "All",
 
 	Functions =
 	{

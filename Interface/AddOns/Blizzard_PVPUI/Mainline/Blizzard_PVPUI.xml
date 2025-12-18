@@ -616,6 +616,17 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
 		</Layers>
 		<HighlightTexture file="Interface\Common\bluemenu-main" alphaMode="ADD" alpha="0.8">
 			<Size x="224" y="80"/>
@@ -700,6 +711,13 @@
 		</Scripts>
 	</Button>
 	<Button name="PVPTrainingGroundActivityButtonTemplate" inherits="PVPCasualStandardButtonTemplate, CallbackRegistrantTemplate" mixin="TrainingGroundActivityButtonMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="Reward" inherits="PVPStandardRewardTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Anchor" x="-16" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

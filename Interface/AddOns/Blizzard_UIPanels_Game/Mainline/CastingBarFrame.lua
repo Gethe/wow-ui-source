@@ -202,8 +202,27 @@ function CastingBarMixin:GetTypeInfo(barType)
 	return CASTING_BAR_TYPES[barType];
 end
 
-function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
-	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
+local function GetInterruptText(interruptedBy)
+	if interruptedBy then
+		local unitName, _unitServer = UnitNameFromGUID(interruptedBy);
+		if unitName and #unitName > 0 then
+			local _className, classFilename, _classID = UnitClassFromGUID(interruptedBy);
+			if classFilename and #classFilename > 0 then
+				local classColor = RAID_CLASS_COLORS[classFilename];
+				if classColor then
+					unitName = classColor:WrapTextInColorCode(unitName);
+				end
+			end
+
+			return SPELL_INTERRUPTED_BY:format(unitName);
+		end
+	end
+
+	return INTERRUPTED;
+end
+
+function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, castID, interruptedBy)
+	if ( empoweredInterrupt or (self:IsShown() and (self.casting and castID == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
 		self.barType = "interrupted"; -- failed and interrupted use same bar art
 
 		--We don't want to show the full state for the empowered texture since it produces a gradient.
@@ -215,7 +234,8 @@ function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event,
 			if ( event == "UNIT_SPELLCAST_FAILED" ) then
 				self.Text:SetText(FAILED);
 			else
-				self.Text:SetText(INTERRUPTED);
+				local interruptText = GetInterruptText(interruptedBy);
+				self.Text:SetText(interruptText);
 			end
 		end
 
@@ -227,18 +247,20 @@ function CastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event,
 	end
 end
 
-function CastingBarMixin:HandleCastStop(event, ...)
+function CastingBarMixin:HandleCastStop(event, castID, castComplete, interruptedBy)
 	if ( not self:IsVisible() ) then
 		local desiredShowFalse = false;
 		self:UpdateShownState(desiredShowFalse);
 	end
-	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
+
+	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and castID == self.castID) or
 	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
 
-		local castComplete = select(4, ...);
-		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
-			self:HandleInterruptOrSpellFailed(true, event, ...);
-			return;
+		if ( not castComplete) then
+			if ( event == "UNIT_SPELLCAST_EMPOWER_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+				self:HandleInterruptOrSpellFailed(true, event, castID, interruptedBy);
+				return;
+			end
 		end
 
 		-- Cast info not available once stopped, so update bar based on cached barType
@@ -336,10 +358,25 @@ function CastingBarMixin:OnEvent(event, ...)
 		self:UpdateHighlightWhenCastTarget();
 		self:UpdateTargetNameText();
 		self:UpdateShownState(self:ShouldShowCastBar());
-	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
-		self:HandleCastStop(event, ...);
-	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		self:HandleInterruptOrSpellFailed(false, event, ...);
+	elseif ( event == "UNIT_SPELLCAST_STOP" ) then
+		local _unit, castGUID, _spellID = ...;
+		local complete = false;
+		local interruptedBy = nil;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
+		local _unit, castGUID, _spellID, interruptedBy = ...;
+		local complete = interruptedBy == nil;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_EMPOWER_STOP" ) then
+		local _unit, castGUID, _spellID, complete, interruptedBy = ...;
+		self:HandleCastStop(event, castGUID, complete, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_FAILED" ) then
+		local _unit, castID, _spellID = ...
+		local interruptedBy = nil;
+		self:HandleInterruptOrSpellFailed(false, event, castID, interruptedBy);
+	elseif ( event == "UNIT_SPELLCAST_INTERRUPTED" ) then
+		local _unit, castID, _spellID, interruptedBy = ...
+		self:HandleInterruptOrSpellFailed(false, event, castID, interruptedBy);
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);

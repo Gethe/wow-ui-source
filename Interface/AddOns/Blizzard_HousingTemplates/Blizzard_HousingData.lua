@@ -1,5 +1,9 @@
 ----------------- Enum to Global String Lookups -----------------
 HousingResultToErrorText = {
+	[Enum.HousingResult.ActionLockedByCombat] = ERR_HOUSING_RESULT_LOCKED_BY_COMBAT,
+	[Enum.HousingResult.BoundsFailureChildren] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT,
+	[Enum.HousingResult.BoundsFailurePlot] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_PLOT,
+	[Enum.HousingResult.BoundsFailureRoom] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ROOM,
 	[Enum.HousingResult.CannotAfford] = ERR_HOUSING_RESULT_CANNOT_AFFORD,
 	[Enum.HousingResult.CharterComplete] = ERR_HOUSING_RESULT_CHARTER_COMPLETE,
 	[Enum.HousingResult.CollisionInvalid] = ERR_HOUSING_RESULT_COLLISION_INVALID,
@@ -15,7 +19,6 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.FixtureHookOccupied] = ERR_HOUSING_RESULT_FIXTURE_HOOK_OCCUPIED,
 	[Enum.HousingResult.FixtureHouseTypeMismatch] = ERR_HOUSING_RESULT_FIXTURE_HOUSE_TYPE_MISMATCH,
 	[Enum.HousingResult.FixtureNotFound] = ERR_HOUSING_RESULT_FIXTURE_NOT_FOUND,
-	[Enum.HousingResult.FixtureNotOwned] = ERR_HOUSING_RESULT_FIXTURE_NOT_OWNED,
 	[Enum.HousingResult.FixtureSizeMismatch] = ERR_HOUSING_RESULT_FIXTURE_SIZE_MISMATCH,
 	[Enum.HousingResult.FixtureTypeMismatch] = ERR_HOUSING_RESULT_FIXTURE_TYPE_MISMATCH,
 	[Enum.HousingResult.GenericFailure] = ERR_HOUSING_RESULT_GENERIC_FAILURE,
@@ -23,10 +26,13 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.GuildMoreActivePlayersNeeded] = ERR_HOUSING_RESULT_GUILD_MORE_ACTIVE_PLAYERS_NEEDED,
 	[Enum.HousingResult.GuildNotLoaded] = ERR_HOUSING_RESULT_GUILD_NOT_LOADED,
 	[Enum.HousingResult.HouseEditLockFailed] = ERR_HOUSING_RESULT_LOCKED_BY_OTHER_PLAYER,
-	[Enum.HousingResult.HouseExteriorAlreadyThatSize] = ERR_HOUSING_RESULT_ALREADY_THAT_SIZE,
-	[Enum.HousingResult.HouseExteriorAlreadyThatType] = ERR_HOUSING_RESULT_ALREADY_THAT_TYPE,
+	[Enum.HousingResult.HouseExteriorAlreadyThatSize] = ERR_HOUSING_RESULT_EXTERIOR_ALREADY_SIZE,
+	[Enum.HousingResult.HouseExteriorAlreadyThatType] = ERR_HOUSING_RESULT_EXTERIOR_ALREADY_TYPE,
 	[Enum.HousingResult.HouseExteriorRootNotFound] = ERR_HOUSING_RESULT_HOUSE_EXTERIOR_ROOT_NOT_FOUND,
 	[Enum.HousingResult.HouseExteriorTypeNeighborhoodMismatch] = ERR_HOUSING_RESULT_EXTERIOR_TYPE_NEIGHBORHOOD_MISMATCH,
+	[Enum.HousingResult.HouseExteriorTypeNotFound] = ERR_HOUSING_RESULT_EXTERIOR_TYPE_NOT_FOUND,
+	[Enum.HousingResult.HouseExteriorTypeSizeMismatch] = ERR_HOUSING_RESULT_EXTERIOR_TYPE_SIZE_MISMATCH,
+	[Enum.HousingResult.HouseExteriorSizeNotAvailable] = ERR_HOUSING_RESULT_EXTERIOR_SIZE_UNAVAILABLE,
 	[Enum.HousingResult.HookNotChildOfFixture] = ERR_HOUSING_RESULT_HOOK_NOT_CHILD_OF_FIXTURE,
 	[Enum.HousingResult.HouseNotFound] = ERR_HOUSING_RESULT_HOUSE_NOT_FOUND,
 	[Enum.HousingResult.IncorrectFaction] = ERR_HOUSING_RESULT_INCORRECT_FACTION,
@@ -42,6 +48,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.LockedByOtherPlayer] = ERR_HOUSING_RESULT_LOCKED_BY_OTHER_PLAYER,
 	[Enum.HousingResult.LockOperationFailed] = ERR_HOUSING_RESULT_LOCK_OPERATION_FAILED,
 	[Enum.HousingResult.MaxDecorReached] = ERR_HOUSING_RESULT_MAX_DECOR_REACHED,
+	[Enum.HousingResult.MaxPreviewDecorReached] = HOUSING_PLACEMENT_PREVIEW_LIMIT_REACHED,
 	[Enum.HousingResult.MissingCoreFixture] = ERR_HOUSING_RESULT_MISSING_CORE_FIXTURE,
 	[Enum.HousingResult.MissingDye] = ERR_HOUSING_RESULT_MISSING_DYE,
 	[Enum.HousingResult.MissingExpansionAccess] = ERR_HOUSING_RESULT_MISSING_EXPANSION_ACCESS,
@@ -50,6 +57,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.MoreHouseSlotsNeeded] = ERR_HOUSING_RESULT_MORE_HOUSE_SLOTS_NEEDED,
 	[Enum.HousingResult.MoreSignaturesNeeded] = ERR_HOUSING_RESULT_MORE_SIGNATURES_NEEDED,
 	[Enum.HousingResult.NeighborhoodNotFound] = ERR_HOUSING_RESULT_NEIGHBORHOOD_NOT_FOUND,
+	[Enum.HousingResult.NoNeighborhoodOwnershipRequests] = ERR_HOUSING_RESULT_NO_NEIGHBORHOOD_OWNERSHIP_REQUESTS,
 	[Enum.HousingResult.NotInDecorEditMode] = ERR_HOUSING_RESULT_NOT_IN_DECOR_EDIT_MODE,
 	[Enum.HousingResult.NotInFixtureEditMode] = ERR_HOUSING_RESULT_NOT_IN_FIXTURE_EDIT_MODE,
 	[Enum.HousingResult.NotInLayoutEditMode] = ERR_HOUSING_RESULT_NOT_IN_LAYOUT_EDIT_MODE,
@@ -58,6 +66,7 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.OperationAborted] = ERR_HOUSING_RESULT_OPERATION_ABORTED,
 	[Enum.HousingResult.PermissionDenied] = ERR_HOUSING_RESULT_PERMISSION_DENIED,
 	[Enum.HousingResult.PlacementTargetInvalid] = ERR_HOUSING_RESULT_PLACEMENT_TARGET_INVALID,
+	[Enum.HousingResult.PlayerNotFound] = ERR_HOUSING_RESULT_PLAYER_NOT_FOUND,
 	[Enum.HousingResult.PlayerNotInInstance] = ERR_HOUSING_RESULT_PLAYER_NOT_IN_INSTANCE,
 	[Enum.HousingResult.PlotNotFound] = ERR_HOUSING_RESULT_PLOT_NOT_FOUND,
 	[Enum.HousingResult.PlotNotVacant] = ERR_HOUSING_RESULT_PLOT_NOT_VACANT,
@@ -67,13 +76,18 @@ HousingResultToErrorText = {
 	[Enum.HousingResult.RoomUpdateFailed] = ERR_HOUSING_RESULT_ROOM_UPDATE_FAILED,
 	[Enum.HousingResult.RpcFailure] = ERR_HOUSING_RESULT_RPC_FAILURE,
 	[Enum.HousingResult.ServiceNotAvailable] = ERR_HOUSING_RESULT_SERVICE_NOT_AVAILABLE,
+	[Enum.HousingResult.StaticDataNotFound] = ERR_HOUSING_RESULT_STATIC_DATA_NOT_FOUND,
 	[Enum.HousingResult.TimeoutLimit] = ERR_HOUSING_RESULT_TIMEOUT_LIMIT,
 	[Enum.HousingResult.TimerunningNotAllowed] = ERR_HOUSING_RESULT_TIMERUNNING_NOT_ALLOWED,
 	[Enum.HousingResult.TokenRequired] = ERR_HOUSING_RESULT_TOKEN_REQUIRED,
 	[Enum.HousingResult.TooManyRequests] = ERR_HOUSING_RESULT_TOO_MANY_REQUESTS,
 	[Enum.HousingResult.TransactionFailure] = ERR_HOUSING_RESULT_TRANSACTION_FAILURE,
+	[Enum.HousingResult.UncollectedExteriorFixture] = ERR_HOUSING_RESULT_FIXTURE_NOT_OWNED,
+	[Enum.HousingResult.UncollectedHouseType] = ERR_HOUSING_RESULT_UNCOLLECTED_HOUSE_TYPE,
+	[Enum.HousingResult.UncollectedRoom] = ERR_HOUSING_RESULT_UNCOLLECTED_ROOM,
+	[Enum.HousingResult.UncollectedRoomMaterial] = ERR_HOUSING_RESULT_UNCOLLECTED_ROOM_MATERIAL,
+	[Enum.HousingResult.UncollectedRoomTheme] = ERR_HOUSING_RESULT_UNCOLLECTED_ROOM_THEME,
 	[Enum.HousingResult.UnlockOperationFailed] = ERR_HOUSING_RESULT_UNLOCK_OPERATION_FAILED,
-	[Enum.HousingResult.ActionLockedByCombat] = ERR_NOT_IN_COMBAT,
 };
 
 NeighborhoodTypeStrings = {
@@ -110,6 +124,8 @@ HousingLayoutGenericRestrictionStrings = {
 	[Enum.HousingLayoutRestriction.LastRoom] = ERR_HOUSING_LAYOUT_RESTRICTION_LAST_ROOM,
 	[Enum.HousingLayoutRestriction.UnreachableRoom] = ERR_HOUSING_LAYOUT_RESTRICTION_UNREACHABLE,
 	[Enum.HousingLayoutRestriction.SingleDoor] = ERR_HOUSING_LAYOUT_RESTRICTION_SINGLE_DOOR,
+	-- [Enum.HousingLayoutRestriction.RoomAbove] = ERR_HOUSING_LAYOUT_RESTRICTION_ROOM_ABOVE, -- TODO: global string exists, add entry to enum
+	-- [Enum.HousingLayoutRestriction.RoomBelow] = ERR_HOUSING_LAYOUT_RESTRICTION_ROOM_BELOW, -- TODO: global string exists, add entry to enum
 };
 
 HousingLayoutRotateRestrictionStrings = {
@@ -138,16 +154,4 @@ HousingExpertSubmodeRestrictionStrings = {
 	[Enum.HousingExpertSubmodeRestriction.NotInExpertMode] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_NOT_IN_EXPERT,
 	[Enum.HousingExpertSubmodeRestriction.NoHouseExteriorScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_HOUSE_EXTERIOR_SCALE,
 	[Enum.HousingExpertSubmodeRestriction.NoWMOScale] = ERR_HOUSING_EXPERT_SUBMODE_RESTRICTION_WMO_SCALE,
-};
-
--- TODO: Add better static data definitions for these "exterior colors" so we have a bespoke source of localized string names
--- Currently they just map to values in a loose ESS with dozens of unused entries
-HousingExteriorColorStrings = {
-	[8] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLUE, --Blue
-	[9] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BROWN, --Brown
-	[21] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_GREEN, --Green
-	[32] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_ORANGE, --Orange
-	[36] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_PURPLE, --Purple
-	[37] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_RED, --Red
-	[44] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_YELLOW, --Yellow
 };

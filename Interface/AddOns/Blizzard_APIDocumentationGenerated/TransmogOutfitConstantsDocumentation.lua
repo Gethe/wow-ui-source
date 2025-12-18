@@ -3,6 +3,17 @@ local TransmogOutfitConstants =
 	Tables =
 	{
 		{
+			Name = "TransmogOutfitDataFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "IsCachedLocally", Type = "TransmogOutfitDataFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "TransmogOutfitDisplayType",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -19,12 +30,16 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitEntryFlags",
 			Type = "Enumeration",
-			NumValues = 1,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 1,
+			MaxValue = 16,
 			Fields =
 			{
 				{ Name = "AutomaticallyAwardedOnLogin", Type = "TransmogOutfitEntryFlags", EnumValue = 1 },
+				{ Name = "UseOverrideName", Type = "TransmogOutfitEntryFlags", EnumValue = 2 },
+				{ Name = "OnlyAvailableDuringEvent", Type = "TransmogOutfitEntryFlags", EnumValue = 4 },
+				{ Name = "SortedToTopOfList", Type = "TransmogOutfitEntryFlags", EnumValue = 8 },
+				{ Name = "UseOverrideCostModifier", Type = "TransmogOutfitEntryFlags", EnumValue = 16 },
 			},
 		},
 		{
@@ -146,7 +161,7 @@ local TransmogOutfitConstants =
 				{ Name = "RangedWeapon", Type = "TransmogOutfitSlotOption", EnumValue = 3 },
 				{ Name = "OffHand", Type = "TransmogOutfitSlotOption", EnumValue = 4 },
 				{ Name = "Shield", Type = "TransmogOutfitSlotOption", EnumValue = 5 },
-				{ Name = "RogueDagger", Type = "TransmogOutfitSlotOption", EnumValue = 6 },
+				{ Name = "DeprecatedReuseMe", Type = "TransmogOutfitSlotOption", EnumValue = 6 },
 				{ Name = "FuryTwoHandedWeapon", Type = "TransmogOutfitSlotOption", EnumValue = 7 },
 				{ Name = "ArtifactSpecOne", Type = "TransmogOutfitSlotOption", EnumValue = 8 },
 				{ Name = "ArtifactSpecTwo", Type = "TransmogOutfitSlotOption", EnumValue = 9 },
@@ -194,24 +209,25 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitSlotWarning",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Ok", Type = "TransmogOutfitSlotWarning", EnumValue = 0 },
 				{ Name = "InvalidEquippedDestinationItem", Type = "TransmogOutfitSlotWarning", EnumValue = 1 },
 				{ Name = "WrongWeaponCategoryEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 2 },
 				{ Name = "PendingWeaponChanges", Type = "TransmogOutfitSlotWarning", EnumValue = 3 },
-				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
+				{ Name = "WeaponDoesNotSupportIllusions", Type = "TransmogOutfitSlotWarning", EnumValue = 4 },
+				{ Name = "NothingEquipped", Type = "TransmogOutfitSlotWarning", EnumValue = 5 },
 			},
 		},
 		{
 			Name = "TransmogOutfitTransactionFlags",
 			Type = "Enumeration",
-			NumValues = 9,
+			NumValues = 10,
 			MinValue = 1,
-			MaxValue = 27,
+			MaxValue = 28,
 			Fields =
 			{
 				{ Name = "UpdateMetadata", Type = "TransmogOutfitTransactionFlags", EnumValue = 1 },
@@ -221,6 +237,7 @@ local TransmogOutfitConstants =
 				{ Name = "UpdateSituations", Type = "TransmogOutfitTransactionFlags", EnumValue = 16 },
 				{ Name = "AddNewOutfitMask", Type = "TransmogOutfitTransactionFlags", EnumValue = 20 },
 				{ Name = "UpdateSituationsMask", Type = "TransmogOutfitTransactionFlags", EnumValue = 18 },
+				{ Name = "AddOutfitAndUpdateSlots", Type = "TransmogOutfitTransactionFlags", EnumValue = 28 },
 				{ Name = "FullOutfitUpdateMask", Type = "TransmogOutfitTransactionFlags", EnumValue = 27 },
 				{ Name = "CreateAndUpdateOutfitInfoMask", Type = "TransmogOutfitTransactionFlags", EnumValue = 6 },
 			},
@@ -303,18 +320,20 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogSituationTrigger",
 			Type = "Enumeration",
-			NumValues = 7,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 6,
+			MaxValue = 8,
 			Fields =
 			{
-				{ Name = "Manual", Type = "TransmogSituationTrigger", EnumValue = 0 },
-				{ Name = "TransmogUpdate", Type = "TransmogSituationTrigger", EnumValue = 1 },
-				{ Name = "Location", Type = "TransmogSituationTrigger", EnumValue = 2 },
-				{ Name = "Movement", Type = "TransmogSituationTrigger", EnumValue = 3 },
-				{ Name = "Specialization", Type = "TransmogSituationTrigger", EnumValue = 4 },
-				{ Name = "EquipmentSet", Type = "TransmogSituationTrigger", EnumValue = 5 },
-				{ Name = "Forms", Type = "TransmogSituationTrigger", EnumValue = 6 },
+				{ Name = "None", Type = "TransmogSituationTrigger", EnumValue = 0 },
+				{ Name = "Manual", Type = "TransmogSituationTrigger", EnumValue = 1 },
+				{ Name = "TransmogUpdate", Type = "TransmogSituationTrigger", EnumValue = 2 },
+				{ Name = "Location", Type = "TransmogSituationTrigger", EnumValue = 3 },
+				{ Name = "Movement", Type = "TransmogSituationTrigger", EnumValue = 4 },
+				{ Name = "Specialization", Type = "TransmogSituationTrigger", EnumValue = 5 },
+				{ Name = "EquipmentSet", Type = "TransmogSituationTrigger", EnumValue = 6 },
+				{ Name = "Forms", Type = "TransmogSituationTrigger", EnumValue = 7 },
+				{ Name = "EventOutfit", Type = "TransmogSituationTrigger", EnumValue = 8 },
 			},
 		},
 		{
@@ -330,6 +349,20 @@ local TransmogOutfitConstants =
 				{ Name = "IsPlayerFacing", Type = "TransmogSituationTriggerFlags", EnumValue = 4 },
 				{ Name = "SituationsAreExclusive", Type = "TransmogSituationTriggerFlags", EnumValue = 8 },
 				{ Name = "DisabledTrigger", Type = "TransmogSituationTriggerFlags", EnumValue = 16 },
+			},
+		},
+		{
+			Name = "TransmogSituationTriggerType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "TransmogSituationTriggerType", EnumValue = 0 },
+				{ Name = "Manual", Type = "TransmogSituationTriggerType", EnumValue = 1 },
+				{ Name = "Automatic", Type = "TransmogSituationTriggerType", EnumValue = 2 },
+				{ Name = "TransmogUpdate", Type = "TransmogSituationTriggerType", EnumValue = 3 },
 			},
 		},
 		{

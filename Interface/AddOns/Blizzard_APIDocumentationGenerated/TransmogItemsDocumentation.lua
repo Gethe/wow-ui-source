@@ -3,6 +3,7 @@ local TransmogItems =
 	Name = "TransmogrifyCollection",
 	Type = "System",
 	Namespace = "C_TransmogCollection",
+	Environment = "All",
 
 	Functions =
 	{

@@ -84,7 +84,7 @@ function PlayerFrame_OnLoad(self)
 			fromPlayerFrame = true;
 		};
 
-		if self.unit == "vehicle" then
+		if unit == "vehicle" then
 			which = "VEHICLE";
 			contextData.unit = "vehicle";
 		else

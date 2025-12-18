@@ -964,7 +964,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	if ( mode == "queued" ) then
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, _, leader, tank, healer, dps = GetLFGInfoServer(category, activeID);
 		local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats(category, activeID);
-		if ( category == LE_LFG_CATEGORY_SCENARIO ) then --Hide roles for scenarios
+		if ( category == LE_LFG_CATEGORY_SCENARIO or instanceSubType == LFG_SUBTYPEID_TRAINING_GROUNDS ) then --Hide roles for scenarios and training grounds
 			tank, healer, dps = nil, nil, nil;
 			totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds = nil, nil, nil, nil, nil, nil;
 		end

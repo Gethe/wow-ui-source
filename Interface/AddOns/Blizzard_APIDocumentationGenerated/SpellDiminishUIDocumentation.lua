@@ -3,6 +3,7 @@ local SpellDiminishUI =
 	Name = "SpellDiminishUI",
 	Type = "System",
 	Namespace = "C_SpellDiminish",
+	Environment = "All",
 
 	Functions =
 	{

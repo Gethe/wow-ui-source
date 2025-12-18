@@ -75,6 +75,9 @@ function HousingDashboardFrameMixin:GetPanelExtraWidth()
 end
 
 function HousingDashboardFrameMixin:OpenInitiativesFrameToTaskID(taskID)
+	if not self.HouseInfoContent.ContentFrame.tabsInitialized then
+		self.HouseInfoContent.ContentFrame:Initialize();
+	end
 	self.HouseInfoContent.ContentFrame:SetTab(self.HouseInfoContent.ContentFrame.endeavorTabID)
 	self.HouseInfoContent.ContentFrame.InitiativesFrame:ScrollToInitiativeTaskID(taskID);
 end

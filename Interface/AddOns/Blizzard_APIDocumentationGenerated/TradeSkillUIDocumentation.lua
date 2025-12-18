@@ -3,6 +3,7 @@ local TradeSkillUI =
 	Name = "TradeSkillUI",
 	Type = "System",
 	Namespace = "C_TradeSkillUI",
+	Environment = "All",
 
 	Functions =
 	{

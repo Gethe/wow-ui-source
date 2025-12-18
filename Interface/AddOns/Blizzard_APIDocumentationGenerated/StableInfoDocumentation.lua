@@ -3,6 +3,7 @@ local StableInfo =
 	Name = "StableInfo",
 	Type = "System",
 	Namespace = "C_StableInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -92,6 +93,15 @@ local StableInfo =
 			Returns =
 			{
 				{ Name = "isAtStableMaster", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsBonusPetSlotAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{

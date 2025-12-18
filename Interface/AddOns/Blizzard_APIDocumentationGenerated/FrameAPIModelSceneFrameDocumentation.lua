@@ -2,6 +2,7 @@ local FrameAPIModelSceneFrame =
 {
 	Name = "FrameAPIModelSceneFrame",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

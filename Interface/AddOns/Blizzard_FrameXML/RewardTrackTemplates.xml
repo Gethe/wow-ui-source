@@ -111,7 +111,7 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</DisabledTexture>
-		<HighlightTexture atlas="ui-journeys-delve-arrow-big-left-hover" useAtlasSize="true" alphaMode="ADD">
+		<HighlightTexture atlas="ui-journeys-delve-arrow-big-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -141,7 +141,7 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</DisabledTexture>
-		<HighlightTexture atlas="ui-journeys-delve-arrow-small-left-hover" useAtlasSize="true" alphaMode="ADD">
+		<HighlightTexture atlas="ui-journeys-delve-arrow-small-left" useAtlasSize="true" alphaMode="ADD" alpha="0.4">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>

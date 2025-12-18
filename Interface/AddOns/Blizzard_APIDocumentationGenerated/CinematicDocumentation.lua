@@ -2,6 +2,7 @@ local Cinematic =
 {
 	Name = "Cinematic",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

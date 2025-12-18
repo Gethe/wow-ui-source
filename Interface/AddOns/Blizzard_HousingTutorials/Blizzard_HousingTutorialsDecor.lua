@@ -81,6 +81,10 @@ end
 
 function HouseDecorQuestWatcherMixin:Quest_Updated(questData)
 	local questID = questData.QuestID;
+	if not self.houseDecorTutorial and HousingTutorialData.HouseDecorTutorial.QuestTutorials[questID] then
+		self:Quest_Accepted(questData);
+	end
+
 	if self.houseDecorTutorial and questID == self.houseDecorTutorial.questID then
 		local helpTipInfo = self.houseDecorTutorial.helpTipInfos[HousingTutorialStates.QuestTutorials.QuestInProgress];
 
@@ -161,7 +165,7 @@ function HouseDecorQuestTutorialMixin:ShowHelpTipByState(stateName)
 	local helpTipInfo = self.helpTipInfos[stateName];
 	-- text can be nil here if the quest is complete
 	if helpTipInfo.text then
-		self.helpTipParent = helpTipInfo.parent;
+		self.helpTipParent = helpTipInfo.parent or HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseDecorTutorial.EnterDecorModeButton);
 		HelpTip:Show(self.helpTipParent, helpTipInfo, self.helpTipParent);
 	end
 end
@@ -170,7 +174,7 @@ function HouseDecorQuestTutorialMixin:UpdateInProgressHelpTip()
 	local helpTipInfo = self.helpTipInfos[HousingTutorialStates.QuestTutorials.QuestInProgress];
 	if helpTipInfo.formattingText then
 		local objectiveText, _objectiveType, finished, _numFulfilled, _numRequired = GetQuestObjectiveInfo(self.questID, 1, false);
-		if not finished then
+		if objectiveText and not finished then
 			self.helpTipInfos[HousingTutorialStates.QuestTutorials.QuestInProgress].text = helpTipInfo.formattingText:format(objectiveText);
 		else
 			HelpTip:Hide(self.helpTipParent, helpTipInfo.text);

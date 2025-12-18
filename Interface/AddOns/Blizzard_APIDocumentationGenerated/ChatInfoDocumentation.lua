@@ -3,6 +3,7 @@ local ChatInfo =
 	Name = "ChatInfo",
 	Type = "System",
 	Namespace = "C_ChatInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -725,7 +726,6 @@ local ChatInfo =
 			Name = "ChatCombatMsgArenaPointsGain",
 			Type = "Event",
 			LiteralName = "CHAT_COMBAT_MSG_ARENA_POINTS_GAIN",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -763,7 +763,6 @@ local ChatInfo =
 			Name = "ChatMsgAchievement",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_ACHIEVEMENT",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -853,7 +852,6 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemAlliance",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_ALLIANCE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -880,7 +878,6 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemHorde",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_HORDE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -907,7 +904,6 @@ local ChatInfo =
 			Name = "ChatMsgBgSystemNeutral",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_BG_SYSTEM_NEUTRAL",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1619,7 +1615,6 @@ local ChatInfo =
 			Name = "ChatMsgGuildAchievement",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_GUILD_ACHIEVEMENT",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -1646,7 +1641,6 @@ local ChatInfo =
 			Name = "ChatMsgGuildItemLooted",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_GUILD_ITEM_LOOTED",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2051,7 +2045,6 @@ local ChatInfo =
 			Name = "ChatMsgPetBattleCombatLog",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_BATTLE_COMBAT_LOG",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2078,7 +2071,6 @@ local ChatInfo =
 			Name = "ChatMsgPetBattleInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_BATTLE_INFO",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -2105,7 +2097,6 @@ local ChatInfo =
 			Name = "ChatMsgPetInfo",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_PET_INFO",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

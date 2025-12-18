@@ -3,6 +3,7 @@ local SocialQueue =
 	Name = "SocialQueue",
 	Type = "System",
 	Namespace = "C_SocialQueue",
+	Environment = "All",
 
 	Functions =
 	{

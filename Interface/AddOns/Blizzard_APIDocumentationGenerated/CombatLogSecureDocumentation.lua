@@ -3,6 +3,7 @@ local CombatLogSecure =
 	Name = "CombatLogSecure",
 	Type = "System",
 	Namespace = "C_CombatLogSecure",
+	Environment = "SecureOnly",
 
 	Functions =
 	{

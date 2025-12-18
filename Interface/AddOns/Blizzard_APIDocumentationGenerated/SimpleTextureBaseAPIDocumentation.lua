@@ -2,6 +2,7 @@ local SimpleTextureBaseAPI =
 {
 	Name = "SimpleTextureBaseAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

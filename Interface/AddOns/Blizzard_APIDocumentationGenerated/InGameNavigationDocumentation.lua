@@ -3,6 +3,7 @@ local InGameNavigation =
 	Name = "InGameNavigation",
 	Type = "System",
 	Namespace = "C_Navigation",
+	Environment = "All",
 
 	Functions =
 	{

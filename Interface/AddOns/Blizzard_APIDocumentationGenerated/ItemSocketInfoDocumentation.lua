@@ -3,6 +3,7 @@ local ItemSocketInfo =
 	Name = "ItemSocketInfo",
 	Type = "System",
 	Namespace = "C_ItemSocketInfo",
+	Environment = "All",
 
 	Functions =
 	{

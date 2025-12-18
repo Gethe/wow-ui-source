@@ -2,6 +2,7 @@ local HousingFixturePointFrameAPI =
 {
 	Name = "HousingFixturePointFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local ScriptWarnings =
 	Name = "ScriptWarnings",
 	Type = "System",
 	Namespace = "C_ScriptWarnings",
+	Environment = "All",
 
 	Functions =
 	{

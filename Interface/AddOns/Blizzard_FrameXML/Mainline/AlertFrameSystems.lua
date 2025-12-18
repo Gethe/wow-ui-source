@@ -23,6 +23,7 @@ function AlertFrameSystems_Register()
 	NewRuneforgePowerAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewRuneforgePowerAlertFrameTemplate", NewRuneforgePowerAlertSystem_SetUp);
 	NewCosmeticAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("NewCosmeticAlertFrameTemplate", NewCosmeticAlertFrameSystem_SetUp);
 	HousingItemEarnedAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("HousingItemEarnedAlertFrameTemplate", HousingItemEarnedAlertFrameSystem_SetUp);
+	InitiativeTaskCompleteAlertFrameSystem = AlertFrame:AddQueuedAlertFrameSubSystem("InitiativeTaskCompleteAlertFrameTemplate", InitiativeTaskCompleteAlertFrameSystem_SetUp);
 end
 
 -- [[ GuildChallengeAlertFrame ]] --
@@ -1468,4 +1469,15 @@ function HousingItemEarnedAlertFrameSystem_SetUp(frame, rewardData)
 	frame.glowAnimIn:Play();
 	frame.sparklesAnimIn:Play();
 	frame.lightRaysAnimIn:Play();
+end
+
+-- [[ InitiativeTaskCompleteAlertFrameSystem ]] --
+
+function InitiativeTaskCompleteAlertFrameSystem_SetUp(frame, taskName)
+	frame.TaskName:SetText(taskName);
+	frame.LightRays:SetAlpha(0);
+	frame.LightRays2:SetAlpha(0);
+	frame.glowAnimIn:Restart();
+	frame.sparklesAnimIn:Restart();
+	frame.lightRaysAnimIn:Restart();
 end

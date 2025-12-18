@@ -3,6 +3,7 @@ local EquipmentManager =
 	Name = "EquipmentSet",
 	Type = "System",
 	Namespace = "C_EquipmentSet",
+	Environment = "All",
 
 	Functions =
 	{

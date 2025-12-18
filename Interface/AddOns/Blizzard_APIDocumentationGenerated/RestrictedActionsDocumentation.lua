@@ -2,33 +2,69 @@ local RestrictedActions =
 {
 	Name = "RestrictedActions",
 	Type = "System",
+	Namespace = "C_RestrictedActions",
+	Environment = "All",
 
 	Functions =
 	{
 		{
-			Name = "GetRestrictedActionStatus",
+			Name = "CheckAllowProtectedFunctions",
 			Type = "Function",
+			SecureHooksAllowed = false,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Queries the status of an addon restriction." },
+			Documentation = { "Returns true if the calling context has permissions to call protected functions on the supplied object." },
 
 			Arguments =
 			{
-				{ Name = "actionType", Type = "RestrictedActionType", Nilable = false },
+				{ Name = "object", Type = "FrameScriptObject", Nilable = false },
+				{ Name = "silent", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, don't signal blocked action errors if protected function calls are disallowed." } },
 			},
 
 			Returns =
 			{
-				{ Name = "isRestricted", Type = "bool", Nilable = false, Documentation = { "If true, the queried restriction will be actively enforced." } },
-				{ Name = "reason", Type = "RestrictedActionReason", Nilable = true, Documentation = { "Additional context for the restriction if enforced. May be nil if enforcement reasons are unspecified." } },
+				{ Name = "protectedFunctionsAllowed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "GetAddOnRestrictionState",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the current state of an addon restriction type." },
+
+			Arguments =
+			{
+				{ Name = "type", Type = "AddOnRestrictionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "state", Type = "AddOnRestrictionState", Nilable = false },
 			},
 		},
 		{
 			Name = "InCombatLockdown",
 			Type = "Function",
+			Namespace = "",
 
 			Returns =
 			{
 				{ Name = "inCombatLockdown", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsAddOnRestrictionActive",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if an addon restriction type is in an active state. Will always return false during dispatch of ADDON_RESTRICTION_STATE_CHANGED." },
+
+			Arguments =
+			{
+				{ Name = "type", Type = "AddOnRestrictionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -58,6 +94,18 @@ local RestrictedActions =
 			},
 		},
 		{
+			Name = "AddonRestrictionStateChanged",
+			Type = "Event",
+			LiteralName = "ADDON_RESTRICTION_STATE_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when the state of an addon restriction type is changing. This event is sequenced such that it will always be fired before a restriction becomes active, or after it is deactivated." },
+			Payload =
+			{
+				{ Name = "type", Type = "AddOnRestrictionType", Nilable = false },
+				{ Name = "state", Type = "AddOnRestrictionState", Nilable = false },
+			},
+		},
+		{
 			Name = "MacroActionBlocked",
 			Type = "Event",
 			LiteralName = "MACRO_ACTION_BLOCKED",
@@ -81,33 +129,6 @@ local RestrictedActions =
 
 	Tables =
 	{
-		{
-			Name = "RestrictedActionReason",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "InCombat", Type = "RestrictedActionReason", EnumValue = 0 },
-				{ Name = "ActiveEncounter", Type = "RestrictedActionReason", EnumValue = 1 },
-				{ Name = "ActiveMythicKeystoneOrChallengeMode", Type = "RestrictedActionReason", EnumValue = 2 },
-				{ Name = "ActivePvPMatch", Type = "RestrictedActionReason", EnumValue = 3 },
-				{ Name = "RestrictedMap", Type = "RestrictedActionReason", EnumValue = 4 },
-			},
-		},
-		{
-			Name = "RestrictedActionType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "SecretAuras", Type = "RestrictedActionType", EnumValue = 0 },
-				{ Name = "SecretCooldowns", Type = "RestrictedActionType", EnumValue = 1 },
-			},
-		},
 	},
 };
 

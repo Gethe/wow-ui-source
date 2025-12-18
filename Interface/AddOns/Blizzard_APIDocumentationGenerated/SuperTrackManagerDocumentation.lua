@@ -3,6 +3,7 @@ local SuperTrackManager =
 	Name = "SuperTrackManager",
 	Type = "System",
 	Namespace = "C_SuperTrack",
+	Environment = "All",
 
 	Functions =
 	{

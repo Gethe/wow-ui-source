@@ -2,6 +2,7 @@ local SimpleStatusBarAPI =
 {
 	Name = "SimpleStatusBarAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -127,6 +128,19 @@ local SimpleStatusBarAPI =
 			Returns =
 			{
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTimerDuration",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -282,6 +296,18 @@ local SimpleStatusBarAPI =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetTimerDuration",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = false, Default = "Immediate" },
+				{ Name = "direction", Type = "StatusBarTimerDirection", Nilable = false, Default = "ElapsedTime" },
 			},
 		},
 		{

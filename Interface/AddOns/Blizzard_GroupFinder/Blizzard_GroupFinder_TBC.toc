@@ -6,6 +6,8 @@
 ## AllowLoadGameType: tbc
 Classic\Constants.lua
 Classic\QueueUpdater.lua
+Shared\LFGReadyCheck.lua
+Shared\LFGReadyCheck.xml
 Classic\PVPHelper.lua
 Classic\PVPHelper.xml
 Classic\Localization.lua

@@ -2,6 +2,7 @@ local SimpleControlPointAPI =
 {
 	Name = "SimpleControlPointAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

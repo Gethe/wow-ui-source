@@ -3,6 +3,7 @@ local SkillInfo =
 	Name = "SkillInfo",
 	Type = "System",
 	Namespace = "C_SkillInfo",
+	Environment = "All",
 
 	Functions =
 	{

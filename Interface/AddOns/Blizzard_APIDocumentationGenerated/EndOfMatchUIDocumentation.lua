@@ -3,6 +3,7 @@ local EndOfMatchUI =
 	Name = "EndOfMatchUI",
 	Type = "System",
 	Namespace = "C_EndOfMatchUI",
+	Environment = "All",
 
 	Functions =
 	{

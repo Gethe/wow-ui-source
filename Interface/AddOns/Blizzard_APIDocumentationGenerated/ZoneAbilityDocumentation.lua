@@ -3,6 +3,7 @@ local ZoneAbility =
 	Name = "ZoneAbility",
 	Type = "System",
 	Namespace = "C_ZoneAbility",
+	Environment = "All",
 
 	Functions =
 	{

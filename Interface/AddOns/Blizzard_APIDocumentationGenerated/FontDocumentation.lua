@@ -2,6 +2,7 @@ local Font =
 {
 	Name = "Font",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

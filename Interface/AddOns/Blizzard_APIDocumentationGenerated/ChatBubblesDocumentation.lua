@@ -3,6 +3,7 @@ local ChatBubbles =
 	Name = "ChatBubbles",
 	Type = "System",
 	Namespace = "C_ChatBubbles",
+	Environment = "All",
 
 	Functions =
 	{

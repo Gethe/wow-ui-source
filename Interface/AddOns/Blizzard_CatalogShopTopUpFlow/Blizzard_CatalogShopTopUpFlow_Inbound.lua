@@ -1,5 +1,10 @@
+
 -- Inbound files need to load under the global environment
 SwapToGlobalEnvironment();
+
+function CatalogShopTopUpFrame_GetFrame()
+	return CatalogShopTopUpFrame;
+end
 
 --All of these functions should be safe to call by tainted code. They should only communicate with secure code via SetAttribute and GetAttribute.
 CatalogShopTopUpFlowInboundInterface = {};
@@ -24,4 +29,8 @@ end
 
 function CatalogShopTopUpFlowInboundInterface.SetDesiredQuantity(quantity)
 	CatalogShopTopUpFrame:SetAttribute("setdesiredquantity", quantity);
+end
+
+function CatalogShopTopUpFlowInboundInterface.SetCurrentBalance(currentBalance)
+	CatalogShopTopUpFrame:SetAttribute("setcurrentbalance", currentBalance);
 end

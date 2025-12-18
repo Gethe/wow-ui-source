@@ -3,6 +3,7 @@ local PlayerMentorship =
 	Name = "PlayerMentorship",
 	Type = "System",
 	Namespace = "C_PlayerMentorship",
+	Environment = "All",
 
 	Functions =
 	{

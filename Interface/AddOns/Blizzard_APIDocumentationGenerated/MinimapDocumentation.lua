@@ -3,6 +3,7 @@ local Minimap =
 	Name = "Minimap",
 	Type = "System",
 	Namespace = "C_Minimap",
+	Environment = "All",
 
 	Functions =
 	{

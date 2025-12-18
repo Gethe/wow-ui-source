@@ -14,11 +14,6 @@ function NamePlatePreviewMixin:OnShow()
 		NamePlateDriverFrame:OnEvent("NAME_PLATE_CREATED", self);
 		NamePlateDriverFrame:OnEvent("NAME_PLATE_UNIT_ADDED", NamePlateConstants.PREVIEW_UNIT_TOKEN);
 
-		-- Set an explicit threat state so changes to the nameplateThreatDisplay option can be observed.
-		local threatStateRed = 3;
-		self.UnitFrame.explicitThreatSituation = threatStateRed;
-		self.UnitFrame.forceAggroFlash = true;
-
 		self.UnitFrame.UpdateNameOverride = function(self)
 			self.name:SetText(UNIT_NAMEPLATES_TARGET_NAME_PREVIEW);
 			self.name:SetShown(not self:IsSimplified());
@@ -60,6 +55,8 @@ function NamePlatePreviewMixin:OnShow()
 		self.UnitFrame.AurasFrame.explicitAuraList[6] = { auraInstanceID = 6, sourceUnit = "player", applications = 1, expirationTime = 0, duration = 10, icon = PreviewIconDataProvider:GetRandomIcon()};
 
 		self.UnitFrame.AurasFrame:RefreshExplicitAuras();
+
+		self:UpdatePreviewText();
 	end
 end
 
@@ -69,8 +66,6 @@ function NamePlatePreviewMixin:OnHide()
 
 		self.explicitUnitToken = nil;
 		self.explicitEnemyFrameOptions = nil;
-		self.UnitFrame.explicitThreatSituation = nil;
-		self.UnitFrame.forceAggroFlash = nil;
 		self.UnitFrame:SetExplicitValues({});
 		self.UnitFrame.AurasFrame.explicitAuraList = nil;
 		self.UnitFrame.UpdateNameOverride = nil;
@@ -108,20 +103,66 @@ function NamePlatePreviewMixin:HidePreviewNamePlateCastBar()
 	castBar:UpdateShownState(false);
 end
 
+function NamePlatePreviewMixin:GetPreviewText()
+	if self.UnitFrame then
+		if self.UnitFrame:IsPlayer() then
+			if self.UnitFrame:IsFriend() then
+				return UNIT_NAMEPLATES_PREVIEW_FRIENDLY_PLAYER;
+			else
+				return UNIT_NAMEPLATES_PREVIEW_ENEMY_PLAYER;
+			end
+		else
+			if self.UnitFrame:IsFriend() then
+				return UNIT_NAMEPLATES_PREVIEW_FRIENDLY_NPC;
+			else
+				return UNIT_NAMEPLATES_PREVIEW_ENEMY_NPC;
+			end
+		end
+	end
+
+	return PREVIEW;
+end
+
+function NamePlatePreviewMixin:GetPreview()
+	local parent = self:GetParent();
+	if not parent then
+		return nil;
+	end
+
+	return parent.Preview;
+end
+
+function NamePlatePreviewMixin:UpdatePreviewText()
+	local preview = self:GetPreview();
+	if not preview then
+		return;
+	end
+
+	local previewText = self:GetPreviewText();
+	preview:SetText(previewText);
+end
+
 function NamePlatePreviewMixin:SetExplicitValues(explicitValues)
 	self.UnitFrame:SetExplicitValues(explicitValues);
+
+	self:UpdatePreviewText();
 end
 
 function NamePlatePreviewMixin:OnNamePlateInfoChanged()
 	local explicitValues = {
-		classification = "elite";
+		classification = "elite",
 	};
 	self:SetExplicitValues(explicitValues);
 end
 
 function NamePlatePreviewMixin:OnNamePlateThreatDisplayChanged()
+	local threatStateRed = 3;
+
 	local explicitValues = {
-		isFriend = false;
+		isPlayer = false,
+		isFriend = false,
+		threatSituation = threatStateRed,
+		aggroFlash = true,
 	};
 	self:SetExplicitValues(explicitValues);
 end
@@ -278,6 +319,14 @@ local function Register()
 	category:SetOrder(CUSTOM_GAMEPLAY_SETTINGS_ORDER[NAMEPLATE_OPTIONS_LABEL]);
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
+
+	 -- Tutorial
+	local function ToggleTutorialCallback()
+		NamePlatesTutorial:SetShown(not NamePlatesTutorial:IsShown());
+	end
+
+	local tutorialTooltip = UNIT_NAMEPLATES_TUTORIAL_TOOLTIP;
+	Settings.AssignTutorialToCategory(category, tutorialTooltip, ToggleTutorialCallback);
 
 	-- Names
 	InterfaceOverrides.RunSettingsCallback(function()
@@ -729,7 +778,28 @@ local function Register()
 			Settings.VarType.Number, UNIT_NAMEPLATES_SIMPLIFIED, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_SIMPLIFIED_TOOLTIP);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_SIMPLIFIED_NONE);
+		initializer.OnHide = OnDropdownHidden;
 	end
 end
 
 SettingsRegistrar:AddRegistrant(Register);
+
+NamePlatesTutorialMixin = {};
+
+function NamePlatesTutorialMixin:OnLoad()
+	ButtonFrameTemplate_HidePortrait(self);
+	ButtonFrameTemplate_HideAttic(self);
+	ButtonFrameTemplate_HideButtonBar(self);
+
+	self:SetTitle(NAMEPLATES_LABEL);
+	self.DragBar:Init(self);
+	self.Inset:Hide();
+end
+
+function NamePlatesTutorialMixin:OnHide()
+	SettingsPanel.activeCategoryTutorial = false;
+end
+
+function NamePlatesTutorialMixin:OnShow()
+	SettingsPanel.activeCategoryTutorial = true;
+end

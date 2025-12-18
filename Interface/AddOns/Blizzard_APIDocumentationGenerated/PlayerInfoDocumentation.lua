@@ -3,6 +3,7 @@ local PlayerInfo =
 	Name = "PlayerInfo",
 	Type = "System",
 	Namespace = "C_PlayerInfo",
+	Environment = "All",
 
 	Functions =
 	{

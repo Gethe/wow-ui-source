@@ -3,6 +3,7 @@ local UIModelInfo =
 	Name = "ModelInfo",
 	Type = "System",
 	Namespace = "C_ModelInfo",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local WeeklyRewards =
 	Name = "WeeklyRewards",
 	Type = "System",
 	Namespace = "C_WeeklyRewards",
+	Environment = "All",
 
 	Functions =
 	{

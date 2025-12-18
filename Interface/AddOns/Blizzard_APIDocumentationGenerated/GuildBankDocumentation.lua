@@ -3,6 +3,7 @@ local GuildBank =
 	Name = "GuildBank",
 	Type = "System",
 	Namespace = "C_GuildBank",
+	Environment = "All",
 
 	Functions =
 	{

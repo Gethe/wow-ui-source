@@ -292,7 +292,7 @@
 							<Size y="32"/>
 							<Anchors>
 								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrencyIcon" relativePoint="LEFT" x="-8"/>
 							</Anchors>
 						</FontString>
 					</Layer>

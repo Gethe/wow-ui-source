@@ -3,6 +3,7 @@ local HousingUI =
 	Name = "HousingUI",
 	Type = "System",
 	Namespace = "C_Housing",
+	Environment = "All",
 
 	Functions =
 	{
@@ -266,6 +267,15 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "IsHousingMarketShopEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHousingMarketShopEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHousingServiceEnabled",
 			Type = "Function",
 
@@ -340,6 +350,16 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "OnHouseFinderClickPlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "plotID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "OnRequestSignatureClicked",
 			Type = "Function",
 		},
@@ -375,6 +395,7 @@ local HousingUI =
 			Arguments =
 			{
 				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -384,6 +405,7 @@ local HousingUI =
 		{
 			Name = "ReturnAfterVisitingHouse",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SaveHouseSettings",
@@ -443,6 +465,7 @@ local HousingUI =
 		{
 			Name = "TeleportHome",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -479,6 +502,7 @@ local HousingUI =
 		{
 			Name = "VisitHouse",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -593,6 +617,16 @@ local HousingUI =
 			Type = "Event",
 			LiteralName = "HOUSE_INFO_UPDATED",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "HouseLevelChanged",
+			Type = "Event",
+			LiteralName = "HOUSE_LEVEL_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "newHouseLevelInfo", Type = "HouseLevelInfo", Nilable = true },
+			},
 		},
 		{
 			Name = "HouseLevelFavorUpdated",
@@ -770,6 +804,16 @@ local HousingUI =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
 				{ Name = "rewards", Type = "table", InnerType = "HouseLevelReward", Nilable = false },
+			},
+		},
+		{
+			Name = "RemoveNeighborhoodCharterSignature",
+			Type = "Event",
+			LiteralName = "REMOVE_NEIGHBORHOOD_CHARTER_SIGNATURE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "signature", Type = "cstring", Nilable = false },
 			},
 		},
 		{

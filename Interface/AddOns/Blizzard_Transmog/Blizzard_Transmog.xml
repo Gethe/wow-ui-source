@@ -342,21 +342,12 @@
 						</Frames>
 					</ModelScene>
 					<Frame parentKey="HideIgnoredToggle">
-						<Size x="20" y="20"/>
+						<Size x="30" y="29"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="25" y="-25"/>
 						</Anchors>
 						<Frames>
-							<CheckButton parentKey="Checkbox">
-								<Size x="18" y="18"/>
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-								</Anchors>
-								<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-								<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-								<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
-								<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
-							</CheckButton>
+							<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
 						</Frames>
 						<Layers>
 							<Layer level="ARTWORK">
@@ -414,9 +405,9 @@
 					<Frame parentKey="TabHeaders" inherits="TabSystemTemplate">
 						<KeyValues>
 							<KeyValue key="minTabWidth" value="95" type="number"/>
-							<KeyValue key="maxTabWidth" value="150" type="number"/>
+							<KeyValue key="maxTabWidth" value="170" type="number"/>
 							<KeyValue key="tabTemplate" value="TransmogWardrobeCollectionTabTemplate" type="string"/>
-							<KeyValue key="tabSelectSound" value="SOUNDKIT.IG_SPELLBOOK_OPEN" type="global"/>
+							<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_TRANSMOG_CATEGORIES_CLICK" type="global"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="32" y="-12"/>
@@ -506,6 +497,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>
@@ -514,21 +507,12 @@
 										</Frames>
 									</Frame>
 									<Frame parentKey="SecondaryAppearanceToggle">
-										<Size x="20" y="20"/>
+										<Size x="30" y="29"/>
 										<Anchors>
 											<Anchor point="BOTTOMLEFT" x="27" y="20"/>
 										</Anchors>
 										<Frames>
-											<CheckButton parentKey="Checkbox">
-												<Size x="18" y="18"/>
-												<Anchors>
-													<Anchor point="TOPLEFT"/>
-												</Anchors>
-												<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-												<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-												<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
-												<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
-											</CheckButton>
+											<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
 										</Frames>
 										<Layers>
 											<Layer level="ARTWORK">
@@ -583,6 +567,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>
@@ -605,6 +591,12 @@
 										<Anchors>
 											<Anchor point="TOPLEFT" x="22" y="-22"/>
 										</Anchors>
+										<ButtonText parentKey="Text" inherits="GameFontNormal" wordwrap="false">
+											<Anchors>
+												<Anchor point="LEFT" x="10" y="0"/>
+												<Anchor point="RIGHT" x="-10" y="0"/>
+											</Anchors>
+										</ButtonText>
 									</Button>
 									<Frame parentKey="PagedContent" inherits="PagedNaturalSizeGridContentFrameTemplate">
 										<KeyValues>
@@ -622,6 +614,8 @@
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 													<KeyValue key="bottomPadding" value="3" type="number"/>
+													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM"/>
@@ -672,21 +666,12 @@
 										</Layers>
 									</Frame>
 									<Frame parentKey="EnabledToggle">
-										<Size x="20" y="20"/>
+										<Size x="30" y="29"/>
 										<Anchors>
 											<Anchor point="BOTTOMLEFT" relativeKey="$parent.Situations" relativePoint="TOPLEFT" x="0" y="10"/>
 										</Anchors>
 										<Frames>
-											<CheckButton parentKey="Checkbox">
-												<Size x="18" y="18"/>
-												<Anchors>
-													<Anchor point="TOPLEFT"/>
-												</Anchors>
-												<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-												<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
-												<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
-												<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
-											</CheckButton>
+											<CheckButton parentKey="Checkbox" inherits="MinimalCheckboxArtTemplate" setAllPoints="true"/>
 										</Frames>
 										<Layers>
 											<Layer level="ARTWORK">

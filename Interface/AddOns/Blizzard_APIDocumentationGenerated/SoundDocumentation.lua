@@ -3,6 +3,7 @@ local Sound =
 	Name = "Sound",
 	Type = "System",
 	Namespace = "C_Sound",
+	Environment = "All",
 
 	Functions =
 	{

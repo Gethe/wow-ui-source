@@ -3,6 +3,7 @@ local AuctionHouse =
 	Name = "AuctionHouse",
 	Type = "System",
 	Namespace = "C_AuctionHouse",
+	Environment = "All",
 
 	Functions =
 	{

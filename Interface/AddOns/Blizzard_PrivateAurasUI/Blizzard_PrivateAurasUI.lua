@@ -6,12 +6,6 @@ PrivateAuraMixin = {};
 
 function PrivateAuraMixin:OnLoad()
 	self.Symbol:Hide();
-	local color = DebuffTypeColor["none"];
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
-	self.DebuffBorder:ClearAllPoints();
-	self.DebuffBorder:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", -1, 0);
-	self.DebuffBorder:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, 0);
-	self.DebuffBorder:Show();
 	self.TempEnchantBorder:Hide();
 end
 
@@ -75,25 +69,21 @@ function PrivateAuraMixin:UpdateExpirationTime(auraInfo)
 	end
 end
 
+local s_showDispelType = false;
+do
+	local callback = C_FunctionContainers.CreateCallback(function(show)
+		s_showDispelType = show;
+	end);
+	C_UnitAurasPrivate.SetShowDispelTypeCallback(callback);
+end
+
 function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 	self.auraInfo = auraInfo;
 	self.unit = unit;
 	self.anchorInfo = anchorInfo;
 
-	local color;
-	if auraInfo.dispelName then
-		color = DebuffTypeColor[auraInfo.dispelName];
-		if GetCVarBool("colorblindMode") then
-			self.Symbol:Show();
-			self.Symbol:SetText(DebuffTypeSymbol[auraInfo.dispelName] or "");
-		else
-			self.Symbol:Hide();
-		end
-	else
-		self.Symbol:Hide();
-		color = DebuffTypeColor["none"];
-	end
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b, color.a);
+	AuraUtil.SetAuraBorderAtlas(self.DebuffBorder, auraInfo.dispelName, s_showDispelType);
+	AuraUtil.SetAuraSymbol(self.Symbol, auraInfo.dispelName);
 
 	self:UpdateExpirationTime(auraInfo);
 	self.Icon:SetTexture(auraInfo.icon);

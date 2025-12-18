@@ -3,6 +3,7 @@ local CovenantSanctum =
 	Name = "CovenantSanctumUI",
 	Type = "System",
 	Namespace = "C_CovenantSanctumUI",
+	Environment = "All",
 
 	Functions =
 	{

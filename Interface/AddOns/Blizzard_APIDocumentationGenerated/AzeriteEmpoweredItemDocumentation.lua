@@ -3,6 +3,7 @@ local AzeriteEmpoweredItem =
 	Name = "AzeriteEmpoweredItem",
 	Type = "System",
 	Namespace = "C_AzeriteEmpoweredItem",
+	Environment = "All",
 
 	Functions =
 	{

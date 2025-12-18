@@ -86,9 +86,9 @@ local AccountConstants =
 		{
 			Name = "AccountTransType",
 			Type = "Enumeration",
-			NumValues = 66,
+			NumValues = 67,
 			MinValue = 0,
-			MaxValue = 65,
+			MaxValue = 66,
 			Fields =
 			{
 				{ Name = "ProxyForwarder", Type = "AccountTransType", EnumValue = 0 },
@@ -157,6 +157,7 @@ local AccountConstants =
 				{ Name = "EventRecords", Type = "AccountTransType", EnumValue = 63 },
 				{ Name = "HousingItem", Type = "AccountTransType", EnumValue = 64 },
 				{ Name = "TransmogOutfitCollection", Type = "AccountTransType", EnumValue = 65 },
+				{ Name = "HouseInitiativeFavor", Type = "AccountTransType", EnumValue = 66 },
 			},
 		},
 		{

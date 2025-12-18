@@ -3,6 +3,7 @@ local LootJournal =
 	Name = "LootJournal",
 	Type = "System",
 	Namespace = "C_LootJournal",
+	Environment = "All",
 
 	Functions =
 	{

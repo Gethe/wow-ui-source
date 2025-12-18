@@ -2,6 +2,7 @@ local Camera =
 {
 	Name = "Camera",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

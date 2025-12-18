@@ -278,8 +278,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
@@ -298,8 +298,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
@@ -330,8 +330,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
 			settings = {
 				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = Enum.ViewArenaSize.Three,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 			},
 			anchorInfo = {

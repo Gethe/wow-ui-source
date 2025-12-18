@@ -92,11 +92,6 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AdventureGuide, function(link, text, link
 	end
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.URLIndex, function(link, text, linkData, contextData)
-	local index = string.split(":", linkData.options);
-	LoadURLIndex(tonumber(index));
-end);
-
 LinkUtil.RegisterLinkHandler(LinkTypes.LootHistory, function(link, text, linkData, contextData)
 	local encounterID = string.split(":", linkData.options);
 	SetLootHistoryFrameToEncounter(tonumber(encounterID));
@@ -271,6 +266,11 @@ LinkUtil.RegisterLinkHandler(LinkTypes.PerksActivity, function(link, text, linkD
 		EncounterJournal_LoadUI();
 	end
 	MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.InitiativeTask, function(link, text, linkData, contextData)
+	local initiativeTaskID = string.split(":", linkData.options);
+	HousingFramesUtil.OpenFrameToTaskID(tonumber(initiativeTaskID));
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.WarbandScene, function(link, text, linkData, contextData)

@@ -3,6 +3,7 @@ local AccountStore =
 	Name = "AccountStore",
 	Type = "System",
 	Namespace = "C_AccountStore",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local CombatLog =
 	Name = "CombatLog",
 	Type = "System",
 	Namespace = "C_CombatLog",
+	Environment = "All",
 
 	Functions =
 	{

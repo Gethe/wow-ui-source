@@ -89,7 +89,6 @@ function ShoppingCartDataManagerMixin:RemoveFromCart(cartItemToRemove)
 			end
 		end
 	end
-
 	-- Default to checking the cart ID
 	for index, currCartItem in ipairs(self.cartList) do
 		if cartItemToRemove.cartID == currCartItem.cartID then

@@ -3,6 +3,7 @@ local HousingBasicModeUI =
 	Name = "HousingBasicModeUI",
 	Type = "System",
 	Namespace = "C_HousingBasicMode",
+	Environment = "All",
 
 	Functions =
 	{
@@ -224,7 +225,7 @@ local HousingBasicModeUI =
 			Payload =
 			{
 				{ Name = "targetType", Type = "HousingBasicModeTargetType", Nilable = false },
-				{ Name = "placementInfo", Type = "InvalidPlacementInfo", Nilable = false },
+				{ Name = "activeFlags", Type = "HousingDecorPlacementRestriction", Nilable = false },
 			},
 		},
 		{
@@ -280,18 +281,6 @@ local HousingBasicModeUI =
 				{ Name = "None", Type = "HousingBasicModeTargetType", EnumValue = 0 },
 				{ Name = "Decor", Type = "HousingBasicModeTargetType", EnumValue = 1 },
 				{ Name = "House", Type = "HousingBasicModeTargetType", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "InvalidPlacementInfo",
-			Type = "Structure",
-			Fields =
-			{
-				{ Name = "anyRestrictions", Type = "bool", Nilable = false },
-				{ Name = "invalidCollision", Type = "bool", Nilable = false },
-				{ Name = "invalidTarget", Type = "bool", Nilable = false },
-				{ Name = "tooFar", Type = "bool", Nilable = false },
-				{ Name = "notInRoom", Type = "bool", Nilable = false },
 			},
 		},
 	},

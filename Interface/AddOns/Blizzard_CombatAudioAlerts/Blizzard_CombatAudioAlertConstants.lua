@@ -15,10 +15,14 @@ CombatAudioAlertConstants =
 		PLAYER_HEALTH_THROTTLE_CVAR = {name = "CAAPlayerHealthThrottle", refreshThrottles = true},
 
 		SAY_TARGET_NAME_CVAR = {name = "CAASayTargetName", refreshEvents = true},
+		SAY_IF_TARGETED_CVAR = {name = "CAASayIfTargeted", refreshEvents = true},
 		TARGET_DEATH_BEHAVIOR_CVAR = {name = "CAATargetDeathBehavior"},
 		TARGET_HEALTH_PCT_CVAR = {name = "CAATargetHealthPercent", refreshEvents = true},
 		TARGET_HEALTH_FMT_CVAR = {name = "CAATargetHealthFormat"},
 		TARGET_HEALTH_THROTTLE_CVAR = {name = "CAATargetHealthThrottle", refreshThrottles = true},
+
+		PARTY_HEALTH_PCT_CVAR = {name = "CAAPartyHealthPercent", refreshEvents = true},
+		PARTY_HEALTH_FREQ_CVAR = {name = "CAAPartyHealthFrequency"},
 
 		PLAYER_RESOURCE_1_PCT_CVAR = {name = "CAAResource1Percents", refreshEvents = true},
 		PLAYER_RESOURCE_1_FMT_CVAR = {name = "CAAResource1Formats"},
@@ -41,4 +45,10 @@ CombatAudioAlertConstants =
 		SAY_INTERRUPT_CAST_CVAR = {name = "CAAInterruptCast", refreshEvents = true},
 		SAY_INTERRUPT_CAST_SUCCESS_CVAR = {name = "CAAInterruptCastSuccess", refreshEvents = true},
 	},
+
+	PARTY_HEALTH_UPDATE_MIN_SECONDS = 1;
+	PARTY_HEALTH_UPDATE_MAX_SECONDS = 5;
+
+	ALLOW_OVERLAP_NO = false;
+	ALLOW_OVERLAP_YES = true;
 };

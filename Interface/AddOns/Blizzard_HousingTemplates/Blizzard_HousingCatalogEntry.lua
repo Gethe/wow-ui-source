@@ -197,7 +197,26 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:Show();
 	end
 
-	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
+	local anyDyes = false;
+	for i, dyeID in ipairs(self.entryInfo.dyeIDs) do
+		local icon = self.dyeIcons[i];
+		if dyeID > 0 then
+			local dyeColorInfo = C_DyeColor.GetDyeColorInfo(dyeID);
+			if dyeColorInfo then
+				icon:SetVertexColor(dyeColorInfo.swatchColorStart:GetRGB());
+			end
+			icon:SetAtlas("dye-drop_32");
+			anyDyes = true;
+		else
+			icon:SetVertexColor(1,1,1);
+			icon:SetAtlas("dye-drop-no-dye_32")
+		end
+	end
+
+	self.CustomizeIcon:SetShown(not anyDyes and self.entryInfo.canCustomize);
+	for i, icon in ipairs(self.dyeIcons) do
+		icon:SetShown(anyDyes and i <= #self.entryInfo.dyeIDs);
+	end
 
 	self.InfoIcon:Hide();
 
@@ -435,6 +454,8 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 		if marketInfo and #marketInfo.bundleIDs > 0 then
 			GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_BUNDLE_DISCLAIMER, DISCLAIMER_TOOLTIP_COLOR);
 		end
+
+		GameTooltip_AddInstructionLine(tooltip, HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR);
 	end
 
 	local dyeNames = entryInfo.customizations;
@@ -447,6 +468,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryInfo.entryID.recordID);
 		if timeStamp then
 			GameTooltip_AddNormalLine(tooltip, Blizzard_HousingCatalogUtil.FormatRefundTime(timeStamp));
+			GameTooltip_AddInstructionLine(tooltip, HOUSING_DECOR_REFUND_RIGHT_CLICK_INSTRUCTION);
 		end
 	end
 end
@@ -623,16 +645,11 @@ function HousingCatalogDecorEntryMixin:OnDestroyConfirmed(destroyAll)
 end
 
 function HousingCatalogDecorEntryMixin:ShowContextMenu()
-	local totalInStorage = self.entryInfo.quantity + self.entryInfo.remainingRedeemable;
-	if totalInStorage <= 0 then
-		return;
-	end
-
-	-- If any other catalog entry type is added that can also be destroyed, we can move all this to be shared
+	-- If any other catalog entry type is added that needs a context menu we can move all this to be shared
 	-- with some kind of conditional flag - for now, it's only for decor
 
-	-- For now there's no context menu for bundle or market entries since they can't be destroyed.
-	if self:IsBundleItem() or self:IsInMarketView() then
+	-- For now there's no context menu for bundle children
+	if self:IsBundleItem() then
 		return;
 	end
 
@@ -661,53 +678,61 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 			end);
 		end
 
-		local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
-			local popupData = {
-				destroyAll = false,
-				owner = self,
-				confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
-			};
-			local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
-			StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
-		end);
-		destroySingleButtonDesc:SetEnabled(canDestroyEntry);
-		if not canDestroyEntry then
-			destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
-		end
+		if self:IsInMarketView() then
+			if self.entryInfo.marketInfo then
+				rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
+					local elementData = {
+						isBundleParent = false,
+						isBundleChild = false,
 
-		if self.entryInfo.quantity > 1 then
-			local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY_ALL, function()
+						id = self.entryInfo.itemID,
+						name = self.entryInfo.name,
+						decorID = self.entryID.recordID,
+						icon = self.entryInfo.iconTexture,
+						productID = self.entryInfo.marketInfo.productID;
+						price = self.entryInfo.marketInfo.originalPrice or self.entryInfo.marketInfo.price,
+						salePrice = self.entryInfo.marketInfo.originalPrice and self.entryInfo.marketInfo.price or nil,
+					};
+
+					EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), elementData);
+				end);
+
+				if self.entryInfo.marketInfo.productID then
+					rootDescription:CreateButton(HOUSING_MARKET_VIEW_IN_SHOP, function()
+						Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(self.entryInfo.marketInfo.productID);
+					end);
+				end
+			end
+		else
+			local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 				local popupData = {
-					destroyAll = true,
+					destroyAll = false,
 					owner = self,
 					confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
 				};
-				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.quantity, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
+				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 				StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 			end);
-			destroyAllButtonDesc:SetEnabled(canDestroyEntry);
+			destroySingleButtonDesc:SetEnabled(canDestroyEntry);
 			if not canDestroyEntry then
-				destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
+				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
 			end
-		end
 
-		if self.entryInfo.marketInfo and self:IsInMarketView() then
-			local addToCartButton = rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
-				local elementData = {
-					isBundleParent = false,
-					isBundleChild = false,
-				
-					id = self.entryInfo.itemID,
-					name = self.entryInfo.name,
-					decorID = self.entryID.recordID,
-					icon = self.entryInfo.iconTexture,
-					productID = self.entryInfo.marketInfo.productID;
-					price = self.entryInfo.marketInfo.originalPrice or self.entryInfo.marketInfo.price,
-					salePrice = self.entryInfo.marketInfo.originalPrice and self.entryInfo.marketInfo.price or nil,
-				};
-
-				EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), elementData);
-			end);
+			if self.entryInfo.quantity > 1 then
+				local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY_ALL, function()
+					local popupData = {
+						destroyAll = true,
+						owner = self,
+						confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
+					};
+					local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.quantity, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
+					StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
+				end);
+				destroyAllButtonDesc:SetEnabled(canDestroyEntry);
+				if not canDestroyEntry then
+					destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
+				end
+			end
 		end
 	end);
 end

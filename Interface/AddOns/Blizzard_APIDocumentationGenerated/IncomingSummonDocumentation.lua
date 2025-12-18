@@ -3,6 +3,7 @@ local IncomingSummon =
 	Name = "IncomingSummon",
 	Type = "System",
 	Namespace = "C_IncomingSummon",
+	Environment = "All",
 
 	Functions =
 	{

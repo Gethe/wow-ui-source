@@ -3,6 +3,7 @@ local AlliedRacesFrame =
 	Name = "AlliedRaces",
 	Type = "System",
 	Namespace = "C_AlliedRaces",
+	Environment = "All",
 
 	Functions =
 	{

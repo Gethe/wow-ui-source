@@ -3,6 +3,7 @@ local ScrappingMachineUI =
 	Name = "ScrappingMachineUI",
 	Type = "System",
 	Namespace = "C_ScrappingMachineUI",
+	Environment = "All",
 
 	Functions =
 	{

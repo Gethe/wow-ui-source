@@ -3,6 +3,7 @@ local LoreText =
 	Name = "LoreText",
 	Type = "System",
 	Namespace = "C_LoreText",
+	Environment = "All",
 
 	Functions =
 	{

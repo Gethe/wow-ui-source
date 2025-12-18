@@ -3,6 +3,7 @@ local ChromieTimeUI =
 	Name = "ChromieTimeInfo",
 	Type = "System",
 	Namespace = "C_ChromieTime",
+	Environment = "All",
 
 	Functions =
 	{

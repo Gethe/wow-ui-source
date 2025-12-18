@@ -147,6 +147,18 @@ local NamePlateConstants =
 				{ Name = "HealthBarColor", Type = "NamePlateThreatDisplay", EnumValue = 3 },
 			},
 		},
+		{
+			Name = "NamePlateType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Friendly", Type = "NamePlateType", EnumValue = 0 },
+				{ Name = "Enemy", Type = "NamePlateType", EnumValue = 1 },
+			},
+		},
 	},
 };
 

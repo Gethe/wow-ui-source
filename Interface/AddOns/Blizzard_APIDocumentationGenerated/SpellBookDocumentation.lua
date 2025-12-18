@@ -3,6 +3,7 @@ local SpellBook =
 	Name = "SpellBook",
 	Type = "System",
 	Namespace = "C_SpellBook",
+	Environment = "All",
 
 	Functions =
 	{
@@ -174,6 +175,24 @@ local SpellBook =
 			},
 		},
 		{
+			Name = "GetSpellBookItemChargeDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active recharge time for a spellbook item." },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellBookItemCharges",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -209,6 +228,24 @@ local SpellBook =
 			Returns =
 			{
 				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active cooldown duration for a spellbook item." },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -298,6 +335,24 @@ local SpellBook =
 			{
 				{ Name = "startTime", Type = "number", Nilable = false },
 				{ Name = "duration", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellBookItemLossOfControlCooldownDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object describing the active loss of control cooldown duration for a spellbook item." },
+
+			Arguments =
+			{
+				{ Name = "spellBookItemSlotIndex", Type = "luaIndex", Nilable = false },
+				{ Name = "spellBookItemSpellBank", Type = "SpellBookSpellBank", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
@@ -858,20 +913,6 @@ local SpellBook =
 			Type = "Event",
 			LiteralName = "STOP_AUTOREPEAT_SPELL",
 			SynchronousEvent = true,
-		},
-		{
-			Name = "UnitSpellcastSent",
-			Type = "Event",
-			LiteralName = "UNIT_SPELLCAST_SENT",
-			SecretWhenSpellCastRestricted = true,
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "unit", Type = "cstring", Nilable = false },
-				{ Name = "target", Type = "cstring", Nilable = false, ConditionalSecret = true },
-				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
-				{ Name = "spellID", Type = "number", Nilable = false },
-			},
 		},
 		{
 			Name = "UpdateShapeshiftCooldown",

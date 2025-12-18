@@ -1,6 +1,6 @@
 local DAMAGE_METER_CATEGORIES = {
 	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken, Enum.DamageMeterType.AvoidableDamageTaken}; },
-	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps, Enum.DamageMeterType.Absorbs}; },
+	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps }; },
 	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels}; },
 };
 
@@ -36,6 +36,17 @@ local function GetDamageMeterSessionShortName(sessionType, sessionID)
 	end
 
 	return sessionID or "?";
+end
+
+-- Some languages can't fit their short name into a single character.
+local function HasLongSessionTypeShortNames()
+	for _sessionType, shortName in pairs(DAMAGE_METER_SESSION_TYPE_SHORT_NAMES) do
+		if shortName and #shortName > 1 then
+			return true;
+		end
+	end
+
+	return false;
 end
 
 local EDIT_MODE_SESSION =
@@ -155,22 +166,34 @@ function DamageMeterSessionWindowMixin:OnEnter()
 	-- Handle showing the ResizeButton under the correct conditions.
 	self:SetScript("OnUpdate", function()
 		local resizeButton = self:GetResizeButton();
-		local shouldResizeButtonBeShown = (self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing()) and self:CanMoveOrResize();
+		local isMouseOver = self:IsMouseOver() or resizeButton:IsMouseOver() or self:IsResizing();
+		local shouldResizeButtonBeShown = self:CanMoveOrResize();
 		local shouldChangeBackgroundOpacity = not self:DoesCurrentStyleUseBackground();
 
-		if shouldResizeButtonBeShown and resizeButton:GetAlpha() == 0 then
-			self.ShowResizeButton:Play();
+		if isMouseOver and self.playedMouseOverAnims ~= true then
+			self.playedMouseOverAnims = true;
+
 			self.EmphasizeScrollBar:Play();
+
+			if shouldResizeButtonBeShown then
+				self.ShowResizeButton:Play();
+			end
 
 			if shouldChangeBackgroundOpacity then
 				self.ShowBackground:Play();
 			end
-		elseif not shouldResizeButtonBeShown and resizeButton:GetAlpha() > 0 then
+		elseif not isMouseOver then
+			self.playedMouseOverAnims = false;
+
 			self:SetScript("OnUpdate", nil);
 
 			local reverse = true;
-			self.ShowResizeButton:Play(reverse);
+
 			self.EmphasizeScrollBar:Play(reverse);
+
+			if shouldResizeButtonBeShown then
+				self.ShowResizeButton:Play(reverse);
+			end
 
 			if shouldChangeBackgroundOpacity then
 				self.ShowBackground:Play(reverse);
@@ -199,7 +222,11 @@ function DamageMeterSessionWindowMixin:SetupEntry(frame, elementData)
 	frame:SetShowBarIcons(self:ShouldShowBarIcons());
 	frame:SetStyle(self:GetStyle());
 	frame:SetBackgroundAlpha(self:GetBackgroundAlpha());
-	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+
+	-- For the existing implementation, clicks need to happen on mouse down because rebuilding the data
+	-- provider with every change ends up hiding all frames and clearing their button state, meaning a
+	-- mouse up might not happen.
+	frame:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 
 	frame:SetScript("OnClick", function(button, mouseButtonName)
 		if mouseButtonName == "LeftButton" or mouseButtonName == "RightButton" then
@@ -266,16 +293,24 @@ function DamageMeterSessionWindowMixin:InitializeDamageMeterTypeDropdown()
 end
 
 function DamageMeterSessionWindowMixin:InitializeSessionDropdown()
+	local sessionDropdown = self:GetSessionDropdown();
+
+	if HasLongSessionTypeShortNames() then
+		sessionDropdown:SetWidth(sessionDropdown.longShortNameWidth);
+	else
+		sessionDropdown:SetWidth(sessionDropdown.shortShortNameWidth);
+	end
+
 	local function IsSelected(option)
 		return self:GetSessionType() == option.type and self:GetSessionID() == option.sessionID;
 	end
 
 	local function SetSelected(option)
 		-- Session changes need to go through the owner.
-		self:GetDamageMeterOwner():SetSessionWindowSessionID(option.type, option.sessionID);
+		self:GetDamageMeterOwner():SetSessionWindowSessionID(self, option.type, option.sessionID);
 	end
 
-	self:GetSessionDropdown():SetupMenu(function(owner, rootDescription)
+	sessionDropdown:SetupMenu(function(owner, rootDescription)
 		rootDescription:SetTag("MENU_DAMAGE_METER_SESSIONS");
 
 		local availableCombatSessions = C_DamageMeter.GetAvailableCombatSessions();
@@ -574,7 +609,7 @@ function DamageMeterSessionWindowMixin:SetDamageMeterType(damageMeterType)
 	-- Changes to the damage meter type should always hide the source window.
 	self:HideSourceWindow();
 
-	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSessionWindowMixin:GetDamageMeterType()
@@ -591,7 +626,7 @@ function DamageMeterSessionWindowMixin:SetSession(sessionType, sessionID)
 
 	self:GetSourceWindow():SetSession(sessionType, sessionID);
 
-	self:Refresh(ScrollBoxConstants.RetainScrollPosition);
+	self:Refresh(ScrollBoxConstants.DiscardScrollPosition);
 end
 
 function DamageMeterSessionWindowMixin:GetSessionType()
@@ -777,7 +812,8 @@ function DamageMeterSessionWindowMixin:SetBackgroundAlpha(alpha)
 end
 
 function DamageMeterSessionWindowMixin:DoesCurrentStyleUseBackground()
-	return self:GetStyle() == Enum.DamageMeterStyle.FullBackground;
+	-- return self:GetStyle() == Enum.DamageMeterStyle.FullBackground;
+	return true;
 end
 
 function DamageMeterSessionWindowMixin:UpdateBackground()

@@ -2,6 +2,7 @@ local Totem =
 {
 	Name = "Totem",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

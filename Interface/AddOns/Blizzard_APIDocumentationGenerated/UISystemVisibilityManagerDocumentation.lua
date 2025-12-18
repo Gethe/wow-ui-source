@@ -3,6 +3,7 @@ local UISystemVisibilityManager =
 	Name = "UISystemVisibilityManager",
 	Type = "System",
 	Namespace = "C_SystemVisibilityManager",
+	Environment = "All",
 
 	Functions =
 	{

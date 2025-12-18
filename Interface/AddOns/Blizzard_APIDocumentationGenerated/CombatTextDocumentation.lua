@@ -3,6 +3,7 @@ local CombatText =
 	Name = "CombatText",
 	Type = "System",
 	Namespace = "C_CombatText",
+	Environment = "All",
 
 	Functions =
 	{

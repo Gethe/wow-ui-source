@@ -3,6 +3,7 @@ local HousingNeighborhoodUI =
 	Name = "HousingNeighborhoodUI",
 	Type = "System",
 	Namespace = "C_HousingNeighborhood",
+	Environment = "All",
 
 	Functions =
 	{

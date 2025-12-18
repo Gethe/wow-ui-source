@@ -3,6 +3,7 @@ local CommentatorFrame =
 	Name = "CommentatorFrame",
 	Type = "System",
 	Namespace = "C_Commentator",
+	Environment = "All",
 
 	Functions =
 	{

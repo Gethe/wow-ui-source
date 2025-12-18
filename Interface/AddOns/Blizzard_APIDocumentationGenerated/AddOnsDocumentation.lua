@@ -3,6 +3,7 @@ local AddOns =
 	Name = "AddOns",
 	Type = "System",
 	Namespace = "C_AddOns",
+	Environment = "All",
 
 	Functions =
 	{

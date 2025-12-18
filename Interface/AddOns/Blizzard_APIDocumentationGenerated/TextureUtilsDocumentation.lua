@@ -3,6 +3,7 @@ local TextureUtils =
 	Name = "TextureUtils",
 	Type = "System",
 	Namespace = "C_Texture",
+	Environment = "All",
 
 	Functions =
 	{

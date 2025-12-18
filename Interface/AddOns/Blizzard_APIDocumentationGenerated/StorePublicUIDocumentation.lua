@@ -3,6 +3,7 @@ local StorePublicUI =
 	Name = "StorePublic",
 	Type = "System",
 	Namespace = "C_StorePublic",
+	Environment = "All",
 
 	Functions =
 	{

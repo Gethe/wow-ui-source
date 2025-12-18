@@ -3,6 +3,7 @@ local Glue =
 	Name = "Glue",
 	Type = "System",
 	Namespace = "C_Glue",
+	Environment = "All",
 
 	Functions =
 	{

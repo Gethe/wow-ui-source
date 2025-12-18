@@ -3,6 +3,7 @@ local HousingCatalogUI =
 	Name = "HousingCatalogUI",
 	Type = "System",
 	Namespace = "C_HousingCatalog",
+	Environment = "All",
 
 	Functions =
 	{
@@ -76,6 +77,15 @@ local HousingCatalogUI =
 			Returns =
 			{
 				{ Name = "bundleInfo", Type = "HousingBundleInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCartSizeLimit",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cartSizeLimit", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -235,6 +245,22 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "PromotePreviewDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+				{ Name = "previewDecorGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestHousingMarketInfoRefresh",
 			Type = "Function",
 		},
@@ -387,6 +413,7 @@ local HousingCatalogUI =
 				{ Name = "originalPrice", Type = "number", Nilable = true },
 				{ Name = "productID", Type = "number", Nilable = false },
 				{ Name = "decorEntries", Type = "table", InnerType = "HousingBundleDecorEntryInfo", Nilable = false },
+				{ Name = "canPreview", Type = "bool", Nilable = false, Default = true, Documentation = { "Bundles containing non-decor items cannot be previewed" } },
 			},
 		},
 		{
@@ -430,6 +457,7 @@ local HousingCatalogUI =
 				{ Name = "isPrefab", Type = "bool", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false, Documentation = { "Labels for each of the customizations applied to this entry, if any" } },
+				{ Name = "dyeIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false, Documentation = { "House XP that can be gained upon acquiring this entry for the first time" } },
 				{ Name = "sourceText", Type = "cstring", Nilable = false, Documentation = { "Describes specific sources this entry may be gained from; Faction-specific sources may or may not be included based on the current player's faction" } },

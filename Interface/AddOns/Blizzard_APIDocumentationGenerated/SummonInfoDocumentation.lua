@@ -3,6 +3,7 @@ local SummonInfo =
 	Name = "SummonInfo",
 	Type = "System",
 	Namespace = "C_SummonInfo",
+	Environment = "All",
 
 	Functions =
 	{

@@ -9,6 +9,14 @@
 		</Scripts>
 	</Frame>
 
+	<Frame name="CooldownViewerItemDebuffBorderTemplate" mixin="CooldownViewerItemDebuffBorderMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Texture" setAllPoints="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="CooldownViewerEssentialItemTemplate" inherits="CooldownViewerBaseItemTemplate" mixin="CooldownViewerEssentialItemMixin" virtual="true">
 		<Size x="50" y="50"/>
 		<KeyValues>
@@ -172,6 +180,12 @@
 				</SwipeTexture>
 				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-SecondaryCooldown"/>
 			</Cooldown>
+			<Frame parentKey="DebuffBorder" inherits="CooldownViewerItemDebuffBorderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-3"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Applications" setAllPoints="true">
 				<Layers>
 					<Layer level="OVERLAY">
@@ -223,22 +237,27 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="DebuffBorder" frameLevel="520" inherits="CooldownViewerItemDebuffBorderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-3"/>
+				</Anchors>
+			</Frame>
 			<StatusBar parentKey="Bar" frameLevel="511">
 				<Size y="19"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="-3"/>
-					<Anchor point="RIGHT"/>
+					<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="RIGHT" x="0" y="0"/>
 				</Anchors>
 				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
 					<Color r="1.0" g="0.5" b="0.25"/>
 				</BarTexture>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture atlas="UI-HUD-CoolDownManager-Bar-BG">
-							<Size y="30"/>
+						<Texture parentKey="BarBG" atlas="UI-HUD-CoolDownManager-Bar-BG">
 							<Anchors>
-								<Anchor point="LEFT" x="-2" y="-2"/>
-								<Anchor point="RIGHT" x="6" y="-2"/>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="4" y="-7"/>
 							</Anchors>
 						</Texture>
 					</Layer>

@@ -525,9 +525,9 @@ function EncounterTimelineTextWithIconEventFrameMixin:UpdateEventState()
 
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.Countdown);
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.FrameLevel);
-	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.IconAlpha);
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.PulseAnimation);
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.StatusText);
+	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.BorderStyle);
 
 	if state == Enum.EncounterTimelineEventState.Canceled then
 		self:PlayCancelAnimation();
@@ -542,6 +542,7 @@ function EncounterTimelineTextWithIconEventFrameMixin:UpdateEventTrack()
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.IconAlpha);
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.PulseAnimation);
 	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.StatusText);
+	self:MarkDirty(EncounterTimelineTextWithIconDirtyFlags.BorderStyle);
 
 	-- Events transitioning off the timeline for reasons other than cancelation
 	-- should play the same outro (eg. pushed off because it can't fit in the
@@ -673,10 +674,32 @@ function EncounterTimelineTextWithIconEventFrameMixin:UpdateBorderStyle()
 	local eventInfo = self:GetEventInfo();
 	local iconFrame = self:GetIconFrame();
 	local isDeadlyEffect = FlagsUtil.IsSet(eventInfo.icons, Enum.EncounterEventIconmask.DeadlyEffect);
+	local isPaused = self:GetEventState() == Enum.EncounterTimelineEventState.Paused;
+	local isQueued = self:GetEventTrack() == Enum.EncounterTimelineTrack.Queued;
 
-	iconFrame.NormalOverlay:SetShown(isDeadlyEffect);
-	iconFrame.DeadlyOverlay:SetShown(isDeadlyEffect);
-	iconFrame.DeadlyOverlayGlow:SetShown(isDeadlyEffect);
+	-- Note that some booleans here are secret, so we want to evaluate them
+	-- inline, and also ensure all SetShown functions are called to prevent
+	-- infererence of secret booleans by counting the number of SetShown
+	-- calls that occur.
+	--
+	-- Priority is Deadly > Paused > Queued > Normal.
+
+	local showDeadlyOverlay = isDeadlyEffect;
+	local showPausedOverlay = not showDeadlyOverlay and isPaused;
+	local showQueuedOverlay = not showPausedOverlay and isQueued;
+	local showNormalOverlay = not showQueuedOverlay;
+
+	iconFrame.DeadlyOverlay:SetShown(showDeadlyOverlay);
+	iconFrame.DeadlyOverlayGlow:SetShown(showDeadlyOverlay);
+	iconFrame.PausedOverlay:SetShown(showPausedOverlay);
+	iconFrame.QueuedOverlay:SetShown(showQueuedOverlay);
+	iconFrame.NormalOverlay:SetShown(showNormalOverlay);
+
+	-- Paused and queued icons are special in that we want to show them even
+	-- if the overlay can't be shown due to it being a deadly event.
+
+	iconFrame.PausedIcon:SetShown(isPaused);
+	iconFrame.QueuedIcon:SetShown(not isPaused and isQueued);
 
 	self:MarkClean(EncounterTimelineTextWithIconDirtyFlags.BorderStyle);
 end
@@ -684,20 +707,13 @@ end
 function EncounterTimelineTextWithIconEventFrameMixin:UpdateCountdown()
 	local timeRemaining = self:GetEventTimeRemaining();
 	local countdownFrame = self:GetCountdownFrame();
+	local eventState = self:GetEventState();
 
-	if self:CanShowCountdownDuration(timeRemaining) then
+	if self:CanShowCountdownDuration(timeRemaining) and eventState == Enum.EncounterTimelineEventState.Active then
 		countdownFrame:SetCooldownDuration(timeRemaining);
-		countdownFrame:SetShown(true);
-
-		local eventState = self:GetEventState();
-
-		if eventState ~= Enum.EncounterTimelineEventState.Active then
-			countdownFrame:Pause();
-		else
-			countdownFrame:Resume();
-		end
+		countdownFrame:Show();
 	else
-		countdownFrame:SetShown(false);
+		countdownFrame:Clear();
 	end
 
 	self:MarkClean(EncounterTimelineTextWithIconDirtyFlags.Countdown);
@@ -729,13 +745,10 @@ function EncounterTimelineTextWithIconEventFrameMixin:UpdateFrameLevel()
 end
 
 function EncounterTimelineTextWithIconEventFrameMixin:UpdateIconAlpha()
-	local state = self:GetEventState();
 	local track = self:GetEventTrack();
 	local alpha;
 
-	if state == Enum.EncounterTimelineEventState.Paused or self:IsEventBlocked() then
-		alpha = EncounterTimelineConstants.PausedEventAlpha;
-	elseif track ~= nil then
+	if track ~= nil then
 		alpha = self:GetIconAlphaCurve():Evaluate(track);
 	else
 		alpha = 1.0;

@@ -50,10 +50,13 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
+	
+	<!-- Dropdown specifically for House Type options -->
+	<Frame name="HouseExteriorTypeDropdownTemplate" mixin="HouseExteriorTypeDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	</Frame>
 
-	<!-- Placeholder dropdown for not-yet-implemented options -->
-	<!-- TODO: Remove once house size & type swapping are implemented -->
-	<Frame name="HouseExteriorPlaceholderDropdownTemplate" mixin="HouseExteriorPlaceholderDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
+	<!-- Dropdown specifically for House Size options -->
+	<Frame name="HouseExteriorSizeDropdownTemplate" mixin="HouseExteriorSizeDropdownMixin" inherits="HouseExteriorOptionDropdownTemplate" virtual="true">
 	</Frame>
 
 	<!-- Dropdown specifically for Core Fixture options -->

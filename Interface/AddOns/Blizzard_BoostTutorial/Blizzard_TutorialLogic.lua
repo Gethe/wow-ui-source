@@ -1510,7 +1510,7 @@ function Class_LootCorpseWatcher:UNIT_LOOT(unitGUID, hasLoot)
 end
 
 function Class_LootCorpseWatcher:UnitLootable(unitGUID)
-	local unitID = C_GUIDUtil.GetCreatureID(unitGUID);
+	local unitID = C_CreatureInfo.GetCreatureID(unitGUID);
 	for id, hasKilled in pairs(self._QuestMobs) do
 		if ((unitID == id) and (not hasKilled)) then
 			Tutorials.LootCorpse:ForceBegin(unitID);

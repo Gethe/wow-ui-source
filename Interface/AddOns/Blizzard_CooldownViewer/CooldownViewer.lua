@@ -89,7 +89,7 @@ end
 
 ---------------------------------------------------------------------------------------------------
 -- Base Mixin for all Cooldown Viewer items.
-CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin);
+CooldownViewerItemMixin = CreateFromMixins(CooldownViewerItemDataMixin, CooldownViewerVisualAlertTargetMixin);
 
 function CooldownViewerItemMixin:OnUpdate(_elapsed, timeNow)
 	if self:ShouldTriggerAvailableAlert(timeNow) then
@@ -255,6 +255,12 @@ end
 function CooldownViewerItemMixin:OnAuraInstanceInfoCleared(_auraSpellID, auraInstanceID)
 	if self.viewerFrame then
 		self.viewerFrame:UnregisterAuraInstanceIDItemFrame(auraInstanceID, self);
+	end
+end
+
+function CooldownViewerItemMixin:RefreshIconBorder()
+	if self.DebuffBorder then
+		self.DebuffBorder:UpdateFromAuraData(self:GetAuraData());
 	end
 end
 
@@ -443,7 +449,7 @@ function CooldownViewerItemMixin:TriggerAlertEvent(event)
 		if alerts then
 			local name = self:GetNameText();
 			for _, alert in ipairs(alerts) do
-				CooldownViewerAlert_PlayAlert(name, alert);
+				CooldownViewerAlert_PlayAlert(self, name, alert);
 			end
 		end
 	end
@@ -455,12 +461,14 @@ end
 
 function CooldownViewerItemMixin:TriggerAvailableAlert()
 	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.Available);
-	self.allowAvailableAlert = nil;
-	self.availableAlertTriggerTime = nil;
 
 	-- Need to refresh the entire button state after the cooldown finishes, this is what simulates the client sending
 	-- a final SPELL_UPDATE_COOLDOWN event which is required to update the icon in case it was tracking buffs.
 	self:RefreshData();
+
+	-- Since we just triggered the alert, prevent this from being triggered again immediately
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
 end
 
 function CooldownViewerItemMixin:CheckSetPandemicAlertTiggerTime(auraData, timeNow)
@@ -541,16 +549,16 @@ function CooldownViewerItemMixin:IsInPandemicTime(timeNow)
 	return self.pandemicStartTime and timeNow >= self.pandemicStartTime and timeNow <= self.pandemicEndTime;
 end
 
-function CooldownViewerItemMixin:AddChargeGainedAlertTime(predictedChargeGainTime)
+function CooldownViewerItemMixin:AddChargeGainedAlertTime(predictedChargeCount, predictedChargeGainTime)
 	local chargeTimes = GetOrCreateTableEntry(self, "chargeGainedAlertTimes", {});
-	chargeTimes[predictedChargeGainTime] = true;
+	chargeTimes[predictedChargeCount] = predictedChargeGainTime;
 end
 
 function CooldownViewerItemMixin:ShouldTriggerChargeGainedAlert(timeNow)
 	if self.chargeGainedAlertTimes then
-		for chargeTime in pairs(self.chargeGainedAlertTimes) do
-			if timeNow >= chargeTime then
-				self.chargeGainedAlertTimes[chargeTime] = nil;
+		for predictedChargeCount, predictedChargeTime in pairs(self.chargeGainedAlertTimes) do
+			if timeNow >= predictedChargeTime then
+				self.chargeGainedAlertTimes[predictedChargeCount] = nil;
 				return true;
 			end
 		end
@@ -565,6 +573,7 @@ function CooldownViewerItemMixin:OnNewTarget()
 	-- This is the first thing that should happen when handling a target switch
 	-- Clear out all state data that was built while a previous target existed.
 	self:SetIsActive(false); -- Force the frame back to an inactive state so that the pending update can re-run the refresh logic.
+	self:SetLinkedSpell(nil);
 	self:SetPandemicAlertTriggerTime(GetTime(), nil, nil);
 end
 
@@ -651,6 +660,10 @@ function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	CooldownViewerItemMixin.OnCooldownIDCleared(self);
 
 	ActionButtonSpellAlertManager:HideAlert(self);
+
+	self.previousCooldownChargesCount = nil;
+	self.cooldownChargesCount = nil;
+	self.cooldownChargesShown = nil;
 
 	if self.needsRangeCheck == true then
 		C_Spell.EnableSpellRangeCheck(self.rangeCheckSpellID, false);
@@ -780,9 +793,7 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNo
 				self.cooldownDesaturated = false;
 			end
 
-			if self:CheckSetPandemicAlertTiggerTime(auraData, timeNow) then
-				self.cooldownUseAuraDisplayTime = false;
-			end
+			self:CheckSetPandemicAlertTiggerTime(auraData, timeNow);
 		end
 	end
 end
@@ -809,16 +820,23 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromCharges(tim
 		if spellChargeInfo.cooldownStartTime > 0 and spellChargeInfo.cooldownDuration > 0 and spellChargeInfo.currentCharges < spellChargeInfo.maxCharges then
 			local predictedChargeGainTime = spellChargeInfo.cooldownStartTime + spellChargeInfo.cooldownDuration;
 			if predictedChargeGainTime > timeNow then
-				self:AddChargeGainedAlertTime(predictedChargeGainTime);
+				self:AddChargeGainedAlertTime(spellChargeInfo.currentCharges + 1, predictedChargeGainTime);
 			end
 		end
 	end
 end
 
+-- Not exposed, but this is  but needed to check durations for cooldowns to see if an available alert would be allowed.
+local MIN_GLOBAL_RECOVERY_TIME = 0.75;
+
 local wasOnGCDLookup = {};
 local function CheckAllowOnCooldown(cdItem, spellID, spellCooldownInfo)
+	-- The "was on GCD" check tries to account for spells that cooldown on specific events like Ancestral Swiftness which enter a state
+	-- where they cannot be cast but are not on cooldown until the aura they apply is consumed. Once that aura is consumed they go from
+	-- not on GCD -> on regular CD and need to be considered as "on GCD" in that state so that the On Cooldown alert can properly be triggered.
+	-- TODO: This likely needs a special case built into the code to check for this info rather than just comparing durations.
 	local wasOnGCD = wasOnGCDLookup[spellID];
-	wasOnGCDLookup[spellID] = cdItem.isOnGCD;
+	wasOnGCDLookup[spellID] = cdItem.isOnGCD or (spellCooldownInfo.duration and spellCooldownInfo.duration < MIN_GLOBAL_RECOVERY_TIME);
 
 	local allowOnCooldownAlert = wasOnGCD and not cdItem.isOnGCD and spellCooldownInfo.duration > (cdItem.cooldownDuration or 0) and spellCooldownInfo.duration > 0;
 	return allowOnCooldownAlert;
@@ -835,11 +853,11 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 		self.cooldownIsActive = endTime > timeNow;
 
 		self.isOnGCD = spellCooldownInfo.isOnGCD;
+		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.isOnActualCooldown = not self.isOnGCD and self.cooldownIsActive;
 		self.allowOnCooldownAlert = CheckAllowOnCooldown(self, spellID, spellCooldownInfo);
-		self.allowAvailableAlert = self.allowAvailableAlert or (not self.isOnGCD and spellCooldownInfo.duration > 0 and self.cooldownEnabled);
+		self.allowAvailableAlert = self.allowAvailableAlert or (not self.isOnGCD and spellCooldownInfo.duration > MIN_GLOBAL_RECOVERY_TIME and self.cooldownEnabled);
 		self.availableAlertTriggerTime = self.allowAvailableAlert and endTime or nil;
-		self.cooldownEnabled = spellCooldownInfo.isEnabled;
 		self.cooldownStartTime = spellCooldownInfo.startTime;
 		self.cooldownDuration = spellCooldownInfo.duration;
 		self.cooldownModRate = spellCooldownInfo.modRate;
@@ -902,24 +920,37 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 	end
 end
 
+function CooldownViewerCooldownItemMixin:SetCachedChargeValues(count, shown)
+	local considerAddingAlert = self.previousCooldownChargesCount ~= nil and count ~= nil;
+	self.previousCooldownChargesCount = (self.cooldownChargesCount or count);
+	self.cooldownChargesCount = count;
+	self.cooldownChargesShown = shown;
+
+	if considerAddingAlert and self.previousCooldownChargesCount < self.cooldownChargesCount then
+		self:AddChargeGainedAlertTime(self.cooldownChargesCount, GetTime());
+	end
+end
+
 function CooldownViewerCooldownItemMixin:CacheChargeValues()
 	-- Give precedence to spells set up with explicit charge info that have more than one max charge.
 	local spellChargeInfo = self:GetSpellChargeInfo();
 	if spellChargeInfo and spellChargeInfo.maxCharges > 1 then
-		self.cooldownChargesCount = spellChargeInfo.currentCharges;
-		self.cooldownChargesShown = true;
+		local showCharges = true;
+		self:SetCachedChargeValues(spellChargeInfo.currentCharges, showCharges);
 		return;
 	end
 
 	-- Some spells are set up to show 'cast count' (also called 'use count') which can have different meanings base on the context of the spell.
 	local spellID = self:GetSpellID();
 	if spellID then
-		self.cooldownChargesCount = C_Spell.GetSpellCastCount(spellID);
-		self.cooldownChargesShown = self.cooldownChargesCount > 0;
+		local charges = C_Spell.GetSpellCastCount(spellID);
+		self:SetCachedChargeValues(charges, charges > 0);
 		return;
 	end
 
-	self.cooldownChargesShown = false;
+	-- Passing in the current charges to preserve previous behavior since neither of the above cases applied.
+	local hideCharges = false;
+	self:SetCachedChargeValues(self.cooldownChargesCount, hideCharges);
 end
 
 function CooldownViewerCooldownItemMixin:IsExpired()
@@ -1034,11 +1065,12 @@ end
 function CooldownViewerCooldownItemMixin:RefreshData()
 	self:ClearVisualDataSource();
 	self:RefreshAuraInstance();
-	self:RefreshSpellCooldownInfo();
 	self:RefreshSpellChargeInfo();
+	self:RefreshSpellCooldownInfo();
 	self:RefreshSpellTexture();
 	self:RefreshIconDesaturation();
 	self:RefreshIconColor();
+	self:RefreshIconBorder();
 	self:RefreshOverlayGlow();
 	self:RefreshActive();
 end
@@ -1197,6 +1229,7 @@ function CooldownViewerBuffIconItemMixin:RefreshData()
 	self:RefreshCooldownInfo();
 	self:RefreshSpellTexture();
 	self:RefreshApplications();
+	self:RefreshIconBorder();
 	self:RefreshActive();
 end
 
@@ -1240,7 +1273,7 @@ function CooldownViewerBuffBarItemMixin:OnLoad()
 	local pipTexture = self:GetPipTexture();
 	local barFrame = self:GetBarFrame();
 	pipTexture:ClearAllPoints();
-	pipTexture:SetPoint("CENTER", barFrame:GetStatusBarTexture(), "RIGHT", 0, 0);
+	pipTexture:SetPoint("CENTER", barFrame:GetStatusBarTexture(), "RIGHT", 0, -1);
 end
 
 function CooldownViewerBuffBarItemMixin:OnUpdate(elapsed, timeNow)
@@ -1254,24 +1287,22 @@ end
 function CooldownViewerBuffBarItemMixin:SetBarContent(barContent)
 	local iconFrame = self:GetIconFrame();
 	local nameFontString = self:GetNameFontString();
-	local point, relativeTo, relativePoint, offsetX, offsetY = "LEFT", iconFrame, "RIGHT", 0, 0;
 
 	if barContent == Enum.CooldownViewerBarContent.IconAndName then
 		iconFrame:Show();
 		nameFontString:Show();
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "RIGHT", 2, 0);
 	elseif barContent == Enum.CooldownViewerBarContent.IconOnly then
 		iconFrame:Show();
 		nameFontString:Hide();
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "RIGHT", 2, 0);
 	elseif barContent == Enum.CooldownViewerBarContent.NameOnly then
 		iconFrame:Hide();
 		nameFontString:Show();
-		relativeTo = self;
-		relativePoint = "LEFT";
+		self:GetBarFrame():SetPoint("LEFT", iconFrame, "LEFT", 0, 0);
 	else
 		assertsafe(false, "Unknown value for bar content: %d", barContent);
 	end
-
-	self:GetBarFrame():SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
 end
 
 function CooldownViewerBuffBarItemMixin:SetBarWidth(barWidth)
@@ -1355,7 +1386,12 @@ function CooldownViewerBuffBarItemMixin:RefreshData()
 	self:RefreshCooldownInfo();
 	self:RefreshName();
 	self:RefreshApplications();
+	self:RefreshIconBorder();
 	self:RefreshActive();
+end
+
+function CooldownViewerBuffBarItemMixin:GetAlertTargetFrame()
+	return self.Icon;
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -1656,6 +1692,10 @@ function CooldownViewerMixin:OnAcquireItemFrame(itemFrame)
 	itemFrame:SetIsEditing(self.isEditing);
 end
 
+function CooldownViewerMixin:GetAdditionalPaddingOffset()
+	return -4;
+end
+
 function CooldownViewerMixin:RefreshLayout()
 	self.itemFramePool:ReleaseAll();
 
@@ -1679,8 +1719,12 @@ function CooldownViewerMixin:RefreshLayout()
 	-- Horizontal layout is always top to bottom. Vertical layout uses the Icon Direction.
 	itemContainerFrame.layoutFramesGoingUp = not self.isHorizontal and self.iconDirection == Enum.CooldownViewerIconDirection.Right;
 
-	itemContainerFrame.childXPadding = self.iconPadding;
-	itemContainerFrame.childYPadding = self.iconPadding;
+	-- To allow the icons to touch they're placed closer together by this additional offset.
+	-- The max setting value has been increased to account for this to allow the user to choose the same padding as before.
+	-- To avoid needing to use this the cooldownItem layout and sizing will need a substantial update.
+	local padding = self.iconPadding + self:GetAdditionalPaddingOffset();
+	itemContainerFrame.childXPadding = padding;
+	itemContainerFrame.childYPadding = padding;
 
 	itemContainerFrame.stride = self:GetStride();
 
@@ -1981,3 +2025,19 @@ function BuffBarCooldownViewerMixin:AnchorPandemicStateFrame(frame, cooldownItem
 	frame:SetPoint("BOTTOMRIGHT", cooldownItem.Bar, "BOTTOMRIGHT", 9, -10);
 	frame:SetFrameLevel(cooldownItem.Bar:GetFrameLevel() + 1);
 end
+
+function BuffBarCooldownViewerMixin:GetAdditionalPaddingOffset()
+	return -2;
+end
+
+CooldownViewerItemDebuffBorderMixin = {};
+
+function CooldownViewerItemDebuffBorderMixin:UpdateFromAuraData(auraData)
+	if auraData then
+		self:Show();
+		AuraUtil.SetAuraBorderAtlasFromAura(self.Texture, auraData);
+	else
+		self:Hide();
+	end
+end
+

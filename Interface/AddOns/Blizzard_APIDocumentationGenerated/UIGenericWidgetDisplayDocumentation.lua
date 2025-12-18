@@ -3,6 +3,7 @@ local UIGenericWidgetDisplay =
 	Name = "GenericWidgetDisplay",
 	Type = "System",
 	Namespace = "C_GenericWidgetDisplay",
+	Environment = "All",
 
 	Functions =
 	{

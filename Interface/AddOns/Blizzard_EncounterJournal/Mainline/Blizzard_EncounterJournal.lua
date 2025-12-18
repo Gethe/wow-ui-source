@@ -296,6 +296,7 @@ function EncounterJournal_OnLoad(self)
 	self:RegisterEvent("PORTRAITS_UPDATED");
 	self:RegisterEvent("SEARCH_DB_LOADED");
 	self:RegisterEvent("UI_MODEL_SCENE_INFO_UPDATED");
+	self:RegisterEvent("SHOW_JOURNEYS_UI");
 
 	self.encounter.freeHeaders = {};
 	self.encounter.usedHeaders = {};
@@ -621,8 +622,10 @@ local function ExpansionDropdown_SelectInternal(self, tier)
 		-- If tier is greater than EJ_TIER_DATA, either we have "current season" selected, or an expansion is missing. Fall back on the current expansion.
 		if tier > #EJ_TIER_DATA then
 			self.JourneysFrame.expansionFilter = LE_EXPANSION_LEVEL_CURRENT;
+			self.JourneysFrame.currentSeason = true;
 		else
 			self.JourneysFrame.expansionFilter = tierData.expansionLevel;
+			self.JourneysFrame.currentSeason = false;
 		end
 
 		if self.JourneysFrame:IsShown() then
@@ -985,6 +988,9 @@ function EncounterJournal_OnEvent(self, event, ...)
 	elseif event == "SPELL_TEXT_UPDATE" then
 		local spellID = ...;
 		EncounterJournal_UpdateSpellText(self, spellID);
+	elseif  event == "SHOW_JOURNEYS_UI" then
+		local factionID = ...;
+		EncounterJournal_OpenToJourney(factionID);
 	end
 end
 
@@ -2666,6 +2672,15 @@ function EncounterJournal_OpenToPowerID(powerID)
 	EncounterJournal.LootJournal:OpenToPowerID(powerID);
 end
 
+function EncounterJournal_OpenToJourney(factionID)
+	local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID);
+	if majorFactionData then
+		ShowUIPanel(EncounterJournal);
+		EJ_ContentTab_Select(EncounterJournal.JourneysTab:GetID());
+		EncounterJournal.JourneysFrame:ResetView(majorFactionData);
+	end
+end
+
 function EncounterJournal_OpenJournal(difficultyID, instanceID, encounterID, sectionID, creatureID, itemID, tierIndex)
 	EJ_HideNonInstancePanels();
 	ShowUIPanel(EncounterJournal);
@@ -3607,8 +3622,7 @@ GreatVaultButtonMixin = {};
 function GreatVaultButtonMixin:OnShow()
 	local currentDisplaySeason = C_SeasonInfo.GetCurrentDisplaySeasonID();
 	self.hasActiveSeason = currentDisplaySeason and currentDisplaySeason > 0;
-	self.GVButtonBG:SetDesaturated(not self.hasActiveSeason);
-	self.GVButtonBGHighlight:SetDesaturated(not self.hasActiveSeason);
+	self.NormalTexture:SetDesaturated(not self.hasActiveSeason);
 end
 
 function GreatVaultButtonMixin:OnClick()

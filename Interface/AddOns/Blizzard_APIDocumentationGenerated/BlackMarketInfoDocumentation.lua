@@ -3,6 +3,7 @@ local BlackMarketInfo =
 	Name = "BlackMarketInfo",
 	Type = "System",
 	Namespace = "C_BlackMarketInfo",
+	Environment = "All",
 
 	Functions =
 	{

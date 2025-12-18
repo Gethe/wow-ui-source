@@ -3,6 +3,7 @@ local SocialRestrictions =
 	Name = "SocialRestrictions",
 	Type = "System",
 	Namespace = "C_SocialRestrictions",
+	Environment = "All",
 
 	Functions =
 	{

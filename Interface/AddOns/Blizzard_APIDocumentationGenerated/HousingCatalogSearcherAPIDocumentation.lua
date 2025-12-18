@@ -2,6 +2,7 @@ local HousingCatalogSearcherAPI =
 {
 	Name = "HousingCatalogSearcherAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

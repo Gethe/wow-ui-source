@@ -28,6 +28,7 @@ LinkTypes = {
 	GarrisonMission = "garrmission",
 	GMChat = "GMChat",
 	GroupFinderUI = "lfd",
+	InitiativeTask = "initiativetask",
 	Item = "item",
 	LevelUpToast = "levelup",
 	LFGListing = "lfglisting",

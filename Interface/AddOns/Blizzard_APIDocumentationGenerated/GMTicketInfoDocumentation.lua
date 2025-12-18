@@ -3,6 +3,7 @@ local GMTicketInfo =
 	Name = "GMTicketInfo",
 	Type = "System",
 	Namespace = "C_GMTicketInfo",
+	Environment = "All",
 
 	Functions =
 	{

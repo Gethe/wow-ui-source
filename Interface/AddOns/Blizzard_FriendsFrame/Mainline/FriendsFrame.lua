@@ -1310,7 +1310,7 @@ function FriendsFrameAddFriendButton_OnClick(self)
 		name = GetUnitName("target", true);
 	end
 
-	if ( name and UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
+	if ( name and UnitIsHumanPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
 		C_FriendList.AddFriend(name);
 		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	else
@@ -1371,7 +1371,7 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 end
 
 function FriendsFrameIgnorePlayerButton_OnClick(self)
-	if UnitCanCooperate("player", "target") and UnitIsPlayer("target") then
+	if UnitCanCooperate("player", "target") and UnitIsHumanPlayer("target") then
 		local name, server = UnitName("target");
 		local fullname = name;
 		if server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then

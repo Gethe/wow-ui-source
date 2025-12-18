@@ -5,15 +5,18 @@ function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
 	self.reward = reward;
 
 	if reward.itemLink then
-		self:SetItem(reward.itemLink);
-		local _, itemQuality, _ = self:GetItemInfo();
-		self:SetSlotQuality(self, itemQuality);
 		self.minDisplayCount = 1;
-		SetItemButtonCount(self, self.reward.count);
+		
+		self:SetItem(reward.itemLink);
+		local itemQuality = select(2, self:GetItemInfo());
+		self:SetSlotQuality(self, itemQuality);
+
+		self:SetItemButtonCount(self.reward.count);
 	elseif reward.currencyType then
-		self:SetCurrency(reward.currencyType);
 		self.minDisplayCount = 0;
-		SetItemButtonCount(self, self.reward.count);
+
+		local reagent = Professions.CreateCurrencyReagent(reward.currencyType);
+		self:SetReagent(reagent, self.reward.count);
 	end
 
 	self:Show();

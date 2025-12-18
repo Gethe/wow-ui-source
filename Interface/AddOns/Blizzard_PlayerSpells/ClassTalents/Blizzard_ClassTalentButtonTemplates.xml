@@ -37,6 +37,9 @@
 
 	<!-- Template for only the Class Talent buttons -->
 	<Frame name="ClassTalentBaseButtonTemplate" inherits="ClassTalentButtonArtTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="SelectableGlowMaxAlpha" value="0.15" type="number"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectableGlow" hidden="true" alphaMode="ADD" atlas="talents-node-square-greenglow">
@@ -46,8 +49,8 @@
 					</Anchors>
 					<Animations>
 						<AnimationGroup parentKey="Anim" looping="REPEAT" setToFinalAlpha="true" inherits="VisibleWhilePlayingAnimGroupTemplate">
-							<Alpha fromAlpha="0" toAlpha="0.15" duration="1" order="1" smoothing="OUT"/>
-							<Alpha fromAlpha="0.15" toAlpha="0" duration="1" order="2" smoothing="IN"/>
+							<Alpha parentKey="GlowFadeIn" fromAlpha="0" toAlpha="0.15" duration="1" order="1" smoothing="OUT"/>
+							<Alpha parentKey="GlowFadeOut" fromAlpha="0.15" toAlpha="0" duration="1" order="2" smoothing="IN"/>
 						</AnimationGroup>
 					</Animations>
 				</Texture>
@@ -82,6 +85,76 @@
 	<Button name="ClassTalentButtonLargeCircleTemplate" inherits="TalentButtonLargeCircleTemplate, ClassTalentButtonArtTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-circle-sheenmask" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ClassTalentButtonCapstoneCircleTemplate" inherits="TalentButtonCapstoneCircleTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-circle-sheenmask" type="string"/>
+			<KeyValue key="SelectableGlowMaxAlpha" value="0.7" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Divider" atlas="talents-apex-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="-14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="ClassTalentButtonCapstoneSquareTemplate" inherits="TalentButtonCapstoneSquareTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-square-sheenmask" type="string"/>
+			<KeyValue key="SelectableGlowMaxAlpha" value="0.7" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Divider" atlas="talents-apex-active-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="ClassTalentButtonCapstoneWithTrackCircleTemplate" inherits="TalentButtonCapstoneWithTrackCircleTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-circle-sheenmask" type="string"/>
+			<KeyValue key="SelectableGlowMaxAlpha" value="0.7" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Divider" atlas="talents-apex-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="-14"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="ClassTalentButtonCapstoneWithTrackSquareTemplate" inherits="TalentButtonCapstoneWithTrackSquareTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-choiceflyout-square-sheenmask" type="string"/>
+			<KeyValue key="SelectableGlowMaxAlpha" value="0.7" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Divider" atlas="talents-apex-active-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" y="-13"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="ClassTalentButtonCapstonePipCircleTemplate" inherits="TalentButtonCapstonePipCircleTemplate, ClassTalentBaseButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="sheenMaskAtlas" value="talents-node-circle-sheenmask" type="string"/>
 		</KeyValues>
 	</Button>
 </Ui>

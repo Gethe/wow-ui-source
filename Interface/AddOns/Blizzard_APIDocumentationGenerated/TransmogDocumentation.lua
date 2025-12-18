@@ -3,6 +3,7 @@ local Transmog =
 	Name = "Transmogrify",
 	Type = "System",
 	Namespace = "C_Transmog",
+	Environment = "All",
 
 	Functions =
 	{
@@ -64,21 +65,6 @@ local Transmog =
 			Returns =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },
-			},
-		},
-		{
-			Name = "GetSlotEffectiveCategory",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
 			},
 		},
 		{

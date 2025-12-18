@@ -3,6 +3,7 @@ local BattlePet =
 	Name = "BattlePet",
 	Type = "System",
 	Namespace = "C_BattlePet",
+	Environment = "All",
 
 	Functions =
 	{

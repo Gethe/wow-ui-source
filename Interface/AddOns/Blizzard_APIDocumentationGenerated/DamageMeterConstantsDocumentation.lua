@@ -5,27 +5,16 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterOverrideType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Ignore", Type = "DamageMeterOverrideType", EnumValue = 0 },
-				{ Name = "RedirectSource", Type = "DamageMeterOverrideType", EnumValue = 1 },
-				{ Name = "AllowFriendlyFire", Type = "DamageMeterOverrideType", EnumValue = 2 },
-			},
-		},
-		{
-			Name = "DamageMeterRedirectGuidType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "None", Type = "DamageMeterRedirectGuidType", EnumValue = 0 },
-				{ Name = "Owner", Type = "DamageMeterRedirectGuidType", EnumValue = 1 },
-				{ Name = "AuraCaster", Type = "DamageMeterRedirectGuidType", EnumValue = 2 },
+				{ Name = "AllowFriendlyFire", Type = "DamageMeterOverrideType", EnumValue = 1 },
+				{ Name = "RedirectSourceToOwner", Type = "DamageMeterOverrideType", EnumValue = 2 },
+				{ Name = "RedirectSourceToAuraCaster", Type = "DamageMeterOverrideType", EnumValue = 3 },
+				{ Name = "IgnoreForAbsorbSpell", Type = "DamageMeterOverrideType", EnumValue = 4 },
 			},
 		},
 		{
@@ -39,6 +28,19 @@ local DamageMeterConstants =
 				{ Name = "Overall", Type = "DamageMeterSessionType", EnumValue = 0 },
 				{ Name = "Current", Type = "DamageMeterSessionType", EnumValue = 1 },
 				{ Name = "Expired", Type = "DamageMeterSessionType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DamageMeterSpellDetailsDisplayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "SpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 0 },
+				{ Name = "UnitSpecificSpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 1 },
+				{ Name = "SpellAffected", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 2 },
 			},
 		},
 		{

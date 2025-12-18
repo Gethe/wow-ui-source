@@ -2,6 +2,7 @@ local SystemTime =
 {
 	Name = "SystemTime",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

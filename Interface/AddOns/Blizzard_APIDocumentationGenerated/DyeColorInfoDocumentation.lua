@@ -3,6 +3,7 @@ local DyeColorInfo =
 	Name = "DyeColorInfo",
 	Type = "System",
 	Namespace = "C_DyeColor",
+	Environment = "All",
 
 	Functions =
 	{

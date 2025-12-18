@@ -48,10 +48,10 @@ function PetFrameMixin:OnLoad()
 	self:RegisterUnitEvent("UNIT_AURA", "pet", "player");
 
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
-		if UnitExists(self.unit) then
+		if UnitExists(unit) then
 			local which = nil;
 			local contextData = {};
-			if self.unit == "player" then
+			if unit == "player" then
 				which = "SELF";
 				contextData.unit = "player";
 			elseif UnitIsUnit("pet", "vehicle") then

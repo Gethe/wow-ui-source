@@ -3,6 +3,7 @@ local ClientScene =
 	Name = "ClientScene",
 	Type = "System",
 	Namespace = "C_ClientScene",
+	Environment = "All",
 
 	Functions =
 	{

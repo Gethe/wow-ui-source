@@ -3,6 +3,7 @@ local InstanceEncounter =
 	Name = "InstanceEncounter",
 	Type = "System",
 	Namespace = "C_InstanceEncounter",
+	Environment = "All",
 
 	Functions =
 	{

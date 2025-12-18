@@ -1,9 +1,13 @@
 MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 45; -- Not actually used much for Classic, but keeping it around as a "fallback" height constant.
-BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X = 254; -- Value for MultiBarBottomLeft. Flip the sign for MultiBarBottomRight.
+BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X = -6; -- Value for MultiBarBottomLeft. Flip the sign for MultiBarBottomRight.
 BOTTOM_ACTION_BAR_DEFAULT_OFFSET_Y = 52;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -2;
 RIGHT_ACTION_BAR_DEFAULT_PADDING_X = -2;
-RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -48;
+RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -35;
+STANCE_ACTION_BAR_DEFAULT_OFFSET_X = -470.5;
+STANCE_ACTION_BAR_DEFAULT_OFFSET_Y = 51;
+PET_ACTION_BAR_DEFAULT_OFFSET_X = -441;
+PET_ACTION_BAR_DEFAULT_OFFSET_Y = 50;
 ACTION_BARS_SKIP_AUTOMATIC_POSITIONING = true;
 RIGHT_CONTAINER_OFFSET_Y = -192;
 
@@ -41,9 +45,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
+				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
+				relativePoint = "BOTTOM",
 				offsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
 				offsetY = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
@@ -60,9 +64,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMRIGHT",
+				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMRIGHT",
+				relativePoint = "BOTTOM",
 				offsetX = -BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
 				offsetY = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
@@ -173,9 +177,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 288,
-				offsetY = 51,
+				relativePoint = "BOTTOM",
+				offsetX = STANCE_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = STANCE_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -190,9 +194,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 317.5,
-				offsetY = 50,
+				relativePoint = "BOTTOM",
+				offsetX = PET_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = PET_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -206,9 +210,9 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 288,
-				offsetY = 51,
+				relativePoint = "BOTTOM",
+				offsetX = STANCE_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = STANCE_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 	},
@@ -280,8 +284,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
@@ -300,8 +304,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
@@ -391,7 +395,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMLEFT",
 			offsetX = 35,
-			offsetY = 140, -- Avoids clipping unit frame.
+			offsetY = 110,
 		},
 	},
 
@@ -499,9 +503,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMLEFT",
+				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
+				relativePoint = "BOTTOM",
 				offsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
 				offsetY = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
@@ -518,9 +522,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
 			},
 			anchorInfo = {
-				point = "BOTTOMRIGHT",
+				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMRIGHT",
+				relativePoint = "BOTTOM",
 				offsetX = -BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
 				offsetY = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
@@ -631,9 +635,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 288,
-				offsetY = 51,
+				relativePoint = "BOTTOM",
+				offsetX = STANCE_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = STANCE_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -648,9 +652,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 317.5,
-				offsetY = 50,
+				relativePoint = "BOTTOM",
+				offsetX = PET_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = PET_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 
@@ -664,9 +668,9 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
-				relativePoint = "BOTTOMLEFT",
-				offsetX = 288,
-				offsetY = 51,
+				relativePoint = "BOTTOM",
+				offsetX = STANCE_ACTION_BAR_DEFAULT_OFFSET_X,
+				offsetY = STANCE_ACTION_BAR_DEFAULT_OFFSET_Y,
 			},
 		},
 	},
@@ -738,8 +742,8 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
 				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
 			},
@@ -758,8 +762,8 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
 				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
 				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
-				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+				[Enum.EditModeUnitFrameSetting.FrameHeight] = 6,
+				[Enum.EditModeUnitFrameSetting.FrameWidth] = 18,
 				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
 			},
 			anchorInfo = {
@@ -849,7 +853,7 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMLEFT",
 			offsetX = 35,
-			offsetY = 150,
+			offsetY = 110,
 		},
 	},
 

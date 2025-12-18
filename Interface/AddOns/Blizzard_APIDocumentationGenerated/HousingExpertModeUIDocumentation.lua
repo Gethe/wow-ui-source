@@ -3,6 +3,7 @@ local HousingExpertModeUI =
 	Name = "HousingExpertModeUI",
 	Type = "System",
 	Namespace = "C_HousingExpertMode",
+	Environment = "All",
 
 	Functions =
 	{
@@ -213,6 +214,17 @@ local HousingExpertModeUI =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
 				{ Name = "targetType", Type = "HousingExpertModeTargetType", Nilable = false },
+			},
+		},
+		{
+			Name = "HousingExpertModePlacementFlagsUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_EXPERT_MODE_PLACEMENT_FLAGS_UPDATED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "targetType", Type = "HousingExpertModeTargetType", Nilable = false },
+				{ Name = "activeFlags", Type = "HousingDecorPlacementRestriction", Nilable = false },
 			},
 		},
 		{

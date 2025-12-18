@@ -273,6 +273,14 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		end
 		CompactUnitFrame_UpdateAll(frame);
 		CompactUnitFrame_UpdatePrivateAuras(frame);
+
+		----NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
+		local clickArgs =
+		{
+			"LeftButtonDown",
+			"RightButtonUp",
+		};
+		SecureUnitButton_OnLoad(frame, unit, CompactUnitFrame_OpenMenu, clickArgs);
 	end
 end
 
@@ -384,12 +392,6 @@ function CompactUnitFrame_OnHide(frame)
 end
 
 function CompactUnitFrame_SetUpClicks(frame)
-	frame:SetAttribute("*type1", "target");
-	frame:SetAttribute("*type2", "menu");
-	--NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
-	frame:RegisterForClicks("AnyDown");
-	frame.menu = CompactUnitFrame_OpenMenu;
-
 	frame.centerStatusIcon:SetScript("OnClick", function(centerStatusIcon, ...)
 		frame:Click(...);
 	end);
@@ -564,7 +566,7 @@ This is a hacky fix, but comes in the interest of not creating further bugs.
 ]]
 local function GetPlunderstormPlayerExtendedColorOverride(unit, displayedUnit)
 	return C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm
-		and UnitIsPlayer(unit)
+		and UnitIsHumanPlayer(unit)
 		and not UnitInParty(unit)
 		and not UnitCanAttack("player", unit)
 		and not CompactUnitFrame_IsOnThreatListWithPlayer(displayedUnit);
@@ -663,7 +665,7 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( frame.optionTable.considerSelectionInCombatAsHostile and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit) and not UnitIsFriend("player", frame.unit) ) then
 					r, g, b = 1.0, 0.0, 0.0;
-				elseif ( frame.optionTable.brightenFriendlyPlayerHealth and UnitIsPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm ) then
+				elseif ( frame.optionTable.brightenFriendlyPlayerHealth and UnitIsHumanPlayer(frame.displayedUnit) and UnitIsFriend("player", frame.displayedUnit) and C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm ) then
 					-- We don't want to use the selection color for friendly player nameplates because
 					-- it doesn't show player health clearly enough.
 					r, g, b = 0.667, 0.667, 1.0;
@@ -962,9 +964,9 @@ local function ShouldShowAggroFlash(frame)
 		return false;
 	end
 
-	-- forceAggroFlash can be used by places like the nameplate preview in the options menu to
+	-- explicitAggroFlash can be used by places like the nameplate preview in the options menu to
 	-- display the flash regardless of spec or threat status.
-	if frame.forceAggroFlash then
+	if frame.explicitAggroFlash then
 		return true;
 	end
 
@@ -1671,10 +1673,11 @@ do
 		elseif auraType == AuraUtil.AuraUpdateChangedType.Buff then
 			frame.buffs[aura.auraInstanceID] = aura;
 			frame.buffsChanged = true;
+		end
 
-			if AuraUtil.IsBigDefensive(aura) then
-				frame.bigDefensives[aura.auraInstanceID] = aura;
-			end
+		if AuraUtil.IsBigDefensive(aura) then
+			frame.bigDefensives[aura.auraInstanceID] = aura;
+			frame.buffsChanged = true;
 		end
 	end
 
@@ -1790,9 +1793,7 @@ do
 			frame.dispelsChanged = false;
 
 			-- Preemptively hide the dispel overlay, it will be shown if there are any dispels to worry about.
-			if frame.DispelOverlay then
-				frame.DispelOverlay:Hide();
-			end
+			CompactUnitFrame_SetDispelOverlayAura(frame, nil);
 
 			local frameNum = 1;
 			local maxDispelDebuffs = frame.maxDispelDebuffs;
@@ -1941,8 +1942,7 @@ function CompactUnitFrame_UtilSetDebuff(frame, debuffFrame, aura)
 		CooldownFrame_Clear(debuffFrame.cooldown);
 	end
 
-	local color = DebuffTypeColor[aura.dispelName] or DebuffTypeColor["none"];
-	debuffFrame.border:SetVertexColor(color.r, color.g, color.b, color.a);
+	AuraUtil.SetAuraBorderColor(debuffFrame.border, aura.dispelName);
 	debuffFrame.isBossBuff = aura.isBossAura and aura.isHelpful;
 
 	local size = CompactUnitFrame_GetDebuffSize(frame, debuffFrame, aura);
@@ -1966,8 +1966,7 @@ function CompactUnitFrame_UtilSetDispelDebuff(frame, dispellDebuffFrame, aura)
 
 	-- The behavior is that the last one set will "win"
 	if CompactUnitFrame_GetOptionShowDispelIndicatorOverlay(frame) then
-		frame.DispelOverlay:SetDispelType(aura.dispelName);
-		frame.DispelOverlay:Show();
+		CompactUnitFrame_SetDispelOverlayAura(frame, aura);
 	end
 end
 
@@ -2184,8 +2183,7 @@ function CompactUnitFrame_UpdateLevel(frame, activePlayerLevel)
 end
 
 --Dropdown
-function CompactUnitFrame_OpenMenu(self)
-	local unit = self.unit;
+function CompactUnitFrame_OpenMenu(frame, unit, button, isKeyPress)
 	if ( not unit ) then
 		return;
 	end
@@ -2199,7 +2197,7 @@ function CompactUnitFrame_OpenMenu(self)
 		which = "VEHICLE";
 	elseif ( UnitIsUnit(unit, "pet") ) then
 		which = "PET";
-	elseif ( UnitIsPlayer(unit) ) then
+	elseif ( UnitIsHumanPlayer(unit) ) then
 		if ( UnitInRaid(unit) ) then
 			which = "RAID_PLAYER";
 		elseif ( UnitInParty(unit) ) then
@@ -2258,7 +2256,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
 			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
 			GetOffsets = function(frame)
-				return -3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
 			end,
 		},
 
@@ -2267,7 +2266,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomLeftToTopRight, 3),
 			Anchor = CreateAnchor("BOTTOMLEFT", "placeholder", "BOTTOMLEFT", 0, 0),
 			GetOffsets = function(frame)
-				return 3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return 3 + dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
 			end,
 		},
 
@@ -2304,7 +2304,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopRightToBottomLeft, 6),
 			Anchor = CreateAnchor("TOPRIGHT", "placeholder", "TOPRIGHT", -3, -3),
 			GetOffsets = function(frame)
-				return -3, -3;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return -3 - dispelOffset, -3 - dispelOffset;
 			end,
 		},
 
@@ -2313,7 +2314,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
 			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
 			GetOffsets = function(frame)
-				return -3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
 			end,
 		},
 
@@ -2352,7 +2354,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomRightToTopLeft, 3),
 			Anchor = CreateAnchor("BOTTOMRIGHT", "placeholder", "BOTTOMRIGHT", 0, 0),
 			GetOffsets = function(frame)
-				return -3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return -3 - dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
 			end,
 		},
 
@@ -2361,7 +2364,8 @@ local CompactUnitFrameLayoutTemplates = {
 			Layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.BottomLeftToTopRight, 3),
 			Anchor = CreateAnchor("BOTTOMLEFT", "placeholder", "BOTTOMLEFT", 0, 0),
 			GetOffsets = function(frame)
-				return 3, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight;
+				local dispelOffset = frame.DispelOverlayAuraOffset or 0;
+				return 3 + dispelOffset, CUF_AURA_BOTTOM_OFFSET + frame.powerBarUsedHeight + dispelOffset;
 			end,
 		},
 
@@ -2441,6 +2445,31 @@ local function CompactUnitFrameLayout_SetupAbsorbElement(element, ...)
 	if element then
 		element:ClearAllPoints();
 		SetTextureWithAddressModeOptions(element, ...);
+	end
+end
+
+local function CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType)
+	auraOrganizationType = auraOrganizationType or EditModeManagerFrame:GetRaidFrameAuraOrganizationType(frame.groupType);
+	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.buffFrames, auraOrganizationType, "Buffs");
+	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.debuffFrames, auraOrganizationType, "Debuffs");
+	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.dispelDebuffFrames, auraOrganizationType, "Dispel");
+end
+
+function CompactUnitFrame_SetDispelOverlayAura(frame, aura)
+	if frame.DispelOverlay then
+		local shown = aura and aura.dispelName;
+		if shown ~= frame.DispelOverlay:IsShown() then
+			if shown then
+				frame.DispelOverlay:SetDispelType(aura.dispelName);
+				frame.DispelOverlay:Show();
+				frame.DispelOverlayAuraOffset = 2;
+			else
+				frame.DispelOverlay:Hide();
+				frame.DispelOverlayAuraOffset = 0;
+			end
+
+			CompactUnitFrame_UpdateAuraFrameLayout(frame);
+		end
 	end
 end
 
@@ -2555,9 +2584,7 @@ function DefaultCompactUnitFrameSetup(frame)
 	UpdateFrameSizes(frame.dispelDebuffFrames, 14);
 	UpdateFrameSizes(frame.PrivateAuraAnchors, auraSize * BOSS_DEBUFF_SCALE_INCREASE);
 
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.buffFrames, auraOrganizationType, "Buffs");
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.debuffFrames, auraOrganizationType, "Debuffs");
-	CompactUnitFrameLayoutTemplates_LayoutContainer(frame, frame.dispelDebuffFrames, auraOrganizationType, "Dispel");
+	CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType);
 
 	local centerStatusIconSize = NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale;
 	frame.centerStatusIcon:SetSize(centerStatusIconSize, centerStatusIconSize);
@@ -2578,6 +2605,7 @@ local nativeMiniUnitFrameHeight = 18;
 local nativeMiniUnitFrameHeightRatio = nativeMiniUnitFrameHeight / NATIVE_UNIT_FRAME_HEIGHT;
 
 function DefaultCompactMiniFrameSetup(frame)
+	frame.powerBarUsedHeight = 0;
 	frame:SetAlpha(1);
 	local frameWidth = EditModeManagerFrame:GetRaidFrameWidth(frame.groupType, NATIVE_UNIT_FRAME_WIDTH);
 	local frameHeight = EditModeManagerFrame:GetRaidFrameHeight(frame.groupType, NATIVE_UNIT_FRAME_HEIGHT) * nativeMiniUnitFrameHeightRatio;

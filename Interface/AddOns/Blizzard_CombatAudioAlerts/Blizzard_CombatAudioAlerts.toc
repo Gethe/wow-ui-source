@@ -1,6 +1,7 @@
 ## Title: Blizzard_CombatAudioAids
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
+## Dependencies: Blizzard_UnitFrame
 ## AllowLoad: game
 
 Blizzard_CombatAudioAlertConstants.lua

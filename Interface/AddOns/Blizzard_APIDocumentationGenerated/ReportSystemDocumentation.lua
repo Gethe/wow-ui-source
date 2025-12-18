@@ -3,6 +3,7 @@ local ReportSystem =
 	Name = "ReportSystem",
 	Type = "System",
 	Namespace = "C_ReportSystem",
+	Environment = "All",
 
 	Functions =
 	{

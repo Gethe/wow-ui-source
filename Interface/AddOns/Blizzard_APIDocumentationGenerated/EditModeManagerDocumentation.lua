@@ -3,6 +3,7 @@ local EditModeManager =
 	Name = "EditModeManager",
 	Type = "System",
 	Namespace = "C_EditMode",
+	Environment = "All",
 
 	Functions =
 	{

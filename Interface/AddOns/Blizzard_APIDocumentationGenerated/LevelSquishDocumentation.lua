@@ -3,6 +3,7 @@ local LevelSquish =
 	Name = "LevelSquish",
 	Type = "System",
 	Namespace = "C_LevelSquish",
+	Environment = "All",
 
 	Functions =
 	{

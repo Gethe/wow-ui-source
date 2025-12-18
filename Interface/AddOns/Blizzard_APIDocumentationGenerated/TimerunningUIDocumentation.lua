@@ -3,6 +3,7 @@ local TimerunningUI =
 	Name = "TimerunningUI",
 	Type = "System",
 	Namespace = "C_TimerunningUI",
+	Environment = "All",
 
 	Functions =
 	{

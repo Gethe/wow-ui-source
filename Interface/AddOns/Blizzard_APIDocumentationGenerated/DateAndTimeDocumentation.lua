@@ -3,6 +3,7 @@ local DateAndTime =
 	Name = "DateAndTime",
 	Type = "System",
 	Namespace = "C_DateAndTime",
+	Environment = "All",
 
 	Functions =
 	{
