@@ -36,7 +36,11 @@
 				</Layers>
 			</Frame>
 
-			<ModelScene parentKey="ModelScene" frameLevel="200" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate" />
+			<ModelScene parentKey="ModelScene" frameLevel="200" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate">
+				<KeyValues>
+					<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+				</KeyValues>
+			</ModelScene>
 
 			<Frame parentKey="SelectedContainer" frameLevel="300" setAllPoints="true" >
 				<Layers>

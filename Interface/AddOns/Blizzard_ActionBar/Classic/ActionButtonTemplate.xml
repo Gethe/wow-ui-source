@@ -50,7 +50,7 @@
 						<Anchor point="BOTTOM" x="0" y="2"/>
 					</Anchors>
 				</FontString>
-				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-ActionButton-Border" useAtlasSize="true" hidden="true">
+				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-ActionButton-Border" useAtlasSize="true" hidden="true" alphaMode="ADD">
 					<Size x="62" y="62"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
