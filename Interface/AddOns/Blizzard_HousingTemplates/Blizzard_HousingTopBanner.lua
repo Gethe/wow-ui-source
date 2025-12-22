@@ -4,6 +4,15 @@ HousingTopBannerMixin = {}
 function HousingTopBannerMixin:OnLoad()
 	self.PopinAnim:SetScript("OnFinished", GenerateClosure(self.OnPopinInAnimFinished, self));
 	self.FadeOutAnim:SetScript("OnFinished", GenerateClosure(self.OnFadeOutAnimFinished, self));
+	self:RegisterEvent("INITIATIVE_COMPLETED");
+end
+
+function HousingTopBannerMixin:OnEvent(event, ...)
+	if ( event == "INITIATIVE_COMPLETED" ) then
+		local initiativeTitle = ...;
+		HousingTopBannerFrame:SetBannerText(ENDEAVOR_COMPLETED, initiativeTitle);
+		TopBannerManager_Show(HousingTopBannerFrame);
+	end
 end
 
 function HousingTopBannerMixin:OnPopinInAnimFinished()

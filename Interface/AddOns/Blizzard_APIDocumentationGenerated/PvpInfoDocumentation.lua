@@ -1072,6 +1072,10 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "JoinRandomTrainingGround",
+			Type = "Function",
+		},
+		{
 			Name = "JoinRatedBGBlitz",
 			Type = "Function",
 		},

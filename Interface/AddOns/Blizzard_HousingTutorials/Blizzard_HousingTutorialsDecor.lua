@@ -455,7 +455,7 @@ function HouseMarketTabTutorialMixin:UpdateHelpTip()
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			targetPoint = HelpTip.Point.RightEdgeCenter,
 			alignment = HelpTip.Alignment.Left,
-			offsetX = 200,
+			offsetX = 0,
 			offsetY = 0,
 			system = HousingTutorialHelpTipSystems.MarketTab,
 			autoHideWhenTargetHides = true,

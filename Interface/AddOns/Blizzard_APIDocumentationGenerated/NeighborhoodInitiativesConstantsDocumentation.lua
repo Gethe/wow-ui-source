@@ -3,6 +3,17 @@ local NeighborhoodInitiativesConstants =
 	Tables =
 	{
 		{
+			Name = "InitiativeMilestoneFlags",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 1,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "FinalMilestone", Type = "InitiativeMilestoneFlags", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "InitiativeRewardFlags",
 			Type = "Enumeration",
 			NumValues = 1,

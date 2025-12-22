@@ -752,7 +752,8 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.background:SetWidth(294);
 			LFGDungeonReadyDialog.instanceInfo.underline:Show();
 
-			LFGDungeonReadyDialog.label:SetText(RANDOM_DUNGEON_IS_READY);
+			local labelText = (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS) and BATTLEGROUND_IS_READY or RANDOM_DUNGEON_IS_READY;
+			LFGDungeonReadyDialog.label:SetText(labelText);
 
 			LFGDungeonReadyDialog.instanceInfo:Hide();
 

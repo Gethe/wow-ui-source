@@ -18,6 +18,15 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "GetActiveNeighborhood",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInitiativeActivityLogInfo",
 			Type = "Function",
 
@@ -166,6 +175,16 @@ local NeighborhoodInitiative =
 			Type = "Event",
 			LiteralName = "INITIATIVE_ACTIVITY_LOG_UPDATED",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "InitiativeCompleted",
+			Type = "Event",
+			LiteralName = "INITIATIVE_COMPLETED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "initiativeTitle", Type = "string", Nilable = false },
+			},
 		},
 		{
 			Name = "InitiativeTaskCompleted",

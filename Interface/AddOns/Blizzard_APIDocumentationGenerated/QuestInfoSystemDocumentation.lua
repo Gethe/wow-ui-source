@@ -31,6 +31,7 @@ local QuestInfoSystem =
 			Arguments =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "clampFavorToCycleCap", Type = "bool", Nilable = true },
 			},
 
 			Returns =

@@ -11,6 +11,7 @@ TooltipConstants = {
 	fullItemDescription - bool
 	prioritizeCurrencyOverItem - bool
 	showCollectionText - bool
+	clampFavorToCycleCap - bool
 --]]
 
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
@@ -113,6 +114,7 @@ TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK = {
 	postHeaderBlankLineCount = 0,
 	wrapHeaderText = false,
 	fullItemDescription = true,
+	clampFavorToCycleCap = true,
 }
 
 function GameTooltip_UnitColor(unit)

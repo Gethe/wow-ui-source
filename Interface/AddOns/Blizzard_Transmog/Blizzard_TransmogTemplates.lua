@@ -596,9 +596,11 @@ function TransmogAppearanceSlotMixin:RefreshWeaponOptions()
 		end
 
 		-- Current option not found, select the preferred first option based on equipped gear for this slot.
-		local equippedWeaponOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
-		if equippedWeaponOption then
-			foundWeaponOption = self:SetCurrentWeaponOption(equippedWeaponOption);
+		if not foundWeaponOption then
+			local equippedWeaponOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
+			if equippedWeaponOption then
+				foundWeaponOption = self:SetCurrentWeaponOption(equippedWeaponOption);
+			end
 		end
 
 		-- No current or preferred option found, select the first valid option instead.

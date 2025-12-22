@@ -186,7 +186,8 @@ end
 
 function TransmogFrameMixin:RefreshSlots()
 	-- Some action was done that could have changed slot info (weapon options, enabled state, etc.). Refresh things to reflect any new state.
-	self.CharacterPreview:RefreshSlotWeaponOptions();
+	local clearCurrentWeaponOptionInfo = false;
+	self.CharacterPreview:RefreshSlotWeaponOptions(clearCurrentWeaponOptionInfo);
 	self.CharacterPreview:RefreshSlots();
 
 	-- Update collection in case the selected slot changed.
@@ -714,19 +715,15 @@ function TransmogCharacterMixin:OnEvent(event, ...)
 				self.SavedFrame.Anim:Restart();
 			end
 		end
-	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" or event == "PLAYER_EQUIPMENT_CHANGED" then
+	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "TRANSMOG_DISPLAYED_OUTFIT_CHANGED" then
 		self:RefreshSlots();
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		local clearCurrentWeaponOptionInfo = true;
+		self:RefreshSlotWeaponOptions(clearCurrentWeaponOptionInfo);
+		self:RefreshSelectedSlot();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SECONDARY_SLOTS_CHANGED" then
 		self:SetupSlots();
-		self:RefreshSlots();
-
-		if self.selectedSlotData then
-			local slotFrame = self:GetSlotFrame(self.selectedSlotData.transmogLocation:GetSlot(), self.selectedSlotData.transmogLocation:GetType());
-			if slotFrame then
-				local forceRefresh = true;
-				TransmogFrame:SelectSlot(slotFrame, forceRefresh);
-			end
-		end
+		self:RefreshSelectedSlot();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_WEAPON_OPTION_CHANGED" then
 		local slot, weaponOption = ...;
 		local appearanceType = Enum.TransmogType.Appearance;
@@ -871,8 +868,12 @@ function TransmogCharacterMixin:RefreshPlayerModel()
 	end
 end
 
-function TransmogCharacterMixin:RefreshSlotWeaponOptions()
+function TransmogCharacterMixin:RefreshSlotWeaponOptions(clearCurrentWeaponOptionInfo)
 	for slotFrame in self.CharacterAppearanceSlotFramePool:EnumerateActive() do
+		if clearCurrentWeaponOptionInfo then
+			slotFrame:SetCurrentWeaponOptionInfo(slotFrame.DEFAULT_WEAPON_OPTION_INFO);
+		end
+
 		slotFrame:RefreshWeaponOptions();
 	end
 end
@@ -963,6 +964,18 @@ function TransmogCharacterMixin:RefreshSlots()
 	-- Select valid slot now that everything has updated if needed.
 	if not self.selectedSlotData then
 		self:SetInitialSelectedSlot();
+	end
+end
+
+function TransmogCharacterMixin:RefreshSelectedSlot()
+	if not self.selectedSlotData then
+		return;
+	end
+
+	local slotFrame = self:GetSlotFrame(self.selectedSlotData.transmogLocation:GetSlot(), self.selectedSlotData.transmogLocation:GetType());
+	if slotFrame then
+		local forceRefresh = true;
+		TransmogFrame:SelectSlot(slotFrame, forceRefresh);
 	end
 end
 
@@ -1872,7 +1885,7 @@ function TransmogWardrobeItemsMixin:UpdateSlot(slotData, forceRefresh)
 		if outfitSlotInfo then
 			local isUnassignedOrEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned or outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
 			if not transmogLocation:IsEqual(self.transmogLocation) or forceRefresh then
-				self:SetActiveSlot(transmogLocation);
+				self:SetActiveSlot(transmogLocation, forceRefresh);
 
 				-- If initially setting to a new category and not one of the display type buttons, make sure we can correctly page to the entry we want once search filters update.
 				if not isUnassignedOrEquipped then
@@ -1896,13 +1909,13 @@ function TransmogWardrobeItemsMixin:GetActiveSlotInfo()
 	return TransmogUtil.GetInfoForEquippedSlot(self.transmogLocation);
 end
 
-function TransmogWardrobeItemsMixin:SetActiveSlot(transmogLocation)
+function TransmogWardrobeItemsMixin:SetActiveSlot(transmogLocation, forceRefresh)
 	self:SetTransmogLocation(transmogLocation);
 	local activeSlotInfo = self:GetActiveSlotInfo();
 
 	-- Figure out a category.
 	local categoryID;
-	local useLastWeaponCategory = self.transmogLocation:IsEitherHand() and self.lastWeaponCategoryID and self:IsValidWeaponCategoryForSlot(self.lastWeaponCategoryID);
+	local useLastWeaponCategory = not forceRefresh and self.transmogLocation:IsEitherHand() and self.lastWeaponCategoryID and self:IsValidWeaponCategoryForSlot(self.lastWeaponCategoryID);
 	if useLastWeaponCategory then
 		categoryID = self.lastWeaponCategoryID;
 	elseif activeSlotInfo.selectedSourceID ~= Constants.Transmog.NoTransmogID then

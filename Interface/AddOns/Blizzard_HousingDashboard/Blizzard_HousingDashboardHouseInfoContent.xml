@@ -87,7 +87,7 @@
 			<Texture parentKey="CollapseIcon" atlas="ui-questtrackerbutton-expand-all" useAtlasSize="false" hidden="true">
 				<Size x="15" y="15"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.Title" relativePoint="RIGHT" x="5"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="TOPRIGHT" x="0"/>
 				</Anchors>
 			</Texture>
 
@@ -445,13 +445,13 @@
 
 											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-3" y="3"/>
+													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-6" y="-2"/>
 												</Anchors>
 											</Texture>
 
 											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="true">
 												<Anchors>
-													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="1" y="3"/>
+													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="5" y="-2"/>
 												</Anchors>
 											</Texture>
 										</Layer>

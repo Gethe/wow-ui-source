@@ -680,20 +680,17 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 	local newSlot = newTransmogLocation:GetSlotName();
 
 	local undressSlot, reloadModel;
-	local newSlotIsArmor = newTransmogLocation:GetArmorCategoryID();
-	if ( newSlotIsArmor ) then
-		local oldSlotIsArmor = oldTransmogLocation and oldTransmogLocation:GetArmorCategoryID();
-		if ( oldSlotIsArmor ) then
-			if ( (TransmogUtil.GetUseTransmogSkin(oldSlot) ~= TransmogUtil.GetUseTransmogSkin(newSlot)) or
-				 (TransmogUtil.GetWardrobeModelSetupData(oldSlot).useTransmogChoices ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).useTransmogChoices) or
-				 (TransmogUtil.GetWardrobeModelSetupData(oldSlot).obeyHideInTransmogFlag ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).obeyHideInTransmogFlag) ) then
-				reloadModel = true;
-			else
-				undressSlot = true;
-			end
-		else
+	local oldSlotIsArmor = oldTransmogLocation and oldTransmogLocation:GetArmorCategoryID();
+	if ( oldSlotIsArmor ) then
+		if ( TransmogUtil.GetUseTransmogSkin(oldSlot) ~= TransmogUtil.GetUseTransmogSkin(newSlot) or
+				TransmogUtil.GetWardrobeModelSetupData(oldSlot).useTransmogChoices ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).useTransmogChoices or
+				TransmogUtil.GetWardrobeModelSetupData(oldSlot).obeyHideInTransmogFlag ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).obeyHideInTransmogFlag ) then
 			reloadModel = true;
+		else
+			undressSlot = true;
 		end
+	else
+		reloadModel = true;
 	end
 
 	if ( reloadModel and not IsUnitModelReadyForUI("player") ) then
@@ -731,7 +728,7 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 			model:Reload(newSlot);
 		end
 		model.visualInfo = nil;
-		end
+	end
 	self.illusionWeaponAppearanceID = nil;
 
 	self:EvaluateSlotAllowed();

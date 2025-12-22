@@ -284,6 +284,11 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 		isFriend = self.explicitIsFriend;
 	elseif self.unit ~= nil then
 		isFriend = UnitIsFriend("player", self.unit);
+
+		-- Cross faction players who are in the local players party but not in an instance are attackable and should appear as enemies.
+		if isFriend and self:IsPlayer() and UnitInParty(self.unit) and UnitCanAttack("player", self.unit) then
+			isFriend = false;
+		end
 	end
 
 	if self.isFriend == isFriend then
@@ -294,6 +299,7 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 
 	self:UpdateThreatDisplay();
 	self:UpdateShowOnlyName();
+	self:UpdateIsSimplified();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
 end

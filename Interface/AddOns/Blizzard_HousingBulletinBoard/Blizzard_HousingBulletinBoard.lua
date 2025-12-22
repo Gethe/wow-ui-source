@@ -91,6 +91,7 @@ local EXTRA_GUILD_COLUMN_SUBDIVISION = {
 local BULLETIN_BOARD_ROSTER_SHOWING_EVENTS = {
 	"UPDATE_BULLETIN_BOARD_ROSTER",
 	"UPDATE_BULLETIN_BOARD_ROSTER_STATUSES",
+	"UPDATE_BULLETIN_BOARD_MEMBER_TYPE"
 };
 function NeighborhoodRosterMixin:OnLoad()
     local view = CreateScrollBoxListLinearView();
@@ -111,6 +112,9 @@ function NeighborhoodRosterMixin:OnEvent(event, ...)
 	elseif event == "UPDATE_BULLETIN_BOARD_ROSTER_STATUSES" then
 		local updatedMemberList = ...;
 		self:UpdateRosterMembers(updatedMemberList);
+	elseif event == "UPDATE_BULLETIN_BOARD_MEMBER_TYPE" then
+		local member, type = ...;
+		self:UpdateRosterMember(member, type);
 	end
 end
 
@@ -137,6 +141,30 @@ function NeighborhoodRosterMixin:UpdateRosterMembers(updatedMembers)
 		end
 		self:UpdateRoster(self.sortedMemberList);
 	end
+end
+
+function NeighborhoodRosterMixin:UpdateRosterMember(member, type)
+	if self.alphabeticalMemberList then
+		for _, memberInfo in ipairs(self.alphabeticalMemberList) do
+			if memberInfo.playerGUID == member then
+				memberInfo.residentType = type;
+			end
+		end
+	end
+	if self.sortedMemberList then
+		for _, memberInfo in ipairs(self.sortedMemberList) do
+			if memberInfo.playerGUID == member then
+				memberInfo.residentType = type;
+			end
+		end
+	end
+
+	self.ScrollBox:ForEachFrame(function(frame, elementData)
+		if frame.info.playerGUID == member then
+			frame.info.residentType = type;
+			frame:UpdateRank();
+		end
+	end);
 end
 
 function NeighborhoodRosterMixin:ShouldShowSubdivision()

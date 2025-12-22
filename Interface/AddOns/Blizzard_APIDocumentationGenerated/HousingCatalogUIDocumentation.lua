@@ -26,7 +26,7 @@ local HousingCatalogUI =
 		{
 			Name = "CreateCatalogSearcher",
 			Type = "Function",
-			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays; Users MUST listen for HousingCatalogSearcherReleased event to avoid hanging onto released instances (ie during UI reload/teardown)" },
+			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays" },
 
 			Returns =
 			{
@@ -321,16 +321,6 @@ local HousingCatalogUI =
 			Payload =
 			{
 				{ Name = "categoryID", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "HousingCatalogSearcherReleased",
-			Type = "Event",
-			LiteralName = "HOUSING_CATALOG_SEARCHER_RELEASED",
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "searcher", Type = "HousingCatalogSearcher", Nilable = false },
 			},
 		},
 		{

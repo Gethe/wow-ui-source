@@ -170,11 +170,24 @@ function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 	end
 
 	if not self.selectedHouseID then
-		-- If we don't have a previous selection, check if we're in a neighborhood and default to a house that belongs there
+		-- If we don't have a previous selection, check if we're in a neighborhood and default to a house that belongs there.
 		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
 		if currentNeighborhoodGUID then
 			for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
 				if houseInfo.neighborhoodGUID == currentNeighborhoodGUID then
+					self.selectedHouseID = houseInfoIndex;
+					break;
+				end
+			end
+		end
+	end
+
+	if not self.selectedHouseID then
+		-- If we still don't have a selection, then default to a house in your active neighborhood
+		local activeNeighborhoodGUID = C_NeighborhoodInitiative.GetActiveNeighborhood();
+		if activeNeighborhoodGUID then
+			for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+				if houseInfo.neighborhoodGUID == activeNeighborhoodGUID then
 					self.selectedHouseID = houseInfoIndex;
 					break;
 				end

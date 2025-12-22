@@ -153,6 +153,11 @@ function NamePlateAurasMixin:SetIsFriend(isFriend)
 	self.isFriend = isFriend;
 
 	self:UpdateShownState();
+
+	if self.unitToken then
+		local unitAuraUpdateInfo = nil;
+		self:RefreshAuras(unitAuraUpdateInfo);
+	end
 end
 
 function NamePlateAurasMixin:IsSimplified()

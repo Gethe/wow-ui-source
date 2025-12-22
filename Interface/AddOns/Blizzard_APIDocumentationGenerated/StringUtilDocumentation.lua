@@ -8,6 +8,22 @@ local StringUtil =
 	Functions =
 	{
 		{
+			Name = "EscapeLuaFormatString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a string with Lua format string tokens ('%') escaped." },
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "escapedText", Type = "stringView", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaPatterns",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",

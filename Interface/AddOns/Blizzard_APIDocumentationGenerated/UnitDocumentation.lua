@@ -90,7 +90,7 @@ local Unit =
 		{
 			Name = "GetComboPoints",
 			Type = "Function",
-			SecretWhenUnitComboPointsRestricted = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -117,7 +117,7 @@ local Unit =
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenUnitChargedPowerPointsRestricted = true,
+			SecretWhenUnitPowerRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -133,7 +133,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerHoldAtMaxTime",
 			Type = "Function",
-			SecretWhenUnitSpellCastingRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -149,7 +149,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerMinHoldTime",
 			Type = "Function",
-			SecretWhenUnitSpellCastingRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -165,7 +165,7 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerStageDuration",
 			Type = "Function",
-			SecretWhenUnitSpellCastingRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -793,7 +793,7 @@ local Unit =
 		{
 			Name = "UnitCastingInfo",
 			Type = "Function",
-			SecretWhenUnitCastingInfoRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -808,10 +808,11 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -833,7 +834,7 @@ local Unit =
 		{
 			Name = "UnitChannelInfo",
 			Type = "Function",
-			SecretWhenUnitChannelInfoRestricted = true,
+			SecretWhenUnitSpellCastRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -848,11 +849,12 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -1074,6 +1076,59 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitEmpoweredChannelDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object that includes the duration of an empowered cast channel." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "includeHoldAtMaxTime", Type = "bool", Nilable = false, Default = true, Documentation = { "If true, include the hold-at-max time of the empowered channel in the total duration." } },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitEmpoweredStageDurations",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a vector of duration objects that measure the time spans for each individual stage in an empowered channel, with hold-at-max time included as the last element." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "table", InnerType = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitEmpoweredStagePercentages",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a vector of percentages that describe how much of the total duration of an empowered channel is occupied by a stage." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "includeHoldAtMaxTime", Type = "bool", Nilable = false, Default = true, Documentation = { "If true, include the hold-at-max time of the empowered channel in the total duration and add a percentage value for it." } },
+			},
+
+			Returns =
+			{
+				{ Name = "percentages", Type = "table", InnerType = "number", Nilable = false },
 			},
 		},
 		{
@@ -4247,7 +4302,7 @@ local Unit =
 			Name = "UnitPowerPointCharge",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_POINT_CHARGE",
-			SecretWhenUnitChargedPowerPointsRestricted = true,
+			SecretWhenUnitPowerRestricted = true,
 			UniqueEvent = true,
 			Payload =
 			{
@@ -4326,6 +4381,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4340,6 +4396,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4353,6 +4410,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4366,6 +4424,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4379,6 +4438,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4394,6 +4454,7 @@ local Unit =
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "complete", Type = "bool", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4407,6 +4468,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4420,6 +4482,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4433,6 +4496,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4447,6 +4511,7 @@ local Unit =
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4520,6 +4585,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4533,6 +4599,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4546,6 +4613,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4689,10 +4757,11 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -4705,11 +4774,12 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{

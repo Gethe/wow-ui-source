@@ -362,6 +362,17 @@ local HousingNeighborhoodUI =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "UpdateBulletinBoardMemberType",
+			Type = "Event",
+			LiteralName = "UPDATE_BULLETIN_BOARD_MEMBER_TYPE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "player", Type = "WOWGUID", Nilable = false },
+				{ Name = "residentType", Type = "ResidentType", Nilable = false },
+			},
+		},
+		{
 			Name = "UpdateBulletinBoardRoster",
 			Type = "Event",
 			LiteralName = "UPDATE_BULLETIN_BOARD_ROSTER",

@@ -1547,7 +1547,7 @@
 										</Anchors>
 										<KeyValues>
 											<KeyValue key="titleText" value="RANDOM_BATTLEGROUNDS" type="global"/>
-											<KeyValue key="queueOption" value="Constants.TrainingGroundConstants.RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID" type="global"/>
+											<KeyValue key="queueOption" value="RandomTrainingGround" type="string"/>
 											<KeyValue key="tooltipTitle" value="BONUS_BUTTON_RANDOM_BG_TITLE" type="global"/>
 											<KeyValue key="tooltipDescription" value="BONUS_BUTTON_RANDOM_BG_DESC" type="global"/>
 										</KeyValues>

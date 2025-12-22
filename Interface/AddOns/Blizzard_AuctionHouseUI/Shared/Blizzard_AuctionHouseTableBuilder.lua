@@ -705,7 +705,7 @@ function AuctionHouseTableCellItemDisplayMixin:UpdateDisplay(itemKey, itemKeyInf
 	local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemKey.itemID);
 
 	if qualityInfo then
-		local markup = CreateChatIconAtlasMarkup(qualityInfo.iconChat);
+		local markup = CreateChatIconAtlasMarkup(qualityInfo);
 		self.Text:SetText(itemName .. " " .. markup);
 		self.ExtraInfo:SetText(markup);
 	else
@@ -750,7 +750,7 @@ function AuctionHouseTableCellAuctionsItemDisplayMixin:UpdateDisplay(itemKey, it
 	local extraInfo = quantity or "";
 
 	if qualityInfo then
-		extraInfo = extraInfo .. " " .. CreateChatIconAtlasMarkup(qualityInfo.iconChat);
+		extraInfo = extraInfo .. " " .. CreateChatIconAtlasMarkup(qualityInfo);
 	end
 
 	if not self:IsDisplayingBids() then

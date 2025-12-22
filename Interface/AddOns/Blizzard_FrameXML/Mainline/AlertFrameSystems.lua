@@ -1474,6 +1474,7 @@ end
 -- [[ InitiativeTaskCompleteAlertFrameSystem ]] --
 
 function InitiativeTaskCompleteAlertFrameSystem_SetUp(frame, taskName)
+	PlaySound(SOUNDKIT.HOUSING_ENDEAVORS_TASK_COMPLETE_TOAST);
 	frame.TaskName:SetText(taskName);
 	frame.LightRays:SetAlpha(0);
 	frame.LightRays2:SetAlpha(0);
