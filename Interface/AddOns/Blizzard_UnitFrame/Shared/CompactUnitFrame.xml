@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="LeftButtonDown, RightButtonUp">
+	<Button name="CompactAuraTemplate" virtual="true" enableMouse="false" registerForClicks="AnyDown, RightButtonUp">
 		<Size x="17" y="17"/>
 		<Layers>
 			<Layer level="ARTWORK">

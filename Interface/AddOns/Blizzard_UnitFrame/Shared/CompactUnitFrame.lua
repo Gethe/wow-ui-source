@@ -277,7 +277,7 @@ function CompactUnitFrame_SetUnit(frame, unit)
 		----NOTE: Make sure you also change the CompactAuraTemplate. (It has to be registered for clicks to be able to pass them through.)
 		local clickArgs =
 		{
-			"LeftButtonDown",
+			"AnyDown",
 			"RightButtonUp",
 		};
 		SecureUnitButton_OnLoad(frame, unit, CompactUnitFrame_OpenMenu, clickArgs);

@@ -253,11 +253,14 @@ local forceinsecure = forceinsecure;
 -- Table of supported action functions
 local SECURE_ACTIONS = {};
 
-SECURE_ACTIONS.menu = function(self, unit, button, isKeyPress)
-	self:ExecuteAttribute("menu-function", self, unit, button, isKeyPress);
+SECURE_ACTIONS.menu = function(self, unit, button, isKeyPress, down)
+	if not down then
+		self:ExecuteAttribute("menu-function", self, unit, button, isKeyPress);
+	end
 end
 
-SECURE_ACTIONS.togglemenu = function(self, unit, button)
+-- Unused by Blizzard code but retained because the "type" attribute can be set from addons.
+SECURE_ACTIONS.togglemenu = function(self, unit, button, isKeyPress, down)
 	if not unit then 
 		return;
 	end
@@ -713,17 +716,20 @@ local function PerformAction(self, button, unit, actionType, down, isKeyPress)
 			-- GMA call allows generic click handler snippets
 			handler = SecureButton_GetModifiedAttribute(self, "_"..actionType, button);
 		end
+
 		if not handler then
 			-- There exist a few means for this lookup to return user-provided
 			-- functions that don't carry taint, so consider this to be at-risk.
 			atRisk = true;
 			handler = rawget(self, actionType);
 		end
+
 		if type(handler) == 'function' then
 			if atRisk then
 				forceinsecure();
 			end
-			handler(self, unit, button, isKeyPress);
+
+			handler(self, unit, button, isKeyPress, down);
 		elseif type(handler) == 'string' then
 			SecureHandler_OnClick(self, "_"..actionType, button, down);
 		end

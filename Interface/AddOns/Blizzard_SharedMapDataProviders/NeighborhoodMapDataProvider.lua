@@ -76,6 +76,19 @@ function NeighborhoodMapBasePinMixin:Refresh()
 
 end
 
+function NeighborhoodMapBasePinMixin:OnMouseEnter()
+	local plotInfo = self:GetPlotInfo();
+
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip_SetTitle(GameTooltip, C_HousingNeighborhood.GetNeighborhoodPlotName(plotInfo.plotID));
+
+	if plotInfo.ownerName then
+		GameTooltip_AddNormalLine(GameTooltip, string.format(NEIGHBORHOODMAP_OWNED_BY, plotInfo.ownerName));
+	end
+
+	GameTooltip:Show();
+end
+
 function NeighborhoodMapBasePinMixin:OnMouseLeave()
 	if GameTooltip:GetOwner() == self then
 		GameTooltip:Hide();
@@ -87,24 +100,15 @@ UnoccupiedPlotPinMixin = CreateFromMixins(NeighborhoodMapBasePinMixin);
 --///////////////////Occupied Pin////////////////////////////
 OccupiedPlotPinMixin = CreateFromMixins(NeighborhoodMapBasePinMixin);
 
-function OccupiedPlotPinMixin:OnMouseEnter()
-	--we only want to show the tooltip for friends, not strangers
-end
-
 --///////////////////Friend Plot Pin////////////////////////////
 FriendsPlotPinMixin = CreateFromMixins(NeighborhoodMapBasePinMixin);
-
-function FriendsPlotPinMixin:OnMouseEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip_SetTitle(GameTooltip, C_HousingNeighborhood.GetNeighborhoodPlotName(self:GetPlotInfo().plotID));
-	GameTooltip_AddNormalLine(GameTooltip, string.format(NEIGHBORHOODMAP_OWNED_BY, self:GetPlotInfo().ownerName));
-	GameTooltip:Show();
-end
 
 --///////////////////Player Plot Pin////////////////////////////
 PlayersPlotPinMixin = CreateFromMixins(NeighborhoodMapBasePinMixin);
 
 function PlayersPlotPinMixin:OnMouseEnter()
+	-- Overrides NeighborhoodMapBasePinMixin.
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip_SetTitle(GameTooltip, C_HousingNeighborhood.GetNeighborhoodPlotName(self:GetPlotInfo().plotID));
 	GameTooltip_AddNormalLine(GameTooltip, NEIGHBORHOODMAP_YOUR_HOUSE);
