@@ -43,6 +43,10 @@ function StanceBarMixin:Update()
 	end
 end
 
+function StanceBarMixin:ShouldShowBackgroundArt()
+	return false; -- Override me!
+end
+
 function StanceBarMixin:SetBackgroundArtShown(shown)
 	-- Override me!
 end

@@ -216,6 +216,15 @@ function PetActionBarMixin:UnlockPetActionBar()
 	self.locked = nil;
 end
 
+function PetActionBarMixin:ShouldShowBackgroundArt()
+	return MainMenuBar:IsShown()
+		and self:IsInDefaultPosition()
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.Orientation)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.NumRows)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconSize)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconPadding);
+end
+
 function PetActionBarMixin:SetBackgroundArtShown(shown)
 	if (self.BackgroundArtTextures)	then
 		for index, texture in ipairs(self.BackgroundArtTextures) do

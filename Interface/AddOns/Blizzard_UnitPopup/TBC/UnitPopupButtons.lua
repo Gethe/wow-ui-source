@@ -196,7 +196,7 @@ function UnitPopupDungeonDifficultyButtonMixin:CanShow(contextData)
 		return false;
 	end
 
-	return (UnitLevel("player") >= 70) and (GetDungeonDifficultyID() == 1); 
+	return (UnitLevel("player") >= 70) or (GetDungeonDifficultyID() ~= 1); 
 end
 
 function UnitPopupAchievementButtonMixin:CanShow(contextData)

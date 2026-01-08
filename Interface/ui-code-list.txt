@@ -535,6 +535,8 @@ Interface\AddOns\Blizzard_ActionBar\Shared\SpellFlyout.xml
 Interface\AddOns\Blizzard_ActionBar\Shared\StanceBar.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\StatusTrackingBar.lua
 Interface\AddOns\Blizzard_ActionBar\Shared\StatusTrackingManager.lua
+Interface\AddOns\Blizzard_ActionBar\Shared\VehicleLeaveButton.lua
+Interface\AddOns\Blizzard_ActionBar\Shared\VehicleLeaveButton.xml
 Interface\AddOns\Blizzard_ActionStatus\ActionStatus.lua
 Interface\AddOns\Blizzard_ActionStatus\ActionStatus.xml
 Interface\AddOns\Blizzard_ActionStatus\Blizzard_ActionStatus.toc
@@ -2689,8 +2691,5 @@ Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInbound.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.lua
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIInsecure.xml
 Interface\AddOns\Blizzard_WowTokenUI\Blizzard_WowTokenUIOutbound.lua
-Interface\WorldMap\Azeroth.zmp
-Interface\WorldMap\Expansion01.zmp
-Interface\WorldMap\Kalimdor.zmp
 Interface\ui-gen-addon-list.txt
 Interface\ui-toc-list.txt

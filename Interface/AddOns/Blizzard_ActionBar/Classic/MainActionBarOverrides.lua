@@ -14,11 +14,11 @@ local function ShouldUseDistantEndCapAnchors(actionBar)
 		or actionBar:GetSettingValue(Enum.EditModeActionBarSetting.NumRows) > 1;
 end
 
-function MainActionBarMixin:UpdateEndCaps(overrideHideEndCaps)
+function MainActionBarMixin:UpdateEndCaps(forceHide)
 	local useMainMenuBarAsEndCaps = ShouldUseMainMenuBarAsEndCaps(self);
 
 	-- Visibility
-	if (overrideHideEndCaps) then
+	if (forceHide) then
 		MainMenuBar:SetShown(false);
 		self.EndCaps:SetShown(false);
 	else

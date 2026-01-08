@@ -50,6 +50,7 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PET_ACTION_BAR_LABEL" type="global"/>
 			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
 			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
+			<KeyValue key="dynamicBackgroundArt" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Layers>

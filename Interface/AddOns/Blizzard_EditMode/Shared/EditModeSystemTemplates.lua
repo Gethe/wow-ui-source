@@ -997,8 +997,14 @@ end
 
 function EditModeActionBarSystemMixin:RefreshBarArt(force)
 	if (self.barArtDirty or force) then
-		if self.UpdateEndCaps then
+		-- Used by MainActionBar.
+		if self.dynamicEndCaps then
 			self:UpdateEndCaps(self.hideBarArt);
+		end
+
+		-- Used by certain Classic action bars, such as the StanceBar.
+		if self.dynamicBackgroundArt then
+			self:SetBackgroundArtShown(self:ShouldShowBackgroundArt());
 		end
 
 		self.barArtDirty = false;

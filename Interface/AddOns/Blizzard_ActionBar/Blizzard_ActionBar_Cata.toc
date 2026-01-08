@@ -28,6 +28,8 @@ Shared\MultiActionBars.xml
 Shared\MainActionBar.lua
 Classic\MainActionBarOverrides.lua
 Classic\MainActionBar.xml
+Shared\VehicleLeaveButton.lua
+Shared\VehicleLeaveButton.xml
 Shared\StatusTrackingManager.lua
 Classic\StatusTrackingManagerOverrides.lua
 Classic\StatusTrackingBar.xml

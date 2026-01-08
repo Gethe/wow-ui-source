@@ -1,4 +1,13 @@
 
+function StanceBarMixin:ShouldShowBackgroundArt()
+	return MainMenuBar:IsShown()
+		and self:IsInDefaultPosition()
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.Orientation)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.NumRows)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconSize)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconPadding);
+end
+
 function StanceBarMixin:SetBackgroundArtShown(shown)
 	self.BackgroundArtLeft:SetShown(shown);
 	if (self.numForms >= 3) then
