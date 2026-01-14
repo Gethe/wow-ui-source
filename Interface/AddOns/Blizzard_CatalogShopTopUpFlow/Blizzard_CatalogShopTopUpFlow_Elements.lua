@@ -33,8 +33,8 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 		end
 
 		productInfo.elementType = CatalogShopConstants.ScrollViewElementType.Product;
-		productInfo.categoryID = categoryID;
-		productInfo.sectionID = sectionID;
+		--productInfo.categoryID = categoryID;
+		--productInfo.sectionID = sectionID;
 		dataProvider:Insert(productInfo);
 		return true;
 	end
@@ -56,10 +56,12 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 	self:SetupScrollView(GetProductContainerElementFactory);
 
 	local dataProvider = CreateDataProvider();
-	for _, product in ipairs(TopUpFlowConstants.TestProductIDs) do
-		local productID = product.productID;
-		local productAdded = addProductToDataProvider(dataProvider, productID);
+	local vcProductInfos = C_CatalogShop.GetVCProductInfos();
+	for _, vcProductInfo in ipairs(vcProductInfos) do
+		local vcProductID = vcProductInfo.vcProductID;
+		addProductToDataProvider(dataProvider, vcProductID);
 	end
+
 	self.ScrollBox:SetDataProvider(dataProvider);
 end
 

@@ -1001,8 +1001,14 @@ end
 
 function EditModeActionBarSystemMixin:RefreshBarArt(force)
 	if (self.barArtDirty or force) then
-		if self.UpdateEndCaps then
+		-- Used by MainActionBar.
+		if self.dynamicEndCaps then
 			self:UpdateEndCaps(self.hideBarArt);
+		end
+
+		-- Used by certain Classic action bars, such as the StanceBar.
+		if self.dynamicBackgroundArt then
+			self:SetBackgroundArtShown(self:ShouldShowBackgroundArt());
 		end
 
 		self.barArtDirty = false;
@@ -3269,8 +3275,9 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSettingStyle()
 	self:SetStyle(style);
 end
 
-function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumbers()
-	-- NYI
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumberDisplayType()
+	local numberDisplayType = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Numbers);
+	self:SetNumberDisplayType(numberDisplayType);
 end
 
 function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameWidth()
@@ -3325,30 +3332,32 @@ function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSyste
 		return;
 	end
 
-	if setting == Enum.EditModeDamageMeterSetting.Visibility and self:HasSetting(Enum.EditModeDamageMeterSetting.Visibility) then
-		self:UpdateSystemSettingVisibility();
-	elseif setting == Enum.EditModeDamageMeterSetting.Style and self:HasSetting(Enum.EditModeDamageMeterSetting.Style) then
-		self:UpdateSystemSettingStyle();
-	elseif setting == Enum.EditModeDamageMeterSetting.Numbers and self:HasSetting(Enum.EditModeDamageMeterSetting.Numbers) then
-		self:UpdateSystemSettingNumbers();
-	elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameWidth) then
-		self:UpdateSystemSettingFrameWidth();
-	elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.FrameHeight) then
-		self:UpdateSystemSettingFrameHeight();
-	elseif setting == Enum.EditModeDamageMeterSetting.BarHeight and self:HasSetting(Enum.EditModeDamageMeterSetting.BarHeight) then
-		self:UpdateSystemSettingBarHeight();
-	elseif setting == Enum.EditModeDamageMeterSetting.Padding and self:HasSetting(Enum.EditModeDamageMeterSetting.Padding) then
-		self:UpdateSystemSettingPadding();
-	elseif setting == Enum.EditModeDamageMeterSetting.Transparency and self:HasSetting(Enum.EditModeDamageMeterSetting.Transparency) then
-		self:UpdateSystemSettingTransparency();
-	elseif setting == Enum.EditModeDamageMeterSetting.ShowSpecIcon and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowSpecIcon) then
-		self:UpdateSystemSettingShowSpecIcon();
-	elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor and self:HasSetting(Enum.EditModeDamageMeterSetting.ShowClassColor) then
-		self:UpdateSystemSettingShowClassColor();
-	elseif setting == Enum.EditModeDamageMeterSetting.TextSize and self:HasSetting(Enum.EditModeDamageMeterSetting.TextSize) then
-		self:UpdateSystemSettingTextSize();
-	elseif setting == Enum.EditModeDamageMeterSetting.BackgroundTransparency and self:HasSetting(Enum.EditModeDamageMeterSetting.BackgroundTransparency) then
-		self:UpdateSystemSettingBackgroundTransparency();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeDamageMeterSetting.Visibility then
+			self:UpdateSystemSettingVisibility();
+		elseif setting == Enum.EditModeDamageMeterSetting.Style then
+			self:UpdateSystemSettingStyle();
+		elseif setting == Enum.EditModeDamageMeterSetting.Numbers then
+			self:UpdateSystemSettingNumberDisplayType();
+		elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth then
+			self:UpdateSystemSettingFrameWidth();
+		elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight then
+			self:UpdateSystemSettingFrameHeight();
+		elseif setting == Enum.EditModeDamageMeterSetting.BarHeight then
+			self:UpdateSystemSettingBarHeight();
+		elseif setting == Enum.EditModeDamageMeterSetting.Padding then
+			self:UpdateSystemSettingPadding();
+		elseif setting == Enum.EditModeDamageMeterSetting.Transparency then
+			self:UpdateSystemSettingTransparency();
+		elseif setting == Enum.EditModeDamageMeterSetting.ShowSpecIcon then
+			self:UpdateSystemSettingShowSpecIcon();
+		elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor then
+			self:UpdateSystemSettingShowClassColor();
+		elseif setting == Enum.EditModeDamageMeterSetting.TextSize then
+			self:UpdateSystemSettingTextSize();
+		elseif setting == Enum.EditModeDamageMeterSetting.BackgroundTransparency then
+			self:UpdateSystemSettingBackgroundTransparency();
+		end
 	end
 
 	if not entireSystemUpdate then

@@ -1044,7 +1044,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		},
 
 		-- Numbers
-		--[[ NYI: Hiding.
 		{
 			setting = Enum.EditModeDamageMeterSetting.Numbers,
 			name = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS,
@@ -1055,7 +1054,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 				{ value = Enum.DamageMeterNumbers.Complete, text = HUD_EDIT_MODE_SETTING_DAMAGE_METER_NUMBERS_COMPLETE },
 			},
 		},
-		--]]
 
 		-- Frame Width
 		{

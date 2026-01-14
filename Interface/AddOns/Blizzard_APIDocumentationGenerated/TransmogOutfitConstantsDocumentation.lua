@@ -3,6 +3,20 @@ local TransmogOutfitConstants =
 	Tables =
 	{
 		{
+			Name = "TransmogOutfitCostModifiersApplied",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 8,
+			Fields =
+			{
+				{ Name = "DebugOnlyFreeDiscountApplied", Type = "TransmogOutfitCostModifiersApplied", EnumValue = 1 },
+				{ Name = "VoidRacialDiscountApplied", Type = "TransmogOutfitCostModifiersApplied", EnumValue = 2 },
+				{ Name = "OutfitCostModifierApplied", Type = "TransmogOutfitCostModifiersApplied", EnumValue = 4 },
+				{ Name = "AuraDiscountApplied", Type = "TransmogOutfitCostModifiersApplied", EnumValue = 8 },
+			},
+		},
+		{
 			Name = "TransmogOutfitDataFlags",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -30,9 +44,9 @@ local TransmogOutfitConstants =
 		{
 			Name = "TransmogOutfitEntryFlags",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 6,
 			MinValue = 1,
-			MaxValue = 16,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "AutomaticallyAwardedOnLogin", Type = "TransmogOutfitEntryFlags", EnumValue = 1 },
@@ -40,6 +54,7 @@ local TransmogOutfitConstants =
 				{ Name = "OnlyAvailableDuringEvent", Type = "TransmogOutfitEntryFlags", EnumValue = 4 },
 				{ Name = "SortedToTopOfList", Type = "TransmogOutfitEntryFlags", EnumValue = 8 },
 				{ Name = "UseOverrideCostModifier", Type = "TransmogOutfitEntryFlags", EnumValue = 16 },
+				{ Name = "IsDefaultEquipped", Type = "TransmogOutfitEntryFlags", EnumValue = 32 },
 			},
 		},
 		{
@@ -352,11 +367,26 @@ local TransmogOutfitConstants =
 			},
 		},
 		{
+			Name = "TransmogSituationTriggerType",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "TransmogSituationTriggerType", EnumValue = 0 },
+				{ Name = "Manual", Type = "TransmogSituationTriggerType", EnumValue = 1 },
+				{ Name = "Automatic", Type = "TransmogSituationTriggerType", EnumValue = 2 },
+				{ Name = "TransmogUpdate", Type = "TransmogSituationTriggerType", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "TransmogOutfitDataConsts",
 			Type = "Constants",
 			Values =
 			{
 				{ Name = "EQUIP_TRANSMOG_OUTFIT_MANUAL_SPELL_ID", Type = "number", Value = 1247613 },
+				{ Name = "TRANSMOG_OUTFIT_SLOT_NONE", Type = "TransmogOutfitSlot", Value = -1 },
 			},
 		},
 	},

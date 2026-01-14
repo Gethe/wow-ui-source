@@ -350,6 +350,16 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "OnHouseFinderClickPlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "plotID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "OnRequestSignatureClicked",
 			Type = "Function",
 		},
@@ -385,6 +395,7 @@ local HousingUI =
 			Arguments =
 			{
 				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
 			},
 		},
 		{

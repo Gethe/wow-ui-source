@@ -76,7 +76,7 @@ local Localization =
 
 			Arguments =
 			{
-				{ Name = "data", Type = "table", InnerType = "NumberAbbrevData", Nilable = false },
+				{ Name = "data", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = false },
 			},
 
 			Returns =
@@ -164,7 +164,7 @@ local Localization =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbrevData", Nilable = true, Documentation = { "Order these from largest to smallest." } },
+				{ Name = "breakpointData", Type = "table", InnerType = "NumberAbbreviationBreakpoint", Nilable = true, Documentation = { "Order these from largest to smallest." } },
 				{ Name = "locale", Type = "cstring", Nilable = true, Documentation = { "Locale controls whether standard asian abbreviation data will be used along with a small change in behavior for large number abbreviation when fractionDivisor is greater than zero." } },
 				{ Name = "config", Type = "AbbreviateConfig", Nilable = true, Documentation = { "Provides a cached config object for optimal performance when calling abbreviation functions multiple times with the same options." } },
 			},

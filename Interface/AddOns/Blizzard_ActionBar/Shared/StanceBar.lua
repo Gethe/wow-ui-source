@@ -43,6 +43,10 @@ function StanceBarMixin:Update()
 	end
 end
 
+function StanceBarMixin:ShouldShowBackgroundArt()
+	return false; -- Override me!
+end
+
 function StanceBarMixin:SetBackgroundArtShown(shown)
 	-- Override me!
 end
@@ -128,7 +132,7 @@ function StanceButtonMixin:StanceButtonMixin_OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	GameTooltip:SetShapeshift(self:GetID());
-	self.UpdateTooltip = self.OnEnter;
+	self.UpdateTooltip = self.StanceButtonMixin_OnEnter;
 end
 
 function StanceButtonMixin:StanceButtonMixin_OnLeave()

@@ -1,5 +1,4 @@
 local CatalogLifetimeEvents = {
-	"HOUSING_CATALOG_SEARCHER_RELEASED",
 	"PLAYER_LEAVING_WORLD",
 };
 
@@ -43,16 +42,6 @@ function HousingCatalogFrameMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_STORAGE_ENTRY_UPDATED" then
 		local entryID = ...;
 		self:OnCatalogEntryUpdated(entryID);
-	elseif event == "HOUSING_CATALOG_SEARCHER_RELEASED" then
-		local releasedSearcher = ...;
-		if self.catalogSearcher and self.catalogSearcher == releasedSearcher then
-			-- This should only get called as part of ReloadUI
-			-- Unfortunately can't just clear it by listening to LEAVING_WORLD because that'll happen after the searcher has already been released
-			-- and after other receiving while-shown cleanup events that will lead this UI to attempt to reference it
-			self.catalogSearcher = nil;
-			self.Filters:ClearSearcherReference();
-			self.OptionsContainer:ClearCatalogData();
-		end
 	end
 end
 

@@ -92,6 +92,22 @@ local DamageMeter =
 			},
 		},
 		{
+			Name = "GetSessionDurationSeconds",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the amount of time a combat session has lasted" },
+
+			Arguments =
+			{
+				{ Name = "sessionType", Type = "DamageMeterSessionType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "durationSeconds", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "IsDamageMeterAvailable",
 			Type = "Function",
 			Documentation = { "Returns whether the player can enable and use the Damage Meter." },
@@ -146,6 +162,7 @@ local DamageMeter =
 			{
 				{ Name = "sessionID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "durationSeconds", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -156,6 +173,8 @@ local DamageMeter =
 			{
 				{ Name = "combatSources", Type = "table", InnerType = "DamageMeterCombatSource", Nilable = false },
 				{ Name = "maxAmount", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "totalAmount", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "durationSeconds", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -165,7 +184,8 @@ local DamageMeter =
 			Fields =
 			{
 				{ Name = "combatSpells", Type = "table", InnerType = "DamageMeterCombatSpell", Nilable = false },
-				{ Name = "maxAmount", Type = "number", Nilable = false },
+				{ Name = "maxAmount", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "totalAmount", Type = "number", Nilable = false, Default = 0 },
 			},
 		},
 		{
@@ -181,6 +201,8 @@ local DamageMeter =
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 				{ Name = "amountPerSecond", Type = "number", Nilable = false },
 				{ Name = "isLocalPlayer", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "deathRecapID", Type = "number", Nilable = false },
+				{ Name = "deathTimeSeconds", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -193,6 +215,9 @@ local DamageMeter =
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 				{ Name = "amountPerSecond", Type = "number", Nilable = false },
 				{ Name = "creatureName", Type = "cstring", Nilable = false },
+				{ Name = "overkillAmount", Type = "number", Nilable = false },
+				{ Name = "isAvoidable", Type = "bool", Nilable = false },
+				{ Name = "isDeadly", Type = "bool", Nilable = false },
 				{ Name = "combatSpellDetails", Type = "DamageMeterCombatSpellUnitDetails", Nilable = false },
 			},
 		},
@@ -205,6 +230,8 @@ local DamageMeter =
 				{ Name = "unitName", Type = "cstring", Nilable = false },
 				{ Name = "unitClassFilename", Type = "cstring", Nilable = false, NeverSecret = true },
 				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
+				{ Name = "isPet", Type = "bool", Nilable = false },
+				{ Name = "isMob", Type = "bool", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
 			},
 		},

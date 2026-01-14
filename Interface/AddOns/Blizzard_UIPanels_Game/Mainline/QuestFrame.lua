@@ -465,7 +465,13 @@ QuestFrameModelSceneMixin = {};
 
 function QuestFrameModelSceneMixin:OnShow()
 	-- Hide if this exceeds the right-edge of the screen.
-	if (self:GetRight() + 6) > UIParent:GetRight() then
+	local r1 = self:GetRight();
+	local r2 = UIParent:GetRight();
+	local validRect = r1 and r2;
+	assertsafe(validRect, "Cannot perform measurement in QuestFrameModelScene. %s, %s", tostring(r1), tostring(r2));
+
+	local padding = 6;
+	if (not validRect) or ((r1 + padding) > r2) then
 		self:Hide();
 	end
 end

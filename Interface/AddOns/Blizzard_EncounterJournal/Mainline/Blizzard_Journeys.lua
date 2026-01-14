@@ -630,6 +630,8 @@ function JourneyProgressFrameMixin:SetRewards(level)
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				GameTooltip_AddNormalLine(GameTooltip, reward.description);
 				GameTooltip:Show();
+
+				EventRegistry:TriggerEvent("JourneyProgressFrame.RewardFrame.OnEnter", self, GameTooltip, reward.name, reward.description);
 			end);
 
 			rewardFrame:SetScript("OnLeave", function(frame)

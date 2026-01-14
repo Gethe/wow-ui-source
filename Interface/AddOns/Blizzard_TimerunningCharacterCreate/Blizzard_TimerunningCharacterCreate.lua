@@ -296,7 +296,7 @@ function TimerunningEventBannerMixin:UpdateShown()
 		self:SetParent(CharacterSelectCharacterFrame);
 		self:SetPoint("BOTTOM", CharacterSelectCharacterFrame, "BOTTOM", 0, 70);
 
-		CharacterSelectCharacterFrame.ScrollBox:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6);
+		CharacterSelectCharacterFrame.ScrollBox:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 6);
 	else
 		self:SetParent(GlueParent);
 		self:ClearAllPoints();

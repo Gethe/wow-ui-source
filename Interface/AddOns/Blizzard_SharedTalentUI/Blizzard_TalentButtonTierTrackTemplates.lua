@@ -29,7 +29,8 @@ end
 function TalentButtonCapstonePipMixin:CalculateVisualState()
 	local parentState = self:GetParent():GetVisualState();
 	local hasErrorState = parentState == TalentButtonUtil.BaseVisualState.RefundInvalid or parentState == TalentButtonUtil.BaseVisualState.DisplayError;
-	if hasErrorState then
+	local hasGatedState = parentState == TalentButtonUtil.BaseVisualState.Gated;
+	if hasErrorState or hasGatedState then
 		return parentState;
 	end
 
@@ -85,14 +86,17 @@ function TalentButtonCapstonePipMixin:ApplyVisualState(visualState)
 end
 
 function TalentButtonCapstonePipMixin:CalculateSpendText()
-	local parentVisualState = self:GetParent():GetVisualState();
-	local shouldForceHideSpendText = parentVisualState == TalentButtonUtil.BaseVisualState.Disabled or parentVisualState == TalentButtonUtil.BaseVisualState.Locked;
+	local parent = self:GetParent();
+	local parentVisualState = parent:GetVisualState();
+	local shouldForceHideSpendText = parentVisualState == TalentButtonUtil.BaseVisualState.Disabled
+									or parentVisualState == TalentButtonUtil.BaseVisualState.Locked
+									or parentVisualState == TalentButtonUtil.BaseVisualState.Gated;
 	if shouldForceHideSpendText then
 		return nil;
 	end
 
 	local spendStateData = self:CalculateSpendStateForPip();
-	local shouldShowSpendText = spendStateData.isActivePip or spendStateData.ranksSpent > 0;
+	local shouldShowSpendText = spendStateData.ranksSpent > 0 or (spendStateData.isActivePip and parent:CanPurchaseRank());
 	return shouldShowSpendText and tostring(spendStateData.ranksSpent) or nil;
 end
 
@@ -127,16 +131,19 @@ function TalentButtonCapstonePipMixin:AddTooltipDescription(tooltip)
 	local entryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(entryID);
 	local spendStateData = self:CalculateSpendStateForPip();
 	for rankIndex = 1, entryInfo.maxRanks do
-		local isFirstRank = rankIndex == 1;
-		if isFirstRank then
-			GameTooltip_AddBlankLineToTooltip(tooltip);
-		end
+		GameTooltip_AddBlankLineToTooltip(tooltip);
 
+		local isFirstRank = rankIndex == 1;
 		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", entryID, rankIndex);
 		tooltipInfo.excludeLines = isFirstRank and { Enum.TooltipDataLineType.SpellName } or { Enum.TooltipDataLineType.SpellName, Enum.TooltipDataLineType.SpellPassive };
 		tooltipInfo.append = true;
 		tooltipInfo.linePreCall = function(tooltip, lineData)
 			if lineData.type == Enum.TooltipDataLineType.SpellDescription then
+				local useRankStageFormat = entryInfo.maxRanks > 1;
+				if useRankStageFormat then
+					lineData.leftText = TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT:format(rankIndex, lineData.leftText);
+				end
+
 				local isPurchased = rankIndex <= spendStateData.ranksSpent;
 				lineData.leftColor = isPurchased and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 			end
@@ -156,6 +163,57 @@ end
 function TalentButtonCapstoneWithTrackMixin:OnRelease()
 	self:ReleaseTrackPips();
 	TalentDisplayMixin.OnRelease(self);
+end
+
+-- Overriding TalentDisplayMixin OnEnter/OnLeave to load all pip spells for the capstone track
+function TalentButtonCapstoneWithTrackMixin:OnEnter()
+	self:LoadPipSpellsAndShowTooltip();
+	self:OnEnterVisuals();
+end
+
+function TalentButtonCapstoneWithTrackMixin:GetPipSpellIDs()
+	local spellIDs = {};
+	local nodeInfo = self:GetNodeInfo();
+	if not nodeInfo or not nodeInfo.entryIDs then
+		return spellIDs;
+	end
+
+	local talentFrame = self:GetTalentFrame();
+	for _index, entryID in ipairs(nodeInfo.entryIDs) do
+		local entryInfo = talentFrame:GetAndCacheEntryInfo(entryID);
+		local definitionInfo = entryInfo and talentFrame:GetAndCacheDefinitionInfo(entryInfo.definitionID);
+		if definitionInfo and definitionInfo.spellID then
+			table.insert(spellIDs, definitionInfo.spellID);
+		end
+	end
+
+	return spellIDs;
+end
+
+function TalentButtonCapstoneWithTrackMixin:LoadPipSpellsAndShowTooltip()
+	if self.spellContinuableContainer then
+		self.spellContinuableContainer:Cancel();
+	end
+
+	self.spellContinuableContainer = ContinuableContainer:Create();
+	for _index, spellID in ipairs(self:GetPipSpellIDs()) do
+		local spell = Spell:CreateFromSpellID(spellID);
+		if not spell:IsSpellEmpty() then
+			self.spellContinuableContainer:AddContinuable(spell);
+		end
+	end
+
+	self.spellContinuableContainer:ContinueOnLoad(function()
+		if self:IsMouseOver() then
+			self:SetTooltipInternal();
+		end
+	end);
+end
+
+function TalentButtonCapstoneWithTrackMixin:OnHide()
+	if self.spellContinuableContainer then
+		self.spellContinuableContainer:Cancel();
+	end
 end
 
 function TalentButtonCapstoneWithTrackMixin:InitializeVisuals()
@@ -277,8 +335,8 @@ end
 function TalentButtonCapstoneWithTrackMixin:AddTooltipTitle(tooltip)
 	local name = self:GetName();
 	local nodeInfo = self:GetNodeInfo();
-	if nodeInfo and nodeInfo.maxRanks > 0 then
-		GameTooltip_SetTitle(tooltip, TALENT_BUTTON_TOOLTIP_CAPSTONE_TRACK_TITLE_FORMAT:format(name, nodeInfo.currentRank, nodeInfo.maxRanks));
+	if nodeInfo and nodeInfo.totalMaxRanks > 0 then
+		GameTooltip_SetTitle(tooltip, TALENT_BUTTON_TOOLTIP_CAPSTONE_TRACK_TITLE_FORMAT:format(name, nodeInfo.currentRank, nodeInfo.totalMaxRanks));
 	else
 		GameTooltip_SetTitle(tooltip, name);
 	end
@@ -321,10 +379,21 @@ function TalentButtonCapstoneWithTrackMixin:AddTooltipDescription(tooltip)
 		GameTooltip_AddHighlightLine(tooltip, TOOLTIP_TALENT_RANK_CAPSTONE:format(index));
 
 		for rank = 1, maxRanks do
+			local isFirstRank = rank == 1;
+			if not isFirstRank then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+			end
+
 			local isPurchased = rank <= spentInTier;
 			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", entryID, rank);
+			local entryHasMultipleRanks = maxRanks > 1;
 			tooltipInfo.excludeLines = { Enum.TooltipDataLineType.SpellPassive,	};
 			tooltipInfo.linePreCall = function(tooltip, lineData)
+				local useRankStageFormat = entryHasMultipleRanks and lineData.type == Enum.TooltipDataLineType.SpellDescription;
+				if useRankStageFormat then
+					lineData.leftText = TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT:format(rank, lineData.leftText);
+				end
+
 				lineData.leftColor = isPurchased and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 			end;
 			tooltipInfo.append = true;

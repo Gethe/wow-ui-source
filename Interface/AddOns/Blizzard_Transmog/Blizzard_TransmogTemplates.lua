@@ -61,8 +61,6 @@ function TransmogOutfitEntryMixin:OnEvent(event, ...)
 end
 
 function TransmogOutfitEntryMixin:Init(elementData)
-	self.OutfitIcon.Icon:SetTexture(elementData.icon);
-
 	self.OutfitIcon:SetScript("OnClick", function(_button, buttonName)
 		local function ClickCallback()
 			local allowRemoveOutfit = true;
@@ -79,6 +77,9 @@ function TransmogOutfitEntryMixin:Init(elementData)
 		self:CheckPendingAction(ClickCallback, includeViewedOutfit);
 	end);
 
+	-- Base visuals
+	self.OutfitIcon.Icon:SetTexture(elementData.icon);
+
 	local activeOutfitID = C_TransmogOutfitInfo.GetActiveOutfitID();
 	self.OutfitIcon.OverlayActive:SetShown(elementData.outfitID == activeOutfitID);
 
@@ -86,6 +87,18 @@ function TransmogOutfitEntryMixin:Init(elementData)
 	self.OutfitIcon.OverlayLocked:SetShown(isLockedOutfit);
 	self.OutfitIcon.OverlayLocked:ShowAutoCastEnabled(isLockedOutfit);
 
+	-- Trial of Style visuals
+	local inTransmogEvent = C_TransmogOutfitInfo.InTransmogEvent();
+	self.OutfitIcon:SetEnabled(not inTransmogEvent);
+	self.OutfitIcon.Icon:SetDesaturated(inTransmogEvent);
+
+	local normalAtlas = "transmog-outfit-card";
+	if elementData.isEventOutfit then
+		normalAtlas = "transmog-outfit-card-tofs";
+	end
+	self.OutfitButton.NormalTexture:SetAtlas(normalAtlas, TextureKitConstants.IgnoreAtlasSize);
+
+	-- Text
 	local textContent = self.OutfitButton.TextContent;
 	textContent.Name:SetText(elementData.name);
 
@@ -103,6 +116,7 @@ function TransmogOutfitEntryMixin:Init(elementData)
 	textContent.SituationInfo:SetText(situationText);
 	textContent:Layout();
 
+	-- Selected state
 	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
 	self:SetSelected(elementData.outfitID == viewedOutfitID);
 end
@@ -124,6 +138,14 @@ end
 function TransmogOutfitEntryMixin:SelectEntry()
 	local elementData = self:GetElementData();
 	if not elementData then
+		return;
+	end
+
+	-- If in a transmog event (trial of style), selecting an outfit entry applies that appearance to the event outfit.
+	if C_TransmogOutfitInfo.InTransmogEvent() then
+		if not elementData.isEventOutfit then
+			C_TransmogOutfitInfo.SetOutfitToOutfit(elementData.outfitID);
+		end
 		return;
 	end
 
@@ -596,9 +618,11 @@ function TransmogAppearanceSlotMixin:RefreshWeaponOptions()
 		end
 
 		-- Current option not found, select the preferred first option based on equipped gear for this slot.
-		local equippedWeaponOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
-		if equippedWeaponOption then
-			foundWeaponOption = self:SetCurrentWeaponOption(equippedWeaponOption);
+		if not foundWeaponOption then
+			local equippedWeaponOption = C_TransmogOutfitInfo.GetEquippedSlotOptionFromTransmogSlot(self.slotData.transmogLocation:GetSlot());
+			if equippedWeaponOption then
+				foundWeaponOption = self:SetCurrentWeaponOption(equippedWeaponOption);
+			end
 		end
 
 		-- No current or preferred option found, select the first valid option instead.
@@ -680,6 +704,39 @@ function TransmogAppearanceSlotMixin:Update()
 	end
 
 	self.lastOutfitSlotInfo = outfitSlotInfo;
+end
+
+function TransmogAppearanceSlotMixin:GetCurrentIcons()
+	-- Collect all icons associated for this slot (and illusion slot, if present) for all weapon option types.
+	local transmogIcons = {};
+
+	if not self.slotData then
+		return transmogIcons;
+	end
+
+	local function PopulateIcons(weaponOption)
+		local outfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), weaponOption);
+		if outfitSlotInfo and outfitSlotInfo.texture then
+			table.insert(transmogIcons, outfitSlotInfo.texture);
+		end
+
+		if self.illusionSlotFrame then
+			local outfitIllusionSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(self.illusionSlotFrame:GetTransmogLocation():GetSlot(), self.illusionSlotFrame:GetTransmogLocation():GetType(), weaponOption);
+			if outfitIllusionSlotInfo and outfitIllusionSlotInfo.texture then
+				table.insert(transmogIcons, outfitIllusionSlotInfo.texture);
+			end
+		end
+	end
+
+	if self.slotData.weaponOptionsInfo then
+		for _index, weaponOptionInfo in ipairs(self.slotData.weaponOptionsInfo) do
+			PopulateIcons(weaponOptionInfo.weaponOption);
+		end
+	else
+		PopulateIcons(self.slotData.currentWeaponOptionInfo.weaponOption);
+	end
+
+	return transmogIcons;
 end
 
 
@@ -1254,7 +1311,6 @@ end
 
 TransmogSetBaseModelMixin = {
 	DYNAMIC_EVENTS = {
-		"VIEWED_TRANSMOG_OUTFIT_CHANGED",
 		"VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH",
 		"PLAYER_EQUIPMENT_CHANGED"
 	};
@@ -1303,7 +1359,7 @@ function TransmogSetBaseModelMixin:OnLeave()
 end
 
 function TransmogSetBaseModelMixin:OnEvent(event, ...)
-	if event == "VIEWED_TRANSMOG_OUTFIT_CHANGED" or event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "PLAYER_EQUIPMENT_CHANGED" then
+	if event == "VIEWED_TRANSMOG_OUTFIT_SLOT_REFRESH" or event == "PLAYER_EQUIPMENT_CHANGED" then
 		self:UpdateSet();
 	end
 end

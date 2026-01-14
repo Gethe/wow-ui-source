@@ -105,7 +105,7 @@ StaticPopupDialogs["GENERIC_INPUT_BOX"] = {
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 	hideOnEscape = 1,
 	timeout = 0,
-	exclusive = 1,
+	multiple = 1,
 	whileDead = 1,
 };
 

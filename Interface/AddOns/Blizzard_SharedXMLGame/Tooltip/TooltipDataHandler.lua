@@ -373,7 +373,7 @@ function TooltipDataHandlerMixin:RebuildFromTooltipInfo()
 
 	for i, info in ipairs(infoList) do
 		-- Remove cached data if there's a getter, otherwise assume that data is complete
-		if info.getterName then
+		if info.getterName or info.getterFunction then
 			info.tooltipData = nil;
 		end
 		-- It's bad if append is set for the primary info and the rebuild wasn't handled by the rebuildPreCall
@@ -497,7 +497,7 @@ local function AddTooltipDataAccessorDelegate(handler, accessor, getterName)
 		-- supplied arguments.
 
 		local tooltipInfo = {
-			getterFunction = getterFunction,
+			getterName = getterName,
 			getterArgs = SafePack(...),
 		};
 		return self:ProcessInfo(tooltipInfo);

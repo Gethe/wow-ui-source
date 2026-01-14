@@ -365,7 +365,7 @@ function CastingBarMixin:OnEvent(event, ...)
 		self:HandleCastStop(event, castGUID, complete, interruptedBy);
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_STOP" ) then
 		local _unit, castGUID, _spellID, interruptedBy = ...;
-		local complete = false;
+		local complete = interruptedBy == nil;
 		self:HandleCastStop(event, castGUID, complete, interruptedBy);
 	elseif ( event == "UNIT_SPELLCAST_EMPOWER_STOP" ) then
 		local _unit, castGUID, _spellID, complete, interruptedBy = ...;

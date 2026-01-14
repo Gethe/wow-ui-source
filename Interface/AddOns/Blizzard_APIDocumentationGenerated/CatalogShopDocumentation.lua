@@ -274,6 +274,15 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetVCProductInfos",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "vcProductInfos", Type = "table", InnerType = "CatalogShopVCProductInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVirtualCurrencyBalance",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -694,6 +703,7 @@ local CatalogShop =
 				{ Name = "shouldShowOriginalPrice", Type = "bool", Nilable = false },
 				{ Name = "wideCardBGOverrideProductURL", Type = "string", Nilable = true },
 				{ Name = "consumableQuantity", Type = "number", Nilable = true },
+				{ Name = "isVCProduct", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -727,6 +737,14 @@ local CatalogShop =
 				{ Name = "itemAppearanceID", Type = "number", Nilable = false },
 				{ Name = "invType", Type = "string", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = false },
+			},
+		},
+		{
+			Name = "CatalogShopVCProductInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "vcProductID", Type = "number", Nilable = false },
 			},
 		},
 		{

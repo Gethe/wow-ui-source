@@ -2707,7 +2707,11 @@ function TrainingGroundsFrameMixin:InitializeQueueButton()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local queueOption = self:GetSelectedQueueOption();
 		if queueOption then
-			C_PvP.JoinTrainingGround(queueOption);
+			if queueOption == "RandomTrainingGround" then
+				C_PvP.JoinRandomTrainingGround();
+			else
+				C_PvP.JoinTrainingGround(queueOption);
+			end
 		end
 	end);
 end
@@ -2908,7 +2912,7 @@ end
 TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
 
 local queueOptionToRewardGetter = {
-	[Constants.TrainingGroundConstants.RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID] = C_PvP.GetRandomTrainingGroundRewards;
+	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
 };
 
 function TrainingGroundActivityButtonMixin:OnLoad()
@@ -3085,8 +3089,28 @@ function SpecificTrainingGroundListMixin:GetSelectedQueueOption()
 	end
 end
 
+local function ShouldTrainingGroundBeVisibleInSpecificList(trainingGround)
+	if not trainingGround or trainingGround.isRandom then
+		return false;
+	end
+
+	local _isAvailableForAll, isAvailableForPlayer, _hideIfNotJoinable, _totalGroupSizeRequired = IsLFGDungeonJoinable(trainingGround.lfgDungeonID);
+	return isAvailableForPlayer;
+end
+
+function SpecificTrainingGroundListMixin:GetVisibleTrainingGrounds()
+	local visibleTrainingGrounds = {};
+	for _index, trainingGround in ipairs(C_PvP.GetTrainingGrounds()) do
+		if ShouldTrainingGroundBeVisibleInSpecificList(trainingGround) then
+			table.insert(visibleTrainingGrounds, trainingGround);
+		end
+	end
+
+	return visibleTrainingGrounds;
+end
+
 function SpecificTrainingGroundListMixin:Refresh()
-	self.ScrollBox:SetDataProvider(CreateDataProvider(C_PvP.GetTrainingGrounds()), ScrollBoxConstants.RetainScrollPosition);
+	self.ScrollBox:SetDataProvider(CreateDataProvider(self:GetVisibleTrainingGrounds()), ScrollBoxConstants.RetainScrollPosition);
 end
 
 PVPSpecificTrainingGroundButtonMixin = {};

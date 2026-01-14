@@ -268,6 +268,11 @@ LinkUtil.RegisterLinkHandler(LinkTypes.PerksActivity, function(link, text, linkD
 	MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
 end);
 
+LinkUtil.RegisterLinkHandler(LinkTypes.InitiativeTask, function(link, text, linkData, contextData)
+	local initiativeTaskID = string.split(":", linkData.options);
+	HousingFramesUtil.OpenFrameToTaskID(tonumber(initiativeTaskID));
+end);
+
 LinkUtil.RegisterLinkHandler(LinkTypes.WarbandScene, function(link, text, linkData, contextData)
 	local warbandSceneID = string.split(":", linkData.options);
 	local warbandSceneInfo = C_WarbandScene.GetWarbandSceneEntry(tonumber(warbandSceneID));

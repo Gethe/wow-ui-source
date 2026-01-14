@@ -1,6 +1,9 @@
 ----------------- Enum to Global String Lookups -----------------
 HousingResultToErrorText = {
 	[Enum.HousingResult.ActionLockedByCombat] = ERR_HOUSING_RESULT_LOCKED_BY_COMBAT,
+	[Enum.HousingResult.BoundsFailureChildren] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT,
+	[Enum.HousingResult.BoundsFailurePlot] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_PLOT,
+	[Enum.HousingResult.BoundsFailureRoom] = ERR_HOUSING_RESULT_BOUNDS_FAILURE_ROOM,
 	[Enum.HousingResult.CannotAfford] = ERR_HOUSING_RESULT_CANNOT_AFFORD,
 	[Enum.HousingResult.CharterComplete] = ERR_HOUSING_RESULT_CHARTER_COMPLETE,
 	[Enum.HousingResult.CollisionInvalid] = ERR_HOUSING_RESULT_COLLISION_INVALID,

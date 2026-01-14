@@ -3,7 +3,22 @@ local LocalizationShared =
 	Tables =
 	{
 		{
-			Name = "NumberAbbrevData",
+			Name = "AbbreviationDataError",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "InvalidBreakpoint", Type = "AbbreviationDataError", EnumValue = 0 },
+				{ Name = "InvalidSignificandDivisor", Type = "AbbreviationDataError", EnumValue = 1 },
+				{ Name = "InvalidFractionDivisor", Type = "AbbreviationDataError", EnumValue = 2 },
+				{ Name = "InvalidAbbreviation", Type = "AbbreviationDataError", EnumValue = 3 },
+				{ Name = "NotMultipleOfTen", Type = "AbbreviationDataError", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "NumberAbbreviationBreakpoint",
 			Type = "Structure",
 			Fields =
 			{

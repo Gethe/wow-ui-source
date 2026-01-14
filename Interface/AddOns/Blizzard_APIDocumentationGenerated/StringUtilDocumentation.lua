@@ -8,6 +8,22 @@ local StringUtil =
 	Functions =
 	{
 		{
+			Name = "EscapeLuaFormatString",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns a string with Lua format string tokens ('%') escaped." },
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "escapedText", Type = "stringView", Nilable = false },
+			},
+		},
+		{
 			Name = "EscapeLuaPatterns",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -98,6 +114,21 @@ local StringUtil =
 				{ Name = "maintainBrackets", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all '[' and ']' characters." } },
 				{ Name = "stripNewlines", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, remove all '|n' quoted code sequences." } },
 				{ Name = "maintainAtlases", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, preserve all balanced '|A' and '|a' quoted code sequences." } },
+			},
+
+			Returns =
+			{
+				{ Name = "stripped", Type = "stringView", Nilable = false },
+			},
+		},
+		{
+			Name = "StripTextureMarkupForLooseFiles",
+			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "string", Nilable = false },
 			},
 
 			Returns =

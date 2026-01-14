@@ -55,7 +55,9 @@ function HousingHouseSettingsFrameMixin:SetHouseInfo(houseInfo)
 	self.PlotAccess:SetSelectedSettings(selectedSettings);
 	self.HouseAccess:SetSelectedSettings(selectedSettings);
 	self.AbandonHouseButton:Enable();
-	self.SaveButton:Enable();
+	if self.selectedOwnerID and self.selectedOwnerID ~= -1 then
+		self.SaveButton:Enable();
+	end
 end
 
 function HousingHouseSettingsFrameMixin:OnEvent(event, ...)
@@ -118,10 +120,15 @@ function HousingHouseSettingsFrameMixin:SetupOwnerDropdown(characterList, curren
 	self.HouseOwnerDropdown:OverrideText(text);
 	self.HouseOwnerDropdown.Text:SetTextColor(color.r, color.g, color.b);
 
-	--If the selected index is -1 we failed to fetch the player's list of characters from the server
+	--If the selected index is -1 we failed to fetch the player's list of characters from the server, re-request it
 	if self.selectedOwnerID == -1 then
 		self.HouseOwnerDropdown:Disable();
+		self.SaveButton:Disable();
+		C_Housing.RequestPlayerCharacterList();
 	else
+		if self.houseInfo then
+			self.SaveButton:Enable();
+		end
 		self.HouseOwnerDropdown:Enable();
 	end
 end
@@ -168,9 +175,12 @@ end
 
 function HousingHouseSettingsFrameMixin:OnSaveClicked()
 	PlaySound(SOUNDKIT.HOUSING_SETTINGS_SAVE_BUTTON);
-	local newOwnerGUID = self.characterList[self.selectedOwnerID].playerGUID;
-	local accessSettings = FlagsUtil.Combine(self.PlotAccess.selectedOptions, self.HouseAccess.selectedOptions, true);
-	C_Housing.SaveHouseSettings(newOwnerGUID, accessSettings);
+	--save button shouldn't be enabled if the character list is nil, but if we get here, don't try to use it
+	if self.characterList then
+		local newOwnerGUID = self.characterList[self.selectedOwnerID].playerGUID;
+		local accessSettings = FlagsUtil.Combine(self.PlotAccess.selectedOptions, self.HouseAccess.selectedOptions, true);
+		C_Housing.SaveHouseSettings(newOwnerGUID, accessSettings);
+	end
 	HideUIPanel(self);
 end
 

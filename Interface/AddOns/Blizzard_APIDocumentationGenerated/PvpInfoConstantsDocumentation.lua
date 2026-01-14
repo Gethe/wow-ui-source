@@ -40,14 +40,6 @@ local PvpInfoConstants =
 				{ Name = "MAX_PVP_LOCK_LIST_MAP", Type = "number", Value = 2 },
 			},
 		},
-		{
-			Name = "TrainingGroundConstants",
-			Type = "Constants",
-			Values =
-			{
-				{ Name = "RANDOM_TRAINING_GROUND_LFG_DUNGEON_ID", Type = "number", Value = 3178 },
-			},
-		},
 	},
 };
 

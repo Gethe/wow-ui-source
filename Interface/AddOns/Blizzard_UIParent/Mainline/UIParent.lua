@@ -1060,7 +1060,7 @@ function OpenDeathRecapUI(id)
 	if (not DeathRecapFrame) then
 		DeathRecap_LoadUI();
 	end
-	DeathRecapFrame_OpenRecap(id);
+	DeathRecapFrame:OpenRecap(id);
 end
 
 function InspectUnit(unit)

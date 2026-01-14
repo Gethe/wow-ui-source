@@ -185,44 +185,6 @@ local ActionBarFrame =
 			},
 		},
 		{
-			Name = "GetActionCooldownRemaining",
-			Type = "Function",
-			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Queries the remaining duration of an action cooldown." },
-
-			Arguments =
-			{
-				{ Name = "actionID", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "remainingSeconds", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetActionCooldownRemainingPercent",
-			Type = "Function",
-			RequiresValidActionSlot = true,
-			SecretWhenActionCooldownRestricted = true,
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Queries the remaining duration of an action cooldown as a percentage, optionally evaluating it against a supplied curve." },
-
-			Arguments =
-			{
-				{ Name = "actionID", Type = "luaIndex", Nilable = false },
-				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
-			},
-		},
-		{
 			Name = "GetActionDisplayCount",
 			Type = "Function",
 			RequiresValidActionSlot = true,

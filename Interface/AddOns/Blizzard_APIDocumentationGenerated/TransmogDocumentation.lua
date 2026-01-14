@@ -68,21 +68,6 @@ local Transmog =
 			},
 		},
 		{
-			Name = "GetSlotEffectiveCategory",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "transmogLocation", Type = "TransmogLocation", Mixin = "TransmogLocationMixin", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "categoryID", Type = "TransmogCollectionType", Nilable = false },
-			},
-		},
-		{
 			Name = "GetSlotForInventoryType",
 			Type = "Function",
 			MayReturnNothing = true,

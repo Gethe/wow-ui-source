@@ -430,13 +430,25 @@ ClassTalentButtonCapstoneWithTrackMixin = CreateFromMixins(ClassTalentButtonBase
 function ClassTalentButtonCapstoneWithTrackMixin:OnLoad()
 	ClassTalentButtonBaseMixin.OnLoad(self);
 	TalentButtonCapstoneWithTrackMixin.OnLoad(self);
+
+	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:UpdateEntryInfo(skipUpdate)
+	-- Overrides TalentButtonSpendMixin.
+	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
+	local useMajorSpendSound = self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneSquare;
+	self.selectSound = useMajorSpendSound and SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR or SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
 end
 
 function ClassTalentButtonCapstoneWithTrackMixin:GetCapstonePipMixin()
 	return ClassTalentButtonCapstonePipMixin;
 end
 
-ClassTalentButtonCapstonePipMixin = CreateFromMixins(ClassTalentButtonBaseMixin, TalentButtonCapstonePipMixin);
+-- ClassTalentButtonBaseMixin is placed second here so that its UpdateStateBorder overrides the generic one
+-- inherited by TalentButtonCapstonePipMixin (via TalentButtonArtMixin)
+ClassTalentButtonCapstonePipMixin = CreateFromMixins(TalentButtonCapstonePipMixin, ClassTalentButtonBaseMixin);
 
 function ClassTalentButtonCapstonePipMixin:OnLoad()
 	ClassTalentButtonBaseMixin.OnLoad(self);

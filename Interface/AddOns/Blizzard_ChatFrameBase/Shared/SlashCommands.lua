@@ -1531,8 +1531,12 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXTTOSPEECH, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	local success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
-	if not success then
+	local cmd, success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
+	if success then
+		if not cmd.isMainToggle and not GetCVarBool("CAAEnabled") then
+			CAACommands:SpeakConfirmation(SLASH_CAA_DISABLED_WARNING, SLASH_CAA_DISABLED_WARNING_NARRATED);
+		end
+	else
 		if failureText then
 			CAACommands:SpeakConfirmation(failureText, failureTextNarrated);
 		else

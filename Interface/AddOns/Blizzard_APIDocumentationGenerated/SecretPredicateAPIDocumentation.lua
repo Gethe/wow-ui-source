@@ -9,6 +9,70 @@ local SecretPredicateAPI =
 	Functions =
 	{
 		{
+			Name = "GetPowerTypeSecrecy",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the base secrecy for a power type." },
+
+			Arguments =
+			{
+				{ Name = "powerType", Type = "PowerType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellAuraSecrecy",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the base secrecy for a spell if queried as an aura." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCastSecrecy",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the base secrecy for a spell if queried as a cast." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
+			Name = "GetSpellCooldownSecrecy",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the base secrecy for a spell if queried as a cooldown." },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "secrecy", Type = "SecrecyLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "HasSecretRestrictions",
 			Type = "Function",
 			Documentation = { "Returns true if this client build has secret value restrictions enabled. If false, all APIs that are tagged as potentially returning secrets will never do so." },
@@ -173,6 +237,22 @@ local SecretPredicateAPI =
 			},
 		},
 		{
+			Name = "ShouldUnitHealthMaxBeSecret",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if queries for maximum unit health will produce secret values." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isUnitHealthMaxSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldUnitIdentityBeSecret",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -263,6 +343,19 @@ local SecretPredicateAPI =
 
 	Tables =
 	{
+		{
+			Name = "SecrecyLevel",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "NeverSecret", Type = "SecrecyLevel", EnumValue = 0, Documentation = { "Will never yield secret values when queried." } },
+				{ Name = "AlwaysSecret", Type = "SecrecyLevel", EnumValue = 1, Documentation = { "Will always yield secret values when queried." } },
+				{ Name = "ContextuallySecret", Type = "SecrecyLevel", EnumValue = 2, Documentation = { "May yield secret values when queried depending upon factors such as addon restriction states, unit disposition, etc." } },
+			},
+		},
 	},
 };
 

@@ -7,7 +7,6 @@ function HousingModelPreviewMixin:OnLoad()
 	local forceSceneChange = true;
 	self.ModelScene:TransitionToModelSceneID(Constants.HousingCatalogConsts.HOUSING_CATALOG_DECOR_MODELSCENEID_DEFAULT, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_DISCARD, forceSceneChange);
 	self.ModelSceneControls:SetModelScene(self.ModelScene);
-	self.TextContainer.fixedWidth = self.TextContainer:GetWidth();
 
 	self:SetupTextTooltip(self.NameContainer.Name, 
 		function(tooltip) 
@@ -71,6 +70,8 @@ function HousingModelPreviewMixin:PreviewCatalogEntryInfo(catalogEntryInfo)
 	local totalOwnedText = totalOwned > 0 and HOUSING_DECOR_OWNED_ICON_FMT:format(totalOwned) or nil;
 	self:SetTextOrHide(self.TextContainer.NumOwned, totalOwnedText);
 
+	-- We have dynamic anchors so we need to fix the width before layout to allow children to properly expand.
+	self.TextContainer:SetFixedWidth(self.TextContainer:GetWidth());
 	self.TextContainer:Layout();
 end
 

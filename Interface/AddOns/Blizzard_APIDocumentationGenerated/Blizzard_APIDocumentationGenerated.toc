@@ -118,6 +118,7 @@ FrameAPIFogOfWarFrameDocumentation.lua
 FrameAPIModelSceneFrameDocumentation.lua
 FrameAPIModelSceneFrameActorDocumentation.lua
 FrameAPIModelSceneFrameActorBaseDocumentation.lua
+FrameAPINamePlateDocumentation.lua
 FrameAPIQuestPOIDocumentation.lua
 FrameAPIScenarioPOIDocumentation.lua
 FrameAPISimpleCheckoutDocumentation.lua
@@ -207,6 +208,7 @@ UIModelInfoDocumentation.lua
 MountJournalDocumentation.lua
 MovieDocumentation.lua
 MythicPlusInfoDocumentation.lua
+NamePlateDocumentation.lua
 NamePlateManagerDocumentation.lua
 NeighborhoodInitiativeDocumentation.lua
 NewItemsDocumentation.lua
@@ -391,7 +393,7 @@ BaseDocumentation.lua
 BattlePetConstantsDocumentation.lua
 BattlepayConstantsDocumentation.lua
 BountySharedDocumentation.lua
-ButtonConstantsDocumentation.lua
+ButtonStateDocumentation.lua
 CalendarConstantsDocumentation.lua
 CameraConstantsDocumentation.lua
 CatalogShopConstantsDocumentation.lua
@@ -407,6 +409,7 @@ ClubSharedDocumentation.lua
 ColorDocumentation.lua
 ColorOverrideConstantsDocumentation.lua
 CombatAudioAlertConstantsDocumentation.lua
+CombatAudioAlertSharedDocumentation.lua
 CombatLogConstantsDocumentation.lua
 CombatLogSharedDocumentation.lua
 CombatTextSharedDocumentation.lua
@@ -475,7 +478,6 @@ ModelAnimationSharedDocumentation.lua
 MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
 MythicPlusInfoSharedDocumentation.lua
-NamePlateDocumentation.lua
 NamePlateConstantsDocumentation.lua
 NeighborhoodInitiativesConstantsDocumentation.lua
 PVPMgrConstantsDocumentation.lua
@@ -516,6 +518,7 @@ SeasonsConstantsDocumentation.lua
 SecretAspectConstantsDocumentation.lua
 SecretPredicatesDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
+SharedScriptObjectNamePlateFrameDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua
 SimpleHTMLSharedDocumentation.lua

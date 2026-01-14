@@ -45,6 +45,7 @@
 			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
 			<KeyValue key="isNormalBar" value="true" type="boolean"/>
 			<KeyValue key="enableDividers" value="true" type="boolean"/>
+			<KeyValue key="dynamicEndCaps" value="true" type="boolean"/>
 		</KeyValues>
 
 		<Layers>
@@ -164,31 +165,6 @@
 					</Button>
 				</Frames>
 			</Frame>
-
-			<Button name="MainMenuBarVehicleLeaveButton" parentKey="VehicleLeaveButton" inherits="EditModeVehicleLeaveButtonSystemTemplate" mixin="MainMenuBarVehicleLeaveButtonMixin" hidden="true" motionScriptsWhileDisabled="true"  frameLevel="70" fixedFrameLevel="true">
-				<Size x="32" y="32"/>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="0" y="0"/>
-				</Anchors>
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-			<KeyValue key="skipAutomaticPositioning" value="ACTION_BARS_SKIP_AUTOMATIC_POSITIONING" type="global"/>
-				</KeyValues>
-				<Scripts>
-					<OnLoad method="OnLoad" inherit="prepend"/>
-					<OnEvent method="OnEvent"/>
-					<OnClick method="OnClicked"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-				<NormalTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Up">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</NormalTexture>
-				<PushedTexture file="Interface\Vehicles\UI-Vehicles-Button-Exit-Down">
-					<TexCoords left="0.140625" right="0.859375" top="0.140625" bottom="0.859375"/>
-				</PushedTexture>
-				<HighlightTexture parentKey="Highlight" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
-			</Button>
 		</Frames>
 
 		<Scripts>

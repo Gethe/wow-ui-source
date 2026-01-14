@@ -5,6 +5,7 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_FRIENDLY_NPCS_CVAR)
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.THREAT_DISPLAY_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.DEBUFF_PADDING_CVAR);
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR);
+CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR);
 
 local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
 
@@ -130,6 +131,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.THREAT_DISPLAY_CVAR, self.UpdateThreatDisplay, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self.UpdateAnchors, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self.UpdateShowOnlyName, self);
+	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self.UpdateNameClassColor, self);
 
 	self:RegisterUnitEvent("UNIT_AURA", self.unit);
 	self:RegisterUnitEvent("UNIT_FACTION", self.unit);
@@ -153,6 +155,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	self:UpdateBehindCamera();
 	self:UpdateWidgetsOnlyMode();
 	self:UpdateShowOnlyName();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetActive(not C_Commentator.IsSpectating());
 	self.AurasFrame:SetUnit(self.unit);
@@ -171,6 +174,7 @@ function NamePlateUnitFrameMixin:OnUnitCleared()
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.THREAT_DISPLAY_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self);
 	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.SHOW_ONLY_NAME_FOR_FRIENDLY_PLAYER_UNITS_CVAR, self);
+	CVarCallbackRegistry:UnregisterCallback(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR, self);
 
 	self:UnregisterEvent("UNIT_AURA");
 	self:UnregisterEvent("UNIT_FACTION");
@@ -212,9 +216,12 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate_Outlined");
 		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate_Outlined");
 
-		-- Clickable region defined by both name and health bar.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+		local extraXOffset = 10;
+		local extraYOffset = setupOptions.healthBarHeight / 2;
+
+		-- Clickable region defined by health bar, extending slightly past it to make it easier to target with the mouse.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, -extraXOffset, extraYOffset);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
 	else
 		-- Outlined font is harder to read when text is outside the health bar.
 		self.name:SetFontObject("SystemFont_NamePlate");
@@ -222,9 +229,13 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate");
 		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate");
 
-		-- Clickable region is just the health bar.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.name);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+		local extraXOffset = 10;
+		local nameOffset = 4;
+		local extraYOffset = setupOptions.healthBarHeight / 2;
+
+		-- Clickable region defined by both name and health bar, extending slightly past them to make it easier to target with the mouse.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.name, -extraXOffset - nameOffset, 0);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
 	end
 
 	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
@@ -263,6 +274,7 @@ function NamePlateUnitFrameMixin:UpdateIsPlayer()
 	self.isPlayer = isPlayer;
 
 	self:UpdateShowOnlyName();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsPlayer(self.isPlayer);
 	self.HealthBarsContainer.healthBar:SetIsPlayer(self.isPlayer);
@@ -284,6 +296,11 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 		isFriend = self.explicitIsFriend;
 	elseif self.unit ~= nil then
 		isFriend = UnitIsFriend("player", self.unit);
+
+		-- Cross faction players who are in the local players party but not in an instance are attackable and should appear as enemies.
+		if isFriend and self:IsPlayer() and UnitInParty(self.unit) and UnitCanAttack("player", self.unit) then
+			isFriend = false;
+		end
 	end
 
 	if self.isFriend == isFriend then
@@ -294,6 +311,8 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 
 	self:UpdateThreatDisplay();
 	self:UpdateShowOnlyName();
+	self:UpdateIsSimplified();
+	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
 end
@@ -305,7 +324,10 @@ end
 function NamePlateUnitFrameMixin:UpdateIsDead()
 	local isDead = false;
 
-	if self.unit ~= nil then
+	-- Allow special cases (e.g. the Options Preview Nameplate) to control whether the nameplate is displaying for a dead unit.
+	if self.explicitIsDead ~= nil then
+		isDead = self.explicitIsDead;
+	elseif self.unit ~= nil then
 		isDead = UnitIsDead(self.unit);
 	end
 
@@ -584,6 +606,22 @@ function NamePlateUnitFrameMixin:UpdateShowOnlyName()
 	self:UpdateAnchors();
 end
 
+function NamePlateUnitFrameMixin:UpdateNameClassColor()
+	local colorNameWithClassColor = false;
+
+	if self:IsFriend() and self:IsPlayer() and CVarCallbackRegistry:GetCVarValueBool(NamePlateConstants.USE_CLASS_COLOR_FOR_FRIENDLY_PLAYER_UNIT_NAMES_CVAR) then
+		colorNameWithClassColor = true;
+	end
+
+	if self.colorNameWithClassColor == colorNameWithClassColor then
+		return;
+	end
+
+	self.colorNameWithClassColor = colorNameWithClassColor;
+
+	CompactUnitFrame_UpdateName(self);
+end
+
 function NamePlateUnitFrameMixin:UpdateThreatDisplay()
 	if self:IsFriend() == false then
 		self.displayAggroFlash = CVarCallbackRegistry:GetCVarBitfieldIndex(NamePlateConstants.THREAT_DISPLAY_CVAR, Enum.NamePlateThreatDisplay.Flash);
@@ -710,7 +748,11 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 
 		local bgTexture = healthBar.bgTexture;
 		PixelUtil.SetPoint(bgTexture, "TOPLEFT", healthBar, "TOPLEFT", -2, 3);
-		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 5, -6);
+		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 6, -6);
+
+		local selectedBorder = healthBar.selectedBorder;
+		PixelUtil.SetPoint(selectedBorder, "TOPLEFT", bgTexture, "TOPLEFT", -1, 1);
+		PixelUtil.SetPoint(selectedBorder, "BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", -3, 3);
 	end
 
 	-- Auras Frame
@@ -732,11 +774,13 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 	self.explicitIsMinusMob = explicitValues.isMinusMob;
 	self.explicitThreatSituation = explicitValues.threatSituation;
 	self.explicitAggroFlash = explicitValues.aggroFlash;
+	self.explicitIsDead = explicitValues.isDead;
 
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsSimplified();
 	self:UpdateNameOverride();
+	self:UpdateIsDead();
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);

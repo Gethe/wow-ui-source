@@ -569,10 +569,31 @@ function CooldownViewerItemMixin:TriggerChargeGainedAlert()
 	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.ChargeGained);
 end
 
+function CooldownViewerItemMixin:TriggerAuraAppliedAlert()
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.OnAuraApplied);
+end
+
+function CooldownViewerItemMixin:CheckTriggerAuraAppliedAlert(auraInstanceID)
+	if auraInstanceID and auraInstanceID == self:GetAuraSpellInstanceID() then
+		self:TriggerAuraAppliedAlert();
+	end
+end
+
+function CooldownViewerItemMixin:TriggerAuraRemovedAlert()
+	self:TriggerAlertEvent(Enum.CooldownViewerAlertEventType.OnAuraRemoved);
+end
+
+function CooldownViewerItemMixin:CheckTriggerAuraRemovedAlert(auraInstanceID)
+	if auraInstanceID and auraInstanceID == self:GetAuraSpellInstanceID() then
+		self:TriggerAuraRemovedAlert();
+	end
+end
+
 function CooldownViewerItemMixin:OnNewTarget()
 	-- This is the first thing that should happen when handling a target switch
 	-- Clear out all state data that was built while a previous target existed.
 	self:SetIsActive(false); -- Force the frame back to an inactive state so that the pending update can re-run the refresh logic.
+	self:SetLinkedSpell(nil);
 	self:SetPandemicAlertTriggerTime(GetTime(), nil, nil);
 end
 
@@ -659,6 +680,10 @@ function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	CooldownViewerItemMixin.OnCooldownIDCleared(self);
 
 	ActionButtonSpellAlertManager:HideAlert(self);
+
+	self.previousCooldownChargesCount = nil;
+	self.cooldownChargesCount = nil;
+	self.cooldownChargesShown = nil;
 
 	if self.needsRangeCheck == true then
 		C_Spell.EnableSpellRangeCheck(self.rangeCheckSpellID, false);
@@ -916,8 +941,8 @@ function CooldownViewerCooldownItemMixin:CacheCooldownValues()
 end
 
 function CooldownViewerCooldownItemMixin:SetCachedChargeValues(count, shown)
-	local considerAddingAlert = self.previousCooldownChargesCount ~= nil;
-	self.previousCooldownChargesCount = (self.cooldownChargesCount or 0);
+	local considerAddingAlert = self.previousCooldownChargesCount ~= nil and count ~= nil;
+	self.previousCooldownChargesCount = (self.cooldownChargesCount or count);
 	self.cooldownChargesCount = count;
 	self.cooldownChargesShown = shown;
 
@@ -1526,6 +1551,9 @@ function CooldownViewerMixin:OnUpdate(elapsed)
 end
 
 function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
+	-- Called first so that item frames still have the right aura instanceIDs set.
+	self:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo);
+
 	if unit == "player" and unitAuraUpdateInfo then
 		if unitAuraUpdateInfo.removedAuraInstanceIDs then
 			for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
@@ -1556,6 +1584,29 @@ function CooldownViewerMixin:OnUnitAura(unit, unitAuraUpdateInfo)
 		end
 	elseif unit == "target" then
 		self:RefreshActiveFramesForTargetChange();
+	end
+
+	-- Called last so that item frames have already processed the aura changes.
+	self:CheckAuraAddedAlertTriggers(unitAuraUpdateInfo);
+end
+
+function CooldownViewerMixin:CheckAuraRemovedAlertTriggers(unitAuraUpdateInfo)
+	if unitAuraUpdateInfo and unitAuraUpdateInfo.removedAuraInstanceIDs then
+		for _, auraInstanceID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs) do
+			for itemFrame in self.itemFramePool:EnumerateActive() do
+				itemFrame:CheckTriggerAuraRemovedAlert(auraInstanceID);
+			end
+		end
+	end
+end
+
+function CooldownViewerMixin:CheckAuraAddedAlertTriggers(unitAuraUpdateInfo)
+	if unitAuraUpdateInfo and unitAuraUpdateInfo.addedAuras then
+		for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
+			for itemFrame in self.itemFramePool:EnumerateActive() do
+				itemFrame:CheckTriggerAuraAppliedAlert(aura.auraInstanceID);
+			end
+		end
 	end
 end
 

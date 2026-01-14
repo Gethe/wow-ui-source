@@ -3,6 +3,22 @@ local HousingDecorShared =
 	Tables =
 	{
 		{
+			Name = "HousingDecorPlacementRestriction",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 1,
+			MaxValue = 32,
+			Fields =
+			{
+				{ Name = "TooFarAway", Type = "HousingDecorPlacementRestriction", EnumValue = 1 },
+				{ Name = "OutsideRoomBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 2 },
+				{ Name = "OutsidePlotBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 4 },
+				{ Name = "ChildOutsideBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 8 },
+				{ Name = "InvalidTarget", Type = "HousingDecorPlacementRestriction", EnumValue = 16 },
+				{ Name = "InvalidCollision", Type = "HousingDecorPlacementRestriction", EnumValue = 32 },
+			},
+		},
+		{
 			Name = "HousingDecorDyeSlot",
 			Type = "Structure",
 			Fields =

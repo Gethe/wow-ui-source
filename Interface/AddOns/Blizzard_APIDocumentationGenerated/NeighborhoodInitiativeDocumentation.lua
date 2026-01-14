@@ -18,6 +18,15 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "GetActiveNeighborhood",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "neighborhoodGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "GetInitiativeActivityLogInfo",
 			Type = "Function",
 
@@ -168,13 +177,23 @@ local NeighborhoodInitiative =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "InitiativeCompleted",
+			Type = "Event",
+			LiteralName = "INITIATIVE_COMPLETED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "initiativeTitle", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "InitiativeTaskCompleted",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASK_COMPLETED",
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "initiativeTaskID", Type = "number", Nilable = false },
+				{ Name = "taskName", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -192,7 +211,7 @@ local NeighborhoodInitiative =
 			Name = "InitiativeTasksTrackedUpdated",
 			Type = "Event",
 			LiteralName = "INITIATIVE_TASKS_TRACKED_UPDATED",
-			SynchronousEvent = true,
+			UniqueEvent = true,
 		},
 		{
 			Name = "NeighborhoodInitiativeUpdated",

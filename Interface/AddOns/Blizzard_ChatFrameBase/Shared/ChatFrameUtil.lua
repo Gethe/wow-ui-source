@@ -404,10 +404,12 @@ function ChatFrameUtil.OpenChat(text, chatFrame, desiredCursorPosition)
 		editBox.setText = 1;
 	end
 
-	if ( editBox:GetChatType() == editBox:GetStickyType() ) then
-		if ( (editBox:GetStickyType() == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
-		(editBox:GetStickyType() == "RAID") and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) or
-		(editBox:GetStickyType() == "INSTANCE_CHAT") and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
+	local stickyType = editBox:GetStickyType();
+	if editBox:GetChatType() == stickyType then
+		if ((stickyType == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
+			(stickyType == "RAID") and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) or
+			(stickyType == "INSTANCE_CHAT") and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
+
 			editBox:SetChatType("SAY");
 		end
 	end

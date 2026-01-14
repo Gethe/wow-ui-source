@@ -54,6 +54,15 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "GetNumFloors",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numFloors", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoomPlacementBudget",
 			Type = "Function",
 			Documentation = { "Returns the max room placement budget for the current house interior; Can be increased via house level" },

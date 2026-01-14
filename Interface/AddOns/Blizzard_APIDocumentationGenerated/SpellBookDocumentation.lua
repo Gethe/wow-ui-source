@@ -159,7 +159,7 @@ local SpellBook =
 		{
 			Name = "GetSpellBookItemCastCount",
 			Type = "Function",
-			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretWhenSpellCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns number of times a SpellBookItem can be cast, typically based on availability of things like required reagent items; Always returns 0 if item is not found or is not a spell" },
 
@@ -196,7 +196,7 @@ local SpellBook =
 			Name = "GetSpellBookItemCharges",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretWhenSpellCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a table of info about the charges of a charge-accumulating SpellBookItem; May return nil if item is not found or is not charge-based" },
 
@@ -215,7 +215,7 @@ local SpellBook =
 			Name = "GetSpellBookItemCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretWhenSpellCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 
@@ -321,7 +321,7 @@ local SpellBook =
 			Name = "GetSpellBookItemLossOfControlCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretWhenSpellBookItemCooldownRestricted = true,
+			SecretWhenSpellCooldownRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns nil if item doesn't exist or if this kind of item doesn't display cooldowns (ex: future or offspec spells)" },
 

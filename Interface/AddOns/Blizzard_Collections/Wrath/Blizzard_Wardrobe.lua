@@ -39,7 +39,7 @@ function WardrobeCollectionFrameMixin:OnLoad()
 
 	self.ItemsCollectionFrame.GetTooltipSourceIndexCallback = GenerateClosure(self.GetTooltipSourceIndex, self);
 
-	self:GetParent().portrait:SetPortraitToAsset("Interface\\Icons\\inv_misc_enggizmos_19");
+	self:GetParent().portrait:SetTexture("Interface\\Icons\\inv_misc_enggizmos_19");
 
 	self.FilterButton:SetWidth(85);
 

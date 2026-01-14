@@ -161,6 +161,7 @@ function NamePlatePreviewMixin:OnNamePlateThreatDisplayChanged()
 	local explicitValues = {
 		isPlayer = false,
 		isFriend = false,
+		isDead = false,
 		threatSituation = threatStateRed,
 		aggroFlash = true,
 	};
@@ -171,6 +172,7 @@ function NamePlatePreviewMixin:ToggleEnemyNPCAuraDisplay()
 	local explicitValues = {
 		isPlayer = false,
 		isFriend = false,
+		isDead = false,
 	};
 	self:SetExplicitValues(explicitValues);
 end
@@ -192,23 +194,25 @@ function NamePlatePreviewMixin:ToggleFriendlyPlayerAuraDisplay()
 end
 
 function NamePlatePreviewMixin:ToggleSimplifiedType(simplifiedType)
-	local simplifiedTypeSet = CVarCallbackRegistry:GetCVarBitfieldIndex("nameplateSimplifiedTypes", simplifiedType);
-	if simplifiedTypeSet ~= true then
-		return;
-	end
-
 	local explicitValues = {};
 
 	if simplifiedType == Enum.NamePlateSimplifiedType.Minion then
 		explicitValues.isMinion = true;
+		explicitValues.isPlayer = false;
+		explicitValues.isFriend = false;
+		explicitValues.isDead = false;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.MinusMob then
 		explicitValues.isMinusMob = true;
+		explicitValues.isPlayer = false;
+		explicitValues.isFriend = false;
+		explicitValues.isDead = false;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.FriendlyPlayer then
 		explicitValues.isPlayer = true;
 		explicitValues.isFriend = true;
 	elseif simplifiedType == Enum.NamePlateSimplifiedType.FriendlyNpc then
 		explicitValues.isPlayer = false;
 		explicitValues.isFriend = true;
+		explicitValues.isDead = false;
 	end
 
 	self:SetExplicitValues(explicitValues);
@@ -614,6 +618,7 @@ local function Register()
 		local defaultValue = CVarCallbackRegistry:GetCVarBitfieldDefault(nameplateCastBarDisplayCVar);
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_CAST_BAR_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_CAST_BAR_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_CAST_BAR_DISPLAY_TOOLTIP);
+		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_CAST_BAR_DISPLAY_NONE);
 		initializer.OnShow = ShowPreviewNamePlateCastBar;
 		initializer.OnHide = OnDropdownHidden;

@@ -2665,7 +2665,7 @@ function EditModeAccountSettingsMixin:GetDamageMeterFrames()
 end
 
 function EditModeAccountSettingsMixin:RefreshDamageMeter()
-	local showDamageMeter = self.settingsCheckButtons.DamageMeter:IsControlChecked();
+	local showDamageMeter = self.settingsCheckButtons.DamageMeter:IsControlChecked() and self.settingsCheckButtons.DamageMeter:ShouldEnable();
 
 	local damageMeterFrames = self:GetDamageMeterFrames();
 

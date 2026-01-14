@@ -7,6 +7,20 @@ local UnitHealPredictionCalculatorAPI =
 	Functions =
 	{
 		{
+			Name = "GetCurrentHealth",
+			Type = "Function",
+			Documentation = { "Returns the base amount of unit health." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "currentHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDamageAbsorbClampMode",
 			Type = "Function",
 			ReturnsNeverSecret = true,
@@ -129,6 +143,91 @@ local UnitHealPredictionCalculatorAPI =
 			},
 		},
 		{
+			Name = "GetMaximumDamageAbsorbs",
+			Type = "Function",
+			Documentation = { "Returns the maximum clamping amount for damage absorbs." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maximumDamageAbsorbs", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaximumHealAbsorbs",
+			Type = "Function",
+			Documentation = { "Returns the maximum clamping amount for heal absorbs." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maximumHealAbsorbs", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaximumHealth",
+			Type = "Function",
+			Documentation = { "Returns the base amount of maximum unit health." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maximumHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaximumHealthMode",
+			Type = "Function",
+			ReturnsNeverSecret = true,
+			Documentation = { "Returns the configured maximum health mode." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maximumHealthMode", Type = "UnitMaximumHealthMode", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMaximumIncomingHeals",
+			Type = "Function",
+			Documentation = { "Returns the maximum clamping amount for incoming heals." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "maximumIncomingHeals", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMissingHealth",
+			Type = "Function",
+			Documentation = { "Returns the base amount of missing unit health." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "missingHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetPredictedValues",
 			Type = "Function",
 			Documentation = { "Returns the raw total figures used for data calculations." },
@@ -140,6 +239,62 @@ local UnitHealPredictionCalculatorAPI =
 			Returns =
 			{
 				{ Name = "predictedValues", Type = "UnitHealPredictionValues", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalDamageAbsorbs",
+			Type = "Function",
+			Documentation = { "Returns the base total amount of all applied damage absorb shields." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "totalDamageAbsorbs", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalHealAbsorbs",
+			Type = "Function",
+			Documentation = { "Returns the base total amount of all applied heal absorption effects." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "totalHealAbsorbs", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalIncomingHeals",
+			Type = "Function",
+			Documentation = { "Returns the base total amount of all incoming heals." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "totalIncomingHeals", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTotalIncomingHealsFromHealer",
+			Type = "Function",
+			Documentation = { "Returns the base total amount of all incoming heals from the healer unit, if any." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "totalIncomingHealsFromHealer", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -161,6 +316,15 @@ local UnitHealPredictionCalculatorAPI =
 			Name = "Reset",
 			Type = "Function",
 			Documentation = { "Resets all stored state on the object." },
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ResetPredictedValues",
+			Type = "Function",
+			Documentation = { "Resets all stored healing values used for calculations." },
 
 			Arguments =
 			{
@@ -219,6 +383,17 @@ local UnitHealPredictionCalculatorAPI =
 			Arguments =
 			{
 				{ Name = "incomingHealOverflowPercent", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetMaximumHealthMode",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Changes the calculation mode for maximum health values used for clamping." },
+
+			Arguments =
+			{
+				{ Name = "maximumHealthMode", Type = "UnitMaximumHealthMode", Nilable = false },
 			},
 		},
 		{

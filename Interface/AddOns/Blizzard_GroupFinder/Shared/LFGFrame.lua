@@ -562,11 +562,11 @@ function LFDRoleButton_OnEnter(self)
 		local queueDungeonID = LFDQueueFrame.type;
 		local roleID = self:GetID();
 		local reasons;
-		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
+		GameTooltip_SetTitle(GameTooltip, ERR_ROLE_UNAVAILABLE);
 		if ( type(queueDungeonID) == "number" ) then
 			local textTable = LFGRoleButton_LockReasonsTextTable(queueDungeonID, roleID);
 			for text,_ in pairs( textTable ) do
-				GameTooltip:AddLine(text, nil, nil, nil, true);
+				GameTooltip_AddNormalLine(GameTooltip, text);
 			end
 		else
 			local textTable = {};
@@ -576,14 +576,14 @@ function LFDRoleButton_OnEnter(self)
 				end
 			end
 			for text, _ in pairs( textTable ) do
-				GameTooltip:AddLine(text, nil, nil, nil, true);
+				GameTooltip_AddNormalLine(GameTooltip, text);
 			end
 		end
 		GameTooltip:Show();
 		return;
 	elseif ( self.alert:IsShown() ) then
-		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
-		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
+		GameTooltip_SetTitle(GameTooltip, INSTANCE_ROLE_WARNING_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, INSTANCE_ROLE_WARNING_TEXT);
 	end
 	GameTooltip:Show();
 	LFGFrameRoleCheckButton_OnEnter(self);
@@ -752,7 +752,8 @@ function LFGDungeonReadyPopup_Update()
 			LFGDungeonReadyDialog.background:SetWidth(294);
 			LFGDungeonReadyDialog.instanceInfo.underline:Show();
 
-			LFGDungeonReadyDialog.label:SetText(RANDOM_DUNGEON_IS_READY);
+			local labelText = (subtypeID == LFG_SUBTYPEID_TRAINING_GROUNDS) and BATTLEGROUND_IS_READY or RANDOM_DUNGEON_IS_READY;
+			LFGDungeonReadyDialog.label:SetText(labelText);
 
 			LFGDungeonReadyDialog.instanceInfo:Hide();
 

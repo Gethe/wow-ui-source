@@ -217,6 +217,17 @@ local HousingExpertModeUI =
 			},
 		},
 		{
+			Name = "HousingExpertModePlacementFlagsUpdated",
+			Type = "Event",
+			LiteralName = "HOUSING_EXPERT_MODE_PLACEMENT_FLAGS_UPDATED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "targetType", Type = "HousingExpertModeTargetType", Nilable = false },
+				{ Name = "activeFlags", Type = "HousingDecorPlacementRestriction", Nilable = false },
+			},
+		},
+		{
 			Name = "HousingExpertModeSelectedTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_EXPERT_MODE_SELECTED_TARGET_CHANGED",

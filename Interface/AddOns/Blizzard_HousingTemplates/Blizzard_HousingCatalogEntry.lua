@@ -197,7 +197,26 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:Show();
 	end
 
-	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
+	local anyDyes = false;
+	for i, dyeID in ipairs(self.entryInfo.dyeIDs) do
+		local icon = self.dyeIcons[i];
+		if dyeID > 0 then
+			local dyeColorInfo = C_DyeColor.GetDyeColorInfo(dyeID);
+			if dyeColorInfo then
+				icon:SetVertexColor(dyeColorInfo.swatchColorStart:GetRGB());
+			end
+			icon:SetAtlas("dye-drop_32");
+			anyDyes = true;
+		else
+			icon:SetVertexColor(1,1,1);
+			icon:SetAtlas("dye-drop-no-dye_32")
+		end
+	end
+
+	self.CustomizeIcon:SetShown(not anyDyes and self.entryInfo.canCustomize);
+	for i, icon in ipairs(self.dyeIcons) do
+		icon:SetShown(anyDyes and i <= #self.entryInfo.dyeIDs);
+	end
 
 	self.InfoIcon:Hide();
 

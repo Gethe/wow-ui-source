@@ -1,5 +1,4 @@
 ## Title: Blizzard_CombatLogProcessor
-## LoadFirst: 1
 ## UseSecureEnvironment: 1
 ## AllowLoadGameType: mainline
 ## Dependencies: Blizzard_CombatLogBase

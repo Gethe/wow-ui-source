@@ -26,7 +26,7 @@ local HousingCatalogUI =
 		{
 			Name = "CreateCatalogSearcher",
 			Type = "Function",
-			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays; Users MUST listen for HousingCatalogSearcherReleased event to avoid hanging onto released instances (ie during UI reload/teardown)" },
+			Documentation = { "Creates a new instance of a HousingCatalog searcher; This can be used to asynchronously search/filter the HousingCatalog without affecting/being restricted by the filter state of other Housing Catalog UI displays" },
 
 			Returns =
 			{
@@ -324,16 +324,6 @@ local HousingCatalogUI =
 			},
 		},
 		{
-			Name = "HousingCatalogSearcherReleased",
-			Type = "Event",
-			LiteralName = "HOUSING_CATALOG_SEARCHER_RELEASED",
-			SynchronousEvent = true,
-			Payload =
-			{
-				{ Name = "searcher", Type = "HousingCatalogSearcher", Nilable = false },
-			},
-		},
-		{
 			Name = "HousingCatalogSubcategoryUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_CATALOG_SUBCATEGORY_UPDATED",
@@ -457,6 +447,7 @@ local HousingCatalogUI =
 				{ Name = "isPrefab", Type = "bool", Nilable = false },
 				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false, Documentation = { "Labels for each of the customizations applied to this entry, if any" } },
+				{ Name = "dyeIDs", Type = "table", InnerType = "number", Nilable = false },
 				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false, Documentation = { "House XP that can be gained upon acquiring this entry for the first time" } },
 				{ Name = "sourceText", Type = "cstring", Nilable = false, Documentation = { "Describes specific sources this entry may be gained from; Faction-specific sources may or may not be included based on the current player's faction" } },

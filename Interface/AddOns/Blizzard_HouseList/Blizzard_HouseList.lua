@@ -70,10 +70,12 @@ end
 
 function HouseListFrameMixin:OnShow()
     FrameUtil.RegisterFrameForEvents(self, HouseListFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_SOCIAL_MENU_OPEN);
 end
 
 function HouseListFrameMixin:OnHide()
     FrameUtil.UnregisterFrameForEvents(self, HouseListFrameShowingEvents);
+	PlaySound(SOUNDKIT.HOUSING_SOCIAL_MENU_CLOSE);
 end
 
 function HouseListFrameMixin:OnHouseListUpdated(houseInfoList)
@@ -129,6 +131,7 @@ function HouseEntryTemplateMixin:Init(elementData)
 end
 
 function HouseEntryTemplateMixin:OnVisitHouseClicked()
+	PlaySound(SOUNDKIT.HOUSING_SOCIAL_MENU_VISIT_HOUSE);
 	C_Housing.VisitHouse(self.houseInfo.neighborhoodGUID, self.houseInfo.houseGUID, self.houseInfo.plotID);
 end
 
@@ -168,6 +171,7 @@ end
 
 function HouseEntryTemplateMixin:OnClick()
     HouseListFrame.houseEntrySelectionBehavior:ToggleSelect(self);
+	PlaySound(SOUNDKIT.HOUSING_SOCIAL_MENU_MINIMIZE_MAXIMIZE);
 end
 
 function HouseEntryTemplateMixin:UpdatePlusMinusTexture()

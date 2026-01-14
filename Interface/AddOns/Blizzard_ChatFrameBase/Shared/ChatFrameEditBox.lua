@@ -406,16 +406,24 @@ function ChatFrameEditBoxMixin:OnEnterPressed()
 	end
 	self:SendText(1);
 
-	local type = self:GetChatType();
-	local chatFrame = self:GetParent();
-	if ( chatFrame.isTemporary and chatFrame.chatType ~= "PET_BATTLE_COMBAT_LOG" ) then --Temporary window sticky types never change.
-		self:SetStickyType(chatFrame.chatType);
-		--BN_WHISPER FIXME
-		if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
-			self:SetTellTarget(chatFrame.chatTarget);
+	if IsVoiceTranscription(SELECTED_CHAT_FRAME) then
+		-- Always return to the VOICE_TEXT types after the message has been sent
+		-- when we are in the voice tab.
+		self:SetChatType("VOICE_TEXT");
+		self:SetStickyType("VOICE_TEXT");
+	else
+		local chatFrame = self:GetParent();
+		if ( chatFrame.isTemporary and chatFrame.chatType ~= "PET_BATTLE_COMBAT_LOG" ) then --Temporary window sticky types never change.
+			self:SetStickyType(chatFrame.chatType);
+			if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
+				self:SetTellTarget(chatFrame.chatTarget);
+			end
+		else
+			local type = self:GetChatType();
+			if ( ChatTypeInfo[type].sticky == 1 ) then
+				self:SetStickyType(type);
+			end
 		end
-	elseif ( ChatTypeInfo[type].sticky == 1 ) then
-		self:SetStickyType(type);
 	end
 
 	self:ClearChat();

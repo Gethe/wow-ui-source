@@ -574,6 +574,7 @@ function PersonalResourceDisplayMixin:SetupClassBar()
 		classFrame:SetPoint("CENTER", self.ClassFrameContainer, "CENTER");
 		classFrame:SetScript("OnShow", function() 
 			classFrame:SetPoint("CENTER", self.ClassFrameContainer, "CENTER");
+			self:UpdateAdditionalBarAnchors();
 		end);
 
 		self.ClassFrameContainer:Show();

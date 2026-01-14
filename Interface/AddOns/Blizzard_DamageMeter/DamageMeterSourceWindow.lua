@@ -161,6 +161,7 @@ function DamageMeterSourceWindowMixin:BuildDataProvider()
 	local combatSessionSource = self:GetCombatSessionSource();
 	local combatSpells = combatSessionSource and combatSessionSource.combatSpells or {};
 	local maxAmount = combatSessionSource and combatSessionSource.maxAmount or 0;
+	local sessionTotalAmount = combatSessionSource and combatSessionSource.totalAmount or 0;
 	local showsValuePerSecondAsPrimary = self:ShowsValuePerSecondAsPrimary();
 
 	local dataProvider = CreateDataProvider();
@@ -168,6 +169,7 @@ function DamageMeterSourceWindowMixin:BuildDataProvider()
 		combatSpell.sourceGUID = self.sourceGUID;
 		combatSpell.classFilename = self.classFilename;
 		combatSpell.maxAmount = maxAmount;
+		combatSpell.sessionTotalAmount = sessionTotalAmount;
 		combatSpell.index = i;
 		combatSpell.showsValuePerSecondAsPrimary = showsValuePerSecondAsPrimary;
 

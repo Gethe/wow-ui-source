@@ -3,7 +3,6 @@ local HouseInfoLifetimeEvents =
 {
 	"PLAYER_HOUSE_LIST_UPDATED",
 	"NEIGHBORHOOD_INITIATIVE_UPDATED",
-	"INITIATIVE_TASK_COMPLETED",
 	"INITIATIVE_TASKS_TRACKED_UPDATED",
 	"INITIATIVE_TASKS_TRACKED_LIST_CHANGED",
 	"INITIATIVE_ACTIVITY_LOG_UPDATED",
@@ -158,14 +157,47 @@ end
 
 function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 	local oldSelectedHouseID = self.selectedHouseID;
-	self.selectedHouseID = 1;
+	local oldSelectedHouseInfo = self.selectedHouseInfo;
+	self.selectedHouseID = nil;
+	self.selectedHouseInfo = nil;
 
-	if oldSelectedHouseID then
-		local newSelectedHouseInfo = houseInfoList[self.selectedHouseID];
+	if oldSelectedHouseID and oldSelectedHouseInfo then
+		local newSelectedHouseInfo = houseInfoList[oldSelectedHouseID];
 		-- If we had something previously selected, and it still exists in the updated list, maintain that selection
-		if self.selectedHouseInfo and self.selectedHouseInfo.houseGUID == newSelectedHouseInfo.houseGUID then
+		if newSelectedHouseInfo and oldSelectedHouseInfo.houseGUID == newSelectedHouseInfo.houseGUID then
 			self.selectedHouseID = oldSelectedHouseID;
 		end
+	end
+
+	if not self.selectedHouseID then
+		-- If we don't have a previous selection, check if we're in a neighborhood and default to a house that belongs there.
+		local currentNeighborhoodGUID = C_Housing.GetCurrentNeighborhoodGUID();
+		if currentNeighborhoodGUID then
+			for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+				if houseInfo.neighborhoodGUID == currentNeighborhoodGUID then
+					self.selectedHouseID = houseInfoIndex;
+					break;
+				end
+			end
+		end
+	end
+
+	if not self.selectedHouseID then
+		-- If we still don't have a selection, then default to a house in your active neighborhood
+		local activeNeighborhoodGUID = C_NeighborhoodInitiative.GetActiveNeighborhood();
+		if activeNeighborhoodGUID then
+			for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+				if houseInfo.neighborhoodGUID == activeNeighborhoodGUID then
+					self.selectedHouseID = houseInfoIndex;
+					break;
+				end
+			end
+		end
+	end
+
+	-- Fallback to just using the first one in the list
+	if not self.selectedHouseID then
+		self.selectedHouseID = 1;
 	end
 
 	local function OnHouseSelected(houseInfoID)
@@ -189,9 +221,8 @@ function HousingDashboardHouseInfoMixin:RefreshHouseDropdown(houseInfoList)
 			OnHouseSelected(houseInfoID);
 		end;
 
-		for houseInfoID = 1, #houseInfoList do
-			local houseInfo = houseInfoList[houseInfoID];
-			rootDescription:CreateRadio(houseInfo.houseName, IsSelected, SetSelected, houseInfoID);
+		for houseInfoIndex, houseInfo in ipairs(houseInfoList) do
+			rootDescription:CreateRadio(houseInfo.houseName, IsSelected, SetSelected, houseInfoIndex);
 		end
 	end);
 
@@ -579,7 +610,7 @@ function InitiativesTabMixin:RefreshTaskList()
 	-- Now insert data into provider with our tree
 	for _, task in pairs(taskList) do
 		if #task.children > 0 then
-			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked, hasChild = true};
+			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked, rewardQuestID = task.rewardQuestID, hasChild = true};
 			local topLevelTask = dataProvider:Insert(topLevelTaskData);
 			for _, child in pairs(task.children) do
 				child.isSubtask = true;
@@ -737,7 +768,7 @@ function InitiativeTaskButtonMixin:OnClick_Internal(button)
 		return true;
 	end
 
-	if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+	if ( IsModifiedClick("QUESTWATCHTOGGLE") and not data.isSubtask ) then
 		if data.tracked then
 			C_NeighborhoodInitiative.RemoveTrackedInitiativeTask(data.ID);
 		else
@@ -787,7 +818,11 @@ function InitiativeTaskButtonMixin:ShowTooltip()
 		return;
 	end
 
-	GameTooltip_SetTitle(GameTooltip, data.taskName, NORMAL_FONT_COLOR, true);
+	if data.timesCompleted and data.timesCompleted > 0 and data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
+		GameTooltip_SetTitle(GameTooltip, HOUSING_DASHBOARD_REPEATABLE_TASK_TITLE_TOOLTIP_FORMAT:format(data.taskName, data.timesCompleted), NORMAL_FONT_COLOR);
+	else
+		GameTooltip_SetTitle(GameTooltip, data.taskName, NORMAL_FONT_COLOR);
+	end
 
 	if data.taskType == Enum.NeighborhoodInitiativeTaskType.RepeatableInfinite then
 		GameTooltip_AddNormalLine(GameTooltip, HOUSING_ENDEAVOR_REPEATABLE_TASK)
@@ -837,6 +872,16 @@ end
 ---------------------Initiatives Tab: ProgressBar Threshold-------------------------------
 ProgressThresholdMixin = {};
 
+function ProgressThresholdMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.Reward.name);
+	GameTooltip_AddNormalLine(GameTooltip, self.Reward.description);
+	if ( self.Reward.currencyID ) then
+		GameTooltip:SetCurrencyByID(self.Reward.currencyID);
+	end
+	GameTooltip:Show();
+end
+
 function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, isFinalReward)
 	self.Reward.name = thresholdInfo.rewards[1].title;
 	self.Reward.description = thresholdInfo.rewards[1].description;
@@ -844,8 +889,11 @@ function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, i
 	local rewardQuestID = thresholdInfo.rewards[1].rewardQuestID;
 	if ( rewardQuestID > 0 ) then
 		local currencyInfo = C_QuestLog.GetQuestRewardCurrencyInfo(rewardQuestID, 1, false);
-		if ( currencyInfo and currencyInfo.texture ) then
-			self.Reward.Icon:SetTexture(currencyInfo.texture);
+		if ( currencyInfo ) then
+			self.Reward.currencyID = currencyInfo.currencyID;
+			if (currencyInfo.texture ) then
+				self.Reward.Icon:SetTexture(currencyInfo.texture);
+			end
 		end
 	end
 

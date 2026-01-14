@@ -24,6 +24,7 @@ local UnitConstants =
 				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = false },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{
@@ -49,6 +50,7 @@ local UnitConstants =
 				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{

@@ -111,18 +111,12 @@
 						<Layers>
 							<Layer level="BACKGROUND">
 								<Texture parentKey="bgTexture" atlas="UI-HUD-CoolDownManager-Bar-BG">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="3"/>
-										<Anchor point="BOTTOMRIGHT" x="5" y="-6"/>
-									</Anchors>
+									<!-- Anchoring handled dynamically in lua.-->
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY">
 								<Texture parentKey="selectedBorder" atlas="UI-HUD-Nameplates-Selected">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="-2" y="3"/>
-										<Anchor point="BOTTOMRIGHT" x="2" y="-3"/>
-									</Anchors>
+									<!-- Anchoring handled dynamically in lua.-->
 								</Texture>
 								<Texture parentKey="deselectedOverlay" atlas="ui-hud-nameplates-deselected-overlay">
 									<Anchors>

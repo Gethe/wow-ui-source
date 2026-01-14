@@ -773,7 +773,7 @@ function QuestUtils_AddQuestRewardsToTooltip(tooltip, questID, style)
 	end
 
 	-- favor
-	local favor = C_QuestInfoSystem.GetQuestLogRewardFavor(questID);
+	local favor = C_QuestInfoSystem.GetQuestLogRewardFavor(questID, style.clampFavorToCycleCap);
 	if ( favor > 0 ) then
 		GameTooltip_AddColoredLine(tooltip, BONUS_OBJECTIVE_HOUSING_FAVOR_FORMAT:format(favor, HOUSING_DASHBOARD_REWARD_ESTATE_XP), HIGHLIGHT_FONT_COLOR);
 		hasAnySingleLineRewards = true;

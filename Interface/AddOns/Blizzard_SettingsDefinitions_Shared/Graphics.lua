@@ -944,6 +944,8 @@ local function Register()
 	local advRaidSettings = GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, AddAdvancedQualitySetting);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
+	raidSetting:SetCommitFlags(Settings.CommitFlag.KioskProtected, Settings.CommitFlag.Apply);
+
 	local raidGraphicsSetting = Settings.GetSetting("PROXY_RAID_GRAPHICS_QUALITY");
 	-- Graphics setting must be applied last to prevent the OnGCChanged callback from
 	-- overwriting any child settings that have yet to been applied.

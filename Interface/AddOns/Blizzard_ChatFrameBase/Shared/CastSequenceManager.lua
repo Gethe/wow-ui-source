@@ -131,11 +131,11 @@ local function ExecuteCastSequence(sequence, target)
 		CastSequenceManager = CreateFrame("Frame");
 		CastSequenceManager.elapsed = 0;
 		CastSequenceManager:RegisterEvent("PLAYER_DEAD");
-		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_SENT");
-		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED");
-		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_FAILED");
-		CastSequenceManager:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET");
+		CastSequenceManager:RegisterUnitEvent("UNIT_SPELLCAST_SENT", "player", "pet");
+		CastSequenceManager:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "pet");
+		CastSequenceManager:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "player", "pet");
+		CastSequenceManager:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", "player", "pet");
+		CastSequenceManager:RegisterUnitEvent("UNIT_SPELLCAST_FAILED_QUIET", "player", "pet");
 		CastSequenceManager:RegisterEvent("PLAYER_TARGET_CHANGED");
 		CastSequenceManager:RegisterEvent("PLAYER_REGEN_ENABLED");
 		CastSequenceManager:SetScript("OnEvent", CastSequenceManager_OnEvent);

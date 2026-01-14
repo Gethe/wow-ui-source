@@ -280,44 +280,6 @@ local Spell =
 			},
 		},
 		{
-			Name = "GetSpellCooldownRemaining",
-			Type = "Function",
-			RequiresValidSpellIdentifier = true,
-			SecretWhenSpellCooldownRestricted = true,
-			SecretArguments = "AllowedWhenTainted",
-			Documentation = { "Queries the remaining duration of a spell cooldown." },
-
-			Arguments =
-			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "remainingSeconds", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetSpellCooldownRemainingPercent",
-			Type = "Function",
-			RequiresValidSpellIdentifier = true,
-			SecretWhenSpellCooldownRestricted = true,
-			SecretWhenCurveSecret = true,
-			SecretArguments = "AllowedWhenTainted",
-			Documentation = { "Queries the remaining duration of a spell cooldown as a percentage, optionally evaluating it against a supplied curve." },
-
-			Arguments =
-			{
-				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
-				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
-			},
-
-			Returns =
-			{
-				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
-			},
-		},
-		{
 			Name = "GetSpellDescription",
 			Type = "Function",
 			MayReturnNothing = true,

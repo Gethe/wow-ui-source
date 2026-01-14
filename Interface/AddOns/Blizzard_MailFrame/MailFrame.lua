@@ -633,7 +633,7 @@ function OpenMail_Update()
 
 		local info = C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID);
 
-		if ( info.reason == Enum.RcoCloseReason.RcoCloseCancel ) then
+		if ( info.reason == Enum.RcoCloseReason.Cancel ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_CANCELED_BODY);
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
@@ -642,7 +642,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseExpire ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Expire ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_EXPIRED_BODY);
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
@@ -651,7 +651,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseFulfill ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Fulfill ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_BY:format(info.crafterName or ""));
 			ConsortiumMailFrame.CrafterText:Show();
@@ -664,7 +664,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseReject ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Reject ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_REJECTED_BY:format(info.crafterName or ""));
 			ConsortiumMailFrame.CrafterText:Show();
@@ -675,7 +675,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseCrafterFulfill ) then
+		elseif ( info.reason == Enum.RcoCloseReason.CrafterFulfill ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_TO:format(info.customerName or ""));
 			ConsortiumMailFrame.CrafterText:Show();

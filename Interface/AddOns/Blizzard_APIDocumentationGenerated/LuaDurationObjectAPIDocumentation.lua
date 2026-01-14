@@ -33,11 +33,47 @@ local LuaDurationObjectAPI =
 			},
 		},
 		{
+			Name = "EvaluateElapsedDuration",
+			Type = "Function",
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Calculates the elapsed duration in seconds and evaluates it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
 			Name = "EvaluateElapsedPercent",
 			Type = "Function",
 			SecretWhenCurveSecret = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Calculates the elapsed duration as a percentage value and evaluates it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = false },
+				{ Name = "modifier", Type = "DurationTimeModifier", Nilable = false, Default = "RealTime" },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
+			Name = "EvaluateRemainingDuration",
+			Type = "Function",
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Calculates the remaining duration in seconds and evaluates it against a supplied curve." },
 
 			Arguments =
 			{
@@ -66,6 +102,20 @@ local LuaDurationObjectAPI =
 			Returns =
 			{
 				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
+			Name = "GetClockTime",
+			Type = "Function",
+			Documentation = { "Returns the current time of the clock source used by this object." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "clockTime", Type = "FrameTime", Nilable = false },
 			},
 		},
 		{
