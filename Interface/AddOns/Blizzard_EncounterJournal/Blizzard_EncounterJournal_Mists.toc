@@ -1,0 +1,10 @@
+## Title: Blizzard Dungeon Journal
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoad: game
+## Dependencies: Blizzard_ClassMenu, Blizzard_HelpPlate
+## AllowLoadGameType: mists
+Cata\Blizzard_EncounterJournal.lua
+Cata\Blizzard_EncounterJournal.xml
+Localization.lua

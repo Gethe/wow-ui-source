@@ -1,0 +1,33 @@
+## Title: Blizzard_Communities
+## RequiredDep: Blizzard_GuildControlUI, Blizzard_HelpPlate
+## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
+## AllowLoadGameType: classic
+
+CommunitiesList.xml
+CommunitiesMemberList.xml
+CommunitiesChatFrame.xml
+CommunitiesInvitationFrame.xml
+CommunitiesGuildFinderFrame.xml
+CommunitiesStreams.xml
+CommunitiesAvatarPickerDialog.xml
+CommunitiesAddDialogInsecure.xml
+CommunitiesTabs.xml
+CommunitiesLanguage.xml
+CommunitiesLanguage.lua
+ClubFinderApplicantList.xml
+ClubFinder.xml
+ClubFinder.lua
+CommunitiesSettings.xml
+CommunitiesTicketManagerDialog.xml
+CommunitiesErrors.lua
+CommunitiesHyperlink.lua
+CommunitiesCalendar.xml
+GuildRewards.xml
+GuildPerks.xml
+Classic\GuildInfo.lua
+GuildInfo.xml
+GuildNews.xml
+GuildRoster.xml
+GuildNameChange.xml
+CommunitiesFrame.xml
+Localization.lua

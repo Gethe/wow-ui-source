@@ -1,0 +1,140 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+	<Frame name="MinimalScrollBarStepperScripts" mixin="MinimalScrollBarStepperScriptsMixin" virtual="true">
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Frame>
+
+	<EventFrame name="MinimalScrollBar" inherits="VerticalScrollBarTemplate" virtual="true">
+		<Size x="8" y="560"/>
+		<KeyValues>
+			<KeyValue key="thumbAnchor" value="TOP" type="string"/>
+			<!--Actual minimum is 16 but is inflated for usability.-->
+			<KeyValue key="minThumbExtent" value="23" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Track" enableMouse="true">
+				<Size x="8"/>
+				<Anchors>
+					<Anchor point="TOP" y="-19"/>
+					<Anchor point="BOTTOM" y="19"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Begin" atlas="minimal-scrollbar-track-top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="End" atlas="minimal-scrollbar-track-bottom" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Middle" atlas="!minimal-scrollbar-track-middle" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Begin" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EventButton parentKey="Thumb" mixin="MinimalScrollBarThumbScriptsMixin" enableMouse="true">
+						<Size x="8"/>
+						<HitRectInsets>
+							<AbsInset left="-4" right="-4" top="-4" bottom="-4"/>
+						</HitRectInsets>
+						<KeyValues>
+							<KeyValue key="upBeginTexture" value="minimal-scrollbar-small-thumb-top" type="string"/>
+							<KeyValue key="upMiddleTexture" value="minimal-scrollbar-small-thumb-middle" type="string"/>
+							<KeyValue key="upEndTexture" value="minimal-scrollbar-small-thumb-bottom" type="string"/>
+							<KeyValue key="overBeginTexture" value="minimal-scrollbar-small-thumb-top-over" type="string"/>
+							<KeyValue key="overMiddleTexture" value="minimal-scrollbar-small-thumb-middle-over" type="string"/>
+							<KeyValue key="overEndTexture" value="minimal-scrollbar-small-thumb-bottom-over" type="string"/>
+							<KeyValue key="downBeginTexture" value="minimal-scrollbar-small-thumb-top-down" type="string"/>
+							<KeyValue key="downMiddleTexture" value="minimal-scrollbar-small-thumb-middle-down" type="string"/>
+							<KeyValue key="downEndTexture" value="minimal-scrollbar-small-thumb-bottom-down" type="string"/>
+							<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.U_CHAT_SCROLL_BUTTON" type="global"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Begin" atlas="minimal-scrollbar-small-thumb-top" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="End" atlas="minimal-scrollbar-small-thumb-bottom" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="minimal-scrollbar-small-thumb-middle" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Begin" relativePoint="BOTTOMLEFT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.End" relativePoint="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnSizeChanged method="OnSizeChanged"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+							<OnMouseDown method="OnMouseDown"/>
+							<OnMouseUp method="OnMouseUp"/>
+							<OnEnable method="OnEnable"/>
+							<OnDisable method="OnDisable"/>
+						</Scripts>
+					</EventButton>
+				</Frames>
+			</Frame>
+			<EventButton parentKey="Back" inherits="MinimalScrollBarStepperScripts">
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Decrease" type="global"/>
+					<KeyValue key="normalTexture" value="minimal-scrollbar-arrow-top" type="string"/>
+					<KeyValue key="overTexture" value="minimal-scrollbar-arrow-top-over" type="string"/>
+					<KeyValue key="downTexture" value="minimal-scrollbar-arrow-top-down" type="string"/>
+					<KeyValue key="disabledTexture" value="minimal-scrollbar-arrow-top" type="string"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
+				</KeyValues>
+				<Size x="17" y="11"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+			<EventButton parentKey="Forward" inherits="MinimalScrollBarStepperScripts">
+				<KeyValues>
+					<KeyValue key="direction" value="ScrollControllerMixin.Directions.Increase" type="global"/>
+					<KeyValue key="normalTexture" value="minimal-scrollbar-arrow-bottom" type="string"/>
+					<KeyValue key="overTexture" value="minimal-scrollbar-arrow-bottom-over" type="string"/>
+					<KeyValue key="downTexture" value="minimal-scrollbar-arrow-bottom-down" type="string"/>
+					<KeyValue key="disabledTexture" value="minimal-scrollbar-bottom-top" type="string"/>
+					<KeyValue key="mouseDownSoundKitID" value="SOUNDKIT.SCROLLBAR_STEP" type="global"/>
+				</KeyValues>
+				<Size x="17" y="11"/>
+				<Anchors>
+					<Anchor point="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Texture"/>
+					</Layer>
+				</Layers>
+			</EventButton>
+		</Frames>
+	</EventFrame>
+</Ui>

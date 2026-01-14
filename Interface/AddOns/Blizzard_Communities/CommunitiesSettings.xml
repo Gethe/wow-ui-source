@@ -1,0 +1,375 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="CommunitiesSettings.lua"/>
+	
+	<Frame name="CommunitiesSettingsDialog" frameStrata="HIGH" parent="UIParent" enableMouse="true" mixin="CommunitiesSettingsDialogMixin" toplevel="true" clampedToScreen="true" hidden="true">
+		<Size x="432" y="740"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" x="0" y="-80"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="DialogLabel" inherits="GameFontHighlight" text="COMMUNITIES_SETTINGS_LABEL">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-18"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="NameLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_NAME_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-52"/>
+						<Anchor point="TOPRIGHT" x="-30" y="-52"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ShortNameLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_SHORT_NAME_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="0" y="-34"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="DescriptionLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_DESCRIPTION_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShortNameLabel" relativePoint="BOTTOMLEFT" x="0" y="-34"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShortNameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-34"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="MessageOfTheDayLabel" inherits="GameFontNormal" justifyH="LEFT" text="COMMUNITIES_SETTINGS_MOTD_LABEL">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="0" y="-76"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="0" y="-76"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ClubFinderPostingBannedError" inherits="GameFontNormal" hidden="true" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="65"/>
+					</Anchors>
+					<Color color="RED_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
+					<Size x="80" y="80"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.MessageOfTheDayLabel" x="0" y="-100"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconPreview">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPreviewRing" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.IconPreview" x="2" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.IconPreview" x="-2" y="2"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IconPreview"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BG" inherits="DialogBorderDarkTemplate"/>
+			<EditBox parentKey="NameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="50">
+				<Size x="0" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.NameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				<Scripts>
+					<OnTabPressed>
+						self:GetParent().ShortNameEdit:SetFocus();
+					</OnTabPressed>
+					<OnTextChanged>
+						self:GetParent():UpdateCreateButton();
+					</OnTextChanged>
+				</Scripts>
+			</EditBox>
+			<EditBox parentKey="ShortNameEdit" inherits="InputBoxTemplate" autoFocus="false" letters="6">
+				<Size x="0" y="22"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ShortNameLabel" relativePoint="BOTTOMLEFT" x="5" y="-2"/>
+						<Anchor point="TOPRIGHT" relativeKey="$parent.ShortNameLabel" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+					</Anchors>
+				<Scripts>
+					<OnTabPressed>
+						self:GetParent().Description.EditBox:SetFocus();
+					</OnTabPressed>
+					<OnTextChanged>
+						self:GetParent():UpdateCreateButton();
+					</OnTextChanged>
+				</Scripts>
+			</EditBox>
+			<Button parentKey="ChangeAvatarButton" inherits="UIPanelButtonNoTooltipTemplate" text="COMMUNITIES_CREATE_DIALOG_ICON_SELECTION_BUTTON">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.IconPreviewRing" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogChangeAvatarButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<ScrollFrame parentKey="MessageOfTheDay" inherits="InputScrollFrameTemplate">
+				<Size x="0" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MessageOfTheDayLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.MessageOfTheDayLabel" relativePoint="BOTTOMRIGHT" x="-5" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_SETTINGS_DIALOG_MOTD_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+					<KeyValue key="cursorOffset" value="0" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().NameEdit;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Frame parentKey="CrossFactionToggle" mixin="CommunitiesSettingsCrossFactionToggleMixin">
+				<Size x="230" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ChangeAvatarButton" relativePoint="TOPLEFT" x="-8" y="0"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="CheckButton">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+						<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+						<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="COMMUNITIES_EDIT_DIALOG_CROSS_FACTION" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="125" y="32"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.CheckButton" x="35" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="ShouldListClub">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ChangeAvatarButton" relativePoint="BOTTOM" x="-135" y="-80"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" motionScriptsWhileDisabled="true" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:OnClick();
+								self:GetParent():GetParent():SetDisabledStateOnCommunityFinderOptions(not self:GetChecked());
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_LIST_COMMUNITY" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" x="35" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="AutoAcceptApplications">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.ShouldListClub" relativePoint="BOTTOM" x="10" y="-30"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_COMMUNITY_AUTO_ACCEPT" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MaxLevelOnly">
+				<Size x="300" y="32"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.AutoAcceptApplications" relativePoint="BOTTOM" x="0" y="-28"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="CLUB_FINDER_MAX_LEVEL_ONLY" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="260" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="MinIlvlOnly">
+				<Size x="150" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.MaxLevelOnly" relativePoint="BOTTOMLEFT" x="0" y="5"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="Button" inherits="ClubFinderCheckboxTemplate">
+						<Size x="32" y="32"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								self:OnClick();
+								if (not self:GetChecked()) then
+									self:GetParent().EditBox:SetText("");
+									self:GetParent().EditBox.Text:Show();
+								end
+							</OnClick>
+						</Scripts>
+					</CheckButton>
+					<EditBox parentKey="EditBox" inherits="InputBoxTemplate" numeric="true" letters="3" setAllPoints="true" autoFocus="false">
+						<Size x="135" y="18"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="200" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" text="STAT_AVERAGE_ITEM_LEVEL"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self.Text:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								if ( self:GetText() == "" ) then
+									self.Text:Show();
+								end
+							</OnEditFocusLost>
+						</Scripts>
+					</EditBox>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Label" text="LFG_LIST_ITEM_LEVEL_REQ" justifyH="LEFT" inherits="GameFontHighlight">
+							<Size x="200" y="0"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Button" relativePoint="LEFT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<DropdownButton parentKey="ClubFocusDropdown" inherits="ClubFinderFocusDropdownTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.MinIlvlOnly" x="5" y="-70"/>
+				</Anchors>
+			</DropdownButton>
+			<DropdownButton parentKey="LookingForDropdown" inherits="ClubFinderLookingForDropdownTemplate" >
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ClubFocusDropdown" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+				</Anchors>
+			</DropdownButton>
+			<DropdownButton parentKey="LanguageDropdown" inherits="CommunitiesLanguageDropdown">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LookingForDropdown" relativePoint="TOPRIGHT" x="10" y="0"/>
+				</Anchors>
+			</DropdownButton>
+			<ScrollFrame parentKey="Description" inherits="InputScrollFrameTemplate">
+				<Size x="0" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMLEFT" x="5" y="-10"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.DescriptionLabel" relativePoint="BOTTOMRIGHT" x="-5" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="maxLetters" value="250" type="number"/>
+					<KeyValue key="instructions" value="COMMUNITIES_CREATE_DIALOG_DESCRIPTION_INSTRUCTIONS" type="global"/>
+					<KeyValue key="hideCharCount" value="true" type="boolean"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						InputScrollFrame_OnLoad(self);
+						self.EditBox.nextEditBox = self:GetParent().MessageOfTheDay.EditBox;
+					</OnLoad>
+				</Scripts>
+			</ScrollFrame>
+			<Button parentKey="Delete" inherits="UIPanelButtonTemplate" text="DELETE">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogDeleteButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Accept" motionScriptsWhileDisabled="true" inherits="UIPanelButtonTemplate" text="ACCEPT">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Delete" relativePoint="LEFT" x="-10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogAcceptButton_OnClick"/>
+					<OnEnter function="CommunitiesSettingsDialogAcceptButton_OnEnter"/>
+					<OnLeave function="CommunitiesSettingsDialogAcceptButton_OnLeave"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="Cancel" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="100" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Delete" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CommunitiesSettingsDialogCancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+	
+	<Button name="CommunitiesSettingsButtonTemplate" inherits="UIPanelDynamicResizeButtonTemplate" text="COMMUNITIES_SETTINGS_BUTTON_LABEL" virtual="true">
+		<Scripts>
+			<OnClick function="CommunitiesSettingsButton_OnClick"/>
+		</Scripts>
+	</Button>
+</Ui>

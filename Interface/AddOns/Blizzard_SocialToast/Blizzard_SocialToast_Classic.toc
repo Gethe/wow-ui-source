@@ -1,0 +1,8 @@
+## Title: Blizzard_SocialToast
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: game
+## AllowLoadGameType: classic
+## Dependencies: Blizzard_SharedXML
+SocialToast.lua
+SocialToast.xml

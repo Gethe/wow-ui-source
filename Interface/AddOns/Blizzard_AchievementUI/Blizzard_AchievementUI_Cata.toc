@@ -1,0 +1,12 @@
+## Interface: 30001
+## Title: Blizzard_AchievementUI
+## Notes: Hooray for Achievements! Everybody loves Achievements =D
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+## AllowLoadGameType: cata
+Cata\Blizzard_AchievementUI.lua
+Classic\Blizzard_AchievementUI_Shared.lua
+Cata\Blizzard_AchievementUI.xml
+Classic\Localization.lua

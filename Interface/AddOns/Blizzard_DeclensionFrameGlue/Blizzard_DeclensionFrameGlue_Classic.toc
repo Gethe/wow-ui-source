@@ -1,0 +1,8 @@
+## Title: Blizzard_DeclensionFrameGlue
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GlueXML
+## AllowLoad: glue
+## AllowLoadGameType: classic
+Classic\DeclensionFrame.lua
+Classic\DeclensionFrame.xml

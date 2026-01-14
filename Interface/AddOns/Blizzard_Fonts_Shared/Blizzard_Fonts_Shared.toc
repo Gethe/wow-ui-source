@@ -1,0 +1,15 @@
+## Title: Blizzard_Fonts_Shared
+## AllowLoad: Both
+## Dependencies: Blizzard_LoadLocale
+[Family]\Fonts.xml
+Shared\Fonts.xml
+Shared\GlueFonts.xml			[AllowLoad Glue]
+[Family]\GlueFonts.xml			[AllowLoad Glue][AllowLoadGameType classic] 
+Shared\GameFonts.xml			[AllowLoad Game]
+[Family]\GameFonts.xml			[AllowLoad Game]
+Shared\FontStyles.xml
+[Family]\FontStyles.xml
+[Family]\GlueFontStyles.xml		[AllowLoad Glue]
+Shared\GlueFontStyles.xml		[AllowLoad Glue]
+[Family]\GameFontStyles.xml		[AllowLoad Game]
+Shared\GameFontStyles.xml		[AllowLoad Game]

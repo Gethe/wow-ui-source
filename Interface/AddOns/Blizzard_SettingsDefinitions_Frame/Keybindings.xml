@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Script file="Keybindings.lua"/>
+
+	<Frame name="SettingsKeybindingSpacerTemplate" virtual="true">
+		<Size y="25"/>
+	</Frame>
+
+	<Frame name="SettingsKeybindingPrefaceTemplate" mixin="SettingsKeybindingPrefaceMixin" virtual="true">
+		<Size x="580" y="25"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="text" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE">
+					<Size x="580" y="25"/>
+					<Anchors>
+						<Anchor point="LEFT" x="37"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<EventFrame name="SettingsKeybindingSectionTemplate" inherits="SettingsExpandableSectionTemplate" mixin="SettingsKeybindingSectionMixin" virtual="true">
+		<Size y="25"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</EventFrame>
+</Ui>
+

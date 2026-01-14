@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="Open Bug Report" category="PTR" default="F6">
+        PTR_IssueReporter.HandleTooltipKeypress()
+    </Binding>
+</Bindings>

@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!-- These frames are shown when the current zone or subzone changes -->
+	<Frame name="ZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-128"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="128" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="ZoneTextString" inherits="ZoneTextFont">
+					<Size>
+						<AbsDimension x="512" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+				<FontString name="PVPInfoTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="512" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="ZoneText_OnLoad"/>
+			<OnEvent function="ZoneText_OnEvent"/>
+			<OnUpdate function="FadingFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="SubZoneTextFrame" parent="UIParent" frameStrata="LOW" toplevel="true">
+		<Anchors>
+			<Anchor point="BOTTOM">
+				<Offset>
+					<AbsDimension x="0" y="512"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Size>
+			<AbsDimension x="128" y="128"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="SubZoneTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="512" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="ZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+				<FontString name="PVPArenaTextString" inherits="SubZoneTextFont">
+					<Size>
+						<AbsDimension x="512" y="0"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="SubZoneTextString" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="SubZoneText_OnLoad"/>
+			<OnUpdate function="FadingFrame_OnUpdate"/>
+		</Scripts>
+	</Frame>
+	<Frame name="AutoFollowStatus" parent="UIParent" setAllPoints="true" frameStrata="BACKGROUND" frameLevel="10" hidden="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="AutoFollowStatusText" inherits="GameFontNormal">
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="WorldFrame">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="20"/>
+					</FontHeight>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="AutoFollowStatus_OnLoad"/>
+			<OnEvent function="AutoFollowStatus_OnEvent"/>
+			<OnUpdate function="AutoFollowStatus_OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,0 +1,26 @@
+## Title: Blizzard Inspect UI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\InspectPaperDollFrame_Shared.lua
+Vanilla\InspectPaperDollFrame.lua [AllowLoadGameType vanilla, tbc, wrath]
+Cata\InspectPaperDollFrame.lua [AllowLoadGameType cata, mists]
+Vanilla\Blizzard_InspectUI.lua [AllowLoadGameType vanilla]
+Vanilla\Blizzard_InspectUI.xml [AllowLoadGameType vanilla]
+TBC\Blizzard_InspectUI.lua [AllowLoadGameType tbc, wrath, cata, mists]
+TBC\Blizzard_InspectUI.xml [AllowLoadGameType tbc, wrath, cata, mists]
+Classic\InspectPaperDollFrame.xml
+Vanilla\InspectHonorFrame.lua [AllowLoadGameType vanilla]
+Vanilla\InspectHonorFrame.xml [AllowLoadGameType vanilla]
+Classic\InspectPVPFrame.lua [AllowLoadGameType tbc, wrath, cata]
+Classic\InspectPVPFrame.xml [AllowLoadGameType tbc, wrath, cata]
+Mists\InspectPVPFrame.lua [AllowLoadGameType mists]
+Mists\InspectPVPFrame.xml [AllowLoadGameType mists]
+Classic\InspectTalentFrame.lua [AllowLoadGameType tbc, wrath, cata]
+Classic\InspectTalentFrame.xml [AllowLoadGameType tbc, wrath, cata]
+Mists\InspectTalentFrame.lua [AllowLoadGameType mists]
+Mists\InspectTalentFrame.xml [AllowLoadGameType mists]
+Cata\InspectGuildFrame.lua [AllowLoadGameType cata, mists]
+Cata\InspectGuildFrame.xml [AllowLoadGameType cata, mists]
+Classic\Localization.lua

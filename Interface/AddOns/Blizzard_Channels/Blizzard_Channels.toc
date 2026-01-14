@@ -1,0 +1,15 @@
+## Title: Blizzard_Channels
+## Dependencies: Blizzard_SocialToast, Blizzard_HelpPlate
+## AllowLoadGameType: classic
+VoiceUtils.lua
+ChannelButton.xml
+RosterButton.xml
+CreateChannelPopup.xml
+ChannelList.xml
+ChannelRoster.xml
+VoiceChatPrompt.xml
+ChannelFrame.xml
+VoiceActivityNotification.xml
+VoiceActivityNotificationParty.xml
+VoiceActivityNotificationRoster.xml
+VoiceActivityManager.xml

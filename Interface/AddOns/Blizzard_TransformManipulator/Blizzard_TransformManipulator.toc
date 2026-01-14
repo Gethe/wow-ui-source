@@ -1,0 +1,11 @@
+## Title: Blizzard House Editor
+## Author: Blizzard Entertainment
+## LoadOnDemand: 0
+## DefaultState: enabled
+## Dependencies: 
+
+Blizzard_ScaleControlFrame.lua
+Blizzard_ScaleControlFrame.xml
+
+Blizzard_RotateControlFrame.lua
+Blizzard_RotateControlFrame.xml

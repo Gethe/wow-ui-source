@@ -1,0 +1,629 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="CharacterCreateIconButtonTemplate" virtual="true">
+		<Size x="38" y="38"/> 
+		<Layers>
+			<Layer level="HIGHLIGHT">
+				<FontString name="$parentHighlightText">
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="1"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentShadow" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-IconShadow">
+					<Size x="58" y="58"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" a="0.85"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBevelEdge" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.5" top="0.5" bottom="1.0"/>
+				</Texture>
+				<Texture name="$parentDisableTexture" hidden="true">
+					<Size x="38" y="38"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="0.75"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				if( self:IsEnabled() == 1 ) then
+				_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 2, -2);
+				_G[self:GetName().."Shadow"]:SetSize(52, 52);
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if( self:IsEnabled() == 1 ) then
+				_G[self:GetName().."BevelEdge"]:SetPoint("CENTER", self, "CENTER", 0, 0);
+				_G[self:GetName().."Shadow"]:SetSize(58, 58);
+				end
+			</OnMouseUp>
+		</Scripts>
+		<HighlightTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
+			<TexCoords left="0" right="0.5" top="0" bottom="0.5"/>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Highlights" alphaMode="ADD">
+			<TexCoords left="0.5" right="1" top="0" bottom="0.5"/>
+		</CheckedTexture>
+	</CheckButton>
+	<CheckButton name="CharacterCreateGenderButtonTemplate" inherits="CharacterCreateIconButtonTemplate" virtual="true">
+		<Size x="40" y="40"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\Glues\CharacterCreate\UI-CharacterCreate-IconShadow">
+					<Size x="55" y="55"/> 
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset>
+								<AbsDimension x="2" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<NormalTexture name="$parentNormalTexture" file="Interface\Glues\CharacterCreate\UI-CharacterCreate-Gender"/>
+	</CheckButton>
+	<Frame name="BarberShopSelectorTemplate" virtual="true">
+		<Size x="175" y="32"/> 
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Category" inherits="GameFontNormal">
+					<Size x="90" y="14"/> 
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="Prev" virtual="true">
+				<Size x="32" y="32"/> 
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.Category" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="-5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						C_BarberShop.CycleCharCustomization(parent:GetID(), true);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+						BarberShop_UpdateCost(parent:GetParent());
+						local updatedBannerName = BarberShop_UpdateSelector(parent);
+						if (not updatedBannerName) then
+							BarberShop_ResetBanner();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+			<Button parentKey="Next" virtual="true">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Category" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						local parent = self:GetParent();
+						C_BarberShop.CycleCharCustomization(parent:GetID(), false);
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+						BarberShop_UpdateCost(parent:GetParent());
+						local updatedBannerName = BarberShop_UpdateSelector(parent);
+						if (not updatedBannerName) then
+							BarberShop_ResetBanner();
+						end
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+				<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Frame>
+	<Frame name="BarberShopFrame" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" inherits="VerticalLayoutFrame">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="271" type="number"/>
+			<KeyValue key="topPadding" value="66" type="number"/>
+			<KeyValue key="bottomPadding" value="52" type="number"/>
+			<KeyValue key="spacing" value="3" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT" x="-18" y="-54"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="Barbershop-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="Barbershop-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture atlas="!Barbershop-MiddleTile" useAtlasSize="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-81"/>
+						<Anchor point="BOTTOM" x="0" y="81"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="BarberShopAlternateFormTop" hidden="true">
+						<Size x="82" y="79"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="BarberShopFrame" relativePoint="TOPLEFT" x="55" y="-25"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentPortrait">
+									<Size x="60" y="60"/>	
+									<Anchors>
+										<Anchor point="CENTER" x="5" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentTop" file="Interface\Glues\CharacterCreate\AlternateForm">
+									<Size x="82" y="79"/>	
+									<TexCoords left="0.00781250" right="0.64843750" top="0.00390625" bottom="0.310546875"/>	
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								BarberShop_SetViewingAlteredForm(false);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="0"/>
+							</Anchors>
+							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="5" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
+					</CheckButton>
+					<CheckButton name="BarberShopAlternateFormBottom" hidden="true">
+						<Size x="82" y="79"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="BarberShopAlternateFormTop" relativePoint="BOTTOMRIGHT" x="-3" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentPortrait">
+									<Size x="60" y="60"/>	
+									<Anchors>
+										<Anchor point="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentBottom" file="Interface\Glues\CharacterCreate\AlternateForm">
+									<Size x="82" y="158"/>	
+									<TexCoords left="0.00781250" right="0.64843750" top="0.310546875" bottom="0.62109375"/>	
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick>
+								BarberShop_SetViewingAlteredForm(true);
+							</OnClick>
+						</Scripts>
+						<HighlightTexture name="$parentHighlight" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+							<TexCoords left="0.49218750" right="0.96093750" top="0.62890625" bottom="0.86328125"/>	
+						</HighlightTexture>
+						<CheckedTexture name="$parentPushedTexture" file="Interface\Glues\CharacterCreate\AlternateForm" alphaMode="ADD">
+							<Size x="60" y="60"/>	
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="0"/>
+							</Anchors>
+							<TexCoords left="0.00781250" right="0.47656250" top="0.62890625" bottom="0.86328125"/>	
+						</CheckedTexture>
+					</CheckButton>
+			<CheckButton name="$parentMaleButton" inherits="CharacterCreateGenderButtonTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+					<KeyValue key="leftPadding" value="87" type="number"/>
+				</KeyValues>
+				<Size x="40" y="40"/>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."NormalTexture"]:SetTexCoord(0, 0.5, 0, 1.0);
+					</OnLoad>
+					<OnClick>
+						BarberShop_SetSelectedSex(self:GetParent(), 0);
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentFemaleButton" inherits="CharacterCreateGenderButtonTemplate">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMaleButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="15" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						_G[self:GetName().."NormalTexture"]:SetTexCoord(0.5, 1.0, 0, 1.0);
+					</OnLoad>
+					<OnClick>
+						BarberShop_SetSelectedSex(self:GetParent(), 1);
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<Frame parentKey="FaceSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="18" type="number"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.Face);
+						self.Category:SetText(FACE);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="HairStyleSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.Hair);
+						self.Category:SetText(HAIR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="HairColorSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.HairColor);
+						self.Category:SetText(HAIR_COLOR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="FacialHairSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.FacialHair);
+						self.Category:SetText(FACIAL_HAIR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="SkinColorSelector" parentArray="Selector" inherits="BarberShopSelectorTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="6" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.Skin);
+						self.Category:SetText(SKIN_COLOR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector1" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="7" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+           				 self:SetID(Enum.CharCustomizationType.CustomOptionTattoo);
+           				 self.Category:SetText(DEMONHUNTER_TATTOO_STYLE);
+          			</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector2" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="9" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+           				 self:SetID(Enum.CharCustomizationType.CustomOptionHorn);
+           				 self.Category:SetText(DEMONHUNTER_HORN_STYLE);
+          			</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector3" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="10" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+           				 self:SetID(Enum.CharCustomizationType.CustomOptionFacewear);
+           				 self.Category:SetText(DEMONHUNTER_BLINDFOLD_STYLE);
+         			 </OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="CustomSelector4" parentArray="Selector" inherits="BarberShopSelectorTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="8" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+				</KeyValues>
+				<Scripts>
+					<OnLoad>
+						self:SetID(Enum.CharCustomizationType.CustomOptionTattooColor);
+						self.Category:SetText(DEMONHUNTER_TATTOO_COLOR);
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<!--
+			[CLASS - 34071]: Remove Barbershop Cost code
+			Cost is now deprecated for Classic and Mainline
+			
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="11" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="leftPadding" value="11" type="number"/>
+					<KeyValue key="topPadding" value="1" type="number"/>
+				</KeyValues>
+				<Size x="128" y="32"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+							<Size x="128" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "GUILD_REPAIR");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			-->
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="12" type="number"/>
+					<KeyValue key="leftPadding" value="52" type="number"/>
+					<KeyValue key="topPadding" value="1" type="number"/>
+				</KeyValues>
+				<Size x="80" y="24"/>
+				<Scripts>
+					<OnClick>
+						C_BarberShop.ApplyCustomizationChoices();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="COINPICKUP_CANCEL">
+				<Size x="80" y="24"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentOkayButton" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="5" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent().FacialHairSelector.Category:SetText(C_BarberShop.GetCustomizationTypeInfo(Enum.CharCustomizationType.FacialHair));
+						C_BarberShop.Cancel();
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentResetButton" inherits="UIPanelButtonTemplate" text="RESET">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="13" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="5" type="number"/>
+				</KeyValues>
+				<Size x="80" y="24"/>
+				<Scripts>
+					<OnClick>
+						BarberShop_ResetAll();
+						self:GetParent().FacialHairSelector.Category:SetText(C_BarberShop.GetCustomizationTypeInfo(Enum.CharCustomizationType.FacialHair));
+						BarberShop_UpdateCost(self:GetParent());
+						BarbersChoiceConfirmFrame:Hide();
+						PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="BarberShop_OnLoad"/>
+			<OnShow inherit="append" function="BarberShop_OnShow"/>
+			<OnHide function="BarberShop_OnHide"/>
+			<OnEvent function="BarberShop_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="BarberShopBannerFrame" toplevel="true" parent="UIParent">
+		<Size x="381" y="210"/>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP">
+				<Offset x="2" y="5"/>
+			</Anchor>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBGTexture" setAllPoints="true">
+					<TexCoords left="0" right="0.744141" top="0" bottom="0.820313"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentCaption" inherits="GameFontNormalLarge" text="BARBERSHOP">
+					<Size x="350" y="30"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="BarberShopBannerFrame" relativePoint="TOP">
+							<Offset x="0" y="-94"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.caption = _G[self:GetName() .. "Caption"];
+			</OnLoad>
+			<OnShow>
+				UIErrorsFrame:SetPoint("TOP", self, "BOTTOM", 0, 0);
+				BarberShopBannerFrameBGTexture:SetTexture("Interface\\Barbershop\\UI-Barbershop-Banner");
+			</OnShow>
+			<OnHide>
+				UIErrorsFrame:SetPoint("TOP", UIParent, "TOP", 0, -122);
+				BarberShopBannerFrameBGTexture:SetTexture(nil);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="BarbersChoiceConfirmFrame" parent="UIParent" toplevel="true" hidden="true" enableMouse="true" inherits="VerticalLayoutFrame">
+		<KeyValues>
+			<KeyValue key="fixedWidth" value="271" type="number"/>
+			<KeyValue key="topPadding" value="78" type="number"/>
+			<KeyValue key="bottomPadding" value="52" type="number"/>
+			<KeyValue key="spacing" value="3" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="RIGHT" relativeTo="UIParent" relativePoint="RIGHT" x="-320" y="87"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture atlas="Barbershop-Top" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="Barbershop-Bottom" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture atlas="!Barbershop-MiddleTile" useAtlasSize="true" vertTile="true">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-81"/>
+						<Anchor point="BOTTOM" x="0" y="81"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<!--
+			[CLASS - 34071]: Remove Barbershop Cost code
+			Cost is now deprecated for Classic and Mainline
+			
+			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="leftPadding" value="11" type="number"/>
+					<KeyValue key="topPadding" value="1" type="number"/>
+				</KeyValues>
+				<Size x="128" y="32"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\MoneyFrame\UI-MoneyFrame-Border">
+							<Size x="128" y="32"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="-5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "GUILD_REPAIR");
+						MoneyFrame_Update(self:GetName(), C_BarberShop.GetBarbersChoiceCost());
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			-->
+			<Button name="$parentBarbersChoiceOkayButton" inherits="UIPanelButtonTemplate" text="I'm Sure">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="1" type="number"/>
+				</KeyValues>
+				<Size x="125" y="24"/>
+				<Scripts>
+					<OnClick>
+						C_BarberShop.BarbersChoice();
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentBarbersChoiceCancelButton" inherits="UIPanelButtonTemplate" text="Never Mind">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="4" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="topPadding" value="3" type="number"/>
+				</KeyValues>
+				<Size x="125" y="24"/>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Frame name="BarbersChoiceBottomPadder">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="5" type="number"/>
+					<KeyValue key="topPadding" value="28" type="number"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -1,0 +1,9 @@
+## Interface: 30001
+## Title: Blizzard Barber Shop UI
+## Notes: The barber's blade went snicker-snack! Have you seen my Jabberwocky?
+## Secure: 1
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 1
+Blizzard_BarberShopUI.lua
+Blizzard_BarberShopUI.xml

@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GameTimeFrame" parent="MinimapBackdrop">
+		<Size x="50" y="50"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-4" y="-23"/>
+		</Anchors>
+		<HitRectInsets left="6" right="0" top="5" bottom="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameTimeTexture" file="Interface\Minimap\UI-TOD-Indicator"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				self.timeOfDay = 0;
+				self:SetFrameLevel(self:GetFrameLevel() + 2);
+				GameTimeFrame_Update(self);
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+				GameTimeFrame_UpdateTooltip(self, GetGameTime());
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			<OnUpdate>
+				GameTimeFrame_Update(self);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>

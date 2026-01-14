@@ -1,0 +1,13 @@
+## Title: Blizzard_GroupFinder
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_GameTooltip, Blizzard_UIPanelTemplates
+## AllowLoad: game
+## AllowLoadGameType: tbc
+Classic\Constants.lua
+Classic\QueueUpdater.lua
+Shared\LFGReadyCheck.lua
+Shared\LFGReadyCheck.xml
+Classic\PVPHelper.lua
+Classic\PVPHelper.xml
+Classic\Localization.lua

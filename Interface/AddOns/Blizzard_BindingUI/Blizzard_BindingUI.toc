@@ -1,0 +1,4 @@
+## Title: Blizzard Key Binding UI
+## LoadOnDemand: 1
+Blizzard_BindingUI.xml
+Localization.lua

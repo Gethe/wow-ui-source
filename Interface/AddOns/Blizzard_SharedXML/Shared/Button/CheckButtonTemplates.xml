@@ -1,0 +1,78 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<CheckButton name="UIRadioButtonTemplate" virtual="true">
+		<Size x="16" y="16"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0" right="0.25" top="0" bottom="1"/>
+		</NormalTexture>
+		<HighlightTexture file="Interface\Buttons\UI-RadioButton" alphaMode="ADD">
+			<TexCoords left="0.5" right="0.75" top="0" bottom="1"/>
+		</HighlightTexture>
+		<CheckedTexture file="Interface\Buttons\UI-RadioButton">
+			<TexCoords left="0.25" right="0.5" top="0" bottom="1"/>
+		</CheckedTexture>
+	</CheckButton>
+
+	<CheckButton name="UIRadialButtonTemplate" virtual="true">
+		<Size x="18" y="18"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<NormalTexture parentKey="NormalTexture" atlas="common-dropdown-tickradial" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="common-dropdown-tickradial" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture parentKey="CheckedTexture" atlas="common-dropdown-icon-radialtick-yellow" useAtlasSize="true"/>
+	</CheckButton>
+
+	<CheckButton name="UICheckButtonArtTemplate" virtual="true">
+		<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+		<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+		<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+		<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+	</CheckButton>
+
+	<CheckButton name="UICheckButtonTemplate" inherits="UICheckButtonArtTemplate" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontNormalSmall" parentKey="Text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+					</Anchors>
+					<Scripts>
+						<OnLoad function="UICheckButtonFontString_SetParentKeyAlias"/>
+					</Scripts>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
+
+	<CheckButton name="MinimalCheckboxArtTemplate" virtual="true">
+		<NormalTexture parentKey="NormalTexture" atlas="checkbox-minimal" useAtlasSize="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="checkbox-minimal" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="checkbox-minimal" useAtlasSize="true" alphaMode="ADD"/>
+		<CheckedTexture parentKey="CheckedTexture" atlas="checkmark-minimal" useAtlasSize="true"/>
+		<DisabledCheckedTexture parentKey="DisabledCheckedTexture" atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+	</CheckButton>
+
+	<CheckButton name="MinimalCheckboxTemplate" inherits="MinimalCheckboxArtTemplate" virtual="true">
+		<Size x="30" y="29"/>
+	</CheckButton>
+
+</Ui>

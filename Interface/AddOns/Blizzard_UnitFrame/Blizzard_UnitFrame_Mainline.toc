@@ -1,0 +1,54 @@
+## Title: Blizzard_UnitFrame
+## Author: Blizzard Entertainment
+## Dependencies: Blizzard_SettingsDefinitions_Frame, Blizzard_UIParent, Blizzard_BuffFrame, Blizzard_UIPanels_Game, Blizzard_ActionBar, Blizzard_TextStatusBar
+## AllowLoad: Game
+## AllowLoadGameType: mainline
+Mainline\BuilderSpenderFrame.lua
+Mainline\BuilderSpenderFrame.xml
+Mainline\UnitPowerBarAlt.xml
+Mainline\PowerBarColorUtil.lua
+Shared\StatusBarOverlaySegment.lua
+Shared\StatusBarOverlaySegment.xml
+Shared\UnitFrame.lua
+Mainline\UnitFrame.lua
+Shared\UnitFrame.xml
+Shared\PlayerFrameTemplates.xml
+Shared\PlayerFrame.lua
+Mainline\PlayerFrame.xml
+Shared\PartyMemberFrame.lua
+Mainline\PartyMemberFrame.lua
+Shared\PartyFrameTemplates.xml
+Mainline\PartyFrameTemplates.xml
+Shared\PartyFrame.xml
+Shared\TargetFrame.lua
+Mainline\TargetFrame.xml
+Mainline\TotemFrame.xml
+Mainline\PetFrame.xml
+Mainline\ComboFrame.xml
+Mainline\ClassPowerBar.xml
+Mainline\ClassResourceBarTemplate.xml
+Mainline\RuneFrame.xml
+Mainline\ShardBar.xml
+Mainline\RogueComboPointBar.xml
+Mainline\DruidComboPointBar.xml
+Mainline\InsanityBar.xml
+Mainline\EssenceFramePlayer.xml
+Mainline\AlternatePowerBarBase.xml
+Mainline\AlternatePowerBar.xml
+Mainline\MonkStaggerBar.lua
+Mainline\MonkStaggerBar.xml
+Mainline\EvokerEbonMightBar.xml
+[Family]\CompactUnitFrameOptions.lua
+Shared\CompactUnitFrame.lua
+Shared\CompactUnitFrame.xml
+Shared\CompactRaidGroup.lua
+Shared\CompactRaidGroup.xml
+Shared\CompactPartyFrame.lua
+Shared\CompactPartyFrame.xml
+Mainline\CompactArenaFrame.lua
+Mainline\CompactArenaFrame.xml
+Mainline\PaladinPowerBar.xml
+Mainline\MageArcaneChargesBar.xml
+Mainline\MonkHarmonyBar.lua
+Mainline\MonkHarmonyBar.xml
+Mainline\Localization.lua

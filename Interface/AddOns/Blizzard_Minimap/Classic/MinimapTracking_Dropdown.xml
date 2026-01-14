@@ -1,0 +1,71 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MiniMapTracking" parent="MinimapBackdrop">
+		<Size x="32" y="32"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="5" y="-64"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" file="Interface\Minimap\UI-Minimap-Background">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-4"/>
+					</Anchors>
+					<Color r="1" g="1" b="1" a="0.6"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon">
+					<Size x="20" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentIconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentIcon"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentIcon"/>
+					</Anchors>
+					<Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton name="$parentButton" mixin="MinimapTrackingDropdownMixin">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="54" y="54"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentShine" file="Interface\ComboFrame\ComboPoint" alphaMode="ADD" hidden="true">
+							<Size x="27" y="27"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="2" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.5625" right="1" top="0" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			</DropdownButton>
+		</Frames>
+	</Frame>
+</Ui>

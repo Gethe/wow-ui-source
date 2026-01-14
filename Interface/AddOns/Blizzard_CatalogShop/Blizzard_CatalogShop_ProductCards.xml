@@ -1,0 +1,112 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Section Header Template -->
+	<Frame name="CatalogShopSectionHeaderTemplate" mixin="CatalogShopSectionHeaderMixin" virtual="true">
+		<Size x="557" y="42"/>
+		<Layers>
+			<Layer>
+				<FontString parentKey="headerText" justifyH="LEFT" inherits="GameFontNormalLarge">
+					<Size x="0" y="42"/>
+					<Color color="WHITE_FONT_COLOR"/>
+					<Anchors>
+						<Anchor point="LEFT" x="20" y="0" />
+					</Anchors>
+				</FontString>
+				<Texture parentKey="sectionHeaderRule" atlas="shop-list-rule" useAtlasSize="true" >
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.headerText" relativePoint="RIGHT" x="0" y="-8"/>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+
+	<!-- Services Small Card Template -->
+	<Button name="SmallCatalogShopServicesCardTemplate" mixin="SmallCatalogShopServicesCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Subscription Small Card Template -->
+	<Button name="SmallCatalogShopSubscriptionCardTemplate" mixin="SmallCatalogShopSubscriptionCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Small Card Template -->
+	<Button name="SmallCatalogShopGameTimeCardTemplate" mixin="SmallCatalogShopGameTimeCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Tender Small Card Template -->
+	<Button name="SmallCatalogShopTenderCardTemplate" mixin="SmallCatalogShopTenderCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Toys Small Card Template -->
+	<Button name="SmallCatalogShopToysCardTemplate" mixin="SmallCatalogShopToysCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Access Small Card Template -->
+	<Button name="SmallCatalogShopAccessCardTemplate" mixin="SmallCatalogShopAccessCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!--
+		Details Card Templates are structually similar to Small Product Card Templates, however
+		they're used in a different context (the details pane) and have different mixins to handle
+
+		Generic Details Card Template -->
+	<Button name="DetailsCatalogShopProductCardTemplate" mixin="DetailsCatalogShopProductCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Services Details Card Template -->
+	<Button name="DetailsCatalogShopServicesCardTemplate" mixin="DetailsCatalogShopServicesCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Subscription Details Card Template -->
+	<Button name="DetailsCatalogShopSubscriptionCardTemplate" mixin="DetailsCatalogShopSubscriptionCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Details Card Template -->
+	<Button name="DetailsCatalogShopGameTimeCardTemplate" mixin="DetailsCatalogShopGameTimeCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Trader's Tender Card Template -->
+	<Button name="DetailsCatalogShopTenderCardTemplate" mixin="DetailsCatalogShopTenderCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Toys Details Card Template -->
+	<Button name="DetailsCatalogShopToysCardTemplate" mixin="DetailsCatalogShopToysCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Access Details Card Template -->
+	<Button name="DetailsCatalogShopAccessCardTemplate" mixin="DetailsCatalogShopAccessCardMixin" inherits="DetailsCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Subscription Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="WideSubscriptionCatalogShopCardTemplate" mixin="WideSubscriptionCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- Game Time Template for Wide cards, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="WideGameTimeCatalogShopCardTemplate" mixin="WideGameTimeCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" />
+
+		<!-- WoW Token Template, inherits from WideCatalogShopProductCardTemplate -->
+	<Button name="WideWoWTokenCatalogShopCardTemplate" mixin="WideWoWTokenCatalogShopCardMixin" inherits="WideCatalogShopProductCardTemplate" virtual="true" >
+		<Frames>
+			<Frame parentKey="AnimContainer" hidden="true" inherits="GlowPulseAnimContainerTemplate" clipChildren="true" frameLevel="300" >
+				<Size x="300" y="300" />
+				<KeyValues>
+					<KeyValue key="playLoopingSoundFX" value="false" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="10" />
+				</Anchors>
+			</Frame>
+			<Frame parentKey="WoWTokenFrame" frameLevel="400" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="WoWTokenIcon" atlas="wow-token-gold" >
+							<Size x="135" y="138" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="10" />
+							</Anchors>
+						</Texture>
+						<Texture parentKey="HeaderBackground" atlas="shop-card-wide-text-shadow" useAtlasSize="true" >
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-9" />
+								<Anchor point="LEFT" x="0" y="0" />
+								<Anchor point="RIGHT" x="0" y="0" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="CurrentMarketPrice" inherits="GameFontNormalMed2" justifyH="CENTER" hidden="false" />
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Button>
+</Ui>

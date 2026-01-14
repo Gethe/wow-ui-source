@@ -1,0 +1,9 @@
+## Title: Blizzard Calendar
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\Blizzard_Calendar.lua
+Classic\Blizzard_CalendarTemplates.xml
+Classic\Blizzard_Calendar.xml
+Localization.lua

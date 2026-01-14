@@ -1,0 +1,1133 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="LFGRoleButtonTemplate" virtual="true" motionScriptsWhileDisabled="true">
+		<Size x="48" y="48"/>
+		<Frames>
+			<CheckButton parentKey="checkButton" scale="0.7">
+				<Size x="30" y="29"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="-5" y="-4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if ( self:GetChecked() ) then
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						else
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+						end
+						if ( self.onClick ) then
+							self.onClick(self, button);
+						end
+					</OnClick>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+				<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+				<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+				<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+			</CheckButton>
+
+			<Frame parentKey="lockedIndicator" hidden="true">
+				<Size x="17" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.checkButton" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture atlas="LFG-lock" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="alert" hidden="true">
+				<Size x="28" y="28"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="5" y="5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="RaiseFrameLevel"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFGRoleButtonTemplate_OnLoad"/>
+			<OnEnter function="LFGRoleButtonTemplate_OnEnter"/> <!--Warning: The Leader button overrides this.-->
+			<OnClick>
+				if ( self.checkButton:IsEnabled() ) then
+					self.checkButton:Click();
+				end
+			</OnClick>
+			<OnLeave>
+				GameTooltip:Hide();
+				self.checkButton:UnlockHighlight();
+			</OnLeave>
+		</Scripts>
+		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
+	</Button>
+
+	<Button name="LFGRoleButtonWithShortageRewardTemplate" inherits="LFGRoleButtonTemplate" mixin="LFGRoleButtonWithShortageRewardMixin" virtual="true">
+		<Size x="32" y="32"/>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="0">
+				<Texture parentKey="shortageBorder" atlas="UI-LFG-RoleIcon-Incentive" hidden="true" alpha="0.6" alphaMode="ADD">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconPulse" alphaMode="ADD" atlas="UI-LFG-RoleIcon-Generic" alpha="0">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EdgePulse" alphaMode="ADD" atlas="GarrLanding-CircleGlow" useAtlasSize="false" alpha="0">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.IconPulse" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="RoleShortagePulseModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+			<Frame parentKey="incentiveIcon" hidden="true">
+				<Size x="14" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="0">
+						<Texture parentKey="texture">
+							<Size x="14" y="14"/>
+						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="11" y="11"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.texture"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="texture"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="border" atlas="bag-border">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.texture" y="-1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="RoleShortagePulseAnim" looping="REPEAT" setToFinalAlpha="true" mixin="LFGRoleShortagePulseAnimMixin">
+				<Alpha childKey="IconPulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="IconPulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="EdgePulse" duration="2" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="EdgePulse" duration="1" order="2" fromAlpha="1" toAlpha="0"/>
+				<Scripts>
+					<OnLoop method="OnLoop"/>
+					<OnStop method="OnStop"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Button>
+
+	<Button name="LFGRoleButtonWithBackgroundTemplate" inherits="LFGRoleButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBackground" parentKey="background">
+					<Size x="80" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+	<Button name="LFGRoleButtonWithBackgroundAndRewardTemplate" inherits="LFGRoleButtonWithBackgroundTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture name="$parentShortageBorder" atlas="UI-LFG-RoleIcon-Incentive" parentKey="shortageBorder" hidden="true" alpha="0.6" alphaMode="ADD">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentIncentiveIcon" parentKey="incentiveIcon" hidden="true">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="5" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" parentKey="texture">
+							<Size x="17" y="17"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-1" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture name="$parentBorder" atlas="bag-border" parentKey="border">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRoleIconIncentive_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Button>
+	<Frame name="LFGSpecificChoiceTemplate" virtual="true">
+		<Size x="295" y="16"/>
+		<HitRectInsets>
+			<AbsInset left="25" right="58" top="0" bottom="0"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeroicIcon" file="Interface/LFGFrame/UI-LFG-ICON-HEROIC" parentKey="heroicIcon">
+					<Size x="16" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="40" y="-1"/>
+					</Anchors>
+					<TexCoords left="0.0" right="0.5" top="0" bottom="0.625"/>
+				</Texture>
+				<FontString name="$parentInstanceLevel" inherits="GameFontNormal" justifyH="RIGHT" parentKey="level">
+					<Anchors>
+						<Anchor point="RIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentInstanceName" inherits="GameFontNormal" justifyH="LEFT" parentKey="instanceName">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="40" y="0"/>
+						<Anchor point="RIGHT" relativeKey="$parent.level" relativePoint="LEFT" x="-10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentLockedIndicator"  file="Interface/LFGFrame/UI-LFG-ICON-LOCK" parentKey="lockedIndicator">
+					<Size x="12" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="25" y="0"/>
+					</Anchors>
+					<TexCoords left="0" right="0.71875" top="0" bottom="0.875"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<CheckButton name="$parentEnableButton" parentKey="enableButton">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.lockedIndicator" relativePoint="CENTER"/>
+				</Anchors>
+				<NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+				<PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+				<HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+				<CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+				<DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+			</CheckButton>
+			<Button name="$parentExpandOrCollapseButton" parentKey="expandOrCollapseButton">
+				<Size x="13" y="13"/>
+				<Anchors>
+					<Anchor point="LEFT" x="3" y="0"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="1" right="-4" top="-2" bottom="-2"/>
+				</HitRectInsets>
+				<NormalTexture file="Interface\Buttons\UI-MinusButton-UP">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture name="$parentHighlight" file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" x="3" y="0"/>
+					</Anchors>
+				</HighlightTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLeave>
+				if ( GameTooltip:GetOwner() == self ) then
+					GameTooltip:Hide();
+				end
+			</OnLeave>
+		</Scripts>
+	</Frame>
+	<Frame name="LFGDungeonReadyRewardTemplate" parentArray="Rewards" virtual="true">
+		<Size x="34" y="34"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" parentKey="texture">
+					<Size x="27" y="27"/>
+					<Anchors>
+						<Anchor point="CENTER" x="-1" y="1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBorder" atlas="bag-border" useAtlasSize="false"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter function="LFGDungeonReadyDialogReward_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="LFGDungeonReadyStatusPlayerTemplate" virtual="true">
+		<Size x="55" y="55"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic" parentKey="texture"/>
+			</Layer>
+			<Layer level="OVERLAY">
+			<Texture name="$parentStatusIcon" atlas="UI-LFG-PendingMark" parentKey="statusIcon" useAtlasSize="false">
+					<Size x="32" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="4" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="LFGDungeonReadyStatusRoleWithCountTemplate" inherits="LFGDungeonReadyStatusPlayerTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentCount" inherits="GameFontHighlight" parentKey="count">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	<Frame name="LFGDungeonReadyPopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="223"/>
+		<Frames>
+			<Frame name="LFGDungeonReadyStatus" toplevel="true" enableMouse="true">
+				<Size x="306" y="130"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentLabel" inherits="GameFontHighlight" justifyH="CENTER" text="READY_CHECK">
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+					<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-1" y="-1"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								LFGDebug("Proposal Hidden: Ready Status close button pressed.");
+								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Frame name="$parentIndividual">
+						<Size x="306" y="55"/>
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="-10"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentPlayer1" inherits="LFGDungeonReadyStatusPlayerTemplate" id="1">
+								<Anchors>
+									<Anchor point="LEFT" x="15" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlayer2" inherits="LFGDungeonReadyStatusPlayerTemplate" id="2">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPlayer1" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlayer3" inherits="LFGDungeonReadyStatusPlayerTemplate" id="3">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPlayer2" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlayer4" inherits="LFGDungeonReadyStatusPlayerTemplate" id="4">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPlayer3" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlayer5" inherits="LFGDungeonReadyStatusPlayerTemplate" id="5">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentPlayer4" relativePoint="RIGHT" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="$parentGrouped">
+						<Size x="306" y="55"/>
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentTank" inherits="LFGDungeonReadyStatusRoleWithCountTemplate">
+								<Anchors>
+									<Anchor point="LEFT" x="49" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentHealer" inherits="LFGDungeonReadyStatusRoleWithCountTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentTank" relativePoint="RIGHT" x="22" y="0"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentDamager" inherits="LFGDungeonReadyStatusRoleWithCountTemplate">
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentHealer" relativePoint="RIGHT" x="22" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="$parentRoleless">
+						<Size x="306" y="55"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentReady" inherits="LFGDungeonReadyStatusRoleWithCountTemplate" parentKey="ready">
+								<Anchors>
+									<Anchor point="CENTER" x="0" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+								self.ready.texture:SetAtlas("UI-LFG-RoleIcon-Generic", TextureKitConstants.IgnoreAtlasSize);
+								self.ready.statusIcon:Hide();
+							</OnLoad>
+						</Scripts>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="LFGDungeonReadyDialog" setAllPoints="true" toplevel="true" enableMouse="true">
+				<Size x="306" y="193"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBackground" parentKey="background" file="Interface\LFGFrame\UI-LFG-BACKGROUND-RANDOMDUNGEON">
+							<Size x="294" y="118"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-11"/>
+								<Anchor point="BOTTOM" x="0" y="64"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentLabel" parentKey="label" inherits="GameFontHighlight" justifyH="CENTER">
+							<Size x="150" y="0"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="-15"/>
+							</Anchors>
+						</FontString>
+						<Texture name="$parentBottomArt" atlas="UI-LFG-DividerLine" parentKey="bottomArt">
+							<Size x="287" y="4"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.background" relativePoint="BOTTOM" y="1"/>
+							</Anchors>
+						</Texture>
+						<FontString name="$parentYourRoleDescription" inherits="GameFontHighlightExtraSmall" text="YOUR_ROLE">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="108" y="93"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentRoleLabel" inherits="GameFontNormalLarge" text="HEALER">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeTo="$parentYourRoleDescription" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
+					<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="-1" y="-1"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+								LFGDebug("Proposal Hidden: Ready Dialog close button pressed.");
+								StaticPopupSpecial_Hide(LFGDungeonReadyPopup);
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentEnterDungeonButton" inherits="UIPanelButtonTemplate" text="ENTER_LFG" parentKey="enterButton">
+						<Size x="115" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="-7" y="25"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+								AcceptProposal();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<Button name="$parentLeaveQueueButton" inherits="UIPanelButtonTemplate" text="LEAVE_QUEUE" parentKey="leaveButton">
+						<Size x="115" y="22"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="7" y="25"/>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
+								RejectProposal();
+							</OnClick>
+						</Scripts>
+					</Button>
+					<!--This is a frame instead of a texture so that we can add a mouseover.-->
+					<Frame name="$parentRoleIcon">
+						<Size x="67" y="67"/>
+						<Anchors>
+							<Anchor point="BOTTOM" x="-1" y="54"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic"/>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentLeaderIcon" atlas="UI-LFG-RoleIcon-Leader-Micro">
+									<Size x="24" y="24"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-3"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentRandomInProgressFrame" parentKey="randomInProgress">
+						<Size x="170" y="30"/>
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR">
+									<Size x="210" y="40"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="0"/>
+									</Anchors>
+									<TexCoords left="0" right="0.6640625" top="0.3125" bottom="0"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" text="THIS_DUNGEON_IN_PROGRESS">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="$parentInstanceInfoFrame" parentKey="instanceInfo">
+						<Size x="170" y="50"/>
+						<Anchors>
+							<Anchor point="BOTTOM" relativeTo="$parentRoleIcon" relativePoint="TOP" x="0" y="10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentName" inherits="GameFontNormalLarge" justifyH="CENTER" parentKey="name" maxLines="2">
+									<Size x="284" y="0"/>
+									<Anchors>
+										<Anchor point="TOP" x="0" y="-13"/>
+									</Anchors>
+								</FontString>
+								<FontString name="$parentStatusText" inherits="GameFontNormal" justifyH="CENTER" parentKey="statusText">
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.name" x="0" y="-12"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+							<Layer level="BACKGROUND">
+								<Texture file="Interface\LFGFrame\UI-LFG-SEPARATOR" parentKey="underline">
+									<Size x="170" y="40"/>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.name" x="0" y="25"/>
+									</Anchors>
+									<TexCoords left="0" right="0.6640625" top="0" bottom="0.3125"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter function="LFGDungeonReadyDialogInstanceInfo_OnEnter"/>
+							<OnLeave function="GameTooltip_Hide"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentRewardsFrame">
+						<Size x="72" y="40"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeTo="$parentRoleIcon" relativePoint="BOTTOMRIGHT" x="19" y="14"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString name="$parentLabel" inherits="GameFontNormalSmall" justifyH="CENTER" text="LFD_REWARDS">
+									<Anchors>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame name="$parentReward1" inherits="LFGDungeonReadyRewardTemplate" id="1"/>
+							<Frame name="$parentReward2" inherits="LFGDungeonReadyRewardTemplate" id="2"/>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self:RegisterEvent("LFG_UPDATE_RANDOM_INFO")
+			</OnLoad>
+			<OnEvent>
+				if ( event == "LFG_UPDATE_RANDOM_INFO" ) then
+					--The rewards may have changed.
+					if ( self:IsShown() ) then
+						LFGDungeonReadyPopup_Update();
+					end
+				end
+			</OnEvent>
+			<OnShow>
+				LFGDungeonReadyPopup_Update();
+				QueueUpdater:RequestInfo();
+				QueueUpdater:AddRef();
+			</OnShow>
+			<OnHide>
+				QueueUpdater:RemoveRef();
+				self.closeIn = nil;
+				self:SetScript("OnUpdate", nil);
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="LFGRewardsLootShortageTemplate" virtual="true">
+		<Size x="19" y="19"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentTexture" atlas="UI-LFG-RoleIcon-Generic" parentKey="texture"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip:SetText(format(LFG_CALL_TO_ARMS, _G[self.role]), 1, 1, 1);
+				GameTooltip:AddLine(LFG_CALL_TO_ARMS_EXPLANATION, nil, nil, nil, true);
+				GameTooltip:Show();
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	<Button name="LFGRewardsLootTemplate" inherits="LargeItemButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentShortageBorder" inherits="Talent-GoldMedal-Border" parentKey="shortageBorder">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" x="-6" y="4"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="IconBorder" file="Interface\Common\WhiteIconFrame" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="IconOverlay" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentRoleIcon1" inherits="LFGRewardsLootShortageTemplate" parentKey="roleIcon1" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRoleIcon2" inherits="LFGRewardsLootShortageTemplate" parentKey="roleIcon2" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleIcon1" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.hasItem = 1;
+			</OnLoad>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				if ( self.shortageIndex ) then
+					GameTooltip:SetLFGDungeonShortageReward(self.dungeonID, self.shortageIndex, self:GetID());
+				else
+					GameTooltip:SetLFGDungeonReward(self.dungeonID, self:GetID());
+				end
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self, elapsed);
+			</OnUpdate>
+			<OnClick>
+				if ( self.shortageIndex ) then
+					HandleModifiedItemClick(GetLFGDungeonShortageRewardLink(self.dungeonID, self.shortageIndex, self:GetID()));
+				else
+					HandleModifiedItemClick(GetLFGDungeonRewardLink(self.dungeonID, self:GetID()));
+				end
+			</OnClick>
+		</Scripts>
+	</Button>
+	<Frame name="LFGRewardFrameTemplate" hidden="true" virtual="true">
+		<Size x="298" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="title" text="LFG_TYPE_RANDOM_DUNGEON">
+					<Anchors>
+						<!--Location different in LFGFrame-->
+						<Anchor point="TOPLEFT" x="10" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentDescription" inherits="QuestFont" justifyH="LEFT" parentKey="description" text="LFD_RANDOM_EXPLANATION">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+				</FontString>
+				<FontString name="$parentRewardsLabel" inherits="QuestTitleFontBlackShadow" justifyH="LEFT" parentKey="rewardsLabel" text="LFD_REWARDS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRewardsDescription" inherits="QuestFont" justifyH="LEFT" parentKey="rewardsDescription" text="LFD_RANDOM_REWARD_EXPLANATION1">
+					<Size x="280" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentRewardsLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+					<Shadow>
+						<Offset x="1" y="-1"/>
+					</Shadow>
+				</FontString>
+				<FontString name="$parentXPLabel" inherits="QuestFont" justifyH="LEFT" parentKey="xpLabel" text="EXPERIENCE_COLON">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentXPAmount" inherits="NumberFontNormalLarge" justifyH="LEFT" parentKey="xpAmount">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentXPLabel" relativePoint="RIGHT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+
+				<!--Texture file="Interface\LFGFrame\UI-LFG-BACKGROUND-QUESTPAPER" setAllPoints="true"/-->
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentItem1" inherits="LFGRewardsLootTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentRewardsDescription" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+			</Button>
+			<Frame name="$parentMoneyReward" inherits="LargeItemButtonTemplate" parentKey="MoneyReward" hidden="true">
+				<Scripts>
+					<OnLoad>
+						self.Icon:SetTexture("Interface\\Icons\\inv_misc_coin_01");
+						self.Name:SetHeight(4);
+					</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(LFG_TOOLTIP_MONEY_REWARD, 1, 1, 1);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentRandomList" parentKey="randomList">
+				<Size x="18" y="18"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentTitle" relativePoint="RIGHT" x="5" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentDiceTexture" file="Interface\Buttons\UI-GroupLoot-Dice-Up">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+						<!--FontString  inherits="ChatFontSmall" text="INCLUDED_DUNGEONS" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentDiceTexture" relativePoint="BOTTOMLEFT" x="-3" y="0"/>
+							</Anchors>
+						</FontString-->
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRandomList_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentEncounterList" parentKey="encounterList">
+				<Size x="18" y="18"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentTexture" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<Size x="18" y="18"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter function="LFGRewardsFrameEncounterList_OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Frame>
+			<Frame name="$parentSpacer" parentKey="spacer">
+				<Size x="2" y="2"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentXPLabel" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="LFGRewardsFrame_OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LFGEventFrame">
+		<Scripts>
+			<OnLoad function="LFGEventFrame_OnLoad"/>
+			<OnEvent function="LFGEventFrame_OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="LFGInvitePopup" parent="UIParent" frameStrata="DIALOG" hidden="true">
+		<Size x="306" y="180"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentText" inherits="GameFontHighlight" justifyH="CENTER">
+					<Size x="240" y="38"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="QueueWarningText" inherits="GameFontHighlight" justifyH="CENTER" text="ACCEPTING_INVITE_WILL_REMOVE_QUEUE" hidden="true">
+					<Size x="240" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-138"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Button name="$parentRoleButtonTank" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="1">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="TANK" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="35" y="-55"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentRoleButtonHealer" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="2">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="HEALER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentRoleButtonDPS" inherits="LFGRoleButtonTemplate" parentArray="RoleButtons" id="3">
+				<Size x="70" y="70"/>
+				<KeyValues>
+					<KeyValue key="role" value="DAMAGER" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentAcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT" motionScriptsWhileDisabled="true">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOM" x="-3" y="15"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupAccept_OnClick"/>
+					<OnEnter>
+						if ( not self:IsEnabled() ) then
+							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT");
+							GameTooltip:SetText(ERR_LFG_NO_ROLES_SELECTED, 1, 0, 0, 1, true);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="$parentDeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
+				<Size x="115" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentAcceptButton" relativePoint="RIGHT" x="6" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="LFGInvitePopupDecline_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				LFGInvitePopupRoleButtonTank.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonHealer.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+				LFGInvitePopupRoleButtonDPS.checkButton.onClick = LFGInvitePopupCheckButton_OnClick;
+			</OnLoad>
+			<OnShow>
+				PlaySound(SOUNDKIT.IG_PLAYER_INVITE);
+			</OnShow>
+			<OnUpdate function="LFGInvitePopup_OnUpdate"/>
+			<OnHide>
+				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+				self:SetHeight(LFG_INVITE_POPUP_DEFAULT_HEIGHT);
+				self.QueueWarningText:Hide();
+			</OnHide>
+		</Scripts>
+	</Frame>
+	<Frame name="LFGCooldownCoverTemplate" hidden="true" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBlackFilter" setAllPoints="true">
+					<Color r="0" b="0" g="0" a="0.93"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString name="$parentDescription" parentKey="description" inherits="GameFontNormal" text="LFG_RANDOM_COOLDOWN_OTHER" justifyH="CENTER">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-30"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTime" parentKey="time" inherits="GameFontHighlightLarge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentDescription" relativePoint="BOTTOM" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName1" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOMLEFT" x="25" y="-60"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus1" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName1" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName2" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName1" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus2" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName2" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName3" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName2" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus3" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName3" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName4" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName3" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus4" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName4" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName5" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName4" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus5" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName5" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName6" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName5" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus6" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName6" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName7" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName6" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus7" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName7" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentName8" inherits="GameFontNormal" justifyH="LEFT" parentArray="Names">
+					<Size x="120" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentName7" relativePoint="BOTTOM" x="0" y="-5"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentStatus8" inherits="GameFontNormal" justifyH="RIGHT" parentArray="Statuses">
+					<Size x="110" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentName8" relativePoint="TOPRIGHT" x="0" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<!--Call LFGCooldownCover_SetUp in OnLoad-->
+			<OnEvent function="LFGCooldownCover_OnEvent"/>
+		</Scripts>
+	</Frame>
+	<Frame name="LFGBackfillCoverTemplate" parentKey="PartyBackfill" hidden="true" enableMouse="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentBlackFilter" setAllPoints="true">
+					<Color r="0" b="0" g="0" a="0.93"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Description" name="$parentDescription" inherits="GameFontNormal" justifyH="CENTER">
+					<Size x="300" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="-0" y="-70"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentBackfillButton" inherits="UIPanelButtonTemplate" text="YES">
+				<Size x="153" y="22"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parentDescription" relativePoint="BOTTOM" x="-5" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						StaticPopup_Hide("LFG_OFFER_CONTINUE");
+						PartyLFGStartBackfill();
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentNoBackfillButton" inherits="UIPanelButtonTemplate" text="HIDE">
+				<Size x="153" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentDescription" relativePoint="BOTTOM" x="5" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+						self:GetParent():Hide();
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				self.updateFunc();
+			</OnShow>
+			<OnHide>
+				self.updateFunc();
+			</OnHide>
+			<OnLoad>
+				self:SetFrameLevel(14);
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

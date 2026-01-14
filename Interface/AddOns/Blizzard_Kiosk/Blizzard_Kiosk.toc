@@ -1,0 +1,16 @@
+## Title: Blizzard_Kiosk
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: both
+
+# Data only
+Housing/Config.lua
+
+Kiosk.lua
+Kiosk.xml
+
+Housing/Glue.lua [AllowLoad Glue]
+Housing/Glue.xml [AllowLoad Glue]
+
+Housing/Game.lua [AllowLoad Game]
+Housing/Game.xml [AllowLoad Game]

@@ -1,0 +1,13 @@
+## Title: Blizzard_CatalogShopTopUpFlow
+## AllowLoad: Both
+## RequiredDep: Blizzard_SharedXML, Blizzard_CatalogShopSharedUtil, Blizzard_CatalogShopSharedTemplates
+## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_GlueDialogs, Blizzard_Shared_SimpleCheckout
+## UseSecureEnvironment: 1
+
+Blizzard_CatalogShopTopUpFlow_Elements.lua
+Blizzard_CatalogShopTopUpFlow.lua
+
+Blizzard_CatalogShopTopUpFlow_Elements.xml
+Blizzard_CatalogShopTopUpFlow.xml
+
+Blizzard_CatalogShopTopUpFlow_Inbound.lua

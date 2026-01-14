@@ -1,0 +1,211 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="AuctionHouseAuctionsFrameTabTemplate" mixin="AuctionHouseAuctionsFrameTabMixin" inherits="AuctionHouseFrameTopTabTemplate" virtual="true">
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="AuctionHouseAuctionsSummaryLineTemplate" mixin="AuctionHouseAuctionsSummaryLineMixin" inherits="TruncatedTooltipScriptTemplate" virtual="true">
+		<Size x="0" y="21"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="Text" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+						<Anchor point="RIGHT" x="-4" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Icon">
+					<Size x="14" y="14"/>
+					<Anchors>
+						<Anchor point="LEFT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconBorder" atlas="auctionhouse-itemicon-small-border" useAtlasSize="false">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedHighlight" atlas="auctionhouse-ui-row-select" alpha=".8" hidden="true" alphaMode="ADD"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+		<HighlightTexture parentKey="HighlightTexture" atlas="auctionhouse-ui-row-highlight" useAtlasSize="false" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="0" y="0"/>
+				<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</HighlightTexture>
+	</Button>
+
+	<Frame name="AuctionHouseAuctionsFrameTemplate" mixin="AuctionHouseAuctionsFrameMixin" virtual="true">
+		<Frames>
+			<Button name="$parentAuctionsTab" parentKey="AuctionsTab" id="1" inherits="AuctionHouseAuctionsFrameTabTemplate" parentArray="Tabs" frameLevel="300" text="AUCTION_HOUSE_AUCTIONS_SUB_TAB">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="47" y="1"/>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentBidsTab" parentKey="BidsTab" id="2" inherits="AuctionHouseAuctionsFrameTabTemplate" parentArray="Tabs" useParentLevel="true" text="AUCTION_HOUSE_BIDS_SUB_TAB">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.AuctionsTab" relativePoint="RIGHT" x="-3" y="0"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="CancelAuctionButton" mixin="CancelAuctionButtonMixin" inherits="UIPanelButtonTemplate" useParentLevel="true" text="AUCTION_HOUSE_CANCEL_AUCTION_BUTTON">
+				<Size x="158" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="-22"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+
+			<Frame parentKey="BuyoutFrame" inherits="AuctionHouseBuyoutFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CancelAuctionButton" relativePoint="RIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BidFrame" inherits="AuctionHouseBidFrameTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.BuyoutFrame" relativePoint="LEFT" x="-58" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="SummaryList" inherits="AuctionHouseBackgroundTemplate" mixin="AuctionHouseAuctionsSummaryListMixin" useParentLevel="true">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-summarylist" type="string"/>
+					<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
+					<KeyValue key="textureWidthClassic" value="138" type="number"/>
+					<KeyValue key="textureHeightClassic" value="434" type="number"/>
+					<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
+					<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
+				</KeyValues>
+				<Size x="168" y="0"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.AuctionsTab" relativePoint="BOTTOM" x="0" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.CancelAuctionButton" relativePoint="TOP"/>
+					<Anchor point="LEFT" x="-1"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Size x="148" y="0"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="BOTTOMRIGHT" x="-27" y="3"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="WowClassicScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="2"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="7" y="-5"/>
+						</Anchors>
+					</EventFrame>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Button parentKey="ItemDisplay" inherits="AuctionHouseItemDisplayTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="itemButtonXOffset" value="22" type="number"/>
+					<KeyValue key="itemButtonYOffset" value="-2" type="number"/>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-buy-noncommodities-header" type="string"/>
+					<KeyValue key="backgroundTextureClassic" value="Interface\QuestFrame\UI-TextBackground-BackdropBackground" type="string"/>
+					<KeyValue key="textureWidthClassic" value="617" type="number"/>
+					<KeyValue key="textureHeightClassic" value="82" type="number"/>
+					<KeyValue key="textureYOffsetClassic" value="-2" type="number"/>
+					<KeyValue key="textureXOffsetClassic" value="3" type="number"/>
+					
+				</KeyValues>
+				<Size x="623" y="86"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.AuctionsTab" relativePoint="BOTTOM" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.SummaryList" relativePoint="RIGHT" x="0"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="AllAuctionsList" inherits="AuctionHouseItemListTemplate">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
+					<KeyValue key="textureWidthClassic" value="595" type="number"/>
+					<KeyValue key="textureHeightClassic" value="414" type="number"/>
+					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+					<KeyValue key="refreshFrameYOffset" value="34" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.SummaryList" relativePoint="TOP" x="0" y="-1"/> <Anchor point="LEFT" relativeKey="$parent.SummaryList" relativePoint="RIGHT" x="0" y="0"/>
+					<Anchor point="RIGHT" x="-5" y="0"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.SummaryList" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="BidsList" inherits="AuctionHouseItemListTemplate">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-index" type="string"/>
+					<KeyValue key="textureWidthClassic" value="595" type="number"/>
+					<KeyValue key="textureHeightClassic" value="414" type="number"/>
+					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+					<KeyValue key="refreshFrameYOffset" value="34" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.AllAuctionsList" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.AllAuctionsList" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ItemList" inherits="AuctionHouseItemListTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-auctions" type="string"/>
+					<KeyValue key="textureWidthClassic" value="595" type="number"/>
+					<KeyValue key="textureHeightClassic" value="315" type="number"/>
+					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+					<KeyValue key="refreshFrameYOffset" value="133" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.ItemDisplay" relativePoint="BOTTOM" x="0" y="-14"/>
+					<Anchor point="LEFT" relativeKey="$parent.ItemDisplay" relativePoint="LEFT" x="0" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.AllAuctionsList" relativePoint="RIGHT"/>
+					<Anchor point="BOTTOM" relativeKey="$parent.SummaryList" relativePoint="BOTTOM"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CommoditiesList" inherits="AuctionHouseCommoditiesListTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="backgroundAtlas" value="auctionhouse-background-auctions" type="string"/>
+					<KeyValue key="textureWidthClassic" value="595" type="number"/>
+					<KeyValue key="textureHeightClassic" value="315" type="number"/>
+					<KeyValue key="searchContext" value="AuctionHouseSearchContext.AuctionsCommodities" type="global"/>
+					<KeyValue key="refreshFrameXOffset" value="-4" type="number"/>
+					<KeyValue key="refreshFrameYOffset" value="133" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ItemList" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ItemList" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

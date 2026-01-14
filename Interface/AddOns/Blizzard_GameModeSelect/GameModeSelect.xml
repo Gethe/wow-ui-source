@@ -1,0 +1,150 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GameModeButtonTemplate" mixin="SelectableButtonMixin, GameModeButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<!--
+			Set the gameModeRecordID key to be the record ID of the game mode you want to switch to.
+			These hardcoded record IDs will only be supported until these buttons are created dynamically.
+			<KeyValue key="gameModeRecordID" value="0" type="number" />
+			-->
+		</KeyValues>
+		<Size x="244" y="122"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectionArrow" atlas="glues-gamemode-selectarrow" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="6"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level ="BACKGROUND">
+				<Texture parentKey="BackgroundGlowTop" atlas="glues-gameMode-glw-top" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BackgroundGlowBottom" atlas="glues-gameMode-glw-bottom" hidden="true" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NormalTexture">
+					<Size x="244" y="122"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Button name="GameModePromoButtonTemplate" mixin="SelectableButtonMixin, GameModeButtonPromoMixin" motionScriptsWhileDisabled="true" virtual="true" inherits="GameModeButtonTemplate">
+		<Size x="244" y="122"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="PulseTexture" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PulseTextureTwo" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PromoText">
+				<Size x="133" y="21"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="8" relativePoint="BOTTOM" relativeKey="$parent.NormalTexture"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="BGLabel" inherits="GameFontNormal_NoShadow" justifyH="CENTER" text="LIMITED_TIME_EVENT">
+							<KeyValues>
+								<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+							</KeyValues>
+							<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0.5" y="-0.5"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="Label" inherits="GameFontHighlight" justifyH="CENTER" text="LIMITED_TIME_EVENT">
+							<Shadow>
+								<Color color="NEW_FEATURE_SHADOW_COLOR"/>
+							</Shadow>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Glow" atlas="glues-gameMode-txtBG">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Label" x="-20" y="10"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Label" x="20" y="-10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="PulseAnim" looping="REPEAT">
+				<Alpha childKey="PulseTexture" duration="0.8" order="1" smoothing="IN_OUT" fromAlpha="0.0" toAlpha="1.0"/>
+				<Alpha childKey="PulseTexture" duration="0.8" order="2" smoothing="IN_OUT" fromAlpha="1.0" toAlpha="0.0"/>
+				<Alpha childKey="PulseTextureTwo" duration="0.8" order="1" smoothing="IN_OUT" fromAlpha="0.0" toAlpha="1.0"/>
+				<Alpha childKey="PulseTextureTwo" duration="0.8" order="2" smoothing="IN_OUT" fromAlpha="1.0" toAlpha="0.0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="GameModeFrameTemplate" mixin="GameModeFrameMixin" virtual="true" inherits="CallbackRegistrantTemplate, ResizeLayoutFrame, DefaultScaleFrame" hidden="true">
+		<KeyValues>
+			<KeyValue key="fixedHeight" value="122"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="glues-gameMode-BG">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10"/>
+						<Anchor point="BOTTOMRIGHT" x="-10"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="NoGameModesText" inherits="GameFontNormalLarge" text="WOWLABS_NO_GAME_MODES_FOUND" hidden="true">
+					<Size x="250"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnKeyDown method="OnKeyDown"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

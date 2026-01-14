@@ -1,0 +1,5 @@
+## Title: Blizzard MovePad
+## Notes: A clickable movement pad
+## LoadOnDemand: 1
+Blizzard_MovePad.lua
+Blizzard_MovePad.xml

@@ -1,0 +1,126 @@
+-- These are functions that were deprecated and will be removed in the future.
+-- Please upgrade to the updated APIs as soon as possible.
+
+if not GetCVarBool("loadDeprecationFallbacks") then
+	return;
+end
+
+CHAT_BUTTON_FLASH_TIME = ChatFrameConstants.ScrollToBottomFlashInterval;
+CHAT_TELL_ALERT_TIME = ChatFrameConstants.WhisperSoundAlertCooldown;
+MAX_COMMUNITY_NAME_LENGTH = ChatFrameConstants.TruncatedCommunityNameLength;
+MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL = ChatFrameConstants.TruncatedCommunityNameWithoutChannelLength;
+MAX_REMEMBERED_TELLS = ChatFrameConstants.MaxRememberedWhisperTargets;
+MESSAGE_SCROLLBUTTON_INITIAL_DELAY = MessageFrameScrollButtonConstants.InitialScrollDelay;
+MESSAGE_SCROLLBUTTON_SCROLL_DELAY = MessageFrameScrollButtonConstants.HeldScrollDelay;
+
+MAX_WOW_CHAT_CHANNELS = Constants.ChatFrameConstants.MaxChatChannels;
+MAX_CHARACTER_NAME_BYTES = Constants.ChatFrameConstants.MaxCharacterNameBytes;
+NUM_CHAT_WINDOWS = Constants.ChatFrameConstants.MaxChatWindows;
+
+MAX_COUNTDOWN_SECONDS = Constants.PartyCountdownConstants.MaxCountdownSeconds;
+
+Chat_AddSystemMessage = ChatFrameUtil.AddSystemMessage;
+Chat_GetChannelColor = ChatFrameUtil.GetChannelColor;
+Chat_GetChannelShortcutName = ChatFrameUtil.GetChannelShortcutName;
+Chat_GetChatCategory = ChatFrameUtil.GetChatCategory;
+Chat_GetChatFrame = ChatFrameUtil.GetChatFrame;
+Chat_GetColoredChatName = ChatFrameUtil.GetColoredChatName;
+Chat_GetCommunitiesChannel = ChatFrameUtil.GetCommunitiesChannel;
+Chat_GetCommunitiesChannelColor = ChatFrameUtil.GetCommunitiesChannelColor;
+Chat_GetCommunitiesChannelName = ChatFrameUtil.GetCommunitiesChannelName;
+Chat_ShouldColorChatByClass = ChatFrameUtil.ShouldColorChatByClass;
+ChatEdit_ActivateChat = ChatFrameUtil.ActivateChat;
+ChatEdit_ChooseBoxForSend = ChatFrameUtil.ChooseBoxForSend;
+ChatEdit_DeactivateChat = ChatFrameUtil.DeactivateChat;
+ChatEdit_FocusActiveWindow = ChatFrameUtil.FocusActiveWindow;
+ChatEdit_GetActiveChatType = ChatFrameUtil.GetActiveChatType;
+ChatEdit_GetActiveWindow = ChatFrameUtil.GetActiveWindow;
+ChatEdit_GetLastActiveWindow = ChatFrameUtil.GetLastActiveWindow;
+ChatEdit_GetLastTellTarget = ChatFrameUtil.GetLastTellTarget;
+ChatEdit_GetLastToldTarget = ChatFrameUtil.GetLastToldTarget;
+ChatEdit_GetNextTellTarget = ChatFrameUtil.GetNextTellTarget;
+ChatEdit_HasStickyFocus = ChatFrameUtil.HasStickyFocus;
+ChatEdit_InsertLink = ChatFrameUtil.InsertLink;
+ChatEdit_LinkItem = ChatFrameUtil.LinkItem;
+ChatEdit_SetLastActiveWindow = ChatFrameUtil.SetLastActiveWindow;
+ChatEdit_SetLastTellTarget = ChatFrameUtil.SetLastTellTarget;
+ChatEdit_SetLastToldTarget = ChatFrameUtil.SetLastToldTarget;
+ChatEdit_TryInsertChatLink = ChatFrameUtil.TryInsertChatLink;
+ChatEdit_TryInsertQuestLinkForQuestID = ChatFrameUtil.TryInsertQuestLinkForQuestID;
+ChatFrame_AddCommunitiesChannel = ChatFrameUtil.AddCommunitiesChannel;
+ChatFrame_AddMessageEventFilter = ChatFrameUtil.AddMessageEventFilter;
+ChatFrame_CanAddChannel = ChatFrameUtil.CanAddChannel;
+ChatFrame_CanChatGroupPerformExpressionExpansion = ChatFrameUtil.CanChatGroupPerformExpressionExpansion;
+ChatFrame_ChatPageDown = ChatFrameUtil.ChatPageDown;
+ChatFrame_ChatPageUp = ChatFrameUtil.ChatPageUp;
+ChatFrame_ClearChatFocusOverride = ChatFrameUtil.ClearChatFocusOverride;
+ChatFrame_DisplayChatHelp = ChatFrameUtil.DisplayChatHelp;
+ChatFrame_DisplayGameTime = ChatFrameUtil.DisplayGameTime;
+ChatFrame_DisplayGMOTD = ChatFrameUtil.DisplayGMOTD;
+ChatFrame_DisplayHelpText = ChatFrameUtil.DisplayHelpText;
+ChatFrame_DisplayHelpTextSimple = ChatFrameUtil.DisplayHelpTextSimple;
+ChatFrame_DisplayMacroHelpText = ChatFrameUtil.DisplayMacroHelpText;
+ChatFrame_DisplaySystemMessage = ChatFrameUtil.DisplaySystemMessage;
+ChatFrame_DisplaySystemMessageInCurrent = ChatFrameUtil.DisplaySystemMessageInCurrent;
+ChatFrame_DisplaySystemMessageInPrimary = ChatFrameUtil.DisplaySystemMessageInPrimary;
+ChatFrame_DisplayTimePlayed = ChatFrameUtil.DisplayTimePlayed;
+ChatFrame_DisplayUsageError = ChatFrameUtil.DisplayUsageError;
+ChatFrame_GetChatFocusOverride = ChatFrameUtil.GetChatFocusOverride;
+ChatFrame_GetCommunitiesChannelLocalID = ChatFrameUtil.GetCommunitiesChannelLocalID;
+ChatFrame_GetCommunityAndStreamFromChannel = ChatFrameUtil.GetCommunityAndStreamFromChannel;
+ChatFrame_GetCommunityAndStreamName = ChatFrameUtil.GetCommunityAndStreamName;
+ChatFrame_GetFullChannelInfo = ChatFrameUtil.GetFullChannelInfo;
+ChatFrame_GetMobileEmbeddedTexture = ChatFrameUtil.GetMobileEmbeddedTexture;
+ChatFrame_OpenChat = ChatFrameUtil.OpenChat;
+ChatFrame_RemoveCommunitiesChannel = ChatFrameUtil.RemoveCommunitiesChannel;
+ChatFrame_RemoveMessageEventFilter = ChatFrameUtil.RemoveMessageEventFilter;
+ChatFrame_ReplyTell = ChatFrameUtil.ReplyTell;
+ChatFrame_ReplyTell2 = ChatFrameUtil.ReplyTell2;
+ChatFrame_ResolveChannelName = ChatFrameUtil.ResolveChannelName;
+ChatFrame_ResolvePrefixedChannelName = ChatFrameUtil.ResolvePrefixedChannelName;
+ChatFrame_ScrollDown = ChatFrameUtil.ScrollDown;
+ChatFrame_ScrollToBottom = ChatFrameUtil.ScrollToBottom;
+ChatFrame_ScrollUp = ChatFrameUtil.ScrollUp;
+ChatFrame_SendTell = ChatFrameUtil.SendTell;
+ChatFrame_SendTellWithMessage = ChatFrameUtil.SendTellWithMessage;
+ChatFrame_SetChatFocusOverride = ChatFrameUtil.SetChatFocusOverride;
+ChatFrame_TimeBreakDown = ChatFrameUtil.TimeBreakDown;
+ChatFrame_TruncateToMaxLength = ChatFrameUtil.TruncateToMaxLength;
+ChatFrame_UpdateChatFrames = ChatFrameUtil.UpdateChatFrames;
+GetChatTimestampFormat = ChatFrameUtil.GetTimestampFormat;
+SubstituteChatMessageBeforeSend = ChatFrameUtil.SubstituteChatMessageBeforeSend;
+
+ChatFrame_AddMessage = ChatFrameMixin.AddMessage;
+ChatFrame_AddMessageGroup = ChatFrameMixin.AddMessageGroup;
+ChatFrame_AddPrivateMessageTarget = ChatFrameMixin.AddPrivateMessageTarget;
+ChatFrame_AddSingleMessageType = ChatFrameMixin.AddSingleMessageType;
+ChatFrame_ContainsChannel = ChatFrameMixin.ContainsChannel;
+ChatFrame_ContainsMessageGroup = ChatFrameMixin.ContainsMessageGroup;
+ChatFrame_ExcludePrivateMessageTarget = ChatFrameMixin.ExcludePrivateMessageTarget;
+ChatFrame_GetDefaultChatTarget = ChatFrameMixin.GetDefaultChatTarget;
+ChatFrame_ReceiveAllPrivateMessages = ChatFrameMixin.ReceiveAllPrivateMessages;
+ChatFrame_RegisterForChannels = ChatFrameMixin.RegisterForChannels;
+ChatFrame_RegisterForMessages = ChatFrameMixin.RegisterForMessages;
+ChatFrame_RemoveAllChannels = ChatFrameMixin.RemoveAllChannels;
+ChatFrame_RemoveAllMessageGroups = ChatFrameMixin.RemoveAllMessageGroups;
+ChatFrame_RemoveChannel = ChatFrameMixin.RemoveChannel;
+ChatFrame_RemoveExcludePrivateMessageTarget = ChatFrameMixin.RemoveExcludePrivateMessageTarget;
+ChatFrame_RemoveMessageGroup = ChatFrameMixin.RemoveMessageGroup;
+ChatFrame_RemovePrivateMessageTarget = ChatFrameMixin.RemovePrivateMessageTarget;
+ChatFrame_UnregisterAllMessageGroups = ChatFrameMixin.UnregisterAllMessageGroups;
+ChatFrame_UpdateColorByID = ChatFrameMixin.UpdateColorByID;
+ChatFrame_UpdateDefaultChatTarget = ChatFrameMixin.UpdateDefaultChatTarget;
+
+ChatEdit_AddHistory = ChatFrameEditBoxMixin.AddHistory;
+ChatEdit_ClearChat = ChatFrameEditBoxMixin.ClearChat;
+ChatEdit_DoesCurrentChannelTargetMatch = ChatFrameEditBoxMixin.DoesCurrentChannelTargetMatch;
+ChatEdit_ExtractChannel = ChatFrameEditBoxMixin.ExtractChannel;
+ChatEdit_ExtractTellTarget = ChatFrameEditBoxMixin.ExtractTellTarget;
+ChatEdit_GetChannelTarget = ChatFrameEditBoxMixin.GetChannelTarget;
+ChatEdit_HandleChatType = ChatFrameEditBoxMixin.HandleChatType;
+ChatEdit_ParseText = ChatFrameEditBoxMixin.ParseText;
+ChatEdit_ResetChatType = ChatFrameEditBoxMixin.ResetChatType;
+ChatEdit_ResetChatTypeToSticky = ChatFrameEditBoxMixin.ResetChatTypeToSticky;
+ChatEdit_SendText = ChatFrameEditBoxMixin.SendText;
+ChatEdit_SetDeactivated = ChatFrameEditBoxMixin.Deactivate;
+ChatEdit_UpdateHeader = ChatFrameEditBoxMixin.UpdateHeader;

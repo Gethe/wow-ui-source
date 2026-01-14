@@ -1,0 +1,284 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Blizzard_BindingUI.lua"/>
+	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="selectedHighlight" file="Interface\Buttons\UI-Silver-Button-Select" alphaMode="ADD" hidden="true">
+					<Size x="180" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				KeyBindingButton_OnClick(self, button, down);
+			</OnClick>
+			<OnLoad>
+				self:RegisterForClicks("AnyUp");
+			</OnLoad>
+		</Scripts>
+		<NormalFont style="GameFontHighlightSmall"/>
+		<DisabledFont style="GameFontDisableSmall"/>
+		<HighlightFont style="GameFontHighlightSmall"/>
+	</Button>
+	<Button name="KeyBindingFrameBindingButtonTemplateWithLabel" inherits="KeyBindingFrameBindingButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="KeyLabel" inherits="GameFontNormalSmall">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="4" y="5" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	<Frame name="KeyBindingFrameBindingTemplate" virtual="true">
+		<Size x="560" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString parentKey="description" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="170" y="24"/>
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="header" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentKey1Button" parentKey="key1Button" inherits="KeyBindingFrameBindingButtonTemplate" id="1">
+				<Size x="180" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" x="185" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentKey2Button" parentKey="key2Button" inherits="KeyBindingFrameBindingButtonTemplate" id="2">
+				<Size x="180" y="22"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentKey1Button" relativePoint="RIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+	<Button name="KeybindingsCategoryListButtonTemplate" inherits="OptionsListButtonTemplate" virtual="true">
+		<Scripts>
+			<OnLoad>
+				OptionsListButton_OnLoad(self);
+			</OnLoad>
+			<OnClick function="KeybindingsCategoryListButton_OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="KeyBindingFrame" inherits="BackdropTemplate" parent="UIParent" toplevel="true" frameStrata="DIALOG" movable="true" enableMouse="true" hidden="true" enableKeyboard="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
+		<Size x="858" y="660"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture parentKey="topSeparator">
+					<Size x="550" y="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="90" y="-70"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+				<FontString parentKey="commandLabel" inherits="GameFontWhite" text="COMMAND">
+					<Anchors>
+						<Anchor point="TOP" x="-141" y="-50"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="key1Label" inherits="GameFontWhite" text="KEY1">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.commandLabel" relativePoint="RIGHT" x="185" y="0"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="key2Label" inherits="GameFontWhite" text="KEY2">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.key1Label" relativePoint="RIGHT" x="145" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="bottomSeparator">
+					<Size x="550" y="1"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="90" y="90"/>
+					</Anchors>
+					<Color r="0.25" g="0.25" b="0.25"/>
+				</Texture>
+				<FontString parentKey="outputText" inherits="GameFontWhite">
+					<Anchors>
+						<Anchor point="BOTTOM" x="90" y="70"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="header" inherits="TranslucentFrameTemplate">
+				<Size x="310" y="45"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="TOP" x="0" y="-8"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentRockBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT"  x="10" y="-10"/>
+								<Anchor point="BOTTOMRIGHT"  x="-10" y="10"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<FontString parentKey="text" inherits="GameFontNormal" text="KEY_BINDINGS">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<CheckButton parentKey="characterSpecificButton" inherits="UICheckButtonTemplate">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-245" y="-20"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="-100" top="0" bottom="0"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnLoad function="CharacterSpecificButton_OnLoad"/>
+					<OnClick function="CharacterSpecificButton_OnClick"/>
+					<OnEnter function="CharacterSpecificButton_OnEnter"/>
+					<OnLeave function="CharacterSpecificButton_OnHide"/>
+				</Scripts>
+			</CheckButton>
+			<Button parentKey="unbindButton" inherits="UIPanelButtonTemplate" text="UNBIND">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-205" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="UnbindButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="okayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.unbindButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="OkayButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="cancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="96" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.okayButton" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CancelButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="defaultsButton" inherits="UIPanelButtonTemplate" text="RESET_TO_DEFAULT">
+				<Size x="130" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="16" y="16"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="DefaultsButton_OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="$parentCategoryList" parentKey="categoryList" inherits="OptionsFrameListTemplate">
+				<KeyValues>
+					<KeyValue key="labelText" value="CATEGORY" type="global"/>
+					<KeyValue key="buttonTemplate" value="KeyBindingsCategoryListButtonTemplate" type="string"/>
+				</KeyValues>
+				<Size x="175" y="569"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="22" y="-40"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="bindingsContainer" inherits="TooltipBorderBackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropBorderColor" value="LIGHTGRAY_FONT_COLOR" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.categoryList" relativePoint="TOPRIGHT" x="16" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.categoryList" relativePoint="BOTTOMRIGHT" x="16" y="1"/>
+					<Anchor point="RIGHT" x="-22" y="0"/>
+				</Anchors>
+			</Frame>
+			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame" inherits="FauxScrollFrameTemplate">
+				<Size x="560" y="554"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-51" y="-49"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="scrollBorderTop" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="28" y="48"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" x="28" y="4"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0" bottom="0.2"/>
+						</Texture>
+						<Texture parentKey="scrollBorderBottom" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Size x="28" y="67"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="28" y="-2"/>
+							</Anchors>
+							<TexCoords left="0.515625" right="1.0" top="0.1440625" bottom="0.4140625"/>
+						</Texture>
+						<Texture parentKey="scrollBorderMiddle" file="Interface\PaperDollInfoFrame\UI-Character-ScrollBar">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.scrollBorderTop" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.scrollBorderBottom" relativePoint="TOPRIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="0.484375" top="0.1640625" bottom="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="scrollFrameScrollBarBackground">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.scrollBorderTop" relativePoint="TOPLEFT" x="2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.scrollBorderBottom" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(self, offset, KEY_BINDING_HEIGHT, KeyBindingFrame_Update);
+					</OnVerticalScroll>
+					<OnMouseWheel>
+						if ( not KeyBindingFrame.selected ) then
+							ScrollFrameTemplate_OnMouseWheel(self, delta);
+						else
+							KeyBindingFrame_OnMouseWheel(KeyBindingFrame, delta);
+						end
+					</OnMouseWheel>
+				</Scripts>
+			</ScrollFrame>
+		</Frames>
+		<Scripts>
+			<OnClick function="KeyBindingFrame_OnKeyDown"/>
+			<OnKeyDown function="KeyBindingFrame_OnKeyDown"/>
+			<OnGamePadButtonDown function="KeyBindingFrame_OnKeyDown"/>
+			<OnShow function="KeyBindingFrame_OnShow"/>
+			<OnHide function="KeyBindingFrame_OnHide"/>
+			<OnLoad inherit="prepend" function="KeyBindingFrame_OnLoad"/>
+			<OnEvent function="KeyBindingFrame_OnEvent"/>
+			<OnMouseWheel function="KeyBindingFrame_OnMouseWheel"/>
+		</Scripts>
+	</Button>
+</Ui>

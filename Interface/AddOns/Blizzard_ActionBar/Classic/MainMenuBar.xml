@@ -1,0 +1,182 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MainMenuBar" parent="UIParent">
+		<Size x="1024" y="53"/>
+		<Anchors>
+			<Anchor point="BOTTOM"/>
+		</Anchors>
+		<Frames>
+			<Frame name="MainMenuBarMaxLevelBar" enableMouse="true" hidden="true">
+				<Size x="1024" y="7"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="MainMenuBar" relativePoint="TOP" x="0" y="-11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuMaxLevelBar0" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size x="256" y="7"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="-384" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0" bottom="0.21875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar1" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size x="256" y="7"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar0" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.25" bottom="0.46875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar2" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size x="256" y="7"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar1" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.5" bottom="0.71875"/>
+						</Texture>
+						<Texture name="MainMenuMaxLevelBar3" file="Interface\MainMenuBar\UI-MainMenuBar-MaxLevel">
+							<Size x="256" y="7"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="MainMenuMaxLevelBar2" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.75" bottom="0.96875"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnShow function="UIParent_ManageFramePositions"/>
+					<OnHide function="UIParent_ManageFramePositions"/>
+				</Scripts>
+			</Frame>
+			<Frame name="MainMenuBarArtFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="MainMenuBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="MainMenuBar"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuBarTexture0" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="43"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-384" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.83203125" bottom="1.0"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture1" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="43"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-128" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.58203125" bottom="0.75"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture2" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="43"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="128" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.33203125" bottom="0.5"/>
+						</Texture>
+						<Texture name="MainMenuBarTextureExtender" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="20" y="43"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="256" y="0"/>
+							</Anchors>
+							<TexCoords left="0.75" right="1.0" top="0.33203125" bottom="0.5"/>
+						</Texture>
+						<Texture name="MainMenuBarTexture3" file="Interface\MainMenuBar\UI-MainMenuBar-Dwarf">
+							<Size x="256" y="43"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="384" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="1.0" top="0.08203125" bottom="0.25"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="5">
+						<Texture name="MainMenuBarLeftEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="-544" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture name="MainMenuBarRightEndCap" file="Interface\MainMenuBar\UI-MainMenuBar-EndCap-Dwarf">
+							<Size x="128" y="128"/>
+							<Anchors>
+								<Anchor point="BOTTOM" x="544" y="0"/>
+							</Anchors>
+							<TexCoords left="1.0" right="0.0" top="0.0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="MainMenuBar_OnLoad"/>
+					<OnEvent function="MainMenuBar_OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame name="MainMenuBarPerformanceBarFrame" frameStrata="LOW">
+				<Size x="16" y="64"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-227" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="MainMenuBarPerformanceBar" atlas="ui-mainmenubar-performancebar-fullbar">
+							<Size x="20" y="66"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						PERFORMANCEBAR_LOW_LATENCY = 300;
+						PERFORMANCEBAR_MEDIUM_LATENCY = 600;
+						PERFORMANCEBAR_UPDATE_INTERVAL = 10;
+						self.hover = nil;
+						self.updateInterval = 0;
+						if (GetExpansionLevel() >= LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+							self:Hide();
+						end
+					</OnLoad>
+					<OnUpdate>
+						if (self.updateInterval > 0) then
+							self.updateInterval = self.updateInterval - elapsed;
+						else
+							self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL;
+
+							local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
+							local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
+							if (latency > PERFORMANCEBAR_MEDIUM_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 0, 0);
+							elseif (latency > PERFORMANCEBAR_LOW_LATENCY) then
+								MainMenuBarPerformanceBar:SetVertexColor(1, 1, 0);
+							else
+								MainMenuBarPerformanceBar:SetVertexColor(0, 1, 0);
+							end
+							if (self.hover) then
+								GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+							end
+						end
+					</OnUpdate>
+				</Scripts>
+			</Frame>
+			<Button name="MainMenuBarPerformanceBarFrameButton" parent="MainMenuBarPerformanceBarFrame" setAllPoints="true" frameStrata="HIGH">
+				<Scripts>
+					<OnEnter>
+						MainMenuBarPerformanceBarFrame.hover = 1;
+						local bandwidthIn, bandwidthOut, latency = GetNetStats();
+						GameTooltip_AddNewbieTip(self, MAINMENUBAR_LATENCY_LABEL.." "..latency..MILLISECONDS_ABBR, 1.0, 1.0, 1.0, NEWBIE_TOOLTIP_LATENCY);
+					</OnEnter>
+					<OnLeave>
+						MainMenuBarPerformanceBarFrame.hover = nil;
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow function="MainMenuBar_OnShow"/>
+			<OnHide function="MainMenuBar_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

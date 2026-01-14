@@ -1,0 +1,12 @@
+## Title: Blizzard_UIPanelTemplates
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedXMLGame
+## AllowLoad: game
+## AllowLoadGameType: classic
+Classic\AutoCastTemplates.lua
+Classic\AutoCastTemplates.xml
+Shared\UIPanelSpellButtonFrame.lua
+Shared\UIPanelSpellButtonFrame.xml
+Classic\UIPanelTemplates.lua
+Classic\UIPanelTemplates.xml

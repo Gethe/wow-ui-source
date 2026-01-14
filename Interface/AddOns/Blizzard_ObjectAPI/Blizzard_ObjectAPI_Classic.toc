@@ -1,0 +1,10 @@
+## Title: Blizzard_ObjectAPI
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Game
+## AllowLoadGameType: classic
+Classic\ContinuableContainer.lua
+Classic\ItemLocation.lua
+Classic\Item.lua
+Classic\Spell.lua
+Classic\PlayerLocation.lua

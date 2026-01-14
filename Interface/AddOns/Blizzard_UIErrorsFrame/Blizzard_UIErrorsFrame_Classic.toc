@@ -1,0 +1,8 @@
+## Title: Blizzard_UIErrorsFrame
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent
+## LoadWith: Blizzard_UIParent
+## AllowLoadGameType: classic
+Classic\UIErrorsFrame.lua
+Classic\UIErrorsFrame.xml

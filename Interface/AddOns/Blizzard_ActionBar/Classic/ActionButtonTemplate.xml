@@ -1,0 +1,187 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<CheckButton name="ActionButtonTemplate" inherits="FlyoutButtonTemplate" mixin="BaseActionButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="enableSpellFX" value="false" type="boolean"/>
+			<KeyValue key="enableLOCCooldown" value="false" type="boolean"/>
+			<KeyValue key="popupDirection" value="UP" type="string"/>
+			<KeyValue key="popupOffset" value="-4" type="number"/>
+			<KeyValue key="popupCrossAxisSize" value="47" type="number"/>
+			<KeyValue key="openArrowOffset" value="2" type="number"/>
+			<KeyValue key="closedArrowOffset" value="4" type="number"/>
+			<KeyValue key="arrowMainAxisSize" value="18" type="number"/>
+			<KeyValue key="arrowCrossAxisSize" value="7" type="number"/>
+			<KeyValue key="hotkeyTextKeyboardX" value="-2" type="number"/>
+			<KeyValue key="hotkeyTextKeyboardY" value="-2" type="number"/>
+			<KeyValue key="hotkeyTextGamepadX" value="3" type="number"/>
+			<KeyValue key="hotkeyTextGamepadY" value="0" type="number"/>
+		</KeyValues>
+		<Size x="36" y="36"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentIcon" parentKey="icon" />
+				<MaskTexture parentKey="IconMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SlotBackground" file="Interface\Buttons\UI-Quickslot" alpha="0.4">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-15" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="15" y="-15"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture name="$parentFlash" parentKey="Flash" atlas="UI-HUD-ActionBar-IconFrame-Flash" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlightSmallOutline">
+					<Size x="36" y="10"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture name="$parentBorder" parentKey="Border" file="Interface\Buttons\UI-ActionButton-Border" useAtlasSize="true" hidden="true" alphaMode="ADD">
+					<Size x="62" y="62"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="NewActionTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpellHighlightTexture" atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" alpha="0.4" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LevelLinkLockIcon" atlas="QuestSharing-Padlock" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Animations>
+			<AnimationGroup parentKey="SpellHighlightAnim" looping="REPEAT">
+				<Alpha childKey="SpellHighlightTexture" smoothing="OUT" duration=".35" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="SpellHighlightTexture" smoothing="IN" duration=".35" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+
+		<Frames>
+			<Frame parentKey="TextOverlayContainer" mixin="ActionButtonTextOverlayContainerMixin" frameLevel="500" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString name="$parentHotKey" inherits="LetterAndNumberFontNormalSmallGray" parentKey="HotKey" justifyH="RIGHT">
+							<Size x="32" y="10"/>
+							<Anchors>
+								<!-- Reanchored in script. -->
+								<Anchor point="TOPRIGHT" x="-5" y="-5"/>
+							</Anchors>
+						</FontString>
+						<FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count" justifyH="RIGHT">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="AutoCastOverlay" inherits="AutoCastOverlayTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Size x="45" y="45"/>
+			</Frame>
+
+			<Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" drawBling="false" useParentLevel="true" parentKey="cooldown">
+				<KeyValues>
+					<KeyValue key="edgeTextureNormal" value="Interface\Cooldown\edge-LoC" type="string"/>
+					<KeyValue key="edgeTextureLOC" value="Interface\Cooldown\edge" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>			
+				<SwipeTexture>
+					<Color r="1" g="1" b="1" a="0.8"/>
+				</SwipeTexture>
+			</Cooldown>
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="BaseActionButtonMixin_OnLoad"/>
+			<OnEnter method="BaseActionButtonMixin_OnEnter"/>
+			<OnLeave method="BaseActionButtonMixin_OnLeave"/>
+			<OnDragStart method="BaseActionButtonMixin_OnDragStart"/>
+			<OnAttributeChanged method="BaseActionButtonMixin_OnAttributeChanged"/>
+		</Scripts>
+
+		<NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2" alpha="0.5">
+			<Size x="40" y="40"/>
+			<TexCoords left="0.1875" right="0.796875" top="0.1875" bottom="0.796875"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture parentKey="PushedTexture" file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture parentKey="CheckedTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonCodeTemplate" inherits="SecureActionButtonTemplate, QuickKeybindButtonTemplate" virtual="true" mixin="ActionBarActionButtonDerivedMixin">
+		<Scripts>
+			<OnLoad method="ActionBarActionButtonDerivedMixin_OnLoad"/>
+			<OnAttributeChanged method="ActionBarActionButtonDerivedMixin_OnAttributeChanged"/>
+			<OnEvent method="ActionBarActionButtonDerivedMixin_OnEvent"/>
+			<OnClick method="ActionBarActionButtonDerivedMixin_OnClick"/>
+			<PostClick method="ActionBarActionButtonDerivedMixin_OnPostClick"/>
+			<OnDragStart method="ActionBarActionButtonDerivedMixin_OnDragStart"/>
+			<OnReceiveDrag method="ActionBarActionButtonDerivedMixin_OnReceiveDrag"/>
+			<OnDragStop method="ActionBarActionButtonDerivedMixin_OnDragStop"/>
+			<OnEnter method="ActionBarActionButtonDerivedMixin_OnEnter"/>
+			<OnLeave method="ActionBarActionButtonDerivedMixin_OnLeave"/>
+			<OnShow method="ActionBarActionButtonDerivedMixin_OnShow"/>
+			<OnHide method="ActionBarActionButtonDerivedMixin_OnHide"/>
+		</Scripts>
+	</CheckButton>
+
+	<CheckButton name="ActionBarButtonTemplate" inherits="ActionButtonTemplate, ActionBarButtonCodeTemplate" virtual="true" mixin="ActionBarButtonMixin">
+		<Scripts>
+			<OnLoad method="ActionBarButtonMixin_OnLoad"/>
+			<OnEnter method="ActionBarButtonMixin_OnEnter"/>
+			<OnLeave method="ActionBarButtonMixin_OnLeave"/>
+			<OnDragStart method="ActionBarButtonMixin_OnDragStart"/>
+		</Scripts>
+	</CheckButton>
+	
+	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="hotkeyX" value="0" type="number"/>
+			<KeyValue key="hotkeyY" value="-3" type="number"/>
+		</KeyValues>
+		<Size x="30" y="30"/>
+		<Scripts>
+			<OnLoad method="SmallActionButtonMixin_OnLoad"/>
+		</Scripts>
+	</CheckButton>
+
+</Ui>

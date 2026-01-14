@@ -1,0 +1,408 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="HelpFrameContainerFrameTemplate" inherits="TooltipBackdropTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="backdropColor" value="BLACK_FONT_COLOR" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Browser name="BrowserTemplate" frameStrata="HIGH" IMEFont="ChatFontNormal" virtual="true">
+		<Frames>
+			<Frame parentKey="BrowserInset" inherits="InsetFrameTemplate" frameStrata="MEDIUM">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-3" y="3"/>
+					<Anchor point="BOTTOMRIGHT" x="3" y="-1"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnExternalLink>
+				local baseURL, _ = strsplit("?", url,  2);
+				StaticPopup_Show("EXTERNAL_LINK", baseURL, nil, {url=url, browser=self});
+			</OnExternalLink>
+			<OnEscapePressed>
+				self:ClearFocus();
+			</OnEscapePressed>
+			<OnButtonUpdate>
+				if (action == "doneloading") then
+					self:GetParent():SetInitialLoading(false);
+				end
+			</OnButtonUpdate>
+			<OnError>
+				self:GetParent():OnError(msg);
+			</OnError>
+		</Scripts>
+	</Browser>
+
+	<Frame name="HelpFrame" toplevel="true" parent="UIParent" inherits="DefaultPanelTemplate" hidden="true" enableMouse="true" mixin="HelpFrameMixin">
+		<Size x="974" y="628"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Browser parentKey="Browser" name="HelpBrowser" inherits="BrowserTemplate" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="7" y="-22"/>
+					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self.homepage = "KnowledgeBase";
+					</OnLoad>
+					<OnHide>
+						GetWebTicket();
+						if (TicketStatusFrame.haveWebSurveyClicked) then
+							AcknowledgeSurvey(TicketStatusFrame.caseIndex);
+							TicketStatusFrame.haveWebSurvey = nil;
+							TicketStatusFrame.haveWebSurveyClicked = nil;
+						end
+					</OnHide>
+				</Scripts>
+			</Browser>
+			<Frame parentKey="SpinnerOverlay" inherits="SpinnerTemplate" frameLevel="3" frameStrata="HIGH">
+				<Size x="120" y="120"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BrowserSettingsTooltip" inherits="TooltipBorderedFrameTemplate" parent="UIParent" frameStrata="FULLSCREEN_DIALOG" hidden="true" >
+		<Size x="250" y="70"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlight" text="BROWSER_SETTINGS_TOOLTIP">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-12" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CookiesButton" inherits="UIPanelButtonTemplate" text="BROWSER_DELETE_COOKIES">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-10"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						local browser = BrowserSettingsTooltip.browser
+						if (browser) then
+							browser:DeleteCookies();
+						end
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+						GameTooltip:SetText(BROWSER_DELETE_COOKIES_TOOLTIP, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+						self:GetParent().isCounting = nil;
+					</OnEnter>
+					<OnLeave>
+						self:GetParent().isCounting = true;
+						GameTooltip_Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow>
+				self.showTimer = 2;
+				self.isCounting = true;
+			</OnShow>
+			<OnHide>
+				self.showTimer = nil;
+				self.isCounting = nil;
+			</OnHide>
+			<OnUpdate>
+				if (self.showTimer and self.isCounting) then
+					if (not (self.showTimer >= 0)) then --no less thans!
+						self:Hide();
+					else
+						self.showTimer = self.showTimer - elapsed;
+					end
+				end
+			</OnUpdate>
+			<OnEnter>
+				self.isCounting = nil;
+			</OnEnter>
+			<OnLeave>
+				self.isCounting = true;
+				self.showTimer = 2;
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
+	<Button name="HelpOpenWebTicketButton" parent="CharacterMicroButton" hidden="true">
+		<Size x="34" y="35"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="20"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self.refreshTime = 0;
+				self:RegisterEvent("UPDATE_WEB_TICKET")
+			</OnLoad>
+			<OnClick>
+				HelpFrame:ShowFrame(HELPFRAME_SUBMIT_TICKET)
+				if (self.caseIndex) then
+					HelpBrowser:OpenTicket(self.caseIndex)
+				else
+					HelpBrowser:NavigateHome("GMTicketStatus")
+				end
+			</OnClick>
+			<OnEvent function="HelpOpenWebTicketButton_OnEvent"/>
+			<OnEnter function="HelpOpenWebTicketButton_OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+		<HitRectInsets>
+			<AbsInset left="4" right="4" top="4" bottom="4"/>
+		</HitRectInsets>
+		<NormalTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.70703125" right="0.77343750" top="0.58593750" bottom="0.85937500"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.88867188" right="0.95507813" top="0.00781250" bottom="0.28125000"/>
+		</PushedTexture>
+		<HighlightTexture file="Interface\HelpFrame\CS_HelpTextures">
+			<TexCoords left="0.80664063" right="0.87304688" top="0.58593750" bottom="0.85937500"/>
+		</HighlightTexture>
+	</Button>
+
+	<!-- Ticket Status -->
+	<!-- It might be a good idea to put this in a separate file and convert the HelpFrame stuff into an addon -->
+	<Frame name="TicketStatusFrame" toplevel="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="208" y="75"/>
+		</Size>
+		<!-- This frame gets positioned in UIParent_UpdateTopFramePositions() -->
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="TicketStatusTitleText" inherits="GameFontNormalSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="10" y="-8"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="TicketStatusTime" inherits="GameFontHighlightSmall" justifyH="LEFT">
+					<Size x="168" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture name="TicketStatusFrameIcon" file="Interface\HelpFrame\OpenTicketIcon">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-3" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="TicketStatusFrameButton" inherits="HelpFrameContainerFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="TicketStatusTitleText">
+						<Offset x="-8" y="8"/>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="TicketStatusTime">
+						<Offset x="30" y="-8"/>
+						<!-- width added to accomodate the status button -->
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad inherit="prepend" function="TicketStatusFrameButton_OnLoad"/>
+					<OnClick function="TicketStatusFrameButton_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad function="TicketStatusFrame_OnLoad"/>
+			<OnEvent function="TicketStatusFrame_OnEvent"/>
+			<OnShow function="TicketStatusFrame_OnShow"/>
+			<OnHide function="TicketStatusFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+	<Frame name="ReportCheatingDialog" parent="UIParent" hidden="true" frameStrata="DIALOG">
+		<Size x="344" y="310"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormal" text="REPORT_CHEATING_TITLE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="-20"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentText1" inherits="GameFontHighlight" text="REPORT_CHEATING_TEXT1" justifyH="LEFT">
+					<Size x="305" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame name="$parentCommentFrame" parentKey="CommentFrame">
+				<Size x="300" y="100"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="70"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentTopLeft" file="Interface\Common\Common-Input-Border-TL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTopRight" file="Interface\Common\Common-Input-Border-TR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentTop" file="Interface\Common\Common-Input-Border-T">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomLeft" file="Interface\Common\Common-Input-Border-BL">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottomRight" file="Interface\Common\Common-Input-Border-BR">
+							<Size x="8" y="8"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="0" y="0"/>
+								</Anchor>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentBottom" file="Interface\Common\Common-Input-Border-B">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentLeft" file="Interface\Common\Common-Input-Border-L">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopLeft" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentRight" file="Interface\Common\Common-Input-Border-R">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentTopRight" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentBottomRight" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border-M">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parentRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<EditBox name="$parentEditBox" multiLine="true" letters="255" setAllPoints="true" parentKey="EditBox" autoFocus="false">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="5" y="-5"/>
+							<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="InformationText" inherits="GameFontDisable" setAllPoints="true" justifyH="LEFT" justifyV="TOP" text="REPORT_CHEATING_EDITBOX_INFO"/>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEditFocusGained>
+								self.InformationText:Hide();
+							</OnEditFocusGained>
+							<OnEditFocusLost>
+								if ( self:GetText() == "" ) then
+									self.InformationText:Show();
+								end
+							</OnEditFocusLost>
+							<OnEnterPressed>
+								--Don't allow line breaks
+							</OnEnterPressed>
+							<OnTextChanged>
+								if ( self:GetText() ~= "" ) then
+									self:GetParent():GetParent().reportButton:Enable();
+								else
+									self:GetParent():GetParent().reportButton:Disable();
+								end
+							</OnTextChanged>
+						</Scripts>
+						<FontString inherits="GameFontHighlightSmall"/>
+					</EditBox>
+				</Frames>
+				<Scripts>
+					<OnMouseDown>
+						self.EditBox:SetFocus();
+					</OnMouseDown>
+				</Scripts>
+			</Frame>
+			<Button name="$parentReportButton" inherits="UIPanelButtonTemplate" text="REPORT_PLAYER" parentKey="reportButton">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						C_ReportSystem.SendReportPlayer(self:GetParent().reportToken, self:GetParent().CommentFrame.EditBox:GetText());
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="120" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+						StaticPopupSpecial_Hide(self:GetParent());
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				self.exclusive = true;
+			</OnLoad>
+		</Scripts>
+	</Frame>
+</Ui>

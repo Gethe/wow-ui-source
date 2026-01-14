@@ -1,0 +1,6 @@
+## Title: Blizzard_Subtitles
+## Version: 1.0
+## AllowLoad: Both
+
+Blizzard_Subtitles.lua
+Blizzard_Subtitles.xml

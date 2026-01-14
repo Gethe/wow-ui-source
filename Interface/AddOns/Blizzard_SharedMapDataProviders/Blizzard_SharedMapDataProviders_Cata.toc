@@ -1,0 +1,39 @@
+## Title: Blizzard_SharedMapDataProviders
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: cata
+
+SharedMapPoiTemplates.xml
+QuestDataProvider.xml
+GroupMembersDataProvider.xml
+SpectatorDataProvider.xml
+WorldQuestDataProvider.xml
+ZoneLabelDataProvider.xml
+ClickToZoomDataProvider.xml
+AreaPOIDataProvider.xml
+MapExplorationDataProvider.xml
+MapHighlightDataProvider.xml
+AreaLabelDataProvider.xml
+BattlefieldFlagDataProvider.xml
+BonusObjectiveDataProvider.xml
+Wrath\BonusObjectiveDataProvider.lua
+VehicleDataProvider.xml
+StorylineQuestDataProvider.xml
+EncounterJournalDataProvider.xml
+FogOfWarDataProvider.xml
+DeathMapDataProvider.lua
+Wrath\DeathMapDataProvider.xml
+QuestBlobDataProvider.xml
+VignetteDataProvider.xml
+InvasionDataProvider.xml
+GossipDataProvider.xml
+FlightPointDataProvider.xml
+PetTamerDataProvider.xml
+DigSiteDataProvider.xml
+GarrisonPlotDataProvider.xml
+DungeonEntranceDataProvider.xml
+BannerDataProvider.xml
+ContributionCollectorDataProvider.xml
+MapLinkDataProvider.xml
+SelectableGraveyardDataProvider.xml

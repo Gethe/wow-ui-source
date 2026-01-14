@@ -1,0 +1,11 @@
+## Title: Blizzard_Minimap
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## Dependencies: Blizzard_UIParent, Blizzard_GameTooltip, Blizzard_QueueStatusFrame
+## AllowLoad: game
+## AllowLoadGameType: cata
+Cata\Minimap.lua
+Cata\Minimap.xml
+Wrath\GameTime.lua
+Classic\GameTime_Shared.lua
+Wrath\GameTime.xml

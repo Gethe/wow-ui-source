@@ -1,0 +1,4 @@
+## Title: Blizzard Item Socketing UI
+## LoadOnDemand: 1
+Blizzard_ItemSocketingUI.xml
+Localization.lua

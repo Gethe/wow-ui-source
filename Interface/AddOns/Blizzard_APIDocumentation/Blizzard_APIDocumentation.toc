@@ -1,0 +1,12 @@
+## Title: Blizzard API Documentation
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoad: Both
+
+BaseAPIMixin.lua
+FieldsAPIMixin.lua
+FunctionsAPIMixin.lua
+SystemsAPIMixin.lua
+TablesAPIMixin.lua
+EventsAPIMixin.lua
+Blizzard_APIDocumentation.lua

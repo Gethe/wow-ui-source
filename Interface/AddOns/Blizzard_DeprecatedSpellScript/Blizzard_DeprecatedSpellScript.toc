@@ -1,0 +1,7 @@
+## Title: Blizzard_Deprecated Spell Script
+## Notes: C API functions that are exposed for backwards compatibility. They will be removed at the next expansion. Upgrade your code to the new APIs as soon as possible.
+## Author: Blizzard Entertainment
+## Version: 1.0
+## LoadOnDemand: 0
+
+Deprecated_SpellScript.lua

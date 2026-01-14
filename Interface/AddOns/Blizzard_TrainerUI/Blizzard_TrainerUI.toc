@@ -1,0 +1,5 @@
+## Title: Blizzard Trainer UI
+## LoadOnDemand: 1
+## SavedVariables: TRAINER_FILTER_AVAILABLE_BOOL, TRAINER_FILTER_UNAVAILABLE_BOOL, TRAINER_FILTER_USED_BOOL
+Blizzard_TrainerUI.xml
+Localization.lua

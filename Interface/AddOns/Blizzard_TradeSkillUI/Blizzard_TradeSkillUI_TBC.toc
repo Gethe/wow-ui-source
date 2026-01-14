@@ -1,0 +1,7 @@
+## Title: Blizzard Trade Skill UI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: tbc
+TBC\Blizzard_TradeSkillUI.lua
+TBC\Blizzard_TradeSkillUI.xml
+Localization.lua

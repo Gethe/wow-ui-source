@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\UI.xsd">
+	<!-- Remove if Classic ever has the Ping system in full. -->
+	<Frame name="PingReceiverAttributeTemplate" virtual="true"/>
+	<Frame name="PingTopLevelPassThroughAttributeTemplate" virtual="true"/>
+	<Frame name="PingableUnitFrameTemplate" virtual="true"/>
+</Ui>

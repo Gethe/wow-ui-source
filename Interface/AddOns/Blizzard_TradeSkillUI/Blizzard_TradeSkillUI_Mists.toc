@@ -1,0 +1,7 @@
+## Title: Blizzard_TradeSkillUI
+## LoadOnDemand: 1
+## AllowLoad: game
+## AllowLoadGameType: mists
+Mists\Blizzard_TradeSkillUI.lua
+Mists\Blizzard_TradeSkillUI.xml
+Localization.lua

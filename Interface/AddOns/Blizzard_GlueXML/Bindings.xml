@@ -1,0 +1,17 @@
+<Bindings>
+	<Binding name="TOGGLEGAMEMENU" hidden="true">
+		GlueMenuFrameUtil.ShowMenu();
+	</Binding>
+	<Binding name="TOGGLEMUSIC" hidden="true">
+		Sound_ToggleMusic();
+	</Binding>
+	<Binding name="TOGGLESOUND" hidden="true">
+		Sound_ToggleSound();
+	</Binding>
+	<Binding name="TOGGLEAMBIENCE" hidden="true">
+		Sound_ToggleAmbience();
+	</Binding>
+	<Binding name="SCREENSHOT" hidden="true">
+		Screenshot();
+	</Binding>
+</Bindings>
