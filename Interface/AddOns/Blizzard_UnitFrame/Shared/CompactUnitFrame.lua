@@ -10,6 +10,14 @@ CUF_MY_HEAL_PREDICTION_COLOR = CreateColor(11/255, 136/255, 105/255, 1);
 CUF_OTHER_HEAL_PREDICTION_COLOR = CreateColor(21/255, 89/255, 72/255, 1);
 CUF_OTHER_HEAL_PREDICTION_COLOR_MINI = CreateColor(2/255, 101/255, 18/255, 1);
 
+local NATIVE_UNIT_FRAME_HEIGHT = 36;
+local NATIVE_UNIT_FRAME_WIDTH = 72;
+local NATIVE_UNIT_FRAME_AURA_SIZE = 11;
+local NATIVE_UNIT_FRAME_AURA_SCALE_MIN = 0.5;
+local NATIVE_UNIT_FRAME_AURA_SCALE_MAX = 2;
+local CENTER_STATUS_ICON_SCALE = 2;
+local NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE = NATIVE_UNIT_FRAME_AURA_SIZE * CENTER_STATUS_ICON_SCALE;
+
 local DispelOverlayOrientation = EnumUtil.MakeEnum(
 	"VerticalTopToBottom",
 	"VerticalBottomToTop",
@@ -1959,6 +1967,19 @@ local dispelAtlases =
 	["Bleed"] = "RaidFrame-Icon-DebuffBleed",
 };
 
+local function UpdateFrameSizes(container, size)
+	for _, frame in pairs(container) do
+		frame:SetSize(size, size);
+
+		-- Need to store the baseSize used because some icons may scale later
+		frame.baseSize = size;
+	end
+end
+
+local function CompactUnitFrame_GetIconScale(frame)
+	return Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1), NATIVE_UNIT_FRAME_AURA_SCALE_MIN, NATIVE_UNIT_FRAME_AURA_SCALE_MAX);
+end
+
 function CompactUnitFrame_UtilSetDispelDebuff(frame, dispellDebuffFrame, aura)
 	dispellDebuffFrame:Show();
 	dispellDebuffFrame.icon:SetAtlas(dispelAtlases[aura.dispelName]);
@@ -1970,13 +1991,18 @@ function CompactUnitFrame_UtilSetDispelDebuff(frame, dispellDebuffFrame, aura)
 	end
 end
 
-function CompactUnitFrame_UpdatePrivateAuras(frame)
+function CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdate)
 	if not frame.PrivateAuraAnchors then
 		return;
 	end
 
+	if frame.privateAuraSize then
+		UpdateFrameSizes(frame.PrivateAuraAnchors, frame.privateAuraSize);
+	end
+
 	for _, auraAnchor in ipairs(frame.PrivateAuraAnchors) do
-		auraAnchor:SetUnit(frame.displayedUnit);
+		auraAnchor:SetBorderScale(frame.privateAuraBorderScale);
+		auraAnchor:SetUnit(frame.displayedUnit, forceUpdate);
 	end
 
 	local lastShownDebuff;
@@ -2232,19 +2258,6 @@ function CompactUnitFrame_UpdateTempMaxHPLoss(frame, value)
 end
 
 ------The default setup function
-local texCoords = {
-	["Raid-AggroFrame"] = {  0.00781250, 0.55468750, 0.00781250, 0.27343750 },
-	["Raid-TargetFrame"] = { 0.00781250, 0.55468750, 0.28906250, 0.55468750 },
-}
-
-local NATIVE_UNIT_FRAME_HEIGHT = 36;
-local NATIVE_UNIT_FRAME_WIDTH = 72;
-local NATIVE_UNIT_FRAME_AURA_SIZE = 11;
-local NATIVE_UNIT_FRAME_AURA_SCALE_MIN = 0.5;
-local NATIVE_UNIT_FRAME_AURA_SCALE_MAX = 2;
-local CENTER_STATUS_ICON_SCALE = 2;
-local NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE = NATIVE_UNIT_FRAME_AURA_SIZE * CENTER_STATUS_ICON_SCALE;
-
 DefaultCompactUnitFrameSetupOptions = {
 	displayPowerBar = true,
 	displayOnlyHealerPowerBars = false,
@@ -2432,15 +2445,6 @@ local function CompactUnitFrameLayoutTemplates_LayoutFrameElement(frame, element
 	layoutData.LayoutFunction(frame);
 end
 
-local function UpdateFrameSizes(container, size)
-	for _, frame in pairs(container) do
-		frame:SetSize(size, size);
-
-		-- Need to store the baseSize used because some icons may scale later
-		frame.baseSize = size;
-	end
-end
-
 local function CompactUnitFrameLayout_SetupAbsorbElement(element, ...)
 	if element then
 		element:ClearAllPoints();
@@ -2482,7 +2486,7 @@ function DefaultCompactUnitFrameSetup(frame)
 	local auraOrganizationType = EditModeManagerFrame:GetRaidFrameAuraOrganizationType(frame.groupType);
 
 	-- Icon Scale affects the sizes of the "gameplay" type icons like auras and available dispel types.
-	local iconScale = Clamp(EditModeManagerFrame:GetRaidFrameIconScale(frame.groupType, 1), NATIVE_UNIT_FRAME_AURA_SCALE_MIN, NATIVE_UNIT_FRAME_AURA_SCALE_MAX);
+	local iconScale = CompactUnitFrame_GetIconScale(frame);
 	local auraSize = NATIVE_UNIT_FRAME_AURA_SIZE * iconScale;
 
 	-- Component Scale affects the sizes of the status text, name, ready check, and center status (summon/rez/LoS...but NOT THE BIG DEFENSIVE)
@@ -2582,8 +2586,11 @@ function DefaultCompactUnitFrameSetup(frame)
 	UpdateFrameSizes(frame.buffFrames, auraSize);
 	UpdateFrameSizes(frame.debuffFrames, auraSize);
 	UpdateFrameSizes(frame.dispelDebuffFrames, 14);
-	UpdateFrameSizes(frame.PrivateAuraAnchors, auraSize * BOSS_DEBUFF_SCALE_INCREASE);
 
+	local forceUpdatePrivateAuras = true;
+	frame.privateAuraBorderScale = iconScale;
+	frame.privateAuraSize = auraSize * BOSS_DEBUFF_SCALE_INCREASE;
+	CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdatePrivateAuras);
 	CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType);
 
 	local centerStatusIconSize = NATIVE_UNIT_FRAME_CENTER_STATUS_ICON_SIZE * componentScale;
@@ -2661,8 +2668,12 @@ end
 
 CompactUnitPrivateAuraAnchorMixin = {};
 
-function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit)
-	if unit == self.unit then
+function CompactUnitPrivateAuraAnchorMixin:SetBorderScale(borderScale)
+	self.borderScale = borderScale;
+end
+
+function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit, force)
+	if unit == self.unit and not force then
 		return;
 	end
 	self.unit = unit;
@@ -2693,6 +2704,7 @@ function CompactUnitPrivateAuraAnchorMixin:SetUnit(unit)
 			iconAnchor = iconAnchor,
 			iconWidth = self:GetWidth(),
 			iconHeight = self:GetHeight(),
+			borderScale = self.borderScale,
 		};
 		privateAnchorArgs.durationAnchor = nil;
 

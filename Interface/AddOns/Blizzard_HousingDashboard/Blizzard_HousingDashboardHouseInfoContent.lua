@@ -273,6 +273,11 @@ function HousingDashboardHouseInfoContentFrameMixin:UpdateTabs()
 		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerMeetsReqLevel, HOUSING_ENDEAVORS_MIN_LEVEL:format(reqLevel));
 	end
 
+	local playerHasInitiativeAccess = C_NeighborhoodInitiative.PlayerHasInitiativeAccess();
+	if not playerHasInitiativeAccess then
+		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerHasInitiativeAccess, HOUSING_ENDEAVORS_DISABLED);
+	end
+
 	local currentTab = self:GetTab();
 	if not currentTab or not self:IsTabAvailable(currentTab) then
 		self:SetToDefaultAvailableTab();
@@ -610,7 +615,7 @@ function InitiativesTabMixin:RefreshTaskList()
 	-- Now insert data into provider with our tree
 	for _, task in pairs(taskList) do
 		if #task.children > 0 then
-			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked, hasChild = true};
+			local topLevelTaskData = { ID = task.ID, taskType = Enum.NeighborhoodInitiativeTaskType.RepeatableFinite, taskName = task.taskName, description = task.description, progressContributionAmount = task.progressContributionAmount, topLevel = true, sortOrder = task.sortOrder, completed = task.completed, requirementsList = task.requirementsList, tracked = task.tracked, rewardQuestID = task.rewardQuestID, hasChild = true};
 			local topLevelTask = dataProvider:Insert(topLevelTaskData);
 			for _, child in pairs(task.children) do
 				child.isSubtask = true;
@@ -768,7 +773,7 @@ function InitiativeTaskButtonMixin:OnClick_Internal(button)
 		return true;
 	end
 
-	if ( IsModifiedClick("QUESTWATCHTOGGLE") ) then
+	if ( IsModifiedClick("QUESTWATCHTOGGLE") and not data.isSubtask ) then
 		if data.tracked then
 			C_NeighborhoodInitiative.RemoveTrackedInitiativeTask(data.ID);
 		else
@@ -872,6 +877,16 @@ end
 ---------------------Initiatives Tab: ProgressBar Threshold-------------------------------
 ProgressThresholdMixin = {};
 
+function ProgressThresholdMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.Reward.name);
+	GameTooltip_AddNormalLine(GameTooltip, self.Reward.description);
+	if ( self.Reward.currencyID ) then
+		GameTooltip:SetCurrencyByID(self.Reward.currencyID);
+	end
+	GameTooltip:Show();
+end
+
 function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, isFinalReward)
 	self.Reward.name = thresholdInfo.rewards[1].title;
 	self.Reward.description = thresholdInfo.rewards[1].description;
@@ -879,8 +894,11 @@ function ProgressThresholdMixin:Setup(thresholdInfo, currentThresholdProgress, i
 	local rewardQuestID = thresholdInfo.rewards[1].rewardQuestID;
 	if ( rewardQuestID > 0 ) then
 		local currencyInfo = C_QuestLog.GetQuestRewardCurrencyInfo(rewardQuestID, 1, false);
-		if ( currencyInfo and currencyInfo.texture ) then
-			self.Reward.Icon:SetTexture(currencyInfo.texture);
+		if ( currencyInfo ) then
+			self.Reward.currencyID = currencyInfo.currencyID;
+			if (currencyInfo.texture ) then
+				self.Reward.Icon:SetTexture(currencyInfo.texture);
+			end
 		end
 	end
 

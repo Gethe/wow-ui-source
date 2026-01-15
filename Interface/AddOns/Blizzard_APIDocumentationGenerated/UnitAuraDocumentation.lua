@@ -183,7 +183,7 @@ local UnitAura =
 			Name = "GetAuraDataBySpellName",
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
-			RequiresNonSecretAuraSpellName = true,
+			RequiresNonSecretAura = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -310,7 +310,7 @@ local UnitAura =
 			Name = "GetPlayerAuraBySpellID",
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
-			RequiresNonSecretAuraSpellID = true,
+			RequiresNonSecretAura = true,
 			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
@@ -347,7 +347,7 @@ local UnitAura =
 			Name = "GetUnitAuraBySpellID",
 			Type = "Function",
 			SecretWhenUnitAuraRestricted = true,
-			RequiresNonSecretAuraSpellID = true,
+			RequiresNonSecretAura = true,
 			SecretArguments = "AllowedWhenTainted",
 			Documentation = { "Returns the first instance of an aura on a unit matching a given spell ID. Returns nil if no such aura is found. Additionally can return nil if querying a unit that is not visible (eg. party members on other maps)." },
 

@@ -120,6 +120,15 @@ local NeighborhoodInitiative =
 			},
 		},
 		{
+			Name = "PlayerHasInitiativeAccess",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerMeetsRequiredLevel",
 			Type = "Function",
 

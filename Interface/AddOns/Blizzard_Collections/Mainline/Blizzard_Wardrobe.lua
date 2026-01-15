@@ -681,7 +681,8 @@ function WardrobeItemsCollectionMixin:ChangeModelsSlot(newTransmogLocation, oldT
 
 	local undressSlot, reloadModel;
 	local oldSlotIsArmor = oldTransmogLocation and oldTransmogLocation:GetArmorCategoryID();
-	if ( oldSlotIsArmor ) then
+	local newSlotIsArmor = newTransmogLocation and newTransmogLocation:GetArmorCategoryID();
+	if ( oldSlotIsArmor and newSlotIsArmor ) then
 		if ( TransmogUtil.GetUseTransmogSkin(oldSlot) ~= TransmogUtil.GetUseTransmogSkin(newSlot) or
 				TransmogUtil.GetWardrobeModelSetupData(oldSlot).useTransmogChoices ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).useTransmogChoices or
 				TransmogUtil.GetWardrobeModelSetupData(oldSlot).obeyHideInTransmogFlag ~= TransmogUtil.GetWardrobeModelSetupData(newSlot).obeyHideInTransmogFlag ) then

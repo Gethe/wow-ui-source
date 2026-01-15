@@ -238,6 +238,15 @@ function PrivateAuraUnitWatcher:SetUpAnchor(privateAnchor)
 		C_UnitAurasPrivate.AnchorPrivateAura(debuffFrame, debuffFrame.Icon, debuffFrame.Duration, privateAnchor.anchorID);
 		if privateAnchor.iconWidth and privateAnchor.iconHeight then
 			debuffFrame.Icon:SetSize(privateAnchor.iconWidth, privateAnchor.iconHeight);
+
+			local scale = privateAnchor.borderScale;
+			if scale then
+				local debuffBorderWidth = privateAnchor.iconWidth + (5 * scale);
+				local debuffBorderHeight = privateAnchor.iconHeight + (5 * scale);
+				debuffFrame.DebuffBorder:SetSize(debuffBorderWidth, debuffBorderHeight);
+			else
+				debuffFrame.DebuffBorder:SetSize(40, 40);
+			end
 		end
 		debuffFrame:Show();
 		debuffFrame:Update(auraInfo, self.unit, privateAnchor);

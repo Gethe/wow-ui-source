@@ -13,6 +13,8 @@ function ProfessionsCrafterOrderRewardMixin:SetReward(reward)
 
 		self:SetItemButtonCount(self.reward.count);
 	elseif reward.currencyType then
+		self:SetItem(nil);
+
 		self.minDisplayCount = 0;
 
 		local reagent = Professions.CreateCurrencyReagent(reward.currencyType);
@@ -829,7 +831,8 @@ function ProfessionsCrafterOrderViewMixin:UpdateCreateButton()
 			enabled = false;
 
 			local smallIcon = true;
-			local markup = Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon);
+			local requiredQualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.order.spellID, self.order.minQuality);
+			local markup = Professions.GetChatIconMarkupForQuality(requiredQualityInfo, smallIcon);
 			errorReason = PROFESSIONS_ORDER_HAS_MINIMUM_QUALITY_FMT:format(markup);
 		end
     end

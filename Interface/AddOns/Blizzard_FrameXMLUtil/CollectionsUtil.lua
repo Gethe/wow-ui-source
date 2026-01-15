@@ -78,11 +78,25 @@ end
 
 function CollectionWardrobeUtil.GetSortedAppearanceSources(visualID, category, transmogLocation)
 	local sources = C_TransmogCollection.GetAppearanceSources(visualID, category, transmogLocation:GetData());
+	assertsafe(sources ~= nil, "No appearance sources found for visualID %d", visualID);
+
+	if sources == nil then
+		sources = {};
+		return sources;
+	end
+
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 
 function CollectionWardrobeUtil.GetSortedAppearanceSourcesForClass(visualID, classID, category, transmogLocation)
 	local sources = C_TransmogCollection.GetValidAppearanceSourcesForClass(visualID, classID, category, transmogLocation:GetData());
+	assertsafe(sources ~= nil, "No appearance sources found for visualID %d, classID %d", visualID, classID);
+
+	if sources == nil then
+		sources = {};
+		return sources;
+	end
+
 	return CollectionWardrobeUtil.SortSources(sources);
 end
 

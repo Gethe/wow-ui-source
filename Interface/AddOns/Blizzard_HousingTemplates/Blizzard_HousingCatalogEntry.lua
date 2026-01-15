@@ -653,12 +653,6 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 		return;
 	end
 
-	local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
-
-	local showDisabledTooltip = function(tooltip, elementDescription)
-		GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
-	end
-
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_CATALOG_ENTRY");
 
@@ -703,7 +697,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 					end);
 				end
 			end
-		else
+		elseif self:IsInStorageView() then
 			local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 				local popupData = {
 					destroyAll = false,
@@ -713,6 +707,13 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 				StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 			end);
+
+			local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
+			
+			local showDisabledTooltip = function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
+			end
+
 			destroySingleButtonDesc:SetEnabled(canDestroyEntry);
 			if not canDestroyEntry then
 				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);

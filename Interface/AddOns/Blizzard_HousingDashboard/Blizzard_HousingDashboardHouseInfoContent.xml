@@ -130,7 +130,7 @@
 </Button>
 
 <!-- Initiative Subtask Template -->
-<Button name="HousingDashboard_InitiativeSubtaskTemplate" virtual="true">
+<Button name="HousingDashboard_InitiativeSubtaskTemplate" mixin="InitiativeTaskButtonMixin" virtual="true">
 	<Size x="400" y="40"/>
 	<Layers>
 		<Layer level="BACKGROUND">
@@ -143,10 +143,15 @@
 		</Layer>
 
 		<Layer level="ARTWORK">
+			<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="55" y="0"/>
+				</Anchors>
+			</Texture>
 			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="MIDDLE" justifyH="LEFT">
 				<Size x="335" y="30"/>
 				<Anchors>
-					<Anchor point="LEFT" x="55" y="5"/>
+					<Anchor point="LEFT" relativeKey="$parent.TrackingCheckmark" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
 			</FontString>
 
@@ -157,6 +162,11 @@
 			</FontString>
 		</Layer>
 	</Layers>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnClick method="OnClick"/>
+		<OnLeave function="GameTooltip_Hide"/>
+	</Scripts>
 </Button>
 
 <!-- Initiative Progress Bar Threshold Templates -->
@@ -167,18 +177,18 @@
 		<Layer level="ARTWORK" textureSubLevel="1">
 			<Texture parentKey="LineComplete" atlas="housing-dashboard-initiatives-fillbar-tickbar-complete" useAtlasSize="true" hidden="true">
 				<Anchors>
-					<Anchor point="CENTER" x="-2" y="12"/>
+					<Anchor point="CENTER" x="-2" y="13"/>
 				</Anchors>
 			</Texture>
 			<Texture parentKey="LineIncomplete" atlas="housing-dashboard-initiatives-fillbar-tickbar-incomplete" useAtlasSize="true">
 				<Anchors>
-					<Anchor point="CENTER" x="-2" y="12"/>
+					<Anchor point="CENTER" x="-2" y="15"/>
 				</Anchors>
 			</Texture>
 		</Layer>
 	</Layers>
 	<Frames>
-		<Frame parentKey="Reward" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
+		<Frame parentKey="Reward" frameStrata="HIGH" setAllPoints="true">
 			<Layers>
 				<Layer level="ARTWORK">
 					<Texture parentKey="Icon">
@@ -245,13 +255,17 @@
 			</Animations>
 		</Frame>
 	</Frames>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave function="GameTooltip_Hide"/>
+	</Scripts>
 </Frame>
 
 <!-- Threshold Large (used for final reward in track) -->
 <Frame name="ProgressThresholdLargeTemplate" mixin="ProgressThresholdMixin" useParentLevel="true" virtual="true">
 	<Size x="40" y="40"/>
 	<Frames>
-		<Frame parentKey="Reward" enableMouse="true" frameStrata="HIGH" setAllPoints="true">
+		<Frame parentKey="Reward" frameStrata="HIGH" setAllPoints="true">
 			<Layers>
 				<Layer level="BACKGROUND">
 					<Texture parentKey="IconBG" atlas="housing-dashboard-fillbar-icon-bg" useAtlasSize="true">
@@ -325,6 +339,10 @@
 			</Animations>
 		</Frame>
 	</Frames>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave function="GameTooltip_Hide"/>
+	</Scripts>
 </Frame>
 
 <!-- Dashboard Frame -->
@@ -842,7 +860,7 @@
 													<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyV="TOP" text="HOUSING_DASHBOARD_INITIATIVE_ACTIVITY_LABEL">
 														<Size x="130" y="30"/>
 														<Anchors>
-															<Anchor point="TOPLEFT" y="-2"/>
+															<Anchor point="TOPLEFT" y="-3"/>
 														</Anchors>
 													</FontString>
 

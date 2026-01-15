@@ -277,6 +277,7 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local chargeInfo = C_Spell.GetSpellCharges(spellID);
 	local cooldownInfo = C_Spell.GetSpellCooldown(spellID);
 	local usesCount = C_Spell.GetSpellCastCount(spellID);
+	local defaultLossOfControlInfo = { startTime = 0; duration = 0; modRate = 0 };
 
 	local icon = C_ZoneAbility.GetZoneAbilityIcon(spellID);
 	self.Icon:SetTexture(icon);
@@ -284,9 +285,6 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local spellCount = nil;
 	if chargeInfo then
 		spellCount = chargeInfo.currentCharges;
-		if chargeInfo.currentCharges < chargeInfo.maxCharges then
-			StartChargeCooldown(self, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate);
-		end
 	elseif usesCount > 0 then
 		spellCount = usesCount;
 	end
@@ -294,7 +292,7 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	self.Count:SetText(spellCount and spellCount or "");
 
 	if cooldownInfo then
-		CooldownFrame_Set(self.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+		ActionButton_ApplyCooldown(self.Cooldown, cooldownInfo, self.ChargeCooldown, chargeInfo, nil, defaultLossOfControlInfo);
 	end
 end
 
