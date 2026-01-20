@@ -3,12 +3,14 @@ local ConsoleScriptCollection =
 	Name = "ConsoleScriptCollection",
 	Type = "System",
 	Namespace = "C_ConsoleScriptCollection",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetCollectionDataByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local ConsoleScriptCollection =
 		{
 			Name = "GetCollectionDataByTag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local ConsoleScriptCollection =
 		{
 			Name = "GetElements",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +55,7 @@ local ConsoleScriptCollection =
 		{
 			Name = "GetScriptData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

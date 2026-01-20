@@ -1,36 +1,7 @@
 InterfaceOverrides = {}
 
-function InterfaceOverrides.CreateLargerNameplateSetting(category)
-	local normalScale = 1.0;
-	local function GetValue()
-		local hScale = GetCVarNumberOrDefault("NamePlateHorizontalScale");
-		local vScale = GetCVarNumberOrDefault("NamePlateVerticalScale");
-		local cScale = GetCVarNumberOrDefault("NamePlateClassificationScale");
-		return not (ApproximatelyEqual(hScale, normalScale) and ApproximatelyEqual(vScale, normalScale) and ApproximatelyEqual(cScale, normalScale));
-	end
-		
-	local function SetValue(value)
-		if value then
-			SetCVar("NamePlateHorizontalScale", 1.4);
-			SetCVar("NamePlateVerticalScale", 2.7);
-			SetCVar("NamePlateClassificationScale", 1.25);
-		else
-			SetCVar("NamePlateHorizontalScale", normalScale);
-			SetCVar("NamePlateVerticalScale", normalScale);
-			SetCVar("NamePlateClassificationScale", normalScale);
-		end
-	end
-
-	local defaultValue = false;
-	local setting = Settings.RegisterProxySetting(category, "PROXY_LARGER_SETTINGS",
-		Settings.VarType.Boolean, UNIT_NAMEPLATES_MAKE_LARGER, defaultValue, GetValue, SetValue);
-	local initializer = Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_UNIT_NAMEPLATES_MAKE_LARGER);
-	initializer:AddModifyPredicate(function()
-		return not C_Commentator.IsSpectating();
-	end);
-end
-
-function InterfaceOverrides.AdjustNameplateSettings(category)
+function InterfaceOverrides.AdjustNameplateSettings(category, layout)
+	-- Unused in mainline.
 end
 
 function InterfaceOverrides.AdjustDisplaySettings(category)
@@ -64,7 +35,51 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	end
 
 	-- Class Colors
-	Settings.SetupCVarCheckbox(category, "raidFramesDisplayClassColor", COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+	do
+		local displayClassColorsSetting = Settings.RegisterCVarSetting(category, "raidFramesDisplayClassColor", Settings.VarType.Boolean, COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS);
+
+		local function GetCVarHealthBarColor()
+			local healthColorString = CVarCallbackRegistry:GetCVarValue("raidFramesHealthBarColor");
+			local color = CreateColorFromHexString(healthColorString);
+			return color or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+		end
+
+		local function OpenHealthBarColorPicker(swatch, button, isDown)
+			local info = {};
+			info.swatch = swatch;
+
+			local healthColor = GetCVarHealthBarColor();
+			info.r, info.g, info.b = healthColor:GetRGB();
+
+			local currentColor = CreateColor(0, 0, 0, 0); -- Making this here to avoid churn
+			info.swatchFunc = function()
+				local r,g,b = ColorPickerFrame:GetColorRGB();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			info.cancelFunc = function()
+				local r,g,b = ColorPickerFrame:GetPreviousValues();
+				currentColor:SetRGB(r, g, b);
+				SetCVar("raidFramesHealthBarColor", currentColor:GenerateHexColor());
+			end;
+
+			ColorPickerFrame:SetupColorPickerAndShow(info);
+		end
+
+		local clickRequiresSet = true;
+		local invertClickRequiresSet = true;
+		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
+			displayClassColorsSetting,
+			OpenHealthBarColorPicker,
+			clickRequiresSet,
+			invertClickRequiresSet,
+			COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
+			GetCVarHealthBarColor
+		);
+
+		layout:AddInitializer(displayClassColorsInitializer);
+	end
 
 	-- Pets
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayPets", COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYPETS);
@@ -72,21 +87,49 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	-- Main Tank and Assist
 	Settings.SetupCVarCheckbox(category, "raidOptionDisplayMainTankAndAssist", COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYMAINTANKANDASSIST);
 
+	-- Debuffs
 	do
-		-- Debuffs
 		local debuffSetting, debuffInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYNONBOSSDEBUFFS);
 
-		-- Only Dispellable Debuffs
 		local function IsModifiable()
 			return debuffSetting:GetValue();
 		end
 
-		local _, initializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
-		initializer:SetParentInitializer(debuffInitializer, IsModifiable);
+		-- Bigger Role Debuffs
+		local _, largerDebuffsInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayLargerRoleSpecificDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_ROLE_DEBUFFS_LARGER);
+		largerDebuffsInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+
+		-- Only Dispellable Debuffs
+		local _, dispellableInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayOnlyDispellableDebuffs", COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYONLYDISPELLABLEDEBUFFS);
+		dispellableInitializer:SetParentInitializer(debuffInitializer, IsModifiable);
+	end
+
+	-- Center Big Defensive Buffs
+	Settings.SetupCVarCheckbox(category, "raidFramesCenterBigDefensive", COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_SHOW_BIG_DEFENSIVES);
+
+	-- Dispel Indicator Types (upper right poison, magic, disease, bleed, curse)
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.RaidDispelDisplayType.Disabled, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_DISABLED);
+			container:Add(Enum.RaidDispelDisplayType.DispellableByMe, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ME);
+			container:Add(Enum.RaidDispelDisplayType.DisplayAll, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE_ALL);
+			return container:GetData();
+		end
+
+		local dispelSetting, dispelInitializer = Settings.SetupCVarDropdown(category, "raidFramesDispelIndicatorType", Settings.VarType.Number, GetOptions, COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPELLABLE_INDICATOR_TYPE);
+
+		local function IsModifiable()
+			return tonumber(dispelSetting:GetValue()) ~= Enum.RaidDispelDisplayType.Disabled;
+		end
+
+		-- Dispel Color Overlay
+		local _, dispelOverlayInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlay", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY);
+		dispelOverlayInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
 	end
 
 	-- Health Text
-	do 
+	do
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add("none", COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTHTEXT_NONE);

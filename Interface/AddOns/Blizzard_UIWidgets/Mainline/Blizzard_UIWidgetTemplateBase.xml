@@ -567,7 +567,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="cooldown" inherits="CooldownFrameTemplate">
+			<Cooldown parentKey="cooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-2"/>
+				</Anchors>
+			</Cooldown>
+			<Cooldown parentKey="lossOfControlCooldown" inherits="CooldownFrameTemplate" drawBling="false" hideCountdownNumbers="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-2"/>
+				</Anchors>
+			</Cooldown>
+			<Cooldown parentKey="chargeCooldown" inherits="CooldownFrameTemplate" drawSwipe="false" hideCountdownNumbers="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="-3" y="2"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="3" y="-2"/>

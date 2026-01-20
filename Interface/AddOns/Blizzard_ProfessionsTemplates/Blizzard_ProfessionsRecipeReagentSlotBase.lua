@@ -1,34 +1,31 @@
-ProfessionsReagentSlotButtonMixin = {};
+-- This file should be renamed to *ReagentSlotButton.
+ProfessionsReagentSlotButtonMixin = CreateFromMixins(ProfessionsButtonMixin);
 
-function ProfessionsReagentSlotButtonMixin:SetItem(item)
-	ItemButtonMixin.SetItem(self, item);
-	self:UpdateOverlay();
+function ProfessionsReagentSlotButtonMixin:GetReagent()
+	return self.reagent;
 end
 
-function ProfessionsReagentSlotButtonMixin:SetCurrency(currencyID)
-	self.currencyID = currencyID;
-	local currencyInfo = currencyID and C_CurrencyInfo.GetCurrencyInfo(currencyID);
-	if currencyInfo then
-		local texture = currencyInfo.iconFileID;
-		self.Icon:SetTexture(texture);
-		self.Icon:Show();
-		self:SetSlotQuality(currencyInfo.quality);
-	end
-	self:UpdateOverlay();
+function ProfessionsReagentSlotButtonMixin:SetReagent(reagent)
+	ProfessionsButtonMixin.SetReagent(self, reagent);
+
+	self.reagent = reagent;
+
+	self:Update();
 end
 
-function ProfessionsReagentSlotButtonMixin:GetCurrencyID()
-	return self.currencyID;
+function ProfessionsReagentSlotButtonMixin:Init()
+	self.reagent = nil;
+	self.showLargeAddIcon = nil;
+	self.QualityOverlay:SetAtlas(nil);
+	self.AddIcon:SetShown(false);
+	self.CropFrame:SetShown(false);
+	self:SetLocked(false);
 end
 
-function ProfessionsReagentSlotButtonMixin:Reset()
-	ItemButtonMixin.Reset(self);
-	self.locked = nil;
-	self.currencyID = nil;
-	self.isModifyingRequired = false;
-	if self.CropFrame then
-		self.CropFrame:Hide();
-	end
+function ProfessionsReagentSlotButtonMixin:Clear()
+	self.reagent = nil;
+
+	self:SetItem(nil);
 	self:Update();
 end
 
@@ -39,61 +36,62 @@ end
 
 function ProfessionsReagentSlotButtonMixin:SetLocked(locked)
 	self.locked = locked;
-	self:UpdateOverlay();
-end
-
-function ProfessionsReagentSlotButtonMixin:SetCropOverlayShown(shown)
-	self.CropFrame:SetShown(shown);
+	self:Update();
 end
 
 function ProfessionsReagentSlotButtonMixin:SetModifyingRequired(isModifyingRequired)
-	self.isModifyingRequired = isModifyingRequired;
-end
+	self.showLargeAddIcon = isModifyingRequired;
+	self.CropFrame:SetShown(isModifyingRequired);
 
-function ProfessionsReagentSlotButtonMixin:IsModifyingRequired()
-	return self.isModifyingRequired;
+	if isModifyingRequired then
+		local scale = .65;
+		self:SetNormalAtlas("itemupgrade_greenplusicon", false);
+		self:GetNormalTexture():SetScale(scale);
+		self:GetNormalTexture():SetDrawLayer("BORDER");
+
+		self:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
+		self:GetPushedTexture():SetScale(scale);
+		self:GetPushedTexture():SetDrawLayer("BORDER");
+
+		self:ClearHighlightTexture();
+	else	
+		local scale = 1;
+		self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
+		self:GetNormalTexture():SetScale(scale);
+		self:GetNormalTexture():SetDrawLayer("BORDER");
+
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
+		self:GetPushedTexture():SetScale(scale);
+		self:GetPushedTexture():SetDrawLayer("BORDER");
+
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
+	end
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateOverlay()
-	if self.InputOverlay then
-		if self.locked then
-			self.InputOverlay.LockedIcon:Show();
-			self.InputOverlay.AddIcon:Hide();
-		else
-			self.InputOverlay.LockedIcon:Hide();
-			self.InputOverlay.AddIcon:SetShown((self:GetItem() == nil) and not (self.currencyID or self.isModifyingRequired));
-		end
+	if not self.InputOverlay then
+		return;
 	end
+
+	self.InputOverlay.LockedIcon:SetShown(self.locked);
+
+	local reagent = self:GetReagent();
+	local showAddIcon = reagent == nil;
+
+	if self.locked or self.showLargeAddIcon then
+		showAddIcon = false;
+	end
+
+	self.InputOverlay.AddIcon:SetShown(showAddIcon);
 end
 
 function ProfessionsReagentSlotButtonMixin:UpdateCursor()
-	if self:IsMouseMotionFocus() then
-		local onEnterScript = self:GetScript("OnEnter");
-		if onEnterScript ~= nil then
-			onEnterScript(self);
-		end
+	if not self:IsMouseMotionFocus() then
+		return;
 	end
-end
 
-function ProfessionsReagentSlotButtonMixin:SetSlotQuality(quality)
-	if quality then
-		local atlasData = ColorManager.GetAtlasDataForProfessionsItemQuality(quality);
-		if atlasData.atlas then
-			self.IconBorder:SetAtlas(atlasData.atlas, TextureKitConstants.IgnoreAtlasSize);
-
-			if atlasData.overrideColor then
-				self.IconBorder:SetVertexColor(atlasData.overrideColor.r, atlasData.overrideColor.g, atlasData.overrideColor.b);
-			else
-				self.IconBorder:SetVertexColor(1, 1, 1);
-			end
-		end
-		self.IconBorder:Show();
+	local onEnterScript = self:GetScript("OnEnter");
+	if onEnterScript ~= nil then
+		onEnterScript(self);
 	end
-end
-
-function ProfessionsReagentSlotButtonMixin:SetItemInternal(item)
-	ItemButtonMixin.SetItemInternal(self, item);
-
-	local _, itemQuality, _ = self:GetItemInfo();
-	self:SetSlotQuality(itemQuality);
 end

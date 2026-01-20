@@ -3,6 +3,7 @@ local AzeriteItem =
 	Name = "AzeriteItem",
 	Type = "System",
 	Namespace = "C_AzeriteItem",
+	Environment = "All",
 
 	Functions =
 	{
@@ -20,6 +21,7 @@ local AzeriteItem =
 			Name = "GetAzeriteItemXPInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +37,7 @@ local AzeriteItem =
 		{
 			Name = "GetPowerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +52,7 @@ local AzeriteItem =
 		{
 			Name = "GetUnlimitedPowerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +76,7 @@ local AzeriteItem =
 		{
 			Name = "IsAzeriteItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +100,7 @@ local AzeriteItem =
 		{
 			Name = "IsAzeriteItemByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +115,7 @@ local AzeriteItem =
 		{
 			Name = "IsAzeriteItemEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -137,6 +144,7 @@ local AzeriteItem =
 			Name = "AzeriteItemEnabledStateChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_ENABLED_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
@@ -146,6 +154,7 @@ local AzeriteItem =
 			Name = "AzeriteItemExperienceChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_EXPERIENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteItemLocation", Type = "AzeriteItemLocation", Mixin = "ItemLocationMixin", Nilable = false },
@@ -157,6 +166,7 @@ local AzeriteItem =
 			Name = "AzeriteItemPowerLevelChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ITEM_POWER_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteItemLocation", Type = "AzeriteItemLocation", Mixin = "ItemLocationMixin", Nilable = false },

@@ -3,6 +3,7 @@ local CinematicList =
 	Name = "CinematicList",
 	Type = "System",
 	Namespace = "C_CinematicList",
+	Environment = "All",
 
 	Functions =
 	{

@@ -3,6 +3,7 @@ local CovenantPreview =
 	Name = "CovenantPreview",
 	Type = "System",
 	Namespace = "C_CovenantPreview",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local CovenantPreview =
 			Name = "GetCovenantInfoForPlayerChoiceResponseID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,11 +35,13 @@ local CovenantPreview =
 			Name = "CovenantPreviewClose",
 			Type = "Event",
 			LiteralName = "COVENANT_PREVIEW_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CovenantPreviewOpen",
 			Type = "Event",
 			LiteralName = "COVENANT_PREVIEW_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "previewInfo", Type = "CovenantPreviewInfo", Nilable = false },
@@ -47,19 +51,6 @@ local CovenantPreview =
 
 	Tables =
 	{
-		{
-			Name = "CovenantAbilityType",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Class", Type = "CovenantAbilityType", EnumValue = 0 },
-				{ Name = "Signature", Type = "CovenantAbilityType", EnumValue = 1 },
-				{ Name = "Soulbind", Type = "CovenantAbilityType", EnumValue = 2 },
-			},
-		},
 		{
 			Name = "CovenantAbilityInfo",
 			Type = "Structure",

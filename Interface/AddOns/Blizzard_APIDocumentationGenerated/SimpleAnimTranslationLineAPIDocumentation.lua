@@ -2,6 +2,7 @@ local SimpleAnimTranslationLineAPI =
 {
 	Name = "SimpleAnimTranslationLineAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

@@ -116,7 +116,7 @@ function MajorFactionListMixin:SetSelectedFaction(majorFactionID)
 	local function SetSelected(majorFactionID, selected)
 		local function FindFactionButton(button, majorFactionData)
 			return majorFactionData.factionID == majorFactionID;
-		end	
+		end
 
 		local factionButton = self.ScrollBox:FindFrameByPredicate(FindFactionButton);
 		if factionButton and factionButton.isUnlocked then
@@ -158,7 +158,7 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 	self.LockedState.Background:SetAtlas(atlasFormats.lockedAtlas, TextureKitConstants.UseAtlasSize);
 	self.LockedState.unlockDescription = majorFactionData.unlockDescription;
 	self.UnlockedState.normalAtlas = atlasFormats.normalAtlas:format(majorFactionData.textureKit);
-	
+
 	-- Some expansions use a unique texture for hover, others reuse the normal texture.
 	if atlasFormats.hoverAtlas then
 		self.UnlockedState.hoverAtlas = atlasFormats.hoverAtlas:format(majorFactionData.textureKit);
@@ -188,7 +188,7 @@ function MajorFactionButtonMixin:Init(majorFactionData)
 		};
 		self.UnlockedState.RenownProgressBar:SetTexCoordRange(lowTexCoords, highTexCoords);
 	end
-	
+
 	local iconSize = factionIconSize[majorFactionData.textureKit] or factionIconSize["Default"];
 	self.UnlockedState.Icon:ClearAllPoints();
 	self.UnlockedState.Icon:SetPoint("CENTER", self.UnlockedState.RenownProgressBar, "CENTER");
@@ -254,8 +254,8 @@ function MajorFactionButtonUnlockedStateMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, MAJOR_FACTION_BUTTON_UNLOCKED_STATE_EVENTS);
 
 	if self:GetParent().isUnlocked then
-		local cvarName = "lastRenownForMajorFaction" .. self:GetParent().factionID;
-		local lastRenownLevel = tonumber(GetCVar(cvarName)) or 1;
+		local majorFactionRenownMap = GetCVarTable("majorFactionRenownMap");
+		local lastRenownLevel = tonumber(majorFactionRenownMap[self:GetParent().factionID]) or 1;
 		local newFactionUnlock = lastRenownLevel == 0;
 		--if newFactionUnlock then
 		--	self:PlayUnlockCelebration();
@@ -350,7 +350,7 @@ function MajorFactionButtonUnlockedStateMixin:SetSelected(selected)
 end
 
 function MajorFactionButtonUnlockedStateMixin:RefreshTooltip()
-	if C_Reputation.IsFactionParagon(self:GetParent().factionID) then
+	if C_Reputation.IsFactionParagonForCurrentPlayer(self:GetParent().factionID) then
 		self:ShowParagonRewardsTooltip();
 	else
 		self:ShowRenownRewardsTooltip();
@@ -360,7 +360,7 @@ end
 function MajorFactionButtonUnlockedStateMixin:ShowRenownRewardsTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local factionID = self:GetParent().factionID;
-	RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(self.ShowRenownRewardsTooltip, self));	
+	RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, factionID, GenerateClosure(self.ShowRenownRewardsTooltip, self));
 	GameTooltip_AddColoredLine(GameTooltip, MAJOR_FACTION_BUTTON_TOOLTIP_VIEW_RENOWN, GREEN_FONT_COLOR);
 	EventRegistry:TriggerEvent("MajorFactionRenown.Header.OnEnter", self, GameTooltip, factionID);
 	GameTooltip:Show();
@@ -439,7 +439,7 @@ end
 function MajorFactionWatchFactionButtonMixin:OnClick()
 	local clickSound = self:GetChecked() and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON;
 	PlaySound(clickSound);
-	
+
 	local baseButton = self:GetParent():GetParent();
 	local factionID = self:GetChecked() and baseButton.factionID or 0;
 	C_Reputation.SetWatchedFactionByID(factionID);

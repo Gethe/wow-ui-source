@@ -7,6 +7,48 @@ local hash_SlashCmdList = _G.hash_SlashCmdList;
 
 ChatFrameEditBoxBaseMixin = {};
 
+function ChatFrameEditBoxBaseMixin:OnPreSendText()
+	-- Implement in a derived mixin.
+end
+
+function ChatFrameEditBoxBaseMixin:GetChatType()
+	return self:GetAttribute("chatType");
+end
+
+function ChatFrameEditBoxBaseMixin:SetChatType(chatType)
+	self:SetAttribute("chatType", chatType);
+end
+
+function ChatFrameEditBoxBaseMixin:GetStickyType()
+	return self:GetAttribute("stickyType");
+end
+
+function ChatFrameEditBoxBaseMixin:SetStickyType(stickyType)
+	self:SetAttribute("stickyType", stickyType);
+end
+
+function ChatFrameEditBoxBaseMixin:GetChannelTarget()
+	local channelTarget = self:GetAttribute("channelTarget"); -- may be a name or an index
+	if channelTarget == nil then
+		return 0;
+	end
+
+	local localID = GetChannelName(channelTarget);
+	return localID;
+end
+
+function ChatFrameEditBoxBaseMixin:SetChannelTarget(channelTarget)
+	self:SetAttribute("channelTarget", channelTarget);
+end
+
+function ChatFrameEditBoxBaseMixin:GetTellTarget()
+	return self:GetAttribute("tellTarget");
+end
+
+function ChatFrameEditBoxBaseMixin:SetTellTarget(tellTarget)
+	self:SetAttribute("tellTarget", tellTarget);
+end
+
 function ChatFrameEditBoxBaseMixin:AddHistory()
 	-- No-op; implement in derived mixins.
 end
@@ -25,17 +67,7 @@ function ChatFrameEditBoxBaseMixin:ClearChat()
 end
 
 function ChatFrameEditBoxBaseMixin:ResetChatTypeToSticky()
-	self:SetAttribute("chatType", self:GetAttribute("stickyType"));
-end
-
-function ChatFrameEditBoxBaseMixin:GetChannelTarget()
-	local channelTarget = self:GetAttribute("channelTarget"); -- may be a name or an index
-	if channelTarget == nil then
-		return 0;
-	end
-
-	local localID = GetChannelName(channelTarget);
-	return localID;
+	self:SetChatType(self:GetStickyType());
 end
 
 function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
@@ -94,8 +126,8 @@ function ChatFrameEditBoxBaseMixin:ExtractChannel(msg)
 
 	msg = strsub(msg, strlen(target) + 2);
 
-	self:SetAttribute("channelTarget", channelNum);
-	self:SetAttribute("chatType", "CHANNEL");
+	self:SetChannelTarget(channelNum);
+	self:SetChatType("CHANNEL");
 	self:SetText(msg);
 	self:UpdateHeader();
 end
@@ -113,8 +145,8 @@ function ChatFrameEditBoxBaseMixin:ProcessChatType(msg, index, send)
 		if ( index == "WHISPER" or index == "SMART_WHISPER" ) then
 			local targetFound, target, chatType, parsedMsg = self:ExtractTellTarget(msg, index);
 			if ( targetFound ) then
-				self:SetAttribute("tellTarget", target);
-				self:SetAttribute("chatType", chatType);
+				self:SetTellTarget(target);
+				self:SetChatType(chatType);
 				self:SetText(parsedMsg);
 				self:UpdateHeader();
 			elseif ( send == 1 ) then
@@ -124,8 +156,8 @@ function ChatFrameEditBoxBaseMixin:ProcessChatType(msg, index, send)
 			local lastTell, lastTellType = ChatFrameUtil.GetLastTellTarget();
 			if ( lastTell ) then
 				--BN_WHISPER FIXME
-				self:SetAttribute("chatType", lastTellType);
-				self:SetAttribute("tellTarget", lastTell);
+				self:SetChatType(lastTellType);
+				self:SetTellTarget(lastTell);
 				self:SetText(msg);
 				self:UpdateHeader();
 			else
@@ -136,7 +168,7 @@ function ChatFrameEditBoxBaseMixin:ProcessChatType(msg, index, send)
 		elseif (index == "CHANNEL") then
 			self:ExtractChannel(msg);
 		else
-			self:SetAttribute("chatType", index);
+			self:SetChatType(index);
 			self:SetText(msg);
 			self:UpdateHeader();
 		end
@@ -152,8 +184,8 @@ function ChatFrameEditBoxBaseMixin:HandleChatType(msg, command, send)
 		if ( chanNum > 0 and chanNum <= Constants.ChatFrameConstants.MaxChatChannels ) then
 			local channelNum, channelName = GetChannelName(channel);
 			if ( channelNum > 0 ) then
-				self:SetAttribute("channelTarget", channelNum);
-				self:SetAttribute("chatType", "CHANNEL");
+				self:SetChannelTarget(channelNum);
+				self:SetChatType("CHANNEL");
 				self:SetText(msg);
 				self:UpdateHeader();
 				return true;
@@ -230,7 +262,7 @@ function ChatFrameEditBoxBaseMixin:ParseText(send, parseIfNoSpaces)
 		return;
 	elseif ( hash_EmoteTokenList[command] ) then
 		-- if the code in here changes - change the corresponding code below
-		local restricted = DoEmote(hash_EmoteTokenList[command], msg);
+		local restricted = C_ChatInfo.PerformEmote(hash_EmoteTokenList[command], msg);
 		-- If the emote is restricted, we want to treat it as if the player entered an unrecognized chat command.
 		if ( not restricted ) then
 			self:AddHistoryLine(text);
@@ -250,22 +282,22 @@ end
 
 function ChatFrameEditBoxBaseMixin:SendText(addHistory)
 	self:ParseText(1);
-
-	local type = self:GetAttribute("chatType");
+	self:OnPreSendText();  -- Intentionally sequenced after ParseText and before GetText.
+	local type = self:GetChatType();
 	local text = self:GetText();
 	if ( strfind(text, "%s*[^%s]+") ) then
 		text = ChatFrameUtil.SubstituteChatMessageBeforeSend(text);
 		--BN_WHISPER FIXME
 		if ( type == "WHISPER") then
-			local target = self:GetAttribute("tellTarget");
+			local target = self:GetTellTarget();
 			ChatFrameUtil.SetLastToldTarget(target, type);
 			C_ChatInfo.SendChatMessage(text, type, self.languageID, target);
 		elseif ( type == "BN_WHISPER" ) then
-			local target = self:GetAttribute("tellTarget");
+			local target = self:GetTellTarget();
 			local bnetIDAccount = BNet_GetBNetIDAccount(target);
 			if ( bnetIDAccount ) then
 				ChatFrameUtil.SetLastToldTarget(target, type);
-				BNSendWhisper(bnetIDAccount, text);
+				C_BattleNet.SendWhisper(bnetIDAccount, text);
 			else
 				ChatFrameUtil.DisplaySystemMessageInPrimary(format(BN_UNABLE_TO_RESOLVE_NAME, target));
 			end
@@ -284,8 +316,8 @@ ChatFrameEditBoxMixin = CreateFromMixins(ChatFrameEditBoxBaseMixin);
 
 function ChatFrameEditBoxMixin:OnLoad()
 	self:SetFrameLevel(self.chatFrame:GetFrameLevel()+1);
-	self:SetAttribute("chatType", "SAY");
-	self:SetAttribute("stickyType", "SAY");
+	self:SetChatType("SAY");
+	self:SetStickyType("SAY");
 	self.chatLanguage = GetDefaultLanguage();
 	self:RegisterEvent("UPDATE_CHAT_COLOR");
 
@@ -295,11 +327,11 @@ function ChatFrameEditBoxMixin:OnLoad()
 	local function ChatEditAutoComplete(editBox, fullText, nameInfo, ambiguatedName)
 		if hash_ChatTypeInfoList[string.upper(editBox.command)] == "SMART_WHISPER" then
 			if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
-				editBox:SetAttribute("tellTarget", nameInfo.name);
-				editBox:SetAttribute("chatType", "BN_WHISPER");
+				editBox:SetTellTarget(nameInfo.name);
+				editBox:SetChatType("BN_WHISPER");
 			else
-				editBox:SetAttribute("tellTarget", ambiguatedName);
-				editBox:SetAttribute("chatType", "WHISPER");
+				editBox:SetTellTarget(ambiguatedName);
+				editBox:SetChatType("WHISPER");
 			end
 			editBox:SetText("");
 			editBox:UpdateHeader();
@@ -337,10 +369,13 @@ function ChatFrameEditBoxMixin:OnUpdate(elapsedSec)
 end
 
 function ChatFrameEditBoxMixin:OnShow()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxShow", self);
 	self:ResetChatType();
 end
 
 function ChatFrameEditBoxMixin:OnHide()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxHide", self);
+
 	if ( ACTIVE_CHAT_EDIT_BOX == self ) then
 		ChatFrameUtil.DeactivateChat(self);
 	end
@@ -352,10 +387,12 @@ function ChatFrameEditBoxMixin:OnHide()
 end
 
 function ChatFrameEditBoxMixin:OnEditFocusGained()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxFocusGained", self);
 	ChatFrameUtil.ActivateChat(self);
 end
 
 function ChatFrameEditBoxMixin:OnEditFocusLost()
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxFocusLost", self);
 	AutoCompleteEditBox_OnEditFocusLost(self);
 
 	if self:ShouldDeactivateChatOnEditFocusLost() then
@@ -369,16 +406,24 @@ function ChatFrameEditBoxMixin:OnEnterPressed()
 	end
 	self:SendText(1);
 
-	local type = self:GetAttribute("chatType");
-	local chatFrame = self:GetParent();
-	if ( chatFrame.isTemporary and chatFrame.chatType ~= "PET_BATTLE_COMBAT_LOG" ) then --Temporary window sticky types never change.
-		self:SetAttribute("stickyType", chatFrame.chatType);
-		--BN_WHISPER FIXME
-		if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
-			self:SetAttribute("tellTarget", chatFrame.chatTarget);
+	if IsVoiceTranscription(SELECTED_CHAT_FRAME) then
+		-- Always return to the VOICE_TEXT types after the message has been sent
+		-- when we are in the voice tab.
+		self:SetChatType("VOICE_TEXT");
+		self:SetStickyType("VOICE_TEXT");
+	else
+		local chatFrame = self:GetParent();
+		if ( chatFrame.isTemporary and chatFrame.chatType ~= "PET_BATTLE_COMBAT_LOG" ) then --Temporary window sticky types never change.
+			self:SetStickyType(chatFrame.chatType);
+			if ( chatFrame.chatType == "WHISPER" or chatFrame.chatType == "BN_WHISPER" ) then
+				self:SetTellTarget(chatFrame.chatTarget);
+			end
+		else
+			local type = self:GetChatType();
+			if ( ChatTypeInfo[type].sticky == 1 ) then
+				self:SetStickyType(type);
+			end
 		end
-	elseif ( ChatTypeInfo[type].sticky == 1 ) then
-		self:SetAttribute("stickyType", type);
 	end
 
 	self:ClearChat();
@@ -476,6 +521,13 @@ function ChatFrameEditBoxMixin:OnInputLanguageChanged()
 	button:SetText(variable);
 end
 
+function ChatFrameEditBoxMixin:OnPreSendText()
+	-- Notification for user addons to perform any final edits to chat text
+	-- contents before sending.
+
+	EventRegistry:TriggerEvent("ChatFrame.OnEditBoxPreSendText", self);
+end
+
 function ChatFrameEditBoxMixin:ClearChat()
 	self:ResetChatTypeToSticky();
 	if ( not self.isGM and ((not IsVoiceTranscription(self.chatFrame) and GetCVar("chatStyle") ~= "im")) ) then
@@ -507,22 +559,22 @@ function ChatFrameEditBoxMixin:Deactivate()
 end
 
 function ChatFrameEditBoxMixin:ResetChatType()
-	if ( self:GetAttribute("chatType") == "PARTY" and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) ) then
-		self:SetAttribute("chatType", "SAY");
+	if ( self:GetChatType() == "PARTY" and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) ) then
+		self:SetChatType("SAY");
 	end
-	if ( self:GetAttribute("chatType") == "RAID" and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) ) then
-		self:SetAttribute("chatType", "SAY");
+	if ( self:GetChatType() == "RAID" and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) ) then
+		self:SetChatType("SAY");
 	end
-	if ( (self:GetAttribute("chatType") == "GUILD" or self:GetAttribute("chatType") == "OFFICER") and not IsInGuild() ) then
-		self:SetAttribute("chatType", "SAY");
+	if ( (self:GetChatType() == "GUILD" or self:GetChatType() == "OFFICER") and not IsInGuild() ) then
+		self:SetChatType("SAY");
 	end
-	if ( self:GetAttribute("chatType") == "INSTANCE_CHAT" and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
-		self:SetAttribute("chatType", "SAY");
+	if ( self:GetChatType() == "INSTANCE_CHAT" and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
+		self:SetChatType("SAY");
 	end
 
 	-- GAME RULES TODO:: The game modes portion here should be an explicit game rule.
 	if ( C_Glue.IsOnGlueScreen() and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) and IsInGroup(LE_PARTY_CATEGORY_HOME) ) then
-		self:SetAttribute("chatType", "PARTY");
+		self:SetChatType("PARTY");
 	end
 
 	self.lastTabComplete = nil;
@@ -542,12 +594,12 @@ local chatTypesThatRequireTellTarget =
 function ChatFrameEditBoxMixin:UpdateHeader()
 	ChatFrameEditBoxBaseMixin.UpdateHeader(self);
 
-	local type = self:GetAttribute("chatType");
+	local type = self:GetChatType();
 	if ( not type ) then
 		return;
 	end
 
-	local tellTarget  = self:GetAttribute("tellTarget");
+	local tellTarget  = self:GetTellTarget();
 	if not tellTarget and chatTypesThatRequireTellTarget[type] then
 		return;
 	end
@@ -571,9 +623,9 @@ function ChatFrameEditBoxMixin:UpdateHeader()
 	if ( type == "SMART_WHISPER" ) then
 		--If we have a bnetIDAccount or this name, it's a BN whisper.
 		if ( BNet_GetBNetIDAccount(tellTarget) ) then
-			self:SetAttribute("chatType", "BN_WHISPER");
+			self:SetChatType("BN_WHISPER");
 		else
-			self:SetAttribute("chatType", "WHISPER");
+			self:SetChatType("WHISPER");
 		end
 		self:UpdateHeader();
 		return;
@@ -592,27 +644,27 @@ function ChatFrameEditBoxMixin:UpdateHeader()
 				channelName = channelName.." "..instanceID;
 			end
 			info = ChatTypeInfo["CHANNEL"..localID];
-			self:SetAttribute("channelTarget", localID);
+			self:SetChannelTarget(localID);
 			header:SetFormattedText(CHAT_CHANNEL_SEND, localID, channelName);
 		end
 	elseif ( (type == "PARTY") and
 		 (not IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		 --Smartly switch to instance chat
-		self:SetAttribute("chatType", "INSTANCE_CHAT");
+		self:SetChatType("INSTANCE_CHAT");
 		self:UpdateHeader();
 		return;
 	elseif ( (type == "RAID") and
 		 (not IsInRaid(LE_PARTY_CATEGORY_HOME) and IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) ) then
 		 --Smartly switch to instance chat
-		self:SetAttribute("chatType", "INSTANCE_CHAT");
+		self:SetChatType("INSTANCE_CHAT");
 		self:UpdateHeader();
 		return;
 	elseif ( (type == "INSTANCE_CHAT") and
 		(IsInGroup(LE_PARTY_CATEGORY_HOME) and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) )then
 		if ( IsInRaid(LE_PARTY_CATEGORY_HOME) ) then
-			self:SetAttribute("chatType", "RAID");
+			self:SetChatType("RAID");
 		else
-			self:SetAttribute("chatType", "PARTY");
+			self:SetChatType("PARTY");
 		end
 		self:UpdateHeader();
 		return;
@@ -656,7 +708,7 @@ function ChatFrameEditBoxMixin:SetFocusRegionsShown(shown)
 end
 
 function ChatFrameEditBoxMixin:DoesCurrentChannelTargetMatch(localID)
-	local type = self:GetAttribute("chatType");
+	local type = self:GetChatType();
 	if type == "CHANNEL" then
 		return self:GetChannelTarget() == localID;
 	end
@@ -666,14 +718,14 @@ end
 
 function ChatFrameEditBoxMixin:AddHistory()
 	local text = "";
-	local type = self:GetAttribute("chatType");
+	local type = self:GetChatType();
 	local header = _G["SLASH_"..type.."1"];
 	if ( header ) then
 		text = header;
 	end
 
 	if ( type == "WHISPER" ) then
-		text = text.." "..self:GetAttribute("tellTarget");
+		text = text.." "..self:GetTellTarget();
 	elseif ( type == "CHANNEL" ) then
 		text = "/"..self:GetChannelTarget();
 	end
@@ -698,12 +750,12 @@ local function SearchTabCompleteTable(tableCompleteTable, command, cmdString)
 end
 
 function ChatFrameEditBoxMixin:SecureTabPressed()
-	local chatType = self:GetAttribute("chatType");
+	local chatType = self:GetChatType();
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-		local newTarget, newTargetType = ChatFrameUtil.GetNextTellTarget(self:GetAttribute("tellTarget"), chatType);
+		local newTarget, newTargetType = ChatFrameUtil.GetNextTellTarget(self:GetTellTarget(), chatType);
 		if ( newTarget and newTarget ~= "" ) then
-			self:SetAttribute("chatType", newTargetType);
-			self:SetAttribute("tellTarget", newTarget);
+			self:SetChatType(newTargetType);
+			self:SetTellTarget(newTarget);
 			self:UpdateHeader();
 		end
 		return;

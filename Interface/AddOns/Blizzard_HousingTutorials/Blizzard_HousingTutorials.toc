@@ -1,5 +1,6 @@
 ## Title: Blizzard Housing Tutorials
 ## AllowLoad: Game
+## AllowLoadGameType: standard
 ## Author: Blizzard Entertainment
 ## Dependencies: Blizzard_Tutorials
 

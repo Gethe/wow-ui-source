@@ -3,6 +3,7 @@ local SuperTrackManager =
 	Name = "SuperTrackManager",
 	Type = "System",
 	Namespace = "C_SuperTrack",
+	Environment = "All",
 
 	Functions =
 	{
@@ -31,6 +32,7 @@ local SuperTrackManager =
 			Name = "GetNextWaypointForMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -152,6 +154,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedContent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -162,6 +165,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedMapPin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +176,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedQuestID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +186,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedUserWaypoint",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -190,6 +196,7 @@ local SuperTrackManager =
 		{
 			Name = "SetSuperTrackedVignette",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -204,11 +211,13 @@ local SuperTrackManager =
 			Name = "SuperTrackingChanged",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "SuperTrackingPathUpdated",
 			Type = "Event",
 			LiteralName = "SUPER_TRACKING_PATH_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

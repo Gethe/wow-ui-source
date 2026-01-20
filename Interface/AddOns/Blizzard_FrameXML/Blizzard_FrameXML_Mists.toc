@@ -1,7 +1,7 @@
 ## Title: Blizzard_FrameXML
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
-## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup
+## Dependencies: Blizzard_UIParent, Blizzard_SettingsDefinitions_Frame, Blizzard_ItemButton, Blizzard_FrameXMLUtil, Blizzard_GameTooltip, Blizzard_UIPanelTemplates, Blizzard_UnitPopup, Blizzard_TransmogShared
 ## LoadFirst: 1
 ## AllowLoad: Game
 ## AllowLoadGameType: mists
@@ -12,14 +12,11 @@ CustomBindingManager.lua
 CustomBindingHandler.lua
 SecureTemplatesBase.xml
 SecureTemplates.lua
-SecureStateDriver.lua
-SecureHoverDriver.lua
 SecureTemplates.xml
-SecureHandlerTemplates.xml
-SecureGroupHeaders.xml
-WardrobeOutfits.xml
+WardrobeCustomSets.xml
 Classic\NavigationBar.lua
 Classic\NavigationBar.xml
+Cata\CharacterFrameTemplates.lua
 Cata\CharacterFrameTemplates.xml
 DeprecatedTemplates.lua
 DeprecatedTemplates.xml

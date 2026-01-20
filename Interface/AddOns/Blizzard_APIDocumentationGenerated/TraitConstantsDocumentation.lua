@@ -194,9 +194,9 @@ local TraitConstants =
 		{
 			Name = "TraitNodeEntryType",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 15,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 14,
 			Fields =
 			{
 				{ Name = "SpendHex", Type = "TraitNodeEntryType", EnumValue = 0 },
@@ -212,14 +212,16 @@ local TraitConstants =
 				{ Name = "RedButton", Type = "TraitNodeEntryType", EnumValue = 10 },
 				{ Name = "ArmorSet", Type = "TraitNodeEntryType", EnumValue = 11 },
 				{ Name = "SpendInfinite", Type = "TraitNodeEntryType", EnumValue = 12 },
+				{ Name = "SpendCapstoneCircle", Type = "TraitNodeEntryType", EnumValue = 13 },
+				{ Name = "SpendCapstoneSquare", Type = "TraitNodeEntryType", EnumValue = 14 },
 			},
 		},
 		{
 			Name = "TraitNodeFlag",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 1,
-			MaxValue = 128,
+			MaxValue = 256,
 			Fields =
 			{
 				{ Name = "ShowMultipleIcons", Type = "TraitNodeFlag", EnumValue = 1 },
@@ -230,6 +232,7 @@ local TraitConstants =
 				{ Name = "ShowExpandedSelection", Type = "TraitNodeFlag", EnumValue = 32 },
 				{ Name = "HideMaxRank", Type = "TraitNodeFlag", EnumValue = 64 },
 				{ Name = "HighestChosenRank", Type = "TraitNodeFlag", EnumValue = 128 },
+				{ Name = "ShowTierTrack", Type = "TraitNodeFlag", EnumValue = 256 },
 			},
 		},
 		{

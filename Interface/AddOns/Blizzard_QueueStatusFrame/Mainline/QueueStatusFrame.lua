@@ -831,8 +831,26 @@ local function QueueStatus_GetAllRelevantLFG(category, queuedList)
 	return queuedList;
 end
 
+local function GetFirstVisibleInstanceNameForLFGCategory(category)
+	local entryIDs = C_LFGInfo.GetAllEntriesForCategory(category);
+	for _index, entryID in ipairs(entryIDs) do
+		if not C_LFGInfo.HideNameFromUI(entryID) then
+			local instanceName = GetLFGDungeonInfo(entryID);
+			if instanceName then
+				return instanceName;
+			end
+		end
+	end
+end
+
 local function GetDisplayNameFromCategory(category)
 	if (category == LE_LFG_CATEGORY_BATTLEFIELD) then
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
+		end
+
+		-- We should be able to get the name from the LFG record, but use the brawl name as a fallback
 		local brawlInfo;
 		if (C_PvP.IsInBrawl()) then
 			brawlInfo = C_PvP.GetActiveBrawlInfo();
@@ -845,14 +863,9 @@ local function GetDisplayNameFromCategory(category)
 	end
 
 	if (category == LE_LFG_CATEGORY_SCENARIO) then
-		local scenarioIDs = C_LFGInfo.GetAllEntriesForCategory(category)
-		for i, scenID in ipairs(scenarioIDs) do
-			if (not C_LFGInfo.HideNameFromUI(scenID)) then
-				local instanceName = GetLFGDungeonInfo(scenID);
-				if(instanceName) then
-					return instanceName;
-				end
-			end
+		local instanceName = GetFirstVisibleInstanceNameForLFGCategory(category);
+		if instanceName then
+			return instanceName;
 		end
 	end
 
@@ -951,7 +964,7 @@ function QueueStatusEntry_SetUpLFG(entry, category)
 	if ( mode == "queued" ) then
 		local inParty, joined, queued, noPartialClear, achievements, lfgComment, slotCount, _, leader, tank, healer, dps = GetLFGInfoServer(category, activeID);
 		local hasData,  leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, damageWait, myWait, queuedTime = GetLFGQueueStats(category, activeID);
-		if ( category == LE_LFG_CATEGORY_SCENARIO ) then --Hide roles for scenarios
+		if ( category == LE_LFG_CATEGORY_SCENARIO or instanceSubType == LFG_SUBTYPEID_TRAINING_GROUNDS ) then --Hide roles for scenarios and training grounds
 			tank, healer, dps = nil, nil, nil;
 			totalTanks, totalHealers, totalDPS, tankNeeds, healerNeeds, dpsNeeds = nil, nil, nil, nil, nil, nil;
 		end
@@ -1163,7 +1176,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 	local nextRoleIcon = 1;
 	if assignedSpec then
 		local id, name, description, icon, role, classFile, className = GetSpecializationInfoByID(assignedSpec);
-		SetPortraitToTexture(entry.AssignedSpec.Icon, icon or QUESTION_MARK_ICON);
+		entry.AssignedSpec.Icon:SetTexture(icon or QUESTION_MARK_ICON);
 	else
 		--Update your role icons
 		if ( isDPS ) then

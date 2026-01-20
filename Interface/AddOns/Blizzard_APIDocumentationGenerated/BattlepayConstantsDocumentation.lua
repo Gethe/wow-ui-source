@@ -3,6 +3,40 @@ local BattlepayConstants =
 	Tables =
 	{
 		{
+			Name = "BulkPurchaseResult",
+			Type = "Enumeration",
+			NumValues = 8,
+			MinValue = 0,
+			MaxValue = 7,
+			Fields =
+			{
+				{ Name = "ResultOk", Type = "BulkPurchaseResult", EnumValue = 0 },
+				{ Name = "ResultInProgress", Type = "BulkPurchaseResult", EnumValue = 1 },
+				{ Name = "ResultPartialSuccess", Type = "BulkPurchaseResult", EnumValue = 2 },
+				{ Name = "ResultFailed", Type = "BulkPurchaseResult", EnumValue = 3 },
+				{ Name = "ResultTooManyProducts", Type = "BulkPurchaseResult", EnumValue = 4 },
+				{ Name = "ResultSystemDisabled", Type = "BulkPurchaseResult", EnumValue = 5 },
+				{ Name = "ResultInsufficientFunds", Type = "BulkPurchaseResult", EnumValue = 6 },
+				{ Name = "ResultPurchaseTimeout", Type = "BulkPurchaseResult", EnumValue = 7 },
+			},
+		},
+		{
+			Name = "BulkRefundResult",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 0,
+			MaxValue = 5,
+			Fields =
+			{
+				{ Name = "ResultOk", Type = "BulkRefundResult", EnumValue = 0 },
+				{ Name = "ResultFailed", Type = "BulkRefundResult", EnumValue = 1 },
+				{ Name = "ResultInvalidRequest", Type = "BulkRefundResult", EnumValue = 2 },
+				{ Name = "ResultRefundWindowExpired", Type = "BulkRefundResult", EnumValue = 3 },
+				{ Name = "ResultSystemDisabled", Type = "BulkRefundResult", EnumValue = 4 },
+				{ Name = "ResultTimeout", Type = "BulkRefundResult", EnumValue = 5 },
+			},
+		},
+		{
 			Name = "CanRedeemTokenForBalanceResult",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -15,11 +49,26 @@ local BattlepayConstants =
 			},
 		},
 		{
+			Name = "SimpleOrderStatus",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Invalid", Type = "SimpleOrderStatus", EnumValue = 0 },
+				{ Name = "Creating", Type = "SimpleOrderStatus", EnumValue = 1 },
+				{ Name = "InProgress", Type = "SimpleOrderStatus", EnumValue = 2 },
+				{ Name = "Success", Type = "SimpleOrderStatus", EnumValue = 3 },
+				{ Name = "Failed", Type = "SimpleOrderStatus", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "VasTransactionPurchaseResult",
 			Type = "Enumeration",
-			NumValues = 144,
+			NumValues = 145,
 			MinValue = 0,
-			MaxValue = 20096,
+			MaxValue = 20097,
 			Fields =
 			{
 				{ Name = "None", Type = "VasTransactionPurchaseResult", EnumValue = 0 },
@@ -165,7 +214,8 @@ local BattlepayConstants =
 				{ Name = "DbNameChangeSkipped", Type = "VasTransactionPurchaseResult", EnumValue = 20093 },
 				{ Name = "DbInvalidName", Type = "VasTransactionPurchaseResult", EnumValue = 20094 },
 				{ Name = "DbBoostProcessingDisabled", Type = "VasTransactionPurchaseResult", EnumValue = 20095 },
-				{ Name = "EndDbErrors", Type = "VasTransactionPurchaseResult", EnumValue = 20096 },
+				{ Name = "DbHouseOwnerRestriction", Type = "VasTransactionPurchaseResult", EnumValue = 20096 },
+				{ Name = "EndDbErrors", Type = "VasTransactionPurchaseResult", EnumValue = 20097 },
 			},
 		},
 	},

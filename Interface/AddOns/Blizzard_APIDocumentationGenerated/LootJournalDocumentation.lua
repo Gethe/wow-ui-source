@@ -3,6 +3,7 @@ local LootJournal =
 	Name = "LootJournal",
 	Type = "System",
 	Namespace = "C_LootJournal",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local LootJournal =
 			Name = "GetItemSetItems",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +27,7 @@ local LootJournal =
 			Name = "GetItemSets",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,6 +48,7 @@ local LootJournal =
 			Name = "LootJournalItemUpdate",
 			Type = "Event",
 			LiteralName = "LOOT_JOURNAL_ITEM_UPDATE",
+			UniqueEvent = true,
 		},
 	},
 

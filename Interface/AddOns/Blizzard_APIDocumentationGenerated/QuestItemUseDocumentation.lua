@@ -3,12 +3,14 @@ local QuestItemUse =
 	Name = "QuestItemUse",
 	Type = "System",
 	Namespace = "C_QuestItemUse",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanUseQuestItemOnObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

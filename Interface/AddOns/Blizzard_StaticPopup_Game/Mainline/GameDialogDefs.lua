@@ -200,7 +200,7 @@ StaticPopupDialogs["DEATH"] = {
 		if ( not dialog.UpdateRecapButton ) then
 			dialog.UpdateRecapButton = function( dialog )
 				local button4 = dialog:GetButton4();
-				if ( DeathRecap_HasEvents() ) then
+				if ( C_DeathRecap.HasRecapEvents() ) then
 					button4:Enable();
 					button4:SetScript("OnEnter", nil );
 					button4:SetScript("OnLeave", nil);
@@ -256,8 +256,8 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = dialog:GetButton1():IsEnabled();
-		local encounterSupressRelease = IsEncounterSuppressingRelease();
-		if ( encounterSupressRelease ) then
+		local encounterSuppressRelease = C_InstanceEncounter.IsEncounterSuppressingRelease();
+		if ( encounterSuppressRelease ) then
 			dialog:GetButton1():SetEnabled(false);
 			dialog:GetButton1():SetText(DEATH_RELEASE);
 		else
@@ -276,7 +276,7 @@ StaticPopupDialogs["DEATH"] = {
 
 		if ( b1_enabled ~= dialog:GetButton1():IsEnabled() ) then
 			if ( b1_enabled ) then
-				if ( encounterSupressRelease ) then
+				if ( encounterSuppressRelease ) then
 					dialog:SetText(CAN_NOT_RELEASE_IN_COMBAT);
 				else
 					dialog:SetText(CAN_NOT_RELEASE_RIGHT_NOW);

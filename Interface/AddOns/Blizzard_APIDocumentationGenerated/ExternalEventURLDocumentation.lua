@@ -3,6 +3,7 @@ local ExternalEventURL =
 	Name = "ExternalEventURL",
 	Type = "System",
 	Namespace = "C_ExternalEventURL",
+	Environment = "All",
 
 	Functions =
 	{

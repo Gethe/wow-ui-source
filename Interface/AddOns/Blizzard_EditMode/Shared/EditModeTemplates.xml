@@ -101,6 +101,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEnter method="EditModeSettingDropdown_OnEnter" inherit="append"/>
+			<OnLeave method="EditModeSettingDropdown_OnLeave" inherit="append"/>
 		</Scripts>
 	</Frame>
 

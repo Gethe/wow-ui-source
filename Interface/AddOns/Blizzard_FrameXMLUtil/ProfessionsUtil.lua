@@ -1,5 +1,66 @@
 ProfessionsUtil = {};
 
+do
+	local function Matches(lhs, rhs)
+		return lhs and (lhs ~= 0) and (lhs == rhs);
+	end
+	
+	function ProfessionsUtil.CraftingReagentMatches(reagent1, reagent2)
+		return Matches(reagent1.itemID, reagent2.itemID) or 
+			Matches(reagent1.currencyID, reagent2.currencyID);
+	end
+end
+
+do
+	-- Returns the quantity required by the slot, or a variable quantity determined by
+	-- the reagent.
+	local function GetQuantityRequired(reagentSlotSchematic, reagent)
+		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
+			if ProfessionsUtil.CraftingReagentMatches(reagent, variableQuantity.reagent) then
+				return variableQuantity.quantity;
+			end
+		end
+
+		return reagentSlotSchematic.quantityRequired;
+	end
+
+	local function HasVariableQuantities(reagentSlotSchematic)
+		return #reagentSlotSchematic.variableQuantities > 0;
+	end
+
+	local function IsVariableQuantityReagent(reagentSlotSchematic, reagent)
+		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
+			if ProfessionsUtil.CraftingReagentMatches(reagent, reagent) then
+				return true;
+			end
+		end
+		return false;
+	end
+
+	local function GetVariableQuantityRange(reagentSlotSchematic, reagent)
+		local min, max = math.huge, 0;
+		for index, variableQuantity in ipairs(reagentSlotSchematic.variableQuantities) do
+			local quantity = variableQuantity.quantity;
+			min = math.min(min, quantity);
+			max = math.max(max, quantity)
+		end
+		return min, max;
+	end
+
+	function ProfessionsUtil.GetRecipeSchematic(...)
+		local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(...);
+	
+		for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
+			reagentSlotSchematic.GetQuantityRequired = GetQuantityRequired;
+			reagentSlotSchematic.HasVariableQuantities = HasVariableQuantities;
+			reagentSlotSchematic.IsVariableQuantityReagent = IsVariableQuantityReagent;
+			reagentSlotSchematic.GetVariableQuantityRange = GetVariableQuantityRange;
+		end
+	
+		return recipeSchematic;
+	end
+end
+
 local isCraftingMinimized = false;
 function ProfessionsUtil.SetCraftingMinimized(minimized)
 	local changed = isCraftingMinimized ~= minimized;
@@ -46,7 +107,7 @@ end
 function ProfessionsUtil.CreateRecipeReagentListByPredicate(recipeID, predicate)
 	local reagents = {};
 	local isRecraft = false;
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(recipeID, isRecraft);
+	local recipeSchematic = ProfessionsUtil.GetRecipeSchematic(recipeID, isRecraft);
 	for _, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		if predicate(reagentSlotSchematic) then
 			tAppendAll(reagents, reagentSlotSchematic.reagents);
@@ -93,11 +154,11 @@ function ProfessionsUtil.AccumulateReagentsInPossession(reagents, characterInven
 end
 
 function ProfessionsUtil.CreateProfessionsRecipeTransactionFromCraftingOrder(order)
-	local recipeSchematic = C_TradeSkillUI.GetRecipeSchematic(order.spellID, order.isRecraft);
+	local recipeSchematic = ProfessionsUtil.GetRecipeSchematic(order.spellID, order.isRecraft);
 	local transaction = CreateProfessionsRecipeTransaction(recipeSchematic);
 	for _, reagentInfo in ipairs(order.reagents) do
 		local allocations = transaction:GetAllocations(reagentInfo.slotIndex);
-		allocations:Allocate(reagentInfo.reagent, reagentInfo.reagent.quantity);
+		allocations:Allocate(reagentInfo.reagentInfo.reagent, reagentInfo.reagentInfo.quantity);
 	end
 	return transaction;
 end

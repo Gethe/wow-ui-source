@@ -1779,9 +1779,9 @@ local function PerksProgramToy_ProcessLines(data)
 				local restrictionText = lineData.leftText;
 				restrictionText = lineData.leftColor:WrapTextInColorCode(restrictionText);
 				if lineData.type == Enum.TooltipDataLineType.ToyEffect then
-					toyEffect = StripHyperlinks(restrictionText);
+					toyEffect = C_StringUtil.StripHyperlinks(restrictionText);
 				elseif lineData.type == Enum.TooltipDataLineType.ToyDescription then				
-					toyDescription = StripHyperlinks(restrictionText);
+					toyDescription = C_StringUtil.StripHyperlinks(restrictionText);
 				end
 			end
 		end
@@ -2026,20 +2026,25 @@ function PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearance
 	local usingWeaponBucket = false;
 
 	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+
+		if not appearanceSourceInfo then
+			return false;
+		end
+
 		if not firstCategoryID then
-			firstCategoryID = categoryID;
+			firstCategoryID = appearanceSourceInfo.category;
 			if IsWeapon(firstCategoryID) then
 				usingWeaponBucket = true;
 			end
 		end
 
 		if usingWeaponBucket then
-			if not IsWeapon(categoryID) then
+			if not IsWeapon(appearanceSourceInfo.category) then
 				return false;
 			end
 		else
-			if firstCategoryID ~= categoryID then
+			if firstCategoryID ~= appearanceSourceInfo.category then
 				return false;
 			end
 		end

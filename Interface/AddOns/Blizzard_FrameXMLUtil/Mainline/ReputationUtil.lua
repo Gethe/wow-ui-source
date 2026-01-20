@@ -10,7 +10,7 @@ function ReputationUtil.TryAppendAccountReputationLineToTooltip(tooltip, faction
 end
 
 function ReputationUtil.AddParagonRewardsToTooltip(tooltip, factionID)
-	if not C_Reputation.IsFactionParagon(factionID) then
+	if not C_Reputation.IsFactionParagonForCurrentPlayer(factionID) then
 		return;
 	end
 

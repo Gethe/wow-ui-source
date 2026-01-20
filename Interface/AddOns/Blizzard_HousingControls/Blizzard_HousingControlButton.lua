@@ -89,7 +89,7 @@ function HouseEditorButtonMixin:EnterMode()
 end
 
 function HouseEditorButtonMixin:LeaveMode()
-	C_HouseEditor.LeaveHouseEditor();
+	HousingFramesUtil.LeaveHouseEditor();
 end
 
 -- Inherits BaseHousingControlButtonMixin

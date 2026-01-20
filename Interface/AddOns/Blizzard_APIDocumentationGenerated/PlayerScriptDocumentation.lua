@@ -2,6 +2,7 @@ local PlayerScript =
 {
 	Name = "PlayerScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -20,6 +21,7 @@ local PlayerScript =
 		{
 			Name = "Ambiguate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -52,6 +54,7 @@ local PlayerScript =
 		{
 			Name = "CanInspect",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +70,7 @@ local PlayerScript =
 			Name = "CanLootUnit",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -86,6 +90,7 @@ local PlayerScript =
 		{
 			Name = "CancelPendingEquip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,6 +104,7 @@ local PlayerScript =
 		{
 			Name = "CheckInteractDistance",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -147,6 +153,7 @@ local PlayerScript =
 		{
 			Name = "EquipPendingItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +163,7 @@ local PlayerScript =
 		{
 			Name = "FollowUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -193,6 +201,7 @@ local PlayerScript =
 		{
 			Name = "GetAttackPowerForStat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -260,8 +269,18 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetCollapsingStarCost",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "cost", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCombatRating",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,6 +295,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRatingBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -290,6 +310,7 @@ local PlayerScript =
 		{
 			Name = "GetCombatRatingBonusForCombatRatingValue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -464,6 +485,7 @@ local PlayerScript =
 		{
 			Name = "GetMaxCombatRatingBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -644,6 +666,7 @@ local PlayerScript =
 			Name = "GetPlayerInfoByGUID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -674,6 +697,7 @@ local PlayerScript =
 		{
 			Name = "GetPowerRegenForPowerType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -767,6 +791,7 @@ local PlayerScript =
 			Name = "GetRuneCooldown",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -784,6 +809,7 @@ local PlayerScript =
 			Name = "GetRuneCount",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -825,6 +851,7 @@ local PlayerScript =
 		{
 			Name = "GetSpellBonusDamage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -893,6 +920,7 @@ local PlayerScript =
 		{
 			Name = "GetVersatilityBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -981,6 +1009,7 @@ local PlayerScript =
 		{
 			Name = "InitiateTrade",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1098,6 +1127,7 @@ local PlayerScript =
 		{
 			Name = "IsItemPreferredArmorType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1112,6 +1142,7 @@ local PlayerScript =
 		{
 			Name = "IsJailersTowerLayerTimeLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1252,6 +1283,7 @@ local PlayerScript =
 		{
 			Name = "NotifyInspect",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1324,6 +1356,7 @@ local PlayerScript =
 		{
 			Name = "RandomRoll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1342,6 +1375,7 @@ local PlayerScript =
 		{
 			Name = "RespondInstanceLock",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1382,6 +1416,7 @@ local PlayerScript =
 		{
 			Name = "SetAllowLowLevelRaid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1391,6 +1426,7 @@ local PlayerScript =
 		{
 			Name = "SetAllowRecentAlliesSeeLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1400,6 +1436,7 @@ local PlayerScript =
 		{
 			Name = "SetAutoDeclineGuildInvites",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1409,6 +1446,7 @@ local PlayerScript =
 		{
 			Name = "SetAutoDeclineNeighborhoodInvites",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1418,6 +1456,7 @@ local PlayerScript =
 		{
 			Name = "SetCemeteryPreference",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1427,6 +1466,7 @@ local PlayerScript =
 		{
 			Name = "SetLootSpecialization",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1436,6 +1476,7 @@ local PlayerScript =
 		{
 			Name = "SetTaxiBenchmarkMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1463,6 +1504,7 @@ local PlayerScript =
 		{
 			Name = "ShowCloak",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1472,6 +1514,7 @@ local PlayerScript =
 		{
 			Name = "ShowHelm",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1513,6 +1556,7 @@ local PlayerScript =
 		{
 			Name = "StartAttack",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1553,10 +1597,17 @@ local PlayerScript =
 			Name = "PlayerInCombatChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_IN_COMBAT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "inCombat", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "PlayerTargetDied",
+			Type = "Event",
+			LiteralName = "PLAYER_TARGET_DIED",
+			SynchronousEvent = true,
 		},
 	},
 

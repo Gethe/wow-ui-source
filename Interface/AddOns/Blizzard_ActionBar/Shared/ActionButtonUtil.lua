@@ -186,13 +186,13 @@ end
 
 function ActionButtonUtil.AddPlayerActionBarsContainingSlots(slots, bars, excludeNonPlayerBars)
 	-- Pre-retrieve page numbers for various override bars
-	local vehicleBarPage = GetVehicleBarIndex();
-	local overrideBarPage = GetOverrideBarIndex();
-	local tempShapeshiftBarPage = GetTempShapeshiftBarIndex();
-	local currentBonusBarIndex = GetBonusBarIndex();
+	local vehicleBarPage = C_ActionBar.GetVehicleBarIndex();
+	local overrideBarPage = C_ActionBar.GetOverrideBarIndex();
+	local tempShapeshiftBarPage = C_ActionBar.GetTempShapeshiftBarIndex();
+	local currentBonusBarIndex = C_ActionBar.GetBonusBarIndex();
 
 	local isMainActionBarActive = ActionBarController_GetCurrentActionBarState() == LE_ACTIONBAR_STATE_MAIN;
-	local isMainActionBarDefaultFirstPageActive = isMainActionBarActive and not (HasBonusActionBar() or HasOverrideActionBar() or HasVehicleActionBar() or HasTempShapeshiftActionBar());
+	local isMainActionBarDefaultFirstPageActive = isMainActionBarActive and not (C_ActionBar.HasBonusActionBar() or C_ActionBar.HasOverrideActionBar() or C_ActionBar.HasVehicleActionBar() or C_ActionBar.HasTempShapeshiftActionBar());
 
 	for _, slot in ipairs(slots) do
 		-- First, calculate the page for slot index, then we can find the bar using that page

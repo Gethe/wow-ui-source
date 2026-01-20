@@ -63,7 +63,7 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
-		elseif ( strsub(text, startLink + 2, startLink + 7) == "outfit" ) then
+		elseif ( strsub(text, startLink + 2, startLink + 10) == "customset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));

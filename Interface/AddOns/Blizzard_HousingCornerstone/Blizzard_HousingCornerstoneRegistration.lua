@@ -1,8 +1,9 @@
 do
 	local attributes =
 	{
+		allowOtherPanels = 1,
 		area = "center",
-		pushable = 3,
+		pushable = 0,
 	};
 
 	RegisterUIPanel(HousingCornerstoneFrame, attributes);

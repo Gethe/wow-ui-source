@@ -1,22 +1,33 @@
 DEFAULT_AURA_DURATION_FONT = "GameFontNormalSmall";
 BUFF_DURATION_WARNING_TIME = 90;
 
---Aubrie TODO move these.. to something else
-DebuffTypeColor = { };
-DebuffTypeColor["none"]	= { r = 0.80, g = 0, b = 0 };
-DebuffTypeColor["Magic"]	= { r = 0.20, g = 0.60, b = 1.00 };
-DebuffTypeColor["Curse"]	= { r = 0.60, g = 0.00, b = 1.00 };
-DebuffTypeColor["Disease"]	= { r = 0.60, g = 0.40, b = 0 };
-DebuffTypeColor["Poison"]	= { r = 0.00, g = 0.60, b = 0 };
-DebuffTypeColor[""]	= DebuffTypeColor["none"];
-
-DebuffTypeSymbol = { };
-DebuffTypeSymbol["Magic"] = DEBUFF_SYMBOL_MAGIC;
-DebuffTypeSymbol["Curse"] = DEBUFF_SYMBOL_CURSE;
-DebuffTypeSymbol["Disease"] = DEBUFF_SYMBOL_DISEASE;
-DebuffTypeSymbol["Poison"] = DEBUFF_SYMBOL_POISON;
+local DEBUFF_DISPLAY_INFO = {
+	["Magic"] = { color = DEBUFF_TYPE_MAGIC_COLOR, abbreviation = DEBUFF_SYMBOL_MAGIC, basicAtlas = "ui-debuff-border-magic-noicon", dispelAtlas = "ui-debuff-border-magic-icon" },
+	["Curse"] = { color = DEBUFF_TYPE_CURSE_COLOR, abbreviation = DEBUFF_SYMBOL_CURSE, basicAtlas = "ui-debuff-border-curse-noicon", dispelAtlas = "ui-debuff-border-curse-icon" },
+	["Disease"] = { color = DEBUFF_TYPE_DISEASE_COLOR, abbreviation = DEBUFF_SYMBOL_DISEASE, basicAtlas = "ui-debuff-border-disease-noicon", dispelAtlas = "ui-debuff-border-disease-icon" },
+	["Poison"] = { color = DEBUFF_TYPE_POISON_COLOR, abbreviation = DEBUFF_SYMBOL_POISON, basicAtlas = "ui-debuff-border-poison-noicon", dispelAtlas = "ui-debuff-border-poison-icon" },
+	["Bleed"] = { color = DEBUFF_TYPE_BLEED_COLOR, abbreviation = DEBUFF_SYMBOL_BLEED, basicAtlas = "ui-debuff-border-bleed-noicon", dispelAtlas = "ui-debuff-border-bleed-icon" },
+	["None"] = { color = DEBUFF_TYPE_NONE_COLOR, abbreviation = "", basicAtlas = "ui-debuff-border-default-noicon" },
+};
 
 AuraUtil = {};
+
+local AuraUtilDataProvider = C_UnitAuras;
+function AuraUtil.SetDataProvider(dataProvider)
+	AuraUtilDataProvider = dataProvider;
+end
+
+function AuraUtil.ClearDataProvider()
+	AuraUtil.SetDataProvider(C_UnitAuras);
+end
+
+local function CallDataProviderMethod(methodName, ...)
+	return AuraUtilDataProvider[methodName](...);
+end
+
+function AuraUtil.GetAuraDataByAuraInstanceID(...)
+	return CallDataProviderMethod("GetAuraDataByAuraInstanceID", ...);
+end
 
 -- For backwards compatibility with old APIs, this helper function returns aura data values unpacked in the same order as before.
 function AuraUtil.UnpackAuraData(auraData)
@@ -50,14 +61,14 @@ local function FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1
 		return ...;
 	end
 	auraIndex = auraIndex + 1;
-	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(unit, auraIndex, filter)));
+	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataByIndex", unit, auraIndex, filter)));
 end
 
 -- Find an aura by any predicate, you can pass in up to 3 predicate specific parameters
 -- The predicate will also receive all aura params, if the aura data matches return true
 function AuraUtil.FindAura(predicate, unit, filter, predicateArg1, predicateArg2, predicateArg3)
 	local auraIndex = 1;
-	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataByIndex(unit, auraIndex, filter)));
+	return FindAuraRecurse(predicate, unit, filter, auraIndex, predicateArg1, predicateArg2, predicateArg3, AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataByIndex", unit, auraIndex, filter)));
 end
 
 -- Finds the first aura that matches the name
@@ -67,7 +78,7 @@ end
 --			consider that in English two auras might have different names, but once localized they have the same name, so even using the localized aura name in a search it could result in different behavior
 --		the unit could have multiple auras with the same name, this will only find the first
 function AuraUtil.FindAuraByName(auraName, unit, filter)
-	return AuraUtil.UnpackAuraData(C_UnitAuras.GetAuraDataBySpellName(unit, auraName, filter));
+	return AuraUtil.UnpackAuraData(CallDataProviderMethod("GetAuraDataBySpellName", unit, auraName, filter));
 end
 
 do
@@ -77,7 +88,7 @@ do
 		for i=1, n do
 			local slot = select(i, ...);
 			local done;
-			local auraInfo = C_UnitAuras.GetAuraDataBySlot(unit, slot);
+			local auraInfo = CallDataProviderMethod("GetAuraDataBySlot", unit, slot);
 
 			-- Protect against GetAuraDataBySlot desyncing with GetAuraSlots
 			if auraInfo then
@@ -101,8 +112,8 @@ do
 		end
 		local continuationToken;
 		repeat
-			-- continuationToken is the first return value of UnitAuraSltos
-			continuationToken = ForEachAuraHelper(unit, filter, func, usePackedAura, C_UnitAuras.GetAuraSlots(unit, filter, batchSize, continuationToken));
+			-- continuationToken is the first return value of UnitAuraSlots
+			continuationToken = ForEachAuraHelper(unit, filter, func, usePackedAura, CallDataProviderMethod("GetAuraSlots", unit, filter, batchSize, continuationToken));
 		until continuationToken == nil;
 	end
 end
@@ -121,6 +132,25 @@ function AuraUtil.DefaultAuraCompare(a, b)
 	return a.auraInstanceID < b.auraInstanceID;
 end
 
+function AuraUtil.BigDefensiveAuraCompare(a, b)
+	-- Comparison rules, note that everything that's compared in here should be known to be a "big defensive" already.
+	-- The longest duration that is NOT yours has the highest priority, then another defensive that is not yours even at shorter duration should be next priority,
+	-- then show yours in center if there are no other defensives on the target.
+
+	-- Keeping the "is player caster" in sync with DefaultAuraCompare:
+	local aFromPlayer = (a.sourceUnit ~= nil) and UnitIsUnit("player", a.sourceUnit) or false;
+	local bFromPlayer = (b.sourceUnit ~= nil) and UnitIsUnit("player", b.sourceUnit) or false;
+	if aFromPlayer ~= bFromPlayer then
+		return not aFromPlayer; -- Big difference from above, we prefer showing things that are not cast by the player
+	end
+
+	if a.expirationTime ~= b.expirationTime then
+		return a.expirationTime > b.expirationTime;
+	end
+
+	return a.auraInstanceID < b.auraInstanceID;
+end
+
 AuraUtil.AuraFilters =
 {
 	Helpful = "HELPFUL",
@@ -131,6 +161,7 @@ AuraUtil.AuraFilters =
 	Cancelable = "CANCELABLE",
 	NotCancelable = "NOT_CANCELABLE",
 	Maw = "MAW",
+	ExternalDefensive = "EXTERNAL_DEFENSIVE",
 };
 
 function AuraUtil.CreateFilterString(...)
@@ -142,7 +173,8 @@ AuraUtil.DispellableDebuffTypes =
 	Magic = true,
 	Curse = true,
 	Disease = true,
-	Poison = true
+	Poison = true,
+	Bleed = true,
 };
 
 AuraUtil.AuraUpdateChangedType = EnumUtil.MakeEnum(
@@ -177,7 +209,7 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		return AuraUtil.AuraUpdateChangedType.None;
 	end
 
-	if aura.isBossAura and not aura.isRaid and not ignoreDebuffs then
+	if (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and not aura.isRaid and not ignoreDebuffs then
 		aura.debuffType = aura.isHarmful and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.BossBuff;
 		return AuraUtil.AuraUpdateChangedType.Debuff;
 	elseif aura.isHarmful and not aura.isRaid and not ignoreDebuffs then
@@ -192,15 +224,15 @@ function AuraUtil.ProcessAura(aura, displayOnlyDispellableDebuffs, ignoreBuffs, 
 		aura.isBuff = true;
 		return AuraUtil.AuraUpdateChangedType.Buff;
 	elseif aura.isHarmful and aura.isRaid then
-		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not aura.isBossAura and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
+		if displayOnlyDispellableDebuffs and not ignoreDebuffs and not (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and AuraUtil.ShouldDisplayDebuff(aura.sourceUnit, aura.spellId) and not AuraUtil.IsPriorityDebuff(aura.spellId) then
 			aura.debuffType = AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
 			return AuraUtil.AuraUpdateChangedType.Debuff;
 		elseif not ignoreDispelDebuffs and AuraUtil.DispellableDebuffTypes[aura.dispelName] ~= nil then
-			aura.debuffType = aura.isBossAura and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
+			aura.debuffType = (aura.isBossAura or AuraUtil.IsRoleAura(aura)) and AuraUtil.UnitFrameDebuffType.BossDebuff or AuraUtil.UnitFrameDebuffType.NonBossRaidDebuff;
 			return AuraUtil.AuraUpdateChangedType.Dispel;
 		end
 	end
-	
+
 	return AuraUtil.AuraUpdateChangedType.None;
 end
 
@@ -219,7 +251,7 @@ do
 	end, {});
 
 	local cachedVisualizationInfo = {};
-	
+
 	-- Visualization info is specific to the spec it was checked under
 	EventRegistry:RegisterFrameEvent("PLAYER_SPECIALIZATION_CHANGED");
 	EventRegistry:RegisterCallback("PLAYER_SPECIALIZATION_CHANGED", function()
@@ -228,7 +260,7 @@ do
 
 	local function GetCachedVisibilityInfo(spellId)
 		if cachedVisualizationInfo[spellId] == nil then
-			local newInfo = {SpellGetVisibilityInfo(spellId, UnitAffectingCombat("player") and "RAID_INCOMBAT" or "RAID_OUTOFCOMBAT")};
+			local newInfo = {C_Spell.GetVisibilityInfo(spellId, UnitAffectingCombat("player") and Enum.SpellAuraVisibilityType.RaidInCombat or Enum.SpellAuraVisibilityType.RaidOutOfCombat)};
 			if not hasValidPlayer then
 				-- Don't cache the info if the player is not valid since we didn't get a valid result
 				return unpack(newInfo);
@@ -252,7 +284,7 @@ do
 	local cachedSelfBuffChecks = {};
 	local function CheckIsSelfBuff(spellId)
 		if cachedSelfBuffChecks[spellId] == nil then
-			cachedSelfBuffChecks[spellId] = SpellIsSelfBuff(spellId);
+			cachedSelfBuffChecks[spellId] = C_Spell.IsSelfBuff(spellId);
 		end
 
 		return cachedSelfBuffChecks[spellId];
@@ -260,21 +292,38 @@ do
 
 	function AuraUtil.ShouldDisplayBuff(unitCaster, spellId, canApplyAura)
 		local hasCustom, alwaysShowMine, showForMySpec = securecallfunction(GetCachedVisibilityInfo, spellId);
-	
+
 		if ( hasCustom ) then
 			return showForMySpec or (alwaysShowMine and (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle"));
+		elseif (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura then
+			return not securecallfunction(CheckIsSelfBuff, spellId);
 		else
-			return (unitCaster == "player" or unitCaster == "pet" or unitCaster == "vehicle") and canApplyAura and not securecallfunction(CheckIsSelfBuff, spellId);
+			return false;
 		end
 	end
 
 	local cachedPriorityChecks = {};
 	function AuraUtil.CheckIsPriorityAura(spellId)
 		if cachedPriorityChecks[spellId] == nil then
-			cachedPriorityChecks[spellId] = SpellIsPriorityAura(spellId);
+			cachedPriorityChecks[spellId] = C_Spell.IsPriorityAura(spellId);
 		end
 
 		return cachedPriorityChecks[spellId];
+	end
+
+	local cachedBigDefensives = {};
+	function AuraUtil.IsBigDefensive(aura)
+		-- EditMode data support without mocking an entire API
+		if aura.isBigDefensive ~= nil then
+			return aura.isBigDefensive;
+		end
+
+		local spellID = aura.spellId;
+		if cachedBigDefensives[spellID] == nil then
+			cachedBigDefensives[spellID] = securecallfunction(C_UnitAuras.AuraIsBigDefensive, spellID);
+		end
+
+		return cachedBigDefensives[spellID];
 	end
 
 	local function DumpCaches()
@@ -368,8 +417,7 @@ local function RefreshDebuffs(frame, unit, numDebuffs, suffix, checkCVar)
 
 			-- setup the border
 			local debuffBorder = _G[debuffName.."Border"];
-			local debuffColor = DebuffTypeColor[debuffType] or DebuffTypeColor["none"];
-			debuffBorder:SetVertexColor(debuffColor.r, debuffColor.g, debuffColor.b);
+			AuraUtil.SetAuraBorderColor(debuffBorder, debuffType);
 
 			-- record interesting data for the aura button
 			statusColor = debuffColor;
@@ -407,5 +455,37 @@ function AuraUtil.RefreshAuras(frame, unit, numAuras, suffix, checkCVar, showBuf
 		RefreshBuffs(frame, unit, numAuras, suffix, checkCVar);
 	else
 		RefreshDebuffs(frame, unit, numAuras, suffix, checkCVar);
+	end
+end
+
+function AuraUtil.IsRoleAura(aura)
+	return aura.isTankRoleAura or aura.isHealerRoleAura or aura.isDPSRoleAura;
+end
+
+function AuraUtil.SetAuraBorderColor(borderRegion, dispelType)
+	local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+	borderRegion:SetVertexColor(info.color:GetRGBA());
+end
+
+function AuraUtil.SetAuraSymbol(fontstring, dispelType)
+	if CVarCallbackRegistry:GetCVarValueBool("colorblindMode") then
+		local info = DEBUFF_DISPLAY_INFO[dispelType] or DEBUFF_DISPLAY_INFO["None"];
+		fontstring:SetText(info.abbreviation);
+		fontstring:Show();
+	else
+		fontstring:Hide();
+	end
+end
+
+function AuraUtil.GetDebuffDisplayInfoTable()
+	return DEBUFF_DISPLAY_INFO;
+end
+
+function AuraUtil.SetAuraBorderAtlasFromAura(borderRegion, auraData, showDispelType)
+	if auraData.isHarmful then
+		borderRegion:Show();
+		AuraUtil.SetAuraBorderAtlas(borderRegion, auraData.dispelName, showDispelType);
+	else
+		borderRegion:Hide();
 	end
 end

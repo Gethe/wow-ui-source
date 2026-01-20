@@ -108,27 +108,14 @@ local function QuestFinishedHandler()
 end
 ----------------------------------------------------------------------------------------------------
 local function PlayerDeathHandler()
-    local deathEvents = DeathRecap_GetEvents()
-    
+    local deathEvents = C_DeathRecap.GetRecapEvents()
+
     if (deathEvents[1]) and (deathEvents[1].sourceGUID) then
-        local creatureID = GetCreatureIDFromGuid(deathEvents[1].sourceGUID)
+        local creatureID = C_CreatureInfo.GetCreatureID(deathEvents[1].sourceGUID)
         
         if (creatureID) then
             PTR_IssueReporter.TriggerEvent(PTR_IssueReporter.ReportEventTypes.PlayerDeath, creatureID)
         end
-    end
-end
-----------------------------------------------------------------------------------------------------
-local function GetCreatureIDFromGuid(guid)
-    local parts = {}
-    for s in guid:gmatch("[^-]+") do -- Split string by '-', The 6th option is creatureID
-        table.insert(parts, s)
-    end
-    
-    if (parts[6]) then
-        return parts[6]
-    else
-        return 0
     end
 end
 ----------------------------------------------------------------------------------------------------

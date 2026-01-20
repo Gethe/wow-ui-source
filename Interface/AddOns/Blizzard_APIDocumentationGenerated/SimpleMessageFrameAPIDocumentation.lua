@@ -2,12 +2,14 @@ local SimpleMessageFrameAPI =
 {
 	Name = "SimpleMessageFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AddMessage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -97,6 +99,8 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "GetFontStringByID",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -235,6 +239,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "HasMessageByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,6 +254,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "ResetMessageFadeByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,6 +264,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFadeDuration",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -267,6 +274,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFadePower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -276,6 +284,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFading",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +294,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFont",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -296,6 +306,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -305,6 +316,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetIndentedWordWrap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -314,6 +326,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetInsertMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,6 +336,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetJustifyH",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -332,6 +346,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetJustifyV",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -341,6 +356,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetShadowColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -353,6 +369,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetShadowOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -363,6 +380,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetSpacing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -372,6 +390,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetTextColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -384,6 +403,7 @@ local SimpleMessageFrameAPI =
 		{
 			Name = "SetTimeVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -2,6 +2,7 @@ local SimpleFrameAPI =
 {
 	Name = "SimpleFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -38,6 +39,7 @@ local SimpleFrameAPI =
 			Name = "ClearAttribute",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -61,6 +63,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CreateFontString",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -77,6 +80,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CreateLine",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -94,6 +98,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CreateMaskTexture",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -111,6 +116,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CreateTexture",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -128,6 +134,7 @@ local SimpleFrameAPI =
 		{
 			Name = "DesaturateHierarchy",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -138,6 +145,7 @@ local SimpleFrameAPI =
 		{
 			Name = "DisableDrawLayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +182,7 @@ local SimpleFrameAPI =
 		{
 			Name = "EnableDrawLayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,6 +193,7 @@ local SimpleFrameAPI =
 			Name = "EnableGamePadButton",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -194,6 +204,7 @@ local SimpleFrameAPI =
 			Name = "EnableGamePadStick",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -204,6 +215,7 @@ local SimpleFrameAPI =
 			Name = "EnableKeyboard",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -213,6 +225,7 @@ local SimpleFrameAPI =
 		{
 			Name = "ExecuteAttribute",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -229,6 +242,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetAlpha",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -242,6 +256,8 @@ local SimpleFrameAPI =
 		{
 			Name = "GetAttribute",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -263,15 +279,16 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "left", Type = "uiUnit", Nilable = false },
-				{ Name = "bottom", Type = "uiUnit", Nilable = false },
-				{ Name = "width", Type = "uiUnit", Nilable = false },
-				{ Name = "height", Type = "uiUnit", Nilable = false },
+				{ Name = "left", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "bottom", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "width", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
+				{ Name = "height", Type = "uiUnit", Nilable = false, ConditionalSecret = true },
 			},
 		},
 		{
 			Name = "GetChildren",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{
@@ -314,6 +331,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetEffectiveAlpha",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Alpha },
 
 			Arguments =
 			{
@@ -327,6 +345,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetEffectiveScale",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Scale },
 
 			Arguments =
 			{
@@ -366,6 +385,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetFrameLevel",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.FrameLevel },
 
 			Arguments =
 			{
@@ -392,6 +412,8 @@ local SimpleFrameAPI =
 		{
 			Name = "GetHighestFrameLevel",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the highest framelevel of the frame and its first order children, or all children if iterateAllChildren is true." },
 
 			Arguments =
@@ -401,7 +423,7 @@ local SimpleFrameAPI =
 
 			Returns =
 			{
-				{ Name = "frameLevel", Type = "number", Nilable = false },
+				{ Name = "frameLevel", Type = "number", Nilable = false, ConditionalSecret = true },
 			},
 		},
 		{
@@ -436,6 +458,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetID",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ID },
 
 			Arguments =
 			{
@@ -449,6 +472,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetNumChildren",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{
@@ -462,6 +486,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetNumRegions",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{
@@ -501,6 +526,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetRegions",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Hierarchy },
 
 			Arguments =
 			{
@@ -530,6 +556,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetScale",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Scale },
 
 			Arguments =
 			{
@@ -604,6 +631,7 @@ local SimpleFrameAPI =
 		{
 			Name = "InterceptStartDrag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -631,6 +659,8 @@ local SimpleFrameAPI =
 		{
 			Name = "IsDrawLayerEnabled",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -645,6 +675,8 @@ local SimpleFrameAPI =
 		{
 			Name = "IsEventRegistered",
 			Type = "Function",
+			ConstSecretAccessor = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -707,6 +739,19 @@ local SimpleFrameAPI =
 			Returns =
 			{
 				{ Name = "locked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsIgnoringChildrenForBounds",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -790,6 +835,7 @@ local SimpleFrameAPI =
 		{
 			Name = "IsShown",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Shown },
 
 			Arguments =
 			{
@@ -803,6 +849,7 @@ local SimpleFrameAPI =
 		{
 			Name = "IsToplevel",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Toplevel },
 
 			Arguments =
 			{
@@ -842,6 +889,7 @@ local SimpleFrameAPI =
 		{
 			Name = "IsVisible",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Shown },
 
 			Arguments =
 			{
@@ -889,6 +937,7 @@ local SimpleFrameAPI =
 		{
 			Name = "RegisterEvent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -901,8 +950,25 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "RegisterEventCallback",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "cb", Type = "FrameEventCallbackType", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "registered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RegisterForDrag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -912,6 +978,7 @@ local SimpleFrameAPI =
 		{
 			Name = "RegisterUnitEvent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -925,8 +992,26 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "RegisterUnitEventCallback",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "eventName", Type = "cstring", Nilable = false },
+				{ Name = "cb", Type = "FrameEventCallbackType", Nilable = false },
+				{ Name = "units", Type = "string", Nilable = false, StrideIndex = 1 },
+			},
+
+			Returns =
+			{
+				{ Name = "registered", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RotateTextures",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -938,6 +1023,8 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAlpha",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -945,8 +1032,22 @@ local SimpleFrameAPI =
 			},
 		},
 		{
+			Name = "SetAlphaFromBoolean",
+			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Alpha },
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+				{ Name = "alphaIfTrue", Type = "SingleColorValue", Nilable = false, Default = 255 },
+				{ Name = "alphaIfFalse", Type = "SingleColorValue", Nilable = false, Default = 0 },
+			},
+		},
+		{
 			Name = "SetAlphaGradient",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -957,6 +1058,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttribute",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -967,6 +1069,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttributeNoHandler",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -978,6 +1081,7 @@ local SimpleFrameAPI =
 			Name = "SetClampRectInsets",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -991,6 +1095,7 @@ local SimpleFrameAPI =
 			Name = "SetClampedToScreen",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -1000,6 +1105,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetClipsChildren",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1009,6 +1115,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetDontSavePosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1018,6 +1125,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetDrawLayerEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1029,6 +1137,7 @@ local SimpleFrameAPI =
 			Name = "SetFixedFrameLevel",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1039,6 +1148,7 @@ local SimpleFrameAPI =
 			Name = "SetFixedFrameStrata",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1048,6 +1158,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetFlattensRenderLayers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1058,6 +1169,8 @@ local SimpleFrameAPI =
 			Name = "SetFrameLevel",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArgumentsAddAspect = { Enum.SecretAspect.FrameLevel },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1068,6 +1181,7 @@ local SimpleFrameAPI =
 			Name = "SetFrameStrata",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -1077,6 +1191,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHighlightLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1087,6 +1202,7 @@ local SimpleFrameAPI =
 			Name = "SetHitRectInsets",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -1099,6 +1215,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetHyperlinkPropagateToParent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Enables or disables propagating hyperlink events (ex. OnHyperlinkEnter, OnHyperlinkLeave, OnHyperlinkClick) to this frame's parent." },
 
 			Arguments =
@@ -1110,6 +1227,7 @@ local SimpleFrameAPI =
 			Name = "SetHyperlinksEnabled",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -1120,6 +1238,8 @@ local SimpleFrameAPI =
 			Name = "SetID",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArgumentsAddAspect = { Enum.SecretAspect.ID },
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1129,6 +1249,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetIgnoreParentAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1139,6 +1260,17 @@ local SimpleFrameAPI =
 			Name = "SetIgnoreParentScale",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "ignore", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetIgnoringChildrenForBounds",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1148,6 +1280,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetIsFrameBuffer",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -1157,6 +1290,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetMovable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1167,6 +1301,7 @@ local SimpleFrameAPI =
 			Name = "SetPropagateKeyboardInput",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1176,6 +1311,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetResizable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1185,6 +1321,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetResizeBounds",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1198,6 +1335,8 @@ local SimpleFrameAPI =
 			Name = "SetScale",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Scale },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1208,6 +1347,8 @@ local SimpleFrameAPI =
 			Name = "SetShown",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Shown },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1218,6 +1359,8 @@ local SimpleFrameAPI =
 			Name = "SetToplevel",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Toplevel },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1227,6 +1370,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetUserPlaced",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1237,6 +1381,7 @@ local SimpleFrameAPI =
 			Name = "SetUsingParentLevel",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1246,6 +1391,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetWindow",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1265,6 +1411,7 @@ local SimpleFrameAPI =
 			Name = "StartMoving",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1275,6 +1422,7 @@ local SimpleFrameAPI =
 			Name = "StartSizing",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1310,6 +1458,7 @@ local SimpleFrameAPI =
 		{
 			Name = "UnregisterEvent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1329,6 +1478,10 @@ local SimpleFrameAPI =
 
 	Tables =
 	{
+		{
+			Name = "FrameEventCallbackType",
+			Type = "CallbackType",
+		},
 	},
 };
 

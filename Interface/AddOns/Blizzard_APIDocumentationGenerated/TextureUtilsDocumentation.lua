@@ -3,12 +3,14 @@ local TextureUtils =
 	Name = "TextureUtils",
 	Type = "System",
 	Namespace = "C_Texture",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ClearTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasElementID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasExists",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +59,7 @@ local TextureUtils =
 		{
 			Name = "GetAtlasID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +75,7 @@ local TextureUtils =
 			Name = "GetAtlasInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,22 +88,9 @@ local TextureUtils =
 			},
 		},
 		{
-			Name = "GetCraftingReagentQualityChatIcon",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "quality", Type = "number", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "textureMarkup", Type = "cstring", Nilable = false },
-			},
-		},
-		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +105,7 @@ local TextureUtils =
 		{
 			Name = "GetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -123,6 +117,7 @@ local TextureUtils =
 		{
 			Name = "IsTitleIconTextureReady",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +133,7 @@ local TextureUtils =
 		{
 			Name = "SetTitleIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -150,6 +146,7 @@ local TextureUtils =
 			Name = "SetURLTexture",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

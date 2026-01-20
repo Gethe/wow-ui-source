@@ -1,0 +1,635 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<!-- Renown Card Button -->
+	<Button name="RenownCardButtonTemplate" inherits="AlphaHighlightButtonTemplate" mixin="RenownCardButtonMixin" virtual="true">
+		<Size x="374" y="112"/>
+		<NormalTexture parentKey="NormalTexture" atlas="ui-journeys-renown-button" useAtlasSize="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="ui-journeys-renown-button-pressed" useAtlasSize="true"/>
+		<Frames>
+			<Frame parentKey="LockFrame">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="IconFrame">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="LEFT" x="20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="1">
+						<Texture parentKey="Border" atlas="ui-journeys-renown-radial-bar" setAllPoints="true" useAtlasSize="false">
+							<Size x="60" y="60"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" useAtlasSize="false">
+							<Size x="40" y="40"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Cooldown parentKey="RenownCardProgressBar" mixin="JourneysProgressBarMixin" reverse="true" hideCountdownNumbers="true" rotation="180" frameLevel="5">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.IconFrame"/>
+				</Anchors>
+				<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+			</Cooldown>
+
+			<Frame parentKey="WatchedFactionToggleFrame" hidden="true">
+				<Size x="200" y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="30" y="-30"/>
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="WatchFactionCheckbox" inherits="UICheckButtonTemplate" mixin="WatchedFactionToggleFrameMixin">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="LEFT"/>
+						</Anchors>
+						<HitRectInsets left="0" right="0" top="0" bottom="0"/>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormalSmall" text="SHOW_FACTION_ON_MAINSCREEN">
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="-2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="RenownCardFactionName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="TOP">
+					<Size x="225" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.IconFrame" relativePoint="RIGHT" x="5" y="5"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RenownCardFactionLevel" inherits="GameFontNormalMed2" justifyH="LEFT" justifyV="TOP">
+					<Size x="220" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.IconFrame" relativePoint="RIGHT" x="5"/>
+						<Anchor point="TOP" relativeKey="$parent.RenownCardFactionName" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<!-- "Other" Journey Card Button -->
+	<Button name="JourneyCardButtonTemplate"  inherits="AlphaHighlightButtonTemplate" mixin="JourneyCardButtonMixin" virtual="true">
+		<Size x="374" y="164"/>
+		<Frames>
+			<Frame parentKey="LockFrame">
+				<Size x="40" y="40"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-15" y="-10"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<StatusBar parentKey="JourneyCardProgressBar">
+				<Size x="335" y="18"/>
+				<BarTexture atlas="ui-journeys-renown-progressbar-fill"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="25"/>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="JourneyCardProgressBarBG" atlas="ui-journeys-renown-progressbar-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<NormalTexture parentKey="NormalTexture" atlas="ui-journeys-delve-button" useAtlasSize="true"/>
+		<PushedTexture parentKey="PushedTexture" atlas="ui-journeys-delve-button-pressed" useAtlasSize="true"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="JourneyCardName" inherits="GameFontHighlightMed2" justifyH="LEFT" justifyV="TOP">
+					<Size x="290" y="20"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="25" y="-25"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="JourneyCardLevel" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
+					<Size x="150" y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.JourneyCardName" x="0"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.JourneyCardProgressBar" relativePoint="TOP" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<!-- Journeys List Category Name -->
+	<Frame name="JourneysListCategoryNameTemplate" virtual="true">
+		<Size x="0" y="20"/>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Anchor point="RIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="CategoryName" inherits="GameFontHighlightLarge" justifyH="LEFT" justifyV="TOP">
+					<Size x="0" y="20"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Journeys List Category Divider -->
+	<Frame name="JourneysListCategoryDividerTemplate" virtual="true">
+		<Size x="0" y="16"/>
+			<Anchors>
+				<Anchor point="LEFT"/>
+				<Anchor point="RIGHT"/>
+			</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CategoryDivider" atlas="ui-journeys-renown-divider" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" x="14"/>
+						<Anchor point="RIGHT" x="-31"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Journey Overview Button -->
+	<Button name="JourneyOverviewButtonTemplate" inherits="UIMenuButtonStretchTemplate" text="JOURNEYS_OVERVIEW_LABEL" mixin="JourneyOverviewBtnMixin" virtual="true">
+		<Size x="75" y="25"/>
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="-18" y="-18"/>
+		</Anchors>
+		<Scripts>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<!-- Overview Highlight -->
+	<Frame name="JourneyOverviewHighlightTemplate" virtual="true">
+		<Size x="256" y="164"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="ui-journeys-renown-highlight-bar" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+						<Anchor point="RIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="HighlightTitle" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Size x="220" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Background" relativePoint="TOP" y="-15"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HighlightLevel" inherits="GameFontHighlightSmall" text="JOURNEYS_LEVEL_LABEL" justifyH="LEFT">
+					<Size x="220" y="20"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HighlightTitle" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="HighlightDescription" inherits="GameFontNormalSmall2" justifyV="TOP" justifyH="LEFT">
+					<Size x="220" y="80"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.HighlightLevel" relativePoint="BOTTOM" y="-5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Progress Reward Card -->
+	<Frame name="JourneyProgressRewardCardTemplate" virtual="true">
+		<Size x="310" y="85"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-card" useAtlasSize="true" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="RewardCardIcon">
+					<Size x="45" y="45"/>
+					<Anchors>
+						<Anchor point="LEFT" x="30"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="TextureMask" atlas="talents-node-choice-mask" useAtlasSize="false" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE" hidden="true">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="RewardCardIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<FontString parentKey="RewardCardName" inherits="GameFontHighlightMed2" justifyH="LEFT">
+					<Size x="200" y="40"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.RewardCardIcon" relativePoint="RIGHT" x="10"/>
+						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="RewardCardIconBorderDefault" atlas="UI-Frame-IconBorder" useAtlasSize="false">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.RewardCardIcon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- Journeys Frame -->
+	<Frame name="JourneysFrameTemplate" mixin="JourneysFrameMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="JourneysList" inherits="WowScrollBoxList" setAllPoints="true"/>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOP" y="-10"/>
+					<Anchor point="BOTTOM" y="10"/>
+					<Anchor point="LEFT" relativeKey="$parent.JourneysList" relativePoint="RIGHT" x="-20"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="BorderFrame" frameLevel="10" inherits="QuestLogBorderFrameTemplate">
+				<Size x="75" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+			<!-- Journeys "Progress" Frame - shows the reward track, other features, access to overview page -->
+			<Frame parentKey="JourneyProgress" hidden="true" setAllPoints="true" mixin="JourneyProgressFrameMixin">
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="JourneyName" inherits="GameFontHighlightHuge2">
+							<Size x="500" y="25"/>
+							<Anchors>
+								<Anchor point="TOP" y="-15"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DividerTexture" atlas="ui-journeys-renown-divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" x="45"/>
+								<Anchor point="RIGHT" x="-45"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DividerGlowTexture" atlas="ui-journeys-renown-divider-glow" useAtlasSize="true" alpha="0.75">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.DividerTexture" relativePoint="TOP" y="-8"/>
+								<Anchor point="LEFT" x="45"/>
+								<Anchor point="RIGHT" x="-45"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="LockedStateFrame" mixin="JourneysLockedStateMixin" hidden="true">
+						<Size x="170" y="25"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.JourneyName" relativePoint="BOTTOM" y="-10"/>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="JourneyLockedText" inherits="GameFontHighlightLarge" text="JOURNEYS_JOURNEY_LOCKED_LABEL" justifyH="LEFT">
+									<Size x="135" y="25"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.LockIcon" relativePoint="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow method="OnShow"/>
+						</Scripts>
+					</Frame>
+					<Frame parentKey="ProgressDetailsFrame" hidden="true">
+						<Size x="270" y="35"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.JourneyName" relativePoint="BOTTOM" y="-5"/>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="JourneyLevelBar" atlas="ui-journeys-delve-level-bar">
+									<Size x="250" y="25"/>
+									<Anchors>
+										<Anchor point="LEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="JourneyLevelBg" atlas="ui-journeys-delve-level-ring" useAtlasSize="true"> 
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBar" relativePoint="LEFT" x="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Size x="30" y="10"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBg" x="-2"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="JourneyLevelProgress" inherits="GameFontNormalMed2" justifyH="CENTER">
+									<Size x="250" y="30"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBar" relativePoint="CENTER"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<StatusBar parentKey="DelveRewardProgressBar">
+						<Size x="648" y="14"/>
+						<BarTexture atlas="ui-journeys-progressbar-fill"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-25"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="DelveRewardProgressBarBG" atlas="ui-journeys-progressbar-BG" useAtlasSize="true">
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture atlas="ui-journeys-progressbar-frame" useAtlasSize="true"/>
+							</Layer>
+						</Layers>
+					</StatusBar>
+					<Button parentKey="OverviewBtn" inherits="JourneyOverviewButtonTemplate" hidden="true"/>
+					<!-- Reward track for renown journeys -->
+					<Frame parentKey="RenownTrackFrame" inherits="RewardTrackFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="rewardButtonXOffset" value="30" type="number"/>
+							<KeyValue key="elementTemplate" value="RenownLevelTemplate" type="string"/>
+							<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+							<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-10"/>
+						</Anchors>
+					</Frame>
+					<!-- Reward gtrack for encounter journeys: delves, prey, etc. -->
+					<Frame parentKey="EncounterRewardProgressFrame" inherits="RewardProgressFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="elementWidth" value="135" type="number"/>
+							<KeyValue key="elementSpacing" value="15" type="number"/>
+							<KeyValue key="rewardButtonXOffset" value="30" type="number"/>
+							<KeyValue key="elementTemplate" value="RenownLevelCardTemplate" type="string"/>
+							<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+							<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-5"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="DelvesCompanionConfigurationFrame" hidden="true">
+						<Size x="310" y="85"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Frames>
+							<Button parentKey="CompanionConfigBtn" inherits="AlphaHighlightButtonTemplate" text="JOURNEYS_COMPANION_CONFIG_LABEL" mixin="JourneyCompanionConfigBtnMixin" motionScriptsWhileDisabled="true" hidden="true">
+								<Size x="313" y="103"/>
+								<NormalTexture parentKey="NormalTexture" atlas="ui-journeys-delve-companion-button" useAtlasSize="true"/>
+								<PushedTexture parentKey="PushedTexture" atlas="ui-journeys-delve-companion-button-pressed" useAtlasSize="true"/>
+								<Anchors>
+									<Anchor point="TOP"/>
+									<Anchor point="LEFT"/>
+								</Anchors>
+								<Scripts>
+									<OnShow method="OnShow"/>
+									<OnEnter method="OnEnter"/>
+									<OnLeave method="OnLeave"/>
+									<OnClick method="OnClick"/>
+								</Scripts>
+								<Layers>
+									<Layer level="OVERLAY" textureSubLevel="1">
+										<Texture parentKey="Icon">
+											<Size x="48" y="48"/>
+											<Anchors>
+												<Anchor point="LEFT" x="35"/>
+											</Anchors>
+										</Texture>
+
+										<FontString parentKey="CompanionName" inherits="GameFontHighlightMedium" justifyH="LEFT">
+											<Size x="200" y="25"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPRIGHT" x="20" y="5"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+									<Layer level="OVERLAY">
+										<Texture parentKey="IconBorder" atlas="ui-journeys-delve-companion-ring" useAtlasSize="true">
+											<Anchors>
+												<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Button>
+						</Frames>
+					</Frame>
+					<Button parentKey="LevelSkipButton" inherits="RewardTrackSkipLevelUpButtonTemplate" hidden="true" frameLevel="510">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="8"/>
+						</Anchors>
+					</Button>
+					<ModelScene parentKey="LevelModelScene" inherits="ScriptAnimatedModelSceneTemplate" frameLevel="100">
+						<Size x="300" y="300"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.RenownTrackFrame"/>
+						</Anchors>
+					</ModelScene>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnMouseWheel method="OnMouseWheel"/>
+				</Scripts>
+			</Frame>
+			<!-- Journeys Overview Frame - shows icon, details/description, highlights -->
+			<Frame parentKey="JourneyOverview" hidden="true" setAllPoints="true" mixin="JourneyOverviewFrameMixin">
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="IconBorder" atlas="ui-journeys-delve-renown-circle-pit" useAtlasSize="true">
+							<Size x="75" y="75"/>
+							<Anchors>
+								<Anchor point="TOP" y="-20"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="ProgressBorder" atlas="ui-journeys-renown-radial-bar" setAllPoints="true" useAtlasSize="false">
+							<Size x="90" y="90"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="JourneyIcon">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.IconBorder"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="JourneyName" inherits="GameFontHighlightHuge2">
+							<Size x="500" y="25"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.JourneyIcon" relativePoint="BOTTOM" y="-25"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="JourneyWarbandLabel" inherits="GameFontHighlightMed2" text="REPUTATION_TOOLTIP_ACCOUNT_WIDE_LABEL" hidden="true">
+							<Size x="500" y="15"/>
+							<Color color="ACCOUNT_WIDE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.JourneyName" relativePoint="BOTTOM" y="-5"/>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="JourneyDescription" justifyV="TOP" inherits="GameFontNormalMed2">
+							<Size x="620" y="70"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="DividerTexture" atlas="ui-journeys-renown-divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+								<Anchor point="TOP" relativeKey="$parent.JourneyDescription" relativePoint="BOTTOM"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="DividerGlowTexture" atlas="ui-journeys-renown-divider-glow" useAtlasSize="true" alpha="0.75">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.DividerTexture" relativePoint="TOP" y="-8"/>
+								<Anchor point="LEFT" x="45"/>
+								<Anchor point="RIGHT" x="-45"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="HighlightLabel" inherits="GameFontHighlightMedium" text="JOURNEYS_HIGHLIGHT_LABEL">
+							<Size x="200" y="10"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+								<Anchor point="TOP" relativeKey="$parent.DividerTexture" relativePoint="BOTTOM" y="-5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LevelFrame" atlas="ui-journeys-paragon-level-frame" useAtlasSize="false">
+							<Size x="27" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.IconBorder" relativePoint="BOTTOM" y="13"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="LockIcon" atlas="ui-journeys-greatvault-lock" useAtlasSize="false" hidden="true">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LevelFrame"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="LevelText" inherits="GameFontNormal" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LevelFrame"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="OverviewBtn" inherits="JourneyOverviewButtonTemplate" text="BACK" hidden="false"/>
+					<Frame parentKey="Highlights" mixin="JourneyOverviewHighlightsFrameMixin" hidden="true">
+						<Anchors>
+							<Anchor point="LEFT" x="10"/>
+							<Anchor point="RIGHT" x="-10"/>
+							<Anchor point="TOP" relativeKey="$parent.HighlightLabel" relativePoint="BOTTOM" y="-5"/>
+							<Anchor point="BOTTOM" y="5"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+						</Scripts>
+					</Frame>
+					<Cooldown parentKey="OverviewProgressBar" mixin="JourneysProgressBarMixin" reverse="true" hideCountdownNumbers="true" rotation="180" frameLevel="3">
+						<Size x="90" y="90"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.ProgressBorder"/>
+						</Anchors>
+						<SwipeTexture file="Interface\PVPFrame\pvpqueue-sidebar-honorbar-fill"/>
+					</Cooldown>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

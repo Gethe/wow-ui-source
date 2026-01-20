@@ -2,6 +2,7 @@ local FrameAPIBlob =
 {
 	Name = "FrameAPIBlob",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -16,6 +17,7 @@ local FrameAPIBlob =
 		{
 			Name = "DrawBlob",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +36,7 @@ local FrameAPIBlob =
 		{
 			Name = "EnableMerging",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,6 +46,7 @@ local FrameAPIBlob =
 		{
 			Name = "EnableSmoothing",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +69,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetBorderAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetBorderScalar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +89,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetBorderTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,6 +99,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetFillAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +109,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetFillTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,6 +119,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetMapID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +129,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetMergeThreshold",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,6 +139,7 @@ local FrameAPIBlob =
 		{
 			Name = "SetNumSplinePoints",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

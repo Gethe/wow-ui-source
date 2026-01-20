@@ -2,6 +2,7 @@ local Camera =
 {
 	Name = "Camera",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -19,6 +20,7 @@ local Camera =
 		{
 			Name = "GetUICameraInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

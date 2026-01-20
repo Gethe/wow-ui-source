@@ -18,7 +18,7 @@ function InspectPvpTalentSlotMixin:Update()
 	local selectedTalentID = C_SpecializationInfo.GetInspectSelectedPvpTalent(INSPECTED_UNIT, self.slotIndex);
 
 	if (selectedTalentID) then
-		SetPortraitToTexture(self.Texture, select(3, GetPvpTalentInfoByID(selectedTalentID)));
+		self.Texture:SetTexture(select(3, GetPvpTalentInfoByID(selectedTalentID)));
 		self.Texture:Show();
 		self.talentID = selectedTalentID;
 	else

@@ -7,7 +7,6 @@ function MicroMenuMixin:GenerateButtonInfos()
 		MicroMenuUtil.GenerateButtonInfo(QuestLogMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(SocialsMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(GuildMicroButton),
-		MicroMenuUtil.GenerateButtonInfo(WorldMapMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(MainMenuMicroButton),
 		MicroMenuUtil.GenerateButtonInfo(HelpMicroButton),
 	};

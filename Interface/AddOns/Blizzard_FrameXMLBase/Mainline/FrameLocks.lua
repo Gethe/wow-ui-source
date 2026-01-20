@@ -41,6 +41,10 @@ local HIDE_MOST = {
 	UtilityCooldownViewer = "hidden",
 	BuffIconCooldownViewer = "hidden",
 	BuffBarCooldownViewer = "hidden",
+	EncounterTimeline = "hidden",
+	CriticalEncounterWarnings = "hidden",
+	MediumEncounterWarnings = "hidden",
+	NormalEncounterWarnings = "hidden",
 };
 
 local SPECTATING_DISPLAY = {
@@ -66,6 +70,10 @@ local SPECTATING_DISPLAY = {
 	UtilityCooldownViewer = "hidden",
 	BuffIconCooldownViewer = "hidden",
 	BuffBarCooldownViewer = "hidden",
+	EncounterTimeline = "hidden",
+	CriticalEncounterWarnings = "hidden",
+	MediumEncounterWarnings = "hidden",
+	NormalEncounterWarnings = "hidden",
 };
 
 --------Data on what locks exist and what frames are ruled by them--------

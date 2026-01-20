@@ -1,15 +1,34 @@
 local FIRST_RPE_QUEST_ID = 90882;
 local LAST_RPE_QUEST_ID = 90911;
 
-local s_tutorialsAdded = false;
+local s_tutorials;
 local s_tutorialsActive = false;
 
-local function ToggleTutorial(name, active)
-	local watcher = TutorialManager:GetWatcher(name);
-	if active then
-		watcher:Activate();
-	else
-		watcher:Deactivate();
+local function AddWatcher(class)
+	if not s_tutorials then
+		s_tutorials = { };
+	end
+
+	if s_tutorials[class] then
+		return;
+	end
+
+	local watcher = TutorialManager:AddWatcher(class:new(), true);
+	s_tutorials[class] = watcher;
+end
+
+local function ToggleWatchers(active)
+	if s_tutorialsActive == active then
+		return;
+	end
+
+	s_tutorialsActive = active;
+	for _class, watcher in pairs(s_tutorials) do
+		if active then
+			watcher:Activate();
+		else
+			watcher:Deactivate();
+		end
 	end
 end
 
@@ -18,29 +37,14 @@ end
 -- This will manage them instead with Activate and Deactivate calls.
 local function EvaluateRPEState()
 	if C_PlayerInfo.IsPlayerInRPE() then
-		if not s_tutorialsAdded then
-			s_tutorialsAdded = true;
-			TutorialManager:AddWatcher(Class_Interrupt_RPE_Watcher:new(), true);
-			TutorialManager:AddWatcher(Class_AssistedHighlight_RPE_Watcher:new(), true);
-			TutorialManager:AddWatcher(Class_Dragonriding_RPE_Watcher:new(), true);
+		if not s_tutorials then
+			AddWatcher(Class_Interrupt_RPE_Watcher);
+			AddWatcher(Class_AssistedHighlight_RPE_Watcher);
+			AddWatcher(Class_Dragonriding_RPE_Watcher);
 		end
-		if not s_tutorialsActive then
-			s_tutorialsActive = true;
-			ToggleTutorial("Interrupt_RPE_Watcher", true);
-			ToggleTutorial("AssistedHighlight_RPE_Watcher", true);
-			ToggleTutorial("Dragonriding_RPE_Watcher", true);
-		end
+		ToggleWatchers(true);
 	else
-		if s_tutorialsActive then
-			s_tutorialsActive = false;
-			ToggleTutorial("Interrupt_RPE_Watcher", false);
-			ToggleTutorial("AssistedHighlight_RPE_Watcher", false);
-			ToggleTutorial("Dragonriding_RPE_Watcher", false);
-		else
-			EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
-				EvaluateRPEState();
-			end, EvaluateRPEState);
-		end
+		ToggleWatchers(false);
 	end
 end
 
@@ -439,7 +443,7 @@ function Class_Dragonriding_RPE_Watcher:EvaluateStep()
 		local shown = false;
 		local btn = TutorialHelper:GetActionButtonBySpellID(SPELL_SURGE_FORWARD);
 		if btn then
-			local base = (NUM_ACTIONBAR_PAGES + GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS;
+			local base = (NUM_ACTIONBAR_PAGES + C_ActionBar.GetBonusBarOffset() - 1) * NUM_ACTIONBAR_BUTTONS;
 			local action = btn.action;
 			if action > base then
 				action = action - base;

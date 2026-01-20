@@ -3,12 +3,14 @@ local ReportSystem =
 	Name = "ReportSystem",
 	Type = "System",
 	Namespace = "C_ReportSystem",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanReportPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local ReportSystem =
 		{
 			Name = "CanReportPlayerForLanguage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local ReportSystem =
 		{
 			Name = "GetMajorCategoriesForReportType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +55,7 @@ local ReportSystem =
 		{
 			Name = "GetMajorCategoryString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +70,7 @@ local ReportSystem =
 		{
 			Name = "GetMinorCategoriesForReportTypeAndMajorCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +86,7 @@ local ReportSystem =
 		{
 			Name = "GetMinorCategoryString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +109,7 @@ local ReportSystem =
 		{
 			Name = "RequiresScreenshotForReportType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +126,7 @@ local ReportSystem =
 			Name = "SendReport",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Not allowed to be called by addons" },
 
 			Arguments =
@@ -129,6 +138,7 @@ local ReportSystem =
 		{
 			Name = "SetScreenshotPreviewTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -147,6 +157,7 @@ local ReportSystem =
 			Name = "ReportPlayerResult",
 			Type = "Event",
 			LiteralName = "REPORT_PLAYER_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "SendReportResult", Nilable = false },
@@ -157,6 +168,7 @@ local ReportSystem =
 			Name = "ReportScreenshotReady",
 			Type = "Event",
 			LiteralName = "REPORT_SCREENSHOT_READY",
+			SynchronousEvent = true,
 		},
 	},
 

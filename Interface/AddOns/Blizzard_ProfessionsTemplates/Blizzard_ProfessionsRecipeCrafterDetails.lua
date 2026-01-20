@@ -147,13 +147,16 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 
 		GameTooltip:SetOwner(fill, "ANCHOR_RIGHT");
 
-		local atlasSize = 25;
-		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality), atlasSize, atlasSize);
+		local qualityInfo = self.QualityMeter.craftingQualityInfo;
 		local applyConcentration = self.transaction:IsApplyingConcentration();
 		local hasNextQuality = self.operationInfo.upperSkillTreshold > self.operationInfo.lowerSkillThreshold;
-		if hasNextQuality then
-			atlasSize = 20;
-			local nextAtlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(self.QualityMeter.craftingQuality + 1), atlasSize, atlasSize);
+
+		local atlasSize = 25;
+		local atlasMarkup = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
+		local nextQualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.recipeInfo.recipeID, qualityInfo.quality + 1);
+		if nextQualityInfo then
+			local nextAtlasSize = 20;
+			local nextAtlasMarkup = CreateAtlasMarkup(nextQualityInfo.icon, nextAtlasSize, nextAtlasSize);
 			if applyConcentration then
 				GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_EXPECTED_QUALITY_WITH_CONCENTRATION:format(nextAtlasMarkup, nextAtlasMarkup));
 			else
@@ -172,7 +175,7 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 			return;
 		end
 
-		local qualityIndex = self.QualityMeter.craftingQuality + (isRight and 1 or 0);
+		local qualityIndex = self.QualityMeter.craftingQualityInfo.quality + (isRight and 1 or 0);
 
 		GameTooltip:SetOwner(cap, "ANCHOR_RIGHT");
 		-- Enchanting recipe
@@ -188,12 +191,16 @@ function ProfessionsRecipeCrafterDetailsMixin:OnLoad()
 		-- Item modified by quality
 		elseif self.recipeInfo.qualityIlvlBonuses ~= nil then
 			GameTooltip_SetTitle(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUSES:format(self.itemName));
+			local recipeID = self.recipeInfo.recipeID;
+			local craftingReagentInfoTbl = self.transaction:CreateOptionalCraftingReagentInfoTbl();
+			local itemGUID = self.transaction:GetAllocationItemGUID();
 			for index, ilvlBonus in ipairs(self.recipeInfo.qualityIlvlBonuses) do
-				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.recipeInfo.recipeID, self.transaction:CreateOptionalCraftingReagentInfoTbl(), self.transaction:GetAllocationItemGUID(), self.recipeInfo.qualityIDs[index]);
+				local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(recipeID, craftingReagentInfoTbl, itemGUID, self.recipeInfo.qualityIDs[index]);
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				if item:IsItemDataCached() then
 					local atlasSize = 25;
-					local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+					local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, index);
+					local atlasMarkup = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
 					GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
 				else
 					local continuableContainer = ContinuableContainer:Create();
@@ -245,7 +252,7 @@ function ProfessionsRecipeCrafterDetailsMixin:OnEvent(event, ...)
 
 		local resultData = ...;
 
-		if resultData.craftingQuality and self.recipeInfo.recipeID == self.expectedRecipeID then
+		if resultData.craftingQualityInfo and self.recipeInfo.recipeID == self.expectedRecipeID then
 			self.QualityMeter:PlayResultAnimation(resultData, self.operationInfo, self.animSpeedMultiplier or 1);
 		end
 	elseif event == "TRADE_SKILL_CRAFT_BEGIN" then
@@ -274,14 +281,16 @@ function ProfessionsRecipeCrafterDetailsMixin:ClearData()
 	self.transaction = nil;
 	self.recipeInfo = nil;
 	self.operationInfo = nil;
-	self.craftingQuality = nil;
+	self.craftingQualityInfo = nil;
+	self.QualityMeter.operationInfo = nil;
 end
 
 function ProfessionsRecipeCrafterDetailsMixin:SetData(transaction, recipeInfo, hasFinishingSlots, hasConcentration)
 	self.transaction = transaction;
 	self.recipeInfo = recipeInfo;
 	self.operationInfo = nil;
-	self.craftingQuality = nil;
+	self.craftingQualityInfo = nil;
+	self.QualityMeter.operationInfo = nil;
 
 	self:SetOutputItemName(recipeInfo.name);
 	self.CraftingChoicesContainer:SetShown(hasFinishingSlots or hasConcentration);
@@ -300,19 +309,26 @@ function ProfessionsRecipeCrafterDetailsMixin:SetStats(operationInfo, supportsQu
 		return;
 	end
 
-	local nextCraftingQuality = operationInfo.craftingQuality;
-	if self.craftingQuality ~= nil then
-		if nextCraftingQuality > self.craftingQuality then
-			local soundKit = nextQualitySoundKits[nextCraftingQuality];
-			if soundKit then
-				PlaySound(soundKit);
+	if isGatheringRecipe then
+		self.craftingQualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(operationInfo.spellID);
+	else
+		local nextCraftingQuality = operationInfo.craftingQuality;
+		if self.craftingQualityInfo ~= nil then
+			if nextCraftingQuality > self.craftingQualityInfo.quality then
+				local soundKit = nextQualitySoundKits[nextCraftingQuality];
+				if soundKit then
+					PlaySound(soundKit);
+				end
+			elseif nextCraftingQuality < self.craftingQualityInfo.quality then
+				PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_PREVIOUS_QUALITY);
 			end
-		elseif nextCraftingQuality < self.craftingQuality then
-			PlaySound(SOUNDKIT.UI_PROFESSION_CRAFTING_PREVIOUS_QUALITY);
 		end
+
+		self.craftingQualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(operationInfo.recipeID, nextCraftingQuality);
 	end
-	self.craftingQuality = nextCraftingQuality;
+	
 	self.operationInfo = operationInfo;
+	self.QualityMeter.operationInfo = operationInfo;
 
 	self.ApplyLayout = function()
 		if self.recipeInfo == nil then
@@ -424,18 +440,18 @@ function ProfessionsRecipeCrafterDetailsMixin:Reset()
 	self.QualityMeter:Reset();
 end
 
-function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQuality()
-	local quality = self.craftingQuality;
+function ProfessionsRecipeCrafterDetailsMixin:GetProjectedQualityInfo()
+	local qualityInfo = self.craftingQualityInfo;
 
 	-- When applying concentration project that the craft is guaranteed to reach the next quality.
 	if self.transaction and self.operationInfo then
-		local applyConcentration = self.transaction:IsApplyingConcentration();
-		if applyConcentration then
-			quality = math.ceil(self.operationInfo.quality);
+		if self.transaction:IsApplyingConcentration() then
+			local quality = math.ceil(self.operationInfo.quality);
+			qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.operationInfo.recipeID, quality);
 		end
 	end
 
-	return quality;
+	return qualityInfo;
 end
 
 ProfessionsQualityMeterMixin = {};
@@ -507,14 +523,18 @@ function ProfessionsQualityMeterMixin:SetOnAnimationsFinished(func)
 end
 
 function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
+	local recipeID = self.operationInfo.recipeID;
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, math.floor(quality));
+	local maxQualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, maxQuality);
+
 	if self.animating then
-		self.pendingQuality = quality;
-		self.pendingMaxQuality = maxQuality;
+		self.pendingQualityInfo = qualityInfo;
+		self.pendingMaxQualityInfo = maxQualityInfo;
 		return;
 	end
 
-	local oldCraftingQuality = self.craftingQuality;
-	self.craftingQuality = math.floor(quality);
+	local oldCraftingQualityInfo = self.craftingQualityInfo;
+	self.craftingQualityInfo = qualityInfo;
 
 	local tierIconOffsets =
 	{
@@ -525,29 +545,32 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 		[5] = 3,
 	};
 	
-	self.Left.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality));
-	self.Left.DissolveIcon:SetAtlas(("GemDissolve_T%d_Flipbook"):format(self.craftingQuality));
+	self.Left.AppearIcon:SetAtlas(qualityInfo.iconAppear);
+	self.Left.DissolveIcon:SetAtlas(qualityInfo.iconDissolve);
 	self.Left:ClearAllPoints();
-	self.Left:SetPoint("RIGHT", self.Center, "LEFT", -tierIconOffsets[self.craftingQuality], 0);
+	self.Left:SetPoint("RIGHT", self.Center, "LEFT", -tierIconOffsets[qualityInfo.quality], 0);
 	
-	self.atMaxTier = self.craftingQuality >= maxQuality;
+	self.atMaxTier = qualityInfo.quality >= maxQualityInfo.quality;
 	self.Right:SetShown(not self.atMaxTier);
 	if not self.atMaxTier then
-		self.Right.AppearIcon:SetAtlas(("GemAppear_T%d_Flipbook"):format(self.craftingQuality + 1));
+		local nextQuality = qualityInfo.quality + 1;
+		local nextQualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, nextQuality);
+
+		self.Right.AppearIcon:SetAtlas(nextQualityInfo.iconAppear);
 		self.Right:ClearAllPoints();
-		self.Right:SetPoint("LEFT", self.Center, "RIGHT", tierIconOffsets[self.craftingQuality + 1], 0);
+		self.Right:SetPoint("LEFT", self.Center, "RIGHT", tierIconOffsets[nextQuality], 0);
 	end
 	
-	if oldCraftingQuality ~= self.craftingQuality then
+	if oldCraftingQualityInfo ~= qualityInfo then
 		self.Left.AppearIcon.Anim:Restart();
 		self.Right.AppearIcon.Anim:Restart();
 	end
 
 	local backgroundAtlas;
-	if quality == maxQuality then
-		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%dCap"):format(maxQuality);
+	if qualityInfo.quality == maxQualityInfo.quality then
+		backgroundAtlas = maxQualityInfo.barBackgroundCap;
 	else
-		backgroundAtlas = ("Professions-QualityBar-BarBGx2-Tier%d"):format(self.craftingQuality);
+		backgroundAtlas = qualityInfo.barBackground;
 	end
 	
 	self.Center.Background:SetAtlas(backgroundAtlas);
@@ -580,11 +603,13 @@ function ProfessionsQualityMeterMixin:SetQuality(quality, maxQuality)
 end
 
 function ProfessionsQualityMeterMixin:SetBarAtlas(quality)
-	local barAtlas = ("Quality-BarFill-Flipbook-T%d-x2"):format(quality);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.operationInfo.recipeID, quality);
+
+	local barAtlas = qualityInfo.barFill;
 	self.Center.Fill.Bar:SetAtlas(barAtlas);
 	self.Center.Fill.Bar:SetSize((374.25/2), (54/2));
 
-	local highlightAtlas = ("Professions-QualityBar-Highlight-T%d"):format(quality);
+	local highlightAtlas = qualityInfo.barHighlight;
 	self.Center.Fill.BarHighlight:SetAtlas(highlightAtlas, TextureKitConstants.UseAtlasSize);
 	self.Center.Fill.BarHighlight:SetSize((372/2), (52/2));
 end

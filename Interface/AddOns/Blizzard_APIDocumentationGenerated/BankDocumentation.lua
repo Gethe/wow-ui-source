@@ -3,6 +3,7 @@ local Bank =
 	Name = "Bank",
 	Type = "System",
 	Namespace = "C_Bank",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local Bank =
 		{
 			Name = "AutoDepositItemsIntoBank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +29,7 @@ local Bank =
 		{
 			Name = "CanDepositMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,7 @@ local Bank =
 		{
 			Name = "CanPurchaseBankTab",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +59,7 @@ local Bank =
 		{
 			Name = "CanUseBank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +74,7 @@ local Bank =
 		{
 			Name = "CanViewBank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +89,7 @@ local Bank =
 		{
 			Name = "CanWithdrawMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +108,7 @@ local Bank =
 		{
 			Name = "DepositMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -111,6 +119,7 @@ local Bank =
 		{
 			Name = "DoesBankTypeSupportAutoDeposit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -125,6 +134,7 @@ local Bank =
 		{
 			Name = "DoesBankTypeSupportMoneyTransfer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,6 +149,7 @@ local Bank =
 		{
 			Name = "FetchBankLockedReason",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,6 +164,7 @@ local Bank =
 		{
 			Name = "FetchDepositedMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -167,6 +179,7 @@ local Bank =
 		{
 			Name = "FetchNextPurchasableBankTabData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +194,7 @@ local Bank =
 		{
 			Name = "FetchNumPurchasedBankTabs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +209,7 @@ local Bank =
 		{
 			Name = "FetchPurchasedBankTabData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -209,6 +224,7 @@ local Bank =
 		{
 			Name = "FetchPurchasedBankTabIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -232,6 +248,7 @@ local Bank =
 		{
 			Name = "HasMaxBankTabs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,6 +263,7 @@ local Bank =
 		{
 			Name = "IsItemAllowedInBankType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -262,6 +280,7 @@ local Bank =
 			Name = "PurchaseBankTab",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,6 +290,7 @@ local Bank =
 		{
 			Name = "UpdateBankTabSettings",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -284,6 +304,7 @@ local Bank =
 		{
 			Name = "WithdrawMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -299,6 +320,7 @@ local Bank =
 			Name = "BankBagSlotFlagsUpdated",
 			Type = "Event",
 			LiteralName = "BANK_BAG_SLOT_FLAGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -308,6 +330,7 @@ local Bank =
 			Name = "BankTabSettingsUpdated",
 			Type = "Event",
 			LiteralName = "BANK_TAB_SETTINGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
@@ -317,6 +340,7 @@ local Bank =
 			Name = "BankTabsChanged",
 			Type = "Event",
 			LiteralName = "BANK_TABS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bankType", Type = "BankType", Nilable = false },
@@ -326,16 +350,19 @@ local Bank =
 			Name = "BankframeClosed",
 			Type = "Event",
 			LiteralName = "BANKFRAME_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BankframeOpened",
 			Type = "Event",
 			LiteralName = "BANKFRAME_OPENED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerAccountBankTabSlotsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_ACCOUNT_BANK_TAB_SLOTS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },
@@ -345,6 +372,7 @@ local Bank =
 			Name = "PlayerbankslotsChanged",
 			Type = "Event",
 			LiteralName = "PLAYERBANKSLOTS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "number", Nilable = false },

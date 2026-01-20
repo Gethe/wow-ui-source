@@ -2,12 +2,14 @@ local FrameAPIModelSceneFrameActor =
 {
 	Name = "FrameAPIModelSceneFrameActor",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AttachToMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "CalculateMountScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +41,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "DetachFromMount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +64,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "DressPlayerSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +88,7 @@ local FrameAPIModelSceneFrameActor =
 			Name = "GetItemTransmogInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -189,6 +195,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "IsSlotAllowed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -203,6 +210,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "IsSlotVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +246,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetAutoDress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +256,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetFrontEndLobbyModelFromDefaultCharacterDisplay",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -261,6 +271,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetItemTransmogInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -277,6 +288,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetModelByHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -291,6 +303,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetObeyHideInTransmogFlag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -300,6 +313,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetPaused",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -310,6 +324,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetSheathed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -320,6 +335,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetUseTransmogChoices",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -329,6 +345,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "SetUseTransmogSkin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -338,6 +355,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "Undress",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -347,6 +365,7 @@ local FrameAPIModelSceneFrameActor =
 		{
 			Name = "UndressSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

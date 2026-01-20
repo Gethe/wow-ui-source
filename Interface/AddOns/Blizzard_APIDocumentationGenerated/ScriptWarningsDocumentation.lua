@@ -3,6 +3,7 @@ local ScriptWarnings =
 	Name = "ScriptWarnings",
 	Type = "System",
 	Namespace = "C_ScriptWarnings",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local ScriptWarnings =
 			Name = "LuaWarning",
 			Type = "Event",
 			LiteralName = "LUA_WARNING",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warningText", Type = "cstring", Nilable = false },

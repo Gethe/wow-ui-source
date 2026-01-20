@@ -3,12 +3,14 @@ local ResearchInfo =
 	Name = "ResearchInfo",
 	Type = "System",
 	Namespace = "C_ResearchInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetDigSitesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,11 +30,13 @@ local ResearchInfo =
 			Name = "ArchaeologyClosed",
 			Type = "Event",
 			LiteralName = "ARCHAEOLOGY_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArchaeologyFindComplete",
 			Type = "Event",
 			LiteralName = "ARCHAEOLOGY_FIND_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "numFindsCompleted", Type = "number", Nilable = false },
@@ -44,6 +48,7 @@ local ResearchInfo =
 			Name = "ArchaeologySurveyCast",
 			Type = "Event",
 			LiteralName = "ARCHAEOLOGY_SURVEY_CAST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "numFindsCompleted", Type = "number", Nilable = false },
@@ -56,11 +61,13 @@ local ResearchInfo =
 			Name = "ArchaeologyToggle",
 			Type = "Event",
 			LiteralName = "ARCHAEOLOGY_TOGGLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArtifactDigsiteComplete",
 			Type = "Event",
 			LiteralName = "ARTIFACT_DIGSITE_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "researchBranchID", Type = "number", Nilable = false },
@@ -70,6 +77,7 @@ local ResearchInfo =
 			Name = "ResearchArtifactComplete",
 			Type = "Event",
 			LiteralName = "RESEARCH_ARTIFACT_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -79,11 +87,13 @@ local ResearchInfo =
 			Name = "ResearchArtifactDigSiteUpdated",
 			Type = "Event",
 			LiteralName = "RESEARCH_ARTIFACT_DIG_SITE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ResearchArtifactUpdate",
 			Type = "Event",
 			LiteralName = "RESEARCH_ARTIFACT_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

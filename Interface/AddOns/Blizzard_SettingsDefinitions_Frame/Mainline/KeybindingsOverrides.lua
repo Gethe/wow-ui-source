@@ -43,6 +43,9 @@ function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 		local initializer = CreateSettingsButtonInitializer("", CLICK_BIND_MODE, OnButtonClick, nil, addSearchTags);
 		initializer:SetKioskProtected();
 		layout:AddInitializer(initializer);
+
+		-- Mirrored in Advanced Options
+		Settings.ClickCastInitializer = initializer;
 	end
 
 	-- Quick keybind
@@ -57,6 +60,9 @@ function KeybindingsOverrides.CreateBindingButtonSettings(layout)
 		local addSearchTags = true;
 		local initializer = CreateSettingsButtonInitializer("", SETTINGS_QUICK_KEYBIND_BUTTON, OnButtonClick, nil, addSearchTags);
 		layout:AddInitializer(initializer);
+
+		-- Mirrored in Advanced Options
+		Settings.QuickKeybindInitializer = initializer;
 	end
 end
 

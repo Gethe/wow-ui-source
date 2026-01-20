@@ -1,0 +1,82 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="CompactRaidGroupUnitFrameTemplate" inherits="CompactUnitFrameTemplate" parentArray="memberUnitFrames" virtual="true"/>
+
+	<Frame name="CompactRaidGroupTemplate" frameStrata="LOW" virtual="true">
+		<KeyValues>
+			<KeyValue key="isFlowGroup" value="true" type="boolean"/>
+			<KeyValue key="minUnitFrames" value="1" type="number"/>
+
+			<!-- Override these fields in overriding frames -->
+			<KeyValue key="groupType" value="CompactRaidGroupTypeEnum.Raid" type="global"/>
+		</KeyValues>
+
+		<Size x="72" y="199"/>
+		<Frames>
+
+			<Button name="$parentMember1" inherits="CompactRaidGroupUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" x="0" y="-14"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember2" inherits="CompactRaidGroupUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember1" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember3" inherits="CompactRaidGroupUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember2" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember4" inherits="CompactRaidGroupUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember3" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+			<Button name="$parentMember5" inherits="CompactRaidGroupUnitFrameTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parentMember4" relativePoint="BOTTOM">
+						<Offset x="0" y="0"/>
+					</Anchor>
+				</Anchors>
+			</Button>
+
+			<Button name="$parentTitle" parentKey="title">
+				<Size x="50" y="14"/>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parentMember1" relativePoint="TOP"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalSmall"/>
+				<DisabledFont style="GameFontNormalSmall"/>
+			</Button>
+
+			<Frame name="$parentBorderFrame" parentKey="borderFrame">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentMember1" relativePoint="TOPLEFT" x="-3" y="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentMember5" relativePoint="BOTTOMRIGHT" x="8" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Background" atlas="options_frame_child" setAllPoints="true"/>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad>
+				CompactRaidGroup_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				CompactRaidGroup_OnEvent(self, event, ...);
+			</OnEvent>
+		</Scripts>
+	</Frame>
+</Ui>

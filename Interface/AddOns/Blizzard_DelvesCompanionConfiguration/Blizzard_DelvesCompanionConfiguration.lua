@@ -73,6 +73,10 @@ local function ConfigChangeAllowed()
     return not UnitAffectingCombat("player") and not playerMustInteractWithSupplies;
 end
 
+local function GetPlayerCompanionID()
+	return DelvesCompanionConfigurationFrame.playerCompanionID or nil;
+end
+
 --[[ Config Frame ]]
 DelvesCompanionConfigurationFrameMixin = {};
 
@@ -87,6 +91,7 @@ function DelvesCompanionConfigurationFrameMixin:OnLoad()
     self:RegisterEvent("SHOW_DELVES_COMPANION_CONFIGURATION_UI");
     self:RegisterEvent("DELVES_ACCOUNT_DATA_ELEMENT_CHANGED");
     self.unseenCuriosAcknowledged = false;
+	self.playerCompanionID = nil;
 end
 
 function DelvesCompanionConfigurationFrameMixin:OnShow()
@@ -98,8 +103,8 @@ end
 
 function DelvesCompanionConfigurationFrameMixin:TryShowSeasonHelptip()
     local lastSeasonNumber = GetCVarNumberOrDefault(DELVES_NEW_SEASON_CVAR);
-    local currentSeasonNumber = C_DelvesUI.GetCurrentDelvesSeasonNumber();
-    
+	local currentSeasonNumber = C_DelvesUI.GetCurrentDelvesSeasonNumber(GetPlayerCompanionID());
+
     if currentSeasonNumber > lastSeasonNumber then
         local helpTipInfo = {
             text = DELVES_NEW_SEASON_HELPTIP,
@@ -111,7 +116,7 @@ function DelvesCompanionConfigurationFrameMixin:TryShowSeasonHelptip()
             end,
             offsetX = 10,
         };
-        HelpTip:Show(self, helpTipInfo, self.CompanionPortraitFrame); 
+		HelpTip:Show(self, helpTipInfo, self.CompanionPortraitFrame);
     end
 end
 
@@ -134,7 +139,7 @@ function DelvesCompanionConfigurationFrameMixin:OnEvent(event)
 end
 
 function DelvesCompanionConfigurationFrameMixin:Refresh()
-    local companionFactionID = C_DelvesUI.GetFactionForCompanion();
+    local companionFactionID = C_DelvesUI.GetFactionForCompanion(GetPlayerCompanionID());
 
     local companionRankInfo = C_GossipInfo.GetFriendshipReputationRanks(companionFactionID);
     DelvesCompanionConfigurationFrame.companionLevel = companionRankInfo and companionRankInfo.currentLevel or 0;
@@ -180,7 +185,7 @@ end
 CompanionPortraitFrameMixin = {};
 
 function CompanionPortraitFrameMixin:Refresh()
-    SetPortraitTextureFromCreatureDisplayID(self.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion());
+    SetPortraitTextureFromCreatureDisplayID(self.Icon, C_DelvesUI.GetCreatureDisplayInfoForCompanion(GetPlayerCompanionID()));
 end
 
 function CompanionPortraitFrameMixin:OnEnter()
@@ -222,7 +227,7 @@ function CompanionInfoFrameMixin:Refresh()
     self.CompanionDescription:SetText(companionInfo.description);
 
     if self.CompanionName:IsTruncated() then
-        self:SetScript("OnEnter", function() 
+		self:SetScript("OnEnter", function()
             GameTooltip:SetOwner(self.CompanionName, "ANCHOR_RIGHT", -100);
 	        GameTooltip_AddNormalLine(GameTooltip, companionInfo.name);
 	        GameTooltip:Show();
@@ -254,7 +259,7 @@ end
 
 function CompanionConfigSlotTemplateMixin:OnLoad()
     local view = CreateScrollBoxListLinearView(1, 0, 0, 0, 0, 1);
-    view:SetElementFactory(function(factory, node) 
+	view:SetElementFactory(function(factory, node)
         local function Initializer(button)
             button.data = {
                 configID = self.configID,
@@ -295,10 +300,10 @@ end
 
 function CompanionConfigSlotTemplateMixin:SetSeenCurios()
     C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
-	    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
+	    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
         self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
-        
+
         if not self.configID or not self.type then
             return;
         end
@@ -316,7 +321,7 @@ function CompanionConfigSlotTemplateMixin:SetSeenCurios()
 end
 
 function CompanionConfigSlotTemplateMixin:OnShow()
-    local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion();
+	local traitTreeID = C_DelvesUI.GetTraitTreeForCompanion(GetPlayerCompanionID());
 
     self:RegisterEvent("GLOBAL_MOUSE_DOWN");
     self.configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
@@ -331,7 +336,7 @@ function CompanionConfigSlotTemplateMixin:OnHide()
 end
 
 function CompanionConfigSlotTemplateMixin:HasActiveEntry()
-    if not self.selectionNodeInfo then 
+    if not self.selectionNodeInfo then
         return false;
     else
         return self.selectionNodeInfo.activeEntry and self.selectionNodeInfo.activeEntry.entryID;
@@ -397,7 +402,7 @@ function CompanionConfigSlotTemplateMixin:OnMouseDown()
     if not self.toggleNotAllowed then
         if self.OptionsList:IsShown() then
             self.OptionsList:Hide();
-            
+
             if self.NewLabel:IsShown() then
                 self.NewLabel:Hide();
                 self.NewGlowHighlight:Hide();
@@ -514,7 +519,7 @@ function CompanionConfigSlotTemplateMixin:Refresh()
 end
 
 function CompanionConfigSlotTemplateMixin:PopulateOptionsList()
-    C_Timer.After(SET_SEEN_CURIOS_DELAY, function() 
+    C_Timer.After(SET_SEEN_CURIOS_DELAY, function()
         local activeEntryID = self:HasActiveEntry() and self.selectionNodeInfo.activeEntry.entryID;
         local dataProvider = CreateDataProvider();
         local buttonCount = 0;
@@ -583,11 +588,11 @@ end
 
 function CompanionConfigSlotTemplateMixin:GetSelectionNodeID()
     if Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Role then
-        return C_DelvesUI.GetRoleNodeForCompanion();
+        return C_DelvesUI.GetRoleNodeForCompanion(GetPlayerCompanionID());
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Utility then
-        return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Utility);
+        return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Utility, GetPlayerCompanionID());
     elseif Enum.CompanionConfigSlotTypes[self.type] == Enum.CompanionConfigSlotTypes.Combat then
-        return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Combat);
+		return C_DelvesUI.GetCurioNodeForCompanion(Enum.CurioType.Combat, GetPlayerCompanionID());
     else
         return nil;
     end
@@ -599,7 +604,7 @@ function CompanionConfigSlotTemplateMixin:BuildSelectionNodeOptions()
     if self.selectionNodeInfo and #self.selectionNodeInfo.entryIDs > 0 then
         for _, entryID in ipairs(self.selectionNodeInfo.entryIDs) do
             local entryInfo = C_Traits.GetEntryInfo(self.configID, entryID);
-            
+
             if self.selectionNodeInfo.type == Enum.TraitNodeType.SubTreeSelection then
                 local subTreeInfo = C_Traits.GetSubTreeInfo(self.configID, entryInfo.subTreeID);
 
@@ -703,17 +708,17 @@ function CompanionConfigListButtonMixin:OnShow()
     if self.data and self.data.isUnseen then
         self.Name:SetTextColor(WHITE_FONT_COLOR:GetRGB());
         self.Name:SetShadowColor(NEW_FEATURE_SHADOW_COLOR:GetRGBA());
-        
+
         local halfStringWidth = self.Name:GetStringWidth() / 2;
         local doubleStringWidth = self.Name:GetStringWidth() * 2;
-        
+
         self.NewGlow:SetWidth(doubleStringWidth);
         self.NewGlow:SetPoint("CENTER", self.Name, "LEFT", math.ceil(halfStringWidth + 1), -1);
 
         self.NewGlow:Show();
     else
         self.Name:SetShadowColor(0, 0, 0, 0);
-                
+
         if self.selected then
             self.Name:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
         else
@@ -729,6 +734,7 @@ CompanionConfigShowAbilitiesButtonMixin = {};
 
 function CompanionConfigShowAbilitiesButtonMixin:OnClick()
     if not DelvesCompanionAbilityListFrame:IsShown() then
+		DelvesCompanionAbilityListFrame.playerCompanionID = GetPlayerCompanionID();
         ShowUIPanel(DelvesCompanionAbilityListFrame);
     else
         HideUIPanel(DelvesCompanionAbilityListFrame);

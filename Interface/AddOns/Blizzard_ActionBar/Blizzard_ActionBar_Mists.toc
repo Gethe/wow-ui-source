@@ -44,8 +44,4 @@ Shared\MultiCastActionBarFrame.lua
 Shared\MultiCastActionBarFrame.xml
 Shared\SpellFlyout.lua
 Shared\SpellFlyout.xml
-Shared\ExtraActionBar.lua
-Shared\ExtraActionBar.xml
-Shared\ActionButtonSpellAlerts.lua
-Shared\ActionButtonSpellAlerts.xml
 Shared\Localization.lua

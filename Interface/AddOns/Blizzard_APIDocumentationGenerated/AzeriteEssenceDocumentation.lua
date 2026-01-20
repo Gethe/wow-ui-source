@@ -3,6 +3,7 @@ local AzeriteEssence =
 	Name = "AzeriteEssence",
 	Type = "System",
 	Namespace = "C_AzeriteEssence",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local AzeriteEssence =
 			Name = "ActivateEssence",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local AzeriteEssence =
 		{
 			Name = "CanActivateEssence",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +38,7 @@ local AzeriteEssence =
 		{
 			Name = "CanDeactivateEssence",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -66,6 +70,7 @@ local AzeriteEssence =
 		{
 			Name = "GetEssenceHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,6 +87,7 @@ local AzeriteEssence =
 			Name = "GetEssenceInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -107,6 +113,7 @@ local AzeriteEssence =
 			Name = "GetMilestoneEssence",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -122,6 +129,7 @@ local AzeriteEssence =
 			Name = "GetMilestoneInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -137,6 +145,7 @@ local AzeriteEssence =
 			Name = "GetMilestoneSpell",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -216,6 +225,7 @@ local AzeriteEssence =
 			Name = "SetPendingActivationEssence",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -225,6 +235,7 @@ local AzeriteEssence =
 		{
 			Name = "UnlockMilestone",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -239,6 +250,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceActivated",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
@@ -249,6 +261,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceActivationFailed",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_ACTIVATION_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "slot", Type = "AzeriteEssenceSlot", Nilable = false },
@@ -259,6 +272,7 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = false },
@@ -269,16 +283,19 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceForgeClose",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_FORGE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AzeriteEssenceForgeOpen",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_FORGE_OPEN",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AzeriteEssenceMilestoneUnlocked",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_MILESTONE_UNLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "milestoneID", Type = "number", Nilable = false },
@@ -288,11 +305,13 @@ local AzeriteEssence =
 			Name = "AzeriteEssenceUpdate",
 			Type = "Event",
 			LiteralName = "AZERITE_ESSENCE_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PendingAzeriteEssenceChanged",
 			Type = "Event",
 			LiteralName = "PENDING_AZERITE_ESSENCE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "essenceID", Type = "number", Nilable = true },

@@ -44,13 +44,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame parentKey="HouseTypeOption" inherits="HouseExteriorPlaceholderDropdownTemplate">
+					<Frame parentKey="HouseTypeOption" inherits="HouseExteriorTypeDropdownTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_HOUSE_TYPE_LABEL" type="global"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="HouseSizeOption" inherits="HouseExteriorPlaceholderDropdownTemplate">
+					<Frame parentKey="HouseSizeOption" inherits="HouseExteriorSizeDropdownTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="3" type="number"/>
 							<KeyValue key="label" value="HOUSING_EXTERIOR_CUSTOMIZATION_HOUSE_SIZE_LABEL" type="global"/>

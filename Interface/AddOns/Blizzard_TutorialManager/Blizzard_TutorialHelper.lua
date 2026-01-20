@@ -197,8 +197,8 @@ function TutorialHelper:GetActionButtonBySpellID(spellID)
 			if btn and btn.action then
 				local actionType, sID, subType = GetActionInfo(btn.action);
 
-				local baseSpellID  = FindBaseSpellByID(spellID) or spellID;
-				local overrideSpellID = FindSpellOverrideByID(spellID) or spellID;
+				local baseSpellID  = C_SpellBook.FindBaseSpellByID(spellID) or spellID;
+				local overrideSpellID = C_SpellBook.FindSpellOverrideByID(spellID) or spellID;
 				local isFlyout = actionType == "flyout";
 				if not isFlyout and sID and (sID == baseSpellID or sID == overrideSpellID) then
 					return btn;

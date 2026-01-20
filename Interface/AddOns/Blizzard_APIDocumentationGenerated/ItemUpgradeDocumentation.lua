@@ -3,12 +3,14 @@ local ItemUpgrade =
 	Name = "ItemUpgrade",
 	Type = "System",
 	Namespace = "C_ItemUpgrade",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanUpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local ItemUpgrade =
 			Name = "GetHighWatermarkForItem",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +51,7 @@ local ItemUpgrade =
 			Name = "GetHighWatermarkForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,6 +68,7 @@ local ItemUpgrade =
 			Name = "GetHighWatermarkSlotForItem",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,6 +105,7 @@ local ItemUpgrade =
 			Name = "GetItemUpgradeEffect",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,6 +133,7 @@ local ItemUpgrade =
 			Name = "GetItemUpgradePvpItemLevelDeltaValues",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -164,6 +171,7 @@ local ItemUpgrade =
 		{
 			Name = "SetItemUpgradeFromLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -173,6 +181,7 @@ local ItemUpgrade =
 		{
 			Name = "UpgradeItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -187,16 +196,19 @@ local ItemUpgrade =
 			Name = "ItemUpgradeFailed",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterSetItem",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_SET_ITEM",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ItemUpgradeMasterUpdate",
 			Type = "Event",
 			LiteralName = "ITEM_UPGRADE_MASTER_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -2,6 +2,7 @@ local FrameAPIScenarioPOI =
 {
 	Name = "FrameAPIScenarioPOI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -21,6 +22,7 @@ local FrameAPIScenarioPOI =
 		{
 			Name = "UpdateMouseOverTooltip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

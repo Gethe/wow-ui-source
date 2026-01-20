@@ -66,6 +66,8 @@ function HousingExteriorFixturePointMixin:OnEnter()
 	GameTooltip_AddHighlightLine(tooltip, HOUSING_EXTERIOR_CUSTOMIZATION_HOOKPOINT_EMPTY_TOOLTIP);
 	tooltip:Show();
 
+	EventRegistry:TriggerEvent("HousingFixturePoint.MouseOver", self, self.pointFrame, tooltip);
+
 	self:UpdateVisuals();
 end
 

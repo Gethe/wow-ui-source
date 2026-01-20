@@ -103,8 +103,8 @@ local function ButtonFrameTemplate_UpdateAnchors(self, isPortraitMode)
 	ButtonFrameTemplate_UpdateRegionAnchor(self.Inset, isPortraitMode and 4 or 9);
 
 	if self.TitleContainer then
-		self.TitleContainer:SetPoint("TOPLEFT", self, "TOPRIGHT", isPortraitMode and 58 or 0, -1);
-		self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPLEFT", isPortraitMode and -24 or 0, -1);
+		self.TitleContainer:SetPoint("TOPLEFT", self, "TOPLEFT", isPortraitMode and 58 or 0, -1);
+		self.TitleContainer:SetPoint("TOPRIGHT", self, "TOPRIGHT", isPortraitMode and -24 or 0, -1);
 	end
 end
 
@@ -1308,6 +1308,16 @@ function DropdownWithSteppersMixin:HideSteppers()
 	self.IncrementButton:Hide();
 end
 
+function DropdownWithSteppersMixin:ShowSteppers()
+	self.DecrementButton:Show();
+	self.IncrementButton:Show();
+end
+
+function DropdownWithSteppersMixin:SetSteppersShown(shown)
+	self.DecrementButton:SetShown(shown);
+	self.IncrementButton:SetShown(shown);
+end
+
 function DropdownWithSteppersMixin:SetSteppersEnabled(canDecrement, canIncrement)
 	if self.Dropdown:IsEnabled() then
 		self.DecrementButton:SetEnabled(canDecrement);
@@ -1543,6 +1553,10 @@ function PanelResizeButtonMixin:OnLeave()
 end
 
 function PanelResizeButtonMixin:OnMouseDown()
+	if not self:IsEnabled() then
+		return;
+	end
+
 	self.isActive = true;
 
 	local target = self.target;
@@ -1662,7 +1676,8 @@ local ValidIconSelectorCursorTypes = {
 	"spell",
 	"mount",
 	"battlepet",
-	"macro"
+	"macro",
+	"outfit"
 };
 
 local function IconSelectorPopupFrame_IconFilterToIconTypes(filter)
@@ -1754,19 +1769,19 @@ function IconSelectorPopupFrameTemplateMixin:UpdateDropdown()
 end
 
 function IconSelectorPopupFrameTemplateMixin:UpdateStateFromCursorType()
-		local cursorType = GetCursorInfo();
-		local isValidCursorType = false;
-		for _, validType in ipairs(ValidIconSelectorCursorTypes) do
-			if ( cursorType == validType ) then
-				isValidCursorType = true;
-				break;
-			end
+	local cursorType = GetCursorInfo();
+	local isValidCursorType = false;
+	for _, validType in ipairs(ValidIconSelectorCursorTypes) do
+		if ( cursorType == validType ) then
+			isValidCursorType = true;
+			break;
 		end
+	end
 
-		self.BorderBox.IconDragArea:SetShown(isValidCursorType);
-		self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
+	self.BorderBox.IconDragArea:SetShown(isValidCursorType);
+	self.BorderBox.IconSelectionText:SetShown(not isValidCursorType);
 	self.BorderBox.IconTypeDropdown:SetShown(not isValidCursorType);
-		self.IconSelector:SetShown(not isValidCursorType);
+	self.IconSelector:SetShown(not isValidCursorType);
 end
 
 function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
@@ -1786,6 +1801,11 @@ function IconSelectorPopupFrameTemplateMixin:SetIconFromMouse()
 				icon = select(9, C_PetJournal.GetPetInfoByPetID(ID));
 			elseif ( cursorType == "macro" ) then
 				icon = select(2, GetMacroInfo(ID));
+			elseif ( cursorType == "outfit" ) then
+				local outfitInfo = C_TransmogOutfitInfo.GetOutfitInfo(ID);
+				if ( outfitInfo ) then
+					icon = outfitInfo.icon;
+				end
 			end
 
 			self.IconSelector:SetSelectedIndex(self:GetIndexOfIcon(icon));
@@ -2329,4 +2349,19 @@ function BarDividerMixin:SetHeaderText(text, color)
 	self.BarMask:SetShown(hasText);
 
 	self.BarTexture:SetVertexColor(textureColor:GetRGB());
+end
+
+function BarDividerMixin:SetMarginSpacing(spacing)
+	self.BarTexture:ClearAllPoints();
+	self.BarTexture:SetPoint("LEFT", spacing, 0);
+	self.BarTexture:SetPoint("RIGHT", -spacing, 0);
+end
+
+ScrollBoxTextContainerMixin = {};
+
+function ScrollBoxTextContainerMixin:SetElementText(text, color)
+	self.Text:SetText(text);
+
+	local textColor = color or LIGHTGRAY_FONT_COLOR;
+	self.Text:SetTextColor(textColor:GetRGB());
 end

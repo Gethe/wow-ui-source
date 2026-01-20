@@ -1,4 +1,16 @@
 
+TopUpFlowConstants = 
+{
+	TestProductIDs = {
+		{productID=2023433},
+		{productID=2023434},
+		{productID=2023435},
+		{productID=2023432},
+		{productID=2023431},
+		{productID=2023436},
+	},
+}
+
 local ScreenPadding =
 {
 	Horizontal = 100,
@@ -17,7 +29,7 @@ function CatalogShopTopUpFrameMixin:OnLoad()
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					CatalogShopFrame:SetAttribute("action", "EscapePressed");
+					CatalogShopTopUpFrame:SetAttribute("action", "EscapePressed");
 				end
 			end
 		);
@@ -36,10 +48,9 @@ function CatalogShopTopUpFrameMixin:OnShow()
 	self:SetAttribute("isshown", true);
 
 	self.TopUpProductContainerFrame:Init();
-	if ( not C_Glue.IsOnGlueScreen() ) then
-
-	else
-
+	if C_Glue.IsOnGlueScreen() then
+		FrameUtil.SetParentMaintainRenderLayering(self, CatalogShopFrame);
+		self:SetFrameStrata("FULLSCREEN_DIALOG", CatalogShopFrame:GetFrameLevel() + 100)
 	end
 	self:ShowCoverFrame();
 	FrameUtil.UpdateScaleForFitSpecific(self, self:GetWidth() + ScreenPadding.Horizontal, self:GetHeight() + ScreenPadding.Vertical);
@@ -47,12 +58,6 @@ end
 
 function CatalogShopTopUpFrameMixin:OnHide()
 	self:SetAttribute("isshown", false);
-
-	if ( not C_Glue.IsOnGlueScreen() ) then
-
-	else
-
-	end
 
 	local scrollBox = self.TopUpProductContainerFrame.ScrollBox;
 	if scrollBox then
@@ -75,10 +80,6 @@ function CatalogShopTopUpFrameMixin:HideCoverFrame()
 	self.CoverFrame:SetShown(false);
 end
 
-function CatalogShopTopUpFrameMixin:SetContextKey(contextKey)
-	self.contextKey = contextKey;
-end
-
 function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 	--Note - Setting attributes is how the external UI should communicate with this frame. That way their taint won't be spread to this code.
 	if ( name == "action" ) then
@@ -94,8 +95,20 @@ function CatalogShopTopUpFrameMixin:OnAttributeChanged(name, value)
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
-	elseif (name == "contextkey") then
-		self:SetContextKey(value);
+	elseif (name == "parentframe") then
+		if value then
+			FrameUtil.SetParentMaintainRenderLayering(self, value);
+		end
+	elseif (name == "setdesiredquantity") then
+		self.desiredQuantity = tonumber(value);
+		if self.desiredQuantity then
+			self.PurchaseTotal:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_PURCHASE, self.desiredQuantity));
+		end
+	elseif (name == "setcurrentbalance") then
+		self.currentBalance = tonumber(value);
+		if self.currentBalance then
+			self.CurrentBalance:SetText(string.format(CATALOG_SHOP_TOPUPFLOW_CURRENT_BALANCE, self.currentBalance));
+		end
 	end
 end
 
@@ -104,21 +117,38 @@ function CatalogShopTopUpFrameMixin:Leave()
 	self:Hide();
 end
 
-function CatalogShopTopUpFrameMixin:PurchaseProduct()
-	local productInfo = self:GetSelectedProductInfo();
+function CatalogShopTopUpFrameMixin:PurchaseProduct(productID)
+	local productInfo = C_CatalogShop.GetProductInfo(productID);
+	if not productInfo then
+		self:Hide();
+		return;
+	end
 
 	local completelyOwned = productInfo.isFullyOwned;
 	if completelyOwned then
 		self:OnError(Enum.StoreError.AlreadyOwned, false, "FakeOwned");
-	elseif C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID) then
+	else
+		local vcAmount = self:GetVirtualCurrencyAmountForProduct(productInfo.catalogShopProductID);
+		local currentBalance = self.currentBalance or 0;
+		local desiredQuantity = self.desiredQuantity or 0;
 
+		if currentBalance + vcAmount < desiredQuantity then
+			C_CatalogShop.StartHousingVCPurchaseConfirmation(productInfo.catalogShopProductID);
+		else
+			C_CatalogShop.PurchaseProduct(productInfo.catalogShopProductID);
+			self:Hide();
+		end
 	end
 end
 
-function CatalogShopTopUpFrameMixin:OnProductSelected(data)
-	local selectedProductInfo = self:GetSelectedProductInfo();
-end
+function CatalogShopTopUpFrameMixin:GetVirtualCurrencyAmountForProduct(productID)
+	local productInfo = C_CatalogShop.GetProductInfo(productID);
+	if productInfo and productInfo.virtualCurrencies and #productInfo.virtualCurrencies > 0 then
+		local virtualCurrency = productInfo.virtualCurrencies[1];
+		if virtualCurrency.currencyCode == Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE then
+			return virtualCurrency.amount;
+		end
+	end
 
-function CatalogShopTopUpFrameMixin:GetSelectedProductInfo()
-	return self.ProductContainerFrame:GetSelectedProductInfo();
+	return 0;
 end

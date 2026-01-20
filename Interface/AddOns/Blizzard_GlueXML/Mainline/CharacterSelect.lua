@@ -1660,8 +1660,8 @@ local function AddVASButton(charUpgradeDisplayData, upgradeInfo, template)
 		frame.Icon:SetAtlas(formattedVASIcon, true);
 		frame.Highlight.Icon:SetAtlas(formattedVASIcon, true);
 	elseif charUpgradeDisplayData.icon then
-		SetPortraitToTexture(frame.Icon, charUpgradeDisplayData.icon);
-		SetPortraitToTexture(frame.Highlight.Icon, charUpgradeDisplayData.icon);
+		frame.Icon:SetTexture(charUpgradeDisplayData.icon);
+		frame.Highlight.Icon:SetTexture(charUpgradeDisplayData.icon);
 	end
 
 	frame:SetAlpha(GetVASTokenAlpha(upgradeInfo));
@@ -2052,7 +2052,7 @@ function CharacterServicesMaster_SetFlow(self, flow)
 		local formattedVASIcon = ("%s-regular"):format(flow.data.iconTextureKit);
 		self:GetParent().Icon:SetAtlas(formattedVASIcon, true);
 	elseif flow.data.icon then
-		SetPortraitToTexture(self:GetParent().Icon, flow.data.icon);
+		self:GetParent().Icon:SetTexture(flow.data.icon);
 	end
 
 	if flow.data.flowTitle then

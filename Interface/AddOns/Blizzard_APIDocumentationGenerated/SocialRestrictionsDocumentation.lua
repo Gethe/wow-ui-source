@@ -3,6 +3,7 @@ local SocialRestrictions =
 	Name = "SocialRestrictions",
 	Type = "System",
 	Namespace = "C_SocialRestrictions",
+	Environment = "All",
 
 	Functions =
 	{
@@ -69,6 +70,7 @@ local SocialRestrictions =
 		{
 			Name = "SetChatDisabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,11 +85,13 @@ local SocialRestrictions =
 			Name = "AlertRegionalChatDisabled",
 			Type = "Event",
 			LiteralName = "ALERT_REGIONAL_CHAT_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ChatDisabledChangeFailed",
 			Type = "Event",
 			LiteralName = "CHAT_DISABLED_CHANGE_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "disabled", Type = "bool", Nilable = false },
@@ -97,6 +101,7 @@ local SocialRestrictions =
 			Name = "ChatDisabledChanged",
 			Type = "Event",
 			LiteralName = "CHAT_DISABLED_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "disabled", Type = "bool", Nilable = false },

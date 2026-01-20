@@ -2,12 +2,14 @@ local Performance =
 {
 	Name = "PerformanceScript",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAddOnCPUUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,7 @@ local Performance =
 		{
 			Name = "GetAddOnMemoryUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +39,7 @@ local Performance =
 		{
 			Name = "GetFrameCPUUsage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

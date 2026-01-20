@@ -3,12 +3,14 @@ local LevelSquish =
 	Name = "LevelSquish",
 	Type = "System",
 	Namespace = "C_LevelSquish",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ConvertFollowerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local LevelSquish =
 		{
 			Name = "ConvertPlayerLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

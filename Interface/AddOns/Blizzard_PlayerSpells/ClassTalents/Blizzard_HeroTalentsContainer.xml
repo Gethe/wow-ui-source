@@ -236,14 +236,14 @@
 				</Scripts>
 			</Button>
 			<Frame parentKey="PreviewContainer" inherits="HeroTalentsTreeContainerTemplate" hidden="true">
-				<Size x="242" y="362"/>
+				<Size x="284" y="362"/>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="talents-heroclass-backplate-full" setAllPoints="true">
+						<Texture parentKey="Background" atlas="talents-heroclass-backplate-full-expanded" setAllPoints="true">
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture parentKey="BlankNodes" atlas="talents-heroclass-backplate-intro" useAtlasSize="true">
+						<Texture parentKey="BlankNodes" atlas="talents-heroclass-backplate-intro-expanded" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" y="-6"/>
 							</Anchors>
@@ -252,10 +252,10 @@
 				</Layers>
 			</Frame>
 			<Frame parentKey="ExpandedContainer" inherits="HeroTalentsTreeContainerTemplate" hidden="true">
-				<Size x="242" y="362"/>
+				<Size x="284" y="362"/>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="Background" atlas="talents-heroclass-backplate-full" setAllPoints="true">
+						<Texture parentKey="Background" atlas="talents-heroclass-backplate-full-expanded" setAllPoints="true">
 						</Texture>
 					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
@@ -273,7 +273,7 @@
 								</AnimationGroup>
 							</Animations>
 						</Texture>
-						<MaskTexture parentKey="HeroClassBackplateFullSheenMask" atlas="talents-animations-mask-heroclass-backplatefull" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<MaskTexture parentKey="HeroClassBackplateFullSheenMask" atlas="talents-animations-mask-heroclass-backplatefull-expanded" useAtlasSize="true" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 							<MaskedTextures>
 								<MaskedTexture childKey="HeroClassBackplateFullSheen"/>
 							</MaskedTextures>
@@ -495,24 +495,24 @@
 								<Anchor point="CENTER" relativeKey="$parent.OrbActivated"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BackplateGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow" useAtlasSize="true">
+						<Texture parentKey="BackplateGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow-expanded" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" y="-201"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BackplateGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow" useAtlasSize="true">
+						<Texture parentKey="BackplateGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-full-glow-expanded" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent" y="-201"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BackplateIntroGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow" useAtlasSize="true">
+						<Texture parentKey="BackplateIntroGlow" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow-expanded" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-6"/>
+								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-4"/>
 							</Anchors>
 						</Texture>
-						<Texture parentKey="BackplateIntroGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow" useAtlasSize="true">
+						<Texture parentKey="BackplateIntroGlow2" parentArray="Textures" alpha="0" alphaMode="ADD" atlas="talents-animations-heroclass-backplate-intro-glow-expanded" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-6"/>
+								<Anchor point="CENTER" relativeKey="$parent.BackplateGlow" y="-4"/>
 							</Anchors>
 						</Texture>
 					</Layer>

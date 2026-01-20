@@ -92,11 +92,6 @@ LinkUtil.RegisterLinkHandler(LinkTypes.AdventureGuide, function(link, text, link
 	end
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.URLIndex, function(link, text, linkData, contextData)
-	local index = string.split(":", linkData.options);
-	LoadURLIndex(tonumber(index));
-end);
-
 LinkUtil.RegisterLinkHandler(LinkTypes.LootHistory, function(link, text, linkData, contextData)
 	local encounterID = string.split(":", linkData.options);
 	SetLootHistoryFrameToEncounter(tonumber(encounterID));
@@ -115,11 +110,15 @@ end);
 LinkUtil.RegisterLinkHandler(LinkTypes.TransmogAppearance, function(link, text, linkData, contextData)
 	local sourceID = string.split(":", linkData.options);
 	if ( IsModifiedClick("CHATLINK") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		HandleModifiedItemClick(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			HandleModifiedItemClick(appearanceSourceInfo.itemLink);			
+		end
 	elseif ( IsModifiedClick("DRESSUP") ) then
-		local itemLink = select(6, C_TransmogCollection.GetAppearanceSourceInfo(sourceID));
-		DressUpItemLink(itemLink);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			DressUpItemLink(appearanceSourceInfo.itemLink);
+		end
 	else
 		TransmogUtil.OpenCollectionToItem(sourceID);
 	end
@@ -130,13 +129,13 @@ LinkUtil.RegisterLinkHandler(LinkTypes.TransmogSet, function(link, text, linkDat
 	TransmogUtil.OpenCollectionToSet(setID);
 end);
 
-LinkUtil.RegisterLinkHandler(LinkTypes.TransmogOutfit, function(link, text, linkData, contextData)
+LinkUtil.RegisterLinkHandler(LinkTypes.TransmogCustomSet, function(link, text, linkData, contextData)
 	local fixedLink = GetFixedLink(text);
 	if not HandleModifiedItemClick(fixedLink) then
-		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromOutfitHyperlink(text);
+		local itemTransmogInfoList = C_TransmogCollection.GetItemTransmogInfoListFromCustomSetHyperlink(text);
 		if itemTransmogInfoList then
-			local showOutfitDetails = true;
-			DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails);
+			local showCustomSetDetails = true;
+			DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails);
 		end
 	end
 end);
@@ -267,6 +266,11 @@ LinkUtil.RegisterLinkHandler(LinkTypes.PerksActivity, function(link, text, linkD
 		EncounterJournal_LoadUI();
 	end
 	MonthlyActivitiesFrame_OpenFrameToActivity(tonumber(perksActivityID));
+end);
+
+LinkUtil.RegisterLinkHandler(LinkTypes.InitiativeTask, function(link, text, linkData, contextData)
+	local initiativeTaskID = string.split(":", linkData.options);
+	HousingFramesUtil.OpenFrameToTaskID(tonumber(initiativeTaskID));
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.WarbandScene, function(link, text, linkData, contextData)

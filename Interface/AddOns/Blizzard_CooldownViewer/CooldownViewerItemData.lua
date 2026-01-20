@@ -1,27 +1,37 @@
 CooldownViewerItemDataMixin = {};
 
 function CooldownViewerItemDataMixin:SetCooldownID(cooldownID, forceSet)
-	if self.cooldownID ~= cooldownID or forceSet then
+	if forceSet or self.cooldownID ~= cooldownID then
 		self.cooldownID = cooldownID;
 		self:OnCooldownIDSet();
 	end
 end
 
+function CooldownViewerItemDataMixin:FindLinkedSpellForCurrentAuras()
+	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
+		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
+			local auraData = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+			if auraData then
+				return spellID;
+			end
+		end
+	end
+
+	return nil;
+end
+
 function CooldownViewerItemDataMixin:OnCooldownIDSet()
-	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self.cooldownID);
+	self.cooldownInfo = CooldownViewerSettings:GetDataProvider():GetCooldownInfoForID(self:GetCooldownID());
+	self.validAlertTypes = nil;
 
 	self:ClearEditModeData();
 
 	-- If one of the item's linked spells currenly has an active aura, it needs to be linked now because
 	-- the UNIT_AURA event for it may have already happened and there might not be another one. e.g. the
 	-- case of an infinite duration aura.
-	if self.cooldownInfo and self.cooldownInfo.linkedSpellIDs then
-		for _, spellID in ipairs(self.cooldownInfo.linkedSpellIDs) do
-			local auraData = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
-			if auraData then
-				self:SetLinkedSpell(spellID);
-			end
-		end
+	local linkedSpellID = self:FindLinkedSpellForCurrentAuras();
+	if linkedSpellID then
+		self:SetLinkedSpell(linkedSpellID);
 	end
 
 	self:RefreshData();
@@ -37,15 +47,12 @@ end
 
 function CooldownViewerItemDataMixin:OnCooldownIDCleared()
 	self.cooldownInfo = nil;
-	self:ClearAuraInfo();
+	self.validAlertTypes = nil;
+	self:ClearAuraInstanceInfo();
 	self:ClearTotemData();
 
 	self:RefreshData();
 	self:UpdateShownState();
-end
-
-function CooldownViewerItemDataMixin:ClearAuraInfo()
-	-- override as needed
 end
 
 function CooldownViewerItemDataMixin:ClearTotemData()
@@ -93,17 +100,12 @@ function CooldownViewerItemDataMixin:SetLinkedSpell(linkedSpellID)
 	end
 
 	cooldownInfo.linkedSpellID = linkedSpellID;
-
 	return true;
 end
 
 function CooldownViewerItemDataMixin:GetLinkedSpell()
 	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
-	end
-
-	return cooldownInfo.linkedSpellID;
+	return cooldownInfo and cooldownInfo.linkedSpellID;
 end
 
 function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
@@ -117,7 +119,7 @@ function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
 	end
 
 	-- If the provided spellId matches the base spell then remove the linked spell's precedence.
-	if cooldownInfo.linkedSpellID and spellID == cooldownInfo.spellID then
+	if cooldownInfo.linkedSpellID and spellID == self:GetBaseSpellID() then
 		return self:SetLinkedSpell(nil);
 	end
 
@@ -140,44 +142,115 @@ end
 -- Prefer calling GetSpellID in most cases. This function is provided for unique cases where the base spell is needed.
 function CooldownViewerItemDataMixin:GetBaseSpellID()
 	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
-	end
-
-	return cooldownInfo.spellID;
+	return cooldownInfo and cooldownInfo.spellID;
 end
 
+--[[
+	NOTE: In general the order of precedence for getting the spellID from a cooldown item is:
+	1. Active Aura
+	2. Active Linked Spell (usually because a matching aura is active)
+	3. Override tooltip spell even if the linked spell is not active, it will always be one of the associated linkedSpellIDs
+	4. Override Spell
+	5. Base Spell
+
+	There are some cases where the base spell may be preferred over the override spell, because the client API for spells already takes overrides into account.
+	In those cases, the aura/tooltip override is checked manually.
+--]]
 function CooldownViewerItemDataMixin:GetSpellID()
-	if self.auraSpellID then
-		return self.auraSpellID;
+	local auraSpellID = self:GetAuraSpellID();
+	if auraSpellID then
+		return auraSpellID;
 	end
 
 	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return nil;
+	if cooldownInfo then
+		if cooldownInfo.linkedSpellID then
+			return cooldownInfo.linkedSpellID;
+		end
+
+		if cooldownInfo.overrideTooltipSpellID then
+			return cooldownInfo.overrideTooltipSpellID;
+		end
+
+		if cooldownInfo.overrideSpellID then
+			return cooldownInfo.overrideSpellID;
+		end
+
+		return cooldownInfo.spellID;
 	end
 
-	if cooldownInfo.linkedSpellID then
-		return cooldownInfo.linkedSpellID;
-	end
-
-	if cooldownInfo.overrideSpellID then
-		return cooldownInfo.overrideSpellID;
-	end
-
-	return cooldownInfo.spellID;
+	return nil;
 end
 
-function CooldownViewerItemDataMixin:GetTooltipSpellID()
-	-- NOTE: This doesn't apply to auraInstanceID at all, call this if it's known
-	-- that a spellID is needed for the tooltip.
-	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
-		return cooldownInfo.overrideTooltipSpellID;
+function CooldownViewerItemDataMixin:SpellIDMatchesAnyAssociatedSpellIDs(spellID)
+	if spellID == self:GetAuraSpellID() then
+		return true;
 	end
 
-	local spellID = self:GetSpellID();
-	return spellID;
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		if cooldownInfo.linkedSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.overrideTooltipSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.overrideSpellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.spellID == spellID then
+			return true;
+		end
+
+		if cooldownInfo.linkedSpellIDs then
+			for _, linkedSpellID in ipairs(cooldownInfo.linkedSpellIDs) do
+				if linkedSpellID == spellID then
+					return true;
+				end
+			end
+		end
+	end
+
+	return false;
+end
+
+function CooldownViewerItemDataMixin:GetAuraSpellID()
+	return self.auraSpellID;
+end
+
+function CooldownViewerItemDataMixin:GetAuraSpellInstanceID()
+	return self.auraInstanceID;
+end
+
+function CooldownViewerItemDataMixin:SetAuraInstanceInfo(auraInfo)
+	local auraSpellID, auraInstanceID = auraInfo.spellId, auraInfo.auraInstanceID;
+	if self.auraInstanceID ~= auraInstanceID or self.auraSpellID ~= auraSpellID then
+		self.auraInstanceID = auraInstanceID;
+		self.auraSpellID = auraSpellID;
+
+		self:OnAuraInstanceInfoSet(auraSpellID, auraInstanceID);
+	end
+end
+
+function CooldownViewerItemDataMixin:ClearAuraInstanceInfo()
+	local auraSpellID, auraInstanceID = self.auraSpellID, self.auraInstanceID;
+	if auraSpellID or auraInstanceID then
+		self.auraInstanceID = nil;
+		self.auraSpellID = nil;
+
+		self:OnAuraInstanceInfoCleared(auraSpellID, auraInstanceID);
+	end
+end
+
+function CooldownViewerItemDataMixin:OnAuraInstanceInfoSet(_auraSpellID, _auraInstanceID)
+	-- override as needed
+end
+
+function CooldownViewerItemDataMixin:OnAuraInstanceInfoCleared(_auraSpellID, _auraInstanceID)
+	-- override as needed
 end
 
 function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
@@ -190,12 +263,18 @@ function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
 end
 
 function CooldownViewerItemDataMixin:GetSpellChargeInfo()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
+	-- To ensure that charges work correctly for cooldown items that are actively cast, apply auras, and have charges
+	-- only check the override or base spell ids.
+	-- NOTE: This uses internal data instead of the spellID API for perf reasons
+	local info = self:GetCooldownInfo();
+	if info then
+		local chargeSpellID = info.overrideSpellID or info.spellID;
+		if chargeSpellID then
+			return C_Spell.GetSpellCharges(chargeSpellID);
+		end
 	end
 
-	return C_Spell.GetSpellCharges(spellID);
+	return nil;
 end
 
 function CooldownViewerItemDataMixin:GetFallbackSpellTexture()
@@ -204,15 +283,21 @@ function CooldownViewerItemDataMixin:GetFallbackSpellTexture()
 end
 
 function CooldownViewerItemDataMixin:GetSpellTexture()
-	-- Overriding the tooltip also serves to override the texture
-	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
-		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
+	-- Checking auraSpellID here is done instead of calling self:GetSpellID() because of the override texture logic.
+	local auraSpellID = self:GetAuraSpellID();
+	if auraSpellID then
+		return C_Spell.GetSpellTexture(auraSpellID);
 	end
 
 	local linkedSpellID = self:GetLinkedSpell();
 	if linkedSpellID then
 		return C_Spell.GetSpellTexture(linkedSpellID);
+	end
+
+	-- Overriding the tooltip also serves to override the texture
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo and cooldownInfo.overrideTooltipSpellID then
+		return C_Spell.GetSpellTexture(cooldownInfo.overrideTooltipSpellID);
 	end
 
 	-- Intentionally always use the base spell when calling C_Spell.GetSpellTexture. Its internal logic will handle the override if needed.
@@ -247,26 +332,62 @@ function CooldownViewerItemDataMixin:GetNameText()
 	return "";
 end
 
-function CooldownViewerItemDataMixin:GetAuraData()
-	local spellID = self:GetSpellID();
-	if not spellID then
-		return nil;
+local targetAuraCacheTime;
+local targetAuraCache;
+local function GetTargetAurasCached()
+	local now = GetTime();
+	if not targetAuraCache or not targetAuraCacheTime or now ~= targetAuraCacheTime then
+		targetAuraCache = C_UnitAuras.GetUnitAuras("target", "HARMFUL|PLAYER") or {};
+		targetAuraCacheTime = now;
 	end
 
-	return C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+	return targetAuraCache;
 end
 
-function CooldownViewerItemDataMixin:UseAuraForCooldown()
+function CooldownViewerItemDataMixin:GetTargetRelatedAuraInfo()
+	for _, aura in ipairs(GetTargetAurasCached()) do
+		if self:SpellIDMatchesAnyAssociatedSpellIDs(aura.spellId) then
+			return aura;
+		end
+	end
+
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetAuraData()
+	-- TODO: Cache these results.
+
+	-- TODO: If we get enough cases where having the aura means "it's active" then there are some other checks that can be nuked
+	local spellID = self:GetSpellID();
+	if spellID then
+		local selfAura = C_UnitAuras.GetPlayerAuraBySpellID(spellID);
+		if selfAura then
+			self.auraDataUnit = "player";
+			return selfAura;
+		end
+	end
+
+	local targetAura = self:GetTargetRelatedAuraInfo();
+	if targetAura then
+		self.auraDataUnit = "target";
+		return targetAura;
+	end
+
+	self.auraDataUnit = nil;
+	return nil;
+end
+
+function CooldownViewerItemDataMixin:GetAuraDataUnit()
+	return self.auraDataUnit;
+end
+
+function CooldownViewerItemDataMixin:CanUseAuraForCooldown()
 	local cooldownInfo = self:GetCooldownInfo();
-	if not cooldownInfo then
-		return true;
+	if cooldownInfo and cooldownInfo.flags then
+		return not FlagsUtil.IsSet(cooldownInfo.flags, Enum.CooldownSetSpellFlags.HideAura);
 	end
 
-	if cooldownInfo.flags == nil then
-		return true;
-	end
-
-	return FlagsUtil.IsSet(cooldownInfo.flags, Enum.CooldownSetSpellFlags.HideAura) == false;
+	return true;
 end
 
 function CooldownViewerItemDataMixin:SetTotemData(totemData)
@@ -302,10 +423,11 @@ end
 
 function CooldownViewerItemDataMixin:RefreshTooltip()
 	local tooltip = GetAppropriateTooltip();
-	if self.auraInstanceID then
-		tooltip:SetUnitBuffByAuraInstanceID("player", self.auraInstanceID);
+	local auraInstanceID = self:GetAuraSpellInstanceID();
+	if auraInstanceID then
+		tooltip:SetUnitAuraByAuraInstanceID(self:GetAuraDataUnit(), auraInstanceID);
 	else
-		local spellID = self:GetTooltipSpellID();
+		local spellID = self:GetSpellID();
 		if spellID then
 			local isPet = false;
 			tooltip:SetSpellByID(spellID, isPet);
@@ -315,4 +437,35 @@ end
 
 function CooldownViewerItemDataMixin:UpdateShownState()
 	-- override as needed
+end
+
+function CooldownViewerItemDataMixin:IsActivelyCast()
+	-- override as necessary; this indicates that the spell related to the cooldown item can be cast by the player and isn't a proc.
+	return false;
+end
+
+function CooldownViewerItemDataMixin:CheckCreateValidAlertTypes()
+	if not self.validAlertTypes then
+		self.validAlertTypes = tInvert(C_CooldownViewer.GetValidAlertTypes(self:GetCooldownID()));
+	end
+end
+
+function CooldownViewerItemDataMixin:GetValidAlertTypes()
+	self:CheckCreateValidAlertTypes();
+	return self.validAlertTypes;
+end
+
+function CooldownViewerItemDataMixin:CanTriggerAlertType(alertType)
+	local validAlertTypes = self:GetValidAlertTypes();
+	return validAlertTypes[alertType] ~= nil;
+end
+
+function CooldownViewerItemDataMixin:GetFirstValidAlertType()
+	local validAlertTypes = self:GetValidAlertTypes();
+	local alertType = next(validAlertTypes);
+	return alertType;
+end
+
+function CooldownViewerItemDataMixin:CanTriggerAnyAlertType()
+	return self:GetFirstValidAlertType() ~= nil;
 end

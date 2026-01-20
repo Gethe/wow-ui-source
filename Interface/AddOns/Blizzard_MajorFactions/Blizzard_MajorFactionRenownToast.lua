@@ -1,43 +1,3 @@
-local ExpansionLayoutInfo = {
-	[LE_EXPANSION_DRAGONFLIGHT] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = true,
-				anchors = {
-					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-	[LE_EXPANSION_WAR_WITHIN] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = true,
-				anchors = {
-					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-};
 
 MajorFactionsRenownToastMixin = {};
 
@@ -61,21 +21,7 @@ function MajorFactionsRenownToastMixin:OnEvent(event, ...)
 end
 
 function MajorFactionsRenownToastMixin:OnHide()
-	MajorFactionCelebrationBannerMixin.OnHide(self);
-
 	TopBannerManager_BannerFinished();
-end
-
-function MajorFactionsRenownToastMixin:AddSwirlEffects(expansion) -- override
-	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByExpansion(expansion);
-	if not swirlEffects then
-		return;
-	end
-
-	for i, effect in ipairs(swirlEffects) do
-		local effectDescription = { effectID = effect, soundEnabled = false, };
-		self.IconSwirlModelScene:AddDynamicEffect(effectDescription, self);
-	end
 end
 
 function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, renownLevel)
@@ -139,14 +85,8 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetFormattedText(MAJOR_FACTION_RENOWN_LEVEL_TOAST, data.renownLevel);
 	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
-	self:SetMajorFactionSwirlEffects(data.expansionID);
-
-	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
-	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
 
 	self.ToastBG:SetAlpha(0);
-	self.IconSwirlModelScene:SetAlpha(0);
-	self.Icon:SetAlpha(0);
 	self.RenownLabel:SetAlpha(0);
 	self.RewardIcon:SetAlpha(0);
 	self.RewardIconRing:SetAlpha(0);
@@ -171,7 +111,7 @@ function MajorFactionsRenownToastMixin:OnMouseEnter()
 	GameTooltip:SetPoint("LEFT", self.RewardIconMouseOver, "RIGHT", 10, 0);
 	self:RefreshTooltip();
 
-	if self.ShowAnim.HoldAlpha:IsPlaying() then
+	if self.ShowAnim.HoldAlpha:IsPlaying() and not self.ShowAnim.HoldAlpha:IsDelaying() then
 		-- Holding already, just pause where we are
 		self.ShowAnim.HoldAlpha:Pause();
 	elseif self.ShowAnim.HoldAlpha:IsDone() then

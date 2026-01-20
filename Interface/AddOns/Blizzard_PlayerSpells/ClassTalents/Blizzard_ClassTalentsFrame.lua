@@ -16,11 +16,11 @@ function ClassTalentCurrencyDisplayMixin:SetPointTypeText(text)
 end
 
 function ClassTalentCurrencyDisplayMixin:SetAmount(amount)
-	self.CurrencyAmount:SetText(amount);
+	self.CurrentAmountContainer.CurrencyAmount:SetText(amount);
 
 	local enabled = not self:IsInspecting() and (amount > 0);
 	local textColor = enabled and GREEN_FONT_COLOR or GRAY_FONT_COLOR;
-	self.CurrencyAmount:SetTextColor(textColor:GetRGBA());
+	self.CurrentAmountContainer.CurrencyAmount:SetTextColor(textColor:GetRGBA());
 
 	self:MarkDirty();
 end
@@ -66,7 +66,7 @@ ClassTalentsFrameMixin:GenerateCallbackEvents(
 function ClassTalentsFrameMixin:OnLoad()
 	self.initialBasePanOffsetX = self.basePanOffsetX;
 	self.initialBasePanOffsetY = self.basePanOffsetY;
-	
+
 	self.areClassTalentCommitCompleteVisualsActive = false;
 	self.areClassTalentCommitVisualsActive = false;
 
@@ -122,7 +122,7 @@ function ClassTalentsFrameMixin:OnUpdate()
 	self:UpdateConfigButtonsState();
 
 	self:UpdateStarterBuildHighlights();
-	
+
 	-- If player deviated from starter build, but then undid the deviation such that there's no changes to save,
 	-- We can no longer wait till next commit so just unflag them now rather than deal with trying to reset ourselves to being in Starter Build mode.
 	if self.unflagStarterBuildAfterNextCommit and not self:IsCommitInProgress() and self:GetIsStarterBuildActive() and not self:HasAnyConfigChanges() then
@@ -216,7 +216,7 @@ function ClassTalentsFrameMixin:CheckSetSelectedConfigID()
 	if not self.variablesLoaded or not self:IsShown() or self:IsInspecting() then
 		return;
 	end
-	
+
 	local currentSelection = self.LoadSystem:GetSelectionID();
 	if (currentSelection ~= nil) and self.LoadSystem:IsSelectionIDValid(currentSelection) then
 		-- Check to see if starter build is the correct selection, as on spec change it's a valid choice but may not be active for the new spec
@@ -382,7 +382,7 @@ function ClassTalentsFrameMixin:OnTraitConfigUpdated(configID)
 	end
 
 	-- There are expected cases for TRAIT_CONFIG_UPDATED being fired that we don't need to react to
-	-- Examples: 
+	-- Examples:
 	--  - Deleting a loadout while active may lead to Updated event for the next loadout down
 	--  - Saving a change to a loadout may lead to Updated event both for the base spec config id and then the selected loadout config id
 	-- If we do start getting "bad" Updated events, make sure to detect & handle those explicitly and not as a catch-all else case
@@ -451,17 +451,17 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 
 	self.LoadSystem:SetMenuTag("MENU_CLASS_TALENT_PROFILE");
 	self.LoadSystem:SetDropdownDefaultText(WrapTextInColor(TALENT_FRAME_DROP_DOWN_DEFAULT, GRAY_FONT_COLOR));
-	
+
 	local function SelectionEnabledCallback(selectionID, isUserInput)
 		if self:IsCommitInProgress() and (selectionID ~= self.lastSelectedConfigID) then
 			return false;
 		end
-		
+
 		if self:IsStarterBuildConfig(selectionID) then
 			if not isUserInput and not self:GetIsStarterBuildActive() then
 				return false; -- Cannot auto-select starter build unless already in it, or the player is switching to it
 			end
-		
+
 			if not self:GetHasStarterBuild() then
 				return false; -- Cannot select Starter Build if it is not available
 			end
@@ -524,7 +524,7 @@ function ClassTalentsFrameMixin:InitializeLoadSystem()
 
 	local function ClipboardExportCallback()
 		CopyToClipboard(self:GetLoadoutExportString());
-		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
+		ChatFrameUtil.DisplaySystemMessageInPrimary(TALENT_FRAME_EXPORT_TEXT);
 	end
 
 	local function ChatLinkCallback()
@@ -888,7 +888,7 @@ function ClassTalentsFrameMixin:SetCommitStarted(configID, reason, skipAnimation
 		self.stagedPurchaseNodes = self.stagedPurchaseNodesForNextCommit;
 		if not self.stagedPurchaseNodes then
 			local stagedPurchases, _, stagedSelectionSwaps = C_Traits.GetStagedChanges(self:GetConfigID());
-			
+
 			local allGainedNodes = stagedPurchases or {};
 			if stagedSelectionSwaps and #stagedSelectionSwaps > 0 then
 				tAppendAll(allGainedNodes, stagedSelectionSwaps);
@@ -900,7 +900,7 @@ function ClassTalentsFrameMixin:SetCommitStarted(configID, reason, skipAnimation
 		end
 		self.stagedPurchaseNodesForNextCommit = nil;
 	end
-	
+
 	TalentFrameBaseMixin.SetCommitStarted(self, configID, reason, skipAnimation);
 
 	local isCommitOngoing = configID and (reason ~= TalentFrameBaseMixin.CommitUpdateReasons.InstantCommit);
@@ -1047,7 +1047,7 @@ function ClassTalentsFrameMixin:StopPurchaseEffectOnNodes(nodes, stopMethodName)
 			StopPurchaseOnButton(button);
 		end
 	end
-	
+
 end
 
 function ClassTalentsFrameMixin:LoadConfigInternal(configID, autoApply, skipAnimation)
@@ -1177,7 +1177,7 @@ function ClassTalentsFrameMixin:SetSelection(nodeID, entryID, oldEntryID)
 		end
 		local function CancelSelect()
 			local button = self:GetTalentButtonByNodeID(nodeID);
-			-- If player cancelled, make sure button is reset back to previous selection 
+			-- If player cancelled, make sure button is reset back to previous selection
 			if button and button:GetSelectedEntryID() == entryID then
 				button:SetSelectedEntryID(oldEntryID);
 			end
@@ -1385,7 +1385,7 @@ function ClassTalentsFrameMixin:CopyInspectLoadout()
 	local loadoutString = self:GetInspectUnit() and C_Traits.GenerateInspectImportString(self:GetInspectUnit()) or self:GetInspectString();
 	if loadoutString and (loadoutString ~= "") then
 		CopyToClipboard(loadoutString);
-		DEFAULT_CHAT_FRAME:AddMessage(TALENT_FRAME_EXPORT_TEXT, YELLOW_FONT_COLOR:GetRGB());
+		ChatFrameUtil.DisplaySystemMessageInPrimary(TALENT_FRAME_EXPORT_TEXT);
 	end
 end
 
@@ -1502,7 +1502,7 @@ function ClassTalentsFrameMixin:WillDeviateFromStarterBuild(selectedNodeID, sele
 	end
 
 	local starterNodeID, starterEntryID = C_ClassTalents.GetNextStarterBuildPurchase();
-	return (starterNodeID and starterNodeID ~= selectedNodeID) or 
+	return (starterNodeID and starterNodeID ~= selectedNodeID) or
 			(selectedEntryID and starterEntryID and starterEntryID ~= selectedEntryID);
 end
 

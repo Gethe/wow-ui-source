@@ -204,6 +204,7 @@ function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadi
 			AdventureObjectiveTracker,
 			AchievementObjectiveTracker,
 			MonthlyActivitiesObjectiveTracker,
+			InitiativeTasksObjectiveTracker,
 			ProfessionsRecipeTracker,
 			BonusObjectiveTracker,
 			WorldQuestObjectiveTracker,

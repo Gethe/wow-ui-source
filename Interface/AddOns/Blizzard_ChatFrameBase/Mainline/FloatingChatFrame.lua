@@ -362,15 +362,15 @@ function FCF_Tab_SetupMenu(self)
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_FCF_TAB");
 
-		-- Window preferences
-		local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
+	-- Window preferences
+	local name, fontSize, r, g, b, a, shown = FCF_GetChatWindowInfo(FCF_GetCurrentChatFrameID());
 		local currentChatFrame = FCF_GetCurrentChatFrame();
 		local isTemporary = currentChatFrame and currentChatFrame.isTemporary;
 		local isOnGlueScreen = C_Glue.IsOnGlueScreen();
 		local tabChatFrame = FCF_GetChatFrameByID(self:GetID());
 
-		-- Window options
-		if ( not isOnGlueScreen ) then
+	-- Window options
+	if ( not isOnGlueScreen ) then
 			-- EditModeManagerFrame is not available at glues.
 			if (EditModeManagerFrame and (tabChatFrame == DEFAULT_CHAT_FRAME)) then
 				-- If you are the default chat frame then show the enter edit mode option
@@ -403,57 +403,57 @@ function FCF_Tab_SetupMenu(self)
 				FCF_ToggleUninteractable();
 			end);
 
-			if ( not isTemporary ) then
-				-- Add name button
+		if ( not isTemporary ) then
+			-- Add name button
 				rootDescription:CreateButton(RENAME_CHAT_WINDOW, function(...)
 					FCF_RenameChatWindow_Popup();
 				end);
-			end
+		end
 
 			if ( currentChatFrame == DEFAULT_CHAT_FRAME ) then
-				-- Create new chat window
+			-- Create new chat window
 				local button = rootDescription:CreateButton(NEW_CHAT_WINDOW, function(...)
 					FCF_NewChatWindow();
 				end);
 				if not FCF_CanOpenNewWindow() then
 					button:SetEnabled(false);
-				end
 			end
+		end
 
-			-- Close current chat window
+		-- Close current chat window
 			if ( currentChatFrame and not IsBuiltinChatWindow(currentChatFrame) ) then
 				if ( not currentChatFrame.isTemporary ) then
 					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
 						FCF_PopInWindow(tabChatFrame);
 					end);
 				elseif (currentChatFrame.chatType == "WHISPER" or currentChatFrame.chatType == "BN_WHISPER" ) then
-					rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
-						FCF_PopInWindow(tabChatFrame);
-					end);
+						rootDescription:CreateButton(CLOSE_CHAT_WHISPER_WINDOW, function(...)
+							FCF_PopInWindow(tabChatFrame);
+						end);
 				else
-					rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
-						FCF_Close(tabChatFrame);
-					end);
+						rootDescription:CreateButton(CLOSE_CHAT_WINDOW, function(...)
+							FCF_Close(tabChatFrame);
+						end);
 				end
 			end
 		end
 
-		-- Display header
+	-- Display header
 		rootDescription:CreateTitle(DISPLAY);
 
 		do
-			-- Font size
+	-- Font size
 			local fontSizeSubmenu = rootDescription:CreateButton(FONT_SIZE);
 
 			local fontFile, fontHeight, fontFlags = currentChatFrame:GetFont();
 			local floorHeight = floor(fontHeight + 0.5);
 			local function IsSelected(height)
 				return height == floorHeight;
-			end
+	end
 
 			local function SetSelected(height)
 				FCF_SetChatWindowFontSize(nil, tabChatFrame, height);
-			end
+	end
 
 			for i=1, #CHAT_FONT_HEIGHTS do
 				local height = CHAT_FONT_HEIGHTS[i];
@@ -486,7 +486,7 @@ function FCF_Tab_SetupMenu(self)
 			rootDescription:CreateButton(CHAT_CONFIGURATION, function(...)
 				ShowUIPanel(ChatConfigFrame);
 			end);
-		end
+	end
 	end);
 end
 
@@ -620,15 +620,15 @@ function FCF_SetTemporaryWindowType(chatFrame, chatType, chatTarget)
 		chatFrame:AddMessageGroup("PET_BATTLE_INFO");
 	end
 
-	chatFrame.editBox:SetAttribute("chatType", chatType);
-	chatFrame.editBox:SetAttribute("stickyType", chatType);
+	chatFrame.editBox:SetChatType(chatType);
+	chatFrame.editBox:SetStickyType(chatType);
 
 	if ( chatType == "WHISPER" or chatType == "BN_WHISPER" ) then
-		chatFrame.editBox:SetAttribute("tellTarget", chatTarget);
+		chatFrame.editBox:SetTellTarget(chatTarget);
 		chatFrame:AddPrivateMessageTarget(chatTarget);
 	elseif ( chatType == "PET_BATTLE_COMBAT_LOG" ) then
-		chatFrame.editBox:SetAttribute("chatType", "SAY");
-		chatFrame.editBox:SetAttribute("stickyType", "SAY");
+		chatFrame.editBox:SetChatType("SAY");
+		chatFrame.editBox:SetStickyType("SAY");
 	end
 
 	--Setting up the icon display info

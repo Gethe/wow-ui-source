@@ -17,7 +17,7 @@ function CatalogShopRefundFrameMixin:OnLoad()
 		self:SetScript("OnKeyDown",
 			function(self, key)
 				if ( key == "ESCAPE" ) then
-					CatalogShopFrame:SetAttribute("action", "EscapePressed");
+					CatalogShopRefundFrame:SetAttribute("action", "EscapePressed");
 				end
 			end
 		);
@@ -55,10 +55,6 @@ function CatalogShopRefundFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.CATALOG_SHOP_CLOSE_SHOP);
 end
 
-function CatalogShopRefundFrameMixin:SetContextKey(contextKey)
-	self.contextKey = contextKey;
-end
-
 function CatalogShopRefundFrameMixin:ShowCoverFrame()
 	local coverFrameParent = GetAppropriateTopLevelParent();
 	self.CoverFrame:ClearAllPoints();
@@ -86,8 +82,6 @@ function CatalogShopRefundFrameMixin:OnAttributeChanged(name, value)
 			end
 			self:SetAttribute("escaperesult", handled);
 		end
-	elseif (name == "contextkey") then
-		self:SetContextKey(value);
 	end
 end
 

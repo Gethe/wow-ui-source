@@ -20,9 +20,6 @@ local GenericTraitFrameEvents = {
 
 function GenericTraitFrameMixin:OnLoad()
 	TalentFrameBaseMixin.OnLoad(self);
-
-	-- Show costs by default.
-	self:SetTreeCurrencyDisplayTextCallback(TalentFrameUtil.GenerateTreeCurrencyDisplayCallback());
 end
 
 function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
@@ -62,7 +59,13 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.basePanOffsetY = layoutInfo.PanOffset.y;
 
 	self.buttonPurchaseFXIDs = layoutInfo.ButtonPurchaseFXIDs;
+	self.suppressSubTreeConfirmation = layoutInfo.SuppressSubTreeConfirmation;
 	self:SetCardTemplateCallback(layoutInfo.CardTemplateCallback or nil);
+
+	-- Show currency costs and held currency amounts by default unless overridden to be hidden by layout info.
+	local showCurrencyDisplay = not layoutInfo.HideCurrencyDisplay;
+	local currencyDisplayCallback = showCurrencyDisplay and TalentFrameUtil.GenerateTreeCurrencyDisplayCallback() or nil;
+	self:SetTreeCurrencyDisplayTextCallback(currencyDisplayCallback);
 
 	SetUIPanelAttribute(GenericTraitFrame, "area", layoutInfo.PanelArea);
 end
@@ -162,7 +165,7 @@ function GenericTraitFrameMixin:AttemptConfigOperation(...)
 end
 
 function GenericTraitFrameMixin:SetSelection(nodeID, entryID)
-	if self:ShouldShowConfirmation() then
+	if self:ShouldShowConfirmation(nodeID) then
 		local baseButton = self:GetTalentButtonByNodeID(nodeID);
 		if baseButton and baseButton:IsMaxed() then
 			self:SetSelectionCallback(nodeID, entryID);
@@ -212,12 +215,16 @@ function GenericTraitFrameMixin:UpdateTreeCurrencyInfo()
 	TalentFrameBaseMixin.UpdateTreeCurrencyInfo(self);
 
 	local currencyInfo = self.treeCurrencyInfo and self.treeCurrencyInfo[1] or nil;
-	local hasCurrencyInfo = currencyInfo ~= nil;
-	self.Currency:SetShown(hasCurrencyInfo);
-	if hasCurrencyInfo then
-		local displayText = self.getDisplayTextFromTreeCurrency(currencyInfo);
-		self.Currency:Setup(currencyInfo, displayText);
+	local showCurrency = currencyInfo ~= nil;
+	if showCurrency then
+		local displayText = self.getDisplayTextFromTreeCurrency and self.getDisplayTextFromTreeCurrency(currencyInfo);
+		if displayText then
+			self.Currency:Setup(currencyInfo, displayText);
+		else
+			showCurrency = false;
+		end
 	end
+	self.Currency:SetShown(showCurrency);
 end
 
 function GenericTraitFrameMixin:GetFrameLevelForButton(nodeInfo, _visualState)
@@ -236,7 +243,7 @@ function GenericTraitFrameMixin:IsLocked()
 end
 
 function GenericTraitFrameMixin:PurchaseRank(nodeID)
-	if self:ShouldShowConfirmation() then
+	if self:ShouldShowConfirmation(nodeID) then
 		local referenceKey = self;
 		if StaticPopup_IsCustomGenericConfirmationShown(referenceKey) then
 			StaticPopup_Hide("GENERIC_CONFIRMATION");
@@ -244,12 +251,17 @@ function GenericTraitFrameMixin:PurchaseRank(nodeID)
 
 		local cost = self:GetNodeCost(nodeID);
 		local costStrings = self:GetCostStrings(cost);
-		local costString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
 
+		local confirmationString;
+		if #costStrings > 0 then
+			confirmationString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE_FORMAT:format(table.concat(costStrings, TALENT_BUTTON_TOOLTIP_COST_ENTRY_SEPARATOR));
+		else
+			confirmationString = GENERIC_TRAIT_FRAME_CONFIRM_PURCHASE;
+		end
 
 		local purchaseRankCallback = GenerateClosure(self.PurchaseRankCallback, self, nodeID);
 		local customData = {
-			text = costString,
+			text = confirmationString,
 			callback = purchaseRankCallback,
 			referenceKey = self,
 		};
@@ -300,9 +312,19 @@ function GenericTraitFrameMixin:PlayDeselectSoundForNode(nodeID)
 	self:InvokeTalentButtonMethodByNodeID("PlayDeselectSound", nodeID);
 end
 
-function GenericTraitFrameMixin:ShouldShowConfirmation()
+function GenericTraitFrameMixin:ShouldShowConfirmation(nodeID)
 	local traitSystemFlags = C_Traits.GetTraitSystemFlags(self:GetConfigID());
-	return traitSystemFlags and FlagsUtil.IsSet(traitSystemFlags, Enum.TraitSystemFlag.ShowSpendConfirmation);
+	local showSpendConfirmation = traitSystemFlags and FlagsUtil.IsSet(traitSystemFlags, Enum.TraitSystemFlag.ShowSpendConfirmation);
+
+	-- If nodeID is provided, check if this is a subtree selection and if suppression is enabled
+	if nodeID and self.suppressSubTreeConfirmation then
+		local nodeInfo = C_Traits.GetNodeInfo(self:GetConfigID(), nodeID);
+		if nodeInfo and nodeInfo.type == Enum.TraitNodeType.SubTreeSelection then
+			return false;
+		end
+	end
+
+	return showSpendConfirmation;
 end
 
 

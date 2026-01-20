@@ -138,7 +138,7 @@ function HouseFinderFrameMixin:SelectSubdivision(index)
 	self.selectedSubdivision = index;
 	self:ShowNeighborhoodList();
 	local neighborhoodInfo = self.guildSubdivisions[index];
-	C_Housing.RequestHouseFinderNeighborhoodData(neighborhoodInfo.neighborhoodGUID);
+	C_Housing.RequestHouseFinderNeighborhoodData(neighborhoodInfo.neighborhoodGUID, neighborhoodInfo.neighborhoodName);
 	self.LoadingSpinnerMap:Show();
 	self.HouseFinderMapCanvasFrame:Hide();
 end
@@ -156,7 +156,7 @@ function HouseFinderFrameMixin:SelectNeighborhood(button, shouldRequestInfo)
 	end
 
 	if shouldRequestInfo then
-		C_Housing.RequestHouseFinderNeighborhoodData(button.neighborhoodInfo.neighborhoodGUID);
+		C_Housing.RequestHouseFinderNeighborhoodData(button.neighborhoodInfo.neighborhoodGUID, button.neighborhoodInfo.neighborhoodName);
 		self.LoadingSpinnerMap:Show();
 		self.HouseFinderMapCanvasFrame:Hide();
 	end
@@ -223,8 +223,9 @@ function HouseFinderFrameMixin:OnEvent(event, ...)
 	elseif event == "DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE" then
 		local success = ...;
 		if success then
-			local nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(self.pendingDeclineInviteNeighborhoodButton);
+			local nextNeighborhood = nil;
 			self.neighborhoodButtonPool:Release(self.pendingDeclineInviteNeighborhoodButton);
+			nextNeighborhood = self.neighborhoodButtonPool:GetNextActive(nextNeighborhood);
 			self:SelectNeighborhood(nextNeighborhood, true); --select new first button and request data for map
 			self.NeighborhoodListFrame.ScrollFrame.NeighborhoodList:Layout();
 		else
@@ -278,6 +279,7 @@ function HouseFinderFrameMixin:SelectPlot(mapPin, plotInfo)
 	end
 	self.PlotInfoFrame:Show();
 	self.NeighborhoodListFrame:Hide();
+	C_Housing.OnHouseFinderClickPlot(plotInfo.plotID);
 
 	PlaySound(SOUNDKIT.HOUSING_HOUSE_FINDER_PLOT_SELECT);
 end

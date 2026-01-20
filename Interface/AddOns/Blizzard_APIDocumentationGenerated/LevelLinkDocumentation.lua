@@ -3,12 +3,14 @@ local LevelLink =
 	Name = "LevelLink",
 	Type = "System",
 	Namespace = "C_LevelLink",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "IsActionLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local LevelLink =
 		{
 			Name = "IsSpellLocked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -25,3 +25,11 @@ function NotificationUtil.ReleaseNotification(frame)
 	frame:SetParent(nil);
 	notificationPoolCollection:Release(frame);
 end
+
+function NotificationUtil_AcquireLargeNotification(point, parent, relativePoint, offsetX, offsetY)
+	return NotificationUtil.AcquireLargeNotification(point, parent, relativePoint, offsetX, offsetY)
+end
+
+function NotificationUtil_ReleaseNotification(frame)
+	return NotificationUtil.ReleaseNotification(frame)
+end

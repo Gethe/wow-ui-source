@@ -3,6 +3,7 @@ local IslandsQueueUI =
 	Name = "IslandsQueue",
 	Type = "System",
 	Namespace = "C_IslandsQueue",
+	Environment = "All",
 
 	Functions =
 	{
@@ -40,6 +41,7 @@ local IslandsQueueUI =
 		{
 			Name = "QueueForIsland",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +51,7 @@ local IslandsQueueUI =
 		{
 			Name = "RequestPreloadRewardData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,11 +66,13 @@ local IslandsQueueUI =
 			Name = "IslandsQueueClose",
 			Type = "Event",
 			LiteralName = "ISLANDS_QUEUE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "IslandsQueueOpen",
 			Type = "Event",
 			LiteralName = "ISLANDS_QUEUE_OPEN",
+			SynchronousEvent = true,
 		},
 	},
 

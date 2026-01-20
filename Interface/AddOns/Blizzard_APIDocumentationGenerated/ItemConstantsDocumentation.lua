@@ -530,6 +530,21 @@ local ItemConstants =
 			},
 		},
 		{
+			Name = "SleevesGeoRange",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "SleevesGeoRange", EnumValue = 0 },
+				{ Name = "Default", Type = "SleevesGeoRange", EnumValue = 1 },
+				{ Name = "Flared", Type = "SleevesGeoRange", EnumValue = 2 },
+				{ Name = "Puffy", Type = "SleevesGeoRange", EnumValue = 3 },
+				{ Name = "PandaCollar", Type = "SleevesGeoRange", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "SlotRegion",
 			Type = "Enumeration",
 			NumValues = 6,

@@ -13,6 +13,7 @@ Mainline\ColorblindOverrides.lua
 Mainline\KeybindingsOverrides.lua
 Mainline\AccessibilityOverrides.lua
 Controls.xml
+Interface.lua
 Interface.xml
 Combat.lua
 ActionBars.lua
@@ -23,7 +24,10 @@ Keybindings.xml
 Accessibility.lua
 Accessibility.xml
 Mainline\Colorblind.xml
-TextToSpeech.xml
+AudioAssist.lua
+AudioAssist.xml
 Mounts.lua
 Subtitles.xml
 AdvancedOptions.lua
+Nameplates.lua
+Nameplates.xml

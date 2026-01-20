@@ -13,18 +13,26 @@ CompactRaidFrameContainerMixin = {};
 
 function CompactRaidFrameContainerMixin:OnLoad()
 	FlowContainer_Initialize(self);	--Congrats! We are now a certified FlowContainer.
-	
+
 	self:SetClampRectInsets(0, 200 - self:GetWidth(), 10, 0);
-	
+
 	self.units = {--[["raid1", "raid2", "raid3", ..., "raid40"]]};
 	for i=1, MAX_RAID_MEMBERS do
 		tinsert(self.units, "raid"..i);
 	end
-	
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("UNIT_PET");
-	
+
+	EventRegistry:RegisterCallback("EditMode.Exit", function()
+		self:ApplyMultipleToFrames(
+			"mini", DefaultCompactMiniFrameSetup,
+			"normal", CompactUnitFrame_UpdateAll,
+			"group", CompactRaidGroup_UpdateBorder
+		);
+	end);
+
 	local unitFrameReleaseFunc = function(frame) CompactUnitFrame_SetUnit(frame, nil);	end;
 	self.frameReservations = {
 		raid		= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);
@@ -33,7 +41,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 		flagged	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--For Main Tank/Assist units
 		target	= CompactRaidFrameReservation_NewManager(unitFrameReleaseFunc);	--Target of target for Main Tank/Main Assist
 	}
-	
+
 	self.frameUpdateList = {
 		normal = {},	--Groups are also in this normal list.
 		mini = {},
@@ -41,7 +49,7 @@ function CompactRaidFrameContainerMixin:OnLoad()
 	}
 
 	self.unitFrameUnusedFunc = function(frame) frame.inUse = false;	end;
-												
+
 	self.displayPets = true;
 	self.displayFlaggedMembers = true;
 
@@ -133,6 +141,16 @@ function CompactRaidFrameContainerMixin:ApplyToFrames(updateSpecifier, func, ...
 	end
 end
 
+function CompactRaidFrameContainerMixin:ApplyMultipleToFrames(...)
+	-- args are interleaved "name1", callback1, "name2", callback2, ... format.
+	-- This one unfortunately cannot pass varargs to func
+	for i = 1, select("#", ...), 2 do
+		local updateSpecifier = select(i, ...);
+		local func = select(i + 1, ...);
+		self:ApplyToFrames(updateSpecifier, func);
+	end
+end
+
 --Internally used functions
 function CompactRaidFrameContainerMixin:TryUpdate()
 	CompactPartyFrame:RefreshMembers();
@@ -157,7 +175,7 @@ function CompactRaidFrameContainerMixin:ReadyToUpdate()
 	if groupMode == "discrete" and not self.groupFilterFunc then
 		return false;
 	end
-	
+
 	return true;
 end
 
@@ -169,28 +187,28 @@ function CompactRaidFrameContainerMixin:LayoutFrames()
 		end
 	end
 	FlowContainer_RemoveAllObjects(self);
-	
+
 	FlowContainer_PauseUpdates(self);	--We don't want to update it every time we add an item.
-	
+
 	if self.displayFlaggedMembers then
 		self:AddFlaggedUnits();
 		FlowContainer_AddLineBreak(self);
 	end
-	
+
 	if self:GetGroupMode() == "discrete" then
 		self:AddGroups();
 	else
 		self:AddPlayers();
 	end
-	
+
 	if self.displayPets then
 		self:AddPets();
 	end
-	
+
 	self:SetSize(3000, 3000);
 	FlowContainer_ResumeUpdates(self);
 	self:Layout();
-	
+
 	self:UpdateBorder();
 	self:ReleaseAllReservedFrames();
 end
@@ -208,7 +226,7 @@ end
 local usedGroups = {}; --Enclosure to make sure usedGroups isn't used anywhere else.
 function CompactRaidFrameContainerMixin:AddGroups()
 	RaidUtil_GetUsedGroups(usedGroups);
-			
+
 	for groupNum, isUsed in ipairs(usedGroups) do
 		if isUsed and self.groupFilterFunc(groupNum) then
 			self:AddGroup(groupNum);
@@ -228,7 +246,7 @@ function CompactRaidFrameContainerMixin:AddGroup(id)
 			tinsert(self.frameUpdateList.mini, groupFrame);
 		end
 	elseif id =="ARENA" then
-		if not CompactArenaFrame_Generate and (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
+		if not CompactArenaFrame_Generate or (C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm) then
 			return;
 		end
 
@@ -266,9 +284,9 @@ function CompactRaidFrameContainerMixin:AddPlayers()
 	--First, sort the players we're going to use
 	assert(self.flowSortFunc);		--No sort function defined! Call SetFlowSortFunction.
 	assert(self.flowFilterFunc);	--No filter function defined! Call SetFlowFilterFunction.
-	
+
 	table.sort(self.units, self.flowSortFunc);
-	
+
 	local numForcedMembersShown = EditModeManagerFrame:GetNumRaidMembersForcedShown();
 
 	for i=1, #self.units do
@@ -317,21 +335,21 @@ function CompactRaidFrameContainerMixin:AddFlaggedUnits()
 			local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
 			if role == desiredRole then
 				FlowContainer_BeginAtomicAdd(self);	--We want each unit to be right next to its target and target of target.
-				
+
 				self:AddUnitFrame(unit, "flagged");
-				
+
 				--If we want to display the tank/assist target...
 				local targetFrame = self:AddUnitFrame(unit.."target", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetFrame, true);
-				
+
 				--Target of target?
 				local targetOfTargetFrame = self:AddUnitFrame(unit.."targettarget", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
-				
+
 				FlowContainer_EndAtomicAdd(self);
 			end
 		end
-	end		
+	end
 end
 
 --Utility Functions
@@ -351,7 +369,7 @@ function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 	local info = frameCreationSpecifiers[frameType];
 	assert(info);
 	assert(info.setUpFunc);
-	
+
 	--Get the mapping for re-using frames
 	local mapping;
 	if ( info.mapping ) then
@@ -359,7 +377,7 @@ function CompactRaidFrameContainerMixin:GetUnitFrame(unit, frameType)
 	else
 		mapping = unit;
 	end
-	
+
 	local frame = CompactRaidFrameReservation_GetFrame(self.frameReservations[frameType], mapping);
 	if ( not frame ) then
 		unitFramesCreated = unitFramesCreated + 1;

@@ -3,12 +3,14 @@ local Soulbinds =
 	Name = "Soulbinds",
 	Type = "System",
 	Namespace = "C_Soulbinds",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ActivateSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local Soulbinds =
 		{
 			Name = "CanActivateSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +45,7 @@ local Soulbinds =
 		{
 			Name = "CanResetConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,6 +74,7 @@ local Soulbinds =
 		{
 			Name = "CommitPendingConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -79,6 +84,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDActuallyInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +100,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDAppearingInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +116,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDPendingInstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,6 +132,7 @@ local Soulbinds =
 		{
 			Name = "FindNodeIDPendingUninstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,6 +157,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +181,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollectionData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -194,6 +205,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitCollectionDataByVirtualID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,6 +220,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitDisplayed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -222,6 +235,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitHyperlink",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -237,6 +251,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitIDPendingInstall",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,6 +266,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,6 +282,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitRank",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -280,6 +297,7 @@ local Soulbinds =
 		{
 			Name = "GetConduitSpellID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -295,6 +313,7 @@ local Soulbinds =
 		{
 			Name = "GetInstalledConduitID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -309,6 +328,7 @@ local Soulbinds =
 		{
 			Name = "GetNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -323,6 +343,7 @@ local Soulbinds =
 		{
 			Name = "GetSoulbindData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -337,6 +358,7 @@ local Soulbinds =
 		{
 			Name = "GetSpecsAssignedToSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -351,6 +373,7 @@ local Soulbinds =
 		{
 			Name = "GetTree",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,6 +388,7 @@ local Soulbinds =
 		{
 			Name = "HasAnyInstalledConduitInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -388,6 +412,7 @@ local Soulbinds =
 		{
 			Name = "HasPendingConduitsInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -402,6 +427,7 @@ local Soulbinds =
 		{
 			Name = "IsConduitInstalled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -416,6 +442,7 @@ local Soulbinds =
 		{
 			Name = "IsConduitInstalledInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -431,6 +458,7 @@ local Soulbinds =
 		{
 			Name = "IsItemConduitByItemInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -445,6 +473,7 @@ local Soulbinds =
 		{
 			Name = "IsNodePendingModify",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -459,6 +488,7 @@ local Soulbinds =
 		{
 			Name = "IsUnselectedConduitPendingInSoulbind",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -473,6 +503,7 @@ local Soulbinds =
 		{
 			Name = "ModifyNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -484,6 +515,7 @@ local Soulbinds =
 		{
 			Name = "SelectNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -493,6 +525,7 @@ local Soulbinds =
 		{
 			Name = "UnmodifyNode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -507,6 +540,7 @@ local Soulbinds =
 			Name = "SoulbindActivated",
 			Type = "Event",
 			LiteralName = "SOULBIND_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "soulbindID", Type = "number", Nilable = false },
@@ -516,11 +550,13 @@ local Soulbinds =
 			Name = "SoulbindConduitCollectionCleared",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_CLEARED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindConduitCollectionRemoved",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "conduitID", Type = "number", Nilable = false },
@@ -530,6 +566,7 @@ local Soulbinds =
 			Name = "SoulbindConduitCollectionUpdated",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_COLLECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "collectionData", Type = "ConduitCollectionData", Nilable = false },
@@ -539,6 +576,7 @@ local Soulbinds =
 			Name = "SoulbindConduitInstalled",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_INSTALLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -549,6 +587,7 @@ local Soulbinds =
 			Name = "SoulbindConduitUninstalled",
 			Type = "Event",
 			LiteralName = "SOULBIND_CONDUIT_UNINSTALLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -559,16 +598,19 @@ local Soulbinds =
 			Name = "SoulbindForgeInteractionEnded",
 			Type = "Event",
 			LiteralName = "SOULBIND_FORGE_INTERACTION_ENDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindForgeInteractionStarted",
 			Type = "Event",
 			LiteralName = "SOULBIND_FORGE_INTERACTION_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindNodeLearned",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_LEARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -578,6 +620,7 @@ local Soulbinds =
 			Name = "SoulbindNodeUnlearned",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_UNLEARNED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -587,6 +630,7 @@ local Soulbinds =
 			Name = "SoulbindNodeUpdated",
 			Type = "Event",
 			LiteralName = "SOULBIND_NODE_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },
@@ -596,11 +640,13 @@ local Soulbinds =
 			Name = "SoulbindPathChanged",
 			Type = "Event",
 			LiteralName = "SOULBIND_PATH_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SoulbindPendingConduitChanged",
 			Type = "Event",
 			LiteralName = "SOULBIND_PENDING_CONDUIT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "nodeID", Type = "number", Nilable = false },

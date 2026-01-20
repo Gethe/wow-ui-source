@@ -3,6 +3,7 @@ local ScriptedAnimations =
 	Name = "ScriptedAnimations",
 	Type = "System",
 	Namespace = "C_ScriptedAnimations",
+	Environment = "All",
 
 	Functions =
 	{
@@ -23,6 +24,7 @@ local ScriptedAnimations =
 			Name = "ScriptedAnimationsUpdate",
 			Type = "Event",
 			LiteralName = "SCRIPTED_ANIMATIONS_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -64,11 +64,11 @@ function MailFrame_Show()
 	SendMailFrame_Update();
 	MailFrameTab_OnClick(nil, 1);
 	MailFrame_RefreshInbox(MailFrame);
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 end
 
 function MailFrame_Hide()
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	HideUIPanel(MailFrame);
 	CloseAllBags(self);
 	SendMailFrameLockSendMail:Hide();
@@ -284,7 +284,7 @@ function InboxFrame_Update()
 			-- Set highlight
 			if ( InboxFrame.openMailID == index ) then
 				button:SetChecked(true);
-				SetPortraitToTexture(OpenMailFrameIcon, stationeryIcon);
+				OpenMailFrameIcon:SetTexture(stationeryIcon);
 			else
 				button:SetChecked(false);
 			end
@@ -467,12 +467,12 @@ function OpenMailFrame_UpdateButtonPositions(letterIsTakeable, textCreated, stat
 			tinsert(OpenMailFrame.activeAttachmentButtons, attachmentButton);
 			rowAttachmentCount = rowAttachmentCount + 1;
 
-			local name, itemID, itemTexture, count, quality, canUse = GetInboxItem(InboxFrame.openMailID, i);
+			local name, id, itemTexture, count, quality, canUse, isCurrency = GetInboxItem(InboxFrame.openMailID, i);
 			if name then
 				attachmentButton.name = name;
 				SetItemButtonTexture(attachmentButton, itemTexture);
 				SetItemButtonCount(attachmentButton, count);
-				SetItemButtonQuality(attachmentButton, quality, itemID);
+				SetItemButtonQuality(attachmentButton, quality, id);
 			else
 				attachmentButton.name = nil;
 				SetItemButtonTexture(attachmentButton, "Interface/Icons/INV_Misc_QuestionMark");
@@ -633,7 +633,7 @@ function OpenMail_Update()
 
 		local info = C_Mail.GetCraftingOrderMailInfo(InboxFrame.openMailID);
 
-		if ( info.reason == Enum.RcoCloseReason.RcoCloseCancel ) then
+		if ( info.reason == Enum.RcoCloseReason.Cancel ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_CANCELED_BODY);
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
@@ -642,7 +642,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseExpire ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Expire ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_EXPIRED_BODY);
 			ConsortiumMailFrame.CrafterText:Hide();
 			ConsortiumMailFrame.CrafterNote:Hide();
@@ -651,7 +651,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseFulfill ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Fulfill ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_BY:format(info.crafterName or ""));
 			ConsortiumMailFrame.CrafterText:Show();
@@ -664,7 +664,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseReject ) then
+		elseif ( info.reason == Enum.RcoCloseReason.Reject ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_REJECTED_BY:format(info.crafterName or ""));
 			ConsortiumMailFrame.CrafterText:Show();
@@ -675,7 +675,7 @@ function OpenMail_Update()
 			ConsortiumMailFrame.CommissionReceivedDisplay:Hide();
 			ConsortiumMailFrame.ConsortiumNote:Hide();
 
-		elseif ( info.reason == Enum.RcoCloseReason.RcoCloseCrafterFulfill ) then
+		elseif ( info.reason == Enum.RcoCloseReason.CrafterFulfill ) then
 			ConsortiumMailFrame.OpeningText:SetText(CRAFTING_ORDER_MAIL_ORDER_HEADER:format(info.recipeName));
 			ConsortiumMailFrame.CrafterText:SetText(CRAFTING_ORDER_MAIL_FULFILLED_TO:format(info.customerName or ""));
 			ConsortiumMailFrame.CrafterText:Show();
@@ -1222,8 +1222,8 @@ function OpenAllMailMixin:AdvanceToNextItem()
 	local foundAttachment = false;
 	while ( not foundAttachment ) do
 		local _, _, _, _, money, CODAmount, daysLeft, itemCount, _, _, _, _, isGM = GetInboxHeaderInfo(self.mailIndex);
-		local itemID = select(2, GetInboxItem(self.mailIndex, self.attachmentIndex));
-		local hasBlacklistedItem = self:IsItemBlacklisted(itemID);
+		local _, id, _, _, _, _, isCurrency = GetInboxItem(self.mailIndex, self.attachmentIndex);
+		local hasBlacklistedItem = (not isCurrency) and self:IsItemBlacklisted(id);
 		local hasCOD = CODAmount and CODAmount > 0;
 		local hasMoneyOrItem = C_Mail.HasInboxMoney(self.mailIndex) or HasInboxItem(self.mailIndex, self.attachmentIndex);
 		if ( not hasBlacklistedItem and not hasCOD and hasMoneyOrItem ) then

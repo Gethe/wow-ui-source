@@ -3,6 +3,7 @@ local RecentAllies =
 	Name = "RecentAllies",
 	Type = "System",
 	Namespace = "C_RecentAllies",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local RecentAllies =
 			Name = "CanSetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +37,7 @@ local RecentAllies =
 			Name = "GetRecentAllyByFullName",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,6 +53,7 @@ local RecentAllies =
 			Name = "GetRecentAllyByGUID",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +69,7 @@ local RecentAllies =
 			Name = "IsRecentAllyByFullName",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +85,7 @@ local RecentAllies =
 			Name = "IsRecentAllyByGUID",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,6 +111,7 @@ local RecentAllies =
 			Name = "IsRecentAllyPinned",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -138,6 +145,7 @@ local RecentAllies =
 			Name = "SetRecentAllyNote",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,6 +157,7 @@ local RecentAllies =
 			Name = "SetRecentAllyPinned",
 			Type = "Function",
 			RequiresRecentAllies = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -170,26 +179,31 @@ local RecentAllies =
 			Name = "LetRecentAlliesSeeLocationSettingUpdated",
 			Type = "Event",
 			LiteralName = "LET_RECENT_ALLIES_SEE_LOCATION_SETTING_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAlliesCacheUpdate",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_CACHE_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "RecentAlliesDataReady",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_DATA_READY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAlliesSystemStatusUpdated",
 			Type = "Event",
 			LiteralName = "RECENT_ALLIES_SYSTEM_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "RecentAllyDataUpdated",
 			Type = "Event",
 			LiteralName = "RECENT_ALLY_DATA_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "characterGUID", Type = "WOWGUID", Nilable = false },

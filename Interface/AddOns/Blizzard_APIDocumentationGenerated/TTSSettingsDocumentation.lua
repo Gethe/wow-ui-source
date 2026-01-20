@@ -3,12 +3,14 @@ local TTSSettings =
 	Name = "TTSSettings",
 	Type = "System",
 	Namespace = "C_TTSSettings",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetChannelEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local TTSSettings =
 		{
 			Name = "GetChatTypeEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +49,7 @@ local TTSSettings =
 		{
 			Name = "GetSetting",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -78,6 +82,7 @@ local TTSSettings =
 		{
 			Name = "GetVoiceOptionID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -92,6 +97,7 @@ local TTSSettings =
 		{
 			Name = "GetVoiceOptionName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -110,6 +116,7 @@ local TTSSettings =
 		{
 			Name = "SetChannelEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -120,6 +127,7 @@ local TTSSettings =
 		{
 			Name = "SetChannelKeyEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +138,7 @@ local TTSSettings =
 		{
 			Name = "SetChatTypeEnabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +153,7 @@ local TTSSettings =
 		{
 			Name = "SetSetting",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +164,7 @@ local TTSSettings =
 		{
 			Name = "SetSpeechRate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -163,6 +174,7 @@ local TTSSettings =
 		{
 			Name = "SetSpeechVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +184,7 @@ local TTSSettings =
 		{
 			Name = "SetVoiceOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +195,7 @@ local TTSSettings =
 		{
 			Name = "SetVoiceOptionName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -192,6 +206,7 @@ local TTSSettings =
 		{
 			Name = "ShouldOverrideMessage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

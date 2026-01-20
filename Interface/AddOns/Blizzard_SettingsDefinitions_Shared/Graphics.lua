@@ -237,7 +237,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local control = containerFrame.Control;
 		control:SetWidth(220);
 
-		local inserter = Settings.CreateDropdownOptionInserter(options);
+		local inserter = Settings.CreateDropdownOptionInserter(setting, options);
 		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
 		Settings.InitDropdown(control.Dropdown, setting, inserter, initTooltip);
 
@@ -664,11 +664,6 @@ local function Register()
 	-- NOTE: Classic doesn't use scale at glues
 	GraphicsOverrides.RunSettingsCallback(function()
 	-- UI Scale
-		local function FormatPercentageRounded(value)
-			local roundToNearestInteger = true;
-			return FormatPercentage(value, roundToNearestInteger);
-		end
-
 		local useUIScaleSetting, uiScaleSliderSetting;
 
 		-- Use UI Scale

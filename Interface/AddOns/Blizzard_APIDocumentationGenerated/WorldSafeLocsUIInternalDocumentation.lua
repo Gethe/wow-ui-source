@@ -3,6 +3,7 @@ local WorldSafeLocsUIInternal =
 	Name = "WorldSafeLocsUIInternal",
 	Type = "System",
 	Namespace = "C_WorldSafeLocsUIInternal",
+	Environment = "All",
 
 	Functions =
 	{

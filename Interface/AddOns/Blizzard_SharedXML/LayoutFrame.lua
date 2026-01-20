@@ -36,7 +36,7 @@ function BaseLayoutMixin:AddLayoutChildren(layoutChildren, ...)
 		-- Individual regions can be ignored or every region can be ignored and require individual opt-in.
 		local canInclude = (not region.ignoreInLayout) and (not self.ignoreAllChildren or region.includeInLayout);
 		if (region:IsShown() or region.includeAsLayoutChildWhenHidden) and canInclude and (self:IgnoreLayoutIndex() or region.layoutIndex) then
-			layoutChildren[#layoutChildren + 1] = region;
+			table.insert(layoutChildren, region);
 		end
 	end
 end
@@ -45,8 +45,9 @@ function LayoutIndexComparator(left, right)
 	if (left.layoutIndex == right.layoutIndex and left ~= right) then
 		local leftName = (left.GetDebugName and left:GetDebugName()) or "unnamed";
 		local rightName = (right.GetDebugName and right:GetDebugName()) or "unnamed";
-		GMError(("Duplicate layoutIndex found: %d for %s and %s"):format(left.layoutIndex, leftName, rightName));
+		assertsafe(false, "Duplicate layoutIndex found: %d for %s and %s", left.layoutIndex, leftName, rightName);
 	end
+
 	return left.layoutIndex < right.layoutIndex;
 end
 

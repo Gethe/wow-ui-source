@@ -1161,6 +1161,50 @@ function ChatConfig_UpdateTieredCheckboxes(frame, index)
 	end
 end
 
+local function GenerateExamplePlayerCombatEvent()
+	local timestamp = 0;
+	local subevent = "SPELL_DAMAGE";
+	local hideCaster = false;
+	local sourceGUID = "Player-0000-00000001";
+	local sourceName = UnitName("player");
+	local sourceFlags = 0x511;
+	local sourceRaidFlags = 0;
+	local destGUID = "Creature-0-0000-0-000-00-0000000001";
+	local destName = EXAMPLE_TARGET_MONSTER;
+	local destFlags = 0x10a28;
+	local destRaidFlags = 0;
+	local spellID = 20793;
+	local spellName = EXAMPLE_SPELL_FIREBALL;
+	local spellSchool = Enum.Damageclass.MaskFire;
+	local amount = 68;
+	local overkill = 16;
+	local school = spellSchool;
+
+	return timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, amount, overkill, school;
+end
+
+local function GenerateExampleCreatureCombatEvent()
+	local timestamp = 0;
+	local subevent = "SPELL_DAMAGE";
+	local hideCaster = false;
+	local sourceGUID = "Creature-0-0000-0-000-00-0000000001";
+	local sourceName = EXAMPLE_TARGET_MONSTER;
+	local sourceFlags = 0x10a28;
+	local sourceRaidFlags = 0;
+	local destGUID = "Player-0000-00000001";
+	local destName = UnitName("player");
+	local destFlags = 0x511;
+	local destRaidFlags = 0;
+	local spellID = 116;
+	local spellName = EXAMPLE_SPELL_FROSTBOLT;
+	local spellSchool = Enum.Damageclass.MaskFrost;
+	local amount = 27;
+	local overkill = 4;
+	local school = spellSchool;
+
+	return timestamp, subevent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, amount, overkill, school;
+end
+
 function CombatConfig_Colorize_Update()
 	if ( not CHATCONFIG_SELECTED_FILTER.settings ) then
 		return;
@@ -1203,11 +1247,11 @@ function CombatConfig_Colorize_Update()
 	CombatConfigColorsHighlightingSchool:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.schoolNameHighlighting);
 
 
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, Enum.Damageclass.MaskFrost, 27, Enum.Damageclass.MaskFrost, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLogInbound.GenerateMessage(CHATCONFIG_SELECTED_FILTER, GenerateExamplePlayerCombatEvent());
 	CombatConfigColorsExampleString1:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0, 0x0000000000000001, UnitName("player"), 0x511, 0, 20793,EXAMPLE_SPELL_FIREBALL, Enum.Damageclass.MaskFire, 68, Enum.Damageclass.MaskFire, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLogInbound.GenerateMessage(CHATCONFIG_SELECTED_FILTER, GenerateExampleCreatureCombatEvent());
 	CombatConfigColorsExampleString2:SetVertexColor(r, g, b);
 	CombatConfigColorsExampleString2:SetText(text);
 end
@@ -1225,11 +1269,11 @@ function CombatConfig_Formatting_Update()
 	CombatConfigFormattingItemNames:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.itemBraces);
 	CombatConfigFormattingFullText:SetChecked(CHATCONFIG_SELECTED_FILTER.settings.fullText);
 
-	local text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0x0000000000000001, UnitName("player"), 0x511, 0, 0xF13000012B000820, EXAMPLE_TARGET_MONSTER, 0x10a28, 0, 116, EXAMPLE_SPELL_FROSTBOLT, Enum.Damageclass.MaskFrost, 27, Enum.Damageclass.MaskFrost, nil, nil, nil, 1, nil, nil);
+	local text, r, g, b = CombatLogInbound.GenerateMessage(CHATCONFIG_SELECTED_FILTER, GenerateExamplePlayerCombatEvent());
 	CombatConfigFormattingExampleString1:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString1:SetText(text);
 
-	text, r, g, b = CombatLog_OnEvent(CHATCONFIG_SELECTED_FILTER, 0, "SPELL_DAMAGE", false, 0xF13000024D002914, EXAMPLE_TARGET_MONSTER, 0x10a48, 0, 0x0000000000000001, UnitName("player"), 0x511, 0, 20793,EXAMPLE_SPELL_FIREBALL, Enum.Damageclass.MaskFire, 68, Enum.Damageclass.MaskFire, nil, nil, nil, nil, nil, nil);
+	text, r, g, b = CombatLogInbound.GenerateMessage(CHATCONFIG_SELECTED_FILTER, GenerateExampleCreatureCombatEvent());
 	CombatConfigFormattingExampleString2:SetVertexColor(r, g, b);
 	CombatConfigFormattingExampleString2:SetText(text);
 end
@@ -1997,7 +2041,7 @@ function CombatConfig_SetCombatFiltersToDefault()
 	Blizzard_CombatLog_Filters = CopyTable(Blizzard_CombatLog_Filter_Defaults);
 	-- Have to call this because of the way the upvalues are setup in the combatlog
 	Blizzard_CombatLog_RefreshGlobalLinks();
-	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1]
+	Blizzard_CombatLog_CurrentSettings = Blizzard_CombatLog_Filters.filters[1];
 	ChatConfig_UpdateFilterList();
 	ChatConfigFilter_OnClick(1);
 	ChatConfig_UpdateCombatTabs(1);

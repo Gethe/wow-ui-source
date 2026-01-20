@@ -147,7 +147,7 @@ function CallingPOI_OnEnter(self)
 	GameTooltip_AddBlankLineToTooltip(GameTooltip);
 	GameTooltip_AddNormalLine(GameTooltip, CALLING_QUEST_TOOLTIP_DESCRIPTION);
 
-	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(self.questID);
+	local widgetSetID = C_TaskQuest.GetQuestUIWidgetSetByType(self.questID, Enum.MapIconUIWidgetSetType.Tooltip);
 	if (widgetSetID) then
 		GameTooltip_AddWidgetSet(GameTooltip, widgetSetID);
 	end

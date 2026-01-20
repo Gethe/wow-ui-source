@@ -8,7 +8,17 @@
 		</Anchors>
 
 		<Frames>
-
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="3" y="2" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
 
 			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 				<KeyValues>
@@ -21,10 +31,6 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnKeyDown function="nop"/>
-					<OnKeyUp function="nop"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 

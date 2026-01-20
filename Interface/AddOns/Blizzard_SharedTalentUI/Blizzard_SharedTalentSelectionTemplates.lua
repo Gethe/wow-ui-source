@@ -285,8 +285,6 @@ function TalentSelectionChoiceMixin:AddTooltipInfo(tooltip)
 		end
 	end
 
-	GameTooltip_AddBlankLineToTooltip(tooltip);
-
 	TalentDisplayMixin.AddTooltipInfo(self, tooltip);
 end
 

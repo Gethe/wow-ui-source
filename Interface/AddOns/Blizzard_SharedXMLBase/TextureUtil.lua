@@ -291,7 +291,11 @@ TextureKitConstants = {
 
 	UseAtlasSize = true;
 	IgnoreAtlasSize = false;
-}
+
+	AddressModeClamp = 1,
+	AddressModeWrap = 2,
+	AddressModeAllowAssetToDetermine = 3,
+};
 
 -- Pass in a frame and a table containing parentKeys (on frame) as keys and atlas member names as the values
 function SetupAtlasesOnRegions(frame, regionsToAtlases, useAtlasSize)
@@ -321,7 +325,7 @@ function SetupTextureKitOnFrame(textureKit, frame, fmt, setVisibility, useAtlasS
 	if not frame then
 		return;
 	end
-	
+
 	local success = false;
 
 	if textureKit then
@@ -387,7 +391,7 @@ function SetupTextureKitsFromRegionInfo(textureKit, frame, regionInfoList)
 	end
 end
 
---Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil. 
+--Pass the texture and the textureKit, if the atlas exists in data then it will return the actual atlas name otherwise, return nil.
 function GetFinalAtlasFromTextureKitIfExists(texture, textureKit)
 	if not texture or not textureKit then
 		return nil;
@@ -405,4 +409,42 @@ function CheckSetAtlas(texture, atlasName, ...)
 	end
 
 	return false;
+end
+
+function GetAtlasSize(atlasName)
+	local atlasInfo = C_Texture.GetAtlasInfo(atlasName);
+
+	if atlasInfo then
+		return atlasInfo.width, atlasInfo.height;
+	end
+end
+
+local addressModeLookup = {
+	[TextureKitConstants.AddressModeClamp] = { descriptor = "CLAMP", tile = false },
+	[TextureKitConstants.AddressModeWrap] = { descriptor = "REPEAT", tile = true },
+	[TextureKitConstants.AddressModeAllowAssetToDetermine] = { descriptor = nil, tile = nil },
+};
+
+-- This API is intended to call either SetAtlas or SetTexture for a given asset and ensure that the correct texture addressing mode APIs are selected
+-- so that as the region changes size, it continues to look correct.
+-- SetAtlas is preferred and checked first before falling back to set texture.
+-- Whether or not the asset refers to an atlas or a texture, UV wrapping will only work as expected if the asset contains a single image.
+function SetTextureWithAddressModeOptions(region, asset, autoSize, addressModeU, addressModeV)
+	local hData = addressModeLookup[addressModeU or TextureKitConstants.AddressModeClamp];
+	local vData = addressModeLookup[addressModeV or TextureKitConstants.AddressModeClamp];
+
+	-- NOTE: filterMode and resetTexCoords not supported in this API yet, just use defaults.
+	local filterMode = nil;
+	local resetTextureCoords = nil;
+	if not CheckSetAtlas(region, asset, autoSize, filterMode, resetTextureCoords, hData.descriptor, vData.descriptor) then
+		region:SetTexture(asset, hData.descriptor, vData.descriptor, filterMode);
+	end
+
+	if hData.tile ~= nil then
+		region:SetHorizTile(hData.tile);
+	end
+
+	if vData.tile ~= nil then
+		region:SetVertTile(vData.tile);
+	end
 end

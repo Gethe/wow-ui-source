@@ -6,6 +6,13 @@ function UIButtonMixin:InitButton()
 		self:SetButtonArtKit(self.buttonArtKit);
 	end
 
+	self:SetDisabledTooltip(self.disabledTooltip);
+end
+
+function UIButtonMixin:SetDisabledTooltip(disabledTooltip)
+	self.disabledTooltip = disabledTooltip;
+
+	-- NOTE: Remains on to preserve previous behavior
 	if self.disabledTooltip then
 		self:SetMotionScriptsWhileDisabled(true);
 	end

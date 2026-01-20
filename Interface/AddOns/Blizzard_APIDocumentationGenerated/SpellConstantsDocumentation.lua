@@ -18,6 +18,19 @@ local SpellConstants =
 			},
 		},
 		{
+			Name = "SpellAuraVisibilityType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "RaidInCombat", Type = "SpellAuraVisibilityType", EnumValue = 0 },
+				{ Name = "RaidOutOfCombat", Type = "SpellAuraVisibilityType", EnumValue = 1 },
+				{ Name = "EnemyTarget", Type = "SpellAuraVisibilityType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "SpellCooldownConsts",
 			Type = "Constants",
 			Values =

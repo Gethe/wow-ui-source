@@ -1,88 +1,51 @@
-ProfessionsReagentSlotMixin = {};
-
-function ProfessionsReagentSlotMixin:Reset()
-	self.Button.QualityOverlay:SetAtlas(nil);
-	self:SetAllocateIconShown(false);
-	self.unallocatable = nil;
-	self.originalItem = nil;
-	self.CustomerState:Hide();
-	self.Button:Reset();
-	if self.continuableContainer then
-		self.continuableContainer:Cancel();
-	end
-	self.continuableContainer = ContinuableContainer:Create();
-	self:SetCheckboxShown(false);
-	self:SetCheckboxCallback(nilCallback);
-	self:SetCheckboxTooltipText(nilTooltipText);
-	self:SetHighlightShown(false);
-	local skipUpdate = true;
-	self:SetOverrideNameColor(nilOverrideColor, skipUpdate)
-	self:SetShowOnlyRequired(false, skipUpdate);
-	self:SetCheckmarkShown(false);
-	self:SetCheckmarkTooltipText(nilTooltipText);
-	self:SetOverrideQuantity(nilOverrideQuantity, skipUpdate)
-	self:SetColorOverlay(nilOverlayColor);
-	self:SetAddIconDesaturated(false);
-end
-
-function ProfessionsReagentSlotMixin:SetSlotBehaviorModifyingRequired(isModifyingRequired)
-	if isModifyingRequired then
-		local scale = .65;
-		self.Button:SetNormalAtlas("itemupgrade_greenplusicon", false);
-		self.Button:GetNormalTexture():SetScale(scale);
-
-		self.Button:SetPushedAtlas("itemupgrade_greenplusicon_pressed", false);
-		self.Button:GetPushedTexture():SetScale(scale);
-
-		self.Button:ClearHighlightTexture();
-
-		self.Button:SetCropOverlayShown(true);
-	else	
-		local scale = 1;
-		self.Button:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2");
-		self.Button:GetNormalTexture():SetScale(scale);
-
-		self.Button:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress");
-		self.Button:GetPushedTexture():SetScale(scale);
-		
-		self.Button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square");
-	end
-end
+ProfessionsReagentSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
+	ProfessionsRecipeSlotBaseMixin.Init(self);
+
+	self:SetCheckboxShown(false);
+	self:SetCheckboxCallback(nil);
+	self:SetCheckboxTooltipText(nil);
+	self:SetHighlightShown(false);
+	local skipUpdate = true;
+	self:SetOverrideNameColor(nil, skipUpdate)
+	self:SetShowOnlyRequired(false, skipUpdate);
+	self:SetCheckmarkShown(false);
+	self:SetCheckmarkTooltipText(nil);
+	self:SetOverrideQuantity(nil, skipUpdate)
+	self:SetColorOverlay(nil);
+	self:SetAddIconDesaturated(false);
+
 	local isModifyingRequired = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
 	self.Button:SetModifyingRequired(isModifyingRequired);
-	self.Button:SetCropOverlayShown(isModifyingRequired);
 
 	self:SetTransaction(transaction);
 	self:SetReagentSlotSchematic(reagentSlotSchematic);
 
-	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
-		if reagent.itemID then
-			local item = Item:CreateFromItemID(reagent.itemID);
-			self.continuableContainer:AddContinuable(item);
-		end
-	end
-	
-	self:SetSlotBehaviorModifyingRequired(isModifyingRequired);
+	Professions.ForEachItemReagent(reagentSlotSchematic.reagents, function(itemID)
+		local item = Item:CreateFromItemID(itemID);
+		self.continuableContainer:AddContinuable(item);
+	end);
 
 	local function OnItemsLoaded()
 		self.Name:Show();
 		
 		local function InitButton()
-			local allocations = transaction:GetAllocations(self:GetSlotIndex());
-			for index, allocation in allocations:Enumerate() do -- luacheck: ignore 512 (loop is executed at most once)
-				local reagent = allocation:GetReagent();
-				self:SetItem(Item:CreateFromItemID(reagent.itemID));
-				return;
+			local slotIndex = self:GetSlotIndex();
+			local allocations = transaction:GetAllocations(slotIndex);
+			local firstAllocation = allocations:GetFirstAllocation();
+			if firstAllocation then
+				local reagent = firstAllocation:GetReagent();
+				self:SetReagent(reagent);
+			else
+				self:ClearReagent();
 			end
-
-			self:SetItem(nil);
 		end
 		
 		local modification = transaction:GetOriginalModification(reagentSlotSchematic.dataSlotIndex);
-		if modification and modification.itemID > 0 then
-			self:SetOriginalItem(Item:CreateFromItemID(modification.itemID));
+		if Professions.IsValidModification(modification) then
+			local reagent = modification.reagent;
+			self:SetOriginalReagent(reagent)
 		end
 
 		local reagentType = reagentSlotSchematic.reagentType;
@@ -92,11 +55,7 @@ function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 			end
 
 			local reagent = reagentSlotSchematic.reagents[1];
-			if reagent.currencyID then
-				self.Button:SetCurrency(reagent.currencyID);
-			else
-				self.Button:SetItem(reagent.itemID);
-			end
+			self:SetReagent(reagent);
 		elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
 			InitButton();
 		elseif reagentType == Enum.CraftingReagentType.Modifying or reagentType == Enum.CraftingReagentType.Finishing then
@@ -130,6 +89,10 @@ function ProfessionsReagentSlotMixin:SetOverrideQuantity(quantity, skipUpdate)
 	end
 end
 
+function ProfessionsReagentSlotMixin:GetReagent()
+	return self.Button:GetReagent();
+end
+
 function ProfessionsReagentSlotMixin:GetNameColor()
 	local transaction = self:GetTransaction();
 
@@ -145,6 +108,15 @@ function ProfessionsReagentSlotMixin:GetNameColor()
 end
 
 function ProfessionsReagentSlotMixin:Update()
+	--[[
+	Accessing the item information prior to the loads being complete will
+	result in a Lua error. Bail here and wait for the Update() call in the
+	load complete handler.
+	]]--
+	if self.continuableContainer:AreAnyLoadsOutstanding() then
+		return;
+	end
+
 	self:UpdateAllocationText();
 	self:UpdateQualityOverlay();
 	self.Button:Update();
@@ -167,14 +139,22 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		return;
 	end
 
+	local currentReagent = self:GetReagent();
+	if currentReagent then
+		self:SetNameText(Professions.GetReagentName(currentReagent));
+	end
+
+	-- Optional slots do not currently use the name text.
 	if not ProfessionsUtil.IsReagentSlotRequired(reagentSlotSchematic) then
 		return;
 	end
 
-	-- The allocation text will not be applied to this slot if it is a modifying-required reagent meeting certain conditions. See ApplySlotInfo() for the
-	-- fallback text behavior.
+	local slotInfo = reagentSlotSchematic.slotInfo;
+	local slotText = slotInfo and slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
+
 	local foundMultiple, foundIndex = false, nil;
-	if ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+	local isModifyingRequired = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
+	if isModifyingRequired then
 		if self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
 			-- The current allocation is the currently installed modification, the currently allocated reagent name will be displayed.
 			return;
@@ -183,13 +163,22 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 		for allocationIndex, allocation in self:GetTransaction():EnumerateAllocations(reagentSlotSchematic.slotIndex) do
 			-- Only one allocation is expected, and is an error otherwise
 			assert(foundIndex == nil, "Cannot have multiple allocations within a modifying-required slot.");
-			foundIndex = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
-				return Professions.CraftingReagentMatches(reagent, allocation.reagent);
-			end);
+			foundIndex = Professions.FindReagentInTable(reagentSlotSchematic.reagents, allocation.reagent);
 		end
 		
 		if foundIndex == nil then
 			-- There is no allocation, the slot name will be displayed.
+			if reagentSlotSchematic:HasVariableQuantities() then
+				self:SetNameText(slotText);
+			else
+				local quantityText = nil;
+				if self.showOnlyRequired then
+					quantityText = reagentSlotSchematic.quantityRequired;
+				else
+					quantityText = TRADESKILL_REAGENT_COUNT:format(0, reagentSlotSchematic.quantityRequired);
+				end
+				self:SetNameText(("%s %s"):format(quantityText, slotText));
+			end
 			return;
 		end
 	else
@@ -216,21 +205,26 @@ function ProfessionsReagentSlotMixin:UpdateAllocationText()
 			end
 		end
 	end
-
-	local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(quantity, reagentSlotSchematic.quantityRequired);
-	-- If this is a modifying-required reagent and an allocation was found, this will select the correct reagent whereas
-	-- other basic slots with reagents sharing the same name would have all been selected correctly using the first index,
-	-- because the names all were identical.
-	local reagent = reagentSlotSchematic.reagents[foundIndex or 1];
-	local reagentName;
-	if reagent.currencyID then
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
-		reagentName = currencyInfo and currencyInfo.name or UNKNOWN;
-	else
-		local item = Item:CreateFromItemID(reagent.itemID);
-		reagentName = item:GetItemName() or UNKNOWN;
-	end
 	
+	local quantityRequired = nil;
+	if foundIndex then
+		local reagent = reagentSlotSchematic.reagents[foundIndex];
+		quantityRequired = reagentSlotSchematic:GetQuantityRequired(reagent);
+	else
+		quantityRequired = reagentSlotSchematic.quantityRequired;
+	end
+
+	local quantityText = nil;
+	if self.showOnlyRequired then
+		quantityText = quantityRequired;
+	else
+		quantityText = TRADESKILL_REAGENT_COUNT:format(quantity, quantityRequired);
+	end
+
+	-- For basic slots, index 1 corresponds to either a fixed reagent or a
+	-- quality reagent whose name is identical to the adjacent reagents in the table.
+	local reagent = reagentSlotSchematic.reagents[foundIndex or 1];
+	local reagentName = Professions.GetReagentName(reagent);
 	self:SetNameText(("%s %s"):format(quantityText, reagentName));
 end
 
@@ -254,8 +248,9 @@ function ProfessionsReagentSlotMixin:GetInventoryDetails()
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	local foundMultiple = nil;
 	local foundIndex = nil;
+	local useCharacterInventoryOnly = self:GetTransaction():ShouldUseCharacterInventoryOnly();
 	for index, reagent in ipairs(reagentSlotSchematic.reagents) do
-		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self:GetTransaction():ShouldUseCharacterInventoryOnly());
+		local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
 		if quantity > 0 then
 			if foundIndex then
 				foundMultiple = true;
@@ -267,26 +262,45 @@ function ProfessionsReagentSlotMixin:GetInventoryDetails()
 end
 
 function ProfessionsReagentSlotMixin:UpdateQualityOverlay()
+	local icon = nil;
+	
 	local reagentSlotSchematic = self:GetReagentSlotSchematic();
 	if reagentSlotSchematic and Professions.GetReagentInputMode(reagentSlotSchematic) == Professions.ReagentInputMode.Quality then
 		-- First try only allocations
-		local foundMultiple, foundIndex = self:GetAllocationDetails();
+		local transaction = self:GetTransaction();
+		for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+			local qualityInfo = Professions.GetReagentQualityInfo(allocation.reagent);
+			if qualityInfo then
+				if icon == nil then
+					icon = qualityInfo.iconInventory;
+				else
+					icon = qualityInfo.iconMixed;
+					break;
+				end
+			end
+		end
 
 		-- Then include inventory if necessary
-		if not foundMultiple and not foundIndex then
-			foundMultiple, foundIndex = self:GetInventoryDetails();
+		if icon == nil then
+			local useCharacterInventoryOnly = transaction:ShouldUseCharacterInventoryOnly();
+			for index, reagent in ipairs(reagentSlotSchematic.reagents) do
+				local quantity = ProfessionsUtil.GetReagentQuantityInPossession(reagent, useCharacterInventoryOnly);
+				if quantity > 0 then
+					local qualityInfo = Professions.GetReagentQualityInfo(reagent);
+					if qualityInfo then
+						if icon == nil then
+							icon = qualityInfo.iconInventory;
+						else
+							icon = qualityInfo.iconMixed;
+							break;
+						end
+					end
+				end
+			end
 		end
-
-		if foundMultiple then
-			self.Button.QualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
-		elseif foundIndex then
-			self.Button.QualityOverlay:SetAtlas(("Professions-Icon-Quality-Tier%d-Inv"):format(foundIndex), TextureKitConstants.UseAtlasSize);
-		else
-			self.Button.QualityOverlay:SetAtlas(nil);
-		end
-	else
-		self.Button.QualityOverlay:SetAtlas(nil);
 	end
+
+	self.Button.QualityOverlay:SetAtlas(icon, TextureKitConstants.UseAtlasSize);
 end
 
 function ProfessionsReagentSlotMixin:SetNameText(text)
@@ -301,75 +315,39 @@ function ProfessionsReagentSlotMixin:IsUnallocatable()
 	return self.unallocatable;
 end
 
-function ProfessionsReagentSlotMixin:ClearItem()
-	self:SetItem(nil);
+function ProfessionsReagentSlotMixin:RestoreOriginalReagent()
+	self:SetReagent(self.originalReagent);
 end
 
-function ProfessionsReagentSlotMixin:RestoreOriginalItem()
-	self:SetItem(self.originalItem);
-end
-
-function ProfessionsReagentSlotMixin:IsOriginalItemSet()
-	return not self.originalItem or Item:DoItemsMatch(self.originalItem, self.item);
-end
-
-function ProfessionsReagentSlotMixin:SetOriginalItem(item)
-	self.originalItem = item;
-end
-
-function ProfessionsReagentSlotMixin:GetOriginalItem(item)
-	return self.originalItem;
-end
-
-function ProfessionsReagentSlotMixin:ApplySlotInfo()
-	local reagentSlotSchematic = self:GetReagentSlotSchematic();
-	local slotInfo = reagentSlotSchematic.slotInfo;
-	local slotText = slotInfo and slotInfo.slotText or OPTIONAL_REAGENT_POSTFIX;
-
-	local isModifyingRequired = ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic);
-	if isModifyingRequired and not self:GetTransaction():IsModificationUnchangedAtSlotIndex(self:GetSlotIndex()) then
-		local quantityText = self.showOnlyRequired and reagentSlotSchematic.quantityRequired or TRADESKILL_REAGENT_COUNT:format(0, reagentSlotSchematic.quantityRequired);
-		self:SetNameText(("%s %s"):format(quantityText, slotText));
-	else
-		self:SetNameText(slotText);
+function ProfessionsReagentSlotMixin:IsOriginalReagentSet()
+	if not self.originalReagent then
+		return true;
 	end
+
+	local reagent = self:GetReagent();
+	if not reagent then
+		return false;
+	end
+
+	return ProfessionsUtil.CraftingReagentMatches(self.originalReagent, self:GetReagent());
 end
 
-function ProfessionsReagentSlotMixin:SetItem(item)
-	ItemButtonMixin.Reset(self.Button);
-	self.item = item;
-	self.currencyID = nil;
+function ProfessionsReagentSlotMixin:SetOriginalReagent(reagent)
+	self.originalReagent = reagent;
+end
 
-	if item then
-		self:SetSlotBehaviorModifyingRequired(false);
+function ProfessionsReagentSlotMixin:GetOriginalReagent()
+	return self.originalReagent;
+end
 
-		self.Button:SetItem(item:GetItemID());
-		self.Button.InputOverlay.AddIcon:Hide();
-		self:SetNameText(item:GetItemName());
-	else
-		if self.Button:IsModifyingRequired() then
-			self:SetSlotBehaviorModifyingRequired(true);
-		end
-
-		self:ApplySlotInfo();
-	end
+function ProfessionsReagentSlotMixin:SetReagent(reagent)
+	self.Button:SetReagent(reagent);
 
 	self:Update();
 end
 
-function ProfessionsReagentSlotMixin:SetCurrency(currencyID)
-	ItemButtonMixin.Reset(self.Button);
-	self.item = nil;
-	self.currencyID = currencyID;
-
-	if currencyID then
-		self.Button:SetCurrency(currencyID);
-		self.Button.InputOverlay.AddIcon:Hide();
-		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
-		self:SetNameText(currencyInfo and currencyInfo.name or UNKNOWN);
-	else
-		self:ApplySlotInfo();
-	end
+function ProfessionsReagentSlotMixin:ClearReagent()
+	self.Button:Clear();
 
 	self:Update();
 end
@@ -398,10 +376,6 @@ end
 
 function ProfessionsReagentSlotMixin:GetReagentSlotSchematic()
 	return self.reagentSlotSchematic;
-end
-
-function ProfessionsReagentSlotMixin:SetAllocateIconShown(shown)
-	self.Button.AddIcon:SetShown(shown);
 end
 
 local function SetElementTooltipText(text, element, tooltipParent)

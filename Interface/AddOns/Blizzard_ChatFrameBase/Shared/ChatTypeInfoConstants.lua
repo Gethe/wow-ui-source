@@ -47,6 +47,7 @@ ChatTypeInfo["RAID_WARNING"]							= { sticky = 0, flashTab = false, flashTabOnG
 ChatTypeInfo["RAID_BOSS_WHISPER"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["RAID_BOSS_EMOTE"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["QUEST_BOSS_EMOTE"]						= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
+ChatTypeInfo["ENCOUNTER_EVENT"]							= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["FILTERED"]								= { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["INSTANCE_CHAT"]                            = { sticky = 1, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
 ChatTypeInfo["INSTANCE_CHAT_LEADER"]                     = { sticky = 0, flashTab = false, flashTabOnGeneral = false, ignoreChatTypeProcessing = false };
@@ -285,6 +286,10 @@ ChatTypeGroup["PET_BATTLE_INFO"] = {
 
 ChatTypeGroup["VOICE_TEXT"] = {
 	"CHAT_MSG_VOICE_TEXT",
+};
+
+ChatTypeGroup["ENCOUNTER_EVENT"] = {
+	"CHAT_MSG_ENCOUNTER_EVENT",
 };
 
 --NEW_CHAT_TYPE - Add the chat type above.

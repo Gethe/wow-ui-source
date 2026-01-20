@@ -72,8 +72,8 @@
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
 		end
-		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.ModelScene:IsShown() ) then
-			local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+		if ( TransmogFrame and TransmogFrame.CharacterPreview.ModelScene:IsShown() ) then
+			local playerActor = TransmogFrame.CharacterPreview.ModelScene:GetPlayerActor();
 			if playerActor then
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
@@ -364,22 +364,22 @@
 	</Binding>
 
 	<Binding name="ACTIONPAGE1" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(1);
+		C_ActionBar.SetActionBarPage(1);
 	</Binding>
 	<Binding name="ACTIONPAGE2" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(2);
+		C_ActionBar.SetActionBarPage(2);
 	</Binding>
 	<Binding name="ACTIONPAGE3" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(3);
+		C_ActionBar.SetActionBarPage(3);
 	</Binding>
 	<Binding name="ACTIONPAGE4" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(4);
+		C_ActionBar.SetActionBarPage(4);
 	</Binding>
 	<Binding name="ACTIONPAGE5" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(5);
+		C_ActionBar.SetActionBarPage(5);
 	</Binding>
 	<Binding name="ACTIONPAGE6" category="BINDING_HEADER_ACTIONBAR">
-		ChangeActionBarPage(6);
+		C_ActionBar.SetActionBarPage(6);
 	</Binding>
 	<Binding name="PREVIOUSACTIONPAGE" category="BINDING_HEADER_ACTIONBAR">
 		ActionBar_PageDown();
@@ -1136,12 +1136,12 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local showFriends = Settings.GetValue("nameplateShowFriends");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
 		if ( showFriends ) then
-			Settings.SetValue("nameplateShowFriends", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			Settings.SetValue("nameplateShowFriends", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
 			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -1151,10 +1151,10 @@
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local showEnemies = Settings.GetValue("nameplateShowEnemies");
-		local showFriends = Settings.GetValue("nameplateShowFriends");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
 		if ( not showEnemies or not showFriends ) then
 			Settings.SetValue("nameplateShowEnemies", true);
-			Settings.SetValue("nameplateShowFriends", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
 		if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -1162,7 +1162,7 @@
 			end
 		else
 			Settings.SetValue("nameplateShowEnemies", false);
-			Settings.SetValue("nameplateShowFriends", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
@@ -1447,10 +1447,10 @@
 		TogglePlayerBounds();
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues(1);
+		TogglePerformanceValues(false);
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformanceValues(0);
+		TogglePerformanceValues(true);
   </Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();
@@ -1665,7 +1665,7 @@
 	HousingFramesUtil.SetGridSnapEnabled(not C_HousingBasicMode.IsGridSnapEnabled());
 </Binding>
 <Binding name="HOUSING_TOGGLEDECORNUDGEMODE" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
-	HousingFramesUtil.SetNudgeEnabled(not C_HousingBasicMode.IsNudgeEnabled());
+	HousingFramesUtil.SetFreePlaceEnabled(not C_HousingBasicMode.IsFreePlaceEnabled());
 </Binding>
 <Binding name="HOUSING_BASICDECOR_ROTATELEFT" runOnUp="true" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorBasicDecorMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_DECOR,BINDING_TAG_DECORATE">
 	HousingFramesUtil.HandleRotateBasicDecorSelectionLeftKeybind(keystate);

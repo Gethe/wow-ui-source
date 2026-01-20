@@ -14,5 +14,6 @@ Vanilla\MainMenuBarMicroButtons.lua [AllowLoadGameType vanilla, tbc]
 Vanilla\MainMenuBarMicroButtons.xml [AllowLoadGameType vanilla, tbc]
 
 Shared\MicroMenuContainer.lua
-[Family]\MicroMenuContainerOverrides.lua
+[Family]\MicroMenuContainerOverrides.lua [ExcludeLoadGameType vanilla]
+[Game]\MicroMenuContainerOverrides.lua [AllowLoadGameType vanilla]
 [Family]\MicroMenuContainer.xml

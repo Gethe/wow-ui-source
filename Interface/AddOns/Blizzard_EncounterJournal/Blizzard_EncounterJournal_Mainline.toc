@@ -7,6 +7,8 @@
 ## AllowLoadGameType: mainline
 Mainline\Blizzard_MonthlyActivities.lua
 Mainline\Blizzard_MonthlyActivities.xml
+Mainline\Blizzard_Journeys.lua
+Mainline\Blizzard_Journeys.xml
 Mainline\Blizzard_EncounterJournal.lua
 Mainline\Blizzard_EncounterJournal.xml
 Mainline\Blizzard_LootJournal.lua

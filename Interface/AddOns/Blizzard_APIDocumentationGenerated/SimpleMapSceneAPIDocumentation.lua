@@ -2,6 +2,7 @@ local SimpleMapSceneAPI =
 {
 	Name = "SimpleMapSceneAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -51,6 +52,7 @@ local SimpleMapSceneAPI =
 		{
 			Name = "SetModelDrawLayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +62,7 @@ local SimpleMapSceneAPI =
 		{
 			Name = "SetViewInsets",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

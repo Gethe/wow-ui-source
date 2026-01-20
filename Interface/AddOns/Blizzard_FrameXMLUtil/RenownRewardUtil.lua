@@ -1,6 +1,10 @@
 RenownRewardUtil = {};
 
 function RenownRewardUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback)
+	if not rewardInfo then
+		return;
+	end
+
 	if rewardInfo.itemID then
 		local item = Item:CreateFromItemID(rewardInfo.itemID);
 		local icon, name;
@@ -50,11 +54,19 @@ function RenownRewardUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCal
 end
 
 function RenownRewardUtil.GetUnformattedRenownRewardInfo(rewardInfo, onItemUpdateCallback)
+	if not rewardInfo then
+		return;
+	end
+
 	local icon, name, formatString, description = RenownRewardUtil.GetRenownRewardDisplayData(rewardInfo, onItemUpdateCallback);
 	return (rewardInfo.icon or icon), (rewardInfo.name or name), formatString, (rewardInfo.description or description);
 end
 
 function RenownRewardUtil.GetRenownRewardInfo(rewardInfo, onItemUpdateCallback)
+	if not rewardInfo then
+		return;
+	end
+
 	local icon, name, formatString, description = RenownRewardUtil.GetUnformattedRenownRewardInfo(rewardInfo, onItemUpdateCallback);
 	return icon, name and formatString and formatString:format(name) or name, description;
 end
@@ -99,7 +111,7 @@ function RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(tooltip, fa
 end
 
 -- Adds an overview of your progress with the faction, with details on how the renown system works
--- Used in the Reputation Panel and Encounter Journal 
+-- Used in the Reputation Panel and Encounter Journal
 function RenownRewardUtil.AddMajorFactionToTooltip(tooltip, factionID, callback)
 	callback = callback or nop;
 

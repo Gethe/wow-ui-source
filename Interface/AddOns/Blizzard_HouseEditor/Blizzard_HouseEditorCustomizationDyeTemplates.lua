@@ -39,6 +39,7 @@ end
 
 function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 	self.decorGUID = decorInstanceInfo.decorGUID;
+
 	self.DecorName:SetText(decorInstanceInfo.name);
 	local numDyesToSpend = C_HousingCustomizeMode.GetNumDyesToSpendOnSelectedDecor();
 	local numDyesToRemove = C_HousingCustomizeMode.GetNumDyesToRemoveOnSelectedDecor();
@@ -59,7 +60,7 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 
 		numDyeSlots = numDyeSlots + 1;
 
-		local function onClickCallback()
+		local function OpenDyeSelectionCallback()
 			DyeSelectionPopout:SetDyeSlotInfo(dyeSlotEntry);
 			DyeSelectionPopout:Show();
 			if self.currentChannel ~= dyeSlotEntry.channel then
@@ -72,7 +73,8 @@ function HousingDyePaneMixin:SetDecorInfo(decorInstanceInfo)
 			self.currentChannel = dyeSlotEntry.channel; 
 			self.dyeSlotFramesByChannel[self.currentChannel].CurrentSwatch:UpdateSelected(true);
 		end
-		dyeSlotFrame:SetDyeSlotInfo(dyeSlotEntry, onClickCallback);
+
+		dyeSlotFrame:SetDyeSlotInfo(dyeSlotEntry, OpenDyeSelectionCallback);
 		dyeSlotFrame:Show();
 		self.dyeSlotFramesByChannel[dyeSlotEntry.channel] = dyeSlotFrame;
 	end

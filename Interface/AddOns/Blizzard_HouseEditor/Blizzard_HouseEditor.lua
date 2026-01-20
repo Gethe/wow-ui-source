@@ -1,5 +1,13 @@
 HouseEditorFrameMixin = {};
 
+function HouseEditorFrame_GetFrame()
+	return HouseEditorFrame;
+end
+
+function HouseEditorFrame_IsShown()
+	return HouseEditorFrame and HouseEditorFrame:IsShown();
+end
+
 local HouseEditorFrameLifetimeEvents =
 {
 	"HOUSE_EDITOR_MODE_CHANGED",
@@ -11,6 +19,8 @@ local HouseEditorFrameShownEvents =
 };
 
 function HouseEditorFrameMixin:OnLoad()
+	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
+
 	self.StoragePanel:SetExpandButton(self.StorageButton);
 	self.activeModeFrame = nil;
 	self.modeFramesByMode = {
@@ -27,6 +37,14 @@ function HouseEditorFrameMixin:OnLoad()
 	
 end
 
+function HouseEditorFrameMixin:ShowAfterCheckout()
+	self:SetAlpha(1);
+end
+
+function HouseEditorFrameMixin:HideForCheckout()
+	self:SetAlpha(0);
+end
+
 function HouseEditorFrameMixin:OnEvent(event, ...)
 	if event == "HOUSE_EDITOR_MODE_CHANGED" then
 		local newMode = ...;
@@ -34,6 +52,9 @@ function HouseEditorFrameMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_DECOR_SELECT_RESPONSE" then
 		local result = ...;
 		self:OnDecorSelectResponse(result);
+	elseif event =="SIMPLE_CHECKOUT_CLOSED" then
+		self:ShowAfterCheckout();
+		EventRegistry:TriggerEvent("HouseEditor.SimpleCheckoutClosed");
 	end
 end
 
@@ -110,7 +131,7 @@ end
 function HouseEditorFrameMixin:HandleEscape()
 	if not StaticPopup_EscapePressed() then
 		if not self.activeModeFrame or not self.activeModeFrame:TryHandleEscape() then
-			C_HouseEditor.LeaveHouseEditor();
+			HousingFramesUtil.LeaveHouseEditor()
 		end
 	end
 end

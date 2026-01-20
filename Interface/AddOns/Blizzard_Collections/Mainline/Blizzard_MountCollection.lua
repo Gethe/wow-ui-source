@@ -251,9 +251,7 @@ function MountJournal_InitFilterButton(self)
 		sourceSubmenu:CreateButton(CHECK_ALL, MountJournal_SetAllSourceFilters, true);
 		sourceSubmenu:CreateButton(UNCHECK_ALL, MountJournal_SetAllSourceFilters, false);
 
-		local filterIndexList = CollectionsUtil.GetSortedFilterIndexList("TOYS", mountSourceOrderPriorities);
-		for index = 1, C_PetJournal.GetNumPetSources() do
-			local filterIndex = filterIndexList[i] and filterIndexList[i].index or index;
+		for filterIndex = 1, C_PetJournal.GetNumPetSources() do
 			if C_MountJournal.IsValidSourceFilter(filterIndex) then
 				sourceSubmenu:CreateCheckbox(_G["BATTLE_PET_SOURCE_"..filterIndex], IsSourceChecked, SetSourceChecked, filterIndex);
 			end

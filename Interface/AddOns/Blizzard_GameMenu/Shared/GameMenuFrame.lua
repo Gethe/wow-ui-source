@@ -92,10 +92,12 @@ function GameMenuFrameMixin:InitButtons()
 		self.NewOptionsFrame:Hide();
 	end
 
-	if C_StorePublic.IsEnabled() then
-		local disabledByParentalControls = C_StorePublic.IsDisabledByParentalControls();
-		local storeDisabledTooltip = disabledByParentalControls and BLIZZARD_STORE_ERROR_PARENTAL_CONTROLS or nil;
-		local storeDisabled = isKioskDisabled or disabledByParentalControls;
+	local shop1Enabled = C_StorePublic.IsEnabled();
+	local shop2Enabled = C_CatalogShop.IsShop2Enabled();
+	local storeEnabled = shop1Enabled or shop2Enabled;
+
+	if storeEnabled then
+		local storeDisabled = isKioskDisabled;
 		self:AddButton(BLIZZARD_STORE, GenerateMenuCallback(GenerateFlatClosure(ToggleStoreUI, G_GameMenuFrameContextKey)), storeDisabled, storeDisabledTooltip);
 	end
 

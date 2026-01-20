@@ -135,6 +135,46 @@ local function GetHeaderNameFromSortOrder(sortOrder)
 	end
 end
 
+ProfessionsButtonMixin = {};
+
+function ProfessionsButtonMixin:SetSlotQuality(quality)
+	local atlasData = ColorManager.GetAtlasDataForProfessionsItemQuality(quality);
+	if atlasData.atlas then
+		self.IconBorder:SetAtlas(atlasData.atlas, TextureKitConstants.IgnoreAtlasSize);
+
+		local overrideColor = atlasData.overrideColor;
+		if overrideColor then
+			self.IconBorder:SetVertexColor(overrideColor.r, overrideColor.g, overrideColor.b);
+		else
+			self.IconBorder:SetVertexColor(1, 1, 1);
+		end
+	end
+	self.IconBorder:Show();
+end
+
+function ProfessionsButtonMixin:SetReagent(reagent, count)
+	local currencyID = reagent.currencyID;
+	if currencyID then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+		if currencyInfo then
+			self.Icon:SetTexture(currencyInfo.iconFileID);
+			self.Icon:Show();
+
+			self:SetSlotQuality(currencyInfo.quality);
+		end
+	else
+		local itemID = reagent.itemID;
+		if itemID then
+			self:SetItem(itemID);
+
+			local itemQuality = select(2, self:GetItemInfo());
+			self:SetSlotQuality(itemQuality);
+		end
+	end
+
+	self:SetItemButtonCount(count or 0);
+end
+
 ProfessionsReagentContainerMixin = {};
 
 function ProfessionsReagentContainerMixin:OnLoad()
@@ -257,7 +297,8 @@ ProfessionsCrafterTableCellQualityMixin = CreateFromMixins(TableBuilderCellMixin
 function ProfessionsCrafterTableCellQualityMixin:Populate(rowData, dataIndex)
 	local order = rowData;
 	local atlasSize = 25;
-	local text = CreateAtlasMarkup(Professions.GetIconForQuality(order.quality), atlasSize, atlasSize);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.quality);
+	local text = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
 	ProfessionsTableCellTextMixin.SetText(self, text);
 end
 
@@ -290,31 +331,39 @@ function ProfessionsCrafterTableCellReagentsMixin:OnEnter()
 	local order = self.rowData.option;
 
 	if order.reagentState ~= Enum.CraftingOrderReagentsType.None then
-		local reagents = {};
-		for _, orderReagentInfo in ipairs(order.reagents) do
-			if orderReagentInfo.source == Enum.CraftingOrderReagentSource.Any and orderReagentInfo.isBasicReagent then
-				local itemID = orderReagentInfo.reagent.itemID;
-				local slotIndex = orderReagentInfo.slotIndex;
-
-				local _, existingReagent = FindInTableIf(reagents, function(r) return r.slotIndex == slotIndex; end);
-				if existingReagent == nil then
-					table.insert(reagents, {slotIndex = slotIndex, itemID = itemID, multipleQualities = false});
+		local foundMultiple = {};
+		local reagentInfos = {};
+		-- The collection can contain reagents with the same slotIndex indicating that
+		-- different qualities are included.
+		for _, info in ipairs(order.reagents) do
+			if info.source == Enum.CraftingOrderReagentSource.Any and info.isBasicReagent then
+				local slotIndex = info.slotIndex;
+				local contained = ContainsIf(reagentInfos, function(tbl)
+					return tbl.slotIndex == slotIndex;
+				end);
+				if contained then
+					foundMultiple[slotIndex] = true;
 				else
-					existingReagent.multipleQualities = true;
+					table.insert(reagentInfos, info);
 				end
 			end
 		end
 
-		table.sort(reagents, function(l, r) return l.slotIndex < r.slotIndex; end);
+		table.sort(reagentInfos, function(lhs, rhs)
+			return lhs.slotIndex < rhs.slotIndex;
+		end);
 
-		for idx, reagent in ipairs(reagents) do
+		for idx, info in ipairs(reagentInfos) do
+			local reagent = info.reagentInfo.reagent;
 			local reagentIconFrame = reagentIconFramePool:Acquire();
-			reagentIconFrame:SetItem(reagent.itemID);
+			reagentIconFrame:SetReagent(reagent);
 			reagentIconFrame.layoutIndex = idx;
 			reagentIconFrame:SetParent(self.ReagentsContainer);
 
-			if reagent.multipleQualities and reagentIconFrame.ProfessionQualityOverlay and reagentIconFrame.ProfessionQualityOverlay:IsShown() then
-				reagentIconFrame.ProfessionQualityOverlay:SetAtlas("Professions-Icon-Quality-Mixed-Inv", TextureKitConstants.UseAtlasSize);
+			local hasFoundMultiple = foundMultiple[info.slotIndex] ~= nil;
+			if hasFoundMultiple and reagentIconFrame.ProfessionQualityOverlay and reagentIconFrame.ProfessionQualityOverlay:IsShown() then
+				local qualityInfo = Professions.GetReagentQualityInfo(reagent);
+				reagentIconFrame.ProfessionQualityOverlay:SetAtlas(qualityInfo.iconMixed, TextureKitConstants.UseAtlasSize);
 			end
 
 			reagentIconFrame:Show();
@@ -412,8 +461,9 @@ function ProfessionsCrafterTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.minQuality);
 			local smallIcon = true;
-			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 
@@ -483,8 +533,9 @@ function ProfessionsCustomerTableCellItemNameMixin:Populate(rowData, dataIndex)
 			itemName = PROFESSIONS_RECRAFT_ORDER_NAME_FMT:format(itemName);
 		end
 		if order.minQuality and order.minQuality > 1 then
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, order.minQuality);
 			local smallIcon = true;
-			local qualityAtlas = Professions.GetChatIconMarkupForQuality(order.minQuality, smallIcon);
+			local qualityAtlas = Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon);
 			itemName = itemName.." "..qualityAtlas;
 		end
 
@@ -517,7 +568,8 @@ function ProfessionsCustomerTableCellIlvlMixin:OnEnter()
 		local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 		if item:IsItemDataCached() then
 			local atlasSize = 25;
-			local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(index), atlasSize, atlasSize);
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(order.spellID, index);
+			local atlasMarkup = CreateAtlasMarkup(qualityInfo.icon, atlasSize, atlasSize);
 			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_CRAFTING_QUALITY_BONUS_INCR:format(atlasMarkup, item:GetCurrentItemLevel(), ilvlBonus));
 		else
 			local continuableContainer = ContinuableContainer:Create();

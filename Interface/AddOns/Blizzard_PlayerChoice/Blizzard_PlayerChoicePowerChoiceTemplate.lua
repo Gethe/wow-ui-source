@@ -168,17 +168,17 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupHeader()
 	end
 end
 
-local OPTION_FONT_COLORS = {
-	title = HIGHLIGHT_FONT_COLOR,
-	description = NORMAL_FONT_COLOR,
+local OPTION_FONT_INFO = {
+	titleColor = HIGHLIGHT_FONT_COLOR,
+	descriptionColor = NORMAL_FONT_COLOR,
 };
 
-function PlayerChoicePowerChoiceTemplateMixin:GetOptionFontColors()
-	return OPTION_FONT_COLORS;
+function PlayerChoicePowerChoiceTemplateMixin:GetOptionFontInfo()
+	return OPTION_FONT_INFO;
 end
 
-function PlayerChoicePowerChoiceTemplateMixin:SetupTextColors()
-	local fontColors = self:GetOptionFontColors();
+function PlayerChoicePowerChoiceTemplateMixin:SetupTextFonts()
+	local fontInfo = self:GetOptionFontInfo();
 
 	local colorData = nil;
 	if self.optionInfo.rarity then
@@ -189,10 +189,10 @@ function PlayerChoicePowerChoiceTemplateMixin:SetupTextColors()
 	if colorData then
 		self.Header.Text:SetTextColor(colorData.color:GetRGB());
 	else
-		self.Header.Text:SetTextColor(fontColors.title:GetRGB());
+		self.Header.Text:SetTextColor(fontInfo.titleColor:GetRGB());
 	end
 
-	self.OptionText:SetTextColor(fontColors.description:GetRGB());
+	self.OptionText:SetTextColor(fontInfo.descriptionColor:GetRGB());
 end
 
 local OPTION_TEXT_WIDTH = 160;

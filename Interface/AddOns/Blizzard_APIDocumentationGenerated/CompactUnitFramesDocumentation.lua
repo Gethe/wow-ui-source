@@ -3,6 +3,7 @@ local CompactUnitFrames =
 	Name = "CompactUnitFrames",
 	Type = "System",
 	Namespace = "C_CompactUnitFrames",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local CompactUnitFrames =
 			Name = "CompactUnitFrameProfilesLoaded",
 			Type = "Event",
 			LiteralName = "COMPACT_UNIT_FRAME_PROFILES_LOADED",
+			SynchronousEvent = true,
 		},
 	},
 

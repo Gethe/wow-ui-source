@@ -702,7 +702,7 @@ function CharacterCreateMixin:CreateCharacter()
 		if KioskFrame then
 			KioskFrame:HandleCreateCharacter();
 		end
-		
+
 		self.creatingCharacter = true;
 		self:UpdateForwardButton();
 
@@ -982,16 +982,25 @@ function CharacterCreateClassButtonMixin:SetClass(classData, selectedClassID)
 				end
 			end
 
-				-- Sort alphabetically
-				table.sort(validAllianceRaceNames);
-				table.sort(validHordeRaceNames);
+			-- Sort alphabetically
+			table.sort(validAllianceRaceNames);
+			table.sort(validHordeRaceNames);
 
-				local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
-				local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
+			local validAllianceRacesString = table.concat(validAllianceRaceNames, ", ");
+			local validHordeRacesString = table.concat(validHordeRaceNames, ", ");
 
-				tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
+			tooltipDisabledReason = CLASS_DISABLED_FACTIONS:format(validAllianceRacesString, validHordeRacesString);
 		elseif classData.disabledReason == Enum.CreationClassDisabledReason.InvalidForTimerunning then
 			tooltipDisabledReason = CHAR_CREATE_CLASS_DISABLED_TIMERUNNING;
+		elseif classData.disabledReason == Enum.CreationClassDisabledReason.LockedByAchievement then
+			tooltipDisabledReason = RACE_CLASS_UNLOCK_TEXT;
+
+			local requirements = C_CharacterCreation.GetClassAchievementRequirements(C_CharacterCreation.GetSelectedRace(), classData.classID);
+			if requirements then
+				for _, requirement in ipairs(requirements) do
+					tooltipDisabledReason = tooltipDisabledReason.."\n"..DASH_WITH_TEXT:format(requirement);
+				end
+			end
 		else
 			tooltipDisabledReason = classData.disabledString;
 		end
@@ -1280,6 +1289,12 @@ local function GetDHMetaModelInfo(race, sex)
 			return { displayID = 65312, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		end
 	elseif race == "BloodElf" then
+		if sex == Enum.UnitSex.Female then
+			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		else
+			return { displayID = 67675, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
+		end
+	elseif race == "VoidElf" then
 		if sex == Enum.UnitSex.Female then
 			return { displayID = 67673, spellVisualKitID = 131909, scale = metaFormScale, equipWeapons = true, weaponScale = 1.15 };
 		else
@@ -2064,7 +2079,7 @@ function CharacterCreateNameAvailabilityStateMixin:CheckName(nameToCheck)
 				self:UpdateState(false, _G[reason]);
 				return;
 			end
-	
+
 			-- The name is valid, so next request the availability be checked
 			C_CharacterCreation.RequestCheckNameAvailability(nameToCheck);
 		end);

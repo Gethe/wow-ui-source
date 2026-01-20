@@ -200,23 +200,23 @@ function HousingCatalogCategoriesMixin:SetFocus(focusedCategoryID, focusedSubcat
 	end
 end
 
-function HousingCatalogCategoriesMixin:SetCustomFocus()
-	self.customFocus = true;
-	self:BuildDisplayedCategories();
-end
+function HousingCatalogCategoriesMixin:SetManualFocusState(isManualFocus)
+	local wasManualFocus = self.isManualFocus;
+	self.isManualFocus = isManualFocus;
 
-function HousingCatalogCategoriesMixin:HasCustomFocus()
-	return self.customFocus;
-end
-
-function HousingCatalogCategoriesMixin:ClearCustomFocus()
-	if self.customFocus then
-		self.customFocus = false;
+	if isManualFocus then
+		self:BuildDisplayedCategories();
+	elseif wasManualFocus then
+		self.isManualFocus = false;
 
 		local forceRebuild = true;
 		local forceFocusChanged = true;
 		self:SetFocus(self.focusedCategoryID, self.focusedSubcategoryID, forceRebuild, forceFocusChanged);
 	end
+end
+
+function HousingCatalogCategoriesMixin:IsInManualFocusState()
+	return self.isManualFocus;
 end
 
 function HousingCatalogCategoriesMixin:IsFeaturedCategoryFocused()
@@ -235,7 +235,7 @@ function HousingCatalogCategoriesMixin:SetCategoryNotification(categoryID, shown
 end
 
 function HousingCatalogCategoriesMixin:BuildDisplayedCategories()
-	if self:HasCustomFocus() then
+	if self:IsInManualFocusState() then
 		self:ClearCategoryFrames();
 		self.BackButton.layoutIndex = 1;
 		self.BackButton:Show();
@@ -469,8 +469,8 @@ function HousingCatalogCategoriesMixin:OnCategoryClicked(categoryFrame)
 		soundToPlay = SOUNDKIT.HOUSING_CATALOG_SUBCATEGORY_SELECT;
 	-- Clicked back button -> return to top-level categories
 	elseif categoryFrame == self.BackButton then
-		if self:HasCustomFocus() then
-			self:ClearCustomFocus();
+		if self:IsInManualFocusState() then
+			self:SetManualFocusState(false);
 		else
 			self:ClearFocus(forceRebuild);
 		end
@@ -557,6 +557,7 @@ function BaseHousingCatalogCategoryMixin:SetActive(isActive)
 		self.isActive = isActive;
 		if self.SelectedBackground then
 			self.SelectedBackground:SetShown(self.isActive);
+			self.SelectedBackground.FlipbookSparkleAnim:SetPlaying(self.isActive);
 		end
 		self:UpdateState();
 	end

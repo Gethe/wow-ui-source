@@ -2,6 +2,7 @@ local SimpleAnimVertexColorAPI =
 {
 	Name = "SimpleAnimVertexColorAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -34,6 +35,7 @@ local SimpleAnimVertexColorAPI =
 		{
 			Name = "SetEndColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -43,6 +45,7 @@ local SimpleAnimVertexColorAPI =
 		{
 			Name = "SetStartColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

@@ -1,7 +1,9 @@
 
-local MINIMUM_BUNDLE_WIDTH = 521;
+local FIXED_BUNDLE_WIDTH = 521;
 local STORAGE_ICON_STRING = CreateAtlasMarkup("house-chest-icon", 16, 16);
 local STORAGE_COUNT_FORMAT = STORAGE_ICON_STRING .. " %s / %d";
+local FRAME_SLIDE_DURATION = 0.2;
+local BUTTON_SLIDE_DURATION = 0.15;
 
 local function GetTotalOwnedDecorStorageString()
 	local totalOwnedCount, exemptOwnedCount = C_HousingCatalog.GetDecorTotalOwnedCount();
@@ -38,10 +40,10 @@ function HouseEditorStorageButtonMixin:OnLeave()
 end
 
 local StorageLifetimeEvents = {
-	"HOUSING_CATALOG_SEARCHER_RELEASED",
 	"PLAYER_LEAVING_WORLD",
 	"CATALOG_SHOP_DATA_REFRESH",
 	"HOUSE_EDITOR_MODE_CHANGED",
+	"HOUSING_REFUND_LIST_UPDATED",
 };
 
 local StorageWhileVisibleEvents = {
@@ -100,11 +102,21 @@ function HouseEditorStorageFrameMixin:OnLoad()
 
 	self:SetCollapsed(GetCVarBool("housingStoragePanelCollapsed"));
 
+	FrameUtil.InitFrameAnimTransition(self, {
+		translationType = AnimTransitionMixinTransitionType.SlideLeft,
+		duration = FRAME_SLIDE_DURATION,
+		easingFunction = EasingUtil.OutExponential,
+		hideOnAnimOut = true,
+		onAnimOutFinish = function()
+			FunctionUtil.CheckInvokeMethod(self.expandButton, "Show");
+			FunctionUtil.CheckInvokeMethod(self.expandButton, "StartAnimIn");
+		end,
+	});
+
 	self.catalogSearcher = C_HousingCatalog.CreateCatalogSearcher();
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	self.catalogSearcher:SetOwnedOnly(true);
-	self.catalogSearcher:SetIncludeMarketEntries(false);
 
 	local editorMode = C_HouseEditor.GetActiveHouseEditorMode();
 	self.catalogSearcher:SetEditorModeContext(editorMode);
@@ -120,9 +132,22 @@ function HouseEditorStorageFrameMixin:OnLoad()
 
 	self:SetTabSystem(self.TabSystem);
 	self.storageTabID = self:AddNamedTab(HOUSE_EDITOR_CATALOG_STORAGE_TAB);
-	self:SetTabCallback(self.storageTabID, function() self:OnStorageTabSelected(); end);
+	self:SetTabCallback(self.storageTabID, function(isUserAction) self:OnStorageTabSelected(isUserAction); end);
 	self.marketTabID = self:AddNamedTab(HOUSE_EDITOR_CATALOG_MARKET_TAB);
-	self:SetTabCallback(self.marketTabID, function() self:OnMarketTabSelected(); end);
+	self:SetTabCallback(self.marketTabID, function(isUserAction) self:OnMarketTabSelected(isUserAction); end);
+	self:SetTabDeselectCallback(self.marketTabID, function() self:OnMarketTabDeselected(); end);
+
+	--add a dialog confirming that you want to switch tabs, as doing so will delete your preview decor.
+	self.TabSystem:SetTabSelectedCallback(function(tabID, isUserAction)
+		if tabID == self.storageTabID and C_HousingDecor.GetNumPreviewDecor() > 0 then
+			StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+				self:SetTab(tabID, isUserAction);
+			end);
+			return true; --stops the tab from being selected, for now.
+		else
+			return self:SetTab(tabID, isUserAction);
+		end
+	end);
 
 	self:SetTab(self.storageTabID);
 	self:UpdateMarketTabVisibility();
@@ -130,6 +155,7 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	self.hasMarketData = false;
 
 	self:AddDynamicEventMethod(EventRegistry, "HousingMarket.BundleSelected", self.OnHousingMarketBundleSelected);
+	self:AddDynamicEventMethod(EventRegistry, "HousingMarketEvents.CartUpdated", self.OnHousingMarketCartUpdated);
 
 	FrameUtil.RegisterFrameForEvents(self, StorageLifetimeEvents);
 end
@@ -145,19 +171,10 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 		self:UpdateEditorMode(newMode);
 	elseif event == "HOUSING_MARKET_AVAILABILITY_UPDATED" then
 		self:UpdateMarketTabVisibility();
-	elseif event == "HOUSING_CATALOG_SEARCHER_RELEASED" then
-		local releasedSearcher = ...;
-		if self.catalogSearcher and self.catalogSearcher == releasedSearcher then
-			-- This should only get called as part of ReloadUI
-			-- Unfortunately can't just clear it by listening to LEAVING_WORLD because that'll happen after the searcher has already been released
-			-- and after other receiving while-shown cleanup events that will lead this UI to attempt to reference it
-			self.catalogSearcher = nil;
-			self.Filters:ClearSearcherReference();
-			self.OptionsContainer:ClearCatalogData();
-		end
 	elseif event == "PLAYER_LEAVING_WORLD" then
 		-- We're going to use leaving world as a "good enough" point for refreshing data from the catalog shop.
 		self:CheckCloseMarketInteraction();
+		self:SetTab(self.storageTabID);
 	elseif event == "CATALOG_SHOP_FETCH_SUCCESS" then
 		self:RefreshMarketData();
 	elseif event == "CATALOG_SHOP_DATA_REFRESH" then
@@ -165,7 +182,21 @@ function HouseEditorStorageFrameMixin:OnEvent(event, ...)
 		if self.catalogShopInteractionStarted then
 			self:RefreshMarketData();
 		end
+	elseif event == "HOUSING_REFUND_LIST_UPDATED" then
+		if self.hasRequestedRefundInfo and self:IsShown() then
+			C_HousingCatalog.RequestHousingMarketRefundInfo();
+		end
 	end
+end
+
+local function SetCartFrameShown(shown, preserveCartState)
+	if not HousingFramesUtil.IsHousingMarketShopAvailable() then
+		shown = false;
+		preserveCartState = false;
+	end
+
+	local cartShownEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartVisualServices.SetCartFrameShown);
+	EventRegistry:TriggerEvent(cartShownEvent, shown, preserveCartState);
 end
 
 function HouseEditorStorageFrameMixin:OnShow()
@@ -180,6 +211,11 @@ function HouseEditorStorageFrameMixin:OnShow()
 		self.catalogSearcher:RunSearch();
 	end
 
+	if not self.hasRequestedRefundInfo then
+		self.hasRequestedRefundInfo = true;
+		C_HousingCatalog.RequestHousingMarketRefundInfo();
+	end
+
 	self:CheckStartMarketInteraction();
 
 	SavedSetsUtil.ContinueOnLoad(function()
@@ -188,6 +224,17 @@ function HouseEditorStorageFrameMixin:OnShow()
 	end);
 
 	self:UpdateCategoryTotal();
+
+	if C_HousingDecor.IsPreviewState() or (self:IsInMarketTab() and self:ShouldShowMarketShop()) then
+		SetCartFrameShown(true, true);
+	end
+
+	-- Forces an update upon showing, reselecting the tab
+	if self:IsInMarketTab() then
+		self:SetTab(self.marketTabID);
+	else
+		self:SetTab(self.storageTabID);
+	end
 end
 
 function HouseEditorStorageFrameMixin:OnHide()
@@ -196,6 +243,8 @@ function HouseEditorStorageFrameMixin:OnHide()
 	if self.catalogSearcher then
 		self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	end
+
+	SetCartFrameShown(false, true);
 end
 
 function HouseEditorStorageFrameMixin:OnResizeStopped()
@@ -223,11 +272,25 @@ end
 function HouseEditorStorageFrameMixin:SetExpandButton(expandButton)
 	self.expandButton = expandButton;
 
+	FrameUtil.InitFrameAnimTransition(self.expandButton, {
+		distanceX = self.expandButton:GetWidth() * 0.67,
+		translationType = AnimTransitionMixinTransitionType.SlideLeft,
+		duration = BUTTON_SLIDE_DURATION,
+		easingFunction = EasingUtil.OutExponential,
+		hideOnAnimOut = true,
+		onAnimOutFinish = function()
+			self:Show();
+			self:StartAnimIn();
+		end,
+	});
+
 	self.expandButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.HOUSING_CATALOG_EXPAND);
 		self:SetCollapsed(false);
 	end);
-	self:UpdateCollapseState();
+
+	local immediate = true;
+	self:UpdateCollapseState(immediate);
 end
 
 function HouseEditorStorageFrameMixin:OnEntryResultsUpdated()
@@ -238,49 +301,78 @@ function HouseEditorStorageFrameMixin:OnTabChanged()
 	self:UpdateMarketTabNotification();
 	self:UpdateCategoryText();
 	self:UpdateCategoryTotal();
+
+	EventRegistry:TriggerEvent("HouseEditorStorage.TabChanged");
 end
 
-function HouseEditorStorageFrameMixin:OnStorageTabSelected()
+function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.catalogSearcher:SetOwnedOnly(true);
-	self.catalogSearcher:SetIncludeMarketEntries(false);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = true;
 	categorySearchParams.includeFeaturedCategory = false;
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_primary");
-	self.Categories:ClearCustomFocus();
+	self.Categories:SetManualFocusState(false);
 	self.Filters:SetCollectionFiltersAvailable(false);
+	C_HousingDecor.ExitPreviewState();
 	self:OnTabChanged();
+
+	local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
+	local requiresConfirmation = false;
+	EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
 end
 
-function HouseEditorStorageFrameMixin:OnMarketTabSelected()
+function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
+	if isUserAction then
+		PlaySound(SOUNDKIT.HOUSING_MARKET_ENTER_CATALOG);
+	end
+
 	self.catalogSearcher:SetOwnedOnly(false);
-	self.catalogSearcher:SetIncludeMarketEntries(true);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
-	categorySearchParams.includeFeaturedCategory = self:ShouldEnableShopInteraction();
+	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();
 	self.Categories:SetCategorySearchParams(categorySearchParams);
 	self.Categories:SetFocus(Constants.HousingCatalogConsts.HOUSING_CATALOG_FEATURED_CATEGORY_ID);
 	self.Categories:SetCategoriesBackground("house-chest-nav-bg_market");
 	self.Filters:SetCollectionFiltersAvailable(true);
 	self:CheckStartMarketInteraction();
+	C_HousingDecor.EnterPreviewState();
 	self:OnTabChanged();
+
+	SetCartFrameShown(self:ShouldShowMarketShop());
 end
 
-function HouseEditorStorageFrameMixin:ShouldEnableShopInteraction()
-	return C_StorePublic.IsEnabled() and not C_StorePublic.IsDisabledByParentalControls();
+function HouseEditorStorageFrameMixin:OnMarketTabDeselected()
+	C_HousingDecor.ExitPreviewState();
+	SetCartFrameShown(false);
+end
+
+function HouseEditorStorageFrameMixin:ShouldShowMarketTab()
+	return C_Housing.IsHousingMarketEnabled();
+end
+
+function HouseEditorStorageFrameMixin:ShouldShowMarketShop()
+	return C_Housing.IsHousingMarketShopEnabled() and C_StorePublic.IsEnabled() and self:HasMarketEntries();
+end
+
+function HouseEditorStorageFrameMixin:HasMarketEntries()
+	-- Assume we have entries until we know otherwise.
+	if not self.hasMarketData then
+		return true;
+	end
+
+	return C_HousingCatalog.HasFeaturedEntries();
 end
 
 function HouseEditorStorageFrameMixin:CheckStartMarketInteraction()
-	if not self:ShouldEnableShopInteraction() then
+	if not self:ShouldShowMarketTab() then
 		return;
 	end
 
-	if not self.catalogShopInteractionStarted and not self.hasMarketData and C_Housing.IsHousingMarketEnabled() then
+	if not self.catalogShopInteractionStarted and not self.hasMarketData then
 		self.catalogShopInteractionStarted = true;
 
-		local allowMovement = true;
-		C_CatalogShop.OpenCatalogShopInteraction(allowMovement);
+		C_CatalogShop.OpenCatalogShopInteractionFromHouse();
 	end
 end
 
@@ -293,13 +385,12 @@ function HouseEditorStorageFrameMixin:CheckCloseMarketInteraction()
 end
 
 function HouseEditorStorageFrameMixin:UpdateMarketTabVisibility()
-	local marketEnabled = C_Housing.IsHousingMarketEnabled();
+	local marketEnabled = self:ShouldShowMarketTab();
 	local showingDecor = self.catalogSearcher:GetEditorModeContext() ~= Enum.HouseEditorMode.Layout;
 	local showMarketTab = marketEnabled and showingDecor;
 	self.TabSystem:SetTabShown(self.marketTabID, showMarketTab);
 
 	if showMarketTab then
-		self.TabSystem:SetTabEnabled(self.marketTabID, self:ShouldEnableShopInteraction(), HOUSING_MARKET_TAB_UNAVAILABLE_TEXT);
 		self:UpdateMarketTabNotification();
 	elseif self:IsInMarketTab() then
 		-- We shouldn't be showing the market tab any more but we're in it, so switch to storage.
@@ -322,21 +413,31 @@ function HouseEditorStorageFrameMixin:ShouldShowAllCategoryNotification()
 end
 
 function HouseEditorStorageFrameMixin:OnHousingMarketBundleSelected(bundleData)
-	local productData = C_CatalogShop.GetProductInfo(bundleData.productID);
+	local bundleCatalogShopProductID = bundleData.productID;
+	local productData = C_CatalogShop.GetProductInfo(bundleCatalogShopProductID);
 	local name = productData and productData.name or nil;
-	self:SetCustomCatalogData(bundleData.decorEntries, name);
+
+	for _i, decorEntry in ipairs(bundleData.decorEntries) do
+		decorEntry.bundleCatalogShopProductID = bundleCatalogShopProductID;
+	end
+
+	self:SetCustomCatalogData(bundleData.decorEntries, name, HOUSING_MARKET_BUNDLE_PREVIEW_DETAILS);
 end
 
-function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText)
+function HouseEditorStorageFrameMixin:OnHousingMarketCartUpdated()
+	self.OptionsContainer:RefreshFrames();
+end
+
+function HouseEditorStorageFrameMixin:SetCustomCatalogData(entries, headerText, instructionText)
 	self.customCatalogData = entries;
 
 	if self.customCatalogData then
 		local retainCurrentPosition = false;
-		self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition, headerText);
-		self.Categories:SetCustomFocus();
+		self.OptionsContainer:SetCatalogData(entries, retainCurrentPosition, headerText, instructionText);
+		self.Categories:SetManualFocusState(true);
 		self:RestoreWidth();
 	else
-		self.Categories:ClearCustomFocus();
+		self.Categories:SetManualFocusState(false);
 	end
 
 	self:UpdateCategoryText();
@@ -425,6 +526,20 @@ end
 function HouseEditorStorageFrameMixin:RefreshMarketData()
 	C_HousingCatalog.RequestHousingMarketInfoRefresh();
 	self.hasMarketData = true;
+
+	if not self:ShouldShowMarketShop() then
+		local categorySearchParams = self.Categories:GetCategorySearchParams();
+		categorySearchParams.includeFeaturedCategory = false;
+		self.Categories:SetCategorySearchParams(categorySearchParams);
+	elseif self:IsInMarketTab() then
+		-- If we had previously cleared the "includeFeaturedCategory" param, reset it now.
+		local categorySearchParams = self.Categories:GetCategorySearchParams();
+		categorySearchParams.includeFeaturedCategory = true;
+		self.Categories:SetCategorySearchParams(categorySearchParams);
+
+		SetCartFrameShown(true, true);
+	end
+
 	self:UpdateCatalogData();
 end
 
@@ -484,8 +599,11 @@ function HouseEditorStorageFrameMixin:UpdateLoadingSpinner()
 end
 
 function HouseEditorStorageFrameMixin:UpdateEditorMode(newEditorMode)
-	if newEditorMode == Enum.HouseEditorMode.None then
+	if newEditorMode ~= Enum.HouseEditorMode.BasicDecor then
 		self:CheckCloseMarketInteraction();
+	end
+
+	if newEditorMode == Enum.HouseEditorMode.None then
 		self:SetCustomCatalogData(nil);
 
 		if not self:IsVisible() then
@@ -540,7 +658,7 @@ function HouseEditorStorageFrameMixin:UpdateCategoryText()
 		return;
 	end
 
-	self.OptionsContainer:SetScrollBoxTopOffset(-20);
+	self.OptionsContainer:SetScrollBoxTopOffset(-28);
 	self.OptionsContainer.CategoryText:SetText(categoryString);
 	if self.catalogSearcher:GetFilteredCategoryID() == Constants.HousingCatalogConsts.HOUSING_CATALOG_ALL_CATEGORY_ID then
 		self.OptionsContainer.CategoryText:SetTextColor(HOUSING_STORAGE_HEADER_COLOR:GetRGB());
@@ -570,18 +688,17 @@ end
 
 function HouseEditorStorageFrameMixin:OnCatalogEntryUpdated(entryID)
 	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
-	local shouldShowOption = entryInfo and entryInfo.quantity > 0 or false;
 
 	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
 	
 	-- If option was added or removed entirely, reset our options list
-	if self.catalogSearcher and ((shouldShowOption and not elementData) or (not shouldShowOption and elementData)) then
+	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
 		self.catalogSearcher:RunSearch();
 		return;
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data
-	if shouldShowOption and optionFrame then
+	if entryInfo and optionFrame then
 		optionFrame:UpdateEntryData();
 	end
 end
@@ -596,11 +713,23 @@ function HouseEditorStorageFrameMixin:IsCollapsed()
 	return self.collapsed;
 end
 
-function HouseEditorStorageFrameMixin:UpdateCollapseState()
-	self:SetShown(not self.collapsed);
-
-	if self.expandButton then
-		self.expandButton:SetShown(self.collapsed);
+function HouseEditorStorageFrameMixin:UpdateCollapseState(immediate)
+	if self.collapsed then
+		-- No animation if we're not starting from a shown state.
+		if immediate or not self:IsShown() then
+			FunctionUtil.CheckInvokeMethod(self.expandButton, "Show");
+			self:Hide();
+		else
+			self:StartAnimOut();
+		end
+	else
+		-- No animation if we're not starting from a shown state.
+		if immediate or not FunctionUtil.CheckInvokeMethod(self.expandButton, "IsShown") then
+			FunctionUtil.CheckInvokeMethod(self.expandButton, "Hide");
+			self:Show();
+		else
+			FunctionUtil.CheckInvokeMethod(self.expandButton, "StartAnimOut");
+		end
 	end
 end
 
@@ -631,8 +760,8 @@ function HouseEditorStorageFrameMixin:OnCategoryFocusChanged(focusedCategoryID, 
 	self.Filters:SetEnabled(not isFeaturedCategory);
 	if isFeaturedCategory then
 		-- Force a minimum width to fit bundles.
-		self:SetWidth(math.max(self:GetWidth(), MINIMUM_BUNDLE_WIDTH));
-		self.ResizeButton:SetMinWidth(MINIMUM_BUNDLE_WIDTH);
+		self:SetWidth(FIXED_BUNDLE_WIDTH);
+		self.ResizeButton:SetEnabled(false);
 
 		self:ClearSearchText();
 		self:UpdateCatalogData();
@@ -675,5 +804,5 @@ end
 function HouseEditorStorageFrameMixin:RestoreWidth()
 	-- Restore width in case it was previously forced to be larger.
 	self:SetWidth(GetCVarNumberOrDefault("housingStoragePanelWidth"));
-	self.ResizeButton:SetMinWidth(self.minWidth);
+	self.ResizeButton:SetEnabled(true);
 end

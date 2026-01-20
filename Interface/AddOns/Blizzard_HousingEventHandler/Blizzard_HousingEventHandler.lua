@@ -1,9 +1,51 @@
 -- Helpers for non-Housing code needing to make housing-related API calls while relevant Housing addons may not be loaded (ex: Keybindings)
 HousingFramesUtil = {};
 
+function HousingFramesUtil.IsHousingMarketShopAvailable()
+	return C_Housing.IsHousingMarketShopEnabled() and C_StorePublic.IsEnabled() and C_HousingCatalog.HasFeaturedEntries();
+end
+
+StaticPopupDialogs["CONFIRM_DESTROY_PREVIEW_DECOR"] = {
+	text = HOUSING_PREVIEW_DECOR_WARNING,
+	button1 = OKAY,
+	button2 = CANCEL,
+	hideOnEscape = 1,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+
+	OnShow = function(dialog, _data)
+		if not HousingFramesUtil.IsHousingMarketShopAvailable() then
+			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING_AR_ONLY);
+		else
+			dialog:SetText(HOUSING_PREVIEW_DECOR_WARNING);
+		end
+	end,
+
+	OnAccept = function(dialog, cb)
+		cb();
+	end
+}
+
+--TODO: eventually we want a more robust "confirm leaving mode" system
+--See HouseEditorUI.cpp
+function HousingFramesUtil.LeaveHouseEditor()
+	if C_HousingDecor.GetNumPreviewDecor() > 0 then
+		StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+			local clearCartEvent = string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.ClearCart);
+			local requiresConfirmation = false;
+			EventRegistry:TriggerEvent(clearCartEvent, requiresConfirmation);
+
+			C_HouseEditor.LeaveHouseEditor();
+		end);
+	else
+		C_HouseEditor.LeaveHouseEditor();
+	end
+end
+
 function HousingFramesUtil.ToggleHouseEditor()
 	if C_HouseEditor.IsHouseEditorActive() then
-		C_HouseEditor.LeaveHouseEditor();
+		HousingFramesUtil.LeaveHouseEditor();
 	else
 		local initialResult = C_HouseEditor.EnterHouseEditor();
 		if initialResult ~= Enum.HousingResult.Success then
@@ -15,9 +57,25 @@ function HousingFramesUtil.ToggleHouseEditor()
 	end
 end
 
-function HousingFramesUtil.ActivateHouseEditorMode(mode)
+function HousingFramesUtil.IsHouseEditorModeAvailable(mode)
+	if C_HousingDecor.IsModeDisabledForPreviewState(mode) then
+		return false;
+	end
+
 	local modeAvailability = C_HouseEditor.GetHouseEditorModeAvailability(mode);
-	if modeAvailability ~= Enum.HousingResult.Success or (not HousingTutorialUtil.HousingQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode)) then
+	if modeAvailability ~= Enum.HousingResult.Success then
+		return false;
+	end
+
+	if not HousingTutorialUtil.HousingQuestTutorialComplete() and not HousingTutorialUtil.IsModeValidForTutorial(mode) then
+		return false;
+	end
+
+	return true;
+end
+
+function HousingFramesUtil.ActivateHouseEditorMode(mode)
+	if not HousingFramesUtil.IsHouseEditorModeAvailable(mode) then
 		return;
 	end
 
@@ -87,9 +145,9 @@ function HousingFramesUtil.SetGridSnapEnabled(gridSnapEnabled)
 	C_HousingBasicMode.SetGridSnapEnabled(gridSnapEnabled);
 end
 
-function HousingFramesUtil.SetNudgeEnabled(nudgeEnabled)
+function HousingFramesUtil.SetFreePlaceEnabled(freeplaceEnabled)
 	PlaySound(SOUNDKIT.HOUSING_PRIMARY_SUB_MENU_BUTTON_TOGGLE_SHORTCUT);
-	C_HousingBasicMode.SetNudgeEnabled(nudgeEnabled);
+	C_HousingBasicMode.SetFreePlaceEnabled(freeplaceEnabled);
 end
 
 function HousingFramesUtil.ZoomLayoutCamera(zoom)
@@ -184,6 +242,15 @@ function HousingFramesUtil.HandleRotateBasicDecorSelectionRightKeybind(keystate)
 		if baseBinding ~= "NONE" then
 			RunBinding(baseBinding, keystate);
 		end
+	end
+end
+
+function HousingFramesUtil.OpenFrameToTaskID(taskID)
+	if not HousingDashboardFrame or not HousingDashboardFrame:IsShown() then
+		HousingFramesUtil.ToggleHousingDashboard();
+	end
+	if HousingDashboardFrame then
+		HousingDashboardFrame:OpenInitiativesFrameToTaskID(taskID);
 	end
 end
 

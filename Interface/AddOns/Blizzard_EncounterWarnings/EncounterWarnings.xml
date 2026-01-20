@@ -1,0 +1,50 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="EncounterWarningsSystemFrameTemplate" mixin="EncounterWarningsSystemFrameMixin" inherits="EditModeEncounterEventsSystemTemplate, ResizeLayoutFrame" virtual="true">
+		<Size x="1" y="1"/>
+		<Attributes>
+			<Attribute name="explicitlyShown" value="false" type="boolean"/>
+		</Attributes>
+		<Frames>
+			<Frame parentKey="View" inherits="EncounterWarningsViewTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CriticalEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="600" type="number"/>
+			<KeyValue key="minimumHeight" value="48" type="number"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.CriticalWarnings" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_CRITICAL_WARNINGS" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="MediumEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="550" type="number"/>
+			<KeyValue key="minimumHeight" value="36" type="number"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.MediumWarnings" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_MEDIUM_WARNINGS" type="global"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="MinorEncounterWarnings" inherits="EncounterWarningsSystemFrameTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="minimumWidth" value="500" type="number"/>
+			<KeyValue key="minimumHeight" value="36" type="number"/>
+			<KeyValue key="systemIndex" value="Enum.EditModeEncounterEventsSystemIndices.NormalWarnings" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_NORMAL_WARNINGS" type="global"/>
+		</KeyValues>
+	</Frame>
+</Ui>

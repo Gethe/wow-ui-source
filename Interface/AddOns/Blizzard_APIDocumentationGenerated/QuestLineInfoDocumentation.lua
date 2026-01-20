@@ -3,12 +3,14 @@ local QuestLineInfo =
 	Name = "QuestLineUI",
 	Type = "System",
 	Namespace = "C_QuestLine",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAvailableQuestLines",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local QuestLineInfo =
 		{
 			Name = "GetForceVisibleQuests",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local QuestLineInfo =
 		{
 			Name = "GetQuestLineInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +57,7 @@ local QuestLineInfo =
 		{
 			Name = "GetQuestLineQuests",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +72,7 @@ local QuestLineInfo =
 		{
 			Name = "IsComplete",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +87,7 @@ local QuestLineInfo =
 		{
 			Name = "QuestLineIgnoresAccountCompletedFiltering",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -96,6 +103,7 @@ local QuestLineInfo =
 		{
 			Name = "RequestQuestLinesForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -39,7 +39,7 @@ function CharacterSelectUtil.IsAccountLocked()
 end
 
 function CharacterSelectUtil.IsStoreAvailable()
-	if not C_StorePublic.IsEnabled() or C_StorePublic.IsDisabledByParentalControls() then
+	if not C_StorePublic.IsEnabled() then
 		return false;
 	end
 

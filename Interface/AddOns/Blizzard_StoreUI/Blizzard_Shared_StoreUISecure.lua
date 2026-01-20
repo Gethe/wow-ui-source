@@ -1947,7 +1947,7 @@ end
 function StoreConfirmationFrame_SetNotice(self, icon, name, dollars, cents, walletName, productDecorator)
 	local currency = C_StoreSecure.GetCurrencyID();
 
-	SetPortraitToTexture(self.Icon, icon);
+	self.Icon:SetTexture(icon);
 
 	name = name:gsub("|n", " ");
 	self.ProductName:SetText(name);
@@ -2349,7 +2349,7 @@ function StoreVASValidationFrame_Init(self)
 	if ( not finalIcon ) then
 		finalIcon = "Interface\\Icons\\INV_Misc_Note_02";
 	end
-	SetPortraitToTexture(self.Icon, finalIcon);
+	self.Icon:SetTexture(finalIcon);
 	self.ProductName:SetText(self.productInfo.sharedData.name);
 
 	self.ProductInstructions:Hide();

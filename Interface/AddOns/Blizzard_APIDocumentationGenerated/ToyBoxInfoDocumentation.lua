@@ -3,12 +3,14 @@ local ToyBoxInfo =
 	Name = "ToyBoxInfo",
 	Type = "System",
 	Namespace = "C_ToyBoxInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ClearFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local ToyBoxInfo =
 		{
 			Name = "IsToySourceValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,7 @@ local ToyBoxInfo =
 		{
 			Name = "NeedsFanfare",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -64,6 +68,7 @@ local ToyBoxInfo =
 			Name = "NewToyAdded",
 			Type = "Event",
 			LiteralName = "NEW_TOY_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = false },
@@ -73,6 +78,8 @@ local ToyBoxInfo =
 			Name = "ToysUpdated",
 			Type = "Event",
 			LiteralName = "TOYS_UPDATED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "itemID", Type = "number", Nilable = true },

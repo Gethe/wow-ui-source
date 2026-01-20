@@ -38,3 +38,17 @@ end
 function HouseEditorCleanupModeMixin:TryHandleEscape()
 	return false;
 end
+
+function HouseEditorCleanupModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+	
+	if decorInstanceInfo.isLocked then
+		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
+	elseif not decorInstanceInfo.canBeRemoved then
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
+	end
+
+	GameTooltip:Show();
+	return GameTooltip;
+end

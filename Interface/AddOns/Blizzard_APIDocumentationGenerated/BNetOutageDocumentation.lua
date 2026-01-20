@@ -2,6 +2,7 @@ local BNetOutage =
 {
 	Name = "BNetOutage",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

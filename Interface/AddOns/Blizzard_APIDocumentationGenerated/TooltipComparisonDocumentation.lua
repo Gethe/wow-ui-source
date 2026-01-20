@@ -3,6 +3,7 @@ local TooltipComparison =
 	Name = "TooltipComparison",
 	Type = "System",
 	Namespace = "C_TooltipComparison",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local TooltipComparison =
 			Name = "GetItemComparisonDelta",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +30,7 @@ local TooltipComparison =
 			Name = "GetItemComparisonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

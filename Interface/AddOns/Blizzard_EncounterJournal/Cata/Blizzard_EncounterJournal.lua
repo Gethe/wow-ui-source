@@ -234,7 +234,7 @@ end
 
 function EncounterJournal_OnLoad(self)
 	self:SetTitle(ENCOUNTER_JOURNAL);
-	SetPortraitToTexture(EncounterJournalPortrait,"Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
+	EncounterJournalPortrait:SetPortraitToAsset("Interface\\EncounterJournal\\UI-EJ-PortraitIcon");
 	self:RegisterEvent("EJ_LOOT_DATA_RECIEVED");
 	self:RegisterEvent("EJ_DIFFICULTY_UPDATE");
 	self:RegisterEvent("UNIT_PORTRAIT_UPDATE");

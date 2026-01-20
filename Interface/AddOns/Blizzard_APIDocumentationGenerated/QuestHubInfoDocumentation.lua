@@ -3,12 +3,14 @@ local QuestHubInfo =
 	Name = "QuestHubUI",
 	Type = "System",
 	Namespace = "C_QuestHub",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "IsQuestCurrentlyRelatedToHub",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

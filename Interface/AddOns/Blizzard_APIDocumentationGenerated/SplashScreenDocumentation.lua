@@ -3,6 +3,7 @@ local SplashScreen =
 	Name = "SplashScreen",
 	Type = "System",
 	Namespace = "C_SplashScreen",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,7 @@ local SplashScreen =
 		{
 			Name = "RequestLatestSplashScreen",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +48,7 @@ local SplashScreen =
 			Name = "OpenSplashScreen",
 			Type = "Event",
 			LiteralName = "OPEN_SPLASH_SCREEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "info", Type = "SplashScreenInfo", Nilable = true },
@@ -55,18 +58,6 @@ local SplashScreen =
 
 	Tables =
 	{
-		{
-			Name = "SplashScreenType",
-			Type = "Enumeration",
-			NumValues = 2,
-			MinValue = 0,
-			MaxValue = 1,
-			Fields =
-			{
-				{ Name = "WhatsNew", Type = "SplashScreenType", EnumValue = 0 },
-				{ Name = "SeasonRollOver", Type = "SplashScreenType", EnumValue = 1 },
-			},
-		},
 		{
 			Name = "SplashScreenInfo",
 			Type = "Structure",

@@ -61,23 +61,44 @@ local function InitializeSettingTooltip(initializer)
 	Settings.InitTooltip(initializer:GetName(), initializer:GetTooltip());
 end
 
-SettingsListSectionHeaderMixin = CreateFromMixins(DefaultTooltipMixin);
+SettingsNewTagMixin = { };
+
+function SettingsNewTagMixin:IsNewTagShown()
+	if self.data.newTagID then
+		return IsNewSettingInCurrentVersion(self.data.newTagID);
+	end
+end
+
+function SettingsNewTagMixin:MarkSettingAsSeen()
+	if self.data.newTagID then
+		MarkNewSettingAsSeen(self.data.newTagID);
+		return true;
+	end
+end
+
+SettingsListSectionHeaderMixin = CreateFromMixins(DefaultTooltipMixin, SettingsNewTagMixin);
 
 function SettingsListSectionHeaderMixin:OnLoad()
 	DefaultTooltipMixin.OnLoad(self);
 end
 
 function SettingsListSectionHeaderMixin:Init(initializer)
-	local data = initializer:GetData();
-	self.Title:SetTextToFit(data.name);
+	local name = initializer:GetName();
+	self.Title:SetTextToFit(name);
 
 	self:SetCustomTooltipAnchoring(self.Title, "ANCHOR_RIGHT");
 
 	self:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
+
+	local newTagShown = initializer:IsNewTagShown();
+	self.NewFeature:SetShown(newTagShown);
+	if newTagShown then
+		initializer:MarkSettingAsSeen();
+	end
 end
 
-function CreateSettingsListSectionHeaderInitializer(name, tooltip)
-	local data = {name = name, tooltip = tooltip};
+function CreateSettingsListSectionHeaderInitializer(name, tooltip, newTagID)
+	local data = {name = name, tooltip = tooltip, newTagID = newTagID};
 	return Settings.CreateElementInitializer("SettingsListSectionHeaderTemplate", data);
 end
 
@@ -112,6 +133,18 @@ function SettingsElementHierarchyMixin:GetModifyPredicates()
 	return self.modifyPredicates;
 end
 
+function SettingsElementHierarchyMixin:EvaluateModifyPredicates()
+	local prereqs = self:GetModifyPredicates();
+	if prereqs then
+		for index, prereq in ipairs(prereqs) do
+			if not prereq() then
+				return false;
+			end
+		end
+	end
+	return true;
+end
+
 function SettingsElementHierarchyMixin:GetEvaluateStateFrameEvents()
 	return self.evaluateStateFrameEvents;
 end
@@ -123,19 +156,15 @@ function SettingsElementHierarchyMixin:AddEvaluateStateFrameEvent(event)
 	table.insert(self.evaluateStateFrameEvents, event);
 end
 
-SettingsNewTagMixin = { };
-
-function SettingsNewTagMixin:IsNewTagShown()
-	if self.data.newTagID then
-		return IsNewSettingInCurrentVersion(self.data.newTagID);
-	end
+function SettingsElementHierarchyMixin:GetEvaluateStateCVars()
+	return self.evaluateStateCVars;
 end
 
-function SettingsNewTagMixin:MarkSettingAsSeen()
-	if self.data.newTagID then
-		MarkNewSettingAsSeen(self.data.newTagID);
-		return true;
+function SettingsElementHierarchyMixin:AddEvaluateStateCVar(cvar)
+	if not self.evaluateStateCVars then
+		self.evaluateStateCVars = {};
 	end
+	table.insert(self.evaluateStateCVars, cvar);
 end
 
 SettingsListPanelInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin, SettingsNewTagMixin);
@@ -189,7 +218,11 @@ function SettingsListElementInitializer:GetData()
 end
 
 function SettingsListElementInitializer:GetName()
-	return self.data.name;
+	if self.data.setting then
+		return self.data.setting:GetName();
+	else
+		return self.data.name;
+	end
 end
 
 function SettingsListElementInitializer:GetTooltip()
@@ -269,6 +302,20 @@ function SettingsListElementMixin:Init(initializer)
 		end
 	end
 
+	local evaluateStateFrameEvents = initializer:GetEvaluateStateFrameEvents();
+	if evaluateStateFrameEvents then
+		for index, event in ipairs(evaluateStateFrameEvents) do
+			self.cbrHandles:AddHandle(EventRegistry:RegisterFrameEventAndCallbackWithHandle(event, self.EvaluateState, self));
+		end
+	end
+
+	local evaluateStateCVars = initializer:GetEvaluateStateCVars();
+	if evaluateStateCVars then
+		for index, cvar in ipairs(evaluateStateCVars) do
+			self.cbrHandles:SetOnValueChangedCallback(cvar, self.EvaluateState, self);
+		end
+	end
+
 	local font = initializer:IsParentInitializerInLayout() and "GameFontNormalSmall" or "GameFontNormal";
 	self.Text:SetFontObject(font);
 	self.Text:SetText(initializer:GetName());
@@ -337,13 +384,6 @@ end
 function SettingsControlMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 	self.cbrHandles:SetOnValueChangedCallback(self:GetSetting():GetVariable(), self.OnSettingValueChanged, self);
-
-	local evaluateStateFrameEvents = initializer:GetEvaluateStateFrameEvents();
-	if evaluateStateFrameEvents then
-		for index, event in ipairs(evaluateStateFrameEvents) do
-			self.cbrHandles:AddHandle(EventRegistry:RegisterFrameEventAndCallbackWithHandle(event, self.EvaluateState, self));
-		end
-	end
 end
 
 function SettingsControlMixin:Release()
@@ -381,15 +421,7 @@ function SettingsControlMixin:IsEnabled()
 	end
 
 	local initializer = self:GetElementData();
-	local prereqs = initializer:GetModifyPredicates();
-	if prereqs then
-		for index, prereq in ipairs(prereqs) do
-			if not prereq() then
-				return false;
-			end
-		end
-	end
-	return true;
+	return initializer:EvaluateModifyPredicates();
 end
 
 function SettingsControlMixin:ShouldInterceptSetting(value)
@@ -456,7 +488,7 @@ function SettingsCheckboxControlMixin:Init(initializer)
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 
 	self.Checkbox:Init(setting:GetValue(), initTooltip);
-	
+
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
 	self:EvaluateState();
@@ -480,7 +512,7 @@ function SettingsCheckboxControlMixin:SetValue(value)
 	self.Checkbox:SetChecked(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
@@ -530,7 +562,7 @@ function SettingsSliderControlMixin:Init(initializer)
 	local setting = self:GetSetting();
 	local options = initializer:GetOptions();
 	self.SliderWithSteppers:Init(setting:GetValue(), options.minValue, options.maxValue, options.steps, options.formatters);
-	
+
 	self.SliderWithSteppers.Slider:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
 
 	self.cbrHandles:RegisterCallback(self.SliderWithSteppers, MinimalSliderWithSteppersMixin.Event.OnValueChanged, self.OnSliderValueChanged, self);
@@ -549,7 +581,7 @@ end
 
 function SettingsSliderControlMixin:OnSettingValueChanged(setting, value)
 	SettingsControlMixin.OnSettingValueChanged(self, setting, value);
-	
+
 	local initializer = self:GetElementData();
 	if initializer.reinitializeOnValueChanged then
 		self.SliderWithSteppers:FormatValue(self:GetSetting():GetValue());
@@ -571,7 +603,7 @@ SettingsDropdownControlMixin = CreateFromMixins(SettingsControlMixin);
 
 function SettingsDropdownControlMixin:OnLoad()
 	SettingsControlMixin.OnLoad(self);
-	
+
 	local dropdownType = self.dropdownType or "SettingsDropdownWithButtonsTemplate";
 	self.Control = CreateFrame("Frame", nil, self, dropdownType);
 	self.Control:SetPoint("LEFT", self, "CENTER", -48, 3);
@@ -610,10 +642,18 @@ function SettingsDropdownControlMixin:InitDropdown()
 	local options = initializer:GetOptions();
 	local initTooltip = Settings.CreateOptionsInitTooltip(setting, initializer:GetName(), initializer:GetTooltip(), options);
 	self:SetupDropdownMenu(self.Control.Dropdown, setting, options, initTooltip);
+
+	local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
+	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
+
+	if initializer.getSelectionTextFunc then
+		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);
+		self.Control.Dropdown:UpdateToMenuSelections(self.Control.Dropdown:GetMenuDescription());
+	end
 end
 
 function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip)
-	local inserter = Settings.CreateDropdownOptionInserter(options);
+	local inserter = Settings.CreateDropdownOptionInserter(setting, options);
 	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip);
 end
 
@@ -623,7 +663,7 @@ end
 
 function SettingsDropdownControlMixin:OnSettingValueChanged(setting, value)
 	SettingsControlMixin.OnSettingValueChanged(self, setting, value);
-	
+
 	local initializer = self:GetElementData();
 	if initializer.reinitializeOnValueChanged then
 		self:InitDropdown();
@@ -650,7 +690,7 @@ function SettingsButtonControlMixin:OnLoad()
 
 	self.Button = CreateFrame("Button", nil, self, "UIPanelButtonTemplate");
 	self.Button:SetWidth(200, 26);
-	
+
 	Mixin(self.Button, DefaultTooltipMixin);
 	DefaultTooltipMixin.OnLoad(self.Button);
 
@@ -680,8 +720,9 @@ function SettingsButtonControlMixin:Init(initializer)
 	self.Button:SetText(self:EvaluateName());
 	self.Button:SetScript("OnClick", self.data.buttonClick);
 	self.Button:SetTooltipFunc(GenerateClosure(InitializeSettingTooltip, initializer));
-	
-	if self.data.name == "" then
+
+	local name = initializer:GetName();
+	if name == "" then
 		self.Button:SetPoint("LEFT", self.Text, "LEFT", 0, 0);
 		self.Tooltip:Hide();
 	else
@@ -756,13 +797,13 @@ function SettingsCheckboxWithButtonControlMixin:Init(initializer)
 
 	local setting = self:GetSetting();
 	local initTooltip = GenerateClosure(InitializeSettingTooltip, initializer);
-	
+
 	self.Checkbox:Init(setting:GetValue(), initTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
 	self.Button:SetText(self.data.buttonText);
 	self.Button:SetScript("OnClick", self.data.OnButtonClick);
-	
+
 	self:EvaluateState();
 end
 
@@ -772,7 +813,7 @@ function SettingsCheckboxWithButtonControlMixin:OnCheckboxValueChanged(value)
 	setting:SetValue(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
@@ -799,7 +840,7 @@ function SettingsCheckboxWithButtonControlMixin:SetValue(value)
 	self.Checkbox:SetChecked(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
@@ -807,7 +848,7 @@ end
 function SettingsCheckboxWithButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = self:IsEnabled();
-	
+
 	local clickEnabled = enabled;
 	if self.data.clickRequiresSet and not self:GetSetting():GetValue() then
 		clickEnabled = false;
@@ -900,7 +941,7 @@ function SettingsCheckboxSliderControlMixin:OnCheckboxValueChanged(value)
 	cbSetting:SetValue(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
@@ -985,11 +1026,22 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 	self.Checkbox:Init(cbSetting:GetValue(), initCheckboxTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
-	local inserter = Settings.CreateDropdownOptionInserter(dropdownOptions);
+	local inserter = Settings.CreateDropdownOptionInserter(dropdownSetting, dropdownOptions);
 	local initDropdownTooltip = Settings.CreateOptionsInitTooltip(dropdownSetting, initializer:GetName(), initializer:GetTooltip(), dropdownOptions);
 	Settings.InitDropdown(self.Control.Dropdown, dropdownSetting, inserter, initDropdownTooltip);
 
-	self.Control:SetEnabled(cbSetting:GetValue());
+	local function OnDropdownSettingChanged()
+		self:EvaluateState();
+	end
+
+	self.cbrHandles:SetOnValueChangedCallback(dropdownSetting:GetVariable(), OnDropdownSettingChanged);
+
+	if initializer.getSelectionTextFunc then
+		self.Control.Dropdown:SetSelectionText(initializer.getSelectionTextFunc);
+		self.Control.Dropdown:UpdateToMenuSelections(self.Control.Dropdown:GetMenuDescription());
+	end
+
+	self:EvaluateState();
 end
 
 function SettingsCheckboxDropdownControlMixin:GetSettings()
@@ -1005,16 +1057,36 @@ function SettingsCheckboxDropdownControlMixin:OnCheckboxValueChanged(value)
 	cbSetting:SetValue(value);
 	if value then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else 
+	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 
-	self.Control:SetEnabled(value);
+	self:EvaluateState();
 end
 
 function SettingsCheckboxDropdownControlMixin:Release()
 	self.Checkbox:Release();
 	SettingsListElementMixin.Release(self);
+end
+
+function SettingsCheckboxDropdownControlMixin:IsEnabled()
+	local enabled = SettingsListElementMixin.IsEnabled(self);
+	if not enabled then
+		return false;
+	end
+
+	local initializer = self:GetElementData();
+	return initializer:EvaluateModifyPredicates();
+end
+
+function SettingsCheckboxDropdownControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
+	local enabled = self:IsEnabled();
+
+	self.Checkbox:SetEnabled(enabled);
+	self.Control.Dropdown:SetEnabled(enabled and self.Checkbox:GetChecked());
+	self.Control:UpdateSteppers();
+	self:DisplayEnabled(enabled);
 end
 
 function CreateSettingsCheckboxDropdownInitializer(cbSetting, cbLabel, cbTooltip, dropdownSetting, dropdownOptions, dropDownLabel, dropDownTooltip)
@@ -1033,6 +1105,103 @@ function CreateSettingsCheckboxDropdownInitializer(cbSetting, cbLabel, cbTooltip
 	return Settings.CreateSettingInitializer("SettingsCheckboxDropdownControlTemplate", data);
 end
 
+SettingsCheckboxWithColorSwatchControlMixin = CreateFromMixins(SettingsControlMixin);
+
+function SettingsCheckboxWithColorSwatchControlMixin:OnLoad()
+	SettingsControlMixin.OnLoad(self);
+
+	self.Checkbox = CreateFrame("CheckButton", nil, self, "SettingsCheckboxTemplate");
+	self.Checkbox:SetPoint("LEFT", self, "CENTER", -80, 0);
+
+	self.ColorSwatch = CreateFrame("Button", nil, self, "ColorSwatchTemplate");
+	self.ColorSwatch:SetPoint("LEFT", self.Checkbox, "RIGHT", 12, -2);
+
+	self.Tooltip:SetScript("OnMouseUp", function()
+		if self.Checkbox:IsEnabled() then
+			self.Checkbox:Click();
+		end
+	end);
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:Init(initializer)
+	SettingsControlMixin.Init(self, initializer);
+
+	local setting = self:GetSetting();
+	local initTooltip = GenerateClosure(InitializeSettingTooltip, initializer);
+
+	self.Checkbox:Init(setting:GetValue(), initTooltip);
+	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
+
+	self.ColorSwatch:SetScript("OnClick", self.data.OnSwatchClick);
+
+	if self.data.initialSwatchColorFn then
+		self.ColorSwatch:SetColor(self.data.initialSwatchColorFn());
+	end
+
+	self:EvaluateState();
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:OnCheckboxValueChanged(value)
+	local initializer = self:GetElementData();
+	local setting = initializer:GetSetting();
+	setting:SetValue(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+
+	self:GetSetting():SetValue(value);
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:Release()
+	self.Checkbox:Release();
+	self.ColorSwatch:SetScript("OnClick", nil);
+	SettingsControlMixin.Release(self);
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:SetButtonState(enabled)
+	self.ColorSwatch:SetEnabled(enabled);
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:OnSettingValueChanged(setting, value)
+	SettingsControlMixin.OnSettingValueChanged(self, setting, value);
+
+	self:EvaluateState();
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:SetValue(value)
+	self.Checkbox:SetChecked(value);
+	if value then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+end
+
+function SettingsCheckboxWithColorSwatchControlMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
+	local enabled = self:IsEnabled();
+
+	local clickEnabled = enabled;
+	if self.data.clickRequiresSet and self:GetSetting():GetValue() == self.data.invertClickRequiresSet then
+		clickEnabled = false;
+	end
+
+	self:SetButtonState(clickEnabled);
+	self:DisplayEnabled(enabled);
+end
+
+function CreateSettingsCheckboxWithColorSwatchInitializer(setting, swatchClick, clickRequiresSet, invertClickRequiresSet, tooltip, initialSwatchColorFn)
+	local data = Settings.CreateSettingInitializerData(setting, nil, tooltip);
+	data.OnSwatchClick = swatchClick;
+	data.clickRequiresSet = clickRequiresSet;
+	data.invertClickRequiresSet = not not invertClickRequiresSet;
+	data.initialSwatchColorFn = initialSwatchColorFn;
+	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithColorSwatchControlTemplate", data);
+	return initializer;
+end
+
 SettingsExpandableSectionMixin = {};
 
 function SettingsExpandableSectionMixin:OnLoad()
@@ -1040,7 +1209,7 @@ function SettingsExpandableSectionMixin:OnLoad()
 		local initializer = self:GetElementData();
 		local data = initializer.data;
 		data.expanded = not data.expanded;
-		
+
 		self:SetHeight(self:CalculateHeight());
 
 		self:OnExpandedChanged(data.expanded);
@@ -1052,14 +1221,18 @@ function SettingsExpandableSectionMixin:OnExpandedChanged(expanded)
 end
 
 function SettingsExpandableSectionMixin:Init(initializer)
-	local data = initializer.data;
-	self.Button.Text:SetText(data.name);
+	local name = initializer:GetName();
+	self.Button.Text:SetText(name);
 end
 
 SettingsExpandableSectionInitializer = CreateFromMixins(ScrollBoxFactoryInitializerMixin, SettingsSearchableElementMixin);
 
 function SettingsExpandableSectionInitializer:GetExtent()
 	error("Implement GetExtent");
+end
+
+function SettingsExpandableSectionInitializer:GetName()
+	return self.data and self.data.name or "";
 end
 
 function CreateSettingsExpandableSectionInitializer(name)

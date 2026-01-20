@@ -3,6 +3,7 @@ local HousingCleanupModeUI =
 	Name = "HousingCleanupModeUI",
 	Type = "System",
 	Namespace = "C_HousingCleanupMode",
+	Environment = "All",
 
 	Functions =
 	{
@@ -36,6 +37,7 @@ local HousingCleanupModeUI =
 			Name = "HousingCleanupModeHoveredTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_CLEANUP_MODE_HOVERED_TARGET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "hasHoveredTarget", Type = "bool", Nilable = false },
@@ -45,6 +47,7 @@ local HousingCleanupModeUI =
 			Name = "HousingCleanupModeTargetSelected",
 			Type = "Event",
 			LiteralName = "HOUSING_CLEANUP_MODE_TARGET_SELECTED",
+			SynchronousEvent = true,
 		},
 	},
 

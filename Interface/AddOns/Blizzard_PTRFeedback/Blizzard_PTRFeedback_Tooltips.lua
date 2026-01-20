@@ -16,6 +16,7 @@ PTR_IssueReporter.TooltipTypes = {
 	housingDecor = "Housing Decor",
 	housingRoom = "Housing Room",
 	housingComponent = "Housing Component",
+	exteriorFixture = "Exterior Fixture",
 }
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupSpellTooltips()
@@ -248,7 +249,7 @@ function PTR_IssueReporter.SetupScenarioTooltips()
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.SetupHousingDecorTooltips()
-	local decorInstanceFunc = function(sender, self, tooltip)
+	local decorInstanceFunc = function(sender, senderFrame, tooltip)
 		local decorDebugInfo = C_HousingDecor.GetHoveredDecorDebugInfo()
 		if (not decorDebugInfo) then
 			return;
@@ -258,14 +259,10 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 			PTR_IssueReporter.HookIntoTooltip(tooltip, PTR_IssueReporter.TooltipTypes.housingDecor, decorDebugInfo.baseInfo.decorID, decorDebugInfo.baseInfo.name)
 		else
 			GameTooltip:ClearAllPoints()
-			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			GameTooltip:SetOwner(senderFrame, "ANCHOR_CURSOR")
 			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.housingDecor, decorDebugInfo.baseInfo.decorID, decorDebugInfo.baseInfo.name, true)
 			GameTooltip:Show()
 		end
-	end
-
-	local decorDebugFunc = function(caller, tooltip)
-		decorInstanceFunc(caller, nil, tooltip)
 	end
 
 	local decorChestFunc = function(caller, catalogEntryFrame, tooltip)
@@ -295,8 +292,8 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 		end
 	end
 
-	local componentMouseOverFunc = function(caller, roomComponentObject, tooltip)
-		if not roomComponentObject or not C_HousingCustomizeMode then
+	local componentMouseOverFunc = function(caller, senderFrame, tooltip)
+		if not C_HousingCustomizeMode then
 			return
 		end
 
@@ -312,27 +309,33 @@ function PTR_IssueReporter.SetupHousingDecorTooltips()
 		end
 	end
 
-	--C_HousingDecor.GetHoveredDecorDebugInfo()
-	--C_HousingDecor.GetSelectedDecorDebugInfo()
-	--C_HousingDecor.GetDecorDebugInfoForGUID(decorGUID)
-	--[[
-		struct HousingDecorInstanceDebugInfo
-		{
-			HousingDecorInstanceInfo baseInfo;
-			[Unpack] vector3 worldPosition;
-			[Unpack] vector3 rotationYawPitchRoll;
-			float scale;
+	local fixtureInstanceMouseOverFunc = function(callerName, callerFrame, existingTooltip)
+		if not C_HouseExterior or not C_HouseExterior.GetHoveredFixtureDebugInfo() then
+			return;
+		end
 
-			[Nilable] WOWGUID roomGUID;
-			[Nilable] WOWGUID parentGUID;
-			[Vector] WOWGUID childDecorGUIDs;
-		}
-	]]
+		local fixtureInfo = C_HouseExterior.GetHoveredFixtureDebugInfo();
+
+		if (existingTooltip) then
+			PTR_IssueReporter.HookIntoTooltip(existingTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, false, nil, fixtureInfo)
+		else
+			GameTooltip:ClearAllPoints()
+			GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+			PTR_IssueReporter.HookIntoTooltip(GameTooltip, PTR_IssueReporter.TooltipTypes.exteriorFixture, fixtureInfo.exteriorComponentID, fixtureInfo.name, true, nil, fixtureInfo)
+			GameTooltip:Show()
+		end
+	end
 	
 	EventRegistry:RegisterCallback("HousingDecorInstance.MouseOver", decorInstanceFunc, PTR_IssueReporter)
-	EventRegistry:RegisterCallback("HousingDecorInstance.MouseOverDebug", decorDebugFunc, PTR_IssueReporter)
+	-- MouseOverDebug event is called if another debug system has added to/affected a decor tooltip, so that lines added by this system can be re-added to the bottom
+	EventRegistry:RegisterCallback("HousingDecorInstance.MouseOverDebug", decorInstanceFunc, PTR_IssueReporter)
 	EventRegistry:RegisterCallback("HousingCatalogEntry.TooltipCreated", decorChestFunc, PTR_IssueReporter)
 	EventRegistry:RegisterCallback("HousingRoomComponentInstance.MouseOver", componentMouseOverFunc, PTR_IssueReporter)
+	EventRegistry:RegisterCallback("HousingRoomComponentInstance.MouseOverDebug", componentMouseOverFunc, PTR_IssueReporter)
+	EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOver", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
+	EventRegistry:RegisterCallback("HousingFixtureInstance.MouseOverDebug", fixtureInstanceMouseOverFunc, PTR_IssueReporter)
+	-- EventRegistry:RegisterCallback("HousingFixturePoint.MouseOver", fixturePointMouseOverFunc, PTR_IssueReporter)
+	-- EventRegistry:RegisterCallback("HousingFixturePoint.MouseOverDebug", fixturePointMouseOverFunc, PTR_IssueReporter)
 end
 ----------------------------------------------------------------------------------------------------
 function PTR_IssueReporter.InitializePTRTooltips()

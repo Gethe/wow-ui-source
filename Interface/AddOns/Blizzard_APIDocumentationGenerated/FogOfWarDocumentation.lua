@@ -3,12 +3,14 @@ local FogOfWar =
 	Name = "FogOfWar",
 	Type = "System",
 	Namespace = "C_FogOfWar",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetFogOfWarForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local FogOfWar =
 		{
 			Name = "GetFogOfWarInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +45,7 @@ local FogOfWar =
 			Name = "FogOfWarUpdated",
 			Type = "Event",
 			LiteralName = "FOG_OF_WAR_UPDATED",
+			UniqueEvent = true,
 		},
 	},
 

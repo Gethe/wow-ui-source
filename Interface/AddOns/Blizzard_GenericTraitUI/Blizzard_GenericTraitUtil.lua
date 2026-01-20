@@ -22,6 +22,7 @@ local GenericTraitFrameLayoutOptions = {
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
 		CloseButtonOffset = { x = -9, y = -9 },
 		PanelArea = "left",
+		HideCurrencyDisplay = false,
 	},
 
 	Dragonflight = {
@@ -84,6 +85,11 @@ local GenericTraitFrameLayoutOptions = {
 	ReshiiWraps = {
 		Title = GENERIC_TRAIT_FRAME_RESHII_WRAPS_TITLE,
 	},
+
+	ZulAmanLoaBlessing = {
+		HideCurrencyDisplay = true,
+		SuppressSubTreeConfirmation = true,
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -112,6 +118,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Reshii Wraps (11.2.0 Cloak)
 	[1115] = GenericTraitFrameLayoutOptions.ReshiiWraps,
+
+	-- Zul'Aman Loa Blessing
+	[1166] = GenericTraitFrameLayoutOptions.ZulAmanLoaBlessing,
 };
 
 local GenericTraitFrameTutorials = {

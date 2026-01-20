@@ -5,6 +5,31 @@ UIPANEL_SKIP_SET_POINT = true;
 UIPANEL_DO_SET_POINT = nil;
 UIPANEL_VALIDATE_CURRENT_FRAME = true;
 
+-- Move this stuff to UIParentPanelManager for TBC when it is created
+-- These are windows that rely on a parent frame to be open.  If the parent closes or a pushable frame overlaps them they must be hidden.
+UIChildWindows = {
+	"OpenMailFrame",
+	"GuildControlPopupFrame",
+	"GuildMemberDetailFrame",
+	"GuildInfoFrame",
+	"TokenFramePopup",
+	"GuildBankPopupFrame",
+	"GearManagerDialog",
+};
+
+UISpecialFrames = {
+	"ItemRefTooltip",
+	"ColorPickerFrame",
+	"FloatingPetBattleAbilityTooltip",
+	"FloatingGarrisonFollowerTooltip",
+	"FloatingGarrisonShipyardFollowerTooltip"
+};
+
+UIMenus = {
+	"DropDownList1",
+	"DropDownList2",
+};
+
 local CHECK_FIT_DEFAULT_EXTRA_WIDTH = 20;
 local CHECK_FIT_DEFAULT_EXTRA_HEIGHT = 20;
 
@@ -741,7 +766,7 @@ end
 function FramePositionDelegate:UIParentManageBottomFrameContainer()
 	local customOverlayHeight = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CustomActionbarOverlayHeightOffset);
 	local bottomActionBarHeight = EditModeUtil:GetBottomActionBarHeight() + customOverlayHeight;
-	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + 15 or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
+	bottomActionBarHeight = bottomActionBarHeight > 0 and bottomActionBarHeight + BOTTOM_FRAME_CONTAINER_MARGIN or MAIN_ACTION_BAR_DEFAULT_OFFSET_Y;
 	UIParentBottomManagedFrameContainer.fixedWidth = 573;
 	UIParentBottomManagedFrameContainer:ClearAllPoints();
 	UIParentBottomManagedFrameContainer:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, bottomActionBarHeight);

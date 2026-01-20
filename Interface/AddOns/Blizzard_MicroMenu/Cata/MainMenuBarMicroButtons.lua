@@ -6,10 +6,10 @@ MICRO_BUTTONS = {
 	"QuestLogMicroButton",
 	"SocialsMicroButton",
 	"GuildMicroButton",
-	"EJMicroButton",
 	"CollectionsMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
+	"EJMicroButton",
 	"MainMenuMicroButton",
 	"HelpMicroButton",
 }

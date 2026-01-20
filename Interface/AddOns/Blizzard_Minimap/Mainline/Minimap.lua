@@ -765,7 +765,7 @@ function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, ...)
-	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then		
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then
 		if event == "CVAR_UPDATE" then
 			local cvarName, value = ...;
 			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov4");
@@ -808,8 +808,6 @@ ExpansionLandingPageMinimapButtonMixin = { };
 
 ExpansionLandingPageMode = {
 	Garrison = 1,
-	ExpansionOverlay = 2,
-	MajorFactionRenown = 3,
 };
 
 local GarrisonLandingPageEvents = {
@@ -828,8 +826,6 @@ local GarrisonLandingPageEvents = {
 };
 
 function ExpansionLandingPageMinimapButtonMixin:OnLoad()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.OverlayChanged", self.OnOverlayChanged, self);
-
 	self.pulseLocks = {};
 
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
@@ -844,21 +840,8 @@ function ExpansionLandingPageMinimapButtonMixin:IsInGarrisonMode()
 	return self.mode == ExpansionLandingPageMode.Garrison;
 end
 
-function ExpansionLandingPageMinimapButtonMixin:IsInMajorFactionRenownMode()
-	return self.mode == ExpansionLandingPageMode.MajorFactionRenown;
-end
-
-function ExpansionLandingPageMinimapButtonMixin:IsExpansionOverlayMode()
-	return self.mode == ExpansionLandingPageMode.ExpansionOverlay;
-end
-
 function ExpansionLandingPageMinimapButtonMixin:SetBestLandingPageMode()
-	if C_GameRules.IsGameRuleActive(Enum.GameRule.LandingPageFactionID) then
-		self.mode = ExpansionLandingPageMode.MajorFactionRenown;
-		self.majorFactionID = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.LandingPageFactionID);
-	elseif ExpansionLandingPage:IsOverlayApplied() then
-		self.mode = ExpansionLandingPageMode.ExpansionOverlay;
-	elseif not self:IsInGarrisonMode() then
+	if not self:IsInGarrisonMode() then
 		self.mode = ExpansionLandingPageMode.Garrison;
 		FrameUtil.RegisterFrameForEvents(self, GarrisonLandingPageEvents);
 	end
@@ -892,36 +875,10 @@ function ExpansionLandingPageMinimapButtonMixin:RefreshButton(forceUpdateIcon)
 	end
 end
 
-function ExpansionLandingPageMinimapButtonMixin:OnShow()
-	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerPulseLock", self.TriggerPulseLock, self);
-	EventRegistry:RegisterCallback("ExpansionLandingPage.HidePulse", self.HidePulse, self);
-	EventRegistry:RegisterCallback("ExpansionLandingPage.ClearPulses", self.ClearPulses, self);
-	EventRegistry:RegisterCallback("ExpansionLandingPage.TriggerAlert", self.TriggerAlert, self);
-end
-
-function ExpansionLandingPageMinimapButtonMixin:OnHide()
-	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerPulseLock", self);
-	EventRegistry:UnregisterCallback("ExpansionLandingPage.HidePulse", self);
-	EventRegistry:UnregisterCallback("ExpansionLandingPage.ClearPulses", self);
-	EventRegistry:UnregisterCallback("ExpansionLandingPage.TriggerAlert", self);
-end
-
 function ExpansionLandingPageMinimapButtonMixin:OnEvent(event, ...)
 	if self:IsInGarrisonMode() and tContains(GarrisonLandingPageEvents, event) then
 		self:HandleGarrisonEvent(event, ...);
 	end
-end
-
-function ExpansionLandingPageMinimapButtonMixin:OnOverlayChanged()
-	local forceUpdateIcon = false;
-
-	local expansionLandingPageType = ExpansionLandingPage:GetLandingPageType();
-	if self.expansionLandingPageType ~= expansionLandingPageType then
-		self.expansionLandingPageType = expansionLandingPageType;
-		forceUpdateIcon = true;
-	end
-
-	self:RefreshButton(forceUpdateIcon);
 end
 
 function ExpansionLandingPageMinimapButtonMixin:SetLandingPageIconFromAtlases(up, down, highlight, glow, useDefaultButtonSize)
@@ -955,22 +912,8 @@ function ExpansionLandingPageMinimapButtonMixin:ResetLandingPageIconOffset()
 end
 
 function ExpansionLandingPageMinimapButtonMixin:UpdateIcon()
-	if self:IsInMajorFactionRenownMode() then
-		local useDefaultButtonSize = true;
-		self:SetLandingPageIconFromAtlases("plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", useDefaultButtonSize);
-		self:ResetLandingPageIconOffset();
-		self.title = "";
-		self.description = "";
-	elseif self:IsInGarrisonMode() then
+	if self:IsInGarrisonMode() then
 		self:UpdateIconForGarrison();
-	else
-		local minimapDisplayInfo = ExpansionLandingPage:GetOverlayMinimapDisplayInfo();
-		if minimapDisplayInfo then
-			self:SetLandingPageIconFromAtlases(minimapDisplayInfo.normalAtlas, minimapDisplayInfo.pushedAtlas, minimapDisplayInfo.highlightAtlas, minimapDisplayInfo.glowAtlas, minimapDisplayInfo.useDefaultButtonSize);
-			self:SetLandingPageIconOffset(minimapDisplayInfo.anchorOffset);
-			self.title = minimapDisplayInfo.title;
-			self.description = minimapDisplayInfo.description;
-		end
 	end
 end
 
@@ -979,26 +922,16 @@ function ExpansionLandingPageMinimapButtonMixin:OnClick(button)
 end
 
 function ExpansionLandingPageMinimapButtonMixin:ToggleLandingPage()
-	if self:IsInMajorFactionRenownMode() then
-		ToggleMajorFactionRenown(Constants.MajorFactionsConsts.PLUNDERSTORM_MAJOR_FACTION_ID);
-	elseif self:IsInGarrisonMode() then
+	if self:IsInGarrisonMode() then
 		GarrisonLandingPage_Toggle();
 		GarrisonMinimap_HideHelpTip(self);
-	elseif self:IsExpansionOverlayMode() then
-		ToggleExpansionLandingPage();
 	end
 end
 
 function ExpansionLandingPageMinimapButtonMixin:SetTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-
-	if self:IsInMajorFactionRenownMode() then
-		RenownRewardUtil.AddMajorFactionLandingPageSummaryToTooltip(GameTooltip, self.majorFactionID, GenerateClosure(self.SetTooltip, self));
-	else
-		GameTooltip:SetText(self.title, 1, 1, 1);
-		GameTooltip:AddLine(self.description, nil, nil, nil, true);
-	end
-
+	GameTooltip:SetText(self.title, 1, 1, 1);
+	GameTooltip:AddLine(self.description, nil, nil, nil, true);
 	GameTooltip:Show();
 end
 

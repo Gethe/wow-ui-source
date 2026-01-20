@@ -150,7 +150,7 @@ function TalentFrameBaseMixin:OnLoad()
 	if not self.enableZoomAndPan then
 		self:DisableZoomAndPan();
 	end
-	
+
 	self.DisabledOverlay.GrayOverlay:SetAlpha(self.disabledOverlayAlpha);
 
 	self:UpdatePadding();
@@ -549,7 +549,7 @@ function TalentFrameBaseMixin:GetRootTalentButton()
 	if not self.talentTreeInfo then
 		return nil;
 	end
-	
+
 	if not self.talentTreeInfo.rootNodeID then
 		return nil;
 	end
@@ -1667,8 +1667,8 @@ function TalentFrameBaseMixin:RollbackConfig(ignoreSound)
 		return;
 	end
 
-	if not ignoreSound then 
-		self:PlayRollbackConfigSound(); 
+	if not ignoreSound then
+		self:PlayRollbackConfigSound();
 	end
 
 	return C_Traits.RollbackConfig(self:GetConfigID());
@@ -1843,7 +1843,7 @@ function TalentFrameBaseMixin:GetCostStrings(traitCurrenciesCost)
 	local costStrings = {};
 	for i, traitCurrencyCost in ipairs(traitCurrenciesCost) do
 		local treeCurrency = self.treeCurrencyInfoMap[traitCurrencyCost.ID];
-		local displayText = treeCurrency and self.getDisplayTextFromTreeCurrency(treeCurrency) or nil;
+		local displayText = treeCurrency and self.getDisplayTextFromTreeCurrency and self.getDisplayTextFromTreeCurrency(treeCurrency) or nil;
 		if treeCurrency and displayText then
 			local amount = traitCurrencyCost.amount;
 			local costEntryString = TALENT_BUTTON_TOOLTIP_COST_ENTRY_FORMAT:format(amount, displayText);

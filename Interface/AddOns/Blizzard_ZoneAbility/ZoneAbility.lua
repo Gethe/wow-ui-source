@@ -105,7 +105,7 @@ end
 
 function ZoneAbilityFrameMixin:UpdateDisplayedZoneAbilities()
 	-- Leaving this as a surgical fix for timerunning for now.
-	local hideZoneAbilities = PlayerIsTimerunning() and HasVehicleActionBar();
+	local hideZoneAbilities = PlayerIsTimerunning() and C_ActionBar.HasVehicleActionBar();
 
 	local zoneAbilities = hideZoneAbilities and {} or GetActiveZoneAbilities();
 	table.sort(zoneAbilities, SortByUIPriority);
@@ -284,9 +284,6 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local spellCount = nil;
 	if chargeInfo then
 		spellCount = chargeInfo.currentCharges;
-		if chargeInfo.currentCharges < chargeInfo.maxCharges then
-			StartChargeCooldown(self, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate);
-		end
 	elseif usesCount > 0 then
 		spellCount = usesCount;
 	end
@@ -294,7 +291,7 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	self.Count:SetText(spellCount and spellCount or "");
 
 	if cooldownInfo then
-		CooldownFrame_Set(self.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+		ActionButton_ApplyCooldown(self.Cooldown, cooldownInfo, self.ChargeCooldown, chargeInfo);
 	end
 end
 
@@ -314,7 +311,7 @@ end
 
 function ZoneAbilityFrameSpellButtonMixin:GetOverrideSpellID()
 	local spellID = self:GetSpellID();
-	return FindSpellOverrideByID(spellID) or spellID;
+	return C_SpellBook.FindSpellOverrideByID(spellID) or spellID;
 end
 
 function ZoneAbilityFrameSpellButtonMixin:SetContent(zoneAbilityInfo)

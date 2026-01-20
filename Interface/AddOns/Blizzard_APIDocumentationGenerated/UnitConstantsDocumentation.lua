@@ -24,6 +24,7 @@ local UnitConstants =
 				{ Name = "iconAnchor", Type = "AnchorBinding", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = false },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = false },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{
@@ -32,9 +33,9 @@ local UnitConstants =
 			Fields =
 			{
 				{ Name = "isFullUpdate", Type = "bool", Nilable = false, Default = false },
-				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
-				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true },
-				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "removedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
+				{ Name = "addedAuras", Type = "table", InnerType = "AuraData", Nilable = true, ConditionalSecretContents = true },
+				{ Name = "updatedAuraInstanceIDs", Type = "table", InnerType = "number", Nilable = true, NeverSecretContents = true },
 			},
 		},
 		{
@@ -49,6 +50,7 @@ local UnitConstants =
 				{ Name = "showCountdownNumbers", Type = "bool", Nilable = false },
 				{ Name = "iconWidth", Type = "uiUnit", Nilable = true },
 				{ Name = "iconHeight", Type = "uiUnit", Nilable = true },
+				{ Name = "borderScale", Type = "uiUnit", Nilable = true },
 			},
 		},
 		{

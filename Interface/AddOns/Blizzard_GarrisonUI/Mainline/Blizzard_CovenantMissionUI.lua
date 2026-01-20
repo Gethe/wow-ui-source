@@ -73,6 +73,12 @@ local AdventureMapTextureKits = {
 		closeButtonX = -15,
 		closeButtonY = -15,
 	},
+
+	midnight =
+	{
+		closeButtonX = -16,
+		closeButtonY = -16,
+	},
 }
 
 local defaultTextureKitInfo = {
@@ -1368,4 +1374,4 @@ function CovenantMissionUpdateBoardTextures(frame, textureKit)
 		frame.FollowerBackground:SetPoint("TOPLEFT", frame.Median, "BOTTOMLEFT", layoutInfo.EnemyBackgroundXOffset, layoutInfo.EnemyBackgroundYOffset);
 		frame.FollowerBackground:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", layoutInfo.FollowerBackgroundXOffset, layoutInfo.FollowerBackgroundYOffset);
 	end
-end 
+end

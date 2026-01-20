@@ -1,0 +1,124 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!-- Personal Resource Display -->
+	<Frame name="PersonalResourceDisplayFrame" inherits="EditModePersonalResourceDisplaySystemTemplate" parent="UIParent" mixin="PersonalResourceDisplayMixin">
+		<Size x="200" y="75"/>
+		<Frames>
+			<!-- Health -->
+			<Frame parentKey="HealthBarsContainer">
+				<Size y="15"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+					<Anchor point="TOP"/>
+					<Anchor point="RIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background">
+							<Color r=".2" g=".2" b=".2" a="0.65"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="border" inherits="NamePlateFullBorderTemplate"/>
+					<StatusBar parentKey="TempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" mixin="TempMaxHealthLossMixin" frameLevel="100">
+						<BarTexture parentKey="TempMaxHealthLossTexture" atlas="UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+					</StatusBar>
+					<StatusBar parentKey="healthBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER" textureSubLevel="5">
+								<Texture parentKey="myHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" hidden="true"/>
+								<Texture parentKey="otherHealPrediction" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" hidden="true"/>
+								<Texture parentKey="totalAbsorb"/>
+							</Layer>
+							<Layer level="BORDER" textureSubLevel="6">
+								<Texture parentKey="totalAbsorbOverlay"/>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="1">
+								<Texture parentKey="myHealAbsorb" hidden="true"/>
+								<Texture parentKey="myHealAbsorbLeftShadow" file="Interface\RaidFrame\Absorb-Edge" hidden="true"/>
+								<Texture parentKey="myHealAbsorbRightShadow" file="Interface\RaidFrame\Absorb-Edge" hidden="true">
+									<TexCoords left="1" right="0" top="0" bottom="1"/>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK" textureSubLevel="2">
+								<Texture parentKey="overAbsorbGlow" hidden="true"/>
+								<Texture parentKey="overHealAbsorbGlow" hidden="true"/>
+							</Layer>
+						</Layers>
+						<BarTexture parentKey="barTexture" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill"/>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<!-- Power (Mana, Rage, etc.) -->
+			<StatusBar parentKey="PowerBar">
+				<Size x="200" y="15"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.HealthBarsContainer" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background">
+							<Color r=".2" g=".2" b=".2" a="0.65"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="ManaCostPredictionBar" file="Interface\TargetingFrame\UI-StatusBar">
+							<Color r="0.0" g="0.447" b="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate"/>
+					<Frame parentKey="FeedbackFrame" setAllPoints="true" useParentLevel="true" inherits="BuilderSpenderFrame"/>
+					<Frame parentKey="FullPowerFrame" inherits="FullResourcePulseFrame">
+						<Size x="200" y="17"/>
+						<Anchors>
+							<Anchor point="RIGHT"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+				<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarColor r="0" g="0" b="1"/>
+			</StatusBar>
+
+			<!-- Alternate Power -->
+			<StatusBar parentKey="AlternatePowerBar" hidden="true">
+				<Size x="200" y="15"/>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="background">
+							<Color r=".2" g=".2" b=".2" a="0.65"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="Border" inherits="NamePlateSecondaryBarBorderTemplate"/>
+				</Frames>
+				<BarTexture parentKey="Texture" file="Interface\TargetingFrame\UI-TargetingFrame-BarFill"/>
+				<BarColor r="0" g="0" b="1"/>
+			</StatusBar>
+
+			<!-- Class Frame -->
+			<Frame parentKey="ClassFrameContainer" hidden="true">
+				<Size x="200" y="15"/>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -2,7 +2,7 @@
 ## Author: Blizzard Entertainment
 ## DefaultState: enabled
 ## Dependencies: Blizzard_AutoComplete, Blizzard_Settings_Shared, Blizzard_TimerunningUtil
-## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode
+## OptionalDeps: Blizzard_GlueStubs, Blizzard_EditMode, Blizzard_TransmogShared
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 Shared\HistoryKeeper.lua

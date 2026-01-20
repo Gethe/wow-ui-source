@@ -39,6 +39,6 @@ function ClassNameplateAlternatePowerBarBaseMixin:OnOptionsUpdated()
 end
 
 function ClassNameplateAlternatePowerBarBaseMixin:OnSizeChanged()
-	PixelUtil.SetHeight(self, DefaultCompactNamePlatePlayerFrameSetUpOptions.healthBarHeight);
+	PixelUtil.SetHeight(self, NamePlateSetupOptions.healthBarHeight);
 	self.Border:UpdateSizes();
 end

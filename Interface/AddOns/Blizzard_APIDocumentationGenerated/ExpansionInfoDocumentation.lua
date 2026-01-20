@@ -2,12 +2,14 @@ local ExpansionInfo =
 {
 	Name = "ExpansionInfo",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ClassicExpansionAtLeast",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,7 @@ local ExpansionInfo =
 		{
 			Name = "ClassicExpansionAtMost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

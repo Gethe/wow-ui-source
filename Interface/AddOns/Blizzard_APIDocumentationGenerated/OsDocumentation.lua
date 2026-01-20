@@ -2,6 +2,7 @@ local Os =
 {
 	Name = "Os",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -9,6 +10,7 @@ local Os =
 			Name = "CopyToClipboard",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

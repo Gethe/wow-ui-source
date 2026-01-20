@@ -3,6 +3,7 @@ local XMLUtil =
 	Name = "XMLUtil",
 	Type = "System",
 	Namespace = "C_XMLUtil",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local XMLUtil =
 			Name = "GetTemplateInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

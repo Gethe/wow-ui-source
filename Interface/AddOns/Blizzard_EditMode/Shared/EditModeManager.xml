@@ -178,7 +178,7 @@
 													<KeyValue key="layoutIndex" value="2" type="number"/>
 												</KeyValues>
 											</Frame>
-		
+
 											<!-- Combat -->
 											<Frame parentKey="CombatTitle">
 												<Size x="225" y="32"/>
@@ -200,7 +200,7 @@
 													<KeyValue key="layoutIndex" value="4" type="number"/>
 												</KeyValues>
 											</Frame>
-		
+
 											<!-- Misc -->
 											<Frame parentKey="MiscTitle">
 												<Size x="225" y="32"/>
@@ -302,6 +302,15 @@
 									<KeyValue key="advancedLayoutIndex" value="1" type="number"/>
 								</KeyValues>
 							</Frame>
+							<Frame parentKey="ExternalDefensives" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="12" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_EXTERNAL_DEFENSIVES_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="externalDefensivesEnabled" type="string"/>
+								</KeyValues>
+							</Frame>
 							<Frame parentKey="CastBar" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_CAST_BAR_LABEL" type="global"/>
@@ -351,6 +360,33 @@
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_COOLDOWN_VIEWER_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="cooldownViewerEnabled" type="string"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="PersonalResourceDisplay" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_PERSONAL_RESOURCE_DISPLAY_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="EncounterEvents" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_ENCOUNTER_EVENTS_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="10" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_ENCOUNTER_EVENTS_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="combatWarningsEnabled" type="string"/>
+								</KeyValues>
+							</Frame>
+							<Frame parentKey="DamageMeter" inherits="EditModeManagerSettingCheckButtonTemplate">
+								<KeyValues>
+									<KeyValue key="labelText" value="HUD_EDIT_MODE_DAMAGE_METER_LABEL" type="global"/>
+									<KeyValue key="category" value="EditModeManagerOptionsCategory.Combat" type="global"/>
+									<KeyValue key="advancedLayoutIndex" value="11" type="number"/>
+									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_DAMAGE_METER_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="damageMeterEnabled" type="string"/>
 								</KeyValues>
 							</Frame>
 
@@ -413,12 +449,14 @@
 									<KeyValue key="advancedLayoutIndex" value="8" type="number"/>
 								</KeyValues>
 							</Frame>
-							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate" mixin="EditModeLootFrameCheckButtonMixin">
+							<Frame parentKey="LootFrame" inherits="EditModeManagerSettingCheckButtonTemplate">
 								<KeyValues>
 									<KeyValue key="labelText" value="HUD_EDIT_MODE_LOOT_FRAME_LABEL" type="global"/>
 									<KeyValue key="category" value="EditModeManagerOptionsCategory.Misc" type="global"/>
 									<KeyValue key="advancedLayoutIndex" value="9" type="number"/>
 									<KeyValue key="disabledTooltipText" value="HUD_EDIT_MODE_LOOT_FRAME_DISABLED_TOOLTIP" type="global"/>
+									<KeyValue key="shouldEnableCVarName" value="lootUnderMouse" type="string"/>
+									<KeyValue key="shouldEnableCVarInverted" value="true" type="boolean"/>
 								</KeyValues>
 							</Frame>
 						</Frames>

@@ -6,11 +6,13 @@
 	cvar [string] - Name of the cvar that controls whether this bar's text should display, only used if <textLockable> is also true
 	textLockable [boolean] - Determines whether text can be kept visible based on current value of <cvar>
 	forceHideText [boolean] - Prevents text from being shown by calling ShowStatusBarText; Does not prevent showing via <forceShow> or <cvar + textLockable>
+	controlsShownState [boolean] - Defaults to true. If false, internal logic won't attempt to show or hide the bar. Useful so external or derived mixins can control the shown state.
 
 	powerToken [string] - If not set or value is "MANA", the "BOTH" status text setting shows both numeric and % values, otherwise BOTH shows only numeric
 	showNumeric [boolean] - If true, forces text to "NUMERIC" mode despite current status text setting; Supercedes <showPercentage>; Often externally set as a temporary override
 	showPercentage [boolean] - If true, forces text to "PERCENT" mode despite current status text setting; Does not function if <showNumeric> is also true; Often externally set as a temporary override
 	disablePercentages [boolean] - If true, forces text to show only non-percentage numeric values even when in "BOTH" or "PERCENT" mode
+	disableMaxValue [boolean] - If true, forces text to show only current value when displaying numeric values
 
 	zeroText [string] - Text to show if current value is 0
 	prefix [string] - Prefix text to display before value numbers; Shown if <alwaysPrefix> is true OR <cvar + textLockable> are disabled
@@ -31,6 +33,7 @@ TextStatusBarMixin = {};
 function TextStatusBarMixin:InitializeTextStatusBar()
 	self:RegisterEvent("CVAR_UPDATE");
 	self.lockShow = 0;
+	self.controlsShownState = true;
 
 	local function OnStatusTextSettingChanged()
 		self:UpdateTextString();
@@ -83,6 +86,14 @@ function TextStatusBarMixin:UpdateTextString()
 	end
 end
 
+function TextStatusBarMixin:GetNumericDisplay(valueDisplay, valueMaxDisplay)
+	if self.disableMaxValue then
+		return valueDisplay;
+	end
+
+	return valueDisplay .. " / " .. valueMaxDisplay;
+end
+
 function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueMin, valueMax)
 	if( self.LeftText and self.RightText ) then
 		self.LeftText:SetText("");
@@ -93,8 +104,10 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 	
 	-- Max value is valid and updates aren't paused
 	if ( ( tonumber(valueMax) ~= valueMax or valueMax > 0 ) and not ( self.pauseUpdates ) ) then
-		self:Show();
-		
+		if ( self.controlsShownState == true ) then
+			self:Show();
+		end
+
 		if ( (self.cvar and GetCVar(self.cvar) == "1" and self.textLockable) or self.forceShow ) then
 			textString:Show();
 		elseif ( self.lockShow > 0 and (not self.forceHideText) ) then
@@ -136,7 +149,9 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 
 		local displayMode = GetCVar("statusTextDisplay");
 		-- Evaluate display mode overrides in priority order
-		if ( self.showNumeric ) then
+		if ( self.showNumeric and self.showPercentage ) then
+			displayMode = STATUS_TEXT_DISPLAY_MODE.BOTH;
+		elseif ( self.showNumeric ) then
 			displayMode = STATUS_TEXT_DISPLAY_MODE.NUMERIC;
 		elseif ( self.showPercentage ) then
 			displayMode = STATUS_TEXT_DISPLAY_MODE.PERCENT;
@@ -150,9 +165,9 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 		-- Numeric only
 		if ( valueMax <= 0 or displayMode == STATUS_TEXT_DISPLAY_MODE.NUMERIC or displayMode == STATUS_TEXT_DISPLAY_MODE.NONE) then
 			if ( shouldUsePrefix ) then
-				textString:SetText(self.prefix.." "..valueDisplay.." / "..valueMaxDisplay);
+				textString:SetText(self.prefix.." " .. self:GetNumericDisplay(valueDisplay, valueMaxDisplay));
 			else
-				textString:SetText(valueDisplay.." / "..valueMaxDisplay);
+				textString:SetText(self:GetNumericDisplay(valueDisplay, valueMaxDisplay));
 			end
 		-- Numeric + Percentage
 		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.BOTH ) then
@@ -165,13 +180,14 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 				self.RightText:SetText(valueDisplay);
 				self.RightText:Show();
 				textString:Hide();
+				textString:SetText("");
 			else
-				valueDisplay = valueDisplay .. " / " .. valueMaxDisplay;
+				valueDisplay = self:GetNumericDisplay(valueDisplay, valueMaxDisplay);
 				if ( not self.disablePercentages ) then
 					valueDisplay = "(" .. math.ceil((value / valueMax) * 100) .. "%) " .. valueDisplay;
 				end
+				textString:SetText(valueDisplay);
 			end
-			textString:SetText(valueDisplay);
 		-- Percentage Only
 		elseif ( displayMode == STATUS_TEXT_DISPLAY_MODE.PERCENT ) then
 			valueDisplay = math.ceil((value / valueMax) * 100) .. "%";
@@ -185,7 +201,7 @@ function TextStatusBarMixin:UpdateTextStringWithValues(textString, value, valueM
 	else
 		textString:Hide();
 		textString:SetText("");
-		if ( not self.alwaysShow ) then
+		if ( not self.alwaysShow and self.controlsShownState == true ) then
 			self:Hide();
 		else
 			self:SetValue(0);

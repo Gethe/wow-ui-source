@@ -118,7 +118,7 @@ function DressUpCollectionAppearance(appearanceID, transmogLocation, categoryID)
 	-- at the transmogrifier check the checkbox state
 	if C_Transmog.CanHaveSecondaryAppearanceForSlotID(transmogLocation.slotID) then
 		local itemLocation = ItemLocation:CreateFromEquipmentSlot(transmogLocation.slotID);
-		if (C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:HasActiveSecondaryAppearance()) or TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
+		if TransmogUtil.IsSecondaryTransmoggedForItemLocation(itemLocation) then
 			itemTransmogInfo = playerActor:GetItemTransmogInfo(transmogLocation.slotID);
 			if transmogLocation:IsSecondary() then
 				itemTransmogInfo.secondaryAppearanceID = appearanceID;
@@ -385,7 +385,7 @@ function DressUpItemTransmogInfo(itemTransmogInfo, forcedFrame)
 	return true;
 end
 
-function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh)
+function DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails, forcePlayerRefresh)
 	local frame = GetFrameAndSetBackground();
 	local itemModifiedAppearanceIDs, fromLink = nil, nil;
 	DressUpFrame_Show(frame, itemModifiedAppearanceIDs, forcePlayerRefresh, fromLink);
@@ -400,14 +400,14 @@ function DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, fo
 		playerActor:SetItemTransmogInfo(itemTransmogInfo, slotID, ignoreChildItems);
 	end
 
-	if showOutfitDetails then
-		frame:ForceOutfitDetailsOn();
+	if showCustomSetDetails then
+		frame:ForceCustomSetDetailsOn();
 	end
 end
 
-DressUpOutfitMixin = { };
+DressUpCustomSetMixin = { };
 
-function DressUpOutfitMixin:GetItemTransmogInfoList()
+function DressUpCustomSetMixin:GetItemTransmogInfoList()
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if playerActor then
 		return playerActor:GetItemTransmogInfoList();
@@ -415,9 +415,9 @@ function DressUpOutfitMixin:GetItemTransmogInfoList()
 	return nil;
 end
 
-function DressUpOutfitMixin:LoadOutfit(outfitID)
-	if outfitID then
-		DressUpItemTransmogInfoList(C_TransmogCollection.GetOutfitItemTransmogInfoList(outfitID));
+function DressUpCustomSetMixin:LoadCustomSet(customSetID)
+	if customSetID then
+		DressUpItemTransmogInfoList(C_TransmogCollection.GetCustomSetItemTransmogInfoList(customSetID));
 	end
 end
 
@@ -458,7 +458,7 @@ function SetUpTransmogAndMountDressupFrame(parentFrame, transmogSetID, mountID, 
 	self:SetPoint(point, parentFrame, relativePoint, offsetX, offsetY);
 end
 
-DressUpOutfitDetailsPanelMixin = { };
+DressUpCustomSetDetailsPanelMixin = { };
 
 local CLASS_BACKGROUND_SETTINGS = {
 	["DEFAULT"] = { desaturation = 0.5, alpha = 0.25 },
@@ -472,8 +472,8 @@ local CLASS_BACKGROUND_SETTINGS = {
 	["WARLOCK"] = { desaturation = 0.5, alpha = 0.40 },	
 }
 
-function DressUpOutfitDetailsPanelMixin:OnLoad()
-	self.slotPool = CreateFramePool("FRAME", self, "DressUpOutfitSlotFrameTemplate");
+function DressUpCustomSetDetailsPanelMixin:OnLoad()
+	self.slotPool = CreateFramePool("FRAME", self, "DressUpCustomSetSlotFrameTemplate");
 	local classFilename = select(2, UnitClass("player"));
 	self.ClassBackground:SetAtlas("dressingroom-background-"..classFilename);
 	local settings = CLASS_BACKGROUND_SETTINGS[classFilename] or CLASS_BACKGROUND_SETTINGS["DEFAULT"];
@@ -483,7 +483,7 @@ function DressUpOutfitDetailsPanelMixin:OnLoad()
 	self:SetFrameLevel(frameLevel + 1);
 end
 
-function DressUpOutfitDetailsPanelMixin:OnShow()
+function DressUpCustomSetDetailsPanelMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:RegisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 
@@ -494,13 +494,13 @@ function DressUpOutfitDetailsPanelMixin:OnShow()
 	self:Refresh();
 end
 
-function DressUpOutfitDetailsPanelMixin:OnHide()
+function DressUpCustomSetDetailsPanelMixin:OnHide()
 	self:UnregisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 	self:UnregisterEvent("TRANSMOG_SOURCE_COLLECTABILITY_UPDATE");
 	self:UnregisterEvent("UNIT_FORM_CHANGED");
 end
 
-function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
+function DressUpCustomSetDetailsPanelMixin:OnEvent(event, ...)
 	if event == "TRANSMOG_COLLECTION_ITEM_UPDATE" then
 		if self.waitingOnItemData then
 			self:Refresh();
@@ -515,12 +515,12 @@ function DressUpOutfitDetailsPanelMixin:OnEvent(event, ...)
 	end
 end
 
-function DressUpOutfitDetailsPanelMixin:OnUpdate()
+function DressUpCustomSetDetailsPanelMixin:OnUpdate()
 	self:SetScript("OnUpdate", nil);
 	self:Refresh();
 end
 
-function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
+function DressUpCustomSetDetailsPanelMixin:OnKeyDown(key)
 	if key == WARDROBE_CYCLE_KEY and self.mousedOverFrame then
 		self.mousedOverFrame:OnCycleKeyDown();
 		return false;
@@ -528,25 +528,25 @@ function DressUpOutfitDetailsPanelMixin:OnKeyDown(key)
 	return true;
 end
 
-function DressUpOutfitDetailsPanelMixin:MarkDirty()
+function DressUpCustomSetDetailsPanelMixin:MarkDirty()
 	self:SetScript("OnUpdate", self.OnUpdate);
 end
 
-function DressUpOutfitDetailsPanelMixin:MarkWaitingOnItemData()
+function DressUpCustomSetDetailsPanelMixin:MarkWaitingOnItemData()
 	self.waitingOnItemData = true;
 end
 
-function DressUpOutfitDetailsPanelMixin:OnAppearanceChange()
+function DressUpCustomSetDetailsPanelMixin:OnAppearanceChange()
 	if self:IsShown() then
 		self:Refresh();
 	end
 end
 
-function DressUpOutfitDetailsPanelMixin:SetMousedOverFrame(frame)
+function DressUpCustomSetDetailsPanelMixin:SetMousedOverFrame(frame)
 	self.mousedOverFrame = frame;
 end
 
-function DressUpOutfitDetailsPanelMixin:Refresh()
+function DressUpCustomSetDetailsPanelMixin:Refresh()
 	self.slotPool:ReleaseAll();
 	self.lastFrame = nil;
 	self.validMainHand = false;
@@ -569,7 +569,7 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 			itemTransmogInfoList[INVSLOT_OFFHAND].appearanceID = pairedTransmogID;
 		end
 	end
-	
+
 	for _, slotID in ipairs(TransmogSlotOrder) do
 		local transmogInfo = itemTransmogInfoList[slotID];
 		if transmogInfo then
@@ -591,7 +591,7 @@ function DressUpOutfitDetailsPanelMixin:Refresh()
 	end
 end
 
-function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
+function DressUpCustomSetDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
 	local playerActor = DressUpFrame.ModelScene:GetPlayerActor();
 	if playerActor then
 		local itemTransmogInfoList = playerActor:GetItemTransmogInfoList();
@@ -599,12 +599,12 @@ function DressUpOutfitDetailsPanelMixin:RefreshPlayerModel(forcePlayerRefresh)
 	local itemModifiedAppearanceIDs = nil;
 	DressUpFrame_Show(DressUpFrame, itemModifiedAppearanceIDs, forcePlayerRefresh);
 
-	local showOutfitDetails = false;
-	DressUpItemTransmogInfoList(itemTransmogInfoList, showOutfitDetails, forcePlayerRefresh);
+	local showCustomSetDetails = false;
+	DressUpItemTransmogInfoList(itemTransmogInfoList, showCustomSetDetails, forcePlayerRefresh);
 	self:Refresh();
 end
 
-function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)
+function DressUpCustomSetDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field)
 	-- hide offhand if empty and mainhand has something
 	if slotID == INVSLOT_OFFHAND and self.validMainHand and transmogInfo.appearanceID == Constants.Transmog.NoTransmogID then
 		return;
@@ -638,9 +638,9 @@ function DressUpOutfitDetailsPanelMixin:AddSlotFrame(slotID, transmogInfo, field
 	end
 end
 
-DressUpOutfitDetailsSlotMixin = { };
+DressUpCustomSetDetailsSlotMixin = { };
 
-function DressUpOutfitDetailsSlotMixin:OnHide()
+function DressUpCustomSetDetailsSlotMixin:OnHide()
 	if self.itemDataLoadedCancelFunc then
 		self.itemDataLoadedCancelFunc();
 		self.itemDataLoadedCancelFunc = nil;
@@ -648,15 +648,15 @@ function DressUpOutfitDetailsSlotMixin:OnHide()
 	self.item = nil;
 end
 
-local OUTFIT_SLOT_STATE_ERROR = 1;
-local OUTFIT_SLOT_STATE_COLLECTED = 2;
-local OUTFIT_SLOT_STATE_UNCOLLECTED = 3;
+local CUSTOM_SET_SLOT_STATE_ERROR = 1;
+local CUSTOM_SET_SLOT_STATE_COLLECTED = 2;
+local CUSTOM_SET_SLOT_STATE_UNCOLLECTED = 3;
 
 local GRAY_FONT_ALPHA = 0.7;
 
 local TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK = "|A:common-icon-checkmark:16:16:0:-1|a "..TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN;
 
-function DressUpOutfitDetailsSlotMixin:OnEnter()
+function DressUpCustomSetDetailsSlotMixin:OnEnter()
 	if not self.transmogID then
 		return;
 	end
@@ -672,12 +672,12 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 	elseif not self.item then
 		-- illusion
 		GameTooltip_AddColoredLine(GameTooltip, self.name, NORMAL_FONT_COLOR);
-		if self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+		if self.slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
 			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 		else
 			GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN_CHECKMARK, GREEN_FONT_COLOR);
 		end
-	elseif self.slotState == OUTFIT_SLOT_STATE_ERROR then
+	elseif self.slotState == CUSTOM_SET_SLOT_STATE_ERROR then
 		local hasData, canCollect = C_TransmogCollection.AccountCanCollectSource(self.transmogID);
 		-- hasData should be true, there's a check that the item data is cached at the top of the function
 
@@ -705,7 +705,7 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 			self:CheckForWarningString();
 			GameTooltip_AddErrorLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNCOLLECTABLE);
 		end
-	elseif self.slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+	elseif self.slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
 		if C_TransmogCollection.PlayerKnowsSource(self.transmogID) then
 			self:GetParent():SetMousedOverFrame(self);
 			self:RefreshAppearanceTooltip();
@@ -728,25 +728,28 @@ function DressUpOutfitDetailsSlotMixin:OnEnter()
 	GameTooltip:Show();
 end
 
-function DressUpOutfitDetailsSlotMixin:CheckForWarningString()
+function DressUpCustomSetDetailsSlotMixin:CheckForWarningString()
 	local warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
 	if warningString then
 		GameTooltip_AddNormalLine(GameTooltip, warningString);
 	end
 end
 
-function DressUpOutfitDetailsSlotMixin:OnLeave()
+function DressUpCustomSetDetailsSlotMixin:OnLeave()
 	self:GetParent():SetMousedOverFrame(nil);
 	self.tooltipSourceIndex = nil;
 	self.tooltipCycle = nil;
 	GameTooltip:Hide();
 end
 
-function DressUpOutfitDetailsSlotMixin:OnMouseUp()
+function DressUpCustomSetDetailsSlotMixin:OnMouseUp()
 	if IsModifiedClick("CHATLINK") and self.transmogID then
 		local link;
 		if self.item then
-			link = select(6, C_TransmogCollection.GetAppearanceSourceInfo(self.transmogID));
+			local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(self.transmogID);
+			if appearanceSourceInfo then
+				link = appearanceSourceInfo.itemLink;
+			end
 		else
 			link = select(2, C_TransmogCollection.GetIllusionStrings(self.transmogID));
 		end
@@ -758,7 +761,7 @@ function DressUpOutfitDetailsSlotMixin:OnMouseUp()
 	end
 end
 
-function DressUpOutfitDetailsSlotMixin:OnCycleKeyDown()
+function DressUpCustomSetDetailsSlotMixin:OnCycleKeyDown()
 	if not self.tooltipCycle and not self.tooltipSourceIndex then
 		return;
 	end
@@ -770,22 +773,30 @@ function DressUpOutfitDetailsSlotMixin:OnCycleKeyDown()
 	self:RefreshAppearanceTooltip();
 end
 
-function DressUpOutfitDetailsSlotMixin:RefreshAppearanceTooltip()
+function DressUpCustomSetDetailsSlotMixin:RefreshAppearanceTooltip()
 	local appearanceInfo = C_TransmogCollection.GetAppearanceInfoBySource(self.transmogID);
 	local category = C_TransmogCollection.GetCategoryForItem(self.transmogID);
-	local sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID, category, self.transmogLocation);
-	local showUseError = true;	
-	local inLegionArtifactCategory = false;
 	local slotName = TransmogUtil.GetSlotName(self.slotID);
-	local subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]);
-	local warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation);
-	local showTrackingInfo = false;
-	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, sources, self.transmogID, self.tooltipSourceIndex, showUseError, inLegionArtifactCategory, subheaderString, warningString, showTrackingInfo);
+
+	local appearanceData = {
+		sources = CollectionWardrobeUtil.GetSortedAppearanceSources(appearanceInfo.appearanceID, category, self.transmogLocation),
+		primarySourceID = self.transmogID,
+		selectedIndex = self.tooltipSourceIndex,
+		showUseError = true,
+		inLegionArtifactCategory = false,
+		subheaderString = HIGHLIGHT_FONT_COLOR:WrapTextInColorCode(_G[slotName]),
+		warningString = CollectionWardrobeUtil.GetSlotVisibilityWarning(DressUpFrame.ModelScene:GetPlayerActor(), self.transmogLocation),
+		showTrackingInfo = false,
+		slotType = nil
+	}
+
+	self.tooltipSourceIndex, self.tooltipCycle = CollectionWardrobeUtil.SetAppearanceTooltip(GameTooltip, appearanceData);
+
 	GameTooltip_AddColoredLine(GameTooltip, TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, LIGHTBLUE_FONT_COLOR);
 	GameTooltip:Show();
 end
 
-function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
+function DressUpCustomSetDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
 	local transmogID = transmogInfo[field];
 	local isSecondary = true;
 	if field == "appearanceID" then
@@ -797,9 +808,8 @@ function DressUpOutfitDetailsSlotMixin:SetUp(slotID, transmogInfo, field)
 	end
 end
 
-function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
-	local modificationType = Enum.TransmogModification.Secondary and isSecondary or Enum.TransmogModification.Main;
-	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, modificationType);
+function DressUpCustomSetDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecondary)
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Appearance, isSecondary);
 
 	local itemID = C_TransmogCollection.GetSourceItemID(transmogID);
 	if not itemID then
@@ -837,7 +847,7 @@ function DressUpOutfitDetailsSlotMixin:SetAppearance(slotID, transmogID, isSecon
 	return true;
 end
 
-function DressUpOutfitDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, isSecondary)
+function DressUpCustomSetDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, isSecondary)
 	local icon = C_TransmogCollection.GetSourceIcon(transmogID);
 	local name = self.item:GetItemName();
 	local slotState, isHiddenVisual;
@@ -846,26 +856,26 @@ function DressUpOutfitDetailsSlotMixin:SetItemInfo(transmogID, appearanceInfo, i
 		-- either uncollectable, or collectable but hidden until collected
 		local hasData, canCollect = C_TransmogCollection.PlayerCanCollectSource(transmogID);
 		if canCollect then
-			slotState = OUTFIT_SLOT_STATE_UNCOLLECTED;
+			slotState = CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
 		else
-			slotState = OUTFIT_SLOT_STATE_ERROR;
+			slotState = CUSTOM_SET_SLOT_STATE_ERROR;
 		end
 	elseif not appearanceInfo.isAnySourceValidForPlayer then
-		slotState = OUTFIT_SLOT_STATE_ERROR;
+		slotState = CUSTOM_SET_SLOT_STATE_ERROR;
 	elseif appearanceInfo.appearanceIsCollected then
 		-- collected
-		slotState = OUTFIT_SLOT_COLLECTED;
+		slotState = CUSTOM_SET_SLOT_COLLECTED;
 		isHiddenVisual = C_TransmogCollection.IsAppearanceHiddenVisual(transmogID);	
 	else
 		-- uncollected
-		slotState = OUTFIT_SLOT_STATE_UNCOLLECTED;
+		slotState = CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
 	end
 
 	local useSmallIcon = isSecondary;
 	self:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual);
 end
 
-function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
+function DressUpCustomSetDetailsSlotMixin:SetIllusion(slotID, transmogID)
 	local illusionInfo = C_TransmogCollection.GetIllusionInfo(transmogID);
 	if not illusionInfo then
 		return false;
@@ -873,16 +883,17 @@ function DressUpOutfitDetailsSlotMixin:SetIllusion(slotID, transmogID)
 
 	local name = C_TransmogCollection.GetIllusionStrings(illusionInfo.sourceID);
 	local useSmallIcon = true;
-	local slotState = illusionInfo.isCollected and OUTFIT_SLOT_STATE_COLLECTED or OUTFIT_SLOT_STATE_UNCOLLECTED;
+	local slotState = illusionInfo.isCollected and CUSTOM_SET_SLOT_STATE_COLLECTED or CUSTOM_SET_SLOT_STATE_UNCOLLECTED;
 	local isHiddenVisual = illusionInfo.isHideVisual;
 	self:SetDetails(transmogID, illusionInfo.icon, TRANSMOGRIFIED_ENCHANT:format(name), useSmallIcon, slotState, isHiddenVisual);
-	
-	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Illusion, Enum.TransmogModification.Main);
+
+	local isSecondary = false;
+	self.transmogLocation = TransmogUtil.CreateTransmogLocation(slotID, Enum.TransmogType.Illusion, isSecondary);
 
 	return true;
 end
 
-function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
+function DressUpCustomSetDetailsSlotMixin:SetDetails(transmogID, icon, name, useSmallIcon, slotState, isHiddenVisual)
 	-- info for tooltip
 	self.transmogID = transmogID;
 	self.name = name;
@@ -892,10 +903,10 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 	local nameColor = NORMAL_FONT_COLOR;
 	local nameAlpha = 1;
 	local borderType;
-	if slotState == OUTFIT_SLOT_STATE_ERROR then
+	if slotState == CUSTOM_SET_SLOT_STATE_ERROR then
 		nameColor = RED_FONT_COLOR;
 		borderType = "error";
-	elseif slotState == OUTFIT_SLOT_STATE_UNCOLLECTED then
+	elseif slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED then
 		nameColor = GRAY_FONT_COLOR;
 		borderType = "uncollected";
 		nameAlpha = GRAY_FONT_ALPHA;
@@ -918,7 +929,7 @@ function DressUpOutfitDetailsSlotMixin:SetDetails(transmogID, icon, name, useSma
 	self.Name:SetAlpha(nameAlpha);
 
 	self.Icon:SetTexture(icon);
-	if slotState == OUTFIT_SLOT_STATE_UNCOLLECTED or isHiddenVisual then
+	if slotState == CUSTOM_SET_SLOT_STATE_UNCOLLECTED or isHiddenVisual then
 		self.Icon:SetAlpha(0.3);
 		self.Icon:SetDesaturated(true);
 	else

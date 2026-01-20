@@ -3,12 +3,14 @@ local VoiceChat =
 	Name = "VoiceChat",
 	Type = "System",
 	Namespace = "C_VoiceChat",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ActivateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local VoiceChat =
 		{
 			Name = "ActivateChannelTranscription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +30,7 @@ local VoiceChat =
 		{
 			Name = "BeginLocalCapture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +58,7 @@ local VoiceChat =
 		{
 			Name = "CreateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,6 +73,7 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +83,7 @@ local VoiceChat =
 		{
 			Name = "DeactivateChannelTranscription",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,6 +133,7 @@ local VoiceChat =
 		{
 			Name = "GetChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -140,6 +148,7 @@ local VoiceChat =
 		{
 			Name = "GetChannelForChannelType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -154,6 +163,7 @@ local VoiceChat =
 		{
 			Name = "GetChannelForCommunityStream",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +206,7 @@ local VoiceChat =
 		{
 			Name = "GetJoinClubVoiceChannelError",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +230,7 @@ local VoiceChat =
 		{
 			Name = "GetLocalPlayerMemberID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -242,6 +254,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +270,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -272,6 +286,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -287,6 +302,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -302,6 +318,7 @@ local VoiceChat =
 		{
 			Name = "GetMemberVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -380,6 +397,7 @@ local VoiceChat =
 		{
 			Name = "IsChannelJoinPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -423,6 +441,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberLocalPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -438,6 +457,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -452,6 +472,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberMutedForAll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -467,6 +488,7 @@ local VoiceChat =
 		{
 			Name = "IsMemberSilenced",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -509,6 +531,7 @@ local VoiceChat =
 		{
 			Name = "IsPlayerUsingVoice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -577,6 +600,7 @@ local VoiceChat =
 		{
 			Name = "LeaveChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -609,6 +633,7 @@ local VoiceChat =
 		{
 			Name = "RequestJoinAndActivateCommunityStreamChannel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -619,6 +644,7 @@ local VoiceChat =
 		{
 			Name = "RequestJoinChannelByChannelType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -629,6 +655,7 @@ local VoiceChat =
 		{
 			Name = "SetCommunicationMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -638,6 +665,7 @@ local VoiceChat =
 		{
 			Name = "SetDeafened",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -647,6 +675,7 @@ local VoiceChat =
 		{
 			Name = "SetInputDevice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -656,6 +685,7 @@ local VoiceChat =
 		{
 			Name = "SetInputVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -665,6 +695,7 @@ local VoiceChat =
 		{
 			Name = "SetMasterVolumeScale",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -674,6 +705,7 @@ local VoiceChat =
 		{
 			Name = "SetMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -684,6 +716,7 @@ local VoiceChat =
 		{
 			Name = "SetMemberVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Adjusts member volume across all channels" },
 
 			Arguments =
@@ -695,6 +728,7 @@ local VoiceChat =
 		{
 			Name = "SetMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -704,6 +738,7 @@ local VoiceChat =
 		{
 			Name = "SetOutputDevice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -713,6 +748,7 @@ local VoiceChat =
 		{
 			Name = "SetOutputVolume",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -722,6 +758,7 @@ local VoiceChat =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -733,6 +770,7 @@ local VoiceChat =
 		{
 			Name = "SetPushToTalkBinding",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -742,6 +780,7 @@ local VoiceChat =
 		{
 			Name = "SetVADSensitivity",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -761,6 +800,7 @@ local VoiceChat =
 		{
 			Name = "SpeakRemoteTextSample",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -770,14 +810,16 @@ local VoiceChat =
 		{
 			Name = "SpeakText",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "SpeakText also supports XML TTS tags on Windows including bookmarks - see SAPI XML TTS Tutorial in Microsoft's online documentation for more information." },
 
 			Arguments =
 			{
 				{ Name = "voiceID", Type = "number", Nilable = false },
 				{ Name = "text", Type = "cstring", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 				{ Name = "rate", Type = "number", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
+				{ Name = "overlap", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 		{
@@ -791,6 +833,7 @@ local VoiceChat =
 		{
 			Name = "ToggleMemberMuted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -809,16 +852,19 @@ local VoiceChat =
 			Name = "VoiceChatActiveInputDeviceUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_ACTIVE_INPUT_DEVICE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatActiveOutputDeviceUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_ACTIVE_OUTPUT_DEVICE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatAudioCaptureEnergy",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_AUDIO_CAPTURE_ENERGY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isSpeaking", Type = "bool", Nilable = false },
@@ -829,16 +875,19 @@ local VoiceChat =
 			Name = "VoiceChatAudioCaptureStarted",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_AUDIO_CAPTURE_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatAudioCaptureStopped",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_AUDIO_CAPTURE_STOPPED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatChannelActivated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_ACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -848,6 +897,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelDeactivated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_DEACTIVATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -857,6 +907,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelDisplayNameChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_DISPLAY_NAME_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -867,6 +918,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelJoined",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_JOINED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
@@ -880,6 +932,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberActiveStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -891,6 +944,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberAdded",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -901,6 +955,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberEnergyChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -912,6 +967,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberGuidUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -922,6 +978,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberMuteForAllChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ALL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -933,6 +990,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberMuteForMeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -944,6 +1002,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberRemoved",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -954,6 +1013,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSilencedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SILENCED_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -965,6 +1025,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSpeakingStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -976,6 +1037,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberSttMessage",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_STT_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -988,6 +1050,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMemberVolumeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MEMBER_VOLUME_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "memberID", Type = "number", Nilable = false },
@@ -999,6 +1062,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelMuteStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_MUTE_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1009,6 +1073,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelPttChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_PTT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1019,6 +1084,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelRemoved",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1028,6 +1094,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelTranscribingChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1038,6 +1105,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelTransmitChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1048,6 +1116,7 @@ local VoiceChat =
 			Name = "VoiceChatChannelVolumeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CHANNEL_VOLUME_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelID", Type = "number", Nilable = false },
@@ -1058,6 +1127,7 @@ local VoiceChat =
 			Name = "VoiceChatCommunicationModeChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_COMMUNICATION_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "communicationMode", Type = "CommunicationMode", Nilable = false },
@@ -1067,11 +1137,13 @@ local VoiceChat =
 			Name = "VoiceChatConnectionSuccess",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_CONNECTION_SUCCESS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatDeafenedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_DEAFENED_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isDeafened", Type = "bool", Nilable = false },
@@ -1081,6 +1153,7 @@ local VoiceChat =
 			Name = "VoiceChatError",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_ERROR",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "platformCode", Type = "number", Nilable = false },
@@ -1091,11 +1164,13 @@ local VoiceChat =
 			Name = "VoiceChatInputDevicesUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_INPUT_DEVICES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatLogin",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_LOGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
@@ -1105,6 +1180,7 @@ local VoiceChat =
 			Name = "VoiceChatLogout",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_LOGOUT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
@@ -1114,6 +1190,7 @@ local VoiceChat =
 			Name = "VoiceChatMutedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_MUTED_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isMuted", Type = "bool", Nilable = false },
@@ -1123,11 +1200,13 @@ local VoiceChat =
 			Name = "VoiceChatOutputDevicesUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_OUTPUT_DEVICES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatPendingChannelJoinState",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
@@ -1140,6 +1219,7 @@ local VoiceChat =
 			Name = "VoiceChatPttButtonPressedStateChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_PTT_BUTTON_PRESSED_STATE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isPressed", Type = "bool", Nilable = false },
@@ -1149,6 +1229,7 @@ local VoiceChat =
 			Name = "VoiceChatSilencedChanged",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_SILENCED_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isSilenced", Type = "bool", Nilable = false },
@@ -1158,50 +1239,61 @@ local VoiceChat =
 			Name = "VoiceChatSpeakForMeActiveStatusUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatSpeakForMeFeatureStatusUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_SPEAK_FOR_ME_FEATURE_STATUS_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "VoiceChatTtsPlaybackBookmark",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_BOOKMARK",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "utteranceID", Type = "number", Nilable = false },
+				{ Name = "bookmarkName", Type = "cstring", Nilable = false },
+			},
 		},
 		{
 			Name = "VoiceChatTtsPlaybackFailed",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FAILED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
+				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
 			},
 		},
 		{
 			Name = "VoiceChatTtsPlaybackFinished",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "numConsumers", Type = "number", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 			},
 		},
 		{
 			Name = "VoiceChatTtsPlaybackStarted",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_PLAYBACK_STARTED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "numConsumers", Type = "number", Nilable = false },
 				{ Name = "utteranceID", Type = "number", Nilable = false },
-				{ Name = "durationMS", Type = "number", Nilable = false },
-				{ Name = "destination", Type = "VoiceTtsDestination", Nilable = false },
 			},
 		},
 		{
 			Name = "VoiceChatTtsSpeakTextUpdate",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_SPEAK_TEXT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "status", Type = "VoiceTtsStatusCode", Nilable = false },
@@ -1212,11 +1304,13 @@ local VoiceChat =
 			Name = "VoiceChatTtsVoicesUpdate",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_TTS_VOICES_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatVadSettingsUpdated",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_VAD_SETTINGS_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -1279,23 +1373,6 @@ local VoiceChat =
 				{ Name = "PlayerVoiceChatParentalDisabled", Type = "VoiceChatStatusCode", EnumValue = 22 },
 				{ Name = "InvalidInputDevice", Type = "VoiceChatStatusCode", EnumValue = 23 },
 				{ Name = "InvalidOutputDevice", Type = "VoiceChatStatusCode", EnumValue = 24 },
-			},
-		},
-		{
-			Name = "VoiceTtsDestination",
-			Type = "Enumeration",
-			NumValues = 7,
-			MinValue = 0,
-			MaxValue = 6,
-			Fields =
-			{
-				{ Name = "RemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 0 },
-				{ Name = "LocalPlayback", Type = "VoiceTtsDestination", EnumValue = 1 },
-				{ Name = "RemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 2 },
-				{ Name = "QueuedRemoteTransmission", Type = "VoiceTtsDestination", EnumValue = 3 },
-				{ Name = "QueuedLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 4 },
-				{ Name = "QueuedRemoteTransmissionWithLocalPlayback", Type = "VoiceTtsDestination", EnumValue = 5 },
-				{ Name = "ScreenReader", Type = "VoiceTtsDestination", EnumValue = 6 },
 			},
 		},
 		{

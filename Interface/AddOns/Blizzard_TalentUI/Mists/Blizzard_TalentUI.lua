@@ -304,7 +304,7 @@ function PlayerTalentFrameSpec_OnLoad(self)
 	for i = 1, numSpecs do
 		local button = self["specButton"..i];
 		local _, name, description, icon = C_SpecializationInfo.GetSpecializationInfo(i, false, self.isPet);
-		SetPortraitToTexture(button.specIcon, icon);
+		button.specIcon:SetTexture(icon);
 		button.specName:SetText(name);
 		button.tooltip = description;
 		local role = GetSpecializationRole(i, false, self.isPet);
@@ -1217,7 +1217,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 		-- that case, just return, and we'll update things later.
 		return;
 	end
-	SetPortraitToTexture(scrollChild.specIcon, icon);
+	scrollChild.specIcon:SetTexture(icon);
 	scrollChild.specName:SetText(name);
 	scrollChild.description:SetText(description);
 	local role1 = GetSpecializationRole(shownSpec, nil, self.isPet);
@@ -1302,7 +1302,7 @@ function PlayerTalentFrame_UpdateSpecFrame(self, spec)
 
 			local spellName, subname = GetSpellInfo(bonuses[i]);
 			local _, spellIcon = GetSpellTexture(bonuses[i]);
-			SetPortraitToTexture(frame.icon, spellIcon);
+			frame.icon:SetTexture(spellIcon);
 			frame.name:SetText(spellName);
 			frame.spellID = bonuses[i];
 			frame.extraTooltip = nil;

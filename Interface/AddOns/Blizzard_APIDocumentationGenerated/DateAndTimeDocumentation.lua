@@ -3,12 +3,14 @@ local DateAndTime =
 	Name = "DateAndTime",
 	Type = "System",
 	Namespace = "C_DateAndTime",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AdjustTimeByDays",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local DateAndTime =
 		{
 			Name = "AdjustTimeByMinutes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +42,7 @@ local DateAndTime =
 		{
 			Name = "AdjustTimeByMonths",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +58,7 @@ local DateAndTime =
 		{
 			Name = "CompareCalendarTime",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +74,7 @@ local DateAndTime =
 		{
 			Name = "GetCalendarTimeFromEpoch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

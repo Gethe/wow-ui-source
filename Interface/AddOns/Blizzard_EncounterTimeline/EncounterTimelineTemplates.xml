@@ -1,0 +1,130 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<!-- Textures used on event frames should inherit from this to disable texel snapping, as this makes the translations visually smoother. -->
+	<Texture name="EncounterTimelineTextureTemplate" texelSnappingBias="0.0" snapToPixelGrid="false" virtual="true"/>
+
+	<Frame name="EncounterTimelineEventIconTemplate" mixin="EncounterTimelineEventIconMixin" virtual="true">
+		<Size x="35" y="35"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconTexture" inherits="EncounterTimelineTextureTemplate" setAllPoints="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" inherits="EncounterTimelineTextureTemplate" atlas="UI-HUD-CoolDownManager-Mask">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="IconTexture"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="NormalOverlay" inherits="EncounterTimelineTextureTemplate" atlas="UI-HUD-CoolDownManager-IconOverlay">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="DeadlyOverlay" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-deadlyglow-base" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PausedOverlay" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-pause" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QueuedOverlay" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="DeadlyOverlayGlow" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-deadlyglow-overlay" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-7" y="6"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="PausedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-pause-icon" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="QueuedIcon" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-queued-icon" hidden="true">
+					<Size x="18" y="18"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="HighlightGlow" inherits="EncounterTimelineTextureTemplate" atlas="combattimeline-fx-highlight" useAtlasSize="true" alpha="0">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="7"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="3">
+				<Texture parentKey="HighlightSwirl" inherits="EncounterTimelineTextureTemplate" useAtlasSize="true" alphaMode="ADD" atlas="combattimeline-fx-highlight-fx" alpha="0">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="HighlightMask" atlas="combattimeline-fx-highlight-mask" inherits="EncounterTimelineTextureTemplate" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="HighlightSwirl"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="HighlightAnimation" setToFinalAlpha="true">
+				<Rotation childKey="HighlightSwirl" duration="0.6" order="1" smoothing="OUT" degrees="-180">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<Alpha childKey="HighlightSwirl" duration="0.2" order="1" startDelay="0.4" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="HighlightGlow" duration="0.2" order="1" startDelay="0" smoothing="IN" fromAlpha="0" toAlpha="0.7"/>
+				<Alpha childKey="HighlightGlow" duration="0.2" order="2" smoothing="OUT" fromAlpha="0.7" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<!--
+		"Indicator" icons refer to the iconography displayed on events for roles and dispel types.
+	-->
+
+	<Texture name="EncounterTimelineIndicatorIconTemplate" inherits="EncounterTimelineTextureTemplate" virtual="true">
+		<Size x="16" y="16"/>
+	</Texture>
+
+	<Frame name="EncounterTimelineIndicatorIconGridTemplate" mixin="EncounterTimelineIndicatorIconGridMixin" virtual="true">
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentArray="RoleIndicators" inherits="EncounterTimelineIndicatorIconTemplate"/>
+				<Texture parentArray="RoleIndicators" inherits="EncounterTimelineIndicatorIconTemplate"/>
+				<Texture parentArray="OtherIndicators" inherits="EncounterTimelineIndicatorIconTemplate"/>
+				<Texture parentArray="OtherIndicators" inherits="EncounterTimelineIndicatorIconTemplate"/>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

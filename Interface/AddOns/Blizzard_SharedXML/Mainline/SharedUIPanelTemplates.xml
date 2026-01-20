@@ -2268,4 +2268,23 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<!-- A simple wrapper frame around text meant for showing in a scroll box. -->
+	<!-- Note: height is fixed for simplicity as I couldn't decide on a good implementation for generically resizing. -->
+	<Frame name="ScrollBoxTextContainerTemplate" mixin="ScrollBoxTextContainerMixin" virtual="true">
+		<Size x="1" y="42"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal">
+					<Size x="0" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-8"/>
+						<Anchor point="LEFT" x="20" y="0"/>
+						<Anchor point="RIGHT" x="-20" y="0"/>
+					</Anchors>
+					<Color color="LIGHTGRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

@@ -456,12 +456,13 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 				else
 					local elementTemplateInfo = self:InternalGetTemplateInfo(elementData.templateKey);
 					local elementPool = self.framePoolCollection:GetOrCreatePool(elementTemplateInfo.type, nil, elementTemplateInfo.template, elementTemplateInfo.resetFunc, nil, elementData.templateKey);
-					local elementFrame = elementPool:Acquire();
+					local elementFrame, isNew = elementPool:Acquire();
 					table.insert(self:GetFrames(), elementFrame);
-					
+
 					self:ProcessElementFrame(elementFrame, elementData, elementIndex);
 
 					elementFrame:SetParent(viewFrame);
+					elementFrame.isNew = isNew;
 					table.insert(layoutFrames, elementFrame);
 
 					elementFrame.GetElementData = function()

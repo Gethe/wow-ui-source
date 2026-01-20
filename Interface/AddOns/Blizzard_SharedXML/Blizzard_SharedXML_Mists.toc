@@ -33,7 +33,6 @@ EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
-AnchorUtil.lua
 GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua

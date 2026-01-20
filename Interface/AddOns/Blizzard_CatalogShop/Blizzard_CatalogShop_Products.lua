@@ -100,7 +100,8 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 	-- Only search for the element if our scrollBox is set up (no view means it hasn't had data assigned)
 	if scrollBox and scrollBox:GetView() then
 		foundElementData = select(2, scrollBox:FindByPredicate(function(elementData)
-			return elementData.catalogShopProductID == productID;
+			local isProductElementType = (elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product);
+			return isProductElementType and (elementData.catalogShopProductID == productID);
 		end));
 	end
 
@@ -145,21 +146,39 @@ function CatalogShopProductContainerFrameMixin:UpdateProducts(resetSelection)
 		end
 	end
 
+	local linkProductID = CatalogShopFrame:GetCatalogShopLinkProductID(); -- ok for this to be nil
+	if linkProductID then
+		self.selectionWasAutomatic = true;		-- The selection is being set by code, keep track for later telemetry
+		-- If we have a linkProductID and we cannot successfully select it, select the first product
+		if not self:TrySelectProductByID(linkProductID) then
+			self:SelectFirstProductSilent();
+		end
+		-- We may want to try again, but that doesn't seem necessary in testing.
+		-- nilling linkProductID just so we don't get stuck in a fail loop and then can never select our previouslySelectedProductInfo
+		CatalogShopFrame:SetCatalogShopLinkProductID(nil);
 	-- Try to preserve selection. If not select first product
-	if resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
+	elseif resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
 		self.selectionWasAutomatic = true;		-- The selection is being reset, keep track for later telemetry
 		self:SelectFirstProductSilent();
 	end
 end
 
 function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
+	if not productInfo then
+		return false;
+	end
+	return self:TrySelectProductByID(productInfo.catalogShopProductID);
+end
+
+function CatalogShopProductContainerFrameMixin:TrySelectProductByID(productID)
 	local scrollContainer = self.ProductsScrollBoxContainer;
 	local scrollBox = scrollContainer.ScrollBox;
 	local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.catalogShopProductID == productInfo.catalogShopProductID;
+		return elementData.catalogShopProductID == productID;
 	end);
 	if foundElementData then
 		scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		scrollContainer.ScrollBox:ScrollToElementData(foundElementData, ScrollBoxConstants.AlignNearest);
 		return true;
 	end
 
@@ -361,6 +380,10 @@ end
 
 function ProductContainerFrameMixin:InitProductContainer()
 	local function sectionProductSortComparator(lhs, rhs)
+		-- If both elements are the same, just return false (not less-than)
+		if lhs == rhs then
+			return false;
+		end
 		-- If the section IDs aren't the same, then use that as sort orderInPage
 		if lhs.sectionID ~= rhs.sectionID then
 			return lhs.sectionID < rhs.sectionID;

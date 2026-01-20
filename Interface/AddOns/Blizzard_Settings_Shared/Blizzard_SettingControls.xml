@@ -21,6 +21,14 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Title" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
@@ -115,6 +123,7 @@
 		</Scripts>
 	</Frame>
 	
+
 	<Frame name="SettingsCheckboxWithButtonControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxWithButtonControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
@@ -130,6 +139,13 @@
 	</Frame>
 
 	<Frame name="SettingsCheckboxDropdownControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxDropdownControlMixin" virtual="true">
+		<Size x="280" y="26"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="SettingsCheckboxWithColorSwatchControlTemplate" inherits="SettingsListElementTemplate" mixin="SettingsCheckboxWithColorSwatchControlMixin" virtual="true">
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

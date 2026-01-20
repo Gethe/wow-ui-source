@@ -3,6 +3,7 @@ local ScenarioInfo =
 	Name = "ScenarioInfo",
 	Type = "System",
 	Namespace = "C_ScenarioInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local ScenarioInfo =
 			Name = "GetCriteriaInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +27,7 @@ local ScenarioInfo =
 			Name = "GetCriteriaInfoByStep",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -40,6 +43,7 @@ local ScenarioInfo =
 		{
 			Name = "GetJailersTowerTypeString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +69,7 @@ local ScenarioInfo =
 			Name = "GetScenarioStepInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -84,6 +89,7 @@ local ScenarioInfo =
 			Name = "JailersTowerLevelUpdate",
 			Type = "Event",
 			LiteralName = "JAILERS_TOWER_LEVEL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
@@ -94,6 +100,7 @@ local ScenarioInfo =
 			Name = "ScenarioBonusObjectiveComplete",
 			Type = "Event",
 			LiteralName = "SCENARIO_BONUS_OBJECTIVE_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "bonusObjectiveID", Type = "number", Nilable = false },
@@ -103,11 +110,13 @@ local ScenarioInfo =
 			Name = "ScenarioBonusVisibilityUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_BONUS_VISIBILITY_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioCompleted",
 			Type = "Event",
 			LiteralName = "SCENARIO_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
@@ -119,6 +128,7 @@ local ScenarioInfo =
 			Name = "ScenarioCriteriaShowStateUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_CRITERIA_SHOW_STATE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "show", Type = "bool", Nilable = false },
@@ -128,6 +138,7 @@ local ScenarioInfo =
 			Name = "ScenarioCriteriaUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_CRITERIA_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "criteriaID", Type = "number", Nilable = false },
@@ -137,16 +148,19 @@ local ScenarioInfo =
 			Name = "ScenarioPoiUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_POI_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioSpellUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_SPELL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ScenarioUpdate",
 			Type = "Event",
 			LiteralName = "SCENARIO_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "newStep", Type = "bool", Nilable = true },

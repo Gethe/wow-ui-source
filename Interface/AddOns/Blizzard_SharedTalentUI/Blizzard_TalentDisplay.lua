@@ -301,6 +301,8 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 			if overrideSpell and not overrideSpell:IsSpellDataCached() then
 				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
 			elseif strcmputf8i(self:GetName(), overrideSpell:GetSpellName()) ~= 0 then
+				GameTooltip_AddBlankLineToTooltip(tooltip);
+				
 				GameTooltip_AddColoredLine(tooltip, TALENT_BUTTON_TOOLTIP_REPLACED_BY_FORMAT:format(overrideSpell:GetSpellName()), SPELL_LINK_COLOR);
 			end
 		end

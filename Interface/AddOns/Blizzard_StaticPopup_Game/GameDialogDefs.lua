@@ -2892,12 +2892,20 @@ StaticPopupDialogs["LFG_LIST_ENTRY_EXPIRED_TIMEOUT"] = {
 	whileDead = 1,
 };
 
-StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_NAME,
+-- data (can be nil):
+-- name - Starting text for the edit box.
+-- customSetID - Set if editing an existing custom set, nil if new custom set flow.
+-- itemTransmogInfoList - Transmog info list to populate any custom set with (overriding existing or adding a new custom set).
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_NAME"] = {
+	text = TRANSMOG_CUSTOM_SET_NAME,
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		WardrobeOutfitManager:NameOutfit(dialog:GetEditBox():GetText(), data);
+		local customSetID = nil;
+		if data then
+			customSetID = data.customSetID;
+		end
+		WardrobeCustomSetManager:NameCustomSet(dialog:GetEditBox():GetText(), customSetID, data);
 	end,
 	timeout = 0,
 	whileDead = 1,
@@ -2908,31 +2916,49 @@ StaticPopupDialogs["NAME_TRANSMOG_OUTFIT"] = {
 		dialog:GetButton1():Disable();
 		dialog:GetButton2():Enable();
 		dialog:GetEditBox():SetFocus();
+
+		if data then
+			WardrobeCustomSetManager:SetItemTransmogInfoList(data.itemTransmogInfoList);
+			dialog:GetEditBox():SetText(data.name);
+		end
 	end,
 	OnHide = function(dialog, data)
 		dialog:GetEditBox():SetText("");
 	end,
 	EditBoxOnEnterPressed = function(editBox, data)
-		if ( editBox:GetParent():GetButton1():IsEnabled() ) then
+		if editBox:GetParent():GetButton1():IsEnabled() then
 			StaticPopup_OnClick(editBox:GetParent(), 1);
 		end
 	end,
-	EditBoxOnTextChanged = StaticPopup_StandardNonEmptyTextHandler,
+	EditBoxOnTextChanged = function(editBox, data)
+		local dialog = editBox:GetParent();
+		local button1 = dialog:GetButton1();
+
+		local enabled = UserEditBoxNonEmpty(editBox);
+		if data then
+			enabled = editBox:GetText() ~= data.name;
+		end
+		button1:SetEnabled(enabled);
+	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
 };
 
-StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_CONFIRM_OVERWRITE,
+-- data:
+-- name - Starting text for TRANSMOG_CUSTOM_SET_NAME's edit box if cancelled.
+-- customSetID - What custom set to override if accepted.
+-- itemTransmogInfoList - Transmog info list to pass back to TRANSMOG_CUSTOM_SET_NAME if cancelled.
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE"] = {
+	text = TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(dialog, data) WardrobeOutfitManager:OverwriteOutfit(data.outfitID) end,
+	OnAccept = function(dialog, data)
+		WardrobeCustomSetManager:OverwriteCustomSet(data.customSetID);
+	end,
 	OnCancel = function(dialog, data)
-		local name = data.name;
 		dialog:Hide();
-		local outfitDialog = StaticPopup_Show("NAME_TRANSMOG_OUTFIT");
-		if ( outfitDialog ) then
-			dialog:GetEditBox():SetText(name);
-		end
+		-- Clear customSetID when going back, as we no longer want to override that existing custom set.
+		local nameData = { name = data.name, customSetID = nil, itemTransmogInfoList = data.itemTransmogInfoList };
+		StaticPopup_Show("TRANSMOG_CUSTOM_SET_NAME", nil, nil, nameData);
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
@@ -2940,73 +2966,32 @@ StaticPopupDialogs["CONFIRM_OVERWRITE_TRANSMOG_OUTFIT"] = {
 	noCancelOnEscape = 1,
 };
 
-StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_OUTFIT"] = {
-	text = TRANSMOG_OUTFIT_CONFIRM_DELETE,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(dialog, data)
-		C_TransmogCollection.DeleteOutfit(data);
-	end,
-	OnCancel = function(dialog, data) end,
-	hideOnEscape = 1,
-	timeout = 0,
-	whileDead = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_OUTFIT_CHECKING_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_CHECKING_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_CHECKING_APPEARANCES,
 	button1 = CANCEL,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
 };
 
-StaticPopupDialogs["TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_ALL_INVALID_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_ALL_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_ALL_INVALID_APPEARANCES,
 	button1 = OKAY,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
 };
 
-StaticPopupDialogs["TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES"] = {
-	text = TRANSMOG_OUTFIT_SOME_INVALID_APPEARANCES,
+StaticPopupDialogs["TRANSMOG_CUSTOM_SET_SOME_INVALID_APPEARANCES"] = {
+	text = TRANSMOG_CUSTOM_SET_SOME_INVALID_APPEARANCES,
 	button1 = SAVE,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		WardrobeOutfitManager:ContinueWithSave();
+		WardrobeCustomSetManager:ContinueWithSave();
 	end,
 	hideOnEscape = 1,
 	timeout = 0,
 	whileDead = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_APPLY_WARNING"] = {
-	text = "%s",
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		return WardrobeTransmogFrame:ApplyPending(data.warningIndex);
-	end,
-	OnHide = function(dialog, data)
-		WardrobeTransmogFrame:UpdateApplyButton();
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
-	hasItemFrame = 1,
-};
-
-StaticPopupDialogs["TRANSMOG_FAVORITE_WARNING"] = {
-	text = TRANSMOG_FAVORITE_LOSE_REFUND_AND_TRADE,
-	button1 = OKAY,
-	button2 = CANCEL,
-	OnAccept = function(dialog, data)
-		local setFavorite = true;
-		local confirmed = true;
-		WardrobeCollectionFrameModelDropdown_SetFavorite(data, setFavorite, confirmed);
-	end,
-	timeout = 0,
-	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["CONFIRM_UNLOCK_TRIAL_CHARACTER"] = {
@@ -3141,6 +3126,19 @@ StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	end,
 	timeout = 0,
 	exclusive = 1,
+};
+
+StaticPopupDialogs["CONFIRM_DELETE_TRANSMOG_CUSTOM_SET"] = {
+	text = TRANSMOG_CUSTOM_SET_CONFIRM_DELETE,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(dialog, data)
+		C_TransmogCollection.DeleteCustomSet(data);
+	end,
+	OnCancel = function(dialog, data) end,
+	hideOnEscape = 1,
+	timeout = 0,
+	whileDead = 1,
 };
 
 StaticPopupDialogs["PREMADE_GROUP_LEADER_CHANGE_DELIST_WARNING"] = {

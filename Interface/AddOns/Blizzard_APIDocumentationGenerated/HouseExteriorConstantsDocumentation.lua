@@ -3,16 +3,42 @@ local HouseExteriorConstants =
 	Tables =
 	{
 		{
-			Name = "WMOExteriorID",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = -1,
-			MaxValue = 87,
+			Name = "HouseExteriorSizeOption",
+			Type = "Structure",
 			Fields =
 			{
-				{ Name = "Invalid", Type = "WMOExteriorID", EnumValue = -1 },
-				{ Name = "DefaultAlliance", Type = "WMOExteriorID", EnumValue = 9 },
-				{ Name = "DefaultHorde", Type = "WMOExteriorID", EnumValue = 87 },
+				{ Name = "size", Type = "HousingFixtureSize", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HouseExteriorSizeOptionsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "selectedSize", Type = "HousingFixtureSize", Nilable = false },
+				{ Name = "options", Type = "table", InnerType = "HouseExteriorSizeOption", Nilable = false },
+			},
+		},
+		{
+			Name = "HouseExteriorTypeOption",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "houseExteriorTypeID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "isLocked", Type = "bool", Nilable = false },
+				{ Name = "lockReasonString", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "HouseExteriorTypeOptionsInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "selectedExteriorType", Type = "number", Nilable = false },
+				{ Name = "options", Type = "table", InnerType = "HouseExteriorTypeOption", Nilable = false },
 			},
 		},
 		{

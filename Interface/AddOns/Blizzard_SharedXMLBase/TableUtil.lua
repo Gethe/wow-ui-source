@@ -86,6 +86,23 @@ function tContains(tbl, item)
 	return false;
 end
 
+function TableUtil.SafeCountTable(tbl, isIndexTable)
+	if tbl == nil then
+		return 0;
+	end
+
+	if isIndexTable then
+		return #tbl;
+	end
+
+	return CountTable(tbl);
+end
+
+function TableUtil.SafeCountIndexTable(tbl)
+	local isIndexTable = true;
+	return TableUtil.SafeCountTable(tbl, isIndexTable);
+end
+
 function TableUtil.ContainsAllKeys(lhsTable, rhsTable)
 	for key, _ in pairs(lhsTable) do
 		if rhsTable[key] == nil then
@@ -143,6 +160,16 @@ function tInvert(tbl)
 		inverted[v] = k;
 	end
 	return inverted;
+end
+
+function tInvertToArray(tbl)
+	local index = 1;
+	local copy = {};
+	for k in pairs(tbl) do
+		copy[k] = index;
+		index = index + 1;
+	end
+	return tInvert(copy);
 end
 
 function TableUtil.TrySet(tbl, key)
@@ -635,9 +662,16 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 
 	local t = {};
 
+	local function GetKey(k)
+		if isAssociative then
+			return keyToPosMap[k];
+		end
+		return k;
+	end
+
 	function t:Get(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		return sortedArray[key];
+		local key = GetKey(k);
+		return key and sortedArray[key] or nil;
 	end
 
 	if not isAssociative then
@@ -647,12 +681,14 @@ function TableUtil.CreatePriorityTable(comparator, isAssociative)
 	end
 
 	function t:Remove(k)
-		local key = isAssociative and keyToPosMap[k] or k;
-		tRemove(sortedArray, key);
-		if isAssociative then
-			keyToPosMap[k] = nil;
-			local shiftUp = false;
-			ShiftPositionMap(key, shiftUp);
+		local key = GetKey(k);
+		if key then
+			tRemove(sortedArray, key);
+			if isAssociative then
+				keyToPosMap[k] = nil;
+				local shiftUp = false;
+				ShiftPositionMap(key, shiftUp);
+			end
 		end
 	end
 

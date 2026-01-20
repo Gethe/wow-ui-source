@@ -52,6 +52,19 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "ChatMessagingLockdownReason",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "ActiveEncounter", Type = "ChatMessagingLockdownReason", EnumValue = 0, Documentation = { "Chat lockdown is active because the player is in an active and incomplete instance encounter." } },
+				{ Name = "ActiveMythicKeystoneOrChallengeMode", Type = "ChatMessagingLockdownReason", EnumValue = 1, Documentation = { "Chat lockdown is active because the player is in an active and incomplete Mythic Keystone or Challenge Mode map." } },
+				{ Name = "ActivePvPMatch", Type = "ChatMessagingLockdownReason", EnumValue = 2, Documentation = { "Chat lockdown is active because the player is in an active and incomplete PvP match." } },
+			},
+		},
+		{
 			Name = "ChatToxityFilterOptOut",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -127,6 +140,43 @@ local ChatConstants =
 			},
 		},
 		{
+			Name = "RegisterAddonMessagePrefixResult",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Success", Type = "RegisterAddonMessagePrefixResult", EnumValue = 0 },
+				{ Name = "DuplicatePrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 1 },
+				{ Name = "InvalidPrefix", Type = "RegisterAddonMessagePrefixResult", EnumValue = 2 },
+				{ Name = "MaxPrefixes", Type = "RegisterAddonMessagePrefixResult", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "SendAddonMessageResult",
+			Type = "Enumeration",
+			NumValues = 13,
+			MinValue = 0,
+			MaxValue = 12,
+			Fields =
+			{
+				{ Name = "Success", Type = "SendAddonMessageResult", EnumValue = 0 },
+				{ Name = "InvalidPrefix", Type = "SendAddonMessageResult", EnumValue = 1 },
+				{ Name = "InvalidMessage", Type = "SendAddonMessageResult", EnumValue = 2 },
+				{ Name = "AddonMessageThrottle", Type = "SendAddonMessageResult", EnumValue = 3 },
+				{ Name = "InvalidChatType", Type = "SendAddonMessageResult", EnumValue = 4 },
+				{ Name = "NotInGroup", Type = "SendAddonMessageResult", EnumValue = 5 },
+				{ Name = "TargetRequired", Type = "SendAddonMessageResult", EnumValue = 6 },
+				{ Name = "InvalidChannel", Type = "SendAddonMessageResult", EnumValue = 7 },
+				{ Name = "ChannelThrottle", Type = "SendAddonMessageResult", EnumValue = 8 },
+				{ Name = "GeneralError", Type = "SendAddonMessageResult", EnumValue = 9 },
+				{ Name = "NotInGuild", Type = "SendAddonMessageResult", EnumValue = 10 },
+				{ Name = "AddOnMessageLockdown", Type = "SendAddonMessageResult", EnumValue = 11 },
+				{ Name = "TargetOffline", Type = "SendAddonMessageResult", EnumValue = 12 },
+			},
+		},
+		{
 			Name = "TtsBoolSetting",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -174,6 +224,19 @@ local ChatConstants =
 				{ Name = "MaxChatWindows", Type = "number", Value = 10 },
 				{ Name = "MaxChatChannels", Type = "number", Value = 20 },
 				{ Name = "MaxCharacterNameBytes", Type = "number", Value = FULLNAME_MAX_CHAR },
+			},
+		},
+		{
+			Name = "TTSConstants",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "TTSRateMin", Type = "number", Value = -10 },
+				{ Name = "TTSRateMax", Type = "number", Value = 10 },
+				{ Name = "TTSRateDefault", Type = "number", Value = 0 },
+				{ Name = "TTSVolumeMin", Type = "number", Value = 0 },
+				{ Name = "TTSVolumeMax", Type = "number", Value = 100 },
+				{ Name = "TTSVolumeDefault", Type = "number", Value = 100 },
 			},
 		},
 	},

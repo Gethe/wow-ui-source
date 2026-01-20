@@ -60,7 +60,7 @@ function PlayerLocationMixin:IsValid()
 	elseif self:IsCommunityData() then
 		return C_Club.CanResolvePlayerLocationFromClubMessageData(self.communityClubID, self.communityStreamID, self.communityEpoch, self.communityPosition);
 	elseif self:IsUnit() then
-		return UnitIsPlayer(self:GetUnit());
+		return UnitIsHumanPlayer(self:GetUnit());
 	end
 
 	return true;

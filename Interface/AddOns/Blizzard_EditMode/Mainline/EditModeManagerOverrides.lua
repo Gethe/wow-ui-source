@@ -20,6 +20,7 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshEncounterBar();
 	self:RefreshExtraAbilities();
 	self:RefreshBuffsAndDebuffs();
+	self:RefreshExternalDefensives();
 	self:RefreshTalkingHeadFrame();
 	self:RefreshVehicleLeaveButton();
 	self:RefreshBossFrames();
@@ -33,6 +34,9 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:RefreshVehicleSeatIndicator();
 	self:RefreshArchaeologyBar();
 	self:RefreshCooldownViewer();
+	self:RefreshPersonalResourceDisplay();
+	self:RefreshEncounterEvents();
+	self:RefreshDamageMeter();
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()

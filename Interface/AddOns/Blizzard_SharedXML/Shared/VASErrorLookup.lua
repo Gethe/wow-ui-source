@@ -266,7 +266,10 @@ local vasErrorData = {
 	},
 	[Enum.VasTransactionPurchaseResult.DbCannotMoveArenaCaptn] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_ARENA_TEAM_CAPTAIN;
-	}
+	},
+	[Enum.VasTransactionPurchaseResult.DbHouseOwnerRestriction] = {
+		msg = BLIZZARD_STORE_VAS_ERROR_HOUSE_NEIGHBORHOOD_OWNER,
+	},
 };
 
 local storeErrorData = {

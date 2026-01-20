@@ -330,12 +330,12 @@
 		end
 	</Binding>
 	<Binding name="FRIENDNAMEPLATES" category="BINDING_HEADER_TARGETING">
-		local showFriends = Settings.GetValue("nameplateShowFriends");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
 		if ( showFriends ) then
-			Settings.SetValue("nameplateShowFriends", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		else
-			Settings.SetValue("nameplateShowFriends", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
 			if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_FRIENDLY_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -345,10 +345,10 @@
 	</Binding>
 	<Binding name="ALLNAMEPLATES" category="BINDING_HEADER_TARGETING">
 		local showEnemies = Settings.GetValue("nameplateShowEnemies");
-		local showFriends = Settings.GetValue("nameplateShowFriends");
+		local showFriends = Settings.GetValue("nameplateShowFriendlyPlayers");
 		if ( not showEnemies or not showFriends ) then
 			Settings.SetValue("nameplateShowEnemies", true);
-			Settings.SetValue("nameplateShowFriends", true);
+			Settings.SetValue("nameplateShowFriendlyPlayers", true);
 		if ( Settings.GetValue("nameplateShowAll") ) then
 				UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_ON, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 			else
@@ -356,7 +356,7 @@
 			end
 		else
 			Settings.SetValue("nameplateShowEnemies", false);
-			Settings.SetValue("nameplateShowFriends", false);
+			Settings.SetValue("nameplateShowFriendlyPlayers", false);
 			UIErrorsFrame:AddMessage(NAMEPLATES_MESSAGE_ALL_OFF, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
 		end
 	</Binding>
@@ -515,10 +515,10 @@
 		TogglePlayerBounds();
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues(1);
+		TogglePerformanceValues(false);
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformanceValues(0);
+		TogglePerformanceValues(true);
   </Binding>
 	<Binding name="TOGGLEANIMKITDISPLAY" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ToggleAnimKitDisplay();

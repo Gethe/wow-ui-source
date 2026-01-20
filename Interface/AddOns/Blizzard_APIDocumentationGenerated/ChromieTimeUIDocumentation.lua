@@ -3,6 +3,7 @@ local ChromieTimeUI =
 	Name = "ChromieTimeInfo",
 	Type = "System",
 	Namespace = "C_ChromieTime",
+	Environment = "All",
 
 	Functions =
 	{
@@ -13,6 +14,7 @@ local ChromieTimeUI =
 		{
 			Name = "GetChromieTimeExpansionOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +38,7 @@ local ChromieTimeUI =
 		{
 			Name = "SelectChromieTimeOption",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

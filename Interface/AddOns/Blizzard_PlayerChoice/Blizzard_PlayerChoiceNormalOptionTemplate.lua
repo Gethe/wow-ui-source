@@ -126,51 +126,61 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupSubHeader()
 	end
 end
 
-local customFontColorInfo = {
+local customFontInfo = {
 	alliance = {
-		title = CreateColor(0.008, 0.051, 0.192),
-		description = CreateColor(0.082, 0.165, 0.373),
+		titleColor = CreateColor(0.008, 0.051, 0.192),
+		descriptionColor = CreateColor(0.082, 0.165, 0.373),
 	},
 
 	horde = {
-		title = CreateColor(0.192, 0.051, 0.008),
-		description = CreateColor(0.412, 0.020, 0.020),
+		titleColor = CreateColor(0.192, 0.051, 0.008),
+		descriptionColor = CreateColor(0.412, 0.020, 0.020),
 	},
 
 	marine = {
-		title = CreateColor(0.192, 0.051, 0.008),
-		description = CreateColor(0.192, 0.051, 0.008),
+		titleColor = CreateColor(0.192, 0.051, 0.008),
+		descriptionColor = CreateColor(0.192, 0.051, 0.008),
 	},
 
 	mechagon = {
-		title = CreateColor(0.969, 0.855, 0.667),
-		description = CreateColor(0.969, 0.855, 0.667),
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.969, 0.855, 0.667),
+		descriptionColor = CreateColor(0.969, 0.855, 0.667),
 	},
 
 	Kyrian = {
-		title = CreateColor(0.008, 0.051, 0.192),
-		description = CreateColor(0.082, 0.165, 0.373),
+		titleColor = CreateColor(0.008, 0.051, 0.192),
+		descriptionColor = CreateColor(0.082, 0.165, 0.373),
 	},
 
 	thewarwithin = {
-		title = CreateColor(0.972, 0.812, 0.706),
-		description = CreateColor(0.972, 0.812, 0.706),
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.972, 0.812, 0.706),
+		descriptionColor = CreateColor(0.972, 0.812, 0.706),
+	},
+
+	midnight = {
+		titleFont = "SystemFont_Shadow_Med3",
+		titleColor = CreateColor(0.807, 0.772, 0.941),
+		descriptionColor = CreateColor(0.807, 0.772, 0.941),
 	},
 };
 
-local defaultOptionFontColors = {
-	title = BLACK_FONT_COLOR,
-	description = WARBOARD_OPTION_TEXT_COLOR,
+local defaultOptionFontInfo = {
+	titleFont = "SystemFont_Med3",
+	titleColor = BLACK_FONT_COLOR,
+	descriptionColor = WARBOARD_OPTION_TEXT_COLOR,
 };
 
-function PlayerChoiceNormalOptionTemplateMixin:GetOptionFontColors()
-	return customFontColorInfo[self:GetTextureKit()] or defaultOptionFontColors;
+function PlayerChoiceNormalOptionTemplateMixin:GetOptionFontInfo()
+	return customFontInfo[self:GetTextureKit()] or defaultOptionFontInfo;
 end
 
-function PlayerChoiceNormalOptionTemplateMixin:SetupTextColors()
-	local fontColors = self:GetOptionFontColors();
-	self.Header.Contents.Text:SetTextColor(fontColors.title:GetRGBA());
-	self.OptionText:SetTextColor(fontColors.description:GetRGBA());
+function PlayerChoiceNormalOptionTemplateMixin:SetupTextFonts()
+	local fontInfo = self:GetOptionFontInfo();
+	self.Header.Contents.Text:SetFontObject(fontInfo.titleFont);
+	self.Header.Contents.Text:SetTextColor(fontInfo.titleColor:GetRGBA());
+	self.OptionText:SetTextColor(fontInfo.descriptionColor:GetRGBA());
 end
 
 local STANDARD_SIZE_TEXT_WIDTH = 196;
@@ -193,6 +203,6 @@ function PlayerChoiceNormalOptionTemplateMixin:SetupButtons()
 end
 
 function PlayerChoiceNormalOptionTemplateMixin:SetupRewards()
-	local fontColors = self:GetOptionFontColors();
-	self.Rewards:Setup(self.optionInfo, fontColors.description);
+	local fontInfo = self:GetOptionFontInfo();
+	self.Rewards:Setup(self.optionInfo, fontInfo.descriptionColor);
 end

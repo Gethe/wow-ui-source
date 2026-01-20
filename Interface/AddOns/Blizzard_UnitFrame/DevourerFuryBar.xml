@@ -1,0 +1,31 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="DevourerFuryBarFrame" inherits="ClassPowerBarFrame" mixin="ClassPowerBar, DevourerFuryPowerBar">
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="FillOverlay" frameStrata="LOW" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.$parent.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Glow" atlas="UF-DDH-MetaFury-Glow" useAtlasSize="true" alpha="0" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="LEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="StartAnim" setToFinalAlpha="true">
+				<Alpha childKey="FillOverlay.Glow" duration="0.17" order="1" fromAlpha="1" toAlpha="1"/>
+				<Alpha childKey="FillOverlay.Glow" duration="0.27" order="1" startDelay="0.17" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

@@ -2,6 +2,7 @@ local GameError =
 {
 	Name = "GameError",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -9,6 +10,7 @@ local GameError =
 			Name = "GetGameMessageInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

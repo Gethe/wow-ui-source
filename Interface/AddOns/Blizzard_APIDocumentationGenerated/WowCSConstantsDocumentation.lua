@@ -5,7 +5,7 @@ local WowCSConstants =
 		{
 			Name = "FragmentID",
 			Type = "Enumeration",
-			NumValues = 69,
+			NumValues = 72,
 			MinValue = 0,
 			MaxValue = 255,
 			Fields =
@@ -47,6 +47,9 @@ local WowCSConstants =
 				{ Name = "FHousingFixture", Type = "FragmentID", EnumValue = 34 },
 				{ Name = "FHousingHouseFixtureSet", Type = "FragmentID", EnumValue = 35 },
 				{ Name = "Timer", Type = "FragmentID", EnumValue = 36 },
+				{ Name = "FPlayerInitiativeInfo", Type = "FragmentID", EnumValue = 37 },
+				{ Name = "FNeighborhoodStateData", Type = "FragmentID", EnumValue = 38 },
+				{ Name = "FUnitAIGroupLink", Type = "FragmentID", EnumValue = 39 },
 				{ Name = "TagItem", Type = "FragmentID", EnumValue = 200 },
 				{ Name = "TagContainer", Type = "FragmentID", EnumValue = 201 },
 				{ Name = "TagAzeriteEmpoweredItem", Type = "FragmentID", EnumValue = 202 },

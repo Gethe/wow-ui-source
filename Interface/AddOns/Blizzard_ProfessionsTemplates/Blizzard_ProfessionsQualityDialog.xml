@@ -5,7 +5,7 @@
 	<Frame name="ProfessionsQualityContainerTemplate" mixin="" virtual="true">
 		<Size x="100" y="75"/>
 		<Frames>
-			<ItemButton parentKey="Button" inherits="ProfessionsReagentButtonTemplate">
+			<ItemButton parentKey="Button" inherits="ProfessionsButtonTemplate">
 				<KeyValues>
 					<KeyValue key="minDisplayCount" value="0" type="number"/>
 				</KeyValues>
@@ -34,14 +34,10 @@
 		</Layers>
 		<Frames>
 			<Button parentKey="ClosePanelButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="Container1" inherits="ProfessionsQualityContainerTemplate"/>
 			<Frame parentKey="Container2" inherits="ProfessionsQualityContainerTemplate">
 				<Anchors>
-					<Anchor point="CENTER" x="5" y="0"/>
-				</Anchors>
-			</Frame>
-			<Frame parentKey="Container1" inherits="ProfessionsQualityContainerTemplate">
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Container2" relativePoint="LEFT" x="0" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.Container1" relativePoint="RIGHT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="Container3" inherits="ProfessionsQualityContainerTemplate">
