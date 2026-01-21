@@ -195,6 +195,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 
 		CatalogShopUtil.ClearSpecialActors(modelScene)
 
+		displayData.fallbackPMTImageURL = displayInfo.productPMTURL;
 		displayData.modelSceneContext = CatalogShopConstants.ModelSceneContext.PreviewScene;
 		if productType == CatalogShopConstants.ProductType.Bundle then
 			forceHideFormButtons = true;

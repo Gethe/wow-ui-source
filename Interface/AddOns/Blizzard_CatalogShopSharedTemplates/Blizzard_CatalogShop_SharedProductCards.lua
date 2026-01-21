@@ -1,3 +1,5 @@
+local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
+
 local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeRemainingFormatter:Init(
 	SecondsFormatterConstants.ZeroApproximationThreshold,
@@ -8,6 +10,19 @@ timeRemainingFormatter:Init(
 timeRemainingFormatter:SetDesiredUnitCount(1);
 timeRemainingFormatter:SetMinInterval(SecondsFormatter.Interval.Minutes);
 timeRemainingFormatter:SetStripIntervalWhitespace(true);
+
+function FormatPriceStrings(productInfo)
+	local price;
+	local originalPrice;
+	if productInfo.isVCProduct then
+		price = productInfo.price.." "..HearthsteelAtlasMarkup;
+		originalPrice = productInfo.originalPrice.." "..HearthsteelAtlasMarkup;
+	else
+		price = productInfo.price;
+		originalPrice = productInfo.originalPrice;
+	end
+	return price, originalPrice;
+end
 
 ----------------------------------------------------------------------------------
 -- InvisibleMouseOverFrameMixin
@@ -45,11 +60,15 @@ function CatalogShopDefaultProductCardMixin:OnShow()
 end
 
 function CatalogShopDefaultProductCardMixin:OnEnter()
-	self.ForegroundContainer.HoverTexture:Show();
+	if self.hoverVisualEnabled then
+		self.ForegroundContainer.HoverTexture:Show();
+	end
 end
 
 function CatalogShopDefaultProductCardMixin:OnLeave()
-	self.ForegroundContainer.HoverTexture:Hide();
+	if self.hoverVisualEnabled then
+		self.ForegroundContainer.HoverTexture:Hide();
+	end
 
 	local function NonSecureWrapper(productId)
 		SavedSetsUtil.Check(SavedSetsUtil.RegisteredSavedSets.SeenShopCatalogProductIDs, productId)
@@ -287,11 +306,16 @@ function SmallCatalogShopProductCardMixin:OnLoad()
 	CatalogShopDefaultProductCardMixin.OnLoad(self);
 end
 
+function SmallCatalogShopProductCardMixin:OnEnter()
+	CatalogShopDefaultProductCardMixin.OnEnter(self);
+end
+
 function SmallCatalogShopProductCardMixin:Layout()
 	CatalogShopDefaultProductCardMixin.Layout(self);
 
-	local container = self.ForegroundContainer;
+	local price, originalPrice = FormatPriceStrings(self.productInfo);
 
+	local container = self.ForegroundContainer;
 	local divider = container.DividerTop;
 	divider:SetShown(true);
 	divider:ClearAllPoints();
@@ -320,7 +344,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
 		priceElement:SetPoint("BOTTOM", 0, 13);
-		priceElement:SetText(self.productInfo.originalPrice);
+		priceElement:SetText(originalPrice);
 
 		local strikeThrough = container.Strikethrough;
 		local strikeThroughLength = priceElement:GetStringWidth() * 0.5;
@@ -335,7 +359,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetPoint("TOP", priceElement, "TOP", 0, 15);
 		discountPriceElement:SetPoint("LEFT", 15, 0);
 		discountPriceElement:SetPoint("RIGHT", -15, 0);
-		discountPriceElement:SetText(self.productInfo.price);
+		discountPriceElement:SetText(price);
 
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
@@ -349,7 +373,7 @@ function SmallCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 17);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
-		priceElement:SetText(self.productInfo.price);
+		priceElement:SetText(price);
 		priceElement:Show();
 
 		container.DiscountPrice:Hide();
@@ -371,6 +395,12 @@ end
 SmallCatalogShopHousingCurrencyCardMixin = {};
 function SmallCatalogShopHousingCurrencyCardMixin:OnLoad()
 	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function SmallCatalogShopHousingCurrencyCardMixin:OnEnter()
+	SmallCatalogShopProductCardMixin.OnEnter(self);
+
+	PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_HOVER_OPTION);
 end
 
 local CurrencyBreakpoints = {
@@ -430,6 +460,12 @@ local function BuyButtonCardLayout(card)
 	background:ClearAllPoints();
 	background:SetPoint("TOPLEFT", 20, -20);
 	background:SetPoint("BOTTOMRIGHT", -21, 21);
+
+	local backgroundMask = card.BackgroundContainer.BackgroundMask;
+	backgroundMask:ClearAllPoints();
+	backgroundMask:SetPoint("TOPLEFT", 20, -20);
+	backgroundMask:SetPoint("BOTTOMRIGHT", -21, 21);
+
 end
 
 function SmallCatalogShopHousingCurrencyCardMixin:Layout()
@@ -452,6 +488,8 @@ end
 
 function WideCatalogShopProductCardMixin:Layout()
 	CatalogShopDefaultProductCardMixin.Layout(self);
+
+	local price, originalPrice = FormatPriceStrings(self.productInfo);
 
 	local container = self.ForegroundContainer;
 	local divider = container.DividerTop;
@@ -482,7 +520,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 30);
 		priceElement:SetPoint("RIGHT", self, "CENTER", -5, 0);
 		priceElement:SetJustifyH("RIGHT");
-		priceElement:SetText(self.productInfo.originalPrice);
+		priceElement:SetText(originalPrice);
 
 		local strikeThrough = container.Strikethrough;
 		local strikeThroughLength = priceElement:GetStringWidth();
@@ -497,7 +535,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		discountPriceElement:SetPoint("BOTTOM", 0, 30);
 		discountPriceElement:SetPoint("LEFT", self, "CENTER", 5, 0);
 		discountPriceElement:SetJustifyH("LEFT");
-		discountPriceElement:SetText(self.productInfo.price);
+		discountPriceElement:SetText(price);
 
 		container.DiscountPrice:Show();
 		container.OriginalPrice:Show();
@@ -512,7 +550,7 @@ function WideCatalogShopProductCardMixin:Layout()
 		priceElement:SetPoint("BOTTOM", 0, 30);
 		priceElement:SetPoint("LEFT", 15, 0);
 		priceElement:SetPoint("RIGHT", -15, 0);
-		priceElement:SetText(self.productInfo.price);
+		priceElement:SetText(price);
 		priceElement:Show();
 
 		container.DiscountPrice:Hide();

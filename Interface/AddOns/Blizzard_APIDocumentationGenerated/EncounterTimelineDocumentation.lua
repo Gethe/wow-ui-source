@@ -94,10 +94,20 @@ local EncounterTimeline =
 			},
 		},
 		{
+			Name = "GetEventHighlightTime",
+			Type = "Function",
+			Documentation = { "Returns the duration at which timeline events will be highlighted for imminency." },
+
+			Returns =
+			{
+				{ Name = "highlightTime", Type = "DurationSeconds", Nilable = false },
+			},
+		},
+		{
 			Name = "GetEventInfo",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
-			SecretBasedOnTimelineEventSource = true,
+			SecretWhenEncounterEvent = true,
 			SecretArguments = "NotAllowed",
 			Documentation = { "Returns information about a timeline event. This data is generally expected to be static for the lifetime of an event." },
 
@@ -173,6 +183,22 @@ local EncounterTimeline =
 			},
 		},
 		{
+			Name = "GetEventTimer",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns a Duration object that tracks the elapsed duration of a timeline event. This object tracks the range [0, duration] of the event and automatically pauses its progression based on event state." },
+
+			Arguments =
+			{
+				{ Name = "eventID", Type = "EncounterTimelineEventID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = true },
+			},
+		},
+		{
 			Name = "GetEventTrack",
 			Type = "Function",
 			RequiresValidTimelineEvent = true,
@@ -188,6 +214,25 @@ local EncounterTimeline =
 			{
 				{ Name = "track", Type = "EncounterTimelineTrack", Nilable = false },
 				{ Name = "trackSortIndex", Type = "luaIndex", Nilable = true },
+			},
+		},
+		{
+			Name = "GetSortedEventList",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns a sorted list of event IDs present in the timeline from shortest to longest remaining durations, meeting the requirements of the specified filters." },
+
+			Arguments =
+			{
+				{ Name = "maxEventCount", Type = "number", Nilable = true, Documentation = { "Maximum number of sorted events to return." } },
+				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
+				{ Name = "excludeTerminalStates", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that are terminal states such as Canceled or Finished." } },
+				{ Name = "excludeHiddenEvents", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that should be hidden by user configuration, such as events on long tracks when the user has opted to not show long countdowns." } },
+			},
+
+			Returns =
+			{
+				{ Name = "events", Type = "table", InnerType = "EncounterTimelineEventID", Nilable = false },
 			},
 		},
 		{
@@ -214,6 +259,48 @@ local EncounterTimeline =
 			Returns =
 			{
 				{ Name = "tracks", Type = "table", InnerType = "EncounterTimelineTrackInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTrackMaxEventDuration",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns the maximum permitted event duration on a single timeline track." },
+
+			Arguments =
+			{
+				{ Name = "track", Type = "EncounterTimelineTrack", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = false },
+			},
+		},
+		{
+			Name = "GetTrackType",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Returns the type of a single timeline track." },
+
+			Arguments =
+			{
+				{ Name = "track", Type = "EncounterTimelineTrack", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "trackType", Type = "EncounterTimelineTrackType", Nilable = false },
+			},
+		},
+		{
+			Name = "GetViewType",
+			Type = "Function",
+			Documentation = { "Returns the current view type of the timeline." },
+
+			Returns =
+			{
+				{ Name = "viewType", Type = "EncounterTimelineViewType", Nilable = false },
 			},
 		},
 		{
@@ -331,6 +418,17 @@ local EncounterTimeline =
 				{ Name = "textures", Type = "table", InnerType = "SimpleTexture", Nilable = false, Documentation = { "Array of texture objects to update. This will change the assigned atlases and alpha values of the region, applying secret aspects to protect the data." } },
 			},
 		},
+		{
+			Name = "SetViewType",
+			Type = "Function",
+			SecretArguments = "NotAllowed",
+			Documentation = { "Changes the view type for the timeline. This adjusts track layouts to be more appropriate for a specific mode and optimizes event processing." },
+
+			Arguments =
+			{
+				{ Name = "viewType", Type = "EncounterTimelineViewType", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -339,7 +437,7 @@ local EncounterTimeline =
 			Name = "EncounterTimelineEventAdded",
 			Type = "Event",
 			LiteralName = "ENCOUNTER_TIMELINE_EVENT_ADDED",
-			SecretBasedOnTimelineEventSource = true,
+			SecretWhenEncounterEvent = true,
 			SynchronousEvent = true,
 			Documentation = { "Fired when an event has been added to the timeline." },
 			Payload =
@@ -416,10 +514,43 @@ local EncounterTimeline =
 			UniqueEvent = true,
 			Documentation = { "Signaled when conditions controlling the visibility of the encounter timeline are updated." },
 		},
+		{
+			Name = "EncounterTimelineViewActivated",
+			Type = "Event",
+			LiteralName = "ENCOUNTER_TIMELINE_VIEW_ACTIVATED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a new timeline view is being activated. This is fired after a full layout and timeline data update, allowing the UI to immediately query the API and get usable results." },
+			Payload =
+			{
+				{ Name = "viewType", Type = "EncounterTimelineViewType", Nilable = false },
+			},
+		},
+		{
+			Name = "EncounterTimelineViewDeactivated",
+			Type = "Event",
+			LiteralName = "ENCOUNTER_TIMELINE_VIEW_DEACTIVATED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when the current timeline view is being deactivated. The UI should clear all stored timeline event data and release all frames back to pools during this event." },
+			Payload =
+			{
+				{ Name = "viewType", Type = "EncounterTimelineViewType", Nilable = false },
+			},
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "EncounterTimelineEventFilter",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maxEventCount", Type = "number", Nilable = true, Documentation = { "Maximum number of sorted events to return." } },
+				{ Name = "maxEventDuration", Type = "DurationSeconds", Nilable = true, Documentation = { "Maximum duration of sorted events to return." } },
+				{ Name = "excludeTerminalStates", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that are terminal states such as Canceled or Finished." } },
+				{ Name = "excludeHiddenEvents", Type = "bool", Nilable = false, Default = true, Documentation = { "If false, include events that should be hidden by user configuration, such as events on long tracks when the user has opted to not show long countdowns." } },
+			},
+		},
 		{
 			Name = "EncounterTimelineEventInfo",
 			Type = "Structure",

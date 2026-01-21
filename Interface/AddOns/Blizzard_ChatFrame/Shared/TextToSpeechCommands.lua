@@ -59,7 +59,7 @@ function TextToSpeechCommandsMixin:EvaluateTextToSpeechCommand(msg)
 			local rangeMin, rangeMax = GetCommandArgumentRange(cmd);
 			local numericArg1 = tonumber(arg1);
 			if not numericArg1 or numericArg1 < rangeMin or numericArg1 > rangeMax then
-				return false;
+				return cmd, false;
 			end
 		end
 		return cmd, cmd:callback(arg1);

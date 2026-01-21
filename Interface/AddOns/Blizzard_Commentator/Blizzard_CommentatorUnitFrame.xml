@@ -279,10 +279,9 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="CommentatorFontMedium" mixin="ShrinkUntilTruncateFontStringMixin" maxLines="1" justifyV="MIDDLE">
-					<Size x="100" />
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Bars.HealthBar" relativePoint="TOPLEFT" x="0" y="20"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bars.HealthBar" relativePoint="BOTTOMRIGHT" x="0" y="45"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Bars.Overlay" relativePoint="TOPLEFT" x="40" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Bars.Overlay" relativePoint="TOPRIGHT" x="-10" y="-10"/>
 					</Anchors>
 					<Color r="1.0" g="1.0" b="1.0"/>
 				</FontString>

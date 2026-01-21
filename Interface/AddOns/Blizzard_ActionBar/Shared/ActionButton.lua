@@ -935,6 +935,10 @@ end
 local SecureCooldown_ApplyCooldownDelegate = CreateSecureDelegate(SecureCooldown_ApplyCooldown);
 
 function ActionButton_ApplyCooldown(normalCooldown, cooldownInfo, chargeCooldown, chargeInfo, lossOfControlCooldown, lossOfControlInfo)
+	cooldownInfo = cooldownInfo or defaultCooldownInfo;
+	chargeInfo = chargeInfo or defaultChargeInfo;
+	lossOfControlInfo = lossOfControlInfo or defaultLossOfControlInfo;
+
 	SecureCooldown_ApplyCooldownDelegate(
 		lossOfControlCooldown,
 		lossOfControlInfo.startTime,

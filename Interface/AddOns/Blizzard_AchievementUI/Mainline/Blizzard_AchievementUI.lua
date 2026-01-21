@@ -2141,10 +2141,12 @@ function AchievementStatTemplateMixin:OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetText(self.Text:GetText(), 1, 1, 1, 1, true);
 	end
+	EventRegistry:TriggerEvent("AchievementFrameAchievement.OnEnter", self, self.id);
 end
 
 function AchievementStatTemplateMixin:OnLeave()
 	GameTooltip:Hide();
+	EventRegistry:TriggerEvent("AchievementFrameAchievement.OnLeave", self);
 end
 
 function AchievementStatTemplateMixin:Init(elementData)

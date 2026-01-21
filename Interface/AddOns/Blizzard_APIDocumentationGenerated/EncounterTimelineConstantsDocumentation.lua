@@ -90,6 +90,20 @@ local EncounterTimelineConstants =
 			},
 		},
 		{
+			Name = "EncounterTimelineViewType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Documentation = { "Enumeration of view types for the timeline., View types control layout parameters for the timeline such as maximum track durations and event counts, and optimize event processing for expected display behaviors." },
+			Fields =
+			{
+				{ Name = "None", Type = "EncounterTimelineViewType", EnumValue = 0, Documentation = { "Configures the view for an empty timeline display. This mode is recommended for user addons that take full control of the timeline display." } },
+				{ Name = "Timeline", Type = "EncounterTimelineViewType", EnumValue = 1, Documentation = { "Configures the view for a linear timeline display." } },
+				{ Name = "Bars", Type = "EncounterTimelineViewType", EnumValue = 2, Documentation = { "Configures the view for a sorted timer bar display." } },
+			},
+		},
+		{
 			Name = "EncounterTimelineEventConstants",
 			Type = "Constants",
 			Values =

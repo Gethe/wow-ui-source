@@ -507,6 +507,8 @@ local NeighborhoodInviteErrorTypeStrings = {
 	[Enum.NeighborhoodInviteResult.InviteLimit] = HOUSING_NEIGHBORHOOD_INVITE_ERR_LIMIT,
 	[Enum.NeighborhoodInviteResult.NotEnoughPlots] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NO_PLOTS,
 	[Enum.NeighborhoodInviteResult.NotFound] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NOT_FOUND,
+	[Enum.NeighborhoodInviteResult.Ignored] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
+	[Enum.NeighborhoodInviteResult.AlreadyInNeighborhood] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
 };
 
 local INVITE_RESIDENT_SHOWING_EVENTS = {

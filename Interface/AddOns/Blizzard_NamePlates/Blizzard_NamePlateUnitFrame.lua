@@ -312,6 +312,7 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 	self:UpdateThreatDisplay();
 	self:UpdateShowOnlyName();
 	self:UpdateIsSimplified();
+	self:UpdateRaidTarget();
 	self:UpdateNameClassColor();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
@@ -462,8 +463,8 @@ function NamePlateUnitFrameMixin:UpdateIsFocus()
 end
 
 function NamePlateUnitFrameMixin:GetRaidTargetIndex()
-	-- Don't display raid icons on other players.
-	if self:IsPlayer() then
+	-- Don't display raid icons on enemy players.
+	if self:IsPlayer() and not self:IsFriend() then
 		return nil;
 	end
 
@@ -732,19 +733,15 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 
 		PixelUtil.SetHeight(self.name, self.name:GetLineHeight());
 
-		if not customOptions or not customOptions.ignoreOverAbsorbGlow then
-			self.overAbsorbGlow:ClearAllPoints();
-			PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
-			PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
-			PixelUtil.SetHeight(self.overAbsorbGlow, 8);
-		end
+		self.overAbsorbGlow:ClearAllPoints();
+		PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
+		PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
+		PixelUtil.SetHeight(self.overAbsorbGlow, 8);
 
-		if not customOptions or not customOptions.ignoreOverHealAbsorbGlow then
-			self.overHealAbsorbGlow:ClearAllPoints();
-			PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
-			PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
-			PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
-		end
+		self.overHealAbsorbGlow:ClearAllPoints();
+		PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
+		PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
+		PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
 
 		local bgTexture = healthBar.bgTexture;
 		PixelUtil.SetPoint(bgTexture, "TOPLEFT", healthBar, "TOPLEFT", -2, 3);
@@ -763,6 +760,17 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 			PixelUtil.SetPoint(self.AurasFrame.DebuffListFrame, "BOTTOM", self.HealthBarsContainer.healthBar, "TOP", 0, debuffPadding);
 		else
 			PixelUtil.SetPoint(self.AurasFrame.DebuffListFrame, "BOTTOM", self.name, "TOP", 0, debuffPadding);
+		end
+	end
+
+	-- Raid Target Frame
+	do
+		self.RaidTargetFrame:ClearAllPoints();
+
+		if self:IsShowOnlyName() then
+			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.name, "TOP", 0, 10);
+		else
+			PixelUtil.SetPoint(self.RaidTargetFrame, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
 		end
 	end
 end

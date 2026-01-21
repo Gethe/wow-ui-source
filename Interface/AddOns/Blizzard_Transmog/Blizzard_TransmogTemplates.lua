@@ -62,19 +62,14 @@ end
 
 function TransmogOutfitEntryMixin:Init(elementData)
 	self.OutfitIcon:SetScript("OnClick", function(_button, buttonName)
-		local function ClickCallback()
-			local allowRemoveOutfit = true;
-			local toggleLock = false;
+		local allowRemoveOutfit = true;
+		local toggleLock = false;
 
-			if buttonName == "RightButton" then
-				toggleLock = true;
-			end
+		if buttonName == "RightButton" then
+			toggleLock = true;
+		end
 
-			C_TransmogOutfitInfo.ChangeDisplayedOutfit(elementData.outfitID, Enum.TransmogSituationTrigger.Manual, toggleLock, allowRemoveOutfit);
-		end;
-
-		local includeViewedOutfit = true;
-		self:CheckPendingAction(ClickCallback, includeViewedOutfit);
+		C_TransmogOutfitInfo.ChangeDisplayedOutfit(elementData.outfitID, Enum.TransmogSituationTrigger.Manual, toggleLock, allowRemoveOutfit);
 	end);
 
 	-- Base visuals
@@ -171,8 +166,7 @@ function TransmogOutfitEntryMixin:OpenEditPopup()
 		return;
 	end
 
-	local includeViewedOutfit = true;
-	self:CheckPendingAction(elementData.onEditCallback, includeViewedOutfit);
+	elementData.onEditCallback();
 end
 
 function TransmogOutfitEntryMixin:CheckPendingAction(callback, includeViewedOutfit)

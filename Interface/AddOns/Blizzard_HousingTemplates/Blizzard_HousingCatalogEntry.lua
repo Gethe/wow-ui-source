@@ -569,17 +569,8 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 		StartPlacing = function() C_HousingBasicMode.StartPlacingNewDecor(self.entryID); end
 	end
 
-	local sound;
-	local size = self.entryInfo.size;
-	if size == Enum.HousingCatalogEntrySize.Tiny or size == Enum.HousingCatalogEntrySize.Small then
-		sound = SOUNDKIT.HOUSING_SELECT_ITEM_SMALL;
-	elseif size == Enum.HousingCatalogEntrySize.Medium or size == Enum.HousingCatalogEntrySize.None then
-		sound = SOUNDKIT.HOUSING_SELECT_ITEM_MEDIUM;
-	else
-		sound = SOUNDKIT.HOUSING_SELECT_ITEM_LARGE;
-	end
-
-	PlaySound(sound);
+	-- Sound will be played by HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED event handler
+	-- which properly handles preview vs non-preview sounds
 
 	if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
 		C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
@@ -653,12 +644,6 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 		return;
 	end
 
-	local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
-
-	local showDisabledTooltip = function(tooltip, elementDescription)
-		GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
-	end
-
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_CATALOG_ENTRY");
 
@@ -703,7 +688,7 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 					end);
 				end
 			end
-		else
+		elseif self:IsInStorageView() then
 			local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 				local popupData = {
 					destroyAll = false,
@@ -713,6 +698,13 @@ function HousingCatalogDecorEntryMixin:ShowContextMenu()
 				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 				StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 			end);
+
+			local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
+			
+			local showDisabledTooltip = function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
+			end
+
 			destroySingleButtonDesc:SetEnabled(canDestroyEntry);
 			if not canDestroyEntry then
 				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);

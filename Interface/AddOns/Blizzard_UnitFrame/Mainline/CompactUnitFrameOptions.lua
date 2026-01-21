@@ -3,6 +3,7 @@
 DefaultCompactUnitFrameOptions = {
 	useClassColors = true,
 	healthBarColor = COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR,
+	healthBarColorBG = COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR_BG,
 	displaySelectionHighlight = true,
 	displayAggroHighlight = true,
 	displayName = true,

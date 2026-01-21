@@ -108,6 +108,9 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
 			-- Toy
 			factory(CatalogShopConstants.CardTemplate.DetailsToys, InitializeButton);
+		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+			-- Decor
+			factory(CatalogShopConstants.CardTemplate.DetailsDecor, InitializeButton);
 		elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.TradersTenders then
 			-- Trader's Tender
 			factory(CatalogShopConstants.CardTemplate.DetailsTender, InitializeButton);

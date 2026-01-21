@@ -172,7 +172,10 @@ function HouseEditorCustomizeModeMixin:ShowDecorInstanceTooltip(decorInstanceInf
 end
 
 function HouseEditorCustomizeModeMixin:ShowHouseTooltip()
-	-- TODO: Error tooltip can go here in the future, existing string references decor (and the house is not decor).
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CUSTOMIZATION_HOUSE_EXTERIOR_TOOLTIP);
+	GameTooltip:Show();
+	return GameTooltip;
 end
 
 function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)

@@ -3,14 +3,16 @@
 
 	<!-- Default Product Card Template -->
 	<Button name="DefaultCatalogShopCardTemplate" clipChildren="true" mixin="CatalogShopDefaultProductCardMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
 		<!--
 		nonInteractive: for cases outside the catalog shop where behavior is overridden.
 		useWideCardSettings: set for wide cards for determining the appropriate model scenes.
-		<KeyValues>
 			<KeyValue key="nonInteractive" value="false" type="boolean"/>
 			<KeyValue key="useWideCardSettings" value="false" type="boolean"/>
-		</KeyValues>
 		-->
+		<!-- hoverVisualEnabled: Controls the hover effect for the shop card. Some cards (like ones with Buy buttons) don't want to show hover state -->
+			<KeyValue key="hoverVisualEnabled" value="true" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="InvisibleMouseOverFrame" mixin="InvisibleMouseOverFrameMixin" enableMouse="true" hidden="true">
 				<Scripts>
@@ -195,6 +197,9 @@
 
 	<!-- Small Card w/Buy Button Template -->
 	<Button name="SmallCatalogShopHousingCurrencyCardTemplate" mixin="SmallCatalogShopHousingCurrencyCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" >
+		<KeyValues>
+			<KeyValue key="hoverVisualEnabled" value="false" type="boolean"/>
+		</KeyValues>
 		<Frames>
 			<Button parentKey="PurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="EmbeddedPurchaseButtonMixin" frameLevel="2000" >
 				<Size x="141" y="50"/>
@@ -209,7 +214,7 @@
 						<Size x="18" y="18"/>
 					</Frame>
 				</Frames>
-			</Button>			
+			</Button>
 		</Frames>
 	</Button>
 

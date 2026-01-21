@@ -14,7 +14,7 @@ local NamePlate =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "includeForbidden", Type = "bool", Nilable = false, Default = false },
 			},
 

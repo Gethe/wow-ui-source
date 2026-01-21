@@ -9,7 +9,7 @@ EncounterWarningsConstants = {
 
 EncounterWarningsSettingDefaults = {
 	IconScale = 1.0;
-	TooltipsEnabled = true;
+	TooltipAnchor = Enum.EncounterEventsTooltipAnchor.Default;
 };
 
 EncounterWarningsSystemSeverity = {

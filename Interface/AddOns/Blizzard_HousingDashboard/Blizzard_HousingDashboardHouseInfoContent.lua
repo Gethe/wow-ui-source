@@ -273,6 +273,11 @@ function HousingDashboardHouseInfoContentFrameMixin:UpdateTabs()
 		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerMeetsReqLevel, HOUSING_ENDEAVORS_MIN_LEVEL:format(reqLevel));
 	end
 
+	local playerHasInitiativeAccess = C_NeighborhoodInitiative.PlayerHasInitiativeAccess();
+	if not playerHasInitiativeAccess then
+		self.TabSystem:SetTabEnabled(self.endeavorTabID, playerHasInitiativeAccess, HOUSING_ENDEAVORS_DISABLED);
+	end
+
 	local currentTab = self:GetTab();
 	if not currentTab or not self:IsTabAvailable(currentTab) then
 		self:SetToDefaultAvailableTab();

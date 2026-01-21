@@ -1900,6 +1900,10 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 
 	local bestGateConditionID = nil;
 	local bestGateSpentRequired = nil;
+
+	local bestLevelConditionID = nil;
+	local minUnmetPlayerLevel = nil;
+
 	local typesWithAnySufficientConditionMet = {};
 
 	for i, conditionID in ipairs(conditionIDs) do
@@ -1912,6 +1916,15 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 			if not bestGateConditionID or (condInfo.spentAmountRequired > bestGateSpentRequired) then
 				bestGateConditionID = conditionID;
 				bestGateSpentRequired = condInfo.spentAmountRequired;
+			end
+		end
+
+		-- Sometimes we have multiple level requirements on a single node (Ex. We want to lock specific tiers of a tiered node behind levels)
+		-- No point in showing them all, just show the lowest unmet level requirement.
+		if condInfo.type == Enum.TraitConditionType.RanksAllowed and condInfo.playerLevel and not condInfo.isMet then
+			if not bestLevelConditionID or (condInfo.playerLevel < minUnmetPlayerLevel) then
+				bestLevelConditionID = conditionID;
+				minUnmetPlayerLevel = condInfo.playerLevel;
 			end
 		end
 	end
@@ -1928,6 +1941,11 @@ function TalentFrameBaseMixin:AddConditionsToTooltip(tooltip, conditionIDs, shou
 
 		-- Only show the tooltip for the best gated condition.
 		if condInfo.isGate and conditionID ~= bestGateConditionID then
+			return false;
+		end
+
+		-- Only show the tooltip for the lowest unmet level requirement.
+		if condInfo.type == Enum.TraitConditionType.RanksAllowed and condInfo.playerLevel and conditionID ~= bestLevelConditionID then
 			return false;
 		end
 

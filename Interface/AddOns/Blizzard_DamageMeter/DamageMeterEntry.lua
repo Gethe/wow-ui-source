@@ -45,10 +45,18 @@ end
 function DamageMeterEntryMixin:UpdateIcon()
 	local atlasElement = self:GetIconAtlasElement();
 	if atlasElement then
-		self:GetIcon():SetAtlas(atlasElement);
+		if atlasElement ~= self.iconAtlasElement then
+			self.iconAtlasElement = atlasElement;
+			self.iconTexture = nil;
+			self:GetIcon():SetAtlas(atlasElement);
+		end
 	else
 		local texture = self:GetIconTexture();
-		self:GetIcon():SetTexture(texture);
+		if texture ~= self.iconTexture then
+			self.iconTexture = texture;
+			self.iconAtlasElement = nil;
+			self:GetIcon():SetTexture(texture);
+		end
 	end
 end
 
@@ -58,7 +66,10 @@ end
 
 function DamageMeterEntryMixin:UpdateName()
 	local text = self:GetNameText();
-	self:GetName():SetText(text);
+	if text ~= self.nameText then
+		self.nameText = text;
+		self:GetName():SetText(text);
+	end
 end
 
 function DamageMeterEntryMixin:ShowsValuePerSecondAsPrimary()
@@ -282,7 +293,10 @@ function DamageMeterEntryMixin:GetStatusBarColor()
 end
 
 function DamageMeterEntryMixin:SetStatusBarColor(color)
-	return self:GetStatusBarTexture():SetVertexColor(color:GetRGB());
+	if color ~= self.statusBarColor then
+		self.statusBarColor = color;
+		self:GetStatusBarTexture():SetVertexColor(color:GetRGB());
+	end
 end
 
 function DamageMeterEntryMixin:GetDesiredBarColor()
@@ -298,6 +312,10 @@ end
 
 function DamageMeterEntryMixin:SetUseClassColor(useClassColor)
 	self.isClassColorDesired = useClassColor;
+	self:UpdateStatusBarColor();
+end
+
+function DamageMeterEntryMixin:UpdateStatusBarColor()
 	self:SetStatusBarColor(self:GetDesiredBarColor());
 end
 
@@ -400,7 +418,7 @@ function DamageMeterEntryMixin:Init(source)
 	self:UpdateName();
 	self:UpdateValue();
 	self:UpdateStatusBar();
-	self:UpdateStyle();
+	self:UpdateStatusBarColor();
 end
 
 function DamageMeterEntryMixin:IsCreature()

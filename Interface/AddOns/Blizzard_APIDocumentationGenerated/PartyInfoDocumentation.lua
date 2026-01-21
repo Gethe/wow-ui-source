@@ -711,6 +711,7 @@ local PartyInfo =
 			Name = "ReadyCheck",
 			Type = "Event",
 			LiteralName = "READY_CHECK",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{
@@ -779,21 +780,6 @@ local PartyInfo =
 			{
 				{ Name = "QuestSync", Type = "LeavePartyConfirmReason", EnumValue = 0 },
 				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "PartyRequestJoinRelation",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "None", Type = "PartyRequestJoinRelation", EnumValue = 0 },
-				{ Name = "Friend", Type = "PartyRequestJoinRelation", EnumValue = 1 },
-				{ Name = "Guild", Type = "PartyRequestJoinRelation", EnumValue = 2 },
-				{ Name = "Club", Type = "PartyRequestJoinRelation", EnumValue = 3 },
-				{ Name = "NumPartyRequestJoinRelations", Type = "PartyRequestJoinRelation", EnumValue = 4 },
 			},
 		},
 	},

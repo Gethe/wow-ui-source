@@ -2897,12 +2897,30 @@ do
 		},
 	};
 
+	local TimelineViewSpecificSettings = {
+		-- Map of timeline settings to their required view type. If a setting
+		-- is appropriate for all view types, omit it from this map.
+
+		[Enum.EditModeEncounterEventsSetting.BarWidth] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.FlipHorizontally] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.IconDirection] = Enum.EncounterEventsViewType.Timeline,
+		[Enum.EditModeEncounterEventsSetting.Orientation] = Enum.EncounterEventsViewType.Timeline,
+		[Enum.EditModeEncounterEventsSetting.Padding] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.ShowSpellName] = Enum.EncounterEventsViewType.Timeline,
+	};
+
 	function EditModeEncounterEventsSystemMixin:ShouldShowSetting(setting)
 		if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
 			return false;
 		end
 
 		if self.systemIndex == Enum.EditModeEncounterEventsSystemIndices.Timeline then
+			local requiredViewType = TimelineViewSpecificSettings[setting];
+
+			if requiredViewType ~= nil and not self:DoesSettingValueEqual(Enum.EditModeEncounterEventsSetting.ViewType, requiredViewType) then
+				return false;
+			end
+
 			if setting == Enum.EditModeEncounterEventsSetting.ShowSpellName then
 				return self:DoesSettingValueEqual(Enum.EditModeEncounterEventsSetting.Orientation, Enum.EncounterEventsOrientation.Vertical);
 			end
@@ -2927,6 +2945,10 @@ do
 	end
 end
 
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingViewType()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
 function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOrientation()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
@@ -2943,6 +2965,14 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOverallSize()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
 
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingPadding()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingBarWidth()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
 function EditModeEncounterEventsSystemMixin:UpdateSystemSettingBackgroundTransparency()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
@@ -2955,11 +2985,15 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSettingVisibility()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
 
-function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowSpellName()
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingTooltipAnchor()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
 
-function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowTooltips()
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingFlipHorizontally()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowSpellName()
 	-- Implement in a derived system frame mixin to process setting changes.
 end
 
@@ -2975,7 +3009,9 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireS
 		return;
 	end
 
-	if setting == Enum.EditModeEncounterEventsSetting.Orientation and self:HasSetting(Enum.EditModeEncounterEventsSetting.Orientation) then
+	if setting == Enum.EditModeEncounterEventsSetting.ViewType and self:HasSetting(Enum.EditModeEncounterEventsSetting.ViewType) then
+		self:UpdateSystemSettingViewType();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Orientation and self:HasSetting(Enum.EditModeEncounterEventsSetting.Orientation) then
 		self:UpdateSystemSettingOrientation();
 	elseif setting == Enum.EditModeEncounterEventsSetting.IconDirection and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconDirection) then
 		self:UpdateSystemSettingIconDirection();
@@ -2983,16 +3019,22 @@ function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireS
 		self:UpdateSystemSettingIconSize();
 	elseif setting == Enum.EditModeEncounterEventsSetting.OverallSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.OverallSize) then
 		self:UpdateSystemSettingOverallSize();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Padding and self:HasSetting(Enum.EditModeEncounterEventsSetting.Padding) then
+		self:UpdateSystemSettingPadding();
+	elseif setting == Enum.EditModeEncounterEventsSetting.BarWidth and self:HasSetting(Enum.EditModeEncounterEventsSetting.BarWidth) then
+		self:UpdateSystemSettingBarWidth();
 	elseif setting == Enum.EditModeEncounterEventsSetting.BackgroundTransparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.BackgroundTransparency) then
 		self:UpdateSystemSettingBackgroundTransparency();
 	elseif setting == Enum.EditModeEncounterEventsSetting.Transparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.Transparency) then
 		self:UpdateSystemSettingTransparency();
 	elseif setting == Enum.EditModeEncounterEventsSetting.Visibility and self:HasSetting(Enum.EditModeEncounterEventsSetting.Visibility) then
 		self:UpdateSystemSettingVisibility();
+	elseif setting == Enum.EditModeEncounterEventsSetting.TooltipAnchor and self:HasSetting(Enum.EditModeEncounterEventsSetting.TooltipAnchor) then
+		self:UpdateSystemSettingTooltipAnchor();
+	elseif setting == Enum.EditModeEncounterEventsSetting.FlipHorizontally and self:HasSetting(Enum.EditModeEncounterEventsSetting.FlipHorizontally) then
+		self:UpdateSystemSettingFlipHorizontally();
 	elseif setting == Enum.EditModeEncounterEventsSetting.ShowSpellName and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowSpellName) then
 		self:UpdateSystemSettingShowSpellName();
-	elseif setting == Enum.EditModeEncounterEventsSetting.ShowTooltips and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTooltips) then
-		self:UpdateSystemSettingShowTooltips();
 	elseif setting == Enum.EditModeEncounterEventsSetting.ShowTimer and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTimer) then
 		self:UpdateSystemSettingShowTimer();
 	end

@@ -277,8 +277,9 @@ function DamageMeterSessionWindowMixin:OnUpdate()
 	end
 end
 
-function DamageMeterSessionWindowMixin:SetupEntry(frame, elementData)
-	frame:Init(elementData);
+function DamageMeterSessionWindowMixin:SetupEntry(frame)
+	frame.hasBeenSetup = true;
+
 	frame:SetUseClassColor(self:ShouldUseClassColor());
 	frame:SetBarHeight(self:GetBarHeight());
 	frame:SetTextScale(self:GetTextScale());
@@ -286,19 +287,22 @@ function DamageMeterSessionWindowMixin:SetupEntry(frame, elementData)
 	frame:SetStyle(self:GetStyle());
 	frame:SetNumberDisplayType(self:GetNumberDisplayType());
 	frame:SetBackgroundAlpha(self:GetBackgroundAlpha());
+	frame:EnableMouse(not self:IsNonInteractive());
 
 	-- For the existing implementation, clicks need to happen on mouse down because rebuilding the data
 	-- provider with every change ends up hiding all frames and clearing their button state, meaning a
 	-- mouse up might not happen.
 	frame:RegisterForClicks("LeftButtonDown", "RightButtonDown");
+end
+
+function DamageMeterSessionWindowMixin:InitEntry(frame, elementData)
+	frame:Init(elementData);
 
 	frame:SetScript("OnClick", function(button, mouseButtonName)
 		if mouseButtonName == "LeftButton" or mouseButtonName == "RightButton" then
 			self:ShowSourceWindow(elementData);
 		end
 	end);
-
-	frame:EnableMouse(not self:IsNonInteractive());
 end
 
 function DamageMeterSessionWindowMixin:InitializeScrollBoxPadding(view)
@@ -311,7 +315,18 @@ end
 function DamageMeterSessionWindowMixin:InitializeScrollBox()
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("DamageMeterSourceEntryTemplate", function(frame, elementData)
-		self:SetupEntry(frame, elementData);
+		self:InitEntry(frame, elementData);
+	end);
+
+	ScrollUtil.AddAcquiredFrameCallback(self:GetScrollBox(), function(o, frame, elementData, new)
+		if not frame.hasBeenSetup then
+			self:SetupEntry(frame);
+		end
+	end);
+
+	ScrollUtil.AddReleasedFrameCallback(self:GetScrollBox(), function(o, frame, elementData)
+		-- Settings can change while the frame isn't being used, so it needs to be setup once it's aquired again.
+		frame.hasBeenSetup = false;
 	end);
 
 	self:InitializeScrollBoxPadding(view);
@@ -600,7 +615,8 @@ function DamageMeterSessionWindowMixin:ShowLocalPlayerEntry(earlierInList)
 	local elementData = scrollBox:FindElementData(self.localPlayerIndex);
 
 	local localPlayerEntry = self:GetLocalPlayerEntry();
-	self:SetupEntry(localPlayerEntry, elementData);
+	self:SetupEntry(localPlayerEntry);
+	self:InitEntry(localPlayerEntry, elementData);
 
 	localPlayerEntry:ClearAllPoints();
 	if earlierInList then
@@ -661,9 +677,43 @@ function DamageMeterSessionWindowMixin:OnScrollBoxScroll()
 	self:EnsureLocalPlayerPresent();
 end
 
+function DamageMeterSessionWindowMixin:UpdateExistingDataProvider(dataProvider)
+	local currentProvider = self:GetScrollBox():GetDataProvider();
+	if not currentProvider then
+		return false;
+	end
+
+	if currentProvider:GetSize() ~= dataProvider:GetSize() then
+		return false;
+	end
+
+	-- It's important to leave the collection the same, but the values of each item in the collection
+	-- can be updated, as long as the frames to which the elements are attached are updated with
+	-- the new values.
+	for i = 1, currentProvider:GetSize() do
+		-- This could use SetTablePairsToTable in the future, but if so check for self assignment
+		-- so the table isn't wiped. It's possible that the new and old elements are pointers to
+		-- the same element.
+		Mixin(currentProvider.collection[i], dataProvider.collection[i]);
+	end
+
+	self:GetScrollBox():ForEachFrame(function(frame)
+		local elementData = currentProvider:Find(frame:GetOrderIndex());
+		self:InitEntry(frame, elementData);
+	end);
+
+	return true;
+end
+
 function DamageMeterSessionWindowMixin:Refresh(retainScrollPosition)
 	local combatSession = self:GetCombatSession();
-	self:GetScrollBox():SetDataProvider(self:BuildDataProvider(combatSession), retainScrollPosition);
+	local dataProvider = self:BuildDataProvider(combatSession);
+
+	-- Only completely rebuild the data provider if necessary. Avoid rebuilding it on basic updates
+	-- to the internal data as that results in a lot of unnecessary work.
+	if not retainScrollPosition or not self:UpdateExistingDataProvider(dataProvider) then
+		self:GetScrollBox():SetDataProvider(dataProvider, retainScrollPosition);
+	end
 
 	self:EnsureLocalPlayerPresent();
 	self:EnsureSourceWindowUpToDate();

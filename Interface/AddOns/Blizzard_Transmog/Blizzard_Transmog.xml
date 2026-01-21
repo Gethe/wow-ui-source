@@ -3,6 +3,9 @@
 	<Script file="Blizzard_Transmog.lua"/>
 
 	<Frame name="TransmogFrame" mixin="TransmogFrameMixin" inherits="PortraitFrameTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="collapsedWidth" value="1308" type="number"/>
+		</KeyValues>
 		<Size x="1618" y="883"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-41"/>
@@ -13,7 +16,7 @@
 					<Anchor point="TOPLEFT" x="38" y="19"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="OutfitCollection" mixin="TransmogOutfitCollectionMixin">
+			<Frame parentKey="OutfitCollection" mixin="TransmogOutfitCollectionMixin" frameLevel="1">
 				<Size x="312" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="2" y="-21"/>
@@ -195,7 +198,7 @@
 					<Anchor point="TOPLEFT" relativeKey="$parent.OutfitCollection" relativePoint="TOPRIGHT" x="0" y="-1"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="CharacterPreview" mixin="TransmogCharacterMixin">
+			<Frame parentKey="CharacterPreview" mixin="TransmogCharacterMixin" frameLevel="1">
 				<Size x="658" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.OutfitCollection" relativePoint="TOPRIGHT"/>
@@ -309,7 +312,7 @@
 							</AnimationGroup>
 						</Animations>
 					</Frame>
-					<Frame parentKey="Gradients" setAllPoints="true">
+					<Frame parentKey="Gradients" setAllPoints="true" frameLevel="0">
 						<Layers>
 							<Layer level="BACKGROUND" textureSubLevel="2">
 								<Texture parentKey="GradientLeft" atlas="transmog-outfit-darkbg-gradient">
@@ -405,7 +408,7 @@
 					<OnEvent method="OnEvent"/>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="WardrobeCollection" mixin="TransmogWardrobeMixin" inherits="TabSystemOwnerTemplate">
+			<Frame parentKey="WardrobeCollection" mixin="TransmogWardrobeMixin" inherits="TabSystemOwnerTemplate" frameLevel="1">
 				<Size x="644" y="860"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.CharacterPreview" relativePoint="TOPRIGHT"/>
@@ -485,16 +488,26 @@
 											<Anchor point="TOPRIGHT" x="-31" y="-106"/>
 										</Anchors>
 									</DropdownButton>
-									<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED">
+									<Frame parentKey="DisplayTypes" inherits="HorizontalLayoutFrame">
+										<KeyValues>
+											<KeyValue key="spacing" value="25" type="number"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPLEFT" relativeKey="$parent.ActiveSlotTitle" relativePoint="BOTTOMLEFT" x="16" y="-21"/>
 										</Anchors>
-									</Button>
-									<Button parentKey="DisplayTypeEquippedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED">
-										<Anchors>
-											<Anchor point="TOPLEFT" relativeKey="$parent.DisplayTypeUnassignedButton" relativePoint="TOPRIGHT" x="25" y="0"/>
-										</Anchors>
-									</Button>
+										<Frames>
+											<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="1" type="number"/>
+												</KeyValues>
+											</Button>
+											<Button parentKey="DisplayTypeEquippedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_EQUIPPED">
+												<KeyValues>
+													<KeyValue key="layoutIndex" value="2" type="number"/>
+												</KeyValues>
+											</Button>
+										</Frames>
+									</Frame>
 									<Frame parentKey="PagedContent" inherits="PagedNaturalSizeGridContentFrameTemplate">
 										<KeyValues>
 											<KeyValue key="viewsPerPage" value="1" type="number"/>
@@ -545,6 +558,7 @@
 									<OnShow method="OnShow"/>
 									<OnHide method="OnHide"/>
 									<OnEvent method="OnEvent"/>
+									<OnKeyDown method="OnKeyDown"/>
 								</Scripts>
 							</Frame>
 							<Frame parentKey="SetsFrame" mixin="TransmogWardrobeSetsMixin" setAllPoints="true">

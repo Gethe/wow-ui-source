@@ -85,6 +85,9 @@
 	</Frame>
 
 	<Frame name="DebuffFrame" inherits="BaseAuraFrameTemplate" mixin="DebuffFrameMixin">
+		<KeyValues>
+			<KeyValue key="maxPrivateAuras" value="6" type="number"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="BuffFrame" relativePoint="BOTTOMRIGHT" x="-13" y="-5" />
 		</Anchors>
@@ -104,6 +107,26 @@
 			<Frame parentKey="privateAuraAnchor2" inherits="BuffFramePrivateAuraAnchorTemplate">
 				<KeyValues>
 					<KeyValue key="auraIndex" value="2" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor3" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor4" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor5" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor6" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="6" type="number"/>
 				</KeyValues>
 			</Frame>
 		</Frames>

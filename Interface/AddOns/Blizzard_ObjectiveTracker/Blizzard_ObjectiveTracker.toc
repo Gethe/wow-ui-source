@@ -1,10 +1,9 @@
-## Title: Blizzard Objective Tracker UI
-## LoadOnDemand: 0
+## Title: Blizzard_ObjectiveTracker
 ## RequiredDep: Blizzard_MawBuffs, Blizzard_TransmogShared
 ## OptionalDeps: Blizzard_UIWidgets, Blizzard_UIWidgets_WoWLabs
 
 Blizzard_ObjectiveTrackerFonts.xml
-Blizzard_ObjectiveTrackerManager.lua
+Blizzard_ObjectiveTrackerManager.lua [AllowLoadEnvironment Global]
 Blizzard_ObjectiveTrackerShared.lua
 Blizzard_ObjectiveTrackerShared.xml
 Blizzard_ObjectiveTrackerBlock.lua

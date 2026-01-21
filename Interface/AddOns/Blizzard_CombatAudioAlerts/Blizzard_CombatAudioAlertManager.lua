@@ -85,10 +85,20 @@ function CombatAudioAlertManagerMixin:OnEvent(event, ...)
 		self:UpdateWatchedPowerTokens();
 	elseif event == "UNIT_SPELLCAST_START" then
 		local unit, _, spellID = ...;
-		self:ProcessCastState(unit, spellID, Enum.CombatAudioAlertCastState.OnCastStart);
+		local isChanneledNo = false;
+		self:ProcessCastState(unit, spellID, isChanneledNo, Enum.CombatAudioAlertCastState.OnCastStart);
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
 		local unit, _, spellID = ...;
-		self:ProcessCastState(unit, spellID, Enum.CombatAudioAlertCastState.OnCastEnd);
+		local isChanneledNo = false;
+		self:ProcessCastState(unit, spellID, isChanneledNo, Enum.CombatAudioAlertCastState.OnCastEnd);
+	elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event ==  "UNIT_SPELLCAST_EMPOWER_START" then
+		local unit, _, spellID = ...;
+		local isChanneledYes = true;
+		self:ProcessCastState(unit, spellID, isChanneledYes, Enum.CombatAudioAlertCastState.OnCastStart);
+	elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
+		local unit, _, spellID = ...;
+		local isChanneledYes = true;
+		self:ProcessCastState(unit, spellID, isChanneledYes, Enum.CombatAudioAlertCastState.OnCastEnd);
 	elseif event == "UNIT_SPELLCAST_INTERRUPTED" then
 		local _, castGUID = ...;
 		self:ProcessTargetCastInterrupted(castGUID);
@@ -145,7 +155,11 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		self:UnregisterEvent("PLAYER_TARGET_CHANGED");
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE");
 		self:UnregisterEvent("UNIT_SPELLCAST_START");
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START");
 		self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP");
 		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
 	end
 
@@ -192,10 +206,14 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 
 		if #unitCastStartUnits > 0 then
 			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", unitCastStartUnits);
 		end
 
 		if #unitCastEndUnits > 0 then
 			self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", unitCastEndUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unitCastStartUnits);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", unitCastStartUnits);
 		end
 
 		self.unitCastStartUnitsLookup = CopyValuesAsKeys(unitCastStartUnits);
@@ -774,36 +792,53 @@ function CombatAudioAlertManagerMixin:GetUnitMinCastTime(unit)
 	end
 end
 
-function CombatAudioAlertManagerMixin:CheckUnitCastTime(unit, spellInfo)
-	local castTimeSeconds = spellInfo.castTime / 1000;
-	return castTimeSeconds > self:GetUnitMinCastTime(unit);
+function CombatAudioAlertManagerMixin:CheckUnitCastTime(unit, castTimeMs)
+	if castTimeMs > 0 then
+		local castTimeSeconds = castTimeMs / 1000;
+		return castTimeSeconds >= self:GetUnitMinCastTime(unit);
+	end
 end
 
-function CombatAudioAlertManagerMixin:ProcessCastState(unit, spellID, castState)
+function CombatAudioAlertManagerMixin:ProcessCastState(unit, spellID, isChanneled, castState)
 	if not self:IsWatchingUnitCastState(unit, castState) then
 		return;
 	end
 
-	local spellInfo = C_Spell.GetSpellInfo(spellID);
-	if not spellInfo then
-		return;
-	end
+	local spellName, castTimeMs;
 
-	local shouldCheckInterrupt = (unit == "target") and (castState == Enum.CombatAudioAlertCastState.OnCastStart) and self:IsInterruptCastEnabled();
-	if shouldCheckInterrupt then
-		local interruptible = not (select(8, UnitCastingInfo(unit)));
-		if interruptible then
-			addonTable.SpeakText(CAA_INTERRUPTIBLE_CAST_TEXT, Enum.CombatAudioAlertCategory.General);
+	if castState == Enum.CombatAudioAlertCastState.OnCastStart then
+		local startTimeMs, endTimeMs, notInterruptible, _;
+		if isChanneled then
+			spellName, _, _, startTimeMs, endTimeMs, _, notInterruptible = UnitChannelInfo(unit);
+		else
+			spellName, _, _, startTimeMs, endTimeMs, _, _, notInterruptible = UnitCastingInfo(unit);
+		end
+
+		castTimeMs = endTimeMs - startTimeMs;
+
+		local shouldCheckInterrupt = (unit == "target") and self:IsInterruptCastEnabled();
+		if shouldCheckInterrupt then
+			if not notInterruptible then
+				addonTable.SpeakText(CAA_INTERRUPTIBLE_CAST_TEXT, Enum.CombatAudioAlertCategory.General);
+				return;
+			end
+		end
+	else
+		local spellInfo = C_Spell.GetSpellInfo(spellID);
+		if not spellInfo then
 			return;
 		end
+
+		spellName = spellInfo.name;
+		castTimeMs = isChanneled and 10 or spellInfo.castTime;	-- If this is a channeled spell, just use 10 as the castTime to force it to announce
 	end
 
 	if not self:IsCastModeSet(unit, castState) then
 		return;
 	end
 
-	if self:CheckUnitCastTime(unit, spellInfo) then
-		addonTable:TrySpeakText(self:GetUnitCastTextInfo(unit, spellInfo.name));
+	if self:CheckUnitCastTime(unit, castTimeMs) then
+		addonTable:TrySpeakText(self:GetUnitCastTextInfo(unit, spellName));
 	end
 end
 

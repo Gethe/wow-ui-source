@@ -47,7 +47,14 @@ function TopUpProductContainerFrameMixin:InitProductContainer()
 		frame:SetSelected(isSelected);
 		frame.PurchaseButton:SetScript("OnClick", function(button, buttonName)
 			CatalogShopTopUpFrame:PurchaseProduct(productInfo.catalogShopProductID);
+			PlaySound(SOUNDKIT.HOUSING_MARKET_TOPUP_SELECT_OPTION);
 		end);
+		-- Use the HoverTexture for the glowing effect UX requested
+		if self.suggestedProductID == productInfo.catalogShopProductID then
+			frame.ForegroundContainer.HoverTexture:Show();
+		else
+			frame.ForegroundContainer.HoverTexture:Hide();
+		end
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
@@ -67,6 +74,10 @@ end
 
 function TopUpProductContainerFrameMixin:OnProductSelected(productInfo)
 	self:SetSelectedProductInfo(productInfo);
+end
+
+function TopUpProductContainerFrameMixin:SetSuggestedProductID(productID)
+	self.suggestedProductID = productID;
 end
 
 function TopUpProductContainerFrameMixin:SetupScrollView(elementFactory)

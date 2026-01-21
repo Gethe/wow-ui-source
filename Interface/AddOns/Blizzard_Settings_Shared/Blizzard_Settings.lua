@@ -3,19 +3,19 @@
 	RegisterSetting(..., nil, "boolean", true);
 	RegisterSetting(..., Settings.VarType.Bool, Settings.Defaults.True)
 --]]
-Settings = 
+Settings =
 {
 	CannotDefault = nil,
 };
 
-Settings.VarType = 
+Settings.VarType =
 {
 	Boolean = "boolean",
 	String = "string",
 	Number = "number",
 };
 
-Settings.Default = 
+Settings.Default =
 {
 	True = true,
 	False = false,
@@ -27,11 +27,11 @@ Settings.CategorySet = EnumUtil.MakeEnum("Game", "AddOns");
 Settings.ControlType = EnumUtil.MakeEnum("Radio", "Checkbox");
 
 Settings.CommitFlag = FlagsUtil.MakeFlags(
-	"ClientRestart", 
-	"GxRestart", 
-	"UpdateWindow", 
-	"SaveBindings", 
-	"Revertable", 
+	"ClientRestart",
+	"GxRestart",
+	"UpdateWindow",
+	"SaveBindings",
+	"Revertable",
 	"Apply",
 	"IgnoreApply",
 	"KioskProtected"
@@ -298,7 +298,7 @@ end
 
 SettingsSliderOptionsMixin = {};
 
-function SettingsSliderOptionsMixin:SetLabelFormatter(labelType, value)	
+function SettingsSliderOptionsMixin:SetLabelFormatter(labelType, value)
 	if not self.formatters then
 		self.formatters = {};
 	end
@@ -328,7 +328,7 @@ function Settings.CreateModifiedClickOptions(tooltips, mustChooseKey)
 end
 
 function Settings.CreateSettingInitializerData(setting, options, tooltip)
-	local data = 
+	local data =
 	{
 		setting = setting,
 		name = setting:GetName(),
@@ -370,6 +370,10 @@ function Settings.CreateDropdownInitializer(setting, options, tooltip)
 	return Settings.CreateControlInitializer("SettingsDropdownControlTemplate", setting, options, tooltip);
 end
 
+function Settings.CreateColorSwatchInitializer(setting, options, tooltip)
+	return Settings.CreateControlInitializer("SettingsColorSwatchControlTemplate", setting, options, tooltip);
+end
+
 local function AddInitializerToLayout(category, initializer)
 	local layout = SettingsPanel:GetLayout(category);
 	layout:AddInitializer(initializer);
@@ -381,6 +385,12 @@ end
 
 function Settings.CreateCheckboxWithOptions(category, setting, options, tooltip)
 	local initializer = Settings.CreateCheckboxInitializer(setting, options, tooltip);
+	AddInitializerToLayout(category, initializer);
+	return initializer;
+end
+
+function Settings.CreateColorSwatch(category, setting, tooltip, options)
+	local initializer = Settings.CreateColorSwatchInitializer(setting, options, tooltip);
 	AddInitializerToLayout(category, initializer);
 	return initializer;
 end
@@ -410,7 +420,7 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 			if isDefault then
 				defaultOption = option;
 			end
-			
+
 			if option.warning then
 				warningOption = option;
 			end
@@ -451,12 +461,12 @@ function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options)
 			local coloredLabel =  GREEN_FONT_COLOR:WrapTextInColorCode(defaultOption.label);
 			GameTooltip_AddHighlightLine(SettingsTooltip, string.format("%s: %s", VIDEO_OPTIONS_RECOMMENDED, coloredLabel));
 		end
-		
+
 		if warningOption and warningOption.value == setting:GetValue() then
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddNormalLine(SettingsTooltip, WARNING_FONT_COLOR:WrapTextInColorCode(warningOption.warning));
 		end
-		
+
 		if setting:HasCommitFlag(Settings.CommitFlag.ClientRestart) then
 			GameTooltip_AddBlankLineToTooltip(SettingsTooltip);
 			GameTooltip_AddErrorLine(SettingsTooltip, VIDEO_OPTIONS_NEED_CLIENTRESTART);
@@ -491,7 +501,7 @@ function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
 				local function IsSelected(optionData)
 					return setting:GetValue() == optionData.value;
 				end
-				
+
 				local function SetSelected(optionData)
 					return setting:SetValue(optionData.value);
 				end
@@ -502,7 +512,7 @@ function Settings.CreateDropdownOptionInserter(setting, optionsFunc)
 					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
 					return bit.band(settingMask, optionMask) ~= 0;
 				end
-				
+
 				local function SetSelected(optionData)
 					local settingMask = setting:GetValue();
 					local optionMask = bit.lshift(1, optionData.value - (optionData.enumValueOffset or 1));
@@ -527,21 +537,21 @@ function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
 		settingValue = setting:GetValue();
 	end
 	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
-	
+
 	dropdown:SetDefaultText(CUSTOM);
 	dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
 		elementInserter(setting, rootDescription);
 	end);
-	
+
 	dropdown:SetTooltipFunc(initTooltip);
 	dropdown:SetDefaultTooltipAnchors();
-	
+
 	dropdown:SetScript("OnEnter", function()
 		ButtonStateBehaviorMixin.OnEnter(dropdown);
 		DefaultTooltipMixin.OnEnter(dropdown);
 	end);
-	
+
 	dropdown:SetScript("OnLeave", function()
 		ButtonStateBehaviorMixin.OnLeave(dropdown);
 		DefaultTooltipMixin.OnLeave(dropdown);
@@ -570,6 +580,12 @@ function Settings.SetupModifiedClickDropdown(category, variable, defaultKey, lab
 	local options = Settings.CreateModifiedClickOptions(tooltips, mustChooseKey);
 	local setting = Settings.RegisterModifiedClickSetting(category, variable, label, defaultKey);
 	local initializer = Settings.CreateDropdown(category, setting, options, tooltip);
+	return setting, initializer;
+end
+
+function Settings.SetupCVarColorSwatch(category, variable, label, tooltip)
+	local setting = Settings.RegisterCVarSetting(category, variable, "string", label);
+	local initializer = Settings.CreateColorSwatch(category, setting, tooltip);
 	return setting, initializer;
 end
 

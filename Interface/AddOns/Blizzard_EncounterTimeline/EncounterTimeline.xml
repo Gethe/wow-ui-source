@@ -7,7 +7,12 @@
 			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_SYSTEM_ENCOUNTER_TIMELINE" type="global"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="View" inherits="EncounterTimelineViewTemplate">
+			<Frame parentKey="TrackView" parentArray="Views" inherits="EncounterTimelineTrackViewTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="TimerView" parentArray="Views" inherits="EncounterTimelineTimerViewTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -23,6 +28,7 @@
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>

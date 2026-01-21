@@ -249,9 +249,7 @@
 
 			<Frame parentKey="RaidTargetFrame" mixin="NamePlateRaidTargetMixin" collapsesLayout="true">
 				<Size x="22" y="22"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HealthBarsContainer" relativePoint="LEFT"/>
-				</Anchors>
+				<!-- Anchoring handled dynamically in lua.-->
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="RaidTargetIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" setAllPoints="true" />

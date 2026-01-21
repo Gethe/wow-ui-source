@@ -98,10 +98,15 @@ end
 
 function TabSystemButtonMixin:OnClick()
 	local tabSystem = self:GetTabSystem();
-	tabSystem:PlayTabSelectSound();
 
+	local wasSelected = self.isSelected;
 	local isUserAction = true;
 	tabSystem:SetTab(self:GetTabID(), isUserAction);
+
+	-- Only play the sound if the tab was actually selected
+	if not wasSelected and self.isSelected then
+		tabSystem:PlayTabSelectSound();
+	end
 end
 
 function TabSystemButtonMixin:Init(tabID, tabText)

@@ -140,9 +140,12 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	--add a dialog confirming that you want to switch tabs, as doing so will delete your preview decor.
 	self.TabSystem:SetTabSelectedCallback(function(tabID, isUserAction)
 		if tabID == self.storageTabID and C_HousingDecor.GetNumPreviewDecor() > 0 then
-			StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
-				self:SetTab(tabID, isUserAction);
-			end);
+			if not StaticPopup_Visible("CONFIRM_DESTROY_PREVIEW_DECOR") then
+				StaticPopup_Show("CONFIRM_DESTROY_PREVIEW_DECOR", nil, nil, function()
+					self:SetTab(tabID, isUserAction);
+				end);
+			end
+
 			return true; --stops the tab from being selected, for now.
 		else
 			return self:SetTab(tabID, isUserAction);

@@ -911,7 +911,7 @@ local Unit =
 			Name = "UnitClassFromGUID",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -1654,6 +1654,7 @@ local Unit =
 		{
 			Name = "UnitIsAFK",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1774,6 +1775,7 @@ local Unit =
 		{
 			Name = "UnitIsDND",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3650,6 +3652,16 @@ local Unit =
 				{ Name = "agilityDelta", Type = "number", Nilable = false },
 				{ Name = "staminaDelta", Type = "number", Nilable = false },
 				{ Name = "intellectDelta", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{

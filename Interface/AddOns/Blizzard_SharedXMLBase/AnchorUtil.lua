@@ -367,17 +367,22 @@ local VERTICAL_MIRROR_POINTS =
 	["RIGHT"] = "RIGHT", -- Mirrored only along x and y offsets.
 };
 
-local SetPointVertical = function(region, point, relative, relativePoint, x, y)
+function AnchorUtil.SetMirroredPointAlongVerticalAxis(region, point, relative, relativePoint, x, y)
 	SetPointAlongAxis(VERTICAL_MIRROR_POINTS, region, point, relative, relativePoint, x, -y);
-end;
+end
 
-local SetTexCoordVertical = function(region)
-	local x1, y1, x2, y2, x3, y3, x4, y4 = region:GetTexCoord();
+function AnchorUtil.SetMirroredTexCoordAlongVerticalAxis(region, x1, y1, x2, y2, x3, y3, x4, y4)
 	region:SetTexCoord(x2, y2, x1, y1, x4, y4, x3, y3);
 end
 
+local SetTexCoordVertical = function(region)
+	AnchorUtil.SetMirroredTexCoordAlongVerticalAxis(region, region:GetTexCoord());
+end
+
 function AnchorUtil.MirrorRegionsAlongVerticalAxis(mirrorDescriptions)
-	MirrorRegionsAlongAxis(mirrorDescriptions, VERTICAL_MIRROR_POINTS, SetPointVertical, SetTexCoordVertical);
+	local setPointWrapper = AnchorUtil.SetMirroredPointAlongVerticalAxis;
+	local setTexCoordsWrapper = SetTexCoordVertical;
+	MirrorRegionsAlongAxis(mirrorDescriptions, VERTICAL_MIRROR_POINTS, setPointWrapper, setTexCoordsWrapper);
 end
 
 local HORIZONTAL_MIRROR_POINTS =
@@ -393,17 +398,22 @@ local HORIZONTAL_MIRROR_POINTS =
 	["BOTTOM"] = "BOTTOM", -- Mirrored only along x and y offsets.
 };
 
-local SetPointHorizontal = function(region, point, relative, relativePoint, x, y)
+function AnchorUtil.SetMirroredPointAlongHorizontalAxis(region, point, relative, relativePoint, x, y)
 	SetPointAlongAxis(HORIZONTAL_MIRROR_POINTS, region, point, relative, relativePoint, -x, y);
 end
 
-local SetTexCoordHorizontal = function(region)
-	local x1, y1, x2, y2, x3, y3, x4, y4 = region:GetTexCoord();
+function AnchorUtil.SetMirroredTexCoordAlongHorizontalAxis(region, x1, y1, x2, y2, x3, y3, x4, y4)
 	region:SetTexCoord(x3, y3, x4, y4, x1, y1, x2, y2);
 end
 
+local SetTexCoordHorizontal = function(region)
+	AnchorUtil.SetMirroredTexCoordAlongHorizontalAxis(region, region:GetTexCoord());
+end
+
 function AnchorUtil.MirrorRegionsAlongHorizontalAxis(mirrorDescriptions)
-	MirrorRegionsAlongAxis(mirrorDescriptions, HORIZONTAL_MIRROR_POINTS, SetPointHorizontal, SetTexCoordHorizontal);
+	local setPointWrapper = AnchorUtil.SetMirroredPointAlongHorizontalAxis;
+	local setTexCoordsWrapper = SetTexCoordHorizontal;
+	MirrorRegionsAlongAxis(mirrorDescriptions, HORIZONTAL_MIRROR_POINTS, setPointWrapper, setTexCoordsWrapper);
 end
 
 local function DebugAnchorGraph(frame, indent, visited, output)

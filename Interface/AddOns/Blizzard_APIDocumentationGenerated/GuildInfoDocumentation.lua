@@ -406,6 +406,7 @@ local GuildInfo =
 			Name = "GuildMotd",
 			Type = "Event",
 			LiteralName = "GUILD_MOTD",
+			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

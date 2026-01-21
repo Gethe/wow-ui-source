@@ -71,14 +71,18 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 		local invertClickRequiresSet = true;
 		local displayClassColorsInitializer = CreateSettingsCheckboxWithColorSwatchInitializer(
 			displayClassColorsSetting,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
 			OpenHealthBarColorPicker,
 			clickRequiresSet,
 			invertClickRequiresSet,
-			COMPACT_UNIT_FRAME_PROFILE_USECLASSCOLORS,
-			GetCVarHealthBarColor
+			GetCVarHealthBarColor,
+			COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR,
+			OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR
 		);
 
 		layout:AddInitializer(displayClassColorsInitializer);
+
+		Settings.SetupCVarColorSwatch(category, "raidFramesHealthBarColorBG", COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_COLOR_BG, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_HEALTH_BAR_BG_COLOR);
 	end
 
 	-- Pets

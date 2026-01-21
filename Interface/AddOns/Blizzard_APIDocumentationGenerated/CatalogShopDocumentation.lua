@@ -38,6 +38,22 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "FindBestCurrencyProductForNeededAmount",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "vcCurrencyCode", Type = "string", Nilable = false },
+				{ Name = "amountNeeded", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "vcProductID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "GetAvailableCategoryIDs",
 			Type = "Function",
 
@@ -326,6 +342,10 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "OnLegalPersonalizedOptOutClicked",
+			Type = "Function",
+		},
+		{
 			Name = "OpenCatalogShopInteractionFromHouse",
 			Type = "Function",
 
@@ -346,6 +366,7 @@ local CatalogShop =
 		{
 			Name = "ProductDisplayedTelemetry",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -358,6 +379,7 @@ local CatalogShop =
 		{
 			Name = "ProductSelectedTelemetry",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -420,6 +442,8 @@ local CatalogShop =
 			{
 				{ Name = "result", Type = "BulkPurchaseResult", Nilable = false },
 				{ Name = "productResults", Type = "table", InnerType = "BulkPurchaseIndividualProductResult", Nilable = false },
+				{ Name = "bestTopUpProductID", Type = "number", Nilable = true },
+				{ Name = "totalCost", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -642,8 +666,8 @@ local CatalogShop =
 				{ Name = "productType", Type = "string", Nilable = true },
 				{ Name = "itemDescription", Type = "string", Nilable = true },
 				{ Name = "hasUnknownLicense", Type = "bool", Nilable = false },
+				{ Name = "productPMTURL", Type = "string", Nilable = true },
 				{ Name = "otherProductImageAtlasName", Type = "string", Nilable = true },
-				{ Name = "otherProductPMTURL", Type = "string", Nilable = true },
 				{ Name = "otherProductGameTitleBaseTag", Type = "string", Nilable = true },
 				{ Name = "otherProductGameType", Type = "string", Nilable = true },
 				{ Name = "customLoopingSoundStart", Type = "number", Nilable = true },
@@ -716,6 +740,7 @@ local CatalogShop =
 				{ Name = "parentCatalogShopCategoryInfoID", Type = "number", Nilable = true },
 				{ Name = "cardType", Type = "string", Nilable = true },
 				{ Name = "scrollGridSize", Type = "number", Nilable = true },
+				{ Name = "shouldShowRecommendationOptOutDisclaimer", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -307,7 +307,7 @@
 				</Scripts>
 			</Frame>
 
-			<Frame parentKey="CrossGameContainerFrame" mixin="CrossGameContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
+			<Frame parentKey="PMTImageContainerFrame" mixin="PMTImageContainerFrameMixin" frameLevel="3" clipChildren="true" alpha="1" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.HeaderFrame" relativePoint="BOTTOMLEFT" x="550" y="0"/>
 					<Anchor point="BOTTOMLEFT" x="550" y="0" />

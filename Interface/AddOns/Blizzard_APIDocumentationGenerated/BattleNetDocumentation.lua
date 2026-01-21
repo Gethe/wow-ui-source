@@ -165,6 +165,17 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "SetAFK",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isAFK", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
 			Name = "SetCustomMessage",
 			Type = "Function",
 			HasRestrictions = true,
@@ -178,6 +189,17 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDND",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isDND", Type = "bool", Nilable = false, Default = true },
 			},
 		},
 	},

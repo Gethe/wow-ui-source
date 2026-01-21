@@ -1,3 +1,5 @@
+local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
+
 ----------------------------------------------------------------------------------
 -- CatalogShopMixin
 ----------------------------------------------------------------------------------
@@ -7,7 +9,6 @@ local CATALOG_SHOP_DYNAMIC_EVENTS = {
 	"CATALOG_SHOP_REBUILD_SCROLL_BOX",
 	"CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
 	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
-	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE",
 	"CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED",
 };
 
@@ -46,6 +47,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self:RegisterEvent("SIMPLE_CHECKOUT_CLOSED");
 	self:RegisterEvent("CATALOG_SHOP_PMT_IMAGE_DOWNLOADED");
 	self:RegisterEvent("SET_SEEN_PRODUCTS");
+	self:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED");
 	self:InitVariables();
 	EventRegistry:RegisterCallback("CatalogShop.OnProductSelected", self.OnProductSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
@@ -185,7 +187,7 @@ function CatalogShopMixin:HidePreviewFrames()
 	self.ToyContainerFrame:Hide();
 	self.ModelSceneContainerFrame:Hide();
 	self.ServicesContainerFrame:Hide();
-	self.CrossGameContainerFrame:Hide();
+	self.PMTImageContainerFrame:Hide();
 end
 
 function CatalogShopMixin:ShowLoadingScreen()
@@ -359,15 +361,19 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		if (currencyCode and currencyCode == Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE) then
 			EventRegistry:TriggerEvent("CatalogShop.OnVCUpdated", balance);
 		end
-	elseif (event == "CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE_FAILURE") then
-		local currencyCode = ...;
-		-- RNMTODO : Not sure what to do with this...
 	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
 		-- TODO (WOW12-40870): Implement this
 	elseif (event == "SET_SEEN_PRODUCTS") then
 		local productIds = ...;
 		if not CatalogShopOutbound.SavedSet_HasAny() then
 			CatalogShopOutbound.SavedSet_Set(productIds);
+		end
+	elseif (event == "BULK_PURCHASE_RESULT_RECEIVED") then
+		local result, productResults, topUpProductID, purchaseAmount = ...;
+		if (result == Enum.BulkPurchaseResult.ResultInsufficientFunds) then
+			if self.CatalogShopVCFrame then
+				self.CatalogShopVCFrame:HandleInsufficientFunds(topUpProductID, purchaseAmount);
+			end
 		end
 	end
 end
@@ -835,6 +841,23 @@ function CatalogShopVCFrameMixin:OnHide()
 	EventRegistry:UnregisterCallback("CatalogShop.OnVCUpdated", self);
 end
 
+function CatalogShopVCFrameMixin:HandleInsufficientFunds(suggestedProductID, purchaseAmount)
+	if CatalogShopTopUpFrame then
+		local hearthsteelBalance = C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
+		if hearthsteelBalance then
+			if purchaseAmount then
+				CatalogShopTopUpFrame:SetDesiredQuantity(purchaseAmount);
+			end
+			CatalogShopTopUpFrame:SetCurrentBalance(hearthsteelBalance);
+		end
+		if suggestedProductID then
+			CatalogShopTopUpFrame:SetSuggestedProduct(suggestedProductID);
+		end
+		CatalogShopTopUpFrame:SetParentFrame(self:GetParent());
+		CatalogShopTopUpFrame:Show();
+	end
+end
+
 function CatalogShopVCFrameMixin:OpenTopUpFlow()
 	if CatalogShopTopUpFrame then
 		local hearthsteelBalance = C_CatalogShop.GetVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
@@ -912,7 +935,11 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 	local shouldShowPendingPurchasesText = isPurchasable and selectedProductInfo.hasPendingOrders;
 	local shouldShowDynamicBundleDiscountText = isPurchasable and (not shouldShowPendingPurchasesText) and selectedProductInfo.isDynamicallyDiscounted;
 
-	self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
+	if selectedProductInfo.isVCProduct then
+		self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price.." "..HearthsteelAtlasMarkup);
+	else
+		self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
+	end
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
 
 	-- Adjust for text fields

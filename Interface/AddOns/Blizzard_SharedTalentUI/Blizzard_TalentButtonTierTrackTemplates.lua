@@ -1,4 +1,79 @@
-TalentButtonCapstonePipMixin = CreateFromMixins(TalentButtonArtMixin);
+TalentButtonCapstoneTooltipMixin = {};
+
+function TalentButtonCapstoneTooltipMixin:FormatCapstoneRankStage(text, rank, maxRanks, isRankPurchased)
+	-- When previewing the first rank (Ex. 0 -> 1), we display "0/Max" to indicate 0 points spent.
+	-- For all other previews (Ex. 1 -> 2), we display the preview rank 2/Max" to match the spell description.
+	local isPreviewingFirstRank = rank == 1 and not isRankPurchased;
+	local displayRank = isPreviewingFirstRank and 0 or rank;
+
+	local bestRankStageFormat = isRankPurchased and TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT_NORMAL or TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT_PREVIEW;
+	return bestRankStageFormat:format(displayRank, maxRanks, text);
+end
+
+function TalentButtonCapstoneTooltipMixin:StripColorsFromText(text)
+	local maintainColor = false;
+	local maintainBrackets = true;
+	local stripNewlines = false;
+	local maintainAtlases = true;
+	local maintainTextures = true;
+	return C_StringUtil.StripHyperlinks(text, maintainColor, maintainBrackets, stripNewlines, maintainAtlases, maintainTextures);
+end
+
+function TalentButtonCapstoneTooltipMixin:InitCapstoneEntryTooltipInfo(tooltipInfo, rank, maxRanks, isRankPurchased)
+	tooltipInfo.excludeLines = { Enum.TooltipDataLineType.SpellPassive };
+	tooltipInfo.append = true;
+	tooltipInfo.linePreCall = function(tooltip, lineData)
+		-- If the rank is not purchased, strip all existing color codes because we want ALL text to use DISABLED_FONT_COLOR
+		if not isRankPurchased then
+			lineData.leftText = self:StripColorsFromText(lineData.leftText);
+		end
+		lineData.leftColor = isRankPurchased and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
+
+		local entryHasMultipleRanks = maxRanks > 1;
+		local useRankStageFormat = entryHasMultipleRanks and lineData.type == Enum.TooltipDataLineType.SpellDescription;
+		if useRankStageFormat then
+			lineData.leftText = self:FormatCapstoneRankStage(lineData.leftText, rank, maxRanks, isRankPurchased);
+		end
+	end
+end
+
+function TalentButtonCapstoneTooltipMixin:AddTooltipRankInfo(tooltip, entryID, rank, maxRanks, isRankPurchased)
+	local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", entryID, rank);
+	self:InitCapstoneEntryTooltipInfo(tooltipInfo, rank, maxRanks, isRankPurchased);
+	tooltip:ProcessInfo(tooltipInfo);
+end
+
+function TalentButtonCapstoneTooltipMixin:TryAddTooltipPassiveInfo(tooltip, entryID)
+	local talentFrame = self:GetTalentFrame();
+	local entryInfo = talentFrame:GetAndCacheEntryInfo(entryID);
+	local definitionInfo = entryInfo and talentFrame:GetAndCacheDefinitionInfo(entryInfo.definitionID);
+	if definitionInfo and C_Spell.IsSpellPassive(definitionInfo.spellID) then
+		GameTooltip_AddHighlightLine(tooltip, SPELL_PASSIVE);
+		GameTooltip_AddBlankLineToTooltip(tooltip);
+	end
+end
+
+function TalentButtonCapstoneTooltipMixin:AddTooltipEntryRanks(tooltip, entryID, spentInTier, maxRanks)
+	local hasMoreRanksToPurchase = spentInTier < maxRanks;
+	local shouldPreviewNextRank = spentInTier > 0 and hasMoreRanksToPurchase;
+
+	local startRank = math.max(spentInTier, 1);
+	local endRank = shouldPreviewNextRank and (spentInTier + 1) or startRank;
+	for rank = startRank, endRank do
+		if rank ~= startRank then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+		end
+
+		local isRankPurchased = rank > 0 and rank <= spentInTier;
+		if shouldPreviewNextRank and not isRankPurchased then
+			GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_NEXT_STAGE_PREVIEW_TITLE);
+		end
+
+		self:AddTooltipRankInfo(tooltip, entryID, rank, maxRanks, isRankPurchased);
+	end
+end
+
+TalentButtonCapstonePipMixin = CreateFromMixins(TalentButtonArtMixin, TalentButtonCapstoneTooltipMixin);
 
 function TalentButtonCapstonePipMixin:OnLoad()
 	TalentButtonArtMixin.OnLoad(self);
@@ -73,7 +148,7 @@ end
 
 function TalentButtonCapstonePipMixin:TrySetPipInProgressTextColor(visualState)
 	local showingErrorState = visualState == TalentButtonUtil.BaseVisualState.RefundInvalid or visualState == TalentButtonUtil.BaseVisualState.DisplayError;
-	if showingErrorState or not self:IsPipInProgress() then
+	if showingErrorState or not self:GetParent():CanAfford() or not self:IsPipInProgress() then
 		return;
 	end
 
@@ -110,9 +185,7 @@ function TalentButtonCapstonePipMixin:AddTooltipInfo(tooltip)
 		return;
 	end
 
-	local entryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(self:GetEntryID());
-	local spendStateData = self:CalculateSpendStateForPip();
-	GameTooltip_AddHighlightLine(tooltip, TALENT_BUTTON_TOOLTIP_RANK_FORMAT:format(spendStateData.ranksSpent, entryInfo.maxRanks));
+	self:TryAddTooltipPassiveInfo(tooltip, self:GetEntryID());
 
 	TalentDisplayMixin.AddTooltipInfo(self, tooltip);
 end
@@ -129,30 +202,14 @@ function TalentButtonCapstonePipMixin:AddTooltipDescription(tooltip)
 
 	local entryID = self:GetEntryID();
 	local entryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(entryID);
+	local maxRanks = entryInfo and entryInfo.maxRanks or 0;
 	local spendStateData = self:CalculateSpendStateForPip();
-	for rankIndex = 1, entryInfo.maxRanks do
-		GameTooltip_AddBlankLineToTooltip(tooltip);
+	local spentInTier = spendStateData.ranksSpent;
 
-		local isFirstRank = rankIndex == 1;
-		local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", entryID, rankIndex);
-		tooltipInfo.excludeLines = isFirstRank and { Enum.TooltipDataLineType.SpellName } or { Enum.TooltipDataLineType.SpellName, Enum.TooltipDataLineType.SpellPassive };
-		tooltipInfo.append = true;
-		tooltipInfo.linePreCall = function(tooltip, lineData)
-			if lineData.type == Enum.TooltipDataLineType.SpellDescription then
-				local useRankStageFormat = entryInfo.maxRanks > 1;
-				if useRankStageFormat then
-					lineData.leftText = TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT:format(rankIndex, lineData.leftText);
-				end
-
-				local isPurchased = rankIndex <= spendStateData.ranksSpent;
-				lineData.leftColor = isPurchased and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
-			end
-		end;
-		tooltip:ProcessInfo(tooltipInfo);
-	end
+	self:AddTooltipEntryRanks(tooltip, entryID, spentInTier, maxRanks);
 end
 
-TalentButtonCapstoneWithTrackMixin = CreateFromMixins(TalentButtonSpendMixin);
+TalentButtonCapstoneWithTrackMixin = CreateFromMixins(TalentButtonSpendMixin, TalentButtonCapstoneTooltipMixin);
 
 function TalentButtonCapstoneWithTrackMixin:OnLoad()
 	TalentButtonSpendMixin.OnLoad(self);
@@ -310,6 +367,10 @@ function TalentButtonCapstoneWithTrackMixin:UpdateTrack()
 
 	local talentFrame = self:GetTalentFrame();
 	local nodeInfo = self:GetNodeInfo();
+	if not nodeInfo then
+		return;
+	end
+
 	local pipAnchorPoints = PipAnchorTable[self.Track.trackType];
 	for index, entryID in ipairs(nodeInfo.entryIDs) do
 		local pipFrame, _isNew = self:AcquirePipFrame(talentFrame, Enum.TraitNodeEntryType.SpendCapstoneCircle);
@@ -342,13 +403,7 @@ function TalentButtonCapstoneWithTrackMixin:AddTooltipTitle(tooltip)
 	end
 
 	if nodeInfo and nodeInfo.entryIDs then
-		local talentFrame = self:GetTalentFrame();
-		local entryInfo = talentFrame:GetAndCacheEntryInfo(nodeInfo.entryIDs[1]);
-		local definitionInfo = entryInfo and talentFrame:GetAndCacheDefinitionInfo(entryInfo.definitionID);
-		if definitionInfo and C_Spell.IsSpellPassive(definitionInfo.spellID) then
-			GameTooltip_AddHighlightLine(tooltip, SPELL_PASSIVE);
-			GameTooltip_AddBlankLineToTooltip(tooltip);
-		end
+		self:TryAddTooltipPassiveInfo(tooltip, nodeInfo.entryIDs[1]);
 	end
 end
 
@@ -378,28 +433,22 @@ function TalentButtonCapstoneWithTrackMixin:AddTooltipDescription(tooltip)
 		end
 		GameTooltip_AddHighlightLine(tooltip, TOOLTIP_TALENT_RANK_CAPSTONE:format(index));
 
-		for rank = 1, maxRanks do
-			local isFirstRank = rank == 1;
-			if not isFirstRank then
-				GameTooltip_AddBlankLineToTooltip(tooltip);
-			end
-
-			local isPurchased = rank <= spentInTier;
-			local tooltipInfo = CreateBaseTooltipInfo("GetTraitEntry", entryID, rank);
-			local entryHasMultipleRanks = maxRanks > 1;
-			tooltipInfo.excludeLines = { Enum.TooltipDataLineType.SpellPassive,	};
-			tooltipInfo.linePreCall = function(tooltip, lineData)
-				local useRankStageFormat = entryHasMultipleRanks and lineData.type == Enum.TooltipDataLineType.SpellDescription;
-				if useRankStageFormat then
-					lineData.leftText = TALENT_BUTTON_TOOLTIP_CAPSTONE_RANK_STAGE_FORMAT:format(rank, lineData.leftText);
-				end
-
-				lineData.leftColor = isPurchased and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
-			end;
-			tooltipInfo.append = true;
-			tooltip:ProcessInfo(tooltipInfo);
-		end
+		self:AddTooltipEntryRanks(tooltip, entryID, spentInTier, maxRanks);
 	end
+end
+
+function TalentButtonCapstoneWithTrackMixin:CanPurchaseAnyRanksInCapstone()
+	return self.nodeInfo and not self:IsInspecting() and not self:IsLocked() and self.nodeInfo.canPurchaseRank;
+end
+
+function TalentButtonCapstoneWithTrackMixin:AddTooltipErrors(tooltip)
+	-- Capstone nodes have multiple tiers, and each tier can have its own errors.
+	-- Let's hold off on showing errors for the next tiers if we can potentially spend points in the currently unlocked tiers.
+	if self:CanPurchaseAnyRanksInCapstone() then
+		return;
+	end
+
+	TalentButtonBaseMixin.AddTooltipErrors(self, tooltip);
 end
 
 function TalentButtonCapstoneWithTrackMixin:AddTooltipInstructions(tooltip)

@@ -546,12 +546,12 @@ function FriendsTabHeaderMixin:OnLoad()
 			self.bnStatus = status;
 
 			if status == FRIENDS_TEXTURE_ONLINE then
-				BNSetAFK(false);
-				BNSetDND(false);
+				C_BattleNet.SetAFK(false);
+				C_BattleNet.SetDND(false);
 			elseif status == FRIENDS_TEXTURE_AFK then
-				BNSetAFK(true);
+				C_BattleNet.SetAFK(true);
 			elseif status == FRIENDS_TEXTURE_DND then
-				BNSetDND(true);
+				C_BattleNet.SetDND(true);
 			end
 		end
 	end

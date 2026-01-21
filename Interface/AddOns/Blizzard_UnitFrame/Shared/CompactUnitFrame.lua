@@ -704,6 +704,10 @@ function CompactUnitFrame_UpdateHealthColor(frame)
 	if frame.UpdateIsDead then
 		frame:UpdateIsDead();
 	end
+
+	if frame.background then
+		frame.background:SetVertexColor(CompactUnitFrame_GetOptionCustomHealthBarColorBG(frame):GetRGB());
+	end
 end
 
 function CompactUnitFrame_UpdateMaxHealth(frame)
@@ -2019,13 +2023,14 @@ function CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdate)
 	end
 
 	local lastShownDebuff;
-	for i = 3, 1, -1 do
-		local debuff = frame["Debuff"..i];
+	for i = #frame.debuffFrames, 1, -1 do
+		local debuff = frame.debuffFrames[i];
 		if debuff:IsShown() then
 			lastShownDebuff = debuff;
 			break;
 		end
 	end
+
 	frame.PrivateAuraAnchor1:ClearAllPoints();
 	if lastShownDebuff then
 		frame.PrivateAuraAnchor1:SetPoint("BOTTOMLEFT", lastShownDebuff, "BOTTOMRIGHT", 0, 0);
@@ -2070,6 +2075,10 @@ end
 
 function CompactUnitFrame_GetOptionCustomHealthBarColors(frame)
 	return frame.optionTable.healthBarColor or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR;
+end
+
+function CompactUnitFrame_GetOptionCustomHealthBarColorBG(frame)
+	return frame.optionTable.healthBarColorBG or COMPACT_UNIT_FRAME_FRIENDLY_HEALTH_COLOR_BG;
 end
 
 function CompactUnitFrame_GetOptionHealthText(frame, options)
@@ -2602,7 +2611,7 @@ function DefaultCompactUnitFrameSetup(frame)
 
 	local forceUpdatePrivateAuras = true;
 	frame.privateAuraBorderScale = iconScale;
-	frame.privateAuraSize = auraSize * BOSS_DEBUFF_SCALE_INCREASE;
+	frame.privateAuraSize = auraSize; -- Search tag: * BOSS_DEBUFF_SCALE_INCREASE
 	CompactUnitFrame_UpdatePrivateAuras(frame, forceUpdatePrivateAuras);
 	CompactUnitFrame_UpdateAuraFrameLayout(frame, auraOrganizationType);
 

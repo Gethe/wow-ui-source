@@ -119,6 +119,7 @@ local LFGListInfo =
 			Name = "GetActiveEntryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 
 			Returns =
 			{
@@ -225,6 +226,7 @@ local LFGListInfo =
 			Name = "GetApplicantInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -372,6 +374,7 @@ local LFGListInfo =
 			Name = "GetSearchResultInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -388,6 +391,7 @@ local LFGListInfo =
 			Name = "GetSearchResultLeaderInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -404,6 +408,7 @@ local LFGListInfo =
 			Name = "GetSearchResultPlayerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

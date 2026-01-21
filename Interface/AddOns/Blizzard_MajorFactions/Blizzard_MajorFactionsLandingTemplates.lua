@@ -1,4 +1,4 @@
-local iconAtlasFormat = "majorFactions_icons_%s512";
+local iconAtlasFormat = "majorfactions_icons_%s512";
 local buttonAtlasFormatsByExpansion = {
 	[LE_EXPANSION_DRAGONFLIGHT] = {
 		normalAtlas = "dragonflight-landingpage-renownbutton-%s",

@@ -276,7 +276,9 @@ local Minimap =
 			Name = "MinimapPing",
 			Type = "Event",
 			LiteralName = "MINIMAP_PING",
-			SynchronousEvent = true,
+			SecretPayloads = true,
+			HasRestrictions = true,
+			CallbackEvent = true,
 			Payload =
 			{
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },

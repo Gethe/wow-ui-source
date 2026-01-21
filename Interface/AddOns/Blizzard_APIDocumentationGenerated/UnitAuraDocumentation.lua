@@ -135,7 +135,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 			},
 
@@ -152,7 +152,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -170,7 +170,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "slot", Type = "number", Nilable = false },
 			},
 
@@ -188,7 +188,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "spellName", Type = "cstring", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -243,7 +243,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 				{ Name = "maxSlots", Type = "number", Nilable = true },
 				{ Name = "continuationToken", Type = "number", Nilable = true },
@@ -263,7 +263,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -296,7 +296,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "index", Type = "luaIndex", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = true },
 			},
@@ -353,7 +353,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 
@@ -369,7 +369,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -388,7 +388,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -407,7 +407,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "auraInstanceID", Type = "number", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 			},

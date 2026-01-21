@@ -284,9 +284,6 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	local spellCount = nil;
 	if chargeInfo then
 		spellCount = chargeInfo.currentCharges;
-		if chargeInfo.currentCharges < chargeInfo.maxCharges then
-			StartChargeCooldown(self, chargeInfo.cooldownStartTime, chargeInfo.cooldownDuration, chargeInfo.chargeModRate);
-		end
 	elseif usesCount > 0 then
 		spellCount = usesCount;
 	end
@@ -294,7 +291,7 @@ function ZoneAbilityFrameSpellButtonMixin:Refresh()
 	self.Count:SetText(spellCount and spellCount or "");
 
 	if cooldownInfo then
-		CooldownFrame_Set(self.Cooldown, cooldownInfo.startTime, cooldownInfo.duration, cooldownInfo.isEnabled);
+		ActionButton_ApplyCooldown(self.Cooldown, cooldownInfo, self.ChargeCooldown, chargeInfo);
 	end
 end
 

@@ -25,7 +25,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<FontString parentKey="PurchaseTotal" inherits="Game40Font_Shadow2" text="CATALOG_SHOP_TOPUPFLOW_PURCHASE">
+				<FontString parentKey="PurchaseTotal" inherits="Game40Font_Shadow2" text="CATALOG_SHOP_TOPUPFLOW_PURCHASE" hidden="true">
 					<Size x="500" y="50"/>
 					<Color color="WHITE_FONT_COLOR"/>
 					<Anchors>

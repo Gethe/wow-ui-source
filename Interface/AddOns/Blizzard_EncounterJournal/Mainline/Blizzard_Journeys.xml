@@ -389,8 +389,8 @@
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBar" relativePoint="LEFT" x="0"/>
 									</Anchors>
 								</Texture>
-								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER">
-									<Size x="30" y="10"/>
+								<FontString parentKey="JourneyLevel" inherits="GameFontNormalMed2" justifyH="CENTER" justifyV="MIDDLE">
+									<Size x="40" y="35"/>
 									<Anchors>
 										<Anchor point="CENTER" relativeKey="$parent.JourneyLevelBg" x="-2"/>
 									</Anchors>
@@ -408,7 +408,7 @@
 						<Size x="648" y="14"/>
 						<BarTexture atlas="ui-journeys-progressbar-fill"/>
 						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-25"/>
+							<Anchor point="CENTER" relativeKey="$parent.ProgressDetailsFrame" relativePoint="BOTTOM" y="-15"/>
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
@@ -630,6 +630,7 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

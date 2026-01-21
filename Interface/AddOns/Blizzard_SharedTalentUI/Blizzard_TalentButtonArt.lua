@@ -154,10 +154,11 @@ TalentButtonArtMixin.ArtSet = {
 		ghost = "lemixartifact-node-circle-ghost",
 		spendFont = "SystemFont16_Shadow_ThickOutline",
 	},
+	
 	CapstoneCircle = {
 		iconMask = "talents-node-circle-mask",
 		shadow = "talents-node-circle-shadow",
-		normal = "talents-node-apex-large-gray",
+		normal = "talents-node-apex-large-yellow",
 		disabled = "talents-node-apex-large-gray",
 		selectable = "talents-node-apex-large-green",
 		maxed = "talents-node-apex-large-yellow",
@@ -175,7 +176,7 @@ TalentButtonArtMixin.ArtSet = {
 	CapstoneSquare = {
 		iconMask = nil,
 		shadow = "talents-node-square-shadow",
-		normal = "talents-node-apex-active-large-gray",
+		normal = "talents-node-apex-active-large-yellow",
 		disabled = "talents-node-apex-active-large-gray",
 		selectable = "talents-node-apex-active-large-green",
 		maxed = "talents-node-apex-active-large-yellow",

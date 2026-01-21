@@ -440,9 +440,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeEncounterEventsSetting",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 14,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 13,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeEncounterEventsSetting", EnumValue = 0 },
@@ -453,8 +453,12 @@ local EditModeManagerConstants =
 				{ Name = "BackgroundTransparency", Type = "EditModeEncounterEventsSetting", EnumValue = 5 },
 				{ Name = "Transparency", Type = "EditModeEncounterEventsSetting", EnumValue = 6 },
 				{ Name = "Visibility", Type = "EditModeEncounterEventsSetting", EnumValue = 7 },
-				{ Name = "ShowTooltips", Type = "EditModeEncounterEventsSetting", EnumValue = 8 },
+				{ Name = "TooltipAnchor", Type = "EditModeEncounterEventsSetting", EnumValue = 8 },
 				{ Name = "ShowTimer", Type = "EditModeEncounterEventsSetting", EnumValue = 9 },
+				{ Name = "ViewType", Type = "EditModeEncounterEventsSetting", EnumValue = 10 },
+				{ Name = "FlipHorizontally", Type = "EditModeEncounterEventsSetting", EnumValue = 11 },
+				{ Name = "BarWidth", Type = "EditModeEncounterEventsSetting", EnumValue = 12 },
+				{ Name = "Padding", Type = "EditModeEncounterEventsSetting", EnumValue = 13 },
 			},
 		},
 		{
@@ -716,6 +720,31 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Horizontal", Type = "EncounterEventsOrientation", EnumValue = 0 },
 				{ Name = "Vertical", Type = "EncounterEventsOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "EncounterEventsTooltipAnchor",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "EncounterEventsTooltipAnchor", EnumValue = 0 },
+				{ Name = "Default", Type = "EncounterEventsTooltipAnchor", EnumValue = 1 },
+				{ Name = "Cursor", Type = "EncounterEventsTooltipAnchor", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "EncounterEventsViewType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Timeline", Type = "EncounterEventsViewType", EnumValue = 0 },
+				{ Name = "Bars", Type = "EncounterEventsViewType", EnumValue = 1 },
 			},
 		},
 		{

@@ -548,6 +548,7 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 	local nextMount = 1;
 	local nextToy = 1;
 	local nextMog = 1;
+	local nextDecor = 1;
 	for _, childDisplayData in ipairs(displayData.bundleChildrenDisplayData) do
 		if childDisplayData.productType == CatalogShopConstants.ProductType.Pet then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Pet .. tostring(nextPet);
@@ -570,6 +571,9 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Transmog then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Transmog .. tostring(nextMog);
 			nextMog = nextMog + 1;
+		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Decor .. tostring(nextDecor);
+			nextDecor = nextDecor + 1;
 		end
 	end
 
@@ -604,6 +608,9 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 				local _modelSceneId = nil;
 				local _preserveCurrentView = false;
 				CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
+			elseif foundChildDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+				local _modelSceneId = nil;
+				CatalogShopUtil.SetupModelSceneForDecor(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, tag);
 			end
 		end
 	end
@@ -640,7 +647,11 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
 			end
-			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			local actorDisplaySet = actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			if not actorDisplaySet then
+				EventRegistry:TriggerEvent("CatalogShop.OnModelSceneActorFailedToLoad", displayData);
+				return;
+			end
 
 			if (isSelfMount) then
 				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
@@ -870,7 +881,11 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
 			end
-			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			local actorDisplaySet = actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			if not actorDisplaySet then
+				EventRegistry:TriggerEvent("CatalogShop.OnModelSceneActorFailedToLoad", displayData);
+			end
+
 			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);			
 			local tryUseOverrideAnim = true;
 			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
@@ -880,7 +895,7 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 end
 
 -- DECOR
-function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange)
+function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, optionalDecorTag)
 	if not displayData then
 		error("CatalogShopUtil.SetupModelSceneForDecor : invalid displayData");
 		return;
@@ -891,7 +906,8 @@ function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displ
 			modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 		end
 
-		local actor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Decor);
+		local decorTag = optionalDecorTag or CatalogShopConstants.DefaultActorTag.Decor;
+		local actor = modelScene:GetActorByTag(decorTag);
 		if actor then
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));

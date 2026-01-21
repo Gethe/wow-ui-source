@@ -193,7 +193,7 @@ end
 function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
-		if self:NeedsAddedAuraUpdate(aura.spellId) then
+		if self:NeedsAddedAuraUpdate(aura) then
 			self:RefreshData();
 			break;
 		end
@@ -390,7 +390,12 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, start
 	return false;
 end
 
-function CooldownViewerItemMixin:NeedsAddedAuraUpdate(spellID)
+function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
+	if auraInfo.sourceUnit ~= "player" then
+		return false;
+	end
+
+	local spellID = auraInfo.spellId;
 	if self:UpdateLinkedSpell(spellID) then
 		return true;
 	end
