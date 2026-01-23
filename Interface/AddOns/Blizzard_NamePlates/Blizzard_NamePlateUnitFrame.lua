@@ -307,6 +307,7 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 	self:UpdateThreatDisplay();
 	self:UpdateShowOnlyName();
 	self:UpdateIsSimplified();
+	self:UpdateRaidTarget();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
 end
@@ -453,8 +454,8 @@ function NamePlateUnitFrameMixin:UpdateIsFocus()
 end
 
 function NamePlateUnitFrameMixin:GetRaidTargetIndex()
-	-- Don't display raid icons on other players.
-	if self:IsPlayer() then
+	-- Don't display raid icons on enemy players.
+	if self:IsPlayer() and not self:IsFriend() then
 		return nil;
 	end
 
