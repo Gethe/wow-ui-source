@@ -19,7 +19,7 @@ EncounterWarningsSystemSeverity = {
 };
 
 EncounterWarningsSeverityTextSizeLimits = {
-	-- These should be about ~110 less than the minimumWidths set up in XML
+	-- These should be about ~110 less than the Size elements set up in XML
 	-- for the per-severity frames to keep the icons from escaping the bounds
 	-- of the region as previewed in edit mode.
 	[Enum.EncounterEventSeverity.High] = { width = 490, height = 48 },

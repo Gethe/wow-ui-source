@@ -65,7 +65,7 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Button>
-	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" frameLevel="90" parentArray="PrivateAuraAnchors" virtual="true"/>
+	<Frame name="CompactUnitPrivateAuraAnchorTemplate" mixin="CompactUnitPrivateAuraAnchorMixin" frameLevel="90" parentArray="PrivateAuraAnchors" propagateMouseInput="Clicks" virtual="true"/>
 	<Frame name="CompactUnitFrameDispelOverlayTemplate" mixin="CompactUnitFrameDispelOverlayMixin" virtual="true">
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="-6">
