@@ -376,3 +376,12 @@ function TooltipComparisonManager:GetAzeritePowerComparisonInfo(azeritePowerID, 
 	local itemLevel = equippedItem:GetCurrentItemLevel();
 	return itemID, itemLevel, comparisonPowerID;
 end
+
+-- Item comparison requests can be driven via a C API which sidesteps some
+-- issues around tainted execution and secret anchors.
+
+local function OnTooltipShowItemComparison(_nilOwner, comparisonItem, tooltip, anchorFrame)
+	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
+end
+
+RegisterEventCallback("TOOLTIP_SHOW_ITEM_COMPARISON", OnTooltipShowItemComparison);

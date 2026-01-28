@@ -443,7 +443,7 @@ end
 function AuctionHouseStoreButtonMixin:OnEnter()
 	if (self.tooltip) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.tooltip, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
+		GameTooltip_SetTitle(GameTooltip, self.tooltip, RED_FONT_COLOR);
 		GameTooltip:Show();
 	end
 end

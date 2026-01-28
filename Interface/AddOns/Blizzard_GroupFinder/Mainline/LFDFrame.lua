@@ -273,36 +273,6 @@ function LFDCheckRolesRestricted(dungeonID, tank, healer, dps)
 	return not tankSelected and not healerSelected and not dpsSelected;
 end
 
-function LFDPopupRoleCheckButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
-	if ( self.permDisabled ) then
-		if(self.permDisabledTip)then
-			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
-		end
-	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
-	elseif ( not self:IsEnabled() ) then
-		local dungeonID = LFDQueueFrame.type;
-		local roleID = self:GetID();
-		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0);
-		local reasons = GetLFGInviteRoleRestrictions(roleID);
-		for i = 1, #reasons do
-			local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]] or "OTHER")];
-			if( text ) then
-				GameTooltip:AddLine(text);
-			end
-		end
-		GameTooltip:Show();
-		return;
-	elseif( self.alert:IsShown() ) then
-		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
-		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
-	end
-	GameTooltip:Show();
-	LFGFrameRoleCheckButton_OnEnter(self);
-end
-
 --List functions
 function LFDQueueFrameList_Update()
 	if ( LFGDungeonList_Setup() ) then
@@ -812,8 +782,8 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 		GameTooltip:Show();
 		return;
 	elseif( self.alert:IsShown() ) then
-		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
-		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
+		GameTooltip_SetTitle(GameTooltip, INSTANCE_ROLE_WARNING_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, INSTANCE_ROLE_WARNING_TEXT);
 	end
 	GameTooltip:Show();
 	LFGFrameRoleCheckButton_OnEnter(self);

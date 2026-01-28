@@ -168,6 +168,38 @@ local SecretPredicateAPI =
 			},
 		},
 		{
+			Name = "ShouldTotemSlotBeSecret",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if information about a totem slot will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTotemSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldTotemSpellBeSecret",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if information about a spell when associated with a totem slot will produce secret values if queried." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isTotemSecret", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ShouldUnitAuraIndexBeSecret",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -343,19 +375,6 @@ local SecretPredicateAPI =
 
 	Tables =
 	{
-		{
-			Name = "SecrecyLevel",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "NeverSecret", Type = "SecrecyLevel", EnumValue = 0, Documentation = { "Will never yield secret values when queried." } },
-				{ Name = "AlwaysSecret", Type = "SecrecyLevel", EnumValue = 1, Documentation = { "Will always yield secret values when queried." } },
-				{ Name = "ContextuallySecret", Type = "SecrecyLevel", EnumValue = 2, Documentation = { "May yield secret values when queried depending upon factors such as addon restriction states, unit disposition, etc." } },
-			},
-		},
 	},
 };
 
