@@ -1,6 +1,3 @@
-COOLDOWN_VIEWER_SETTINGS_ALERT_TYPE_VISUAL = "Visual"; -- TODO: Localize
-COOLDOWN_VIEWER_SETTINGS_ALERT_DIALOG_LABEL_VISUAL_TYPE = "Visual Alert"; -- TODO: Localize
-
 -- These values aren't actually part of the enum
 -- They exist so that disabled states can be managed using the same category enums
 -- There are checks to ensure that they don't match any of the pre-existing enum values

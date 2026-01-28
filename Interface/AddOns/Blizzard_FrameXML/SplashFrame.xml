@@ -115,7 +115,7 @@
 						</FontString>
 						<FontString parentKey="Title" inherits="Game72Font"  mixin="AutoScalingFontStringMixin" justifyV="BOTTOM">
 							<KeyValues>
-								<KeyValue key="minLineHeight" value="18" type="number"/>
+								<KeyValue key="minLineHeight" value="14" type="number"/>
 							</KeyValues>
 							<Size x="300" y="0"/>
 							<Anchors>

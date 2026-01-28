@@ -2,7 +2,10 @@ ProfessionsReagentSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 
 function ProfessionsReagentSlotMixin:Init(transaction, reagentSlotSchematic)
 	ProfessionsRecipeSlotBaseMixin.Init(self);
-
+	
+	self:SetOriginalReagent(nil);
+	self:SetNameText(nil);
+	self:SetUnallocatable(nil);
 	self:SetCheckboxShown(false);
 	self:SetCheckboxCallback(nil);
 	self:SetCheckboxTooltipText(nil);

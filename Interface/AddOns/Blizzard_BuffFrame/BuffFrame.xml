@@ -106,6 +106,26 @@
 					<KeyValue key="auraIndex" value="2" type="number"/>
 				</KeyValues>
 			</Frame>
+			<Frame parentKey="privateAuraAnchor3" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="3" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor4" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="4" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor5" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="5" type="number"/>
+				</KeyValues>
+			</Frame>
+			<Frame parentKey="privateAuraAnchor6" inherits="BuffFramePrivateAuraAnchorTemplate">
+				<KeyValues>
+					<KeyValue key="auraIndex" value="6" type="number"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="prepend"/>

@@ -212,9 +212,12 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate_Outlined");
 		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate_Outlined");
 
-		-- Clickable region defined by both name and health bar.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+		local extraXOffset = 10;
+		local extraYOffset = setupOptions.healthBarHeight / 2;
+
+		-- Clickable region defined by health bar, extending slightly past it to make it easier to target with the mouse.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, -extraXOffset, extraYOffset);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
 	else
 		-- Outlined font is harder to read when text is outside the health bar.
 		self.name:SetFontObject("SystemFont_NamePlate");
@@ -222,9 +225,13 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate");
 		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate");
 
-		-- Clickable region is just the health bar.
-		self.HitTestFrame:SetPoint("TOPLEFT", self.name);
-		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar);
+		local extraXOffset = 10;
+		local nameOffset = 4;
+		local extraYOffset = setupOptions.healthBarHeight / 2;
+
+		-- Clickable region defined by both name and health bar, extending slightly past them to make it easier to target with the mouse.
+		self.HitTestFrame:SetPoint("TOPLEFT", self.name, -extraXOffset - nameOffset, 0);
+		self.HitTestFrame:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, extraXOffset, -extraYOffset);
 	end
 
 	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
@@ -300,6 +307,7 @@ function NamePlateUnitFrameMixin:UpdateIsFriend()
 	self:UpdateThreatDisplay();
 	self:UpdateShowOnlyName();
 	self:UpdateIsSimplified();
+	self:UpdateRaidTarget();
 
 	self.AurasFrame:SetIsFriend(self.isFriend);
 end
@@ -446,8 +454,8 @@ function NamePlateUnitFrameMixin:UpdateIsFocus()
 end
 
 function NamePlateUnitFrameMixin:GetRaidTargetIndex()
-	-- Don't display raid icons on other players.
-	if self:IsPlayer() then
+	-- Don't display raid icons on enemy players.
+	if self:IsPlayer() and not self:IsFriend() then
 		return nil;
 	end
 

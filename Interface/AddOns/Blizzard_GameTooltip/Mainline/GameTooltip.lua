@@ -470,7 +470,10 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local tooltip = self or GameTooltip;
 	local tooltipData = tooltip:GetPrimaryTooltipData();
 	local comparisonItem = TooltipComparisonManager:CreateComparisonItem(tooltipData);
-	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
+
+	if comparisonItem then
+		C_TooltipComparison.CompareItem(comparisonItem, tooltip, anchorFrame);
+	end
 end
 
 function GameTooltip_ShowEventHyperlink(hyperlink)
@@ -521,7 +524,7 @@ function GameTooltip_AddStatusBar(self, min, max, value, text)
 	statusBar:SetMinMaxValues(min, max);
 	statusBar:SetValue(value);
 	statusBar:Show();
-	statusBar:SetPoint("LEFT", self:GetName().."TextLeft"..numLines, "LEFT", 0, -2);
+	statusBar:SetPoint("LEFT", self:GetLeftLine(numLines), "LEFT", 0, -2);
 	statusBar:SetPoint("RIGHT", self, "RIGHT", -9, 0);
 	statusBar:Show();
 	self:SetMinimumWidth(140);

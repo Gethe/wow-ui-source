@@ -449,7 +449,7 @@ function WorldMapBountyBoardMixin:ShowLockedByNoBountiesTooltip(bountyIndex)
 	else
 		tooltipText = BOUNTY_BOARD_NO_BOUNTIES;
 	end
-	GameTooltip:SetText(tooltipText, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true);
+	GameTooltip_SetTitle(GameTooltip, tooltipText, NORMAL_FONT_COLOR);
 
 	GameTooltip:Show();
 end
