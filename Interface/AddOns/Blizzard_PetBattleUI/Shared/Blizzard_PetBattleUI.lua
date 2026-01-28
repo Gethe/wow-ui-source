@@ -570,10 +570,10 @@ end
 
 function PetBattleCatchButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, self.name);
-	GameTooltip_AddNormalLine(GameTooltip, self.description);
+	GameTooltip:SetText(self.name, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, true);
+	GameTooltip:AddLine(self.description, nil, nil, nil, true);
 	if (self.additionalText) then
-		GameTooltip_AddErrorLine(GameTooltip, self.additionalText);
+		GameTooltip:AddLine(self.additionalText, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 	end
 	GameTooltip:Show();
 end

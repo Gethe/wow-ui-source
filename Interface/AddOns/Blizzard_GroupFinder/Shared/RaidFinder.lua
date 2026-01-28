@@ -437,22 +437,21 @@ end
 
 function RaidFinderRoleButton_OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, _G["ROLE_DESCRIPTION_"..self.role]);
-
+	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
 	if ( self.permDisabled ) then
 		if(self.permDisabledTip)then
-			GameTooltip_AddErrorLine(GameTooltip, self.permDisabledTip);
+			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
 		end
 	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-		GameTooltip_AddErrorLine(GameTooltip, self.disabledTooltip);
+		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
 	elseif ( self.lockedIndicator:IsVisible() ) then
 		local dungeonID = RaidFinderQueueFrame.raid;
 		local roleID = self:GetID();
-		GameTooltip_SetTitle(GameTooltip, ERR_ROLE_UNAVAILABLE);
+		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
 		if ( type(dungeonID) == "number" ) then
 			local textTable = LFGRoleButton_LockReasonsTextTable(dungeonID, roleID);
 			for text,_ in pairs( textTable ) do
-				GameTooltip_AddNormalLine(GameTooltip, text);
+				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
 		end
 		GameTooltip:Show();

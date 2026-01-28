@@ -78,7 +78,7 @@ local function trayItemResetter(trayItemPool, trayItem)
 end;
 
 function SpellDiminishStatusTrayMixin:InitializeTrayItemPool()
-	self.trayItemPool = CreateUnsecuredFramePool("FRAME", self, "SpellDiminishStatusTrayItemTemplate", trayItemResetter);
+	self.trayItemPool = CreateFramePool("FRAME", self, "SpellDiminishStatusTrayItemTemplate", trayItemResetter);
 	self.trayItemOrder = {};
 	self.activeItemForCategory = {};
 end

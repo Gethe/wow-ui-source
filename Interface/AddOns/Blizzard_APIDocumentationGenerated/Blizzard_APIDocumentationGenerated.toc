@@ -515,7 +515,6 @@ ScriptRegionSharedDocumentation.lua
 SeasonsConstantsDocumentation.lua
 SecretAspectConstantsDocumentation.lua
 SecretPredicatesDocumentation.lua
-SecretWrapperConstantsDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua
 SharedTraitsEnumsDocumentation.lua

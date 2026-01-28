@@ -562,11 +562,11 @@ function LFDRoleButton_OnEnter(self)
 		local queueDungeonID = LFDQueueFrame.type;
 		local roleID = self:GetID();
 		local reasons;
-		GameTooltip_SetTitle(GameTooltip, ERR_ROLE_UNAVAILABLE);
+		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0, true);
 		if ( type(queueDungeonID) == "number" ) then
 			local textTable = LFGRoleButton_LockReasonsTextTable(queueDungeonID, roleID);
 			for text,_ in pairs( textTable ) do
-				GameTooltip_AddNormalLine(GameTooltip, text);
+				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
 		else
 			local textTable = {};
@@ -576,14 +576,14 @@ function LFDRoleButton_OnEnter(self)
 				end
 			end
 			for text, _ in pairs( textTable ) do
-				GameTooltip_AddNormalLine(GameTooltip, text);
+				GameTooltip:AddLine(text, nil, nil, nil, true);
 			end
 		end
 		GameTooltip:Show();
 		return;
 	elseif ( self.alert:IsShown() ) then
-		GameTooltip_SetTitle(GameTooltip, INSTANCE_ROLE_WARNING_TITLE);
-		GameTooltip_AddNormalLine(GameTooltip, INSTANCE_ROLE_WARNING_TEXT);
+		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
+		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
 	end
 	GameTooltip:Show();
 	LFGFrameRoleCheckButton_OnEnter(self);

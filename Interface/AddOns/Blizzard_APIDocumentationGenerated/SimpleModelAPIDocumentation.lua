@@ -707,17 +707,6 @@ local SimpleModelAPI =
 			},
 		},
 		{
-			Name = "SetUseGBuffer",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "useGBuffer", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetViewInsets",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

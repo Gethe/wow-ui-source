@@ -605,7 +605,6 @@ function SetLoginScreenModel(model)
 		if lowResBG and highResBG then
 			local background = GetLoginScreenBackground(highResBG, lowResBG);
 			model:SetModel(background, true);
-			model:SetUseGBuffer(true);
 		end
 	end
 

@@ -714,9 +714,7 @@ function ItemModelBaseMixin:OnMouseUp(button)
 
 				local function SetChecked(data)
 					itemsCollectionFrame:SetChosenVisualSource(data.visualID, data.sourceID);
-					if itemsCollectionFrame.SelectVisual then
-						itemsCollectionFrame:SelectVisual(data.visualID);
-					end
+					itemsCollectionFrame:SelectVisual(data.visualID);
 				end
 
 				local name, color = itemsCollectionFrame:GetAppearanceNameTextAndColor(source);

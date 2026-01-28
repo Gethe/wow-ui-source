@@ -7,21 +7,6 @@ local FrameAPITooltip =
 	Functions =
 	{
 		{
-			Name = "GetLeftLine",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "line", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "leftFontString", Type = "SimpleFontString", Nilable = false },
-			},
-		},
-		{
 			Name = "GetMinimumWidth",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.MinimumWidth },
@@ -51,21 +36,6 @@ local FrameAPITooltip =
 				{ Name = "bottom", Type = "number", Nilable = false },
 				{ Name = "left", Type = "number", Nilable = false },
 				{ Name = "top", Type = "number", Nilable = false },
-			},
-		},
-		{
-			Name = "GetRightLine",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "line", Type = "luaIndex", Nilable = false },
-			},
-
-			Returns =
-			{
-				{ Name = "rightFontString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{

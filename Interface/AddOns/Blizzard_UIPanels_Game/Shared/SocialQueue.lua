@@ -121,18 +121,18 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 			isAutoAccept = firstQueue.isAutoAccept; -- Auto accept is set on the premade group entry
 			LFGListUtil_SetSearchEntryTooltip(tooltip, firstQueue.queueData.lfgListID, LFG_LIST_UTIL_SUPPRESS_AUTO_ACCEPT_LINE);
 		else
-			GameTooltip_SetTitle(tooltip, playerDisplayName);
-			GameTooltip_AddErrorLine(tooltip, LFG_LIST_ENTRY_DELISTED);
+			tooltip:SetText(playerDisplayName, 1, 1, 1, true);
+			tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 	else
-		GameTooltip_SetTitle(tooltip, playerDisplayName);
-		GameTooltip_AddDisabledLine(tooltip, SOCIAL_QUEUE_QUEUED_FOR);
+		tooltip:SetText(playerDisplayName, 1, 1, 1, true);
+		tooltip:AddLine(SOCIAL_QUEUE_QUEUED_FOR, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 		for i, queue in ipairs(queues) do
 			local queueName = SocialQueueUtil_GetQueueName(queue.queueData, "- %s");
 			if ( queue.isZombie ) then
-				GameTooltip_AddDisabledLine(tooltip, queueName);
+				tooltip:AddLine(queueName, GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b, true);
 			else
-				GameTooltip_AddNormalLine(tooltip, queueName);
+				tooltip:AddLine(queueName, nil, nil, nil, true);
 				isAutoAccept = (isAutoAccept or queue.isAutoAccept) and hasRelationshipWithLeader; -- Must know the leader to have autoaccept apply
 
 				needTank = needTank or queue.needTank;
@@ -142,7 +142,7 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 		end
 
 		if ( not canJoin ) then
-			GameTooltip_AddErrorLine(tooltip, LFG_LIST_ENTRY_DELISTED);
+			tooltip:AddLine(LFG_LIST_ENTRY_DELISTED, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b, true);
 		end
 	end
 
@@ -156,13 +156,13 @@ function SocialQueueUtil_SetTooltip(tooltip, playerDisplayName, queues, canJoin,
 		tooltip:AddLine(" ");
 
 		if roleIcons ~= "" then
-			GameTooltip_AddNormalLine(tooltip, QUICK_JOIN_TOOLTIP_AVAILABLE_ROLES_FORMAT:format(QUICK_JOIN_TOOLTIP_AVAILABLE_ROLES, roleIcons));
+			tooltip:AddLine(QUICK_JOIN_TOOLTIP_AVAILABLE_ROLES_FORMAT:format(QUICK_JOIN_TOOLTIP_AVAILABLE_ROLES, roleIcons), NORMAL_FONT_COLOR:GetRGB());
 		else
-			GameTooltip_AddNormalLine(tooltip, QUICK_JOIN_TOOLTIP_NO_AVAILABLE_ROLES);
+			tooltip:AddLine(QUICK_JOIN_TOOLTIP_NO_AVAILABLE_ROLES, NORMAL_FONT_COLOR:GetRGB());
 		end
 
 		if isAutoAccept then
-			GameTooltip_AddColoredLine(tooltip, QUICK_JOIN_IS_AUTO_ACCEPT_TOOLTIP, LIGHTBLUE_FONT_COLOR);
+			tooltip:AddLine(QUICK_JOIN_IS_AUTO_ACCEPT_TOOLTIP, LIGHTBLUE_FONT_COLOR:GetRGB());
 		end
 	end
 end

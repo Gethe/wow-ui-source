@@ -861,7 +861,12 @@ function ActionButton_UpdateCooldown(self)
 		cooldownInfo.duration =  auraData.duration
 		cooldownInfo.modRate = auraData.timeMod;
 		cooldownInfo.isEnabled = 1;
-		chargeInfo = defaultChargeInfo; -- auraData does not contain charge counts
+		chargeInfo = {};
+		chargeInfo.charges = auraData.charges;
+		chargeInfo.maxCharges = auraData.maxCharges;
+		chargeInfo.chargeStart = currentTime * 0.001;
+		chargeInfo.chargeDuration = auraData.duration * 0.001;
+		chargeInfo.chargeModRate = auraData.timeMod;
 	elseif (self.spellID) then
 		cooldownInfo = C_Spell.GetSpellCooldown(self.spellID) or defaultCooldownInfo;
 		chargeInfo = C_Spell.GetSpellCharges(self.spellID) or defaultChargeInfo;

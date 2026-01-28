@@ -653,20 +653,27 @@ StaticPopupDialogs["HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE"] = {
 	button2 = CANCEL,
 	timeout = 0,
 	exclusive = 1,
-	OnAccept = function(self)
-		C_HousingNeighborhood.CancelInviteToNeighborhood(HousingInviteResidentFrame.pendingCancelInvite.RemoveButton.playerName);
-	end,
-	OnCancel = function (self)
-		HousingInviteResidentFrame.pendingCancelInvite.LoadingSpinner:Hide();
-		HousingInviteResidentFrame.pendingCancelInvite.RemoveButton:Enable();
-		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CANCEL);
-	end,
 };
 
 function HousingInviteResidentFrameMixin:CancelInviteClicked(pendingInviteFrame)
 	self.pendingCancelInvite = pendingInviteFrame;
 	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
-	StaticPopup_Show("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE", self.pendingCancelInvite.RemoveButton.playerName, nil, self);
+	local dialog = StaticPopup_Show("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE", self.pendingCancelInvite.RemoveButton.playerName);
+	local acceptButton = dialog:GetButton1();
+	acceptButton:SetScript("OnClick", GenerateClosure(self.CancelInviteConfirmed, self));
+	local cancelButton = dialog:GetButton2();
+	cancelButton:SetScript("OnClick", GenerateClosure(self.CancelInviteCancelled, self));
+end
+
+function HousingInviteResidentFrameMixin:CancelInviteConfirmed()
+	C_HousingNeighborhood.CancelInviteToNeighborhood(self.pendingCancelInvite.RemoveButton.playerName);
+	StaticPopup_Hide("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE");
+end
+
+function HousingInviteResidentFrameMixin:CancelInviteCancelled()
+	self.pendingCancelInvite.LoadingSpinner:Hide();
+	self.pendingCancelInvite.RemoveButton:Enable();
+	StaticPopup_Hide("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE");
 end
 
 --///////////////////////////////

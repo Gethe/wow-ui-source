@@ -1212,8 +1212,8 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 end
 
 function TransmogWardrobeMixin:UpdateSlot(slotData, forceRefresh)
-	self.TabContent.ItemsFrame:UpdateSlot(slotData, forceRefresh);
 	self:SetToItemsTab();
+	self.TabContent.ItemsFrame:UpdateSlot(slotData, forceRefresh);
 end
 
 
