@@ -564,7 +564,7 @@ function EncounterTimelineTimerEventMixin:UpdateCountdownText()
 	local timeRemaining = self:GetEventTimeRemaining();
 
 	if timeRemaining ~= nil and timeRemaining <= 0 then
-		durationFontString:SetText("");
+		durationFontString:ClearText("");
 	elseif timeRemaining < 1 then
 		durationFontString:SetFormattedText("%.1F", timeRemaining);
 	else
@@ -653,6 +653,7 @@ function EncounterTimelineTimerEventMixin:UpdateTimerSparkLayout()
 
 	timerSpark:ClearAllPoints();
 	SetPointWithHorizontalFlip(timerSpark, "CENTER", self:GetTimerStatusBar():GetStatusBarTexture(), "RIGHT", offsetX, offsetY, flipped);
+	timerSpark:SetShown(self:ShouldShowTimerSpark());
 end
 
 function EncounterTimelineTimerEventMixin:UpdateLayout()
@@ -728,6 +729,7 @@ function EncounterTimelineTimerEventMixin:UpdatePosition()
 end
 
 function EncounterTimelineTimerEventMixin:UpdateTimerBar()
+	local eventInfo = self:GetEventInfo();
 	local timerBar = self:GetTimerStatusBar();
 	local timerFillDirection = self:GetTimerFillDirection();
 	local timerDuration = self:GetEventTimer();
@@ -741,6 +743,8 @@ function EncounterTimelineTimerEventMixin:UpdateTimerBar()
 	-- event frame settings change.
 
 	timerBar:SetTimerDuration(timerDuration, timerInterpolation, timerFillDirection);
+	timerBar:SetStatusBarColor(eventInfo.color:GetRGB());
+
 	self:MarkClean(EncounterTimelineTimerEventDirtyFlag.TimerBar);
 end
 

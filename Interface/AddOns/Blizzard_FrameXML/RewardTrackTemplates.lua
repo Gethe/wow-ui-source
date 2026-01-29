@@ -434,6 +434,9 @@ end
 
 function RenownLevelMixin:ApplyAlpha(alpha)
 	self.Level:SetAlpha(alpha);
+	if self.RewardName then
+		self.RewardName:SetAlpha(alpha);
+	end
 end
 
 function RenownLevelMixin:OnMouseUp()

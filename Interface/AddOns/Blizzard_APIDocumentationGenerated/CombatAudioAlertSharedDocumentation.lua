@@ -18,9 +18,9 @@ local CombatAudioAlertShared =
 		{
 			Name = "CombatAudioAlertCategory",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "General", Type = "CombatAudioAlertCategory", EnumValue = 0 },
@@ -31,6 +31,19 @@ local CombatAudioAlertShared =
 				{ Name = "PlayerResource1", Type = "CombatAudioAlertCategory", EnumValue = 5 },
 				{ Name = "PlayerResource2", Type = "CombatAudioAlertCategory", EnumValue = 6 },
 				{ Name = "PartyHealth", Type = "CombatAudioAlertCategory", EnumValue = 7 },
+				{ Name = "PlayerDebuffs", Type = "CombatAudioAlertCategory", EnumValue = 8 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertDebuffSelfAlertValues",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Off", Type = "CombatAudioAlertDebuffSelfAlertValues", EnumValue = 0 },
+				{ Name = "DispelType", Type = "CombatAudioAlertDebuffSelfAlertValues", EnumValue = 1 },
 			},
 		},
 		{
@@ -83,6 +96,18 @@ local CombatAudioAlertShared =
 				{ Name = "Casting", Type = "CombatAudioAlertPlayerCastFormatValues", EnumValue = 2 },
 				{ Name = "Cast", Type = "CombatAudioAlertPlayerCastFormatValues", EnumValue = 3 },
 				{ Name = "Spellname", Type = "CombatAudioAlertPlayerCastFormatValues", EnumValue = 4 },
+			},
+		},
+		{
+			Name = "CombatAudioAlertPlayerDebuffFormatValues",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Full", Type = "CombatAudioAlertPlayerDebuffFormatValues", EnumValue = 0 },
+				{ Name = "NoSpellname", Type = "CombatAudioAlertPlayerDebuffFormatValues", EnumValue = 1 },
 			},
 		},
 		{

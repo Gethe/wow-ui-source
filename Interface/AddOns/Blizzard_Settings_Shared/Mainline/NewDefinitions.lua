@@ -72,3 +72,11 @@ NewSettings["12.0.0"] = {
 	"raidFramesDispelIndicatorType",
 	"raidFramesDispelIndicatorOverlay",
 };
+
+NewSettings["12.0.1"] = {
+	"enableConnectToPhotoSharing",
+}
+
+NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
+	return C_HousingPhotoSharing.IsEnabled();
+end

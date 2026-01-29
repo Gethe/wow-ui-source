@@ -449,9 +449,9 @@ local PlayerHousingConstants =
 		{
 			Name = "NeighborhoodInviteResult",
 			Type = "Enumeration",
-			NumValues = 13,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 12,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "Success", Type = "NeighborhoodInviteResult", EnumValue = 0 },
@@ -465,8 +465,7 @@ local PlayerHousingConstants =
 				{ Name = "NotEnoughPlots", Type = "NeighborhoodInviteResult", EnumValue = 8 },
 				{ Name = "NotFound", Type = "NeighborhoodInviteResult", EnumValue = 9 },
 				{ Name = "TooManyRequests", Type = "NeighborhoodInviteResult", EnumValue = 10 },
-				{ Name = "Ignored", Type = "NeighborhoodInviteResult", EnumValue = 11 },
-				{ Name = "AlreadyInNeighborhood", Type = "NeighborhoodInviteResult", EnumValue = 12 },
+				{ Name = "AlreadyInNeighborhood", Type = "NeighborhoodInviteResult", EnumValue = 11 },
 			},
 		},
 		{

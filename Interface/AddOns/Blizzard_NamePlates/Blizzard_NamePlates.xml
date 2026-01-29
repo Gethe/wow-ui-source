@@ -184,10 +184,7 @@
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="ImportantCastIndicator" atlas="ui-hud-nameplates-importantcast">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-16" y="3"/>
-								<Anchor point="BOTTOMRIGHT" x="16" y="-3"/>
-							</Anchors>
+							<!-- Anchoring and size handled dynamically in lua.-->
 						</Texture>
 						<Texture parentKey="CastTargetIndicator" atlas="ui-hud-nameplates-targetedbyenemy">
 							<Anchors>

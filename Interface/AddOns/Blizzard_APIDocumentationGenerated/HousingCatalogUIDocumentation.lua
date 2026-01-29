@@ -221,6 +221,22 @@ local HousingCatalogUI =
 			},
 		},
 		{
+			Name = "GetMarketInfoForDecor",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns market info for a specific decor. This is decor-only for now but should be extended to support entry type and recordID generically" },
+
+			Arguments =
+			{
+				{ Name = "decorID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "HasFeaturedEntries",
 			Type = "Function",
 
@@ -448,7 +464,6 @@ local HousingCatalogUI =
 				{ Name = "quality", Type = "ItemQuality", Nilable = true },
 				{ Name = "customizations", Type = "table", InnerType = "cstring", Nilable = false, Documentation = { "Labels for each of the customizations applied to this entry, if any" } },
 				{ Name = "dyeIDs", Type = "table", InnerType = "number", Nilable = false },
-				{ Name = "marketInfo", Type = "HousingMarketInfo", Nilable = true },
 				{ Name = "firstAcquisitionBonus", Type = "number", Nilable = false, Documentation = { "House XP that can be gained upon acquiring this entry for the first time" } },
 				{ Name = "sourceText", Type = "cstring", Nilable = false, Documentation = { "Describes specific sources this entry may be gained from; Faction-specific sources may or may not be included based on the current player's faction" } },
 			},

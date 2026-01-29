@@ -59,6 +59,16 @@ local sayCastInfo = {
 	{str = CAA_SAY_CASTS_END_OF_CAST},
 };
 
+local playerDebuffFormatInfo = {
+	{formatStr = CAA_SAY_YOUR_DEBUFFS_FORMAT_FULL},
+	{formatStr = CAA_SAY_YOUR_DEBUFFS_FORMAT_NO_SPELLNAME, noValue = true},
+};
+
+local debuffSelfAlertInfo = {
+	{formatStr = LOC_OPTION_OFF, noValue = true},
+	{formatStr = CAA_DEBUFF_SELF_ALERT_FORMAT_DEBUFF_TYPE},
+};
+
 local playerHealthFormatInfo = {
 	{formatStr = CAA_SAY_HEALTH_FORMAT_FULL},
 	{formatStr = CAA_SAY_HEALTH_FORMAT_NO_PERCENT},
@@ -178,6 +188,28 @@ end
 
 function CombatAudioAlertUtil.EnumerateSayCastInfo()
 	return ipairs(sayCastInfo);
+end
+
+function CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal)
+	return playerDebuffFormatInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumeratePlayerDebuffFormatInfo()
+	return ipairs(playerDebuffFormatInfo);
+end
+
+function CombatAudioAlertUtil.GetPlayerDebuffFormattedString(spellName)
+	local cvarVal = CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_YOUR_DEBUFFS_FORMAT_CVAR");
+	local formatInfo = CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal);
+	return CombatAudioAlertUtil.GetFormattedString(formatInfo, spellName);
+end
+
+function CombatAudioAlertUtil.GetDebuffSelfAlertInfo(cvarVal)
+	return debuffSelfAlertInfo[cvarVal + 1];
+end
+
+function CombatAudioAlertUtil.EnumerateDebuffSelfAlertInfo()
+	return ipairs(debuffSelfAlertInfo);
 end
 
 function CombatAudioAlertUtil.EnumerateUnitFormatInfo(unit, alertType)

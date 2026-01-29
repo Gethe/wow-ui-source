@@ -134,20 +134,16 @@ function DamageMeterSourceWindowMixin:InitializeResizeButton()
 end
 
 function DamageMeterSourceWindowMixin:GetCombatSessionSource()
-	if not self.sourceGUID then
-		return nil;
-	end
-
 	local damageMeterType = self:GetDamageMeterType();
 
 	local sessionType = self:GetSessionType();
 	if sessionType then
-		return C_DamageMeter.GetCombatSessionSourceFromType(sessionType, damageMeterType, self.sourceGUID);
+		return C_DamageMeter.GetCombatSessionSourceFromType(sessionType, damageMeterType, self.sourceGUID, self.sourceCreatureID);
 	end
 
 	local sessionID = self:GetSessionID();
 	if sessionID then
-		return C_DamageMeter.GetCombatSessionSourceFromID(sessionID, damageMeterType, self.sourceGUID);
+		return C_DamageMeter.GetCombatSessionSourceFromID(sessionID, damageMeterType, self.sourceGUID, self.sourceCreatureID);
 	end
 
 	return nil;
@@ -166,7 +162,6 @@ function DamageMeterSourceWindowMixin:BuildDataProvider()
 
 	local dataProvider = CreateDataProvider();
 	for i, combatSpell in ipairs(combatSpells) do
-		combatSpell.sourceGUID = self.sourceGUID;
 		combatSpell.classFilename = self.classFilename;
 		combatSpell.maxAmount = maxAmount;
 		combatSpell.sessionTotalAmount = sessionTotalAmount;
@@ -199,6 +194,7 @@ end
 
 function DamageMeterSourceWindowMixin:SetSource(source)
 	self.sourceGUID = source.sourceGUID;
+	self.sourceCreatureID = source.sourceCreatureID;
 	self.totalAmount = source.totalAmount;
 	self.sourceName = source.name;
 	self.classFilename = source.classFilename;
@@ -207,14 +203,23 @@ end
 
 function DamageMeterSourceWindowMixin:ClearSource()
 	self.sourceGUID = nil;
+	self.sourceCreatureID = nil;
 	self.totalAmount = nil;
 	self.sourceName = nil;
 	self.classFilename = nil;
 	self.showsValuePerSecondAsPrimary = nil;
 end
 
-function DamageMeterSourceWindowMixin:GetSourceGUID()
-	return self.sourceGUID;
+function DamageMeterSourceWindowMixin:IsShowingSource(source)
+	if self.sourceGUID and self.sourceGUID == source.sourceGUID then
+		return true;
+	end
+
+	if self.sourceCreatureID and self.sourceCreatureID == source.sourceCreatureID then
+		return true;
+	end
+
+	return false;
 end
 
 function DamageMeterSourceWindowMixin:GetTotalAmount()

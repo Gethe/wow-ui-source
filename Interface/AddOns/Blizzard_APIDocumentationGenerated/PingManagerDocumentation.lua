@@ -10,7 +10,7 @@ local PingManager =
 		{
 			Name = "GetContextualPingTypeForUnit",
 			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

@@ -2,7 +2,6 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Frame name="MenuTemplateBase" mixin="MenuProxyMixin" enableMouse="true" flattenRenderLayers="true" inherits="ResizeLayoutFrame" virtual="true">
 		<KeyValues>
-			<KeyValue key="minimumWidth" type="number" value="70"/>
 			<KeyValue key="minimumElementWidth" type="number" value="50"/>
 			<!--All children are ignored by default so that the derived menu's inherited frames
 			are not automatically included as layout children.-->

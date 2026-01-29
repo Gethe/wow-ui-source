@@ -94,6 +94,7 @@ DurationUtilDocumentation.lua
 DyeColorInfoDocumentation.lua
 EditModeManagerDocumentation.lua
 EncodingUtilDocumentation.lua
+EncounterEventsDocumentation.lua
 EncounterInfoDocumentation.lua
 EncounterJournalDocumentation.lua
 EncounterTimelineDocumentation.lua
@@ -155,6 +156,7 @@ HousingFixturePointFrameAPIDocumentation.lua
 HousingLayoutPinFrameAPIDocumentation.lua
 HousingLayoutUIDocumentation.lua
 HousingNeighborhoodUIDocumentation.lua
+HousingPhotoSharingUIDocumentation.lua
 HousingUIDocumentation.lua
 ImmersiveInteractionManagerDocumentation.lua
 InGameNavigationDocumentation.lua
@@ -433,6 +435,7 @@ DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
 EditModeManagerConstants_MainlineDocumentation.lua
 EncodingUtilConstantsDocumentation.lua
+EncounterEventsSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
 EncounterTimelineConstantsDocumentation.lua
 EventSchedulerConstantsDocumentation.lua
@@ -455,6 +458,7 @@ HousingCatalogConstantsDocumentation.lua
 HousingDecorSharedDocumentation.lua
 HousingLayoutUITypesDocumentation.lua
 HousingUISharedDocumentation.lua
+ImageSharingConstantsDocumentation.lua
 InputConstantsDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
@@ -517,6 +521,7 @@ ScriptRegionSharedDocumentation.lua
 SeasonsConstantsDocumentation.lua
 SecretAspectConstantsDocumentation.lua
 SecretPredicatesDocumentation.lua
+SecretWrapperConstantsDocumentation.lua
 SharedScriptObjectModelLightDocumentation.lua
 SharedScriptObjectNamePlateFrameDocumentation.lua
 SharedScriptObjectUnitPositionFrameDocumentation.lua

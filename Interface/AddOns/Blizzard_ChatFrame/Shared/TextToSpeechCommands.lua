@@ -434,6 +434,7 @@ CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_START, "CAASayCombatStart", SLASH_CAA_HE
 CAA_AddBoolCommand(SLASH_CAA_SAY_COMBAT_END, "CAASayCombatEnd", SLASH_CAA_HELP_SAY_COMBAT_END,SLASH_CAA_SAY_COMBAT_END_NARRATED, CAA_SAY_COMBAT_END_LABEL);
 CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT, "CAAInterruptCast", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_LABEL);
 CAA_AddBoolCommand(SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, "CAAInterruptCastSuccess", SLASH_CAA_HELP_SAY_TARGET_CASTS_INTERRUPT_SUCCESS, SLASH_CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_NARRATED, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_LABEL);
+CAA_AddBoolCommand(SLASH_CAA_SAY_YOUR_DEBUFFS, "CAASayYourDebuffs", SLASH_CAA_HELP_SAY_YOUR_DEBUFFS, SLASH_CAA_SAY_YOUR_DEBUFFS_NARRATED, CAA_SAY_YOUR_DEBUFFS_LABEL);
 
 local function TrySetCAAVoice(cmd, newVoiceID, confirmationText, categoryType)
 	local voiceName = GetVoiceName(newVoiceID);
@@ -747,6 +748,106 @@ do
 	end
 
 	CAACommands:AddCommand(SLASH_CAA_SAY_IF_TARGETED, CAA_SayIfTargetedHandler, nil, SLASH_CAA_HELP_SAY_IF_TARGETED, SLASH_CAA_SAY_IF_TARGETED_NARRATED, SAY_IF_TARGETED_MIN, SAY_IF_TARGETED_MAX);
+end
+
+-- Say Your Debuffs Format
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local SAY_YOUR_DEBUFFS_FORMAT_MIN = Enum.CombatAudioAlertPlayerDebuffFormatValuesMeta.MinValue;
+	local SAY_YOUR_DEBUFFS_FORMAT_MAX = Enum.CombatAudioAlertPlayerDebuffFormatValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, formatInfo in CombatAudioAlertUtil.EnumeratePlayerDebuffFormatInfo() do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_DEBUFFNAME);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_SayYourDebuffsFormatHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_YOUR_DEBUFFS_FORMAT_MIN and cvarVal <= SAY_YOUR_DEBUFFS_FORMAT_MAX then
+			SetCVar("CAASayYourDebuffsFormat", cvarVal);
+			local formatInfo = CombatAudioAlertUtil.GetPlayerDebuffFormatInfo(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_DEBUFFNAME);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_DEBUFFS_FORMAT, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_FORMAT, CAA_SayYourDebuffsFormatHandler, nil, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_FORMAT, SLASH_CAA_SAY_YOUR_DEBUFFS_FORMAT_NARRATED, SAY_YOUR_DEBUFFS_FORMAT_MIN, SAY_YOUR_DEBUFFS_FORMAT_MAX);
+end
+
+AddCAAVoiceCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_VOICE, SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE_NARRATED, SLASH_CAA_SAY_YOUR_DEBUFFS_VOICE_CHANGED_CONFIRMATION, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+
+-- Say Your Debuffs Minimum Duration
+do
+	local SAY_YOUR_DEBUFFS_MIN_DURATION_MIN = Constants.CAAConstants.CAASayYourDebuffsMinDurationMin;
+	local SAY_YOUR_DEBUFFS_MIN_DURATION_MAX = Constants.CAAConstants.CAASayYourDebuffsMinDurationMax;
+
+	local function CAA_SayYourDebuffsMinDurationHandler(cmd, arg)
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= SAY_YOUR_DEBUFFS_MIN_DURATION_MIN and cvarVal <= SAY_YOUR_DEBUFFS_MIN_DURATION_MAX then
+			SetCVar("CAASayYourDebuffsMinDuration", cvarVal);
+			local formattedStr = SECONDS_FLOAT:format(cvarVal);
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_SAY_YOUR_DEBUFFS_MIN_DURATION, formattedStr));
+			return true;
+		end
+
+		return false;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_MIN_DURATION, CAA_SayYourDebuffsMinDurationHandler, nil, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_MIN_DURATION, SLASH_CAA_SAY_YOUR_DEBUFFS_MIN_DURATION_NARRATED, SAY_YOUR_DEBUFFS_MIN_DURATION_MIN, SAY_YOUR_DEBUFFS_MIN_DURATION_MAX);
+end
+
+AddCAAVolumeCommand(SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME, SLASH_CAA_HELP_SAY_YOUR_DEBUFFS_VOLUME, SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME_NARRATED, SLASH_CAA_SAY_YOUR_DEBUFFS_VOLUME_NARRATED, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+
+-- Debuff Self Alert
+do
+	local failureText;
+	local failureTextNarrated;
+
+	local DEBUFF_SELF_ALERT_MIN = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MinValue;
+	local DEBUFF_SELF_ALERT_MAX = Enum.CombatAudioAlertDebuffSelfAlertValuesMeta.MaxValue;
+
+	local function InitFailureText()
+		if not failureText then
+			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
+			for index, info in CombatAudioAlertUtil.EnumerateDebuffSelfAlertInfo() do
+				local cvarVal = index - 1;
+				local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_DISPELTTYPE);
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, formattedStr);
+				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
+			end
+		end
+	end
+
+	local function CAA_DebuffSelfAlertHandler(cmd, arg)
+		InitFailureText();
+
+		local cvarVal = tonumber(arg);
+		if cvarVal and cvarVal >= DEBUFF_SELF_ALERT_MIN and cvarVal <= DEBUFF_SELF_ALERT_MAX then
+			SetCVar("CAADebuffSelfAlert", cvarVal);
+			local info = CombatAudioAlertUtil.GetDebuffSelfAlertInfo(cvarVal);
+			local formattedStr = CombatAudioAlertUtil.GetFormattedString(info, CAA_SAMPLE_DISPELTTYPE)
+			cmd:GetCommands():SpeakConfirmation(SLASH_CAA_CONFIRMATION:format(CAA_DEBUFF_SELF_ALERT_LABEL, formattedStr));
+			return true;
+		end
+
+		return false, failureText, failureTextNarrated;
+	end
+
+	CAACommands:AddCommand(SLASH_CAA_DEBUFF_SELF_ALERT, CAA_DebuffSelfAlertHandler, nil, SLASH_CAA_HELP_DEBUFF_SELF_ALERT, SLASH_CAA_DEBUFF_SELF_ALERT_NARRATED, DEBUFF_SELF_ALERT_MIN, DEBUFF_SELF_ALERT_MAX);
 end
 
 -- Say Party Health

@@ -381,7 +381,7 @@ end
 function ItemRefTooltipMixin:ItemRefSetHyperlink(link)
 	self:SetPadding(0, 0);
 	self:SetHyperlink(link);
-	local title = _G[self:GetName().."TextLeft1"];
+	local title = self:GetLeftLine(1);
 	if ( title and title:GetRight() - self.CloseButton:GetLeft() > 0 ) then
 		local xPadding = 16;
 		self:SetPadding(xPadding, 0);

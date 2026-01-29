@@ -64,7 +64,7 @@
 					</Layer>
 				</Layers>
 				<BarTexture atlas="UI-HUD-CoolDownManager-Bar" setAllPoints="true">
-					<Color r="0.8" g="0.1" b="0.1"/>
+					<Color color="ENCOUNTER_TIMELINE_TIMER_COLOR"/>
 				</BarTexture>
 			</StatusBar>
 		</Frames>

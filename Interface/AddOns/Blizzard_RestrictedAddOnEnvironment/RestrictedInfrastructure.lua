@@ -370,7 +370,7 @@ end
 local function RestrictedTable_ipairsaux(T, i)
     i = i + 1;
     local v = T[i];
-    if (v) then
+    if v ~= nil then
         return i, v;
     end
 end
@@ -398,19 +398,19 @@ function RestrictedTable_unpack_ro(...)
     return CheckReadonlyValue(...), RestrictedTable_unpack_ro(select(2, ...));
 end
 
--- ... = RestrictedTable_unpack(table)
+-- ... = RestrictedTable_unpack(table[, i[, j]])
 --
 -- An implementation of unpack which unpacks both restricted
 -- and normal tables.
-local function RestrictedTable_unpack(T)
+local function RestrictedTable_unpack(T, i, j)
     local PT = LOCAL_Restricted_Tables[T];
     if (PT) then
         if (getmetatable(T)) then
-            return RestrictedTable_unpack_ro(unpack(PT));
+            return RestrictedTable_unpack_ro(unpack(PT, i, j));
         end
-        return unpack(PT)
+        return unpack(PT, i, j)
     end
-    return unpack(T);
+    return unpack(T, i, j);
 end
 
 -- table = RestrictedTable_wipe(table)

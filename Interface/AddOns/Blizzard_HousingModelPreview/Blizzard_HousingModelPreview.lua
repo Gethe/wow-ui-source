@@ -116,7 +116,6 @@ end
 HousingModelPreviewFrameMixin = {};
 
 function HousingModelPreviewFrameMixin:OnLoad()
-	self:SetParent(GetAppropriateTopLevelParent());
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideAttic(self);
 	self:SetTitle(PREVIEW);

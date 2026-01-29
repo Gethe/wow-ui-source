@@ -398,8 +398,64 @@ function CooldownViewerItemDataMixin:GetTotemData()
 	return self.totemData;
 end
 
+function CooldownViewerItemDataMixin:GetTotemSlot()
+	return self.totemData and self.totemData.slot or nil;
+end
+
 function CooldownViewerItemDataMixin:ClearTotemData()
 	self.totemData = nil;
+end
+
+local playerTotemCacheTime;
+local playerTotemCache;
+local function GetPlayerTotemsCached()
+	local now = GetTime();
+	if not playerTotemCache or not playerTotemCacheTime or now ~= playerTotemCacheTime then
+		playerTotemCache = {};
+		local workingCacheBySpellID = {};
+
+		for slot = 1, GetNumTotemSlots() do
+			local hasTotem, name, startTime, duration, _icon, modRate, spellID = GetTotemInfo(slot);
+			if hasTotem then
+				local totemInfo = {
+					spellID = spellID,
+					slot = slot,
+					expirationTime = (startTime or 0) + (duration or 0),
+					duration = duration,
+					name = name,
+					modRate = modRate;
+				};
+
+				-- Replace totems with duplicate spells with the one that has the longer duration
+				if spellID then
+					local existingTotem = workingCacheBySpellID[spellID];
+					if existingTotem then
+						if totemInfo.expirationTime > existingTotem.expirationTime then
+							workingCacheBySpellID[spellID] = totemInfo;
+						end
+					else
+						workingCacheBySpellID[spellID] = totemInfo;
+					end
+				end
+			end
+		end
+
+		for _spellID, totemInfo in pairs(workingCacheBySpellID) do
+			playerTotemCache[totemInfo.slot] = totemInfo;
+		end
+
+		playerTotemCacheTime = now;
+	end
+
+	return playerTotemCache;
+end
+
+function CooldownViewer_MarkTotemCacheDirty()
+	playerTotemCacheTime = nil;
+end
+
+function CooldownViewerItemDataMixin:GetCurrentPlayerTotemCache()
+	return GetPlayerTotemsCached();
 end
 
 function CooldownViewerItemDataMixin:RefreshData()

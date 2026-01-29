@@ -132,7 +132,6 @@ DefaultCompactNamePlateFrameSetUpOptions = {
 	healthBarAlpha = 0.75,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,
@@ -146,7 +145,6 @@ DefaultCompactNamePlatePlayerFrameSetUpOptions = {
 	healthBarAlpha = 1,
 	castBarHeight = 8,
 	castBarFontHeight = 10,
-	useLargeNameFont = false,
 
 	castBarShieldWidth = 10,
 	castBarShieldHeight = 12,

@@ -3,6 +3,9 @@ MajorFactionUnlockToastMixin = {};
 
 function MajorFactionUnlockToastMixin:OnLoad()
 	self:RegisterEvent("MAJOR_FACTION_UNLOCKED");
+	self.ShowAnim:SetScript("OnFinished", function()
+		self:OnAnimFinished();
+	end);
 end
 
 function MajorFactionUnlockToastMixin:OnEvent(event, ...)
@@ -29,6 +32,7 @@ function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 			expansionID = majorFactionData.expansionID,
+			useJourneyUnlockToast = majorFactionData.useJourneyUnlockToast,
 		});
 	end
 end
@@ -37,6 +41,12 @@ function MajorFactionUnlockToastMixin:PlayBanner(data)
 	self.FactionName:SetText(data.name);
 	self.FactionName:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
+
+	if data.useJourneyUnlockToast then
+		self.HeaderText:SetText(JOURNEY_UNLOCKED_TOAST);
+	else
+		self.HeaderText:SetText(WAR_WITHIN_LANDING_PAGE_ALERT_MAJOR_FACTION_UNLOCKED);
+	end
 
 	PlaySound(data.celebrationSoundKit);
 

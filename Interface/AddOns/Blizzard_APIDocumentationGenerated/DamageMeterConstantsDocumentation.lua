@@ -3,6 +3,19 @@ local DamageMeterConstants =
 	Tables =
 	{
 		{
+			Name = "DamageMeterCombineSessionType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "None", Type = "DamageMeterCombineSessionType", EnumValue = 0 },
+				{ Name = "ChallengeMode", Type = "DamageMeterCombineSessionType", EnumValue = 1 },
+				{ Name = "Arena", Type = "DamageMeterCombineSessionType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "DamageMeterOverrideType",
 			Type = "Enumeration",
 			NumValues = 5,
@@ -33,23 +46,24 @@ local DamageMeterConstants =
 		{
 			Name = "DamageMeterSpellDetailsDisplayType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "SpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 0 },
 				{ Name = "UnitSpecificSpellCasted", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 1 },
 				{ Name = "SpellAffected", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 2 },
 				{ Name = "Deaths", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 3 },
+				{ Name = "EnemyDamageTaken", Type = "DamageMeterSpellDetailsDisplayType", EnumValue = 4 },
 			},
 		},
 		{
 			Name = "DamageMeterStorageType",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 9,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 8,
 			Fields =
 			{
 				{ Name = "Damage", Type = "DamageMeterStorageType", EnumValue = 0 },
@@ -60,14 +74,15 @@ local DamageMeterConstants =
 				{ Name = "DamageTaken", Type = "DamageMeterStorageType", EnumValue = 5 },
 				{ Name = "AvoidableDamageTaken", Type = "DamageMeterStorageType", EnumValue = 6 },
 				{ Name = "Deaths", Type = "DamageMeterStorageType", EnumValue = 7 },
+				{ Name = "EnemyDamageTaken", Type = "DamageMeterStorageType", EnumValue = 8 },
 			},
 		},
 		{
 			Name = "DamageMeterType",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "DamageDone", Type = "DamageMeterType", EnumValue = 0 },
@@ -80,6 +95,7 @@ local DamageMeterConstants =
 				{ Name = "DamageTaken", Type = "DamageMeterType", EnumValue = 7 },
 				{ Name = "AvoidableDamageTaken", Type = "DamageMeterType", EnumValue = 8 },
 				{ Name = "Deaths", Type = "DamageMeterType", EnumValue = 9 },
+				{ Name = "EnemyDamageTaken", Type = "DamageMeterType", EnumValue = 10 },
 			},
 		},
 	},

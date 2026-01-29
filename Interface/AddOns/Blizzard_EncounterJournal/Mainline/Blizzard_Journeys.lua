@@ -48,6 +48,7 @@ JourneysFrameMixin = {};
 
 function JourneysFrameMixin:OnLoad()
 	self:SetupJourneysList();
+	self.BorderFrame.TopDetail:Hide();
 end
 
 function JourneysFrameMixin:OnShow()
@@ -186,7 +187,7 @@ function JourneysFrameMixin:SetupJourneysList()
 		if isLocked then
 			button.RenownCardFactionLevel:SetText(MAJOR_FACTION_BUTTON_FACTION_LOCKED);
 		elseif button.majorFactionData.paragonInfo and button.majorFactionData.paragonInfo.level ~= 0 then
-			button.RenownCardFactionLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL:format(elementData.renownLevel + button.majorFactionData.paragonInfo.level));
+			button.RenownCardFactionLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL);
 		else
 			button.RenownCardFactionLevel:SetText(JOURNEYS_LEVEL_LABEL:format(elementData.renownLevel));
 		end
@@ -227,7 +228,7 @@ function JourneysFrameMixin:SetupJourneysList()
 		elseif button.majorFactionData.paragonInfo and button.majorFactionData.paragonInfo.level ~= 0 then
 			local paragonInfo = button.majorFactionData.paragonInfo;
 
-			button.JourneyCardLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL:format(elementData.renownLevel + paragonInfo.level));
+			button.JourneyCardLevel:SetText(JOURNEYS_MAX_LEVEL_LABEL);
 			button.JourneyCardProgressBar:SetMinMaxValues(0, paragonInfo.threshold);
 			button.JourneyCardProgressBar:SetValue(paragonInfo.value - (paragonInfo.threshold * paragonInfo.level));
 		else
@@ -466,6 +467,12 @@ function JourneyProgressFrameMixin:SetupProgressDetails()
 		self.DelveRewardProgressBar:SetMinMaxValues(0, threshold);
 		self.DelveRewardProgressBar:SetValue(progress);
 		self.DelveRewardProgressBar:Show();
+		local maskTexture = self.track.ClipFrame.Mask;
+		if maskTexture then
+			self.DelveRewardProgressBar.DelveRewardProgressBarBG:AddMaskTexture(maskTexture);
+			self.DelveRewardProgressBar.DelveRewardProgressBarFrame:AddMaskTexture(maskTexture);
+			self.DelveRewardProgressBar:GetStatusBarTexture():AddMaskTexture(maskTexture);
+		end
 	end
 end
 

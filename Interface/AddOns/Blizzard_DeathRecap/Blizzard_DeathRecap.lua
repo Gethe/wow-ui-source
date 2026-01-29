@@ -321,12 +321,12 @@ function DeathRecapMixin:BuildDataProvider()
 	local deathTimestamp = 0;
 
 	for i, event in ipairs(events) do
-		if event.amount > highestDamageAmount then
+		if event.amount and event.amount > highestDamageAmount then
 			highestDamageIndex = i;
 			highestDamageAmount = event.amount;
 		end
 
-		if event.timestamp > deathTimestamp then
+		if event.timestamp and event.timestamp > deathTimestamp then
 			deathTimestamp = event.timestamp;
 		end
 	end
@@ -337,7 +337,7 @@ function DeathRecapMixin:BuildDataProvider()
 		elementData.highestDamage = i == highestDamageIndex;
 		elementData.maxHealth = maxHealth;
 		elementData.timeBeforeDeath = deathTimestamp - elementData.timestamp;
-		elementData.causedDeath = deathTimestamp == elementData.timestamp;
+		elementData.causedDeath = i == 1;
 
 		dataProvider:Insert(elementData);
 	end

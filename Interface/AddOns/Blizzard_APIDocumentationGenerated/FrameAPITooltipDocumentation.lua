@@ -7,6 +7,30 @@ local FrameAPITooltip =
 	Functions =
 	{
 		{
+			Name = "ClearPadding",
+			Type = "Function",
+			Documentation = { "Set all padding values to 0.0 and remove the Padding SecretAspect." },
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "GetLeftLine",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "line", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "leftFontString", Type = "SimpleFontString", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMinimumWidth",
 			Type = "Function",
 			SecretReturnsForAspect = { Enum.SecretAspect.MinimumWidth },
@@ -36,6 +60,21 @@ local FrameAPITooltip =
 				{ Name = "bottom", Type = "number", Nilable = false },
 				{ Name = "left", Type = "number", Nilable = false },
 				{ Name = "top", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRightLine",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "line", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "rightFontString", Type = "SimpleFontString", Nilable = false },
 			},
 		},
 		{

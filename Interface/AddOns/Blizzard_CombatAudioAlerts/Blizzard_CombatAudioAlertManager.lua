@@ -4,6 +4,10 @@ do
 	addonTable.knownTargetingList = {};
 	addonTable.SpeakText = C_CombatAudioAlert.SpeakText;
 	addonTable.IsEnabled = C_CombatAudioAlert.IsEnabled;
+	addonTable.GetSpecSetting = C_CombatAudioAlert.GetSpecSetting;
+	addonTable.GetCAACVarValueNumber = CombatAudioAlertUtil.GetCAACVarValueNumber;
+	addonTable.GetCAACVarValueBool = CombatAudioAlertUtil.GetCAACVarValueBool;
+	addonTable.GetPlayerDebuffFormattedString = CombatAudioAlertUtil.GetPlayerDebuffFormattedString;
 end
 
 CombatAudioAlertManagerMixin = {};
@@ -105,6 +109,9 @@ function CombatAudioAlertManagerMixin:OnEvent(event, ...)
 	elseif event == "UNIT_TARGET" then
 		local unit = ...;
 		self:ProcessUnitTargetChanged(unit);
+	elseif event == "UNIT_AURA" then
+		local unit, updateInfo = ...;
+		self:ProcessPlayerAuraUpdate(unit, updateInfo);
 	end
 end
 
@@ -161,6 +168,7 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
 		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP");
 		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+		self:UnregisterEvent("UNIT_AURA");
 	end
 
 	if addonTable.IsEnabled() then
@@ -222,6 +230,10 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 		if self:IsInterruptCastSuccessEnabled() then
 			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", "target");
 		end
+
+		if self:IsSayYourDebuffsEnabled() or self:IsDebuffSelfAlertEnabled() then
+			self:RegisterUnitEvent("UNIT_AURA", "player");
+		end
 	else
 		self.unitHealthUnitsLookup = {};
 		self.watchedPowerTokens = {};
@@ -272,23 +284,23 @@ function CombatAudioAlertManagerMixin:SetCategoryVolume(categoryType, newVolume)
 end
 
 function CombatAudioAlertManagerMixin:IsSayCombatStartEnabled()
-	return CombatAudioAlertUtil.GetCAACVarValueBool("SAY_COMBAT_START_CVAR");
+	return addonTable.GetCAACVarValueBool("SAY_COMBAT_START_CVAR");
 end
 
 function CombatAudioAlertManagerMixin:IsSayCombatEndEnabled()
-	return CombatAudioAlertUtil.GetCAACVarValueBool("SAY_COMBAT_END_CVAR");
+	return addonTable.GetCAACVarValueBool("SAY_COMBAT_END_CVAR");
 end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerHealthEnabled()
-	return (CombatAudioAlertUtil.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") > 0);
+	return (addonTable.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsSayTargetNameEnabled()
-	return CombatAudioAlertUtil.GetCAACVarValueBool("SAY_TARGET_NAME_CVAR");
+	return addonTable.GetCAACVarValueBool("SAY_TARGET_NAME_CVAR");
 end
 
 function CombatAudioAlertManagerMixin:IsSayTargetHealthEnabled()
-	return (CombatAudioAlertUtil.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") > 0);
+	return (addonTable.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") > 0);
 end
 
 function CombatAudioAlertManagerMixin:ShouldSayTargetHealthOnTargetUpdate()
@@ -304,7 +316,7 @@ function CombatAudioAlertManagerMixin:ShouldSayTargetHealthOnTargetUpdate()
 end
 
 function CombatAudioAlertManagerMixin:GetTargetDeathBehavior()
-	return CombatAudioAlertUtil.GetCAACVarValueNumber("TARGET_DEATH_BEHAVIOR_CVAR");
+	return addonTable.GetCAACVarValueNumber("TARGET_DEATH_BEHAVIOR_CVAR");
 end
 
 function CombatAudioAlertManagerMixin:ShouldReplaceTargetDeathWithVoiceLine()
@@ -312,7 +324,7 @@ function CombatAudioAlertManagerMixin:ShouldReplaceTargetDeathWithVoiceLine()
 end
 
 function CombatAudioAlertManagerMixin:IsSayPartyHealthEnabled()
-	return (CombatAudioAlertUtil.GetCAACVarValueNumber("PARTY_HEALTH_PCT_CVAR") > 0);
+	return (addonTable.GetCAACVarValueNumber("PARTY_HEALTH_PCT_CVAR") > 0);
 end
 
 function CombatAudioAlertManagerMixin:GetSayPartyHealthPercent()
@@ -320,14 +332,14 @@ function CombatAudioAlertManagerMixin:GetSayPartyHealthPercent()
 end
 
 function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencySetting()
-	return CombatAudioAlertUtil.GetCAACVarValueNumber("PARTY_HEALTH_FREQ_CVAR");
+	return addonTable.GetCAACVarValueNumber("PARTY_HEALTH_FREQ_CVAR");
 end
 
 -- Calculate relative frequency scale value (from 0.5 to 1.5)
 function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencyScalingValue()
 	-- Get the party health frequency setting (-10 to 10)
 	local relativeFrequency = self:GetPartyHealthRelativeFrequencySetting();
-	
+
 	-- Normalize it (0.0 to 1.0)
 	local normalizedRelativeFrequency = PercentageBetween(relativeFrequency, Constants.CAAConstants.CAAFrequencyMin, Constants.CAAConstants.CAAFrequencyMax);
 
@@ -336,18 +348,18 @@ function CombatAudioAlertManagerMixin:GetPartyHealthRelativeFrequencyScalingValu
 end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerResource1Enabled()
-	return (C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent) > 0);
+	return (addonTable.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource1Percent) > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerResource2Enabled()
-	return (C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent) > 0);
+	return (addonTable.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.Resource2Percent) > 0);
 end
 
 function CombatAudioAlertManagerMixin:GetSayUnitCastMode(unit)
 	if unit == "player" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_PLAYER_CAST_CVAR");
+		return addonTable.GetCAACVarValueNumber("SAY_PLAYER_CAST_CVAR");
 	elseif unit == "target" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_TARGET_CAST_CVAR");
+		return addonTable.GetCAACVarValueNumber("SAY_TARGET_CAST_CVAR");
 	else
 		error("Invalid unit passed to GetSayUnitCastMode")
 	end
@@ -358,11 +370,23 @@ function CombatAudioAlertManagerMixin:IsCastModeSet(unit, mode)
 end
 
 function CombatAudioAlertManagerMixin:IsInterruptCastEnabled()
-	return (CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_CVAR") > 0);
+	return (addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_CVAR") > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsInterruptCastSuccessEnabled()
-	return (CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_SUCCESS_CVAR") > 0);
+	return (addonTable.GetCAACVarValueNumber("SAY_INTERRUPT_CAST_SUCCESS_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsSayYourDebuffsEnabled()
+	return addonTable.GetCAACVarValueBool("SAY_YOUR_DEBUFFS_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:GetDebuffSelfAlertMode()
+	return addonTable.GetCAACVarValueNumber("DEBUFF_SELF_ALERT_CVAR");
+end
+
+function CombatAudioAlertManagerMixin:IsDebuffSelfAlertEnabled()
+	return (self:GetDebuffSelfAlertMode() > 0);
 end
 
 function CombatAudioAlertManagerMixin:IsWatchingUnitHealth(unit)
@@ -499,12 +523,12 @@ function CombatAudioAlertManagerMixin:GetAnnouncePercentage(percent, currentBand
 	if shouldAnnounce then
 		if not lastBand or not currentBand then
 			-- Initial call, announce the actual percent
-			return percent;	
+			return percent;
 		end
 
 		if currentBand < lastBand then
 			-- Percent went down, announce the band above current (90% -> 65%, announce 70%)
-			return currentBand + 10;	
+			return currentBand + 10;
 		else
 			-- Percent went up, announce the current band (20% -> 57%, announce 50%)
 			return currentBand;
@@ -516,9 +540,9 @@ end
 
 function CombatAudioAlertManagerMixin:GetUnitHealthThreshold(unit)
 	if unit == "player" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") * 10;
+		return addonTable.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") * 10;
 	elseif unit == "target" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") * 10;
+		return addonTable.GetCAACVarValueNumber("TARGET_HEALTH_PCT_CVAR") * 10;
 	else
 		error("Invalid unit passed to GetUnitHealthThreshold")
 	end
@@ -633,11 +657,11 @@ end
 function CombatAudioAlertManagerMixin:GetPartyHealthFrequencyMinAndMax()
 	-- Get scaling value, based off the player's current relateive frequency setting (0.5 to 1.5)
 	local scaleValue = self:GetPartyHealthRelativeFrequencyScalingValue();
-	
+
 	-- Apply scaling to both min and max values
 	local scaledMinSeconds = CombatAudioAlertConstants.PARTY_HEALTH_UPDATE_MIN_SECONDS * scaleValue;
 	local scaledMaxSeconds = CombatAudioAlertConstants.PARTY_HEALTH_UPDATE_MAX_SECONDS * scaleValue;
-	
+
 	return scaledMinSeconds, scaledMaxSeconds;
 end
 
@@ -647,7 +671,7 @@ function CombatAudioAlertManagerMixin:GetPartyHealthUpdateFrequency(healthPercen
 	-- Get the min and max frequency
 	local minFrequency, maxFrequency = self:GetPartyHealthFrequencyMinAndMax();
 
-	-- Return a value between those 2 values, scaled by unscaledHealthPercent  
+	-- Return a value between those 2 values, scaled by unscaledHealthPercent
 	return Lerp(minFrequency, maxFrequency, unscaledHealthPercent);
 end
 
@@ -784,9 +808,9 @@ end
 
 function CombatAudioAlertManagerMixin:GetUnitMinCastTime(unit)
 	if unit == "player" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_PLAYER_CAST_MIN_TIME_CVAR");
+		return addonTable.GetCAACVarValueNumber("SAY_PLAYER_CAST_MIN_TIME_CVAR");
 	elseif unit == "target" then
-		return CombatAudioAlertUtil.GetCAACVarValueNumber("SAY_TARGET_CAST_MIN_TIME_CVAR");
+		return addonTable.GetCAACVarValueNumber("SAY_TARGET_CAST_MIN_TIME_CVAR");
 	else
 		error("Invalid unit passed to GetUnitMinCastTime")
 	end
@@ -850,6 +874,39 @@ function CombatAudioAlertManagerMixin:ProcessTargetCastInterrupted(castGUID)
 	end
 end
 
+function CombatAudioAlertManagerMixin:ProcessPlayerAuraUpdate(unit, updateInfo)
+	if not updateInfo or not updateInfo.addedAuras then
+		return;
+	end
+
+	local sayYourDebuffsEnabled = self:IsSayYourDebuffsEnabled();
+	local debuffSelfAlertEnabled = self:IsDebuffSelfAlertEnabled();
+
+	if not sayYourDebuffsEnabled and not debuffSelfAlertEnabled then
+		return;
+	end
+
+	for _, auraData in ipairs(updateInfo.addedAuras) do
+		if auraData.isHarmful then
+			local text;
+			local dispelType = auraData.dispelName;
+
+			-- Check if Debuff Self Alert should override (player can dispel this debuff type on themselves)
+			if debuffSelfAlertEnabled and dispelType and auraData.canActivePlayerDispel then
+				-- Use the special self-alert format for dispellable debuffs
+				text = CAA_DEBUFF_SELF_ALERT_FORMAT:format(dispelType);
+			elseif sayYourDebuffsEnabled and addonTable:ShouldAnnounceDebuff(auraData) then
+				-- Use the regular debuff announcement format
+				text = addonTable.GetPlayerDebuffFormattedString(auraData.name);
+			end
+
+			if text then
+				addonTable.SpeakText(text, Enum.CombatAudioAlertCategory.PlayerDebuffs);
+			end
+		end
+	end
+end
+
 function CombatAudioAlertManagerMixin:ProcessUnitTargetChanged(unit)
 	if not addonTable:IsSayIfTargetedEnabled() then
 		return;
@@ -904,7 +961,7 @@ function addonTable:RemoveFromKnownTargetingList(unit)
 end
 
 function addonTable:GetSayIfTargetedMode()
-	return C_CombatAudioAlert.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
+	return self.GetSpecSetting(Enum.CombatAudioAlertSpecSetting.SayIfTargeted);
 end
 
 function addonTable:IsSayIfTargetedEnabled()
@@ -932,6 +989,24 @@ function addonTable:GetUnitFormattedTargetingString(unit)
 	end
 
 	return text;
+end
+
+function addonTable:GetSayYourDebuffsMinDuration()
+	return addonTable.GetCAACVarValueNumber("SAY_YOUR_DEBUFFS_MIN_DURATION_CVAR");
+end
+
+function addonTable:ShouldAnnounceDebuff(auraData)
+	-- Check minimum duration requirement
+	local minDuration = self:GetSayYourDebuffsMinDuration();
+	if minDuration > 0 then
+		local duration = auraData.duration;
+		-- Duration of 0 means permanent/infinite, which we always announce
+		if duration and duration > 0 and duration < minDuration then
+			return false;
+		end
+	end
+
+	return true;
 end
 
 function addonTable:OnThrottleTimerComplete(throttleType)

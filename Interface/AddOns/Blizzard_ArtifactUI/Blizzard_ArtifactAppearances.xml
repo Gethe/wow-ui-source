@@ -33,7 +33,7 @@
 					<OnEnter>
 						if self.tooltip then
 							GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 0);
-							GameTooltip:SetText(self.tooltip , 1, 1, 1, true);
+							GameTooltip_SetTitle(GameTooltip, self.tooltip);
 						end
 					</OnEnter>
 					<OnLeave function="GameTooltip_Hide" />

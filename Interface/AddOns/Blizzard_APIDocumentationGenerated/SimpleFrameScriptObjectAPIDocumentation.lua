@@ -113,6 +113,7 @@ local SimpleFrameScriptObjectAPI =
 		{
 			Name = "IsPreventingSecretValues",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecrets },
 
 			Arguments =
 			{

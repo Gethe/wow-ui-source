@@ -465,9 +465,18 @@ function EncounterTimelineTrackEventMixin:SetIcon(iconFileID)
 	iconFrame:Show();
 end
 
-function EncounterTimelineTrackEventMixin:SetNameText(text)
+function EncounterTimelineTrackEventMixin:ClearNameText()
+	local fontString = self:GetNameFontString();
+	fontString:ClearText();
+	fontString:Hide();
+
+	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
+end
+
+function EncounterTimelineTrackEventMixin:SetNameText(text, color)
 	local fontString = self:GetNameFontString();
 	fontString:SetText(text or "");
+	fontString:SetTextColor(color:GetRGB());
 	fontString:SetShown(self:CanShowNameText(text));
 
 	self:MarkDirty(EncounterTimelineTrackEventDirtyFlag.TextAnchors);
@@ -676,7 +685,12 @@ end
 
 function EncounterTimelineTrackEventMixin:UpdateNameText()
 	local eventInfo = self:GetEventInfo();
-	self:SetNameText(eventInfo and eventInfo.spellName or "");
+
+	if eventInfo ~= nil then
+		self:SetNameText(eventInfo.spellName or "", eventInfo.color);
+	else
+		self:ClearNametext();
+	end
 end
 
 function EncounterTimelineTrackEventMixin:UpdateOrientation()

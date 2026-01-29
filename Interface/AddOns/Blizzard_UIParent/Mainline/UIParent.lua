@@ -2384,6 +2384,8 @@ function ToggleGameMenu()
 	elseif(ALLOW_PLAYER_CHOICE_ON_GAME_MENU_TOGGLE and PlayerChoiceFrame and PlayerChoiceFrame:IsShown()) then
 	elseif(ReportFrame and ReportFrame:IsShown()) then
 		ReportFrame:Hide();
+	elseif(HousingPhotoSharingFrame and HousingPhotoSharingFrame:IsShown()) then
+		HousingPhotoSharingFrame:Hide();
 	else
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		ShowUIPanel(GameMenuFrame);

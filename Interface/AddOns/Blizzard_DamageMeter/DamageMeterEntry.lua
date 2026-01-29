@@ -1,5 +1,3 @@
-local DAMAGE_METER_DEFAULT_STATUSBAR_COLOR = CreateColor(1, 0.84, 0.52);
-
 DamageMeterEntryMixin = {};
 
 function DamageMeterEntryMixin:GetIcon()
@@ -58,6 +56,19 @@ function DamageMeterEntryMixin:UpdateIcon()
 			self:GetIcon():SetTexture(texture);
 		end
 	end
+end
+
+function DamageMeterEntryMixin:GetClassificationAtlasElement()
+	-- Using same logic as NamePlateClassificationFrameMixin
+	if self.classification == "elite" or self.classification == "worldboss" then
+		return "nameplates-icon-elite-gold";
+	elseif self.classification == "rare" then
+		return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star";
+	elseif self.classification == "rareelite" then
+		return "nameplates-icon-elite-silver";
+	end
+
+	return nil;
 end
 
 function DamageMeterEntryMixin:GetNameText()
@@ -284,7 +295,11 @@ function DamageMeterEntryMixin:UpdateStyle()
 end
 
 function DamageMeterEntryMixin:GetDefaultStatusBarColor()
-	return DAMAGE_METER_DEFAULT_STATUSBAR_COLOR;
+	return DAMAGE_METER_STATUS_BAR_DEFAULT_COLOR;
+end
+
+function DamageMeterEntryMixin:GetCreatureStatusBarColor()
+	return DAMAGE_METER_STATUS_BAR_CREATURE_COLOR;
 end
 
 function DamageMeterEntryMixin:GetStatusBarColor()
@@ -301,6 +316,10 @@ end
 
 function DamageMeterEntryMixin:GetDesiredBarColor()
 	if self.isClassColorDesired then
+		if self:IsCreature() then
+			return self:GetCreatureStatusBarColor();
+		end
+
 		local classFilename = self.classFilename or self.unitClassFilename;
 		if classFilename then
 			return RAID_CLASS_COLORS[classFilename] or self:GetDefaultStatusBarColor();
@@ -434,8 +453,14 @@ function DamageMeterSourceEntryMixin:Init(combatSource)
 	self.specIconID = combatSource.specIconID;
 	self.deathRecapID = combatSource.deathRecapID;
 	self.deathTimeSeconds = combatSource.deathTimeSeconds;
+	self.isCreature = combatSource.sourceCreatureID ~= nil;
+	self.classification = combatSource.classification;
 
 	DamageMeterEntryMixin.Init(self, combatSource);
+end
+
+function DamageMeterSourceEntryMixin:IsCreature()
+	return self.isCreature;
 end
 
 function DamageMeterSourceEntryMixin:GetIconAtlasElement()
@@ -455,12 +480,24 @@ function DamageMeterEntryMixin:GetIconTexture()
 	return self.specIconID;
 end
 
+function DamageMeterEntryMixin:GetFormattedSourceNameText()
+	-- Insert the classification image if its provided.
+	local classificationAtlasElement = self:GetClassificationAtlasElement();
+	if classificationAtlasElement then
+		local atlasMarkup = CreateAtlasMarkup(classificationAtlasElement);
+		return string.format("%s %s", atlasMarkup, self.sourceName);
+	end
+
+	return self.sourceName;
+end
+
 function DamageMeterSourceEntryMixin:GetNameText()
 	if self.deathRecapID and self.deathRecapID ~= 0 then
 		return self.sourceName;
 	end
 
-	return DAMAGE_METER_SOURCE_NAME:format(self.index, self.sourceName);
+	local formattedSourceName = self:GetFormattedSourceNameText();
+	return DAMAGE_METER_SOURCE_NAME:format(self.index, formattedSourceName);
 end
 
 function DamageMeterSourceEntryMixin:GetMaxStatusValue()
@@ -487,6 +524,11 @@ deathTimeFormatter:SetMinInterval(SecondsFormatter.Interval.Seconds);
 
 function DamageMeterSourceEntryMixin:GetValueText()
 	if self.deathRecapID and self.deathRecapID ~= 0 then
+		-- no timestamps for overall session
+		if self.deathTimeSeconds == -1 then
+			return "";
+		end
+
 		local totalSeconds = self.deathTimeSeconds or 0;
 		return deathTimeFormatter:Format(totalSeconds);
 	end
@@ -505,6 +547,7 @@ function DamageMeterSpellEntryMixin:Init(combatSpell)
 	self.isPet = combatSpell.combatSpellDetails.isPet;
 	self.isMob = combatSpell.combatSpellDetails.isMob;
 	self.classFilename = combatSpell.classFilename;
+	self.specIconID = combatSpell.combatSpellDetails.specIconID;
 
 	DamageMeterEntryMixin.Init(self, combatSpell);
 
@@ -534,6 +577,10 @@ function DamageMeterSpellEntryMixin:GetSpellID()
 end
 
 function DamageMeterSpellEntryMixin:GetIconTexture()
+	if self.specIconID and self.specIconID ~= 0 then
+		return self.specIconID;
+	end
+
 	if not self.spellID then
 		return nil;
 	end
@@ -551,19 +598,6 @@ function DamageMeterSpellEntryMixin:GetUnitNameText()
 	end
 
 	return self.unitName;
-end
-
-function DamageMeterSpellEntryMixin:GetClassificationAtlasElement()
-	-- Using same logic as NamePlateClassificationFrameMixin
-	if self.classification == "elite" or self.classification == "worldboss" then
-		return "nameplates-icon-elite-gold";
-	elseif self.classification == "rare" then
-		return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star";
-	elseif self.classification == "rareelite" then
-		return "nameplates-icon-elite-silver";
-	end
-
-	return nil;
 end
 
 function DamageMeterSpellEntryMixin:GetFormattedUnitNameText()
@@ -594,7 +628,11 @@ function DamageMeterSpellEntryMixin:GetNameText()
 	-- Special formatting for when another unit is the subject and the player is the object (e.g. damage taken)
 	if self.unitName and #self.unitName > 0 then
 		local formattedUnitName = self:GetFormattedUnitNameText();
-		return DAMAGE_METER_SPELL_ENTRY_UNIT:format(spellName, formattedUnitName);
+		if spellName and #spellName > 0 then
+			return DAMAGE_METER_SPELL_ENTRY_UNIT:format(spellName, formattedUnitName);
+		end
+
+		return formattedUnitName;
 	end
 
 	return spellName;
@@ -602,13 +640,4 @@ end
 
 function DamageMeterSpellEntryMixin:GetNumberDisplayType()
 	return Enum.DamageMeterNumbers.Complete;
-end
-
-function DamageMeterSpellEntryMixin:GetDesiredBarColor()
-	if self.isClassColorDesired and self:IsCreature() then
-		-- NOTE: DamageMeterSpellEntryMixin has special behavior for non-pet creatures.
-		return RED_FONT_COLOR;
-	end
-
-	return DamageMeterEntryMixin.GetDesiredBarColor(self);
 end

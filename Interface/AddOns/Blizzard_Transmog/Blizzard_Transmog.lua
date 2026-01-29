@@ -1218,6 +1218,18 @@ TransmogWardrobeMixin = {
 			acknowledgeOnHide = true,
 			cvarBitfield = "closedInfoFramesAccountWide",
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations
+		},
+		[Enum.FrameTutorialAccount.TransmogCustomSetsMigration] =
+		{
+			text = TRANSMOG_CUSTOM_SETS_MIGRATION_HELPTIP,
+			buttonStyle = HelpTip.ButtonStyle.Close,
+			targetPoint = HelpTip.Point.BottomEdgeCenter,
+			alignment = HelpTip.Alignment.Center,
+			offsetY = 5,
+			system = "TransmogWardrobe",
+			acknowledgeOnHide = true,
+			cvarBitfield = "closedInfoFramesAccountWide",
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSetsMigration
 		}
 	};
 };
@@ -1261,7 +1273,9 @@ function TransmogWardrobeMixin:SetToDefaultAvailableTab()
 end
 
 function TransmogWardrobeMixin:SetToItemsTab()
-	self:SetTab(self.itemsTabID);
+	if TabSystemOwnerMixin.GetTab(self) ~= self.itemsTabID then
+		self:SetTab(self.itemsTabID);
+	end
 end
 
 function TransmogWardrobeMixin:SetTab(tabID)
@@ -1276,12 +1290,29 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 
 	local helpTipParent = self:GetTabButton(tabID);
 	local bitfieldFlag;
-	if tabID == self.setsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSets;
-	elseif tabID == self.custmSetsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSets;
-	elseif tabID == self.situationsTabID then
-		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations;
+
+	-- Only show custom set migration helptip if the player has any custom sets, otherwise mark it as seen and check the other tips.
+	if not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogCustomSetsMigration) then
+		local customSets = C_TransmogCollection.GetCustomSets();
+		if #customSets > 0 then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSetsMigration;
+			helpTipParent = self:GetTabButton(self.custmSetsTabID);
+		else
+			local helptipInfo = self.HELPTIP_INFO[Enum.FrameTutorialAccount.TransmogCustomSetsMigration];
+			if helptipInfo then
+				SetCVarBitfield(helptipInfo.cvarBitfield, helptipInfo.bitfieldFlag, true);
+			end
+		end
+	end
+
+	if not bitfieldFlag then
+		if tabID == self.setsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSets;
+		elseif tabID == self.custmSetsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSets;
+		elseif tabID == self.situationsTabID then
+			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations;
+		end
 	end
 
 	if bitfieldFlag and not GetCVarBitfield("closedInfoFramesAccountWide", bitfieldFlag) then
@@ -1295,8 +1326,8 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 end
 
 function TransmogWardrobeMixin:UpdateSlot(slotData, forceRefresh)
-	self:SetToItemsTab();
 	self.TabContent.ItemsFrame:UpdateSlot(slotData, forceRefresh);
+	self:SetToItemsTab();
 end
 
 
@@ -1343,13 +1374,6 @@ function TransmogWardrobeItemsMixin:OnLoad()
 	else
 		displayTypeUnassignedButton.SavedFrame.Anim:SetScript("OnFinished", function()
 			displayTypeUnassignedButton.SavedFrame:Hide();
-		end);
-
-		displayTypeUnassignedButton:SetScript("OnEnter", function(button)
-			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-			GameTooltip_AddHighlightLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED);
-			GameTooltip_AddNormalLine(GameTooltip, TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_TOOLTIP);
-			GameTooltip:Show();
 		end);
 
 		displayTypeUnassignedButton:SetScript("OnLeave", GameTooltip_Hide);
@@ -1655,8 +1679,19 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 		return;
 	end
 
+	-- Slightly different logic if the current weapon option is an artifact option.
+	local artifactOptionSelected = false;
+	if selectedSlotData.artifactOptionsInfo then
+		for _index, artifactOptionInfo in ipairs(selectedSlotData.artifactOptionsInfo) do
+			if artifactOptionInfo.weaponOption == selectedSlotData.currentWeaponOptionInfo.weaponOption then
+				artifactOptionSelected = true;
+				break;
+			end
+		end
+	end
+
 	unassignedButton:SetShown(DisplayTypeUnassignedSupported());
-	equippedButton:Show();
+	equippedButton:SetShown(not artifactOptionSelected);
 
 	local function SetDisplayTypeButtonState(displayTypeButton, selected)
 		local stateAtlas;
@@ -1715,6 +1750,17 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 
 	-- Unassigned Button.
 	if unassignedButton:IsShown() then
+		local buttonText = artifactOptionSelected and TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_ARTIFACT or TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED;
+		local tooltipText = artifactOptionSelected and TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_ARTIFACT_TOOLTIP or TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED_TOOLTIP;
+
+		unassignedButton:SetText(buttonText);
+		unassignedButton:SetScript("OnEnter", function(button)
+			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+			GameTooltip_AddHighlightLine(GameTooltip, buttonText);
+			GameTooltip_AddNormalLine(GameTooltip, tooltipText);
+			GameTooltip:Show();
+		end);
+
 		unassignedButton.IconFrame.Icon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
 
 		local isUnassigned = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned;
@@ -1722,20 +1768,22 @@ function TransmogWardrobeItemsMixin:RefreshDisplayTypeButtons()
 	end
 
 	-- Equipped Button.
-	local equippedIcon = equippedButton.IconFrame.Icon;
-	if outfitSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.Ok then
-		equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
-	else
-		local textureName = GetInventoryItemTexture("player", selectedSlotData.transmogLocation:GetSlotID());
-		if textureName then
-			equippedIcon:SetTexture(textureName);
-		else
+	if equippedButton:IsShown() then
+		local equippedIcon = equippedButton.IconFrame.Icon;
+		if outfitSlotInfo.warning ~= Enum.TransmogOutfitSlotWarning.Ok then
 			equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
+		else
+			local textureName = GetInventoryItemTexture("player", selectedSlotData.transmogLocation:GetSlotID());
+			if textureName then
+				equippedIcon:SetTexture(textureName);
+			else
+				equippedIcon:SetAtlas(unassignedAtlas, TextureKitConstants.UseAtlasSize);
+			end
 		end
-	end
 
-	local isEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
-	SetDisplayTypeButtonState(equippedButton, isEquipped);
+		local isEquipped = outfitSlotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped;
+		SetDisplayTypeButtonState(equippedButton, isEquipped);
+	end
 end
 
 function TransmogWardrobeItemsMixin:RefreshSecondaryAppearanceToggle()

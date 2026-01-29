@@ -142,6 +142,8 @@ local SimpleAnimGroupAPI =
 		{
 			Name = "HasScript",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectType },
+			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

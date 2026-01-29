@@ -17,6 +17,7 @@ local SimpleFrameAPI =
 		{
 			Name = "CanChangeAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.ObjectSecurity },
 
 			Arguments =
 			{
@@ -39,6 +40,7 @@ local SimpleFrameAPI =
 			Name = "ClearAttribute",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "NotAllowed",
 
 			Arguments =
@@ -225,6 +227,7 @@ local SimpleFrameAPI =
 		{
 			Name = "ExecuteAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -256,6 +259,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			ConstSecretAccessor = true,
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -1058,6 +1062,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttribute",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -1069,6 +1074,7 @@ local SimpleFrameAPI =
 		{
 			Name = "SetAttributeNoHandler",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Attributes },
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

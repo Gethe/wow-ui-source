@@ -26,7 +26,7 @@ function HousingBulletinBoardFrameMixin:OnHide()
 end
 
 function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
-	self.GearDropdown:Show();
+	
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.neighborhoodOwnerType = neighborhoodInfo.neighborhoodOwnerType;
 	self.ResidentsTab:OnNeighborhoodInfoUpdated(neighborhoodInfo);
@@ -37,9 +37,15 @@ function HousingBulletinBoardFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodIn
 		self.Background:SetAtlas(bgAtlasPrefix .. bgAtlasSuffix);
 	end
 
-	self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
-	end);
+	if self.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.Charter or self.neighborhoodOwnerType == Enum.NeighborhoodOwnerType.Guild then
+		self.GearDropdown:Show();
+
+		self.GearDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:CreateButton(HOUSING_BULLETINBOARD_REPORT, GenerateClosure(self.ReportNeighborhood, self));
+		end);
+	else
+		self.GearDropdown:Hide();
+	end
 end
 
 function HousingBulletinBoardFrameMixin:ReportNeighborhood()
@@ -507,7 +513,6 @@ local NeighborhoodInviteErrorTypeStrings = {
 	[Enum.NeighborhoodInviteResult.InviteLimit] = HOUSING_NEIGHBORHOOD_INVITE_ERR_LIMIT,
 	[Enum.NeighborhoodInviteResult.NotEnoughPlots] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NO_PLOTS,
 	[Enum.NeighborhoodInviteResult.NotFound] = HOUSING_NEIGHBORHOOD_INVITE_ERR_NOT_FOUND,
-	[Enum.NeighborhoodInviteResult.Ignored] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
 	[Enum.NeighborhoodInviteResult.AlreadyInNeighborhood] = HOUSING_NEIGHBORHOOD_INVITE_ERR_GENERIC,
 };
 
@@ -658,27 +663,20 @@ StaticPopupDialogs["HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE"] = {
 	button2 = CANCEL,
 	timeout = 0,
 	exclusive = 1,
+	OnAccept = function(self)
+		C_HousingNeighborhood.CancelInviteToNeighborhood(HousingInviteResidentFrame.pendingCancelInvite.RemoveButton.playerName);
+	end,
+	OnCancel = function (self)
+		HousingInviteResidentFrame.pendingCancelInvite.LoadingSpinner:Hide();
+		HousingInviteResidentFrame.pendingCancelInvite.RemoveButton:Enable();
+		PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_BUY_CANCEL);
+	end,
 };
 
 function HousingInviteResidentFrameMixin:CancelInviteClicked(pendingInviteFrame)
 	self.pendingCancelInvite = pendingInviteFrame;
 	PlaySound(SOUNDKIT.HOUSING_BULLETIN_BOARD_INVITE_RESIDENTS_BUTTONS);
-	local dialog = StaticPopup_Show("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE", self.pendingCancelInvite.RemoveButton.playerName);
-	local acceptButton = dialog:GetButton1();
-	acceptButton:SetScript("OnClick", GenerateClosure(self.CancelInviteConfirmed, self));
-	local cancelButton = dialog:GetButton2();
-	cancelButton:SetScript("OnClick", GenerateClosure(self.CancelInviteCancelled, self));
-end
-
-function HousingInviteResidentFrameMixin:CancelInviteConfirmed()
-	C_HousingNeighborhood.CancelInviteToNeighborhood(self.pendingCancelInvite.RemoveButton.playerName);
-	StaticPopup_Hide("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE");
-end
-
-function HousingInviteResidentFrameMixin:CancelInviteCancelled()
-	self.pendingCancelInvite.LoadingSpinner:Hide();
-	self.pendingCancelInvite.RemoveButton:Enable();
-	StaticPopup_Hide("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE");
+	StaticPopup_Show("HOUSING_BULLETIN_CONFIRM_CANCEL_NEIGHBORHOOD_INVITE", self.pendingCancelInvite.RemoveButton.playerName, nil, self);
 end
 
 --///////////////////////////////

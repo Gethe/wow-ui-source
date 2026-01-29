@@ -114,7 +114,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
 				</Anchors>
 				<SwipeTexture>
-					<Color r="0" g="0" b="0" a="1"/>
+					<Color r="0" g="0" b="0" a="0.8"/>
 				</SwipeTexture>
 			</Cooldown>
 			<Cooldown parentKey="lossOfControlCooldown" inherits="CooldownFrameTemplate" drawBling="false" hideCountdownNumbers="true" useParentLevel="true">
@@ -123,7 +123,7 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.icon" x="-3" y="3"/>
 				</Anchors>
 				<SwipeTexture>
-					<Color r="0.17" g="0" b="0" a="1"/>
+					<Color r="0.17" g="0" b="0" a="0.8"/>
 				</SwipeTexture>
 				<EdgeTexture file="Interface\Cooldown\UI-HUD-ActionBar-LoC"/>
 			</Cooldown>
@@ -194,7 +194,7 @@
 			<OnDragStart method="ActionBarButtonMixin_OnDragStart"/>
 		</Scripts>
 	</CheckButton>
-	
+
 	<CheckButton name="SmallActionButtonTemplate" inherits="ActionButtonTemplate" mixin="SmallActionButtonMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="hotkeyX" value="-3" type="number"/>

@@ -58,6 +58,13 @@ CombatAudioAlertConstants =
 
 		SAY_INTERRUPT_CAST_CVAR = {name = "CAAInterruptCast", refreshEvents = true},
 		SAY_INTERRUPT_CAST_SUCCESS_CVAR = {name = "CAAInterruptCastSuccess", refreshEvents = true},
+
+		SAY_YOUR_DEBUFFS_CVAR = {name = "CAASayYourDebuffs", refreshEvents = true},
+		SAY_YOUR_DEBUFFS_FORMAT_CVAR = {name = "CAASayYourDebuffsFormat"},
+		SAY_YOUR_DEBUFFS_MIN_DURATION_CVAR = {name = "CAASayYourDebuffsMinDuration"},
+		SAY_YOUR_DEBUFFS_VOICE_CVAR = {name = "CAASayYourDebuffsVoice", playSample = true, categoryType = Enum.CombatAudioAlertCategory.PlayerDebuffs},
+		SAY_YOUR_DEBUFFS_VOLUME_CVAR = {name = "CAASayYourDebuffsVolume", playSample = true, categoryType = Enum.CombatAudioAlertCategory.PlayerDebuffs},
+		DEBUFF_SELF_ALERT_CVAR = {name = "CAADebuffSelfAlert", refreshEvents = true},
 	},
 
 	PARTY_HEALTH_UPDATE_MIN_SECONDS = 1;

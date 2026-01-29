@@ -124,8 +124,8 @@
 	</Layers>
 	<Scripts>
 		<OnEnter method="OnEnter"/>
+		<OnLeave method="OnLeave"/>
 		<OnClick method="OnClick"/>
-		<OnLeave function="GameTooltip_Hide"/>
 	</Scripts>
 </Button>
 
@@ -135,6 +135,12 @@
 	<Layers>
 		<Layer level="BACKGROUND">
 			<Texture parentKey="BG" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false">
+				<Size x="400" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="BGAlphaAdd" alphaMode="ADD" alpha="0.7" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false" hidden="true">
 				<Size x="400" y="40"/>
 				<Anchors>
 					<Anchor point="CENTER" x="10"/>
@@ -164,8 +170,8 @@
 	</Layers>
 	<Scripts>
 		<OnEnter method="OnEnter"/>
+		<OnLeave method="OnLeave"/>
 		<OnClick method="OnClick"/>
-		<OnLeave function="GameTooltip_Hide"/>
 	</Scripts>
 </Button>
 
@@ -583,10 +589,10 @@
 															<Anchor point="LEFT" x="15" y="0"/>
 														</Anchors>
 													</FontString>
-													<FontString parentKey="ProgressText" inherits="GameFontHighlight" hidden="true">
+													<FontString parentKey="ProgressText" inherits="GameFontHighlight">
 														<Size x="0" y="0"/>
 														<Anchors>
-															<Anchor point="RIGHT" x="-30" y="0"/>
+															<Anchor point="RIGHT" x="-10" y="0"/>
 														</Anchors>
 													</FontString>
 												</Layer>
@@ -646,20 +652,11 @@
 													<Anchor point="RIGHT"/>
 												</Anchors>
 											</Texture>
-
-											<Texture parentKey="BorderRight" file="Interface\Housing\HousingDashboardInitiativesDividerVert">
-												<Size x="15" y="16"/>
-												<Anchors>
-													<Anchor point="TOP" y="-16"/>
-													<Anchor point="BOTTOM"/>
-													<Anchor point="RIGHT" x="11"/>
-												</Anchors>
-											</Texture>
 										</Layer>
 									</Layers>
 									<Frames>
 										<Button parentKey="SwitchActiveNeighborhoodBtn" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_SET_AS_ACTIVE_INITIATIVE_LABEL" mixin="InitiativeActiveNeighborhoodSwitcherMixin">
-											<Size x="200" y="40"/>
+											<Size x="200" y="22"/>
 											<Anchors>
 												<Anchor point="CENTER" y="65"/>
 											</Anchors>
@@ -809,7 +806,7 @@
 								<!-- Initiative Activity Log -->
 								<Frame parentKey="InitiativeActivity" useParentLevel="true">
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.InitiativeTasks" relativePoint="RIGHT" y="-1"/>
+										<Anchor point="LEFT" relativeKey="$parent.InitiativeTasks" relativePoint="RIGHT"/>
 										<Anchor point="RIGHT"/>
 										<Anchor point="BOTTOM"/>
 									</Anchors>

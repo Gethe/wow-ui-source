@@ -73,7 +73,7 @@ local function Register()
 			local function OnButtonClick()
 				ToggleTextToSpeechFrame();
 			end;
-			local initializer = CreateSettingsCheckboxWithButtonInitializer(ttsSetting, CONFIGURE_TEXT_TO_SPEECH, OnButtonClick, true, OPTION_TOOLTIP_ENABLE_TEXT_TO_SPEECH);
+			local initializer = CreateSettingsCheckboxWithButtonInitializer(ttsSetting, CONFIGURE_TEXT_TO_SPEECH, OnButtonClick, nil, true, OPTION_TOOLTIP_ENABLE_TEXT_TO_SPEECH);
 			AddTTSSearchTags(initializer);
 			layout:AddInitializer(initializer);
 		end
@@ -1013,6 +1013,85 @@ local function Register()
 					return container:GetData();
 				end
 				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_TARGET_CASTS_INTERRUPT_SUCCESS_TOOLTIP);
+				InitCAAOption(initializer);
+			end
+
+			-- Say Your Debuffs
+			local sayYourDebuffsSetting, sayYourDebuffsInitializer = Settings.SetupCVarCheckbox(category, "CAASayYourDebuffs", CAA_SAY_YOUR_DEBUFFS_LABEL, CAA_SAY_YOUR_DEBUFFS_TOOLTIP);
+			InitCAAOption(sayYourDebuffsInitializer);
+
+			local function SayYourDebuffsOptionsModifiable()
+				return GetCVarBool("CAASayYourDebuffs");
+			end
+
+			-- Say Your Debuffs Format
+			do
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					for index, formatInfo in CombatAudioAlertUtil.EnumeratePlayerDebuffFormatInfo() do
+						container:Add(index - 1, CombatAudioAlertUtil.GetFormattedString(formatInfo, CAA_SAMPLE_DEBUFFNAME));
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterCVarSetting(category, "CAASayYourDebuffsFormat", Settings.VarType.Number, CAA_SAY_YOUR_DEBUFFS_FORMAT_LABEL);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_SAY_YOUR_DEBUFFS_FORMAT_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayYourDebuffsInitializer, SayYourDebuffsOptionsModifiable);
+			end
+
+			-- Say Your Debuffs Voice
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAASayYourDebuffsVoice", Settings.VarType.Number, CAA_VOICE_LABEL);
+				local initializer = Settings.CreateDropdown(category, setting, GetVoiceOptions, CAA_SAY_YOUR_DEBUFFS_VOICE_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayYourDebuffsInitializer, SayYourDebuffsOptionsModifiable);
+			end
+
+			-- Say Your Debuffs Minimum Duration
+			do
+				local setting = Settings.RegisterCVarSetting(category, "CAASayYourDebuffsMinDuration", Settings.VarType.Number, CAA_SAY_YOUR_DEBUFFS_MIN_DURATION_LABEL);
+
+				local options = Settings.CreateSliderOptions(Constants.CAAConstants.CAASayYourDebuffsMinDurationMin, Constants.CAAConstants.CAASayYourDebuffsMinDurationMax, Constants.CAAConstants.CAASayYourDebuffsMinDurationStep);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatSeconds);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_YOUR_DEBUFFS_MIN_DURATION_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayYourDebuffsInitializer, SayYourDebuffsOptionsModifiable);
+			end
+
+			-- Say Your Debuffs Volume
+			do
+				local function GetValue()
+					return C_CombatAudioAlert.GetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerDebuffs);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerDebuffs, value);
+				end
+
+				local setting = Settings.RegisterProxySetting(category, "PROXY_CAA_PLAYER_DEBUFFS_VOLUME",
+					Settings.VarType.Number, CAA_VOLUME_LABEL, Constants.TTSConstants.TTSVolumeDefault, GetValue, SetValue);
+
+				local options = Settings.CreateSliderOptions(Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1);
+				options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+				local initializer = Settings.CreateSlider(category, setting, options, CAA_SAY_YOUR_DEBUFFS_VOLUME_TOOLTIP);
+				InitCAAOption(initializer);
+				initializer:SetParentInitializer(sayYourDebuffsInitializer, SayYourDebuffsOptionsModifiable);
+			end
+
+			-- Debuff Self Alert
+			do
+				local function GetOptions()
+					local container = Settings.CreateControlTextContainer();
+					container:Add(Enum.CombatAudioAlertDebuffSelfAlertValues.Off, LOC_OPTION_OFF);
+					container:Add(Enum.CombatAudioAlertDebuffSelfAlertValues.DispelType, CAA_DEBUFF_SELF_ALERT_FORMAT_DEBUFF_TYPE:format(CAA_SAMPLE_DISPELTTYPE));
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterCVarSetting(category, "CAADebuffSelfAlert", Settings.VarType.Number, CAA_DEBUFF_SELF_ALERT_LABEL);
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, CAA_DEBUFF_SELF_ALERT_TOOLTIP);
 				InitCAAOption(initializer);
 			end
 		end

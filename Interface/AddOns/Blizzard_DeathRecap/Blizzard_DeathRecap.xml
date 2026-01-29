@@ -88,15 +88,6 @@
 				</Layers>
 			</Frame>
 		</Frames>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="Tombstone" atlas="deathrecap-icon-tombstone" useAtlasSize="true">
-					<Anchors>
-						<Anchor point="LEFT"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

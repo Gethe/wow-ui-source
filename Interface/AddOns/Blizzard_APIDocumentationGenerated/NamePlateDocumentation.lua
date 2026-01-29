@@ -14,7 +14,7 @@ local NamePlate =
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
+				{ Name = "unitToken", Type = "UnitTokenNamePlate", Nilable = false },
 				{ Name = "includeForbidden", Type = "bool", Nilable = false, Default = false },
 			},
 
@@ -43,16 +43,6 @@ local NamePlate =
 			},
 		},
 		{
-			Name = "GetTargetClampingInsets",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "top", Type = "uiUnit", Nilable = false },
-				{ Name = "bottom", Type = "uiUnit", Nilable = false },
-			},
-		},
-		{
 			Name = "SetNamePlateSize",
 			Type = "Function",
 			HasRestrictions = true,
@@ -62,18 +52,6 @@ local NamePlate =
 			{
 				{ Name = "width", Type = "uiUnit", Nilable = false },
 				{ Name = "height", Type = "uiUnit", Nilable = false },
-			},
-		},
-		{
-			Name = "SetTargetClampingInsets",
-			Type = "Function",
-			HasRestrictions = true,
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "top", Type = "uiUnit", Nilable = false, Default = 0 },
-				{ Name = "bottom", Type = "uiUnit", Nilable = false, Default = 0 },
 			},
 		},
 	},

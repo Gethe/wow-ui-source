@@ -7,6 +7,38 @@ local UnitHealPredictionCalculatorAPI =
 	Functions =
 	{
 		{
+			Name = "EvaluateCurrentHealthPercent",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Calculates the percentage of current unit health and evaluates it against the supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
+			Name = "EvaluateMissingHealthPercent",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Calculates the percentage of missing unit health and evaluates it against the supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentHealth",
 			Type = "Function",
 			Documentation = { "Returns the base amount of unit health." },
@@ -18,6 +50,20 @@ local UnitHealPredictionCalculatorAPI =
 			Returns =
 			{
 				{ Name = "currentHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetCurrentHealthPercent",
+			Type = "Function",
+			Documentation = { "Returns the percentage of current unit health." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "currentHealthPercent", Type = "number", Nilable = false },
 			},
 		},
 		{
@@ -225,6 +271,20 @@ local UnitHealPredictionCalculatorAPI =
 			Returns =
 			{
 				{ Name = "missingHealth", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMissingHealthPercent",
+			Type = "Function",
+			Documentation = { "Returns the percentage of missing unit health." },
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "missingHealthPercent", Type = "number", Nilable = false },
 			},
 		},
 		{

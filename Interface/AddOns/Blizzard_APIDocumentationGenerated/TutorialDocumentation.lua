@@ -82,9 +82,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 46,
+			NumValues = 47,
 			MinValue = 1,
-			MaxValue = 46,
+			MaxValue = 47,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -133,6 +133,7 @@ local Tutorial =
 				{ Name = "TransmogSituations", Type = "FrameTutorialAccount", EnumValue = 44 },
 				{ Name = "TransmogWeaponOptions", Type = "FrameTutorialAccount", EnumValue = 45 },
 				{ Name = "TransmogTrialOfStyle", Type = "FrameTutorialAccount", EnumValue = 46 },
+				{ Name = "TransmogCustomSetsMigration", Type = "FrameTutorialAccount", EnumValue = 47 },
 			},
 		},
 	},

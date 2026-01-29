@@ -105,11 +105,13 @@ function ClassTalentButtonBaseMixin:UpdateGlow()
 	self:UpdateSelectableGlow();
 end
 
-function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
+function ClassTalentButtonBaseMixin:CanPlaySelectableGlow()
 	local isDoingStandardGlow = self.Glow and self.shouldGlow;
-	local canDoSelectableGlow = not isDoingStandardGlow and not self.selectableGlowDisabled;
+	return not isDoingStandardGlow and not self.selectableGlowDisabled;
+end
 
-	local playSelectableGlow = canDoSelectableGlow and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
+function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
+	local playSelectableGlow = self:CanPlaySelectableGlow() and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
 	self.SelectableGlow.Anim:SetPlaying(playSelectableGlow);
 end
 
@@ -440,6 +442,11 @@ function ClassTalentButtonCapstoneWithTrackMixin:UpdateEntryInfo(skipUpdate)
 	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
 	local useMajorSpendSound = self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneSquare;
 	self.selectSound = useMajorSpendSound and SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR or SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:CanPlaySelectableGlow()
+	-- Capstone nodes shouldn't play the "selectable glow" if the player has already encountered a purchasable capstone before
+	return ClassTalentButtonBaseMixin.CanPlaySelectableGlow(self) and not GetCVarBool("seenPurchasableClassCapstone");
 end
 
 function ClassTalentButtonCapstoneWithTrackMixin:GetCapstonePipMixin()

@@ -8,10 +8,6 @@ function EncounterWarningsUtil.GetFontObjectForSeverity(severity)
 	return GetValueOrCallFunction(EncounterWarningsSeverityFonts, severity);
 end
 
-function EncounterWarningsUtil.GetTextColorForSeverity(severity)
-	return GetValueOrCallFunction(EncounterWarningsSeverityColors, severity);
-end
-
 function EncounterWarningsUtil.GetMaximumTextSizeForSeverity(severity)
 	return GetValueOrCallFunction(EncounterWarningsSeverityTextSizeLimits, severity);
 end

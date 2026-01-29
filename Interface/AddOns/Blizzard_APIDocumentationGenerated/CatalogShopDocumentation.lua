@@ -24,6 +24,16 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "BulkRefundDecors",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "decorGUIDs", Type = "table", InnerType = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseCatalogShopInteraction",
 			Type = "Function",
 		},
@@ -447,6 +457,16 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "BulkRefundResultReceived",
+			Type = "Event",
+			LiteralName = "BULK_REFUND_RESULT_RECEIVED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "BulkRefundResult", Nilable = false },
+			},
+		},
+		{
 			Name = "CatalogShopAddPendingProduct",
 			Type = "Event",
 			LiteralName = "CATALOG_SHOP_ADD_PENDING_PRODUCT",
@@ -788,7 +808,8 @@ local CatalogShop =
 			{
 				{ Name = "decorGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "timeRemainingSeconds", Type = "time_t", Nilable = false },
-				{ Name = "standaloneDecorProductID", Type = "number", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "price", Type = "string", Nilable = false },
 			},
 		},
 	},

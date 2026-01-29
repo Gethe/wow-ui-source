@@ -64,7 +64,8 @@ local DamageMeter =
 			{
 				{ Name = "sessionID", Type = "number", Nilable = false },
 				{ Name = "type", Type = "DamageMeterType", Nilable = false },
-				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "sourceCreatureID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -83,7 +84,8 @@ local DamageMeter =
 			{
 				{ Name = "sessionType", Type = "DamageMeterSessionType", Nilable = false },
 				{ Name = "type", Type = "DamageMeterType", Nilable = false },
-				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "sourceCreatureID", Type = "number", Nilable = true },
 			},
 
 			Returns =
@@ -194,15 +196,17 @@ local DamageMeter =
 			Documentation = { "Aggregated data for a single source (unit) in a damage meter combat session." },
 			Fields =
 			{
-				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "sourceGUID", Type = "WOWGUID", Nilable = true },
+				{ Name = "sourceCreatureID", Type = "number", Nilable = true },
 				{ Name = "name", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "classFilename", Type = "cstring", Nilable = false, NeverSecret = true },
 				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
 				{ Name = "totalAmount", Type = "number", Nilable = false },
 				{ Name = "amountPerSecond", Type = "number", Nilable = false },
 				{ Name = "isLocalPlayer", Type = "bool", Nilable = false, NeverSecret = true },
-				{ Name = "deathRecapID", Type = "number", Nilable = false },
+				{ Name = "deathRecapID", Type = "number", Nilable = false, NeverSecret = true },
 				{ Name = "deathTimeSeconds", Type = "number", Nilable = false },
+				{ Name = "classification", Type = "cstring", Nilable = false, NeverSecret = true },
 			},
 		},
 		{
@@ -233,6 +237,7 @@ local DamageMeter =
 				{ Name = "isPet", Type = "bool", Nilable = false },
 				{ Name = "isMob", Type = "bool", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
+				{ Name = "specIconID", Type = "fileID", Nilable = false, NeverSecret = true },
 			},
 		},
 	},

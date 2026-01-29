@@ -200,24 +200,39 @@ function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	end
 end
 
-function CooldownViewerItemMixin:OnPlayerTotemUpdateEvent(slot, name, startTime, duration, modRate, spellID)
-	if not self:NeedsTotemUpdate(slot, spellID) then
-		return;
+function CooldownViewerItemMixin:GetPreferredTotemSlotInfo()
+	if self.preferredTotemUpdateSlot then
+		local totems = self:GetCurrentPlayerTotemCache();
+		local preferredTotemInfo = totems[self.preferredTotemUpdateSlot];
+		if preferredTotemInfo and preferredTotemInfo.spellID == self:GetSpellID() then
+			return preferredTotemInfo;
+		end
 	end
+end
 
-	if duration == 0 then
-		self:ClearTotemData();
+function CooldownViewerItemMixin:RefreshTotemData()
+	local previousTotemSlot = self:GetTotemSlot();
+	self:ClearTotemData();
+
+	local preferredTotemInfo = self:GetPreferredTotemSlotInfo();
+	if preferredTotemInfo then
+		self:SetTotemData(preferredTotemInfo);
 	else
-		self:SetTotemData({
-			slot = slot,
-			expirationTime = startTime + duration,
-			duration = duration,
-			name = name,
-			modRate = modRate;
-		});
+		local totems = self:GetCurrentPlayerTotemCache();
+		for slot, totemInfo in pairs(totems) do
+			if self:NeedsTotemUpdate(previousTotemSlot, slot, totemInfo.spellID) then
+				self:SetTotemData(totemInfo);
+				return;
+			end
+		end
 	end
+end
 
-	self:RefreshData();
+function CooldownViewerItemMixin:OnPlayerTotemUpdateEvent(slot, spellID)
+	if self:NeedsTotemUpdate(self:GetTotemSlot(), slot, spellID) then
+		self.preferredTotemUpdateSlot = slot;
+		self:RefreshData();
+	end
 end
 
 function CooldownViewerItemMixin:GetFallbackSpellTexture()
@@ -335,13 +350,10 @@ function CooldownViewerItemMixin:OnActiveStateChanged()
 end
 
 function CooldownViewerItemMixin:SetIsActive(active)
-	if active == self.isActive then
-		return;
+	if active ~= self.isActive then
+		self.isActive = active;
+		self:OnActiveStateChanged();
 	end
-
-	self.isActive = active;
-
-	self:OnActiveStateChanged();
 end
 
 function CooldownViewerItemMixin:IsActive()
@@ -407,7 +419,7 @@ function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
 	return false;
 end
 
-function CooldownViewerItemMixin:NeedsTotemUpdate(slot, spellID)
+function CooldownViewerItemMixin:NeedsTotemUpdate(previousTotemSlot, slot, spellID)
 	if self:UpdateLinkedSpell(spellID) then
 		return true;
 	end
@@ -418,8 +430,7 @@ function CooldownViewerItemMixin:NeedsTotemUpdate(slot, spellID)
 
 	-- If a totem is destroyed the totem's spellID may already be set to 0, in which case
 	-- it's necessary to use the slot to determine if the update is needed.
-	local totemData = self:GetTotemData();
-	if spellID == 0 and totemData and totemData.slot == slot then
+	if spellID == 0 and slot and previousTotemSlot == slot then
 		return true;
 	end
 
@@ -689,6 +700,7 @@ function CooldownViewerCooldownItemMixin:OnCooldownIDCleared()
 	self.previousCooldownChargesCount = nil;
 	self.cooldownChargesCount = nil;
 	self.cooldownChargesShown = nil;
+	self.preferredTotemUpdateSlot = nil;
 
 	if self.needsRangeCheck == true then
 		C_Spell.EnableSpellRangeCheck(self.rangeCheckSpellID, false);
@@ -778,6 +790,8 @@ function CooldownViewerCooldownItemMixin:NeedsSpellRangeUpdate(spellID)
 end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromAura(timeNow)
+	self:RefreshTotemData();
+
 	-- If the spell results in a self buff, give those values precedence over the spell's cooldown until the buff is gone.
 	if self:CanUseAuraForCooldown() then
 		local totemData = self:GetTotemData();
@@ -1250,6 +1264,7 @@ end
 
 function CooldownViewerBuffIconItemMixin:RefreshData()
 	self:ClearVisualDataSource();
+	self:RefreshTotemData();
 	self:RefreshAuraInstance();
 	self:RefreshCooldownInfo();
 	self:RefreshSpellTexture();
@@ -1407,6 +1422,7 @@ end
 
 function CooldownViewerBuffBarItemMixin:RefreshData()
 	self:RefreshAuraInstance();
+	self:RefreshTotemData();
 	self:RefreshSpellTexture();
 	self:RefreshCooldownInfo();
 	self:RefreshName();
@@ -1541,9 +1557,9 @@ function CooldownViewerMixin:OnEvent(event, ...)
 		self:OnUnitTarget(unit);
 	elseif event == "PLAYER_TOTEM_UPDATE" then
 		local slot = ...;
-		local _haveTotem, name, startTime, duration, _icon, modRate, spellID = GetTotemInfo(slot);
+		local _haveTotem, _name, _startTime, _duration, _icon, _modRate, spellID = GetTotemInfo(slot);
 		for itemFrame in self.itemFramePool:EnumerateActive() do
-			itemFrame:OnPlayerTotemUpdateEvent(slot, name, startTime, duration, modRate, spellID);
+			itemFrame:OnPlayerTotemUpdateEvent(slot, spellID);
 		end
 	end
 end

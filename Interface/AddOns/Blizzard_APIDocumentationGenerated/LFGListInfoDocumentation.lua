@@ -472,12 +472,36 @@ local LFGListInfo =
 			},
 		},
 		{
+			Name = "IsPlayerValidForEndgameFieldEdits",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPremadeGroupFinderEnabled",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ListingUsesEndgameEditRestrictions",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "activityID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isEndgameListing", Type = "bool", Nilable = false },
 			},
 		},
 		{

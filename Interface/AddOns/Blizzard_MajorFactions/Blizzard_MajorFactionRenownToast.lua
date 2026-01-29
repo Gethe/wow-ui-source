@@ -3,6 +3,13 @@ MajorFactionsRenownToastMixin = {};
 
 function MajorFactionsRenownToastMixin:OnLoad()
 	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED");
+
+	self.waitAndAnimOut:SetScript("OnFinished", function()
+		self:Hide();
+	end);
+	self.ShowAnim:SetScript("OnFinished", function()
+		self:OnAnimFinished();
+	end);
 end
 
 function MajorFactionsRenownToastMixin:OnEvent(event, ...)
@@ -111,31 +118,12 @@ function MajorFactionsRenownToastMixin:OnMouseEnter()
 	GameTooltip:SetPoint("LEFT", self.RewardIconMouseOver, "RIGHT", 10, 0);
 	self:RefreshTooltip();
 
-	if self.ShowAnim.HoldAlpha:IsPlaying() and not self.ShowAnim.HoldAlpha:IsDelaying() then
-		-- Holding already, just pause where we are
-		self.ShowAnim.HoldAlpha:Pause();
-	elseif self.ShowAnim.HoldAlpha:IsDone() then
-		-- We're starting to fade out, reset alpha and hold
-		self.ShowAnim.FadeAlpha:SetToAlpha(1);
-		self.ShowAnim.FadeAlpha:Pause();
-	else
-		-- Still showing the fade-in, OnHoldAnimStarted will handle the transition
-	end
+	self.waitAndAnimOut:Stop();
 end
 
 function MajorFactionsRenownToastMixin:OnMouseLeave()
-	self.ShowAnim.FadeAlpha:SetToAlpha(0);
-	self.ShowAnim:Stop();
-	local isReversed = false;
-	self.ShowAnim:Play(isReversed, 1.0);
-
+	self.waitAndAnimOut:Play();
 	GameTooltip_Hide(self);
-end
-
-function MajorFactionsRenownToastMixin:OnHoldAnimStarted()
-	if GameTooltip:GetOwner() == self.RewardIconMouseOver then
-		self.ShowAnim.HoldAlpha:Pause();
-	end
 end
 
 function MajorFactionsRenownToastMixin:RefreshTooltip()
@@ -173,10 +161,12 @@ function MajorFactionsRenownToastMixin:RefreshTooltip()
 end
 
 function MajorFactionsRenownToastMixin:StopBanner()
-	self.ShowAnim:Stop();
+	self.waitAndAnimOut:Stop();
 	self:Hide();
 end
 
 function MajorFactionsRenownToastMixin:OnAnimFinished()
-	self:Hide();
+	if GameTooltip:GetOwner() ~= self.RewardIconMouseOver then
+		self.waitAndAnimOut:Play();
+	end
 end

@@ -1122,7 +1122,7 @@ function PTR_IssueReporter.HookIntoTooltip(tooltip, tooltipType, tooltipID, tool
 		-- Check if we already added to this tooltip. Happens on the talent frame
 		local found = false
 		for i = 1,15 do
-			local frame = _G[tooltip:GetName() .. "TextLeft" .. i]
+			local frame = tooltip:GetLeftLine(i)
 			local text
 			if frame then text = frame:GetText() end
 			if (text) then

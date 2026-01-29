@@ -24,6 +24,18 @@ local DispelOverlayOrientation = EnumUtil.MakeEnum(
 	"HorizontalLeftToRight"
 );
 
+local function CompactUnitFrame_CreateAuraPriorityTables(frame)
+	assertsafe(frame.debuffs == nil, "CompactUnitFrame_CreateAuraPriorityTables called multiple times on the same frame");
+
+	frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
+	frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	frame.bigDefensives = TableUtil.CreatePriorityTable(AuraUtil.BigDefensiveAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	frame.dispels = {};
+	for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
+		frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
+	end
+end
+
 function CompactUnitFrame_OnLoad(self)
 	-- Names are required for concatenation of compact unit frame names. Search for
 	-- Name.."HealthBar" for examples. This is ignored by nameplates.
@@ -61,6 +73,7 @@ function CompactUnitFrame_OnLoad(self)
 	self.maxDebuffs = 0;
 	self.maxDispelDebuffs = 0;
 	CompactUnitFrame_SetOptionTable(self, OPTION_TABLE_NONE);
+	CompactUnitFrame_CreateAuraPriorityTables(self);
 
 	if not self.disableMouse then
 		CompactUnitFrame_SetUpClicks(self);
@@ -1633,16 +1646,10 @@ end
 
 --Other internal functions
 do
-	local function CompactUnitFrame_InitializePriorityTables(frame)
-		if frame.debuffs == nil then
-			frame.debuffs = TableUtil.CreatePriorityTable(AuraUtil.UnitFrameDebuffComparator, TableUtil.Constants.AssociativePriorityTable);
-			frame.buffs = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			frame.bigDefensives = TableUtil.CreatePriorityTable(AuraUtil.BigDefensiveAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			frame.dispels = {};
-			for type, _ in pairs(AuraUtil.DispellableDebuffTypes) do
-				frame.dispels[type] = TableUtil.CreatePriorityTable(AuraUtil.DefaultAuraCompare, TableUtil.Constants.AssociativePriorityTable);
-			end
-		else
+	local function CompactUnitFrame_ClearPriorityTables(frame)
+		assertsafe(frame.debuffs ~= nil, "Aura Priority tables not initialized for frame %s.", tostring(frame:GetDebugName()));
+
+		if frame.debuffs then
 			frame.debuffs:Clear();
 			frame.buffs:Clear();
 			frame.bigDefensives:Clear();
@@ -1736,7 +1743,7 @@ do
 		frame.buffsChanged = true;
 		frame.dispelsChanged = true;
 
-		CompactUnitFrame_InitializePriorityTables(frame);
+		CompactUnitFrame_ClearPriorityTables(frame);
 
 		local function HandleAura(aura)
 			CompactUnitFrame_ProcessAura(frame, aura, displayOnlyDispellableDebuffs, ignoreBuffs, ignoreDebuffs, ignoreDispelDebuffs, dispelIndicatorOption);

@@ -29,8 +29,8 @@
 			<Layer level="OVERLAY">
 				<FontString parentKey="NotActive" inherits="GameFontNormalMed1" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" x="20" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Background" relativePoint="BOTTOMRIGHT" x="-20" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="SessionTimer" inherits="GameFontNormalMed1" justifyH="LEFT">

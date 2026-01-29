@@ -1308,7 +1308,8 @@ function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 	if not text then
 		text = WrapTextInColor(self.recipeSchematic.name, NORMAL_FONT_COLOR);
 	end
-		
+
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
 	local maxWidth = minimized and 250 or 800;
 	local multiline = minimized;
 	if isRecipeInfoRecraft then

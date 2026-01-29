@@ -313,11 +313,32 @@ function TalentButtonCapstoneWithTrackMixin:CalculateIconTexture()
 	return TalentButtonUtil.CalculateIconTextureFromInfo(self.definitionInfo);
 end
 
+function TalentButtonCapstoneWithTrackMixin:IsMaxed()
+	local nodeInfo = self:GetNodeInfo();
+	if not nodeInfo then
+		return false;
+	end
+
+	return nodeInfo.ranksPurchased > 0 and nodeInfo.ranksPurchased >= nodeInfo.totalMaxRanks;
+end
+
+function TalentButtonCapstoneWithTrackMixin:HasProgressPastFirstPip()
+	local nodeInfo = self:GetNodeInfo();
+	if not nodeInfo or not nodeInfo.entryIDs or #nodeInfo.entryIDs <= 1 then
+		return false;
+	end
+
+	local firstEntryInfo = self:GetTalentFrame():GetAndCacheEntryInfo(nodeInfo.entryIDs[1]);
+	return firstEntryInfo and (nodeInfo.ranksPurchased > firstEntryInfo.maxRanks) or false;
+end
+
 function TalentButtonCapstoneWithTrackMixin:GetProgressBarAtlas()
 	local trackType = self.Track.trackType;
 	if self:IsMaxed() then
 		return trackType == "Round" and "talents-node-apex-bar-full" or "talents-node-apex-active-bar-full";
-	elseif self:HasProgress() then
+	elseif self:HasProgressPastFirstPip() then
+		-- Note: The existing progress bar art assets only support 3 pips per track so we use the 2nd pip as the halfway point
+		-- If we want more pips in the future then we need new art
 		return trackType == "Round" and "talents-node-apex-bar-half" or "talents-node-apex-active-bar-half";
 	else
 		return trackType == "Round" and "talents-node-apex-bar-base" or "talents-node-apex-active-bar-base";

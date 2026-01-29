@@ -117,6 +117,7 @@ function HouseEditorStorageFrameMixin:OnLoad()
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetDistinctPerRecordID(false);
 
 	local editorMode = C_HouseEditor.GetActiveHouseEditorMode();
 	self.catalogSearcher:SetEditorModeContext(editorMode);
@@ -310,6 +311,7 @@ end
 
 function HouseEditorStorageFrameMixin:OnStorageTabSelected(_isUserAction)
 	self.catalogSearcher:SetOwnedOnly(true);
+	self.catalogSearcher:SetDistinctPerRecordID(false);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = true;
 	categorySearchParams.includeFeaturedCategory = false;
@@ -331,6 +333,7 @@ function HouseEditorStorageFrameMixin:OnMarketTabSelected(isUserAction)
 	end
 
 	self.catalogSearcher:SetOwnedOnly(false);
+	self.catalogSearcher:SetDistinctPerRecordID(true);
 	local categorySearchParams = self.Categories:GetCategorySearchParams();
 	categorySearchParams.withOwnedEntriesOnly = false;
 	categorySearchParams.includeFeaturedCategory = self:ShouldShowMarketShop();

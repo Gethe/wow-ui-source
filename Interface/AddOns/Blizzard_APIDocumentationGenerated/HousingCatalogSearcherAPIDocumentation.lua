@@ -196,6 +196,19 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "IsDistinctPerRecordIDActive",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsFirstAcquisitionBonusOnlyActive",
 			Type = "Function",
 
@@ -317,6 +330,17 @@ local HousingCatalogSearcherAPI =
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Search parameter; If true, catalog entries that cannot be customized (ie dyed) will be excluded from the search" },
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDistinctPerRecordID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, only the first entry per recordID will be included" },
 
 			Arguments =
 			{
@@ -459,6 +483,14 @@ local HousingCatalogSearcherAPI =
 		},
 		{
 			Name = "ToggleCustomizableOnly",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
+			Name = "ToggleDistinctPerRecordID",
 			Type = "Function",
 
 			Arguments =

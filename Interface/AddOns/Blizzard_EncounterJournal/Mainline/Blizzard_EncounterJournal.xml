@@ -1603,13 +1603,13 @@
 									<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
 									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="55" y="-10"/>
+										<Anchor point="TOPLEFT" x="60" y="-16"/>
 									</Anchors>
 								</Texture>
 								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
 									<Size x="290" y="12"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.difficultyIcon" relativePoint="RIGHT" x="-4" y="0"/>
+										<!-- Anchored dynamically in lua-->
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>

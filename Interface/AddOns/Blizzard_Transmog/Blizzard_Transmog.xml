@@ -496,7 +496,7 @@
 											<Anchor point="TOPLEFT" relativeKey="$parent.ActiveSlotTitle" relativePoint="BOTTOMLEFT" x="16" y="-21"/>
 										</Anchors>
 										<Frames>
-											<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate" text="TRANSMOG_SLOT_DISPLAY_TYPE_UNASSIGNED">
+											<Button parentKey="DisplayTypeUnassignedButton" inherits="DisplayTypeButtonTemplate">
 												<KeyValues>
 													<KeyValue key="layoutIndex" value="1" type="number"/>
 												</KeyValues>

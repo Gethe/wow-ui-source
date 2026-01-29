@@ -108,7 +108,7 @@ end
 function GarrisonMonuntmentLock_OnEnter(self)
 	local trophy_id, lock_code, lock_reason, trophy_name = C_Trophy.MonumentGetTrophyInfoByIndex(GarrisonMonumentFrame.monumentID);
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(trophy_name or EMPTY, 1, 1, 1, true);
+	GameTooltip_SetTitle(GameTooltip, trophy_name or EMPTY);
 	if( lock_code == MATCH_CONDITION_WRONG_ACHIEVEMENT ) then
 		local _, ach_name, _, _, _, _, _, desc = GetAchievementInfo(lock_reason);
 		GameTooltip:AddLine(GARRISON_TROPHY_LOCKED_SUBTEXT.."\n\n"..ach_name, 1, .82, 0, true);

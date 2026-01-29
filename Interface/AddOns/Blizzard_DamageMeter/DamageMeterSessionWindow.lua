@@ -1,5 +1,5 @@
 local DAMAGE_METER_CATEGORIES = {
-	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken, Enum.DamageMeterType.AvoidableDamageTaken}; },
+	{ name = DAMAGE_METER_CATEGORY_DAMAGE; types = {Enum.DamageMeterType.DamageDone, Enum.DamageMeterType.Dps, Enum.DamageMeterType.DamageTaken, Enum.DamageMeterType.AvoidableDamageTaken, Enum.DamageMeterType.EnemyDamageTaken}; },
 	{ name = DAMAGE_METER_CATEGORY_HEALING; types = {Enum.DamageMeterType.HealingDone, Enum.DamageMeterType.Hps }; },
 	{ name = DAMAGE_METER_CATEGORY_ACTIONS; types = {Enum.DamageMeterType.Interrupts, Enum.DamageMeterType.Dispels, Enum.DamageMeterType.Deaths}; },
 };
@@ -32,6 +32,7 @@ local DAMAGE_METER_TYPE_NAMES = {
 	[Enum.DamageMeterType.DamageTaken] = DAMAGE_METER_TYPE_DAMAGE_TAKEN,
 	[Enum.DamageMeterType.AvoidableDamageTaken] = DAMAGE_METER_TYPE_AVOIDABLE_DAMAGE_TAKEN,
 	[Enum.DamageMeterType.Deaths] = DAMAGE_METER_TYPE_DEATHS,
+	[Enum.DamageMeterType.EnemyDamageTaken] = DAMAGE_METER_TYPE_ENEMY_DAMAGE_TAKEN,
 };
 
 local function GetDamageMeterTypeName(damageMeterType)
@@ -583,7 +584,7 @@ function DamageMeterSessionWindowMixin:BuildDataProvider(combatSession)
 		end
 
 		-- Determine if the source window is currently showing for this source and if its data is stale.
-		if combatSource.sourceGUID == sourceWindow:GetSourceGUID() then
+		if sourceWindow:IsShowingSource(combatSource) then
 			-- Changes in the total amount need to be reflected in the source window.
 			if combatSource.totalAmount ~= sourceWindow:GetTotalAmount() then
 				self.needsSourceWindowRefresh = true;

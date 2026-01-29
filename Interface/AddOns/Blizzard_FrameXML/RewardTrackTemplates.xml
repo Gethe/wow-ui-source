@@ -77,7 +77,7 @@
 		<Size x="135" y="130"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-reward-bar" useAtlasSize="true" setAllPoints="true"/>
+				<Texture parentKey="RewardCardBG" atlas="ui-journeys-delve-reward-bar" useAtlasSize="true" setAllPoints="true" parentArray="Textures"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" parentArray="Textures">
@@ -89,7 +89,7 @@
 				
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="LevelSquare" atlas="ui-journeys-delve-level-square">
+				<Texture parentKey="LevelSquare" atlas="ui-journeys-delve-level-square" parentArray="Textures">
 					<Size x="38" y="38"/>
 					<Anchors>
 						<Anchor point="TOP" y="9"/>
@@ -302,6 +302,16 @@
 		<Size x="570" y="185"/>
 		<Frames>
 			<Frame parentKey="ClipFrame" clipChildren="true" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<MaskTexture parentKey="Mask" atlas="ui-journeys-scroll-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="570" y="570"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</MaskTexture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="ParagonLevelFrame" hidden="true">
 						<Size x="200" y="50"/>

@@ -80,7 +80,7 @@ EncounterTimelineTrackSettingDefaults = {
 EncounterTimelineTimerSettingDefaults = {
 	ShowIcon = true,
 	ShowTimerSpark = true,
-	TimerFillDirection = Enum.StatusBarTimerDirection.ElapsedTime,
+	TimerFillDirection = Enum.StatusBarTimerDirection.RemainingTime,
 };
 
 EncounterTimelineTrackViewSettingDefaults = {
@@ -96,7 +96,7 @@ EncounterTimelineTrackViewSettingDefaults = {
 
 EncounterTimelineTimerViewSettingDefaults = {
 	-- Flow direction for timer bars.
-	TimerLayoutDirection = EncounterTimelineTimerLayoutDirection.TopToBottom,
+	TimerLayoutDirection = EncounterTimelineTimerLayoutDirection.BottomToTop,
 	-- Spacing between elements in the timer bar display.
 	TimerSpacing = 2,
 	-- Width scaling to apply to the timer view display.

@@ -53,6 +53,7 @@
 			<KeyValue key="enableCommitSpinner" value="true" type="boolean"/>
 			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 			<KeyValue key="heroSpecSelectionDialog" value="HeroTalentsSelectionDialog" type="global" />
+			<KeyValue key="refreshOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">

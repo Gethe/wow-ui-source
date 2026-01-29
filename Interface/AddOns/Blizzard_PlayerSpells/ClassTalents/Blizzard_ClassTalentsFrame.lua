@@ -253,7 +253,30 @@ function ClassTalentsFrameMixin:CheckSetSelectedConfigID()
 	end
 end
 
+function ClassTalentsFrameMixin:TrySetSeenPurchasableClassCapstone()
+	if GetCVarBool("seenPurchasableClassCapstone") then
+		return;
+	end
+
+	for talentButton in self:EnumerateAllTalentButtons() do
+		local nodeInfo = talentButton:GetNodeInfo();
+		local entryID = nodeInfo.activeEntry and nodeInfo.activeEntry.entryID or nil;
+		local entryInfo = entryID and self:GetAndCacheEntryInfo(entryID) or nil;
+		local isCapstoneNode = entryInfo and (entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneCircle or entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneSquare);
+		if isCapstoneNode then
+			local canPurchaseCapstoneRanks = talentButton.CanPurchaseAnyRanksInCapstone and talentButton:CanPurchaseAnyRanksInCapstone() or false;
+			local hasPurchasedCapstoneRanks = nodeInfo.ranksPurchased and nodeInfo.ranksPurchased > 0 or false;
+			if canPurchaseCapstoneRanks or hasPurchasedCapstoneRanks then
+				SetCVar("seenPurchasableClassCapstone", true);
+				return;
+			end
+		end
+	end
+end
+
 function ClassTalentsFrameMixin:OnHide()
+	self:TrySetSeenPurchasableClassCapstone();
+
 	TalentFrameBaseMixin.OnHide(self);
 
 	FrameUtil.UnregisterFrameForEvents(self, ClassTalentsFrameEvents);
@@ -1020,10 +1043,18 @@ function ClassTalentsFrameMixin:PlayPurchaseEffectOnNodes(nodes, playMethodName,
 	if not nodes then
 		return;
 	end
+
+	-- Tiered nodes can potentially have multiple staged purchases at the same time (Ex. A player purchases the first, second, and third tiers of a node at once)
+	-- To prevent playing the purchase effect multiple times for the same node, we keep track of which nodeIDs already have the effect playing.
+	local handledNodes = {};
 	for _, nodeID in ipairs(nodes) do
-		local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
-		if buttonWithPurchase and buttonWithPurchase[playMethodName] then
-			buttonWithPurchase[playMethodName](buttonWithPurchase, self.FxModelScene, fxIDs);
+		if not handledNodes[nodeID] then
+			handledNodes[nodeID] = true;
+
+			local buttonWithPurchase = self:GetTalentButtonByNodeID(nodeID);
+			if buttonWithPurchase and buttonWithPurchase[playMethodName] then
+				buttonWithPurchase[playMethodName](buttonWithPurchase, self.FxModelScene, fxIDs);
+			end
 		end
 	end
 end

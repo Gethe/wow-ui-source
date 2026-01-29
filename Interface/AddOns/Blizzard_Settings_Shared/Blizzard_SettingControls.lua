@@ -931,7 +931,7 @@ function SettingsCheckboxWithButtonControlMixin:Init(initializer)
 	self.Checkbox:Init(setting:GetValue(), initTooltip);
 	self.cbrHandles:RegisterCallback(self.Checkbox, SettingsCheckboxMixin.Event.OnValueChanged, self.OnCheckboxValueChanged, self);
 
-	self.Button:SetText(self.data.buttonText);
+	self.Button:SetText(self:EvaluateName(self.data.buttonText));
 	self.Button:SetScript("OnClick", self.data.OnButtonClick);
 
 	self:EvaluateState();
@@ -972,26 +972,43 @@ function SettingsCheckboxWithButtonControlMixin:SetValue(value)
 	end
 end
 
+function SettingsCheckboxWithButtonControlMixin:EvaluateName()
+	if type(self.data.buttonText) == "function" then
+		return self.data.buttonText();
+	end
+
+	return self.data.buttonText;
+end
+
 function SettingsCheckboxWithButtonControlMixin:EvaluateState()
 	SettingsListElementMixin.EvaluateState(self);
 	local enabled = self:IsEnabled();
+
+	-- User provided callback
+	if (self.data.OnEvaluateState ~= nil) then
+		self.data.OnEvaluateState(self);
+	end
 
 	local clickEnabled = enabled;
 	if self.data.clickRequiresSet and not self:GetSetting():GetValue() then
 		clickEnabled = false;
 	end
 
+	self.Button:SetText(self:EvaluateName())
 	self:SetButtonState(clickEnabled);
 	self:DisplayEnabled(enabled);
 end
 
-function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, buttonClick, clickRequiresSet, tooltip)
+function CreateSettingsCheckboxWithButtonInitializer(setting, buttonText, buttonClick, evaluateState, clickRequiresSet, tooltip)
 	local data = Settings.CreateSettingInitializerData(setting, nil, tooltip);
 	data.buttonText = buttonText;
 	data.OnButtonClick = buttonClick;
+	data.OnEvaluateState = evaluateState;
 	data.clickRequiresSet = clickRequiresSet;
+
 	local initializer = Settings.CreateSettingInitializer("SettingsCheckboxWithButtonControlTemplate", data);
 	initializer:AddSearchTags(buttonText);
+
 	return initializer;
 end
 

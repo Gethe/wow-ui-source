@@ -162,6 +162,10 @@ AuraUtil.AuraFilters =
 	NotCancelable = "NOT_CANCELABLE",
 	Maw = "MAW",
 	ExternalDefensive = "EXTERNAL_DEFENSIVE",
+	CrowdControl = "CROWD_CONTROL",
+	RaidInCombat = "RAID_IN_COMBAT",	-- Auras flagged to show on raid frames in combat. Combine with Player & Helpful to return self-cast HoTs 
+	RaidPlayerDispellable = "RAID_PLAYER_DISPELLABLE",	-- Auras with a dispel type the player can dispel
+	BigDefensive = "BIG_DEFENSIVE",
 };
 
 function AuraUtil.CreateFilterString(...)

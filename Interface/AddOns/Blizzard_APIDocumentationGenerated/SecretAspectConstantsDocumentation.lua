@@ -5,7 +5,7 @@ local SecretAspectConstants =
 		{
 			Name = "SecretAspect",
 			Type = "Enumeration",
-			NumValues = 24,
+			NumValues = 25,
 			MinValue = 1,
 			MaxValue = 262144,
 			Fields =
@@ -15,6 +15,7 @@ local SecretAspectConstants =
 				{ Name = "ObjectType", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ObjectSecrets", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ObjectSecurity", Type = "SecretAspect", EnumValue = 1 },
+				{ Name = "Attributes", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "Hierarchy", Type = "SecretAspect", EnumValue = 1 },
 				{ Name = "ID", Type = "SecretAspect", EnumValue = 2 },
 				{ Name = "Toplevel", Type = "SecretAspect", EnumValue = 4 },

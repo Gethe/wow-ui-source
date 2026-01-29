@@ -10,6 +10,7 @@ local CATALOG_SHOP_DYNAMIC_EVENTS = {
 	"CATALOG_SHOP_SPECIFIC_PRODUCT_REFRESH",
 	"CATALOG_SHOP_VIRTUAL_CURRENCY_BALANCE_UPDATE",
 	"CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED",
+	"BULK_REFUND_RESULT_RECEIVED",
 };
 
 function CatalogShopMixin.GetBaseProductInfo(productID)
@@ -275,6 +276,7 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		end
 
 		self.HeaderFrame:SetCategories(self.categoryIDs);
+		EventRegistry:TriggerEvent("CatalogShop.DataRefreshed");
 	elseif event == "CATALOG_SHOP_REBUILD_SCROLL_BOX" then
 		local resetSelection = false;
 		self.ProductContainerFrame:UpdateProducts(resetSelection);
@@ -362,7 +364,13 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 			EventRegistry:TriggerEvent("CatalogShop.OnVCUpdated", balance);
 		end
 	elseif (event == "CATALOG_SHOP_REFUNDABLE_DECORS_UPDATED") then
-		-- TODO (WOW12-40870): Implement this
+		self.PersistentRefundContainerFrame:UpdateState();
+
+		-- TODO (WOW12-45327): Clean up this selected product logic (see https://wowhub.corp.blizzard.net/warcraft/wow/pull/40310)
+		local selectedProductInfo = self:GetSelectedProductInfo();
+		if (selectedProductInfo) then
+			self.CatalogShopDetailsFrame:UpdateState();
+		end
 	elseif (event == "SET_SEEN_PRODUCTS") then
 		local productIds = ...;
 		if not CatalogShopOutbound.SavedSet_HasAny() then
@@ -374,6 +382,11 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 			if self.CatalogShopVCFrame then
 				self.CatalogShopVCFrame:HandleInsufficientFunds(topUpProductID, purchaseAmount);
 			end
+		end
+	elseif (event == "BULK_REFUND_RESULT_RECEIVED") then
+		local result = ...;
+		if (result == Enum.BulkRefundResult.ResultOk) then
+			C_CatalogShop.RefreshVirtualCurrencyBalance(Constants.CatalogShopVirtualCurrencyConstants.HEARTHSTEEL_VC_CURRENCY_CODE);
 		end
 	end
 end
@@ -796,8 +809,8 @@ end
 ----------------------------------------------------------------------------------
 CatalogShopVCFrameMixin = {};
 function CatalogShopVCFrameMixin:OnLoad()
-	-- Refreshing VC onLoad so that GetVirutalCurrencyBalance can be called safely OnShow
-	self:RefreshVC();
+	-- Refreshing VC when data is loaded, this allows GetVirutalCurrencyBalance can be called safely OnShow
+	EventRegistry:RegisterCallback("CatalogShop.DataRefreshed", self.RefreshVC, self);
 end
 
 function CatalogShopVCFrameMixin:OnVCUpdated(amount)

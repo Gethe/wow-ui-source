@@ -769,7 +769,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.BackgroundTransparency] = 0,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.InEncounter,
 				[Enum.EditModeEncounterEventsSetting.ShowSpellName] = 0,
-				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Default,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 				[Enum.EditModeEncounterEventsSetting.ShowTimer] = 1,
 				[Enum.EditModeEncounterEventsSetting.FlipHorizontally] = 0,
 				[Enum.EditModeEncounterEventsSetting.BarWidth] = 50,
@@ -789,7 +789,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Default,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",
@@ -805,7 +805,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Default,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",
@@ -822,7 +822,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeEncounterEventsSetting.OverallSize] = 5,
 				[Enum.EditModeEncounterEventsSetting.Transparency] = 50,
 				[Enum.EditModeEncounterEventsSetting.Visibility] = Enum.EncounterEventsVisibility.Always,
-				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Default,
+				[Enum.EditModeEncounterEventsSetting.TooltipAnchor] = Enum.EncounterEventsTooltipAnchor.Cursor,
 			},
 			anchorInfo = {
 				point = "TOP",

@@ -681,6 +681,16 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		-- don't display at the same time. Only interruptable spells display the spell icon.
 		PixelUtil.SetSize(self.castBar.BorderShield, setupOptions.castBarShieldWidth, setupOptions.castBarShieldHeight);
 		PixelUtil.SetPoint(self.castBar.BorderShield, "RIGHT", self.castBar.Icon, "RIGHT", 0, 0);
+
+		-- The smallest nameplates need slightly different anchoring to look correct when everything is so scaled down.
+		local namePlateSize = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.SIZE_CVAR);
+		if namePlateSize < 2 then
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "TOPLEFT", self.castBar, "TOPLEFT", -20, 3);
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "BOTTOMRIGHT", self.castBar, "BOTTOMRIGHT", 20, -3);
+		else
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "TOPLEFT", self.castBar, "TOPLEFT", -26, 3);
+			PixelUtil.SetPoint(self.castBar.ImportantCastIndicator, "BOTTOMRIGHT", self.castBar, "BOTTOMRIGHT", 25, -3);
+		end
 	end
 
 	-- Health Bar
