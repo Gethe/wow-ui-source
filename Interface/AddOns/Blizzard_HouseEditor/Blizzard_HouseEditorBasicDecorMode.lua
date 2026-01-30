@@ -64,11 +64,16 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 		self:OnPlacementFlagsUpdate(targetType, placementFlags);
 	elseif event == "GLOBAL_MOUSE_UP" then
 		local button = ...;
-		if button == "LeftButton" and C_HousingBasicMode.IsPlacingNewDecor() then
-			if self.commitNewDecorOnMouseUp then
-				C_HousingBasicMode.FinishPlacingNewDecor();
-			else
-				self.commitNewDecorOnMouseUp = true;
+		if button == "LeftButton" then
+			if C_HousingBasicMode.IsPlacingNewDecor() then
+				if self.commitNewDecorOnMouseUp then
+					C_HousingBasicMode.FinishPlacingNewDecor();
+				else
+					self.commitNewDecorOnMouseUp = true;
+				end
+			elseif C_HousingBasicMode.IsDecorSelected() and self.draggingPreviewDecor then
+				C_HousingBasicMode.CommitDecorMovement() --if it's unsuccessful it will just revert to click-to-place.
+				self.draggingPreviewDecor = false;
 			end
 		end
 	elseif event == "HOUSING_DECOR_PLACE_FAILURE" then

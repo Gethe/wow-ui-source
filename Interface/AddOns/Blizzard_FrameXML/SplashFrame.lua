@@ -175,7 +175,7 @@ end
 function SplashRightFeatureFrameMixin:Setup(screenInfo)
 	self.questID = self:GetQuestID(screenInfo);
 	self.Title:SetSize(310, 0);
-	self.Title:SetMaxLines(1);
+	self.Title:SetMaxLines(2);
 	self.Title:SetText(screenInfo.rightFeatureTitle);
 	self.Description:SetText(screenInfo.rightFeatureDesc);
 	self:SetStartQuestButtonDisplay(screenInfo);

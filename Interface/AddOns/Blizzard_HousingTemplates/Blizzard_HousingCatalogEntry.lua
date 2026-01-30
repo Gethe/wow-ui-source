@@ -596,7 +596,8 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 		-- if user dragged icon from the house chest, then add decor on mouse up.
 		-- otherwise, user clicked on house chest icon; don't add decor until next click.
 		activeEditorModeFrame.commitNewDecorOnMouseUp = isDrag;
-
+		--dragging functionality for placing preview Decor
+		activeEditorModeFrame.draggingPreviewDecor = C_HousingDecor.IsPreviewState() and isDrag;
 		-- HOUSING_TODO: We should add some kind of out error to these kinds of APIs so we can display any failure reasons
 		StartPlacing();
 	end

@@ -63,6 +63,14 @@ local ItemConstants_Mainline =
 				{ Name = "MAX_TRANSACTION_BANK_TABS", Type = "number", Value = 0 },
 			},
 		},
+		{
+			Name = "ItemConsts_Mainline",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "HWM_SQUISH_ERA_PLAYER_DATA_ACCOUNT_ELEMENT_ID", Type = "number", Value = 212 },
+			},
+		},
 	},
 };
 
