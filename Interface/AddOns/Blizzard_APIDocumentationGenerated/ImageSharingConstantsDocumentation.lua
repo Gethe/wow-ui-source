@@ -49,9 +49,9 @@ local ImageSharingConstants =
 		{
 			Name = "PhotoSharingUploadStatus",
 			Type = "Enumeration",
-			NumValues = 28,
+			NumValues = 29,
 			MinValue = 0,
-			MaxValue = 27,
+			MaxValue = 28,
 			Fields =
 			{
 				{ Name = "Failed", Type = "PhotoSharingUploadStatus", EnumValue = 0 },
@@ -82,6 +82,7 @@ local ImageSharingConstants =
 				{ Name = "CreatePostTooManyRequests", Type = "PhotoSharingUploadStatus", EnumValue = 25 },
 				{ Name = "CreatePostGenericFailure", Type = "PhotoSharingUploadStatus", EnumValue = 26 },
 				{ Name = "CreatePostNoIDFound", Type = "PhotoSharingUploadStatus", EnumValue = 27 },
+				{ Name = "CreatePostThrottled", Type = "PhotoSharingUploadStatus", EnumValue = 28 },
 			},
 		},
 	},

@@ -72,8 +72,10 @@ function HousingPhotoSharingMixin:OnEvent(event, ...)
 		local status = ...;
 		if status == Enum.PhotoSharingUploadStatus.Success then
 			UIErrorsFrame:AddMessage(PHOTO_SHARING_PUBLISHED, YELLOW_FONT_COLOR.r, YELLOW_FONT_COLOR.g, YELLOW_FONT_COLOR.b);
-		elseif status == Enum.PhotoSharingUploadStatus.CreatePinTooManyRequests then
+		elseif status == Enum.PhotoSharingUploadStatus.CreatePostTooManyRequests then
 			UIErrorsFrame:AddMessage(PHOTO_SHARING_PUBLISHED_ERROR_MAX_POSTS, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
+		elseif status == Enum.PhotoSharingUploadStatus.CreatePostThrottled then
+			UIErrorsFrame:AddMessage(ERR_GENERIC_THROTTLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		else
 			UIErrorsFrame:AddMessage(PHOTO_SHARING_PUBLISHED_ERROR, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b);
 		end

@@ -64,6 +64,12 @@ local TransmogOutfitInfo =
 		{
 			Name = "CommitAndApplyAllPending",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "useAvailableDiscount", Type = "bool", Nilable = false },
+			},
 		},
 		{
 			Name = "CommitOutfitInfo",
@@ -540,6 +546,15 @@ local TransmogOutfitInfo =
 			Returns =
 			{
 				{ Name = "isWeaponSlot", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsUsableDiscountAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
 			},
 		},
 		{
