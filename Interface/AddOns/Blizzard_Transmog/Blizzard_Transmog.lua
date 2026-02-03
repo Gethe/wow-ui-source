@@ -48,6 +48,26 @@ StaticPopupDialogs["TRANSMOG_PENDING_CHANGES"] = {
 	hideOnEscape = 1
 };
 
+StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
+	text = TRANSMOG_USABLE_DISCOUNT_CONFIRM,
+	button1 = TRANSMOG_USABLE_DISCOUNT_CLAIM,
+	button2 = TRANSMOG_USABLE_DISCOUNT_USE_GOLD,
+	button3 = CANCEL,
+	selectCallbackByIndex = true,
+	OnButton1 = function()
+		local useAvailableDiscount = true;
+		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
+	end,
+	OnButton2 = function()
+		local useAvailableDiscount = false;
+		C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
+	end,
+	OnButton3 = function()
+	end,
+	timeout = 0,
+	hideOnEscape = 1
+};
+
 TransmogFrameMixin = {
 	DYNAMIC_EVENTS = {
 		"TRANSMOG_OUTFITS_CHANGED",
@@ -57,6 +77,15 @@ TransmogFrameMixin = {
 		"PLAYER_SPECIALIZATION_CHANGED",
 		"DISPLAY_SIZE_CHANGED",
 		"UI_SCALE_CHANGED"
+	};
+	STATIC_POPUPS = {
+		"CONFIRM_BUY_OUTFIT_SLOT",
+		"TRANSMOG_OUTFIT_INVALID_NAME",
+		"TRANSMOG_PENDING_CHANGES",
+		"CONFIRM_TRANSMOG_USABLE_DISCOUNT",
+		"CONFIRM_DELETE_TRANSMOG_CUSTOM_SET",
+		"TRANSMOG_CUSTOM_SET_NAME",
+		"TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE"
 	};
 	HELP_PLATE_INFO = {
 		FramePos = { x = 0,	y = -21 },
@@ -105,12 +134,11 @@ function TransmogFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, self.DYNAMIC_EVENTS);
 
 	-- Clean up any open dialogs.
-	StaticPopup_Hide("CONFIRM_BUY_OUTFIT_SLOT");
-	StaticPopup_Hide("TRANSMOG_OUTFIT_INVALID_NAME");
-	StaticPopup_Hide("TRANSMOG_PENDING_CHANGES");
-	StaticPopup_Hide("CONFIRM_DELETE_TRANSMOG_CUSTOM_SET");
-	StaticPopup_Hide("TRANSMOG_CUSTOM_SET_NAME");
-	StaticPopup_Hide("TRANSMOG_CUSTOM_SET_CONFIRM_OVERWRITE");
+	for _index, popup in ipairs(self.STATIC_POPUPS) do
+		if StaticPopup_Visible(popup) then
+			StaticPopup_Hide(popup);
+		end
+	end
 	self.OutfitPopup:Hide();
 
 	local userToggled = false;
@@ -329,7 +357,14 @@ function TransmogOutfitCollectionMixin:OnLoad()
 
 	self.SaveOutfitButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.UI_TRANSMOG_APPLY_V2);
-		C_TransmogOutfitInfo.CommitAndApplyAllPending();
+
+		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		if C_TransmogOutfitInfo.IsUsableDiscountAvailable() and cost and cost > 0 then
+			StaticPopup_Show("CONFIRM_TRANSMOG_USABLE_DISCOUNT");
+		else
+			local useAvailableDiscount = false;
+			C_TransmogOutfitInfo.CommitAndApplyAllPending(useAvailableDiscount);
+		end
 
 		HelpTip:HideAllSystem("TransmogOutfitCollection");
 	end);
@@ -343,6 +378,8 @@ function TransmogOutfitCollectionMixin:OnShow()
 
 	self.canScrollToOutfit = true;
 	self.OutfitList.ScrollBox:ScrollToBegin();
+
+	self:RefreshUsableDiscountText();
 end
 
 function TransmogOutfitCollectionMixin:OnHide()
@@ -354,6 +391,8 @@ function TransmogOutfitCollectionMixin:OnEvent(event, ...)
 		self:UpdateSelectedOutfit();
 	elseif event == "VIEWED_TRANSMOG_OUTFIT_SLOT_SAVE_SUCCESS" then
 		local _slot, _type, _weaponOption = ...;
+
+		self:RefreshUsableDiscountText();
 
 		-- Already set to true, do not restart animations if multiple slots are changing.
 		if self:GetOutfitSavedState() then
@@ -390,6 +429,10 @@ function TransmogOutfitCollectionMixin:Refresh(dataProvider, selectActiveOutfit)
 	local enabled = unlockedOutfitCount < maxOutfitCount;
 	self.PurchaseOutfitButton:SetEnabled(enabled);
 	self.PurchaseOutfitButton.Icon:SetDesaturated(not enabled);
+end
+
+function TransmogOutfitCollectionMixin:RefreshUsableDiscountText()
+	self.UsableDiscountText:SetShown(C_TransmogOutfitInfo.IsUsableDiscountAvailable());
 end
 
 function TransmogOutfitCollectionMixin:CheckShowHelptips()
