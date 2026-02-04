@@ -64,6 +64,12 @@ StaticPopupDialogs["CONFIRM_TRANSMOG_USABLE_DISCOUNT"] = {
 	end,
 	OnButton3 = function()
 	end,
+	OnShow = function(dialog, _data)
+		-- Disable 'Use Gold' button if player cannot afford.
+		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		local canAfford = cost and cost <= GetMoney();
+		dialog:GetButton2():SetEnabled(canAfford);
+	end,
 	timeout = 0,
 	hideOnEscape = 1
 };
@@ -255,19 +261,23 @@ end
 function TransmogFrameMixin:UpdateCostDisplay()
 	local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
 	local canApply = false;
-	if cost and cost > GetMoney() then
-		SetMoneyFrameColor(self.OutfitCollection.MoneyFrame.Money, "red");
-	else
-		SetMoneyFrameColor(self.OutfitCollection.MoneyFrame.Money);
-		if cost then
-			canApply = true;
+	local canClear = false;
+	SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "white");
+	if cost then
+		canClear = true;
+
+		local canAfford = cost <= GetMoney();
+		canApply = canAfford or C_TransmogOutfitInfo.IsUsableDiscountAvailable();
+
+		if not canAfford then
+			SetMoneyFrameColorByFrame(self.OutfitCollection.MoneyFrame.Money, "red");
 		end
 	end
 
 	-- Always show 0 copper.
 	MoneyFrame_Update(self.OutfitCollection.MoneyFrame.Money, cost or 0, true);
 	self.OutfitCollection.SaveOutfitButton:SetEnabled(canApply);
-	self.CharacterPreview.ClearAllPendingButton:SetShown(canApply);
+	self.CharacterPreview.ClearAllPendingButton:SetShown(canClear);
 end
 
 function TransmogFrameMixin:SelectSlot(slotFrame, forceRefresh)
