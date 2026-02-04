@@ -3,12 +3,14 @@ local AccountInfo =
 	Name = "AccountInfo",
 	Type = "System",
 	Namespace = "C_AccountInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetIDFromBattleNetAccountGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local AccountInfo =
 		{
 			Name = "IsGUIDBattleNetAccountType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local AccountInfo =
 		{
 			Name = "IsGUIDRelatedToLocalAccount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

@@ -2,6 +2,7 @@ local SimpleAnimAlphaAPI =
 {
 	Name = "SimpleAnimAlphaAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -34,6 +35,7 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "SetFromAlpha",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -43,6 +45,7 @@ local SimpleAnimAlphaAPI =
 		{
 			Name = "SetToAlpha",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{

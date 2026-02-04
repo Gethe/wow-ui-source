@@ -10,10 +10,14 @@ function HouseEditorCleanupModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_CLEANUP_MODE_TARGET_SELECTED" then
 		C_HousingDecor.RemoveSelectedDecor();
 	elseif event == "HOUSING_CLEANUP_MODE_HOVERED_TARGET_CHANGED" then
-		local isHovering = ...;
+		local isHovering, targetType = ...;
 		if isHovering then
 			PlaySound(SOUNDKIT.HOUSING_HOVER_PLACED_DECOR);
-			self:OnDecorHovered();
+			if targetType == Enum.HousingCleanupModeTargetType.Decor then
+				self:OnDecorHovered();
+			elseif targetType == Enum.HousingCleanupModeTargetType.HouseExterior then
+				self:ShowHouseTooltip();
+			end
 		else
 			GameTooltip:Hide();
 		end
@@ -37,4 +41,25 @@ end
 
 function HouseEditorCleanupModeMixin:TryHandleEscape()
 	return false;
+end
+
+function HouseEditorCleanupModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+	
+	if decorInstanceInfo.isLocked then
+		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
+	elseif not decorInstanceInfo.canBeRemoved then
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
+	end
+
+	GameTooltip:Show();
+	return GameTooltip;
+end
+
+function HouseEditorCleanupModeMixin:ShowHouseTooltip()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip_AddErrorLine(GameTooltip, HOUSING_CLEANUP_HOUSE_EXTERIOR_TOOLTIP);
+	GameTooltip:Show();
+	return GameTooltip;
 end

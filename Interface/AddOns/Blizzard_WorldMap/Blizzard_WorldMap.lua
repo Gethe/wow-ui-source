@@ -349,7 +349,7 @@ function WorldMapMixin:OnShow()
 	MapCanvasMixin.OnShow(self);
 	self:ResetZoom();
 
-	DoEmote("READ", nil, true);
+	C_ChatInfo.PerformEmote("READ", nil, true);
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_OPEN);
 
 	PlayerMovementFrameFader.AddDeferredFrame(self, .5, 1.0, .5, function() return GetCVarBool("mapFade") and not self:IsMouseOver() end);
@@ -371,7 +371,7 @@ end
 function WorldMapMixin:OnHide()
 	MapCanvasMixin.OnHide(self);
 
-	CancelEmote();
+	C_ChatInfo.CancelEmote();
 	PlaySound(SOUNDKIT.IG_QUEST_LOG_CLOSE);
 
 	PlayerMovementFrameFader.RemoveFrame(self);

@@ -28,3 +28,5 @@ SpellBook/Blizzard_SpellBookFrame.xml
 Blizzard_PlayerSpellsFrame.xml
 
 Blizzard_PlayerSpellsRegistration.lua
+
+Localization.lua

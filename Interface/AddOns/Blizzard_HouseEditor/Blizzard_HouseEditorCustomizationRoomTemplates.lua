@@ -351,7 +351,7 @@ function RoomComponentPaneMixin:SetRoomComponentInfo(roomComponentInfo)
 		dropdown:SetRoomComponentInfo(roomComponentInfo);
 	end);
 
-	self.ApplyThemeToRoomButton:SetShown(self.ThemeDropdown:IsShown());
+	self.ApplyThemeToRoomButton:SetShown(roomComponentInfo.type == Enum.HousingRoomComponentType.Wall);
 
 	local isCustomizingWall = roomComponentInfo.type == Enum.HousingRoomComponentType.Wall;
 	self.ApplyWallpaperToAllWallsButton:SetShown(isCustomizingWall);

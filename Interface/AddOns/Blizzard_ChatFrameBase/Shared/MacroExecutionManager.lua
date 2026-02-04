@@ -20,9 +20,9 @@ EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
 	setMacroExecutionCallback(function(line)
 		local defaultEditBox = securecall(GetDefaultChatEditBox);
 		local macroEditBox = addonTbl.MacroEditBox;
-		macroEditBox:SetAttribute("chatType", defaultEditBox:GetAttribute("chatType"));
-		macroEditBox:SetAttribute("tellTarget", defaultEditBox:GetAttribute("tellTarget"));
-		macroEditBox:SetAttribute("channelTarget", defaultEditBox:GetChannelTarget());
+		macroEditBox:SetChatType(defaultEditBox:GetChatType());
+		macroEditBox:SetTellTarget(defaultEditBox:GetTellTarget());
+		macroEditBox:SetChannelTarget(defaultEditBox:GetChannelTarget());
 		macroEditBox:SetText(line);
 		macroEditBox:SendText();
 	end);

@@ -78,13 +78,13 @@ function KeybindReminderMixin:UpdateOffensiveReminder()
 		return;
 	end
 
-	local hasAction = HasAction(OffensiveSlotOffset + self.spellSlot);
+	local hasAction = C_ActionBar.HasAction(OffensiveSlotOffset + self.spellSlot);
 	if(hasAction) then
 		--swap
 		self.RightIndicator:Show();
 		--Change the SlotSpell to be the icon of the spell in that slot.
 		self.BindingAction:SetText(PLUNDERSTORM_INTERACT_SWAP_REMINDER_TEXT);
-		local texture = GetActionTexture(OffensiveSlotOffset + self.spellSlot);
+		local texture = C_ActionBar.GetActionTexture(OffensiveSlotOffset + self.spellSlot);
 		self.SlotSpell:SetTexture(texture);
 		self.SlotSpell:Show();
 		self:Layout();
@@ -101,8 +101,8 @@ function KeybindReminderMixin:UpdateOffensiveReminder()
 end
 
 function KeybindReminderMixin:HandleEmptyAbilitySlots(baseIndex, buttonMapping)
-	local firstSlotHasAction = HasAction(baseIndex);
-	local secondSlotHasAction = HasAction(baseIndex + 1);
+	local firstSlotHasAction = C_ActionBar.HasAction(baseIndex);
+	local secondSlotHasAction = C_ActionBar.HasAction(baseIndex + 1);
 	local slotOffset = 0;
 
 	if(firstSlotHasAction == false) then
@@ -130,14 +130,14 @@ function KeybindReminderMixin:UpdateUtilityReminder()
 		return;
 	end
 
-	local hasAction = HasAction(UtilitySlotOffset + self.spellSlot);
+	local hasAction = C_ActionBar.HasAction(UtilitySlotOffset + self.spellSlot);
 
 	if(hasAction) then
 		--swap
 		self.RightIndicator:Show();
 		--Change the SlotSpell to be the icon of the spell in that slot.
 		self.BindingAction:SetText(PLUNDERSTORM_INTERACT_SWAP_REMINDER_TEXT);
-		local texture = GetActionTexture(UtilitySlotOffset + self.spellSlot);
+		local texture = C_ActionBar.GetActionTexture(UtilitySlotOffset + self.spellSlot);
 		self.SlotSpell:SetTexture(texture);
 		self.SlotSpell:Show();
 		self:Layout();

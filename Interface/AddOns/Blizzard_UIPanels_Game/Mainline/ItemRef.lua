@@ -63,7 +63,7 @@ function GetFixedLink(text, quality)
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 12) == "transmogset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
-		elseif ( strsub(text, startLink + 2, startLink + 7) == "outfit" ) then
+		elseif ( strsub(text, startLink + 2, startLink + 10) == "customset" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffff80ff%1|r", 1));
 		elseif ( strsub(text, startLink + 2, startLink + 9) == "worldmap" ) then
 			return (gsub(text, "(|H.+|h.+|h)", "|cffffff00%1|r", 1));
@@ -381,7 +381,7 @@ end
 function ItemRefTooltipMixin:ItemRefSetHyperlink(link)
 	self:SetPadding(0, 0);
 	self:SetHyperlink(link);
-	local title = _G[self:GetName().."TextLeft1"];
+	local title = self:GetLeftLine(1);
 	if ( title and title:GetRight() - self.CloseButton:GetLeft() > 0 ) then
 		local xPadding = 16;
 		self:SetPadding(xPadding, 0);

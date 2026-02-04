@@ -56,7 +56,7 @@ function PlayerChoiceBaseOptionTemplateMixin:Setup(optionInfo, frameTextureKit, 
 	self:SetupFrame();
 	self:SetupHeader();
 	self:SetupSubHeader();
-	self:SetupTextColors();
+	self:SetupTextFonts();
 	self:SetupOptionText();
 	self:SetupRewards();
 	self:SetupWidgets();
@@ -152,10 +152,10 @@ end
 function PlayerChoiceBaseOptionTemplateMixin:SetupSubHeader()
 end
 
-function PlayerChoiceBaseOptionTemplateMixin:GetOptionFontColors()
+function PlayerChoiceBaseOptionTemplateMixin:GetOptionFontInfo()
 end
 
-function PlayerChoiceBaseOptionTemplateMixin:SetupTextColors()
+function PlayerChoiceBaseOptionTemplateMixin:SetupTextFonts()
 end
 
 function PlayerChoiceBaseOptionTemplateMixin:SetupOptionText()
@@ -253,9 +253,9 @@ end
 
 function PlayerChoiceBaseOptionTemplateMixin:WidgetInit(widgetFrame)
 	if widgetFrame.SetFontStringColor then
-		local fontColors = self:GetOptionFontColors();
-		if fontColors then
-			widgetFrame:SetFontStringColor(fontColors.description);
+		local fontInfo = self:GetOptionFontInfo();
+		if fontInfo then
+			widgetFrame:SetFontStringColor(fontInfo.descriptionColor);
 		end
 	end
 end

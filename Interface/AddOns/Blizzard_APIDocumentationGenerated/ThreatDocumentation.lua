@@ -2,12 +2,14 @@ local Threat =
 {
 	Name = "Threat",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetThreatStatusColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

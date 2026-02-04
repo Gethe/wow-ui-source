@@ -3,6 +3,7 @@ local CovenantCallings =
 	Name = "CovenantCallings",
 	Type = "System",
 	Namespace = "C_CovenantCallings",
+	Environment = "All",
 
 	Functions =
 	{
@@ -27,6 +28,7 @@ local CovenantCallings =
 			Name = "CovenantCallingsUpdated",
 			Type = "Event",
 			LiteralName = "COVENANT_CALLINGS_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "callings", Type = "table", InnerType = "BountyInfo", Nilable = false },

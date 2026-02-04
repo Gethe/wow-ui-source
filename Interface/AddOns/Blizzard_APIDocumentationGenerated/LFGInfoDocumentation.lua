@@ -3,12 +3,14 @@ local LFGInfo =
 	Name = "LFGInfo",
 	Type = "System",
 	Namespace = "C_LFGInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AreCrossFactionGroupQueuesAllowed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +89,7 @@ local LFGInfo =
 		{
 			Name = "DoesActivePartyMeetPremadeLaunchCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -101,6 +104,7 @@ local LFGInfo =
 		{
 			Name = "DoesCrossFactionQueueRequireFullPremade",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -115,6 +119,7 @@ local LFGInfo =
 		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +135,7 @@ local LFGInfo =
 			Name = "GetDungeonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -153,6 +159,7 @@ local LFGInfo =
 		{
 			Name = "GetLevelUpInstances",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -178,6 +185,7 @@ local LFGInfo =
 		{
 			Name = "HideNameFromUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -219,6 +227,7 @@ local LFGInfo =
 		{
 			Name = "IsLFGFollowerDungeon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +256,7 @@ local LFGInfo =
 			Name = "IslandCompleted",
 			Type = "Event",
 			LiteralName = "ISLAND_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },
@@ -257,26 +267,31 @@ local LFGInfo =
 			Name = "LfgBootProposalUpdate",
 			Type = "Event",
 			LiteralName = "LFG_BOOT_PROPOSAL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgCompletionReward",
 			Type = "Event",
 			LiteralName = "LFG_COMPLETION_REWARD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgCooldownsUpdated",
 			Type = "Event",
 			LiteralName = "LFG_COOLDOWNS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgEnabledStateChanged",
 			Type = "Event",
 			LiteralName = "LFG_ENABLED_STATE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgInvalidErrorMessage",
 			Type = "Event",
 			LiteralName = "LFG_INVALID_ERROR_MESSAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reason", Type = "number", Nilable = false },
@@ -288,11 +303,13 @@ local LFGInfo =
 			Name = "LfgLockInfoReceived",
 			Type = "Event",
 			LiteralName = "LFG_LOCK_INFO_RECEIVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgOfferContinue",
 			Type = "Event",
 			LiteralName = "LFG_OFFER_CONTINUE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -304,6 +321,7 @@ local LFGInfo =
 			Name = "LfgOpenFromGossip",
 			Type = "Event",
 			LiteralName = "LFG_OPEN_FROM_GOSSIP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "dungeonID", Type = "number", Nilable = false },
@@ -313,36 +331,43 @@ local LFGInfo =
 			Name = "LfgProposalDone",
 			Type = "Event",
 			LiteralName = "LFG_PROPOSAL_DONE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgProposalFailed",
 			Type = "Event",
 			LiteralName = "LFG_PROPOSAL_FAILED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgProposalShow",
 			Type = "Event",
 			LiteralName = "LFG_PROPOSAL_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgProposalSucceeded",
 			Type = "Event",
 			LiteralName = "LFG_PROPOSAL_SUCCEEDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgProposalUpdate",
 			Type = "Event",
 			LiteralName = "LFG_PROPOSAL_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgQueueStatusUpdate",
 			Type = "Event",
 			LiteralName = "LFG_QUEUE_STATUS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgReadyCheckDeclined",
 			Type = "Event",
 			LiteralName = "LFG_READY_CHECK_DECLINED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -352,11 +377,13 @@ local LFGInfo =
 			Name = "LfgReadyCheckHide",
 			Type = "Event",
 			LiteralName = "LFG_READY_CHECK_HIDE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgReadyCheckPlayerIsReady",
 			Type = "Event",
 			LiteralName = "LFG_READY_CHECK_PLAYER_IS_READY",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -366,6 +393,7 @@ local LFGInfo =
 			Name = "LfgReadyCheckShow",
 			Type = "Event",
 			LiteralName = "LFG_READY_CHECK_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isRequeue", Type = "bool", Nilable = false },
@@ -375,21 +403,25 @@ local LFGInfo =
 			Name = "LfgReadyCheckUpdate",
 			Type = "Event",
 			LiteralName = "LFG_READY_CHECK_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgRoleCheckDeclined",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_CHECK_DECLINED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgRoleCheckHide",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_CHECK_HIDE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgRoleCheckRoleChosen",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_CHECK_ROLE_CHOSEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -402,6 +434,7 @@ local LFGInfo =
 			Name = "LfgRoleCheckShow",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_CHECK_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isRequeue", Type = "bool", Nilable = false },
@@ -411,36 +444,43 @@ local LFGInfo =
 			Name = "LfgRoleCheckUpdate",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_CHECK_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgRoleUpdate",
 			Type = "Event",
 			LiteralName = "LFG_ROLE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgUpdate",
 			Type = "Event",
 			LiteralName = "LFG_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LfgUpdateRandomInfo",
 			Type = "Event",
 			LiteralName = "LFG_UPDATE_RANDOM_INFO",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowLfgExpandSearchPrompt",
 			Type = "Event",
 			LiteralName = "SHOW_LFG_EXPAND_SEARCH_PROMPT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateLfgList",
 			Type = "Event",
 			LiteralName = "UPDATE_LFG_LIST",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WarfrontCompleted",
 			Type = "Event",
 			LiteralName = "WARFRONT_COMPLETED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapID", Type = "number", Nilable = false },

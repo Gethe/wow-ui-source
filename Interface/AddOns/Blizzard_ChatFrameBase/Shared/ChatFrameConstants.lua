@@ -24,7 +24,7 @@ MessageFrameScrollButtonConstants = {
 	-- Number of seconds that must elapse while holding the scroll down/up
 	-- buttons pressed before the message frame will be scrolled by one
 	-- message.
-	ClickScrollDelay = 0.05;
+	HeldScrollDelay = 0.05;
 };
 
 ICON_LIST = {

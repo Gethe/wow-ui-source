@@ -20,12 +20,12 @@ end
 -- DRESS UP MODEL FRAME LINK BUTTON MIXIN
 DressUpModelFrameLinkButtonMixin = {};
 function DressUpModelFrameLinkButtonMixin:OnShow()
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT) then
+	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET) then
 		local helpTipInfo = {
-			text = LINK_TRANSMOG_OUTFIT_HELPTIP,
+			text = LINK_TRANSMOG_CUSTOM_SET_HELPTIP,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT,
+			bitfieldFlag = LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			alignment = HelpTip.Alignment.Left,
 			offsetY = 5,
@@ -42,17 +42,17 @@ function DressUpModelFrameLinkButtonMixin:OnShow()
 			return;
 		end
 
-		rootDescription:CreateButton(TRANSMOG_OUTFIT_POST_IN_CHAT, function()
-			local hyperlink = C_TransmogCollection.GetOutfitHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
+		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_POST_IN_CHAT, function()
+			local hyperlink = C_TransmogCollection.GetCustomSetHyperlinkFromItemTransmogInfoList(itemTransmogInfoList);
 			if not ChatFrameUtil.InsertLink(hyperlink) then
 				ChatFrameUtil.OpenChat(hyperlink);
 			end
 		end);
 
-		rootDescription:CreateButton(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD, function()
-			local slashCommand = TransmogUtil.CreateOutfitSlashCommand(itemTransmogInfoList);
+		rootDescription:CreateButton(TRANSMOG_CUSTOM_SET_COPY_TO_CLIPBOARD, function()
+			local slashCommand = TransmogUtil.CreateCustomSetSlashCommand(itemTransmogInfoList);
 			CopyToClipboard(slashCommand);
-			DEFAULT_CHAT_FRAME:AddMessage(TRANSMOG_OUTFIT_COPY_TO_CLIPBOARD_NOTICE, YELLOW_FONT_COLOR:GetRGB());
+			ChatFrameUtil.DisplaySystemMessageInPrimary(TRANSMOG_CUSTOM_SET_COPY_TO_CLIPBOARD_NOTICE);
 		end);
 	end);
 
@@ -64,8 +64,8 @@ function DressUpModelFrameLinkButtonMixin:OnHide()
 end
 
 function DressUpModelFrameLinkButtonMixin:OnClick()
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_OUTFIT, true);
-	HelpTip:Hide(self, LINK_TRANSMOG_OUTFIT_HELPTIP);
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LINK_TRANSMOG_CUSTOM_SET, true);
+	HelpTip:Hide(self, LINK_TRANSMOG_CUSTOM_SET_HELPTIP);
 end
 
 --------------------------------------------------
@@ -128,16 +128,16 @@ end
 
 function DressUpModelFrameBaseMixin:SetMode(mode)
 	self.mode = mode;
-	if self.hasOutfitControls then
+	if self.hasCustomSetControls then
 		local inPlayerMode = mode == "player";
 		self.ResetButton:SetShown(inPlayerMode);
 		self.LinkButton:SetShown(inPlayerMode);
-		self.ToggleOutfitDetailsButton:SetShown(inPlayerMode);
-		self.OutfitDropdown:SetShown(inPlayerMode);
+		self.ToggleCustomSetDetailsButton:SetShown(inPlayerMode);
+		self.CustomSetDropdown:SetShown(inPlayerMode);
 		if not inPlayerMode then
-			self:SetShownOutfitDetailsPanel(false);
+			self:SetShownCustomSetDetailsPanel(false);
 		else
-			self:SetShownOutfitDetailsPanel(GetCVarBool("showOutfitDetails"));
+			self:SetShownCustomSetDetailsPanel(GetCVarBool("showCustomSetDetails"));
 		end
 
 		if self.SetSelectionPanel then
@@ -182,13 +182,13 @@ function DressUpModelFrameMixin:OnHide()
 end
 
 function DressUpModelFrameMixin:OnDressModel(itemModifiedAppearanceID, invSlot, removed)
-	if self.OutfitDropdown then
+	if self.CustomSetDropdown then
 		if not self.gotDressed then
 			self.gotDressed = true;
 			C_Timer.After(0, function()
 				self.gotDressed = nil;
-				self.OutfitDropdown:UpdateSaveButton();
-				self.OutfitDetailsPanel:OnAppearanceChange();
+				self.CustomSetDropdown:UpdateSaveButton();
+				self.CustomSetDetailsPanel:OnAppearanceChange();
 			end);
 		end
 	end
@@ -205,51 +205,57 @@ function DressUpModelFrameMixin:InitSetSelectionPanel(setID, setLink)
 	end
 end
 
-function DressUpModelFrameMixin:ToggleOutfitDetails()
-	local show = not self.OutfitDetailsPanel:IsShown();
-	self:SetShownOutfitDetailsPanel(show);
-	SetCVar("showOutfitDetails", show);
+function DressUpModelFrameMixin:ToggleCustomSetDetails()
+	local show = not self.CustomSetDetailsPanel:IsShown();
+	self:SetShownCustomSetDetailsPanel(show);
+	SetCVar("showCustomSetDetails", show);
 end
 
 function DressUpModelFrameMixin:ConfigureSize(isMinimized)
 	if isMinimized then
 		self:SetSize(334, 423);
-		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
+		self.CustomSetDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -4, -1);
 
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -1);
 
-		self.OutfitDropdown:SetPoint("TOP", -37, -31);
-		self.OutfitDropdown:SetWidth(130);
+		self.CustomSetDropdown:SetPoint("TOP", -37, -31);
+		self.CustomSetDropdown:SetWidth(130);
 	else
 		self:SetSize(450, 545);
-		self.OutfitDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
+		self.CustomSetDetailsPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -9, -29);
 
 		self.SetSelectionPanel:SetPoint("TOPLEFT", self, "TOPRIGHT", -7, -30);
 
-		self.OutfitDropdown:SetPoint("TOP", -39, -31);
-		self.OutfitDropdown:SetWidth(203);
+		self.CustomSetDropdown:SetPoint("TOP", -39, -31);
+		self.CustomSetDropdown:SetWidth(203);
 	end
 	UpdateUIPanelPositions(self);
 end
 
-function DressUpModelFrameMixin:SetShownOutfitDetailsPanel(show)
+function DressUpModelFrameMixin:SetShownCustomSetDetailsPanel(show)
 	if self.SetSelectionPanel:IsShown() then
-		self.OutfitDetailsPanel:Hide();
+		self.CustomSetDetailsPanel:Hide();
 		return;
 	end
 
-	self.OutfitDetailsPanel:SetShown(show);
-	local outfitDetailsPanelWidth = 307;
-	local extrawidth = show and outfitDetailsPanelWidth or 0;
+	self.CustomSetDetailsPanel:SetShown(show);
+	local customSetDetailsPanelWidth = 307;
+	local extrawidth = show and customSetDetailsPanelWidth or 0;
 	SetUIPanelAttribute(self, "extraWidth", extrawidth);
 	UpdateUIPanelPositions(self);
 end
 
-function DressUpModelFrameMixin:ForceOutfitDetailsOn()
+function DressUpModelFrameMixin:ForceCustomSetDetailsOn()
 	self.forcedMaximized = true;
 	local isAutomaticAction = true;
 	self.MaximizeMinimizeFrame:Maximize(isAutomaticAction);
-	self:SetShownOutfitDetailsPanel(true);
+	self:SetShownCustomSetDetailsPanel(true);
+end
+
+function DressUpModelFrameMixin:ShowCustomSet(customSetID)
+	-- We do not want this cleared from the dropdown when the frame shows.
+	local persistSelectedCustomSet = true;
+	self.CustomSetDropdown:SelectCustomSet(customSetID, persistSelectedCustomSet);
 end
 
 --------------------------------------------------
@@ -361,7 +367,7 @@ local function ConvertInvTypeToSelectionKey(invType, invSlot)
 	if invType == "INVTYPE_2HWEAPON" or invType == "INVTYPE_RANGED" or invType == "INVTYPE_RANGEDRIGHT" then
 		return "SELECTIONTYPE_TWOHAND";
 	end
-	
+
 	if invType == "INVTYPE_WEAPONMAINHAND" then
 		return "SELECTIONTYPE_MAINHAND";
 	end
@@ -426,15 +432,15 @@ function DressUpFrameTransmogSetMixin:OnShow()
 	end
 
 	local parent = self:GetParent();
-	parent.OutfitDetailsPanel:Hide();
-	parent.ToggleOutfitDetailsButton:Hide();
+	parent.CustomSetDetailsPanel:Hide();
+	parent.ToggleCustomSetDetailsButton:Hide();
 end
 
 function DressUpFrameTransmogSetMixin:OnHide()
 	local parent = self:GetParent();
 	if parent.mode == "player" then
-		parent.OutfitDetailsPanel:Show();
-		parent.ToggleOutfitDetailsButton:Show();
+		parent.CustomSetDetailsPanel:Show();
+		parent.ToggleCustomSetDetailsButton:Show();
 	end
 
 	if self.continuableContainer then
@@ -507,7 +513,7 @@ function DressUpFrameTransmogSetMixin:UpdateTransmogSlot(itemModifiedAppearanceI
 				DeselectItemByType(self.selectedItems, "SELECTIONTYPE_TWOHAND");
 			end
 
-			-- Needed for if the player ctrl click previews another one hander that is put into the offhand slot. 
+			-- Needed for if the player ctrl click previews another one hander that is put into the offhand slot.
 			-- I.e. on a rogue when the preview a new dagger outside of the set with this frame open
 			if selectionType == "SELECTIONTYPE_MAINHAND" and invSlot == INVSLOT_OFFHAND then
 				DeselectItemByType(self.selectedItems, "SELECTIONTYPE_OFFHAND");
@@ -544,7 +550,7 @@ function DressUpFrameTransmogSetMixin:UpdateTransmogSlot(itemModifiedAppearanceI
 					if isTwoHandWeapon and invSlot == INVSLOT_MAINHAND then
 						DeselectItemByType(self.selectedItems, "SELECTIONTYPE_MAINHAND");
 						DeselectItemByType(self.selectedItems, "SELECTIONTYPE_OFFHAND");
-						
+
 						if actor then
 							actor:UndressSlot(INVSLOT_OFFHAND);
 						end
@@ -576,7 +582,7 @@ function DressUpFrameTransmogSetMixin:Init()
 	end
 
 	self.modelScene = self:GetParent().ModelScene;
-	
+
 	self:Show();
 
 	self.selectedItems = {};
@@ -601,11 +607,11 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 	local tooltipLineTypes = { Enum.TooltipDataLineType.EquipSlot, };
 
 	local result = TooltipUtil.FindLinesFromGetter(tooltipLineTypes, "GetItemByID", setItem.itemID);
-	
+
 	setItem.name = C_Item.GetItemNameByID(setItem.itemID);
 	setItem.quality = C_Item.GetItemQualityByID(setItem.itemID);
 
-	-- These values might not be properly loaded at the first time this is called. 
+	-- These values might not be properly loaded at the first time this is called.
 	if setItem.name and setItem.quality and result and #result ~= 0 then
 		local itemIcon = C_Item.GetItemIconByID(setItem.itemID);
 		local selectionType = ConvertInvTypeToSelectionKey(setItem.invType, setItem.invSlot);
@@ -613,7 +619,7 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 		local _, canCollect = C_TransmogCollection.PlayerCanCollectSource(setItem.itemModifiedAppearanceID);
 		local elementData = {
 			 selected = false,
-			 itemName = setItem.name, 
+			 itemName = setItem.name,
 			 itemSlot = result[1],
 			 itemUsable = canCollect,
 			 itemSlotID = setItem.invSlot,
@@ -627,7 +633,7 @@ function DressUpFrameTransmogSetMixin:CreateSetItemFrame(setItem, dataProvider)
 		dataProvider:Insert(elementData);
 
 		local shouldUpdate = not self.selectedItems[selectionType];
-		if selectionType == "SELECTIONTYPE_TWOHAND" then 
+		if selectionType == "SELECTIONTYPE_TWOHAND" then
 			shouldUpdate = not self.selectedItems["SELECTIONTYPE_TWOHAND"] and not self.selectedItems["SELECTIONTYPE_MAINHAND"] and not self.selectedItems["SELECTIONTYPE_OFFHAND"];
 		end
 
@@ -681,7 +687,7 @@ function DressUpFrameTransmogSetMixin:UpdateSelectedAppearance(elementData)
 					actor:DressPlayerSlot(INVSLOT_MAINHAND);
 				end
 			end
-			
+
 			if isTwoHandWeapon then
 				actor:DressPlayerSlot(INVSLOT_OFFHAND);
 			end

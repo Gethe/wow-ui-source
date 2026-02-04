@@ -2,6 +2,7 @@ local MinimapFrameAPI =
 {
 	Name = "MinimapFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -48,6 +49,7 @@ local MinimapFrameAPI =
 		{
 			Name = "PingLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +60,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobInsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +70,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobInsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,6 +80,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobOutsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -85,6 +90,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobOutsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -94,6 +100,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobRingAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +110,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobRingScalar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +120,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetArchBlobRingTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -121,6 +130,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetBlipTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +140,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetCorpsePOIArrowTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -139,6 +150,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetIconTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -148,6 +160,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetMaskTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,6 +170,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetPOIArrowTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -166,6 +180,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetPlayerTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -175,6 +190,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobInsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -184,6 +200,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobInsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -193,6 +210,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobOutsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -202,6 +220,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobOutsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -211,6 +230,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobRingAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -220,6 +240,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobRingScalar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -229,6 +250,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetQuestBlobRingTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -238,6 +260,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetStaticPOIArrowTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +270,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobInsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -256,6 +280,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobInsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -265,6 +290,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobOutsideAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,6 +300,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobOutsideTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -283,6 +310,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobRingAlpha",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -292,6 +320,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobRingScalar",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -301,6 +330,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetTaskBlobRingTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -310,6 +340,7 @@ local MinimapFrameAPI =
 		{
 			Name = "SetZoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

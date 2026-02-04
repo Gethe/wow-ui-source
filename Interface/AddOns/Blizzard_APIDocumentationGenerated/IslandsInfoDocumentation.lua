@@ -3,6 +3,7 @@ local IslandsInfo =
 	Name = "IslandsInfo",
 	Type = "System",
 	Namespace = "C_IslandsInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,7 @@ local IslandsInfo =
 			Name = "IslandAzeriteGain",
 			Type = "Event",
 			LiteralName = "ISLAND_AZERITE_GAIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "amount", Type = "number", Nilable = false },

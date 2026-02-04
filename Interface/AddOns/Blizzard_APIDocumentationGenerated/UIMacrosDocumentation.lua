@@ -3,12 +3,14 @@ local UIMacros =
 	Name = "UIMacros",
 	Type = "System",
 	Namespace = "C_Macro",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetMacroName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local UIMacros =
 		{
 			Name = "GetSelectedMacroIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -38,6 +41,7 @@ local UIMacros =
 			Name = "RunMacroText",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +53,7 @@ local UIMacros =
 			Name = "SetMacroExecuteLineCallback",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +68,7 @@ local UIMacros =
 			Name = "UpdateMacros",
 			Type = "Event",
 			LiteralName = "UPDATE_MACROS",
+			SynchronousEvent = true,
 		},
 	},
 

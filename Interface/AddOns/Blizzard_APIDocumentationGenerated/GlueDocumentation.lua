@@ -3,6 +3,7 @@ local Glue =
 	Name = "Glue",
 	Type = "System",
 	Namespace = "C_Glue",
+	Environment = "All",
 
 	Functions =
 	{
@@ -32,6 +33,7 @@ local Glue =
 			Name = "AccountCvarsLoaded",
 			Type = "Event",
 			LiteralName = "ACCOUNT_CVARS_LOADED",
+			SynchronousEvent = true,
 		},
 	},
 

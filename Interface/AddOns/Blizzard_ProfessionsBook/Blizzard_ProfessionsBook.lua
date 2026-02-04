@@ -436,7 +436,7 @@ function FormatProfession(frame, index)
 		end
 
 		if frame.icon and texture then
-			SetPortraitToTexture(frame.icon, texture);
+			frame.icon:SetTexture(texture);
 		end
 
 		frame.professionName:SetText(name);
@@ -482,7 +482,7 @@ function FormatProfession(frame, index)
 		frame.missingText:Show();
 
 		if frame.icon then
-			SetPortraitToTexture(frame.icon, "Interface\\Icons\\INV_Scroll_04");
+			frame.icon:SetTexture("Interface\\Icons\\INV_Scroll_04");
 			frame.specialization:SetText("");
 		end
 		frame.SpellButton1:Hide();

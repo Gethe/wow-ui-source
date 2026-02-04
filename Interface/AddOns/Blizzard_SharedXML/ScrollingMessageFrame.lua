@@ -76,7 +76,7 @@ Example predicate:
 			return true;
 		end
 	end
-	
+
 Example transformFunction:
 	local function ChangeToDeleted(message, r, g, b, ...)
 		return "This message has been deleted.", r, g, b, ...;
@@ -88,11 +88,11 @@ function ScrollingMessageFrameMixin:TransformMessages(predicate, transformFuncti
 	local function Unpackage(entry)
 		return self:UnpackageEntry(entry);
 	end
-	
+
 	local function TransformEntry(...)
 		return self:PackageEntry(transformFunction(...));
 	end
-	
+
 	if self.historyBuffer:TransformIf(predicate, TransformEntry, Unpackage) then
 		self:MarkDisplayDirty();
 	end
@@ -208,7 +208,7 @@ end
 
 function ScrollingMessageFrameMixin:GetMaxScrollRange()
 	-- Warning! constrainRangeToText is only intended to be used by scrolling message frames with
-	-- exclusively single unwrapped lines. This has the effect of removing the "empty space" by constraining 
+	-- exclusively single unwrapped lines. This has the effect of removing the "empty space" by constraining
 	-- the scroll range to prevent the text from being scrolled into a position beyond the last line.
 	if self.constrainRangeToText then
 		return math.max((self.historyBuffer:GetNumElements() - (self:GetNumVisibleLines() - 1)), 0);
@@ -312,6 +312,13 @@ end
 
 function ScrollingMessageFrameMixin:IsSelectingText()
 	return self.selectingCharacterIndex ~= nil;
+end
+
+function ScrollingMessageFrameMixin:ResetAllFadeTimes()
+	local now = GetTime();
+	self.overrideFadeTimestamp = now;
+	self.oldestFadingLineTimestamp = now;
+	self:MarkDisplayDirty();
 end
 
 -- "private" functions
@@ -592,7 +599,7 @@ function ScrollingMessageFrameMixin:RefreshLayout()
 	for lineIndex = self:GetNumVisibleLines(), numVisibleLines, -1 do
 		self.visibleLines[lineIndex] = nil;
 	end
-	
+
 	self:MarkDisplayDirty();
 end
 
@@ -622,6 +629,9 @@ function ScrollingMessageFrameMixin:RefreshDisplay()
 		local messageInfo = self.historyBuffer:GetEntryAtIndex(messageIndex);
 		if messageInfo then
 			visibleLine.messageInfo = messageInfo;
+			-- Re-initialize the fontstring to clear secret aspects, as fontstrings don't
+			-- get released into the pool on display-only updates.
+			self:InitializeFontString(visibleLine);
 			visibleLine:SetText(messageInfo.message);
 			visibleLine:SetTextColor(messageInfo.r or fontR, messageInfo.g or fontG, messageInfo.b or fontB);
 			if canFade then
@@ -683,22 +693,20 @@ function ScrollingMessageFrameMixin:MarkDisplayDirty()
 	self.isDisplayDirty = true;
 end
 
-function ScrollingMessageFrameMixin:ResetAllFadeTimes()
-	local now = GetTime();
-	self.overrideFadeTimestamp = now;
-	self.oldestFadingLineTimestamp = now;
-	self:MarkDisplayDirty();
-end
-
 function ScrollingMessageFrameMixin:AcquireFontString()
 	if not self.fontStringPool then
-		self.fontStringPool = CreateFontStringPool(self.FontStringContainer, "BACKGROUND", 0);
+		self.fontStringPool = CreateFontStringPool(self.FontStringContainer, "BACKGROUND", 0, nil, Pool_HideAndSetToDefaults);
 	end
 
 	local fontString = self.fontStringPool:Acquire();
+	self:InitializeFontString(fontString);
+	return fontString;
+end
+
+function ScrollingMessageFrameMixin:InitializeFontString(fontString)
+	fontString:SetToDefaults();
 	fontString:SetFontObject(self:GetFontObject());
 	fontString:SetNonSpaceWrap(true);
-	return fontString;
 end
 
 function ScrollingMessageFrameMixin:AcquireHighlightTexture()
@@ -775,6 +783,174 @@ end
 
 function ScrollingMessageFrameMixin:OnFontObjectUpdated() -- override from FontableFrameMixin
 	self:MarkLayoutDirty();
+end
+
+-- Public functions that mutate state on ScrollingMessageFrameMixin should
+-- be exposed here to allow addons to customize message frames.
+--
+-- Note that all of these functions act as secure elevation barriers - ie.
+-- calling them from tainted code will invoke the function as-if execution
+-- were untainted. For function arguments, these are wrapped in closures that
+-- taint when invoked.
+
+ScrollingMessageFrameSecureMixin = {};
+
+function ScrollingMessageFrameSecureMixin:AddMessage(message, r, g, b, ...)
+	ScrollingMessageFrameMixin.AddMessage(self, message, r, g, b, ...);
+end
+
+function ScrollingMessageFrameSecureMixin:BackFillMessage(message, r, g, b, ...)
+	ScrollingMessageFrameMixin.BackFillMessage(self, message, r, g, b, ...);
+end
+
+function ScrollingMessageFrameSecureMixin:RemoveMessagesByPredicate(predicate)
+	ScrollingMessageFrameMixin.RemoveMessagesByPredicate(self, predicate);
+end
+
+function ScrollingMessageFrameSecureMixin:AdjustMessageColors(transformFunction)
+	ScrollingMessageFrameMixin.AdjustMessageColors(self, transformFunction);
+end
+
+function ScrollingMessageFrameSecureMixin:TransformMessages(predicate, transformFunction)
+	ScrollingMessageFrameMixin.TransformMessages(self, predicate, transformFunction);
+end
+
+function ScrollingMessageFrameSecureMixin:SetScrollAllowed(allowed)
+	ScrollingMessageFrameMixin.SetScrollAllowed(self, allowed);
+end
+
+function ScrollingMessageFrameSecureMixin:ScrollByAmount(amount)
+	ScrollingMessageFrameMixin.ScrollByAmount(self, amount);
+end
+
+function ScrollingMessageFrameSecureMixin:ScrollUp()
+	ScrollingMessageFrameMixin.ScrollUp(self);
+end
+
+function ScrollingMessageFrameSecureMixin:ScrollDown()
+	ScrollingMessageFrameMixin.ScrollDown(self);
+end
+
+function ScrollingMessageFrameSecureMixin:PageUp()
+	ScrollingMessageFrameMixin.PageUp(self);
+end
+
+function ScrollingMessageFrameSecureMixin:PageDown()
+	ScrollingMessageFrameMixin.PageDown(self);
+end
+
+function ScrollingMessageFrameSecureMixin:ScrollToTop()
+	ScrollingMessageFrameMixin.ScrollToTop(self);
+end
+
+function ScrollingMessageFrameSecureMixin:ScrollToBottom()
+	ScrollingMessageFrameMixin.ScrollToBottom(self);
+end
+
+function ScrollingMessageFrameSecureMixin:AddOnDisplayRefreshedCallback(callback)
+	ScrollingMessageFrameMixin.AddOnDisplayRefreshedCallback(self, callback);
+end
+
+function ScrollingMessageFrameSecureMixin:SetOnScrollChangedCallback(onScrollChangedCallback)
+	ScrollingMessageFrameMixin.SetOnScrollChangedCallback(self, onScrollChangedCallback);
+end
+
+function ScrollingMessageFrameSecureMixin:SetOnTextCopiedCallback(onTextCopiedCallback)
+	ScrollingMessageFrameMixin.SetOnTextCopiedCallback(self, onTextCopiedCallback);
+end
+
+function ScrollingMessageFrameSecureMixin:SetOnLineRightClickedCallback(onLineRightClickedCallback)
+	ScrollingMessageFrameMixin.SetOnLineRightClickedCallback(self, onLineRightClickedCallback);
+end
+
+function ScrollingMessageFrameSecureMixin:SetScrollOffset(offset)
+	ScrollingMessageFrameMixin.SetScrollOffset(self, offset);
+end
+
+function ScrollingMessageFrameSecureMixin:SetMaxLines(maxLines)
+	ScrollingMessageFrameMixin.SetMaxLines(self, maxLines);
+end
+
+function ScrollingMessageFrameSecureMixin:SetFading(shouldFadeAfterInactivity)
+	ScrollingMessageFrameMixin.SetFading(self, shouldFadeAfterInactivity);
+end
+
+function ScrollingMessageFrameSecureMixin:SetTimeVisible(timeVisibleSecs)
+	ScrollingMessageFrameMixin.SetTimeVisible(self, timeVisibleSecs);
+end
+
+function ScrollingMessageFrameSecureMixin:SetFadeDuration(fadeDurationSecs)
+	ScrollingMessageFrameMixin.SetFadeDuration(self, fadeDurationSecs);
+end
+
+function ScrollingMessageFrameSecureMixin:Clear()
+	ScrollingMessageFrameMixin.Clear(self);
+end
+
+function ScrollingMessageFrameSecureMixin:SetInsertMode(insertMode)
+	ScrollingMessageFrameMixin.SetInsertMode(self, insertMode);
+end
+
+function ScrollingMessageFrameSecureMixin:SetTextCopyable(textIsCopyable)
+	ScrollingMessageFrameMixin.SetTextCopyable(self, textIsCopyable);
+end
+
+function ScrollingMessageFrameSecureMixin:ResetAllFadeTimes()
+	ScrollingMessageFrameMixin.ResetAllFadeTimes(self);
+end
+
+-- The following functions are "private" but we're allowing them to always
+-- execute securely as they have limited scope (generally, any function
+-- that accepts no parameters is safe to elevate).
+
+function ScrollingMessageFrameSecureMixin:MarkLayoutDirty()
+	ScrollingMessageFrameMixin.MarkLayoutDirty(self);
+end
+
+function ScrollingMessageFrameSecureMixin:MarkDisplayDirty()
+	ScrollingMessageFrameMixin.MarkDisplayDirty(self);
+end
+
+function ScrollingMessageFrameSecureMixin:ResetSelectingText()
+	ScrollingMessageFrameMixin.ResetSelectingText(self);
+end
+
+-- The following functions are inherited fron FontableFrameMixin.
+
+function ScrollingMessageFrameSecureMixin:SetFontObject(fontObject)
+	FontableFrameMixin.SetFontObject(self, fontObject);
+end
+
+function ScrollingMessageFrameSecureMixin:SetFont(font, fontHeight, fontFlags)
+	FontableFrameMixin.SetFont(self, font, fontHeight, fontFlags);
+end
+
+function ScrollingMessageFrameSecureMixin:SetTextColor(r, g, b, a)
+	FontableFrameMixin.SetTextColor(self, r, g, b, a);
+end
+
+function ScrollingMessageFrameSecureMixin:SetShadowColor(r, g, b, a)
+	FontableFrameMixin.SetShadowColor(self, r, g, b, a);
+end
+
+function ScrollingMessageFrameSecureMixin:SetShadowOffset(offsetX, offsetY)
+	FontableFrameMixin.SetShadowOffset(self, offsetX, offsetY);
+end
+
+function ScrollingMessageFrameSecureMixin:SetSpacing(spacing)
+	FontableFrameMixin.SetSpacing(self, spacing);
+end
+
+function ScrollingMessageFrameSecureMixin:SetJustifyH(justifyH)
+	FontableFrameMixin.SetJustifyH(self, justifyH);
+end
+
+function ScrollingMessageFrameSecureMixin:SetJustifyV(justifyV)
+	FontableFrameMixin.SetJustifyV(self, justifyV);
+end
+
+function ScrollingMessageFrameSecureMixin:SetIndentedWordWrap(indentWordWrap)
+	FontableFrameMixin.SetIndentedWordWrap(self, indentWordWrap);
 end
 
 function IsScrollingMessageFrame(object)

@@ -60,7 +60,7 @@
 			<Anchor point="TOP" relativeTo="RaidWarningFrame" relativePoint="BOTTOM"/>
 		</Anchors>
 	</Frame>
-
+	
 	<Frame name="PrivateRaidBossEmoteFrameAnchor" mixin="PrivateRaidBossEmoteFrameAnchorMixin" inherits="PingTopLevelPassThroughAttributeTemplate" parent="UIParent" frameStrata="HIGH" toplevel="true">
 		<Size x="512" y="80"/>
 		<Anchors>
@@ -70,5 +70,5 @@
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Frame>
-
+	
 </Ui>

@@ -47,7 +47,7 @@ end
 
 function POIButtonDisplayLayerMixin:UpdateInProgress()
 	local poiButton = self:GetParent();
-	local inProgressAtlas = poiButton:IsSelected() and "Quest-In-Progress-Icon-Brown" or "Quest-In-Progress-Icon-yellow";
+	local inProgressAtlas = poiButton:GetInProgressDisplay();
 	self:SetAtlas(nil, nil, inProgressAtlas);
 	self:SetOffset(0, 0);
 end
@@ -222,30 +222,6 @@ local function POIButton_GetAreaPOIAtlasInfoPushed(poiButton)
 	end
 end
 
-local function GetMapPinInfoButtonField(mapPin, isSelected, fieldName)
-	if isSelected then
-		return mapPin.buttonSelected[fieldName];
-	else
-		return mapPin.button[fieldName];
-	end
-end
-
-local function POIButton_GetVignetteDisplay(poiButton)
-	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "icon");
-end
-
-local function POIButton_GetVignetteAtlasInfoNormal(poiButton)
-	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "normal");
-end
-
-local function POIButton_GetVigntteAtlasInfoPushed(poiButton)
-	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "pressed");
-end
-
-local function POIButton_GetVignetteAtlasInfoHighlight(poiButton)
-	return GetMapPinInfoButtonField(poiButton:GetMapPinInfo(), poiButton:IsSelected(), "highlight");
-end
-
 local function POIButton_GetContentTrackingAtlas(poiButton)
 	if poiButton:IsSelected() then
 		return "waypoint-mappin-minimap-tracked";
@@ -262,38 +238,40 @@ local function POIButton_GetQuestCompleteAtlas(poiButton)
 end
 
 local function POIButton_UpdateQuestInProgressStyle(poiButton)
-	local questClassification = poiButton:GetQuestClassification();
-	if questClassification == Enum.QuestClassification.Legendary then
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiLegendary-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetLegendaryAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetLegendaryAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiLegendary-InnerGlow");
-	elseif questClassification == Enum.QuestClassification.Campaign or questClassification == Enum.QuestClassification.Calling then
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiCampaign-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetCampaignAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetCampaignAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
-	elseif questClassification == Enum.QuestClassification.Recurring then
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiRecurring-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetRecurringAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetRecurringAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiRecurring-InnerGlow");
-	elseif questClassification == Enum.QuestClassification.Important then
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiImportant-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetImportantAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetImportantAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiImportant-InnerGlow");
-	elseif questClassification == Enum.QuestClassification.Meta then
-		poiButton.Display:SetOffset(0, 0);
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiWrapper-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetMetaAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetMetaAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiWrapper-InnerGlow");
-	else
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
+	if not poiButton:CheckUpdateFromMapPinInfo() then
+		local questClassification = poiButton:GetQuestClassification();
+		if questClassification == Enum.QuestClassification.Legendary then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiLegendary-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetLegendaryAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetLegendaryAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiLegendary-InnerGlow");
+		elseif questClassification == Enum.QuestClassification.Campaign or questClassification == Enum.QuestClassification.Calling then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiCampaign-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetCampaignAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetCampaignAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiCampaign-InnerGlow");
+		elseif questClassification == Enum.QuestClassification.Recurring then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiRecurring-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetRecurringAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetRecurringAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiRecurring-InnerGlow");
+		elseif questClassification == Enum.QuestClassification.Important then
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiImportant-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetImportantAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetImportantAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiImportant-InnerGlow");
+		elseif questClassification == Enum.QuestClassification.Meta then
+			poiButton.Display:SetOffset(0, 0);
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoiWrapper-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetMetaAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetMetaAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, "UI-QuestPoiWrapper-InnerGlow");
+		else
+			POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
+			POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetAtlasInfoNormal(poiButton));
+			POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAtlasInfoPushed(poiButton));
+			POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
+		end
 	end
 
 	poiButton:UpdateButtonAlpha();
@@ -327,11 +305,8 @@ local function POIButton_UpdateNormalStyle(poiButton)
 		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetAreaPOIAtlasInfoPushed(poiButton));
 		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetAtlasInfoHighlight(poiButton));
 	elseif style == POIButtonUtil.Style.Vignette then
-		poiButton.Display:SetAtlas(nil, nil, POIButton_GetVignetteDisplay(poiButton));
-		POIButton_SetAtlas(poiButton.Glow, nil, nil, "UI-QuestPoi-OuterGlow");
-		POIButton_SetAtlas(poiButton.NormalTexture, nil, nil, POIButton_GetVignetteAtlasInfoNormal(poiButton));
-		POIButton_SetAtlas(poiButton.PushedTexture, nil, nil, POIButton_GetVigntteAtlasInfoPushed(poiButton));
-		POIButton_SetAtlas(poiButton.HighlightTexture, nil, nil, POIButton_GetVignetteAtlasInfoHighlight(poiButton));
+		poiButton.Display:SetAtlas(nil, nil, poiButton:GetMapPinInfo_Display());
+		poiButton:CheckUpdateFromMapPinInfo();
 	else
 		local questClassification = poiButton:GetQuestClassification();
 
@@ -625,10 +600,24 @@ end
 
 function POIButtonMixin:SetQuestID(questID)
 	self.questID = questID;
+	self:SetMapPinInfoFromQuestID();
 end
 
 function POIButtonMixin:GetQuestID()
 	return self.questID;
+end
+
+function POIButtonMixin:SetMapPinInfoFromQuestID()
+	local theme = C_QuestLog.GetQuestDetailsTheme(self:GetQuestID());
+	if theme and theme.mapPinInfo then
+		self:SetMapPinInfo(theme.mapPinInfo);
+	else
+		self:SetMapPinInfo(nil);
+	end
+end
+
+function POIButtonMixin:GetCustomButtonData()
+	return self.customButtonData;
 end
 
 function POIButtonMixin:SetTrackable(trackableType, trackableID)
@@ -671,6 +660,65 @@ end
 
 function POIButtonMixin:GetMapPinInfo(info)
 	return self.mapPinInfo;
+end
+
+function POIButtonMixin:GetMapPinInfo_OuterGlow()
+	local info = self:GetMapPinInfo();
+	if info then
+		return info.outerGlow;
+	end
+
+	return "UI-QuestPoi-OuterGlow";
+end
+
+function POIButtonMixin:GetMapPinInfoButtonField(fieldName)
+	local mapPin = self:GetMapPinInfo();
+	if mapPin then
+		if self:IsSelected() then
+			return mapPin.buttonSelected[fieldName];
+		else
+			return mapPin.button[fieldName];
+		end
+	end
+end
+
+function POIButtonMixin:GetMapPinInfo_Display()
+	return self:GetMapPinInfoButtonField("icon");
+end
+
+function POIButtonMixin:GetInProgressDisplay()
+	local mapPinInfoDisplayOverride = self:GetMapPinInfo_Display();
+	if mapPinInfoDisplayOverride then
+		return mapPinInfoDisplayOverride;
+	end
+
+	return self:IsSelected() and "Quest-In-Progress-Icon-Brown" or "Quest-In-Progress-Icon-yellow";
+end
+
+function POIButtonMixin:GetMapPinInfo_Normal()
+	return self:GetMapPinInfoButtonField("normal");
+end
+
+function POIButtonMixin:GetMapPinInfo_Pressed()
+	return self:GetMapPinInfoButtonField("pressed");
+end
+
+function POIButtonMixin:GetMapPinInfo_Highlight()
+	return self:GetMapPinInfoButtonField("highlight");
+end
+
+function POIButtonMixin:CheckUpdateFromMapPinInfo()
+	local mapPinInfo = self:GetMapPinInfo();
+	if mapPinInfo then
+		POIButton_SetAtlas(self.Glow, nil, nil, self:GetMapPinInfo_OuterGlow());
+		POIButton_SetAtlas(self.NormalTexture, nil, nil, self:GetMapPinInfo_Normal());
+		POIButton_SetAtlas(self.PushedTexture, nil, nil, self:GetMapPinInfo_Pressed());
+		POIButton_SetAtlas(self.HighlightTexture, nil, nil, self:GetMapPinInfo_Highlight());
+
+		return true;
+	end
+
+	return false;
 end
 
 function POIButtonMixin:SetPinScale(scale)
@@ -903,6 +951,7 @@ function POIButtonMixin:Reset()
 	self.pinScale = nil;
 	self.index = nil;
 	self.questID = nil;
+	self.mapPinInfo = nil;
 	self.areaPOIID = nil;
 	self.trackableType = nil;
 	self.trackableID = nil;

@@ -26,10 +26,10 @@ function IconIntroTrackerMixin:PushSpellToActionBar(spellID, slotIndex, slotPos)
 	ClearNewActionHighlight(slotIndex, true);
 
 	local page = math.floor((slotIndex - 1) / NUM_ACTIONBAR_BUTTONS) + 1;
-	local currentPage = GetActionBarPage();
+	local currentPage = C_ActionBar.GetActionBarPage();
 
-	local bonusBarIndex = GetBonusBarIndex();
-	if (HasBonusActionBar() and bonusBarIndex ~= 0) then
+	local bonusBarIndex = C_ActionBar.GetBonusBarIndex();
+	if (C_ActionBar.HasBonusActionBar() and bonusBarIndex ~= 0) then
 		currentPage = bonusBarIndex;
 	end
 

@@ -6,12 +6,6 @@ PrivateAuraMixin = {};
 
 function PrivateAuraMixin:OnLoad()
 	self.Symbol:Hide();
-	local color = DebuffTypeColor["none"];
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
-	self.DebuffBorder:ClearAllPoints();
-	self.DebuffBorder:SetPoint("TOPLEFT", self.Icon, "TOPLEFT", -1, 0);
-	self.DebuffBorder:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, 0);
-	self.DebuffBorder:Show();
 	self.TempEnchantBorder:Hide();
 end
 
@@ -75,25 +69,21 @@ function PrivateAuraMixin:UpdateExpirationTime(auraInfo)
 	end
 end
 
+local s_showDispelType = false;
+do
+	local callback = C_FunctionContainers.CreateCallback(function(show)
+		s_showDispelType = show;
+	end);
+	C_UnitAurasPrivate.SetShowDispelTypeCallback(callback);
+end
+
 function PrivateAuraMixin:Update(auraInfo, unit, anchorInfo)
 	self.auraInfo = auraInfo;
 	self.unit = unit;
 	self.anchorInfo = anchorInfo;
 
-	local color;
-	if auraInfo.dispelName then
-		color = DebuffTypeColor[auraInfo.dispelName];
-		if GetCVarBool("colorblindMode") then
-			self.Symbol:Show();
-			self.Symbol:SetText(DebuffTypeSymbol[auraInfo.dispelName] or "");
-		else
-			self.Symbol:Hide();
-		end
-	else
-		self.Symbol:Hide();
-		color = DebuffTypeColor["none"];
-	end
-	self.DebuffBorder:SetVertexColor(color.r, color.g, color.b);
+	AuraUtil.SetAuraBorderAtlas(self.DebuffBorder, auraInfo.dispelName, s_showDispelType);
+	AuraUtil.SetAuraSymbol(self.Symbol, auraInfo.dispelName);
 
 	self:UpdateExpirationTime(auraInfo);
 	self.Icon:SetTexture(auraInfo.icon);
@@ -248,6 +238,15 @@ function PrivateAuraUnitWatcher:SetUpAnchor(privateAnchor)
 		C_UnitAurasPrivate.AnchorPrivateAura(debuffFrame, debuffFrame.Icon, debuffFrame.Duration, privateAnchor.anchorID);
 		if privateAnchor.iconWidth and privateAnchor.iconHeight then
 			debuffFrame.Icon:SetSize(privateAnchor.iconWidth, privateAnchor.iconHeight);
+
+			local scale = privateAnchor.borderScale;
+			if scale then
+				local debuffBorderWidth = privateAnchor.iconWidth + (5 * scale);
+				local debuffBorderHeight = privateAnchor.iconHeight + (5 * scale);
+				debuffFrame.DebuffBorder:SetSize(debuffBorderWidth, debuffBorderHeight);
+			else
+				debuffFrame.DebuffBorder:SetSize(40, 40);
+			end
 		end
 		debuffFrame:Show();
 		debuffFrame:Update(auraInfo, self.unit, privateAnchor);
@@ -329,7 +328,7 @@ function RaidBossEmoteFrame_OnLoad(self) -- Private version override
 	self.timings["RAID_NOTICE_MAX_HEIGHT"] = 30.0;
 	self.timings["RAID_NOTICE_SCALE_UP_TIME"] = 0.2;
 	self.timings["RAID_NOTICE_SCALE_DOWN_TIME"] = 0.4;
-	
+
 	self:RegisterEvent("CLEAR_BOSS_EMOTES");
 
 	C_UnitAurasPrivate.SetPrivateWarningTextFrame(self);

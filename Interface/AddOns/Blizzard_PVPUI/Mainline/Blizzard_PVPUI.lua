@@ -14,6 +14,20 @@ local SEASON_STATE_DISABLED = 4;
 local HORDE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Horde];
 local ALLIANCE_PLAYER_FACTION_GROUP_NAME = PLAYER_FACTION_GROUP[PLAYER_FACTION_GROUP.Alliance];
 
+local function InitializeRoleListOnFrame(frame)
+	if not frame or not frame.RoleList then
+		return;
+	end
+
+	local function GetPVPFrame()
+		return frame;
+	end
+
+	for index, roleIcon in ipairs(frame.RoleList.RoleIcons) do
+		roleIcon.checkButton.GetPVPFrame = GetPVPFrame;
+	end
+end
+
 ---------------------------------------------------------------
 -- PVP FRAME
 ---------------------------------------------------------------
@@ -200,22 +214,25 @@ function PVPUIFrame_EvaluateHelpTips(self)
 end
 
 function PVPUIFrame_RoleButtonClicked(self)
-	PVPUIFrame_SetRoles(self:GetParent():GetParent());
+	PVPUIFrame_SetRoles(self:GetPVPFrame());
 end
 
 function PVPUIFrame_SetRoles(frame)
-	SetPVPRoles(frame.TankIcon.checkButton:GetChecked(),
-		frame.HealerIcon.checkButton:GetChecked(),
-		frame.DPSIcon.checkButton:GetChecked());
+	SetPVPRoles(frame.RoleList.TankIcon.checkButton:GetChecked(),
+		frame.RoleList.HealerIcon.checkButton:GetChecked(),
+		frame.RoleList.DPSIcon.checkButton:GetChecked());
 	LFG_UpdateAllRoleCheckboxes();
 end
 
 function PVPUIFrame_UpdateRolesChangeable()
-	PVPUIFrame_UpdateAvailableRoles(HonorFrame.TankIcon, HonorFrame.HealerIcon, HonorFrame.DPSIcon);
-	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+	PVPUIFrame_UpdateAvailableRoles(HonorFrame.RoleList.TankIcon, HonorFrame.RoleList.HealerIcon, HonorFrame.RoleList.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleList.RoleIcons);
 
-	PVPUIFrame_UpdateAvailableRoles(ConquestFrame.TankIcon, ConquestFrame.HealerIcon, ConquestFrame.DPSIcon);
-	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
+	PVPUIFrame_UpdateAvailableRoles(ConquestFrame.RoleList.TankIcon, ConquestFrame.RoleList.HealerIcon, ConquestFrame.RoleList.DPSIcon);
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleList.RoleIcons);
+
+	PVPUIFrame_UpdateAvailableRoles(TrainingGroundsFrame.RoleList.TankIcon, TrainingGroundsFrame.RoleList.HealerIcon, TrainingGroundsFrame.RoleList.DPSIcon);
+	-- No role shortages for Training Grounds
 
 	EventRegistry:TriggerEvent("PVPUI.AvailablePVPRolesUpdated");
 end
@@ -236,12 +253,17 @@ end
 
 function PVPUIFrame_UpdateSelectedRoles()
 	local tank, healer, dps = GetPVPRoles();
-	HonorFrame.TankIcon.checkButton:SetChecked(tank);
-	HonorFrame.HealerIcon.checkButton:SetChecked(healer);
-	HonorFrame.DPSIcon.checkButton:SetChecked(dps);
-	ConquestFrame.TankIcon.checkButton:SetChecked(tank);
-	ConquestFrame.HealerIcon.checkButton:SetChecked(healer);
-	ConquestFrame.DPSIcon.checkButton:SetChecked(dps);
+	HonorFrame.RoleList.TankIcon.checkButton:SetChecked(tank);
+	HonorFrame.RoleList.HealerIcon.checkButton:SetChecked(healer);
+	HonorFrame.RoleList.DPSIcon.checkButton:SetChecked(dps);
+
+	ConquestFrame.RoleList.TankIcon.checkButton:SetChecked(tank);
+	ConquestFrame.RoleList.HealerIcon.checkButton:SetChecked(healer);
+	ConquestFrame.RoleList.DPSIcon.checkButton:SetChecked(dps);
+
+	TrainingGroundsFrame.RoleList.TankIcon.checkButton:SetChecked(tank);
+	TrainingGroundsFrame.RoleList.HealerIcon.checkButton:SetChecked(healer);
+	TrainingGroundsFrame.RoleList.DPSIcon.checkButton:SetChecked(dps);
 end
 
 function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRewards, currencyRewards, roleShortageBonus)
@@ -295,7 +317,7 @@ function PVPUIFrame_ConfigureRewardFrame(rewardFrame, honor, experience, itemRew
 	rewardFrame:RefreshRoleShortageBonus();
 
 	if rewardTexture then
-		SetPortraitToTexture(rewardFrame.Icon, rewardTexture);
+		rewardFrame.Icon:SetTexture(rewardTexture);
 		rewardFrame.honor = honor;
 		rewardFrame.experience = experience;
 		rewardFrame.itemID = itemID;
@@ -311,36 +333,26 @@ end
 -- CATEGORY FRAME
 ---------------------------------------------------------------
 
-local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "PlunderstormFrame" }
+local pvpFrames = { "HonorFrame", "ConquestFrame", "LFGListPVPStub", "TrainingGroundsFrame", "PlunderstormFrame" }
 
 function PVPQueueFrame_OnLoad(self)
 	--set up side buttons
-	SetPortraitToTexture(self.CategoryButton1.Icon, "Interface\\Icons\\achievement_bg_winwsg");
+	self.CategoryButton1.Icon:SetTexture("Interface\\Icons\\achievement_bg_winwsg");
 	self.CategoryButton1.Name:SetText(PVP_TAB_HONOR);
 
-	SetPortraitToTexture(self.CategoryButton2.Icon, "Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
+	self.CategoryButton2.Icon:SetTexture("Interface\\Icons\\achievement_bg_killxenemies_generalsroom");
 	self.CategoryButton2.Name:SetText(PVP_TAB_CONQUEST);
 
-	SetPortraitToTexture(self.CategoryButton3.Icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	self.CategoryButton3.Icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	self.CategoryButton3.Name:SetText(PVP_TAB_GROUPS);
 
-	self.CategoryButton4.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
-	self.CategoryButton4.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
+	self.CategoryButton4.Icon:SetTexture("Interface\\Icons\\ability_hunter_focusedaim");
+	self.CategoryButton4.Name:SetText(PVP_TAB_TRAINING_GROUNDS);
 
-	-- If Plunderstorm is available, we have some different anchoring
-	local plunderstormAvailable = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
-	local overrideAnchoringParent = self.CategoryButton2;
-	local categoryButtonOffsets = -101;
-	if plunderstormAvailable then
-		overrideAnchoringParent = self.CategoryButton4;
-		categoryButtonOffsets = -61;
-	end
+	self.CategoryButton5.Icon:SetAtlas("plunderstorm-pvpqueue-catergory-icon");
+	self.CategoryButton5.Name:SetText(WOW_LABS_PLUNDERSTORM_CATEGORY);
 
-	-- Sets the list to fit 3 or 4 elements differently
-	self.CategoryButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, categoryButtonOffsets);
-	-- Reanchors the Premade Group button to the Plunderstorm button
-	self.CategoryButton3:SetPoint("TOP", overrideAnchoringParent, "BOTTOM", 0, -30);
-	self.CategoryButton4:SetShown(plunderstormAvailable);
+	PVPQueueFrame_UpdateAnchoringForAvailableModes(self);
 
 	-- disable unusable side buttons
 	local disabledButtons = false;
@@ -356,6 +368,13 @@ function PVPQueueFrame_OnLoad(self)
 		disabledButtons = true;
 		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, false);
 		self.CategoryButton3.tooltip = failureReason;
+	end
+
+	canUse, failureReason = C_PvP.CanPlayerUseTrainingGroundsUI();
+	if not canUse then
+		disabledButtons = true;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
+		self.CategoryButton4.tooltip = failureReason;
 	end
 
 	if disabledButtons then
@@ -377,10 +396,42 @@ function PVPQueueFrame_OnLoad(self)
 	self:RegisterEvent("ARENA_SEASON_WORLD_STATE");
 end
 
+function PVPQueueFrame_UpdateAnchoringForAvailableModes(self)
+	-- Normally we display 4 category buttons in the UI.
+	-- If Plunderstorm is up then we need to display 5, which requires various visual tweaks to get things to fit.
+
+	-- First, we set the topmost button
+	self.CategoryButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, -66);
+
+	-- Next we hide/show the Plunderstorm button
+	local plunderstormAvailable = C_GameRules.GetCurrentEventRealmQueues() ~= Enum.EventRealmQueues.None and C_LobbyMatchmakerInfo.GetQueueFromMainlineEnabled();
+	self.CategoryButton5:SetShown(plunderstormAvailable);
+
+	-- Finally, update the art size and button spacing for the number of elements we're showing
+	local shouldShrinkButtons = plunderstormAvailable;
+	for index, button in ipairs(self.CategoryButtons) do
+		local iconSize = shouldShrinkButtons and 46 or 66;
+		button.Icon:SetSize(iconSize, iconSize);
+
+		local ringSizeX, ringSizeY = shouldShrinkButtons and 67 or 95, shouldShrinkButtons and 68 or 96;
+		button.Ring:SetSize(ringSizeX, ringSizeY);
+		local ringOffsetX, ringOffsetY = shouldShrinkButtons and -5 or -12, -1;
+		button.Ring:SetPoint("LEFT", ringOffsetX, ringOffsetY);
+
+		-- Update the spacing between buttons based on their size
+		local isFirstButton = index == 1;
+		if not isFirstButton then
+			local point, relativeTo, relativePoint, offsetX, offsetY = button:GetPoint(1);
+			button:SetPoint("TOP", relativeTo, "BOTTOM", 0, shouldShrinkButtons and -11 or -23);
+		end
+	end
+end
+
 function PVPQueueFrame_OnEvent(self, event, ...)
 	if (event == "PLAYER_LEVEL_CHANGED") then
 		local canUseRated = C_PvP.CanPlayerUseRatedPVPUI();
 		local canUsePremade = C_LFGInfo.CanPlayerUsePremadeGroup();
+		local canUseTrainingGrounds = C_PvP.CanPlayerUseTrainingGroundsUI();
 		if canUseRated then
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton2, true);
 			self.CategoryButton2.tooltip = nil;
@@ -389,7 +440,11 @@ function PVPQueueFrame_OnEvent(self, event, ...)
 			self.CategoryButton3.tooltip = nil;
 			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton3, true);
 		end
-		if canUseRated and canUsePremade then
+		if canUseTrainingGrounds then
+			PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
+			self.CategoryButton4.tooltip = nil;
+		end
+		if canUseRated and canUsePremade and canUseTrainingGrounds then
 			self:UnregisterEvent("PLAYER_LEVEL_CHANGED");
 		end
 	elseif ( event == "UPDATE_BATTLEFIELD_STATUS" or event == "ZONE_CHANGED_NEW_AREA" or event == "ZONE_CHANGED") then
@@ -446,8 +501,8 @@ function PVPQueueFrame_OnShow(self)
 	local canUsePlunderButton = not (IsTrialAccount() or IsVeteranTrialAccount());
 	local failureReason = WOWLABS_SUB_REQUIRED;
 	if not canUsePlunderButton then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, false);
+		self.CategoryButton5.tooltip = failureReason;
 
 		return;
 	end
@@ -455,14 +510,14 @@ function PVPQueueFrame_OnShow(self)
 	canUsePlunderButton = not C_PlayerInfo.IsPlayerNPERestricted();
 	failureReason = FEATURE_NOT_YET_AVAILABLE;
 	if not canUsePlunderButton then
-		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, false);
-		self.CategoryButton4.tooltip = failureReason;
+		PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, false);
+		self.CategoryButton5.tooltip = failureReason;
 
 		return;
 	end
 
-	self.CategoryButton4.tooltip = nil;
-	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton4, true);
+	self.CategoryButton5.tooltip = nil;
+	PVPQueueFrame_SetCategoryButtonState(self.CategoryButton5, true);
 end
 
 function PVPQueueFrame_UpdateTitle()
@@ -509,7 +564,7 @@ end
 function PVPQueueFrame_SelectButton(index)
 	local self = PVPQueueFrame;
 	for i = 1, #pvpFrames do
-		local button = self["CategoryButton"..i];
+		local button = self.CategoryButtons[i];
 		if ( i == index ) then
 			button.Background:SetTexCoord(0.00390625, 0.87890625, 0.59179688, 0.66992188);
 		else
@@ -588,6 +643,8 @@ function HonorFrame_OnLoad(self)
 		rootDescription:CreateRadio(SPECIFIC_BATTLEGROUNDS, IsSelected, SetSelected, "specific");
 	end);
 
+	InitializeRoleListOnFrame(self);
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_SHOW");
 	self:RegisterEvent("PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE");
@@ -644,7 +701,7 @@ function HonorFrame_SetTypeInternal(value)
 		HonorFrame.BonusFrame:Show();
 	end
 
-	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleList.RoleIcons);
 end
 
 function HonorFrame_SetType(value)
@@ -830,16 +887,16 @@ end
 function HonorFrameSpecificList_Update()
 	local dataProvider = CreateDataProvider();
 	for index = 1, GetNumBattlegroundTypes() do
-		local localizedName, canEnter, isHoliday, isRandom, battleGroundID, mapDescription, BGMapID, maxPlayers, gameType, iconTexture, shortDescription, longDescription = GetBattlegroundInfo(index);
-		if localizedName and canEnter and not isRandom then
+		local battlegroundInfo = C_PvP.GetBattlegroundInfo(index);
+		if battlegroundInfo and battlegroundInfo.name and battlegroundInfo.canEnter and not battlegroundInfo.isRandom then
 			dataProvider:Insert({
-				localizedName=localizedName,
-				battleGroundID=battleGroundID,
-				maxPlayers=maxPlayers,
-				gameType=gameType,
-				iconTexture=iconTexture,
-				shortDescription=shortDescription,
-				longDescription=longDescription,
+				localizedName=battlegroundInfo.name,
+				battleGroundID=battlegroundInfo.battlegroundID,
+				maxPlayers=battlegroundInfo.maxPlayers,
+				gameType=battlegroundInfo.gameType,
+				iconTexture=battlegroundInfo.icon,
+				shortDescription=battlegroundInfo.shortDescription,
+				longDescription=battlegroundInfo.longDescription,
 			});
 		end
 	end
@@ -1093,7 +1150,7 @@ function HonorFrameBonusFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	HonorFrame.BonusFrame.selectedButton = button;
-	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleIcons);
+	PVPUIFrame_UpdateRoleShortages(HonorFrame_GetSelectedModeRoleShortageBonus(), HonorFrame.RoleList.RoleIcons);
 	HonorFrame_UpdateQueueButtons();
 end
 
@@ -1150,6 +1207,8 @@ function ConquestFrame_OnLoad(self)
 
 	RequestRatedInfo();
 	RequestPVPOptionsEnabled();
+
+	InitializeRoleListOnFrame(self);
 
 	self:RegisterEvent("PVP_TYPES_ENABLED");
 
@@ -1506,7 +1565,7 @@ function ConquestFrame_SelectButton(button)
 	end
 	button.SelectedTexture:Show();
 	ConquestFrame.selectedButton = button;
-	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleIcons);
+	PVPUIFrame_UpdateRoleShortages(ConquestFrame_GetSelectedModeRoleShortageBonus(), ConquestFrame.RoleList.RoleIcons);
 	ConquestFrame_UpdateJoinButton();
 end
 
@@ -1752,22 +1811,34 @@ local HONOR_INSET_WIDTH = 225;
 
 PVPUIHonorInsetMixin = { }
 
+PVPUIHonorInsetPanelType = EnumUtil.MakeEnum(
+	"Casual",
+	"Rated",
+	"Plunderstorm",
+	"TrainingGrounds"
+);
+
 function PVPUIHonorInsetMixin:Update()
 	local activePanel = PVPQueueFrame.selection;
 	if activePanel == HonorFrame then
 		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
-		self:DisplayCasualPanel();
+		self:DisplayPanel(PVPUIHonorInsetPanelType.Casual);
 		return HONOR_INSET_WIDTH;
 	elseif activePanel == ConquestFrame then
 		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
-		self:DisplayRatedPanel();
+		self:DisplayPanel(PVPUIHonorInsetPanelType.Rated);
 		return HONOR_INSET_WIDTH;
 	elseif activePanel == PlunderstormFrame then
 		self.Background:SetAtlas("plunderstorm-pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
 		self:Show();
-		self:DisplayPlunderstormPanel();
+		self:DisplayPanel(PVPUIHonorInsetPanelType.Plunderstorm);
+		return HONOR_INSET_WIDTH;
+	elseif activePanel == TrainingGroundsFrame then
+		self.Background:SetAtlas("pvpqueue-sidebar-background", TextureKitConstants.UseAtlasSize);
+		self:Show();
+		self:DisplayPanel(PVPUIHonorInsetPanelType.TrainingGrounds);
 		return HONOR_INSET_WIDTH;
 	end
 
@@ -1775,10 +1846,10 @@ function PVPUIHonorInsetMixin:Update()
 	return 0;
 end
 
-function PVPUIHonorInsetMixin:DisplayCasualPanel()
-	self.CasualPanel:Show();
-	self.RatedPanel:Hide();
-	self.PlunderstormPanel:Hide();
+function PVPUIHonorInsetMixin:DisplayPanel(panelTypeToDisplay)
+	for index, panel in ipairs(self.InsetPanels) do
+		panel:SetShown(panel.panelType == panelTypeToDisplay);
+	end
 end
 
 local function GetPVPSeasonAchievementID()
@@ -1800,18 +1871,6 @@ local function GetPVPSeasonAchievementID()
 	end
 
 	return achievementID;
-end
-
-function PVPUIHonorInsetMixin:DisplayRatedPanel()
-	self.RatedPanel:Show();
-	self.CasualPanel:Hide();
-	self.PlunderstormPanel:Hide();
-end
-
-function PVPUIHonorInsetMixin:DisplayPlunderstormPanel()
-	self.PlunderstormPanel:Show();
-	self.RatedPanel:Hide();
-	self.CasualPanel:Hide();
 end
 
 PVPUIHonorLevelDisplayMixin = { };
@@ -2602,4 +2661,478 @@ function PVPRewardRoleShortageBonusMixin:OnLeave()
 		self.spellLoadCancel();
 		self.spellLoadCancel = nil;
 	end
+end
+
+---------------------------------------------------------------
+-- TRAINING GROUNDS FRAME
+---------------------------------------------------------------
+
+TrainingGroundsFrameMixin = {};
+
+local TrainingGroundsFrameEvents = {
+	"GROUP_ROSTER_UPDATE",
+	"LFG_LIST_ACTIVE_ENTRY_UPDATE",
+	"LFG_LIST_SEARCH_RESULT_UPDATED",
+	"TRAINING_GROUNDS_ENABLED_STATUS_UPDATED",
+};
+
+local TrainingGroundPVPType = EnumUtil.MakeEnum(
+	"Specific",
+	"Bonus"
+);
+
+function TrainingGroundsFrameMixin:OnLoad()
+	InitializeRoleListOnFrame(self);
+	self:InitializeEventCallbacks();
+	self:InitializePVPTypeFrames();
+	self:InitializeTypeDropdown();
+	self:InitializeSelectedPVPType();
+	self:InitializeQueueButton();
+end
+
+function TrainingGroundsFrameMixin:InitializePVPTypeFrames()
+	local function GetTrainingGroundsFrame()
+		return self;
+	end
+	self.SpecificTrainingGroundList.GetTrainingGroundsFrame = GetTrainingGroundsFrame;
+	self.BonusTrainingGroundList.GetTrainingGroundsFrame = GetTrainingGroundsFrame;
+end
+
+function TrainingGroundsFrameMixin:InitializeEventCallbacks()
+	self:AddDynamicEventMethod(EventRegistry, "LobbyMatchmaker.UpdateQueueState", self.OnLobbyMatchmakerUpdateQueueState);
+end
+
+function TrainingGroundsFrameMixin:InitializeQueueButton()
+	self.QueueButton:SetScript("OnClick", function() 
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		local queueOption = self:GetSelectedQueueOption();
+		if queueOption then
+			if queueOption == "RandomTrainingGround" then
+				C_PvP.JoinRandomTrainingGround();
+			else
+				C_PvP.JoinTrainingGround(queueOption);
+			end
+		end
+	end);
+end
+
+function TrainingGroundsFrameMixin:OnShow()
+	CallbackRegistrantMixin.OnShow(self);
+
+	FrameUtil.RegisterFrameForEvents(self, TrainingGroundsFrameEvents);
+
+	self:RefreshQueueButton();
+end
+
+function TrainingGroundsFrameMixin:OnHide()
+	CallbackRegistrantMixin.OnHide(self);
+
+	FrameUtil.UnregisterFrameForEvents(self, TrainingGroundsFrameEvents);
+end
+
+function TrainingGroundsFrameMixin:OnEvent(event, ...)
+	if event == "GROUP_ROSTER_UPDATE" or event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" or event == "LFG_LIST_SEARCH_RESULT_UPDATED" or event == "TRAINING_GROUNDS_ENABLED_STATUS_UPDATED" then
+		self:RefreshQueueButton();
+	end
+end
+
+function TrainingGroundsFrameMixin:OnLobbyMatchmakerUpdateQueueState()
+	self:RefreshQueueButton();
+end
+
+function TrainingGroundsFrameMixin:InitializeTypeDropdown()
+	self.TypeDropdown:SetWidth(180);
+	self.TypeDropdown:SetupMenu(function(_dropdown, rootDescription)
+		rootDescription:SetTag("MENU_PVPUI_TRAINING_GROUND_TYPE");
+
+		local function IsSelected(pvpType)
+			return self:GetSelectedPVPType() == pvpType;
+		end
+		
+		local function SetSelected(pvpType)
+			self:SetSelectedPVPType(pvpType);
+		end
+
+		rootDescription:CreateRadio(BONUS_BATTLEGROUNDS, IsSelected, SetSelected, TrainingGroundPVPType.Bonus);
+		rootDescription:CreateRadio(SPECIFIC_BATTLEGROUNDS, IsSelected, SetSelected, TrainingGroundPVPType.Specific);
+	end);
+end
+
+function TrainingGroundsFrameMixin:SetSelectedPVPType(pvpType)
+	self.selectedPVPType = pvpType;
+
+	self:RefreshVisualsForSelectedPVPType();
+	self:RefreshQueueButton();
+	self.TypeDropdown:GenerateMenu();
+end
+
+function TrainingGroundsFrameMixin:GetSelectedPVPType()
+	return self.selectedPVPType;
+end
+
+function TrainingGroundsFrameMixin:InitializeSelectedPVPType()
+	self:SetSelectedPVPType(TrainingGroundPVPType.Bonus);
+end
+
+function TrainingGroundsFrameMixin:RefreshVisualsForSelectedPVPType()
+	self.SpecificTrainingGroundList:SetShown(self.selectedPVPType == TrainingGroundPVPType.Specific);
+	self.BonusTrainingGroundList:SetShown(self.selectedPVPType == TrainingGroundPVPType.Bonus);
+end
+
+function TrainingGroundsFrameMixin:RefreshQueueButton()
+	self:RefreshQueueButtonText();
+	self:RefreshQueueButtonEnabledState();
+end
+
+function TrainingGroundsFrameMixin:GetQueueButtonDisabledReason()
+	if not C_PvP.AreTrainingGroundsEnabled() then
+		return ERR_PVP_TRAINING_GROUNDS_DISABLED;
+	end
+
+	local isPartyLeader = not IsInGroup(LE_PARTY_CATEGORY_HOME) or UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME);
+	if not isPartyLeader then
+		return ERR_NOT_LEADER;
+	end
+
+	if C_LobbyMatchmakerInfo.IsInQueue() then
+		return WOW_LABS_CANNOT_ENTER_NON_PLUNDER_QUEUE;
+	end
+
+	local numLFGListGroupsAppliedTo = select(2, C_LFGList.GetNumApplications());
+	local hasActiveLFGListApplications = numLFGListGroupsAppliedTo > 0;
+	if hasActiveLFGListApplications then
+		return CANNOT_DO_THIS_WITH_LFGLIST_APP;
+	end
+	
+	local hasActiveLFGListGroup = C_LFGList.HasActiveEntryInfo();
+	if hasActiveLFGListGroup then
+		return CANNOT_DO_THIS_WHILE_LFGLIST_LISTED;
+	end
+
+	if not self:GetSelectedQueueOption() then
+		return "";
+	end
+end
+
+function TrainingGroundsFrameMixin:RefreshQueueButtonEnabledState()
+	local disabledReason = self:GetQueueButtonDisabledReason();
+	self.QueueButton:SetEnabled(disabledReason == nil);
+	self.QueueButton.disabledTooltip = disabledReason;
+end
+
+function TrainingGroundsFrameMixin:RefreshQueueButtonText()
+	local bestText = IsInGroup(LE_PARTY_CATEGORY_HOME) and BATTLEFIELD_GROUP_JOIN or BATTLEFIELD_JOIN;
+	self.QueueButton:SetText(bestText);
+end
+
+function TrainingGroundsFrameMixin:GetSelectedQueueOption()
+	local selectedPVPType = self:GetSelectedPVPType();
+	if selectedPVPType == TrainingGroundPVPType.Bonus then
+		return self.BonusTrainingGroundList:GetSelectedQueueOption();
+	end
+
+	if selectedPVPType == TrainingGroundPVPType.Specific then
+		return self.SpecificTrainingGroundList:GetSelectedQueueOption();
+	end
+end
+
+BonusTrainingGroundListMixin = {};
+
+local BonusTrainingGroundListEvents = {
+	"PLAYER_LEVEL_UP",
+	"PVPQUEUE_ANYWHERE_SHOW",
+	"PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
+	"PVP_RATED_STATS_UPDATE",
+	"PVP_REWARDS_UPDATE",
+};
+
+function BonusTrainingGroundListMixin:OnLoad()
+	self:InitializeBonusButtons();
+end
+
+function BonusTrainingGroundListMixin:InitializeBonusButtons()
+	for index, button in ipairs(self.BonusTrainingGroundButtons) do
+		button.GetBonusTrainingGroundList = function() return self; end;
+
+		local enabled, minLevel = true, 0;
+		button:SetButtonState(enabled, minLevel);
+	end
+end
+
+function BonusTrainingGroundListMixin:SetSelectedQueueOption(selectedQueueOption)
+	local alreadySelected = self:GetSelectedQueueOption() == selectedQueueOption;
+	if alreadySelected then
+		return;
+	end
+
+	self.selectedQueueOption = selectedQueueOption;
+	for index, button in ipairs(self.BonusTrainingGroundButtons) do
+		button:RefreshSelectedHighlight();
+	end
+	self:GetTrainingGroundsFrame():RefreshQueueButton();
+end
+
+function BonusTrainingGroundListMixin:GetSelectedQueueOption()
+	return self.selectedQueueOption;
+end
+
+function BonusTrainingGroundListMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, BonusTrainingGroundListEvents);
+
+	QueueUpdater:RequestInfo();
+	QueueUpdater:AddRef();
+
+	self:TrySelectFirstQueueOptionIfNoneSelected();
+end
+
+function BonusTrainingGroundListMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, BonusTrainingGroundListEvents);
+
+	QueueUpdater:RemoveRef();
+end
+
+function BonusTrainingGroundListMixin:OnEvent(event, ...)
+	if tContains(BonusTrainingGroundListEvents, event) then
+		self:Refresh();
+	end
+end
+
+function BonusTrainingGroundListMixin:TrySelectFirstQueueOptionIfNoneSelected()
+	if not self:GetSelectedQueueOption() then
+		self:SetSelectedQueueOption(self.RandomTrainingGroundButton.queueOption);
+	end
+end
+
+function BonusTrainingGroundListMixin:Refresh()
+	for index, button in ipairs(self.BonusTrainingGroundButtons) do
+		button:RefreshVisuals();
+	end
+end
+
+TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
+
+local queueOptionToRewardGetter = {
+	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
+};
+
+function TrainingGroundActivityButtonMixin:OnLoad()
+	self:InitializeAnchorPosition();
+	self:InitializeTitleText();
+end
+
+function TrainingGroundActivityButtonMixin:OnClick()
+	self:Select();
+end
+
+function TrainingGroundActivityButtonMixin:Select()
+	self:GetBonusTrainingGroundList():SetSelectedQueueOption(self:GetQueueOption());
+end
+
+function TrainingGroundActivityButtonMixin:OnShow()
+	self:RefreshVisuals();
+end
+
+function TrainingGroundActivityButtonMixin:InitializeAnchorPosition()
+	self.Anchor:ClearAllPoints();
+	self.Anchor:SetPoint("TOPLEFT", self);
+	self.Anchor:SetPoint("BOTTOMRIGHT", self);
+end
+
+function TrainingGroundActivityButtonMixin:InitializeTitleText()
+	self.Title:SetText(self.titleText);
+end
+
+function TrainingGroundActivityButtonMixin:SetButtonState(enable, minLevel)
+	self:SetEnabled(enable);
+	self.minLevel = minLevel or 0;
+
+	self:RefreshVisualsForEnabledState();
+end
+
+function TrainingGroundActivityButtonMixin:RefreshVisualsForEnabledState()
+	self:RefreshTitleTextColor();
+	self:RefreshNormalTextureAlpha();
+	self:RefreshLevelRequirementAndTitleAnchoring();
+	self:RefreshRewardDisplay();
+end
+
+function TrainingGroundActivityButtonMixin:RefreshRewardDisplay()
+	local rewardGetterFunction = queueOptionToRewardGetter[self:GetQueueOption()];
+	if not rewardGetterFunction then
+		return;
+	end
+
+	PVPUIFrame_ConfigureRewardFrame(self.Reward, rewardGetterFunction());
+end
+
+function TrainingGroundActivityButtonMixin:RefreshTitleTextColor()
+	local bestTextColor = self:IsEnabled() and HIGHLIGHT_FONT_COLOR or DISABLED_FONT_COLOR;
+	self.Title:SetTextColor(bestTextColor:GetRGBA());
+end
+
+function TrainingGroundActivityButtonMixin:RefreshNormalTextureAlpha()
+	local bestAlpha = self:IsEnabled() and 1 or 0.5;
+	self.NormalTexture:SetAlpha(bestAlpha);
+end
+
+function TrainingGroundActivityButtonMixin:RefreshLevelRequirementAndTitleAnchoring()
+	local shouldShowLevelRequirement = not self:IsEnabled() and PartyUtil.GetMinLevel() < self.minLevel;
+	self.LevelRequirement:SetShown(shouldShowLevelRequirement);
+	if not shouldShowLevelRequirement then
+		self.Title:SetPoint("LEFT", self.Anchor, "LEFT", 20, -1);
+		return;
+	end
+
+	self.LevelRequirement:SetFormattedText(UNLOCKS_AT_LEVEL, self.minLevel);
+	local height = self.LevelRequirement:GetHeight() + 4;
+	self.Title:SetPoint("LEFT", self.Anchor, "LEFT", 20, (height / 2) - 1);
+end
+
+function TrainingGroundActivityButtonMixin:RefreshSelectedHighlight()
+	self.SelectedTexture:SetShown(self:IsEnabled() and self:IsSelected());
+end
+
+function TrainingGroundActivityButtonMixin:RefreshVisuals()
+	self:RefreshVisualsForEnabledState();
+	self:RefreshSelectedHighlight();
+end
+
+function TrainingGroundActivityButtonMixin:GetQueueOption()
+	return self.queueOption;
+end
+
+function TrainingGroundActivityButtonMixin:IsSelected()
+	return self:GetBonusTrainingGroundList():GetSelectedQueueOption() == self:GetQueueOption();
+end
+
+function TrainingGroundActivityButtonMixin:OnEnter()
+	self:TryShowTooltip();
+end
+
+function TrainingGroundActivityButtonMixin:TryShowTooltip()
+	local hasTooltipText = self.tooltipTitle or self.tooltipDescription;
+	if not hasTooltipText then
+		return;
+	end
+
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(GameTooltip, self.tooltipTitle);
+	GameTooltip_AddNormalLine(GameTooltip, self.tooltipDescription);
+	GameTooltip:Show();
+end
+
+function TrainingGroundActivityButtonMixin:OnLeave()
+	GameTooltip:Hide();
+end
+
+SpecificTrainingGroundListMixin = {};
+
+local SpecificTrainingGroundListEvents = {
+	"PLAYER_LEVEL_UP",
+	"PVPQUEUE_ANYWHERE_SHOW",
+	"PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
+	"PVP_RATED_STATS_UPDATE",
+};
+
+function SpecificTrainingGroundListMixin:OnLoad()
+	self:InitializeScrollBox();
+end
+
+function SpecificTrainingGroundListMixin:InitializeScrollBox()
+	local topPadding, bottomPadding, leftPadding, rightPadding = 1, 0, 2, 0;
+	local elementSpacing = 0;
+	local view = CreateScrollBoxListLinearView(topPadding, bottomPadding, leftPadding, rightPadding, elementSpacing);
+
+	local function GetSpecificTrainingGroundList()
+		return self;
+	end
+	view:SetElementInitializer("PVPSpecificTrainingGroundButtonTemplate", function(button, elementData)
+		button.GetSpecificTrainingGroundList = GetSpecificTrainingGroundList;
+		button:Initialize(elementData);
+		button:SetScript("OnClick", function(button, mouseButtonName)
+			self.selectionBehavior:ToggleSelect(button);
+			self:GetTrainingGroundsFrame():RefreshQueueButton();
+		end);
+	end);
+		
+	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
+
+	self.selectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Intrusive);
+	self.selectionBehavior:RegisterCallback(SelectionBehaviorMixin.Event.OnSelectionChanged, function(o, elementData, selected)
+		local button = self.ScrollBox:FindFrame(elementData);
+		if button then
+			button:SetSelected(selected);
+		end
+	end, self);
+end
+
+function SpecificTrainingGroundListMixin:OnShow()
+	FrameUtil.RegisterFrameForEvents(self, SpecificTrainingGroundListEvents);
+
+	self:Refresh();
+end
+
+function SpecificTrainingGroundListMixin:OnHide()
+	FrameUtil.UnregisterFrameForEvents(self, SpecificTrainingGroundListEvents);
+end
+
+function SpecificTrainingGroundListMixin:OnEvent(event, ...)
+	if tContains(SpecificTrainingGroundListEvents, event) then
+		self:Refresh();
+	end
+end
+
+function SpecificTrainingGroundListMixin:GetSelectedQueueOption()
+	local selectedElementData = self.selectionBehavior:GetSelectedElementData()[1];
+	if selectedElementData then
+		return selectedElementData.lfgDungeonID;
+	end
+end
+
+local function ShouldTrainingGroundBeVisibleInSpecificList(trainingGround)
+	if not trainingGround or trainingGround.isRandom then
+		return false;
+	end
+
+	local _isAvailableForAll, isAvailableForPlayer, _hideIfNotJoinable, _totalGroupSizeRequired = IsLFGDungeonJoinable(trainingGround.lfgDungeonID);
+	return isAvailableForPlayer;
+end
+
+function SpecificTrainingGroundListMixin:GetVisibleTrainingGrounds()
+	local visibleTrainingGrounds = {};
+	for _index, trainingGround in ipairs(C_PvP.GetTrainingGrounds()) do
+		if ShouldTrainingGroundBeVisibleInSpecificList(trainingGround) then
+			table.insert(visibleTrainingGrounds, trainingGround);
+		end
+	end
+
+	return visibleTrainingGrounds;
+end
+
+function SpecificTrainingGroundListMixin:Refresh()
+	self.ScrollBox:SetDataProvider(CreateDataProvider(self:GetVisibleTrainingGrounds()), ScrollBoxConstants.RetainScrollPosition);
+end
+
+PVPSpecificTrainingGroundButtonMixin = {};
+
+function PVPSpecificTrainingGroundButtonMixin:Initialize(elementData)
+	self.elementData = elementData;
+	self.NameText:SetText(elementData.name);
+	self.SizeText:SetFormattedText(PVP_TEAMTYPE, elementData.maxPlayers, elementData.maxPlayers);
+	self.InfoText:SetText(elementData.gameType);
+	self.Icon:SetTexture(elementData.icon or DEFAULT_BG_TEXTURE);
+
+	-- Copy some data here for compatibility with PVPInstanceListEntryButtonTemplate (it expects these for tooltips)
+	self.name = elementData.name;
+	self.longDescription = elementData.longDescription;
+
+	self:SetSelected(SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData));
+end
+
+function PVPSpecificTrainingGroundButtonMixin:SetSelected(selected)
+	local fontColor = selected and HIGHLIGHT_FONT_COLOR or NORMAL_FONT_COLOR;
+	self.NameText:SetTextColor(fontColor:GetRGB());
+	self.SizeText:SetTextColor(fontColor:GetRGB());
+
+	self.SelectedTexture:SetShown(selected);
 end

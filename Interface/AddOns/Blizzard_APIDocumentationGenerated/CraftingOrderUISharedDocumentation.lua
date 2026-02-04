@@ -170,7 +170,7 @@ local CraftingOrderUIShared =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "reagent", Type = "CraftingReagentInfo", Nilable = false },
+				{ Name = "reagentInfo", Type = "CraftingReagentInfo", Nilable = false },
 				{ Name = "slotIndex", Type = "luaIndex", Nilable = false },
 				{ Name = "source", Type = "CraftingOrderReagentSource", Nilable = false },
 				{ Name = "isBasicReagent", Type = "bool", Nilable = false },
@@ -205,7 +205,7 @@ local CraftingOrderUIShared =
 				{ Name = "orderDuration", Type = "CraftingOrderDuration", Nilable = false },
 				{ Name = "tipAmount", Type = "WOWMONEY", Nilable = false },
 				{ Name = "customerNotes", Type = "string", Nilable = false },
-				{ Name = "reagentItems", Type = "table", InnerType = "RegularReagentInfo", Nilable = false },
+				{ Name = "reagentInfos", Type = "table", InnerType = "RegularReagentInfo", Nilable = false },
 				{ Name = "craftingReagentItems", Type = "table", InnerType = "CraftingReagentInfo", Nilable = false },
 				{ Name = "minCraftingQualityID", Type = "number", Nilable = true },
 				{ Name = "orderTarget", Type = "string", Nilable = true },

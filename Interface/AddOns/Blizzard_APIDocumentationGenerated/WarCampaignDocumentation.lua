@@ -3,6 +3,7 @@ local WarCampaign =
 	Name = "WarCampaign",
 	Type = "System",
 	Namespace = "C_CampaignInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local WarCampaign =
 		{
 			Name = "GetCampaignChapterInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local WarCampaign =
 		{
 			Name = "GetCampaignID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +49,7 @@ local WarCampaign =
 		{
 			Name = "GetCampaignInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +64,7 @@ local WarCampaign =
 		{
 			Name = "GetChapterIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local WarCampaign =
 		{
 			Name = "GetCurrentChapterID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +94,7 @@ local WarCampaign =
 		{
 			Name = "GetFailureReason",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +109,7 @@ local WarCampaign =
 		{
 			Name = "GetState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +124,7 @@ local WarCampaign =
 		{
 			Name = "IsCampaignQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +139,7 @@ local WarCampaign =
 		{
 			Name = "SortAsNormalQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -195,6 +205,7 @@ local WarCampaign =
 				{ Name = "usesNormalQuestIcons", Type = "bool", Nilable = false },
 				{ Name = "isContainerCampaign", Type = "bool", Nilable = false },
 				{ Name = "sortAsNormalQuest", Type = "bool", Nilable = false },
+				{ Name = "hideFutureChapters", Type = "bool", Nilable = false },
 			},
 		},
 	},

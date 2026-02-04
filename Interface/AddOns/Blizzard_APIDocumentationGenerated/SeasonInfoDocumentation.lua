@@ -3,6 +3,7 @@ local SeasonInfo =
 	Name = "SeasonInfo",
 	Type = "System",
 	Namespace = "C_SeasonInfo",
+	Environment = "All",
 
 	Functions =
 	{

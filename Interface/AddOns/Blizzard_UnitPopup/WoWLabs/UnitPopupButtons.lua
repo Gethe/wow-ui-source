@@ -238,14 +238,18 @@ function UnitPopupInviteButtonMixin:CanShow(contextData)
 	
 	if UnitPopupSharedUtil.IsPlayerOffline(contextData)then
 		return false;
-end
+	end
 
 	local unit = contextData.unit;
 	if contextData.unit then
 		if not UnitPopupSharedUtil.CanCooperate(contextData) then
-		return false;
+			return false;
 		end
-		
+
+		if not UnitIsHumanPlayer(unit) then
+			return false;
+		end
+
 		if UnitIsUnit("player", unit) then
 			return false;
 		end
@@ -267,7 +271,7 @@ end
 	end
 
 	return self:GetInviteName() == displayedInvite;
-	end
+end
 
 function UnitPopupAddGuildBtagFriendButtonMixin:CanShow(contextData)
 	local isLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
@@ -284,7 +288,7 @@ function UnitPopupBnetInviteButtonMixin:CanShow(contextData)
 	local accountInfo = contextData.accountInfo;
 	if not accountInfo then
 		return false;
-end
+	end
 
 	local playerGuid = accountInfo.gameAccountInfo.playerGuid;
 	if not playerGuid then
@@ -293,15 +297,15 @@ end
 
 	local inviteName = "BN_"..GetDisplayedInviteType(playerGuid);
 	if self:GetInviteName() ~= inviteName then
-			return false; 
+		return false; 
 	end
 
 	if not contextData.bnetIDAccount then
-			return false; 
-		end
+		return false; 
+	end
 
 	return BNFeaturesEnabledAndConnected(); 
-	end
+end
 
 function UnitPopupCommunitiesLeaveButtonMixin:GetText(contextData)
 	local isCharacterClub = contextData.clubInfo.clubType == Enum.ClubType.Character;
@@ -333,12 +337,12 @@ end
 
 	if contextData.unit then
 		if not UnitPopupSharedUtil.CanCooperate(contextData) then
-		return false;
-	end
+			return false;
+		end
 
 		if not UnitPopupSharedUtil.IsPlayer(contextData) then
-		return false;
-	end
+			return false;
+		end
 	end
 
 	return true; 

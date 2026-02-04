@@ -82,7 +82,7 @@ function HousingCornerstonePurchaseFrameMixin:OnEvent(event, ...)
 			UIErrorsFrame:AddExternalErrorMessage(HOUSING_PURCHASE_PLOT_ERROR);
 		end
 	elseif event == "PLAYER_MONEY" then
-		self:CheckPurchaseEligibility();
+		self:CheckPurchaseEligibility(false);
 	elseif event == "CLOSE_PLOT_CORNERSTONE" then
 		HideUIPanel(HousingCornerstonePurchaseFrame);
 	end
@@ -123,11 +123,18 @@ function HousingCornerstonePurchaseFrameMixin:OnShow()
 
 	self.purchaseMode = C_HousingNeighborhood.GetCornerstonePurchaseMode();
 	if self.purchaseMode == Enum.CornerstonePurchaseMode.Move then
+		-- Hide the money frame because moves are always free. If HousingMoveHouseJob is updated to deduct a cost, we need to update this
+		self.PriceMoneyFrame:Hide();
+
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_MOVE_BUTTON);
+		self.BuyButton:Enable();
+		self.ErrorText:Hide();
+		self:CheckPurchaseEligibility(true);
 	else
+		self.PriceMoneyFrame:Show();
 		self.BuyButton:SetText(HOUSING_CORNERSTONE_BUY);
+		self:CheckPurchaseEligibility(false);
 	end
-	self:CheckPurchaseEligibility();
 	self:CheckMoveCooldown();
 
 	PlaySound(SOUNDKIT.HOUSING_CORNERSTONE_FOR_SALE_OPEN);
@@ -193,16 +200,18 @@ function HousingCornerstonePurchaseFrameMixin:OnHide()
 	end
 end
 
-function HousingCornerstonePurchaseFrameMixin:CheckPurchaseEligibility()
+function HousingCornerstonePurchaseFrameMixin:CheckPurchaseEligibility(ignoreCostCheck)
 	local canBuy = true;
-	if GetMoney() >= self.houseInfo.plotCost then
-		SetMoneyFrameColor("HousingCornerstonePriceMoneyFrame", "gold");
-	else
-		SetMoneyFrameColor("HousingCornerstonePriceMoneyFrame", "red")
-		self.BuyButton:Disable();
-		self.ErrorText:SetText(HOUSING_CORNERSTONE_CANT_AFFORD);
-		self.ErrorText:Show();
-		canBuy = false;
+	if ignoreCostCheck == false then
+		if GetMoney() >= self.houseInfo.plotCost then
+			SetMoneyFrameColor("HousingCornerstonePriceMoneyFrame", "gold");
+		else
+			SetMoneyFrameColor("HousingCornerstonePriceMoneyFrame", "red")
+			self.BuyButton:Disable();
+			self.ErrorText:SetText(HOUSING_CORNERSTONE_CANT_AFFORD);
+			self.ErrorText:Show();
+			canBuy = false;
+		end
 	end
 	
 	local cantPurchaseReason = C_HousingNeighborhood.HasPermissionToPurchase();
@@ -262,7 +271,7 @@ end
 function HousingCornerstonePurchaseFrameMixin:OnNeighborhoodInfoUpdated(neighborhoodInfo)
 	self.neighborhoodName = neighborhoodInfo.neighborhoodName;
 	self.NeighborhoodText:SetText(self.neighborhoodName);
-	self:CheckPurchaseEligibility();
+	self:CheckPurchaseEligibility(false);
 end
 
 --//////////////////////////////Shared Visitor Frame//////////////////////////////////////////

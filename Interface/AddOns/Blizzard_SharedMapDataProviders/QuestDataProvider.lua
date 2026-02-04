@@ -192,7 +192,7 @@ end
 
 function QuestDataProviderMixin:AddQuest(questID, x, y, frameLevelOffset, isWaypoint)
 	local pin = self:GetMap():AcquirePin(self:GetPinTemplate());
-	pin.questID = questID;
+	pin:SetQuestID(questID);
 	pin.dataProvider = self;
 
 	local isSuperTracked = questID == C_SuperTrack.GetSuperTrackedQuestID();

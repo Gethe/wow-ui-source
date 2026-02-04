@@ -199,6 +199,53 @@ local function Register()
 		Settings.SetupCVarDropdown(category, "showTimestamps", Settings.VarType.String, GetOptions, TIMESTAMPS_LABEL, OPTION_TOOLTIP_TIMESTAMPS);
 	end
 
+
+	-- Connect to Photo Sharing
+	do
+		if C_HousingPhotoSharing.IsEnabled() then
+			local setting = Settings.RegisterCVarSetting(category, "enableConnectToPhotoSharing", Settings.VarType.Boolean, PHOTO_SHARING_SETTINGS_LABEL);
+
+			local function OnConnectButtonClick()
+				if not C_HousingPhotoSharing.IsAuthorized() then
+					C_HousingPhotoSharing.BeginAuthorizationFlow();
+				else
+					C_HousingPhotoSharing.ClearAuthorization();
+				end
+			end
+
+			local function EvaluateButtonName()
+				if C_HousingPhotoSharing.IsAuthorized() then
+					return PHOTO_SHARING_DISCONNECT;
+				else
+					return PHOTO_SHARING_SIGN_IN;
+				end
+			end
+
+			local function OnEvaluateState(self)
+				-- This is true when the checkbox is unchecked
+				if not self:GetSetting():GetValue() then
+					C_HousingPhotoSharing.ClearAuthorization();
+				end
+
+				-- This is governed by server settings, unrelated to client checkbox
+				if C_HousingPhotoSharing.IsEnabled() then
+					self:Show();
+				else
+					self:Hide();
+				end
+			end
+
+			local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, EvaluateButtonName, OnConnectButtonClick, OnEvaluateState, true, PHOTO_SHARING_SETTINGS_LABEL_TOOLTIP);
+			initializer:AddEvaluateStateFrameEvent("PHOTO_SHARING_AUTHORIZATION_UPDATED");
+
+			-- Button is dynamic, so we will manually register both possible values here
+			initializer:AddSearchTags(PHOTO_SHARING_DISCONNECT);
+			initializer:AddSearchTags(PHOTO_SHARING_SIGN_IN);
+
+			layout:AddInitializer(initializer);
+		end
+	end
+
 	-- Reset Chat Positions
 	do
 		local function OnButtonClick()

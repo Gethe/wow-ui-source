@@ -546,12 +546,12 @@ function FriendsTabHeaderMixin:OnLoad()
 			self.bnStatus = status;
 
 			if status == FRIENDS_TEXTURE_ONLINE then
-				BNSetAFK(false);
-				BNSetDND(false);
+				C_BattleNet.SetAFK(false);
+				C_BattleNet.SetDND(false);
 			elseif status == FRIENDS_TEXTURE_AFK then
-				BNSetAFK(true);
+				C_BattleNet.SetAFK(true);
 			elseif status == FRIENDS_TEXTURE_DND then
-				BNSetDND(true);
+				C_BattleNet.SetDND(true);
 			end
 		end
 	end
@@ -1310,7 +1310,7 @@ function FriendsFrameAddFriendButton_OnClick(self)
 		name = GetUnitName("target", true);
 	end
 
-	if ( name and UnitIsPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
+	if ( name and UnitIsHumanPlayer("target") and UnitCanCooperate("player", "target") and not C_FriendList.GetFriendInfo(name) ) then
 		C_FriendList.AddFriend(name);
 		PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	else
@@ -1371,7 +1371,7 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 end
 
 function FriendsFrameIgnorePlayerButton_OnClick(self)
-	if UnitCanCooperate("player", "target") and UnitIsPlayer("target") then
+	if UnitCanCooperate("player", "target") and UnitIsHumanPlayer("target") then
 		local name, server = UnitName("target");
 		local fullname = name;
 		if server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
@@ -2020,7 +2020,7 @@ function FriendsBroadcastFrameMixin:SetBroadcast()
 	local newBroadcastText = self.EditBox:GetText();
 	local _, _, _, broadcastText = BNGetInfo();
 	if newBroadcastText ~= broadcastText then
-		BNSetCustomMessage(newBroadcastText);
+		C_BattleNet.SetCustomMessage(newBroadcastText);
 	end
 	self:HideFrame();
 end

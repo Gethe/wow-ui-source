@@ -371,8 +371,6 @@
 										</Animations>
 										<Scripts>
 											<OnLoad  method="OnLoad"/>
-											<OnShow method="OnShow"/>
-											<OnHide method="OnHide"/>
 											<OnEvent method="OnEvent"/>
 											<OnClick method="OnClick"/>
 											<OnEnter method="OnEnter"/>

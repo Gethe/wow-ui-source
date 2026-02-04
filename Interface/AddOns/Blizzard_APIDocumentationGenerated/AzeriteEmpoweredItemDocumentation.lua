@@ -3,12 +3,14 @@ local AzeriteEmpoweredItem =
 	Name = "AzeriteEmpoweredItem",
 	Type = "System",
 	Namespace = "C_AzeriteEmpoweredItem",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanSelectPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "ConfirmAzeriteEmpoweredItemRespec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -33,6 +36,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetAllTierInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +51,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "GetAllTierInfoByItemID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +77,7 @@ local AzeriteEmpoweredItem =
 			Name = "GetPowerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -87,6 +93,7 @@ local AzeriteEmpoweredItem =
 			Name = "GetPowerText",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -104,6 +111,7 @@ local AzeriteEmpoweredItem =
 			Name = "GetSpecsForPower",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +126,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasAnyUnselectedPowers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,6 +141,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "HasBeenViewed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -146,6 +156,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -160,6 +171,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeriteEmpoweredItemByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -174,6 +186,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsAzeritePreviewSourceDisplayable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -198,6 +211,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerAvailableForSpec",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -213,6 +227,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "IsPowerSelected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -228,6 +243,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SelectPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -243,6 +259,7 @@ local AzeriteEmpoweredItem =
 		{
 			Name = "SetHasBeenViewed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +274,7 @@ local AzeriteEmpoweredItem =
 			Name = "AzeriteEmpoweredItemEquippedStatusChanged",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_EQUIPPED_STATUS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isHeartEquipped", Type = "bool", Nilable = false },
@@ -266,6 +284,7 @@ local AzeriteEmpoweredItem =
 			Name = "AzeriteEmpoweredItemSelectionUpdated",
 			Type = "Event",
 			LiteralName = "AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "azeriteEmpoweredItemLocation", Type = "AzeriteEmpoweredItemLocation", Mixin = "ItemLocationMixin", Nilable = false },

@@ -3,12 +3,14 @@ local ClickBindings =
 	Name = "ClickBindings",
 	Type = "System",
 	Namespace = "C_ClickBindings",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanSpellBeClickBound",
 			Type = "Function",
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local ClickBindings =
 			Name = "ExecuteBinding",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +38,7 @@ local ClickBindings =
 		{
 			Name = "GetBindingType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -50,6 +54,7 @@ local ClickBindings =
 		{
 			Name = "GetEffectiveInteractionButton",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local ClickBindings =
 		{
 			Name = "GetStringFromModifiers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -112,6 +118,7 @@ local ClickBindings =
 			Name = "SetProfileByInfo",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +137,7 @@ local ClickBindings =
 			Name = "ClickbindingsSetHighlightsShown",
 			Type = "Event",
 			LiteralName = "CLICKBINDINGS_SET_HIGHLIGHTS_SHOWN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "showHighlights", Type = "bool", Nilable = false },

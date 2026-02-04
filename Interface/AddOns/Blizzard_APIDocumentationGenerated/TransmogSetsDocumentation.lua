@@ -3,6 +3,7 @@ local TransmogSets =
 	Name = "TransmogrifySets",
 	Type = "System",
 	Namespace = "C_TransmogSets",
+	Environment = "All",
 
 	Functions =
 	{
@@ -13,6 +14,7 @@ local TransmogSets =
 		{
 			Name = "ClearNewSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,7 @@ local TransmogSets =
 		{
 			Name = "ClearSetNewSourcesForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +45,7 @@ local TransmogSets =
 			Name = "GetAllSourceIDs",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,9 +58,19 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetAvailableSets",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "sets", Type = "table", InnerType = "TransmogSetInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetBaseSetID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +95,7 @@ local TransmogSets =
 			Name = "GetBaseSetsFilter",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -126,6 +141,7 @@ local TransmogSets =
 			Name = "GetIsFavorite",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,6 +167,7 @@ local TransmogSets =
 			Name = "GetSetInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -166,6 +183,7 @@ local TransmogSets =
 			Name = "GetSetNewSources",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -181,6 +199,7 @@ local TransmogSets =
 			Name = "GetSetPrimaryAppearances",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +215,7 @@ local TransmogSets =
 			Name = "GetSetsContainingSourceID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -208,9 +228,26 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "GetSetsFilter",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSourceIDsForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,6 +264,7 @@ local TransmogSets =
 			Name = "GetSourcesForSlot",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -270,6 +308,7 @@ local TransmogSets =
 		{
 			Name = "GetValidClassForSet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +324,7 @@ local TransmogSets =
 			Name = "GetVariantSets",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -308,6 +348,7 @@ local TransmogSets =
 		{
 			Name = "IsBaseSetCollected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,6 +363,7 @@ local TransmogSets =
 		{
 			Name = "IsNewSource",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -336,6 +378,7 @@ local TransmogSets =
 		{
 			Name = "IsSetVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -357,8 +400,18 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "IsUsingDefaultSetsFilters",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isUsingDefaultSetsFilters", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetBaseSetsFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -371,8 +424,13 @@ local TransmogSets =
 			Type = "Function",
 		},
 		{
+			Name = "SetDefaultSetsFilters",
+			Type = "Function",
+		},
+		{
 			Name = "SetHasNewSources",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -387,6 +445,7 @@ local TransmogSets =
 		{
 			Name = "SetHasNewSourcesForSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -402,6 +461,7 @@ local TransmogSets =
 		{
 			Name = "SetIsFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -410,8 +470,20 @@ local TransmogSets =
 			},
 		},
 		{
+			Name = "SetSetsFilter",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+				{ Name = "isChecked", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetTransmogSetsClassFilter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -446,6 +518,7 @@ local TransmogSets =
 				{ Name = "favorite", Type = "bool", Nilable = false },
 				{ Name = "limitedTimeSet", Type = "bool", Nilable = false },
 				{ Name = "validForCharacter", Type = "bool", Nilable = false },
+				{ Name = "grantAsPrecedingVariant", Type = "bool", Nilable = false },
 			},
 		},
 		{

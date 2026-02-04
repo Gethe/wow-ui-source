@@ -3,12 +3,14 @@ local IncomingSummon =
 	Name = "IncomingSummon",
 	Type = "System",
 	Namespace = "C_IncomingSummon",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "HasIncomingSummon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local IncomingSummon =
 		{
 			Name = "IncomingSummonStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

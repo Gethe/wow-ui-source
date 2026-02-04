@@ -45,7 +45,8 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 
 		local anythingSelect, targetType = ...;
 		if anythingSelect and targetType == Enum.HousingExpertModeTargetType.Decor then
-			self:PlaySelectedSoundForDecorInfo(C_HousingExpertMode.GetSelectedDecorInfo());
+			local isPreview = false; -- For now we don't have preview state in expert mode
+			self:PlaySelectedSoundForDecorInfo(C_HousingExpertMode.GetSelectedDecorInfo(), isPreview);
 		elseif anythingSelect and targetType == Enum.HousingExpertModeTargetType.House then
 			self:PlaySelectedSoundForHouse();
 		end
@@ -158,21 +159,12 @@ end
 function HouseEditorExpertDecorModeMixin:UpdateShownInstructions()
 	local isTargetSelected = C_HousingExpertMode.IsDecorSelected() or C_HousingExpertMode.IsHouseExteriorSelected();
 	local isManipulating = self.isManipulating;
-	local subMode = C_HousingExpertMode.GetPrecisionSubmode();
+	local activeSubmode = C_HousingExpertMode.GetPrecisionSubmode();
 
-	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isTargetSelected and not isManipulating);
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, isTargetSelected and not isManipulating);
-	self:SetInstructionShown(self.Instructions.ManipulatingInstructions, isManipulating);
-	self:SetInstructionShown(self.Instructions.SelectedOrManipulatingInstructions, isTargetSelected or isManipulating);
-
-	local showMoveInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Translate;
-	self:SetInstructionShown(self.Instructions.SelectedAndMoveSubmodeInstructions, showMoveInstructions);
-
-	local showRotateInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Rotate;
-	self:SetInstructionShown(self.Instructions.SelectedAndRotateSubmodeInstructions, showRotateInstructions);
-
-	local showScaleInstructions = isTargetSelected and not isManipulating and subMode == Enum.HousingPrecisionSubmode.Scale;
-	self:SetInstructionShown(self.Instructions.SelectedAndScaleSubmodeInstructions, showScaleInstructions);
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isTargetSelected and not isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, isTargetSelected and not isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.ManipulatingInstructions, isManipulating, activeSubmode);
+	self:SetInstructionShown(self.Instructions.SelectedOrManipulatingInstructions, isTargetSelected or isManipulating, activeSubmode);
 
 	if self.Instructions.RemoveInstruction then
 		local shouldShowRemove = false;
@@ -186,30 +178,29 @@ function HouseEditorExpertDecorModeMixin:UpdateShownInstructions()
 	self.Instructions:UpdateLayout();
 end
 
-function HouseEditorExpertDecorModeMixin:SetInstructionShown(instructionSet, shouldShow)
+function HouseEditorExpertDecorModeMixin:SetInstructionShown(instructionSet, shouldShow, activeSubmode)
 	if instructionSet then
 		for _, instruction in ipairs(instructionSet) do
-			instruction:SetShown(shouldShow);
+			instruction:SetShown(shouldShow and ((not instruction.submode) or (instruction.submode == activeSubmode)));
 		end
 	end
 end
 
 function HouseEditorExpertDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
-	if decorInstanceInfo.isLocked or not decorInstanceInfo.canBeRemoved then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
-		if decorInstanceInfo.isLocked then
-			GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
-		else
-			GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
-		end
-
-		GameTooltip:Show();
-		return GameTooltip;
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+	
+	if decorInstanceInfo.isLocked then
+		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
+	elseif not decorInstanceInfo.canBeRemoved then
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
 	end
+
+	GameTooltip:Show();
+	return GameTooltip;
 end
 
-function HouseEditorExpertDecorModeMixin:PlaySelectedSoundForSize(size)
+function HouseEditorExpertDecorModeMixin:PlaySelectedSoundForSize(size, _isPreview)
 	self:PlaySoundForSize(size,
 		SOUNDKIT.HOUSING_EXPERTMODE_ITEM_SELECT,
 		SOUNDKIT.HOUSING_EXPERTMODE_ITEM_SELECT,

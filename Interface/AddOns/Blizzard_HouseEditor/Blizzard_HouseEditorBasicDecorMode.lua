@@ -8,7 +8,7 @@ local BasicDecorModeShownEvents =
 	"HOUSING_DECOR_PLACE_FAILURE",
 	"HOUSING_DECOR_PLACE_SUCCESS",
 	"HOUSE_EXTERIOR_POSITION_SUCCESS",
-	"HOUSING_DECOR_NUDGE_STATUS_CHANGED",
+	"HOUSING_DECOR_FREE_PLACE_STATUS_CHANGED",
 	"HOUSING_DECOR_GRID_VISIBILITY_STATUS_CHANGED",
 	"HOUSING_DECOR_GRID_SNAP_STATUS_CHANGED",
 	"HOUSING_DECOR_REMOVED",
@@ -32,15 +32,17 @@ function HouseEditorBasicDecorModeMixin:OnLoad()
 
 	local decorIsSelected = false;
 	self:UpdateInstructions(decorIsSelected);
+	
+	EventRegistry:RegisterCallback("HousingMarketEvents.SetCartFrameShown", self.OnCartFrameSetShown, self);
 end
 
 function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 	if event == "HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED" then
-		local selected, targetType = ...;
+		local selected, targetType, isPreview = ...;
 		if selected then
 			self:OnTargetSelected();
 			if targetType == Enum.HousingBasicModeTargetType.Decor then
-				self:PlaySelectedSoundForDecorInfo(C_HousingBasicMode.GetSelectedDecorInfo());
+				self:PlaySelectedSoundForDecorInfo(C_HousingBasicMode.GetSelectedDecorInfo(), isPreview);
 			elseif targetType == Enum.HousingBasicModeTargetType.House then
 				self:PlaySelectedSoundForHouse();
 			end
@@ -58,23 +60,20 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 			GameTooltip:Hide();
 		end
 	elseif event == "HOUSING_BASIC_MODE_PLACEMENT_FLAGS_UPDATED" then
-		local targetType, invalidPlacementInfo = ...;
-		if invalidPlacementInfo.anyRestrictions then
-			if targetType == Enum.HousingBasicModeTargetType.Decor then
-				self:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo);
-			elseif targetType == Enum.HousingBasicModeTargetType.House then
-				self:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo);
-			end
-		else
-			GameTooltip:Hide();
-		end
+		local targetType, placementFlags = ...;
+		self:OnPlacementFlagsUpdate(targetType, placementFlags);
 	elseif event == "GLOBAL_MOUSE_UP" then
 		local button = ...;
-		if button == "LeftButton" and C_HousingBasicMode.IsPlacingNewDecor() then
-			if self.commitNewDecorOnMouseUp then
-				C_HousingBasicMode.FinishPlacingNewDecor();
-			else
-				self.commitNewDecorOnMouseUp = true;
+		if button == "LeftButton" then
+			if C_HousingBasicMode.IsPlacingNewDecor() then
+				if self.commitNewDecorOnMouseUp then
+					C_HousingBasicMode.FinishPlacingNewDecor();
+				else
+					self.commitNewDecorOnMouseUp = true;
+				end
+			elseif C_HousingBasicMode.IsDecorSelected() and self.draggingPreviewDecor then
+				C_HousingBasicMode.CommitDecorMovement() --if it's unsuccessful it will just revert to click-to-place.
+				self.draggingPreviewDecor = false;
 			end
 		end
 	elseif event == "HOUSING_DECOR_PLACE_FAILURE" then
@@ -95,19 +94,19 @@ function HouseEditorBasicDecorModeMixin:OnEvent(event, ...)
 				acknowledgeOnHide = true,
 			};
 
-			HelpTip:Show(self.SubButtonBar.NudgeButton, helpTipInfo);
+			HelpTip:Show(self.SubButtonBar.FreePlaceButton, helpTipInfo);
 		end
 
 		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
 	elseif event == "HOUSING_DECOR_PLACE_SUCCESS" then
-		local _, size = ...;
-		self:PlayPlacedSoundForSize(size);
+		local _, size, _, isPreview = ...;
+		self:PlayPlacedSoundForSize(size, isPreview);
 	elseif event == "HOUSE_EXTERIOR_POSITION_SUCCESS" then
 		self:PlayPlacementSoundForHouse();
 	elseif event == "UPDATE_BINDINGS" then
 		self.Instructions:UpdateAllControls();
-	elseif event == "HOUSING_DECOR_NUDGE_STATUS_CHANGED" then
-		self.SubButtonBar.NudgeButton:UpdateState();
+	elseif event == "HOUSING_DECOR_FREE_PLACE_STATUS_CHANGED" then
+		self.SubButtonBar.FreePlaceButton:UpdateState();
 	elseif event == "HOUSING_DECOR_GRID_SNAP_STATUS_CHANGED" then
 		self.SubButtonBar.SnapButton:UpdateState();
 	elseif event == "HOUSING_DECOR_REMOVED" then
@@ -136,6 +135,10 @@ function HouseEditorBasicDecorModeMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, BasicDecorModeShownEvents);
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorBasicDecorMode);
 	C_KeyBindings.DeactivateBindingContext(Enum.BindingContext.HousingEditorBasicAndExpertDecorMode);
+end
+
+function HouseEditorBasicDecorModeMixin:OnCartFrameSetShown(cartShown)
+	self.Instructions:SetShown(not cartShown);
 end
 
 function HouseEditorBasicDecorModeMixin:OnTargetSelected()
@@ -198,53 +201,53 @@ function HouseEditorBasicDecorModeMixin:TryHandleEscape()
 end
 
 function HouseEditorBasicDecorModeMixin:ShowDecorInstanceTooltip(decorInstanceInfo)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+	GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
+
 	if decorInstanceInfo.isLocked then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
 		GameTooltip_AddErrorLine(GameTooltip, ERR_HOUSING_DECOR_LOCKED);
-
-		GameTooltip:Show();
-		return GameTooltip;
  	elseif not decorInstanceInfo.canBeRemoved then	
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, decorInstanceInfo.name);
 		GameTooltip_AddErrorLine(GameTooltip, HOUSING_DECOR_CANNOT_REMOVE);
+	end
 
-		GameTooltip:Show();
-		return GameTooltip;
+	GameTooltip:Show();
+	return GameTooltip;
+end
+
+function HouseEditorBasicDecorModeMixin:OnPlacementFlagsUpdate(targetType, placementFlags)
+	local showingAnyTooltips = false;
+	if targetType ~= Enum.HousingBasicModeTargetType.None then
+		showingAnyTooltips = self:TryShowInvalidPlacementTooltip(placementFlags);
+	end
+
+	if not showingAnyTooltips and GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
 	end
 end
 
-function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementDecorTooltip(invalidPlacementInfo)
-	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
-
-		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
-		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
-
-		GameTooltip:Show();
-		return GameTooltip;
-	end
-end
-
-function HouseEditorBasicDecorModeMixin:ShowInvalidPlacementHouseTooltip(invalidPlacementInfo)
-	if invalidPlacementInfo.invalidCollision or invalidPlacementInfo.invalidTarget then
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
-		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
-
-		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
-		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
-
-		GameTooltip:Show();
-		return GameTooltip;
-	elseif invalidPlacementInfo.notInRoom then
+local invalidCollisionFlagsMask = bit.bor(Enum.HousingDecorPlacementRestriction.InvalidCollision, Enum.HousingDecorPlacementRestriction.InvalidTarget);
+function HouseEditorBasicDecorModeMixin:TryShowInvalidPlacementTooltip(placementFlags)
+	if FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.OutsidePlotBounds) then
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
 		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_OUTSIDE_PLOT_ERROR_TITLE, ERROR_COLOR);
-
 		GameTooltip:Show();
-		return GameTooltip;
+		return true;
+	elseif FlagsUtil.IsSet(placementFlags, Enum.HousingDecorPlacementRestriction.ChildOutsideBounds) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		-- Post 12.0.0, add a new more specific tooltip string rather than using the generic error code one
+		GameTooltip_SetTitle(GameTooltip, ERR_HOUSING_RESULT_BOUNDS_FAILURE_ATTACHMENT, ERROR_COLOR);
+		GameTooltip:Show();
+		return true;
+	elseif FlagsUtil.IsAnySet(placementFlags, invalidCollisionFlagsMask) then
+		GameTooltip:SetOwner(self, "ANCHOR_CURSOR");
+		GameTooltip_SetTitle(GameTooltip, HOUSING_PLACEMENT_COLLISION_ERROR_TITLE, ERROR_COLOR);
+		local toggleCollisionBinding = GetBindingKey("HOUSING_TOGGLEDECORNUDGEMODE") or NPE_UNBOUND_KEYBIND;
+		GameTooltip_AddHighlightLine(GameTooltip, string.format(HOUSING_PLACEMENT_COLLISION_ERROR_SUBTITLE, toggleCollisionBinding));
+		GameTooltip:Show();
+		return true;
 	end
+
+	return false;
 end
 
 -- Iherits HouseEditorSubmodeButtonMixin
@@ -278,16 +281,16 @@ function HouseEditorGridVisibilityButtonMixin:LeaveMode()
 end
 
 -- Iherits HouseEditorSubmodeButtonMixin
-HouseEditorNudgeButtonMixin = {};
+HouseEditorFreePlaceButtonMixin = {};
 
-function HouseEditorNudgeButtonMixin:IsActive()
-	return C_HousingBasicMode.IsNudgeEnabled();
+function HouseEditorFreePlaceButtonMixin:IsActive()
+	return C_HousingBasicMode.IsFreePlaceEnabled();
 end
 
-function HouseEditorNudgeButtonMixin:EnterMode()
-	C_HousingBasicMode.SetNudgeEnabled(true);
+function HouseEditorFreePlaceButtonMixin:EnterMode()
+	C_HousingBasicMode.SetFreePlaceEnabled(true);
 end
 
-function HouseEditorNudgeButtonMixin:LeaveMode()
-	C_HousingBasicMode.SetNudgeEnabled(false);
+function HouseEditorFreePlaceButtonMixin:LeaveMode()
+	C_HousingBasicMode.SetFreePlaceEnabled(false);
 end

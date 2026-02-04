@@ -389,7 +389,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		AddPVPStatColumns(cellStatTemplate);
 	end
 
-	if C_PvP.CanDisplayKillingBlows() then
+	do
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_KILLING_BLOWS, "CENTER", "kills", KILLING_BLOW_TOOLTIP_TITLE, KILLING_BLOW_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
@@ -413,14 +413,14 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local isAbbreviated = true;
 	local hasTooltip = true;
 
-	if C_PvP.CanDisplayDamage() then
+	do
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_DAMAGE_DONE, "CENTER", "damage", DAMAGE_DONE_TOOLTIP_TITLE, DAMAGE_DONE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "damageDone", useAlternateColor, isAbbreviated, hasTooltip);
 	end
 
-	if C_PvP.CanDisplayHealing() then
+	do
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HEALING_DONE, "CENTER", "healing", HEALING_DONE_TOOLTIP_TITLE, HEALING_DONE_TOOLTIP);
 		column:ConstrainToHeader(textPadding);

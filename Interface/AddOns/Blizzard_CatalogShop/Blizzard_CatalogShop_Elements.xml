@@ -348,6 +348,46 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
+
+	<Frame name="ProductRefundContainerTemplate" mixin="ProductRefundContainerMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="RefundTextFrame">
+				<Size x="200" y="39"/>
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RefundText" inherits="GameFontNormal" wordwrap="true" maxLines="2" justifyH="LEFT" justifyV="MIDDLE" >
+							<Size x="200" />
+							<Color color="NORMAL_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="20"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RefundIcon" atlas="common-icon-undo" >
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.RefundText" relativePoint="LEFT" x="-8" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Button parentKey="RefundButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_REFUND">
+				<Size x="141" y="50"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.RefundTextFrame" relativePoint="BOTTOM" x="0" y="0"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="ShowSelectedRefundableDecor" type="string"/>
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
 	
 	<Button name="NavigationBarButtonTemplate" mixin="NavigationBarButtonMixin" virtual="true">
 		<Size x="40" y="40"/>
@@ -453,7 +493,61 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	
+
+	<Frame name="CatalogShopPersistentRefundContainerFrameTemplate" mixin="CatalogShopPersistentRefundContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
+		<Size x="88" y="88" />
+		<Frames>
+			<Button parentKey="PersistentRefundButton" inherits="BigRedRefreshButtonTemplate" mixin="CatalogShopButtonMixin" motionScriptsWhileDisabled="true">
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="ShowAllRefundableDecor" type="string"/>
+				</KeyValues>
+				<Size x="48" y="48"/>
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Button>
+			<Frame parentKey="RefundTextFrame">
+				<Size x="88" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.PersistentRefundButton" relativePoint="BOTTOM" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="RefundText" inherits="GameFontNormal" wordwrap="false" maxLines="1" justifyH="CENTER" justifyV="MIDDLE">
+							<Size x="88" />
+							<Color color="NORMAL_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="RefundCountFrame">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.PersistentRefundButton" relativePoint="TOPLEFT" x="3" y="-3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="RefundCountBackground" atlas="tokens-counterbg-large">
+							<Size x="24" y="24"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="RefundCountText" inherits="GameFontNormal" justifyV="MIDDLE" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RefundCountBackground" relativePoint="CENTER" x="0" y="0"/>
+							</Anchors>
+							<Color color="WHITE_FONT_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
 	<Frame name="CatalogShopProductContainerFrameTemplate" mixin="CatalogShopProductContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
 		<Size x="596" y="778" />
 		<Frames>

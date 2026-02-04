@@ -3,6 +3,7 @@ local PvpInfo =
 	Name = "PvpInfo",
 	Type = "System",
 	Namespace = "C_PvP",
+	Environment = "All",
 
 	Functions =
 	{
@@ -16,12 +17,12 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "CanDisplayDamage",
+			Name = "AreTrainingGroundsEnabled",
 			Type = "Function",
 
 			Returns =
 			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
+				{ Name = "areTrainingGroundsEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -34,25 +35,7 @@ local PvpInfo =
 			},
 		},
 		{
-			Name = "CanDisplayHealing",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "CanDisplayHonorableKills",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "canDisplay", Type = "bool", Nilable = false },
-			},
-		},
-		{
-			Name = "CanDisplayKillingBlows",
 			Type = "Function",
 
 			Returns =
@@ -71,8 +54,19 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "CanPlayerUseTrainingGroundsUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canUseTrainingGroundsUI", Type = "bool", Nilable = false },
+				{ Name = "failureReason", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "CanToggleWarMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -151,6 +145,7 @@ local PvpInfo =
 			Name = "GetArenaCrowdControlInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -168,6 +163,7 @@ local PvpInfo =
 			Name = "GetArenaRewards",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,6 +195,7 @@ local PvpInfo =
 		{
 			Name = "GetAssignedSpecForBattlefieldQueue",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +220,7 @@ local PvpInfo =
 		{
 			Name = "GetBattlefieldFlagPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -241,6 +239,7 @@ local PvpInfo =
 			Name = "GetBattlefieldVehicleInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -257,6 +256,7 @@ local PvpInfo =
 			Name = "GetBattlefieldVehicles",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -269,9 +269,25 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetBattlegroundInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "battlegroundIndex", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "battlegroundInfo", Type = "BattlegroundInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetBrawlRewards",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -310,6 +326,7 @@ local PvpInfo =
 			Name = "GetGlobalPvpScalingInfoForSpecID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -324,6 +341,7 @@ local PvpInfo =
 		{
 			Name = "GetHonorRewardInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -338,6 +356,7 @@ local PvpInfo =
 		{
 			Name = "GetLevelUpBattlegrounds",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -352,6 +371,7 @@ local PvpInfo =
 		{
 			Name = "GetMatchPVPStatColumn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -375,6 +395,7 @@ local PvpInfo =
 		{
 			Name = "GetNextHonorLevelForReward",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -389,6 +410,7 @@ local PvpInfo =
 		{
 			Name = "GetOutdoorPvPWaitTime",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -476,6 +498,7 @@ local PvpInfo =
 		{
 			Name = "GetPvpTierID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -491,6 +514,7 @@ local PvpInfo =
 		{
 			Name = "GetPvpTierInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -535,6 +559,19 @@ local PvpInfo =
 		},
 		{
 			Name = "GetRandomEpicBGRewards",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "honor", Type = "number", Nilable = false },
+				{ Name = "experience", Type = "number", Nilable = false },
+				{ Name = "itemRewards", Type = "table", InnerType = "BattlefieldItemReward", Nilable = true },
+				{ Name = "currencyRewards", Type = "table", InnerType = "BattlefieldCurrencyReward", Nilable = true },
+				{ Name = "roleShortageBonus", Type = "RoleShortageReward", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRandomTrainingGroundRewards",
 			Type = "Function",
 
 			Returns =
@@ -606,6 +643,7 @@ local PvpInfo =
 		{
 			Name = "GetRewardItemLevelsByTierEnum",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -621,6 +659,8 @@ local PvpInfo =
 		{
 			Name = "GetScoreInfo",
 			Type = "Function",
+			SecretInActivePvPMatch = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -635,6 +675,8 @@ local PvpInfo =
 		{
 			Name = "GetScoreInfoByPlayerGuid",
 			Type = "Function",
+			SecretInActivePvPMatch = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -660,6 +702,7 @@ local PvpInfo =
 			Name = "GetSkirmishInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -683,6 +726,7 @@ local PvpInfo =
 		{
 			Name = "GetTeamInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -692,6 +736,15 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "info", Type = "PVPTeamInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetTrainingGrounds",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "trainingGrounds", Type = "table", InnerType = "BattlegroundInfo", Nilable = false },
 			},
 		},
 		{
@@ -752,6 +805,25 @@ local PvpInfo =
 			Returns =
 			{
 				{ Name = "hasArenaSkirmishWinToday", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasMatchStarted",
+			Type = "Function",
+			Documentation = { "Returns true if a match is either active or complete." },
+
+			Returns =
+			{
+				{ Name = "hasStarted", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "HasRandomTrainingGroundWinToday",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasRandomTrainingGroundWinToday", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -984,6 +1056,7 @@ local PvpInfo =
 			Name = "JoinBattlefield",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -993,6 +1066,7 @@ local PvpInfo =
 		{
 			Name = "JoinBrawl",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1000,12 +1074,27 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "JoinRandomTrainingGround",
+			Type = "Function",
+		},
+		{
 			Name = "JoinRatedBGBlitz",
 			Type = "Function",
 		},
 		{
+			Name = "JoinTrainingGround",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "trainingGroundID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "RequestCrowdControlSpell",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1016,6 +1105,7 @@ local PvpInfo =
 			Name = "SetPVP",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1026,6 +1116,7 @@ local PvpInfo =
 			Name = "SetWarModeDesired",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1035,6 +1126,7 @@ local PvpInfo =
 		{
 			Name = "StartSoloRBGWarGameByName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1049,6 +1141,7 @@ local PvpInfo =
 		{
 			Name = "StartSpectatorSoloRBGWarGame",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1081,6 +1174,7 @@ local PvpInfo =
 			Name = "ArenaOpponentUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_OPPONENT_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "unitToken", Type = "cstring", Nilable = false },
@@ -1091,36 +1185,43 @@ local PvpInfo =
 			Name = "ArenaPrepOpponentSpecializations",
 			Type = "Event",
 			LiteralName = "ARENA_PREP_OPPONENT_SPECIALIZATIONS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArenaSeasonWorldState",
 			Type = "Event",
 			LiteralName = "ARENA_SEASON_WORLD_STATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldAutoQueue",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_AUTO_QUEUE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldAutoQueueEject",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_AUTO_QUEUE_EJECT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldQueueTimeout",
 			Type = "Event",
 			LiteralName = "BATTLEFIELD_QUEUE_TIMEOUT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldsClosed",
 			Type = "Event",
 			LiteralName = "BATTLEFIELDS_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlefieldsShow",
 			Type = "Event",
 			LiteralName = "BATTLEFIELDS_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isArena", Type = "bool", Nilable = true },
@@ -1131,21 +1232,25 @@ local PvpInfo =
 			Name = "BattlegroundObjectivesUpdate",
 			Type = "Event",
 			LiteralName = "BATTLEGROUND_OBJECTIVES_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "BattlegroundPointsUpdate",
 			Type = "Event",
 			LiteralName = "BATTLEGROUND_POINTS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GdfSimComplete",
 			Type = "Event",
 			LiteralName = "GDF_SIM_COMPLETE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HonorLevelUpdate",
 			Type = "Event",
 			LiteralName = "HONOR_LEVEL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isHigherLevel", Type = "bool", Nilable = false },
@@ -1155,6 +1260,7 @@ local PvpInfo =
 			Name = "NotifyPvpAfkResult",
 			Type = "Event",
 			LiteralName = "NOTIFY_PVP_AFK_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "offender", Type = "cstring", Nilable = false },
@@ -1166,16 +1272,19 @@ local PvpInfo =
 			Name = "PlayerEnteringBattleground",
 			Type = "Event",
 			LiteralName = "PLAYER_ENTERING_BATTLEGROUND",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerJoinedPvpMatch",
 			Type = "Event",
 			LiteralName = "PLAYER_JOINED_PVP_MATCH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PostMatchCurrencyRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_CURRENCY_REWARD_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reward", Type = "PVPPostMatchCurrencyReward", Nilable = false },
@@ -1185,21 +1294,25 @@ local PvpInfo =
 			Name = "PostMatchItemRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_ITEM_REWARD_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpBrawlInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_BRAWL_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchActive",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_ACTIVE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchComplete",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_COMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "winner", Type = "number", Nilable = false },
@@ -1210,26 +1323,31 @@ local PvpInfo =
 			Name = "PvpMatchInactive",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_INACTIVE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpMatchStateChanged",
 			Type = "Event",
 			LiteralName = "PVP_MATCH_STATE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRatedStatsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_RATED_STATS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRewardsUpdate",
 			Type = "Event",
 			LiteralName = "PVP_REWARDS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpRolePopupHide",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_POPUP_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = true },
@@ -1239,6 +1357,7 @@ local PvpInfo =
 			Name = "PvpRolePopupShow",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_POPUP_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "readyCheckInfo", Type = "PvpReadyCheckInfo", Nilable = false },
@@ -1248,16 +1367,19 @@ local PvpInfo =
 			Name = "PvpRoleUpdate",
 			Type = "Event",
 			LiteralName = "PVP_ROLE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpSpecialEventInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_SPECIAL_EVENT_INFO_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpTypesEnabled",
 			Type = "Event",
 			LiteralName = "PVP_TYPES_ENABLED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "wargameBattlegrounds", Type = "bool", Nilable = false },
@@ -1271,36 +1393,49 @@ local PvpInfo =
 			Name = "PvpVehicleInfoUpdated",
 			Type = "Event",
 			LiteralName = "PVP_VEHICLE_INFO_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PvpWorldstateUpdate",
 			Type = "Event",
 			LiteralName = "PVP_WORLDSTATE_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpqueueAnywhereShow",
 			Type = "Event",
 			LiteralName = "PVPQUEUE_ANYWHERE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PvpqueueAnywhereUpdateAvailable",
 			Type = "Event",
 			LiteralName = "PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "TrainingGroundsEnabledStatusUpdated",
+			Type = "Event",
+			LiteralName = "TRAINING_GROUNDS_ENABLED_STATUS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateActiveBattlefield",
 			Type = "Event",
 			LiteralName = "UPDATE_ACTIVE_BATTLEFIELD",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBattlefieldScore",
 			Type = "Event",
 			LiteralName = "UPDATE_BATTLEFIELD_SCORE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateBattlefieldStatus",
 			Type = "Event",
 			LiteralName = "UPDATE_BATTLEFIELD_STATUS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "battleFieldIndex", Type = "number", Nilable = false },
@@ -1310,6 +1445,7 @@ local PvpInfo =
 			Name = "WarModeStatusUpdate",
 			Type = "Event",
 			LiteralName = "WAR_MODE_STATUS_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "warModeEnabled", Type = "bool", Nilable = false },
@@ -1319,11 +1455,13 @@ local PvpInfo =
 			Name = "WargameInviteSent",
 			Type = "Event",
 			LiteralName = "WARGAME_INVITE_SENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WargameRequestResponse",
 			Type = "Event",
 			LiteralName = "WARGAME_REQUEST_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "responderGUID", Type = "WOWGUID", Nilable = false },
@@ -1335,6 +1473,7 @@ local PvpInfo =
 			Name = "WargameRequested",
 			Type = "Event",
 			LiteralName = "WARGAME_REQUESTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "opposingPartyMemberName", Type = "cstring", Nilable = false },
@@ -1347,6 +1486,7 @@ local PvpInfo =
 			Name = "WorldPvpQueue",
 			Type = "Event",
 			LiteralName = "WORLD_PVP_QUEUE",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -1432,6 +1572,27 @@ local PvpInfo =
 				{ Name = "isPlayer", Type = "bool", Nilable = false },
 				{ Name = "isAlive", Type = "bool", Nilable = false },
 				{ Name = "shouldDrawBelowPlayerBlips", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "BattlegroundInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "icon", Type = "fileID", Nilable = true },
+				{ Name = "gameType", Type = "cstring", Nilable = false },
+				{ Name = "shortDescription", Type = "cstring", Nilable = false },
+				{ Name = "longDescription", Type = "cstring", Nilable = false },
+				{ Name = "mapDescription", Type = "cstring", Nilable = false },
+				{ Name = "maxPlayers", Type = "number", Nilable = false },
+				{ Name = "battlegroundID", Type = "number", Nilable = true },
+				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
+				{ Name = "mapID", Type = "number", Nilable = true },
+				{ Name = "isHoliday", Type = "bool", Nilable = false },
+				{ Name = "isRandom", Type = "bool", Nilable = false },
+				{ Name = "canEnter", Type = "bool", Nilable = false },
+				{ Name = "isTrainingGround", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -1613,12 +1774,12 @@ local PvpInfo =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "pvpStatID", Type = "number", Nilable = false },
+				{ Name = "pvpStatID", Type = "number", Nilable = false, NeverSecret = true },
 				{ Name = "pvpStatValue", Type = "number", Nilable = false },
-				{ Name = "orderIndex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "tooltip", Type = "string", Nilable = false },
-				{ Name = "iconName", Type = "string", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "name", Type = "string", Nilable = false, NeverSecret = true },
+				{ Name = "tooltip", Type = "string", Nilable = false, NeverSecret = true },
+				{ Name = "iconName", Type = "string", Nilable = false, NeverSecret = true },
 			},
 		},
 		{

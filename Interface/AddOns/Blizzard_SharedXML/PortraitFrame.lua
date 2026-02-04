@@ -40,13 +40,17 @@ function PortraitFrameMixin:GetPortrait()
 	return self.PortraitContainer.portrait;
 end
 
+function PortraitFrameMixin:HasPortraitTexture()
+	return self.PortraitContainer.portrait:GetTexture();
+end
+
 function PortraitFrameMixin:SetBorder(layoutName)
 	local layout = NineSliceUtil.GetLayout(layoutName);
 	NineSliceUtil.ApplyLayout(self.NineSlice, layout);
 end
 
 function PortraitFrameMixin:SetPortraitToAsset(texture)
-	SetPortraitToTexture(self:GetPortrait(), texture);
+	self:GetPortrait():SetTexture(texture);
 end
 
 function PortraitFrameMixin:SetPortraitToUnit(unit)

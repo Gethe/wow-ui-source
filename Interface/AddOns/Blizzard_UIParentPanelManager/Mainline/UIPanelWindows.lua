@@ -8,7 +8,6 @@ function UIPanelWindows_Initialize()
 	-- Frames using the new Templates
 	UIPanelWindows["CharacterFrame"] =				{ area = "left",			pushable = 3,	whileDead = 1};
 	UIPanelWindows["ProfessionsBookFrame"] =		{ area = "left",			pushable = 1,	whileDead = 1, width = 575, height = 545 };
-	UIPanelWindows["TaxiFrame"] =					{ area = "left",			pushable = 0, 	width = 605, height = 580, showFailedFunc = CloseTaxiMap };
 	UIPanelWindows["PVPUIFrame"] =					{ area = "left",			pushable = 0,	whileDead = 1, width = 563};
 	UIPanelWindows["PVPBannerFrame"] =				{ area = "left",			pushable = 1};
 	UIPanelWindows["PVEFrame"] =					{ area = "left",			pushable = 1, 	whileDead = 1 };
@@ -32,7 +31,6 @@ function UIPanelWindows_Initialize()
 	UIPanelWindows["RaidParentFrame"] =				{ area = "left",			pushable = 1,	whileDead = 1 };
 	UIPanelWindows["RaidBrowserFrame"] =			{ area = "left",			pushable = 1,	};
 	UIPanelWindows["DeathRecapFrame"] =				{ area = "center",			pushable = 0,	yoffset = -116, whileDead = 1, allowOtherPanels = 1};
-	UIPanelWindows["WardrobeFrame"] =				{ area = "left",			pushable = 0,	width = 965 };
 	UIPanelWindows["AlliedRacesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };
 	UIPanelWindows["GuildControlUI"] =				{ area = "left",			pushable = 1,	whileDead = 1,		yoffset = 4, };
 	UIPanelWindows["CommunitiesFrame"] =			{ area = "left",			pushable = 1,	whileDead = 1 };

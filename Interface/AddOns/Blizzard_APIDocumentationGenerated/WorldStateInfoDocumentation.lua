@@ -3,6 +3,7 @@ local WorldStateInfo =
 	Name = "WorldStateInfo",
 	Type = "System",
 	Namespace = "C_WorldStateInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,6 +15,8 @@ local WorldStateInfo =
 			Name = "CancelPlayerCountdown",
 			Type = "Event",
 			LiteralName = "CANCEL_PLAYER_COUNTDOWN",
+			SecretInChatMessagingLockdown = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
@@ -25,6 +28,8 @@ local WorldStateInfo =
 			Name = "StartPlayerCountdown",
 			Type = "Event",
 			LiteralName = "START_PLAYER_COUNTDOWN",
+			SecretInChatMessagingLockdown = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "initiatedBy", Type = "WOWGUID", Nilable = false },
@@ -38,6 +43,7 @@ local WorldStateInfo =
 			Name = "StartTimer",
 			Type = "Event",
 			LiteralName = "START_TIMER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerType", Type = "StartTimerType", Nilable = false },
@@ -49,6 +55,7 @@ local WorldStateInfo =
 			Name = "StopTimerOfType",
 			Type = "Event",
 			LiteralName = "STOP_TIMER_OF_TYPE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerType", Type = "StartTimerType", Nilable = false },
@@ -58,6 +65,7 @@ local WorldStateInfo =
 			Name = "WorldStateTimerStart",
 			Type = "Event",
 			LiteralName = "WORLD_STATE_TIMER_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerID", Type = "number", Nilable = false },
@@ -67,6 +75,7 @@ local WorldStateInfo =
 			Name = "WorldStateTimerStop",
 			Type = "Event",
 			LiteralName = "WORLD_STATE_TIMER_STOP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerID", Type = "number", Nilable = false },

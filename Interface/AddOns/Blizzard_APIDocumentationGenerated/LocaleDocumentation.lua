@@ -2,12 +2,14 @@ local Locale =
 {
 	Name = "Locale",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAvailableLocaleInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -22,6 +24,7 @@ local Locale =
 		{
 			Name = "GetAvailableLocales",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

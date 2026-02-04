@@ -2,6 +2,7 @@ local SimpleControlPointAPI =
 {
 	Name = "SimpleControlPointAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -35,6 +36,7 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,6 +47,7 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -54,6 +57,7 @@ local SimpleControlPointAPI =
 		{
 			Name = "SetParent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

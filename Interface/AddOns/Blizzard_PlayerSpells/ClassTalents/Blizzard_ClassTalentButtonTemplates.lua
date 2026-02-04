@@ -64,6 +64,12 @@ ClassTalentButtonBaseMixin = {};
 function ClassTalentButtonBaseMixin:OnLoad()
 	self.BorderSheenMask:SetAtlas(self.sheenMaskAtlas, TextureKitConstants.UseAtlasSize);
 	self.SelectableGlow:SetAtlas(self.artSet.glow, TextureKitConstants.IgnoreAtlasSize);
+
+	if self.SelectableGlow then
+		self.SelectableGlow.Anim.GlowFadeIn:SetToAlpha(self.SelectableGlowMaxAlpha);
+		self.SelectableGlow.Anim.GlowFadeOut:SetFromAlpha(self.SelectableGlowMaxAlpha);
+	end
+
 	self.tooltipBackdropStyle = GAME_TOOLTIP_BACKDROP_STYLE_CLASS_TALENT;
 	self.SearchIcon.tooltipBackdropStyle = self.tooltipBackdropStyle;
 end
@@ -99,11 +105,13 @@ function ClassTalentButtonBaseMixin:UpdateGlow()
 	self:UpdateSelectableGlow();
 end
 
-function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
+function ClassTalentButtonBaseMixin:CanPlaySelectableGlow()
 	local isDoingStandardGlow = self.Glow and self.shouldGlow;
-	local canDoSelectableGlow = not isDoingStandardGlow and not self.selectableGlowDisabled;
+	return not isDoingStandardGlow and not self.selectableGlowDisabled;
+end
 
-	local playSelectableGlow = canDoSelectableGlow and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
+function ClassTalentButtonBaseMixin:UpdateSelectableGlow()
+	local playSelectableGlow = self:CanPlaySelectableGlow() and self.visualState == TalentButtonUtil.BaseVisualState.Selectable;
 	self.SelectableGlow.Anim:SetPlaying(playSelectableGlow);
 end
 
@@ -417,4 +425,39 @@ function ClassTalentSelectionChoiceMixin:OnLeave()
 	-- Overrides TalentDisplayMixin.
 	TalentDisplayMixin.OnLeave(self);
 	self:HideActionBarHighlights();
+end
+
+ClassTalentButtonCapstoneWithTrackMixin = CreateFromMixins(ClassTalentButtonBaseMixin, TalentButtonCapstoneWithTrackMixin);
+
+function ClassTalentButtonCapstoneWithTrackMixin:OnLoad()
+	ClassTalentButtonBaseMixin.OnLoad(self);
+	TalentButtonCapstoneWithTrackMixin.OnLoad(self);
+
+	self.selectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+	self.deselectSound = SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND;
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:UpdateEntryInfo(skipUpdate)
+	-- Overrides TalentButtonSpendMixin.
+	TalentButtonSpendMixin.UpdateEntryInfo(self, skipUpdate);
+	local useMajorSpendSound = self.entryInfo and self.entryInfo.type == Enum.TraitNodeEntryType.SpendCapstoneSquare;
+	self.selectSound = useMajorSpendSound and SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND_MAJOR or SOUNDKIT.UI_CLASS_TALENT_NODE_SPEND;
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:CanPlaySelectableGlow()
+	-- Capstone nodes shouldn't play the "selectable glow" if the player has already encountered a purchasable capstone before
+	return ClassTalentButtonBaseMixin.CanPlaySelectableGlow(self) and not GetCVarBool("seenPurchasableClassCapstone");
+end
+
+function ClassTalentButtonCapstoneWithTrackMixin:GetCapstonePipMixin()
+	return ClassTalentButtonCapstonePipMixin;
+end
+
+-- ClassTalentButtonBaseMixin is placed second here so that its UpdateStateBorder overrides the generic one
+-- inherited by TalentButtonCapstonePipMixin (via TalentButtonArtMixin)
+ClassTalentButtonCapstonePipMixin = CreateFromMixins(TalentButtonCapstonePipMixin, ClassTalentButtonBaseMixin);
+
+function ClassTalentButtonCapstonePipMixin:OnLoad()
+	ClassTalentButtonBaseMixin.OnLoad(self);
+	TalentButtonCapstonePipMixin.OnLoad(self);
 end

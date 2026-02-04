@@ -5,15 +5,33 @@
 	<Frame name="ClassTalentCurrencyDisplayTemplate" mixin="ClassTalentCurrencyDisplayMixin" inherits="ResizeLayoutFrame" virtual="true">
 		<Size x="1" y="1"/>
 		<Layers>
-			<Layer>
-				<FontString parentKey="CurrencyLabel" inherits="SystemFont_Shadow_Large2" justifyH="CENTER"/>
-				<FontString parentKey="CurrencyAmount" inherits="Game32Font_Shadow2" justifyH="CENTER">
+			<Layer level="ARTWORK">
+				<FontString parentKey="CurrencyLabel" inherits="SystemFont_Shadow_Large2" justifyH="CENTER">
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.CurrencyLabel" relativePoint="BOTTOM" x="0" y="-8"/>
+						<Anchor point="LEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Frame parentKey="CurrentAmountContainer" inherits="ResizeLayoutFrame">
+				<KeyValues>
+					<KeyValue key="minimumWidth" value="54" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CurrencyLabel" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="CurrencyAmount" inherits="Game32Font_Shadow2" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 	</Frame>
 
 	<Frame name="ClassTalentsFrameTemplate" mixin="ClassTalentsFrameMixin" inherits="TalentFrameBaseTemplate" virtual="true">
@@ -27,7 +45,7 @@
 			<KeyValue key="bottomPadding" value="82" type="number"/>
 			<KeyValue key="rightPadding" value="0" type="number"/>
 			<KeyValue key="basePanOffsetX" value="49" type="number"/>
-			<KeyValue key="basePanOffsetY" value="-30" type="number"/>
+			<KeyValue key="basePanOffsetY" value="24" type="number"/>
 			<KeyValue key="maximumCommitTime" value="6" type="number"/>
 			<KeyValue key="disabledOverlayAlpha" value=".3" type="number"/>
 			<KeyValue key="enableCommitEndFlash" value="true" type="boolean"/>
@@ -35,6 +53,7 @@
 			<KeyValue key="enableCommitSpinner" value="true" type="boolean"/>
 			<KeyValue key="commitSound" value="SOUNDKIT.UI_CLASS_TALENT_APPLY_CHANGES" type="global"/>
 			<KeyValue key="heroSpecSelectionDialog" value="HeroTalentsSelectionDialog" type="global" />
+			<KeyValue key="refreshOnShow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -193,13 +212,13 @@
 
 			<Frame parentKey="ClassCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="372" y="-48"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPLEFT" x="372" y="-45"/>
 				</Anchors>
 			</Frame>
 
 			<Frame parentKey="SpecCurrencyDisplay" inherits="ClassTalentCurrencyDisplayTemplate">
 				<Anchors>
-					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-401" y="-48"/>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="TOPRIGHT" x="-401" y="-45"/>
 				</Anchors>
 			</Frame>
 

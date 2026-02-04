@@ -3,12 +3,14 @@ local PetBattles =
 	Name = "PetBattles",
 	Type = "System",
 	Namespace = "C_PetBattles",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetBreedQuality",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -25,6 +27,7 @@ local PetBattles =
 			Name = "GetIcon",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,7 @@ local PetBattles =
 			Name = "GetName",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

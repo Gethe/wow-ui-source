@@ -3,12 +3,14 @@ local RaidLocks =
 	Name = "RaidLocks",
 	Type = "System",
 	Namespace = "C_RaidLocks",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetRedirectedDifficultyID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local RaidLocks =
 		{
 			Name = "IsEncounterComplete",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

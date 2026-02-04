@@ -9,14 +9,17 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtonVisibility()
 
 	-- Classic settings to show.
 	self.settingsCheckButtons.TargetAndFocus.shouldHide = false;
-	self.settingsCheckButtons.StanceBar.shouldHide = false;
-	self.settingsCheckButtons.PetActionBar.shouldHide = false;
-	self.settingsCheckButtons.PossessActionBar.shouldHide = false;
+	self.settingsCheckButtons.PartyFrames.shouldHide = false;
+	self.settingsCheckButtons.RaidFrames.shouldHide = false;
 	self.settingsCheckButtons.CastBar.shouldHide = false;
 	self.settingsCheckButtons.BuffsAndDebuffs.shouldHide = false;
+	self.settingsCheckButtons.VehicleLeaveButton.shouldHide = false;
 	self.settingsCheckButtons.StatusTrackingBar2.shouldHide = false;
 	self.settingsCheckButtons.DurabilityFrame.shouldHide = false;
 	self.settingsCheckButtons.PetFrame.shouldHide = false;
+	self.settingsCheckButtons.StanceBar.shouldHide = false;
+	self.settingsCheckButtons.PetActionBar.shouldHide = false;
+	self.settingsCheckButtons.PossessActionBar.shouldHide = false;
 end
 
 function EditModeAccountSettingsMixin:EditModeFrameSetup()
@@ -29,8 +32,11 @@ function EditModeAccountSettingsMixin:EditModeFrameSetup()
 	self:SetupPetFrame();
 
 	self:RefreshTargetAndFocus();
+	self:RefreshPartyFrames();
+	self:RefreshRaidFrames()
 	self:RefreshCastBar();
 	self:RefreshBuffsAndDebuffs();
+	self:RefreshVehicleLeaveButton();
 	self:RefreshStatusTrackingBar2();
 	self:RefreshDurabilityFrame();
 	self:RefreshPetFrame();
@@ -38,6 +44,8 @@ end
 
 function EditModeAccountSettingsMixin:EditModeFrameReset()
 	self:ResetTargetAndFocus();
+	self:ResetPartyFrames();
+	self:ResetRaidFrames();
 
 	self:ResetActionBarShown(StanceBar);
 	self:ResetActionBarShown(PetActionBar);

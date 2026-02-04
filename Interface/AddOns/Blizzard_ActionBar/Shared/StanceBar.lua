@@ -20,7 +20,7 @@ end
 
 function StanceBarMixin:ShouldShow()
 	return self.numForms > 0
-		and not IsPossessBarVisible()
+		and not C_ActionBar.IsPossessBarVisible()
 		and ActionBarController_GetCurrentActionBarState() ~= LE_ACTIONBAR_STATE_OVERRIDE;
 end
 
@@ -41,6 +41,10 @@ function StanceBarMixin:Update()
 	if not ActionBarBusy() then
 		self:SetShown(self:ShouldShow());
 	end
+end
+
+function StanceBarMixin:ShouldShowBackgroundArt()
+	return false; -- Override me!
 end
 
 function StanceBarMixin:SetBackgroundArtShown(shown)
@@ -128,7 +132,7 @@ function StanceButtonMixin:StanceButtonMixin_OnEnter()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	end
 	GameTooltip:SetShapeshift(self:GetID());
-	self.UpdateTooltip = self.OnEnter;
+	self.UpdateTooltip = self.StanceButtonMixin_OnEnter;
 end
 
 function StanceButtonMixin:StanceButtonMixin_OnLeave()

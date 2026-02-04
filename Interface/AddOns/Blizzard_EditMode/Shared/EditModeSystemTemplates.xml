@@ -348,4 +348,45 @@
 			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="EditModePersonalResourceDisplaySystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModePersonalResourceDisplaySystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.PersonalResourceDisplay" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_PERSONAL_RESOURCE_DISPLAY_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeEncounterEventsSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeEncounterEventsSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.EncounterEvents" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
+	<Frame name="EditModeDamageMeterSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeDamageMeterSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.DamageMeter" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_DAMAGE_METER_LABEL" type="global"/>
+			<KeyValue key="defaultHideSelection" value="true" type="boolean"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+			<Button parentKey="EditModeResizeButton" frameStrata="HIGH" toplevel="true" hidden="true">
+				<Size x="60" y="60"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="10" y="-10"/>
+				</Anchors>
+				<NormalTexture atlas="damagemeters-scalehandle"/>
+				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
+				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>
+			</Button>
+		</Frames>
+	</Frame>
 </Ui>

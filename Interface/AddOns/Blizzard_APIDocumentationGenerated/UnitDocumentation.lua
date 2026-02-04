@@ -2,12 +2,14 @@ local Unit =
 {
 	Name = "Unit",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CanEjectPassengerFromSeat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,8 @@ local Unit =
 			Name = "ClosestGameObjectPosition",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -49,6 +53,8 @@ local Unit =
 			Name = "ClosestUnitPosition",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,8 +69,18 @@ local Unit =
 			},
 		},
 		{
+			Name = "CreateUnitHealPredictionCalculator",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "EjectPassengerFromSeat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +90,8 @@ local Unit =
 		{
 			Name = "GetComboPoints",
 			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -99,6 +117,8 @@ local Unit =
 			Name = "GetUnitChargedPowerPoints",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -113,6 +133,8 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerHoldAtMaxTime",
 			Type = "Function",
+			SecretWhenUnitSpellCastRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -127,6 +149,8 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerMinHoldTime",
 			Type = "Function",
+			SecretWhenUnitSpellCastRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -141,6 +165,8 @@ local Unit =
 		{
 			Name = "GetUnitEmpowerStageDuration",
 			Type = "Function",
+			SecretWhenUnitSpellCastRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -156,6 +182,7 @@ local Unit =
 		{
 			Name = "GetUnitHealthModifier",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -170,6 +197,7 @@ local Unit =
 		{
 			Name = "GetUnitMaxHealthModifier",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,6 +213,7 @@ local Unit =
 			Name = "GetUnitPowerBarInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +229,7 @@ local Unit =
 			Name = "GetUnitPowerBarInfoByID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -214,6 +244,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarStrings",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -230,6 +261,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarStringsByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -246,6 +278,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarTextureInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -266,6 +299,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerBarTextureInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -285,6 +319,7 @@ local Unit =
 		{
 			Name = "GetUnitPowerModifier",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -299,6 +334,7 @@ local Unit =
 		{
 			Name = "GetUnitSpeed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -316,6 +352,7 @@ local Unit =
 		{
 			Name = "GetUnitTotalModifiedMaxHealthPercent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,6 +368,7 @@ local Unit =
 			Name = "GetVehicleUIIndicator",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -347,6 +385,7 @@ local Unit =
 			Name = "GetVehicleUIIndicatorSeat",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -364,6 +403,7 @@ local Unit =
 		{
 			Name = "IsFalling",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -378,6 +418,7 @@ local Unit =
 		{
 			Name = "IsFlying",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -392,6 +433,7 @@ local Unit =
 		{
 			Name = "IsPlayerInGuildFromGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -406,6 +448,7 @@ local Unit =
 		{
 			Name = "IsSubmerged",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -420,6 +463,7 @@ local Unit =
 		{
 			Name = "IsSwimming",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -434,6 +478,7 @@ local Unit =
 		{
 			Name = "IsUnitModelReadyForUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,6 +493,7 @@ local Unit =
 		{
 			Name = "PlayerIsPVPInactive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -472,6 +518,7 @@ local Unit =
 			Name = "ReportPlayerIsPVPAFK",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -481,6 +528,7 @@ local Unit =
 		{
 			Name = "ResistancePercent",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -496,6 +544,7 @@ local Unit =
 		{
 			Name = "SetPortraitTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -507,6 +556,7 @@ local Unit =
 		{
 			Name = "SetPortraitTextureFromCreatureDisplayID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -517,6 +567,7 @@ local Unit =
 		{
 			Name = "SetUnitCursorTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -534,6 +585,7 @@ local Unit =
 		{
 			Name = "UnitAffectingCombat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -548,6 +600,7 @@ local Unit =
 		{
 			Name = "UnitAlliedRaceInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -563,6 +616,7 @@ local Unit =
 		{
 			Name = "UnitArmor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -580,6 +634,7 @@ local Unit =
 		{
 			Name = "UnitAttackPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -596,6 +651,7 @@ local Unit =
 		{
 			Name = "UnitAttackSpeed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -611,6 +667,7 @@ local Unit =
 		{
 			Name = "UnitBattlePetLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -625,6 +682,7 @@ local Unit =
 		{
 			Name = "UnitBattlePetSpeciesID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -639,6 +697,7 @@ local Unit =
 		{
 			Name = "UnitBattlePetType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -653,6 +712,7 @@ local Unit =
 		{
 			Name = "UnitCanAssist",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -668,6 +728,7 @@ local Unit =
 		{
 			Name = "UnitCanAttack",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -683,6 +744,7 @@ local Unit =
 		{
 			Name = "UnitCanCooperate",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -698,6 +760,7 @@ local Unit =
 		{
 			Name = "UnitCanPetBattle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -711,8 +774,27 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCastingDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitCastingInfo",
 			Type = "Function",
+			SecretWhenUnitSpellCastRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -726,19 +808,38 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
+			},
+		},
+		{
+			Name = "UnitChannelDuration",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitChannelInfo",
 			Type = "Function",
+			SecretWhenUnitSpellCastRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitToken", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -748,16 +849,18 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitChromieTimeID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -773,6 +876,7 @@ local Unit =
 			Name = "UnitClass",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -781,7 +885,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "className", Type = "cstring", Nilable = false },
+				{ Name = "className", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "classFilename", Type = "cstring", Nilable = false },
 				{ Name = "classID", Type = "number", Nilable = false },
 			},
@@ -790,6 +894,7 @@ local Unit =
 			Name = "UnitClassBase",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -803,8 +908,27 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitClassFromGUID",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "className", Type = "cstring", Nilable = false, ConditionalSecret = true },
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
+				{ Name = "classID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitClassification",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -819,6 +943,7 @@ local Unit =
 		{
 			Name = "UnitControllingVehicle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -833,6 +958,8 @@ local Unit =
 		{
 			Name = "UnitCreatureFamily",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -846,8 +973,26 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitCreatureID",
+			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitCreatureType",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -863,6 +1008,7 @@ local Unit =
 		{
 			Name = "UnitDamage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -884,6 +1030,7 @@ local Unit =
 			Name = "UnitDetailedThreatSituation",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -903,6 +1050,7 @@ local Unit =
 		{
 			Name = "UnitDistanceSquared",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -918,6 +1066,7 @@ local Unit =
 		{
 			Name = "UnitEffectiveLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -930,12 +1079,66 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitExists",
+			Name = "UnitEmpoweredChannelDuration",
 			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a duration object that includes the duration of an empowered cast channel." },
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "includeHoldAtMaxTime", Type = "bool", Nilable = false, Default = true, Documentation = { "If true, include the hold-at-max time of the empowered channel in the total duration." } },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitEmpoweredStageDurations",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a vector of duration objects that measure the time spans for each individual stage in an empowered channel, with hold-at-max time included as the last element." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "duration", Type = "table", InnerType = "LuaDurationObject", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitEmpoweredStagePercentages",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a vector of percentages that describe how much of the total duration of an empowered channel is occupied by a stage." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "includeHoldAtMaxTime", Type = "bool", Nilable = false, Default = true, Documentation = { "If true, include the hold-at-max time of the empowered channel in the total duration and add a percentage value for it." } },
+			},
+
+			Returns =
+			{
+				{ Name = "percentages", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitExists",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -946,6 +1149,7 @@ local Unit =
 		{
 			Name = "UnitFactionGroup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -962,10 +1166,12 @@ local Unit =
 		{
 			Name = "UnitFullName",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -977,6 +1183,8 @@ local Unit =
 		{
 			Name = "UnitGUID",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -989,8 +1197,22 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitGetDetailedHealPrediction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "healerUnit", Type = "UnitToken", Nilable = true, Documentation = { "If specified, a unit to evaluate as the 'healer' for incoming heal values. If nil, healer values will be zero." } },
+				{ Name = "healPredictionCalculator", Type = "UnitHealPredictionCalculator", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitGetIncomingHeals",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1006,6 +1228,8 @@ local Unit =
 		{
 			Name = "UnitGetTotalAbsorbs",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1020,6 +1244,8 @@ local Unit =
 		{
 			Name = "UnitGetTotalHealAbsorbs",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1034,10 +1260,11 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssigned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1048,10 +1275,11 @@ local Unit =
 		{
 			Name = "UnitGroupRolesAssignedEnum",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1062,6 +1290,7 @@ local Unit =
 		{
 			Name = "UnitHPPerStamina",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1076,6 +1305,7 @@ local Unit =
 		{
 			Name = "UnitHasRelicSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1090,10 +1320,11 @@ local Unit =
 		{
 			Name = "UnitHasVehiclePlayerFrameUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1104,10 +1335,11 @@ local Unit =
 		{
 			Name = "UnitHasVehicleUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1118,6 +1350,8 @@ local Unit =
 		{
 			Name = "UnitHealthMax",
 			Type = "Function",
+			SecretWhenUnitHealthMaxRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1130,8 +1364,48 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitHealthMissing",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitHealthMax() - UnitHealth()" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitHealthPercent",
+			Type = "Function",
+			SecretWhenCurveSecret = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns percent of health remaining - can be scaled via a curve for display purposes" },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "usePredicted", Type = "bool", Nilable = false, Default = true },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
+			},
+		},
+		{
 			Name = "UnitHealth",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1147,6 +1421,7 @@ local Unit =
 		{
 			Name = "UnitHonor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1161,6 +1436,7 @@ local Unit =
 		{
 			Name = "UnitHonorLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1175,6 +1451,7 @@ local Unit =
 		{
 			Name = "UnitHonorMax",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1189,10 +1466,11 @@ local Unit =
 		{
 			Name = "UnitInAnyGroup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1204,10 +1482,11 @@ local Unit =
 		{
 			Name = "UnitInBattleground",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1219,6 +1498,7 @@ local Unit =
 		{
 			Name = "UnitInOtherParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Checks whether this unit cannot see your party chat because it is in an instance group" },
 
 			Arguments =
@@ -1234,10 +1514,11 @@ local Unit =
 		{
 			Name = "UnitInParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1249,10 +1530,11 @@ local Unit =
 		{
 			Name = "UnitInPartyIsAI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1263,6 +1545,7 @@ local Unit =
 		{
 			Name = "UnitInPartyShard",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1277,10 +1560,11 @@ local Unit =
 		{
 			Name = "UnitInRaid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1292,6 +1576,8 @@ local Unit =
 		{
 			Name = "UnitInRange",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1307,10 +1593,11 @@ local Unit =
 		{
 			Name = "UnitInSubgroup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1322,6 +1609,7 @@ local Unit =
 		{
 			Name = "UnitInVehicle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1336,10 +1624,11 @@ local Unit =
 		{
 			Name = "UnitInVehicleControlSeat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1350,10 +1639,11 @@ local Unit =
 		{
 			Name = "UnitInVehicleHidesPetFrame",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1364,6 +1654,8 @@ local Unit =
 		{
 			Name = "UnitIsAFK",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1378,6 +1670,7 @@ local Unit =
 		{
 			Name = "UnitIsBattlePet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1392,6 +1685,7 @@ local Unit =
 		{
 			Name = "UnitIsBattlePetCompanion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1406,6 +1700,7 @@ local Unit =
 		{
 			Name = "UnitIsBossMob",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1420,10 +1715,11 @@ local Unit =
 		{
 			Name = "UnitIsCharmed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1434,6 +1730,7 @@ local Unit =
 		{
 			Name = "UnitIsConnected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1448,6 +1745,7 @@ local Unit =
 		{
 			Name = "UnitIsControlling",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1462,10 +1760,11 @@ local Unit =
 		{
 			Name = "UnitIsCorpse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1476,6 +1775,8 @@ local Unit =
 		{
 			Name = "UnitIsDND",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1490,6 +1791,7 @@ local Unit =
 		{
 			Name = "UnitIsDead",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1504,6 +1806,7 @@ local Unit =
 		{
 			Name = "UnitIsDeadOrGhost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1518,6 +1821,7 @@ local Unit =
 		{
 			Name = "UnitIsEnemy",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1533,6 +1837,7 @@ local Unit =
 		{
 			Name = "UnitIsFeignDeath",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1547,6 +1852,7 @@ local Unit =
 		{
 			Name = "UnitIsFriend",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1562,10 +1868,11 @@ local Unit =
 		{
 			Name = "UnitIsGameObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1576,6 +1883,7 @@ local Unit =
 		{
 			Name = "UnitIsGhost",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1590,6 +1898,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupAssistant",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1604,6 +1913,7 @@ local Unit =
 		{
 			Name = "UnitIsGroupLeader",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1617,8 +1927,25 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsHumanPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsInMyGuild",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1633,10 +1960,26 @@ local Unit =
 		{
 			Name = "UnitIsInteractable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsLieutenant",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -1647,6 +1990,7 @@ local Unit =
 		{
 			Name = "UnitIsMercenary",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1659,12 +2003,44 @@ local Unit =
 			},
 		},
 		{
-			Name = "UnitIsOtherPlayersBattlePet",
+			Name = "UnitIsMinion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the unit is considered a minion of a player, such as a pet, totem, or guardian." },
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsNPCAsPlayer",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitIsOtherPlayersBattlePet",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1675,10 +2051,11 @@ local Unit =
 		{
 			Name = "UnitIsOtherPlayersPet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1689,6 +2066,7 @@ local Unit =
 		{
 			Name = "UnitIsOwnerOrControllerOfUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1704,6 +2082,7 @@ local Unit =
 		{
 			Name = "UnitIsPVP",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1718,6 +2097,7 @@ local Unit =
 		{
 			Name = "UnitIsPVPFreeForAll",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1732,10 +2112,11 @@ local Unit =
 		{
 			Name = "UnitIsPVPSanctuary",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1746,10 +2127,11 @@ local Unit =
 		{
 			Name = "UnitIsPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -1761,10 +2143,11 @@ local Unit =
 		{
 			Name = "UnitIsPossessed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1775,6 +2158,7 @@ local Unit =
 		{
 			Name = "UnitIsQuestBoss",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1789,10 +2173,11 @@ local Unit =
 		{
 			Name = "UnitIsRaidOfficer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1803,6 +2188,7 @@ local Unit =
 		{
 			Name = "UnitIsSameServer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1815,8 +2201,27 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitIsSpellTarget",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns whether spell's target unit matches the target param. Returns false if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "target", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitIsTapDenied",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1831,6 +2236,7 @@ local Unit =
 		{
 			Name = "UnitIsTrivial",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1845,6 +2251,7 @@ local Unit =
 		{
 			Name = "UnitIsUnconscious",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1859,11 +2266,13 @@ local Unit =
 		{
 			Name = "UnitIsUnit",
 			Type = "Function",
+			SecretWhenUnitComparisonRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unitName1", Type = "cstring", Nilable = false },
-				{ Name = "unitName2", Type = "cstring", Nilable = false },
+				{ Name = "unit1", Type = "UnitToken", Nilable = false },
+				{ Name = "unit2", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -1874,10 +2283,11 @@ local Unit =
 		{
 			Name = "UnitIsVisible",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -1888,6 +2298,7 @@ local Unit =
 		{
 			Name = "UnitIsWildBattlePet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1902,6 +2313,7 @@ local Unit =
 		{
 			Name = "UnitLeadsAnyGroup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1916,6 +2328,7 @@ local Unit =
 		{
 			Name = "UnitLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1930,10 +2343,29 @@ local Unit =
 		{
 			Name = "UnitName",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "unitName", Type = "cstring", Nilable = false },
+				{ Name = "unitServer", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitNameFromGUID",
+			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
@@ -1945,10 +2377,12 @@ local Unit =
 		{
 			Name = "UnitNameUnmodified",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "cstring", Nilable = false },
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
 			},
 
 			Returns =
@@ -1960,6 +2394,7 @@ local Unit =
 		{
 			Name = "UnitNameplateShowsWidgetsOnly",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1974,6 +2409,7 @@ local Unit =
 		{
 			Name = "UnitNumPowerBarTimers",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1988,6 +2424,7 @@ local Unit =
 		{
 			Name = "UnitOnTaxi",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2002,6 +2439,8 @@ local Unit =
 		{
 			Name = "UnitOwnerGUID",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2016,6 +2455,8 @@ local Unit =
 		{
 			Name = "UnitPVPName",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2030,6 +2471,8 @@ local Unit =
 		{
 			Name = "UnitPartialPower",
 			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2046,6 +2489,8 @@ local Unit =
 		{
 			Name = "UnitPercentHealthFromGUID",
 			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -2060,6 +2505,7 @@ local Unit =
 		{
 			Name = "UnitPhaseReason",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2074,10 +2520,11 @@ local Unit =
 		{
 			Name = "UnitPlayerControlled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -2088,10 +2535,11 @@ local Unit =
 		{
 			Name = "UnitPlayerOrPetInParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -2103,10 +2551,11 @@ local Unit =
 		{
 			Name = "UnitPlayerOrPetInRaid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 				{ Name = "partyIndex", Type = "luaIndex", Nilable = true },
 			},
 
@@ -2118,6 +2567,7 @@ local Unit =
 		{
 			Name = "UnitPosition",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2135,6 +2585,8 @@ local Unit =
 		{
 			Name = "UnitPower",
 			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2151,6 +2603,7 @@ local Unit =
 		{
 			Name = "UnitPowerBarID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2166,6 +2619,8 @@ local Unit =
 			Name = "UnitPowerBarTimerInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2184,6 +2639,7 @@ local Unit =
 		{
 			Name = "UnitPowerDisplayMod",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2198,6 +2654,8 @@ local Unit =
 		{
 			Name = "UnitPowerMax",
 			Type = "Function",
+			SecretWhenUnitPowerMaxRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2212,9 +2670,50 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitPowerMissing",
+			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Result of UnitPowerMax() - UnitPower()" },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitPowerPercent",
+			Type = "Function",
+			SecretWhenUnitPowerRestricted = true,
+			SecretWhenCurveSecret = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Queries the percent of power remaining, optionally evaluating it against a supplied curve." },
+
+			Arguments =
+			{
+				{ Name = "unitToken", Type = "UnitToken", Nilable = false },
+				{ Name = "powerType", Type = "PowerType", Nilable = true },
+				{ Name = "unmodified", Type = "bool", Nilable = false, Default = false },
+				{ Name = "curve", Type = "LuaCurveObjectBase", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "LuaCurveEvaluatedResult", Nilable = false, Documentation = { "If no curve is specified, a floating point percentage value. Else, the result of evaluating the curve with the percentage as the input." } },
+			},
+		},
+		{
 			Name = "UnitPowerType",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2234,6 +2733,7 @@ local Unit =
 		{
 			Name = "UnitPvpClassification",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2248,6 +2748,7 @@ local Unit =
 		{
 			Name = "UnitQuestTrivialLevelRange",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2262,6 +2763,7 @@ local Unit =
 		{
 			Name = "UnitQuestTrivialLevelRangeScaling",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2277,6 +2779,7 @@ local Unit =
 			Name = "UnitRace",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2293,6 +2796,7 @@ local Unit =
 		{
 			Name = "UnitRangedAttackPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2309,6 +2813,7 @@ local Unit =
 		{
 			Name = "UnitRangedDamage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2328,6 +2833,7 @@ local Unit =
 		{
 			Name = "UnitReaction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2343,6 +2849,7 @@ local Unit =
 		{
 			Name = "UnitRealmRelationship",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2357,6 +2864,7 @@ local Unit =
 		{
 			Name = "UnitSelectionColor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2375,6 +2883,7 @@ local Unit =
 		{
 			Name = "UnitSelectionType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2390,6 +2899,7 @@ local Unit =
 		{
 			Name = "UnitSex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2402,8 +2912,40 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitSexBase",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sex", Type = "UnitSex", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitShouldDisplayName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitShouldDisplaySpellTargetName",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns whether the target's name should be displayed. Returns false if the unit is not casting a spell or the spell has no target." },
 
 			Arguments =
 			{
@@ -2418,6 +2960,7 @@ local Unit =
 		{
 			Name = "UnitSpellHaste",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2427,11 +2970,46 @@ local Unit =
 			Returns =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellTargetClass",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns the class of the spell's target unit. Returns nil if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "classFilename", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellTargetName",
+			Type = "Function",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If the unit is currently casting a spell, returns the name of the spell's target unit. Returns nil if the unit is not casting a spell or the spell has no target." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "targetName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitStagger",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2440,12 +3018,13 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "result", Type = "number", Nilable = false },
+				{ Name = "result", Type = "number", Nilable = false, ConditionalSecret = true },
 			},
 		},
 		{
 			Name = "UnitStat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2464,6 +3043,7 @@ local Unit =
 		{
 			Name = "UnitSwitchToVehicleSeat",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2474,10 +3054,11 @@ local Unit =
 		{
 			Name = "UnitTargetsVehicleInRaidUI",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -2486,8 +3067,26 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitThreatLeadSituation",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a threat state (0-3; representing none, yellow, orange, red) that indicates how far the provided unit is above the secondmost threat on the provided mob. If the unit is not first on threat, will always return red. Can return nil if the provided mob does not exist." },
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+				{ Name = "mobGUID", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "UnitThreatPercentageOfLead",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2503,6 +3102,7 @@ local Unit =
 		{
 			Name = "UnitThreatSituation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2518,6 +3118,8 @@ local Unit =
 		{
 			Name = "UnitTokenFromGUID",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{
@@ -2532,6 +3134,7 @@ local Unit =
 		{
 			Name = "UnitTreatAsPlayerForDisplay",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2546,6 +3149,7 @@ local Unit =
 		{
 			Name = "UnitTrialBankedLevels",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2562,6 +3166,7 @@ local Unit =
 		{
 			Name = "UnitTrialXP",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2576,6 +3181,7 @@ local Unit =
 		{
 			Name = "UnitUsingVehicle",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2590,6 +3196,7 @@ local Unit =
 		{
 			Name = "UnitVehicleSeatCount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2605,6 +3212,7 @@ local Unit =
 			Name = "UnitVehicleSeatInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2624,10 +3232,11 @@ local Unit =
 		{
 			Name = "UnitVehicleSkin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -2638,6 +3247,7 @@ local Unit =
 		{
 			Name = "UnitWeaponAttackPower",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2655,6 +3265,7 @@ local Unit =
 			Name = "UnitWidgetSet",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2669,6 +3280,7 @@ local Unit =
 		{
 			Name = "UnitXP",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2683,6 +3295,7 @@ local Unit =
 		{
 			Name = "UnitXPMax",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -2697,10 +3310,11 @@ local Unit =
 		{
 			Name = "WorldLootObjectExists",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitToken", Nilable = false, Default = "WOWGUID_NULL" },
+				{ Name = "unit", Type = "UnitToken", Nilable = true },
 			},
 
 			Returns =
@@ -2716,23 +3330,26 @@ local Unit =
 			Name = "ActivePlayerSpecializationChanged",
 			Type = "Event",
 			LiteralName = "ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ArenaCooldownsUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_COOLDOWNS_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "ArenaCrowdControlSpellUpdate",
 			Type = "Event",
 			LiteralName = "ARENA_CROWD_CONTROL_SPELL_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
@@ -2740,6 +3357,7 @@ local Unit =
 			Name = "AutofollowBegin",
 			Type = "Event",
 			LiteralName = "AUTOFOLLOW_BEGIN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -2749,21 +3367,25 @@ local Unit =
 			Name = "AutofollowEnd",
 			Type = "Event",
 			LiteralName = "AUTOFOLLOW_END",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CancelSummon",
 			Type = "Event",
 			LiteralName = "CANCEL_SUMMON",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ComboTargetChanged",
 			Type = "Event",
 			LiteralName = "COMBO_TARGET_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ConfirmBinder",
 			Type = "Event",
 			LiteralName = "CONFIRM_BINDER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "areaName", Type = "cstring", Nilable = false },
@@ -2773,6 +3395,7 @@ local Unit =
 			Name = "ConfirmSummon",
 			Type = "Event",
 			LiteralName = "CONFIRM_SUMMON",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "summonReason", Type = "number", Nilable = false },
@@ -2783,6 +3406,7 @@ local Unit =
 			Name = "EclipseDirectionChange",
 			Type = "Event",
 			LiteralName = "ECLIPSE_DIRECTION_CHANGE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "direction", Type = "cstring", Nilable = false },
@@ -2792,52 +3416,59 @@ local Unit =
 			Name = "HearthstoneBound",
 			Type = "Event",
 			LiteralName = "HEARTHSTONE_BOUND",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HonorXpUpdate",
 			Type = "Event",
 			LiteralName = "HONOR_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "IncomingResurrectChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_RESURRECT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "IncomingSummonChanged",
 			Type = "Event",
 			LiteralName = "INCOMING_SUMMON_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "KnownTitlesUpdate",
 			Type = "Event",
 			LiteralName = "KNOWN_TITLES_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "LocalplayerPetRenamed",
 			Type = "Event",
 			LiteralName = "LOCALPLAYER_PET_RENAMED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MirrorTimerPause",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_PAUSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -2848,6 +3479,7 @@ local Unit =
 			Name = "MirrorTimerStart",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_START",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -2862,6 +3494,7 @@ local Unit =
 			Name = "MirrorTimerStop",
 			Type = "Event",
 			LiteralName = "MIRROR_TIMER_STOP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "timerName", Type = "cstring", Nilable = false },
@@ -2871,6 +3504,7 @@ local Unit =
 			Name = "NeutralFactionSelectResult",
 			Type = "Event",
 			LiteralName = "NEUTRAL_FACTION_SELECT_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -2880,6 +3514,7 @@ local Unit =
 			Name = "ObjectEnteredAOI",
 			Type = "Event",
 			LiteralName = "OBJECT_ENTERED_AOI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
@@ -2889,25 +3524,41 @@ local Unit =
 			Name = "ObjectLeftAOI",
 			Type = "Event",
 			LiteralName = "OBJECT_LEFT_AOI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "guid", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
+			Name = "PartyKill",
+			Type = "Event",
+			LiteralName = "PARTY_KILL",
+			SecretWhenUnitIdentityRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "attackerGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "targetGUID", Type = "WOWGUID", Nilable = false },
+			},
+		},
+		{
 			Name = "PetBarUpdateUsable",
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE_USABLE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetUiUpdate",
 			Type = "Event",
 			LiteralName = "PET_UI_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerCanGlideChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_CAN_GLIDE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "canGlide", Type = "bool", Nilable = false },
@@ -2917,44 +3568,51 @@ local Unit =
 			Name = "PlayerDamageDoneMods",
 			Type = "Event",
 			LiteralName = "PLAYER_DAMAGE_DONE_MODS",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerEnterCombat",
 			Type = "Event",
 			LiteralName = "PLAYER_ENTER_COMBAT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerFarsightFocusChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FARSIGHT_FOCUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerFlagsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FLAGS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerFocusChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_FOCUS_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerImpulseApplied",
 			Type = "Event",
 			LiteralName = "PLAYER_IMPULSE_APPLIED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerIsGlidingChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_IS_GLIDING_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isGliding", Type = "bool", Nilable = false },
@@ -2964,11 +3622,13 @@ local Unit =
 			Name = "PlayerLeaveCombat",
 			Type = "Event",
 			LiteralName = "PLAYER_LEAVE_COMBAT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerLevelChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldLevel", Type = "number", Nilable = false },
@@ -2980,6 +3640,7 @@ local Unit =
 			Name = "PlayerLevelUp",
 			Type = "Event",
 			LiteralName = "PLAYER_LEVEL_UP",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
@@ -2994,52 +3655,70 @@ local Unit =
 			},
 		},
 		{
+			Name = "PlayerMaxLevelUpdate",
+			Type = "Event",
+			LiteralName = "PLAYER_MAX_LEVEL_UPDATE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
 			Name = "PlayerMountDisplayChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_MOUNT_DISPLAY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerPvpKillsChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_PVP_KILLS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerPvpRankChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_PVP_RANK_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerRegenDisabled",
 			Type = "Event",
 			LiteralName = "PLAYER_REGEN_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerRegenEnabled",
 			Type = "Event",
 			LiteralName = "PLAYER_REGEN_ENABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftEnemyChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_ENEMY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftFriendChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_FRIEND_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSoftInteractChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_INTERACT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "oldTarget", Type = "WOWGUID", Nilable = false },
@@ -3050,83 +3729,98 @@ local Unit =
 			Name = "PlayerSoftTargetInteraction",
 			Type = "Event",
 			LiteralName = "PLAYER_SOFT_TARGET_INTERACTION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerSpecializationChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_SPECIALIZATION_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerStartedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_LOOKING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStartedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_MOVING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStartedTurning",
 			Type = "Event",
 			LiteralName = "PLAYER_STARTED_TURNING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedLooking",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_LOOKING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedMoving",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_MOVING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerStoppedTurning",
 			Type = "Event",
 			LiteralName = "PLAYER_STOPPED_TURNING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTargetChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_TARGET_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerTrialXpUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_TRIAL_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerUpdateResting",
 			Type = "Event",
 			LiteralName = "PLAYER_UPDATE_RESTING",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerXpUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_XP_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PortraitsUpdated",
 			Type = "Event",
 			LiteralName = "PORTRAITS_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "ProvingGroundsScoreUpdate",
 			Type = "Event",
 			LiteralName = "PROVING_GROUNDS_SCORE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "points", Type = "number", Nilable = false },
@@ -3136,15 +3830,18 @@ local Unit =
 			Name = "PvpTimerUpdate",
 			Type = "Event",
 			LiteralName = "PVP_TIMER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "RunePowerUpdate",
 			Type = "Event",
 			LiteralName = "RUNE_POWER_UPDATE",
+			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "runeIndex", Type = "number", Nilable = false },
@@ -3155,6 +3852,8 @@ local Unit =
 			Name = "RuneTypeUpdate",
 			Type = "Event",
 			LiteralName = "RUNE_TYPE_UPDATE",
+			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "runeIndex", Type = "number", Nilable = false },
@@ -3164,11 +3863,13 @@ local Unit =
 			Name = "ShowFactionSelectUi",
 			Type = "Event",
 			LiteralName = "SHOW_FACTION_SELECT_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SpellConfirmationPrompt",
 			Type = "Event",
 			LiteralName = "SPELL_CONFIRMATION_PROMPT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -3184,6 +3885,7 @@ local Unit =
 			Name = "SpellConfirmationTimeout",
 			Type = "Event",
 			LiteralName = "SPELL_CONFIRMATION_TIMEOUT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -3194,68 +3896,76 @@ local Unit =
 			Name = "UnitAbsorbAmountChanged",
 			Type = "Event",
 			LiteralName = "UNIT_ABSORB_AMOUNT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitAreaChanged",
 			Type = "Event",
 			LiteralName = "UNIT_AREA_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitAttack",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitAttackPower",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK_POWER",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitAttackSpeed",
 			Type = "Event",
 			LiteralName = "UNIT_ATTACK_SPEED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitCheatToggleEvent",
 			Type = "Event",
 			LiteralName = "UNIT_CHEAT_TOGGLE_EVENT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UnitClassificationChanged",
 			Type = "Event",
 			LiteralName = "UNIT_CLASSIFICATION_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitCombat",
 			Type = "Event",
 			LiteralName = "UNIT_COMBAT",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "event", Type = "cstring", Nilable = false },
 				{ Name = "flagText", Type = "cstring", Nilable = false },
 				{ Name = "amount", Type = "number", Nilable = false },
@@ -3266,9 +3976,10 @@ local Unit =
 			Name = "UnitConnection",
 			Type = "Event",
 			LiteralName = "UNIT_CONNECTION",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "isConnected", Type = "bool", Nilable = false },
 			},
 		},
@@ -3276,45 +3987,62 @@ local Unit =
 			Name = "UnitCtrOptions",
 			Type = "Event",
 			LiteralName = "UNIT_CTR_OPTIONS",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitDamage",
 			Type = "Event",
 			LiteralName = "UNIT_DAMAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitDefense",
 			Type = "Event",
 			LiteralName = "UNIT_DEFENSE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitDied",
+			Type = "Event",
+			LiteralName = "UNIT_DIED",
+			SecretWhenUnitIdentityRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitDisplaypower",
 			Type = "Event",
 			LiteralName = "UNIT_DISPLAYPOWER",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitDistanceCheckUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_DISTANCE_CHECK_UPDATE",
+			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "isInDistance", Type = "bool", Nilable = false },
 			},
 		},
@@ -3322,63 +4050,73 @@ local Unit =
 			Name = "UnitFaction",
 			Type = "Event",
 			LiteralName = "UNIT_FACTION",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitFlags",
 			Type = "Event",
 			LiteralName = "UNIT_FLAGS",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitFormChanged",
 			Type = "Event",
 			LiteralName = "UNIT_FORM_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitHealAbsorbAmountChanged",
 			Type = "Event",
 			LiteralName = "UNIT_HEAL_ABSORB_AMOUNT_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitHealPrediction",
 			Type = "Event",
 			LiteralName = "UNIT_HEAL_PREDICTION",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitHealth",
 			Type = "Event",
 			LiteralName = "UNIT_HEALTH",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitInRangeUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_IN_RANGE_UPDATE",
+			SecretPayloads = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "isInRange", Type = "bool", Nilable = false },
 			},
 		},
@@ -3386,36 +4124,54 @@ local Unit =
 			Name = "UnitInventoryChanged",
 			Type = "Event",
 			LiteralName = "UNIT_INVENTORY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitLevel",
 			Type = "Event",
 			LiteralName = "UNIT_LEVEL",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitLoot",
+			Type = "Event",
+			LiteralName = "UNIT_LOOT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "hasLoot", Type = "bool", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitMana",
 			Type = "Event",
 			LiteralName = "UNIT_MANA",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitMaxHealthModifiersChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MAX_HEALTH_MODIFIERS_CHANGED",
+			SecretPayloads = true,
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "percentMaxHealthAdjusted", Type = "number", Nilable = false },
 			},
 		},
@@ -3423,18 +4179,21 @@ local Unit =
 			Name = "UnitMaxhealth",
 			Type = "Event",
 			LiteralName = "UNIT_MAXHEALTH",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitMaxpower",
 			Type = "Event",
 			LiteralName = "UNIT_MAXPOWER",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
@@ -3442,99 +4201,112 @@ local Unit =
 			Name = "UnitModelChanged",
 			Type = "Event",
 			LiteralName = "UNIT_MODEL_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitNameUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_NAME_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitOtherPartyChanged",
 			Type = "Event",
 			LiteralName = "UNIT_OTHER_PARTY_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPet",
 			Type = "Event",
 			LiteralName = "UNIT_PET",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPetExperience",
 			Type = "Event",
 			LiteralName = "UNIT_PET_EXPERIENCE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPhase",
 			Type = "Event",
 			LiteralName = "UNIT_PHASE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPortraitUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_PORTRAIT_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPowerBarHide",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_HIDE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPowerBarShow",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_SHOW",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPowerBarTimerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_BAR_TIMER_UPDATE",
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPowerFrequent",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_FREQUENT",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
@@ -3542,18 +4314,21 @@ local Unit =
 			Name = "UnitPowerPointCharge",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_POINT_CHARGE",
+			SecretWhenUnitPowerRestricted = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitPowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_POWER_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "powerType", Type = "cstring", Nilable = false },
 			},
 		},
@@ -3561,183 +4336,225 @@ local Unit =
 			Name = "UnitQuestLogChanged",
 			Type = "Event",
 			LiteralName = "UNIT_QUEST_LOG_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitRangedAttackPower",
 			Type = "Event",
 			LiteralName = "UNIT_RANGED_ATTACK_POWER",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitRangeddamage",
 			Type = "Event",
 			LiteralName = "UNIT_RANGEDDAMAGE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitResistances",
 			Type = "Event",
 			LiteralName = "UNIT_RESISTANCES",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitSpellHaste",
 			Type = "Event",
 			LiteralName = "UNIT_SPELL_HASTE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitSpellcastChannelStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_START",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastChannelStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_STOP",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastChannelUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_CHANNEL_UPDATE",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastDelayed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_DELAYED",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_START",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_STOP",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 				{ Name = "complete", Type = "bool", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastEmpowerUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_EMPOWER_UPDATE",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastFailed",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastFailedQuiet",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_FAILED_QUIET",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastInterrupted",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTED",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "interruptedBy", Type = "WOWGUID", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastInterruptible",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_INTERRUPTIBLE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitSpellcastNotInterruptible",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitSpellcastReticleClear",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_CLEAR",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -3746,9 +4563,25 @@ local Unit =
 			Name = "UnitSpellcastReticleTarget",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_RETICLE_TARGET",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "UnitSpellcastSent",
+			Type = "Event",
+			LiteralName = "UNIT_SPELLCAST_SENT",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
+				{ Name = "target", Type = "cstring", Nilable = false, ConditionalSecret = true },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
@@ -3757,99 +4590,119 @@ local Unit =
 			Name = "UnitSpellcastStart",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_START",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastStop",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_STOP",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitSpellcastSucceeded",
 			Type = "Event",
 			LiteralName = "UNIT_SPELLCAST_SUCCEEDED",
+			SecretWhenUnitSpellCastRestricted = true,
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "castGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
 			Name = "UnitStats",
 			Type = "Event",
 			LiteralName = "UNIT_STATS",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitTarget",
 			Type = "Event",
 			LiteralName = "UNIT_TARGET",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitTargetableChanged",
 			Type = "Event",
 			LiteralName = "UNIT_TARGETABLE_CHANGED",
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitThreatListUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_THREAT_LIST_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UnitThreatSituationUpdate",
 			Type = "Event",
 			LiteralName = "UNIT_THREAT_SITUATION_UPDATE",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "UpdateExhaustion",
 			Type = "Event",
 			LiteralName = "UPDATE_EXHAUSTION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateMouseoverUnit",
 			Type = "Event",
 			LiteralName = "UPDATE_MOUSEOVER_UNIT",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateStealth",
 			Type = "Event",
 			LiteralName = "UPDATE_STEALTH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VehicleAngleUpdate",
 			Type = "Event",
 			LiteralName = "VEHICLE_ANGLE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "normalizedPitch", Type = "number", Nilable = false },
@@ -3916,10 +4769,11 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
 				{ Name = "castID", Type = "WOWGUID", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "castingSpellID", Type = "number", Nilable = false },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{
@@ -3932,11 +4786,12 @@ local Unit =
 				{ Name = "textureID", Type = "fileID", Nilable = false },
 				{ Name = "startTimeMs", Type = "number", Nilable = false },
 				{ Name = "endTimeMs", Type = "number", Nilable = false },
-				{ Name = "isTradeskill", Type = "bool", Nilable = false },
-				{ Name = "notInterruptible", Type = "bool", Nilable = false },
+				{ Name = "isTradeskill", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "notInterruptible", Type = "bool", Nilable = true },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "isEmpowered", Type = "bool", Nilable = false },
-				{ Name = "numEmpowerStages", Type = "number", Nilable = false },
+				{ Name = "isEmpowered", Type = "bool", Nilable = false, NeverSecret = true },
+				{ Name = "numEmpowerStages", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "castBarID", Type = "number", Nilable = true, NeverSecret = true },
 			},
 		},
 		{

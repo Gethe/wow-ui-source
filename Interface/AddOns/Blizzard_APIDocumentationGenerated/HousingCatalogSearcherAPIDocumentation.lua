@@ -2,12 +2,14 @@ local HousingCatalogSearcherAPI =
 {
 	Name = "HousingCatalogSearcherAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAllSearchItems",
 			Type = "Function",
+			Documentation = { "Returns all catalog entries being searched (note these are NOT search results, this is the source collection of what's being searched)" },
 
 			Arguments =
 			{
@@ -21,6 +23,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "GetCatalogSearchResults",
 			Type = "Function",
+			Documentation = { "Returns the most recent search result entries" },
 
 			Arguments =
 			{
@@ -47,6 +50,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "GetFilterTagStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +92,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "GetNumSearchItems",
 			Type = "Function",
+			Documentation = { "Returns the total number of entries being searched through" },
 
 			Arguments =
 			{
@@ -101,6 +106,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "GetSearchCount",
 			Type = "Function",
+			Documentation = { "Returns the total number of owned instances across all most recent search result entries" },
 
 			Arguments =
 			{
@@ -190,7 +196,7 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "IsFirstAcquisitionBonusOnlyActive",
+			Name = "IsDistinctPerRecordIDActive",
 			Type = "Function",
 
 			Arguments =
@@ -203,7 +209,7 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "IsIncludingMarketEntries",
+			Name = "IsFirstAcquisitionBonusOnlyActive",
 			Type = "Function",
 
 			Arguments =
@@ -212,7 +218,7 @@ local HousingCatalogSearcherAPI =
 
 			Returns =
 			{
-				{ Name = "isIncludingMarketEntries", Type = "bool", Nilable = false },
+				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -266,6 +272,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetAllInFilterTagGroup",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Set the toggle state of all filter tags within a specific group; If active, only entries that match Any of the tags in the group will be included in search results" },
 
 			Arguments =
 			{
@@ -276,6 +284,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetAllowedIndoors",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, entries that can be placed in house interiors will be included in the search; Note many decor objects can be placed both indoors and outdoors, so having only this toggled on may still include decor that can also be placed outdoors" },
 
 			Arguments =
 			{
@@ -285,6 +295,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetAllowedOutdoors",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, entries that can be placed outside in plots will be included in the search; Note many decor objects can be placed both indoors and outdoors, so having only this toggled on may still include decor that can also be placed indoors" },
 
 			Arguments =
 			{
@@ -294,6 +306,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetAutoUpdateOnParamChanges",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If true, searcher automatically updates results whenever search param values are changed" },
 
 			Arguments =
@@ -304,6 +317,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetCollected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, includes all owned entries, including those that are in storage OR placed in an owned house or plot; See IsOwnedOnlyActive for a more exclusive toggle" },
 
 			Arguments =
 			{
@@ -313,6 +328,19 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetCustomizableOnly",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, catalog entries that cannot be customized (ie dyed) will be excluded from the search" },
+
+			Arguments =
+			{
+				{ Name = "isActive", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDistinctPerRecordID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, only the first entry per recordID will be included" },
 
 			Arguments =
 			{
@@ -322,6 +350,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetEditorModeContext",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If set, limits search results to only entries that are used/valid in the specified editor mode" },
 
 			Arguments =
 			{
@@ -331,6 +361,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetFilterTagStatus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Set the toggle state of a single filter tag within a specific group" },
 
 			Arguments =
 			{
@@ -342,6 +374,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetFilteredCategoryID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If set, limits search results to only those within the specified category" },
 
 			Arguments =
 			{
@@ -351,6 +385,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetFilteredSubcategoryID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If set, limits search results to only those within the specified subcategory" },
 
 			Arguments =
 			{
@@ -360,6 +396,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetFirstAcquisitionBonusOnly",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, excludes any entries that do not reward house xp when acquired for the first time" },
 
 			Arguments =
 			{
@@ -367,17 +405,10 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
-			Name = "SetIncludeMarketEntries",
-			Type = "Function",
-
-			Arguments =
-			{
-				{ Name = "includeMarketEntries", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetOwnedOnly",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, only entries that you own, and have instances of available in storage, will be included; This does not include entries that you own but have all been placed in a house; See IsCollectedActive for param that includes placed entries" },
 
 			Arguments =
 			{
@@ -387,6 +418,7 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetResultsUpdatedCallback",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -396,16 +428,18 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetSearchText",
 			Type = "Function",
-			Documentation = { "Supports advanced search tokens ('\"' '-' and '|')" },
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If set, multiple text fields are checked for instances of the text, including name, category, subcategory, and data tags" },
 
 			Arguments =
 			{
-				{ Name = "searchText", Type = "string", Nilable = true },
+				{ Name = "searchText", Type = "string", Nilable = true, Documentation = { "Supports advanced search tokens ('\"' '-' and '|'), case and accent insensitive; Set nil to clear out the search text" } },
 			},
 		},
 		{
 			Name = "SetSortType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -415,6 +449,8 @@ local HousingCatalogSearcherAPI =
 		{
 			Name = "SetUncollected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Search parameter; If true, includes entries that are not owned, meaning not available in storage nor placed in any owned houses or plots" },
 
 			Arguments =
 			{
@@ -454,8 +490,17 @@ local HousingCatalogSearcherAPI =
 			},
 		},
 		{
+			Name = "ToggleDistinctPerRecordID",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+		},
+		{
 			Name = "ToggleFilterTag",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

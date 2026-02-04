@@ -231,6 +231,10 @@ end
 
 function CommunitiesGuildNewsButton_OnClick(self, button)
 	if ( button == "RightButton" ) then
+		if not self.newsInfo then
+			return;
+		end
+
 		-- we don't have any options for these combinations
 		local newsType = self.newsInfo.newsType;
 		if (newsType == NEWS_DUNGEON_ENCOUNTER) or (newsType == NEWS_GUILD_LEVEL) or (newsType == NEWS_GUILD_CREATE) and (not CanEditMOTD()) then

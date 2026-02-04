@@ -276,6 +276,10 @@ function CollectionsJournal_LoadUI()
 	UIParentLoadAddOn("Blizzard_Collections");
 end
 
+function Transmog_LoadUI()
+	UIParentLoadAddOn("Blizzard_Transmog");
+end
+
 function BlackMarket_LoadUI()
 	UIParentLoadAddOn("Blizzard_BlackMarketUI");
 end
@@ -539,10 +543,9 @@ function UIParent_OnEvent(self, event, ...)
 			local info = ChatTypeInfo["WHISPER"];
 			GMChatFrame:AddMessage(format(GM_CHAT_LAST_SESSION, "|TInterface\\ChatFrame\\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t "..
 				GetGMLink(lastTalkedToGM, "["..lastTalkedToGM.."]")), info.r, info.g, info.b, info.id);
-			GMChatFrameEditBox:SetAttribute("tellTarget", lastTalkedToGM);
-			GMChatFrameEditBox:SetAttribute("chatType", "WHISPER");
+			GMChatFrameEditBox:SetTellTarget(lastTalkedToGM);
+			GMChatFrameEditBox:SetChatType("WHISPER");
 		end
-		TargetFrame_OnVariablesLoaded();
 		local useNewCashShop = C_CatalogShop.IsShop2Enabled();
 		if useNewCashShop then
 			CatalogShopInboundInterface.CheckForFree(self, value);
@@ -771,7 +774,7 @@ function UIParent_OnEvent(self, event, ...)
 		end
 	elseif ( event == "GROUP_ROSTER_UPDATE" ) then
 		-- Hide/Show party member frames
-		RaidOptionsFrame_UpdatePartyFrames();
+		UpdateRaidAndPartyFrames();
 		if ( not IsInGroup(LE_PARTY_CATEGORY_INSTANCE) ) then
 			StaticPopup_Hide("CONFIRM_LEAVE_INSTANCE_PARTY");
 		end
@@ -1748,39 +1751,6 @@ function SetGuildTabardTextures(emblemSize, columns, offset, unit, emblemTexture
 			end
 		end
 	end
-end
-
-function GetDisplayedAllyFrames()
-	local useCompact = GetCVarBool("useCompactPartyFrames")
-	if ( IsActiveBattlefieldArena() and not useCompact ) then
-		return "party";
-	elseif ( IsInGroup() and (IsInRaid() or useCompact) ) then
-		return "raid";
-	elseif ( IsInGroup() ) then
-		return "party";
-	else
-		return nil;
-	end
-end
-
-NUMBER_ABBREVIATION_DATA = {
-	-- Order these from largest to smallest
-	-- (significandDivisor and fractionDivisor should multiply to be equal to breakpoint)
-	{ breakpoint = 100000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 10000000,	fractionDivisor = 1 },
-	{ breakpoint = 10000000,	abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000000,	fractionDivisor = 1 },
-	{ breakpoint = 1000000,		abbreviation = SECOND_NUMBER_CAP_NO_SPACE,	significandDivisor = 100000,		fractionDivisor = 10 },
-	{ breakpoint = 10000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 1000,		fractionDivisor = 1 },
-	{ breakpoint = 1000,		abbreviation = FIRST_NUMBER_CAP_NO_SPACE,	significandDivisor = 100,		fractionDivisor = 10 },
-}
-
-function AbbreviateNumbers(value)
-	for i, data in ipairs(NUMBER_ABBREVIATION_DATA) do
-		if value >= data.breakpoint then
-			local finalValue = math.floor(value / data.significandDivisor) / data.fractionDivisor;
-			return finalValue .. data.abbreviation;
-		end
-	end
-	return tostring(value);
 end
 
 function IsInLFDBattlefield()

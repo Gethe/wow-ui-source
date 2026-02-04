@@ -3,13 +3,28 @@ local TooltipComparison =
 	Name = "TooltipComparison",
 	Type = "System",
 	Namespace = "C_TooltipComparison",
+	Environment = "All",
 
 	Functions =
 	{
 		{
+			Name = "CompareItem",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "comparisonItem", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "tooltip", Type = "Tooltip", Nilable = false },
+				{ Name = "anchorFrame", Type = "SimpleFrame", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemComparisonDelta",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,6 +43,7 @@ local TooltipComparison =
 			Name = "GetItemComparisonInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -43,6 +59,18 @@ local TooltipComparison =
 
 	Events =
 	{
+		{
+			Name = "TooltipShowItemComparison",
+			Type = "Event",
+			LiteralName = "TOOLTIP_SHOW_ITEM_COMPARISON",
+			CallbackEvent = true,
+			Payload =
+			{
+				{ Name = "comparisonItem", Type = "TooltipComparisonItem", Nilable = false },
+				{ Name = "tooltip", Type = "Tooltip", Nilable = false },
+				{ Name = "anchorFrame", Type = "SimpleFrame", Nilable = true },
+			},
+		},
 	},
 
 	Tables =

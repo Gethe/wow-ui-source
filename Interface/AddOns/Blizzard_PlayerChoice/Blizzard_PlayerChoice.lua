@@ -75,6 +75,11 @@ local customTextureKitInfo = {
 		closeButtonY = -9,
 	},
 
+	midnight = {
+		closeButtonX = -11,
+		closeButtonY = -11,
+	},
+
 	-- Texture Kits below here use custom templates 
 
 	-- Oribos is a special texture kit type, used for the covenant choice UI in Shadowlands

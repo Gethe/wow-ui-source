@@ -78,23 +78,6 @@
 				<Anchor point="TOP" x="0" y="-135"/>
 			</Anchors>
 			<Layers>
-				<Layer level="BACKGROUND">
-					<Texture>
-						<Anchors>
-							<Anchor point="TOPLEFT" x="5" y="-5" />
-							<Anchor point="BOTTOMRIGHT" x="-5" y="5" />
-						</Anchors>
-						<Color r="0" g="0" b="0" a="1" />
-					</Texture>
-				</Layer>
-				<Layer level="BORDER">
-					<Texture parentKey="CautionIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
-						<Size x="32" y="32"/>
-						<Anchors>
-							<Anchor point="LEFT" x="24" y="0"/>
-						</Anchors>
-					</Texture>
-				</Layer>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Text" inherits="GameFontHighlight">
 						<Size x="320" y="0"/>
@@ -111,6 +94,19 @@
 				</Layer>
 			</Layers>
 			<Frames>
+				<Frame parentKey="CoverFrame" enableMouse="true" enableKeyboard="true" hidden="true" useParentLevel="true">
+					<Layers>
+						<Layer level="BACKGROUND" textureSubLevel="-1">
+							<Texture setAllPoints="true">
+								<Color r="0" g="0" b="0" a="0.5"/>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnKeyDown function="nop"/>
+						<OnKeyUp function="nop"/>
+					</Scripts>
+				</Frame>
 				<Frame parentKey="Border" inherits="SecureDialogBorderTemplate"/>
 				<Button parentKey="Button1" inherits="SecureTransferButtonTemplate" text="OKAY" id="1">
 					<Size x="120" y="22"/>
@@ -130,6 +126,25 @@
 						<OnClick function="SecureTransferDialogButton_OnClick"/>
 					</Scripts>
 				</Button>
+				<Frame parentKey="DarkOverlay" hidden="true" frameLevel="500">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="11" y="-11"/>
+						<Anchor point="BOTTOMRIGHT" x="-11" y="11"/>
+					</Anchors>
+					<Layers>
+						<Layer level="OVERLAY">
+							<Texture setAllPoints="true">
+								<Color r="0" g="0" b="0" a="0.8"/>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true" frameLevel="1000">
+					<Size x="60" y="60"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Frame>
 			</Frames>
 			<Scripts>
 				<OnLoad function="SecureTransferDialog_OnLoad"/>

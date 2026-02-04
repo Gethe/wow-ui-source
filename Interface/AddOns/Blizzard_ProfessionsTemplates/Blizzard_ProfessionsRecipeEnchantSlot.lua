@@ -1,25 +1,12 @@
-ProfessionsEnchantSlotMixin = {};
+ProfessionsEnchantSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 
-function ProfessionsEnchantSlotMixin:Reset()
-	self.Button.QualityOverlay:SetAtlas(nil);
-	self:SetAllocateIconShown(false);
-	self.unallocatable = nil;
-	self.quantityAvailableCallback = nil;
-	self.CustomerState:Hide();
-	self.allocationItem = nil;
-	self.Button:Reset();
-	self.Button:SetLocked(false);
-	
-	if self.continuableContainer then
-		self.continuableContainer:Cancel();
-	end
-	self.continuableContainer = ContinuableContainer:Create();
-end
+function ProfessionsEnchantSlotMixin:Init(transaction)
+	ProfessionsRecipeSlotBaseMixin.Init(self);
 
-function ProfessionsEnchantSlotMixin:Init(transaction, quantityRequired)
-	self:Reset();
+	self:ClearReagent();
 
 	self:SetNameText(PROFESSIONS_ADD_ENCHANT);
+
 	self:Update();
 	
 	local function OnItemsLoaded()
@@ -38,6 +25,8 @@ end
 
 function ProfessionsEnchantSlotMixin:Update()
 	self:UpdateAllocationText();
+
+	self.Button.InputOverlay.AddIcon:SetShown(self.allocationItem == nil);
 end
 
 function ProfessionsEnchantSlotMixin:SetQuantityAvailableCallback(callback)
@@ -68,10 +57,10 @@ function ProfessionsEnchantSlotMixin:IsUnallocatable()
 	return self.unallocatable;
 end
 
-function ProfessionsEnchantSlotMixin:ClearItem()
+function ProfessionsEnchantSlotMixin:ClearReagent()
 	self.allocationItem = nil;
 
-	self.Button:Reset();
+	self.Button:Clear();
 
 	self:SetNameText(PROFESSIONS_ADD_ENCHANT);
 
@@ -85,8 +74,4 @@ function ProfessionsEnchantSlotMixin:SetItem(item)
 	self.Name:SetText(item:GetItemName());
 
 	self:Update();
-end
-
-function ProfessionsEnchantSlotMixin:SetAllocateIconShown(shown)
-	self.Button.AddIcon:SetShown(shown);
 end

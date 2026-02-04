@@ -1,3 +1,7 @@
+
+local ROOM_PIN_FRAME_LEVEL = 500;
+local DOOR_PIN_FRAME_LEVEL = 1000;
+
 local HouseEditorLayoutModeLifetimeEvents =
 {
 	"HOUSING_LAYOUT_PIN_FRAME_ADDED",
@@ -156,11 +160,11 @@ function HouseEditorLayoutModeMixin:AddPin(pinFrame)
 	if pinType == Enum.HousingLayoutPinType.Room then
 		pinPool = self.roomPinPool;
 		-- Must set FrameStratas here as they get reset on reparenting in & out of Pools
-		pinFrame:SetFrameStrata("LOW");
+		pinFrame:SetFrameLevel(ROOM_PIN_FRAME_LEVEL);
 	elseif pinType == Enum.HousingLayoutPinType.Door then
 		pinPool = self.doorPinPool;
 		-- Set Door pins higher than Rooms so they aren't potentially blocked by lengthy room names
-		pinFrame:SetFrameStrata("MEDIUM");
+		pinFrame:SetFrameLevel(DOOR_PIN_FRAME_LEVEL);
 	end
 
 	if pinPool then
@@ -189,6 +193,45 @@ function HouseEditorLayoutModeMixin:ReleasePins()
 	self.doorPinPool:ReleaseAll();
 end
 
+HouseEditorLayoutFloorLineMixin = {};
+
+function HouseEditorLayoutFloorLineMixin:OnEnter()
+	self.FloorText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGBA());
+end
+
+function HouseEditorLayoutFloorLineMixin:OnLeave()
+	local isActive = self.floorIndex == C_HousingLayout.GetViewedFloor();
+	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
+	self.FloorText:SetTextColor(color:GetRGBA());
+end
+
+function HouseEditorLayoutFloorLineMixin:OnClick()
+	local soundKit = (self.floorIndex < C_HousingLayout.GetViewedFloor()) and SOUNDKIT.HOUSING_VIEW_FLOOR_DOWN or SOUNDKIT.HOUSING_VIEW_FLOOR_UP;
+	PlaySound(soundKit);
+	C_HousingLayout.SetViewedFloor(self.floorIndex);
+end
+
+function HouseEditorLayoutFloorLineMixin:Init(floorIndex)
+	self.floorIndex = floorIndex;
+	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(floorIndex + 1));
+
+	local isTopFloor = floorIndex == (C_HousingLayout.GetNumFloors() - 1);
+	self.TopDivider:SetShown(isTopFloor);
+
+	local isFloorOne = floorIndex == 0;
+	self.DoorIcon:SetShown(isFloorOne);
+
+	local isActive = self:IsActive();
+	local color = isActive and HIGHLIGHT_FONT_COLOR or HOUSING_STORAGE_HEADER_COLOR;
+	self.FloorText:SetTextColor(color:GetRGBA());
+	self.DoorIcon:SetAtlas(isActive and "housing-floor-door" or "housing-floor-door-inactive");
+	self.BottomDivider:SetAtlas(isActive and "housing-floor-list-divider-active" or "housing-floor-list-divider-default");
+end
+
+function HouseEditorLayoutFloorLineMixin:IsActive()
+	return self.floorIndex == C_HousingLayout.GetViewedFloor();
+end
+
 local HouseEditorLayoutFloorSelectShownEvents =
 {
 	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
@@ -206,6 +249,8 @@ function HouseEditorLayoutFloorSelectMixin:OnLoad()
 		PlaySound(SOUNDKIT.HOUSING_VIEW_FLOOR_DOWN);
 		C_HousingLayout.SetViewedFloor(self.currentFloor - 1);
 	end);
+
+	self:InitScrollBox();
 end
 
 function HouseEditorLayoutFloorSelectMixin:OnShow()
@@ -223,10 +268,39 @@ function HouseEditorLayoutFloorSelectMixin:OnEvent(event, ...)
 	end
 end
 
+function HouseEditorLayoutFloorSelectMixin:InitScrollBox()
+	-- Scroll wheel should move up or down one floor at a time
+	self.ScrollBox:SetScript("OnMouseWheel", function(_, delta)
+		if delta > 0 then
+			self.UpButton:Click();
+		else
+			self.DownButton:Click();
+		end
+	end);
+
+	local top, bottom, left, right, horizontalSpacing, verticalSpacing = 60, 60, 0, 0, 0, 0;
+	local view = CreateScrollBoxListSequenceView(top, bottom, left, right, horizontalSpacing, verticalSpacing);
+	self.ScrollBox:SetEdgeFadeLength(60);
+	local function Initializer(button, elementData)
+		button:Init(elementData);
+	end
+
+	view:SetElementInitializer("HouseEditorLayoutFloorLineTemplate", Initializer);
+	self.ScrollBox:Init(view);
+end
+
 function HouseEditorLayoutFloorSelectMixin:UpdateFloorInfo()
 	self.currentFloor = C_HousingLayout.GetViewedFloor();
-	self.FloorText:SetText(HOUSING_LAYOUT_FLOOR_DISPLAY:format(self.currentFloor + 1)); -- Floors start at 0, which is confusing for players so display starting at 1
-
 	self.UpButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor + 1));
 	self.DownButton:SetEnabled(C_HousingLayout.AnyRoomsOnFloor(self.currentFloor - 1));
+
+	local dataProvider = CreateDataProvider();
+
+	-- Floor indices are 0-based.
+	for floorIndex = C_HousingLayout.GetNumFloors() - 1, 0, -1 do
+		dataProvider:Insert(floorIndex);
+	end
+
+	self.ScrollBox:SetDataProvider(dataProvider);
+	self.ScrollBox:ScrollToElementData(self.currentFloor);
 end

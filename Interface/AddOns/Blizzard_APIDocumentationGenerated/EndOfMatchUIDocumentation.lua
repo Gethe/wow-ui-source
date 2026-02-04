@@ -3,6 +3,7 @@ local EndOfMatchUI =
 	Name = "EndOfMatchUI",
 	Type = "System",
 	Namespace = "C_EndOfMatchUI",
+	Environment = "All",
 
 	Functions =
 	{
@@ -23,6 +24,7 @@ local EndOfMatchUI =
 			Name = "ShowEndOfMatchUI",
 			Type = "Event",
 			LiteralName = "SHOW_END_OF_MATCH_UI",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -11,6 +11,7 @@ end
 CatalogShopProductContainerFrameMixin = {};
 function CatalogShopProductContainerFrameMixin:OnLoad()
 	EventRegistry:RegisterCallback("CatalogShop.AllDataRefresh", self.AllDataRefresh, self);
+	EventRegistry:RegisterCallback("CatalogShop.OnModelSceneActorFailedToLoad", self.OnModelSceneFailure, self);
 end
 
 function CatalogShopProductContainerFrameMixin:Init()
@@ -100,7 +101,8 @@ function CatalogShopProductContainerFrameMixin:UpdateSpecificProduct(productID)
 	-- Only search for the element if our scrollBox is set up (no view means it hasn't had data assigned)
 	if scrollBox and scrollBox:GetView() then
 		foundElementData = select(2, scrollBox:FindByPredicate(function(elementData)
-			return elementData.catalogShopProductID == productID;
+			local isProductElementType = (elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product);
+			return isProductElementType and (elementData.catalogShopProductID == productID);
 		end));
 	end
 
@@ -145,21 +147,39 @@ function CatalogShopProductContainerFrameMixin:UpdateProducts(resetSelection)
 		end
 	end
 
+	local linkProductID = CatalogShopFrame:GetCatalogShopLinkProductID(); -- ok for this to be nil
+	if linkProductID then
+		self.selectionWasAutomatic = true;		-- The selection is being set by code, keep track for later telemetry
+		-- If we have a linkProductID and we cannot successfully select it, select the first product
+		if not self:TrySelectProductByID(linkProductID) then
+			self:SelectFirstProductSilent();
+		end
+		-- We may want to try again, but that doesn't seem necessary in testing.
+		-- nilling linkProductID just so we don't get stuck in a fail loop and then can never select our previouslySelectedProductInfo
+		CatalogShopFrame:SetCatalogShopLinkProductID(nil);
 	-- Try to preserve selection. If not select first product
-	if resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
+	elseif resetSelection or not previouslySelectedProductInfo or not self:TrySelectProduct(previouslySelectedProductInfo) then
 		self.selectionWasAutomatic = true;		-- The selection is being reset, keep track for later telemetry
 		self:SelectFirstProductSilent();
 	end
 end
 
 function CatalogShopProductContainerFrameMixin:TrySelectProduct(productInfo)
+	if not productInfo then
+		return false;
+	end
+	return self:TrySelectProductByID(productInfo.catalogShopProductID);
+end
+
+function CatalogShopProductContainerFrameMixin:TrySelectProductByID(productID)
 	local scrollContainer = self.ProductsScrollBoxContainer;
 	local scrollBox = scrollContainer.ScrollBox;
 	local _, foundElementData = scrollBox:FindByPredicate(function(elementData)
-		return elementData.catalogShopProductID == productInfo.catalogShopProductID;
+		return elementData.catalogShopProductID == productID;
 	end);
 	if foundElementData then
 		scrollContainer.selectionBehavior:SelectElementData(foundElementData);
+		scrollContainer.ScrollBox:ScrollToElementData(foundElementData, ScrollBoxConstants.AlignNearest);
 		return true;
 	end
 
@@ -185,7 +205,12 @@ function CatalogShopProductContainerFrameMixin:OnHide()
 end
 
 function CatalogShopProductContainerFrameMixin:OnEvent(event, ...)
-	-- TODO handle events here
+end
+
+function CatalogShopProductContainerFrameMixin:OnModelSceneFailure(displayInfo)
+	CatalogShopFrame.ModelSceneContainerFrame:Hide();
+	CatalogShopFrame.PMTImageContainerFrame:Show();
+	CatalogShopFrame.PMTImageContainerFrame:SetPMTImageOnly(displayInfo);
 end
 
 function ModelSceneShouldAllowRotation(modelSceneID)
@@ -231,8 +256,8 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 	-- An Unknown License implies we have a product from Catalog that isn't known by our server (it was returned as a missing license)
 	-- So in this case we are currently assuming this means the product is for another game (which could be another flavor of WoW)
 	if displayInfo.hasUnknownLicense then
-		CatalogShopFrame.CrossGameContainerFrame:Show();
-		CatalogShopFrame.CrossGameContainerFrame:SetDisplayInfo(displayInfo);
+		CatalogShopFrame.PMTImageContainerFrame:Show();
+		CatalogShopFrame.PMTImageContainerFrame:SetDisplayInfo(displayInfo);
 	elseif productType == CatalogShopConstants.ProductType.Token then
 		CatalogShopFrame.WoWTokenContainerFrame:Show();
 	elseif productType == CatalogShopConstants.ProductType.Toy then
@@ -361,6 +386,10 @@ end
 
 function ProductContainerFrameMixin:InitProductContainer()
 	local function sectionProductSortComparator(lhs, rhs)
+		-- If both elements are the same, just return false (not less-than)
+		if lhs == rhs then
+			return false;
+		end
 		-- If the section IDs aren't the same, then use that as sort orderInPage
 		if lhs.sectionID ~= rhs.sectionID then
 			return lhs.sectionID < rhs.sectionID;
@@ -474,11 +503,14 @@ function ProductContainerFrameMixin:InitProductContainer()
 	end
 
 	local function GetProductContainerElementFactory(factory, elementData)
+		local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
 		if elementData.elementType == CatalogShopConstants.ScrollViewElementType.Header then
-			factory(CatalogShopConstants.CardTemplate.Header, InitializeSection)
+			if sectionInfo.shouldShowRecommendationOptOutDisclaimer then
+				factory(CatalogShopConstants.CardTemplate.HeaderPersonalized, InitializeSection);
+			else
+				factory(CatalogShopConstants.CardTemplate.Header, InitializeSection);
+			end
 		elseif elementData.elementType == CatalogShopConstants.ScrollViewElementType.Product then
-			local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
-			
 			local scrollViewSize = sectionInfo.scrollGridSize or 3;-- How many children per row
 			if scrollViewSize == 1 then
 				if elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Token then
@@ -501,6 +533,8 @@ function ProductContainerFrameMixin:InitProductContainer()
 					factory(CatalogShopConstants.CardTemplate.SmallTender, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Toy then
 					factory(CatalogShopConstants.CardTemplate.SmallToys, InitializeButton);
+				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+					factory(CatalogShopConstants.CardTemplate.SmallDecor, InitializeButton);
 				elseif elementData.cardDisplayData.productType == CatalogShopConstants.ProductType.Access then
 					factory(CatalogShopConstants.CardTemplate.SmallAccess, InitializeButton);
 				else

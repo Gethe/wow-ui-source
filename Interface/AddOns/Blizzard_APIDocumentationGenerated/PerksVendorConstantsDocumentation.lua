@@ -21,7 +21,25 @@ local PerksVendorConstants =
 				{ Name = "Activity", Type = "PerksVendorCategoryType", EnumValue = 21 },
 				{ Name = "GmAdjustment", Type = "PerksVendorCategoryType", EnumValue = 22 },
 				{ Name = "Achievement", Type = "PerksVendorCategoryType", EnumValue = 23 },
-				{ Name = "UnusedPerksVendorCategoryRefundUnused", Type = "PerksVendorCategoryType", EnumValue = 24 },
+				{ Name = "RefundUnused", Type = "PerksVendorCategoryType", EnumValue = 24 },
+			},
+		},
+		{
+			Name = "CriteriaRequiredValue",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "criteriaID", Type = "number", Nilable = false },
+				{ Name = "requiredValue", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "CriteriaRequirement",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "completed", Type = "bool", Nilable = false },
+				{ Name = "requirementText", Type = "string", Nilable = false },
 			},
 		},
 	},

@@ -2,6 +2,7 @@ local FrameAPIQuestPOI =
 {
 	Name = "FrameAPIQuestPOI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -21,6 +22,7 @@ local FrameAPIQuestPOI =
 		{
 			Name = "GetTooltipIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +37,7 @@ local FrameAPIQuestPOI =
 		{
 			Name = "UpdateMouseOverTooltip",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

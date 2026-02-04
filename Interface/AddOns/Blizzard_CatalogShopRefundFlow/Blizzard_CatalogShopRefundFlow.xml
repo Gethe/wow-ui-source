@@ -8,7 +8,167 @@
 		</Anchors>
 
 		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts" frameLevel="510">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():Hide();
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					</OnClick>
+				</Scripts>
+			</Button>
 
+			<Frame parentKey="DescriptionContainer" frameLevel="1000">
+				<Size x="490" y="50" />
+				<Anchors>
+					<Anchor point="TOP" x="0" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="DescriptionText" justifyH="CENTER" justifyV="MIDDLE" inherits="SystemFont_Large" text="CATALOG_SHOP_REFUND_FLOW_DESCRIPTION">
+							<Anchors>
+								<Anchor point="TOP" y="-50" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="DecorsScrollBoxContainer" frameLevel="1000">
+				<Size x="490" y="300" />
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-20"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0" />
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0" />
+						</Anchors>
+					</EventFrame>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RefundDividerTop" atlas="perks-divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOM" relativeKey="$parent.ScrollBox" relativePoint="TOP" x="0" y="0" />
+								<Anchor point="LEFT" x="0" y="0"/>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RefundDividerBottom" atlas="perks-divider" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ScrollBox" relativePoint="BOTTOM" x="0" y="0" />
+								<Anchor point="LEFT" x="0" y="0"/>
+								<Anchor point="RIGHT" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="SelectAllButton" inherits="CatalogShopRefundButtonTemplate" text="CATALOG_SHOP_REFUND_FLOW_SELECT_ALL" motionScriptsWhileDisabled="true">
+						<KeyValues>
+							<KeyValue key="catalogShopRefundOnClickMethod" value="SelectAllDecors" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.RefundDividerTop" relativePoint="TOPLEFT" x="5" y="10" />
+						</Anchors>
+					</Button>
+					<Button parentKey="RefundSortButton" inherits="RefundHeaderSortButtonTemplate">
+						<KeyValues>
+							<KeyValue key="sortField" value="price" type="string" />
+							<KeyValue key="labelText" value="CATALOG_SHOP_REFUND" type="global" />
+						</KeyValues>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.SelectAllButton" relativePoint="BOTTOMRIGHT" x="185" />
+						</Anchors>
+					</Button>
+					<Button parentKey="TimeSortButton" inherits="RefundHeaderSortButtonTemplate">
+						<KeyValues>
+							<KeyValue key="sortField" value="timeRemainingSeconds" type="string" />
+							<KeyValue key="iconAtlas" value="perks-clock" type="string" />
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" relativeKey="$parent.RefundSortButton" relativePoint="RIGHT" x="80" />
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+
+			<Button parentKey="RefundButton" inherits="CatalogShopRefundButtonLargeTemplate" text="CATALOG_SHOP_REFUND" motionScriptsWhileDisabled="true">
+				<KeyValues>
+					<KeyValue key="catalogShopRefundOnClickMethod" value="RefundSelectedDecors" type="string"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.DecorsScrollBoxContainer.SelectAllButton" x="0" y="-370" />
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="TotalRefundContainer">
+				<Size x="150" y="50" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.RefundButton" x="310" y="0" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="TotalRefundTitleText" justifyH="RIGHT" justifyV="TOP" inherits="GameFontNormal" text="CATALOG_SHOP_REFUND_FLOW_TOTAL_REFUND">
+							<Anchors>
+								<Anchor point="TOPRIGHT" x="0" y="0" />
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RefundAmountIcon" atlas="hearthsteel-icon-32x32">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TotalRefundAmountText" inherits="GameFontNormalLarge2" wordwrap="false" justifyH="RIGHT" text="0">
+							<Color color="WHITE_FONT_COLOR"/>
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.RefundAmountIcon" relativePoint="LEFT" x="-5" y="0" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="ProcessingContainer" frameLevel="2000" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentBg" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+				</Anchors>
+				<Frames>
+					<Frame parentKey="CoverFrame" enableMouse="true" enableKeyboard="true" frameLevel="2100">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="0" y="0" />
+							<Anchor point="BOTTOMRIGHT" x="0" y="0" />
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+						</KeyValues>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="-1">
+								<Texture setAllPoints="true">
+									<Color r="0" g="0" b="0" a="0.5"/>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate" frameLevel="2200">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
 
 			<Frame parentKey="CoverFrame" useParentLevel="true" enableMouse="true" enableKeyboard="true" hidden="true">
 				<KeyValues>
@@ -21,16 +181,13 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<Scripts>
-					<OnKeyDown function="nop"/>
-					<OnKeyUp function="nop"/>
-				</Scripts>
 			</Frame>
 		</Frames>
 
 		<Scripts>
 			<OnLoad method="OnLoad" />
 			<OnEvent method="OnEvent" />
+			<OnUpdate method="OnUpdate" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
 			<OnAttributeChanged method="OnAttributeChanged" />

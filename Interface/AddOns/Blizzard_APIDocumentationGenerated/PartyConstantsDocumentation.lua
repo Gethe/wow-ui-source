@@ -19,6 +19,21 @@ local PartyConstants =
 			},
 		},
 		{
+			Name = "PartyRequestJoinRelation",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "None", Type = "PartyRequestJoinRelation", EnumValue = 0 },
+				{ Name = "Friend", Type = "PartyRequestJoinRelation", EnumValue = 1 },
+				{ Name = "Guild", Type = "PartyRequestJoinRelation", EnumValue = 2 },
+				{ Name = "Club", Type = "PartyRequestJoinRelation", EnumValue = 3 },
+				{ Name = "RecentAllies", Type = "PartyRequestJoinRelation", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "RestrictPingsTo",
 			Type = "Enumeration",
 			NumValues = 4,

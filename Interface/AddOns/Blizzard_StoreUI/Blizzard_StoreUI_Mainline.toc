@@ -1,9 +1,8 @@
-## Title: Blizzard Store UI
+## Title: Blizzard_StoreUI
 ## AllowLoad: Both
 ## AllowLoadGameType: mainline
-## LoadFirst: 1
 ## RequiredDep: Blizzard_SharedXML
-## OptionalDep: Blizzard_UIParent, Blizzard_GlueParent, Blizzard_Shared_SimpleCheckout, Blizzard_FrameXMLBase
+## OptionalDep: Blizzard_GlueParent, Blizzard_Shared_SimpleCheckout, Blizzard_FrameXMLBase
 ## UseSecureEnvironment: 1
 
 Blizzard_Shared_StoreButtonMixin.lua

@@ -48,6 +48,25 @@ function FrameUtil.RegisterFrameForUnitEvents(frame, events, ...)
 	end
 end
 
+function FrameUtil.RegisterFrameForEventCallbacks(frame, events)
+	for event, callback in pairs(events) do
+		frame:RegisterEventCallback(event, callback);
+	end
+end
+
+function FrameUtil.UnregisterFrameForEventCallbacks(frame, events)
+	for event, _callback in pairs(events) do
+		frame:UnregisterEventCallback(event);
+	end
+end
+
+function FrameUtil.RegisterFrameForEventCallbackFields(frame, events)
+	for event, callbackName in pairs(events) do
+		local callback = frame[callbackName];
+		frame:RegisterEventCallback(event, callback);
+	end
+end
+
 function FrameUtil.DialogStyleGlobalMouseDown(frame, buttonName, ...)
 	local mouseFoci = GetMouseFoci();
 	if DoesAncestryIncludeAny(frame, mouseFoci) then
@@ -550,4 +569,139 @@ function FrameUtil.UpdateTopLevelParent(frame)
 	if newParent and newParent ~= oldParent then
 		FrameUtil.SetParentMaintainRenderLayering(frame, newParent);
 	end
+end
+
+-- AnimTransitionMixin - A configurable mixin for animated transitions when showing and hiding.
+-- Alpha and/or scale could be added in the future if needed.
+
+-- Mixes in and initializes the AnimTransitionMixin to a frame to give it animated show/hide capabilities.
+-- config: see DEFAULT_ANIM_TRANSITION_CONFIG for parameters.
+function FrameUtil.InitFrameAnimTransition(frame, config)
+	Mixin(frame, AnimTransitionMixin);
+	frame:InitAnimTransition(config);
+end
+
+AnimTransitionMixinTransitionType = {
+	SlideLeft = 1,
+	SlideRight = 2,
+	SlideTop = 3,
+	SlideBottom = 4,
+};
+
+AnimTransitionMixin = {};
+
+local DEFAULT_ANIM_TRANSITION_CONFIG = {
+	distanceX = nil, -- If nil, uses frame width
+	distanceY = nil, -- If nil, uses frame height
+	translationType = nil, -- Value from AnimTransitionMixinTransitionType enum
+	duration = 0.3, -- Animation duration in seconds
+	easingFunction = nil, -- Easing function from EasingUtil
+	hideOnAnimOut = false, -- Hide the frame when out animation completes
+	onAnimInFinish = nil, -- Callback when in animation finishes
+	onAnimOutFinish = nil, -- Callback when out animation finishes
+};
+
+-- Initialize the animation configuration for this instance
+-- config: A table with optional properties matching DEFAULT_ANIM_TRANSITION_CONFIG
+function AnimTransitionMixin:InitAnimTransition(config)
+	config = config or {};
+
+	local defaultConfig = CopyTable(DEFAULT_ANIM_TRANSITION_CONFIG);
+	self.animTransitionConfig = Mixin(defaultConfig, config);
+end
+
+function AnimTransitionMixin:StartAnimIn()
+	if not self.animTransitionConfig then
+		error("AnimTransitionMixin: Must call InitAnimTransition before StartAnimIn");
+		return;
+	end
+
+	self:StartAnimTransition(false);
+end
+
+function AnimTransitionMixin:StartAnimOut()
+	if not self.animTransitionConfig then
+		error("AnimTransitionMixin: Must call InitAnimTransition before StartAnimOut");
+		return;
+	end
+
+	self:StartAnimTransition(true);
+end
+
+function AnimTransitionMixin:CancelAnimTransition()
+	if self.animTransitionCancelFunc then
+		self.animTransitionCancelFunc();
+		self.animTransitionCancelFunc = nil;
+	end
+end
+
+-- Only meant to be used internally. Call StartAnimIn or StartAnimOut instead.
+function AnimTransitionMixin:StartAnimTransition(isOut)
+	self:CancelAnimTransition();
+
+	local config = self.animTransitionConfig;
+
+	if not isOut then
+		self:Show();
+	end
+
+	local distanceX, distanceY = self:GetTranslationDeltas(config.translationType, isOut);
+
+	local needsClampRestore = false;
+	if distanceX ~= 0 or distanceY ~= 0 then
+		if self:IsClampedToScreen() then
+			needsClampRestore = true;
+			self:SetClampedToScreen(false);
+		end
+
+		-- Set starting state for "in" animation (reverse of the final state)
+		if not isOut then
+			self:AdjustPointsOffset(-distanceX, -distanceY);
+		end
+	end
+
+	local variationCallback = ScriptAnimationUtil.GenerateEasedVariationCallback(config.easingFunction, distanceX, distanceY);
+
+	local function OnAnimFinish()
+		if isOut and config.hideOnAnimOut then
+			self:Hide();
+		end
+
+		if needsClampRestore then
+			self:SetClampedToScreen(true);
+		end
+
+		if isOut then
+			if distanceX ~= 0 or distanceY ~= 0 then
+				self:AdjustPointsOffset(-distanceX, -distanceY);
+			end
+		end
+
+		self.animTransitionCancelFunc = nil;
+
+		local callback = isOut and config.onAnimOutFinish or config.onAnimInFinish;
+		if callback then
+			callback(self);
+		end
+	end
+
+	self.animTransitionCancelFunc = ScriptAnimationUtil.StartScriptAnimation(self, variationCallback, config.duration, OnAnimFinish);
+end
+
+function AnimTransitionMixin:GetTranslationDeltas(translationType, isOut)
+	if translationType == AnimTransitionMixinTransitionType.SlideLeft then
+		local width = self.animTransitionConfig.distanceX or self:GetWidth();
+		return isOut and -width or width, 0;
+	elseif translationType == AnimTransitionMixinTransitionType.SlideRight then
+		local width = self.animTransitionConfig.distanceX or self:GetWidth();
+		return isOut and width or -width, 0;
+	elseif translationType == AnimTransitionMixinTransitionType.SlideTop then
+		local height = self.animTransitionConfig.distanceY or self:GetHeight();
+		return 0, isOut and height or -height;
+	elseif translationType == AnimTransitionMixinTransitionType.SlideBottom then
+		local height = self.animTransitionConfig.distanceY or self:GetHeight();
+		return 0, isOut and -height or height;
+	end
+
+	return 0, 0;
 end

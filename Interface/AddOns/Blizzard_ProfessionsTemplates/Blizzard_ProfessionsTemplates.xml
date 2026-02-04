@@ -40,13 +40,16 @@
 		<BarColor r=".25" g=".25" b=".75"/>
 	</StatusBar>
 
-	<ItemButton name="ProfessionsReagentButtonTemplate" virtual="true">
+	<ItemButton name="ProfessionsButtonTemplate" mixin="ProfessionsButtonMixin" virtual="true">
 		<Size x="39" y="39" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="SlotBackground" atlas="Professions-Slot-bg"/>
 			</Layer>
 			<Layer level="ARTWORK">
+				<!--Substitution for the "icon" in ItemButton. Was originally added
+				so that currency textures could be manually assigned without conflict
+				with ItemButtonMixin.-->
 				<Texture parentKey="Icon"/>
 			</Layer>
 			<Layer level="OVERLAY">
@@ -122,7 +125,7 @@
 		</Layers>
 	</Frame>
 
-	<ItemButton name="ProfessionsCrafterTableCellReagentsButtonTemplate" inherits="ProfessionsReagentButtonTemplate" mixin="ItemButtonMixin" virtual="true"/>
+	<ItemButton name="ProfessionsCrafterTableCellReagentsButtonTemplate" inherits="ProfessionsButtonTemplate" mixin="ItemButtonMixin" virtual="true"/>
 	<Frame name="ProfessionsCrafterTableCellReagentsTemplate" mixin="ProfessionsCrafterTableCellReagentsMixin" inherits="ProfessionsTableCellTextTemplate" passThroughButtons="LeftButton, RightButton" virtual="true">
 		<Scripts>
 			<OnEnter method="OnEnter"/>

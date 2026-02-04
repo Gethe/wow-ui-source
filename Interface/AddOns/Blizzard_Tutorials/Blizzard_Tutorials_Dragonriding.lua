@@ -26,7 +26,7 @@ function Class_DragonRidingWatcher:StartWatching()
 end
 
 function Class_DragonRidingWatcher:OnUpdateBonusActionBar()
-	local bonusBarIndex = GetBonusBarIndex();
+	local bonusBarIndex = C_ActionBar.GetBonusBarIndex();
 	--Dragon riding bar is 11
 	if bonusBarIndex == 11 then
 		HelpTip:Show(UIParent, self.helpTipInfo, MainActionBar);

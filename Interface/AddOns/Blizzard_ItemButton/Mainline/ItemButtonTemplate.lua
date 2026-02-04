@@ -298,24 +298,26 @@ function SetItemButtonOverlay(button, itemIDOrLink, quality, isBound)
 	end
 end
 
-local function SetupCraftingQualityOverlay(button, quality)
-	if quality then
-		if not button.ProfessionQualityOverlay then
-			button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
-			button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
-			button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
-		end
-
-		local atlas = ("Professions-Icon-Quality-Tier%d-Inv"):format(quality);
-		button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
-		ItemButtonMixin.UpdateCraftedProfessionsQualityShown(button);
-		EventRegistry:RegisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", ItemButtonMixin.UpdateCraftedProfessionsQualityShown, button);
+local function SetupCraftingQualityOverlay(button, qualityInfo)
+	if not qualityInfo then
+		return;
 	end
+
+	if not button.ProfessionQualityOverlay then
+		button.ProfessionQualityOverlay = button:CreateTexture(nil, "OVERLAY");
+		button.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2);
+		button.ProfessionQualityOverlay:SetDrawLayer("OVERLAY", 7);
+	end
+
+	local atlas = qualityInfo.iconInventory;
+	button.ProfessionQualityOverlay:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	ItemButtonMixin.UpdateCraftedProfessionsQualityShown(button);
+	EventRegistry:RegisterCallback("ItemButton.UpdateCraftedProfessionQualityShown", ItemButtonMixin.UpdateCraftedProfessionsQualityShown, button);
 end
 
-function SetItemCraftingQualityOverlayOverride(button, quality)
-	button.professionQualityOverlayOverride = quality;
-	SetupCraftingQualityOverlay(button, quality);
+function SetItemCraftingQualityOverlayOverride(button, qualityInfo)
+	button.professionQualityOverlayOverride = qualityInfo;
+	SetupCraftingQualityOverlay(button, qualityInfo);
 end
 
 function SetItemCraftingQualityOverlay(button, itemIDOrLink)
@@ -323,27 +325,27 @@ function SetItemCraftingQualityOverlay(button, itemIDOrLink)
 		return;
 	end
 
-	local quality = nil;
+	local qualityInfo = nil;
 	if itemIDOrLink  then
-		quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(itemIDOrLink);
-		if quality then
+		qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemIDOrLink);
+		if qualityInfo then
 			button.isCraftedItem = false;
 		else
-			quality = C_TradeSkillUI.GetItemCraftedQualityByItemInfo(itemIDOrLink);
-			button.isCraftedItem = quality ~= nil;
+			qualityInfo = C_TradeSkillUI.GetItemCraftedQualityInfo(itemIDOrLink);
+			button.isCraftedItem = qualityInfo ~= nil;
 		end
 
-		button.isProfessionItem = quality ~= nil;
+		button.isProfessionItem = qualityInfo ~= nil;
 	else
 		button.isProfessionItem = false;
 	end
 
 	if button.professionQualityOverlayOverride then
-		quality = button.professionQualityOverlayOverride;
+		qualityInfo = button.professionQualityOverlayOverride;
 	end
 
-	if quality then
-		SetupCraftingQualityOverlay(button, quality);
+	if qualityInfo then
+		SetupCraftingQualityOverlay(button, qualityInfo);
 	end
 end
 

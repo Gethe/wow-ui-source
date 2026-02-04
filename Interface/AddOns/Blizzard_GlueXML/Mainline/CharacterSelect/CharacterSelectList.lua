@@ -228,7 +228,7 @@ function CharacterSelectListMixin:InitScrollBox()
 	-- Scroll box extends far to the left and then counterpositioned to make space
 	-- for services, service arrows, and locks.
 	local counterPositioning = select(4, self.ScrollBox:GetPointByName("TOPLEFT"));
-	local left = math.abs(counterPositioning - 10);
+	local left = math.abs(counterPositioning - 7);
 	local pad = 0;
 	local spacing = 2;
 	view:SetPadding(pad, pad, left, pad, spacing);
@@ -552,6 +552,8 @@ function CharacterSelectListMixin:UpdateCharacterMatchingGUID(guid)
 end
 
 function CharacterSelectListMixin:UpdateCharacterSelection()
+	self.ScrollBox.dragBehavior:AbortDrag();
+
 	local dataProvider = CharacterSelectListUtil.GenerateCharactersDataProvider();
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
@@ -563,6 +565,8 @@ function CharacterSelectListMixin:UpdateCharacterSelection()
 end
 
 function CharacterSelectListMixin:ClearCharacterSelection()
+	self.ScrollBox.dragBehavior:AbortDrag();
+
 	self.ScrollBox:SetDataProvider(CreateDataProvider());
 end
 

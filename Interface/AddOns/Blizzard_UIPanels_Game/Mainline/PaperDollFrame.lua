@@ -2127,7 +2127,7 @@ function GearSetButton_SetSpecInfo(self, specID)
 	if ( specID and specID > 0 ) then
 		self.specID = specID;
 		local id, name, description, texture, role, class = GetSpecializationInfoByID(specID);
-		SetPortraitToTexture(self.SpecIcon, texture);
+		self.SpecIcon:SetTexture(texture);
 		self.SpecIcon:Show();
 		self.SpecRing:Show();
 	else

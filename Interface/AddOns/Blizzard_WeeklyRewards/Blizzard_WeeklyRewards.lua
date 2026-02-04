@@ -572,6 +572,11 @@ function WeeklyRewardsActivityMixin:OnEnter()
 
 			local formatRemainingProgress = true;
 			self:ShowIncompleteTooltip(WEEKLY_REWARDS_UNLOCK_REWARD, description, formatRemainingProgress)
+			
+			if self.info.progress > 0 then
+				self:AddWorldRunsToTooltip();
+			end
+			GameTooltip:Show();
 		elseif self.info.type == Enum.WeeklyRewardChestThresholdType.Raid then
 			local description;
 			local showRaidCompletionInTooltip = false;
@@ -751,6 +756,8 @@ function WeeklyRewardsActivityMixin:HandlePreviewWorldRewardTooltip(itemLevel, u
 		GameTooltip_AddColoredLine(GameTooltip, string.format(WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL, upgradeItemLevel), GREEN_FONT_COLOR);
 		GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_COMPLETE_WORLD, nextLevel));
 	end
+	
+	self:AddWorldRunsToTooltip();
 end
 
 function WeeklyRewardsActivityMixin:AddTopRunsToTooltip()
@@ -788,6 +795,38 @@ function WeeklyRewardsActivityMixin:AddTopRunsToTooltip()
 			GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_HEROIC);
 			numHeroic = numHeroic - 1;
 			missingRuns = missingRuns - 1;
+		end
+	end
+end
+
+function WeeklyRewardsActivityMixin:AddWorldRunsToTooltip()
+	local desiredRuns = self.info.threshold;
+	if desiredRuns <= 0 then
+		return;
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip);
+	GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, self.info.threshold));
+	
+	-- Comes sorted in descending difficulty
+	local combineSharedDifficulty = true;
+	local activityTierProgress = C_WeeklyRewards.GetSortedProgressForActivity(Enum.WeeklyRewardChestThresholdType.World, combineSharedDifficulty);	
+
+	-- For Delves, difficulty is the tier and numPoints is the number of completions.
+	-- We loop on number of completions and print a line for each, until we hit the desiredRuns or have no remaining progress.
+	for _, tierProgress in ipairs(activityTierProgress) do
+		local numRuns = math.min(tierProgress.numPoints, desiredRuns);
+		if numRuns <= 0 then
+			return;
+		end
+		desiredRuns = desiredRuns - numRuns;
+
+		-- Difficulties above 1 are guaranteed to be Delves and get a Delve-specific string, otherwise they get a generic string.
+		-- This will need to change if the assumption of World activities capping at difficulty 1 does not hold.
+		if tierProgress.difficulty > 1 then
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_INFO, tierProgress.difficulty, numRuns));
+		else
+			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_AND_WORLD_INFO, tierProgress.difficulty, numRuns));
 		end
 	end
 end

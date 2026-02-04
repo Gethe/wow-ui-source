@@ -3,12 +3,14 @@ local SocialQueue =
 	Name = "SocialQueue",
 	Type = "System",
 	Namespace = "C_SocialQueue",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAllGroups",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +37,7 @@ local SocialQueue =
 			Name = "GetGroupForPlayer",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +54,7 @@ local SocialQueue =
 			Name = "GetGroupInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -73,6 +77,7 @@ local SocialQueue =
 			Name = "GetGroupMembers",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +93,7 @@ local SocialQueue =
 			Name = "GetGroupQueues",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +108,7 @@ local SocialQueue =
 		{
 			Name = "RequestToJoin",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -119,6 +126,7 @@ local SocialQueue =
 		{
 			Name = "SignalToastDisplayed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -134,11 +142,13 @@ local SocialQueue =
 			Name = "SocialQueueConfigUpdated",
 			Type = "Event",
 			LiteralName = "SOCIAL_QUEUE_CONFIG_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "SocialQueueUpdate",
 			Type = "Event",
 			LiteralName = "SOCIAL_QUEUE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "groupGUID", Type = "WOWGUID", Nilable = false },

@@ -56,9 +56,17 @@ function SettingsLanguageDropdownMixin:OnLoad()
 end
 
 local function SetupDropdown(dropdown, setting, options, width, initTooltip)
-	local function Inserter(rootDescription, isSelected, setSelected)
+	local function Inserter(setting, rootDescription)
 		for index, localeTbl in ipairs(options()) do
-			local optionDescription = Settings.CreateDropdownButton(rootDescription, localeTbl, isSelected, setSelected);
+			local function IsSelected(optionData)
+				return setting:GetValue() == optionData.value;
+			end
+			
+			local function SetSelected(optionData)
+				return setting:SetValue(optionData.value);
+			end
+
+			local optionDescription = Settings.CreateDropdownButton(rootDescription, localeTbl, IsSelected, SetSelected);
 			
 			-- Language dropdown requires all the initialization from Settings.CreateDropdownButton,
 			-- except it needs to display it's selected value as a texture, not text.

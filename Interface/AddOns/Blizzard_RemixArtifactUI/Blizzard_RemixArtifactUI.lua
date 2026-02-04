@@ -237,7 +237,7 @@ function RemixArtifactFrameMixin:UpdateTreeCurrencyInfo()
 	local hasCurrencyInfo = currencyInfo ~= nil;
 	self.Currency:SetShown(hasCurrencyInfo);
 	if hasCurrencyInfo then
-		local displayText = self.getDisplayTextFromTreeCurrency(currencyInfo);
+		local displayText = self.getDisplayTextFromTreeCurrency and self.getDisplayTextFromTreeCurrency(currencyInfo);
 		self.Currency:Setup(currencyInfo, displayText);
 	end
 end

@@ -4,9 +4,6 @@ EditModeManagerOptionsCategory = {
 	Misc = 3
 };
 
-local disableOnMaxLayouts = true;
-local disableOnActiveChanges = false;
-local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 local maxLayoutsCopyErrorText = HUD_EDIT_MODE_ERROR_COPY_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 local characterLayoutHeaderText = GetClassColoredTextForUnit("player", HUD_EDIT_MODE_CHARACTER_LAYOUTS_HEADER:format(UnitNameUnmodified("player")));
 
@@ -57,6 +54,8 @@ function EditModeManagerFrameMixin:OnLoad()
 	self:RegisterUnitEvent("PLAYER_SPECIALIZATION_CHANGED", "player");
 
 	self.FramesBlockingEditMode = {};
+
+	self:SetupEditModeDialogs();
 end
 
 function EditModeManagerFrameMixin:OnDragStart()
@@ -82,11 +81,12 @@ end
 
 function EditModeManagerFrameMixin:EnterEditMode()
 	self.editModeActive = true;
+	AuraUtil.SetDataProvider(GetEditModeAuraDataProvider());
 	self:ClearActiveChangesFlags();
 	self:UpdateDropdownOptions();
 	self:ShowSystemSelections();
 	self.AccountSettings:OnEditModeEnter();
-    EventRegistry:TriggerEvent("EditMode.Enter");
+	EventRegistry:TriggerEvent("EditMode.Enter");
 end
 
 local function callOnEditModeExit(index, systemFrame)
@@ -99,12 +99,13 @@ end
 
 function EditModeManagerFrameMixin:ExitEditMode()
 	self.editModeActive = false;
+	AuraUtil.ClearDataProvider();
 	self:RevertAllChanges();
 	self:HideSystemSelections();
 	self.AccountSettings:OnEditModeExit();
 	self:InvokeOnAnyEditModeSystemAnchorChanged(true);
 	C_EditMode.OnEditModeExit();
-    EventRegistry:TriggerEvent("EditMode.Exit");
+	EventRegistry:TriggerEvent("EditMode.Exit");
 	PlaySound(SOUNDKIT.IG_MAINMENU_QUIT);
 end
 
@@ -211,12 +212,13 @@ function EditModeManagerFrameMixin:GetRegisteredSystemFrame(system, systemIndex)
 end
 
 local function AreAnchorsEqual(anchorInfo, otherAnchorInfo)
+	local anchorEpsilon = 0.1;
 	if anchorInfo and otherAnchorInfo then
 		return anchorInfo.point == otherAnchorInfo.point
 		and anchorInfo.relativeTo == otherAnchorInfo.relativeTo
 		and anchorInfo.relativePoint == otherAnchorInfo.relativePoint
-		and anchorInfo.offsetX == otherAnchorInfo.offsetX
-		and anchorInfo.offsetY == otherAnchorInfo.offsetY
+		and ApproximatelyEqual(anchorInfo.offsetX, otherAnchorInfo.offsetX, anchorEpsilon)
+		and ApproximatelyEqual(anchorInfo.offsetY, otherAnchorInfo.offsetY, anchorEpsilon)
 	end
 
 	return anchorInfo == otherAnchorInfo;
@@ -515,14 +517,28 @@ function EditModeManagerFrameMixin:GetNumRaidMembersForcedShown()
 	end
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex)
+-- NOTE: For RaidFrame sizes, the caller provides both a default and lower bound in the form of the default parameter.
+-- This is to avoid coupling between the CUF and EditMode code for constants that are not shared yet and used in several other layout calculations.
+function EditModeManagerFrameMixin:GetRaidFrameWidth(systemIndex, default)
 	local raidFrameWidth = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameWidth);
-	return (raidFrameWidth and raidFrameWidth > 0) and raidFrameWidth or NATIVE_UNIT_FRAME_WIDTH;
+	return (raidFrameWidth and raidFrameWidth >= default) and raidFrameWidth or default;
 end
 
-function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex)
+function EditModeManagerFrameMixin:GetRaidFrameHeight(systemIndex, default)
 	local raidFrameHeight = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.FrameHeight);
-	return (raidFrameHeight and raidFrameHeight > 0) and raidFrameHeight or NATIVE_UNIT_FRAME_HEIGHT;
+	return (raidFrameHeight and raidFrameHeight >= default) and raidFrameHeight or default;
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameAuraOrganizationType(systemIndex)
+	local auraOrganizationType = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.AuraOrganizationType);
+	return (auraOrganizationType and auraOrganizationType > 0) and auraOrganizationType or Enum.RaidAuraOrganizationType.Legacy;
+end
+
+function EditModeManagerFrameMixin:GetRaidFrameIconScale(systemIndex, default)
+	-- The iconSize setting is not a percentage even though it represents one; convert it here, note that default is expected to be in percentage form
+	-- Because the min/max are setup in EditModeSettingDisplayInfo they're not checked here and the caller needs to verify ranges.
+	local iconSize = self:GetSettingValue(Enum.EditModeSystem.UnitFrame, systemIndex, Enum.EditModeUnitFrameSetting.IconSize);
+	return (iconSize and iconSize > 0) and (iconSize / 100) or default;
 end
 
 function EditModeManagerFrameMixin:ShouldRaidFrameUseHorizontalRaidGroups(systemIndex)
@@ -628,7 +644,7 @@ function EditModeManagerFrameMixin:UpdateBottomActionBarPositions()
 					offsetX = -bar:GetWidth() / 2;
 				end
 
-				local topBarHeight = topMostBar and topMostBar:GetHeight() + 5 or 0;
+				local topBarHeight = topMostBar and topMostBar:GetHeight() + BOTTOM_ACTION_BARS_SPACER_Y or 0;
 				offsetY = offsetY + topBarHeight;
 
 				bar:ClearAllPoints();
@@ -845,6 +861,7 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetEncounterBarShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterBar));
 	self.AccountSettings:SetExtraAbilitiesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExtraAbilities));
 	self.AccountSettings:SetBuffsAndDebuffsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBuffsAndDebuffs));
+	self.AccountSettings:SetExternalDefensivesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowExternalDefensives));
 	self.AccountSettings:SetTalkingHeadFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowTalkingHeadFrame));
 	self.AccountSettings:SetVehicleLeaveButtonShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowVehicleLeaveButton));
 	self.AccountSettings:SetBossFramesShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowBossFrames));
@@ -855,6 +872,9 @@ function EditModeManagerFrameMixin:InitializeAccountSettings()
 	self.AccountSettings:SetDurabilityFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDurabilityFrame));
 	self.AccountSettings:SetPetFrameShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPetFrame));
 	self.AccountSettings:SetCooldownViewerShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowCooldownViewer));
+	self.AccountSettings:SetPersonalResourceDisplayShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowPersonalResourceDisplay));
+	self.AccountSettings:SetEncounterEventsShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowEncounterEvents));
+	self.AccountSettings:SetDamageMeterShown(self:GetAccountSettingValueBool(Enum.EditModeAccountSetting.ShowDamageMeter));
 end
 
 function EditModeManagerFrameMixin:OnAccountSettingChanged(changedSetting, newValue)
@@ -1072,33 +1092,147 @@ function EditModeManagerFrameMixin:CreateLayoutTbls()
 	return layoutTbls, hasCharacterLayouts;
 end
 
-local function GetNewLayoutText(disabled)
-	if disabled then
-		return HUD_EDIT_MODE_NEW_LAYOUT_DISABLED:format(CreateAtlasMarkup("editmode-new-layout-plus-disabled"));
-	end
-	return HUD_EDIT_MODE_NEW_LAYOUT:format(CreateAtlasMarkup("editmode-new-layout-plus"));
+function EditModeManagerFrameMixin:GetMaxLayoutsErrorText()
+	return HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
 end
 
-local function GetDisableReason(disableOnMaxLayouts, disableOnActiveChanges)
-	if disableOnMaxLayouts and EditModeManagerFrame:AreLayoutsFullyMaxed() then
-		return maxLayoutsErrorText;
-	elseif disableOnActiveChanges and EditModeManagerFrame:HasActiveChanges() then
-		return HUD_EDIT_MODE_UNSAVED_CHANGES;
-	end
-	return nil;
+function EditModeManagerFrameMixin:SetupEditModeDialogs()
+	EditModeLayoutDialog:SetLayoutManager(self);
+	EditModeLayoutDialog:SetModeData({
+		newLayout = {
+			title = HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE,
+			acceptText = SAVE,
+			cancelText = CANCEL,
+			disabledAcceptTooltip = HUD_EDIT_MODE_ERROR_ENTER_NAME,
+			needsEditbox = true,
+			needsCharacterSpecific = true,
+			onCancelEvent = "EditMode.NewLayoutCancel",
+			onAcceptCallback = self.CreateNewLayoutFromDialog,
+			updateAcceptCallback = self.CanCreateNewLayoutFromDialog,
+		},
+
+		renameLayout = {
+			title = HUD_EDIT_MODE_RENAME_LAYOUT_DIALOG_TITLE,
+			acceptText = SAVE,
+			cancelText = CANCEL,
+			disabledAcceptTooltip = nil,
+			needsEditbox = true,
+			needsCharacterSpecific = false,
+			onAcceptCallback = self.RenameLayoutFromDialog,
+			updateAcceptCallback = self.ValidateLayoutNameFromDialog,
+		},
+
+		deleteLayout = {
+			title = HUD_EDIT_MODE_DELETE_LAYOUT_DIALOG_TITLE,
+			acceptText = YES,
+			cancelText = NO,
+			disabledAcceptTooltip = nil,
+			needsEditbox = false,
+			needsCharacterSpecific = false,
+			onAcceptCallback = self.DeleteLayoutFromDialog,
+			updateAcceptCallback = function() return true; end,
+		},
+	});
+
+	EditModeImportLayoutDialog:SetLayoutManager(self);
+	EditModeImportLayoutDialog:SetModeData({
+		importLayout = {
+			title = HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_TITLE,
+			importEditBoxLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_DIALOG_EDIT_BOX_LABEL,
+			nameEditBoxLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_LINK_DIALOG_EDIT_BOX_LABEL,
+			instructionsLabel = HUD_EDIT_MODE_IMPORT_LAYOUT_INSTRUCTIONS,
+			acceptText = HUD_EDIT_MODE_IMPORT_LAYOUT,
+			cancelText = CANCEL,
+			disabledAcceptTooltip = HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME,
+			onAcceptCallback = self.ImportLayoutFromDialog,
+			updateAcceptCallback = self.CanImportFromDialog,
+			needsCharacterSpecific = true,
+		},
+	});
 end
 
-local function SetPresetEnabledState(elementDescription, disableOnMaxLayouts, disableOnActiveChanges)
-	local reason = GetDisableReason(disableOnMaxLayouts, disableOnActiveChanges);
-	local enabled = reason == nil;
-	elementDescription:SetEnabled(enabled);
+function EditModeManagerFrameMixin:CreateNewLayoutFromDialog(dialog)
+	local isLayoutImportedNo = false;
+	self:MakeNewLayout(CopyTable(dialog:GetLayoutInfo()), dialog:GetDesiredLayoutType(), dialog:GetEditBoxText(), isLayoutImportedNo);
+end
 
-	if not enabled then
-		elementDescription:SetTooltip(function(tooltip, elementDescription)
-			GameTooltip_SetTitle(tooltip, MenuUtil.GetElementText(elementDescription));
-			GameTooltip_AddErrorLine(tooltip, reason);
-		end);
+function EditModeManagerFrameMixin:RenameLayoutFromDialog(dialog)
+	self:RenameLayout(dialog:GetLayoutIndex(), dialog:GetEditBoxText());
+end
+
+function EditModeManagerFrameMixin:DeleteLayoutFromDialog(dialog)
+	self:DeleteLayout(dialog:GetLayoutIndex());
+end
+
+function EditModeManagerFrameMixin:ImportLayoutFromDialog(dialog)
+	self:ImportLayout(dialog:GetLayoutInfo(), dialog:GetDesiredLayoutType(), dialog:GetEditBoxText());
+end
+
+function EditModeManagerFrameMixin:IsCharacterSpecificLayout(layout)
+	return (layout.layoutType == Enum.EditModeLayoutType.Character);
+end
+
+function EditModeManagerFrameMixin:GetLayoutName(layout)
+	return layout.layoutName;
+end
+
+local maxCharLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_CHAR_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+local maxAccountLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_ACCOUNT_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+local maxLayoutsErrorText = HUD_EDIT_MODE_ERROR_MAX_LAYOUTS:format(Constants.EditModeConsts.EditModeMaxLayoutsPerType, Constants.EditModeConsts.EditModeMaxLayoutsPerType);
+
+function EditModeManagerFrameMixin:ValidateLayoutNameFromDialog(dialog)
+	local editBoxText = dialog:GetEditBoxText();
+	local editModeLayouts = self:GetLayouts();
+	for index, layout in ipairs(editModeLayouts) do
+		if self:GetLayoutName(layout) == editBoxText then
+			return false, HUD_EDIT_MODE_ERROR_DUPLICATE_NAME;
+		end
 	end
+
+	local hasValidInput = UserInputNonEmpty(editBoxText);
+	if not hasValidInput then
+		return false, HUD_EDIT_MODE_ERROR_ENTER_NAME;
+	end
+
+	if not C_EditMode.IsValidLayoutName(editBoxText) then
+		return false, HUD_EDIT_MODE_ERROR_ENTER_NAME; -- TODO: Add custom string for this?
+	end
+
+	return true;
+end
+
+function EditModeManagerFrameMixin:CanCreateNewLayoutFromDialog(dialog)
+	if self:AreLayoutsFullyMaxed() then
+		return false, maxLayoutsErrorText;
+	end
+
+	local layoutType = dialog:GetDesiredLayoutType();
+	if self:AreLayoutsOfTypeMaxed(layoutType) then
+		if layoutType == Enum.EditModeLayoutType.Character then
+			return false, maxCharLayoutsErrorText;
+		else
+			return false, maxAccountLayoutsErrorText;
+		end
+	end
+
+	return self:ValidateLayoutNameFromDialog(dialog);
+end
+
+function EditModeManagerFrameMixin:CanRenameLayoutFromDialog(dialog)
+	return self:ValidateLayoutNameFromDialog(dialog);
+end
+
+function EditModeManagerFrameMixin:CanImportFromDialog(dialog)
+	local isEnabled, disabledTooltip = self:CanCreateNewLayoutFromDialog(dialog);
+	if not isEnabled then
+		return isEnabled, disabledTooltip;
+	end
+
+	if not dialog:GetLayoutInfo() then
+		return false, HUD_EDIT_MODE_ERROR_ENTER_IMPORT_STRING_AND_NAME;
+	end
+
+	return true;
 end
 
 function EditModeManagerFrameMixin:UpdateDropdownOptions()
@@ -1168,37 +1302,28 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 
 				radio:AddInitializer(function(button, description, menu)
 					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-					gearButton:SetPoint("RIGHT");
-					gearButton:SetScript("OnClick", function()
+					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
 						description:ForceOpenSubmenu();
 					end);
 
-					MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
-						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_RENAME_OR_COPY_LAYOUT);
-					end);
-
 					local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-					cancelButton:SetPoint("RIGHT", gearButton, "LEFT", -3, 0);
-					cancelButton:SetScript("OnClick", function()
+					MenuTemplates.SetUtilityButtonTooltipText(cancelButton, HUD_EDIT_MODE_DELETE_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton);
+					MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
 						self:ShowDeleteLayoutDialog(index, layoutInfo);
 						menu:Close();
-					end);
-
-					MenuUtil.HookTooltipScripts(cancelButton, function(tooltip)
-						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_DELETE_LAYOUT);
 					end);
 				end);
 			else
 				radio:AddInitializer(function(button, description, menu)
 					local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-					gearButton:SetPoint("RIGHT");
-					gearButton:SetScript("OnClick", function()
+					MenuTemplates.SetUtilityButtonTooltipText(gearButton, HUD_EDIT_MODE_COPY_LAYOUT);
+					MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+					MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
 						self:ShowNewLayoutDialog(layoutInfo);
 						menu:Close();
-					end);
-
-					MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
-						GameTooltip_SetTitle(tooltip, HUD_EDIT_MODE_COPY_LAYOUT);
 					end);
 				end);
 			end
@@ -1207,18 +1332,22 @@ function EditModeManagerFrameMixin:UpdateDropdownOptions()
 		rootDescription:CreateDivider();
 
 		-- new layout
-		local disabled = GetDisableReason(disableOnMaxLayouts, not disableOnActiveChanges) ~= nil;
-		local text = GetNewLayoutText(disabled);
+		local newLayoutDisableOnMaxLayouts = true;
+		local newLayoutDisableOnActiveChanges = true;
+		local disabled = EditModeLayoutManagerUtil.GetDisableReason(newLayoutDisableOnMaxLayouts, newLayoutDisableOnActiveChanges, self) ~= nil;
+		local text = EditModeLayoutManagerUtil.GetNewLayoutText(disabled);
 		local newLayoutButton = rootDescription:CreateButton(text, function()
 			self:ShowNewLayoutDialog();
 		end);
-		SetPresetEnabledState(newLayoutButton, disableOnMaxLayouts, not disableOnActiveChanges);
+		EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(newLayoutButton, newLayoutDisableOnMaxLayouts, newLayoutDisableOnActiveChanges, self);
 
 		-- import layout
+		local importLayoutDisableOnMaxLayouts = true;
+		local importLayoutDisableOnActiveChanges = false;
 		local importLayoutButton = rootDescription:CreateButton(HUD_EDIT_MODE_IMPORT_LAYOUT, function()
 			self:ShowImportLayoutDialog();
 		end);
-		SetPresetEnabledState(importLayoutButton, disableOnMaxLayouts, disableOnActiveChanges);
+		EditModeLayoutManagerUtil.SetElementDescriptionEnabledState(importLayoutButton, importLayoutDisableOnMaxLayouts, importLayoutDisableOnActiveChanges, self);
 
 		-- share
 		local shareSubmenu = rootDescription:CreateButton(HUD_EDIT_MODE_SHARE_LAYOUT);
@@ -1277,7 +1406,7 @@ end
 function EditModeManagerFrameMixin:GetActiveLayoutInfo()
 	if self.overrideLayoutInfo then
 		return self.overrideLayoutInfo;
-	else 
+	else
 		return self.layoutInfo and self.layoutInfo.layouts[self.layoutInfo.activeLayout];
 	end
 end
@@ -1316,6 +1445,8 @@ end
 
 function EditModeManagerFrameMixin:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImported)
 	if newLayoutInfo and layoutName and layoutName ~= "" and C_EditMode.IsValidLayoutName(layoutName) then
+		self:RevertAllChanges();
+
 		newLayoutInfo.layoutType = layoutType;
 		newLayoutInfo.layoutName = layoutName;
 
@@ -1366,7 +1497,7 @@ end
 function EditModeManagerFrameMixin:CopyActiveLayoutToClipboard()
 	local activeLayoutInfo = self:GetActiveLayoutInfo();
 	CopyToClipboard(C_EditMode.ConvertLayoutInfoToString(activeLayoutInfo));
-	DEFAULT_CHAT_FRAME:AddMessage(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName), YELLOW_FONT_COLOR:GetRGB());
+	ChatFrameUtil.DisplaySystemMessageInPrimary(HUD_EDIT_MODE_COPY_TO_CLIPBOARD_NOTICE:format(activeLayoutInfo.layoutName));
 end
 
 --[[
@@ -1388,8 +1519,6 @@ function EditModeManagerFrameMixin:ClearActiveChangesFlags()
 end
 
 function EditModeManagerFrameMixin:ImportLayout(newLayoutInfo, layoutType, layoutName)
-	self:RevertAllChanges();
-
 	local isLayoutImportedYes = true;
 	self:MakeNewLayout(newLayoutInfo, layoutType, layoutName, isLayoutImportedYes);
 end
@@ -1425,14 +1554,15 @@ end
 
 function EditModeManagerFrameMixin:ShowNewLayoutDialog(layoutInfo)
 	self:ClearSelectedSystem();
-	EditModeNewLayoutDialog:ShowDialog(layoutInfo or self:GetActiveLayoutInfo());
+	EditModeLayoutDialog:ShowNewLayoutDialog(layoutInfo or self:GetActiveLayoutInfo());
 end
 
 function EditModeManagerFrameMixin:ShowImportLayoutDialog()
 	self:ClearSelectedSystem();
-	EditModeImportLayoutDialog:ShowDialog();
+	EditModeImportLayoutDialog:ShowImportLayoutDialog();
 end
 
+--[[
 function EditModeManagerFrameMixin:OpenAndShowImportLayoutLinkDialog(link)
 	if not self:IsShown() then
 		self:Show();
@@ -1440,27 +1570,16 @@ function EditModeManagerFrameMixin:OpenAndShowImportLayoutLinkDialog(link)
 
 	EditModeImportLayoutLinkDialog:ShowDialog(link);
 end
+--]]
 
 function EditModeManagerFrameMixin:ShowRenameLayoutDialog(layoutIndex, layoutInfo)
 	self:ClearSelectedSystem();
-
-	local function onAcceptCallback(layoutName)
-		self:RenameLayout(layoutIndex, layoutName);
-	end
-
-	local data = {text = HUD_EDIT_MODE_RENAME_LAYOUT_DIALOG_TITLE, text_arg1 = layoutInfo.layoutName, callback = onAcceptCallback, acceptText = SAVE }
-	StaticPopup_ShowCustomGenericInputBox(data);
+	EditModeLayoutDialog:ShowRenameLayoutDialog(layoutIndex, layoutInfo);
 end
 
 function EditModeManagerFrameMixin:ShowDeleteLayoutDialog(layoutIndex, layoutInfo)
 	self:ClearSelectedSystem();
-
-	local function onAcceptCallback()
-		self:DeleteLayout(layoutIndex);
-	end
-
-	local data = {text = HUD_EDIT_MODE_DELETE_LAYOUT_DIALOG_TITLE, text_arg1 = layoutInfo.layoutName, callback = onAcceptCallback }
-	StaticPopup_ShowCustomGenericConfirmation(data);
+	EditModeLayoutDialog:ShowDeleteLayoutDialog(layoutIndex, layoutInfo);
 end
 
 function EditModeManagerFrameMixin:ShowRevertWarningDialog(selectedLayoutIndex)
@@ -1649,6 +1768,7 @@ local checkBoxSetupData =
 	EncounterBar = { callbackName = "SetEncounterBarShown", mouseoverName = "SetEncounterBarMouseOver", },
 	ExtraAbilities = { callbackName = "SetExtraAbilitiesShown", mouseoverName = "SetExtraAbilitiesMouseOver", },
 	BuffsAndDebuffs = { callbackName = "SetBuffsAndDebuffsShown", mouseoverName = "SetBuffsAndDebuffsMouseOver", },
+	ExternalDefensives = { callbackName = "SetExternalDefensivesShown", mouseoverName = "SetExternalDefensivesMouseOver", },
 	TalkingHeadFrame = { callbackName = "SetTalkingHeadFrameShown", mouseoverName = "SetTalkingHeadFrameMouseOver", },
 	VehicleLeaveButton = { callbackName = "SetVehicleLeaveButtonShown", mouseoverName = "SetVehicleLeaveButtonMouseOver", },
 	BossFrames = { callbackName = "SetBossFramesShown", mouseoverName = "SetBossFramesMouseOver", },
@@ -1662,6 +1782,8 @@ local checkBoxSetupData =
 	VehicleSeatIndicator = { callbackName = "SetVehicleSeatIndicatorShown", mouseoverName = "SetVehicleSeatIndicatorMouseOver", },
 	ArchaeologyBar = { callbackName = "SetArchaeologyBarShown", mouseoverName = "SetArchaeologyBarMouseOver", },
 	CooldownViewer = { callbackName = "SetCooldownViewerShown", mouseoverName = "SetCooldownViewerMouseOver", },
+	EncounterEvents = { callbackName = "SetEncounterEventsShown", mouseoverName = "SetEncounterEventsMouseOver", },
+	DamageMeter = { callbackName = "SetDamageMeterShown", mouseoverName = "SetDamageMeterMouseOver", },
 	StanceBar = { callbackName = "SetStanceBarShown", mouseoverName = "SetStanceBarMouseOver", },
 	PetActionBar = { callbackName = "SetPetActionBarShown", mouseoverName = "SetPetActionBarMouseOver", },
 	PossessActionBar = { callbackName = "SetPossessActionBarShown", mouseoverName = "SetPossessActionBarMouseOver", },
@@ -1683,6 +1805,13 @@ function EditModeAccountSettingsMixin:PrepareSettingsCheckButtons()
 		SetupEditModeCheckBox(self, keyName, setupData.callbackName, setupData.mouseoverName);
 	end
 
+
+	-- This will likely need integration into the new system; holding off on that while resolving a conflict.
+	local function onPersonalResourceDisplayCheckboxChecked(isChecked, isUserInput)
+		self:SetPersonalResourceDisplayShown(isChecked, isUserInput);
+	end
+	self.settingsCheckButtons.PersonalResourceDisplay = self.SettingsContainer.PersonalResourceDisplay;
+	self.settingsCheckButtons.PersonalResourceDisplay:SetCallback(onPersonalResourceDisplayCheckboxChecked);
 end
 
 function EditModeAccountSettingsMixin:OnEvent(event, ...)
@@ -1707,7 +1836,7 @@ end
 
 function EditModeAccountSettingsMixin:OnEditModeEnter()
 	self.oldActionBarSettings = {};
-	
+
 	self:EditModeFrameSetup();
 end
 
@@ -1890,6 +2019,10 @@ function EditModeAccountSettingsMixin:SetBuffsAndDebuffsMouseOver(...)
 	DebuffFrame:ShowEditInstructions(...);
 end
 
+function EditModeAccountSettingsMixin:SetExternalDefensivesMouseOver(...)
+	ExternalDefensivesFrame:ShowEditInstructions(...);
+end
+
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameMouseOver(...)
 	TalkingHeadFrame:ShowEditInstructions(...);
 end
@@ -1941,6 +2074,18 @@ end
 function EditModeAccountSettingsMixin:SetCooldownViewerMouseOver(...)
 	for index, cooldownViewer in ipairs(self:GetCooldownViewerFrames()) do
 		cooldownViewer:ShowEditInstructions(...);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetEncounterEventsMouseOver(...)
+	for index, encounterEventsFrame in ipairs(self:GetEncounterEventsFrames()) do
+		encounterEventsFrame:ShowEditInstructions(...);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetDamageMeterMouseOver(...)
+	for index, frame in ipairs(self:GetDamageMeterFrames()) do
+		frame:ShowEditInstructions(...);
 	end
 end
 
@@ -2095,23 +2240,38 @@ function EditModeAccountSettingsMixin:SetBuffsAndDebuffsShown(shown, isUserInput
 	end
 end
 
+function EditModeAccountSettingsMixin:SetExternalDefensivesShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowExternalDefensives, shown);
+		self:RefreshExternalDefensives();
+	else
+		self.settingsCheckButtons.ExternalDefensives:SetControlChecked(shown);
+	end
+end
+
+local function RefreshAuraFrame(frame, isEditing)
+	frame:SetIsEditing(isEditing);
+
+	if isEditing then
+		frame:HighlightSystem();
+	else
+		frame:ClearHighlight();
+	end
+
+	frame:UpdateAuraButtons();
+end
+
 function EditModeAccountSettingsMixin:RefreshBuffsAndDebuffs()
 	local showBuffsAndDebuffs = self.settingsCheckButtons.BuffsAndDebuffs:IsControlChecked();
 
-	if showBuffsAndDebuffs then
-		BuffFrame.isInEditMode = true;
-		DebuffFrame.isInEditMode = true;
-		BuffFrame:HighlightSystem();
-		DebuffFrame:HighlightSystem();
-	else
-		BuffFrame.isInEditMode = false;
-		DebuffFrame.isInEditMode = false;
-		BuffFrame:ClearHighlight();
-		DebuffFrame:ClearHighlight();
+	local frames = { BuffFrame, DebuffFrame };
+	for _, auraFrame in pairs(frames) do
+		RefreshAuraFrame(auraFrame, showBuffsAndDebuffs);
 	end
+end
 
-	BuffFrame:UpdateAuraButtons();
-	DebuffFrame:UpdateAuraButtons();
+function EditModeAccountSettingsMixin:RefreshExternalDefensives()
+	RefreshAuraFrame(ExternalDefensivesFrame, self.settingsCheckButtons.ExternalDefensives:IsControlChecked() and self.settingsCheckButtons.ExternalDefensives:ShouldEnable());
 end
 
 function EditModeAccountSettingsMixin:SetTalkingHeadFrameShown(shown, isUserInput)
@@ -2424,20 +2584,104 @@ function EditModeAccountSettingsMixin:GetCooldownViewerFrames()
 	return frames;
 end
 
+function EditModeAccountSettingsMixin:SetPersonalResourceDisplayShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowPersonalResourceDisplay, shown);
+		self:RefreshPersonalResourceDisplay();
+	else
+		self.settingsCheckButtons.PersonalResourceDisplay:SetControlChecked(shown);
+	end
+end
+
 function EditModeAccountSettingsMixin:RefreshCooldownViewer()
-	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked();
+	local showCooldownViewer = self.settingsCheckButtons.CooldownViewer:IsControlChecked() and self.settingsCheckButtons.CooldownViewer:ShouldEnable();
 
-	local cooldownViewerFrames = self:GetCooldownViewerFrames();
-
-	if showCooldownViewer then
-		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
-			cooldownViewer:SetIsEditing(true);
+	for _, cooldownViewer in ipairs(self:GetCooldownViewerFrames()) do
+		cooldownViewer:SetIsEditing(showCooldownViewer);
+		if showCooldownViewer then
 			cooldownViewer:HighlightSystem();
+		else
+			cooldownViewer:ClearHighlight();
+		end
+	end
+end
+
+function EditModeAccountSettingsMixin:RefreshPersonalResourceDisplay()
+	local showPersonalResourceDisplay = self.settingsCheckButtons.PersonalResourceDisplay:IsControlChecked();
+
+	if showPersonalResourceDisplay then
+		PersonalResourceDisplayFrame:SetIsInEditMode(true);
+		PersonalResourceDisplayFrame:HighlightSystem();
+	else
+		PersonalResourceDisplayFrame:SetIsInEditMode(false);
+		PersonalResourceDisplayFrame:ClearHighlight();
+	end
+end
+
+function EditModeAccountSettingsMixin:SetEncounterEventsShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowEncounterEvents, shown);
+		self:RefreshEncounterEvents();
+	else
+		self.settingsCheckButtons.EncounterEvents:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:GetEncounterEventsFrames()
+	local frames = { EncounterTimeline, CriticalEncounterWarnings, MediumEncounterWarnings, MinorEncounterWarnings };
+	assertsafe(#frames == Enum.EditModeEncounterEventsSystemIndicesMeta.NumValues, "Missing encounter events frame.");
+	return frames;
+end
+
+function EditModeAccountSettingsMixin:RefreshEncounterEvents()
+	local showEncounterEventsFrames = self.settingsCheckButtons.EncounterEvents:IsControlChecked() and self.settingsCheckButtons.EncounterEvents:ShouldEnable();
+	local encounterEventsFrames = self:GetEncounterEventsFrames();
+
+	local function ShowEncounterEventFrame(_, encounterEventsFrame)
+		encounterEventsFrame:SetIsEditing(true);
+		encounterEventsFrame:HighlightSystem();
+	end
+
+	local function HideEncounterEventFrame(_, encounterEventsFrame)
+		encounterEventsFrame:SetIsEditing(false);
+		encounterEventsFrame:ClearHighlight();
+	end
+
+	if showEncounterEventsFrames then
+		secureexecuterange(encounterEventsFrames, ShowEncounterEventFrame);
+	else
+		secureexecuterange(encounterEventsFrames, HideEncounterEventFrame);
+	end
+end
+
+function EditModeAccountSettingsMixin:SetDamageMeterShown(shown, isUserInput)
+	if isUserInput then
+		EditModeManagerFrame:OnAccountSettingChanged(Enum.EditModeAccountSetting.ShowDamageMeter, shown);
+		self:RefreshDamageMeter();
+	else
+		self.settingsCheckButtons.DamageMeter:SetControlChecked(shown);
+	end
+end
+
+function EditModeAccountSettingsMixin:GetDamageMeterFrames()
+	local frames = { DamageMeter };
+	return frames;
+end
+
+function EditModeAccountSettingsMixin:RefreshDamageMeter()
+	local showDamageMeter = self.settingsCheckButtons.DamageMeter:IsControlChecked() and self.settingsCheckButtons.DamageMeter:ShouldEnable();
+
+	local damageMeterFrames = self:GetDamageMeterFrames();
+
+	if showDamageMeter then
+		for _, damageMeter in ipairs(damageMeterFrames) do
+			damageMeter:SetIsEditing(true);
+			damageMeter:HighlightSystem();
 		end
 	else
-		for _, cooldownViewer in ipairs(cooldownViewerFrames) do
-			cooldownViewer:SetIsEditing(false);
-			cooldownViewer:ClearHighlight();
+		for _, damageMeter in ipairs(damageMeterFrames) do
+			damageMeter:SetIsEditing(false);
+			damageMeter:ClearHighlight();
 		end
 	end
 end
@@ -2533,11 +2777,4 @@ function EditModeManagerTutorialMixin:ProgressHelpTips()
 	end
 
 	self:ShowHelpTip();
-end
-
-EditModeLootFrameCheckButtonMixin = {};
-
--- Override
-function EditModeLootFrameCheckButtonMixin:ShouldEnable()
-	return GetCVar("lootUnderMouse") ~= "1";
 end

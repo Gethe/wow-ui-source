@@ -1,21 +1,19 @@
-local function GetEventPOI(uiMapID, areaPoiID)
-	local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(uiMapID, areaPoiID);
+local function GetAreaPOIInfo(uiMapID, eventInfo)
+	local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(uiMapID, eventInfo.areaPoiID);
 	if poiInfo then
-		-- Stopgap to ensure that events don't contain widgets that are only intended for map display
-		if poiInfo.tooltipWidgetSet == 1016 then
-			poiInfo.tooltipWidgetSet = 1481;
+		if eventInfo.displayInfo.hideDescription then
 			poiInfo.description = nil;
+		end
+		if eventInfo.displayInfo.overrideTooltipWidgetSetID then
+			poiInfo.tooltipWidgetSet = eventInfo.displayInfo.overrideTooltipWidgetSetID;
+		end
+		if eventInfo.displayInfo.overrideAtlas then
+			poiInfo.atlasName = eventInfo.displayInfo.overrideAtlas;
+
 		end
 	end
 
 	return poiInfo;
-end
-
-local function ShouldShowTimeLeftInTooltip(poiInfo)
-	if poiInfo.tooltipWidgetSet == 1355 then
-		return false;
-	end
-	return true;
 end
 
 local function ShouldHideRewardedEvents()
@@ -258,7 +256,7 @@ function EventSchedulerMixin:AddOngoingEvents(dataProvider, ongoingEvents, hideR
 	for i, eventInfo in ipairs(ongoingEvents) do
 		if not hideRewardedEvents or not eventInfo.rewardsClaimed then
 			local uiMapID = nil;
-			local poiInfo = GetEventPOI(uiMapID, eventInfo.areaPoiID);
+			local poiInfo = GetAreaPOIInfo(uiMapID, eventInfo);
 			if poiInfo then
 				local eventData = { entryType = EntryType.OngoingEvent, poiInfo = poiInfo, eventInfo = eventInfo };
 				categorySubtree:Insert(eventData);
@@ -315,7 +313,7 @@ function EventSchedulerMixin:AddScheduledEvents(dataProvider, scheduledEvents, h
 
 			if showEvent then
 				local uiMapID = nil;
-				local info = GetEventPOI(uiMapID, eventInfo.areaPoiID);
+				local info = GetAreaPOIInfo(uiMapID, eventInfo);
 				if info then
 					local eventDate = date("*t", eventInfo.startTime);
 					if eventDate.yday == dateNow.yday then
@@ -484,8 +482,10 @@ end
 function EventSchedulerBaseEntryMixin:UpdateTooltip()
 	if self.showTimeLeft then
 		self.info.secondsLeft = self.eventInfo.endTime - time();
+		self.info.forceHideTimer = false;
 	else
 		self.info.secondsLeft = nil;
+		self.info.forceHideTimer = true;
 	end
 
 	AreaPoiUtil.TryShowTooltip(self, "ANCHOR_RIGHT", self.info);
@@ -580,7 +580,7 @@ function EventSchedulerScheduledEntryMixin:Init(data)
 	self.eventInfo = data.eventInfo;
 
 	-- data.active also rules out ongoing events, which do not have an active state
-	self.showTimeLeft = data.active and ShouldShowTimeLeftInTooltip(self.info);
+	self.showTimeLeft = data.active and not self.eventInfo.displayInfo.hideTimeLeft;
 
 	if not EventSchedulerAnimationManager:HasAnim(self.eventInfo.eventKey, AnimType.Expired) then
 		self:SetAlpha(1);
@@ -821,7 +821,7 @@ function EventSchedulerReminderManager:AnnounceEvent(eventInfo, time)
 	end
 
 	local uiMapID = nil;
-	local areaPoiInfo = GetEventPOI(uiMapID, eventInfo.areaPoiID);
+	local areaPoiInfo = GetAreaPOIInfo(uiMapID, eventInfo);
 	if areaPoiInfo then
 		local nameLink = LinkUtil.FormatLink(LinkTypes.EventPOI, "["..areaPoiInfo.name.."]", eventInfo.areaPoiID);
 		if time <= 0 then

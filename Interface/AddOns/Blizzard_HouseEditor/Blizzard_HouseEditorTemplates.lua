@@ -46,9 +46,9 @@ function BaseHouseEditorModeMixin:OnRoomComponentHovered()
 	EventRegistry:TriggerEvent("HousingRoomComponentInstance.MouseOver", self, tooltip);
 end
 
-function BaseHouseEditorModeMixin:PlaySelectedSoundForDecorInfo(decorInfo)
+function BaseHouseEditorModeMixin:PlaySelectedSoundForDecorInfo(decorInfo, isPreview)
 	if decorInfo then -- We may not have an info in the case of newly placed decor
-		self:PlaySelectedSoundForSize(decorInfo.size);
+		self:PlaySelectedSoundForSize(decorInfo.size, isPreview);
 	end
 end
 
@@ -86,20 +86,36 @@ function BaseHouseEditorModeMixin:PlaySoundForHouseSize(size, small, medium, lar
 	PlaySound(sound);
 end
 
-function BaseHouseEditorModeMixin:PlaySelectedSoundForSize(size)
-	self:PlaySoundForSize(size,
-		SOUNDKIT.HOUSING_SELECT_ITEM_SMALL,
-		SOUNDKIT.HOUSING_SELECT_ITEM_MEDIUM,
-		SOUNDKIT.HOUSING_SELECT_ITEM_LARGE
-	);
+function BaseHouseEditorModeMixin:PlaySelectedSoundForSize(size, isPreview)
+	if isPreview then
+		self:PlaySoundForSize(size,
+			SOUNDKIT.HOUSING_MARKET_SELECT_ITEM_SMALL,
+			SOUNDKIT.HOUSING_MARKET_SELECT_ITEM_MEDIUM,
+			SOUNDKIT.HOUSING_MARKET_SELECT_ITEM_LARGE
+		);
+	else
+		self:PlaySoundForSize(size,
+			SOUNDKIT.HOUSING_SELECT_ITEM_SMALL,
+			SOUNDKIT.HOUSING_SELECT_ITEM_MEDIUM,
+			SOUNDKIT.HOUSING_SELECT_ITEM_LARGE
+		);
+	end
 end
 
-function BaseHouseEditorModeMixin:PlayPlacedSoundForSize(size)
-	self:PlaySoundForSize(size,
-		SOUNDKIT.HOUSING_PLACE_ITEM_SMALL,
-		SOUNDKIT.HOUSING_PLACE_ITEM_MEDIUM,
-		SOUNDKIT.HOUSING_PLACE_ITEM_LARGE
-	);
+function BaseHouseEditorModeMixin:PlayPlacedSoundForSize(size, isPreview)
+	if isPreview then
+		self:PlaySoundForSize(size,
+			SOUNDKIT.HOUSING_MARKET_PLACE_ITEM_SMALL,
+			SOUNDKIT.HOUSING_MARKET_PLACE_ITEM_MEDIUM,
+			SOUNDKIT.HOUSING_MARKET_PLACE_ITEM_LARGE
+		);
+	else
+		self:PlaySoundForSize(size,
+			SOUNDKIT.HOUSING_PLACE_ITEM_SMALL,
+			SOUNDKIT.HOUSING_PLACE_ITEM_MEDIUM,
+			SOUNDKIT.HOUSING_PLACE_ITEM_LARGE
+		);
+	end
 end
 
 function BaseHouseEditorModeMixin:PlaySelectedHouseSoundForSize(size)

@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_ProfessionsCrafterOrderView.lua"/>
 
-	<ItemButton name="ProfessionsCrafterOrderRewardTemplate" inherits="ProfessionsReagentButtonTemplate" mixin="ProfessionsCrafterOrderRewardMixin" virtual="true">
+	<ItemButton name="ProfessionsCrafterOrderRewardTemplate" inherits="ProfessionsButtonTemplate" mixin="ProfessionsCrafterOrderRewardMixin" virtual="true">
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave method="OnLeave"/>

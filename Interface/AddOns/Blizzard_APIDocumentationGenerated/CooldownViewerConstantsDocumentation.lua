@@ -26,6 +26,48 @@ local CooldownViewerConstants =
 			},
 		},
 		{
+			Name = "CooldownViewerAddAlertStatus",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Success", Type = "CooldownViewerAddAlertStatus", EnumValue = 0 },
+				{ Name = "InvalidAlertType", Type = "CooldownViewerAddAlertStatus", EnumValue = 1 },
+				{ Name = "InvalidEventType", Type = "CooldownViewerAddAlertStatus", EnumValue = 2 },
+				{ Name = "DuplicateAlert", Type = "CooldownViewerAddAlertStatus", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "CooldownViewerAlertEventType",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 1,
+			MaxValue = 6,
+			Fields =
+			{
+				{ Name = "Available", Type = "CooldownViewerAlertEventType", EnumValue = 1 },
+				{ Name = "PandemicTime", Type = "CooldownViewerAlertEventType", EnumValue = 2 },
+				{ Name = "OnCooldown", Type = "CooldownViewerAlertEventType", EnumValue = 3 },
+				{ Name = "ChargeGained", Type = "CooldownViewerAlertEventType", EnumValue = 4 },
+				{ Name = "OnAuraApplied", Type = "CooldownViewerAlertEventType", EnumValue = 5 },
+				{ Name = "OnAuraRemoved", Type = "CooldownViewerAlertEventType", EnumValue = 6 },
+			},
+		},
+		{
+			Name = "CooldownViewerAlertType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 1,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Sound", Type = "CooldownViewerAlertType", EnumValue = 1 },
+				{ Name = "Visual", Type = "CooldownViewerAlertType", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "CooldownViewerCategory",
 			Type = "Enumeration",
 			NumValues = 4,

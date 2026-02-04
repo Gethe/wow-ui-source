@@ -3,12 +3,14 @@ local BattleNet =
 	Name = "BattleNet",
 	Type = "System",
 	Namespace = "C_BattleNet",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "BNCheckBattleTagInviteToRecentAlly",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -18,6 +20,7 @@ local BattleNet =
 		{
 			Name = "GetAccountInfoByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +35,7 @@ local BattleNet =
 		{
 			Name = "GetAccountInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -47,6 +51,7 @@ local BattleNet =
 		{
 			Name = "GetFriendAccountInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -62,6 +67,7 @@ local BattleNet =
 		{
 			Name = "GetFriendGameAccountInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -77,6 +83,7 @@ local BattleNet =
 		{
 			Name = "GetFriendNumGameAccounts",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +98,7 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByGUID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -105,6 +113,7 @@ local BattleNet =
 		{
 			Name = "GetGameAccountInfoByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -120,6 +129,78 @@ local BattleNet =
 			Name = "InstallHighResTextures",
 			Type = "Function",
 			HasRestrictions = true,
+		},
+		{
+			Name = "SendGameData",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "gameAccountID", Type = "number", Nilable = false },
+				{ Name = "prefix", Type = "stringView", Nilable = false },
+				{ Name = "data", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "SendAddonMessageResult", Nilable = false },
+			},
+		},
+		{
+			Name = "SendWhisper",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "text", Type = "stringView", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAFK",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isAFK", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
+			Name = "SetCustomMessage",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "text", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetDND",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "isDND", Type = "bool", Nilable = false, Default = true },
+			},
 		},
 	},
 

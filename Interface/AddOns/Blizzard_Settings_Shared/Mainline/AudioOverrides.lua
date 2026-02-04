@@ -35,6 +35,38 @@ function AudioOverrides.CreatePingSoundSettings(category, layout)
 	end
 end
 
+function AudioOverrides.CreateEncounterWarningsSoundSettings(category, layout)
+	if not C_Glue.IsOnGlueScreen() then
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(COMBAT_WARNINGS_LABEL));
+
+		-- Enable Combat Warning Sounds and Combat Warning Volume
+		local enableSetting = Settings.RegisterCVarSetting(category, "Sound_EnableEncounterWarningsSounds", Settings.VarType.Boolean, ENABLE_COMBAT_WARNINGS_SOUNDS);
+		local volumeSetting = Settings.RegisterCVarSetting(category, "Sound_EncounterWarningsVolume", Settings.VarType.Number, COMBAT_WARNINGS_SOUND_VOLUME);
+
+		local minValue, maxValue, step = 0, 1, .05;
+		local function Formatter(value)
+			local roundToNearestInteger = true;
+			return FormatPercentage(value, roundToNearestInteger);
+		end
+		local sliderOptions = Settings.CreateSliderOptions(minValue, maxValue, step);
+		sliderOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, Formatter);
+
+		local initializer = CreateSettingsCheckboxSliderInitializer(
+				enableSetting, ENABLE_COMBAT_WARNINGS_SOUNDS, ENABLE_COMBAT_WARNINGS_SOUNDS_TOOLTIP,
+				volumeSetting, sliderOptions, COMBAT_WARNINGS_SOUND_VOLUME, COMBAT_WARNINGS_SOUND_VOLUME_TOOLTIP);
+
+		layout:AddInitializer(initializer);
+
+		-- Button which links to Boss Warnings Settings
+		local function onButtonClick()
+			Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID, COMBAT_WARNINGS_LABEL);
+		end
+		local addSearchTags = false;
+		initializer = CreateSettingsButtonInitializer("", COMBAT_WARNINGS_SETTINGS, onButtonClick, nil, addSearchTags);
+		layout:AddInitializer(initializer);
+	end
+end
+
 function AudioOverrides.CreateGameplaySoundEffectsSettings(category, layout, volumeOptions)
 	local cbSetting = Settings.RegisterCVarSetting(category, "Sound_EnableGameplaySFX", Settings.VarType.Boolean, ENABLE_GAMEPLAY_SFX);
 	local sliderSetting = Settings.RegisterCVarSetting(category, "Sound_GameplaySFX", Settings.VarType.Number, GAMEPLAY_SFX_VOLUME);

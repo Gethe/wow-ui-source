@@ -74,9 +74,15 @@ function TextToSpeechButtonMixin:OnClick(button)
 end
 
 function TextToSpeechButtonMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip_SetTitle(GameTooltip, TEXT_TO_SPEECH_CONFIG);
-	GameTooltip:Show();
+	if self:IsEnabled() then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip_SetTitle(GameTooltip, TEXT_TO_SPEECH_CONFIG);
+		GameTooltip:Show();
+	elseif self.disabledTooltip then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:AddLine(self.disabledTooltip, ERROR_COLOR.r, ERROR_COLOR.g, ERROR_COLOR.b)
+		GameTooltip:Show();
+	end
 end
 
 function TextToSpeechButtonMixin:OnLeave()

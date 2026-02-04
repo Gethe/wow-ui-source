@@ -3,6 +3,7 @@ local ZoneAbility =
 	Name = "ZoneAbility",
 	Type = "System",
 	Namespace = "C_ZoneAbility",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local ZoneAbility =
 		{
 			Name = "GetZoneAbilityIcon",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

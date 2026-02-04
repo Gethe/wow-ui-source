@@ -1,0 +1,13 @@
+## Title: Blizzard_EncounterWarnings
+## AllowLoadGameType: standard
+## Dependencies: Blizzard_EditMode
+
+EncounterWarningsConstants.lua
+EncounterWarningsUtil.lua
+EncounterWarningsSettings.lua
+EncounterWarningsViewElements.lua
+EncounterWarningsViewElements.xml
+EncounterWarningsView.lua
+EncounterWarningsView.xml
+EncounterWarnings.lua
+EncounterWarnings.xml

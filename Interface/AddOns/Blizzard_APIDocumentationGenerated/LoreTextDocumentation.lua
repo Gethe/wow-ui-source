@@ -3,12 +3,14 @@ local LoreText =
 	Name = "LoreText",
 	Type = "System",
 	Namespace = "C_LoreText",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "RequestLoreTextForCampaignID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local LoreText =
 			Name = "LoreTextUpdatedCampaign",
 			Type = "Event",
 			LiteralName = "LORE_TEXT_UPDATED_CAMPAIGN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "campaignID", Type = "number", Nilable = false },

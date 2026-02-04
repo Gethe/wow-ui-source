@@ -33,7 +33,6 @@ EasingUtil.lua
 PixelUtilSecure.lua
 PixelUtil.lua
 TableBuilder.lua
-AnchorUtil.lua
 GridLayoutUtil.lua
 VectorLib.xml
 Classic\NineSliceLayouts.lua
@@ -112,12 +111,19 @@ Shared\ButtonTray\ButtonTray.lua
 Shared\ButtonTray\ButtonTray.xml
 Dump.lua [AllowLoadEnvironment Global]
 
+Shared\TabSystem\TabSystemTemplates.lua
+Shared\TabSystem\TabSystemTemplates.xml
+Shared\TabSystem\TabSystemOwner.lua
+Shared\TabSystem\TabSystemOwner.xml
 Shared\Selector\Blizzard_SelectorUI.lua
 Shared\Selector\Blizzard_SelectorUI.xml
 Shared\Selector\Blizzard_GridSelectorUI.lua
 Shared\Selector\Blizzard_GridSelectorUI.xml
 Shared\Selector\Blizzard_ScrollBoxSelector.lua
 Classic\Selector\Blizzard_ScrollBoxSelector.xml
+
+HelpTip.lua [AllowLoadEnvironment Global]
+HelpTip.xml [AllowLoadEnvironment Global]
 
 ScrollingMessageFrame.lua
 ScrollingMessageFrame.xml

@@ -51,7 +51,7 @@
 	<Binding name="WOWLABS_SWAP_OFFENSIVES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
 		if ( keystate == "up" ) then
 			ClearCursor();
-			if not HasAction(61) then
+			if not C_ActionBar.HasAction(61) then
 				PickupInventoryItem(INVSLOT_OFFENSIVE_2);
 				PickupInventoryItem(INVSLOT_OFFENSIVE_1);
 			else
@@ -63,7 +63,7 @@
 	<Binding name="WOWLABS_SWAP_UTLITIES" runOnUp="true" category="WOWLABS_BINDING_HEADER">
 		if ( keystate == "up" ) then
 			ClearCursor();
-			if not HasAction(49) then
+			if not C_ActionBar.HasAction(49) then
 				PickupInventoryItem(INVSLOT_UTILITY_2);
 				PickupInventoryItem(INVSLOT_UTILITY_1);
 			else
@@ -208,8 +208,8 @@
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
 		end
-		if ( WardrobeTransmogFrame and WardrobeTransmogFrame.ModelScene:IsShown() ) then
-			local playerActor = WardrobeTransmogFrame.ModelScene:GetPlayerActor();
+		if ( TransmogFrame and TransmogFrame.CharacterPreview.ModelScene:IsShown() ) then
+			local playerActor = TransmogFrame.CharacterPreview.ModelScene:GetPlayerActor();
 			if playerActor then
 				playerActor:SetSheathed(not playerActor:GetSheathed());
 			end
@@ -400,7 +400,7 @@
 		C_PlayerInteractionManager.InteractUnit("anyinteract");
 	</Binding>
 	<Binding name="LOOTLEFT" category="BINDING_HEADER_TARGETING">
-		C_PlayerInteractionManager.InteractUnit("anyleftInteract");
+		C_PlayerInteractionManager.InteractUnit("anyleftinteract");
 	</Binding>
 	<Binding name="ASSISTTARGET" category="BINDING_HEADER_TARGETING">
 		AssistUnit("target");
@@ -539,10 +539,10 @@
     TogglePerformancePause();
   </Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-		TogglePerformanceValues(1);
+		TogglePerformanceValues(false);
 	</Binding>
   <Binding name="TOGGLEPERFORMANCEVALUES_OLD" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
-    TogglePerformanceValues(0);
+		TogglePerformanceValues(true);
   </Binding>
   <Binding name="RESETPERFORMANCEVALUES" hidden="true" debug="true" category="BINDING_HEADER_DEBUG">
 		ResetPerformanceValues();

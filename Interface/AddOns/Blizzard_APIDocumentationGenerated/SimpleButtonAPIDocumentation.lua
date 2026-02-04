@@ -2,6 +2,7 @@ local SimpleButtonAPI =
 {
 	Name = "SimpleButtonAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -40,6 +41,7 @@ local SimpleButtonAPI =
 		{
 			Name = "Click",
 			Type = "Function",
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -212,6 +214,7 @@ local SimpleButtonAPI =
 		{
 			Name = "GetText",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.Text },
 
 			Arguments =
 			{
@@ -265,6 +268,7 @@ local SimpleButtonAPI =
 			Name = "RegisterForClicks",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -275,6 +279,7 @@ local SimpleButtonAPI =
 			Name = "RegisterForMouse",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -284,6 +289,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetButtonState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +300,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetDisabledAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,6 +310,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetDisabledFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -312,6 +320,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetDisabledTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,6 +331,7 @@ local SimpleButtonAPI =
 			Name = "SetEnabled",
 			Type = "Function",
 			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
 
 			Arguments =
 			{
@@ -331,6 +341,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetFontString",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -340,6 +351,8 @@ local SimpleButtonAPI =
 		{
 			Name = "SetFormattedText",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -349,6 +362,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetHighlightAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -359,6 +373,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetHighlightFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -368,6 +383,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetHighlightTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -378,6 +394,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetMotionScriptsWhileDisabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -387,6 +404,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetNormalAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -396,6 +414,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetNormalFontObject",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -405,6 +424,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetNormalTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -414,6 +434,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetPushedAtlas",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -423,6 +444,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetPushedTextOffset",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -433,6 +455,7 @@ local SimpleButtonAPI =
 		{
 			Name = "SetPushedTexture",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -442,6 +465,8 @@ local SimpleButtonAPI =
 		{
 			Name = "SetText",
 			Type = "Function",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.Text },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

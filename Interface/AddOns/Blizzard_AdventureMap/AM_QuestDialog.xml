@@ -2,7 +2,7 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="AM_QuestDialog.lua"/>
 
-	<Button name="AdventureMapQuestRewardTemplate" enableMouse="true" virtual="true">
+	<Button name="AdventureMapQuestRewardTemplate" mixin="AdventureMapQuestRewardMixin" enableMouse="true" virtual="true">
 		<Size x="135" y="41" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -42,18 +42,13 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				if self.tooltipText then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltipText, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b, nil, true);
-				end
-			</OnEnter>
-
+			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide" />
 		</Scripts>
 	</Button>
 
 	<Frame name="AdventureMapQuestChoiceDialog" hidden="true" enableMouse="true" mixin="AdventureMapQuestChoiceDialogMixin">
+		<!-- The height of this can be changed by RefreshDetails -->
 		<Size x="295" y="380" />
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -152,7 +147,7 @@
 			<Button parentKey="DeclineButton" inherits="UIPanelButtonTemplate" text="DECLINE">
 				<Size x="78" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-6" y="2"/>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -164,7 +159,7 @@
 			<Button parentKey="AcceptButton" inherits="UIPanelButtonTemplate" text="ACCEPT">
 				<Size x="77" y="22"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="6" y="2"/>
+					<Anchor point="BOTTOMLEFT" x="6" y="4"/>
 				</Anchors>
 				<Scripts>
 					<OnClick>

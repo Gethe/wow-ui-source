@@ -7,10 +7,17 @@ CommentatorVictoryFanfare.xml
 
 Blizzard_CommentatorConstants.lua
 Blizzard_CommentatorUtil.lua
+Blizzard_CommentatorScoreboard.lua
 Blizzard_CommentatorScoreboard.xml
+Blizzard_CommentatorSpell.lua
 Blizzard_commentatorSpell.xml
+Blizzard_CommentatorSpellTray.lua
 Blizzard_CommentatorSpellTray.xml
+Blizzard_CommentatorModelScene.lua
 Blizzard_CommentatorModelScene.xml
+Blizzard_CommentatorUnitFrame.lua
 Blizzard_CommentatorUnitFrame.xml
+Blizzard_CommentatorNamePlate.lua
 Blizzard_CommentatorNamePlate.xml
+Blizzard_Commentator.lua
 Blizzard_Commentator.xml

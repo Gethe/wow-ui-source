@@ -1,7 +1,7 @@
 ## Title: Blizzard House Editor
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HousingTemplates, Blizzard_CustomizationUI, Blizzard_CatalogShopSharedTemplates
+## Dependencies: Blizzard_HousingTemplates, Blizzard_CustomizationUI, Blizzard_HousingMarketCart, Blizzard_CatalogShopSharedTemplates
 ## AllowLoadGameType: standard
 
 

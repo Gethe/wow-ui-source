@@ -40,13 +40,14 @@ function UIWidgetTemplateSpellDisplayMixin:Setup(widgetInfo, widgetContainer)
 	if widgetInfo.spellInfo.spellID ~= 0 then
 		self.hadSpellID = true;
 	end
-	
-	self:EnableMouse(true);
-	self:SetMouseClickEnabled(true);
-	self:SetScript("OnMouseDown", self.OnMouseDown);
+
 	self:UpdateRarityPips(widgetInfo.spellInfo);
 
 	if IsWorldLootObject(self.attachedUnit) then
+		self:EnableMouse(true);
+		self:SetMouseClickEnabled(true);
+		self:SetScript("OnMouseDown", self.OnMouseDown);
+
 		self.widgetInfo = widgetInfo;
 		self.displayedWorldLootObject = self.attachedUnit;
 		EventRegistry:TriggerEvent("WorldLootObject.ObjectShown", self.displayedWorldLootObject, self);
@@ -84,6 +85,7 @@ function UIWidgetTemplateSpellDisplayMixin:OnReset()
 		EventRegistry:TriggerEvent("WorldLootObject.ObjectHidden", self.displayedWorldLootObject, self);
 		self.widgetInfo = nil;
 		self.displayedWorldLootObject = nil;
+		self:SetScript("OnMouseDown", nil);
 	end
 
 	UIWidgetBaseTemplateMixin.OnReset(self);

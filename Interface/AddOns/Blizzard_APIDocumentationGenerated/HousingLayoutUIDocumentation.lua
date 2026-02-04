@@ -3,12 +3,14 @@ local HousingLayoutUI =
 	Name = "HousingLayoutUI",
 	Type = "System",
 	Namespace = "C_HousingLayout",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AnyRoomsOnFloor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,10 +29,11 @@ local HousingLayoutUI =
 		{
 			Name = "ConfirmStairChoice",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
-				{ Name = "choice", Type = "HousingLayoutStairDirection", Nilable = true },
+				{ Name = "choice", Type = "HousingLayoutStairDirection", Nilable = true, Documentation = { "If not set, the pending stair operation will be cancelled" } },
 			},
 		},
 		{
@@ -51,8 +54,18 @@ local HousingLayoutUI =
 			},
 		},
 		{
+			Name = "GetNumFloors",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "numFloors", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetRoomPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns the max room placement budget for the current house interior; Can be increased via house level" },
 
 			Returns =
 			{
@@ -103,6 +116,7 @@ local HousingLayoutUI =
 		{
 			Name = "GetSpentPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns how much of the current house's room placement budget has been spent; Different kinds of rooms take up different budget amounts, so this value isn't an individual room count, see GetNumActiveRooms for that" },
 
 			Returns =
 			{
@@ -131,6 +145,7 @@ local HousingLayoutUI =
 		{
 			Name = "HasRoomPlacementBudget",
 			Type = "Function",
+			Documentation = { "Returns whether there's a max room placement budget available and active for the current player, in the current house interior" },
 
 			Returns =
 			{
@@ -169,6 +184,7 @@ local HousingLayoutUI =
 		{
 			Name = "HasStairs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -183,6 +199,7 @@ local HousingLayoutUI =
 		{
 			Name = "HasValidConnection",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -199,6 +216,7 @@ local HousingLayoutUI =
 		{
 			Name = "IsBaseRoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -223,6 +241,8 @@ local HousingLayoutUI =
 		{
 			Name = "MoveDraggedRoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Attempt to move the room currently being dragged to a specific connection point on a specific other room" },
 
 			Arguments =
 			{
@@ -234,6 +254,7 @@ local HousingLayoutUI =
 		{
 			Name = "MoveLayoutCamera",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -244,6 +265,8 @@ local HousingLayoutUI =
 		{
 			Name = "RemoveRoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Attempt to return a previously placed room to the House Chest" },
 
 			Arguments =
 			{
@@ -253,6 +276,7 @@ local HousingLayoutUI =
 		{
 			Name = "RotateFocusedRoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Rotates either the currently dragged or currently selected room, if either exist" },
 
 			Arguments =
@@ -263,6 +287,8 @@ local HousingLayoutUI =
 		{
 			Name = "RotateRoom",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Attempt to rotate an already placed room" },
 
 			Arguments =
 			{
@@ -273,6 +299,7 @@ local HousingLayoutUI =
 		{
 			Name = "SelectFloorplan",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -282,6 +309,7 @@ local HousingLayoutUI =
 		{
 			Name = "SetViewedFloor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,6 +331,7 @@ local HousingLayoutUI =
 		{
 			Name = "ZoomLayoutCamera",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -322,6 +351,8 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDoorSelected",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DOOR_SELECTED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when one of the door nodes of an already placed room has been selected" },
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -332,6 +363,8 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDoorSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DOOR_SELECTION_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when one of the door nodes of an already placed room has been selected or deselected" },
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -341,6 +374,8 @@ local HousingLayoutUI =
 			Name = "HousingLayoutDragTargetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_DRAG_TARGET_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when an already placed room has either started or stopped being dragged" },
 			Payload =
 			{
 				{ Name = "isDraggingRoom", Type = "bool", Nilable = false },
@@ -350,6 +385,8 @@ local HousingLayoutUI =
 			Name = "HousingLayoutFloorplanSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_FLOORPLAN_SELECTION_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a room option in the House Chest has been selected or deselected" },
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -360,6 +397,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutNumFloorsChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_NUM_FLOORS_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "prevNumFloors", Type = "number", Nilable = false },
@@ -370,6 +408,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFrameAdded",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAME_ADDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pinFrame", Type = "HousingLayoutPinFrame", Nilable = false },
@@ -379,6 +418,7 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFrameReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAME_RELEASED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "pinFrame", Type = "HousingLayoutPinFrame", Nilable = false },
@@ -388,11 +428,13 @@ local HousingLayoutUI =
 			Name = "HousingLayoutPinFramesReleased",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_PIN_FRAMES_RELEASED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomComponentThemeSetChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_COMPONENT_THEME_SET_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "roomGUID", Type = "WOWGUID", Nilable = false },
@@ -405,16 +447,21 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomMoveInvalid",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_MOVE_INVALID",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingLayoutRoomMoved",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_MOVED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a previously placed room has been moved to a different position or rotation" },
 		},
 		{
 			Name = "HousingLayoutRoomReceived",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_RECEIVED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when info for a newly placed room has been recieved while in Layout Mode" },
 			Payload =
 			{
 				{ Name = "prevNumFloors", Type = "number", Nilable = false },
@@ -426,16 +473,22 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomRemoved",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_REMOVED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a previously placed room has been removed while in Layout Mode" },
 		},
 		{
 			Name = "HousingLayoutRoomReturned",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_RETURNED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a room that was being dragged is let go of without being placed, and is returned to the House Chest" },
 		},
 		{
 			Name = "HousingLayoutRoomSelectionChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when an already placed room has been selected or deselected" },
 			Payload =
 			{
 				{ Name = "hasSelection", Type = "bool", Nilable = false },
@@ -445,11 +498,14 @@ local HousingLayoutUI =
 			Name = "HousingLayoutRoomSnapped",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_ROOM_SNAPPED",
+			SynchronousEvent = true,
+			Documentation = { "Fired when a room being dragged has been snapped to a particular door connection" },
 		},
 		{
 			Name = "HousingLayoutViewedFloorChanged",
 			Type = "Event",
 			LiteralName = "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "floor", Type = "number", Nilable = false },
@@ -459,6 +515,7 @@ local HousingLayoutUI =
 			Name = "ShowStairDirectionConfirmation",
 			Type = "Event",
 			LiteralName = "SHOW_STAIR_DIRECTION_CONFIRMATION",
+			SynchronousEvent = true,
 		},
 	},
 

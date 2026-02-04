@@ -1,17 +1,10 @@
-
 function WardrobeCollectionFrameMixin:SetTab(tabID)
 	PanelTemplates_SetTab(self, tabID);
-	local atTransmogrifier = C_Transmog.IsAtTransmogNPC();
-	if atTransmogrifier then
-		self.selectedTransmogTab = tabID;
-	else
-		self.selectedCollectionTab = tabID;
-	end
+	self.selectedCollectionTab = tabID;
 	if tabID == WARDROBE_TAB_ITEMS then
 		self.activeFrame = self.ItemsCollectionFrame;
 		self.ItemsCollectionFrame:Show();
 		self.SetsCollectionFrame:Hide();
-		self.SetsTransmogFrame:Hide();
 		self.SearchBox:ClearAllPoints();
 		self.SearchBox:SetPoint("TOPRIGHT", -107, -35);
 		self.SearchBox:SetWidth(115);
@@ -23,26 +16,15 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 	elseif tabID == WARDROBE_TAB_SETS then
 		self.ItemsCollectionFrame:Hide();
 		self.SearchBox:ClearAllPoints();
-		if ( atTransmogrifier )  then
-			self.activeFrame = self.SetsTransmogFrame;
-			self.SearchBox:SetPoint("TOPRIGHT", -107, -35);
-			self.SearchBox:SetWidth(115);
-			self.FilterButton:Hide();
-		else
-			self.activeFrame = self.SetsCollectionFrame;
-			self.SearchBox:SetPoint("TOPLEFT", 19, -69);
-			self.SearchBox:SetWidth(145);
-			self.FilterButton:Show();
-			self.FilterButton:SetEnabled(true);
-			self:InitBaseSetsFilterButton();
-		end
-
+		self.activeFrame = self.SetsCollectionFrame;
+		self.SearchBox:SetPoint("TOPLEFT", 19, -69);
+		self.SearchBox:SetWidth(145);
+		self.FilterButton:Show();
+		self.FilterButton:SetEnabled(true);
+		self:InitBaseSetsFilterButton();
 		self.SearchBox:SetEnabled(true);
-
-		self.SetsCollectionFrame:SetShown(not atTransmogrifier);
-		self.SetsTransmogFrame:SetShown(atTransmogrifier);
+		self.SetsCollectionFrame:Show();
 	end
-	WardrobeFrame:TriggerEvent(WardrobeFrameMixin.Event.OnCollectionTabChanged);
 end
 
 function WardrobeCollectionFrameMixin:OnLoad()
@@ -50,9 +32,14 @@ function WardrobeCollectionFrameMixin:OnLoad()
 	PanelTemplates_SetTab(self, WARDROBE_TAB_ITEMS);
 	PanelTemplates_ResizeTabsToFit(self, WARDROBE_TABS_MAX_WIDTH);
 	self.selectedCollectionTab = WARDROBE_TAB_ITEMS;
-	self.selectedTransmogTab = WARDROBE_TAB_ITEMS;
+	self:SetTab(self.selectedCollectionTab);
 
-	SetPortraitToTexture(self:GetParent().portrait, "Interface\\Icons\\inv_misc_enggizmos_19");
+	self.ItemsCollectionFrame.BGCornerTopLeft:Hide();
+	self.ItemsCollectionFrame.BGCornerTopRight:Hide();
+
+	self.ItemsCollectionFrame.GetTooltipSourceIndexCallback = GenerateClosure(self.GetTooltipSourceIndex, self);
+
+	self:GetParent().portrait:SetTexture("Interface\\Icons\\inv_misc_enggizmos_19");
 
 	self.FilterButton:SetWidth(85);
 
@@ -71,10 +58,13 @@ function WardrobeCollectionFrameMixin:OpenTransmogLink(link)
 		local sourceID = tonumber(id);
 		self:SetTab(WARDROBE_TAB_ITEMS);
 		-- For links a base appearance is fine
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
-		local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(categoryID);
-		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
-		self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(sourceID);
+		if appearanceSourceInfo then
+			local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(appearanceSourceInfo.category);
+			local isSecondary = false;
+			local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, isSecondary);
+			self.ItemsCollectionFrame:GoToSourceID(sourceID, transmogLocation);
+		end
 	elseif ( linkType == "transmogset") then
 		local setID = tonumber(id);
 		self:SetTab(WARDROBE_TAB_SETS);
@@ -86,7 +76,7 @@ end
 function WardrobeCollectionFrameMixin:UpdateTabButtons()
 	if(self.SetsCollectionFrame:HasSetsToShow()) then
 		self.SetsTab:Show();
-		self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID and not C_Transmog.IsAtTransmogNPC());
+		self.SetsTab.FlashFrame:SetShown(C_TransmogSets.GetLatestSource() ~= Constants.Transmog.NoTransmogID);
 	else
 		-- if we have no sets to show, hide the tab and go back to items
 		self.SetsTab:Hide();
@@ -105,39 +95,14 @@ function WardrobeCollectionFrameMixin:GoToSet(setID)
 end
 
 function WardrobeItemsCollectionMixin:CheckHelpTip()
-	if (C_Transmog.IsAtTransmogNPC()) then
-		local sets = C_TransmogSets.GetAllSets();
-		local hasCollected = false;
-		if (sets) then
-			for i = 1, #sets do
-				if (sets[i].collected) then
-					hasCollected = true;
-					break;
-				end
-			end
-		end
-		if (not hasCollected) then
-			return;
-		end
-
-		local helpTipInfo = {
-			text = TRANSMOG_SETS_VENDOR_TUTORIAL,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_TRANSMOG_SETS_VENDOR_TAB,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-		};
-		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
-	else
-		local helpTipInfo = {
-			text = TRANSMOG_SETS_TAB_TUTORIAL,
-			buttonStyle = HelpTip.ButtonStyle.Close,
-			cvarBitfield = "closedInfoFramesAccountWide",
-			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSetsTab,
-			targetPoint = HelpTip.Point.BottomEdgeCenter,
-		};
-		HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
-	end
+	local helpTipInfo = {
+		text = TRANSMOG_SETS_TAB_TUTORIAL,
+		buttonStyle = HelpTip.ButtonStyle.Close,
+		cvarBitfield = "closedInfoFramesAccountWide",
+		bitfieldFlag = Enum.FrameTutorialAccount.TransmogSetsTab,
+		targetPoint = HelpTip.Point.BottomEdgeCenter,
+	};
+	HelpTip:Show(WardrobeCollectionFrame, helpTipInfo, WardrobeCollectionFrame.SetsTab);
 end
 
 function WardrobeItemsCollectionMixin:OnShow()
@@ -147,12 +112,13 @@ function WardrobeItemsCollectionMixin:OnShow()
 	self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE");
 
 	local needsUpdate = false;	-- we don't need to update if we call :SetActiveSlot as that will do an update
-	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory and not C_Transmog.IsAtTransmogNPC() ) then
+	if ( self.jumpToLatestCategoryID and self.jumpToLatestCategoryID ~= self.activeCategory ) then
 		local slot = CollectionWardrobeUtil.GetSlotFromCategoryID(self.jumpToLatestCategoryID);
 		-- The model got reset from OnShow, which restored all equipment.
 		-- But ChangeModelsSlot tries to be smart and only change the difference from the previous slot to the current slot, so some equipment will remain left on.
 		-- This is only set for new apperances, base transmogLocation is fine
-		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		local isSecondary = false;
+		local transmogLocation = TransmogUtil.GetTransmogLocation(slot, Enum.TransmogType.Appearance, isSecondary);
 		local ignorePreviousSlot = true;
 		self:SetActiveSlot(transmogLocation, self.jumpToLatestCategoryID, ignorePreviousSlot);
 		self.jumpToLatestCategoryID = nil;
@@ -161,7 +127,8 @@ function WardrobeItemsCollectionMixin:OnShow()
 		self:ChangeModelsSlot(self.transmogLocation);
 		needsUpdate = true;
 	else
-		local transmogLocation = C_Transmog.IsAtTransmogNPC() and WardrobeTransmogFrame:GetSelectedTransmogLocation() or TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, Enum.TransmogModification.Main);
+		local isSecondary = false;
+		local transmogLocation = TransmogUtil.GetTransmogLocation("HEADSLOT", Enum.TransmogType.Appearance, isSecondary);
 		self:SetActiveSlot(transmogLocation);
 	end
 

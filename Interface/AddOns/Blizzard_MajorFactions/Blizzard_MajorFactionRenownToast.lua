@@ -1,48 +1,15 @@
-local ExpansionLayoutInfo = {
-	[LE_EXPANSION_DRAGONFLIGHT] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = true,
-				anchors = {
-					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-	[LE_EXPANSION_WAR_WITHIN] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = true,
-				anchors = {
-					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-};
 
 MajorFactionsRenownToastMixin = {};
 
 function MajorFactionsRenownToastMixin:OnLoad()
 	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED");
+
+	self.waitAndAnimOut:SetScript("OnFinished", function()
+		self:Hide();
+	end);
+	self.ShowAnim:SetScript("OnFinished", function()
+		self:OnAnimFinished();
+	end);
 end
 
 function MajorFactionsRenownToastMixin:OnEvent(event, ...)
@@ -61,21 +28,7 @@ function MajorFactionsRenownToastMixin:OnEvent(event, ...)
 end
 
 function MajorFactionsRenownToastMixin:OnHide()
-	MajorFactionCelebrationBannerMixin.OnHide(self);
-
 	TopBannerManager_BannerFinished();
-end
-
-function MajorFactionsRenownToastMixin:AddSwirlEffects(expansion) -- override
-	local swirlEffects = MajorFactionUnlockToasts.GetSwirlEffectsByExpansion(expansion);
-	if not swirlEffects then
-		return;
-	end
-
-	for i, effect in ipairs(swirlEffects) do
-		local effectDescription = { effectID = effect, soundEnabled = false, };
-		self.IconSwirlModelScene:AddDynamicEffect(effectDescription, self);
-	end
 end
 
 function MajorFactionsRenownToastMixin:ShowRenownLevelUpToast(majorFactionData, renownLevel)
@@ -139,14 +92,8 @@ function MajorFactionsRenownToastMixin:PlayBanner(data)
 	self.RenownLabel:SetFormattedText(MAJOR_FACTION_RENOWN_LEVEL_TOAST, data.renownLevel);
 	self.RenownLabel:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
-	self:SetMajorFactionSwirlEffects(data.expansionID);
-
-	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
-	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
 
 	self.ToastBG:SetAlpha(0);
-	self.IconSwirlModelScene:SetAlpha(0);
-	self.Icon:SetAlpha(0);
 	self.RenownLabel:SetAlpha(0);
 	self.RewardIcon:SetAlpha(0);
 	self.RewardIconRing:SetAlpha(0);
@@ -171,31 +118,12 @@ function MajorFactionsRenownToastMixin:OnMouseEnter()
 	GameTooltip:SetPoint("LEFT", self.RewardIconMouseOver, "RIGHT", 10, 0);
 	self:RefreshTooltip();
 
-	if self.ShowAnim.HoldAlpha:IsPlaying() then
-		-- Holding already, just pause where we are
-		self.ShowAnim.HoldAlpha:Pause();
-	elseif self.ShowAnim.HoldAlpha:IsDone() then
-		-- We're starting to fade out, reset alpha and hold
-		self.ShowAnim.FadeAlpha:SetToAlpha(1);
-		self.ShowAnim.FadeAlpha:Pause();
-	else
-		-- Still showing the fade-in, OnHoldAnimStarted will handle the transition
-	end
+	self.waitAndAnimOut:Stop();
 end
 
 function MajorFactionsRenownToastMixin:OnMouseLeave()
-	self.ShowAnim.FadeAlpha:SetToAlpha(0);
-	self.ShowAnim:Stop();
-	local isReversed = false;
-	self.ShowAnim:Play(isReversed, 1.0);
-
+	self.waitAndAnimOut:Play();
 	GameTooltip_Hide(self);
-end
-
-function MajorFactionsRenownToastMixin:OnHoldAnimStarted()
-	if GameTooltip:GetOwner() == self.RewardIconMouseOver then
-		self.ShowAnim.HoldAlpha:Pause();
-	end
 end
 
 function MajorFactionsRenownToastMixin:RefreshTooltip()
@@ -233,10 +161,12 @@ function MajorFactionsRenownToastMixin:RefreshTooltip()
 end
 
 function MajorFactionsRenownToastMixin:StopBanner()
-	self.ShowAnim:Stop();
+	self.waitAndAnimOut:Stop();
 	self:Hide();
 end
 
 function MajorFactionsRenownToastMixin:OnAnimFinished()
-	self:Hide();
+	if GameTooltip:GetOwner() ~= self.RewardIconMouseOver then
+		self.waitAndAnimOut:Play();
+	end
 end

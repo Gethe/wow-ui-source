@@ -9,6 +9,7 @@ Blizzard_ProfessionsTransaction.lua
 Blizzard_ProfessionsTemplates.xml
 Blizzard_ProfessionsRecipeList.xml
 Blizzard_ProfessionsRecipeCrafterDetails.xml
+Blizzard_ProfessionsRecipeSlotBase.lua
 Blizzard_ProfessionsRecipeReagentSlotBase.xml
 Blizzard_ProfessionsRecipeReagentSlot.xml
 Blizzard_ProfessionsRecipeSalvageSlot.xml

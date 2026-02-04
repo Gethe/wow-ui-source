@@ -9,7 +9,7 @@ end
 
 function PossessActionBarMixin:Update()
 	if ( not MainActionBar.busy and not UnitHasVehicleUI("player") ) then	--Don't change while we're animating out MainActionBar for vehicle UI
-		if ( IsPossessBarVisible() ) then
+		if ( C_ActionBar.IsPossessBarVisible() ) then
 			if ( not self:IsShown() ) then
 				self:Show();
 			end
@@ -43,6 +43,15 @@ function PossessActionBarMixin:UpdateState()
 	end
 
 	self:UpdateShownButtons();
+end
+
+function PossessActionBarMixin:ShouldShowBackgroundArt()
+	return MainMenuBar:IsShown()
+		and self:IsInDefaultPosition()
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.Orientation)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.NumRows)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconSize)
+		and self:IsSystemSettingDefault(Enum.EditModeActionBarSetting.IconPadding);
 end
 
 function PossessActionBarMixin:SetBackgroundArtShown(shown)

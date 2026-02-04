@@ -3,12 +3,14 @@ local MajorFactions =
 	Name = "MajorFactionsUI",
 	Type = "System",
 	Namespace = "C_MajorFactions",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetCurrentRenownLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local MajorFactions =
 		{
 			Name = "GetMajorFactionData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -37,6 +40,7 @@ local MajorFactions =
 		{
 			Name = "GetMajorFactionIDs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -51,6 +55,7 @@ local MajorFactions =
 		{
 			Name = "GetMajorFactionRenownInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +70,7 @@ local MajorFactions =
 		{
 			Name = "GetRenownLevels",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +94,7 @@ local MajorFactions =
 		{
 			Name = "GetRenownRewardsForLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +110,7 @@ local MajorFactions =
 		{
 			Name = "HasMaximumRenown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,6 +125,7 @@ local MajorFactions =
 		{
 			Name = "IsMajorFactionHiddenFromExpansionPage",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,6 +140,7 @@ local MajorFactions =
 		{
 			Name = "IsWeeklyRenownCapped",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,6 +152,36 @@ local MajorFactions =
 				{ Name = "isWeeklyCapped", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldDisplayMajorFactionAsJourney",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldDisplayMajorFactionAsJourney", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldUseJourneyRewardTrack",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "majorFactionID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldUseJourneyRewardTrack", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -150,16 +190,19 @@ local MajorFactions =
 			Name = "MajorFactionInteractionEnded",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_ENDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MajorFactionInteractionStarted",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_INTERACTION_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MajorFactionRenownLevelChanged",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "majorFactionID", Type = "number", Nilable = false },
@@ -171,6 +214,7 @@ local MajorFactions =
 			Name = "MajorFactionUnlocked",
 			Type = "Event",
 			LiteralName = "MAJOR_FACTION_UNLOCKED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "majorFactionID", Type = "number", Nilable = false },
@@ -186,10 +230,13 @@ local MajorFactions =
 			Fields =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "highlights", Type = "table", InnerType = "RenownHighlightInfo", Nilable = false },
 				{ Name = "factionID", Type = "number", Nilable = false },
 				{ Name = "expansionID", Type = "number", Nilable = false },
 				{ Name = "bountySetID", Type = "number", Nilable = false },
 				{ Name = "isUnlocked", Type = "bool", Nilable = false },
+				{ Name = "useJourneyUnlockToast", Type = "bool", Nilable = false },
 				{ Name = "unlockDescription", Type = "cstring", Nilable = true },
 				{ Name = "uiPriority", Type = "number", Nilable = false },
 				{ Name = "renownLevel", Type = "number", Nilable = false },
@@ -200,6 +247,7 @@ local MajorFactions =
 				{ Name = "renownFanfareSoundKitID", Type = "number", Nilable = false },
 				{ Name = "factionFontColor", Type = "DBColorExport", Nilable = true },
 				{ Name = "renownTrackLevelEffectID", Type = "number", Nilable = true },
+				{ Name = "playerCompanionID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -243,6 +291,17 @@ local MajorFactions =
 				{ Name = "name", Type = "cstring", Nilable = true },
 				{ Name = "description", Type = "cstring", Nilable = true },
 				{ Name = "toastDescription", Type = "cstring", Nilable = true },
+				{ Name = "rewardType", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "RenownHighlightInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "title", Type = "cstring", Nilable = false },
+				{ Name = "description", Type = "cstring", Nilable = false },
+				{ Name = "level", Type = "number", Nilable = false },
 			},
 		},
 	},

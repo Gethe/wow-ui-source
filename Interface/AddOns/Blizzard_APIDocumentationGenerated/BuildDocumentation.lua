@@ -2,6 +2,7 @@ local Build =
 {
 	Name = "Build",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{

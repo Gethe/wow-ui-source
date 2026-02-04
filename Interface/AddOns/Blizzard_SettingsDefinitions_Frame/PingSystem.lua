@@ -47,7 +47,7 @@ local function Register()
             ShowUIPanel(ChatConfigFrame);
             ChatConfigFrameChatTabManager:UpdateSelection(DEFAULT_CHAT_FRAME:GetID());
 		end;
-		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, PING_CHAT_SETTINGS, OnButtonClick, true, OPTION_TOOLTIP_SHOW_PINGS_IN_CHAT);
+		local initializer = CreateSettingsCheckboxWithButtonInitializer(setting, PING_CHAT_SETTINGS, OnButtonClick, nil, true, OPTION_TOOLTIP_SHOW_PINGS_IN_CHAT);
 		initializer:SetKioskProtected();
 		layout:AddInitializer(initializer);
     end
@@ -58,7 +58,8 @@ local function Register()
             local keybindsCategory = SettingsPanel:GetCategory(Settings.KEYBINDINGS_CATEGORY_ID);
             local keybindsLayout = SettingsPanel:GetLayout(keybindsCategory);
             for _, initializer in keybindsLayout:EnumerateInitializers() do
-                if initializer.data.name == BINDING_HEADER_PING_SYSTEM then
+				local name = initializer:GetName();
+				if name == BINDING_HEADER_PING_SYSTEM then
                     initializer.data.expanded = true;
                     Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, BINDING_HEADER_PING_SYSTEM);
                     return;

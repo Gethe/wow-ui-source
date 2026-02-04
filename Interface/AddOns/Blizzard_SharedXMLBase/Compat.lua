@@ -57,4 +57,5 @@ strmatch = str.match
 strrep = str.rep
 strrev = str.reverse
 strsub = str.sub
+strtrim = str.trim
 strupper = str.upper

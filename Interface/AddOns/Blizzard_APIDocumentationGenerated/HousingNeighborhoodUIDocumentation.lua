@@ -3,6 +3,7 @@ local HousingNeighborhoodUI =
 	Name = "HousingNeighborhoodUI",
 	Type = "System",
 	Namespace = "C_HousingNeighborhood",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "CancelInviteToNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -28,6 +30,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "DemoteToResident",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -115,6 +118,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "GetNeighborhoodPlotName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -133,7 +137,7 @@ local HousingNeighborhoodUI =
 
 			Returns =
 			{
-				{ Name = "previousHouseIdentifier", Type = "cstring", Nilable = false },
+				{ Name = "previousHouseIdentifier", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -149,6 +153,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "InvitePlayerToNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -211,6 +216,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "PromoteToManager",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -235,6 +241,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "TransferNeighborhoodOwnership",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -245,6 +252,7 @@ local HousingNeighborhoodUI =
 		{
 			Name = "TryEvictPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only available when interacting with a bulletin board game object" },
 
 			Arguments =
@@ -270,6 +278,7 @@ local HousingNeighborhoodUI =
 			Name = "CancelNeighborhoodInviteResponse",
 			Type = "Event",
 			LiteralName = "CANCEL_NEIGHBORHOOD_INVITE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -280,11 +289,13 @@ local HousingNeighborhoodUI =
 			Name = "ClosePlotCornerstone",
 			Type = "Event",
 			LiteralName = "CLOSE_PLOT_CORNERSTONE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NeighborhoodInfoUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -294,6 +305,7 @@ local HousingNeighborhoodUI =
 			Name = "NeighborhoodInviteResponse",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_INVITE_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -303,11 +315,13 @@ local HousingNeighborhoodUI =
 			Name = "NeighborhoodMapDataUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_MAP_DATA_UPDATED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "NeighborhoodNameUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_NAME_UPDATED",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
@@ -318,11 +332,13 @@ local HousingNeighborhoodUI =
 			Name = "OpenPlotCornerstone",
 			Type = "Event",
 			LiteralName = "OPEN_PLOT_CORNERSTONE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PendingNeighborhoodInvitesRecieved",
 			Type = "Event",
 			LiteralName = "PENDING_NEIGHBORHOOD_INVITES_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "NeighborhoodInviteResult", Nilable = false },
@@ -333,6 +349,7 @@ local HousingNeighborhoodUI =
 			Name = "PurchasePlotResult",
 			Type = "Event",
 			LiteralName = "PURCHASE_PLOT_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "number", Nilable = false },
@@ -342,11 +359,24 @@ local HousingNeighborhoodUI =
 			Name = "ShowPlayerEvictedDialog",
 			Type = "Event",
 			LiteralName = "SHOW_PLAYER_EVICTED_DIALOG",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "UpdateBulletinBoardMemberType",
+			Type = "Event",
+			LiteralName = "UPDATE_BULLETIN_BOARD_MEMBER_TYPE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "player", Type = "WOWGUID", Nilable = false },
+				{ Name = "residentType", Type = "ResidentType", Nilable = false },
+			},
 		},
 		{
 			Name = "UpdateBulletinBoardRoster",
 			Type = "Event",
 			LiteralName = "UPDATE_BULLETIN_BOARD_ROSTER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -357,6 +387,7 @@ local HousingNeighborhoodUI =
 			Name = "UpdateBulletinBoardRosterStatuses",
 			Type = "Event",
 			LiteralName = "UPDATE_BULLETIN_BOARD_ROSTER_STATUSES",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "rosterMemberList", Type = "table", InnerType = "NeighborhoodRosterMemberUpdateInfo", Nilable = false },

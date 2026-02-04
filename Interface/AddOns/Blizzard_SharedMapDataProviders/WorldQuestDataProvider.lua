@@ -327,7 +327,7 @@ function WorldQuestDataProviderMixin:AddWorldQuest(info)
 	pin:InitializeVisuals();
 	pin:SetPosition(info.x, info.y);
 
-	pin.iconWidgetSet = C_TaskQuest.GetQuestIconUIWidgetSet(questID);
+	pin.iconWidgetSet = C_TaskQuest.GetQuestUIWidgetSetByType(questID, Enum.MapIconUIWidgetSetType.BehindIcon);
 	pin:AddIconWidgets();
 
 	if not HaveQuestRewardData(questID) then

@@ -52,6 +52,7 @@ local SPEC_FORMAT_STRINGS = {
 	[1467] = "evoker-devastation",
 	[1468] = "evoker-preservation",
 	[1473] = "evoker-augmentation",
+	[1480] = "demonhunter-devourer"
 }
 
 ClassSpecFrameMixin={}
@@ -497,7 +498,7 @@ end
 function ClassSpecSpellMixin:Setup(index, spellID)
 	self.index = index;
 	local _, icon = C_Spell.GetSpellTexture(spellID);
-	SetPortraitToTexture(self.Icon, icon);
+	self.Icon:SetTexture(icon);
 	self.spellID = spellID;
 	self.extraTooltip = nil;
 	self.disabled = true;

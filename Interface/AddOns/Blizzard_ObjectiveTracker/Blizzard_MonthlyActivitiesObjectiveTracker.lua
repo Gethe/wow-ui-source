@@ -76,7 +76,6 @@ end
 
 function MonthlyActivitiesObjectiveTrackerMixin:LayoutContents()
 	local trackedActivities = C_PerksActivities.GetTrackedPerksActivities().trackedIDs;
-
 	for i = 1, #trackedActivities do
 		local activityID = trackedActivities[i];
 		local activityInfo = C_PerksActivities.GetPerksActivityInfo(activityID);
@@ -91,7 +90,6 @@ end
 function MonthlyActivitiesObjectiveTrackerMixin:AddActivity(activityInfo)
 	local activityName = activityInfo.activityName;
 	local requirements = activityInfo.requirementsList;
-
 	local block = self:GetBlock(activityInfo.ID);
 	block.name = activityName;
 	block:SetHeader(activityName);

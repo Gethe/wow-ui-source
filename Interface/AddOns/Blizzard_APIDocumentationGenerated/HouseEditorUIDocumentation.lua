@@ -3,12 +3,15 @@ local HouseEditorUI =
 	Name = "HouseEditorUI",
 	Type = "System",
 	Namespace = "C_HouseEditor",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ActivateHouseEditorMode",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Attempts switch the House Editor to a specific House Editor mode" },
 
 			Arguments =
 			{
@@ -17,16 +20,17 @@ local HouseEditorUI =
 
 			Returns =
 			{
-				{ Name = "result", Type = "HousingResult", Nilable = false },
+				{ Name = "result", Type = "HousingResult", Nilable = false, Documentation = { "The initial result of the attempt to activate the mode; If Success, mode is either already active, or we've succesfully started making required requests to server; Listen for MODE_CHANGED or MODE_CHANGE_FAILURE events for ultimate end result after server calls" } },
 			},
 		},
 		{
 			Name = "EnterHouseEditor",
 			Type = "Function",
+			Documentation = { "Attempts to open the House Editor to the default House Editor mode" },
 
 			Returns =
 			{
-				{ Name = "result", Type = "HousingResult", Nilable = false },
+				{ Name = "result", Type = "HousingResult", Nilable = false, Documentation = { "The initial result of the attempt to open the Editor; If Success, Editor is either already active, or we've succesfully started making required requests to server; Listen for MODE_CHANGED or MODE_CHANGE_FAILURE events for ultimate end result after server calls" } },
 			},
 		},
 		{
@@ -41,6 +45,7 @@ local HouseEditorUI =
 		{
 			Name = "GetHouseEditorAvailability",
 			Type = "Function",
+			Documentation = { "Returns the availability state of the House Editor overall" },
 
 			Returns =
 			{
@@ -50,6 +55,8 @@ local HouseEditorUI =
 		{
 			Name = "GetHouseEditorModeAvailability",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns the availability of a specific House Editor mode" },
 
 			Arguments =
 			{
@@ -64,6 +71,7 @@ local HouseEditorUI =
 		{
 			Name = "IsHouseEditorActive",
 			Type = "Function",
+			Documentation = { "Returns whether the House Editor is active, in any mode" },
 
 			Returns =
 			{
@@ -73,6 +81,8 @@ local HouseEditorUI =
 		{
 			Name = "IsHouseEditorModeActive",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the specific House Editor mode is active" },
 
 			Arguments =
 			{
@@ -106,11 +116,13 @@ local HouseEditorUI =
 			Name = "HouseEditorAvailabilityChanged",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_AVAILABILITY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HouseEditorModeChangeFailure",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_MODE_CHANGE_FAILURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -120,6 +132,7 @@ local HouseEditorUI =
 			Name = "HouseEditorModeChanged",
 			Type = "Event",
 			LiteralName = "HOUSE_EDITOR_MODE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "currentEditMode", Type = "HouseEditorMode", Nilable = false },

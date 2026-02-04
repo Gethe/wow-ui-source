@@ -33,7 +33,6 @@ BindingUtil.lua
 InputUtil.lua
 EventUtil.lua
 RegionUtil.lua
-AnchorUtil.lua
 SortUtil.lua
 GridLayoutUtil.lua
 ScriptAnimationUtil.lua
@@ -163,10 +162,10 @@ Backdrop.xml
 
 Shared\LoadSystem\LoadSystemTemplates.lua
 Shared\LoadSystem\LoadSystemTemplates.xml
-Mainline\TabSystem\TabSystemTemplates.lua
-Mainline\TabSystem\TabSystemTemplates.xml
-Mainline\TabSystem\TabSystemOwner.lua
-Mainline\TabSystem\TabSystemOwner.xml
+Shared\TabSystem\TabSystemTemplates.lua
+Shared\TabSystem\TabSystemTemplates.xml
+Shared\TabSystem\TabSystemOwner.lua
+Shared\TabSystem\TabSystemOwner.xml
 Shared\Selector\Blizzard_SelectorUI.lua
 Shared\Selector\Blizzard_SelectorUI.xml
 Shared\Selector\Blizzard_GridSelectorUI.lua

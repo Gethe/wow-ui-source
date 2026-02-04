@@ -312,8 +312,8 @@ end
 
 function ChatFrameUtil.SendBNetTell(tokenizedName)
 	local editBox = ChatFrameUtil.ChooseBoxForSend();
-	editBox:SetAttribute("tellTarget", tokenizedName);
-	editBox:SetAttribute("chatType", "BN_WHISPER");
+	editBox:SetTellTarget(tokenizedName);
+	editBox:SetChatType("BN_WHISPER");
 	if ( editBox ~= ChatFrameUtil.GetActiveWindow() ) then
 		ChatFrameUtil.OpenChat("");
 	else
@@ -327,8 +327,8 @@ function ChatFrameUtil.ReplyTell(chatFrame)
 	local lastTell, lastTellType = ChatFrameUtil.GetLastTellTarget();
 	if ( lastTell ) then
 		--BN_WHISPER FIXME
-		editBox:SetAttribute("chatType", lastTellType);
-		editBox:SetAttribute("tellTarget", lastTell);
+		editBox:SetChatType(lastTellType);
+		editBox:SetTellTarget(lastTell);
 		editBox:UpdateHeader();
 		if ( editBox ~= ChatFrameUtil.GetActiveWindow() ) then
 			ChatFrameUtil.OpenChat("", chatFrame);
@@ -344,8 +344,8 @@ function ChatFrameUtil.ReplyTell2(chatFrame)
 	local lastTold, lastToldType = ChatFrameUtil.GetLastToldTarget();
 	if ( lastTold ) then
 		--BN_WHISPER FIXME
-		editBox:SetAttribute("chatType", lastToldType);
-		editBox:SetAttribute("tellTarget", lastTold);
+		editBox:SetChatType(lastToldType);
+		editBox:SetTellTarget(lastTold);
 		editBox:UpdateHeader();
 		if ( editBox ~= ChatFrameUtil.GetActiveWindow() ) then
 			ChatFrameUtil.OpenChat("", chatFrame);
@@ -374,7 +374,7 @@ function ChatFrameUtil.OpenChat(text, chatFrame, desiredCursorPosition)
 			hasInitializedDefaultChatChannel = true;
 
 			-- Don't default chat type if we already have a specific type (i.e. BN_WHISPER)
-			if editBox:GetAttribute("chatType") == "SAY" then
+			if editBox:GetChatType() == "SAY" then
 				local isInGroup;
 				if IsInGroup(LE_PARTY_CATEGORY_HOME) then
 					local groupCount = GetNumGroupMembers();
@@ -390,8 +390,8 @@ function ChatFrameUtil.OpenChat(text, chatFrame, desiredCursorPosition)
 					chatType = "INSTANCE_CHAT";
 				end
 
-				editBox:SetAttribute("chatType", chatType);
-				editBox:SetAttribute("stickyType", chatType);
+				editBox:SetChatType(chatType);
+				editBox:SetStickyType(chatType);
 			end
 		end
 	end
@@ -404,11 +404,13 @@ function ChatFrameUtil.OpenChat(text, chatFrame, desiredCursorPosition)
 		editBox.setText = 1;
 	end
 
-	if ( editBox:GetAttribute("chatType") == editBox:GetAttribute("stickyType") ) then
-		if ( (editBox:GetAttribute("stickyType") == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
-		(editBox:GetAttribute("stickyType") == "RAID") and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) or
-		(editBox:GetAttribute("stickyType") == "INSTANCE_CHAT") and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
-			editBox:SetAttribute("chatType", "SAY");
+	local stickyType = editBox:GetStickyType();
+	if editBox:GetChatType() == stickyType then
+		if ((stickyType == "PARTY") and (not IsInGroup(LE_PARTY_CATEGORY_HOME)) or
+			(stickyType == "RAID") and (not IsInRaid(LE_PARTY_CATEGORY_HOME)) or
+			(stickyType == "INSTANCE_CHAT") and (not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
+
+			editBox:SetChatType("SAY");
 		end
 	end
 
@@ -426,7 +428,7 @@ end
 
 function ChatFrameUtil.GetActiveChatType()
 	local editBox = ChatFrameUtil.GetActiveWindow();
-	return editBox and editBox:GetAttribute("chatType") or nil;
+	return editBox and editBox:GetChatType() or nil;
 end
 
 function ChatFrameUtil.FocusActiveWindow()
@@ -667,17 +669,17 @@ function ChatFrameUtil.PopOutChat(sourceChatFrame, chatType, chatTarget)
 		end
 	end
 
-	frame.editBox:SetAttribute("chatType", chatType);
-	frame.editBox:SetAttribute("stickyType", chatType);
+	frame.editBox:SetChatType(chatType);
+	frame.editBox:SetStickyType(chatType);
 
 	if ( chatType == "CHANNEL" ) then
-		frame.editBox:SetAttribute("channelTarget", chatTarget);
+		frame.editBox:SetChannelTarget(chatTarget);
 		frame:AddChannel(ChatFrameUtil.GetChannelShortcutName(chatTarget));
 	end
 
 	if ( chatType == "PET_BATTLE_COMBAT_LOG" or chatType == "PET_BATTLE_INFO" ) then
-		frame.editBox:SetAttribute("chatType", "SAY");
-		frame.editBox:SetAttribute("stickyType", "SAY");
+		frame.editBox:SetChatType("SAY");
+		frame.editBox:SetStickyType("SAY");
 	end
 
 	--Remove the things popped out from the source chat frame.
@@ -903,9 +905,9 @@ function ChatFrameUtil.AddCommunitiesChannel(chatFrame, channelName, channelColo
 	chatFrame:AddMessage(COMMUNITIES_CHANNEL_ADDED_TO_CHAT_WINDOW:format(channelIndex, ChatFrameUtil.ResolveChannelName(channelName)), channelColor:GetRGB());
 
 	if setEditBoxToChannel then
-		chatFrame.editBox:SetAttribute("channelTarget", channelIndex);
-		chatFrame.editBox:SetAttribute("chatType", "CHANNEL");
-		chatFrame.editBox:SetAttribute("stickyType", "CHANNEL");
+		chatFrame.editBox:SetChannelTarget(channelIndex);
+		chatFrame.editBox:SetChatType("CHANNEL");
+		chatFrame.editBox:SetStickyType("CHANNEL");
 		chatFrame.editBox:UpdateHeader();
 	end
 end

@@ -1,5 +1,6 @@
 local _, addonTbl = ...;
 
+local canaccessvalue = canaccessvalue;
 local securecallfunction = securecallfunction;
 
 function ChatFrameUtil.CreateSenderNameFilterRegistry()
@@ -27,10 +28,17 @@ function ChatFrameUtil.CreateSenderNameFilterRegistry()
 		-- execution taint at the point of creation.
 		--
 		-- When ApplyFilter is called, that stored taint then re-activates and
-		-- applies to execution.
+		-- applies to execution. If at that point we determine that we can't
+		-- access the (potentially secret) decorated player name, we'll skip
+		-- evaluating the (tainted) user-supplied callback function because
+		-- it's highly unlikely that it'd be able to do anything with the data.
 
 		local function ApplyFilter(event, decoratedPlayerName, ...)
-			return callback(event, decoratedPlayerName, ...);
+			if canaccessvalue(decoratedPlayerName) then
+				return callback(event, decoratedPlayerName, ...);
+			else
+				return decoratedPlayerName;
+			end
 		end
 
 		if not FindFilterByCallback(callback) then
@@ -105,7 +113,9 @@ function ChatFrameUtil.CreateMessageEventFilterRegistry()
 		local callbacks = GetOrCreateFiltersForEvent(event);
 
 		local function ApplyFilter(chatFrame, event, ...)
-			return callback(chatFrame, event, ...);
+			if canaccessvalue(...) then
+				return callback(chatFrame, event, ...);
+			end
 		end
 
 		if not FindFilterByCallback(callbacks, callback) then

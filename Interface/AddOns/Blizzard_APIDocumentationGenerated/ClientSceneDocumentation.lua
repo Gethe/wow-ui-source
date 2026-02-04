@@ -3,6 +3,7 @@ local ClientScene =
 	Name = "ClientScene",
 	Type = "System",
 	Namespace = "C_ClientScene",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,11 +15,13 @@ local ClientScene =
 			Name = "ClientSceneClosed",
 			Type = "Event",
 			LiteralName = "CLIENT_SCENE_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ClientSceneOpened",
 			Type = "Event",
 			LiteralName = "CLIENT_SCENE_OPENED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "sceneType", Type = "ClientSceneType", Nilable = false },

@@ -3,12 +3,14 @@ local UIFrameManager =
 	Name = "UIFrameManager",
 	Type = "System",
 	Namespace = "C_FrameManager",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetFrameVisibilityState",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -28,11 +30,13 @@ local UIFrameManager =
 			Name = "FrameManagerUpdateAll",
 			Type = "Event",
 			LiteralName = "FRAME_MANAGER_UPDATE_ALL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "FrameManagerUpdateFrame",
 			Type = "Event",
 			LiteralName = "FRAME_MANAGER_UPDATE_FRAME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "UIFrameType", Nilable = false },

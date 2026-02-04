@@ -81,7 +81,7 @@
 							<KeyValue key="glowMaskKey" type="string" value="snap"/>
 						</KeyValues>
 					</Button>
-					<Button parentKey="NudgeButton" mixin="HouseEditorNudgeButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
+					<Button parentKey="FreePlaceButton" mixin="HouseEditorFreePlaceButtonMixin" inherits="HouseEditorSubmodeButtonTemplate">
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="2" type="number"/>
 							

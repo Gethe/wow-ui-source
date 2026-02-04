@@ -23,8 +23,6 @@ function LFDFrame_OnLoad(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("LFG_ROLE_CHECK_SHOW");
 	self:RegisterEvent("LFG_ROLE_CHECK_HIDE");
-	self:RegisterEvent("LFG_READY_CHECK_SHOW");
-	self:RegisterEvent("LFG_READY_CHECK_HIDE");
 	self:RegisterEvent("LFG_BOOT_PROPOSAL_UPDATE");
 	self:RegisterEvent("VOTE_KICK_REASON_NEEDED");
 	self:RegisterEvent("LFG_UPDATE_RANDOM_INFO");
@@ -63,18 +61,6 @@ function LFDFrame_OnEvent(self, event, ...)
 	elseif ( event == "LFG_ROLE_CHECK_HIDE" ) then
 		StaticPopupSpecial_Hide(LFDRoleCheckPopup);
 		LFDQueueFrameList_Update();
-	elseif ( event == "LFG_READY_CHECK_SHOW" ) then
-		local _, readyCheckBgQueue = GetLFGReadyCheckUpdate();
-		local displayName;
-		if ( readyCheckBgQueue ) then
-			displayName = GetLFGReadyCheckUpdateBattlegroundInfo();
-		else
-			displayName = UNKNOWN;
-		end
-		LFDReadyCheckPopup.Text:SetFormattedText(CONFIRM_YOU_ARE_READY, displayName);
-		StaticPopupSpecial_Show(LFDReadyCheckPopup);
-	elseif ( event == "LFG_READY_CHECK_HIDE" ) then
-		StaticPopupSpecial_Hide(LFDReadyCheckPopup);
 	elseif ( event == "LFG_BOOT_PROPOSAL_UPDATE" ) then
 		local voteInProgress, didVote, myVote, targetName, totalVotes, bootVotes, timeLeft, reason = GetLFGBootProposal();
 		if ( voteInProgress and not didVote and targetName ) then
@@ -285,36 +271,6 @@ function LFDCheckRolesRestricted(dungeonID, tank, healer, dps)
 	end
 
 	return not tankSelected and not healerSelected and not dpsSelected;
-end
-
-function LFDPopupRoleCheckButton_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(_G["ROLE_DESCRIPTION_"..self.role], nil, nil, nil, nil, true);
-	if ( self.permDisabled ) then
-		if(self.permDisabledTip)then
-			GameTooltip:AddLine(self.permDisabledTip, 1, 0, 0, true);
-		end
-	elseif ( self.disabledTooltip and not self:IsEnabled() ) then
-		GameTooltip:AddLine(self.disabledTooltip, 1, 0, 0, true);
-	elseif ( not self:IsEnabled() ) then
-		local dungeonID = LFDQueueFrame.type;
-		local roleID = self:GetID();
-		GameTooltip:SetText(ERR_ROLE_UNAVAILABLE, 1.0, 1.0, 1.0);
-		local reasons = GetLFGInviteRoleRestrictions(roleID);
-		for i = 1, #reasons do
-			local text = _G["INSTANCE_UNAVAILABLE_SELF_"..(LFG_INSTANCE_INVALID_CODES[reasons[i]] or "OTHER")];
-			if( text ) then
-				GameTooltip:AddLine(text);
-			end
-		end
-		GameTooltip:Show();
-		return;
-	elseif( self.alert:IsShown() ) then
-		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
-		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
-	end
-	GameTooltip:Show();
-	LFGFrameRoleCheckButton_OnEnter(self);
 end
 
 --List functions
@@ -826,8 +782,8 @@ function LFDPopupRoleCheckButton_OnEnter(self)
 		GameTooltip:Show();
 		return;
 	elseif( self.alert:IsShown() ) then
-		GameTooltip:SetText(INSTANCE_ROLE_WARNING_TITLE, 1.0, 1.0, 1.0, true);
-		GameTooltip:AddLine(INSTANCE_ROLE_WARNING_TEXT, nil, nil, nil, true);
+		GameTooltip_SetTitle(GameTooltip, INSTANCE_ROLE_WARNING_TITLE);
+		GameTooltip_AddNormalLine(GameTooltip, INSTANCE_ROLE_WARNING_TEXT);
 	end
 	GameTooltip:Show();
 	LFGFrameRoleCheckButton_OnEnter(self);

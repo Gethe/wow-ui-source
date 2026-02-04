@@ -36,65 +36,45 @@ function HouseExteriorOptionDropdownMixin:ClearAndHide()
 	self.Dropdown:CloseMenu();
 	self:Hide();
 	self:MarkDirty();
+	self.selectedOptionID = nil;
+	self.options = nil;
 end
 
------------------ Placeholder Dropdown -----------------
--- TODO: Remove this whole mixin & template once we no longer need these static placeholder dropdowns for house type & size
-HouseExteriorPlaceholderDropdownMixin = {};
-
-function HouseExteriorPlaceholderDropdownMixin:OnLoad()
-	HouseExteriorOptionDropdownMixin.OnLoad(self);
-	self.Dropdown:SetMotionScriptsWhileDisabled(true);
-	self.Dropdown:SetScript("OnEnter", function() self:OnEnter(); end);
-	self.Dropdown:SetScript("OnLeave", function() self:OnLeave(); end);
-end
-
-function HouseExteriorPlaceholderDropdownMixin:ShowStaticPlaceholderInfo(value)
-	self.Dropdown.Text:SetText(value);
-	self.Dropdown:SetEnabled(false);
-end
-
-function HouseExteriorPlaceholderDropdownMixin:OnEnter()
-	local tooltip = GameTooltip;
-	tooltip:SetOwner(self, "ANCHOR_NONE");
-	tooltip:SetPoint("BOTTOMRIGHT", self.Dropdown, "TOPLEFT", 0, 0);
-	GameTooltip_AddNormalLine(tooltip, HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_COMING_SOON_TOOLTIP);
-	tooltip:Show();
-end
-
-function HouseExteriorPlaceholderDropdownMixin:OnLeave()
-	GameTooltip:Hide();
-end
-
------------------ Core Fixture Dropdown -----------------
--- Inherits HouseExteriorOptionDropdownTemplate
-HouseExteriorCoreFixtureDropdownMixin = {};
-
-function HouseExteriorCoreFixtureDropdownMixin:ClearAndHide()
-	HouseExteriorOptionDropdownMixin.ClearAndHide(self);
-	self.selectedFixtureID = nil;
-	self.fixtureOptions = nil;
-end
-
-function HouseExteriorCoreFixtureDropdownMixin:HasAnyLockedChoices()
-	for _, fixtureOption in ipairs(self.fixtureOptions) do
-		if fixtureOption.isLocked then
+function HouseExteriorOptionDropdownMixin:HasAnyLockedChoices()
+	for _, option in ipairs(self.options) do
+		if option.isLocked then
 			return true;
 		end
 	end
 	return false;
 end
 
-function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions, useColorNames)
-	self.selectedFixtureID = selectedFixtureID;
-	self.fixtureOptions = fixtureOptions;
+function HouseExteriorOptionDropdownMixin:CanSelectChoice(choiceData)
+	return not choiceData.isLocked;
+end
+
+function HouseExteriorOptionDropdownMixin:IsChoiceSelected(choiceData)
+	-- Required override
+	assert(false);
+end
+
+function HouseExteriorOptionDropdownMixin:OnSelectChoice(choiceData)
+	-- Required override
+	assert(false);
+end
+
+function HouseExteriorOptionDropdownMixin:ShowOptions(selectedOptionID, options)
+	self.selectedOptionID = selectedOptionID;
+	self.options = options;
 
 	local hasAnyLockedChoices = self:HasAnyLockedChoices();
-	local hasAnyFailedReqs = hasAnyLockedChoices; -- Right now we have no ineligible choices that aren't also just locked
+	local hasAnyFailedReqs = hasAnyLockedChoices; -- For now we don't display any ineligible choices, just locked
+
+	local defaultLockedTooltip = self:GetDefaultLockedTooltip();
 
 	self.Dropdown:SetEnabled(true);
 	self.Dropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("HOUSE_EXTERIOR_CORE_FIXTURE_OPTIONS_MENU");
+		rootDescription:SetTag(self:GetDropdownTag());
 
 		-- All of this is to be consistent with CustomizationDropdownWithSteppersAndLabelMixin and should ideally
 		-- be rewritten/simplified to use the modern menu flow more correctly
@@ -110,15 +90,15 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 		end);
 
 		local function IsSelected(choiceData)
-			return choiceData.fixtureID == selectedFixtureID;
+			return self:IsChoiceSelected(choiceData);
 		end
 
 		local function CanSelect(choiceData)
-			return not choiceData.isLocked;
+			return self:CanSelectChoice(choiceData);
 		end
 
 		local function OnSelect(choiceData, menuInputData, menu)
-			C_HouseExterior.SelectCoreFixtureOption(choiceData.fixtureID);
+			self:OnSelectChoice(choiceData);
 		end
 
 		local function FinalizeLayout(button, description, menu, columns, rows)
@@ -128,18 +108,14 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 			self:MarkDirty();
 		end
 
-		for choiceIndex, choiceData in ipairs(fixtureOptions) do
-			if useColorNames then
-				-- TODO: If/when we can redo the data setup for exterior color definitions, ideally color name is part of the choice struct, rather than the color ID
-				local colorName = HousingExteriorColorStrings[choiceData.colorID];
-				if colorName then
-					choiceData.name = colorName;
-				end
-			end
-
+		for choiceIndex, choiceData in ipairs(options) do
 			choiceData.ineligibleChoice = choiceData.isLocked;
 			if choiceData.isLocked then
-				choiceData.lockedText = HOUSING_EXTERIOR_CUSTOMIZATION_LOCKED_TOOLTIP;
+				if choiceData.lockReasonString and choiceData.lockReasonString ~= "" then
+					choiceData.lockedText = choiceData.lockReasonString;
+				else
+					choiceData.lockedText = defaultLockedTooltip;
+				end
 			end
 
 			local entryDescription = rootDescription:CreateTemplate("HouseExteriorOptionDropdownElementTemplate");
@@ -178,6 +154,92 @@ function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtu
 
 	self:MarkDirty();
 	self:Show();
+end
+
+----------------- Exterior Type Dropdown -----------------
+-- Inherits HouseExteriorOptionDropdownTemplate
+HouseExteriorTypeDropdownMixin = {};
+
+function HouseExteriorTypeDropdownMixin:GetDropdownTag()
+	return "HOUSE_EXTERIOR_TYPE_OPTIONS_MENU";
+end
+
+function HouseExteriorTypeDropdownMixin:GetDefaultLockedTooltip()
+	return HOUSING_EXTERIOR_CUSTOMIZATION_LOCKED_TOOLTIP;
+end
+
+function HouseExteriorTypeDropdownMixin:IsChoiceSelected(choiceData)
+	return choiceData.houseExteriorTypeID == self.selectedOptionID;
+end
+
+function HouseExteriorTypeDropdownMixin:OnSelectChoice(choiceData)
+	C_HouseExterior.SetHouseExteriorType(choiceData.houseExteriorTypeID);
+end
+
+function HouseExteriorTypeDropdownMixin:ShowHouseExteriorTypeOptions(selectedExteriorTypeID, exteriorTypeOptions)
+	self:ShowOptions(selectedExteriorTypeID, exteriorTypeOptions);
+end
+
+----------------- Exterior Size Dropdown -----------------
+-- Inherits HouseExteriorOptionDropdownTemplate
+HouseExteriorSizeDropdownMixin = {};
+
+function HouseExteriorSizeDropdownMixin:GetDropdownTag()
+	return "HOUSE_EXTERIOR_TYPE_OPTIONS_MENU";
+end
+
+function HouseExteriorSizeDropdownMixin:GetDefaultLockedTooltip()
+	return HOUSING_EXTERIOR_CUSTOMIZATION_SIZE_LOCKED_TOOLTIP;
+end
+
+function HouseExteriorSizeDropdownMixin:IsChoiceSelected(choiceData)
+	return choiceData.size == self.selectedOptionID;
+end
+
+function HouseExteriorSizeDropdownMixin:OnSelectChoice(choiceData)
+	C_HouseExterior.SetHouseExteriorSize(choiceData.size);
+end
+
+function HouseExteriorSizeDropdownMixin:ShowHouseExteriorSizeOptions(selectedSize, exteriorSizeOptions)
+	self:ShowOptions(selectedSize, exteriorSizeOptions);
+end
+
+----------------- Core Fixture Dropdown -----------------
+-- Inherits HouseExteriorOptionDropdownTemplate
+HouseExteriorCoreFixtureDropdownMixin = {};
+
+function HouseExteriorCoreFixtureDropdownMixin:GetDropdownTag()
+	return "HOUSE_EXTERIOR_CORE_FIXTURE_OPTIONS_MENU";
+end
+
+function HouseExteriorCoreFixtureDropdownMixin:GetDefaultLockedTooltip()
+	return HOUSING_EXTERIOR_CUSTOMIZATION_LOCKED_TOOLTIP;
+end
+
+function HouseExteriorCoreFixtureDropdownMixin:IsChoiceSelected(choiceData)
+	return choiceData.fixtureID == self.selectedOptionID;
+end
+
+function HouseExteriorCoreFixtureDropdownMixin:OnSelectChoice(choiceData)
+	C_HouseExterior.SelectCoreFixtureOption(choiceData.fixtureID);
+end
+
+function HouseExteriorCoreFixtureDropdownMixin:ShowCoreFixtureInfo(selectedFixtureID, fixtureOptions, useColorNames)
+	-- TODO: Remove all this once we have real color name data
+	local houseTypeID = C_HouseExterior.GetCurrentHouseExteriorType();
+	local typeSpecificNames = houseTypeID and HouseExteriorColorNames.TypeSpecific[houseTypeID] or nil;
+	for choiceIndex, choiceData in ipairs(fixtureOptions) do
+		if useColorNames then
+			-- TODO: If/when we can redo the data setup for exterior color definitions, ideally color name is part of the choice struct, rather than the color ID
+			local overrideColorName = typeSpecificNames and typeSpecificNames[choiceData.colorID];
+			local colorName = overrideColorName or HouseExteriorColorNames.Default[choiceData.colorID];
+			if colorName then
+				choiceData.name = colorName;
+			end
+		end
+	end
+
+	self:ShowOptions(selectedFixtureID, fixtureOptions);
 end
 
 ----------------- Base choice entry for non-dropdown use -----------------
@@ -281,6 +343,7 @@ function HouseExteriorFixtureOptionListMixin:HasAnyLockedChoices()
 end
 
 function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointInfo)
+	local isSameHookpoint = self.fixturePointInfo and self.fixturePointInfo.ownerHash == fixturePointInfo.ownerHash;
 	self.fixturePointInfo = fixturePointInfo;
 
 	local isAnythingSelected = self.fixturePointInfo.selectedFixtureID ~= nil;
@@ -339,7 +402,8 @@ function HouseExteriorFixtureOptionListMixin:ShowFixturePointInfo(fixturePointIn
 
 	local dataProvider = CreateDataProvider(optionElements);
 
-	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
+	local scrollBehavior = isSameHookpoint and ScrollBoxConstants.RetainScrollPosition or ScrollBoxConstants.DiscardScrollPosition;
+	self.ScrollBox:SetDataProvider(dataProvider, scrollBehavior);
 
 	self:Show();
 end
@@ -353,3 +417,32 @@ function HouseExteriorFixtureOptionListMixin:ClearAndHide()
 	self:ClearData();
 	self:Hide();
 end
+
+-- TODO: Create some new data & stop using the ExteriorComponent "COLOR" field for player-facing color names altogether
+-- It is not meant for the kind of granular color specificity we're looking for here
+HouseExteriorColorNames = {
+	Default = {
+		[7] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLACK, --Black - "Charcoal"
+		[8] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLUE, --Blue "Ocean"
+		[9] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BROWN, --Brown "nutmeg"
+		[21] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_GREEN, --Green "Forest"
+		[32] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_ORANGE, --Orange "Rust"
+		[36] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_PURPLE, --Purple "Violet"
+		[37] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_RED, --Red "Crimson"
+		[44] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_YELLOW, --Yellow "Mustard"
+	},
+	TypeSpecific = {
+		[55] = { -- Night Elf
+			[34] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_PLUM, --Pink "Plum"
+			[40] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLUE, --Teal "Ocean"
+			[44] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_OCHRE, --Yellow "Ochre"
+		},
+		[56] = { -- Blood Elf
+			[0] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_RED, --None "Crimson"
+			[8] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_SAPPHIRE, --Blue "Sapphire"
+			[21] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_EMERALD, --Green "Emerald"
+			[40] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_BLUE, --Teal "Ocean"
+			[42] = HOUSING_EXTERIOR_CUSTOMIZATION_COLOR_PLUM, --Violet "Plum"
+		},
+	},
+};

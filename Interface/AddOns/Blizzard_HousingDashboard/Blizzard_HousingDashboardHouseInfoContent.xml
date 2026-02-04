@@ -1,109 +1,940 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="HousingDashboardHouseInfoTemplate" mixin="HousingDashboardHouseInfoMixin" virtual="true">
-		<Frames>
-			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
-				<Size x="60" y="60"/>
-				<Anchors>
-					<Anchor point="CENTER"/>
-				</Anchors>
-			</Frame>
+<!-- House Finder Button Template -->
+<Button name="HousingDashboard_HouseFinderButtonTemplate" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_HOUSEFINDERBUTTON" mixin="HouseFinderButtonMixin" virtual="true">
+	<Size x="116" y="32"/>
+	<NormalFont style="GameFontNormalSmall"/>
+	<HighlightFont style="GameFontNormalSmall"/>
+	<DisabledFont style="GameFontDisableSmall"/>
+	<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+	<Scripts>
+		<OnClick method="OnClick"/>
+	</Scripts>
+</Button>
 
-			<DropdownButton parentKey="HouseDropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
-				<Size x="200" y="25"/>
+<!-- Initiative Activity Template -->
+<Frame name="HousingDashboard_InitiativeTaskActivityEntryTemplate" virtual="true">
+	<Size x="290" y="60"/>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture parentKey="Divider" atlas="housing-dashboard-activity-listitem-divider" useAtlasSize="false">
+				<Size x="290" y="2"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-10" y="-28"/>
+					<Anchor point="TOPLEFT"/>
 				</Anchors>
-			</DropdownButton>
+			</Texture>
 
-			<Button parentKey="HouseFinderButton" hidden="true" inherits="UIPanelButtonTemplate">
-				<Size x="116" y="22"/>
+			<Texture parentKey="EntryFlag" atlas="housing-dashboard-activity-listitem-flag" useAtlasSize="false">
+				<Size x="42" y="45"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.HouseDropdown" relativePoint="LEFT" x="-10"/>
+					<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="3"/>
+					<Anchor point="LEFT" x="5"/>
 				</Anchors>
-				<NormalFont style="GameFontNormalSmall"/>
-				<HighlightFont style="GameFontNormalSmall"/>
-				<DisabledFont style="GameFontDisableSmall"/>
-				<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-			</Button>
+			</Texture>
 
-			<Frame parentKey="DashboardNoHousesFrame" setAllPoints="true" enableMouse="true" hidden="true">
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" atlas="housing-dashboard-bg-empty" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="CENTER" y="-4"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_NO_HOUSE_TEXT">
-							<Size x="320"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="SubtitleText" inherits="GameFontNormal" text="" hidden="true" justifyH="LEFT">
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT" y="-16"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Frames>
-					<Button parentKey="NoHouseButton" inherits="UIPanelButtonHeightScaledTemplate">
-						<Size x="160" y="32"/>
+			<Texture parentKey="Checkmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="false">
+				<Size x="21" y="21"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" relativePoint="CENTER" y="2"/>
+				</Anchors>
+			</Texture>
+
+			<FontString parentKey="ActivityMessage" inherits="GameFontNormalSmall2" justifyH="LEFT" justifyV="TOP">
+				<Size x="180" y="40"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.EntryFlag" relativePoint="RIGHT" x="8" y="-10"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+</Frame>
+
+<!-- Initiative Task Template -->
+<Button name="HousingDashboard_InitiativeTaskTemplate" mixin="InitiativeTaskButtonMixin" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+	<Size x="430" y="57"/>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="BG" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false">
+				<Size x="430" y="57"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+			
+			<Texture parentKey="BGAlphaAdd" alphaMode="ADD" alpha="0.7" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false" hidden="true">
+				<Size x="430" y="57"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+
+		<Layer level="ARTWORK">
+			<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="50" y="0"/>
+				</Anchors>
+			</Texture>
+
+			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="TOP" justifyH="LEFT">
+				<Size x="330" y="35"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.TrackingCheckmark" relativePoint="RIGHT" x="5" y="-10"/>
+				</Anchors>
+			</FontString>
+
+			<Texture parentKey="CollapseIcon" atlas="ui-questtrackerbutton-expand-all" useAtlasSize="false" hidden="true">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="TOPRIGHT" x="0"/>
+				</Anchors>
+			</Texture>
+
+			<Texture parentKey="EntryFlag" atlas="housing-dashboard-tasks-listitem-flag" useAtlasSize="false">
+				<Size x="55" y="55"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-25" y="1"/>
+				</Anchors>
+			</Texture>
+
+			<FontString parentKey="ActivityXP" inherits="GameFontNormalMed2" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" x="-3" y="8"/>
+				</Anchors>
+			</FontString>
+
+			<Texture parentKey="Checkmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="false" hidden="true">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.EntryFlag" x="-3" y="8"/>
+				</Anchors>
+			</Texture>
+			
+		</Layer>
+
+		<Layer level="HIGHLIGHT">
+			<Texture parentKey="CollapseIconAlphaAdd" alphaMode="ADD" alpha="0.3" atlas="ui-questtrackerbutton-expand-all" useAtlasSize="false" hidden="true">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.CollapseIcon"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave method="OnLeave"/>
+		<OnClick method="OnClick"/>
+	</Scripts>
+</Button>
+
+<!-- Initiative Subtask Template -->
+<Button name="HousingDashboard_InitiativeSubtaskTemplate" mixin="InitiativeTaskButtonMixin" virtual="true">
+	<Size x="400" y="40"/>
+	<Layers>
+		<Layer level="BACKGROUND">
+			<Texture parentKey="BG" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false">
+				<Size x="400" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="BGAlphaAdd" alphaMode="ADD" alpha="0.7" atlas="housing-dashboard-initiatives-tasks-listitem-bg" useAtlasSize="false" hidden="true">
+				<Size x="400" y="40"/>
+				<Anchors>
+					<Anchor point="CENTER" x="10"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+
+		<Layer level="ARTWORK">
+			<Texture parentKey="TrackingCheckmark" atlas="activities-icon-checkmark-small-yellow" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" x="55" y="0"/>
+				</Anchors>
+			</Texture>
+			<FontString parentKey="Title" inherits="GameFontHighlightSmall2" justifyV="MIDDLE" justifyH="LEFT">
+				<Size x="335" y="30"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.TrackingCheckmark" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</FontString>
+
+			<FontString parentKey="ActivityXP" inherits="GameFontNormalMed2" justifyV="MIDDLE">
+				<Anchors>
+					<Anchor point="RIGHT" x="-40"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave method="OnLeave"/>
+		<OnClick method="OnClick"/>
+	</Scripts>
+</Button>
+
+<!-- Initiative Progress Bar Threshold Templates -->
+<!-- Threshold Normal -->
+<Frame name="ProgressThresholdTemplate" mixin="ProgressThresholdMixin" useParentLevel="true" virtual="true">
+	<Size x="20" y="20"/>
+	<Layers>
+		<Layer level="ARTWORK" textureSubLevel="1">
+			<Texture parentKey="LineComplete" atlas="housing-dashboard-initiatives-fillbar-tickbar-complete" useAtlasSize="true" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" x="-2" y="13"/>
+				</Anchors>
+			</Texture>
+			<Texture parentKey="LineIncomplete" atlas="housing-dashboard-initiatives-fillbar-tickbar-incomplete" useAtlasSize="true">
+				<Anchors>
+					<Anchor point="CENTER" x="-2" y="15"/>
+				</Anchors>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Frames>
+		<Frame parentKey="Reward" frameStrata="HIGH" setAllPoints="true">
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon">
+						<Size x="30" y="30"/>
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="-50" relativeKey="$parent.SubtitleText" relativePoint="BOTTOM"/>
+							<Anchor point="CENTER" x="-1" y="0"/>
 						</Anchors>
-						<NormalFont style="GameFontNormal"/>
-						<HighlightFont style="GameFontNormal"/>
-						<DisabledFont style="GameFontDisable"/>
-						<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
-					</Button>
-				</Frames>
-			</Frame>
-
-			<Frame parentKey="ContentFrame" inherits="TabSystemOwnerTemplate" mixin="HousingDashboardHouseInfoContentFrameMixin">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="5" y="-60" />
-					<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
-						<KeyValues>
-							<KeyValue key="minTabWidth" value="100" type="number"/>
-							<KeyValue key="maxTabWidth" value="150" type="number"/>
-							<KeyValue key="tabTemplate" value="TabSystemTopButtonTemplate" type="string"/>
-							<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
-						</KeyValues>
+					</Texture>
+					<MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<Size x="20" y="20"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="60"/>
+							<Anchor point="CENTER" x="0" y="2"/>
 						</Anchors>
-					</Frame>
+						<MaskedTextures>
+							<MaskedTexture childKey="Icon"/>
+						</MaskedTextures>
+					</MaskTexture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="IconBorder" atlas="housing-dashboard-fillbar-pip-incomplete" useAtlasSize="true">
+					<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="PipFlipbook" atlas="housing-dashboard-fillbar-pip-flipbook" alpha="0">
+						<Size x="47" y="47"/>
+						<Anchors>
+							<Anchor point="CENTER" x="-2" y="0"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="Glow" alphaMode="ADD" atlas="housing-dashboard-fillbar-pip-glow" useAtlasSize="true" alpha="0">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="EarnedCheckmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="CENTER" x="0" y="2"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+						<Size x="98" y="98"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.EarnedCheckmark" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ThresholdReached" setToFinalAlpha="false">
+					<FlipBook childKey="PipFlipbook" duration="1.25" order="1" flipBookRows="6" flipBookColumns="6" flipBookFrames="36" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="PipFlipbook" duration="0.1" order="1" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Glow" duration="0.5" order="1" smoothing="IN" fromAlpha="0" toAlpha="1"/>
+					<Alpha childKey="Glow" duration="0.5" order="1" startDelay="0.5" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" startDelay="0.5" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave function="GameTooltip_Hide"/>
+	</Scripts>
+</Frame>
 
-					<Frame parentKey="EndeavorFrame" frameLevel="100" setAllPoints="true" hidden="true">
-						<Layers>
-							<Layer level="ARTWORK">
-								<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_ENDEAVORS_COMING_SOON">
+<!-- Threshold Large (used for final reward in track) -->
+<Frame name="ProgressThresholdLargeTemplate" mixin="ProgressThresholdMixin" useParentLevel="true" virtual="true">
+	<Size x="40" y="40"/>
+	<Frames>
+		<Frame parentKey="Reward" frameStrata="HIGH" setAllPoints="true">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="IconBG" atlas="housing-dashboard-fillbar-icon-bg" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<Texture parentKey="Icon">
+						<Size x="50" y="50"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
+					<MaskTexture parentKey="CircleMask" atlas="CircleMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+						<Size x="44" y="44"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+						<MaskedTextures>
+							<MaskedTexture childKey="Icon"/>
+						</MaskedTextures>
+					</MaskTexture>
+					<Texture parentKey="Flipbook" atlas="housing-dashboard-fillbar-icon-fx-flipbook" alpha="0">
+						<Size x="113" y="99"/>
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY">
+					<Texture parentKey="FrameGlow" atlas="housing-dashboard-fillbar-icon-frame-glow" useAtlasSize="true" alpha="0">
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="3"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="IconBorder" atlas="housing-dashboard-fillbar-icon-frame" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.Icon" relativePoint="CENTER"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="OVERLAY" textureSubLevel="1">
+					<Texture parentKey="EarnedCheckmark" atlas="housing-dashboard-small-checkmark" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="CENTER" x="10" y="-3"/>
+						</Anchors>
+					</Texture>
+					<Texture parentKey="CheckmarkFlipbook" alpha="0" alphaMode="BLEND" atlas="activities-checkmark_flipbook-large">
+						<Size x="98" y="98"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.EarnedCheckmark" x="0" y="-1"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Animations>
+				<AnimationGroup parentKey="ThresholdReached" setToFinalAlpha="false">
+					<Alpha childKey="Flipbook" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<FlipBook childKey="Flipbook" duration="1.4" order="1" flipBookRows="8" flipBookColumns="5" flipBookFrames="38" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					<Alpha childKey="FrameGlow" duration="1" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="FrameGlow" duration="0.5" order="1" startDelay="1" smoothing="OUT" fromAlpha="1" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" duration="0.5" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="EarnedCheckmark" startDelay="0.5" duration="0.0" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.25" duration="0.25" order="1" fromAlpha="1" toAlpha="1"/>
+					<Alpha childKey="CheckmarkFlipbook" startDelay="0.5" duration="0.25" order="1" fromAlpha="0" toAlpha="0"/>
+					<FlipBook startDelay="0.25" endDelay="0" smoothing="NONE" childKey="CheckmarkFlipbook" duration="0.25" order="1" flipBookRows="2" flipBookColumns="4" flipBookFrames="8" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+				</AnimationGroup>
+			</Animations>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnEnter method="OnEnter"/>
+		<OnLeave function="GameTooltip_Hide"/>
+	</Scripts>
+</Frame>
+
+<!-- Dashboard Frame -->
+<Frame name="HousingDashboardHouseInfoTemplate" mixin="HousingDashboardHouseInfoMixin" virtual="true">
+	<Size x="800" y="496"/>
+	<Frames>
+		<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate" frameLevel="2000">
+			<Size x="60" y="60"/>
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</Frame>
+
+		<DropdownButton parentKey="HouseDropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
+			<Size x="200" y="25"/>
+			<Anchors>
+				<Anchor point="TOPRIGHT" x="-10" y="-28"/>
+			</Anchors>
+		</DropdownButton>
+
+		<Button parentKey="HouseFinderButton" hidden="true" inherits="UIPanelButtonTemplate">
+			<Size x="116" y="22"/>
+			<Anchors>
+				<Anchor point="RIGHT" relativeKey="$parent.HouseDropdown" relativePoint="LEFT" x="-10"/>
+			</Anchors>
+			<NormalFont style="GameFontNormalSmall"/>
+			<HighlightFont style="GameFontNormalSmall"/>
+			<DisabledFont style="GameFontDisableSmall"/>
+			<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+		</Button>
+
+		<Frame parentKey="DashboardNoHousesFrame" setAllPoints="true" enableMouse="true" hidden="true">
+			<Layers>
+				<Layer level="BACKGROUND">
+					<Texture parentKey="Background" atlas="housing-dashboard-bg-empty" useAtlasSize="true">
+						<Anchors>
+							<Anchor point="CENTER" y="-4"/>
+						</Anchors>
+					</Texture>
+				</Layer>
+				<Layer level="ARTWORK">
+					<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_NO_HOUSE_TEXT">
+						<Size x="320"/>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</FontString>
+					<FontString parentKey="SubtitleText" inherits="GameFontNormal" text="" hidden="true" justifyH="LEFT">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.TitleText" relativePoint="BOTTOMLEFT" y="-16"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Frames>
+				<Button parentKey="NoHouseButton" inherits="UIPanelButtonHeightScaledTemplate">
+					<Size x="160" y="32"/>
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="-50" relativeKey="$parent.SubtitleText" relativePoint="BOTTOM"/>
+					</Anchors>
+					<NormalFont style="GameFontNormal"/>
+					<HighlightFont style="GameFontNormal"/>
+					<DisabledFont style="GameFontDisable"/>
+					<HighlightTexture inherits="UIPanelButtonHighlightTexture"/>
+				</Button>
+			</Frames>
+		</Frame>
+
+		<Frame parentKey="ContentFrame" inherits="TabSystemOwnerTemplate" mixin="HousingDashboardHouseInfoContentFrameMixin">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="5" y="-58"/>
+				<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+			</Anchors>
+			<Frames>
+				<Frame parentKey="TabSystem" inherits="TabSystemTemplate">
+					<KeyValues>
+						<KeyValue key="minTabWidth" value="100" type="number"/>
+						<KeyValue key="maxTabWidth" value="150" type="number"/>
+						<KeyValue key="tabTemplate" value="TabSystemTopButtonTemplate" type="string"/>
+						<KeyValue key="tabSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_TAB" type="global"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" x="60" y="-1"/>
+					</Anchors>
+				</Frame>
+
+				<!-- Initiatives Tab -->
+				<Frame parentKey="InitiativesFrame" mixin="InitiativesTabMixin" setAllPoints="true" hidden="true">
+					<Frames>
+						<Frame parentKey="InitiativesArt" setAllPoints="true">
+							<Layers>
+								<Layer level="BACKGROUND">
+									<Texture parentKey="InitiativesBG" useAtlasSize="false">
+										<Anchors>
+											<Anchor point="TOPLEFT"/>
+											<Anchor point="BOTTOMRIGHT"/>
+										</Anchors>
+									</Texture>
+								</Layer>
+							</Layers>
+							<Frames>
+								<Frame parentKey="BorderArt" frameStrata="HIGH" setAllPoints="true">
+									<Layers>
+										<Layer level="BORDER">
+											<Texture parentKey="InitiativesCornerTL" atlas="housing-dashboard-filigree-wood-small-tl" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPLEFT" relativeKey="$parent.$parent.InitiativesBG" x="2" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="-2" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerBL" atlas="housing-dashboard-filigree-corner-bl" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="BOTTOMLEFT" relativeKey="$parent.$parent.InitiativesBG" x="-6" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="InitiativesCornerBR" atlas="housing-dashboard-filigree-corner-br" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="BOTTOMRIGHT" relativeKey="$parent.$parent.InitiativesBG" x="5" y="-2"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+								</Frame>
+							</Frames>
+						</Frame>
+
+						<Frame parentKey="NoInitiativeSetFrame" setAllPoints="true" hidden="true">
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="TitleText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_NO_ACTIVE_INITIATIVE">
+										<Anchors>
+											<Anchor point="CENTER"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+
+						<Frame parentKey="InitiativeSetFrame" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+							</Anchors>
+							<Layers>
+								<Layer level="ARTWORK">
+									<FontString parentKey="InitiativeName" inherits="GameFontHighlightLarge2" justifyH="LEFT">
+										<Size x="580" y="30"/>
+										<Anchors>
+											<Anchor point="TOPLEFT" x="25" y="-15"/>
+										</Anchors>
+									</FontString>
+
+									<FontString parentKey="InitiativeDescription" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+										<Size x="600" y="40"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.InitiativeName" relativePoint="BOTTOM" x="13" y="-2"/>
+										</Anchors>
+									</FontString>
+
+									<FontString parentKey="NeighborhoodGroupText" inherits="GameFontNormalMed1" justifyH="LEFT" justifyV="TOP">
+										<Size x="600" y="40"/>
+										<Anchors>
+											<Anchor point="TOP" relativeKey="$parent.InitiativeDescription" relativePoint="BOTTOM" y="-55"/>
+										</Anchors>
+									</FontString>
+								</Layer>
+							</Layers>
+							<Frames>
+								<!-- Initiative Timer -->
+								<Frame parentKey="InitiativeTimer">
+									<Size x="209" y="30"/>
 									<Anchors>
-										<Anchor point="CENTER"/>
+										<Anchor point="TOPRIGHT" x="19" y="-14"/>
 									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-					</Frame>
+									<Layers>
+										<Layer level="BACKGROUND">
+											<Texture parentKey="TimerBG" atlas="housing-dashboard-timertag-bg" useAtlasSize="false">
+												<Size x="209" y="30"/>
+												<Anchors>
+													<Anchor point="CENTER" x="-22" y="-2"/>
+												</Anchors>
+											</Texture>
+										</Layer>
 
-					<Frame parentKey="HouseUpgradeFrame" frameLevel="100" setAllPoints="true" hidden="true" inherits="HousingUpgradeFrameTemplate">
-					</Frame>
-				</Frames>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
-			<OnEvent method="OnEvent"/>
-		</Scripts>
-	</Frame>
+										<Layer level="ARTWORK">
+											<Texture parentKey="TimerIcon" atlas="housing-dashboard-timertag-clock-icon" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="LEFT" x="22" y="-2"/>
+												</Anchors>
+											</Texture>
+
+											<FontString parentKey="TimeRemaining" inherits="GameFontHighlightSmall2" justifyH="LEFT">
+												<Size x="150" y="20"/>
+												<Anchors>
+													<Anchor point="LEFT" relativeKey="$parent.TimerIcon" relativePoint="RIGHT" x="6"/>
+												</Anchors>
+											</FontString>
+										</Layer>
+									</Layers>
+								</Frame>
+
+								<!-- Initiative Progress Bar -->
+								<StatusBar parentKey="ProgressBar">
+									<BarTexture parentKey="BarFill" atlas="housing-dashboard-fillbar-fill"/>
+									<Size x="1" y="25"/>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.InitiativeDescription" relativePoint="BOTTOM" y="-10"/>
+										<Anchor point="LEFT" x="35"/>
+										<Anchor point="RIGHT" x="-80"/>
+									</Anchors>
+									<Layers>
+										<Layer level="BACKGROUND" textureSubLevel="1">
+											<Texture parentKey="BarBackground" atlas="housing-dashboard-fillbar-bar-bg">
+												<Size x="1" y="35"/>
+												<Anchors>
+													<Anchor point="LEFT" x="-5" y="-1"/>
+													<Anchor point="RIGHT" x="8"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+									<Frames>
+										<Frame parentKey="TextContainer" frameStrata="HIGH" setAllPoints="true">
+											<Layers>
+												<Layer level="OVERLAY">
+													<FontString parentKey="Points" inherits="GameFontHighlight" text="ENDEAVOR_FAVOR">
+														<Size x="0" y="0"/>
+														<Anchors>
+															<Anchor point="LEFT" x="15" y="0"/>
+														</Anchors>
+													</FontString>
+													<FontString parentKey="ProgressText" inherits="GameFontHighlight">
+														<Size x="0" y="0"/>
+														<Anchors>
+															<Anchor point="RIGHT" x="-10" y="0"/>
+														</Anchors>
+													</FontString>
+												</Layer>
+											</Layers>
+										</Frame>
+										<Frame parentKey="BarEnd" useParentLevel="true" hidden="true">
+											<Size x="1" y="25"/>
+											<Layers>
+												<Layer level="OVERLAY">
+													<Texture parentKey="Overlay" atlas="housing-dashboard-fillbar-fill-threshold" useAtlasSize="false">
+														<Size x="1" y="25"/>
+														<Anchors>
+															<Anchor point="LEFT"/>
+															<Anchor point="RIGHT"/>
+														</Anchors>
+													</Texture>
+													<Texture parentKey="Flipbook" alphaMode="ADD" atlas="housing-dashboard-fillbar-fill-threshold-flipbook" alpha="0">
+														<Size x="142" y="25"/>
+														<Anchors>
+															<Anchor point="CENTER"/>
+														</Anchors>
+													</Texture>
+												</Layer>
+											</Layers>
+											<Animations>
+												<AnimationGroup parentKey="Sparkles" setToFinalAlpha="true">
+													<FlipBook childKey="Flipbook" duration="1.5" order="1" flipBookRows="11" flipBookColumns="4" flipBookFrames="44" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+													<Alpha childKey="Flipbook" duration="1.4" order="1" fromAlpha="1" toAlpha="1"/>
+													<Alpha childKey="Flipbook" duration="0.2" order="1" startDelay="1.3" fromAlpha="1" toAlpha="0"/>
+												</AnimationGroup>
+											</Animations>
+										</Frame>
+									</Frames>
+								</StatusBar>
+
+								<!-- Active Neighborhood Switcher -->
+								<Frame parentKey="InitiativeActiveNeighborhoodSwitcher" useParentLevel="true" hidden="true">
+									<Size x="470" y="300"/>
+									<Anchors>
+										<Anchor point="LEFT" y="-90"/>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+									<Layers>
+										<Layer level="BACKGROUND" textureSubLevel="1">
+											<Texture parentKey="BG">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+													<Anchor point="BOTTOMRIGHT"/>
+												</Anchors>
+												<Color r="0" g="0" b="0" a="0.43"/>
+											</Texture>
+
+											<Texture parentKey="BorderTop" atlas="housing-dashboard-divider-horz-tile" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="TOP"/>
+													<Anchor point="LEFT"/>
+													<Anchor point="RIGHT"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+									<Frames>
+										<Button parentKey="SwitchActiveNeighborhoodBtn" inherits="UIPanelButtonTemplate" text="HOUSING_DASHBOARD_SET_AS_ACTIVE_INITIATIVE_LABEL" mixin="InitiativeActiveNeighborhoodSwitcherMixin">
+											<Size x="200" y="22"/>
+											<Anchors>
+												<Anchor point="CENTER" y="65"/>
+											</Anchors>
+											<Scripts>
+												<OnClick method="OnClick"/>
+											</Scripts>
+										</Button>
+
+										<Frame parentKey="CurrentlyActiveInfo">
+											<Size x="200" y="100"/>
+											<Anchors>
+												<Anchor point="TOP" relativeKey="$parent.SwitchActiveNeighborhoodBtn" relativePoint="BOTTOM" y="-50"/>
+											</Anchors>
+											<Layers>
+												<Layer level="ARTWORK">
+													<FontString parentKey="CurrentlyActive" inherits="GameFontNormal" text="HOUSING_DASHBOARD_CURRENTLY_ACTIVE_LABEL" hidden="true">
+														<!-- TODO GP work needed before we can show this -->
+														<Anchors>
+															<Anchor point="TOP"/>
+														</Anchors>
+													</FontString>
+													<FontString parentKey="ActiveName" inherits="GameFontHighlightLarge" hidden="true">
+														<!-- TODO GP work needed before we can show this -->
+														<Anchors>
+															<Anchor point="TOP" relativeKey="$parent.CurrentlyActive" relativePoint="BOTTOM" y="-5"/>
+														</Anchors>
+													</FontString>
+													<FontString parentKey="ActiveNeighborhoodName" inherits="GameFontNormalMed2" hidden="true">
+														<!-- TODO GP work needed before we can show this -->
+														<Anchors>
+															<Anchor point="TOP" relativeKey="$parent.ActiveName" relativePoint="BOTTOM" y="-5"/>
+														</Anchors>
+													</FontString>
+												</Layer>
+											</Layers>
+										</Frame>
+									</Frames>
+								</Frame>
+
+								<!-- Initiative Tasks -->
+								<Frame parentKey="InitiativeTasks" useParentLevel="true">
+									<Size x="510"/>
+									<Anchors>
+										<Anchor point="LEFT" y="-85"/>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+									<Layers>
+										<Layer level="BACKGROUND" textureSubLevel="1">
+											<Texture parentKey="BG">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+													<Anchor point="BOTTOMRIGHT"/>
+												</Anchors>
+												<Color r="0" g="0" b="0" a="0.43"/>
+											</Texture>
+
+											<Texture parentKey="BorderTop" atlas="housing-dashboard-divider-horz-tile" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="TOP"/>
+													<Anchor point="LEFT"/>
+													<Anchor point="RIGHT"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="BorderRight" file="Interface\Housing\HousingDashboardInitiativesDividerVert">
+												<Size x="15" y="16"/>
+												<Anchors>
+													<Anchor point="TOP" y="-16"/>
+													<Anchor point="BOTTOM"/>
+													<Anchor point="RIGHT" x="11"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="TitleCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" y="-2"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+									</Layers>
+									<Frames>
+										<Frame parentKey="TaskListTitleContainer" frameStrata="HIGH" setAllPoints="true">
+											<Layers>
+												<Layer level="ARTWORK">
+													<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyV="TOP" text="HOUSING_DASHBOARD_INITIATIVE_TASKS_LABEL">
+														<Size x="200" y="30"/>
+														<Anchors>
+															<Anchor point="TOPLEFT" x="1" y="-2"/>
+														</Anchors>
+													</FontString>
+
+													<Texture parentKey="TitleTextureL" atlas="housing-dashboard-woodsign-left" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.Title" y="6"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleTextureM" atlas="housing-dashboard-woodsign-center" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.TitleTextureL" relativePoint="RIGHT"/>
+															<Anchor point="RIGHT" relativeKey="$parent.Title" x="-15"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleTextureR" atlas="housing-dashboard-woodsign-right" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.TitleTextureM" relativePoint="RIGHT"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleFoliage" atlas="housing-dashboard-foliage-header_left" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="TOPLEFT" relativeKey="$parent.TitleTextureL" relativePoint="BOTTOMLEFT" x="1" y="5"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleCornerBR" atlas="housing-dashboard-filigree-wood-small-br" useAtlasSize="false">
+														<Size x="23" y="23"/>
+														<Anchors>
+															<Anchor point="BOTTOMRIGHT"  y="3"/>
+														</Anchors>
+													</Texture>
+												</Layer>
+											</Layers>
+										</Frame>
+
+										<Frame parentKey="TaskList" inherits="WowScrollBoxList">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.TaskListTitleContainer.Title" relativePoint="BOTTOMLEFT" x="5" y="30"/>
+												<Anchor point="BOTTOMRIGHT" x="-20"/>
+											</Anchors>
+											<KeyValues>
+												<KeyValue key="wheelPanScalar" value="1" type="number"/>
+											</KeyValues>
+										</Frame>
+
+										<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.TaskList" relativePoint="TOPRIGHT" x="4" y="-15"/>
+												<Anchor point="BOTTOMLEFT" relativeKey="$parent.TaskList" relativePoint="BOTTOMRIGHT" x="4" y="15"/>
+											</Anchors>
+										</EventFrame>
+									</Frames>
+								</Frame>
+
+								<!-- Initiative Activity Log -->
+								<Frame parentKey="InitiativeActivity" useParentLevel="true">
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.InitiativeTasks" relativePoint="RIGHT"/>
+										<Anchor point="RIGHT"/>
+										<Anchor point="BOTTOM"/>
+									</Anchors>
+									<Layers>
+										<Layer level="BACKGROUND" textureSubLevel="1">
+											<Texture parentKey="BG">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+													<Anchor point="BOTTOMRIGHT"/>
+												</Anchors>
+												<Color r="0" g="0" b="0" a="0.12"/>
+											</Texture>
+
+											<Texture parentKey="BGTexture" atlas="housing-dashboard-bg-activity" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="TOPLEFT"/>
+													<Anchor point="BOTTOMRIGHT"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="BorderTop" atlas="housing-dashboard-divider-horz-tile" useAtlasSize="true">
+												<Anchors>
+													<Anchor point="TOP"/>
+													<Anchor point="LEFT"/>
+													<Anchor point="RIGHT"/>
+												</Anchors>
+											</Texture>
+
+											<Texture parentKey="TitleCornerTR" atlas="housing-dashboard-filigree-wood-small-tr" useAtlasSize="false">
+												<Size x="23" y="23"/>
+												<Anchors>
+													<Anchor point="TOPRIGHT" y="-2"/>
+												</Anchors>
+											</Texture>
+										</Layer>
+										<Layer>
+											<FontString parentKey="NoActivityText" inherits="Game15Font_Shadow" text="HOUSING_DASHBOARD_INITIATIVE_NO_ACTIVITY">
+												<Anchors>
+													<Anchor point="CENTER"/>
+												</Anchors>
+											</FontString>
+										</Layer>
+									</Layers>
+									<Frames>
+										<Frame parentKey="ActivityLogTitleContainer" frameStrata="HIGH" setAllPoints="true">
+											<Layers>
+												<Layer level="ARTWORK">
+													<FontString parentKey="Title" inherits="GameFontHighlightLarge" justifyV="TOP" text="HOUSING_DASHBOARD_INITIATIVE_ACTIVITY_LABEL">
+														<Size x="130" y="30"/>
+														<Anchors>
+															<Anchor point="TOPLEFT" y="-3"/>
+														</Anchors>
+													</FontString>
+
+													<Texture parentKey="TitleTextureL" atlas="housing-dashboard-woodsign-left" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.Title" y="6"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleTextureM" atlas="housing-dashboard-woodsign-center" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.TitleTextureL" relativePoint="RIGHT"/>
+															<Anchor point="RIGHT" relativeKey="$parent.Title" x="-15"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleTextureR" atlas="housing-dashboard-woodsign-right" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="LEFT" relativeKey="$parent.TitleTextureM" relativePoint="RIGHT" x="-15"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleFoliage" atlas="housing-foliage-header_right" useAtlasSize="true">
+														<Anchors>
+															<Anchor point="TOPLEFT" relativeKey="$parent.TitleTextureR" relativePoint="TOPRIGHT" x="-2" y="-2"/>
+														</Anchors>
+													</Texture>
+
+													<Texture parentKey="TitleCornerBL" atlas="housing-dashboard-filigree-wood-small-bl" useAtlasSize="false">
+														<Size x="23" y="23"/>
+														<Anchors>
+															<Anchor point="BOTTOMLEFT" y="3"/>
+														</Anchors>
+													</Texture>
+												</Layer>
+											</Layers>
+										</Frame>
+
+										<Frame parentKey="ActivityLog" inherits="WowScrollBoxList">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.ActivityLogTitleContainer.Title" relativePoint="BOTTOMLEFT" x="5" y="30"/>
+												<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+											</Anchors>
+											<KeyValues>
+												<KeyValue key="wheelPanScalar" value="1" type="number"/>
+											</KeyValues>
+										</Frame>
+
+										<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+											<Anchors>
+												<Anchor point="TOPLEFT" relativeKey="$parent.ActivityLog" relativePoint="TOPRIGHT" x="3" y="-20"/>
+												<Anchor point="BOTTOMLEFT" relativeKey="$parent.ActivityLog" relativePoint="BOTTOMRIGHT" x="3" y="55"/>
+											</Anchors>
+										</EventFrame>
+									</Frames>
+								</Frame>
+							</Frames>
+						</Frame>
+					</Frames>
+
+					<Scripts>
+						<OnLoad method="OnLoad"/>
+						<OnShow method="OnShow"/>
+						<OnHide method="OnHide"/>
+						<OnUpdate method="OnUpdate"/>
+					</Scripts>
+				</Frame>
+
+				<Frame parentKey="HouseUpgradeFrame" frameLevel="100" setAllPoints="true" hidden="true" inherits="HousingUpgradeFrameTemplate">
+				</Frame>
+			</Frames>
+		</Frame>
+	</Frames>
+	<Scripts>
+		<OnLoad method="OnLoad"/>
+		<OnShow method="OnShow"/>
+		<OnEvent method="OnEvent"/>
+	</Scripts>
+</Frame>
 </Ui>

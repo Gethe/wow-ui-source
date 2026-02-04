@@ -20,7 +20,11 @@ function SharedTooltip_OnLoad(self)
 end
 
 function SharedTooltip_OnHide(self)
-	self:SetPadding(0, 0, 0, 0);
+	if self.ClearPadding then
+		self:ClearPadding();
+	else
+		self:SetPadding(0, 0, 0, 0);
+	end
 end
 
 local DEFAULT_TOOLTIP_OFFSET_X = -17;
@@ -194,14 +198,14 @@ function GameTooltip_InsertFrame(tooltipFrame, frame, verticalPadding)
 	verticalPadding = verticalPadding or 0;
 
 	local textSpacing = tooltipFrame:GetCustomLineSpacing() or 2;
-	local textHeight = Round(envTable[tooltipFrame:GetName().."TextLeft2"]:GetLineHeight());
+	local textHeight = Round(tooltipFrame:GetLeftLine(2):GetLineHeight());
 	local neededHeight = Round(frame:GetHeight() + verticalPadding);
 	local numLinesNeeded = math.ceil(neededHeight / (textHeight + textSpacing));
 	local currentLine = tooltipFrame:NumLines();
 	GameTooltip_AddBlankLinesToTooltip(tooltipFrame, numLinesNeeded);
 	frame:SetParent(tooltipFrame);
 	frame:ClearAllPoints();
-	frame:SetPoint("TOPLEFT", tooltipFrame:GetName().."TextLeft"..(currentLine + 1), "TOPLEFT", 0, -verticalPadding);
+	frame:SetPoint("TOPLEFT", tooltipFrame:GetLeftLine(currentLine + 1), "TOPLEFT", 0, -verticalPadding);
 	if not tooltipFrame.insertedFrames then
 		tooltipFrame.insertedFrames = { };
 	end

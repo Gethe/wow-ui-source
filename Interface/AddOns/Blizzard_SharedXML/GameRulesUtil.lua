@@ -52,7 +52,7 @@ function GameRulesUtil.ShouldShowTargetCastBar()
 end
 
 function GameRulesUtil.ShouldShowNamePlateCastBar()
-	return not C_GameRules.IsGameRuleActive(Enum.GameRule.NameplateCastBarDisabled);
+	return GetCVarBool("nameplateShowCastBars") and not C_GameRules.IsGameRuleActive(Enum.GameRule.NameplateCastBarDisabled);
 end
 
 function GameRulesUtil.ShouldShowAddOns()
@@ -82,6 +82,7 @@ function GameRulesUtil.EJIsDisabled()
 
 	-- At least one tab needs to be active for the Encounter Journal to be enabled.
 	local tabFunctions = {
+		GameRulesUtil.EJShouldShowJourneys,
 		GameRulesUtil.EJShouldShowTravelersLog,
 		GameRulesUtil.EJShouldShowSuggestedContent,
 		GameRulesUtil.EJShouldShowDungeons,
@@ -96,6 +97,10 @@ function GameRulesUtil.EJIsDisabled()
 	end
 
 	return true;
+end
+
+function GameRulesUtil.EJShouldShowJourneys()
+	return not C_GameRules.IsGameRuleActive(Enum.GameRule.EjJourneysDisabled);
 end
 
 function GameRulesUtil.EJShouldShowTravelersLog()
@@ -182,7 +187,9 @@ end
 
 function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
 	-- Timerunners levels can go above the purchased max level to the max current expansion level
-	return (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+	local maxLevelForExpansion = (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
+	local maxPlayerLevel = GetMaxPlayerLevel(); -- In case this particular player's max level is capped for some reason. (This is how Classic pre-patches work.)
+	return math.min(maxLevelForExpansion, maxPlayerLevel);
 end
 
 EventRegistry:RegisterFrameEventAndCallback("ACTIVE_GAME_MODE_UPDATED", GameRulesUtil.OnActiveGameModeUpdated, GameRulesUtil);

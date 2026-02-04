@@ -687,7 +687,8 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture name="$parentIcon" file="Interface\EncounterJournal\UI-EJ-Icons" parentKey="icon">
-					<Size x="32" y="32"/>
+					<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
+					<Size x="16" y="16"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
@@ -1406,6 +1407,11 @@
 								<Anchor point="TOPLEFT" x="3" y="-1"/>
 							</Anchors>
 						</Texture>
+						<Texture parentKey="evergreenBg" atlas="activities-background" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-1"/>
+							</Anchors>
+						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<FontString parentKey="Title" inherits="GameFontNormalLarge2" justifyH="LEFT" text="MONTHLY_ACTIVITIES_TAB">
@@ -1416,12 +1422,21 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<DropdownButton parentKey="ExpansionDropdown" inherits="WowStyle1DropdownTemplate">
+					<DropdownButton parentKey="ExpansionDropdown" inherits="WowStyle1DropdownTemplate"/>
+					<Button parentKey="GreatVaultButton" inherits="AlphaHighlightButtonTemplate" hidden="true" mixin="GreatVaultButtonMixin">
+						<Size x="35" y="35"/>
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="-24" y="-10"/>
+							<Anchor point="LEFT" relativeKey="$parent.ExpansionDropdown" relativePoint="RIGHT" x="2"/>
 						</Anchors>
-					</DropdownButton>
-
+						<NormalTexture parentKey="NormalTexture" atlas="ui-journeys-greatvault-button" useAtlasSize="true"/>
+						<PushedTexture parentKey="PushedTexture" atlas="ui-journeys-greatvault-button-pressed" useAtlasSize="true" alphaMode="ADD"/>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+					</Button>
 					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="748" y="367"/>
 						<Anchors>
@@ -1526,64 +1541,6 @@
 									</OnMouseUp>
 								</Scripts>
 							</Button>
-							<Button name="$parentMajorFactionRewardsButton" parentKey="majorFactionRewardsButton" hidden="true">
-								<Size x="64" y="64"/>
-								<Anchors>
-									<Anchor point="BOTTOMRIGHT" x="-29" y="123"/>
-								</Anchors>
-								<Layers>
-									<Layer level="BORDER">
-										<Texture name="$parentMajorFactionRewardsButtonBorder" parentKey="majorFactionRewardsButtonBorder" atlas="Map_Faction_Ring" useAtlasSize="false">
-											<Size x="64" y="64"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-									<Layer level="BACKGROUND">
-										<Texture name="$parentMajorFactionRewardsButtonBackground" parentKey="majorFactionRewardsButtonBackground">
-											<Size x="50" y="50"/>
-											<Color color="BLACK_COLOR"/>
-											<Anchors>
-												<Anchor point="CENTER"/>
-											</Anchors>
-										</Texture>
-										<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-											<Size x="50" y="50"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.majorFactionRewardsButtonBackground" relativePoint="CENTER"/>
-											</Anchors>
-											<MaskedTextures>
-												<MaskedTexture childKey="majorFactionRewardsButtonBackground"/>
-											</MaskedTextures>
-										</MaskTexture>
-									</Layer>
-									<Layer level="ARTWORK">
-										<Texture name="$parentMajorFactionRewardsButtonIcon" parentKey="majorFactionRewardsButtonIcon">
-											<Size x="50" y="50"/>
-											<Anchors>
-												<Anchor point="CENTER" x="-1" y="1"/>
-											</Anchors>
-										</Texture>
-										<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
-											<Size x="46" y="46"/>
-											<Anchors>
-												<Anchor point="CENTER" relativeKey="$parent.majorFactionRewardsButtonIcon" relativePoint="CENTER"/>
-											</Anchors>
-											<MaskedTextures>
-												<MaskedTexture childKey="majorFactionRewardsButtonIcon"/>
-											</MaskedTextures>
-										</MaskTexture>
-									</Layer>
-								</Layers>
-								<HighlightTexture alphaMode="ADD" file="Interface\CharacterFrame\TempPortraitAlphaMask">
-									<Size x="55" y="55"/>
-									<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-									<Color r="0.2" g="0.2" b="0.2" a="0.4"/>
-								</HighlightTexture>
-							</Button>
 							<Frame parentKey="LoreScrollingFont" inherits="ScrollingFontTemplate" frameStrata="HIGH">
 								<Size x="315" y="95"/>
 								<Anchors>
@@ -1643,15 +1600,16 @@
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
 								<Texture name="$parentDifficultyIcon" parentKey="difficultyIcon" file="Interface\EncounterJournal\UI-EJ-Icons">
-									<Size x="32" y="32"/>
+									<!-- Size dynamically overridden in EncounterJournal_SetFlagIcon. -->
+									<Size x="16" y="16"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="55" y="-10"/>
+										<Anchor point="TOPLEFT" x="60" y="-16"/>
 									</Anchors>
 								</Texture>
 								<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
 									<Size x="290" y="12"/>
 									<Anchors>
-										<Anchor point="LEFT" relativeKey="$parent.difficultyIcon" relativePoint="RIGHT" x="-4" y="0"/>
+										<!-- Anchored dynamically in lua-->
 									</Anchors>
 									<Color r="0.902" g="0.788" b="0.671"/>
 								</FontString>
@@ -2091,6 +2049,13 @@
 				</Anchors>
 			</Frame>
 
+			<Frame name="$parentJourneysFrame" inherits="JourneysFrameTemplate" setAllPoints="true" parentKey="JourneysFrame" enableMouse="true" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="0" y="0" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentInset" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
 			<Frame name="$parentSuggestFrame" setAllPoints="true" parentKey="suggestFrame" enableMouse="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
@@ -2287,6 +2252,7 @@
 					<OnMouseWheel function="EJSuggestFrame_OnMouseWheel"/>
 				</Scripts>
 			</Frame>
+
 			<Frame parentKey="TutorialsFrame" setAllPoints="true" enableMouse="true" hidden="true" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentInset" x="5" y="-51" />
@@ -2337,36 +2303,42 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Button name="$parentMonthlyActivitiesTab" inherits="BottomEncounterTierTabTemplate" text="MONTHLY_ACTIVITIES_TAB" id="1" parentKey="MonthlyActivitiesTab" mixin="MonthlyActivitiesTabButtonMixin">
+
+			<Button name="$parentJourneysTab" inherits="BottomEncounterTierTabTemplate" text="JOURNEYS_LABEL" id="1" parentKey="JourneysTab">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentSuggestTab" inherits="BottomEncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" id="2" parentKey="suggestTab">
+			<Button name="$parentMonthlyActivitiesTab" inherits="BottomEncounterTierTabTemplate" text="MONTHLY_ACTIVITIES_TAB" id="2" parentKey="MonthlyActivitiesTab" mixin="MonthlyActivitiesTabButtonMixin">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.JourneysTab" relativePoint="RIGHT" x="-15" y="0"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentSuggestTab" inherits="BottomEncounterTierTabTemplate" text="AJ_SUGGESTED_CONTENT_TAB" id="3" parentKey="suggestTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.MonthlyActivitiesTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentDungeonTab" inherits="BottomEncounterTierTabTemplate" text="DUNGEONS" id="3" parentKey="dungeonsTab">
+			<Button name="$parentDungeonTab" inherits="BottomEncounterTierTabTemplate" text="DUNGEONS" id="4" parentKey="dungeonsTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.suggestTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentRaidTab" inherits="BottomEncounterTierTabTemplate" text="RAIDS" id="4" parentKey="raidsTab">
+			<Button name="$parentRaidTab" inherits="BottomEncounterTierTabTemplate" text="RAIDS" id="5" parentKey="raidsTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.dungeonsTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" id="5" parentKey="LootJournalTab">
+			<Button name="$parentLootJournalTab" inherits="BottomEncounterTierTabTemplate" text="LOOT_JOURNAL_ITEM_SETS" id="6" parentKey="LootJournalTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.raidsTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
 			</Button>
-			<Button inherits="BottomEncounterTierTabTemplate" text="EJ_TUTORIALS" id="6" parentKey="TutorialsTab">
+			<Button inherits="BottomEncounterTierTabTemplate" text="EJ_TUTORIALS" id="7" parentKey="TutorialsTab">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.LootJournalTab" relativePoint="RIGHT" x="-15" y="0"/>
 				</Anchors>
-			</Button>
+			</Button>			
 		</Frames>
 		<Scripts>
 			<OnShow function="EncounterJournal_OnShow"/>

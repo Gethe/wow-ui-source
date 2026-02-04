@@ -886,13 +886,17 @@ function PerksProgramDividerFrameMixin:OnProductSelectedAfterModel(data)
 	self:SetShown(showDivider);
 end
 
+local s_usageRequirementTypes = {
+	[Enum.TooltipDataUsageRequirementType.RaceClass] = true,
+	[Enum.TooltipDataUsageRequirementType.Faction] = true,
+	[Enum.TooltipDataUsageRequirementType.Skill] = true,
+	[Enum.TooltipDataUsageRequirementType.PvPMedal] = true,
+	[Enum.TooltipDataUsageRequirementType.Reputation] = true,
+	[Enum.TooltipDataUsageRequirementType.Level] = true
+};
+
 local function PerksProgramProductDetails_ProcessLines(itemID, perksVendorCategoryID)
-	local tooltipLineTypes = { Enum.TooltipDataLineType.RestrictedRaceClass,
-								Enum.TooltipDataLineType.RestrictedFaction,
-								Enum.TooltipDataLineType.RestrictedSkill,
-								Enum.TooltipDataLineType.RestrictedPVPMedal,
-								Enum.TooltipDataLineType.RestrictedReputation,
-								Enum.TooltipDataLineType.RestrictedLevel, };
+	local tooltipLineTypes = { Enum.TooltipDataLineType.UsageRequirement };
 
 	if IsPerksVendorCategoryTransmog(perksVendorCategoryID) then
 		table.insert(tooltipLineTypes, Enum.TooltipDataLineType.EquipSlot);
@@ -917,7 +921,7 @@ local function PerksProgramProductDetails_ProcessLines(itemID, perksVendorCatego
 				table.insert(equipSlotLines, lineText);
 			end
 		else
-			if lineData.leftText then
+			if lineData.leftText and s_usageRequirementTypes[lineData.requirementType] then
 				local lineText = lineData.leftColor:WrapTextInColorCode(lineData.leftText);
 				table.insert(otherLines, lineText);
 			end
@@ -1769,7 +1773,7 @@ function PerksProgramToyDetailsFrameMixin:OnShow()
 	self.DescriptionText:SetFontObject(newFont);
 end
 
-local restrictions = { Enum.TooltipDataLineType.ToyEffect, Enum.TooltipDataLineType.ToyDescription };
+local restrictions = { Enum.TooltipDataLineType.ToyEffect, Enum.TooltipDataLineType.FlavorText };
 local function PerksProgramToy_ProcessLines(data)
 	local result = TooltipUtil.FindLinesFromGetter(restrictions, "GetToyByItemID", data.itemID);
 	local toyDescription, toyEffect;
@@ -1779,9 +1783,9 @@ local function PerksProgramToy_ProcessLines(data)
 				local restrictionText = lineData.leftText;
 				restrictionText = lineData.leftColor:WrapTextInColorCode(restrictionText);
 				if lineData.type == Enum.TooltipDataLineType.ToyEffect then
-					toyEffect = StripHyperlinks(restrictionText);
-				elseif lineData.type == Enum.TooltipDataLineType.ToyDescription then				
-					toyDescription = StripHyperlinks(restrictionText);
+					toyEffect = C_StringUtil.StripHyperlinks(restrictionText);
+				elseif lineData.type == Enum.TooltipDataLineType.FlavorText then				
+					toyDescription = C_StringUtil.StripHyperlinks(restrictionText);
 				end
 			end
 		end
@@ -2026,20 +2030,25 @@ function PerksProgramUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearance
 	local usingWeaponBucket = false;
 
 	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		local appearanceSourceInfo = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+
+		if not appearanceSourceInfo then
+			return false;
+		end
+
 		if not firstCategoryID then
-			firstCategoryID = categoryID;
+			firstCategoryID = appearanceSourceInfo.category;
 			if IsWeapon(firstCategoryID) then
 				usingWeaponBucket = true;
 			end
 		end
 
 		if usingWeaponBucket then
-			if not IsWeapon(categoryID) then
+			if not IsWeapon(appearanceSourceInfo.category) then
 				return false;
 			end
 		else
-			if firstCategoryID ~= categoryID then
+			if firstCategoryID ~= appearanceSourceInfo.category then
 				return false;
 			end
 		end

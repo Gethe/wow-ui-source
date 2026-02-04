@@ -646,7 +646,7 @@ function ProfessionsSpecFrameMixin:SetSelectedTab(traitTreeID)
 	self.TreeView.TreeDescription:SetWidth(325);
 	self.TreeView.TreeDescription:SetText(self.tabInfo.description);
 
-	SetPortraitToTexture(self.TreePreview.PathIcon.Icon, self.tabInfo.rootIconID);
+	self.TreePreview.PathIcon.Icon:SetTexture(self.tabInfo.rootIconID);
 	self.TreePreview.Title:SetText(self.tabInfo.name);
 	self.TreePreview.Description:SetText(self.tabInfo.description);
 	self:ConfigurePreviewHighlights(self.tabInfo.highlights);

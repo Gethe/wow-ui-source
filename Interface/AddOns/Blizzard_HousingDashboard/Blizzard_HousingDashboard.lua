@@ -1,5 +1,4 @@
-
-HousingDashboardFrameMixin = {}
+HousingDashboardFrameMixin = {};
 
 function HousingDashboardFrameMixin:OnLoad()
 	self:SetPortraitAtlasRaw("housing-dashboard-homestone-icon");
@@ -73,6 +72,14 @@ end
 function HousingDashboardFrameMixin:GetPanelExtraWidth()
 	local frame = self.TabButtons[1];
 	return frame:GetWidth();
+end
+
+function HousingDashboardFrameMixin:OpenInitiativesFrameToTaskID(taskID)
+	if not self.HouseInfoContent.ContentFrame.tabsInitialized then
+		self.HouseInfoContent.ContentFrame:Initialize();
+	end
+	self.HouseInfoContent.ContentFrame:SetTab(self.HouseInfoContent.ContentFrame.endeavorTabID)
+	self.HouseInfoContent.ContentFrame.InitiativesFrame:ScrollToInitiativeTaskID(taskID);
 end
 
 function HousingDashboardFrameMixin:UpdateSizeToContent(contentFrame)

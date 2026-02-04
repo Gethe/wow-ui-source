@@ -3,12 +3,14 @@ local UIWidgetManager =
 	Name = "UIWidgetManager",
 	Type = "System",
 	Namespace = "C_UIWidgetManager",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetAllWidgetsBySetID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local UIWidgetManager =
 		{
 			Name = "GetBulletTextListWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +49,7 @@ local UIWidgetManager =
 		{
 			Name = "GetButtonHeaderWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +64,7 @@ local UIWidgetManager =
 		{
 			Name = "GetCaptureBarWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local UIWidgetManager =
 		{
 			Name = "GetCaptureZoneVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +94,7 @@ local UIWidgetManager =
 		{
 			Name = "GetDiscreteProgressStepsVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +109,7 @@ local UIWidgetManager =
 		{
 			Name = "GetDoubleIconAndTextWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -116,6 +124,7 @@ local UIWidgetManager =
 		{
 			Name = "GetDoubleStateIconRowVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -130,6 +139,7 @@ local UIWidgetManager =
 		{
 			Name = "GetDoubleStatusBarWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -144,6 +154,7 @@ local UIWidgetManager =
 		{
 			Name = "GetFillUpFramesWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +169,7 @@ local UIWidgetManager =
 		{
 			Name = "GetHorizontalCurrenciesWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +184,7 @@ local UIWidgetManager =
 		{
 			Name = "GetIconAndTextWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -186,6 +199,7 @@ local UIWidgetManager =
 		{
 			Name = "GetIconTextAndBackgroundWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -200,6 +214,7 @@ local UIWidgetManager =
 		{
 			Name = "GetIconTextAndCurrenciesWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -214,6 +229,7 @@ local UIWidgetManager =
 		{
 			Name = "GetItemDisplayVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -228,6 +244,7 @@ local UIWidgetManager =
 		{
 			Name = "GetMapPinAnimationWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -258,8 +275,24 @@ local UIWidgetManager =
 			},
 		},
 		{
+			Name = "GetPreyHuntProgressWidgetVisualizationInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "widgetID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "widgetInfo", Type = "PreyHuntProgressWidgetVisualizationInfo", Nilable = true },
+			},
+		},
+		{
 			Name = "GetScenarioHeaderCurrenciesAndBackgroundWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -274,6 +307,7 @@ local UIWidgetManager =
 		{
 			Name = "GetScenarioHeaderDelvesWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,6 +322,7 @@ local UIWidgetManager =
 		{
 			Name = "GetScenarioHeaderTimerWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -302,6 +337,7 @@ local UIWidgetManager =
 		{
 			Name = "GetSpacerVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -316,6 +352,7 @@ local UIWidgetManager =
 		{
 			Name = "GetSpellDisplayVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -330,6 +367,7 @@ local UIWidgetManager =
 		{
 			Name = "GetStackedResourceTrackerWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -344,6 +382,7 @@ local UIWidgetManager =
 		{
 			Name = "GetStatusBarWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -358,6 +397,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextColumnRowVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -372,6 +412,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextWithStateWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -386,6 +427,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextWithSubtextWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -400,6 +442,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextureAndTextRowVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -414,6 +457,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextureAndTextVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -428,6 +472,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTextureWithAnimationVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -451,6 +496,7 @@ local UIWidgetManager =
 		{
 			Name = "GetTugOfWarWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -465,6 +511,7 @@ local UIWidgetManager =
 		{
 			Name = "GetUnitPowerBarWidgetVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -480,6 +527,7 @@ local UIWidgetManager =
 			Name = "GetWidgetSetInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -494,6 +542,7 @@ local UIWidgetManager =
 		{
 			Name = "GetZoneControlVisualizationInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -508,6 +557,7 @@ local UIWidgetManager =
 		{
 			Name = "RegisterUnitForWidgetUpdates",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -518,6 +568,7 @@ local UIWidgetManager =
 		{
 			Name = "SetProcessingUnit",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -527,6 +578,7 @@ local UIWidgetManager =
 		{
 			Name = "SetProcessingUnitGuid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -536,6 +588,7 @@ local UIWidgetManager =
 		{
 			Name = "UnregisterUnitForWidgetUpdates",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -551,11 +604,13 @@ local UIWidgetManager =
 			Name = "UpdateAllUiWidgets",
 			Type = "Event",
 			LiteralName = "UPDATE_ALL_UI_WIDGETS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "UpdateUiWidget",
 			Type = "Event",
 			LiteralName = "UPDATE_UI_WIDGET",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "widgetInfo", Type = "UIWidgetInfo", Nilable = false },
@@ -652,6 +707,20 @@ local UIWidgetManager =
 			{
 				{ Name = "None", Type = "MapPinAnimationType", EnumValue = 0 },
 				{ Name = "Pulse", Type = "MapPinAnimationType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "PreyHuntProgressState",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Cold", Type = "PreyHuntProgressState", EnumValue = 0 },
+				{ Name = "Warm", Type = "PreyHuntProgressState", EnumValue = 1 },
+				{ Name = "Hot", Type = "PreyHuntProgressState", EnumValue = 2 },
+				{ Name = "Final", Type = "PreyHuntProgressState", EnumValue = 3 },
 			},
 		},
 		{
@@ -1539,6 +1608,29 @@ local UIWidgetManager =
 			{
 				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
 				{ Name = "animType", Type = "MapPinAnimationType", Nilable = false },
+				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
+				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },
+				{ Name = "hasTimer", Type = "bool", Nilable = false },
+				{ Name = "orderIndex", Type = "number", Nilable = false },
+				{ Name = "widgetTag", Type = "string", Nilable = false },
+				{ Name = "inAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "outAnimType", Type = "WidgetAnimationType", Nilable = false },
+				{ Name = "widgetScale", Type = "UIWidgetScale", Nilable = false },
+				{ Name = "layoutDirection", Type = "UIWidgetLayoutDirection", Nilable = false },
+				{ Name = "modelSceneLayer", Type = "UIWidgetModelSceneLayer", Nilable = false },
+				{ Name = "scriptedAnimationEffectID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "PreyHuntProgressWidgetVisualizationInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "shownState", Type = "WidgetShownState", Nilable = false },
+				{ Name = "progressState", Type = "PreyHuntProgressState", Nilable = false },
+				{ Name = "tooltip", Type = "string", Nilable = false },
+				{ Name = "tooltipLoc", Type = "UIWidgetTooltipLocation", Nilable = false },
 				{ Name = "widgetSizeSetting", Type = "number", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
 				{ Name = "frameTextureKit", Type = "textureKit", Nilable = false },

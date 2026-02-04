@@ -3,12 +3,14 @@ local PartyInfo =
 	Name = "PartyInfo",
 	Type = "System",
 	Namespace = "C_PartyInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AllowedToDoPartyConversion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -65,6 +67,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmInviteTravelPass",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,6 +79,7 @@ local PartyInfo =
 			Name = "ConfirmInviteUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Immediately invites the named unit to a party, with no regard for potentially destructive actions." },
 
 			Arguments =
@@ -86,6 +90,7 @@ local PartyInfo =
 		{
 			Name = "ConfirmLeaveParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Immediately leave the party with no regard for potentially destructive actions" },
 
 			Arguments =
@@ -97,6 +102,7 @@ local PartyInfo =
 			Name = "ConfirmRequestInviteFromUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Immediately request an invite into the target party, this is the confirmation function to call after RequestInviteFromUnit, or if you would like to skip the confirmation process." },
 
 			Arguments =
@@ -123,6 +129,7 @@ local PartyInfo =
 		{
 			Name = "DoCountdown",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -212,6 +219,7 @@ local PartyInfo =
 			Name = "GetInviteConfirmationInvalidQueues",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -227,6 +235,7 @@ local PartyInfo =
 			Name = "GetInviteReferralInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -256,6 +265,7 @@ local PartyInfo =
 		{
 			Name = "GetMinItemLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -271,6 +281,7 @@ local PartyInfo =
 		{
 			Name = "GetMinLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -305,6 +316,7 @@ local PartyInfo =
 			Name = "InviteUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to invite the named unit to a party, requires confirmation in some cases (e.g. the party will convert to a raid, or if there is a party sync in progress)." },
 
 			Arguments =
@@ -333,6 +345,7 @@ local PartyInfo =
 		{
 			Name = "IsCrossFactionParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -365,6 +378,7 @@ local PartyInfo =
 		{
 			Name = "IsPartyFull",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -397,6 +411,7 @@ local PartyInfo =
 		{
 			Name = "LeaveParty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Usually this will leave the party immediately. In some cases (e.g. PartySync) the user will be prompted to confirm leaving the party, because it's potentially destructive" },
 
 			Arguments =
@@ -408,6 +423,7 @@ local PartyInfo =
 			Name = "RequestInviteFromUnit",
 			Type = "Function",
 			RequiresValidInviteTarget = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Attempt to request an invite into the target party, requires confirmation in some cases (e.g. there is a party sync in progress)." },
 
 			Arguments =
@@ -422,6 +438,7 @@ local PartyInfo =
 			Name = "SetInstanceAbandonVoteResponse",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Vote on whether to abandon instance, true for yes, false for no" },
 
 			Arguments =
@@ -432,6 +449,7 @@ local PartyInfo =
 		{
 			Name = "SetLootMethod",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -447,6 +465,7 @@ local PartyInfo =
 		{
 			Name = "SetRestrictPings",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -467,6 +486,7 @@ local PartyInfo =
 			Name = "BnetRequestInviteConfirmation",
 			Type = "Event",
 			LiteralName = "BNET_REQUEST_INVITE_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "gameAccountID", Type = "number", Nilable = false },
@@ -480,16 +500,19 @@ local PartyInfo =
 			Name = "ConvertToRaidConfirmation",
 			Type = "Event",
 			LiteralName = "CONVERT_TO_RAID_CONFIRMATION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "EnteredDifferentInstanceFromParty",
 			Type = "Event",
 			LiteralName = "ENTERED_DIFFERENT_INSTANCE_FROM_PARTY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GroupFormed",
 			Type = "Event",
 			LiteralName = "GROUP_FORMED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
@@ -500,11 +523,13 @@ local PartyInfo =
 			Name = "GroupInviteConfirmation",
 			Type = "Event",
 			LiteralName = "GROUP_INVITE_CONFIRMATION",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "GroupJoined",
 			Type = "Event",
 			LiteralName = "GROUP_JOINED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
@@ -515,6 +540,7 @@ local PartyInfo =
 			Name = "GroupLeft",
 			Type = "Event",
 			LiteralName = "GROUP_LEFT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "category", Type = "number", Nilable = false },
@@ -525,11 +551,13 @@ local PartyInfo =
 			Name = "GroupRosterUpdate",
 			Type = "Event",
 			LiteralName = "GROUP_ROSTER_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "InstanceAbandonVoteFinished",
 			Type = "Event",
 			LiteralName = "INSTANCE_ABANDON_VOTE_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "votePassed", Type = "bool", Nilable = false },
@@ -539,31 +567,37 @@ local PartyInfo =
 			Name = "InstanceAbandonVoteStarted",
 			Type = "Event",
 			LiteralName = "INSTANCE_ABANDON_VOTE_STARTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InstanceAbandonVoteUpdated",
 			Type = "Event",
 			LiteralName = "INSTANCE_ABANDON_VOTE_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InstanceBootStart",
 			Type = "Event",
 			LiteralName = "INSTANCE_BOOT_START",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InstanceBootStop",
 			Type = "Event",
 			LiteralName = "INSTANCE_BOOT_STOP",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InstanceGroupSizeChanged",
 			Type = "Event",
 			LiteralName = "INSTANCE_GROUP_SIZE_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "InviteToPartyConfirmation",
 			Type = "Event",
 			LiteralName = "INVITE_TO_PARTY_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "targetName", Type = "cstring", Nilable = false },
@@ -575,6 +609,7 @@ local PartyInfo =
 			Name = "InviteTravelPassConfirmation",
 			Type = "Event",
 			LiteralName = "INVITE_TRAVEL_PASS_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "targetName", Type = "cstring", Nilable = false },
@@ -587,6 +622,7 @@ local PartyInfo =
 			Name = "LeavePartyConfirmation",
 			Type = "Event",
 			LiteralName = "LEAVE_PARTY_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "reason", Type = "LeavePartyConfirmReason", Nilable = false },
@@ -596,11 +632,13 @@ local PartyInfo =
 			Name = "PartyInviteCancel",
 			Type = "Event",
 			LiteralName = "PARTY_INVITE_CANCEL",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PartyInviteRequest",
 			Type = "Event",
 			LiteralName = "PARTY_INVITE_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -617,54 +655,64 @@ local PartyInfo =
 			Name = "PartyLeaderChanged",
 			Type = "Event",
 			LiteralName = "PARTY_LEADER_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PartyLfgRestricted",
 			Type = "Event",
 			LiteralName = "PARTY_LFG_RESTRICTED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PartyLootMethodChanged",
 			Type = "Event",
 			LiteralName = "PARTY_LOOT_METHOD_CHANGED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PartyMemberDisable",
 			Type = "Event",
 			LiteralName = "PARTY_MEMBER_DISABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PartyMemberEnable",
 			Type = "Event",
 			LiteralName = "PARTY_MEMBER_ENABLE",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 			},
 		},
 		{
 			Name = "PlayerDifficultyChanged",
 			Type = "Event",
 			LiteralName = "PLAYER_DIFFICULTY_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerRolesAssigned",
 			Type = "Event",
 			LiteralName = "PLAYER_ROLES_ASSIGNED",
+			UniqueEvent = true,
 		},
 		{
 			Name = "RaidRosterUpdate",
 			Type = "Event",
 			LiteralName = "RAID_ROSTER_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ReadyCheck",
 			Type = "Event",
 			LiteralName = "READY_CHECK",
+			SecretInChatMessagingLockdown = true,
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "initiatorName", Type = "cstring", Nilable = false },
@@ -675,9 +723,10 @@ local PartyInfo =
 			Name = "ReadyCheckConfirm",
 			Type = "Event",
 			LiteralName = "READY_CHECK_CONFIRM",
+			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "unitTarget", Type = "UnitToken", Nilable = false },
+				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "isReady", Type = "bool", Nilable = false },
 			},
 		},
@@ -685,6 +734,7 @@ local PartyInfo =
 			Name = "ReadyCheckFinished",
 			Type = "Event",
 			LiteralName = "READY_CHECK_FINISHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "preempted", Type = "bool", Nilable = false },
@@ -694,6 +744,7 @@ local PartyInfo =
 			Name = "RequestInviteConfirmation",
 			Type = "Event",
 			LiteralName = "REQUEST_INVITE_CONFIRMATION",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "targetName", Type = "cstring", Nilable = false },
@@ -708,6 +759,7 @@ local PartyInfo =
 			Name = "VoteKickReasonNeeded",
 			Type = "Event",
 			LiteralName = "VOTE_KICK_REASON_NEEDED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "name", Type = "cstring", Nilable = false },
@@ -728,21 +780,6 @@ local PartyInfo =
 			{
 				{ Name = "QuestSync", Type = "LeavePartyConfirmReason", EnumValue = 0 },
 				{ Name = "RestrictedChallengeMode", Type = "LeavePartyConfirmReason", EnumValue = 1 },
-			},
-		},
-		{
-			Name = "PartyRequestJoinRelation",
-			Type = "Enumeration",
-			NumValues = 5,
-			MinValue = 0,
-			MaxValue = 4,
-			Fields =
-			{
-				{ Name = "None", Type = "PartyRequestJoinRelation", EnumValue = 0 },
-				{ Name = "Friend", Type = "PartyRequestJoinRelation", EnumValue = 1 },
-				{ Name = "Guild", Type = "PartyRequestJoinRelation", EnumValue = 2 },
-				{ Name = "Club", Type = "PartyRequestJoinRelation", EnumValue = 3 },
-				{ Name = "NumPartyRequestJoinRelations", Type = "PartyRequestJoinRelation", EnumValue = 4 },
 			},
 		},
 	},

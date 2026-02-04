@@ -2,6 +2,7 @@ local PingPinFrameAPI =
 {
 	Name = "PingPinFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{

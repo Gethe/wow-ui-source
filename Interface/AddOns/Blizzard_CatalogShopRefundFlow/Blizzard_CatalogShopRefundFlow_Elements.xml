@@ -1,9 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-
-	<Button name="CatalogShopRefundButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
-		<Size x="180" y="30"/>
+	<Button name="CatalogShopRefundButtonLargeTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
+		<Size x="150" y="50"/>
 		<NormalFont style="GameFontWhiteLarge"/>
 		<HighlightFont style="GameFontHighlightLarge"/>
 		<DisabledFont style="GameFontDisableLarge"/>
@@ -14,11 +13,11 @@
 		</Scripts>
 	</Button>
 
-	<Button name="CatalogShopRedGoldRefundButtonTemplate" inherits="SharedGoldRedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
-		<Size x="180" y="30"/>
-		<NormalFont style="GameFontNormalLarge"/>
-		<HighlightFont style="GameFontHighlightLarge"/>
-		<DisabledFont style="GameFontDisableLarge"/>		
+	<Button name="CatalogShopRefundButtonTemplate" inherits="SharedButtonTemplate" mixin="CatalogShopRefundButtonMixin" virtual="true" >
+		<Size x="120" y="30"/>
+		<NormalFont style="GameFontWhite"/>
+		<HighlightFont style="GameFontHighlight"/>
+		<DisabledFont style="GameFontDisable"/>
 		<Scripts>
 			<OnClick method="OnClick" />
 			<OnEnter method="OnEnter" />
@@ -26,4 +25,135 @@
 		</Scripts>
 	</Button>
 
+	<Button name="RefundHeaderSortButtonTemplate" motionScriptsWhileDisabled="true" inherits="ResizeLayoutFrame" mixin="RefundHeaderSortButtonMixin" virtual="true">
+		<KeyValues>
+			<!--
+			the data field we will sort on
+			<KeyValue key="sortField" value="price" type="string"/>
+
+			the atlas for the icon if we don't have a label
+			<KeyValue key="iconAtlas" value="perks-clock" type="string"/>
+
+			the text for the label if we don't have an icon
+			<KeyValue key="labelText" value="PERKS_PROGRAM_PRICE" type="global"/>
+			icon and label are mutually exclusive			
+			
+			the default tint for either the icon or the label
+			<KeyValue key="normalColor" value="NORMAL_FONT_COLOR" type="global"/>
+			
+			the highlight or mouse over color for either the icon or the label
+			<KeyValue key="highlightColor" value="WHITE_FONT_COLOR" type="global"/>
+			-->
+			<KeyValue key="widthPadding" value="5" type="number"/>
+			<KeyValue key="heightPadding" value="5" type="number"/>
+		</KeyValues>
+
+		<Size x="1" y="1"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Label" justifyH="LEFT" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Arrow" atlas="auctionhouse-ui-sortarrow" hidden="true">
+					<Size x="10" y="10"/>
+					<KeyValues>
+						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+					</KeyValues>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+			<OnClick method="OnClick" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
+
+	<Button name="RefundFlowDecorButtonTemplate" motionScriptsWhileDisabled="true" mixin="RefundFlowDecorButtonMixin" virtual="true">
+		<Size x="176" y="48" />
+		<Frames>
+			<Frame parentKey="ArtContainer" frameLevel="986">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="HighlightTexture" atlas="perks-list-hover" hidden="true" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="ContentsContainer">
+				<Anchors>
+					<Anchor point="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Anchors>
+				<Frames>
+					<CheckButton parentKey="RefundCheckbox" motionScriptsWhileDisabled="true">
+						<Size x="30" y="29"/>
+						<Anchors>
+							<Anchor point="LEFT" x="0" y="0" />
+						</Anchors>
+						<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+						<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+					</CheckButton>
+				</Frames>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="NameText" inherits="GameFontNormalMed3" wordwrap="true" justifyH="LEFT">
+							<Color color="NORMAL_FONT_COLOR" />
+							<Size x="220" y="38" />
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RefundCheckbox" relativePoint="RIGHT" x="5" y="0" />
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RefundAmountIcon" atlas="hearthsteel-icon-32x32">
+							<Size x="21" y="21" />
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.RefundCheckbox" relativePoint="RIGHT" x="300" y="0" />
+							</Anchors>
+						</Texture>
+						<FontString parentKey="RefundAmountText" inherits="GameFontNormalMed3" wordwrap="false" justifyH="LEFT">
+							<Color color="WHITE_FONT_COLOR" />
+							<Size x="0" y="0" />
+							<Anchors>
+								<Anchor point="RIGHT" relativeKey="$parent.RefundAmountIcon" relativePoint="LEFT" x="-2" y="0" />
+							</Anchors>
+						</FontString>
+						<FontString parentKey="TimeRemainingText" inherits="GameFontNormalMed3" wordwrap="false" justifyH="LEFT">
+							<Size x="0" y="0" />
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="-30" y="0" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEnter method="OnEnter" />
+			<OnLeave method="OnLeave" />
+		</Scripts>
+	</Button>
 </Ui>

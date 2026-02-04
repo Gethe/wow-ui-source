@@ -14,11 +14,6 @@ function ProfessionsCustomerListingsElementMixin:Init(elementData)
 	self.order = elementData.option;
 end
 
-local function AnyRecraftablePredicate(itemGUID)
-	local craftRecipeID, craftSkillLineAbility = C_TradeSkillUI.GetOriginalCraftRecipeID(itemGUID);
-	return craftSkillLineAbility ~= nil and C_CraftingOrders.CanOrderSkillAbility(craftSkillLineAbility);
-end
-
 local ProfessionsCustomerOrderFormEvents =
 {
     "UNIT_INVENTORY_CHANGED",
@@ -104,34 +99,21 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 		if buttonName == "LeftButton" and not self.committed then
 			HelpTip:Hide(self, CRAFTING_ORDER_TUTORIAL_RECRAFT);
 
-			local flyout = ToggleProfessionsItemFlyout(self.RecraftSlot.InputSlot, self);
-			if flyout then
-				local function OnFlyoutItemSelected(o, flyout, elementData)
-					local itemLocation = C_Item.GetItemLocation(elementData.itemGUID);
-					C_Sound.PlayItemSound(Enum.ItemSoundType.Drop, itemLocation);
-					self:SetRecraftItemGUID(elementData.itemGUID);
-				end
-	
-				flyout.GetElementsImplementation = function(self)
-					local isIndexTable = true;
-					local itemGUIDs = tFilter(C_TradeSkillUI.GetRecraftItems(), AnyRecraftablePredicate, isIndexTable);
-					local items = ItemUtil.TransformItemGUIDsToItems(itemGUIDs);
-					local elementData = {items = items, itemGUIDs = itemGUIDs};
-					return elementData;
-				end
-
-				flyout.OnElementEnterImplementation = function(elementData, tooltip)
-					tooltip:SetItemByGUID(elementData.itemGUID);
-				end
-				
-				flyout.OnElementEnabledImplementation = function(button, elementData)
-					return true;
-				end
-
-				local canModifyFilter = false;
-				flyout:Init(self.RecraftSlot.InputSlot, self.transaction, canModifyFilter);
-				flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, self);
+			if IsProfessionsItemFlyoutOpen() then
+				CloseProfessionsItemFlyout();
+				return;
 			end
+
+			local behavior = CreateProfessionsOrderRecraftFlyout(self.transaction);
+			local flyout = OpenProfessionsItemFlyout(self.RecraftSlot.InputSlot, self, behavior);
+
+			local function OnFlyoutItemSelected(o, flyout, elementData)
+				local itemLocation = C_Item.GetItemLocation(elementData.itemGUID);
+				C_Sound.PlayItemSound(Enum.ItemSoundType.Drop, itemLocation);
+				self:SetRecraftItemGUID(elementData.itemGUID);
+			end
+
+			flyout:RegisterCallback(ProfessionsFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, self);
 		elseif self.order.recraftItemHyperlink then
 			HandleModifiedItemClick(self.order.recraftItemHyperlink);
 		end
@@ -433,14 +415,7 @@ function ProfessionsCustomerOrderFormMixin:InitCurrentListings()
 end
 
 function ProfessionsCustomerOrderFormMixin:OnLoad()
-	local function PoolReset(pool, slot)
-		slot:Reset();
-		slot.Button:SetScript("OnEnter", nil);
-		slot.Button:SetScript("OnClick", nil);
-		slot.Button:SetScript("OnMouseDown", nil);
-		Pool_HideAndClearAnchors(pool, slot);
-	end
-	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", PoolReset);
+	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate");
 
 	self:InitPaymentContainer();
 	self:InitButtons();
@@ -529,7 +504,7 @@ function ProfessionsCustomerOrderFormMixin:SetupQualityDropdown()
 			button.fontString:SetFontObject("Number12Font");
 			
 			if index > 1 then
-				button.fontString:SetPoint("LEFT", button.leftTexture1, "RIGHT", 1, 7);
+				button.fontString:SetPoint("LEFT", button.leftTexture1, "RIGHT", 1, 0);
 			end
 		end);
 	end
@@ -542,7 +517,8 @@ function ProfessionsCustomerOrderFormMixin:SetupQualityDropdown()
 		local smallIcon = true;
 		local overrideOffsetY = 0;
 		for index in ipairs(self.minQualityIDs) do
-			local text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(index, smallIcon, overrideOffsetY);
+			local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.order.spellID, index);
+			local text = index == 1 and NONE or Professions.GetChatIconMarkupForQuality(qualityInfo, smallIcon, overrideOffsetY);
 			CreateRadio(rootDescription, text, index);
 		end
 	end);
@@ -660,10 +636,11 @@ function ProfessionsCustomerOrderFormMixin:SetOrderRecipient(index)
 	self:UpdateListOrderButton();
 end
 
-function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(index)
-	self.order.minQuality = index;
+function ProfessionsCustomerOrderFormMixin:SetMinimumQualityIndex(quality)
+	self.order.minQuality = quality;
 
-	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, index);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(self.order.spellID, quality);
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, qualityInfo);
 end
 
 local helptipSystemName = "Professions Customer Orders";
@@ -814,10 +791,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 					slot.Button:SetScript("OnClick", function(button, buttonName, down)
 						if IsShiftKeyDown() then
 							local qualityIndex = Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic) or 1;
-							local handled, link = Professions.HandleQualityReagentItemLink(recipeID, reagentSlotSchematic, qualityIndex);
-							if not handled then
-								Professions.TriggerReagentClickedEvent(link);
-							end
+							Professions.HandleQualityReagentLink(recipeID, reagentSlotSchematic, qualityIndex);
 							return;
 						end
 
@@ -844,7 +818,8 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 
 					slot.Button:SetScript("OnEnter", function()
 						GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
-						Professions.SetupQualityReagentTooltip(slot, transaction);
+						Professions.SetupReagentQualityPickerTooltip(slot, transaction);
+
 						if orderSource ~= Enum.CraftingOrderReagentSource.Any then
 							GameTooltip_AddBlankLineToTooltip(GameTooltip);
 							local sourceMsg = (orderSource == Enum.CraftingOrderReagentSource.Crafter) and PROFESSIONS_ORDER_CRAFTER_REQUIRED_REAGENT or PROFESSIONS_ORDER_CUSTOMER_REQUIRED_REAGENT;
@@ -855,17 +830,22 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 				else
 					slot.Button:SetScript("OnClick", function(button, buttonName, down)
 						if IsShiftKeyDown() then
-							local handled, link = Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic);
-							if not handled then
-								Professions.TriggerReagentClickedEvent(link);
-							end
-							return;
+							Professions.HandleFixedReagentLink(recipeID, reagentSlotSchematic);
 						end
 					end);
 
 					slot.Button:SetScript("OnEnter", function()
 						GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
-						local tooltipInfo = CreateBaseTooltipInfo("GetRecipeReagentItem", recipeID, reagentSlotSchematic.dataSlotIndex);
+
+						local tooltipInfo = nil;
+						local reagent = slot:GetReagent();
+						if reagent.itemID then
+							 tooltipInfo = CreateBaseTooltipInfo("GetRecipeReagentItem", recipeID, reagentSlotSchematic.dataSlotIndex);
+						elseif reagent.currencyID then
+							local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reagent.currencyID);
+							tooltipInfo = CreateBaseTooltipInfo("GetCurrencyByID", reagent.currencyID, currencyInfo.quantity);
+						end
+
 						tooltipInfo.tooltipPostCall = function(tooltip)
 							if orderSource ~= Enum.CraftingOrderReagentSource.Any then
 								GameTooltip_AddBlankLineToTooltip(tooltip);
@@ -881,7 +861,13 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 					slot:SetCheckmarkShown(hasAnyAllocation);
 					slot:SetCheckmarkAtlas("Professions-Icon-Customer");
 					slot:SetCheckmarkTooltipText(hasAnyAllocation and PROFESSIONS_CUSTOMER_ORDER_REAGENT_PROVIDED);
-					slot:SetOverrideQuantity(hasAnyAllocation and reagentSlotSchematic.quantityRequired or 0);
+
+					if hasAnyAllocation then
+						local quantityRequired = reagentSlotSchematic:GetQuantityRequired(slot:GetReagent());
+						slot:SetOverrideQuantity(quantityRequired);
+					else
+						slot:SetOverrideQuantity(0);
+					end
 				end
 			else
 				slot.Button:SetLocked(false);
@@ -905,24 +891,24 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 
 				local function OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic)
 					local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
-					local quantity = math.min(quantityOwned, reagentSlotSchematic.quantityRequired);
+					local quantity = math.min(quantityOwned, reagentSlotSchematic:GetQuantityRequired(reagent));
 					self.transaction:OverwriteAllocation(slotIndex, reagent, quantity);
 				end
 
 				local function AllocateModificationWithQuantityInPossession(slotIndex, reagentSlotSchematic)
 					local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-					if modification and modification.itemID > 0 then
-						local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-						OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic);
+					if Professions.IsValidModification(modification) then
+						OverwriteAllocationWithQuantityInPossession(slotIndex, modification.reagent, reagentSlotSchematic);
 					end
 				end
 
 				slot.Button:SetScript("OnEnter", function()
 					GameTooltip:SetOwner(slot.Button, "ANCHOR_RIGHT");
 
-					local areRequirementsAllocated = not slot.originalItem or transaction:AreAllRequirementsAllocatedByItemID(slot.originalItem:GetItemID());
-					local suppressInstruction = committed or (slot.originalItem and areRequirementsAllocated);
-					Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, nil, nil, suppressInstruction, self.transaction);
+					local originalReagent = slot:GetOriginalReagent();
+					local areRequirementsAllocated = not originalReagent or transaction:AreDependentReagentsAllocated(originalReagent);
+					local suppressInstruction = committed or (originalReagent and areRequirementsAllocated);
+					Professions.SetupOptionalReagentTooltip(slot, self.transaction, reagentSlotSchematic, suppressInstruction);
 					GameTooltip:Show();
 				end);
 				
@@ -931,94 +917,45 @@ function ProfessionsCustomerOrderFormMixin:UpdateReagentSlots()
 						if buttonName == "LeftButton" then
 							HelpTip:Hide(self, CRAFTING_ORDER_TUTORIAL_OPTIONAL_REAGENTS);
 
-							local flyout = ToggleProfessionsItemFlyout(slot.Button, self);
-							if flyout then
-								local function OnUndoClicked(o, flyout)
-									AllocateModificationWithQuantityInPossession(slotIndex, reagentSlotSchematic);
-									
-									slot:RestoreOriginalItem();
-									slot:SetHighlightShown(false);
-									
-									self:UpdateListOrderButton();
-									
-									EventRegistry:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
-								end
-
-								local function OnFlyoutItemSelected(o, flyout, elementData)
-									local item = elementData.item;
-									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
-									OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic);
-
-									slot:SetItem(item);
-									slot:SetHighlightShown(not slot:IsOriginalItemSet());
-									 
-									self:UpdateListOrderButton();
-								end
-
-								flyout.GetElementsImplementation = function(self, filterAvailable)
-									local itemIDs = Professions.ExtractItemIDsFromCraftingReagents(reagentSlotSchematic.reagents);
-									if filterAvailable then
-										itemIDs = ItemUtil.FilterOwnedItems(itemIDs);
-									end
-									local items = ItemUtil.TransformItemIDsToItems(itemIDs);
-									local elementData = {items = items, useCharacterInventoryOnly = self.transaction:ShouldUseCharacterInventoryOnly()};
-									return elementData;
-								end
-								
-								flyout.OnElementEnterImplementation = function(elementData, tooltip)
-									Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, nil, self.transaction, reagentSlotSchematic, self.transaction:ShouldUseCharacterInventoryOnly());
-								end
-	
-								flyout.OnElementEnabledImplementation = function(button, elementData, displayCount)
-									if displayCount <= 0 then
-										return false;
-									end
-
-									local item = elementData.item;
-									local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
-									if self.transaction:HasAllocatedReagent(reagent) then
-										return false;
-									end
-
-									if not self.transaction:AreAllRequirementsAllocated(item) then
-										return false;
-									end
-
-									local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, self.transaction:ShouldUseCharacterInventoryOnly());
-									if quantityOwned < reagentSlotSchematic.quantityRequired then
-										return false;
-									end
-
-									local recraftAllocation = transaction:GetRecraftAllocation();
-									if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
-										return false;
-									end
-
-									return true;
-								end
-
-								flyout.GetElementValidImplementation = function(button, elementData)
-									return self.transaction:AreAllRequirementsAllocated(elementData.item);
-								end
-
-								flyout.GetUndoElementImplementation = function(self)
-									if not slot:IsOriginalItemSet() then
-										return slot:GetOriginalItem();
-									end
-								end
-
-								flyout:Init(slot.Button, self.transaction);
-								flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
-								flyout:RegisterCallback(ProfessionsItemFlyoutMixin.Event.UndoClicked, OnUndoClicked, slot);
+							if IsProfessionsItemFlyoutOpen() then
+								CloseProfessionsItemFlyout();
+								return;
 							end
+
+							local behavior = CreateProfessionsOrderMCRFlyout(self.transaction, reagentSlotSchematic, slot);
+							local flyout = OpenProfessionsItemFlyout(slot.Button, self, behavior);
+
+							local function OnUndoClicked(o, flyout)
+								AllocateModificationWithQuantityInPossession(slotIndex, reagentSlotSchematic);
+								
+								slot:RestoreOriginalReagent();
+								slot:SetHighlightShown(false);
+								
+								self:UpdateListOrderButton();
+								
+								EventRegistry:TriggerEvent(ProfessionsRecipeSchematicFormMixin.Event.AllocationsModified);
+							end
+
+							local function OnFlyoutItemSelected(o, flyout, elementData)
+								local reagent = elementData.reagent;
+								OverwriteAllocationWithQuantityInPossession(slotIndex, reagent, reagentSlotSchematic);
+								slot:SetReagent(reagent);
+								slot:SetHighlightShown(not slot:IsOriginalReagentSet());
+								 
+								self:UpdateListOrderButton();
+							end
+
+							flyout:RegisterCallback(ProfessionsFlyoutMixin.Event.ItemSelected, OnFlyoutItemSelected, slot);
+							flyout:RegisterCallback(ProfessionsFlyoutMixin.Event.UndoClicked, OnUndoClicked, slot);
 						elseif buttonName == "RightButton" then
 							-- Normally you cannot remove the reagent if it is the original item unless you are replacing it with another
 							-- reagent, however, in the case of infusions with dependent reagents, if a dependent reagent is changed to something
 							-- the infusion cannot be supported on, we need to be able to explicly remove it from the order.
-							if not slot.originalItem or not transaction:AreAllRequirementsAllocatedByItemID(slot.originalItem:GetItemID()) then
+							local originalReagent = slot:GetOriginalReagent();
+							if not originalReagent or not transaction:AreDependentReagentsAllocated(originalReagent) then
 								transaction:ClearAllocations(slotIndex);
 
-								slot:ClearItem();
+								slot:ClearReagent();
 
 								if not reagentSlotSchematic.required then
 									-- Add icon not shown for modified + required reagents. This already
@@ -1090,7 +1027,7 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		self.TrackRecipeCheckbox.Checkbox:SetChecked(C_TradeSkillUI.IsRecipeTracked(recipeID, self.order.isRecraft));
 	end
 
-	local recipeSchematic = self.order.spellID and C_TradeSkillUI.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
+	local recipeSchematic = self.order.spellID and ProfessionsUtil.GetRecipeSchematic(self.order.spellID, self.order.isRecraft);
 	self.transaction = recipeSchematic and CreateProfessionsRecipeTransaction(recipeSchematic);
 
 	if self.order.isRecraft then
@@ -1101,9 +1038,8 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		end
 		local function AllocateModification(slotIndex, reagentSlotSchematic)
 			local modification = self.transaction:GetModification(reagentSlotSchematic.dataSlotIndex);
-			if modification and modification.itemID > 0 then
-				local reagent = Professions.CreateCraftingReagentByItemID(modification.itemID);
-				self.transaction:OverwriteAllocation(slotIndex, reagent, reagentSlotSchematic.quantityRequired);
+			if Professions.IsValidModification(modification) then
+				self.transaction:OverwriteAllocation(slotIndex, modification.reagent, reagentSlotSchematic:GetQuantityRequired(modification.reagent));
 			end
 		end
 		for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
@@ -1113,14 +1049,20 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 		end
 	end
 
-	self.RecraftSlot:Init(self.transaction, AnyRecraftablePredicate, function(itemGUID) self:SetRecraftItemGUID(itemGUID); end, self.order.recraftItemHyperlink);
-	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, self.order.minQuality or 1);
+	local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality or 1);
+
+	local function OverrideItemTransition(itemGUID)
+		self:SetRecraftItemGUID(itemGUID);
+	end
+
+	self.RecraftSlot:Init(self.transaction, Professions.AnyRecraftablePredicate, OverrideItemTransition, self.order.recraftItemHyperlink);
+	SetItemCraftingQualityOverlayOverride(self.RecraftSlot.OutputSlot, qualityInfo);
 
 	self.minQualityIDs = recipeID and C_TradeSkillUI.GetQualitiesForRecipe(recipeID);
 
 	if self.committed then
 		for _, reagentInfo in ipairs(self.order.reagents) do
-			self.transaction:OverwriteAllocation(reagentInfo.slotIndex, reagentInfo.reagent, reagentInfo.reagent.quantity);
+			self.transaction:OverwriteAllocation(reagentInfo.slotIndex, reagentInfo.reagentInfo.reagent, reagentInfo.reagentInfo.quantity);
 		end
 	else
 		Professions.AllocateAllBasicReagents(self.transaction, true);
@@ -1135,12 +1077,11 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 				if reagentSlotSchematic.dataSlotType == Enum.TradeskillSlotDataType.ModifiedReagent then
 					-- Skip any slots where the existing modification was replaced by another customer provided slot.
-					local allocs = self.transaction:GetAllocations(slotIndex);
-					local alloc = allocs:SelectFirst();
-					if alloc then
-						local reagent = alloc:GetReagent();
-						local itemID = reagent.itemID;
-						if itemID and itemID > 0 and not self.transaction:AreAllRequirementsAllocatedByItemID(itemID) then
+					local allocations = self.transaction:GetAllocations(slotIndex);
+					local allocation = allocations:GetFirstAllocation();
+					if allocation then
+						local reagent = allocation:GetReagent();
+						if Professions.IsValidReagent(reagent) and not self.transaction:AreDependentReagentsAllocated(reagent) then
 							self.transaction:ClearAllocations(slotIndex);
 							self.transaction:ClearModification(reagentSlotSchematic.dataSlotIndex);
 						end
@@ -1156,9 +1097,10 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			if outputItemInfo.hyperlink then
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				local itemName = item:GetItemName();
-				local hasMinQuality = (self.order.minQuality ~= nil and self.order.minQuality > 1) and self.committed;
-				if hasMinQuality then
-					itemName = itemName.." "..CreateAtlasMarkup(string.format("Professions-Icon-Quality-Tier%d-Small", self.order.minQuality));
+				local quality = self.order.minQuality or 1;
+				if self.committed and quality > 1 then
+					local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality);
+					itemName = itemName.." "..CreateAtlasMarkup(qualityInfo.iconSmall);
 				end
 				self.RecraftRecipeName:SetText(PROFESSIONS_ORDER_RECRAFT_TITLE_FMT:format(item:GetItemQualityColor().color:WrapTextInColorCode(itemName)));
 			else
@@ -1172,9 +1114,10 @@ function ProfessionsCustomerOrderFormMixin:InitSchematic()
 			if outputItemInfo.hyperlink then
 				local item = Item:CreateFromItemLink(outputItemInfo.hyperlink);
 				local itemName = item:GetItemName();
-				local hasMinQuality = (self.order.minQuality ~= nil and self.order.minQuality > 1) and self.committed;
-				if hasMinQuality then
-					itemName = itemName.." "..CreateAtlasMarkup(string.format("Professions-Icon-Quality-Tier%d-Small", self.order.minQuality));
+				local quality = self.order.minQuality or 1;
+				if self.committed and quality > 1 then
+					local qualityInfo = C_TradeSkillUI.GetRecipeItemQualityInfo(recipeID, self.order.minQuality);
+					itemName = itemName.." "..CreateAtlasMarkup(qualityInfo.iconSmall);
 				end
 				self.RecipeName:SetText(itemName);
 				self.RecipeName:SetTextColor(item:GetItemQualityColorRGB());
@@ -1252,7 +1195,12 @@ function ProfessionsCustomerOrderFormMixin:Init(order)
 	self.depositCost = 0;
 	self.committed = order.orderID ~= nil;
 	self.transaction = nil;
-	self.RecraftSlot:Init(self.transaction, AnyRecraftablePredicate, function(itemGUID) self:SetRecraftItemGUID(itemGUID); end, self.order.recraftItemHyperlink);
+
+	local function OverrideItemTransition(itemGUID)
+		self:SetRecraftItemGUID(itemGUID);
+	end
+
+	self.RecraftSlot:Init(self.transaction, Professions.AnyRecraftablePredicate, OverrideItemTransition, self.order.recraftItemHyperlink);
 	self.minQualityIDs = nil;
 	self.recraftGUID = nil;
 	if self.loader then
@@ -1435,7 +1383,10 @@ function ProfessionsCustomerOrderFormMixin:AreRequiredReagentsProvided()
 	local transaction = self.transaction;
 	local recipeSchematic = transaction:GetRecipeSchematic();
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
-		local mustProvide = (reagentSlotSchematic.required and ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Customer) or ((reagentSlotSchematic.orderSource == Enum.CraftingOrderReagentSource.Any) and (self.order.orderType == Enum.CraftingOrderType.Public))));
+		local orderSource = reagentSlotSchematic.orderSource;
+		local mustProvide = (reagentSlotSchematic.required and
+			((orderSource == Enum.CraftingOrderReagentSource.Customer) or
+			((orderSource == Enum.CraftingOrderReagentSource.Any) and (self.order.orderType == Enum.CraftingOrderType.Public))));
 		if mustProvide and not transaction:HasAllAllocations(slotIndex) then
 			return false;
 		end
@@ -1450,15 +1401,11 @@ function ProfessionsCustomerOrderFormMixin:AnyModifyingReagentsChanged()
 	for slotIndex, reagentSlotSchematic in ipairs(recipeSchematic.reagentSlotSchematics) do
 		if reagentSlotSchematic.reagentType == Enum.CraftingReagentType.Modifying then
 			local originalModification = transaction:GetOriginalModification(reagentSlotSchematic.dataSlotIndex);
-			local originalModItemID = originalModification and originalModification.itemID;
-			local currentAllocation = transaction:GetAllocations(slotIndex);
-			local allocs = currentAllocation:SelectFirst();
-			local currentAllocationItemID = 0;
-			if allocs then
-				local reagent = allocs:GetReagent();
-				currentAllocationItemID = reagent.itemID;
-			end
-			if originalModItemID ~= currentAllocationItemID then
+			local originalModReagent = originalModification and originalModification.reagent;
+			local allocations = transaction:GetAllocations(slotIndex);
+			local allocation = allocations:GetFirstAllocation();
+			local allocationReagent = allocation and allocation:GetReagent();
+			if (not allocationReagent) or (not ProfessionsUtil.CraftingReagentMatches(originalModReagent, allocationReagent)) then
 				return true;
 			end
 		end
@@ -1487,7 +1434,7 @@ function ProfessionsCustomerOrderFormMixin:UpdateListOrderButton()
 	elseif not self:AreRequiredReagentsProvided() then
 		enabled = false;
 		errorText = PROFESSIONS_INSUFFICIENT_REAGENTS_CUSTOMER;
-	elseif not self.transaction:HasMetPrerequisiteRequirements() then
+	elseif self.transaction:HasMissingDependentReagents() then
 		enabled = false;
 		errorText = PROFESSIONS_PREREQUISITE_REAGENTS_CUSTOMER;
 	elseif self.order.orderType == Enum.CraftingOrderType.Personal and self.OrderRecipientTarget:GetText() == "" then
@@ -1541,9 +1488,10 @@ function ProfessionsCustomerOrderFormMixin:ListOrder()
     local itemMods = self.transaction:GetRecraftItemMods();
     if itemMods then
         for dataSlotIndex, modification in ipairs(itemMods) do
-            if modification.itemID > 0 then
+			if Professions.IsValidModification(modification) then
+				local reagent = modification.reagent;
                 for _, craftingReagentInfo in ipairs(craftingReagentTbl) do
-                    if (craftingReagentInfo.itemID == modification.itemID) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+                    if (ProfessionsUtil.CraftingReagentMatches(craftingReagentInfo.reagent, reagent) and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex)) then
                         -- If the modification still exists in the same position, set it's quantity to 0 to inform the server
                         -- not to modify this reagent.
                         craftingReagentInfo.quantity = 0;
@@ -1560,7 +1508,7 @@ function ProfessionsCustomerOrderFormMixin:ListOrder()
 		orderDuration = self.duration,
 		tipAmount = self.PaymentContainer.TipMoneyInputFrame:GetAmount(),
 		customerNotes = self.PaymentContainer.NoteEditBox.ScrollingEditBox:GetInputText(),
-		reagentItems = self.transaction:CreateRegularReagentInfoTbl(),
+		reagentInfos = self.transaction:CreateReagentInfoTbl(),
 		craftingReagentItems = craftingReagentTbl,
 		recraftItem = self.recraftGUID,
 	};

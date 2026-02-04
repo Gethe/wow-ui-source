@@ -69,6 +69,19 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "AuraFrameVisibleSetting",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "AuraFrameVisibleSetting", EnumValue = 0 },
+				{ Name = "InCombat", Type = "AuraFrameVisibleSetting", EnumValue = 1 },
+				{ Name = "Hidden", Type = "AuraFrameVisibleSetting", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "BagsDirection",
 			Type = "Enumeration",
 			NumValues = 4,
@@ -145,11 +158,51 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "DamageMeterNumbers",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Minimal", Type = "DamageMeterNumbers", EnumValue = 0 },
+				{ Name = "Compact", Type = "DamageMeterNumbers", EnumValue = 1 },
+				{ Name = "Complete", Type = "DamageMeterNumbers", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DamageMeterStyle",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Default", Type = "DamageMeterStyle", EnumValue = 0 },
+				{ Name = "Thin", Type = "DamageMeterStyle", EnumValue = 1 },
+				{ Name = "Bordered", Type = "DamageMeterStyle", EnumValue = 2 },
+				{ Name = "FullBackground", Type = "DamageMeterStyle", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "DamageMeterVisibility",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "DamageMeterVisibility", EnumValue = 0 },
+				{ Name = "InCombat", Type = "DamageMeterVisibility", EnumValue = 1 },
+				{ Name = "Hidden", Type = "DamageMeterVisibility", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "EditModeAccountSetting",
 			Type = "Enumeration",
-			NumValues = 29,
+			NumValues = 33,
 			MinValue = 0,
-			MaxValue = 28,
+			MaxValue = 32,
 			Fields =
 			{
 				{ Name = "ShowGrid", Type = "EditModeAccountSetting", EnumValue = 0 },
@@ -181,6 +234,10 @@ local EditModeManagerConstants =
 				{ Name = "ShowVehicleSeatIndicator", Type = "EditModeAccountSetting", EnumValue = 26 },
 				{ Name = "ShowArchaeologyBar", Type = "EditModeAccountSetting", EnumValue = 27 },
 				{ Name = "ShowCooldownViewer", Type = "EditModeAccountSetting", EnumValue = 28 },
+				{ Name = "ShowPersonalResourceDisplay", Type = "EditModeAccountSetting", EnumValue = 29 },
+				{ Name = "ShowEncounterEvents", Type = "EditModeAccountSetting", EnumValue = 30 },
+				{ Name = "ShowDamageMeter", Type = "EditModeAccountSetting", EnumValue = 31 },
+				{ Name = "ShowExternalDefensives", Type = "EditModeAccountSetting", EnumValue = 32 },
 			},
 		},
 		{
@@ -238,9 +295,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeAuraFrameSetting",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeAuraFrameSetting", EnumValue = 0 },
@@ -251,18 +308,22 @@ local EditModeManagerConstants =
 				{ Name = "IconSize", Type = "EditModeAuraFrameSetting", EnumValue = 5 },
 				{ Name = "IconPadding", Type = "EditModeAuraFrameSetting", EnumValue = 6 },
 				{ Name = "DeprecatedShowFull", Type = "EditModeAuraFrameSetting", EnumValue = 7 },
+				{ Name = "VisibleSetting", Type = "EditModeAuraFrameSetting", EnumValue = 8 },
+				{ Name = "Opacity", Type = "EditModeAuraFrameSetting", EnumValue = 9 },
+				{ Name = "ShowDispelType", Type = "EditModeAuraFrameSetting", EnumValue = 10 },
 			},
 		},
 		{
 			Name = "EditModeAuraFrameSystemIndices",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 1,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "BuffFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 1 },
 				{ Name = "DebuffFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 2 },
+				{ Name = "ExternalDefensivesFrame", Type = "EditModeAuraFrameSystemIndices", EnumValue = 3 },
 			},
 		},
 		{
@@ -309,9 +370,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeCooldownViewerSetting",
 			Type = "Enumeration",
-			NumValues = 11,
+			NumValues = 12,
 			MinValue = 0,
-			MaxValue = 10,
+			MaxValue = 11,
 			Fields =
 			{
 				{ Name = "Orientation", Type = "EditModeCooldownViewerSetting", EnumValue = 0 },
@@ -325,6 +386,7 @@ local EditModeManagerConstants =
 				{ Name = "HideWhenInactive", Type = "EditModeCooldownViewerSetting", EnumValue = 8 },
 				{ Name = "ShowTimer", Type = "EditModeCooldownViewerSetting", EnumValue = 9 },
 				{ Name = "ShowTooltips", Type = "EditModeCooldownViewerSetting", EnumValue = 10 },
+				{ Name = "BarWidthScale", Type = "EditModeCooldownViewerSetting", EnumValue = 11 },
 			},
 		},
 		{
@@ -342,6 +404,29 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeDamageMeterSetting",
+			Type = "Enumeration",
+			NumValues = 13,
+			MinValue = 0,
+			MaxValue = 12,
+			Fields =
+			{
+				{ Name = "Visibility", Type = "EditModeDamageMeterSetting", EnumValue = 0 },
+				{ Name = "Style", Type = "EditModeDamageMeterSetting", EnumValue = 1 },
+				{ Name = "Numbers", Type = "EditModeDamageMeterSetting", EnumValue = 2 },
+				{ Name = "FrameWidth", Type = "EditModeDamageMeterSetting", EnumValue = 3 },
+				{ Name = "FrameHeight", Type = "EditModeDamageMeterSetting", EnumValue = 4 },
+				{ Name = "Padding", Type = "EditModeDamageMeterSetting", EnumValue = 5 },
+				{ Name = "Transparency", Type = "EditModeDamageMeterSetting", EnumValue = 6 },
+				{ Name = "ObsoleteReuse1", Type = "EditModeDamageMeterSetting", EnumValue = 7 },
+				{ Name = "ShowSpecIcon", Type = "EditModeDamageMeterSetting", EnumValue = 8 },
+				{ Name = "ShowClassColor", Type = "EditModeDamageMeterSetting", EnumValue = 9 },
+				{ Name = "BarHeight", Type = "EditModeDamageMeterSetting", EnumValue = 10 },
+				{ Name = "TextSize", Type = "EditModeDamageMeterSetting", EnumValue = 11 },
+				{ Name = "BackgroundTransparency", Type = "EditModeDamageMeterSetting", EnumValue = 12 },
+			},
+		},
+		{
 			Name = "EditModeDurabilityFrameSetting",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -350,6 +435,44 @@ local EditModeManagerConstants =
 			Fields =
 			{
 				{ Name = "Size", Type = "EditModeDurabilityFrameSetting", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "EditModeEncounterEventsSetting",
+			Type = "Enumeration",
+			NumValues = 14,
+			MinValue = 0,
+			MaxValue = 13,
+			Fields =
+			{
+				{ Name = "Orientation", Type = "EditModeEncounterEventsSetting", EnumValue = 0 },
+				{ Name = "IconDirection", Type = "EditModeEncounterEventsSetting", EnumValue = 1 },
+				{ Name = "ShowSpellName", Type = "EditModeEncounterEventsSetting", EnumValue = 2 },
+				{ Name = "IconSize", Type = "EditModeEncounterEventsSetting", EnumValue = 3 },
+				{ Name = "OverallSize", Type = "EditModeEncounterEventsSetting", EnumValue = 4 },
+				{ Name = "BackgroundTransparency", Type = "EditModeEncounterEventsSetting", EnumValue = 5 },
+				{ Name = "Transparency", Type = "EditModeEncounterEventsSetting", EnumValue = 6 },
+				{ Name = "Visibility", Type = "EditModeEncounterEventsSetting", EnumValue = 7 },
+				{ Name = "TooltipAnchor", Type = "EditModeEncounterEventsSetting", EnumValue = 8 },
+				{ Name = "ShowTimer", Type = "EditModeEncounterEventsSetting", EnumValue = 9 },
+				{ Name = "ViewType", Type = "EditModeEncounterEventsSetting", EnumValue = 10 },
+				{ Name = "FlipHorizontally", Type = "EditModeEncounterEventsSetting", EnumValue = 11 },
+				{ Name = "BarWidth", Type = "EditModeEncounterEventsSetting", EnumValue = 12 },
+				{ Name = "Padding", Type = "EditModeEncounterEventsSetting", EnumValue = 13 },
+			},
+		},
+		{
+			Name = "EditModeEncounterEventsSystemIndices",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Timeline", Type = "EditModeEncounterEventsSystemIndices", EnumValue = 1 },
+				{ Name = "CriticalWarnings", Type = "EditModeEncounterEventsSystemIndices", EnumValue = 2 },
+				{ Name = "MediumWarnings", Type = "EditModeEncounterEventsSystemIndices", EnumValue = 3 },
+				{ Name = "NormalWarnings", Type = "EditModeEncounterEventsSystemIndices", EnumValue = 4 },
 			},
 		},
 		{
@@ -407,6 +530,18 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModePersonalResourceDisplaySetting",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "HideHealthAndPower", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 0 },
+				{ Name = "OnlyShowInCombat", Type = "EditModePersonalResourceDisplaySetting", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "EditModePresetLayouts",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -459,9 +594,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 21,
+			NumValues = 24,
 			MinValue = 0,
-			MaxValue = 20,
+			MaxValue = 23,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -485,6 +620,9 @@ local EditModeManagerConstants =
 				{ Name = "VehicleSeatIndicator", Type = "EditModeSystem", EnumValue = 18 },
 				{ Name = "ArchaeologyBar", Type = "EditModeSystem", EnumValue = 19 },
 				{ Name = "CooldownViewer", Type = "EditModeSystem", EnumValue = 20 },
+				{ Name = "PersonalResourceDisplay", Type = "EditModeSystem", EnumValue = 21 },
+				{ Name = "EncounterEvents", Type = "EditModeSystem", EnumValue = 22 },
+				{ Name = "DamageMeter", Type = "EditModeSystem", EnumValue = 23 },
 			},
 		},
 		{
@@ -501,9 +639,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeUnitFrameSetting",
 			Type = "Enumeration",
-			NumValues = 18,
+			NumValues = 21,
 			MinValue = 0,
-			MaxValue = 17,
+			MaxValue = 20,
 			Fields =
 			{
 				{ Name = "HidePortrait", Type = "EditModeUnitFrameSetting", EnumValue = 0 },
@@ -524,6 +662,9 @@ local EditModeManagerConstants =
 				{ Name = "RowSize", Type = "EditModeUnitFrameSetting", EnumValue = 15 },
 				{ Name = "FrameSize", Type = "EditModeUnitFrameSetting", EnumValue = 16 },
 				{ Name = "ViewArenaSize", Type = "EditModeUnitFrameSetting", EnumValue = 17 },
+				{ Name = "AuraOrganizationType", Type = "EditModeUnitFrameSetting", EnumValue = 18 },
+				{ Name = "IconSize", Type = "EditModeUnitFrameSetting", EnumValue = 19 },
+				{ Name = "Opacity", Type = "EditModeUnitFrameSetting", EnumValue = 20 },
 			},
 		},
 		{
@@ -556,6 +697,70 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EncounterEventsIconDirection",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Left", Type = "EncounterEventsIconDirection", EnumValue = 0 },
+				{ Name = "Right", Type = "EncounterEventsIconDirection", EnumValue = 1 },
+				{ Name = "Top", Type = "EncounterEventsIconDirection", EnumValue = 0 },
+				{ Name = "Bottom", Type = "EncounterEventsIconDirection", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "EncounterEventsOrientation",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Horizontal", Type = "EncounterEventsOrientation", EnumValue = 0 },
+				{ Name = "Vertical", Type = "EncounterEventsOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "EncounterEventsTooltipAnchor",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Hidden", Type = "EncounterEventsTooltipAnchor", EnumValue = 0 },
+				{ Name = "Default", Type = "EncounterEventsTooltipAnchor", EnumValue = 1 },
+				{ Name = "Cursor", Type = "EncounterEventsTooltipAnchor", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "EncounterEventsViewType",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Timeline", Type = "EncounterEventsViewType", EnumValue = 0 },
+				{ Name = "Bars", Type = "EncounterEventsViewType", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "EncounterEventsVisibility",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Always", Type = "EncounterEventsVisibility", EnumValue = 0 },
+				{ Name = "InEncounter", Type = "EncounterEventsVisibility", EnumValue = 1 },
+				{ Name = "DeprecatedHidden", Type = "EncounterEventsVisibility", EnumValue = 2 },
+			},
+		},
+		{
 			Name = "MicroMenuOrder",
 			Type = "Enumeration",
 			NumValues = 2,
@@ -577,6 +782,32 @@ local EditModeManagerConstants =
 			{
 				{ Name = "Horizontal", Type = "MicroMenuOrientation", EnumValue = 0 },
 				{ Name = "Vertical", Type = "MicroMenuOrientation", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "RaidAuraOrganizationType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Legacy", Type = "RaidAuraOrganizationType", EnumValue = 0 },
+				{ Name = "BuffsTopDebuffsBottom", Type = "RaidAuraOrganizationType", EnumValue = 1 },
+				{ Name = "BuffsRightDebuffsLeft", Type = "RaidAuraOrganizationType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "RaidDispelDisplayType",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
+			Fields =
+			{
+				{ Name = "Disabled", Type = "RaidDispelDisplayType", EnumValue = 0 },
+				{ Name = "DispellableByMe", Type = "RaidDispelDisplayType", EnumValue = 1 },
+				{ Name = "DisplayAll", Type = "RaidDispelDisplayType", EnumValue = 2 },
 			},
 		},
 		{

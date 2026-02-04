@@ -167,7 +167,7 @@ local function NameAndIconFromElementData(elementData)
 
 		local actionName, actionIcon, _;
 		if type == Enum.ClickBindingType.Spell or type == Enum.ClickBindingType.PetAction then
-			local overrideID = FindSpellOverrideByID(actionID);
+			local overrideID = C_SpellBook.FindSpellOverrideByID(actionID);
 			local spellInfo = C_Spell.GetSpellInfo(overrideID);
 			actionName = spellInfo.name;
 			actionIcon = spellInfo.iconID;

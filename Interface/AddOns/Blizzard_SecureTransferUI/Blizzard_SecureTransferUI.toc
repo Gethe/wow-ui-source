@@ -1,5 +1,4 @@
-## Title: Blizzard Secure Trade UI
-## LoadFirst: 1
+## Title: Blizzard_SecureTransferUI
 ## RequiredDep: Blizzard_SharedXML, Blizzard_UIParent
 ## UseSecureEnvironment: 1
 Blizzard_SecureTransferUI.xml

@@ -200,7 +200,7 @@ StaticPopupDialogs["DEATH"] = {
 		if ( not dialog.UpdateRecapButton ) then
 			dialog.UpdateRecapButton = function( dialog )
 				local button4 = dialog:GetButton4();
-				if ( DeathRecap_HasEvents() ) then
+				if ( C_DeathRecap.HasRecapEvents() ) then
 					button4:Enable();
 					button4:SetScript("OnEnter", nil );
 					button4:SetScript("OnLeave", nil);
@@ -256,8 +256,8 @@ StaticPopupDialogs["DEATH"] = {
 		end
 
 		local b1_enabled = dialog:GetButton1():IsEnabled();
-		local encounterSupressRelease = IsEncounterSuppressingRelease();
-		if ( encounterSupressRelease ) then
+		local encounterSuppressRelease = C_InstanceEncounter.IsEncounterSuppressingRelease();
+		if ( encounterSuppressRelease ) then
 			dialog:GetButton1():SetEnabled(false);
 			dialog:GetButton1():SetText(DEATH_RELEASE);
 		else
@@ -276,7 +276,7 @@ StaticPopupDialogs["DEATH"] = {
 
 		if ( b1_enabled ~= dialog:GetButton1():IsEnabled() ) then
 			if ( b1_enabled ) then
-				if ( encounterSupressRelease ) then
+				if ( encounterSuppressRelease ) then
 					dialog:SetText(CAN_NOT_RELEASE_IN_COMBAT);
 				else
 					dialog:SetText(CAN_NOT_RELEASE_RIGHT_NOW);
@@ -1362,28 +1362,6 @@ StaticPopupDialogs["CONFIRM_RAF_REMOVE_RECRUIT"] = {
 local factionMajorCities = {
 	["Alliance"] = STORMWIND,
 	["Horde"] = ORGRIMMAR,
-}
-
-StaticPopupDialogs["RETURNING_PLAYER_PROMPT"] = {
-	text = "",
-	button1 = YES,
-	button2 = NO,
-	OnShow = function(dialog, data)
-		local playerFactionGroup = UnitFactionGroup("player");
-		local factionCity = playerFactionGroup and factionMajorCities[playerFactionGroup] or nil;
-		if(factionCity) then
-			dialog:SetText(RETURNING_PLAYER_PROMPT:format(factionCity));
-		end
-	end,
-	OnAccept = function(dialog, data)
-		C_ReturningPlayerUI.AcceptPrompt();
-		dialog:Hide();
-	end,
-	OnCancel = function(dialog, data)
-		C_ReturningPlayerUI.DeclinePrompt();
-	end,
-	timeout = 0,
-	exclusive = 1,
 }
 
 StaticPopupDialogs["CRAFTING_HOUSE_DISABLED"] = {

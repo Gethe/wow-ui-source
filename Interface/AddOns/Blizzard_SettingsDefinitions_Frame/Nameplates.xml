@@ -1,0 +1,136 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="NamePlatePreviewTemplate" virtual="true">
+		<Size y="195"/> <!-- Must be at least as large as largest possible value of NamePlateDriverMixin:GetNamePlateHeight plus the height of the Preview FontString.-->
+		<Frames>
+			<Button parentKey="NamePlate" mixin="NamePlatePreviewMixin">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Border" atlas="options_frame_child">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="20" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="-20" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Preview" text="PREVIEW" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="NamePlatesTutorial" inherits="ButtonFrameTemplate" mixin="NamePlatesTutorialMixin" frameStrata="DIALOG" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" parent="UIParent">
+		<Size x="965" y="815"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="tutorial-background" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOM" x="2" y="5"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StyleOptions" atlas="tutorial-card-small-styleoptions" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="70" y="-115"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlightLarge2" text="UNIT_NAMEPLATES_TUTORIAL_STYLE_OPTIONS" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.StyleOptions" relativePoint="TOPLEFT" x="0" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StyleOptions" relativePoint="TOPRIGHT" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="Aggro" atlas="tutorial-card-small-aggro" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-70" y="-115"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlightLarge2" text="UNIT_NAMEPLATES_TUTORIAL_AGGRO" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Aggro" relativePoint="TOPLEFT" x="0" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Aggro" relativePoint="TOPRIGHT" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BuffsDebuffs" atlas="tutorial-card-small-buffsdebuffs" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="70" y="55"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlightLarge2" text="UNIT_NAMEPLATES_TUTORIAL_BUFFS_DEBUFFS" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.BuffsDebuffs" relativePoint="TOPLEFT" x="0" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BuffsDebuffs" relativePoint="TOPRIGHT" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="EnemyVsFriendly" atlas="tutorial-card-small-enemyvsfriendly" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-70" y="55"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontHighlightLarge2" text="UNIT_NAMEPLATES_TUTORIAL_ENEMY_FRIENDLY" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.EnemyVsFriendly" relativePoint="TOPLEFT" x="0" y="10"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EnemyVsFriendly" relativePoint="TOPRIGHT" x="0" y="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="tutorial-card-frame" >
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.StyleOptions" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.StyleOptions" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="tutorial-card-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Aggro" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Aggro" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="tutorial-card-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BuffsDebuffs" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BuffsDebuffs" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture atlas="tutorial-card-frame">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.EnemyVsFriendly" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.EnemyVsFriendly" x="2" y="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="DragBar" inherits="PanelDragBarTemplate">
+				<Size y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

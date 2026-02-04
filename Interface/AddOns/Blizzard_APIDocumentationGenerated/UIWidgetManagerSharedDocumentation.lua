@@ -5,13 +5,14 @@ local UIWidgetManagerShared =
 		{
 			Name = "MapIconUIWidgetSetType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Tooltip", Type = "MapIconUIWidgetSetType", EnumValue = 0 },
 				{ Name = "BehindIcon", Type = "MapIconUIWidgetSetType", EnumValue = 1 },
+				{ Name = "AdventureMapDetails", Type = "MapIconUIWidgetSetType", EnumValue = 2 },
 			},
 		},
 		{
@@ -126,9 +127,9 @@ local UIWidgetManagerShared =
 		{
 			Name = "UIWidgetVisualizationType",
 			Type = "Enumeration",
-			NumValues = 31,
+			NumValues = 32,
 			MinValue = 0,
-			MaxValue = 30,
+			MaxValue = 31,
 			Fields =
 			{
 				{ Name = "IconAndText", Type = "UIWidgetVisualizationType", EnumValue = 0 },
@@ -162,6 +163,7 @@ local UIWidgetManagerShared =
 				{ Name = "TugOfWar", Type = "UIWidgetVisualizationType", EnumValue = 28 },
 				{ Name = "ScenarioHeaderDelves", Type = "UIWidgetVisualizationType", EnumValue = 29 },
 				{ Name = "ButtonHeader", Type = "UIWidgetVisualizationType", EnumValue = 30 },
+				{ Name = "PreyHuntProgress", Type = "UIWidgetVisualizationType", EnumValue = 31 },
 			},
 		},
 	},

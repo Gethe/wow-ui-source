@@ -130,6 +130,11 @@ function FormatPercentage(percentage, roundToNearestInteger)
 	return PERCENTAGE_STRING:format(percentage);
 end
 
+function FormatPercentageRounded(value)
+	local roundToNearestInteger = true;
+	return FormatPercentage(value, roundToNearestInteger);
+end
+
 function FormatFraction(numerator, denominator)
 	return GENERIC_FRACTION_STRING:format(numerator, denominator);
 end

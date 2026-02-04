@@ -10,7 +10,6 @@ local errorStrings =
 HousingCreateNeighborhoodMixin = {}
 
 function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnLoad()
-    self:RegisterEvent("CREATE_NEIGHBORHOOD_RESULT");
 	self.NeighborhoodNameEditBox:SetMaxLetters(50);
 end
 
@@ -23,8 +22,9 @@ function HousingCreateNeighborhoodMixin:CreateNeighborhoodBaseOnEvent(event, ...
             HousingTopBannerFrame:SetBannerText(HOUSING_CREATENEIGHBORHOOD_TOAST, neighborhoodName);
             TopBannerManager_Show(HousingTopBannerFrame);
         else
-			UIErrorsFrame:AddExternalErrorMessage(HOUSING_CREATENEIGHBORHOOD_SERVER_ERROR .."\n".. HousingResultToErrorText[result]);
+			UIErrorsFrame:AddExternalErrorMessage(HousingResultToErrorText[result]);
         end
+		self:UnregisterEvent("CREATE_NEIGHBORHOOD_RESULT");
     end
 end
 
@@ -51,6 +51,7 @@ function HousingCreateCharterNeighborhoodConfirmationMixin:OnLoad()
 	self.Title:SetText(HOUSING_CREATENEIGHBORHOOD_CREATECHARTER);
     self.ConfirmButton:SetText(HOUSING_CREATENEIGHBORHOOD_GUILD_CONFIRMBUTTON);
     self.ConfirmButton:SetScript("OnClick", function()
+		HousingCreateNeighborhoodCharterFrame:RegisterEvent("CREATE_NEIGHBORHOOD_RESULT");
         C_Housing.OnCharterConfirmationAccepted();
         HideUIPanel(HousingCreateCharterNeighborhoodConfirmationFrame);
 		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_CHARTER_BUTTONS);
@@ -92,6 +93,7 @@ function HousingCreateGuildNeighborhoodConfirmationMixin:OnLoad()
 	self.Title:SetText(HOUSING_CREATENEIGHBORHOOD_CREATEGUILD);
 
     self.ConfirmButton:SetScript("OnClick", function()
+		HousingCreateGuildNeighborhoodFrame:RegisterEvent("CREATE_NEIGHBORHOOD_RESULT");
         C_Housing.CreateGuildNeighborhood(HousingCreateGuildNeighborhoodFrame.NeighborhoodNameEditBox:GetText());
         HousingCreateGuildNeighborhoodFrame.ConfirmationFrame:Hide();
 		PlaySound(SOUNDKIT.HOUSING_CREATE_NEIGHBORHOOD_GUILD_BUTTON);

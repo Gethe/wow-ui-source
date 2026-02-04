@@ -11,6 +11,7 @@ local PrivateProxySettingMixin = CreateSecureMixinCopy(ProxySettingMixin);
 local PrivateSettingsListElementInitializer = CreateSecureMixinCopy(SettingsListElementInitializer);
 local CreateVerticalLayout = CreateVerticalLayout;
 local CreateCanvasLayout = CreateCanvasLayout;
+local GenerateClosure = GenerateClosure;
 
 local AttributeDelegate = CreateFrame("Frame");
 
@@ -37,6 +38,24 @@ local function UnpackArgs(argTable, expectedNumArgs)
 	return securecallfunction(unpack, argTable, 1, expectedNumArgs);
 end
 
+-- Pass in function args to have them automatically wrapped in a closure. These wrapped functions are returned back in the same order they were passed in
+-- IMPORTANT: Pass ALL arguments to settings that could potentially be functions through here. This ensures that taint state is captured correctly, preventing taint-laundering exploits
+local function SecureWrapFunctionArgs(...)
+	local wrappedArgs = {};
+
+	local numArgs = select("#", ...);
+	for i = 1, numArgs do
+		local arg = select(i, ...);
+		if type(arg) == "function" then
+			wrappedArgs[i] = GenerateClosure(arg);
+		else
+			wrappedArgs[i] = arg;
+		end
+	end
+
+	return unpack(wrappedArgs, 1, numArgs);
+end
+
 SettingsInbound = {};
 
 SettingsInbound.AssignLayoutToCategoryAttribute = "assign-layout-to-category";
@@ -47,7 +66,6 @@ SettingsInbound.CreateElementInitializerAttribute = "create-element-initializer"
 SettingsInbound.CreateSettingInitializerAttribute = "create-setting-initializer";
 SettingsInbound.CreatePanelInitializerAttribute = "create-panel-initializer";
 SettingsInbound.OnSettingValueChangedAttribute = "on-setting-value-changed";
-SettingsInbound.OpenToCategoryAttribute = "open-to-category";
 SettingsInbound.RegisterCanvasLayoutCategoryAttribute = "register-canvas-layout-category";
 SettingsInbound.RegisterCanvasLayoutSubcategoryAttribute = "register-canvas-layout-subcategory";
 SettingsInbound.RegisterCategoryAttribute = "register-category";
@@ -58,11 +76,6 @@ SettingsInbound.RegisterVerticalLayoutSubcategoryAttribute = "register-vertical-
 SettingsInbound.RepairDisplayAttribute = "repair-display";
 SettingsInbound.SetCurrentLayoutAttribute = "set-current-layout";
 SettingsInbound.SetKeybindingsCategoryAttribute = "set-keybindings-category";
-
-function SettingsInbound.OpenToCategory(categoryID, scrollToElementName)
-	AttributeDelegate:SetAttribute(SettingsInbound.OpenToCategoryAttribute, { categoryID, scrollToElementName, });
-	return AttributeDelegate:GetSecureAttributeResults();
-end
 
 function SettingsInbound.RegisterCategory(category, group, addon)
 	AttributeDelegate:SetAttribute(SettingsInbound.RegisterCategoryAttribute, { category, group, addon, });
@@ -101,17 +114,11 @@ function SettingsInbound.CreateAddOnSetting(categoryTbl, name, variable, variabl
 	return AttributeDelegate:GetSecureAttributeResults();
 end
 
-function SettingsInbound.CreateProxySetting(categoryTbl, name, variable, variableType, defaultValue, getValue, setValue)
-	-- Accessors must be wrapped. See comment above UnpackArgs.
-	local function GetValueWrapper(...)
-		return getValue(...);
-	end
+function SettingsInbound.CreateProxySetting(categoryTbl, nameValue, variable, variableType, defaultValue, getValue, setValue)
+	-- Function args must be wrapped. See comment above UnpackArgs.
+	nameValue, variable, variableType, defaultValue, getValue, setValue = SecureWrapFunctionArgs(nameValue, variable, variableType, defaultValue, getValue, setValue);
 
-	local function SetValueWrapper(...)
-		return setValue(...);
-	end
-
-	AttributeDelegate:SetAttribute(SettingsInbound.CreateProxySettingAttribute, { categoryTbl, name, variable, variableType, defaultValue, GetValueWrapper, SetValueWrapper, });
+	AttributeDelegate:SetAttribute(SettingsInbound.CreateProxySettingAttribute, { categoryTbl, nameValue, variable, variableType, defaultValue, getValue, setValue, });
 	return AttributeDelegate:GetSecureAttributeResults();
 end
 
@@ -156,20 +163,14 @@ function SettingsInbound.SetCurrentLayout(layout)
 end
 
 function SettingsInbound.AssignTutorialToCategory(category, tooltip, callback)
-	-- Callback must be wrapped. See comment above UnpackArgs.
-	local function CallbackWrapper(...)
-		return callback(...);
-	end
+	-- Function args must be wrapped. See comment above UnpackArgs.
+	tooltip, callback = SecureWrapFunctionArgs(tooltip, callback);
 
-	AttributeDelegate:SetAttribute(SettingsInbound.AssignTutorialToCategoryAttribute, { category, tooltip, CallbackWrapper, });
+	AttributeDelegate:SetAttribute(SettingsInbound.AssignTutorialToCategoryAttribute, { category, tooltip, callback, });
 end
 
 function AttributeDelegate:OnAttributeChanged(name, value)
-	if name == SettingsInbound.OpenToCategoryAttribute then
-		local categoryID, scrollToElementName = SecureUnpackArgs(value);
-		local successful = SettingsPanel:OpenToCategory(categoryID, scrollToElementName);
-		self:SetSecureAttributeResults(successful);
-	elseif name == SettingsInbound.RegisterCategoryAttribute then
+	if name == SettingsInbound.RegisterCategoryAttribute then
 		local category, group, addon = SecureUnpackArgs(value, 3);
 		SettingsPanel:RegisterCategory(category, group, addon);
 	elseif name == SettingsInbound.RegisterVerticalLayoutCategoryAttribute then
@@ -210,8 +211,8 @@ function AttributeDelegate:OnAttributeChanged(name, value)
 		SettingsPanel:RegisterSetting(categoryTbl, setting);
 		self:SetSecureAttributeResults(setting);
 	elseif name == SettingsInbound.CreateProxySettingAttribute then
-		local categoryTbl, settingName, variable, variableType, defaultValue, getValueWrapper, setValueWrapper = UnpackArgs(value);
-		local setting = CreateAndInitFromMixin(PrivateProxySettingMixin, settingName, variable, variableType, defaultValue, getValueWrapper, setValueWrapper);
+		local categoryTbl, settingName, variable, variableType, defaultValue, getValue, setValue = UnpackArgs(value);
+		local setting = CreateAndInitFromMixin(PrivateProxySettingMixin, settingName, variable, variableType, defaultValue, getValue, setValue);
 		SettingsPanel:RegisterSetting(categoryTbl, setting);
 		self:SetSecureAttributeResults(setting);
 	elseif name == SettingsInbound.RegisterSettingAttribute then
@@ -260,9 +261,9 @@ function AttributeDelegate:OnAttributeChanged(name, value)
 	elseif name == SettingsInbound.SetCurrentLayoutAttribute then
 		SettingsPanel:SetCurrentLayout(value);
 	elseif name == SettingsInbound.AssignTutorialToCategoryAttribute then
-		local category, tooltip, callbackWrapper = UnpackArgs(value);
+		local category, tooltip, callback = UnpackArgs(value);
 		if category then
-			category:SetCategoryTutorialInfo(tooltip, callbackWrapper);
+			category:SetCategoryTutorialInfo(tooltip, callback);
 		end
 	end
 end

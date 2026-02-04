@@ -3,6 +3,7 @@ local LiveEvent =
 	Name = "LiveEvent",
 	Type = "System",
 	Namespace = "C_LiveEvent",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local LiveEvent =
 			Name = "OnLiveEventBannerClicked",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -20,6 +22,7 @@ local LiveEvent =
 			Name = "OnLiveEventPopupClicked",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

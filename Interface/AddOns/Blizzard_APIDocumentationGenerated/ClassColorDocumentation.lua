@@ -3,6 +3,7 @@ local ClassColor =
 	Name = "ClassColor",
 	Type = "System",
 	Namespace = "C_ClassColor",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local ClassColor =
 			Name = "GetClassColor",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
 
 			Arguments =
 			{

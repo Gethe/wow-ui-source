@@ -36,7 +36,7 @@ end
 -- Add static registrations below here.
 
 local function CheckForDelvesCompanionTraitFrame(treeID)
-	return treeID == C_DelvesUI.GetTraitTreeForCompanion();
+	return C_DelvesUI.IsTraitTreeForCompanion(treeID);
 end
 
 local function OpenDelvesCompanionTraitFrame()

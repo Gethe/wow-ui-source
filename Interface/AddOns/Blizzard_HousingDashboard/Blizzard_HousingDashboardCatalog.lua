@@ -1,5 +1,4 @@
 local CatalogLifetimeEvents = {
-	"HOUSING_CATALOG_SEARCHER_RELEASED",
 	"PLAYER_LEAVING_WORLD",
 };
 
@@ -29,7 +28,6 @@ function HousingCatalogFrameMixin:OneTimeInit()
 	self.catalogSearcher:SetResultsUpdatedCallback(function() self:OnEntryResultsUpdated(); end);
 	self.catalogSearcher:SetAutoUpdateOnParamChanges(false);
 	self.catalogSearcher:SetOwnedOnly(false);
-	self.catalogSearcher:SetIncludeMarketEntries(false);
 	self.catalogSearcher:SetEditorModeContext(displayContext);
 
 	self.Filters:Initialize(self.catalogSearcher);
@@ -44,16 +42,6 @@ function HousingCatalogFrameMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_STORAGE_ENTRY_UPDATED" then
 		local entryID = ...;
 		self:OnCatalogEntryUpdated(entryID);
-	elseif event == "HOUSING_CATALOG_SEARCHER_RELEASED" then
-		local releasedSearcher = ...;
-		if self.catalogSearcher and self.catalogSearcher == releasedSearcher then
-			-- This should only get called as part of ReloadUI
-			-- Unfortunately can't just clear it by listening to LEAVING_WORLD because that'll happen after the searcher has already been released
-			-- and after other receiving while-shown cleanup events that will lead this UI to attempt to reference it
-			self.catalogSearcher = nil;
-			self.Filters:ClearSearcherReference();
-			self.OptionsContainer:ClearCatalogData();
-		end
 	end
 end
 
@@ -142,18 +130,17 @@ end
 
 function HousingCatalogFrameMixin:OnCatalogEntryUpdated(entryID)
 	local entryInfo = C_HousingCatalog.GetCatalogEntryInfo(entryID);
-	local shouldShowOption = entryInfo and entryInfo.quantity > 0 or false;
 
 	local elementData, optionFrame = self.OptionsContainer:TryGetElementAndFrame(entryID);
 	
 	-- If option was added or removed entirely, reset our options list
-	if self.catalogSearcher and ((shouldShowOption and not elementData) or (not shouldShowOption and elementData)) then
+	if self.catalogSearcher and ((entryInfo and not elementData) or (not entryInfo and elementData)) then
 		self.catalogSearcher:RunSearch();
 		return;
 	end
 
 	-- Otherwise, if the frame for this option is currently showing, update its data
-	if shouldShowOption and optionFrame then
+	if entryInfo and optionFrame then
 		optionFrame:UpdateEntryData();
 	end
 end

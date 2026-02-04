@@ -3,6 +3,7 @@ local CraftingOrderUI =
 	Name = "CraftingOrderUI",
 	Type = "System",
 	Namespace = "C_CraftingOrders",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local CraftingOrderUI =
 		{
 			Name = "CalculateCraftingOrderPostingFee",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -34,6 +36,7 @@ local CraftingOrderUI =
 		{
 			Name = "CanOrderSkillAbility",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -48,6 +51,7 @@ local CraftingOrderUI =
 		{
 			Name = "CancelOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +62,7 @@ local CraftingOrderUI =
 			Name = "ClaimOrder",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -76,6 +81,7 @@ local CraftingOrderUI =
 		{
 			Name = "FulfillOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,6 +138,7 @@ local CraftingOrderUI =
 		{
 			Name = "GetCustomerOptions",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -182,6 +189,7 @@ local CraftingOrderUI =
 		{
 			Name = "GetOrderClaimInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -214,6 +222,7 @@ local CraftingOrderUI =
 		{
 			Name = "IsCustomerOptionFavorited",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -228,6 +237,7 @@ local CraftingOrderUI =
 		{
 			Name = "ListMyOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -245,6 +255,7 @@ local CraftingOrderUI =
 		{
 			Name = "OrderCanBeRecrafted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,6 +275,7 @@ local CraftingOrderUI =
 			Name = "PlaceNewOrder",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -273,6 +285,7 @@ local CraftingOrderUI =
 		{
 			Name = "RejectOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -284,6 +297,7 @@ local CraftingOrderUI =
 		{
 			Name = "ReleaseOrder",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -294,6 +308,7 @@ local CraftingOrderUI =
 		{
 			Name = "RequestCrafterOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -303,6 +318,7 @@ local CraftingOrderUI =
 		{
 			Name = "RequestCustomerOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -312,6 +328,7 @@ local CraftingOrderUI =
 		{
 			Name = "SetCustomerOptionFavorited",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -331,6 +348,7 @@ local CraftingOrderUI =
 		{
 			Name = "SkillLineHasOrders",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -354,16 +372,19 @@ local CraftingOrderUI =
 			Name = "CraftingHouseDisabled",
 			Type = "Event",
 			LiteralName = "CRAFTING_HOUSE_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersCanRequest",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CAN_REQUEST",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersClaimOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CLAIM_ORDER_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -374,16 +395,19 @@ local CraftingOrderUI =
 			Name = "CraftingordersClaimedOrderAdded",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CLAIMED_ORDER_ADDED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersClaimedOrderRemoved",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CLAIMED_ORDER_REMOVED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersClaimedOrderUpdated",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CLAIMED_ORDER_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "orderID", Type = "BigUInteger", Nilable = false },
@@ -393,6 +417,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersCraftOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CRAFT_ORDER_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -403,16 +428,19 @@ local CraftingOrderUI =
 			Name = "CraftingordersCustomerFavoritesChanged",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CUSTOMER_FAVORITES_CHANGED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersCustomerOptionsParsed",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_CUSTOMER_OPTIONS_PARSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersDisplayCrafterFulfilledMsg",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_DISPLAY_CRAFTER_FULFILLED_MSG",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "orderTypeString", Type = "cstring", Nilable = false },
@@ -426,6 +454,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersFulfillOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_FULFILL_ORDER_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -436,16 +465,19 @@ local CraftingOrderUI =
 			Name = "CraftingordersHideCrafter",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_HIDE_CRAFTER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersHideCustomer",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_HIDE_CUSTOMER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersOrderCancelResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_ORDER_CANCEL_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -455,6 +487,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersOrderPlacementResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_ORDER_PLACEMENT_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -464,6 +497,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersRejectOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_REJECT_ORDER_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -474,6 +508,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersReleaseOrderResponse",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_RELEASE_ORDER_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "CraftingOrderResult", Nilable = false },
@@ -484,21 +519,25 @@ local CraftingOrderUI =
 			Name = "CraftingordersShowCrafter",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_SHOW_CRAFTER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersShowCustomer",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_SHOW_CUSTOMER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersUnexpectedError",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UNEXPECTED_ERROR",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersUpdateCustomerName",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_CUSTOMER_NAME",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "customerName", Type = "cstring", Nilable = false },
@@ -509,6 +548,7 @@ local CraftingOrderUI =
 			Name = "CraftingordersUpdateOrderCount",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_ORDER_COUNT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "orderType", Type = "CraftingOrderType", Nilable = false },
@@ -519,11 +559,13 @@ local CraftingOrderUI =
 			Name = "CraftingordersUpdatePersonalOrderCounts",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CraftingordersUpdateRewards",
 			Type = "Event",
 			LiteralName = "CRAFTINGORDERS_UPDATE_REWARDS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "npcOrderRewards", Type = "table", InnerType = "CraftingOrderRewardInfo", Nilable = false },

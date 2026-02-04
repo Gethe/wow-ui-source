@@ -1,48 +1,11 @@
-local ExpansionLayoutInfo = {
-	[LE_EXPANSION_DRAGONFLIGHT] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = false,
-				anchors = {
-					["TOP"] = { x = 0, y = -77, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-	[LE_EXPANSION_WAR_WITHIN] = {
-		textureDataTable = {
-			["GlowLineBottom"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-bottomglowline",
-				useAtlasSize = true,
-			},
-			["RewardIconRing"] =  {
-				atlas = "majorfaction-celebration-thewarwithin-content-ring",
-				useAtlasSize = false,
-			},
-			["ToastBG"] = {
-				atlas = "majorfaction-celebration-toastBG",
-				useAtlasSize = false,
-				anchors = {
-					["TOP"] = { x = 0, y = -57, relativePoint = "TOP" },
-				},
-			},
-		},
-	},
-};
 
 MajorFactionUnlockToastMixin = {};
 
 function MajorFactionUnlockToastMixin:OnLoad()
 	self:RegisterEvent("MAJOR_FACTION_UNLOCKED");
+	self.ShowAnim:SetScript("OnFinished", function()
+		self:OnAnimFinished();
+	end);
 end
 
 function MajorFactionUnlockToastMixin:OnEvent(event, ...)
@@ -57,8 +20,6 @@ function MajorFactionUnlockToastMixin:OnEvent(event, ...)
 end
 
 function MajorFactionUnlockToastMixin:OnHide()
-	MajorFactionCelebrationBannerMixin.OnHide(self);
-
 	TopBannerManager_BannerFinished();
 end
 
@@ -71,6 +32,7 @@ function MajorFactionUnlockToastMixin:PlayMajorFactionUnlockToast(majorFactionID
 			textureKit = majorFactionData.textureKit,
 			celebrationSoundKit = majorFactionData.celebrationSoundKit,
 			expansionID = majorFactionData.expansionID,
+			useJourneyUnlockToast = majorFactionData.useJourneyUnlockToast,
 		});
 	end
 end
@@ -79,16 +41,16 @@ function MajorFactionUnlockToastMixin:PlayBanner(data)
 	self.FactionName:SetText(data.name);
 	self.FactionName:SetTextColor(data.factionColor:GetRGB());
 	self:SetMajorFactionTextureKit(data.textureKit);
-	self:SetMajorFactionSwirlEffects(data.expansionID);
 
-	local expansionLayoutInfo = ExpansionLayoutInfo[data.expansionID] or ExpansionLayoutInfo[LE_EXPANSION_DRAGONFLIGHT];
-	self:SetMajorFactionExpansionLayoutInfo(expansionLayoutInfo);
+	if data.useJourneyUnlockToast then
+		self.HeaderText:SetText(JOURNEY_UNLOCKED_TOAST);
+	else
+		self.HeaderText:SetText(WAR_WITHIN_LANDING_PAGE_ALERT_MAJOR_FACTION_UNLOCKED);
+	end
 
 	PlaySound(data.celebrationSoundKit);
 
 	self.ToastBG:SetAlpha(0);
-	self.IconSwirlModelScene:SetAlpha(0);
-	self.Icon:SetAlpha(0);
 	self.FactionName:SetAlpha(0);
 	self.HeaderText:SetAlpha(0);
 

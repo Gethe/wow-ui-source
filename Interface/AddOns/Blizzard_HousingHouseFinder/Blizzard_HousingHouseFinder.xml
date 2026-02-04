@@ -377,65 +377,6 @@
 							</Anchors>
 							<Color r="0.8" g="0.8" b="0.8"/>
 						</FontString>
-						<FontString parentKey="PriceLabel" inherits="Game13FontShadow" text="HOUSEFINDER_PRICE_LABEL">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.PlotLabel" y="-40"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSEFINDER_NEIGHBORHOOD_LABEL">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.PriceLabel" y="-30"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" text="">
-							<Size x="120"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="3"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="LocationLabel" inherits="Game13FontShadow" text="HOUSEFINDER_LOCATION_LABEL">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" x= "10" y="-21"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="LocationText" inherits="Game13FontShadow" justifyH="LEFT" text="">
-							<Size x="150"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="3"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="TypeLabel" inherits="Game13FontShadow" text="HOUSEFINDER_TYPE_LABEL">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.LocationLabel" y="-21"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="TypeText" inherits="Game13FontShadow" text="">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TypeLabel" relativePoint="RIGHT" x="3"/>
-							</Anchors>
-						</FontString>
-						<FontString parentKey="OwnerLabel" inherits="Game13FontShadow" text="HOUSEFINDER_OWNER_LABEL">
-							<Size y="15"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.TypeLabel" y="-21"/>
-							</Anchors>
-							<Color r="1.0" g="0.82" b="0"/>
-						</FontString>
-						<FontString parentKey="OwnerText" inherits="Game13FontShadow" justifyH="LEFT" text="">
-							<Size x="130"/>
-							<Anchors>
-								<Anchor point="LEFT" relativeKey="$parent.OwnerLabel" relativePoint="RIGHT" x="3"/>
-							</Anchors>
-						</FontString>
 						<FontString parentKey="ReservationError" inherits="Game13FontShadow" hidden="true" text="HOUSEFINDER_RESERVATION_ERROR">
 							<Size x="230" y="50"/>
 							<Anchors>
@@ -496,10 +437,130 @@
 							<Anchor point="CENTER" relativeKey="$parent.VisitHouseButton"/>
 						</Anchors>
 					</Frame>
-					<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+					<Frame parentKey="PlotInfoLayout" inherits="VerticalLayoutFrame">
+						<KeyValues>
+							<KeyValue key="maximumHeight" value="325" type="number"/>
+							<KeyValue key="leftPadding" value="10" type="number"/>
+							<KeyValue key="topPadding" value="20" type="number"/>
+							<KeyValue key="spacing" value="5" type="number"/>
+						</KeyValues>
 						<Anchors>
-							<Anchor point="LEFT" relativeKey="$parent.PriceLabel" relativePoint="RIGHT"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.PlotTitleBG" relativePoint="BOTTOMLEFT"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="PriceContainer">
+								<Size x="240" y="15"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="1" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="5">
+										<FontString parentKey="PriceLabel" inherits="Game13FontShadow" text="HOUSEFINDER_PRICE_LABEL">
+											<Anchors>
+												<Anchor point="TOPLEFT"/>
+											</Anchors>
+											<Color color="NORMAL_FONT_COLOR"/>
+										</FontString>
+									</Layer>
+								</Layers>
+								<Frames>
+									<Frame parentKey="PriceMoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="false">
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeKey="$parent.PriceLabel" relativePoint="TOPRIGHT" x="3"/>
+										</Anchors>
+									</Frame>
+								</Frames>
+							</Frame>
+							<Frame parentKey="NeighborhoodContainer">
+								<Size x="240" y="15"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="2" type="number"/>
+									<KeyValue key="fixedWidth" value="240" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="5">
+										<FontString parentKey="NeighborhoodLabel" inherits="Game13FontShadow" text="HOUSEFINDER_NEIGHBORHOOD_LABEL">
+											<Anchors>
+												<Anchor point="LEFT"/>
+											</Anchors>
+											<Color color="NORMAL_FONT_COLOR"/>
+										</FontString>
+										<FontString parentKey="NeighborhoodText" inherits="Game13FontShadow" justifyH="LEFT" wordwrap="true" text="">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.NeighborhoodLabel" relativePoint="RIGHT" x="3"/>
+												<Anchor point="RIGHT" relativePoint="RIGHT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="LocationContainer">
+								<Size x="240" y="15"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="3" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="5">
+										<FontString parentKey="LocationLabel" inherits="Game13FontShadow" text="HOUSEFINDER_LOCATION_LABEL">
+											<Anchors>
+												<Anchor point="LEFT" x="10"/>
+											</Anchors>
+											<Color color="NORMAL_FONT_COLOR"/>
+										</FontString>
+										<FontString parentKey="LocationText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.LocationLabel" relativePoint="RIGHT" x="3"/>
+												<Anchor point="RIGHT" relativePoint="RIGHT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="TypeContainer">
+								<Size x="240" y="15"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="4" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="5">
+										<FontString parentKey="TypeLabel" inherits="Game13FontShadow" text="HOUSEFINDER_TYPE_LABEL">
+											<Anchors>
+												<Anchor point="LEFT" x="10"/>
+											</Anchors>
+											<Color color="NORMAL_FONT_COLOR"/>
+										</FontString>
+										<FontString parentKey="TypeText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.TypeLabel" relativePoint="RIGHT" x="3"/>
+												<Anchor point="RIGHT" relativePoint="RIGHT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame parentKey="OwnerContainer">
+								<Size x="240" y="15"/>
+								<KeyValues>
+									<KeyValue key="layoutIndex" value="5" type="number"/>
+								</KeyValues>
+								<Layers>
+									<Layer level="ARTWORK" textureSubLevel="5">
+										<FontString parentKey="OwnerLabel" inherits="Game13FontShadow" text="HOUSEFINDER_OWNER_LABEL">
+											<Anchors>
+												<Anchor point="LEFT" x="10"/>
+											</Anchors>
+											<Color color="NORMAL_FONT_COLOR"/>
+										</FontString>
+										<FontString parentKey="OwnerText" inherits="Game13FontShadow" justifyH="LEFT" text="">
+											<Anchors>
+												<Anchor point="LEFT" relativeKey="$parent.OwnerLabel" relativePoint="RIGHT" x="3"/>
+												<Anchor point="RIGHT" relativePoint="RIGHT"/>
+											</Anchors>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
 					</Frame>
 				</Frames>
 			</Frame>

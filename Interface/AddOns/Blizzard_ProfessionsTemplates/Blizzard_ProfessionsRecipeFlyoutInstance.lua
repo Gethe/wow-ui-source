@@ -1,27 +1,25 @@
-local flyout = CreateFrame("FRAME", nil, nil, "ProfessionsItemFlyoutTemplate");
-flyout:Hide();
+local flyout = CreateFrame("FRAME", nil, nil, "ProfessionsFlyoutTemplate");
+
+function IsProfessionsItemFlyoutOpen()
+	return flyout:IsShown();
+end
 
 function CloseProfessionsItemFlyout()
 	flyout:ClearAllPoints();
 	flyout:Hide();
 end
 
-function OpenProfessionsItemFlyout(owner, parent)
+function OpenProfessionsItemFlyout(anchorTo, owner, behavior)
+	assert(anchorTo);
+	behavior:SetFlyout(flyout);
+
 	-- Avoiding parenting to a scaled item slot (recraft).
-	flyout:ClearHandlers();
-	flyout:SetParent(parent);
-	flyout:SetPoint("TOPLEFT", owner, "TOPRIGHT", 5, 0);
+	flyout:SetParent(owner);
+	flyout:SetPoint("TOPLEFT", anchorTo, "TOPRIGHT", 5, 0);
 	flyout:SetFrameStrata("HIGH");
 	flyout:Show();
-	return flyout;
-end
 
-function ToggleProfessionsItemFlyout(owner, parent)
-	if flyout:IsShown() then
-		CloseProfessionsItemFlyout();
-		return nil;
-	end
+	flyout:Init(owner, behavior);
 
-	OpenProfessionsItemFlyout(owner, parent);
 	return flyout;
 end

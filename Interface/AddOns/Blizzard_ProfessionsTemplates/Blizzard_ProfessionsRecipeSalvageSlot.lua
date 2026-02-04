@@ -1,23 +1,9 @@
-ProfessionsSalvageSlotMixin = {};
-
-function ProfessionsSalvageSlotMixin:Reset()
-	self.Button.QualityOverlay:SetAtlas(nil);
-	self:SetAllocateIconShown(false);
-	self.unallocatable = nil;
-	self.quantityAvailableCallback = nil;
-	self.CustomerState:Hide();
-	self.allocationItem = nil;
-	self.Button:Reset();
-	self.Button:SetLocked(false);
-	
-	if self.continuableContainer then
-		self.continuableContainer:Cancel();
-	end
-	self.continuableContainer = ContinuableContainer:Create();
-end
+ProfessionsSalvageSlotMixin = CreateFromMixins(ProfessionsRecipeSlotBaseMixin);
 
 function ProfessionsSalvageSlotMixin:Init(transaction, quantityRequired)
-	self:Reset();
+	ProfessionsRecipeSlotBaseMixin.Init(self);
+
+	self:ClearReagent();
 
 	self.quantityRequired = quantityRequired;
 
@@ -41,6 +27,8 @@ function ProfessionsSalvageSlotMixin:Update()
 	if not self:UpdateAllocationText() then
 		self:SetNameText(PROFESSIONS_ADD_SALVAGE);
 	end
+
+	self.Button.InputOverlay.AddIcon:SetShown(self.allocationItem == nil);
 end
 
 function ProfessionsSalvageSlotMixin:SetQuantityAvailableCallback(callback)
@@ -48,14 +36,12 @@ function ProfessionsSalvageSlotMixin:SetQuantityAvailableCallback(callback)
 end
 
 function ProfessionsSalvageSlotMixin:UpdateAllocationText()
-	if self.allocationItem then
-		local quantity = self.allocationItem:GetStackCount();
-		if quantity then
-			self:SetNameText(("%s %s"):format(
-				TRADESKILL_REAGENT_COUNT:format(quantity, self.quantityRequired),
-				self.allocationItem:GetItemName()));
-				return true;
-		end
+	local quantity = self.allocationItem and self.allocationItem:GetStackCount();
+	if quantity then
+		self:SetNameText(("%s %s"):format(
+			TRADESKILL_REAGENT_COUNT:format(quantity, self.quantityRequired),
+			self.allocationItem:GetItemName()));
+		return true;
 	end
 	return false;
 end
@@ -72,7 +58,7 @@ function ProfessionsSalvageSlotMixin:IsUnallocatable()
 	return self.unallocatable;
 end
 
-function ProfessionsSalvageSlotMixin:ClearItem()
+function ProfessionsSalvageSlotMixin:ClearReagent()
 	self.allocationItem = nil;
 
 	self.Button:Reset();
@@ -88,8 +74,4 @@ function ProfessionsSalvageSlotMixin:SetItem(item)
 	self.Button:SetItem(item:GetItemID());
 
 	self:Update();
-end
-
-function ProfessionsSalvageSlotMixin:SetAllocateIconShown(shown)
-	self.Button.AddIcon:SetShown(shown);
 end

@@ -191,7 +191,7 @@ function FullStoreCardMixin:ShowIcon(displayData)
 			self.IconBorder:SetSize(80, 81);
 			self.IconBorder:SetPoint("CENTER", self.Icon, "CENTER", 0, -3);
 		else -- round icon borders use textures
-			SetPortraitToTexture(self.Icon, icon);
+			self.Icon:SetTexture(icon);
 			self.IconBorder:ClearAllPoints();
 
 			self.Icon:ClearAllPoints();

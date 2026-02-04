@@ -244,6 +244,14 @@ local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameA
 	end
 end
 
+local function ShouldUseNativeForm()
+	if CatalogShopFrame then
+		return CatalogShopFrame:GetUseNativeForm();
+	end
+
+	return true;
+end
+
 --[[
 
 CatalogShopUtil is a system for taking relevant product info and "flattening" it into a single "display data" table.  There is an auto tools system
@@ -540,6 +548,7 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 	local nextMount = 1;
 	local nextToy = 1;
 	local nextMog = 1;
+	local nextDecor = 1;
 	for _, childDisplayData in ipairs(displayData.bundleChildrenDisplayData) do
 		if childDisplayData.productType == CatalogShopConstants.ProductType.Pet then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Pet .. tostring(nextPet);
@@ -562,6 +571,9 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Transmog then
 			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Transmog .. tostring(nextMog);
 			nextMog = nextMog + 1;
+		elseif childDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+			childDisplayData.modelSceneTag = CatalogShopConstants.DefaultActorTag.Decor .. tostring(nextDecor);
+			nextDecor = nextDecor + 1;
 		end
 	end
 
@@ -596,6 +608,9 @@ function CatalogShopUtil.SetupModelSceneForBundle(modelScene, modelSceneID, disp
 				local _modelSceneId = nil;
 				local _preserveCurrentView = false;
 				CatalogShopUtil.SetupModelSceneForTransmogsForBundles(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, preserveCurrentView);
+			elseif foundChildDisplayData.productType == CatalogShopConstants.ProductType.Decor then
+				local _modelSceneId = nil;
+				CatalogShopUtil.SetupModelSceneForDecor(modelScene, _modelSceneId, foundChildDisplayData, modelLoadedCB, forceSceneChange, tag);
 			end
 		end
 	end
@@ -632,7 +647,11 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
 			end
-			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			local actorDisplaySet = actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			if not actorDisplaySet then
+				EventRegistry:TriggerEvent("CatalogShop.OnModelSceneActorFailedToLoad", displayData);
+				return;
+			end
 
 			if (isSelfMount) then
 				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
@@ -642,8 +661,7 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 				actor:SetAnimation(0);
 			end
 			local showPlayer = forceHidePlayer == nil or not forceHidePlayer; -- fetch this instead
-			local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
-			--local useNativeForm = true; -- fetch this
+			local useNativeForm = ShouldUseNativeForm();
 
 			local isSelfMount = false;
 			local disablePlayerMountPreview = false; -- some mounts are flagged to not show the player on the mount - this is static data we need to fetch
@@ -665,7 +683,7 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 end
 
 -- GETTING PLAYER WHILE INGAME
-function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID)
+function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID, actorDisplayData)
 	if not playerData then
 		return;
 	end
@@ -694,6 +712,11 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 		playerData.modelScene.useNativeForm = playerData.useNativeForm;
 		local holdBowString = true;
 		actor:SetModelByUnit("player", playerData.sheatheWeapon, playerData.autoDress, playerData.hideWeapon, playerData.useNativeForm, holdBowString, customRaceID);
+
+		-- Fix for rotations not applying correctly after the initial native form swap
+		if actorDisplayData then
+			actor:SetYaw(math.rad(actorDisplayData.yaw));
+		end
 	else
 		if playerData.autoDress then
 			actor:Dress();
@@ -769,8 +792,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	end
 
 	local hideWeapon, sheatheWeapon, autoDress = false, true, true;
-	local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
-	--local itemModifiedAppearanceID;
+	local useNativeForm = ShouldUseNativeForm();
 	local itemModifiedAppearanceIDs;
 
 	local actorDisplayData = nil;
@@ -825,7 +847,12 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	if C_Glue.IsOnGlueScreen() then
 		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB, customRaceID);
 	else
-		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedCB, customRaceID);
+		modelScene.CachedPlayerActor = CatalogShopUtil.SetupPlayerModelSceneForInGame(
+			playerData,
+			modelLoadedCB,
+			customRaceID,
+			preserveCurrentView and actorDisplayData or nil
+		);
 	end
 
 	if displayData and not preserveCurrentView then
@@ -854,7 +881,11 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
 			end
-			actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			local actorDisplaySet = actor:SetModelByCreatureDisplayID(creatureDisplayID);
+			if not actorDisplaySet then
+				EventRegistry:TriggerEvent("CatalogShop.OnModelSceneActorFailedToLoad", displayData);
+			end
+
 			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);			
 			local tryUseOverrideAnim = true;
 			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
@@ -864,7 +895,7 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 end
 
 -- DECOR
-function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange)
+function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displayData, modelLoadedCB, forceSceneChange, optionalDecorTag)
 	if not displayData then
 		error("CatalogShopUtil.SetupModelSceneForDecor : invalid displayData");
 		return;
@@ -875,7 +906,8 @@ function CatalogShopUtil.SetupModelSceneForDecor(modelScene, modelSceneID, displ
 			modelScene:TransitionToModelSceneID(modelSceneID, CAMERA_TRANSITION_TYPE_IMMEDIATE, CAMERA_MODIFICATION_TYPE_MAINTAIN, forceSceneChange);
 		end
 
-		local actor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Decor);
+		local decorTag = optionalDecorTag or CatalogShopConstants.DefaultActorTag.Decor;
+		local actor = modelScene:GetActorByTag(decorTag);
 		if actor then
 			if modelLoadedCB then
 				actor:SetOnModelLoadedCallback(GenerateClosure(modelLoadedCB, modelScene, actor));
@@ -950,7 +982,7 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, isP
 		if not C_Glue.IsOnGlueScreen() then
 			hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 		end
-		local useNativeForm = CatalogShopFrame and CatalogShopFrame:GetUseNativeForm() or true;
+		local useNativeForm = ShouldUseNativeForm();
 
 		if not isOverrideData then
 			local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
@@ -1158,7 +1190,7 @@ function CatalogShopUtil.SetServicesContainerIcon(icon, displayInfo)
 		local formattedIcon = ("%s-large"):format(displayInfo.iconTextureKit);
 		icon:SetAtlas(formattedIcon);
 	elseif displayInfo.iconFileDataID then
-		SetPortraitToTexture(icon, displayInfo.iconFileDataID);
+		icon:SetTexture(displayInfo.iconFileDataID);
 	end
 end
 
@@ -1169,6 +1201,9 @@ function CatalogShopUtil.SetAlternateProductIcon(icon, displayInfo)
 end
 
 local function IsWeapon(categoryID)
+	if not categoryID then
+		return false;
+	end
 	local firstWeaponCategory = Enum.TransmogCollectionType.Wand;
 	local lastWeaponCategory = Enum.TransmogCollectionType.Warglaives;
 	if categoryID >= firstWeaponCategory and categoryID <= lastWeaponCategory then
@@ -1190,7 +1225,8 @@ function CatalogShopUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceI
 	local usingWeaponBucket = false;
 
 	for i, itemModifiedAppearanceID in ipairs(itemModifiedAppearanceIDs) do
-		local categoryID = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		local categoryInfo = C_TransmogCollection.GetAppearanceSourceInfo(itemModifiedAppearanceID);
+		local categoryID = categoryInfo and categoryInfo.category or nil;
 		if not firstCategoryID then
 			firstCategoryID = categoryID;
 			if IsWeapon(firstCategoryID) then

@@ -3,6 +3,7 @@ local StableInfo =
 	Name = "StableInfo",
 	Type = "System",
 	Namespace = "C_StableInfo",
+	Environment = "All",
 
 	Functions =
 	{
@@ -49,6 +50,7 @@ local StableInfo =
 		{
 			Name = "GetStablePetFoodTypes",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -63,6 +65,7 @@ local StableInfo =
 		{
 			Name = "GetStablePetInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -93,8 +96,18 @@ local StableInfo =
 			},
 		},
 		{
+			Name = "IsBonusPetSlotAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPetFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +122,7 @@ local StableInfo =
 		{
 			Name = "PickupStablePet",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +132,7 @@ local StableInfo =
 		{
 			Name = "SetPetFavorite",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -128,6 +143,7 @@ local StableInfo =
 		{
 			Name = "SetPetSlot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -143,26 +159,31 @@ local StableInfo =
 			Name = "PetInfoUpdate",
 			Type = "Event",
 			LiteralName = "PET_INFO_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "PetStableClosed",
 			Type = "Event",
 			LiteralName = "PET_STABLE_CLOSED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableFavoritesUpdated",
 			Type = "Event",
 			LiteralName = "PET_STABLE_FAVORITES_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableShow",
 			Type = "Event",
 			LiteralName = "PET_STABLE_SHOW",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PetStableUpdate",
 			Type = "Event",
 			LiteralName = "PET_STABLE_UPDATE",
+			SynchronousEvent = true,
 		},
 	},
 

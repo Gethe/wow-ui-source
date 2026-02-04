@@ -131,6 +131,7 @@ SLASH_COMMAND = {
 	RESET_COMMENTATOR_SETTINGS = "RESET_COMMENTATOR_SETTINGS",
 	VOICECHAT = "VOICECHAT",
 	TEXTTOSPEECH = "TEXTTOSPEECH",
+	COMBATAUDIOALERTS = "CAA",
 	COUNTDOWN = "COUNTDOWN",
 	PET_ASSIST = "PET_ASSIST",
 	PET_AUTOCASTON = "PET_AUTOCASTON",
@@ -158,7 +159,7 @@ SLASH_COMMAND = {
 	SPECTATOR_SOLOSHUFFLE_WARGAME = "SPECTATOR_SOLOSHUFFLE_WARGAME",
 	SPECTATOR_SOLORBG_WARGAME = "SPECTATOR_SOLORBG_WARGAME",
 	GUILDFINDER = "GUILDFINDER",
-	TRANSMOG_OUTFIT = "TRANSMOG_OUTFIT",
+	TRANSMOG_CUSTOM_SET = "TRANSMOG_CUSTOM_SET",
 	COMMUNITY = "COMMUNITY",
 	RAF = "RAF",
 	EDITMODE = "EDITMODE",
@@ -440,7 +441,7 @@ SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.CHANGEACTIONBAR, SLASH
 	if ( page and page ~= "" ) then
 		page = tonumber(page);
 		if (page and page >= 1 and page <= NUM_ACTIONBAR_PAGES) then
-			ChangeActionBarPage(page);
+			C_ActionBar.SetActionBarPage(page);
 		else
 			ChatFrameUtil.DisplayUsageError(format(ERROR_SLASH_CHANGEACTIONBAR, 1, NUM_ACTIONBAR_PAGES));
 		end
@@ -455,10 +456,10 @@ SlashCommandUtil.CheckAddSecureSlashCommand(SLASH_COMMAND.SWAPACTIONBAR, SLASH_C
 			a = tonumber(a);
 			b = tonumber(b);
 			if ( ( a and a >= 1 and a <= NUM_ACTIONBAR_PAGES ) and ( b and b >= 1 and b <= NUM_ACTIONBAR_PAGES ) ) then
-				if ( GetActionBarPage() == a ) then
-					ChangeActionBarPage(b);
+				if ( C_ActionBar.GetActionBarPage() == a ) then
+					C_ActionBar.SetActionBarPage(b);
 				else
-					ChangeActionBarPage(a);
+					C_ActionBar.SetActionBarPage(a);
 				end
 			else
 				ChatFrameUtil.DisplayUsageError(format(ERROR_SLASH_SWAPACTIONBAR, 1, NUM_ACTIONBAR_PAGES));
@@ -1115,7 +1116,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.FRIENDS, SLASH_COMMAND_CATEG
 		return;
 	end
 
-	if msg == "" and UnitIsPlayer("target") then
+	if msg == "" and UnitIsHumanPlayer("target") then
 		msg = GetUnitName("target", true)
 	end
 	if not msg or msg == "" then
@@ -1133,7 +1134,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsPlayer("target") ) then
+	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
 		local bNetIDAccount = BNet_GetBNetIDAccount(msg);
 		if ( bNetIDAccount ) then
 			if ( BNIsFriend(bNetIDAccount) ) then
@@ -1150,7 +1151,7 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGO
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNIGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsPlayer("target") ) then
+	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
 		C_FriendList.DelIgnore(msg);
 	else
 		ToggleIgnorePanel();
@@ -1521,11 +1522,42 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.VOICECHAT, SLASH_COMMAND_CAT
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TEXTTOSPEECH, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
-	if TextToSpeechCommands:EvaluateTextToSpeechCommand(msg) then
+	local cmd, success, failureText, failureTextNarrated = TextToSpeechCommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
+	elseif success then
 		TextToSpeechFrame_Update(TextToSpeechFrame);
 	else
-		TextToSpeechCommands:SpeakConfirmation(TEXTTOSPEECH_COMMAND_SYNTAX_ERROR);
-		TextToSpeechCommands:ShowHelp(msg)
+		if not failureText then
+			failureText, failureTextNarrated = TextToSpeechCommands:GetCommandHelpText(cmd);
+		end
+
+		if failureText then
+			TextToSpeechCommands:SpeakConfirmation(failureText, failureTextNarrated);
+		else
+			TextToSpeechCommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+		end
+	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.COMBATAUDIOALERTS, SLASH_COMMAND_CATEGORY.VOICE_CHAT, function(msg)
+	local cmd, success, failureText, failureTextNarrated = CAACommands:EvaluateTextToSpeechCommand(msg);
+	if cmd == nil then
+		CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+	elseif success then
+		if not cmd.isMainToggle and not GetCVarBool("CAAEnabled") then
+			CAACommands:SpeakConfirmation(SLASH_CAA_DISABLED_WARNING, SLASH_CAA_DISABLED_WARNING_NARRATED);
+		end
+	else
+		if not failureText then
+			failureText, failureTextNarrated = CAACommands:GetCommandHelpText(cmd);
+		end
+
+		if failureText then
+			CAACommands:SpeakConfirmation(failureText, failureTextNarrated);
+		else
+			CAACommands:SpeakConfirmation(CAA_COMMAND_SYNTAX_ERROR, CAA_COMMAND_SYNTAX_ERROR_NARRATED);
+		end
 	end
 end);
 

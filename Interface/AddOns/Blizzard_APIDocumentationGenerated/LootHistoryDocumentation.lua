@@ -3,6 +3,7 @@ local LootHistory =
 	Name = "LootHistory",
 	Type = "System",
 	Namespace = "C_LootHistory",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local LootHistory =
 		{
 			Name = "GetInfoForEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +43,7 @@ local LootHistory =
 		{
 			Name = "GetSortedDropsForEncounter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -55,6 +58,7 @@ local LootHistory =
 		{
 			Name = "GetSortedInfoForDrop",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -75,11 +79,13 @@ local LootHistory =
 			Name = "LootHistoryClearHistory",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_CLEAR_HISTORY",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LootHistoryGoToEncounter",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_GO_TO_ENCOUNTER",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
@@ -89,6 +95,7 @@ local LootHistory =
 			Name = "LootHistoryOneHundredRoll",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_ONE_HUNDRED_ROLL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
@@ -99,6 +106,7 @@ local LootHistory =
 			Name = "LootHistoryUpdateDrop",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_UPDATE_DROP",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },
@@ -109,6 +117,7 @@ local LootHistory =
 			Name = "LootHistoryUpdateEncounter",
 			Type = "Event",
 			LiteralName = "LOOT_HISTORY_UPDATE_ENCOUNTER",
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "encounterID", Type = "number", Nilable = false },

@@ -289,7 +289,7 @@ function ProfessionsMixin:UpdateTabs()
 		self.isCraftingOrdersTabEnabled = false;
 	else
 		self.isCraftingOrdersTabEnabled = C_TradeSkillUI.IsNearProfessionSpellFocus(self.professionInfo.profession);
-		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, self.isCraftingOrdersTabEnabled and "" or PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
+		self.TabSystem:SetTabEnabled(self.craftingOrdersTabID, self.isCraftingOrdersTabEnabled, PROFESSIONS_ORDERS_MUST_BE_NEAR_TABLE);
 		forceAwayFromOrders = not self.isCraftingOrdersTabEnabled;
 		FrameUtil.RegisterUpdateFunction(self, .75, GenerateClosure(self.Update, self));
 	end
@@ -428,16 +428,23 @@ function ProfessionsMixin:SetTab(tabID, forcedOpen)
 	end
 
 	if isCraftingOrderTab then
+		-- When transitioning to the crafting orders page, the currently selected expansion
+		-- is now copied from the recipes page instead of defaulted to the most recent expansion.
+		if not self.craftingOrdersFilters then
+			self.craftingOrdersFilters = Professions.GetCurrentFilterSet();
+		end
+		self.craftingOrdersFilters.professionInfo = self.recipesFilters.professionInfo;
+
 		Professions.ApplyfilterSet(self.craftingOrdersFilters);
 	elseif isRecipesTab then
 		Professions.ApplyfilterSet(self.recipesFilters);
 	end
 
+	-- The currently selected expansion in the recipes page now governs the skill line
+	-- used to generate the crafting order recipe list and patron orders.
 	local overrideSkillLine;
 	if isSpecTab and not C_ProfSpecs.SkillLineHasSpecialization(self:GetProfessionInfo().professionID) then
 		overrideSkillLine = C_ProfSpecs.GetDefaultSpecSkillLine();
-	elseif isCraftingOrderTab and not C_CraftingOrders.SkillLineHasOrders(self:GetProfessionInfo().professionID) then
-		overrideSkillLine = C_CraftingOrders.GetDefaultOrdersSkillLine();
 	end
 
 	if overrideSkillLine then

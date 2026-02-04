@@ -3,12 +3,14 @@ local CreatureInfo =
 	Name = "CreatureInfo",
 	Type = "System",
 	Namespace = "C_CreatureInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GetClassInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local CreatureInfo =
 		{
 			Name = "GetCreatureFamilyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -41,6 +44,21 @@ local CreatureInfo =
 			Returns =
 			{
 				{ Name = "creatureFamilyInfo", Type = "CreatureFamilyInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetCreatureID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "creatureGUID", Type = "WOWGUID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "creatureID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -55,6 +73,7 @@ local CreatureInfo =
 		{
 			Name = "GetCreatureTypeInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +88,7 @@ local CreatureInfo =
 		{
 			Name = "GetFactionInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -83,6 +103,7 @@ local CreatureInfo =
 		{
 			Name = "GetRaceInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

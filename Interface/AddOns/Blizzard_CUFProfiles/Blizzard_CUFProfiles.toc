@@ -1,5 +1,3 @@
 ## Title: Blizzard_CUFProfiles
-## LoadOnDemand: 0
-## AllowLoadGameType: standard
-
-Blizzard_CompactUnitFrameProfiles.lua
+## Dependencies: Blizzard_UnitFrame
+Blizzard_CompactUnitFrameProfiles.lua [AllowLoadEnvironment Global]

@@ -2,12 +2,14 @@ local SimpleOffScreenFrameAPI =
 {
 	Name = "SimpleOffScreenFrameAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "ApplySnapshot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -44,6 +46,7 @@ local SimpleOffScreenFrameAPI =
 		{
 			Name = "IsSnapshotValid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +61,7 @@ local SimpleOffScreenFrameAPI =
 		{
 			Name = "SetMaxSnapshots",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -80,6 +84,7 @@ local SimpleOffScreenFrameAPI =
 		{
 			Name = "TestPrintToFile",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Unavailable in public builds" },
 
 			Arguments =

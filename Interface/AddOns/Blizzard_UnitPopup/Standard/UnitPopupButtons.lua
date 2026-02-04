@@ -190,7 +190,11 @@ function UnitPopupInviteButtonMixin:CanShow(contextData)
 		if not UnitPopupSharedUtil.CanCooperate(contextData) then
 			return false;
 		end
-		
+
+		if not UnitIsHumanPlayer(unit) then
+			return false;
+		end
+
 		if UnitIsUnit("player", unit) then
 			return false;
 		end
@@ -229,7 +233,7 @@ function UnitPopupBnetInviteButtonMixin:CanShow(contextData)
 	local accountInfo = contextData.accountInfo;
 	if not accountInfo then
 		return false;
-end
+	end
 
 	local playerGuid = accountInfo.gameAccountInfo.playerGuid;
 	if not playerGuid then
@@ -242,11 +246,11 @@ end
 	end
 
 	if not contextData.bnetIDAccount then
-			return false; 
-		end
+		return false; 
+	end
 
 	return BNFeaturesEnabledAndConnected(); 
-	end
+end
 
 function UnitPopupCommunitiesLeaveButtonMixin:GetText(contextData)
 	local isCharacterClub = contextData.clubInfo.clubType == Enum.ClubType.Character;
@@ -256,7 +260,7 @@ end
 function UnitPopupWhisperButtonMixin:CanShow(contextData)
 	if contextData.isMobile then
 		return false;
-end
+	end
 
 	local whisperIsLocalPlayer = UnitPopupSharedUtil.GetIsLocalPlayer(contextData);
 	if not whisperIsLocalPlayer then
@@ -303,7 +307,11 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		if UnitIsUnit(unit, "player") then
 			return false; 
 		end
-		
+
+		if not UnitIsHumanPlayer(unit) then
+			return false;
+		end
+
 		if not UnitInBattleground(unit) and not IsInActiveWorldPVP(unit) then
 			return false; 
 		end
@@ -311,13 +319,13 @@ function UnitPopupPvpReportAfkButtonMixin:CanShow(contextData)
 		local name = contextData.name;
 		if name then
 			if name == UnitNameUnmodified("player") then
-			return false; 
+				return false; 
 			end
 			
 			if not UnitInBattleground(name) and not IsInActiveWorldPVP(name) then
-			return false; 
+				return false; 
+			end
 		end
-	end
 	end
 
 	return true;

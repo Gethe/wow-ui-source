@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="DressUpOutfitSlotFrameTemplate" virtual="true" mixin="DressUpOutfitDetailsSlotMixin">
+	<Frame name="DressUpCustomSetSlotFrameTemplate" virtual="true" mixin="DressUpCustomSetDetailsSlotMixin">
 		<Size x="272" y="24"/>
 		<Layers>
 			<Layer level="BORDER">
@@ -43,7 +43,7 @@
 
 	<Frame name="SideDressUpFrame" flattenRenderLayers="true" mixin="SideDressUpModelFrameFrameMixin" parent="UIParent" enableMouse="true" hidden="true">
 		<KeyValues>
-			<KeyValue key="hasOutfitControls" value="false" type="boolean"/>
+			<KeyValue key="hasCustomSetControls" value="false" type="boolean"/>
 		</KeyValues>
 		<Size x="187" y="389"/>
 		<Layers>
@@ -135,7 +135,7 @@
 
 	<Frame name="TransmogAndMountDressupFrame" mixin="TransmogAndMountDressupFrameMixin" flattenRenderLayers="true" enableMouse="true" hidden="true">
 		<KeyValues>
-			<KeyValue key="hasOutfitControls" value="false" type="boolean"/>
+			<KeyValue key="hasCustomSetControls" value="false" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<CheckButton parentKey="ShowMountCheckButton" inherits="UICheckButtonTemplate">
@@ -271,7 +271,7 @@
 
 	<Frame name="DressUpFrame" mixin="DressUpModelFrameMixin" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" inherits="ButtonFrameTemplateMinimizable">
 		<KeyValues>
-			<KeyValue key="hasOutfitControls" value="true" type="boolean"/>
+			<KeyValue key="hasCustomSetControls" value="true" type="boolean"/>
 			<KeyValue key="transmogSetDressUpEnabled" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="450" y="545"/>
@@ -282,7 +282,7 @@
 			<AbsInset left="0" right="30" top="0" bottom="45"/>
 		</HitRectInsets>
 		<Frames>
-			<DropdownButton parentKey="OutfitDropdown" name="$parentOutfitDropdown" inherits="WardrobeOutfitDropdownTemplate" mixin="DressUpOutfitMixin">
+			<DropdownButton parentKey="CustomSetDropdown" name="$parentCustomSetDropdown" inherits="WardrobeCustomSetDropdownTemplate" mixin="DressUpCustomSetMixin">
 				<KeyValues>
 					<KeyValue key="width" value="163" type="number"/>
 					<KeyValue key="minMenuStringWidth" value="127" type="number"/>
@@ -332,7 +332,7 @@
 					</OnDressModel>
 				</Scripts>
 			</ModelScene>
-			<Button parentKey="ToggleOutfitDetailsButton">
+			<Button parentKey="ToggleCustomSetDetailsButton">
 				<Size x="27" y="25"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-11" y="-30"/>
@@ -348,7 +348,7 @@
 				<Scripts>
 					<OnClick>
 						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
-						self:GetParent():ToggleOutfitDetails();
+						self:GetParent():ToggleCustomSetDetails();
 					</OnClick>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4);
@@ -364,7 +364,7 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-7" y="-30"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="OutfitDetailsPanel" mixin="DressUpOutfitDetailsPanelMixin" enableKeyboard="true">
+			<Frame parentKey="CustomSetDetailsPanel" mixin="DressUpCustomSetDetailsPanelMixin" enableKeyboard="true">
 				<Size x="313" y="473"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-9" y="-29"/>
@@ -411,7 +411,7 @@
 					<OnClick method="OnClick" />
 				</Scripts>
 			</Button>
-			<DropdownButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_OUTFIT">
+			<DropdownButton parentKey="LinkButton" mixin="DressUpModelFrameLinkButtonMixin" inherits="UIPanelButtonTemplate" text="LINK_TRANSMOG_CUSTOM_SET">
 				<KeyValues>
 					<KeyValue key="menuPointX" type="number" value="15"/>
 					<KeyValue key="menuPointY" type="number" value="2"/>

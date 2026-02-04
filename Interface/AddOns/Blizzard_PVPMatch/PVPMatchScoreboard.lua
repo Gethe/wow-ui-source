@@ -105,8 +105,7 @@ end
 
 
 function PVPMatchScoreboardMixin:UpdateTable()
-	local forceNewDataProvider = true;
-	PVPMatchUtil.UpdateDataProvider(self.ScrollBox, forceNewDataProvider);
+	PVPMatchUtil.UpdateDataProvider(self.ScrollBox);
 
 	self:UpdateTabs();
 end
@@ -124,8 +123,9 @@ function PVPMatchScoreboardMixin:OnTabGroupClicked(tab)
 	SetBattlefieldScoreFaction(tab.factionEnum);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
-	local forceNewDataProvider = true;
-	PVPMatchUtil.UpdateDataProvider(self.ScrollBox, forceNewDataProvider);
+	PVPMatchUtil.UpdateDataProvider(self.ScrollBox);
+
+	self.ScrollBox:ScrollToBegin();
 end
 
 function PVPMatchScoreboardMixin:BeginShow()

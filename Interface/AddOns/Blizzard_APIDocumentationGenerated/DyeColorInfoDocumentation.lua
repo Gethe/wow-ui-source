@@ -3,6 +3,7 @@ local DyeColorInfo =
 	Name = "DyeColorInfo",
 	Type = "System",
 	Namespace = "C_DyeColor",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local DyeColorInfo =
 		{
 			Name = "GetAllDyeColors",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -32,6 +34,7 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorCategoryInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +49,7 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorForItem",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -60,6 +64,7 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorForItemLocation",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -74,6 +79,7 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +94,7 @@ local DyeColorInfo =
 		{
 			Name = "GetDyeColorsInCategory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +110,7 @@ local DyeColorInfo =
 		{
 			Name = "IsDyeColorOwned",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "True if the player owns any of the consumable item used to apply the specified dye" },
 
 			Arguments =
@@ -123,6 +131,7 @@ local DyeColorInfo =
 			Name = "DyeColorCategoryUpdated",
 			Type = "Event",
 			LiteralName = "DYE_COLOR_CATEGORY_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "dyeColorCategoryID", Type = "number", Nilable = false },
@@ -132,6 +141,7 @@ local DyeColorInfo =
 			Name = "DyeColorUpdated",
 			Type = "Event",
 			LiteralName = "DYE_COLOR_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "dyeColorID", Type = "number", Nilable = false },

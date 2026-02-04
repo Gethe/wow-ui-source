@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="HouseEditorFrame" mixin="HouseEditorFrameMixin" inherits="TopLevelParentScaleFrameTemplate" toplevel="true" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
+	<Frame name="HouseEditorFrame" mixin="HouseEditorFrameMixin" inherits="TopLevelParentScaleFrameTemplate" setAllPoints="true" ignoreParentScale="true" enableKeyboard="true" hidden="true">
 		<KeyValues>
 			<KeyValue key="matchAnchors" value="true" type="boolean"/>
 		</KeyValues>
@@ -20,6 +20,12 @@
 			<Frame parentKey="ModeBar" inherits="HouseEditorModesBarTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="MarketShoppingCartFrame" inherits="HousingMarketCartFrameTemplate" hidden="true">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-30" y="20"/>
 				</Anchors>
 			</Frame>
 

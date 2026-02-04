@@ -3,6 +3,7 @@ local MacOptions =
 	Name = "MacOptions",
 	Type = "System",
 	Namespace = "C_MacOptions",
+	Environment = "All",
 
 	Functions =
 	{
@@ -76,6 +77,7 @@ local MacOptions =
 		{
 			Name = "SetOSShortcutsDisabled",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

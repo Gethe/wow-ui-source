@@ -218,7 +218,7 @@ function ArenaEnemyMatchFrameMixin:UpdatePlayer() --At some points, we need to u
 	if (specID and specID > 0) then
 		local _, _, _, specIcon = GetSpecializationInfoByID(specID);
 		self.specBorder:Show();
-		SetPortraitToTexture(self.specPortrait, specIcon);
+		self.specPortrait:SetTexture(specIcon);
 	else
 		self.specPortrait:SetTexture(nil);
 		self.specBorder:Hide();
@@ -485,7 +485,7 @@ function ArenaEnemyPrepFramesContainerMixin:UpdateFrames()
 					prepFrame.classPortrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles");
 					prepFrame.classPortrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[strupper(class)]));
 				end
-				SetPortraitToTexture(prepFrame.specPortrait, specIcon);
+				prepFrame.specPortrait:SetTexture(specIcon);
 				prepFrame:Show();
 			else
 				prepFrame:Hide();

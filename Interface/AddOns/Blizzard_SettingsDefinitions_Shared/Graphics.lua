@@ -63,6 +63,7 @@ local function CreateAdvancedQualitySetting(category, cvar, name, proxyName, min
 		Settings.VarType.Number, name, getDefaultValue(), getValue, setValue);
 	setting:SetCommitFlags(Settings.CommitFlag.Apply);
 	setting.minQualityValue = minQualityValue or -1;
+	setting.cvar = cvar;
 	return setting;
 end
 
@@ -124,106 +125,106 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 
 	local function GetShadowQualityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingShadowQuality:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_SHADOW_QUALITY_LOW);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_SHADOW_QUALITY_FAIR);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_SHADOW_QUALITY_HIGH);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA);
-		AddValidatedSettingOption(container, variable, raid, 5, VIDEO_OPTIONS_ULTRA_HIGH, VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH);
-		AddRecommended(container, variable);
+		local cvar = settingShadowQuality.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_SHADOW_QUALITY_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_SHADOW_QUALITY_FAIR);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_SHADOW_QUALITY_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_SHADOW_QUALITY_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA);
+		AddValidatedSettingOption(container, cvar, raid, 5, VIDEO_OPTIONS_ULTRA_HIGH, VIDEO_OPTIONS_SHADOW_QUALITY_ULTRA_HIGH);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetLiquidDetailOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingLiquidDetail:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_LIQUID_DETAIL_LOW);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_LIQUID_DETAIL_FAIR);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA);
-		AddRecommended(container, variable);
+		local cvar = settingLiquidDetail.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_LIQUID_DETAIL_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_LIQUID_DETAIL_FAIR);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_LIQUID_DETAIL_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_LIQUID_DETAIL_ULTRA);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetParticleDensityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingParticleDensity:GetVariable();
-		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
+		local cvar = settingParticleDensity.cvar;
+		local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_FAIR);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_HIGH);
-		AddValidatedSettingOption(container, variable, raid, 5, VIDEO_OPTIONS_ULTRA);
-		AddRecommended(container, variable);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_FAIR);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 5, VIDEO_OPTIONS_ULTRA);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetSSAOOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingSSAO:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_HIGH);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_ULTRA);
-		AddRecommended(container, variable);
+		local cvar = settingSSAO.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_DISABLED);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_ULTRA);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetDepthEffectOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingDepthEffects:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_DEPTH_EFFECTS_LOW);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH);
-		AddRecommended(container, variable);
+		local cvar = settingDepthEffects.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_DEPTH_EFFECTS_DISABLED);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_DEPTH_EFFECTS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_DEPTH_EFFECTS_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_DEPTH_EFFECTS_HIGH);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetComputeEffectOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingComputeEffects:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_COMPUTE_EFFECTS_HIGH);
-		AddValidatedSettingOption(container, variable, raid, 4, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_COMPUTE_EFFECTS_ULTRA);
-		AddRecommended(container, variable);
+		local cvar = settingComputeEffects.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_COMPUTE_EFFECTS_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_COMPUTE_EFFECTS_ULTRA);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetOutlineModeOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingOutlineMode:GetVariable();
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_DISABLED);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_MEDIUM);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_HIGH);
-		AddRecommended(container, variable);
+		local cvar = settingOutlineMode.cvar;
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_DISABLED);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_MEDIUM);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_HIGH);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetSpellDensityOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingSpellDensity:GetVariable();
+		local cvar = settingSpellDensity.cvar;
 		-- These match the enum values of SPELL_VISUAL_KIT_DENSITY.
-		--AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
-		AddValidatedSettingOption(container, variable, raid, 2, VIDEO_OPTIONS_SFX_DENSITY_FULL, VIDEO_OPTIONS_SFX_DENSITY_FULL_TOOLTIP);
-		AddRecommended(container, variable);
+		--AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
+		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_SFX_DENSITY_FULL, VIDEO_OPTIONS_SFX_DENSITY_FULL_TOOLTIP);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
 	local function GetProjectedTexturesOptions()
 		local container = Settings.CreateControlTextContainer();
-		local variable = settingProjectedTextures:GetVariable();
-		local data = AddValidatedSettingOption(container, variable, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
+		local cvar = settingProjectedTextures.cvar;
+		local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
-		AddValidatedSettingOption(container, variable, raid, 1, VIDEO_OPTIONS_ENABLED);
-		AddRecommended(container, variable);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_ENABLED);
+		AddRecommended(container, cvar);
 		return container:GetData();
 	end
 
@@ -237,7 +238,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local control = containerFrame.Control;
 		control:SetWidth(220);
 
-		local inserter = Settings.CreateDropdownOptionInserter(options);
+		local inserter = Settings.CreateDropdownOptionInserter(setting, options);
 		local initTooltip = Settings.CreateOptionsInitTooltip(setting, name, tooltip, options);
 		Settings.InitDropdown(control.Dropdown, setting, inserter, initTooltip);
 
@@ -664,11 +665,6 @@ local function Register()
 	-- NOTE: Classic doesn't use scale at glues
 	GraphicsOverrides.RunSettingsCallback(function()
 	-- UI Scale
-		local function FormatPercentageRounded(value)
-			local roundToNearestInteger = true;
-			return FormatPercentage(value, roundToNearestInteger);
-		end
-
 		local useUIScaleSetting, uiScaleSliderSetting;
 
 		-- Use UI Scale
@@ -949,6 +945,8 @@ local function Register()
 	local advRaidSettings = GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, AddAdvancedQualitySetting);
 
 	local raidSetting = Settings.RegisterCVarSetting(category, RaidSettingsEnabledCVar, Settings.VarType.Boolean, RAID_SETTINGS_ENABLED);
+	raidSetting:SetCommitFlags(Settings.CommitFlag.KioskProtected, Settings.CommitFlag.Apply);
+
 	local raidGraphicsSetting = Settings.GetSetting("PROXY_RAID_GRAPHICS_QUALITY");
 	-- Graphics setting must be applied last to prevent the OnGCChanged callback from
 	-- overwriting any child settings that have yet to been applied.

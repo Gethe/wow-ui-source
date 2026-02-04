@@ -535,7 +535,7 @@ end
 -- An optimization to avoid unnecessarily fetching the template and template info
 -- is planned in a future version. In the meantime, this must occur before calculating
 -- the extent.
-function ScrollBoxListViewMixin:PrepareRecalculateExtent()
+function ScrollBoxListViewMixin:RebuildTemplateInfoCache()
 	local dataProvider = self:GetDataProvider();
 	if not dataProvider then
 		return;
@@ -545,6 +545,11 @@ function ScrollBoxListViewMixin:PrepareRecalculateExtent()
 	if size == 0 then
 		return;
 	end
+
+	-- We have to flush the template info cache so that info contained is only representive
+	-- of the contents of the data provider. Otherwise, lingering info with different extents
+	-- would prevent equal template extent optimizations from occurring.
+	self.templateInfoCache:FlushTemplateInfos();
 
 	-- IndexRangeDataProvider is virtual and can represent thousands
 	-- of elements whom are only ever represented by a single template.

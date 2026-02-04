@@ -78,15 +78,7 @@
 		</Layers>
 		<Frames>
 			<!-- Prevent accidental interaction with decor/etc from clicking through various parts of the storage frame -->
-			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true">
-				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="-1">
-						<Texture setAllPoints="true">
-							<Color r="0" g="0" b="0" a="0.5"/>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
+			<Button parentKey="InputBlocker" frameLevel="1" setAllPoints="true"/>
 
 			<EditBox parentKey="SearchBox" inherits="HousingCatalogSearchBoxTemplate">
 				<Size y="30"/>
@@ -124,12 +116,12 @@
 					<Layer level="ARTWORK" textureSubLevel="1">
 						<FontString parentKey="CategoryText" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="0" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="CategoryTotal" inherits="GameFontNormal">
 							<Anchors>
-								<Anchor point="TOPRIGHT" x="-32" y="0"/>
+								<Anchor point="TOPRIGHT" x="-32" y="-8"/>
 							</Anchors>
 							<Color color="HOUSING_STORAGE_HEADER_COLOR"/>
 						</FontString>
@@ -152,7 +144,7 @@
 					<KeyValue key="tabTemplate" value="HouseEditorStorageTabTemplate" type="string"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="22" y="0"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="34" y="0"/>
 				</Anchors>
 			</Frame>
 

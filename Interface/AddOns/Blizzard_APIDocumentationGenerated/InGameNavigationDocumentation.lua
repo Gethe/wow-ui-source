@@ -3,6 +3,7 @@ local InGameNavigation =
 	Name = "InGameNavigation",
 	Type = "System",
 	Namespace = "C_Navigation",
+	Environment = "All",
 
 	Functions =
 	{
@@ -68,6 +69,7 @@ local InGameNavigation =
 			Name = "NavigationDestinationReached",
 			Type = "Event",
 			LiteralName = "NAVIGATION_DESTINATION_REACHED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "isWaypoint", Type = "bool", Nilable = false },
@@ -77,6 +79,7 @@ local InGameNavigation =
 			Name = "NavigationFrameCreated",
 			Type = "Event",
 			LiteralName = "NAVIGATION_FRAME_CREATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "region", Type = "ScriptRegion", Nilable = false },
@@ -86,6 +89,7 @@ local InGameNavigation =
 			Name = "NavigationFrameDestroyed",
 			Type = "Event",
 			LiteralName = "NAVIGATION_FRAME_DESTROYED",
+			SynchronousEvent = true,
 		},
 	},
 

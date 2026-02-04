@@ -2,12 +2,14 @@ local Font =
 {
 	Name = "Font",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "CreateFontFamily",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local Font =
 		{
 			Name = "GetFontInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

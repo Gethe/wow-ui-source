@@ -22,6 +22,7 @@ CatalogShopConstants =
 	CardTemplate =
 	{
 		Header = "CatalogShopSectionHeaderTemplate",
+		HeaderPersonalized = "CatalogShopSectionHeaderOptOutLinkTemplate",
 		Wide = "WideCatalogShopProductCardTemplate",
 		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
 		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",
@@ -34,6 +35,7 @@ CatalogShopConstants =
 		SmallTender = "SmallCatalogShopTenderCardTemplate",
 		SmallToys = "SmallCatalogShopToysCardTemplate",
 		SmallAccess = "SmallCatalogShopAccessCardTemplate",
+		SmallDecor = "SmallCatalogShopDecorCardTemplate",
 
 		Details = "DetailsCatalogShopProductCardTemplate",
 		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
@@ -42,6 +44,7 @@ CatalogShopConstants =
 		DetailsTender = "DetailsCatalogShopTenderCardTemplate",
 		DetailsToys = "DetailsCatalogShopToysCardTemplate",
 		DetailsAccess = "DetailsCatalogShopAccessCardTemplate",
+		DetailsDecor = "DetailsCatalogShopDecorCardTemplate",
 	},
 
 	ModelSceneContext =

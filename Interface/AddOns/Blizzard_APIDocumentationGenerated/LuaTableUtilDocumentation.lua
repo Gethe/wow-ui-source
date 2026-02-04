@@ -2,7 +2,8 @@ local LuaTableUtil =
 {
 	Name = "LuaTableUtil",
 	Type = "System",
-	Namespace = "table",
+	Namespace = "C_TableUtil",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,8 @@ local LuaTableUtil =
 			Name = "count",
 			Type = "Function",
 			MayReturnNothing = true,
+			Namespace = "table",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -26,6 +29,8 @@ local LuaTableUtil =
 		{
 			Name = "create",
 			Type = "Function",
+			Namespace = "table",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +41,23 @@ local LuaTableUtil =
 			Returns =
 			{
 				{ Name = "table", Type = "LuaValueReference", Nilable = false },
+			},
+		},
+		{
+			Name = "FindIndexedMismatch",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Given two tables, finds the first index in the range (1, #t1) and (1, #t2) where two elements compare as inequal, or nil if no such elements are found." },
+
+			Arguments =
+			{
+				{ Name = "t1", Type = "LuaValueReference", Nilable = false },
+				{ Name = "t2", Type = "LuaValueReference", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "index", Type = "number", Nilable = true },
 			},
 		},
 	},

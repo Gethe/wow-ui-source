@@ -627,7 +627,7 @@ function SetTooltipMoney(frame, money, type, prefixText, suffixText)
 	else
 		xOffset = 0;
 	end
-	moneyFrame:SetPoint("LEFT", frame:GetName().."TextLeft"..numLines, "LEFT", xOffset, 0);
+	moneyFrame:SetPoint("LEFT", frame:GetLeftLine(numLines), "LEFT", xOffset, 0);
 	moneyFrame:Show();
 	if ( not frame.shownMoneyFrames ) then
 		frame.shownMoneyFrames = 1;

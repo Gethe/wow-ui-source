@@ -187,11 +187,7 @@ function ObjectiveTrackerManager:EnumerateActiveBlocksByTag(tag, callback)
 	end
 end
 
-function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadingUI)
-	if not isInitialLogin and not isReloadingUI then
-		return;
-	end
-	
+function ObjectiveTrackerManager:Init()
 	local mainTrackerFrame = ObjectiveTrackerFrame;
 	self:AddContainer(mainTrackerFrame);
 
@@ -204,6 +200,7 @@ function ObjectiveTrackerManager:OnPlayerEnteringWorld(isInitialLogin, isReloadi
 			AdventureObjectiveTracker,
 			AchievementObjectiveTracker,
 			MonthlyActivitiesObjectiveTracker,
+			InitiativeTasksObjectiveTracker,
 			ProfessionsRecipeTracker,
 			BonusObjectiveTracker,
 			WorldQuestObjectiveTracker,
@@ -230,4 +227,4 @@ function ObjectiveTrackerManager:SetCanAddModules(canAdd)
 	self.canAddModules = canAdd;
 end
 
-EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", ObjectiveTrackerManager.OnPlayerEnteringWorld, ObjectiveTrackerManager);
+EventUtil.ContinueAfterAllEvents(GenerateClosure(ObjectiveTrackerManager.Init, ObjectiveTrackerManager), "PLAYER_ENTERING_WORLD", "VARIABLES_LOADED");

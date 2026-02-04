@@ -3,12 +3,14 @@ local UITimer =
 	Name = "UITimer",
 	Type = "System",
 	Namespace = "C_Timer",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "After",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -19,6 +21,7 @@ local UITimer =
 		{
 			Name = "NewTicker",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -35,6 +38,7 @@ local UITimer =
 		{
 			Name = "NewTimer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

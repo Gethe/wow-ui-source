@@ -3,12 +3,22 @@ local Tutorial =
 	Name = "Tutorial",
 	Type = "System",
 	Namespace = "C_Tutorial",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "AbandonTutorialArea",
 			Type = "Function",
+		},
+		{
+			Name = "GetCombatEventInfo",
+			Type = "Function",
+			RequireNPERestricted = true,
+
+			Returns =
+			{
+			},
 		},
 		{
 			Name = "ReturnToTutorialArea",
@@ -22,16 +32,26 @@ local Tutorial =
 			Name = "LeavingTutorialArea",
 			Type = "Event",
 			LiteralName = "LEAVING_TUTORIAL_AREA",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NpeTutorialUpdate",
 			Type = "Event",
 			LiteralName = "NPE_TUTORIAL_UPDATE",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "TutorialCombatEvent",
+			Type = "Event",
+			LiteralName = "TUTORIAL_COMBAT_EVENT",
+			RequireNPERestricted = true,
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TutorialHighlightSpell",
 			Type = "Event",
 			LiteralName = "TUTORIAL_HIGHLIGHT_SPELL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "spellID", Type = "number", Nilable = false },
@@ -42,6 +62,7 @@ local Tutorial =
 			Name = "TutorialTrigger",
 			Type = "Event",
 			LiteralName = "TUTORIAL_TRIGGER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "tutorialIndex", Type = "number", Nilable = false },
@@ -52,6 +73,7 @@ local Tutorial =
 			Name = "TutorialUnhighlightSpell",
 			Type = "Event",
 			LiteralName = "TUTORIAL_UNHIGHLIGHT_SPELL",
+			SynchronousEvent = true,
 		},
 	},
 
@@ -60,9 +82,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 40,
+			NumValues = 47,
 			MinValue = 1,
-			MaxValue = 40,
+			MaxValue = 47,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -105,6 +127,13 @@ local Tutorial =
 				{ Name = "HousingModesUnlocked", Type = "FrameTutorialAccount", EnumValue = 38 },
 				{ Name = "HousingExpertMode", Type = "FrameTutorialAccount", EnumValue = 39 },
 				{ Name = "HousingCleanupMode", Type = "FrameTutorialAccount", EnumValue = 40 },
+				{ Name = "TransmogOutfits", Type = "FrameTutorialAccount", EnumValue = 41 },
+				{ Name = "TransmogSets", Type = "FrameTutorialAccount", EnumValue = 42 },
+				{ Name = "TransmogCustomSets", Type = "FrameTutorialAccount", EnumValue = 43 },
+				{ Name = "TransmogSituations", Type = "FrameTutorialAccount", EnumValue = 44 },
+				{ Name = "TransmogWeaponOptions", Type = "FrameTutorialAccount", EnumValue = 45 },
+				{ Name = "TransmogTrialOfStyle", Type = "FrameTutorialAccount", EnumValue = 46 },
+				{ Name = "TransmogCustomSetsMigration", Type = "FrameTutorialAccount", EnumValue = 47 },
 			},
 		},
 	},

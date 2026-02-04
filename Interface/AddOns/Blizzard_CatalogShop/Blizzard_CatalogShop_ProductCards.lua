@@ -21,6 +21,51 @@ function CatalogShopSectionHeaderMixin:UpdateTimeRemaining()
 	-- Currently nothing to do for headers with time remaining.
 end
 
+
+--------------------------------------------------
+-- CatalogShopSectionHeaderOptOutLinkMixin
+CatalogShopSectionHeaderOptOutLinkMixin = {};
+function CatalogShopSectionHeaderOptOutLinkMixin:OnLoad()
+	self.Help:SetScript("OnEnter", self.OnInfoButton_Enter);
+	self.Help:SetScript("OnLeave", self.OnInfoButton_Leave);
+	self.Help:SetScript("OnClick", self.OnInfoButton_OnClick);
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:OnClick(button)
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:Init()
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:SetHeaderText(elementData)
+	if not elementData then
+		return;
+	end
+	local sectionInfo = C_CatalogShop.GetCategorySectionInfo(elementData.categoryID, elementData.sectionID);
+	if not sectionInfo then
+		return;
+	end
+	self.headerText:SetText(sectionInfo.displayName);
+	self.Help.tooltipHeader = sectionInfo.displayName;
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:OnInfoButton_Enter()
+	CatalogShopFrame:ShowTooltip(self, self.tooltipHeader, CATALOG_SHOP_PERSONALIZE_OPT_OUT_TOOLTIP);
+
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:OnInfoButton_Leave()
+	CatalogShopFrame:HideTooltip();
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:OnInfoButton_OnClick()
+	C_CatalogShop.OnLegalPersonalizedOptOutClicked();
+end
+
+function CatalogShopSectionHeaderOptOutLinkMixin:UpdateTimeRemaining()
+	-- Currently nothing to do for headers with time remaining.
+end
+
 --------------------------------------------------
 -- SMALL CATALOG SHOP SERVICES CARD MIXIN
 SmallCatalogShopServicesCardMixin = {};
@@ -182,6 +227,37 @@ end
 
 
 --------------------------------------------------
+-- SMALL CATALOG SHOP DECOR CARD MIXIN
+SmallCatalogShopDecorCardMixin = {};
+function SmallCatalogShopDecorCardMixin:OnLoad()
+	SmallCatalogShopProductCardMixin.OnLoad(self);
+end
+
+local function DecorCardLayout(card)
+	local displayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(card.productInfo.catalogShopProductID);
+
+	-- Skip decor-specific display for unknown (cross-game) licenses
+	if displayInfo.hasUnknownLicense then
+		return;
+	end
+
+	local container = card.ForegroundContainer;
+	container.RectIcon:ClearAllPoints();
+	container.RectIcon:SetPoint("CENTER", 0, 40);
+	container.RectIcon:SetSize(150, 150);
+
+	container.RectIcon:Show();
+	container.RectIcon:SetTexture(displayInfo.iconFileDataID);
+	container.SquareIconBorder:Hide();
+end
+
+function SmallCatalogShopDecorCardMixin:Layout()
+	SmallCatalogShopProductCardMixin.Layout(self);
+	DecorCardLayout(self);
+end
+
+
+--------------------------------------------------
 -- SMALL CATALOG SHOP ACCESS CARD MIXIN
 SmallCatalogShopAccessCardMixin = {};
 function SmallCatalogShopAccessCardMixin:OnLoad()
@@ -321,6 +397,18 @@ end
 function DetailsCatalogShopToysCardMixin:Layout()
 	DetailsCatalogShopProductCardMixin.Layout(self);
 	ToysCardLayout(self);
+end
+
+--------------------------------------------------
+-- DETAILS CATALOG SHOP DECOR CARD MIXIN
+DetailsCatalogShopDecorCardMixin = {};
+function DetailsCatalogShopDecorCardMixin:OnLoad()
+	DetailsCatalogShopProductCardMixin.OnLoad(self);
+end
+
+function DetailsCatalogShopDecorCardMixin:Layout()
+	DetailsCatalogShopProductCardMixin.Layout(self);
+	DecorCardLayout(self);
 end
 
 --------------------------------------------------

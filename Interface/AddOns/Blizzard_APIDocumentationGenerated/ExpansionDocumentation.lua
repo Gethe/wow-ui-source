@@ -2,6 +2,7 @@ local Expansion =
 {
 	Name = "Expansion",
 	Type = "System",
+	Environment = "All",
 
 	Functions =
 	{
@@ -53,6 +54,7 @@ local Expansion =
 		{
 			Name = "GetExpansionDisplayInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -69,6 +71,7 @@ local Expansion =
 			Name = "GetExpansionForLevel",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -102,6 +105,7 @@ local Expansion =
 		{
 			Name = "GetMaxLevelForExpansionLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Maps an expansion level to a maximum character level for that expansion." },
 
 			Arguments =
@@ -217,6 +221,7 @@ local Expansion =
 			Name = "SendSubscriptionInterstitialResponse",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -240,16 +245,19 @@ local Expansion =
 			Name = "MaxExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MAX_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MinExpansionLevelUpdated",
 			Type = "Event",
 			LiteralName = "MIN_EXPANSION_LEVEL_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "ShowSubscriptionInterstitial",
 			Type = "Event",
 			LiteralName = "SHOW_SUBSCRIPTION_INTERSTITIAL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "type", Type = "SubscriptionInterstitialType", Nilable = false },
@@ -296,6 +304,9 @@ local Expansion =
 				{ Name = "highResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "lowResBackgroundID", Type = "fileID", Nilable = false },
 				{ Name = "textureKit", Type = "textureKit", Nilable = false },
+				{ Name = "glueAmbianceSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueMusicSoundKit", Type = "number", Nilable = true },
+				{ Name = "glueCreditsSoundKit", Type = "number", Nilable = true },
 			},
 		},
 		{

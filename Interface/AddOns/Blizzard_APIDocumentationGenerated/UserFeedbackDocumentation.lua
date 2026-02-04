@@ -3,12 +3,14 @@ local UserFeedback =
 	Name = "UserFeedback",
 	Type = "System",
 	Namespace = "C_UserFeedback",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "SubmitBug",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -24,6 +26,7 @@ local UserFeedback =
 		{
 			Name = "SubmitSuggestion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

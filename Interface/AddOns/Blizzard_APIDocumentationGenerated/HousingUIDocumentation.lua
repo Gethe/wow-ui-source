@@ -3,6 +3,7 @@ local HousingUI =
 	Name = "HousingUI",
 	Type = "System",
 	Namespace = "C_Housing",
+	Environment = "All",
 
 	Functions =
 	{
@@ -22,6 +23,7 @@ local HousingUI =
 		{
 			Name = "CanTakeReportScreenshot",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -36,6 +38,7 @@ local HousingUI =
 		{
 			Name = "CreateGuildNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -45,6 +48,7 @@ local HousingUI =
 		{
 			Name = "CreateNeighborhoodCharter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -58,6 +62,7 @@ local HousingUI =
 		{
 			Name = "DoesFactionMatchNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -72,6 +77,7 @@ local HousingUI =
 		{
 			Name = "EditNeighborhoodCharter",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -90,6 +96,7 @@ local HousingUI =
 		{
 			Name = "GetCurrentHouseLevelFavor",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -117,6 +124,7 @@ local HousingUI =
 		{
 			Name = "GetHouseLevelFavorForLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -131,6 +139,7 @@ local HousingUI =
 		{
 			Name = "GetHouseLevelRewardsForLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -158,6 +167,7 @@ local HousingUI =
 		{
 			Name = "GetNeighborhoodTextureSuffix",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -172,6 +182,7 @@ local HousingUI =
 		{
 			Name = "GetOthersOwnedHouses",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -196,6 +207,7 @@ local HousingUI =
 		{
 			Name = "GetUIMapIDForNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -237,6 +249,7 @@ local HousingUI =
 		{
 			Name = "HouseFinderRequestReservationAndPort",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -251,6 +264,15 @@ local HousingUI =
 			Returns =
 			{
 				{ Name = "isHousingMarketEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsHousingMarketShopEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isHousingMarketShopEnabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -328,12 +350,23 @@ local HousingUI =
 			Type = "Function",
 		},
 		{
+			Name = "OnHouseFinderClickPlot",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "plotID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "OnRequestSignatureClicked",
 			Type = "Function",
 		},
 		{
 			Name = "OnSignCharterClicked",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -343,6 +376,7 @@ local HousingUI =
 		{
 			Name = "RelinquishHouse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -356,10 +390,12 @@ local HousingUI =
 		{
 			Name = "RequestHouseFinderNeighborhoodData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
 				{ Name = "neighborhoodGuid", Type = "WOWGUID", Nilable = false },
+				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
 			},
 		},
 		{
@@ -369,10 +405,12 @@ local HousingUI =
 		{
 			Name = "ReturnAfterVisitingHouse",
 			Type = "Function",
+			HasRestrictions = true,
 		},
 		{
 			Name = "SaveHouseSettings",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -383,6 +421,7 @@ local HousingUI =
 		{
 			Name = "SearchBNetFriendNeighborhoods",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -397,6 +436,7 @@ local HousingUI =
 		{
 			Name = "SearchBNetFriendNeighborhoodsByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -411,6 +451,7 @@ local HousingUI =
 		{
 			Name = "SetTrackedHouseGuid",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -424,6 +465,8 @@ local HousingUI =
 		{
 			Name = "TeleportHome",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -435,6 +478,7 @@ local HousingUI =
 		{
 			Name = "TryRenameNeighborhood",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -448,6 +492,7 @@ local HousingUI =
 		{
 			Name = "ValidateNeighborhoodName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -457,6 +502,8 @@ local HousingUI =
 		{
 			Name = "VisitHouse",
 			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -473,6 +520,7 @@ local HousingUI =
 			Name = "AddNeighborhoodCharterSignature",
 			Type = "Event",
 			LiteralName = "ADD_NEIGHBORHOOD_CHARTER_SIGNATURE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "signature", Type = "cstring", Nilable = false },
@@ -482,6 +530,7 @@ local HousingUI =
 			Name = "BNetNeighborhoodListUpdated",
 			Type = "Event",
 			LiteralName = "B_NET_NEIGHBORHOOD_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -492,21 +541,25 @@ local HousingUI =
 			Name = "CloseCharterConfirmationUI",
 			Type = "Event",
 			LiteralName = "CLOSE_CHARTER_CONFIRMATION_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CloseCreateCharterNeighborhoodUI",
 			Type = "Event",
 			LiteralName = "CLOSE_CREATE_CHARTER_NEIGHBORHOOD_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CloseCreateGuildNeighborhoodUI",
 			Type = "Event",
 			LiteralName = "CLOSE_CREATE_GUILD_NEIGHBORHOOD_UI",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "CreateNeighborhoodResult",
 			Type = "Event",
 			LiteralName = "CREATE_NEIGHBORHOOD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -517,6 +570,7 @@ local HousingUI =
 			Name = "CurrentHouseInfoRecieved",
 			Type = "Event",
 			LiteralName = "CURRENT_HOUSE_INFO_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "houseInfo", Type = "HouseInfo", Nilable = false },
@@ -526,6 +580,7 @@ local HousingUI =
 			Name = "CurrentHouseInfoUpdated",
 			Type = "Event",
 			LiteralName = "CURRENT_HOUSE_INFO_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "houseInfo", Type = "HouseInfo", Nilable = false },
@@ -535,6 +590,7 @@ local HousingUI =
 			Name = "DeclineNeighborhoodInvitationResponse",
 			Type = "Event",
 			LiteralName = "DECLINE_NEIGHBORHOOD_INVITATION_RESPONSE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "success", Type = "bool", Nilable = false },
@@ -544,11 +600,13 @@ local HousingUI =
 			Name = "ForceRefreshHouseFinder",
 			Type = "Event",
 			LiteralName = "FORCE_REFRESH_HOUSE_FINDER",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HouseFinderNeighborhoodDataRecieved",
 			Type = "Event",
 			LiteralName = "HOUSE_FINDER_NEIGHBORHOOD_DATA_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodPlots", Type = "table", InnerType = "NeighborhoodPlotMapInfo", Nilable = false },
@@ -558,11 +616,23 @@ local HousingUI =
 			Name = "HouseInfoUpdated",
 			Type = "Event",
 			LiteralName = "HOUSE_INFO_UPDATED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "HouseLevelChanged",
+			Type = "Event",
+			LiteralName = "HOUSE_LEVEL_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "newHouseLevelInfo", Type = "HouseLevelInfo", Nilable = true },
+			},
 		},
 		{
 			Name = "HouseLevelFavorUpdated",
 			Type = "Event",
 			LiteralName = "HOUSE_LEVEL_FAVOR_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "houseLevelFavor", Type = "HouseLevelFavor", Nilable = false },
@@ -572,16 +642,19 @@ local HousingUI =
 			Name = "HousePlotEntered",
 			Type = "Event",
 			LiteralName = "HOUSE_PLOT_ENTERED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousePlotExited",
 			Type = "Event",
 			LiteralName = "HOUSE_PLOT_EXITED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HouseReservationResponseRecieved",
 			Type = "Event",
 			LiteralName = "HOUSE_RESERVATION_RESPONSE_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -591,21 +664,25 @@ local HousingUI =
 			Name = "HousingMarketAvailabilityUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_MARKET_AVAILABILITY_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "HousingServicesAvailabilityUpdated",
 			Type = "Event",
 			LiteralName = "HOUSING_SERVICES_AVAILABILITY_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MoveOutReservationUpdated",
 			Type = "Event",
 			LiteralName = "MOVE_OUT_RESERVATION_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "NeighborhoodGuildSizeValidated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_GUILD_SIZE_VALIDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "approved", Type = "bool", Nilable = false },
@@ -615,6 +692,7 @@ local HousingUI =
 			Name = "NeighborhoodListUpdated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "result", Type = "HousingResult", Nilable = false },
@@ -625,6 +703,7 @@ local HousingUI =
 			Name = "NeighborhoodNameValidated",
 			Type = "Event",
 			LiteralName = "NEIGHBORHOOD_NAME_VALIDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "approved", Type = "bool", Nilable = false },
@@ -634,6 +713,7 @@ local HousingUI =
 			Name = "NewHousingItemAcquired",
 			Type = "Event",
 			LiteralName = "NEW_HOUSING_ITEM_ACQUIRED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "itemType", Type = "HousingItemToastType", Nilable = false },
@@ -645,6 +725,7 @@ local HousingUI =
 			Name = "OpenCharterConfirmationUI",
 			Type = "Event",
 			LiteralName = "OPEN_CHARTER_CONFIRMATION_UI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodName", Type = "string", Nilable = false },
@@ -655,6 +736,7 @@ local HousingUI =
 			Name = "OpenCreateCharterNeighborhoodUI",
 			Type = "Event",
 			LiteralName = "OPEN_CREATE_CHARTER_NEIGHBORHOOD_UI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "locationName", Type = "cstring", Nilable = false },
@@ -664,6 +746,7 @@ local HousingUI =
 			Name = "OpenCreateGuildNeighborhoodUI",
 			Type = "Event",
 			LiteralName = "OPEN_CREATE_GUILD_NEIGHBORHOOD_UI",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "locationName", Type = "cstring", Nilable = false },
@@ -673,6 +756,7 @@ local HousingUI =
 			Name = "OpenNeighborhoodCharter",
 			Type = "Event",
 			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -684,6 +768,7 @@ local HousingUI =
 			Name = "OpenNeighborhoodCharterSignatureRequest",
 			Type = "Event",
 			LiteralName = "OPEN_NEIGHBORHOOD_CHARTER_SIGNATURE_REQUEST",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodInfo", Type = "NeighborhoodInfo", Nilable = false },
@@ -693,6 +778,7 @@ local HousingUI =
 			Name = "PlayerCharacterListUpdated",
 			Type = "Event",
 			LiteralName = "PLAYER_CHARACTER_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "characterInfos", Type = "table", InnerType = "HouseOwnerCharacterInfo", Nilable = false },
@@ -703,6 +789,7 @@ local HousingUI =
 			Name = "PlayerHouseListUpdated",
 			Type = "Event",
 			LiteralName = "PLAYER_HOUSE_LIST_UPDATED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "houseInfos", Type = "table", InnerType = "HouseInfo", Nilable = false },
@@ -712,6 +799,7 @@ local HousingUI =
 			Name = "ReceivedHouseLevelRewards",
 			Type = "Event",
 			LiteralName = "RECEIVED_HOUSE_LEVEL_REWARDS",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "level", Type = "number", Nilable = false },
@@ -719,9 +807,20 @@ local HousingUI =
 			},
 		},
 		{
+			Name = "RemoveNeighborhoodCharterSignature",
+			Type = "Event",
+			LiteralName = "REMOVE_NEIGHBORHOOD_CHARTER_SIGNATURE",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "signature", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "ShowNeighborhoodOwnershipTransferDialog",
 			Type = "Event",
 			LiteralName = "SHOW_NEIGHBORHOOD_OWNERSHIP_TRANSFER_DIALOG",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "neighborhoodName", Type = "cstring", Nilable = false },
@@ -732,6 +831,7 @@ local HousingUI =
 			Name = "TrackedHouseChanged",
 			Type = "Event",
 			LiteralName = "TRACKED_HOUSE_CHANGED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "trackedHouse", Type = "WOWGUID", Nilable = true },
@@ -741,6 +841,7 @@ local HousingUI =
 			Name = "ViewHousesListRecieved",
 			Type = "Event",
 			LiteralName = "VIEW_HOUSES_LIST_RECIEVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "houseInfos", Type = "table", InnerType = "HouseInfo", Nilable = false },
@@ -767,15 +868,16 @@ local HousingUI =
 		{
 			Name = "HousingItemToastType",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 4,
 			Fields =
 			{
 				{ Name = "Room", Type = "HousingItemToastType", EnumValue = 0 },
 				{ Name = "Fixture", Type = "HousingItemToastType", EnumValue = 1 },
 				{ Name = "Customization", Type = "HousingItemToastType", EnumValue = 2 },
 				{ Name = "Decor", Type = "HousingItemToastType", EnumValue = 3 },
+				{ Name = "House", Type = "HousingItemToastType", EnumValue = 4 },
 			},
 		},
 	},

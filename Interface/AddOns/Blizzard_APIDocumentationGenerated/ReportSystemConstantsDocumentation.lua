@@ -61,19 +61,6 @@ local ReportSystemConstants =
 			},
 		},
 		{
-			Name = "ReportStorageProvider",
-			Type = "Enumeration",
-			NumValues = 3,
-			MinValue = 0,
-			MaxValue = 2,
-			Fields =
-			{
-				{ Name = "Aws", Type = "ReportStorageProvider", EnumValue = 0 },
-				{ Name = "Alibaba", Type = "ReportStorageProvider", EnumValue = 1 },
-				{ Name = "Gcp", Type = "ReportStorageProvider", EnumValue = 2 },
-			},
-		},
-		{
 			Name = "ReportSubComplaintTypes",
 			Type = "Enumeration",
 			NumValues = 2,

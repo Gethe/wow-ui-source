@@ -3,15 +3,31 @@ local HousingDecorShared =
 	Tables =
 	{
 		{
+			Name = "HousingDecorPlacementRestriction",
+			Type = "Enumeration",
+			NumValues = 6,
+			MinValue = 1,
+			MaxValue = 32,
+			Fields =
+			{
+				{ Name = "TooFarAway", Type = "HousingDecorPlacementRestriction", EnumValue = 1 },
+				{ Name = "OutsideRoomBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 2 },
+				{ Name = "OutsidePlotBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 4 },
+				{ Name = "ChildOutsideBounds", Type = "HousingDecorPlacementRestriction", EnumValue = 8 },
+				{ Name = "InvalidTarget", Type = "HousingDecorPlacementRestriction", EnumValue = 16 },
+				{ Name = "InvalidCollision", Type = "HousingDecorPlacementRestriction", EnumValue = 32 },
+			},
+		},
+		{
 			Name = "HousingDecorDyeSlot",
 			Type = "Structure",
 			Fields =
 			{
 				{ Name = "ID", Type = "number", Nilable = false },
-				{ Name = "dyeColorCategoryID", Type = "number", Nilable = false },
-				{ Name = "orderIndex", Type = "number", Nilable = false },
-				{ Name = "channel", Type = "number", Nilable = false },
-				{ Name = "dyeColorID", Type = "number", Nilable = true },
+				{ Name = "dyeColorCategoryID", Type = "number", Nilable = false, Documentation = { "What category of dye colors this slot is for; This currently has no functional useage as slots accept colors of any category, but may be used for things like labeling in the future" } },
+				{ Name = "orderIndex", Type = "number", Nilable = false, Documentation = { "Display sort order" } },
+				{ Name = "channel", Type = "number", Nilable = false, Documentation = { "The specific shader channel that this slot affects when a dye color is applied" } },
+				{ Name = "dyeColorID", Type = "number", Nilable = true, Documentation = { "What dye color (if any) is currently applied to this slot" } },
 			},
 		},
 		{
@@ -24,12 +40,13 @@ local HousingDecorShared =
 				{ Name = "decorID", Type = "number", Nilable = false },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false, Documentation = { "True if this decor is already being edited by someone else" } },
-				{ Name = "canBeCustomized", Type = "bool", Nilable = false },
-				{ Name = "canBeRemoved", Type = "bool", Nilable = false },
+				{ Name = "canBeCustomized", Type = "bool", Nilable = false, Documentation = { "True if this decor can be customized, namely by applying Dyes" } },
+				{ Name = "canBeRemoved", Type = "bool", Nilable = false, Documentation = { "False if this decor must remain placed in the house and cannot be placed back into house chest storage" } },
 				{ Name = "isAllowedOutdoors", Type = "bool", Nilable = false },
 				{ Name = "isAllowedIndoors", Type = "bool", Nilable = false },
-				{ Name = "dyeSlots", Type = "table", InnerType = "HousingDecorDyeSlot", Nilable = false },
-				{ Name = "dataTagsByID", Type = "LuaValueVariant", Nilable = false },
+				{ Name = "isRefundable", Type = "bool", Nilable = false },
+				{ Name = "dyeSlots", Type = "table", InnerType = "HousingDecorDyeSlot", Nilable = false, Documentation = { "Empty for decor that can't be dyed (see canBeCustomized)" } },
+				{ Name = "dataTagsByID", Type = "LuaValueVariant", Nilable = false, Documentation = { "Simple localized 'tag' strings that are primarily used for things like categorization and filtering" } },
 				{ Name = "size", Type = "HousingCatalogEntrySize", Nilable = false },
 			},
 		},

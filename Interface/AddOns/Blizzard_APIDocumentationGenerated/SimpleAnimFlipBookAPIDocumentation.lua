@@ -2,6 +2,7 @@ local SimpleAnimFlipBookAPI =
 {
 	Name = "SimpleAnimFlipBookAPI",
 	Type = "ScriptObject",
+	Environment = "All",
 
 	Functions =
 	{
@@ -73,6 +74,7 @@ local SimpleAnimFlipBookAPI =
 		{
 			Name = "SetFlipBookColumns",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -82,6 +84,7 @@ local SimpleAnimFlipBookAPI =
 		{
 			Name = "SetFlipBookFrameHeight",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -91,6 +94,7 @@ local SimpleAnimFlipBookAPI =
 		{
 			Name = "SetFlipBookFrameWidth",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -100,6 +104,7 @@ local SimpleAnimFlipBookAPI =
 		{
 			Name = "SetFlipBookFrames",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -109,6 +114,7 @@ local SimpleAnimFlipBookAPI =
 		{
 			Name = "SetFlipBookRows",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

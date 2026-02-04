@@ -3,6 +3,7 @@ local PlayerChoice =
 	Name = "PlayerChoice",
 	Type = "System",
 	Namespace = "C_PlayerChoice",
+	Environment = "All",
 
 	Functions =
 	{
@@ -54,6 +55,7 @@ local PlayerChoice =
 		{
 			Name = "SendPlayerChoiceResponse",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -68,11 +70,13 @@ local PlayerChoice =
 			Name = "PlayerChoiceClose",
 			Type = "Event",
 			LiteralName = "PLAYER_CHOICE_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "PlayerChoiceUpdate",
 			Type = "Event",
 			LiteralName = "PLAYER_CHOICE_UPDATE",
+			UniqueEvent = true,
 		},
 	},
 

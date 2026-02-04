@@ -43,7 +43,8 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" useParentLevel="true"/>
+			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" drawBling="false" drawEdge="false" useParentLevel="true"/>
+			<Cooldown parentKey="ChargeCooldown" inherits="CooldownFrameTemplate" drawSwipe="false" hideCountdownNumbers="true" useParentLevel="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

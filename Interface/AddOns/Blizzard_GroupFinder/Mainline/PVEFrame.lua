@@ -8,7 +8,6 @@ local panels = {
 	{ name = "GroupFinderFrame", addon = nil },
 	{ name = "PVPUIFrame", addon = "Blizzard_PVPUI" },
 	{ name = "ChallengesFrame", addon = "Blizzard_ChallengesUI", check = function() return UnitLevel("player") >= GetMaxLevelForPlayerExpansion(); end, hideLeftInset = true },
-	{ name = "DelvesDashboardFrame", addon = "Blizzard_DelvesDashboardUI", check = function() return UnitLevel("player") >= C_DelvesUI.GetDelvesMinRequiredLevel() and GetExpansionLevel() >= LE_EXPANSION_WAR_WITHIN end, hideLeftInset = true },
 }
 
 function LFGListPVPStub_OnShow(self)
@@ -168,22 +167,22 @@ end
 local groupFrames = { "LFDParentFrame", "RaidFinderFrame", "LFGListPVEStub" }
 
 local function GroupFinderFrame_InitLFG(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\INV_Helmet_08");
+	button.icon:SetTexture("Interface\\Icons\\INV_Helmet_08");
 	button.name:SetText(LOOKING_FOR_DUNGEON_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitScenarios(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\Icon_Scenarios");
+	button.icon:SetTexture("Interface\\Icons\\Icon_Scenarios");
 	button.name:SetText(SCENARIOS_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitLFR(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\LFGFrame\\UI-LFR-PORTRAIT");
+	button.icon:SetTexture("Interface\\LFGFrame\\UI-LFR-PORTRAIT");
 	button.name:SetText(RAID_FINDER_PVEFRAME);
 end
 
 local function GroupFinderFrame_InitPremadeGroup(self, button)
-	SetPortraitToTexture(button.icon, "Interface\\Icons\\Achievement_General_StayClassy");
+	button.icon:SetTexture("Interface\\Icons\\Achievement_General_StayClassy");
 	button.name:SetText(LFGLIST_NAME);
 end
 
@@ -245,7 +244,7 @@ end
 
 function GroupFinderFrame_EvaluateButtonVisibility(self)
 	GroupFinderFrame_SetupLFG(self, self.groupButton1);
-	
+
 	if PVEFrame:ScenariosEnabled() then
 		GroupFinderFrame_SetupScenario(self, self.groupButton2);
 		GroupFinderFrame_SetupLFR(self, self.groupButton3);
@@ -324,8 +323,8 @@ end
 
 function GroupFinderFrame_OnShow(self)
 	GroupFinderFrame_InitLFG(self, self.groupButton1);
-	
-	if (PVEFrame:ScenariosEnabled()) then		
+
+	if (PVEFrame:ScenariosEnabled()) then
 		groupFrames = { "LFDParentFrame", "ScenarioFinderFrame", "RaidFinderFrame", "LFGListPVEStub" };
 
 		GroupFinderFrame_InitScenarios(self, self.groupButton2);
@@ -400,14 +399,13 @@ function PVEFrameMixin:OnLoad()
 	self:RegisterEvent("AJ_PVP_LFG_ACTION");
 	self:RegisterEvent("AJ_PVP_RBG_ACTION");
 	self:RegisterEvent("AJ_PVE_LFG_ACTION");
-	self:RegisterEvent("SHOW_DELVES_DISPLAY_UI");
 
 	self.maxTabWidth = (self:GetWidth() - 19) / #panels;
 end
 
 function PVEFrameMixin:ScenariosEnabled()
 	-- scenarios are currently only enabled in Timerunning
-	-- Keeping this seperate from the Timerunning check to leave 
+	-- Keeping this seperate from the Timerunning check to leave
 	-- room for Design to add other conditions
 	return GameRulesUtil.ScenariosEnabled();
 end
@@ -424,23 +422,13 @@ function PVEFrameMixin:OnShow()
 				PanelTemplates_EnableTab(self, index);
 			end
 		end
-	end	
+	end
 
-	-- If timerunning enabled, hide PVP, M+, and delves tab
+	-- If timerunning enabled, hide PVP, M+ tabs
 	if TimerunningUtil.TimerunningEnabledForPlayer() then
 		self.tab1:Hide();
 		self.tab2:Hide();
 		self.tab3:Hide();
-		self.tab4:Hide();
-	else
-	-- Otherwise, anchor Delves tab to PVP if M+ hidden, or to M+ if both are shown - to prevent a gap if the player is ineligible for M+ and we hide the tab
-		if self.tab4:IsShown() then
-			if self.tab2:IsShown() and not self.tab3:IsShown() then
-				self.tab4:SetPoint("TOPLEFT", self.tab2, "TOPRIGHT", 3, 0);
-			elseif self.tab2:IsShown() and self.tab3:IsShown() then
-				self.tab4:SetPoint("TOPLEFT", self.tab3, "TOPRIGHT", 3, 0);
-			end
-		end
 	end
 
 	UpdateMicroButtons();
@@ -463,7 +451,7 @@ function PVEFrameMixin:OnEvent(event, ...)
 	elseif ( event == "AJ_PVP_SPECIAL_BG_ACTION" ) then
 		PVEFrame_ShowFrame("PVPUIFrame", "HonorFrame");
 		HonorFrame_SetType("bonus");
-		
+
 		if (HonorFrame.BonusFrame.BrawlButton2) then
 			HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.BrawlButton2);
 		end
@@ -482,8 +470,6 @@ function PVEFrameMixin:OnEvent(event, ...)
 		HonorFrame_SetType("bonus");
 
 		HonorFrameBonusFrame_SelectButton(HonorFrame.BonusFrame.RandomBGButton);
-	elseif ( event == "SHOW_DELVES_DISPLAY_UI" ) then
-		PVEFrame_ShowFrame("DelvesDashboardFrame");
 	end
 end
 
@@ -533,10 +519,10 @@ function PlunderstormQueueTutorialMixin:UpdateTutorialState()
 		self:SetParent(nil);
 		return;
 	end
-	
+
 	if PVPUIFrame and PVPUIFrame:IsVisible() then
 		PLUNDERSTORM_QUEUE_FROM_MAINLINE_TUTORIAL_STATE = PlunderstormTutorialStates.PvpTabAcknowledged;
-		
+
 		self:SetParent(PVPQueueFrameCategoryButton4);
 		self:SetPoint("RIGHT", PVPQueueFrameCategoryButton4, "TOPRIGHT", -4, 0);
 

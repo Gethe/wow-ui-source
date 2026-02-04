@@ -3,6 +3,7 @@ local MythicPlusInfo =
 	Name = "MythicPlusInfo",
 	Type = "System",
 	Namespace = "C_MythicPlus",
+	Environment = "All",
 
 	Functions =
 	{
@@ -48,6 +49,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetEndOfRunGearSequenceLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -103,6 +105,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelForDifficultyLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -118,6 +121,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetRewardLevelFromKeystoneLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -132,6 +136,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetRunHistory",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -149,6 +154,7 @@ local MythicPlusInfo =
 			Name = "GetSeasonBestAffixScoreInfoForMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets the active players best runs by the seasonal tracked affixes as well as their overall score for the current season." },
 
 			Arguments =
@@ -165,6 +171,7 @@ local MythicPlusInfo =
 		{
 			Name = "GetSeasonBestForMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -192,6 +199,7 @@ local MythicPlusInfo =
 			Name = "GetWeeklyBestForMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -249,11 +257,13 @@ local MythicPlusInfo =
 			Name = "MythicPlusCurrentAffixUpdate",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_CURRENT_AFFIX_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "MythicPlusNewWeeklyRecord",
 			Type = "Event",
 			LiteralName = "MYTHIC_PLUS_NEW_WEEKLY_RECORD",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "mapChallengeModeID", Type = "number", Nilable = false },

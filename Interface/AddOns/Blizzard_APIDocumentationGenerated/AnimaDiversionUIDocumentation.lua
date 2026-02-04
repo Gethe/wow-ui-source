@@ -3,6 +3,7 @@ local AnimaDiversionUI =
 	Name = "AnimaDiversionInfo",
 	Type = "System",
 	Namespace = "C_AnimaDiversion",
+	Environment = "All",
 
 	Functions =
 	{
@@ -55,6 +56,7 @@ local AnimaDiversionUI =
 			Name = "SelectAnimaNode",
 			Type = "Function",
 			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -70,11 +72,13 @@ local AnimaDiversionUI =
 			Name = "AnimaDiversionClose",
 			Type = "Event",
 			LiteralName = "ANIMA_DIVERSION_CLOSE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "AnimaDiversionOpen",
 			Type = "Event",
 			LiteralName = "ANIMA_DIVERSION_OPEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "info", Type = "AnimaDiversionFrameInfo", Nilable = false },
@@ -84,6 +88,7 @@ local AnimaDiversionUI =
 			Name = "AnimaDiversionTalentUpdated",
 			Type = "Event",
 			LiteralName = "ANIMA_DIVERSION_TALENT_UPDATED",
+			SynchronousEvent = true,
 		},
 	},
 

@@ -3,12 +3,14 @@ local PlayerLocation =
 	Name = "PlayerLocationInfo",
 	Type = "System",
 	Namespace = "C_PlayerInfo",
+	Environment = "All",
 
 	Functions =
 	{
 		{
 			Name = "GUIDIsPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -23,6 +25,7 @@ local PlayerLocation =
 		{
 			Name = "GetClass",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -39,6 +42,7 @@ local PlayerLocation =
 		{
 			Name = "GetName",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -53,6 +57,7 @@ local PlayerLocation =
 		{
 			Name = "GetRace",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -67,6 +72,7 @@ local PlayerLocation =
 		{
 			Name = "GetSex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -81,6 +87,7 @@ local PlayerLocation =
 		{
 			Name = "IsConnected",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -95,6 +102,7 @@ local PlayerLocation =
 		{
 			Name = "UnitIsSameServer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

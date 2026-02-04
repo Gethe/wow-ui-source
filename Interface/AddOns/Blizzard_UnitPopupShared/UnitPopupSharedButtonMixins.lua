@@ -434,8 +434,13 @@ function UnitPopupWhisperButtonMixin:OnClick(contextData)
 		local playerLocation = contextData.playerLocation;
 		if playerLocation then
 			isBNetAccount = playerLocation and playerLocation:IsBattleNetGUID();
+		end
 	end
-end
+
+	local unit = contextData.unit;
+	if unit and not UnitIsHumanPlayer(unit) then
+		return;
+	end
 
 	if isBNetAccount then
 		ChatFrameUtil.SendBNetTell(contextData.name);
@@ -447,7 +452,7 @@ end
 
 function UnitPopupWhisperButtonMixin:IsEnabled(contextData)
 	local unit = contextData.unit;
-	return not unit or UnitIsConnected(unit);
+	return not unit or (UnitIsConnected(unit) and UnitIsHumanPlayer(unit));
 end
 
 UnitPopupInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -980,11 +985,13 @@ function UnitPopupPartyInstanceAbandonButtonMixin:GetTooltipText()
 	if timeLeft then
 		local cooldownTimeLeftText = PartyInstanceAbandonFormatter:Format(timeLeft);
 		return VOTE_TO_ABANDON_ON_COOLDOWN:format(cooldownTimeLeftText);
-	elseif IsEncounterInProgress() then
-		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
-	else
-		return nil;
 	end
+
+	if C_InstanceEncounter.IsEncounterInProgress() then
+		return ERR_VOTE_TO_ABANDON_ENCOUNTER;
+	end
+
+	return nil;
 end
 
 UnitPopupFollowButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
@@ -2416,10 +2423,6 @@ function UnitPopupRaidTargetBaseMixin:OnClick(contextData)
 	return MenuResponse.Close;
 end
 
-function UnitPopupRaidTargetBaseMixin:GetTextureCoords()
-	return nil;
-end
-
 function UnitPopupRaidTargetBaseMixin:GetIcon()
 	return nil;
 end
@@ -2437,9 +2440,13 @@ function UnitPopupRaidTargetBaseMixin:CreateMenuDescription(rootDescription, con
 		rightTexture:SetPoint("RIGHT");
 		rightTexture:SetSize(16, 16);
 		
-		local l, r, t, b = self:GetTextureCoords();
-		rightTexture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons");
-		rightTexture:SetTexCoord(l, r, t, b);
+		local raidTargetIconIndex = self:GetRaidTargetIndex();
+		if raidTargetIconIndex > 0 then
+			rightTexture:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons");
+			rightTexture:SetSpriteSheetCell(raidTargetIconIndex, RAID_TARGET_TEXTURE_ROWS, RAID_TARGET_TEXTURE_COLUMNS);
+		else
+			rightTexture:SetTexture("");
+		end
 
 		local fontString = button.fontString;
 		fontString:SetPoint("RIGHT", rightTexture, "LEFT");
@@ -2476,10 +2483,6 @@ function UnitPopupRaidTarget1ButtonMixin:GetRaidTargetIndex()
 	return 1;
 end
 
-function UnitPopupRaidTarget1ButtonMixin:GetTextureCoords()
-	return 0, .25, 0, .25;
-end
-
 function UnitPopupRaidTarget1ButtonMixin:GetColor()
 	return 1, .92, 0;
 end
@@ -2492,10 +2495,6 @@ end
 
 function UnitPopupRaidTarget2ButtonMixin:GetRaidTargetIndex()
 	return 2;
-end
-
-function UnitPopupRaidTarget2ButtonMixin:GetTextureCoords()
-	return .25, .5, 0, .25;
 end
 
 function UnitPopupRaidTarget2ButtonMixin:GetColor()
@@ -2512,10 +2511,6 @@ function UnitPopupRaidTarget3ButtonMixin:GetRaidTargetIndex()
 	return 3;
 end
 
-function UnitPopupRaidTarget3ButtonMixin:GetTextureCoords()
-	return .5, .75, 0, .25;
-end
-
 function UnitPopupRaidTarget3ButtonMixin:GetColor()
 	return .83, .22, .9;
 end
@@ -2528,10 +2523,6 @@ end
 
 function UnitPopupRaidTarget4ButtonMixin:GetRaidTargetIndex()
 	return 4;
-end
-
-function UnitPopupRaidTarget4ButtonMixin:GetTextureCoords()
-	return .75, 1, 0, .25;
 end
 
 function UnitPopupRaidTarget4ButtonMixin:GetColor()
@@ -2548,10 +2539,6 @@ function UnitPopupRaidTarget5ButtonMixin:GetRaidTargetIndex()
 	return 5;
 end
 
-function UnitPopupRaidTarget5ButtonMixin:GetTextureCoords()
-	return 0, .25, .25, .5;
-end
-
 function UnitPopupRaidTarget5ButtonMixin:GetColor()
 	return .7, .82, .875;
 end
@@ -2564,10 +2551,6 @@ end
 
 function UnitPopupRaidTarget6ButtonMixin:GetRaidTargetIndex()
 	return 6;
-end
-
-function UnitPopupRaidTarget6ButtonMixin:GetTextureCoords()
-	return .25, .5, .25, .5;
 end
 
 function UnitPopupRaidTarget6ButtonMixin:GetColor()
@@ -2584,10 +2567,6 @@ function UnitPopupRaidTarget7ButtonMixin:GetRaidTargetIndex()
 	return 7;
 end
 
-function UnitPopupRaidTarget7ButtonMixin:GetTextureCoords()
-	return .5, .75, .25, .5;
-end
-
 function UnitPopupRaidTarget7ButtonMixin:GetColor()
 	return 1, .24, .168;
 end
@@ -2600,10 +2579,6 @@ end
 
 function UnitPopupRaidTarget8ButtonMixin:GetRaidTargetIndex()
 	return 8;
-end
-
-function UnitPopupRaidTarget8ButtonMixin:GetTextureCoords()
-	return .75, 1, .25, .5;
 end
 
 function UnitPopupRaidTarget8ButtonMixin:GetColor()

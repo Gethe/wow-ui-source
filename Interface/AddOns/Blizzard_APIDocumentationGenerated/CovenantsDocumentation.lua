@@ -3,6 +3,7 @@ local Covenants =
 	Name = "Covenant",
 	Type = "System",
 	Namespace = "C_Covenants",
+	Environment = "All",
 
 	Functions =
 	{
@@ -18,6 +19,7 @@ local Covenants =
 		{
 			Name = "GetCovenantData",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -46,6 +48,7 @@ local Covenants =
 			Name = "CovenantChosen",
 			Type = "Event",
 			LiteralName = "COVENANT_CHOSEN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "covenantID", Type = "number", Nilable = false },

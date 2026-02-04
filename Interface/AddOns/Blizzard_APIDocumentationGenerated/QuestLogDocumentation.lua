@@ -3,6 +3,7 @@ local QuestLog =
 	Name = "QuestLog",
 	Type = "System",
 	Namespace = "C_QuestLog",
+	Environment = "All",
 
 	Functions =
 	{
@@ -13,6 +14,7 @@ local QuestLog =
 		{
 			Name = "AddQuestWatch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -27,6 +29,7 @@ local QuestLog =
 		{
 			Name = "AddWorldQuestWatch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -42,6 +45,7 @@ local QuestLog =
 		{
 			Name = "CanAbandonQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -56,6 +60,7 @@ local QuestLog =
 		{
 			Name = "DoesQuestAwardReputationWithFaction",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -88,6 +93,16 @@ local QuestLog =
 			},
 		},
 		{
+			Name = "GetActivePreyQuest",
+			Type = "Function",
+			MayReturnNothing = true,
+
+			Returns =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetActiveThreatMaps",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -109,6 +124,7 @@ local QuestLog =
 		{
 			Name = "GetBountiesForMapID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -124,6 +140,7 @@ local QuestLog =
 			Name = "GetBountySetInfoForMapID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -142,6 +159,7 @@ local QuestLog =
 			Name = "GetDistanceSqToQuest",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -157,6 +175,7 @@ local QuestLog =
 		{
 			Name = "GetHeaderIndexForQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -171,6 +190,7 @@ local QuestLog =
 		{
 			Name = "GetInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -185,6 +205,7 @@ local QuestLog =
 		{
 			Name = "GetLogIndexForQuestID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only returns a log index for actual quests, not headers" },
 
 			Arguments =
@@ -230,6 +251,7 @@ local QuestLog =
 			Name = "GetNextWaypoint",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -247,6 +269,7 @@ local QuestLog =
 			Name = "GetNextWaypointForMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -264,6 +287,7 @@ local QuestLog =
 			Name = "GetNextWaypointText",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -288,6 +312,7 @@ local QuestLog =
 		{
 			Name = "GetNumQuestObjectives",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -320,6 +345,7 @@ local QuestLog =
 		{
 			Name = "GetQuestAdditionalHighlights",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -338,6 +364,7 @@ local QuestLog =
 		{
 			Name = "GetQuestDetailsTheme",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -352,6 +379,7 @@ local QuestLog =
 		{
 			Name = "GetQuestDifficultyLevel",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -366,6 +394,7 @@ local QuestLog =
 		{
 			Name = "GetQuestIDForLogIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only returns a questID for actual quests, not headers" },
 
 			Arguments =
@@ -381,6 +410,7 @@ local QuestLog =
 		{
 			Name = "GetQuestIDForQuestWatchIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -395,6 +425,7 @@ local QuestLog =
 		{
 			Name = "GetQuestIDForWorldQuestWatchIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -410,6 +441,7 @@ local QuestLog =
 			Name = "GetQuestLogMajorFactionReputationRewards",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -425,6 +457,7 @@ local QuestLog =
 			Name = "GetQuestLogPortraitGiver",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -444,6 +477,7 @@ local QuestLog =
 			Name = "GetQuestObjectives",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -458,6 +492,7 @@ local QuestLog =
 		{
 			Name = "GetQuestRewardCurrencies",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -472,6 +507,7 @@ local QuestLog =
 		{
 			Name = "GetQuestRewardCurrencyInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -488,6 +524,7 @@ local QuestLog =
 		{
 			Name = "GetQuestTagInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -502,6 +539,7 @@ local QuestLog =
 		{
 			Name = "GetQuestType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -516,6 +554,7 @@ local QuestLog =
 		{
 			Name = "GetQuestWatchType",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -531,6 +570,7 @@ local QuestLog =
 			Name = "GetQuestsOnMap",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -545,6 +585,7 @@ local QuestLog =
 		{
 			Name = "GetRequiredMoney",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Uses the selected quest if no questID is provided" },
 
 			Arguments =
@@ -569,6 +610,7 @@ local QuestLog =
 		{
 			Name = "GetSuggestedGroupSize",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -584,6 +626,7 @@ local QuestLog =
 			Name = "GetTimeAllowed",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -599,6 +642,7 @@ local QuestLog =
 		{
 			Name = "GetTitleForLogIndex",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns a valid title for anything that is in the quest log." },
 
 			Arguments =
@@ -614,6 +658,7 @@ local QuestLog =
 		{
 			Name = "GetTitleForQuestID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Only returns a valid title for quests, header titles cannot be discovered using this." },
 
 			Arguments =
@@ -630,6 +675,7 @@ local QuestLog =
 			Name = "GetZoneStoryInfo",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -654,6 +700,7 @@ local QuestLog =
 		{
 			Name = "IsAccountQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -668,6 +715,7 @@ local QuestLog =
 		{
 			Name = "IsComplete",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -682,6 +730,7 @@ local QuestLog =
 		{
 			Name = "IsFailed",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -696,6 +745,7 @@ local QuestLog =
 		{
 			Name = "IsImportantQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -710,6 +760,7 @@ local QuestLog =
 		{
 			Name = "IsMetaQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -724,6 +775,7 @@ local QuestLog =
 		{
 			Name = "IsOnMap",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -739,6 +791,7 @@ local QuestLog =
 		{
 			Name = "IsOnQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -753,6 +806,7 @@ local QuestLog =
 		{
 			Name = "IsPushableQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -767,6 +821,7 @@ local QuestLog =
 		{
 			Name = "IsQuestBounty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -781,6 +836,7 @@ local QuestLog =
 		{
 			Name = "IsQuestCalling",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -795,6 +851,7 @@ local QuestLog =
 		{
 			Name = "IsQuestCriteriaForBounty",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -810,6 +867,7 @@ local QuestLog =
 		{
 			Name = "IsQuestDisabledForSession",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -824,6 +882,7 @@ local QuestLog =
 		{
 			Name = "IsQuestFlaggedCompleted",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -838,6 +897,7 @@ local QuestLog =
 		{
 			Name = "IsQuestFlaggedCompletedOnAccount",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -852,6 +912,7 @@ local QuestLog =
 		{
 			Name = "IsQuestFromContentPush",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -866,6 +927,7 @@ local QuestLog =
 		{
 			Name = "IsQuestInvasion",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -880,6 +942,7 @@ local QuestLog =
 		{
 			Name = "IsQuestReplayable",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -894,6 +957,7 @@ local QuestLog =
 		{
 			Name = "IsQuestReplayedRecently",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -908,6 +972,7 @@ local QuestLog =
 		{
 			Name = "IsQuestTask",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -922,6 +987,7 @@ local QuestLog =
 		{
 			Name = "IsQuestTrivial",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -936,6 +1002,7 @@ local QuestLog =
 		{
 			Name = "IsRepeatableQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -950,6 +1017,7 @@ local QuestLog =
 		{
 			Name = "IsThreatQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -964,6 +1032,7 @@ local QuestLog =
 		{
 			Name = "IsUnitOnQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -979,6 +1048,7 @@ local QuestLog =
 		{
 			Name = "IsWorldQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -993,6 +1063,7 @@ local QuestLog =
 		{
 			Name = "QuestCanHaveWarModeBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Tests whether a quest is eligible for warmode bonuses (e.g. most world quests, some daily quests" },
 
 			Arguments =
@@ -1008,6 +1079,7 @@ local QuestLog =
 		{
 			Name = "QuestContainsFirstTimeRepBonusForPlayer",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1022,6 +1094,7 @@ local QuestLog =
 		{
 			Name = "QuestHasQuestSessionBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1036,6 +1109,7 @@ local QuestLog =
 		{
 			Name = "QuestHasWarModeBonus",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Tests whether a quest in the player's quest log that is eligible for warmode bonuses (see 'QuestCanHaveWarModeBOnus') has been completed in warmode (including accepting it)" },
 
 			Arguments =
@@ -1051,6 +1125,7 @@ local QuestLog =
 		{
 			Name = "QuestIgnoresAccountCompletedFiltering",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1065,6 +1140,7 @@ local QuestLog =
 		{
 			Name = "ReadyForTurnIn",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1079,6 +1155,7 @@ local QuestLog =
 		{
 			Name = "RemoveQuestWatch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1093,6 +1170,7 @@ local QuestLog =
 		{
 			Name = "RemoveWorldQuestWatch",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1107,6 +1185,7 @@ local QuestLog =
 		{
 			Name = "RequestLoadQuestByID",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1120,6 +1199,7 @@ local QuestLog =
 		{
 			Name = "SetMapForQuestPOIs",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1129,6 +1209,7 @@ local QuestLog =
 		{
 			Name = "SetSelectedQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1138,6 +1219,7 @@ local QuestLog =
 		{
 			Name = "ShouldDisplayTimeRemaining",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1152,6 +1234,7 @@ local QuestLog =
 		{
 			Name = "ShouldShowQuestRewards",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1170,6 +1253,7 @@ local QuestLog =
 		{
 			Name = "UnitIsRelatedToActiveQuest",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1193,6 +1277,7 @@ local QuestLog =
 			Name = "QuestAccepted",
 			Type = "Event",
 			LiteralName = "QUEST_ACCEPTED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questId", Type = "number", Nilable = false },
@@ -1202,6 +1287,7 @@ local QuestLog =
 			Name = "QuestAutocomplete",
 			Type = "Event",
 			LiteralName = "QUEST_AUTOCOMPLETE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questId", Type = "number", Nilable = false },
@@ -1211,11 +1297,13 @@ local QuestLog =
 			Name = "QuestComplete",
 			Type = "Event",
 			LiteralName = "QUEST_COMPLETE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "QuestDataLoadResult",
 			Type = "Event",
 			LiteralName = "QUEST_DATA_LOAD_RESULT",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1226,6 +1314,7 @@ local QuestLog =
 			Name = "QuestDetail",
 			Type = "Event",
 			LiteralName = "QUEST_DETAIL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questStartItemID", Type = "number", Nilable = true },
@@ -1235,6 +1324,7 @@ local QuestLog =
 			Name = "QuestLogCriteriaUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_LOG_CRITERIA_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1248,16 +1338,19 @@ local QuestLog =
 			Name = "QuestLogUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_LOG_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestPoiUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_POI_UPDATE",
+			UniqueEvent = true,
 		},
 		{
 			Name = "QuestRemoved",
 			Type = "Event",
 			LiteralName = "QUEST_REMOVED",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1268,6 +1361,7 @@ local QuestLog =
 			Name = "QuestTurnedIn",
 			Type = "Event",
 			LiteralName = "QUEST_TURNED_IN",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1279,6 +1373,8 @@ local QuestLog =
 			Name = "QuestWatchListChanged",
 			Type = "Event",
 			LiteralName = "QUEST_WATCH_LIST_CHANGED",
+			SynchronousEvent = true,
+			UniqueEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = true },
@@ -1289,6 +1385,7 @@ local QuestLog =
 			Name = "QuestWatchUpdate",
 			Type = "Event",
 			LiteralName = "QUEST_WATCH_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1298,6 +1395,7 @@ local QuestLog =
 			Name = "QuestlineUpdate",
 			Type = "Event",
 			LiteralName = "QUESTLINE_UPDATE",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "requestRequired", Type = "bool", Nilable = false },
@@ -1307,21 +1405,25 @@ local QuestLog =
 			Name = "TaskProgressUpdate",
 			Type = "Event",
 			LiteralName = "TASK_PROGRESS_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "TreasurePickerCacheFlush",
 			Type = "Event",
 			LiteralName = "TREASURE_PICKER_CACHE_FLUSH",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WaypointUpdate",
 			Type = "Event",
 			LiteralName = "WAYPOINT_UPDATE",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "WorldQuestCompletedBySpell",
 			Type = "Event",
 			LiteralName = "WORLD_QUEST_COMPLETED_BY_SPELL",
+			SynchronousEvent = true,
 			Payload =
 			{
 				{ Name = "questID", Type = "number", Nilable = false },
@@ -1478,6 +1580,7 @@ local QuestLog =
 				{ Name = "seal", Type = "textureAtlas", Nilable = false },
 				{ Name = "signature", Type = "cstring", Nilable = false },
 				{ Name = "poiIcon", Type = "textureAtlas", Nilable = false },
+				{ Name = "mapPinInfo", Type = "UIMapPinInfo", Nilable = true },
 			},
 		},
 	},

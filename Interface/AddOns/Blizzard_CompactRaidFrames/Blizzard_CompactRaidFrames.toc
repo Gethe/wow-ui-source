@@ -2,5 +2,6 @@
 ## Dependencies: Blizzard_RaidFrame
 Blizzard_CompactRaidFrameReservationManager.lua
 Blizzard_CompactRaidFrameContainer.xml
-Blizzard_CompactRaidFrameManager.xml
+[Family]\Blizzard_CompactRaidFrameManager.lua
+[Family]\Blizzard_CompactRaidFrameManager.xml
 Localization.lua

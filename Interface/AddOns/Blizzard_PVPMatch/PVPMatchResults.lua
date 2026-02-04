@@ -499,8 +499,9 @@ function PVPMatchResultsMixin:OnTabGroupClicked(tab)
 	SetBattlefieldScoreFaction(tab.factionEnum);
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 
-	local forceNewDataProvider = true;
-	PVPMatchUtil.UpdateDataProvider(self.scrollBox, forceNewDataProvider);
+	PVPMatchUtil.UpdateDataProvider(self.scrollBox);
+
+	self.scrollBox:ScrollToBegin();
 end
 
 PVPMatchResultsRatingMixin = {};

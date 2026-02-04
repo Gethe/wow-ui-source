@@ -180,7 +180,7 @@ local function ShouldShowExaltedPlusHelpTip()
 	local numFactions = C_Reputation.GetNumFactions();
 	for i=1, numFactions do
 		local factionData = C_Reputation.GetFactionDataByIndex(i);
-		if (factionData and C_Reputation.IsFactionParagon(factionData.factionID) ) then
+		if (factionData and C_Reputation.IsFactionParagonForCurrentPlayer(factionData.factionID) ) then
 			return true;
 		end
 	end

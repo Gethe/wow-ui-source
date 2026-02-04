@@ -879,7 +879,7 @@ function GarrisonBuildingInfoBox_OnDragStart(self, button)
 	end
 		
 	if (icon) then
-		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
+		GarrisonBuildingPlacer.Icon:SetTexture(icon);
 	end
 	if (textureKit) then
 		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, textureKit.."_Map");
@@ -1278,7 +1278,7 @@ function GarrisonBuildingListButton_OnDragStart(self, button)
 	
 	local id, name, textureKit, icon = C_Garrison.GetBuildingInfo(self.info.buildingID);
 	if (icon) then
-		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
+		GarrisonBuildingPlacer.Icon:SetTexture(icon);
 	end
 	if (textureKit) then
 		GarrisonPlot_SetBuildingArt(GarrisonBuildingPlacer, textureKit.."_Map");
@@ -1353,7 +1353,7 @@ function GarrisonPlot_OnDragStart(self)
 	GarrisonPlot_SetGreyedOut(self, true);
 	
 	if (icon) then
-		SetPortraitToTexture(GarrisonBuildingPlacer.Icon, icon);
+		GarrisonBuildingPlacer.Icon:SetTexture(icon);
 	end
 	
 	if (textureKit) then
@@ -1596,7 +1596,7 @@ function GarrisonPlot_SetBuilding(self, id, tooltip, textureKit, icon, rank, isB
 		self.followerTooltip = GarrisonPlot_GetFollowerTooltipText(self.buildingID, self.plotID);
 	end
 	if (icon) then
-		SetPortraitToTexture(self.Icon, icon);
+		self.Icon:SetTexture(icon);
 		self.Icon:Show();
 		self.Icon:SetDesaturated(self.greyedOut);
 		self.IconRing:Show();

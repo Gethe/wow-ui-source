@@ -485,6 +485,10 @@ function EditModeSystemMixin:GetSettingValue(setting, useRawValue)
 		return 0;
 	end
 
+	if not self:HasSetting(setting) then
+		return 0;
+	end
+
 	local compositeNumberValue = self:GetCompositeNumberSettingValue(setting, useRawValue);
 	if compositeNumberValue ~= nil then
 		return compositeNumberValue;
@@ -997,8 +1001,14 @@ end
 
 function EditModeActionBarSystemMixin:RefreshBarArt(force)
 	if (self.barArtDirty or force) then
-		if self.UpdateEndCaps then
+		-- Used by MainActionBar.
+		if self.dynamicEndCaps then
 			self:UpdateEndCaps(self.hideBarArt);
+		end
+
+		-- Used by certain Classic action bars, such as the StanceBar.
+		if self.dynamicBackgroundArt then
+			self:SetBackgroundArtShown(self:ShouldShowBackgroundArt());
 		end
 
 		self.barArtDirty = false;
@@ -1144,24 +1154,26 @@ function EditModeActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeActionBarSetting.Orientation and self:HasSetting(Enum.EditModeActionBarSetting.Orientation) then
-		self:UpdateSystemSettingOrientation();
-	elseif setting == Enum.EditModeActionBarSetting.NumRows and self:HasSetting(Enum.EditModeActionBarSetting.NumRows) then
-		self:UpdateSystemSettingNumRows();
-	elseif setting == Enum.EditModeActionBarSetting.NumIcons and self:HasSetting(Enum.EditModeActionBarSetting.NumIcons) then
-		self:UpdateSystemSettingNumIcons();
-	elseif setting == Enum.EditModeActionBarSetting.IconSize and self:HasSetting(Enum.EditModeActionBarSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeActionBarSetting.IconPadding and self:HasSetting(Enum.EditModeActionBarSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarArt and self:HasSetting(Enum.EditModeActionBarSetting.HideBarArt) then
-		self:UpdateSystemSettingHideBarArt();
-	elseif setting == Enum.EditModeActionBarSetting.HideBarScrolling and self:HasSetting(Enum.EditModeActionBarSetting.HideBarScrolling) then
-		self:UpdateSystemSettingHideBarScrolling();
-	elseif setting == Enum.EditModeActionBarSetting.VisibleSetting and self:HasSetting(Enum.EditModeActionBarSetting.VisibleSetting) then
-		self:UpdateSystemSettingVisibleSetting();
-	elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons and self:HasSetting(Enum.EditModeActionBarSetting.AlwaysShowButtons) then
-		self:UpdateSystemSettingAlwaysShowButtons();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeActionBarSetting.Orientation then
+			self:UpdateSystemSettingOrientation();
+		elseif setting == Enum.EditModeActionBarSetting.NumRows then
+			self:UpdateSystemSettingNumRows();
+		elseif setting == Enum.EditModeActionBarSetting.NumIcons then
+			self:UpdateSystemSettingNumIcons();
+		elseif setting == Enum.EditModeActionBarSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeActionBarSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeActionBarSetting.HideBarArt then
+			self:UpdateSystemSettingHideBarArt();
+		elseif setting == Enum.EditModeActionBarSetting.HideBarScrolling then
+			self:UpdateSystemSettingHideBarScrolling();
+		elseif setting == Enum.EditModeActionBarSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeActionBarSetting.AlwaysShowButtons then
+			self:UpdateSystemSettingAlwaysShowButtons();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -1268,6 +1280,23 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.AuraOrganizationType then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
+			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
+		end
+	elseif setting == Enum.EditModeUnitFrameSetting.Opacity then
+		-- Arena frames not supported for now
+		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Arena then
+			return false;
+		end
+
 		if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Party then
 			return self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames);
 		end
@@ -1404,39 +1433,50 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSettingViewRaidSize()
 	CompactRaidFrameContainer:Layout();
 end
 
-function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
-	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+function EditModeUnitFrameSystemMixin:UpdateCompactRaidFrameContainerSetting(...)
+	CompactRaidFrameContainer:ApplyMultipleToFrames(...);
 
 	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
 		EditModeManagerFrame:UpdateRaidContainerFlow();
 	else
 		PartyFrame:UpdatePaddingAndLayout();
 	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameWidth()
+	self:UpdateCompactRaidFrameContainerSetting(
+		"mini", DefaultCompactMiniFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll,
+		"group", CompactRaidGroup_UpdateBorder
+	);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingFrameHeight()
-	CompactRaidFrameContainer:ApplyToFrames("normal", DefaultCompactUnitFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("mini", DefaultCompactMiniFrameSetup);
-	CompactRaidFrameContainer:ApplyToFrames("normal", CompactUnitFrame_UpdateAll);
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
-
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		EditModeManagerFrame:UpdateRaidContainerFlow();
-	else
-		PartyFrame:UpdatePaddingAndLayout();
-	end
+	self:UpdateCompactRaidFrameContainerSetting(
+		"mini", DefaultCompactMiniFrameSetup,
+		"normal", CompactUnitFrame_UpdateAll,
+		"group", CompactRaidGroup_UpdateBorder
+	);
 end
 
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingDisplayBorder()
-	CompactRaidFrameContainer:ApplyToFrames("group", CompactRaidGroup_UpdateBorder);
+	self:UpdateCompactRaidFrameContainerSetting("group", CompactRaidGroup_UpdateBorder);
+end
 
-	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Raid then
-		EditModeManagerFrame:UpdateRaidContainerFlow();
-	else
-		PartyFrame:UpdatePaddingAndLayout();
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingAuraOrganizationType()
+	-- New setting, not sure this one is right...
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAll);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingIconSize()
+	-- New setting, not sure this one is right...
+	self:UpdateCompactRaidFrameContainerSetting("normal", CompactUnitFrame_UpdateAll);
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingOpacity()
+	if self:ShouldShowSetting(Enum.EditModeUnitFrameSetting.Opacity) then
+		local alpha = self:GetSettingValue(Enum.EditModeUnitFrameSetting.Opacity) / 100;
+		self:SetAlpha(alpha);
 	end
 end
 
@@ -1506,40 +1546,48 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarUnderneath) then
-		-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame
-	elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop and self:HasSetting(Enum.EditModeUnitFrameSetting.BuffsOnTop) then
-		self:UpdateSystemSettingBuffsOnTop();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame and self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) then
-		self:UpdateSystemSettingUseLargerFrame();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames and self:HasSetting(Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames) then
-		self:UpdateSystemSettingUseRaidStylePartyFrames();
-	elseif setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground) then
-		self:UpdateSystemSettingShowPartyFrameBackground();
-	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups and self:HasSetting(Enum.EditModeUnitFrameSetting.UseHorizontalGroups) then
-		self:UpdateSystemSettingUseHorizontalGroups();
-	elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide and self:HasSetting(Enum.EditModeUnitFrameSetting.CastBarOnSide) then
-		self:UpdateSystemSettingCastBarOnSide();
-	elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime and self:HasSetting(Enum.EditModeUnitFrameSetting.ShowCastTime) then
-		self:UpdateSystemSettingShowCastTime();
-	elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewRaidSize) then
-		self:UpdateSystemSettingViewRaidSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameWidth) then
-		self:UpdateSystemSettingFrameWidth();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameHeight) then
-		self:UpdateSystemSettingFrameHeight();
-	elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder and self:HasSetting(Enum.EditModeUnitFrameSetting.DisplayBorder) then
-		self:UpdateSystemSettingDisplayBorder();
-	elseif setting == Enum.EditModeUnitFrameSetting.RaidGroupDisplayType and self:HasSetting(Enum.EditModeUnitFrameSetting.RaidGroupDisplayType) then
-		self:UpdateSystemSettingRaidGroupDisplayType();
-	elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy and self:HasSetting(Enum.EditModeUnitFrameSetting.SortPlayersBy) then
-		self:UpdateSystemSettingSortPlayersBy();
-	elseif setting == Enum.EditModeUnitFrameSetting.RowSize and self:HasSetting(Enum.EditModeUnitFrameSetting.RowSize) then
-		self:UpdateSystemSettingRowSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize and self:HasSetting(Enum.EditModeUnitFrameSetting.FrameSize) then
-		self:UpdateSystemSettingFrameSize();
-	elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize and self:HasSetting(Enum.EditModeUnitFrameSetting.ViewArenaSize) then
-		self:UpdateSystemSettingViewArenaSize();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeUnitFrameSetting.CastBarUnderneath then
+			-- Nothing to do, this setting is mirrored by Enum.EditModeCastBarSetting.LockToPlayerFrame
+		elseif setting == Enum.EditModeUnitFrameSetting.BuffsOnTop then
+			self:UpdateSystemSettingBuffsOnTop();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseLargerFrame then
+			self:UpdateSystemSettingUseLargerFrame();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames then
+			self:UpdateSystemSettingUseRaidStylePartyFrames();
+		elseif setting == Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground then
+			self:UpdateSystemSettingShowPartyFrameBackground();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalGroups then
+			self:UpdateSystemSettingUseHorizontalGroups();
+		elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide then
+			self:UpdateSystemSettingCastBarOnSide();
+		elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime then
+			self:UpdateSystemSettingShowCastTime();
+		elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize then
+			self:UpdateSystemSettingViewRaidSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameWidth then
+			self:UpdateSystemSettingFrameWidth();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameHeight then
+			self:UpdateSystemSettingFrameHeight();
+		elseif setting == Enum.EditModeUnitFrameSetting.DisplayBorder then
+			self:UpdateSystemSettingDisplayBorder();
+		elseif setting == Enum.EditModeUnitFrameSetting.RaidGroupDisplayType then
+			self:UpdateSystemSettingRaidGroupDisplayType();
+		elseif setting == Enum.EditModeUnitFrameSetting.SortPlayersBy then
+			self:UpdateSystemSettingSortPlayersBy();
+		elseif setting == Enum.EditModeUnitFrameSetting.RowSize then
+			self:UpdateSystemSettingRowSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.FrameSize then
+			self:UpdateSystemSettingFrameSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.ViewArenaSize then
+			self:UpdateSystemSettingViewArenaSize();
+		elseif setting == Enum.EditModeUnitFrameSetting.AuraOrganizationType then
+			self:UpdateSystemSettingAuraOrganizationType();
+		elseif setting == Enum.EditModeUnitFrameSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeUnitFrameSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		end
 	end
 
 	self:ClearDirtySetting(setting);
@@ -1596,6 +1644,11 @@ function EditModeArenaUnitFrameSystemMixin:SetIsInEditMode(isInEditMode)
 		local ccRemoverFrame = memberUnitFrame.CcRemoverFrame;
 		if ccRemoverFrame then
 			ccRemoverFrame:SetIsInEditMode(isInEditMode);
+		end
+
+		local spellDiminishStatusTray = memberUnitFrame.SpellDiminishStatusTray;
+		if spellDiminishStatusTray then
+			spellDiminishStatusTray:SetIsInEditMode(isInEditMode);
 		end
 
 		local debuffFrame = memberUnitFrame.DebuffFrame;
@@ -1809,8 +1862,8 @@ EditModeAuraFrameSystemMixin = {};
 function EditModeAuraFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
-	self.isInEditMode = false;
-	self:UpdateAuraButtons();
+	self:SetIsEditing(false);
+	self:Update();
 end
 
 function EditModeAuraFrameSystemMixin:AnchorSelectionFrame()
@@ -1952,8 +2005,7 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconDirection()
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconLimit()
-	local setting = self == BuffFrame and Enum.EditModeAuraFrameSetting.IconLimitBuffFrame or Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
-	self.AuraContainer.iconStride = self:GetSettingValue(setting);
+	self.AuraContainer.iconStride = self:GetSettingValue(self:GetIconLimitSettingEnum());
 end
 
 function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconSize()
@@ -1965,6 +2017,21 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSettingIconPadding()
 	self.AuraContainer.iconPadding = self:GetSettingValue(Enum.EditModeAuraFrameSetting.IconPadding);
 end
 
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingVisibleSetting()
+	self.visibleSetting = self:GetSettingValue(Enum.EditModeAuraFrameSetting.VisibleSetting);
+	self:UpdateShownState();
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingOpacity()
+	local opacitySetting = self:GetSettingValue(Enum.EditModeAuraFrameSetting.Opacity);
+	self:SetAlpha(opacitySetting / 100);
+end
+
+function EditModeAuraFrameSystemMixin:UpdateSystemSettingShowDispelType()
+	self.AuraContainer.showDispelType = self:GetSettingValueBool(Enum.EditModeAuraFrameSetting.ShowDispelType);
+	C_UnitAuras.TriggerPrivateAuraShowDispelType(self.AuraContainer.showDispelType);
+end
+
 function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -1973,19 +2040,27 @@ function EditModeAuraFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		return;
 	end
 
-	if setting == Enum.EditModeAuraFrameSetting.Orientation and self:HasSetting(Enum.EditModeAuraFrameSetting.Orientation) then
-		self:UpdateSystemSettingOrientation(entireSystemUpdate);
-	elseif setting == Enum.EditModeAuraFrameSetting.IconWrap and self:HasSetting(Enum.EditModeAuraFrameSetting.IconWrap) then
-		self:UpdateSystemSettingIconWrap();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconDirection and self:HasSetting(Enum.EditModeAuraFrameSetting.IconDirection) then
-		self:UpdateSystemSettingIconDirection();
-	elseif (setting == Enum.EditModeAuraFrameSetting.IconLimitBuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitBuffFrame))
-		or (setting == Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame and self:HasSetting(Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame)) then
-		self:UpdateSystemSettingIconLimit();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconSize and self:HasSetting(Enum.EditModeAuraFrameSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeAuraFrameSetting.IconPadding and self:HasSetting(Enum.EditModeAuraFrameSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeAuraFrameSetting.Orientation then
+			self:UpdateSystemSettingOrientation(entireSystemUpdate);
+		elseif setting == Enum.EditModeAuraFrameSetting.IconWrap then
+			self:UpdateSystemSettingIconWrap();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconDirection then
+			self:UpdateSystemSettingIconDirection();
+		elseif (setting == Enum.EditModeAuraFrameSetting.IconLimitBuffFrame) or (setting == Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame) then
+			self:UpdateSystemSettingIconLimit();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeAuraFrameSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeAuraFrameSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeAuraFrameSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeAuraFrameSetting.ShowDispelType then
+			self:UpdateSystemSettingShowDispelType();
+			self:UpdateAuraButtons();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -2700,9 +2775,7 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSettingVisibleSetting()
 end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarContent()
-	if self.SetBarContent then
-		self:SetBarContent(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarContent));
-	end
+	self:SetBarContent(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarContent));
 end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingHideWhenInactive()
@@ -2715,6 +2788,10 @@ end
 
 function EditModeCooldownViewerSystemMixin:UpdateSystemSettingShowTooltips()
 	self:SetTooltipsShown(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.ShowTooltips) == 1);
+end
+
+function EditModeCooldownViewerSystemMixin:UpdateSystemSettingBarWidthScale()
+	self:SetBarWidthScale(self:GetSettingValue(Enum.EditModeCooldownViewerSetting.BarWidthScale) / 100);
 end
 
 function EditModeCooldownViewerSystemMixin:UseSettingAltName(setting)
@@ -2732,28 +2809,32 @@ function EditModeCooldownViewerSystemMixin:UpdateSystemSetting(setting, entireSy
 		return;
 	end
 
-	if setting == Enum.EditModeCooldownViewerSetting.Orientation and self:HasSetting(Enum.EditModeCooldownViewerSetting.Orientation) then
-		self:UpdateSystemSettingOrientation(entireSystemUpdate);
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconLimit and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconLimit) then
-		self:UpdateSystemSettingIconLimit();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconDirection and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconDirection) then
-		self:UpdateSystemSettingIconDirection();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconSize and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconSize) then
-		self:UpdateSystemSettingIconSize();
-	elseif setting == Enum.EditModeCooldownViewerSetting.IconPadding and self:HasSetting(Enum.EditModeCooldownViewerSetting.IconPadding) then
-		self:UpdateSystemSettingIconPadding();
-	elseif setting == Enum.EditModeCooldownViewerSetting.Opacity and self:HasSetting(Enum.EditModeCooldownViewerSetting.Opacity) then
-		self:UpdateSystemSettingOpacity();
-	elseif setting == Enum.EditModeCooldownViewerSetting.VisibleSetting and self:HasSetting(Enum.EditModeCooldownViewerSetting.VisibleSetting) then
-		self:UpdateSystemSettingVisibleSetting();
-	elseif setting == Enum.EditModeCooldownViewerSetting.BarContent and self:HasSetting(Enum.EditModeCooldownViewerSetting.BarContent) then
-		self:UpdateSystemSettingBarContent();
-	elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive and self:HasSetting(Enum.EditModeCooldownViewerSetting.HideWhenInactive) then
-		self:UpdateSystemSettingHideWhenInactive();
-	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTimer) then
-		self:UpdateSystemSettingShowTimer();
-	elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips and self:HasSetting(Enum.EditModeCooldownViewerSetting.ShowTooltips) then
-		self:UpdateSystemSettingShowTooltips();
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeCooldownViewerSetting.Orientation then
+			self:UpdateSystemSettingOrientation(entireSystemUpdate);
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconLimit then
+			self:UpdateSystemSettingIconLimit();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconDirection then
+			self:UpdateSystemSettingIconDirection();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconSize then
+			self:UpdateSystemSettingIconSize();
+		elseif setting == Enum.EditModeCooldownViewerSetting.IconPadding then
+			self:UpdateSystemSettingIconPadding();
+		elseif setting == Enum.EditModeCooldownViewerSetting.Opacity then
+			self:UpdateSystemSettingOpacity();
+		elseif setting == Enum.EditModeCooldownViewerSetting.VisibleSetting then
+			self:UpdateSystemSettingVisibleSetting();
+		elseif setting == Enum.EditModeCooldownViewerSetting.BarContent then
+			self:UpdateSystemSettingBarContent();
+		elseif setting == Enum.EditModeCooldownViewerSetting.HideWhenInactive then
+			self:UpdateSystemSettingHideWhenInactive();
+		elseif setting == Enum.EditModeCooldownViewerSetting.ShowTimer then
+			self:UpdateSystemSettingShowTimer();
+		elseif setting == Enum.EditModeCooldownViewerSetting.ShowTooltips then
+			self:UpdateSystemSettingShowTooltips();
+		elseif setting == Enum.EditModeCooldownViewerSetting.BarWidthScale then
+			self:UpdateSystemSettingBarWidthScale();
+		end
 	end
 
 	if not entireSystemUpdate then
@@ -2790,6 +2871,189 @@ function EditModeCooldownViewerSystemMixin:AddExtraButtons(extraButtonPool)
 		local fromEditMode = true;
 		CooldownViewerSettings:ShowOptionsPanel(fromEditMode);
 	end);
+	optionsButton:Show();
+
+	return true;
+end
+
+EditModeEncounterEventsSystemMixin = CreateFromMixins(EditModeSystemMixin);
+
+function EditModeEncounterEventsSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self:SetIsEditing(false);
+end
+
+do
+	local IconDirectionStringOverrides = {
+		[Enum.EncounterEventsOrientation.Horizontal] = {
+			HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_LEFT,
+			HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_RIGHT,
+		},
+
+		[Enum.EncounterEventsOrientation.Vertical] = {
+			HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_TOP,
+			HUD_EDIT_MODE_SETTING_ENCOUNTER_EVENTS_ICON_DIRECTION_BOTTOM,
+		},
+	};
+
+	local TimelineViewSpecificSettings = {
+		-- Map of timeline settings to their required view type. If a setting
+		-- is appropriate for all view types, omit it from this map.
+
+		[Enum.EditModeEncounterEventsSetting.BarWidth] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.FlipHorizontally] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.IconDirection] = Enum.EncounterEventsViewType.Timeline,
+		[Enum.EditModeEncounterEventsSetting.Orientation] = Enum.EncounterEventsViewType.Timeline,
+		[Enum.EditModeEncounterEventsSetting.Padding] = Enum.EncounterEventsViewType.Bars,
+		[Enum.EditModeEncounterEventsSetting.ShowSpellName] = Enum.EncounterEventsViewType.Timeline,
+	};
+
+	function EditModeEncounterEventsSystemMixin:ShouldShowSetting(setting)
+		if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+			return false;
+		end
+
+		if self.systemIndex == Enum.EditModeEncounterEventsSystemIndices.Timeline then
+			local requiredViewType = TimelineViewSpecificSettings[setting];
+
+			if requiredViewType ~= nil and not self:DoesSettingValueEqual(Enum.EditModeEncounterEventsSetting.ViewType, requiredViewType) then
+				return false;
+			end
+
+			if setting == Enum.EditModeEncounterEventsSetting.ShowSpellName then
+				return self:DoesSettingValueEqual(Enum.EditModeEncounterEventsSetting.Orientation, Enum.EncounterEventsOrientation.Vertical);
+			end
+		end
+
+		return true;
+	end
+
+	function EditModeEncounterEventsSystemMixin:UpdateDisplayInfoOptions(displayInfo)
+		local updatedDisplayInfo = displayInfo;
+
+		if displayInfo.setting == Enum.EditModeEncounterEventsSetting.IconDirection then
+			local orientation = self:GetSettingValue(Enum.EditModeEncounterEventsSetting.Orientation);
+			updatedDisplayInfo = CopyTable(displayInfo);
+
+			for optionIndex, optionText in ipairs(IconDirectionStringOverrides[orientation]) do
+				updatedDisplayInfo.options[optionIndex].text = optionText;
+			end
+		end
+
+		return updatedDisplayInfo;
+	end
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingViewType()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOrientation()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingIconDirection()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingIconSize()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingOverallSize()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingPadding()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingBarWidth()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingBackgroundTransparency()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingTransparency()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingVisibility()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingTooltipAnchor()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingFlipHorizontally()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowSpellName()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSettingShowTimer()
+	-- Implement in a derived system frame mixin to process setting changes.
+end
+
+function EditModeEncounterEventsSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeEncounterEventsSetting.ViewType and self:HasSetting(Enum.EditModeEncounterEventsSetting.ViewType) then
+		self:UpdateSystemSettingViewType();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Orientation and self:HasSetting(Enum.EditModeEncounterEventsSetting.Orientation) then
+		self:UpdateSystemSettingOrientation();
+	elseif setting == Enum.EditModeEncounterEventsSetting.IconDirection and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconDirection) then
+		self:UpdateSystemSettingIconDirection();
+	elseif setting == Enum.EditModeEncounterEventsSetting.IconSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.IconSize) then
+		self:UpdateSystemSettingIconSize();
+	elseif setting == Enum.EditModeEncounterEventsSetting.OverallSize and self:HasSetting(Enum.EditModeEncounterEventsSetting.OverallSize) then
+		self:UpdateSystemSettingOverallSize();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Padding and self:HasSetting(Enum.EditModeEncounterEventsSetting.Padding) then
+		self:UpdateSystemSettingPadding();
+	elseif setting == Enum.EditModeEncounterEventsSetting.BarWidth and self:HasSetting(Enum.EditModeEncounterEventsSetting.BarWidth) then
+		self:UpdateSystemSettingBarWidth();
+	elseif setting == Enum.EditModeEncounterEventsSetting.BackgroundTransparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.BackgroundTransparency) then
+		self:UpdateSystemSettingBackgroundTransparency();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Transparency and self:HasSetting(Enum.EditModeEncounterEventsSetting.Transparency) then
+		self:UpdateSystemSettingTransparency();
+	elseif setting == Enum.EditModeEncounterEventsSetting.Visibility and self:HasSetting(Enum.EditModeEncounterEventsSetting.Visibility) then
+		self:UpdateSystemSettingVisibility();
+	elseif setting == Enum.EditModeEncounterEventsSetting.TooltipAnchor and self:HasSetting(Enum.EditModeEncounterEventsSetting.TooltipAnchor) then
+		self:UpdateSystemSettingTooltipAnchor();
+	elseif setting == Enum.EditModeEncounterEventsSetting.FlipHorizontally and self:HasSetting(Enum.EditModeEncounterEventsSetting.FlipHorizontally) then
+		self:UpdateSystemSettingFlipHorizontally();
+	elseif setting == Enum.EditModeEncounterEventsSetting.ShowSpellName and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowSpellName) then
+		self:UpdateSystemSettingShowSpellName();
+	elseif setting == Enum.EditModeEncounterEventsSetting.ShowTimer and self:HasSetting(Enum.EditModeEncounterEventsSetting.ShowTimer) then
+		self:UpdateSystemSettingShowTimer();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeEncounterEventsSystemMixin:OpenToBossWarningSettingsCategory()
+	EditModeManagerFrame:CheckHideAndLockEditMode();
+	Settings.OpenToCategory(Settings.ADVANCED_OPTIONS_CATEGORY_ID, COMBAT_WARNINGS_LABEL);
+end
+
+function EditModeEncounterEventsSystemMixin:AddExtraButtons(extraButtonPool)
+	EditModeSystemMixin.AddExtraButtons(self, extraButtonPool);
+
+	local optionsButton = extraButtonPool:Acquire();
+	optionsButton.layoutIndex = 5;
+	optionsButton:SetText(COMBAT_WARNINGS_SETTINGS);
+	optionsButton:SetOnClickHandler(function() self:OpenToBossWarningSettingsCategory(); end);
 	optionsButton:Show();
 
 	return true;
@@ -2935,4 +3199,220 @@ function EditModeSystemSelectionDoubleLabelMixin:UpdateLabelVisibility()
 	local showLabel = self:ShouldShowLabelText();
 	self.HorizontalLabel:SetShown(showLabel and not self.isVertical);
 	self.VerticalLabel:SetShown(showLabel and self.isVertical);
+end
+
+EditModePersonalResourceDisplaySystemMixin = {};
+
+function EditModePersonalResourceDisplaySystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+	self:SetIsInEditMode(false);
+end
+
+function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingHideHealthAndPower()
+	self.hideHealthAndPower = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower)
+	self:SetupHealthBar();
+	self:SetupMaxHealth();
+	self:UpdateHealthPrediction();
+	self:SetupPowerBar();
+	self:UpdatePower();
+	self:SetupAlternatePowerBar();
+	FunctionUtil.SafeInvokeMethod(self.AlternatePowerBar, "UpdateAuraState");
+	FunctionUtil.SafeInvokeMethod(self.AlternatePowerBar, "UpdatePower");
+end
+
+function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingOnlyShowInCombat()
+	self.onlyShowInCombat = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat);
+	self:UpdateShownState();
+end
+
+function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		return;
+	end
+
+	if setting == Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.HideHealthAndPower) then
+		self:UpdateSystemSettingHideHealthAndPower();
+	elseif setting == Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.OnlyShowInCombat) then
+		self:UpdateSystemSettingOnlyShowInCombat();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeDamageMeterSystemMixin = CreateFromMixins(EditModeSystemMixin);
+
+function EditModeDamageMeterSystemMixin:OnSystemLoad()
+	EditModeSystemMixin.OnSystemLoad(self);
+
+	self.EditModeResizeButton:SetScript("OnMouseDown", function(button, mouseButtonName, _down)
+		button:SetButtonState("PUSHED", true);
+		button:GetHighlightTexture():Hide();
+
+		self:StartSizing("BOTTOMRIGHT");
+	end);
+
+	self.EditModeResizeButton:SetScript("OnMouseUp", function(button, mouseButtonName, _down)
+		button:SetButtonState("NORMAL", false);
+		button:GetHighlightTexture():Show();
+
+		self:StopMovingOrSizing();
+		self:SetUserPlaced(false);
+
+		local width = self:GetWidth();
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeDamageMeterSetting.FrameWidth, width);
+
+		local height =  self:GetHeight();
+		EditModeManagerFrame:OnSystemSettingChange(self, Enum.EditModeDamageMeterSetting.FrameHeight, height);
+	end);
+
+	local widthSetting = self.settingDisplayInfoMap[Enum.EditModeDamageMeterSetting.FrameWidth];
+	local heightSetting = self.settingDisplayInfoMap[Enum.EditModeDamageMeterSetting.FrameHeight];
+	self:SetResizeBounds(widthSetting.minValue, heightSetting.minValue, widthSetting.maxValue, heightSetting.maxValue);
+end
+
+function EditModeDamageMeterSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	self.EditModeResizeButton:Show();
+
+	self:SetResizable(true);
+end
+
+function EditModeDamageMeterSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.EditModeResizeButton:Hide();
+
+	self:SetResizable(false);
+
+	self:SetIsEditing(false);
+end
+
+function EditModeDamageMeterSystemMixin:ShouldShowSetting(setting)
+	if not EditModeSystemMixin.ShouldShowSetting(self, setting) then
+		return false;
+	end
+
+	--[[
+	-- FullBackground style removed, and since the BG always shows the transparency setting is always applicable.
+	if setting == Enum.EditModeDamageMeterSetting.BackgroundTransparency then
+		-- Art assets for the Bordered style don't support adjusting transparency
+		-- of the background at present.
+		return not self:DoesSettingValueEqual(Enum.EditModeDamageMeterSetting.Style, Enum.DamageMeterStyle.Bordered);
+	end
+	--]]
+
+	return true;
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingVisibility()
+	self.visibility = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Visibility);
+	self:UpdateShownState();
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingStyle()
+	local style = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Style);
+	self:SetStyle(style);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingNumberDisplayType()
+	local numberDisplayType = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Numbers);
+	self:SetNumberDisplayType(numberDisplayType);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameWidth()
+	local frameWidth = self:GetSettingValue(Enum.EditModeDamageMeterSetting.FrameWidth);
+	self:SetSize(frameWidth, self:GetHeight());
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingFrameHeight()
+	local frameHeight = self:GetSettingValue(Enum.EditModeDamageMeterSetting.FrameHeight);
+	self:SetSize(self:GetWidth(), frameHeight);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingBarHeight()
+	local barHeight = self:GetSettingValue(Enum.EditModeDamageMeterSetting.BarHeight);
+	self:SetBarHeight(barHeight);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingPadding()
+	local barSpacing = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Padding);
+	self:SetBarSpacing(barSpacing);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingTransparency()
+	local transparency = self:GetSettingValue(Enum.EditModeDamageMeterSetting.Transparency);
+	self:SetWindowTransparency(transparency);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowSpecIcon()
+	local showBarIcons = self:GetSettingValueBool(Enum.EditModeDamageMeterSetting.ShowSpecIcon);
+	self:SetShowBarIcons(showBarIcons);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingShowClassColor()
+	local useClassColor = self:GetSettingValueBool(Enum.EditModeDamageMeterSetting.ShowClassColor);
+	self:SetUseClassColor(useClassColor);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingTextSize()
+	local textSize = self:GetSettingValue(Enum.EditModeDamageMeterSetting.TextSize);
+	self:SetTextSize(textSize);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSettingBackgroundTransparency()
+	local backgroundTransparency = self:GetSettingValue(Enum.EditModeDamageMeterSetting.BackgroundTransparency);
+	self:SetBackgroundTransparency(backgroundTransparency);
+end
+
+function EditModeDamageMeterSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		return;
+	end
+
+	if self:HasSetting(setting) then
+		if setting == Enum.EditModeDamageMeterSetting.Visibility then
+			self:UpdateSystemSettingVisibility();
+		elseif setting == Enum.EditModeDamageMeterSetting.Style then
+			self:UpdateSystemSettingStyle();
+		elseif setting == Enum.EditModeDamageMeterSetting.Numbers then
+			self:UpdateSystemSettingNumberDisplayType();
+		elseif setting == Enum.EditModeDamageMeterSetting.FrameWidth then
+			self:UpdateSystemSettingFrameWidth();
+		elseif setting == Enum.EditModeDamageMeterSetting.FrameHeight then
+			self:UpdateSystemSettingFrameHeight();
+		elseif setting == Enum.EditModeDamageMeterSetting.BarHeight then
+			self:UpdateSystemSettingBarHeight();
+		elseif setting == Enum.EditModeDamageMeterSetting.Padding then
+			self:UpdateSystemSettingPadding();
+		elseif setting == Enum.EditModeDamageMeterSetting.Transparency then
+			self:UpdateSystemSettingTransparency();
+		elseif setting == Enum.EditModeDamageMeterSetting.ShowSpecIcon then
+			self:UpdateSystemSettingShowSpecIcon();
+		elseif setting == Enum.EditModeDamageMeterSetting.ShowClassColor then
+			self:UpdateSystemSettingShowClassColor();
+		elseif setting == Enum.EditModeDamageMeterSetting.TextSize then
+			self:UpdateSystemSettingTextSize();
+		elseif setting == Enum.EditModeDamageMeterSetting.BackgroundTransparency then
+			self:UpdateSystemSettingBackgroundTransparency();
+		end
+	end
+
+	if not entireSystemUpdate then
+		self:RefreshLayout();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeDamageMeterSystemMixin:OnUpdateSystem(anySettingsDirty)
+	EditModeSystemMixin.OnUpdateSystem(self, anySettingsDirty);
+
+	if anySettingsDirty then
+		self:RefreshLayout();
+	end
 end

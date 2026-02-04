@@ -3,6 +3,7 @@ local UIModifiedInstance =
 	Name = "UIModifiedInstance",
 	Type = "System",
 	Namespace = "C_ModifiedInstance",
+	Environment = "All",
 
 	Functions =
 	{
@@ -10,6 +11,7 @@ local UIModifiedInstance =
 			Name = "GetModifiedInstanceInfoFromMapID",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

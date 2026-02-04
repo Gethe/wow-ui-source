@@ -5,93 +5,130 @@ Professions.ReagentInputMode = EnumUtil.MakeEnum("Fixed", "Quality", "Any");
 Professions.ReagentContents = EnumUtil.MakeEnum("None", "Partial", "All");
 Professions.ProfessionType = EnumUtil.MakeEnum("Crafting", "Gathering");
 
+function Professions.IsValidReagent(reagent)
+	local isItemIDValid = reagent.itemID and reagent.itemID > 0;
+	local isCurrencyIDValid = reagent.currencyID and reagent.currencyID > 0;
+	return isItemIDValid or isCurrencyIDValid and not (isItemIDValid and isCurrencyIDValid);
+end
+
 -- See native CraftingReagent
 function Professions.CreateCraftingReagent(itemID, currencyID)
-	assert(itemID ~= nil or currencyID ~= nil);
+	assert((itemID ~= nil and itemID > 0) or (currencyID ~= nil and currencyID > 0));
 	return {itemID = itemID, currencyID = currencyID};
 end
 
-function Professions.CraftingReagentMatches(reagent1, reagent2)
-	local function Matches(lhs, rhs)
-		return lhs and lhs > 0 and (lhs == rhs);
-	end
-
-	return Matches(reagent1.itemID, reagent2.itemID) or 
-		Matches(reagent1.currencyID, reagent2.currencyID);
+function Professions.FindReagentInTable(reagents, findReagent)
+	return FindInTableIf(reagents, function(reagent)
+		return ProfessionsUtil.CraftingReagentMatches(reagent, findReagent);
+	end);
 end
 
-function Professions.CreateCraftingReagentByItemID(itemID)
+function Professions.CreateItemReagent(itemID)
 	return Professions.CreateCraftingReagent(itemID, nil);
 end
 
-function Professions.CreateCraftingReagentByCurrencyID(currencyID)
+function Professions.CreateCurrencyReagent(currencyID)
 	return Professions.CreateCraftingReagent(nil, currencyID);
 end
 
-
 -- See native CraftingReagentInfo
-function Professions.CreateCraftingReagentInfo(itemID, dataSlotIndex, quantity)
-	assert(itemID ~= nil and dataSlotIndex ~= nil and quantity ~= nil);
-	return {itemID = itemID, dataSlotIndex = dataSlotIndex, quantity = quantity };
+function Professions.CreateCraftingReagentInfo(reagent, dataSlotIndex, quantity)
+	assert(reagent ~= nil and dataSlotIndex ~= nil and quantity ~= nil);
+	assert(reagent.itemID ~= nil or reagent.currencyID ~= nil);
+	return {reagent = reagent, dataSlotIndex = dataSlotIndex, quantity = quantity };
+end
+
+function Professions.IsValidModification(modification)
+	return modification and Professions.IsValidReagent(modification.reagent);
+end
+
+function Professions.DoesModificationContainReagent(modification, reagent)
+	assert(modification.reagent ~= nil);
+	assert(reagent ~= nil);
+	return ProfessionsUtil.CraftingReagentMatches(modification.reagent, reagent);
+end
+
+function Professions.GetReagentQualityInfo(reagent)
+	local itemID = reagent.itemID;
+	if itemID then
+		local qualityInfo = C_TradeSkillUI.GetItemReagentQualityInfo(itemID);
+		return qualityInfo;
+	end
+
+	return nil;
+end
+
+function Professions.ReagentToString(reagent)
+	if reagent.itemID then
+		return string.format("itemID = %d", reagent.itemID);
+	elseif reagent.currencyID then
+		return string.format("currencyID = %d", reagent.currencyID);
+	end
+	return "invalid_reagent";
 end
 
 function Professions.CreateCraftingReagentInfoBonusTbl(...)
 	local tbls = {};
 	for index = 1, select('#', ...) do
-		local itemID = select(index, ...);
+		local reagent = select(index, ...);
 		local quantity = 1;
-		table.insert(tbls, Professions.CreateCraftingReagentInfo(itemID, index, quantity));
+		table.insert(tbls, Professions.CreateCraftingReagentInfo(reagent, index, quantity));
 	end
 	return tbls;
 end
 
-function Professions.ExtractItemIDsFromCraftingReagents(reagents)
-	local tbl = {};
-	for index, reagent in ipairs(reagents) do
-		local itemID = reagent.itemID;
-		if itemID then
-			table.insert(tbl, itemID);
-		end
+function Professions.AddTooltipInfo(reagent, tooltip, transaction)
+	if reagent.currencyID then
+		tooltip:SetCurrencyByID(reagent.currencyID);
+	else
+		local displayData = Professions.GetReagentDisplayData(reagent);
+		GameTooltip_SetTitle(tooltip, displayData.name, displayData.color, false);
 	end
-	return tbl;
-end
 
-function Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction)
-	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(item:GetItemID());
+	local addBlank = true;
+	local craftingReagents = Professions.CreateCraftingReagentInfoBonusTbl(reagent);
 	local difficultyText = C_TradeSkillUI.GetReagentDifficultyText(1, craftingReagents);
 	if difficultyText and difficultyText ~= "" then
 		GameTooltip_AddHighlightLine(tooltip, difficultyText);
 		GameTooltip_AddBlankLineToTooltip(tooltip);
+		addBlank = false;
 	end
-
+	
+	local recipeID = transaction:GetRecipeID();
+	local allocationItemGUID = transaction:GetAllocationItemGUID();
 	local craftingReagentIndex = 1;
-	local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, craftingReagentIndex, craftingReagents, recraftItemGUID);
+	local bonusText = C_TradeSkillUI.GetCraftingReagentBonusText(recipeID, craftingReagentIndex, craftingReagents, allocationItemGUID);
 	for _, str in ipairs(bonusText) do
 		GameTooltip_AddHighlightLine(tooltip, str);
+		addBlank = true;
 	end
 
-	local quality = C_TradeSkillUI.GetItemReagentQualityByItemInfo(item:GetItemID());
-	if quality then
-		GameTooltip_AddBlankLineToTooltip(tooltip);
+	local qualityInfo = Professions.GetReagentQualityInfo(reagent);
+	if qualityInfo then
+		if addBlank then
+			GameTooltip_AddBlankLineToTooltip(tooltip);
+			addBlank = false;
+		end
 		local atlasSize = 26;
-		local atlasMarkup = CreateAtlasMarkup(Professions.GetIconForQuality(quality, true), atlasSize, atlasSize);
+		local atlasMarkup = CreateAtlasMarkup(qualityInfo.iconSmall, atlasSize, atlasSize);
 		GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_CRAFTING_QUALITY:format(atlasMarkup));
 	end
-
-	-- The requirement items should already be loaded because the schematic form loaded every item associated with every slot.
-	local requirements = C_TradeSkillUI.GetReagentRequirementItemIDs(item:GetItemID());
-	for index, requiredItemID in ipairs(requirements) do
-		local requiredItem = Item:CreateFromItemID(requiredItemID);
-		local itemName = requiredItem:GetItemName();
-		if transaction:HasAllocatedItemID(requiredItemID) then
-			GameTooltip_AddHighlightLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+	
+	-- If this item is a flyout item, then the dependent reagents will have already been loaded when the
+	-- flyout loaded all of its item options.
+	local requirements = C_TradeSkillUI.GetDependentReagents(reagent);
+	for index, requiredReagent in ipairs(requirements) do
+		local name = Professions.GetReagentName(requiredReagent);
+		local line = PROFESSIONS_REQUIRES_REAGENTS:format(name);
+		if transaction:HasAllocatedReagent(requiredReagent) then
+			GameTooltip_AddHighlightLine(tooltip, line);
 		else
-			GameTooltip_AddErrorLine(tooltip, PROFESSIONS_REQUIRES_REAGENTS:format(itemName));
+			GameTooltip_AddErrorLine(tooltip, line);
 		end
 	end
 
 	local recraftAllocation = transaction:GetRecraftAllocation();
-	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, item:GetItemID()) then
+	if recraftAllocation and not C_TradeSkillUI.IsRecraftReagentValid(recraftAllocation, reagent) then
 		GameTooltip_AddErrorLine(tooltip, PROFESSIONS_DISALLOW_DOWNGRADE);
 	end
 end
@@ -117,7 +154,7 @@ local CraftingAccessibleBags =
 	Enum.BagIndex.AccountBankTab_5,
 };
 
-function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
+function Professions.FindItemsInInventorySlots(itemID, maxFindCount)
 	local items = {};
 	local max = maxFindCount or math.huge;
 	local function FindMatchingItemID(itemLocation)
@@ -141,45 +178,52 @@ function Professions.FindItemsMatchingItemID(itemID, maxFindCount)
 	return items;
 end
 
-function Professions.GenerateFlyoutItemsTable(itemIDs, filterAvailable)
+do
+	local function FilterReagentByCurrencyID(reagent)
+		return reagent.currencyID ~= nil;
+	end
+	
+	function Professions.FilterReagentsByCurrencyID(reagents)
+		local isIndexTable = true;
+		return tFilter(reagents, FilterReagentByCurrencyID, isIndexTable);
+	end
+
+	local function FilterReagentByItemID(reagent)
+		return reagent.itemID ~= nil;
+	end
+
+	function Professions.FilterReagentsByItemID(reagents)
+		local isIndexTable = true;
+		return tFilter(reagents, FilterReagentByItemID, isIndexTable);
+	end
+end
+
+function Professions.ForEachItemReagent(reagents, func)
+	for index, reagent in ipairs(reagents) do
+		if reagent.itemID ~= nil then
+			func(reagent.itemID);
+		end
+	end
+end
+
+--[[
+Creates Item objects for each item in the reagents list. When 'filterAvailable' is false, and
+a non-zero quantity of items is found, an Item object is created for each instance.
+]]--
+function Professions.GenerateItemsFromEligibleItemSlots(reagents, filterAvailable)
 	local items = {};
 	local maxFindCount = 1;
-	if filterAvailable then
-		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
-			tAppendAll(items, foundItems);
-		end
-	else
-		for index, itemID in ipairs(itemIDs) do
-			local foundItems = Professions.FindItemsMatchingItemID(itemID, maxFindCount);
-			if #foundItems == 0 then
-				table.insert(items, Item:CreateFromItemID(itemID));
-			else
-				tAppendAll(items, foundItems);
-			end
+	for index, reagent in ipairs(Professions.FilterReagentsByItemID(reagents)) do
+		local itemID = reagent.itemID;
+		local foundItems = Professions.FindItemsInInventorySlots(itemID, maxFindCount);
+		tAppendAll(items, foundItems);
+
+		-- Create an item to be displayed representing 0 quantity of the item.
+		if not filterAvailable and #foundItems == 0 then
+			table.insert(items, Item:CreateFromItemID(itemID));
 		end
 	end
 	return items;
-end
-
-function Professions.FlyoutOnElementEnterImplementation(elementData, tooltip, recipeID, recraftItemGUID, transaction, reagentSlotSchematic)
-	local item = elementData.item;
-		
-	local colorData = item:GetItemQualityColor();
-	GameTooltip_SetTitle(tooltip, item:GetItemName(), colorData.color);
-	
-	Professions.AddCommonOptionalTooltipInfo(item, tooltip, recipeID, recraftItemGUID, transaction);
-
-	local count = ItemUtil.GetCraftingReagentCount(item:GetItemID(), transaction:ShouldUseCharacterInventoryOnly());
-	if count <= 0 then
-		GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_NONE_AVAILABLE);
-	else
-		local reagent = Professions.CreateCraftingReagentByItemID(item:GetItemID());
-		local quantityOwned = ProfessionsUtil.GetReagentQuantityInPossession(reagent, transaction:ShouldUseCharacterInventoryOnly());
-		if quantityOwned < reagentSlotSchematic.quantityRequired then
-			GameTooltip_AddErrorLine(tooltip, OPTIONAL_REAGENT_INSUFFICIENT_AVAILABLE);
-		end
-	end
 end
 
 local recraftingTransitionData = nil;
@@ -385,66 +429,126 @@ function Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic)
 	local slotIndex = reagentSlotSchematic.slotIndex;
 	for allocationIndex, allocation in transaction:EnumerateAllocations(slotIndex) do
 		local index = FindInTableIf(reagentSlotSchematic.reagents, function(reagent)
-			return Professions.CraftingReagentMatches(reagent, allocation.reagent);
+			return ProfessionsUtil.CraftingReagentMatches(reagent, allocation.reagent);
 		end);
 
 		if not index or quantities[index] == nil then
 			local reagent = allocation.reagent;
 			local recipeID = transaction:GetRecipeID();
-			local id = reagent.itemID or reagent.currencyID;
 			local foundIndex = index and index or -1;
 			local reagentsSize = (reagentSlotSchematic.reagents and #reagentSlotSchematic.reagents or 0);
-			assert(false, ("Invalid allocation found: recipeID = %d, slotIndex = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, id = %d"):format(
-				recipeID, slotIndex, allocationIndex, foundIndex, reagentsSize, id));
+			assert(false, ("Invalid allocation found: recipeID = %d, slotIndex = %d, allocationIndex = %d, foundIndex = %d, reagentsSize = %d, itemID = %d, currencyID = %d"):format(
+				recipeID, slotIndex, allocationIndex, foundIndex, reagentsSize, reagent.itemID, reagent.currencyID));
 		end
 		quantities[index] = allocation.quantity;
 	end
 	return quantities;
 end
 
-function Professions.SetupQualityReagentTooltip(slot, transaction, noInstruction)
-	local itemID = slot.Button:GetItemID();
+function Professions.SetupReagentTooltip(reagent)
+	local itemID = reagent.itemID;
 	if itemID then
-		local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", slot.Button:GetItemID());
-		tooltipInfo.excludeLines = {
-				Enum.TooltipDataLineType.SellPrice,
-				Enum.TooltipDataLineType.ProfessionCraftingQuality,
-		};
-		GameTooltip:ProcessInfo(tooltipInfo);
-
-		local quantities = Professions.GetQuantitiesAllocated(transaction, slot:GetReagentSlotSchematic());
-		local slotsAllocated = AccumulateOp(quantities, function(quantity)
-			return math.min(quantity, 1);
-		end);
-
-		local blankLineAdded = false;
-		if slotsAllocated > 1 then
-			GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			blankLineAdded = true;
-			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
-			quantities[1], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier1-Small"), 
-			quantities[2], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier2-Small"),  
-			quantities[3], CreateAtlasMarkupWithAtlasSize("Professions-Icon-Quality-Tier3-Small")));
-		end
-
-		if not slot:IsUnallocatable() and not noInstruction then
-			if not blankLineAdded then
-				GameTooltip_AddBlankLineToTooltip(GameTooltip);
-			end
-			GameTooltip_AddInstructionLine(GameTooltip, BASIC_REAGENT_TOOLTIP_CLICK_TO_ALLOCATE);
+		GameTooltip:SetItemByID(itemID);
+	else
+		local currencyID = reagent.currencyID;
+		if currencyID then
+			GameTooltip:SetCurrencyByID(currencyID);
 		end
 	end
 end
 
-function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSchematic, exchangeOnly, recraftItemGUID, suppressInstruction, transaction)
-	local reagentType = reagentSlotSchematic.reagentType;
-	local itemID = slot.Button:GetItemID();
-	if itemID then
+function Professions.SetupReagentQualityPickerTooltip(slot, transaction, noInstruction)
+	-- Quality reagents do not support currencies.
+	local reagent = slot:GetReagent();
+	if reagent.currencyID then
+		return;
+	end
+
+	local tooltipInfo = CreateBaseTooltipInfo("GetItemByID", reagent.itemID);
+	tooltipInfo.excludeLines =
+	{
+		Enum.TooltipDataLineType.SellPrice,
+		Enum.TooltipDataLineType.ProfessionCraftingQuality,
+	};
+	GameTooltip:ProcessInfo(tooltipInfo);
+
+	local reagentSlotSchematic = slot:GetReagentSlotSchematic();
+	local quantities = Professions.GetQuantitiesAllocated(transaction, reagentSlotSchematic);
+	local quantitiesCount = AccumulateOp(quantities, function(quantity)
+		return (quantity > 0) and 1 or 0;
+	end);
+
+	local hasMultipleAllocations = quantitiesCount > 1;
+	if hasMultipleAllocations then
+		local qualityInfos = {};
+		for allocationIndex, allocation in transaction:EnumerateAllocations(reagentSlotSchematic.slotIndex) do
+			local qualityInfo = Professions.GetReagentQualityInfo(allocation.reagent);
+			table.insert(qualityInfos, qualityInfo);
+		end
+
+		table.sort(qualityInfos, function(lhs, rhs)
+			return lhs.quality < rhs.quality;
+		end);
+
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+
+		local qualityInfosSize = #qualityInfos;
+		if qualityInfosSize == 2 then
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP_2:format(
+				quantities[1], CreateAtlasMarkupWithAtlasSize(qualityInfos[1].iconSmall), 
+				quantities[2], CreateAtlasMarkupWithAtlasSize(qualityInfos[2].iconSmall)));
+		elseif qualityInfosSize == 3 then
+			GameTooltip_AddNormalLine(GameTooltip, PROFESSIONS_ALLOCATIONS_TOOLTIP:format(
+				quantities[1], CreateAtlasMarkupWithAtlasSize(qualityInfos[1].iconSmall),
+				quantities[2], CreateAtlasMarkupWithAtlasSize(qualityInfos[2].iconSmall),
+				quantities[3], CreateAtlasMarkupWithAtlasSize(qualityInfos[3].iconSmall)));
+		else
+			error(string.format("Unexpected quality info table size. size = %d, %s", qualityInfosSize,
+				Professions.ReagentToString(reagent)));
+		end
+	end
+
+	if (not noInstruction) and (not slot:IsUnallocatable()) then
+		-- Add a blank line if one was not added above.
+		if not hasMultipleAllocations then
+			GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		end
+		GameTooltip_AddInstructionLine(GameTooltip, BASIC_REAGENT_TOOLTIP_CLICK_TO_ALLOCATE);
+	end
+end
+
+function Professions.GetReagentDisplayData(reagent)
+	local data = {};
+	local itemID = reagent.itemID;
+	if itemID and itemID > 0 then
 		local item = Item:CreateFromItemID(itemID);
-		local colorData = item:GetItemQualityColor();
-		GameTooltip_SetTitle(GameTooltip, item:GetItemName(), colorData.color, false);
-	
-		Professions.AddCommonOptionalTooltipInfo(item, GameTooltip, recipeID, recraftItemGUID, transaction);
+		data.name = item:GetItemName();
+		data.color = item:GetItemQualityColor().color;
+	end
+
+	local currencyID = reagent.currencyID;
+	if currencyID and reagent.currencyID > 0 then
+		local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(currencyID);
+		data.name = currencyInfo.name;
+		data.texture = currencyInfo.iconFileID;
+
+		local quality = currencyInfo.quality;
+		local colorData = ColorManager.GetColorDataForItemQuality(quality);
+		data.color = colorData.color;
+	end
+	return data;
+end
+
+function Professions.GetReagentName(reagent)
+	local displayData = Professions.GetReagentDisplayData(reagent);
+	return displayData.name or UNKNOWN;
+end
+
+function Professions.SetupOptionalReagentTooltip(slot, transaction, reagentSlotSchematic, suppressInstruction, exchangeOnly)
+	local reagentType = reagentSlotSchematic.reagentType;
+	local reagent =  slot.Button:GetReagent();
+	if reagent then
+		Professions.AddTooltipInfo(reagent, GameTooltip, transaction);
 
 		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
 			if exchangeOnly then
@@ -464,29 +568,30 @@ function Professions.SetupOptionalReagentTooltip(slot, recipeID, reagentSlotSche
 				end
 			end
 		end
+		return;
+	end
+
+	local slotText = reagentSlotSchematic.slotInfo.slotText;
+	local title;
+	if reagentType == Enum.CraftingReagentType.Finishing then
+		title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
 	else
-		local slotText = reagentSlotSchematic.slotInfo.slotText;
-		
-		local title;
+		title = slotText or OPTIONAL_REAGENT_POSTFIX;
+	end
+
+	GameTooltip_SetTitle(GameTooltip, title, nil, false);
+
+	if (not suppressInstruction) and not (slot:IsUnallocatable()) then
+		local instruction;
 		if reagentType == Enum.CraftingReagentType.Finishing then
-			title = FINISHING_REAGENT_TOOLTIP_TITLE:format(slotText);
+			instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
+		elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
+			instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
 		else
-			title = slotText or OPTIONAL_REAGENT_POSTFIX;
+			instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
 		end
 
-		GameTooltip_SetTitle(GameTooltip, title, nil, false);
-		if (not suppressInstruction) and not (slot:IsUnallocatable()) then
-			local instruction;
-			if reagentType == Enum.CraftingReagentType.Finishing then
-				instruction = FINISHING_REAGENT_TOOLTIP_CLICK_TO_ADD;
-			elseif ProfessionsUtil.IsReagentSlotModifyingRequired(reagentSlotSchematic) then
-				instruction = REQUIRED_REAGENT_TOOLTIP_CLICK_TO_ADD;
-			else
-				instruction = OPTIONAL_REAGENT_TOOLTIP_CLICK_TO_ADD;
-			end
-
-			GameTooltip_AddInstructionLine(GameTooltip, instruction);
-		end
+		GameTooltip_AddInstructionLine(GameTooltip, instruction);
 	end
 end
 
@@ -550,7 +655,7 @@ function Professions.InspectRecipe(recipeID)
 	InspectRecipeFrame:Open(recipeID);
 end
 
-function Professions.HandleReagentLink(link)
+function Professions.HandleItemReagentLink(link)
 	if not HandleModifiedItemClick(link) then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		return false, link;
@@ -558,22 +663,75 @@ function Professions.HandleReagentLink(link)
 	return true, link;
 end
 
-function Professions.TriggerReagentClickedEvent(link)
-	if link then
-		local itemID = GetItemInfoFromHyperlink(link);
-		local item = Item:CreateFromItemID(itemID);
-		EventRegistry:TriggerEvent("Professions.ReagentClicked", item:GetItemName());
+function Professions.HandleCurrencyReagentLink(link)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	-- No global currency handler at this time.
+	return false, link;
+end
+
+function Professions.HandleReagentLink(reagent, count)
+	local itemID = reagent.itemID;
+	if itemID then
+		local link = ItemUtil.GetItemHyperlink(itemID);
+		return Professions.HandleItemReagentLink(link);
+	end
+
+	local currencyID = reagent.currencyID;
+	if currencyID then
+		local link = C_CurrencyInfo.GetCurrencyLink(currencyID, count or 1);
+		return Professions.HandleCurrencyReagentLink(link);
 	end
 end
 
-function Professions.HandleFixedReagentItemLink(recipeID, reagentSlotSchematic)
-	local link = C_TradeSkillUI.GetRecipeFixedReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex);
-	return Professions.HandleReagentLink(link);
+function Professions.CreateReagentFromLink(link)
+	local currencyID = C_CurrencyInfo.GetCurrencyIDFromLink(link);
+	if currencyID > 0 then
+		return Professions.CreateCurrencyReagent(currencyID);
+	end
+
+	local itemID = GetItemInfoFromHyperlink(link);
+	if itemID then
+		return Professions.CreateItemReagent(itemID);
+	end
 end
 
-function Professions.HandleQualityReagentItemLink(recipeID, reagentSlotSchematic, qualityIndex)
-	local link = C_TradeSkillUI.GetRecipeQualityReagentItemLink(recipeID, reagentSlotSchematic.dataSlotIndex, qualityIndex);
-	return Professions.HandleReagentLink(link);
+function Professions.HandleFixedReagentLink(recipeID, reagentSlotSchematic)
+	local handled, link = false, nil;
+
+	local reagent = reagentSlotSchematic.reagents[1];
+	local dataSlotType = reagentSlotSchematic.dataSlotType;
+	if dataSlotType == Enum.TradeskillSlotDataType.Reagent then
+		link = ItemUtil.GetItemHyperlink(reagent.itemID);
+		handled = Professions.HandleItemReagentLink(link);
+	elseif dataSlotType == Enum.TradeskillSlotDataType.Currency then
+		local quantity = reagentSlotSchematic.quantityRequired;
+		link = C_CurrencyInfo.GetCurrencyLink(reagent.currencyID, quantity);
+		handled = Professions.HandleCurrencyReagentLink(link);
+	end
+
+	if not handled then
+		Professions.TriggerReagentClickedEvent(link);
+	end
+end
+
+function Professions.HandleQualityReagentLink(recipeID, reagentSlotSchematic, qualityIndex)
+	local link = C_TradeSkillUI.GetRecipeQualityReagentLink(recipeID, reagentSlotSchematic.dataSlotIndex, qualityIndex);
+	local handled = Professions.HandleItemReagentLink(link);
+
+	if not handled then
+		Professions.TriggerReagentClickedEvent(link);
+	end
+end
+
+function Professions.TriggerReagentClickedEvent(link)
+	if not link then
+		return;
+	end
+
+	local reagent = Professions.CreateReagentFromLink(link);
+	if reagent then
+		EventRegistry:TriggerEvent("Professions.ReagentClicked", reagent);
+	end
 end
 
 function Professions.FindFirstQualityAllocated(transaction, reagentSlotSchematic)
@@ -591,11 +749,7 @@ function Professions.GetReagentInputMode(reagentSlotSchematic)
 			return Professions.ReagentInputMode.Fixed;
 		end
 
-		if count == 3 then
-			return Professions.ReagentInputMode.Quality;
-		end
-
-		assert(false, "Reagent slot schematic does not have an expected reagent setup.");
+		return Professions.ReagentInputMode.Quality;
 	end
 
 	return Professions.ReagentInputMode.Any;
@@ -880,15 +1034,8 @@ function Professions.GetDefaultOrderRecipient()
 	return recipient;
 end
 
-function Professions.GetIconForQuality(quality, small)
-	if small then
-		return ("Professions-Icon-Quality-Tier%d-Small"):format(quality);
-	end
-	return ("Professions-Icon-Quality-Tier%d"):format(quality);
-end
-
-function Professions.GetChatIconMarkupForQuality(quality, small, overrideOffsetY)
-	local atlas = ("professions-chaticon-quality-tier%d"):format(quality);
+function Professions.GetChatIconMarkupForQuality(qualityInfo, small, overrideOffsetY)
+	local atlas = qualityInfo.iconChat;
 	local offsetX = nil;
 	local offsetY = overrideOffsetY or (small and 0 or 1);
 	local rVertexColor = nil;
@@ -1319,34 +1466,40 @@ end
 
 function Professions.PrepareRecipeRecraft(transaction, craftingReagentTbl)
 	local removedModifications = {};
-	local itemMods = transaction:GetRecraftItemMods();
-	if itemMods then
-		-- Remove allocations that exist on the original item from the allocations table,
-		-- and insert any items that no longer exist on the original item into the removed table.
-		for dataSlotIndex, modification in ipairs(itemMods) do
-			if modification.itemID > 0 then
-				local modRemoved = true;
+	local modifications = transaction:GetRecraftItemMods();
+	if not modifications then
+		return removedModifications;
+	end
 
-				for reagentInfoIndex, craftingReagentInfo in ipairs_reverse(craftingReagentTbl) do
-					local itemIDMatch = craftingReagentInfo.itemID == modification.itemID;
-					if itemIDMatch then
-						modRemoved = false;
-					end
+	-- FIXME Needs a comment, the original one was not helpful. See callsite of PrepareRecipeRecraft to better
+	-- understand the purpose of the comparisons.
+	for dataSlotIndex, modification in ipairs(modifications) do
+		if Professions.IsValidReagent(modification.reagent) then
+			local shouldRemoveMod = true;
 
-					if itemIDMatch and (craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex) then
+			for reagentInfoIndex, craftingReagentInfo in ipairs_reverse(craftingReagentTbl) do
+				if Professions.DoesModificationContainReagent(modification, craftingReagentInfo.reagent) then
+					shouldRemoveMod = false;
+
+					if craftingReagentInfo.dataSlotIndex == modification.dataSlotIndex then
 						table.remove(craftingReagentTbl, reagentInfoIndex);
 						break;
 					end
 				end
+			end
 
-				if modRemoved then
-					table.insert(removedModifications, modification);
-				end
+			if shouldRemoveMod then
+				table.insert(removedModifications, modification);
 			end
 		end
 	end
 
 	return removedModifications;
+end
+
+function Professions.AnyRecraftablePredicate(itemGUID)
+	local craftRecipeID, craftSkillLineAbility = C_TradeSkillUI.GetOriginalCraftRecipeID(itemGUID);
+	return craftSkillLineAbility ~= nil and C_CraftingOrders.CanOrderSkillAbility(craftSkillLineAbility);
 end
 
 function Professions.GetProfessionType(professionInfo)
@@ -1421,6 +1574,7 @@ function Professions.TranslateSearchSort(sort)
 	return translatedSort;
 end
 
+-- See CraftingOrderInfo for table definition
 function Professions.ApplySortOrder(sortOrder, lhs, rhs)
 	if sortOrder == ProfessionsSortOrder.ItemName then
 		local lhsItem = Item:CreateFromItemID(lhs.option.itemID);

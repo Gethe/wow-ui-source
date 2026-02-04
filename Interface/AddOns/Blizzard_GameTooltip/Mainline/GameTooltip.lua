@@ -11,6 +11,7 @@ TooltipConstants = {
 	fullItemDescription - bool
 	prioritizeCurrencyOverItem - bool
 	showCollectionText - bool
+	clampFavorToCycleCap - bool
 --]]
 
 TOOLTIP_QUEST_REWARDS_STYLE_DEFAULT = {
@@ -106,6 +107,16 @@ TOOLTIP_QUEST_REWARDS_STYLE_NONE = {
 	postHeaderBlankLineCount = 0,
 }
 
+TOOLTIP_QUEST_REWARDS_STYLE_INITIATIVE_TASK = {
+	headerText = HOUSING_DASHBOARD_ADDITIONAL_REWARDS_LABEL,
+	headerColor = NORMAL_FONT_COLOR,
+	prefixBlankLineCount = 0,
+	postHeaderBlankLineCount = 0,
+	wrapHeaderText = false,
+	fullItemDescription = true,
+	clampFavorToCycleCap = true,
+}
+
 function GameTooltip_UnitColor(unit)
 	local r, g, b;
 	if ( UnitPlayerControlled(unit) ) then
@@ -184,7 +195,7 @@ function GameTooltip_AddQuestRewardsToTooltip(tooltip, questID, style)
 
 	if ( GetQuestLogRewardXP(questID) > 0 or C_QuestInfoSystem.HasQuestRewardCurrencies(questID) or GetNumQuestLogRewards(questID) > 0 or
 		GetQuestLogRewardMoney(questID) > 0 or GetQuestLogRewardArtifactXP(questID) > 0 or GetQuestLogRewardHonor(questID) > 0 or
-		C_QuestInfoSystem.HasQuestRewardSpells(questID)) then
+		C_QuestInfoSystem.HasQuestRewardSpells(questID) or C_QuestInfoSystem.GetQuestLogRewardFavor(questID) ) then
 		if tooltip.ItemTooltip then
 			tooltip.ItemTooltip:Hide();
 		end
@@ -230,8 +241,8 @@ function GameTooltip_CalculatePadding(tooltip)
 	local isBottomFontStringShown = tooltip.BottomFontString and tooltip.BottomFontString:IsShown();
 
 	if not isItemTooltipShown and not isBottomFontStringShown then
-		if tooltip.SetPadding then
-			tooltip:SetPadding(0, 0, 0, 0);
+		if tooltip.ClearPadding then
+			tooltip:ClearPadding();
 		end
 		return;
 	end
@@ -391,7 +402,7 @@ function GameTooltip_OnHide(self)
 	if self.ItemTooltip then
 		EmbeddedItemTooltip_Hide(self.ItemTooltip);
 	end
-	self:SetPadding(0, 0, 0, 0);
+	self:ClearPadding();
 
 	self:ClearHandlerInfo();
 
@@ -459,7 +470,10 @@ function GameTooltip_ShowCompareItem(self, anchorFrame)
 	local tooltip = self or GameTooltip;
 	local tooltipData = tooltip:GetPrimaryTooltipData();
 	local comparisonItem = TooltipComparisonManager:CreateComparisonItem(tooltipData);
-	TooltipComparisonManager:CompareItem(comparisonItem, tooltip, anchorFrame);
+
+	if comparisonItem then
+		C_TooltipComparison.CompareItem(comparisonItem, tooltip, anchorFrame);
+	end
 end
 
 function GameTooltip_ShowEventHyperlink(hyperlink)
@@ -510,7 +524,7 @@ function GameTooltip_AddStatusBar(self, min, max, value, text)
 	statusBar:SetMinMaxValues(min, max);
 	statusBar:SetValue(value);
 	statusBar:Show();
-	statusBar:SetPoint("LEFT", self:GetName().."TextLeft"..numLines, "LEFT", 0, -2);
+	statusBar:SetPoint("LEFT", self:GetLeftLine(numLines), "LEFT", 0, -2);
 	statusBar:SetPoint("RIGHT", self, "RIGHT", -9, 0);
 	statusBar:Show();
 	self:SetMinimumWidth(140);
@@ -610,8 +624,8 @@ local function AddFloorLocationLine(tooltip, floorLocation, aboveString, belowSt
 	end
 end
 
-function GameTooltip_AddQuest(self, questIDArg)
-	local questID = self.questID or questIDArg;
+function GameTooltip_AddQuest(self)
+	local questID = self.questID;
 	if ( not HaveQuestData(questID) ) then
 		GameTooltip_SetTitle(GameTooltip, RETRIEVING_DATA, RED_FONT_COLOR);
 		GameTooltip_SetTooltipWaitingForData(GameTooltip, true);
@@ -620,7 +634,7 @@ function GameTooltip_AddQuest(self, questIDArg)
 	end
 
 	local widgetSetAdded = false;
-	local widgetSetID = C_TaskQuest.GetQuestTooltipUIWidgetSet(questID);
+	local widgetSetID = C_TaskQuest.GetQuestUIWidgetSetByType(questID, Enum.MapIconUIWidgetSetType.Tooltip);
 	local isThreat = C_QuestLog.IsThreatQuest(questID);
 
 	local title, factionID, capped = C_TaskQuest.GetQuestInfoByQuestID(questID);
@@ -646,7 +660,7 @@ function GameTooltip_AddQuest(self, questIDArg)
 		local factionData = factionID and C_Reputation.GetFactionDataByID(factionID);
 		if factionData then
 			local questAwardsReputationWithFaction = C_QuestLog.DoesQuestAwardReputationWithFaction(questID, factionID);
-			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagon(factionID);
+			local reputationYieldsRewards = (not capped) or C_Reputation.IsFactionParagonForCurrentPlayer(factionID);
 			if questAwardsReputationWithFaction and reputationYieldsRewards then
 				GameTooltip:AddLine(factionData.name);
 			else
@@ -963,8 +977,17 @@ function GameTooltipDataMixin:SetWorldCursor(anchorType, parent)
 		self:SetObjectTooltipPosition();
 	end
 
-	local oldInfo = self:GetPrimaryTooltipInfo();
-	
+	-- Reading old tooltip info can taint if the tooltip was previously shown
+	-- by a user addon. We don't want this taint to travel into ProcessInfo
+	-- because this can result in the tooltip displaying no lines if the new
+	-- world cursor info we'd want to show has any secret line data/text.
+	--
+	-- Note that irrespective of this securecall we can taint if the 'elseif'
+	-- branch is evaluated when reading the getterName/fadeOut fields. This
+	-- at present causes no observable issues.
+
+	local oldInfo = securecallfunction(self.GetPrimaryTooltipInfo, self);
+
 	if tooltipData then
 		local tooltipInfo = {
 			getterName = "GetWorldCursor",
@@ -1005,9 +1028,14 @@ function GameTooltipUnitHealthBarMixin:OnLoad()
 	self:SetMinMaxValues(0, 1);
 end
 
+-- Attributes are used for guid storage because there's a taint path for some
+-- addon tooltip customizations that persists between hiding and showing
+-- a tooltip for a different unit, which can fail catastrophically in the
+-- OnUpdate handler when health data is secret.
+
 function GameTooltipUnitHealthBarMixin:SetWatch(guid)
-	self.guid = guid;
-	self:SetValue(0);
+	self:SetAttribute("guid", guid);
+	self:ResetUnitHealth();
 	self:Show();
 	self:UpdateUnitHealth();
 end
@@ -1015,8 +1043,7 @@ end
 function GameTooltipUnitHealthBarMixin:StopUpdates()
 	-- get the current health, last update might have been right before killing blow
 	self:UpdateUnitHealth();
-
-	self.guid = nil;
+	self:SetAttribute("guid", nil);
 end
 
 function GameTooltipUnitHealthBarMixin:ClearWatch()
@@ -1024,12 +1051,18 @@ function GameTooltipUnitHealthBarMixin:ClearWatch()
 	self:Hide();
 end
 
+function GameTooltipUnitHealthBarMixin:ResetUnitHealth()
+	self:SetValue(0);
+end
+
 function GameTooltipUnitHealthBarMixin:UpdateUnitHealth()
-	if not self.guid then
+	local guid = self:GetAttribute("guid");
+
+	if not guid then
 		return;
 	end
 
-	local percentHealth = UnitPercentHealthFromGUID(self.guid);
+	local percentHealth = UnitPercentHealthFromGUID(guid);
 	if percentHealth then
 		self:SetValue(percentHealth);
 	end
@@ -1037,4 +1070,18 @@ end
 
 function GameTooltipUnitHealthBarMixin:OnUpdate()
 	self:UpdateUnitHealth();
+end
+
+-- We promote a couple of methods to a secure mixin method so they can be
+-- invoked from tainted execution paths in SetWatch/ClearWatch without
+-- causing further secret-related errors.
+
+GameTooltipUnitHealthBarSecureMixin = {};
+
+function GameTooltipUnitHealthBarSecureMixin:ResetUnitHealth()
+	GameTooltipUnitHealthBarMixin.ResetUnitHealth(self);
+end
+
+function GameTooltipUnitHealthBarSecureMixin:UpdateUnitHealth()
+	GameTooltipUnitHealthBarMixin.UpdateUnitHealth(self);
 end

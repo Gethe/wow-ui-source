@@ -3,6 +3,15 @@ local ActorTag = "decor";
 local QuestionMarkIconFileDataID = 134400;
 local ContentTrackingAtlasMarkup = CreateAtlasMarkup("waypoint-mappin-minimap-untracked", 16, 16, -3, 0);
 
+-- This is decor-only for now but should be extended to support entry type and recordID generically
+local function GetMarketInfoIfDecor(entryID)
+	if entryID.entryType == Enum.HousingCatalogEntryType.Decor then
+		return C_HousingCatalog.GetMarketInfoForDecor(entryID.recordID);
+	end
+
+	return nil;
+end
+
 HousingCatalogEntryMixin = {};
 
 function HousingCatalogEntryMixin:OnLoad()
@@ -14,7 +23,7 @@ end
 function HousingCatalogEntryMixin:Init(elementData)
 	self.elementData = elementData;
 	self.entryID = elementData.entryID;
-	self.bundleEntryInfo = elementData.bundleEntryInfo;
+	self.bundleItemInfo = elementData.bundleItemInfo;
 	local forceUpdate = true;
 	self:UpdateEntryData(forceUpdate);
 
@@ -25,8 +34,16 @@ function HousingCatalogEntryMixin:Init(elementData)
 	self:TypeSpecificInit();
 end
 
-function HousingCatalogEntryMixin:IsBundleEntry()
-	return self.bundleEntryInfo ~= nil;
+function HousingCatalogEntryMixin:IsBundleItem()
+	return self.bundleItemInfo ~= nil;
+end
+
+function HousingCatalogEntryMixin:GetNumDecorPlaced()
+	if not self:IsBundleItem() then
+		return 0;
+	end
+
+	return HouseEditorFrame.MarketShoppingCartFrame:GetNumDecorPlaced(self.bundleItemInfo.bundleCatalogShopProductID, self.bundleItemInfo.decorID);
 end
 
 function HousingCatalogEntryMixin.Reset(framePool, self)
@@ -60,14 +77,13 @@ function HousingCatalogEntryMixin:GetEntryData()
 end
 
 function HousingCatalogEntryMixin:UpdateEntryData(forceUpdate)
-	local isValidBundleEntry = self:IsBundleEntry() and self.bundleEntryInfo and self.bundleEntryInfo.decorID;
-	if not self.elementData or (not self.entryID and not isValidBundleEntry) then
+	local isValidBundleItem = self:IsBundleItem() and self.bundleItemInfo and self.bundleItemInfo.decorID;
+	if not self.elementData or (not self.entryID and not isValidBundleItem) then
 		self:ClearEntryData();
 		return;
 	end
 
-	local tryGetOwnedInfo = false;
-	local entryInfo = self:IsBundleEntry() and C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, self.bundleEntryInfo.decorID, tryGetOwnedInfo) or C_HousingCatalog.GetCatalogEntryInfo(self.entryID);
+	local entryInfo = self:GetEntryData();
 	if not entryInfo then
 		self:ClearEntryData();
 		return;
@@ -190,18 +206,50 @@ function HousingCatalogEntryMixin:UpdateVisuals()
 		self.Icon:Show();
 	end
 
-	self.CustomizeIcon:SetShown(self.entryInfo.canCustomize);
+	local dyesShown = false;
+	if not self:IsInMarketView() then
+		for i, dyeID in ipairs(self.entryInfo.dyeIDs) do
+			local icon = self.dyeIcons[i];
+			if dyeID > 0 then
+				local dyeColorInfo = C_DyeColor.GetDyeColorInfo(dyeID);
+				if dyeColorInfo then
+					icon:SetVertexColor(dyeColorInfo.swatchColorStart:GetRGB());
+				end
+				icon:SetAtlas("dye-drop_32");
+				dyesShown = true;
+			else
+				icon:SetVertexColor(1,1,1);
+				icon:SetAtlas("dye-drop-no-dye_32")
+			end
+		end
+	end
 
-	if self:IsBundleEntry() then
+	self.CustomizeIcon:SetShown(not dyesShown and self.entryInfo.canCustomize);
+	for i, icon in ipairs(self.dyeIcons) do
+		icon:SetShown(dyesShown and i <= #self.entryInfo.dyeIDs);
+	end
+
+	self.InfoIcon:Hide();
+
+	self.InfoText:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+	if self:IsBundleItem() then
 		self.InfoText:Show();
 
-		-- TODO:: Eventually this should update based on the number that have been preview-placed.
-		self.InfoText:SetText(self.bundleEntryInfo.quantity);
+		local numPlaced = self:GetNumDecorPlaced();
+		local quantity = self.bundleItemInfo.quantity - numPlaced;
+		self.InfoText:SetText(quantity);
+		if quantity <= 0 then
+			self.InfoText:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		end
 	elseif self:IsInMarketView() then
-		local marketInfo = self.entryInfo.marketInfo;
+		local marketInfo = GetMarketInfoIfDecor(self.entryInfo.entryID);
 		local price = marketInfo and marketInfo.price or 0;
 		self.InfoText:SetText(Blizzard_HousingCatalogUtil.FormatPrice(price));
 		self.InfoText:SetShown(price > 0);
+	elseif self.entryInfo.isUniqueTrophy then
+		-- Right now info icon is only used for the unique trophy icon.
+		self.InfoText:Hide();
+		self.InfoIcon:Show();
 	else
 		self.InfoText:SetText(self.entryInfo.quantity + self.entryInfo.remainingRedeemable);
 		self.InfoText:SetShown(self.entryInfo.showQuantity);
@@ -226,7 +274,7 @@ function HousingCatalogEntryMixin:UpdateBackground(isPressed)
 end
 
 function HousingCatalogEntryMixin:HasValidData()
-	return self.elementData and (self.entryID or self.bundleEntryInfo) and self.entryInfo;
+	return self.elementData and (self.entryID or self.bundleItemInfo) and self.entryInfo;
 end
 
 function HousingCatalogEntryMixin:GetElementData()
@@ -327,11 +375,6 @@ function HousingCatalogEntryMixin:ClearTypeSpecificData()
 	-- Optional override
 end
 
-function HousingCatalogEntryMixin:IsInMarketView()
-	-- Optional override
-	return false;
-end
-
 function HousingCatalogEntryMixin:ShowContextMenu()
 	-- Optional override
 end
@@ -356,14 +399,18 @@ function HousingCatalogEntryMixin:AddTooltipTrackingLines(tooltip)
 	-- Optional override
 end
 
+function HousingCatalogEntryMixin:IsInMarketView()
+	-- Optional override. Rooms do not have a market view.
+	return false;
+end
 
-HousingCatalogDecorEntryMixin = {};
+HousingCatalogDecorEntryMixin = CreateFromMixins(HousingCatalogEntryMixin);
 
-function HousingCatalogDecorEntryMixin:GetEntryInfo()
+function HousingCatalogDecorEntryMixin:GetEntryData()
 	-- Overrides HousingCatalogEntryMixin.
 
 	local tryGetOwnedInfo = false;
-	return self:IsBundleEntry() and C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, self.bundleEntryInfo.decorID, tryGetOwnedInfo) or HousingCatalogEntryMixin.GetEntryInfo(self);
+	return self:IsBundleItem() and C_HousingCatalog.GetCatalogEntryInfoByRecordID(Enum.HousingCatalogEntryType.Decor, self.bundleItemInfo.decorID, tryGetOwnedInfo) or HousingCatalogEntryMixin.GetEntryData(self);
 end
 
 function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
@@ -371,7 +418,7 @@ function HousingCatalogDecorEntryMixin:AddTooltipTitle(tooltip)
 
 	local dyeNames = self.entryInfo.customizations;
 	local isDyed = dyeNames and #dyeNames > 0;
-	local name = isDyed and HOUSING_DECOR_DYED_NAME_FORMAT:format(self.entryInfo.name) or self.entryInfo.name;
+	local name = (isDyed and not self:IsInMarketView()) and HOUSING_DECOR_DYED_NAME_FORMAT:format(self.entryInfo.name) or self.entryInfo.name;
 	local placementCost = HOUSING_DECOR_PLACEMENT_COST_FORMAT:format(self.entryInfo.placementCost);
 	local itemQualityColor = ColorManager.GetColorDataForItemQuality(self.entryInfo.quality or Enum.ItemQuality.Common).color;
 	local wrap = false;
@@ -382,11 +429,15 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 	-- Overrides HousingCatalogEntryMixin.
 
 	local entryInfo = self.entryInfo;
-	local marketInfo = entryInfo.marketInfo;
 
-	local total = entryInfo.numPlaced + entryInfo.numStored;
+	if entryInfo.isUniqueTrophy then
+		GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_UNIQUE_TROPHY_TOOLTIP);
+	end
+
+	local stored = entryInfo.quantity + entryInfo.remainingRedeemable;
+	local total = entryInfo.numPlaced + stored;
 	if total ~= 0 then
-		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, entryInfo.numStored));
+		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_OWNED_COUNT_FORMAT:format(total, entryInfo.numPlaced, stored));
 	end
 
 	if entryInfo.firstAcquisitionBonus > 0 then
@@ -395,7 +446,17 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 
 	self:AddInvalidTooltipLine(tooltip);
 
-	if not self:IsBundleEntry() then
+	if self:IsBundleItem() then
+		local numPlaced = self:GetNumDecorPlaced();
+		if numPlaced >= self.bundleItemInfo.quantity then
+			GameTooltip_AddErrorLine(tooltip, HOUSING_BUNDLE_BUNDLE_ITEM_PLACED);
+		else
+			GameTooltip_AddInstructionLine(tooltip, HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR);
+		end
+
+	-- We only show market info in the market view.
+	elseif self:IsInMarketView() then
+		local marketInfo = GetMarketInfoIfDecor(entryInfo.entryID);
 		if marketInfo and marketInfo.price then
 			local priceText = Blizzard_HousingCatalogUtil.FormatPrice(marketInfo.price);
 			GameTooltip_AddHighlightLine(tooltip, HOUSING_DECOR_PRICE_FORMAT:format(priceText));
@@ -404,12 +465,22 @@ function HousingCatalogDecorEntryMixin:AddTooltipLines(tooltip)
 		if marketInfo and #marketInfo.bundleIDs > 0 then
 			GameTooltip_AddColoredLine(tooltip, HOUSING_DECOR_BUNDLE_DISCLAIMER, DISCLAIMER_TOOLTIP_COLOR);
 		end
+
+		GameTooltip_AddInstructionLine(tooltip, HOUSING_BUNDLE_CLICK_TO_PLACE_DECOR);
 	end
 
 	local dyeNames = entryInfo.customizations;
-	if dyeNames and #dyeNames > 0 then
+	if dyeNames and #dyeNames > 0 and not self:IsInMarketView() then
 		local dyeNamesString = table.concat(dyeNames, ", ");
 		GameTooltip_AddNormalLine(tooltip, HOUSING_DECOR_DYE_LIST:format(dyeNamesString));
+	end
+
+	if not self:IsBundleItem() then
+		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryInfo.entryID.recordID);
+		if timeStamp then
+			GameTooltip_AddNormalLine(tooltip, Blizzard_HousingCatalogUtil.FormatRefundTime(timeStamp));
+			GameTooltip_AddInstructionLine(tooltip, HOUSING_DECOR_REFUND_RIGHT_CLICK_INSTRUCTION);
+		end
 	end
 end
 
@@ -448,9 +519,11 @@ function HousingCatalogDecorEntryMixin:IsInStorageView()
 end
 
 function HousingCatalogDecorEntryMixin:IsInMarketView()
+	-- Overrides HousingCatalogEntryMixin.
+
 	-- TODO:: Replace this hack. For now I'm not sure how preview placement will work so I'm disabling it.
 	local storagePanel = HouseEditorFrame and HouseEditorFrame.StoragePanel or nil;
-	if storagePanel and storagePanel:IsInMarketTab() then
+	if storagePanel and storagePanel:IsVisible() and storagePanel:IsInMarketTab() then
 		return true;
 	end
 
@@ -461,11 +534,16 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 	if not C_HouseEditor.IsHouseEditorActive() then
 		return;
 	end
-	
-	-- TODO:: Allow preview placement when quantity is 0.
-	-- TODO:: Support preview placement for bundles based on :IsBundleEntry()
-	if not self:HasValidData() or ((self.entryInfo.quantity + self.entryInfo.remainingRedeemable) <= 0) then
+
+	if not self:HasValidData() or (not C_HousingDecor.IsPreviewState() and self.entryInfo.quantity + self.entryInfo.remainingRedeemable <= 0) then
 		return;
+	end
+
+	if self:IsBundleItem() then
+		local numPlaced = self:GetNumDecorPlaced();
+		if numPlaced >= self.bundleItemInfo.quantity then
+			return;
+		end
 	end
 
 	local decorPlaced = C_HousingDecor.GetSpentPlacementBudget();
@@ -486,42 +564,44 @@ function HousingCatalogDecorEntryMixin:TypeSpecificOnInteract(button, isDrag)
 		return;
 	end
 
-	if self:IsInMarketView() then
-		-- TODO:: Implement preview placement for market tab
-
-	-- Bundle entries should all be in the market view and can't be previewed otherwise.
-	elseif not self:IsBundleEntry() then
-		local sound;
-		local size = self.entryInfo.size;
-		if size == Enum.HousingCatalogEntrySize.Tiny or size == Enum.HousingCatalogEntrySize.Small then
-			sound = SOUNDKIT.HOUSING_SELECT_ITEM_SMALL;
-		elseif size == Enum.HousingCatalogEntrySize.Medium or size == Enum.HousingCatalogEntrySize.None then
-			sound = SOUNDKIT.HOUSING_SELECT_ITEM_MEDIUM;
-		else
-			sound = SOUNDKIT.HOUSING_SELECT_ITEM_LARGE;
-		end
-
-		PlaySound(sound);
-
-		if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
-			C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
-
-			RunNextFrame(function()
-				C_HousingBasicMode.StartPlacingNewDecor(self.entryID);
-			end);
+	local StartPlacing;
+	if C_HousingDecor.IsPreviewState() then
+		local bundleCatalogShopProductID = self.bundleItemInfo and self.bundleItemInfo.bundleCatalogShopProductID or nil;
+		StartPlacing = function()
+			local decorID = self:IsBundleItem() and self.bundleItemInfo.decorID or self.entryID.recordID;
+			C_HousingBasicMode.StartPlacingPreviewDecor(decorID, bundleCatalogShopProductID);
+		end;
+	else
+		-- Bundle entries should all be in the market view and can't be previewed otherwise.
+		if self:IsBundleItem() then
 			return;
 		end
 
-		local activeHouseEditorMode = C_HouseEditor.GetActiveHouseEditorMode();
-		local activeEditorModeFrame = HouseEditorFrame and HouseEditorFrame:GetActiveModeFrame();
-		if activeHouseEditorMode == Enum.HouseEditorMode.BasicDecor and activeEditorModeFrame then
-			-- if user dragged icon from the house chest, then add decor on mouse up.
-			-- otherwise, user clicked on house chest icon; don't add decor until next click.
-			activeEditorModeFrame.commitNewDecorOnMouseUp = isDrag;
+		StartPlacing = function() C_HousingBasicMode.StartPlacingNewDecor(self.entryID); end
+	end
 
-			-- HOUSING_TODO: We should add some kind of out error to these kinds of APIs so we can display any failure reasons
-			C_HousingBasicMode.StartPlacingNewDecor(self.entryID);
-		end
+	-- Sound will be played by HOUSING_BASIC_MODE_SELECTED_TARGET_CHANGED event handler
+	-- which properly handles preview vs non-preview sounds
+
+	if not C_HouseEditor.IsHouseEditorModeActive(Enum.HouseEditorMode.BasicDecor) then
+		C_HouseEditor.ActivateHouseEditorMode(Enum.HouseEditorMode.BasicDecor);
+
+		RunNextFrame(function()
+			StartPlacing();
+		end);
+		return;
+	end
+
+	local activeHouseEditorMode = C_HouseEditor.GetActiveHouseEditorMode();
+	local activeEditorModeFrame = HouseEditorFrame and HouseEditorFrame:GetActiveModeFrame();
+	if activeHouseEditorMode == Enum.HouseEditorMode.BasicDecor and activeEditorModeFrame then
+		-- if user dragged icon from the house chest, then add decor on mouse up.
+		-- otherwise, user clicked on house chest icon; don't add decor until next click.
+		activeEditorModeFrame.commitNewDecorOnMouseUp = isDrag;
+		--dragging functionality for placing preview Decor
+		activeEditorModeFrame.draggingPreviewDecor = C_HousingDecor.IsPreviewState() and isDrag;
+		-- HOUSING_TODO: We should add some kind of out error to these kinds of APIs so we can display any failure reasons
+		StartPlacing();
 	end
 end
 
@@ -568,55 +648,86 @@ function HousingCatalogDecorEntryMixin:OnDestroyConfirmed(destroyAll)
 end
 
 function HousingCatalogDecorEntryMixin:ShowContextMenu()
-	local totalInStorage = self.entryInfo.quantity + self.entryInfo.remainingRedeemable;
-	if totalInStorage <= 0 then
-		return;
-	end
-
-	-- If any other catalog entry type is added that can also be destroyed, we can move all this to be shared
+	-- If any other catalog entry type is added that needs a context menu we can move all this to be shared
 	-- with some kind of conditional flag - for now, it's only for decor
 
-	-- For now there's no context menu for bundle or market entries since they can't be destroyed.
-	if self:IsBundleEntry() or self:IsInMarketView() then
+	-- For now there's no context menu for bundle children
+	if self:IsBundleItem() then
 		return;
-	end
-
-	local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
-
-	local showDisabledTooltip = function(tooltip, elementDescription)
-		GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
 	end
 
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_HOUSING_CATALOG_ENTRY");
 
-		local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
-			local popupData = {
-				destroyAll = false,
-				owner = self,
-				confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
-			};
-			local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
-			StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
-		end);
-		destroySingleButtonDesc:SetEnabled(canDestroyEntry);
-		if not canDestroyEntry then
-			destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
+		local timeStamp = C_HousingCatalog.GetCatalogEntryRefundTimeStampByRecordID(Enum.HousingCatalogEntryType.Decor, self.entryInfo.entryID.recordID);
+		if timeStamp then
+			rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_REFUND, function()
+				CatalogShopRefundFlowInboundInterface.SetShown(true);
+			end);
 		end
 
-		if self.entryInfo.quantity > 1 then
-			local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY_ALL, function()
+		if self:IsInMarketView() then
+			local marketInfo = GetMarketInfoIfDecor(self.entryInfo.entryID);
+			if marketInfo then
+				rootDescription:CreateButton(HOUSING_MARKET_ADD_TO_CART, function()
+					local elementData = {
+						isBundleParent = false,
+						isBundleChild = false,
+
+						id = self.entryInfo.itemID,
+						name = self.entryInfo.name,
+						decorID = self.entryID.recordID,
+						icon = self.entryInfo.iconTexture,
+						productID = marketInfo.productID;
+						price = marketInfo.originalPrice or marketInfo.price,
+						salePrice = marketInfo.originalPrice and marketInfo.price or nil,
+					};
+
+					EventRegistry:TriggerEvent(string.format("%s.%s", HOUSING_MARKET_EVENT_NAMESPACE, ShoppingCartDataServices.AddToCart), elementData);
+				end);
+
+				if marketInfo.productID then
+					rootDescription:CreateButton(HOUSING_MARKET_VIEW_IN_SHOP, function()
+						Blizzard_HousingCatalogUtil.OpenCatalogShopForProduct(marketInfo.productID);
+					end);
+				end
+			end
+		elseif self:IsInStorageView() then
+			local destroySingleButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY, function()
 				local popupData = {
-					destroyAll = true,
+					destroyAll = false,
 					owner = self,
 					confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
 				};
-				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.quantity, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
+				local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
 				StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
 			end);
-			destroyAllButtonDesc:SetEnabled(canDestroyEntry);
+
+			local canDestroyEntry = C_HousingCatalog.CanDestroyEntry(self.entryID);
+			
+			local showDisabledTooltip = function(tooltip, elementDescription)
+				GameTooltip_SetTitle(tooltip, HOUSING_DECOR_STORAGE_ITEM_CANNOT_DESTROY);
+			end
+
+			destroySingleButtonDesc:SetEnabled(canDestroyEntry);
 			if not canDestroyEntry then
-				destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
+				destroySingleButtonDesc:SetTooltip(showDisabledTooltip);
+			end
+
+			if self.entryInfo.quantity > 1 then
+				local destroyAllButtonDesc = rootDescription:CreateButton(HOUSING_DECOR_STORAGE_ITEM_DESTROY_ALL, function()
+					local popupData = {
+						destroyAll = true,
+						owner = self,
+						confirmationString = HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING,
+					};
+					local promptText = string.format(HOUSING_DECOR_STORAGE_ITEM_CONFIRM_DESTROY_ALL, self.entryInfo.quantity, self.entryInfo.name, HOUSING_DECOR_STORAGE_ITEM_DESTROY_CONFIRMATION_STRING);
+					StaticPopup_Show("CONFIRM_DESTROY_DECOR", promptText, nil, popupData);
+				end);
+				destroyAllButtonDesc:SetEnabled(canDestroyEntry);
+				if not canDestroyEntry then
+					destroyAllButtonDesc:SetTooltip(showDisabledTooltip);
+				end
 			end
 		end
 	end);
@@ -675,7 +786,7 @@ end
 function HousingCatalogRoomEntryMixin:HasValidData()
 	-- Overrides HousingCatalogEntryMixin.
 
-	-- For now, we don't support bundleEntryInfo-based room entries.
+	-- For now, we don't support bundleItemInfo-based room entries.
 	return self.elementData and self.entryInfo;
 end
 

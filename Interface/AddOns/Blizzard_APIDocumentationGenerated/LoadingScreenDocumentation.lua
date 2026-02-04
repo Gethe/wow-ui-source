@@ -3,6 +3,7 @@ local LoadingScreen =
 	Name = "LoadingScreen",
 	Type = "System",
 	Namespace = "C_LoadingScreen",
+	Environment = "All",
 
 	Functions =
 	{
@@ -14,11 +15,13 @@ local LoadingScreen =
 			Name = "LoadingScreenDisabled",
 			Type = "Event",
 			LiteralName = "LOADING_SCREEN_DISABLED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "LoadingScreenEnabled",
 			Type = "Event",
 			LiteralName = "LOADING_SCREEN_ENABLED",
+			SynchronousEvent = true,
 		},
 	},
 
