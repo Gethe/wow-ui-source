@@ -156,6 +156,32 @@ function PlayerTalentFrame_OnLoad(self)
 	self.talentGroup = 1;
 	self.updateFunction = PlayerTalentFrame_Update;
 
+	if ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING) then
+		-- The points bar is a distinct frame instead of baked into the background texture.
+		PlayerTalentFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft");
+		PlayerTalentFrameBottomRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight");
+		PlayerTalentFramePointsBar:SetPoint("BOTTOM", 0, 81);
+		PlayerTalentFramePointsBarBackground:Show();
+		PlayerTalentFramePointsBarBorderLeft:Show();
+		PlayerTalentFramePointsBarBorderRight:Show();
+		PlayerTalentFramePointsBarBorderMiddle:Show();
+
+		-- The cancel button is not present, so the bottom points bar extends all the way across the frame.
+		PlayerTalentFrameCancelButton:Hide();
+		PlayerTalentFramePointsBarBorderRight:SetPoint("RIGHT", -4, 0);
+		PlayerTalentFramePointsBar:SetWidth(331);
+		PlayerTalentFramePointsBar:SetPoint("RIGHT", -36, 0);
+
+		-- The count of points spent on the shown tree is in the bottom points bar instead of top status bar.
+		PlayerTalentFrameSpentPointsText:ClearAllPoints();
+		PlayerTalentFrameSpentPointsText:SetParent(PlayerTalentFramePointsBar);
+		PlayerTalentFrameSpentPointsText:SetDrawLayer("ARTWORK");
+		PlayerTalentFrameSpentPointsText:SetPoint("LEFT", 12, 0);
+
+		-- The top status bar indicates whether this is your active spec.
+		PlayerTalentFrameStatusText:Show();
+	end
+
 	TalentFrame_Load(self);
 
 	-- setup talent buttons
@@ -384,8 +410,11 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	local spec = TalentUIUtil.GetSelectedSpec();
 	local isActiveSpec = TalentUIUtil.IsActiveSpecSelected();
 
-	-- show the multi-spec status frame if this is not a pet spec or we have more than one talent group
-	local showStatusFrame = not spec.pet and numTalentGroups > 1;
+	-- Prior to Wrath, the status frame shows points spent in the displayed tree, so show it if looking at
+	--  active spec. Otherwise, the status frame displays multi-spec status. Display it if this is not a pet
+	--  spec and there is more than one talent group.
+	local showStatusFrame = (not ClassicExpansionAtLeast(LE_EXPANSION_WRATH_OF_THE_LICH_KING)) or (not spec.pet and numTalentGroups > 1);
+
 	-- show the activate button if we were going to show the status frame but this is not the active spec
 	local showActivateButton = showStatusFrame and not isActiveSpec;
 	if ( showActivateButton ) then
@@ -419,7 +448,7 @@ function PlayerTalentFrame_UpdateControls(activeTalentGroup, numTalentGroups)
 	else
 		PlayerTalentFramePreviewBar:Hide();
 		-- unsquish frames since the bar is now hidden
-		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 81);
+		PlayerTalentFramePointsBar:SetPoint("BOTTOM", PlayerTalentFrame, "BOTTOM", 0, 78);
 	end
 end
 
